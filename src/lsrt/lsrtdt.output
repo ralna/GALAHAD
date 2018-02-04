@@ -1,0 +1,29 @@
+
+ ==== normal exits ====== 
+
+ problem 1 pass   1 LSRT_solve exit status =      0
+ problem 1 pass   2 LSRT_solve exit status =      0
+ problem 1 pass   3 LSRT_solve exit status =      0
+ problem 1 pass   4 LSRT_solve exit status =      0
+ problem 1 pass   5 LSRT_solve exit status =      0
+ problem 1 pass   6 LSRT_solve exit status =      0
+ problem 1 pass   7 LSRT_solve exit status =      0
+ problem 1 pass   8 LSRT_solve exit status =      0
+ problem 1 pass   9 LSRT_solve exit status =      0
+ problem 2 pass   1 LSRT_solve exit status =      0
+ problem 2 pass   2 LSRT_solve exit status =      0
+ problem 2 pass   3 LSRT_solve exit status =      0
+ problem 2 pass   4 LSRT_solve exit status =      0
+ problem 2 pass   5 LSRT_solve exit status =      0
+ problem 2 pass   6 LSRT_solve exit status =      0
+ problem 2 pass   7 LSRT_solve exit status =      0
+ problem 2 pass   8 LSRT_solve exit status =      0
+ problem 2 pass   9 LSRT_solve exit status =      0
+
+ ==== error exits ====== 
+
+ pass   2 LSRT_solve exit status =    -18
+ pass   3 LSRT_solve exit status =    -25
+ pass   4 LSRT_solve exit status =     -3
+ pass   5 LSRT_solve exit status =     -3
+ pass   8 LSRT_solve exit status =     -3

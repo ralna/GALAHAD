@@ -1,0 +1,22 @@
+
+ ==== normal exits ====== 
+
+ pass   1 GLTR_solve exit status =      0
+ pass   2 GLTR_solve exit status =      0
+ pass   3 GLTR_solve exit status =      0
+ pass   4 GLTR_solve exit status =      0
+ pass   5 GLTR_solve exit status =      0
+ pass   6 GLTR_solve exit status =      0
+ pass   7 GLTR_solve exit status =      0
+ pass   8 GLTR_solve exit status =      0
+ pass   9 GLTR_solve exit status =      0
+ pass  10 GLTR_solve exit status =      0
+ pass  11 GLTR_solve exit status =      0
+
+ ==== error exits ====== 
+
+ pass   1 GLTR_solve exit status =    -30
+ pass   2 GLTR_solve exit status =    -18
+ pass   3 GLTR_solve exit status =    -15
+ pass   4 GLTR_solve exit status =     -3
+ pass   5 GLTR_solve exit status =     -3

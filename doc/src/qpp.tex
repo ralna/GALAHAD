@@ -1,0 +1,1727 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{qpp}
+\newcommand{\packagename}{QPP}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+This package reorders to a standard form the variables and constraints
+for the {\bf quadratic programming problem}
+\eqn{qp}{\mbox{minimize}\;\; \half \bmx^T \bmH \bmx + \bmg^T \bmx + f}
+or sometimes the (shifted, squared) {\bf least-distance problem}
+\eqn{lsqp}{\mbox{minimize}\;\;
+ \half \sum_{i=1}^n w_i^2 ( x_i^{ } - x_i^0 )^2 + \bmg^T \bmx + f,}
+subject to the general linear constraints
+\disp{c_{i}^{l}  \leq  \bma_{i}^{T}\bmx  \leq  c_{i}^{u}, \;\;\;
+ i = 1, \ldots , m,}
+and the simple bound constraints
+\disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
+where the $n$ by $n$ symmetric matrix $\bmH$, the 
+vectors $\bmg$, $\bmw$, $\bmx^{0}$,
+$\bma_{i}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$, 
+$\bmx^{u}$ and the scalar $f$ are given.
+Full advantage is taken of any zero coefficients in the matrix $\bmH$ or the
+vectors $\bma_{i}$. 
+Any of the constraint bounds $c_{i}^{l}$, $c_{i}^{u}$, 
+$x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
+
+The variables are rordered so that any
+free variables (ie, those without bounds) occur first, followed
+respectively by 
+non-negativities (i.e., those for which the only
+bounds are that $x_j \geq 0$),
+lower-bounded variables (i.e., those for which the only
+bounds are that $x_j \geq x_j^l \neq 0$),
+range-bounded variables (i.e., those for which the 
+bounds satisfy $- \infty < x_j^l < x_j^u < \infty$)
+upper-bounded variables (i.e., those for which the only
+bounds are that $x_j \leq x_j^u \neq 0$), and finally
+non-positivities (i.e., those for which the only
+bounds are that $x_j \leq 0$).
+Fixed variables will be removed. Within each of the above categories, 
+the variables are further ordered so that those with non-zero diagonal Hessian 
+entries occur before the remainder.
+
+The constraints are reordered so that equality constraints (i.e., those
+for which $c_i^l = c_i^u$) occur first, followed 
+respectively by those 
+which are lower-bounded (i.e., those for which the only
+bounds are that $\bma_i^T \bmx \geq c_i^l$),
+those which have ranges (i.e., those for which the 
+bounds satisfy 
+$- \infty < c_j^l < c_j^u < \infty$), 
+and finally those which are upper-bounded (i.e., those for which the only
+bounds are that $\bma_i^T \bmx \leq c_i^u$).
+Free constraints, that is those for which 
+$c_i^l = - \infty$ and $c_i^u = \infty$, are removed.
+
+Procedures are provided to detetmine the required ordering, to
+reorder the problem to standard form, and
+to recover the problem, or perhaps just the values of
+the original variables, once it has been converted to standard form.
+
+The derived type is also capable of supporting {\em parametric}
+quadratic programming problems, in which an additional objective
+term $\theta \delta \bmg^T \bmx$ is included, and the trajectory of 
+solution are required for all $0 \leq \theta \leq \theta_{\max}$ 
+for which
+\disp{
+c_{i}^{l}  + \theta \delta c_{i}^{l}
+\leq  \bma_{i}^{T}\bmx  \leq  c_{i}^{u} + \theta \delta c_{i}^{u}, \;\;\;
+ i = 1, \ldots , m,}
+and 
+\disp{x_{j}^{l} + \theta x_{j}^{l} \leq x_{j}^{ } \leq 
+x_{j}^{u} + \delta x_{j}^{u} , \;\;\; j = 1, \ldots , n.}
+
+It is anticipated that this module will principally be used as a pre- and 
+post-processing tool for other \galahad\ packages.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses
+{\tt GALAHAD\_SY\-M\-BOLS}, 
+{\tt GALAHAD\_SMT}, 
+{\tt GALAHAD\_QPT},
+{\tt GALAHAD\_SORT}.
+\galdate December 1999.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory, and
+Ph. L. Toint, University of Namur, Belgium.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types 
+{\tt SMT\_TYPE},
+{\tt QPT\_problem\_type},
+{\tt \packagename\_dims\_type}, 
+{\tt \packagename\_control\_type}, 
+\sloppy
+{\tt \packagename\_inform\_type} 
+and
+{\tt \packagename\_map\_type}
+(Section~\ref{galtypes})
+and the subroutines
+{\tt \packagename\_initialize}, 
+{\tt \packagename\_reorder},
+{\tt \packagename\_apply}, 
+{\tt \packagename\_get\_values}, 
+{\tt \packagename\_restore}
+and
+{\tt \packagename\_terminate} 
+(Section~\ref{galarguments})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmatrix
+
+Both the Hessian matrix $\bmH$ and
+the constraint Jacobian $\bmA$, the matrix 
+whose rows are the vectors $\bma_{i}^{T}$, $i = 1, \ldots , m$, 
+may be stored in a variety of input formats.
+
+\subsubsection{Dense storage format}\label{dense}
+The matrix $\bmA$ is stored as a compact 
+dense matrix by rows, that is, the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+Component $n \ast (i-1) + j$ of the storage array {\tt A\%val} will hold the 
+value $a_{ij}$ for $i = 1, \ldots , m$, $j = 1, \ldots , n$.
+Since $\bmH$ is symmetric, only the lower triangular part (that is the part 
+$h_{ij}$ for $1 \leq j \leq i \leq n$) need be held. In this case
+the lower triangle will be stored by rows, that is 
+component $i \ast (i-1)/2 + j$ of the storage array {\tt H\%val}  
+will hold the value $h_{ij}$ (and, by symmetry, $h_{ji}$)
+for $1 \leq j \leq i \leq n$.
+
+\subsubsection{Sparse co-ordinate storage format}\label{coordinate}
+Only the nonzero entries of the matrices are stored. For the 
+$l$-th entry of $\bmA$, its row index $i$, column index $j$ 
+and value $a_{ij}$
+are stored in the $l$-th components of the integer arrays {\tt A\%row}, 
+{\tt A\%col} and real array {\tt A\%val}, respectively.
+The order is unimportant, but the total
+number of entries {\tt A\%ne} is also required. 
+The same scheme is applicable to
+$\bmH$ (thus requiring integer arrays {\tt H\%row}, {\tt H\%col}, a real array 
+{\tt H\%val} and an integer value {\tt H\%ne}),
+except that only the entries in the lower triangle need be stored.
+
+\subsubsection{Sparse row-wise storage format}\label{rowwise}
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row $i$ appear directly before those
+in row $i+1$. For the $i$-th row of $\bmA$, the $i$-th component of a 
+integer array {\tt A\%ptr} holds the position of the first entry in this row,
+while {\tt A\%ptr} $(m+1)$ holds the total number of entries plus one.
+The column indices $j$ and values $a_{ij}$ of the entries in the $i$-th row 
+are stored in components 
+$l =$ {\tt A\%ptr}$(i)$, \ldots ,{\tt A\%ptr} $(i+1)-1$ of the 
+integer array {\tt A\%col}, and real array {\tt A\%val}, respectively. 
+The same scheme is applicable to
+$\bmH$ (thus requiring integer arrays {\tt H\%ptr}, {\tt H\%col}, and 
+a real array {\tt H\%val}),
+except that only the entries in the lower triangle need be stored.
+
+For sparse matrices, this scheme almost always requires less storage than 
+its predecessor.
+
+\subsubsection{Diagonal storage format}\label{diagonal}
+If $\bmH$ is diagonal (i.e., $h_{ij} = 0$ for all $1 \leq i \neq j \leq n$)
+only the diagonals entries $h_{ii}$, $1 \leq i \leq n$,  need be stored,
+and the first $n$ components of the array {\tt H\%val} may be used for 
+the purpose. There is no sensible equivalent for the non-square $\bmA$.
+
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Six derived data types are accessible from the package.
+
+%%%%%%%%%%% matrix data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding matrices}\label{typesmt}
+The derived data type {\tt SMT\_TYPE} is used to hold the matrices $\bmA$
+and $\bmH$. The components of {\tt SMT\_TYPE} used here are:
+
+\begin{description}
+
+\ittf{m} is a scalar component of type default \integer, 
+that holds the number of rows in the matrix. 
+ 
+\ittf{n} is a scalar component of type default \integer, 
+that holds the number of columns in the matrix. 
+ 
+\ittf{ne} is a scalar variable of type default \integer, that either 
+holds the number of matrix entries or is used to flag the storage scheme
+used. 
+
+\ittf{val} is a rank-one allocatable array of type default \realdp\, 
+and dimension at least {\tt ne}, that holds the values of the entries. 
+Each pair of off-diagonal entries $h_{ij} = h_{ji}$ of a {\em symmetric}
+matrix $\bmH$ is represented as a single entry 
+(see \S\ref{dense}--\ref{rowwise}).
+Any duplicated entries that appear in the sparse 
+co-ordinate or row-wise schemes will be summed. 
+
+\ittf{row} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt ne}, that may hold the row indices of the entries. 
+(see \S\ref{coordinate}).
+
+\ittf{col} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt ne}, that may the column indices of the entries
+(see \S\ref{coordinate}--\ref{rowwise}).
+
+\ittf{ptr} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt n + 1}, that may hold the pointers to
+the first entry in each column (see \S\ref{rowwise}).
+
+\end{description}
+
+%%%%%%%%%%% problem type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding quadratic programs}
+\label{typeqp}
+
+The derived data type 
+{\tt QPT\_problem\_type}
+is used to hold the data that defines the problem.
+The components of 
+{\tt QPT\_problem\_type} used here are:
+
+\begin{description}
+
+\ittf{n} is a scalar variable of type default \integer, 
+ that holds the number of optimization variables, $n$.  
+              
+\ittf{m} is a scalar variable of type default \integer, 
+ that holds the number of general linear constraints, $m$.
+              
+\itt{Hessian\_kind} is a scalar variable of type default \integer, 
+that is used to indicate what type of Hessian the problem involves.
+Possible values for {\tt Hessian\_kind} are:
+
+\begin{description}
+\itt{<0}  In this case, a general quadratic program of the form
+\req{qp} is given. The Hessian matrix $\bmH$ will be provided in the 
+component {\tt H} (see below).
+
+\itt{0}  In this case, a linear program, that is a problem of the form 
+\req{lsqp} with weights $\bmw = 0$, is given.
+
+\itt{1} In this case, a least-distance problem of the form \req{lsqp}
+with weights $w_{j} = 1$ for $j = 1, \ldots , n$ is given.
+
+\itt{>1} In this case, a weighted least-distance problem of the form \req{lsqp}
+with general weights $\bmw$ is given. The weights will be
+provided in the component {\tt WEIGHT} (see below).
+\end{description}
+
+\ittf{H} is scalar variable of type {\tt SMT\_TYPE} 
+that contains the Hessian matrix $\bmH$ whenever {\tt Hessian\_kind} $>1$.
+The following components are used:
+
+\begin{description}
+
+\itt{H\%type} is an allocatable array of rank one and type default \character, 
+that is used to indicate the storage scheme used. If the dense storage scheme 
+(see Section~\ref{dense}) is used, 
+the first five components of {\tt H\%type} must contain the
+string {\tt DENSE}.
+For the sparse co-ordinate scheme (see Section~\ref{coordinate}), 
+the first ten components of {\tt H\%type} must contain the
+string {\tt COORDINATE},  
+for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
+the first fourteen components of {\tt H\%type} must contain the
+string {\tt SPARSE\_BY\_ROWS},
+and for the diagonal storage scheme (see Section~\ref{diagonal}),
+the first eight components of {\tt H\%type} must contain the
+string {\tt DIAGONAL}.
+
+For convenience, the procedure {\tt SMT\_put} 
+may be used to allocate sufficient space and insert the required keyword
+into {\tt H\%type}.
+For example, if {\tt prob} is of derived type {\tt \packagename\_problem\_type}
+and involves a Hessian we wish to store using the co-ordinate scheme,
+we may simply
+%\vspace*{-2mm}
+{\tt 
+\begin{verbatim}
+        CALL SMT_put( prob%H%type, 'COORDINATE' )
+\end{verbatim}
+}
+%\vspace*{-4mm}
+\noindent
+See the documentation for the \galahad\ package {\tt SMT} 
+for further details on the use of {\tt SMT\_put}.
+
+\itt{H\%ne} is a scalar variable of type default \integer, that 
+holds the number of entries in the {\bf lower triangular} part of $\bmH$
+in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}). 
+It need not be set for any of the other three schemes.
+
+\itt{H\%val} is a rank-one allocatable array of type default \realdp, that holds
+the values of the entries of the {\bf lower triangular} part
+of the Hessian matrix $\bmH$ in any of the 
+storage schemes discussed in Section~\ref{galmatrix}.
+
+\itt{H\%row} is a rank-one allocatable array of type default \integer,
+that holds the row indices of the {\bf lower triangular} part of $\bmH$ 
+in the sparse co-ordinate storage
+scheme (see Section~\ref{coordinate}). 
+It need not be allocated for any of the other three schemes.
+
+\itt{H\%col} is a rank-one allocatable array variable of type default \integer,
+that holds the column indices of the {\bf lower triangular} part of 
+$\bmH$ in either the sparse co-ordinate 
+(see Section~\ref{coordinate}), or the sparse row-wise 
+(see Section~\ref{rowwise}) storage scheme.
+It need not be allocated when the dense or diagonal storage schemes are used.
+
+\itt{H\%ptr} is a rank-one allocatable array of dimension {\tt n+1} and type 
+default \integer, that holds the starting position of 
+each row of the {\bf lower triangular} part of $\bmH$, as well
+as the total number of entries plus one, in the sparse row-wise storage
+scheme (see Section~\ref{rowwise}). It need not be allocated when the
+other schemes are used.
+
+\end{description}
+If {\tt Hessian\_kind} $\geq 0$, the components of {\tt H} need not be set.
+
+\itt{WEIGHT} is a rank-one allocatable array type default \realdp, that 
+should be allocated to have length {\tt n}, and its $j$-th component 
+filled with the value $w_{j}$ for $j = 1, \ldots , n$, 
+whenever {\tt Hessian\_kind} $>1$.
+If {\tt Hessian\_kind} $\leq 1$, {\tt WEIGHT} need not be allocated.
+
+\itt{target\_kind} is a scalar variable of type default \integer, 
+that is used to indicate whether the components of the targets $\bmx^0$ 
+(if they are used) have special or general values. Possible values for 
+{\tt target\_kind} are:
+\begin{description}
+\itt{0}  In this case, $\bmx^0 = 0$.
+
+\itt{1} In this case, $x^0_{j} = 1$ for $j = 1, \ldots , n$.
+
+\itt{$\neq$ 0,1} In this case, general values of $\bmx^0$ will be used,
+     and will be provided in the component {\tt X0} (see below).
+\end{description}
+
+\itt{X0} is a rank-one allocatable array type default \realdp, that 
+should be allocated to have length {\tt n}, and its $j$-th component 
+filled with the value $x_{j}^0$ for $j = 1, \ldots , n$, 
+whenever {\tt Hessian\_kind} $>0$.
+If {\tt Hessian\_kind} $\leq 0$  or {\tt target\_kind} $= 0,1$,
+{\tt X0} need not be allocated.
+
+\itt{gradient\_kind} is a scalar variable of type default \integer, 
+that is used to indicate whether the components of the gradient $\bmg$ 
+have special or general values. Possible values for {\tt gradient\_kind} are:
+\begin{description}
+\itt{0}  In this case, $\bmg = 0$.
+
+\itt{1} In this case, $g_{j} = 1$ for $j = 1, \ldots , n$.
+
+\itt{$\neq$ 0,1} In this case, general values of $\bmg$ will be used,
+     and will be provided in the component {\tt G} (see below).
+\end{description}
+
+\ittf{G} is a rank-one allocatable array type default \realdp, that 
+should be allocated to have length {\tt n}, and its $j$-th component 
+filled with the value $g_{j}$ for $j = 1, \ldots , n$, 
+whenever {\tt gradient\_kind} $\neq$ 0,1.
+If {\tt gradient\_kind} {= 0, 1}, {\tt G} need not be allocated.
+
+\ittf{DG} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that may hold the gradient $\delta \bmg$ 
+of the parametric linear term of the quadratic objective function.
+The $j$-th component of 
+{\tt DG}, $j = 1,  \ldots ,  n$, contains $\delta g_{j}$.
+
+\ittf{f} is a scalar variable of type 
+default \realdp, that holds 
+the constant term, $f$, in the objective function.
+
+\ittf{A} is scalar variable of type {\tt SMT\_TYPE} 
+that holds the Jacobian matrix $\bmA$. The following components are used:
+
+\begin{description}
+
+\itt{A\%type} is an allocatable array of rank one and type default \character, 
+that is used to indicate the storage scheme used. If the dense storage scheme 
+(see Section~\ref{dense}) is used, 
+the first five components of {\tt A\%type} must contain the
+string {\tt DENSE}.
+For the sparse co-ordinate scheme (see Section~\ref{coordinate}), 
+the first ten components of {\tt A\%type} must contain the
+string {\tt COORDINATE}, while 
+for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
+the first fourteen components of {\tt A\%type} must contain the
+string {\tt SPARSE\_BY\_ROWS}.
+
+Just as for {\tt H\%type} above, the procedure {\tt SMT\_put} 
+may be used to allocate sufficient space and insert the required keyword
+into {\tt A\%type}.
+Once again, if {\tt prob} is of derived type {\tt \packagename\_problem\_type}
+and involves a Jacobian we wish to store using the sparse row-wise 
+storage scheme, we may simply
+%\vspace*{-2mm}
+{\tt 
+\begin{verbatim}
+        CALL SMT_put( prob%A%type, 'SPARSE_BY_ROWS' )
+\end{verbatim}
+}
+%\vspace*{-4mm}
+\noindent
+
+\itt{A\%ne} is a scalar variable of type default \integer, that 
+holds the number of entries in $\bmA$
+in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}). 
+It need not be set for either of the other two schemes.
+
+\itt{A\%val} is a rank-one allocatable array of type default \realdp, that holds
+the values of the entries of the Jacobian matrix $\bmA$ in any of the 
+storage schemes discussed in Section~\ref{galmatrix}.
+
+\itt{A\%row} is a rank-one allocatable array of type default \integer,
+that holds the row indices of $\bmA$ in the sparse co-ordinate storage
+scheme (see Section~\ref{coordinate}). 
+It need not be allocated for either of the other two schemes.
+
+\itt{A\%col} is a rank-one allocatable array variable of type default \integer,
+that holds the column indices of $\bmA$ in either the sparse co-ordinate 
+(see Section~\ref{coordinate}), or the sparse row-wise 
+(see Section~\ref{rowwise}) storage scheme.
+It need not be allocated when the dense storage scheme is used.
+
+\itt{A\%ptr} is a rank-one allocatable array of dimension {\tt m+1} and type 
+default \integer, that holds the 
+starting position of each row of $\bmA$, as well
+as the total number of entries plus one, in the sparse row-wise storage
+scheme (see Section~\ref{rowwise}). It need not be allocated when the
+other schemes are used.
+
+\end{description}
+
+\ittf{C\_l} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds the vector of lower bounds $\bmc^{l}$ 
+on the general constraints. The $i$-th component of 
+{\tt C\_l}, $i = 1, \ldots , m$, contains $c_{i}^{l}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt C\_l} to any value smaller than {\tt -infinity}, 
+where {\tt infinity} is a  solver-dependent value that will be recognised as
+infinity.
+
+\ittf{C\_u} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds the vector of upper bounds $\bmc^{u}$ 
+on the general constraints. The $i$-th component of 
+{\tt C\_u}, $i = 1,  \ldots ,  m$, contains $c_{i}^{u}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt C\_u} to any value larger than {\tt infinity}, 
+where {\tt infinity} is a  solver-dependent value that will be recognised as
+infinity.
+
+\ittf{DC\_l} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that may hold the vector of parametric lower bounds 
+$\delta \bmc^{l}$ on the general constraints. The $i$-th component of 
+{\tt DC\_l}, $i = 1, \ldots , m$, contains $\delta c_{i}^{l}$.
+Only components corresponding to finite lower bounds $c_{i}^{l}$
+need be set.
+
+\ittf{DC\_u} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that may hold the vector of parametric upper bounds 
+$\delta \bmc^{u}$  on the general constraints. The $i$-th component of 
+{\tt DC\_u}, $i = 1,  \ldots ,  m$, contains $\delta c_{i}^{u}$.
+Only components corresponding to finite upper bounds $c_{i}^{u}$
+need be set.
+
+\ittf{X\_l} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds
+the vector of lower bounds $\bmx^{l}$ on the variables.
+The $j$-th component of {\tt X\_l}, $j = 1, \ldots , n$, 
+contains $x_{j}^{l}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt X\_l} to any value smaller than {\tt -infinity}, 
+where {\tt infinity} is a  solver-dependent value that will be recognised as
+infinity.
+
+\ittf{X\_u} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds
+the vector of upper bounds $\bmx^{u}$ on the variables.
+The $j$-th component of {\tt X\_u}, $j = 1, \ldots , n$, 
+contains $x_{j}^{u}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt X\_u} to any value larger than that {\tt infinity}, 
+where {\tt infinity} is a  solver-dependent value that will be recognised as
+infinity.
+
+\ittf{DX\_l} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that may hold the vector of parametric lower bounds 
+$\delta \bmx^{l}$ on the variables. The $j$-th component of 
+{\tt DX\_l}, $j = 1, \ldots , n$, contains $\delta x_{j}^{l}$.
+Only components corresponding to finite lower bounds $x_{j}^{l}$
+need be set.
+
+\ittf{DX\_u} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that may hold the vector of parametric upper bounds 
+$\delta \bmx^{u}$  on the variables. The $j$-th component of 
+{\tt DX\_u}, $j = 1,  \ldots ,  n$, contains $\delta x_{j}^{u}$.
+Only components corresponding to finite upper bounds $x_{j}^{u}$
+need be set.
+
+\ittf{X} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, 
+that holds the values $\bmx$ of the optimization variables.
+The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.  
+
+\ittf{Z} is a rank-one allocatable array of dimension {\tt n} and type default 
+\realdp, that holds
+the values $\bmz$ of estimates  of the dual variables 
+corresponding to the simple bound constraints (see Section~\ref{galmethod}).
+The $j$-th component of {\tt Z}, $j = 1,  \ldots ,  n$, contains $z_{j}$.  
+
+\ittf{Z\_l} is a rank-one allocatable array of dimension {\tt n} and type default 
+\realdp, that holds
+the values $\bmz^{l}$ of estimates  of the dual variables 
+corresponding to the lower simple bound constraints $\bmx^{l} \leq \bmx$
+(see Section~\ref{galmethod}).
+The $j$-th component of {\tt Z\_l}, $j = 1,  \ldots ,  n$, 
+contains $z_{j}^{l}$.  
+
+\ittf{Z\_u} is a rank-one allocatable array of dimension {\tt n} and type default 
+\realdp, that holds
+the values $\bmz^{u}$ of estimates  of the dual variables 
+corresponding to the upper simple bound constraints $\bmx \leq \bmx^{u}$
+(see Section~\ref{galmethod}).
+The $j$-th component of {\tt Z\_l}, $j = 1,  \ldots ,  n$, 
+contains $z_{j}^{l}$.  
+
+\ittf{C} is a rank-one allocatable array of dimension {\tt m} and type default 
+\realdp, that holds
+the values $\bmA \bmx$ of the constraints.
+The $i$-th component of {\tt C}, $i = 1,  \ldots ,  m$, contains 
+$\bma_{i}^{T}\bmx \equiv (\bmA \bmx)_{i}$.  
+
+\ittf{Y} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds
+the values $\bmy$ of estimates  of the Lagrange multipliers
+corresponding to the general linear constraints (see Section~\ref{galmethod}).
+The $i$-th component of {\tt Y}, $i = 1,  \ldots ,  m$, contains $y_{i}$.  
+
+\ittf{Y\_l} is a rank-one allocatable array of dimension {\tt m} and 
+type default \realdp, that holds
+the values $\bmy^{l}$ of estimates  of the Lagrange multipliers
+corresponding to the lower general constraints $\bmc^{l} \leq \bmA \bmx$
+(see Section~\ref{galmethod}).
+The $i$-th component of {\tt Y\_l}, $i = 1,  \ldots ,  m$, 
+contains $y_{i}^{l}$.  
+
+\ittf{Y\_u} is a rank-one allocatable array of dimension {\tt m} and 
+type default \realdp, that holds
+the values $\bmy^{u}$ of estimates  of the Lagrange multipliers
+corresponding to the upper general constraints $\bmA \bmx \leq \bmc^{u}$
+(see Section~\ref{galmethod}).
+The $i$-th component of {\tt Y\_u}, $i = 1,  \ldots ,  m$, 
+contains $y_{i}^{u}$.  
+
+\end{description}
+
+
+%%%%%%%%%%% problem type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding the problem dimensions}
+\label{typeprob}
+The derived data type 
+{\tt \packagename\_dims\_type} 
+is used to hold scalar data that defines the problem partitioning for the
+reordered problem. 
+The components of 
+{\tt \packagename\_dims\_type} 
+are:
+
+\begin{description}
+\itt{x\_free} is a scalar variable of type default \integer, that holds the 
+number of free variables. 
+    
+\itt{x\_l\_start} is a scalar variable of type default \integer, that holds the 
+index of the first variable with a nonzero lower (or lower range) bound. 
+    
+\itt{x\_l\_end} is a scalar variable of type default \integer, that holds the 
+index of the last variable with a nonzero lower (or lower range) bound. 
+    
+\itt{x\_u\_start} is a scalar variable of type default \integer, that holds the 
+index of the first variable with a nonzero upper (or upper range) bound. 
+    
+\itt{x\_u\_end} is a scalar variable of type default \integer, that holds the 
+index of the last variable with a nonzero upper (or upper range) bound. 
+    
+\itt{c\_equality} is a scalar variable of type default \integer, that holds the 
+number of equality constraints. 
+    
+\itt{c\_l\_start} is a scalar variable of type default \integer, that holds the 
+index of the first inequality constraint with a lower (or lower range) bound. 
+    
+\itt{c\_l\_end} is a scalar variable of type default \integer, that holds the 
+index of the last inequality constraint with a lower (or lower range) bound. 
+    
+\itt{c\_u\_start} is a scalar variable of type default \integer, that holds the 
+index of the first inequality constraint with an upper (or upper range) bound. 
+    
+\itt{c\_u\_end} is a scalar variable of type default \integer, that holds the 
+index of the last inequality constraint with an upper (or upper range) bound. 
+ 
+\itt{h\_diag\_end\_free} is a scalar variable of type default \integer, 
+that holds the index of the last free variable for which the Hessian has a 
+diagonal entry. 
+ 
+\itt{h\_diag\_end\_nonneg} is a scalar variable of type default \integer, 
+that holds the index of the last non-negative variable for which 
+the Hessian has a diagonal entry 
+ 
+\itt{h\_diag\_end\_lower} is a scalar variable of type default \integer, 
+that holds the index of the last lower-bounded variable for which the Hessian 
+has a diagonal entry 
+ 
+\itt{h\_diag\_end\_range} is a scalar variable of type default \integer, 
+that holds the index of the last range variable for which the Hessian has a 
+diagonal entry 
+ 
+\itt{h\_diag\_end\_upper} is a scalar variable of type default \integer, 
+that holds the index of the last upper-bounded variable for which the Hessian 
+has a diagonal entry 
+ 
+\itt{h\_diag\_end\_nonpos} is a scalar variable of type default \integer, 
+that holds the index of the last non-positive variable for which the Hessian 
+has a diagonal entry 
+\end{description}
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control 
+ parameters}\label{typecontrol}
+The derived data type 
+{\tt \packagename\_control\_type} 
+is used to hold controlling data. Default values may be obtained by calling 
+{\tt \packagename\_initialize}
+(see Section~\ref{subinit}). The components of 
+{\tt \packagename\_control\_type} 
+are:
+
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in 
+{\tt \packagename\_reorder} and {\tt \packagename\_terminate} 
+is suppressed if {\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\itt{infinity} is a scalar variable of type default \realdp, that is used to
+specify which constraint bounds are infinite.
+Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
+The default is {\tt infinity =} $10^{19}$.
+
+\itt{treat\_zero\_bounds\_as\_general} is a scalar variable of type 
+default \logical.
+If it is set to \false, variables which 
+are only bounded on one side, and whose bound is zero,
+will be recognised as non-negativities/non-positivities rather than simply as
+lower- or upper-bounded variables.
+If it is set to \true, any variable bound 
+$x_{j}^{l}$ or $x_{j}^{u}$ which has the value 0.0 will be
+treated as if it had a general value.
+Setting {\tt treat\_zero\_bounds\_as\_general} to \true\ has the advantage
+that if a sequence of problems are reordered, then bounds which are
+``accidentally'' zero will be considered to have the same structure as
+those which are nonzero. However, {\tt \fullpackagename} is
+able to take special advantage of non-negativities/non-positivities, so
+if a single problem, or if a sequence of problems whose 
+bound structure is known not to change, is/are to be solved, 
+it will pay to set the variable to \false.
+The default is {\tt treat\_zero\_bounds\_as\_general = .FALSE.}.
+
+\end{description}
+
+%%%%%%%%%%% info type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type 
+{\tt \packagename\_inform\_type} 
+is used to hold parameters that give information about the progress and needs 
+of the algorithm. The components of 
+{\tt \packagename\_inform\_type} 
+are:
+
+\begin{description}
+
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm. See Sections~\ref{galerrors} and \ref{galinfo}
+for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+
+\end{description}
+
+%%%%%%%%%%% map type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding reordering data}\label{typemap}
+The derived data type 
+{\tt \packagename\_map\_type} 
+is used to hold all the reordering and workspace data for a particular 
+problem, or sequences of problems with the same structure, between calls of 
+{\tt \packagename} procedures. 
+This data should be preserved, untouched, from the initial call to 
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}.
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are six procedures for user calls:
+
+\begin{enumerate}
+\item The subroutine 
+  {\tt \packagename\_initialize} 
+  is used to set default 
+  values, and initialize private data, before reordered one or more problems 
+  with the same sparsity and bound structure. 
+  Here, the term "structure" refers both to 
+  the sparsity patterns of the Hessian matrices $\bmH$ and Jacobian 
+  matrices $\bmA$ involved 
+  (but not their numerical values), to the zero/nonzero/infinity patterns 
+  (a bound is either zero, $\pm$ infinity, or a finite but arbitrary 
+  nonzero) of each of the constraint bounds, and to the variables and 
+  constraints that are fixed (both bounds are the same) or free 
+  (the lower and upper bounds are $\pm$ infinity, respectively). 
+ 
+\item The subroutine 
+  {\tt \packagename\_reorder} 
+  is called to reorder a problem, or the first of a sequence of structurally 
+  identical problems. 
+ 
+\item The subroutine 
+  {\tt \packagename\_apply} 
+  may be called to reorder real data for subsequent structurally identical 
+  problems. 
+ 
+\item The subroutine 
+  {\tt \packagename\_get\_values} 
+  may be used to obtain the values of the original primal and dual variables 
+  and Lagrange multipliers from those for the reordered problem. 
+ 
+\item The subroutine {\tt \packagename\_restore} may be used to recover the 
+  original problem from the data for the reordered one. 
+ 
+\item The subroutine 
+  {\tt \packagename\_terminate} 
+  is provided to allow the user to automatically deallocate array components 
+  of the private data,  allocated by 
+  {\tt \packagename\_reorder}, 
+  at the end of the reordering process. It is important to do this if the data 
+  object is re-used for another problem {\bf with a different structure} 
+  since {\tt \packagename\_initialize} cannot test for this situation, 
+  and any existing associated targets will subsequently become unreachable. 
+\end{enumerate}
+We use square brackets {\tt [ ]} to indicate \optional\ arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize( map, control )}
+
+\vspace*{-2mm}
+\begin{description}
+
+\itt{map} is a scalar \intentout\ argument of type 
+{\tt \packagename\_map\_type} (see Section~\ref{typemap}). 
+It is used to hold all the reordering and workspace data for the problem. 
+
+\itt{control} is a scalar \intentout\ argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). 
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling 
+{\tt \packagename\_initialize}.
+
+\end{description}
+
+%%%%%%%%% initial reordering subroutine %%%%%%
+
+\subsubsection{The initial reordering subroutine}
+The initial reordering algorithm is applied as follows: 
+\vspace*{-2mm}
+{\tt 
+\begin{verbatim}
+        CALL QPP_reorder( map, control, info, dims, prob, &
+                          get_x, get_y, get_z [, parametric ] )
+\end{verbatim}
+}
+\vspace*{-4mm}
+\begin{description}
+\ittf{map} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_map\_type}. 
+It is used to hold reordering and workspace data for the problem. 
+It must not have been altered {\bf by the user} since the last call
+to {\tt \packagename\_initialize}. 
+ 
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type} 
+(see Section~\ref{typecontrol}). 
+Default values may be assigned by calling 
+{\tt \packagename\_initialize} 
+prior to the first call to {\tt \packagename\_reorder}. 
+ 
+\itt{info} is a scalar \intentout\ argument of type 
+{\tt \packagename\_inform\_type} 
+(see Section~\ref{typeinform}). 
+A successful call to {\tt \packagename\_reor\-der} is indicated 
+when the component {\tt status} has the value 0. For other return values 
+of {\tt status}, see Section~\ref{galerrors}. 
+ 
+\itt{dims} is a scalar \intentout\ argument of type 
+{\tt \packagename\_dims\_type} that 
+is used to hold scalar data that defines the reordered problem. 
+On successful exit, all components will have been set to values 
+that define the reordered problem (see Section~\ref{typeprob}). 
+ 
+\itt{prob} is a scalar \intentinout\ argument of type 
+{\tt QPT\_problem\_type} that 
+is used to hold data that defines the original and reordered problem. 
+On entry, components {\tt f}, {\tt gradient\_kind}, {\tt G},
+{\tt A}, {\tt C\_l}, {\tt C\_u}, {\tt X\_l} and {\tt X\_u} 
+must be appropriately allocated and set (see Section~\ref{typeqp}).
+The same is true of component {\tt H} in the quadratic programming case
+and components {\tt weight\_type}, {\tt WEIGHT} and {\tt X0} 
+in the least-distance case. 
+In addition, for parametric problems
+{\tt DG}, {\tt DC\_l}, {\tt DC\_u}, {\tt DX\_l} and {\tt DX\_u}
+must be allocated appropriately and set.
+If the user wishes to provide suitable starting values for $\bmx$, $\bmy$ 
+(or alternatively $\bmy^l$ and $\bmy^u$) and
+$\bmz$ (or alternatively $\bmz^l$ and $\bmz^u$), 
+they should be placed in {\tt X}, {\tt Y} (or {\tt Y\_l} and {\tt Y\_u})
+and {\tt Z} (or {\tt Z\_l} and {\tt Z\_u}) respectively,
+and the arguments {\tt get\_x}, {\tt get\_y} and {\tt get\_z}
+set appropriately (see below). 
+
+%Regardless of the storage schemes used to store $g$, $\bmA$ and $\bmH$, the
+%components {\tt G}, {\tt H\%col}, {\tt H\%ptr}, {\tt A\%col} and {\tt A\%ptr} 
+%must be either explicitly disassociated (using a {\tt NULLIFY} statement) 
+%or allocated.
+
+On successful exit, all provided components will have been set to values 
+that define the reordered problem (see Section 2.2.1). The reordered 
+arrays $\bmA$ and, if appropriate,  $\bmH$ will be stored using the row-wise
+scheme. In addition the components
+{\tt X}, {\tt Y}, {\tt Z} and {\tt C} will contain values of 
+$\bmx$, $\bmy$, $\bmz$ and $\bmA \bmx$ for the reordered problem. 
+The user should be aware that fixed variables and free constraints will have 
+been removed, and thus that the components {\tt prob\%n} and {\tt prob\%m} 
+may be smaller than their values on entry. 
+
+\itt{get\_x} is a scalar \intentin\ argument of type default \logical, that 
+must be set \false\ if the user wishes to provide suitable values for the 
+primal variables in {\tt X}, and \true, if appropriate values should be 
+calculated by the subroutine. 
+ 
+\itt{get\_y} is a scalar \intentin\ argument of type default \logical, that 
+must be set \false\ if the user wishes to provide suitable values for the 
+Lagrange multiplies for the general linear constraints in {\tt Y}
+(or alternatively in {\tt Y\_l} and {\tt Y\_u}), 
+and \true, if appropriate values should be calculated by the subroutine. 
+In the latter case, the array {\tt Y} (or the arrays {\tt Y\_l} and {\tt Y\_u})
+must have been allocated.
+ 
+\itt{get\_z} is a scalar \intentin\ argument of type default \logical, that 
+must be set \false\ if the user wishes to provide suitable values for the 
+dual variables for the simple bound constraints in {\tt Z}
+(or alternatively in {\tt Z\_l} and {\tt Z\_u}), and \true, 
+if appropriate values should be calculated by the subroutine. 
+In the latter case, the array {\tt Z} (or the arrays {\tt Z\_l} and {\tt Z\_u})
+must have been allocated.
+
+\itt{parametric} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {parametric} is present, the problem will be assumed to include
+parametric data $\delta \bmg$, $\delta \bmx_l$, $\delta \bmx_u$, 
+$\delta \bmx_l$ and $\delta \bmx_u$ as part of {\tt prob},
+and this data will be reordered. If 
+If {parametric} is absent, no parametric data will be processed.
+ 
+\end{description}
+
+%%%%%%% subsequent reordering subroutine %%%%%%
+
+\subsubsection{The subsequent reordering subroutine}
+The reordering calculated by a previous call to {\tt \packagename\_reorder} 
+may be applied to a structurally identical problem with different real data 
+as follows:
+
+\vspace*{-2mm}
+{\tt 
+\begin{verbatim}
+     CALL QPP_apply( map, info, dims, prob [, get_all, get_all_parametric, &
+                     get_g, get_dg, get_x, get_y, get_z,                   &
+                     get_x_bounds, get_dx_bounds, get_c, get_c_bounds,     &
+                     get_dc_bounds, get_A, get_H ] )
+\end{verbatim}
+}
+\vspace*{-1mm}
+\noindent
+The arguments {\tt map}, and {\tt info} are exactly as for 
+{\tt \packagename\_reorder}. The values of the integers 
+{\tt prob\%n}, {\tt prob\%m}, {\tt prob\%h\_ne}, {\tt prob\%a\_ne},
+{\tt prob\%gradient\%type} and {\tt prob\%weight\%type}, the
+integer arrays {\tt prob\%H\%col}, {\tt prob\%H\%ptr}, 
+{\tt prob\%A\%col}, {\tt prob\%A\%ptr}, and the remaining (integer) 
+components of {\tt dims} must 
+have been preserved exactly as they were on exit from the most recent 
+call to {\tt \packagename\_reorder} or {\tt \packagename\_restore}, 
+and are not altered by the subroutine. 
+
+New \realdp, values may be assigned to the arguments 
+{\tt prob\%f}, {\tt prob\%H\%val}, {\tt prob\%G}, {\tt prob\%A\%val}, 
+{\tt prob\%WEIGHT}, {\tt prob\%X0}, {\tt prob\%C\_l}, 
+{\tt prob\%C\_l}, {\tt prob\%X\_l}, {\tt prob\%X\_u}, {\tt prob\%X}, 
+{\tt prob\%Y} 
+(or alternatively {\tt prob\%Y\_l} and {\tt prob\%Y\_u}), 
+and {\tt prob\%Z}
+(or alternatively {\tt prob\%Z\_l} and {\tt prob\%Z\_u}), 
+(and optionally 
+{\tt prob\%DC}, {\tt prob\%DC\_l}, {\tt prob\%DC\_l}, {\tt prob\%DX\_l} and 
+{\tt prob\%DX\_u} for parametric problems), 
+but the components of these arrays 
+must be in exactly the same order as originally presented to 
+{\tt \packagename\_reorder}. 
+The exit values of all of these real values depend on the following, 
+remaining arguments: 
+
+\begin{description}
+\itt{get\_all} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_all} is present, the entire non-parametric problem 
+input in {\tt prob} will be reordered according to the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+Any parametric data will be ignored.
+
+\itt{get\_all\_parametric} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_all\_parametric} is present, the entire parametric problem 
+input in {\tt prob} will be reordered according to the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_f} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_f} is present, the constant objective term
+$f$, input in {\tt prob\%f} 
+will be adjusted for the the reordered problem according to the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_g} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_g} is present, the gradient 
+$\bmg$, input in {\tt prob\%G} 
+will be adjusted for the the reordered problem according to the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_dg} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_dg} is present, the parametric gradient $\delta \bmg$, input in 
+{\tt prob\%DG}),
+will be adjusted for the the reordered problem according to the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_x} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_x} is present, the vector of primal variables $\bmx$, 
+input in {\tt prob\%X}, will be 
+adjusted for the the reordered problem according to the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_y} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_y} is present, the 
+Lagrange multipliers $\bmy$, input in {\tt prob\%Y}
+(or alternatively in {\tt prob\%Y\_l} and {\tt prob\%Y\_u}), 
+will be adjusted for the the reordered problem according to the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+
+\itt{get\_z} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_z} is present, the vector of dual variables $\bmz$, input in 
+{\tt prob\%Z} (or alternatively in {\tt prob\%Z\_l} and {\tt prob\%Z\_u}),
+will be adjusted for the reordered problem according 
+to the mappings generated by the last successful 
+call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_x\_bounds} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_x\_bounds} is present, 
+the vectors of variable bounds $\bmx_l$ and 
+$\bmx_u$, input in {\tt prob\%X\_l} and {\tt prob\%X\_u} respectively
+will be reordered according to the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_dx\_bounds} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_dx\_bounds} is present, 
+the vectors of parametric variable bounds $\delta \bmx_l$ and 
+$\delta \bmx_u$, input in {\tt prob\%DX\_l} and {\tt prob\%DX\_u} respectively,
+will be reordered according to the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_c} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_c} is present, the vector $\bmA \bmx$ for the reordered problem 
+will be returned in {\tt prob\%C}. 
+ 
+\itt{get\_c\_bounds} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_c\_bounds} is present, 
+the vectors of constraint bounds $\bmc_l$ and 
+$\bmc_u$, input in {\tt prob\%C\_l} and {\tt prob\%C\_u} respectively
+will be reordered according to the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_dc\_bounds} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_dc\_bounds} is present, 
+the vectors of parametric constraint bounds $\delta \bmc_l$ and 
+$\delta \bmc_u$, input in {\tt prob\%DC\_l} and {\tt prob\%DC\_u} respectively,
+will be reordered according to the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_A} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_A} is present, the entries of the 
+matrix $\bmA$, input in {\tt prob\%A\%val}, will be reordered according to the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_H} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_H} is present, the Hessian matrix will be reordered according to the
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+Specifically, if {\tt Hessian\_kind} $< 0$, the entries of the 
+lower triangular part of the matrix $\bmH$, input in {\tt prob\%H\%val}, 
+will be reordered. If {\tt Hessian\_kind} $> 0$, the 
+components of $\bmx^0$ input in {\tt prob\%X0} will be reordered, 
+and additionally if {\tt Hessian\_kind} $> 1$ so will the weights 
+$\bmw$ input in {\tt prob\%WEIGHT}.
+
+\end{description}
+
+%%%%%%% variable recovery subroutine %%%%%%
+
+\subsubsection{The  variable recovery reordering subroutine}
+The values of minimization variables that have been determined for the 
+reordered problem may be recovered for the original problem as follows: 
+\vspace*{-2mm}
+{\tt 
+\begin{verbatim}
+        CALL QPP_get_values( map, info, prob [, X_val, Y_val, Z_val ] )
+\end{verbatim}
+}
+\vspace*{-1mm}
+\noindent
+The arguments {\tt map} and {\tt info} are exactly as for 
+{\tt \packagename\_reorder}. 
+The \intentin\ argument {\tt prob}
+must contain reordered problem data from a previous call 
+to {\tt QPP\_reorder} or {\tt QPP\_apply}.
+
+\begin{description}
+\itt{X\_val} is an \optional\ rank-one \intentout\ array argument of 
+type default \realdp. If 
+present, it will be filled with the values of the primal variables $\bmx$ 
+for the original problem, corresponding to those for the the reordered 
+problem input in {\tt X}. 
+ 
+\itt{Y\_val} is an \optional\ rank-one \intentout\ array argument of 
+type default \realdp. If present, 
+it will be filled with the values of the Lagrange multipliers $\bmy$ 
+for the original problem, corresponding to those for the the reordered 
+problem input in {\tt Y} (or {\tt Y\_l + Y\_u}).
+. 
+ 
+\itt{Z\_val} is an \optional\ rank-one \intentout\ array argument of 
+type default \realdp. If 
+present, it will be filled with the values of the primal variables $\bmz$ 
+for the original problem, corresponding to those for the the reordered 
+problem input in {\tt Z} (or {\tt Z\_l + Z\_u}).
+\end{description}
+
+%%%%%%%  problem restoration subroutine %%%%%%
+
+\subsubsection{The  problem restoration subroutine}
+The data for the original problem may be recovered from its reordered 
+variant as follows:
+\vspace*{-2mm}
+{\tt 
+\begin{verbatim}
+     CALL QPP_restore( map, info, dims, prob [, get_all, get_all_parametric, &
+                       get_g, get_dg, get_x, get_y, get_z,                   &
+                       get_x_bounds, get_dx_bounds, get_c, get_c_bounds,     &
+                       get_dc_bounds, get_A, get_H ] )
+\end{verbatim}
+}
+\vspace*{-1mm}
+\noindent
+The arguments {\tt map}, {\tt info}, {\tt dims} and {\tt prob} are 
+exactly as described as output from 
+{\tt \packagename\_reorder} or {\tt \packagename\_apply},
+and correspond to data for the reordered problem. 
+They may be restored to data for the original problem by appropriate 
+settings for the remaining arguments: 
+
+\begin{description}
+\itt{get\_all} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_all} is present, the entire non-parametric problem 
+input in {\tt prob} and {\tt dims} will be restored using the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+Any parametric data will be ignored.
+
+\itt{get\_all\_parametric} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_all\_parametric} is present, the entire parametric problem 
+input in {\tt prob} and {\tt dims} will be recovered from the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_g} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_g} is present, the gradient $\bmg$
+will be recovered from  the reordered problem and placed in {\tt prob\%G} 
+using the mappings generated by the last successful call to 
+{\tt \packagename\_reorder}. 
+
+will be recovered from  the reordered problem using the 
+mappings generated by the last successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_dg} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_dg} is present, the parametric gradient $\delta \bmg$
+will be recovered from  the reordered problem and placed in {\tt prob\%DG} 
+using the mappings generated by the last successful call to 
+{\tt \packagename\_reorder}. 
+ 
+\itt{get\_x} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_x} is present, the vector of primal variables $\bmx$
+will be recovered from  the reordered problem and placed in {\tt prob\%X} 
+using the mappings generated by the last successful call to 
+{\tt \packagename\_reorder}. 
+ 
+\itt{get\_y} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_y} is present and {\tt prob\%Y} is allocated, 
+the Lagrange multipliers 
+$\bmy$ will be recovered from  the reordered problem and placed in {\tt prob\%Y} 
+using the mappings generated by the last successful call to 
+{\tt \packagename\_reorder}. If {\tt prob\%Y\_l} and {\tt prob\%Y\_u} 
+are allocated, the Lagrange multipliers 
+$\bmy^l$ and $\bmy^u$ will be recovered from  the reordered problem and 
+placed in {\tt prob\%Y\_l} and {\tt prob\%Y\_u} respectively.
+ 
+\itt{get\_z} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_z} is present and {\tt prob\%Z} is allocated, 
+the vector of dual variables $\bmz$
+will be recovered from  the reordered problem and placed in {\tt prob\%Z} 
+using the mappings generated by the last successful call to 
+{\tt \packagename\_reorder}. If {\tt prob\%Z\_l} and {\tt prob\%Z\_u} 
+are allocated, the dual variables
+$\bmz^l$ and $\bmz^u$ will be recovered from  the reordered problem and 
+placed in {\tt prob\%Z\_l} and {\tt prob\%Z\_u} respectively.
+ 
+\itt{get\_x\_bounds} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_x\_bounds} is present, 
+the vectors of variable bounds $\bmx_l$ and $\bmx_u$
+will be recovered from  the reordered problem and placed in {\tt prob\%X\_l} 
+and {\tt prob\%X\_u} using the mappings generated by the last successful 
+call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_dx\_bounds} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_dx\_bounds} is present, 
+the vectors of parametric variable bounds $\delta \bmx_l$ and 
+$\delta \bmx_u$
+will be recovered from  the reordered problem and placed in {\tt prob\%DX\_l} 
+and {\tt prob\%DX\_u} using the mappings generated by the last successful 
+call to {\tt \packagename\_reorder}. 
+
+\itt{get\_c} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_c} is present, the vector $\bmA \bmx$ 
+will be recovered from  the reordered problem and placed in {\tt prob\%C} 
+using the mappings generated by the last successful call to 
+{\tt \packagename\_reorder}. 
+ 
+\itt{get\_c\_bounds} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_c\_bounds} is present, 
+the vectors of constraint bounds $\bmc_l$ and 
+$\bmc_u$
+will be recovered from  the reordered problem and placed in {\tt prob\%C\_l} 
+and {\tt prob\%C\_u} using the mappings generated by the last successful 
+call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_dc\_bounds} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_dc\_bounds} is present, 
+the vectors of parametric constraint bounds $\delta \bmc_l$ and $\delta \bmc_u$
+will be recovered from  the reordered problem and placed in {\tt prob\%DC\_l} 
+and {\tt prob\%DC\_u} using the mappings generated by the last successful 
+call to {\tt \packagename\_reorder}. 
+ 
+\itt{get\_A} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_A} is present, the matrix $\bmA$
+will be recovered from the reordered problem and placed in {\tt prob\%A} 
+using the mappings generated by the last successful call to 
+{\tt \packagename\_reorder}. 
+ 
+\itt{get\_H} 
+is an \optional\ scalar \intentin\ argument of type default \logical. 
+If {\tt get\_H} is present, the Hessian matrix will be recovered  from the
+reordered problem using the mappings generated by the last successful call to 
+{\tt \packagename\_reorder}. 
+Specifically, if {\tt Hessian\_kind} $< 0$, the entries of the 
+recovered lower triangular part of the matrix $\bmH$ will be placed in
+{\tt prob\%H\%val}. If {\tt Hessian\_kind} $> 0$, the 
+components of $\bmx^0$ will be recovered and placed in 
+{\tt prob\%X0}, and additionally if {\tt Hessian\_kind} $> 1$ 
+the weights $\bmw$ will be placed in {\tt prob\%WEIGHT}.
+ 
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_terminate( map, control, info )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{map} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_map\_type} 
+exactly as for 
+{\tt \packagename\_reorder}
+which must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+On exit, array components will have been deallocated.
+
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_reorder}.
+
+\itt{info} is a scalar \intentout\ argument of type 
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_reorder}.
+Only the component {\tt status} will be set on exit, and a 
+successful call to 
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt info\%status} on exit from 
+{\tt \packagename\_solve}
+or 
+{\tt \packagename\_terminate}
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\itt{\galerrallocate.} An allocation error occurred. 
+A message indicating the offending 
+ array is written on unit {\tt control\%error} and the returned allocation 
+ status is given by the value {\tt inform\%alloc\_status}.
+
+\itt{\galerrrestrictions.} One of the restrictions 
+{\tt prob\%n} $> 0$ or {\tt prob\%m} $\geq  0$
+    or requirements that {\tt prob\%A\_type} 
+    and {\tt prob\%H\_type} contain its relevant string
+    {\tt 'DENSE'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'} 
+    or {\tt 'DIAGONAL'}
+    has been violated.
+
+%\itt{-3.} At least one of the arrays 
+% {\tt prob\%A\_val}, {\tt prob\%A\_row}, {\tt prob\%A\_col},
+% {\tt prob\%H\_val}, {\tt prob\%H\_row} or {\tt prob\%H\_col},
+% is not large enough to hold the original, or reordered, matrices $\bmA$
+% or $\bmH$.
+
+\itt{\galerrprimalinfeasible.} The constraints are inconsistent.
+
+\itt{\galerrupperentry.} An entry from the strict upper triangle of $\bmH$ 
+ has been specified.
+
+\itt{-31.} An attempt to use 
+{\tt \packagename\_apply}, {\tt \packagename\_get\_values} 
+or {\tt \packagename\_restore} 
+has been made before a successful call to {\tt \packagename\_reorder}. 
+ 
+\itt{-52.} An attempt to change a matrix storage format has been made 
+without first recalling {\tt \packagename\_reorder}. 
+ 
+\itt{-53.} At least one of the matrices $\bmA$ or $\bmH$ has not been reordered, 
+while the current subroutine call requires it to have been. 
+
+\itt{-54.} Neither the array {\tt prob\%Y} nor the pair {\tt prob\%Y\_l} and
+{\tt prob\%Y\_u} have been allocated.
+
+\itt{-55.} Neither the array {\tt prob\%Z} nor the pair {\tt prob\%Z\_l} and
+{\tt prob\%Z\_u} have been allocated.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+The only information printed will be error messages, corresponding to 
+nonzero values of {\tt info\%status}, on unit {\tt control\%error}. 
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines None. 
+\galmodules 
+{\tt GALAHAD\_SY\-M\-BOLS}, 
+{\tt GALAHAD\_SMT}, 
+{\tt GALAHAD\_QPT},
+and {\tt GALAHAD\_SORT}.
+\galio Output is under control of the argument {\tt control\%error}.
+\galrestrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $\geq  0$, 
+{\tt prob\%A\_type} and {\tt prob\%H\_type} $\in \{${\tt 'DENSE'}, 
+ {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}$\}$. 
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+The required solution $\bmx$ necessarily satisfies 
+the primal optimality conditions
+\eqn{4.1a}{\bmA \bmx = \bmc,}
+where
+\eqn{4.1b}{
+ \bmc^{l} \leq \bmc \leq \bmc^{u} \;\; \mbox{and} \;\;
+\bmx^{l} \leq\bmx \leq\bmx^{u},}
+the dual optimality conditions
+\eqn{4.2a}{
+ \bmH \bmx + \bmg =
+ \bmA^{T} \bmy + \bmz \;\;
+(\mbox{or} \;\; \bmW^{2} (\bmx -\bmx^{0}) + \bmg = 
+ \bmA^{T} \bmy + \bmz \;\; \mbox{for the least-distance type objective}),}
+where
+\eqn{4.2b}{
+ \bmy = \bmy^{l} + \bmy^{u}, \;\;
+ \bmz = \bmz^{l} + \bmz^{u}, \;\;
+ \bmy^{l} \geq 0 , \;\;
+ \bmy^{u} \leq 0 , \;\;
+ \bmz^{l} \geq 0 \;\; \mbox{and} \;\;
+ \bmz^{u} \leq 0 ,}
+and the complementary slackness conditions 
+\eqn{4.3}{
+( \bmA \bmx - \bmc^{l} )^{T} \bmy^{l} = 0  ,\;\;
+( \bmA \bmx - \bmc^{u} )^{T} \bmy^{u} = 0  ,\;\;
+(\bmx -\bmx^{l} )^{T} \bmz^{l} = 0   \tim{and}
+(\bmx -\bmx^{u} )^{T} \bmz^{u} = 0 ,}
+where the diagonal matrix $\bmW^{2}$ has diagonal entries $w_{j}^{2}$,
+$j = 1, \ldots , n$, where the vectors $\bmy$ and $\bmz$ are 
+known as the Lagrange multipliers for
+the general linear constraints, and the dual variables for the bounds,
+respectively, and where the vector inequalities hold componentwise.
+
+Two passes are made through the sets of bounds on the variables. 
+In the first, the number belonging to each of the required categories 
+(free, non-negativities, lower-bounded, range-bounded, 
+upper-bounded, non-positivities and fixed) is computed, with further 
+subdivisions within each categories according to those which have 
+nonzero diagonal Hessian entries being recorded. On the second pass, a 
+permutation of the variables to rearange them into the required standard form 
+is obtained. A mapping array of the original Hessian entries into their 
+permuted form is then obtained, and the permutations applied in place 
+(ie, without resorting to further storage) to $\bmH$, $\bmx$, $\bmz$, $\bmg$, 
+$\bmx^l$ and $\bmx^u$, suitable values of $\bmx$ and $\bmz$ 
+satisfying \req{4.1b} and \req{4.2b} having optionally been computed. 
+ 
+Next, two passes are made through the sets of constraint bounds. 
+In the first, the number belonging to each of the required categories 
+(equality, lower-bounded, range-bounded, 
+upper-bounded, and free) is computed, while in the 
+second the required permutation of the constraints 
+into the required standard form is obtained. 
+A mapping array of the original Jacobian entries into their 
+permuted form is then obtained, and the permutations applied in place 
+to $\bmA$, $\bmc$, $\bmy$, $\bmc^l$ and $\bmc^u$, 
+suitable values of $\bmc$ and $\bmy$, satisfying \req{4.2b},
+having, as before, optionally been computed. 
+Both sets of permutations, and the matrix mapping arrays are saved for 
+possible later use. 
+ 
+Any fixed variables and free constraints are removed. Fixing variables 
+results in changes to the values of $f$, $\bmg$, $\bmc^l$ and $\bmc^u$. 
+Subsequent reorderings for structurally similar problems, or restorations 
+of data from reordered problems, 
+are easily obtained from the permuation and mapping arrays, and their inverses. 
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose we wish to minimize
+$\half x_1^2 + x_2^2 + \fivehalves x_3^2 + 
+\threehalves x_4^2 - x_2 x_3 + 4 x_1 x_4 
+ + x_1 + 2 x_2 + 3 x_3 + 4 x_4 + 1$ 
+subject to the general linear constraints 
+$1 \leq 2 x_1 + x_2 \leq 2$, 
+$x_2 + x_3 + x_4 = 2$, and simple bounds 
+$-1 \leq x_1 \leq 1$, $x_3 = 1$ and $x_4 \leq 2$, but first wish to 
+convert the problem to our standard form. 
+Then, on writing the data for this problem as 
+\disp{\bmH = \mat{cccc}{1 & & & 4 \\ & 2 & -1 & \\ & -1 & 5 & \\ 4 & & & 3}, 
+ \;\; \bmg = \vect{ 1 \\ 2 \\ 3 \\ 4 }, \;\;
+\bmx^{l} = \vect{ -1 \\ - \infty \\ 1 \\ - \infty } \tim{and}
+\bmx^{u} = \vect{ 1 \\ \infty \\ 1 \\ 2 },}
+and
+\disp{
+ \bmA = \mat{cccc}{ 2 & 1 & & \\ & 1 & 1 & 1 },\;\;
+ \bmc^{l} = \vect{ 1 \\ 2 }, \tim{and}
+ \bmc^{u} = \vect{ 2 \\ 2 }}
+we may use the following code:
+
+{\tt \small
+\begin{verbatim}
+  PROGRAM GALAHAD_QPP_EXAMPLE
+   USE GALAHAD_QPP_double                            ! double precision version
+   IMPLICIT NONE
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
+   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
+   TYPE ( QPP_dims_type ) :: d
+   TYPE ( QPP_map_type ) :: map
+   TYPE ( QPP_control_type ) :: control        
+   TYPE ( QPP_inform_type ) :: info
+   TYPE ( QPT_problem_type ) :: p
+   INTEGER :: i, j
+   INTEGER, PARAMETER :: n = 4, m = 2, h_ne = 5, a_ne = 5
+   REAL ( KIND = wp ) :: X_orig( n )
+! sparse co-ordinate storage format
+   CALL SMT_put( p%H%type, 'COORDINATE' )  ! Specify co-ordinate 
+   CALL SMT_put( p%A%type, 'COORDINATE' )  ! storage for H and A
+   ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
+   ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
+   p%H%val = (/ 1.0_wp, 2.0_wp, -1.0_wp, 5.0_wp, 4.0_wp /) ! Hessian H
+   p%H%row = (/ 1, 2, 3, 3, 4 /)                           ! NB lower triangle
+   p%H%col = (/ 1, 2, 2, 3, 1 /) ; p%H%ne = h_ne
+   p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)  ! Jacobian A
+   p%A%row = (/ 1, 1, 2, 2, 2 /)
+   p%A%col = (/ 1, 2, 2, 3, 4 /) ; p%A%ne = a_ne
+! arrays complete
+   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
+   ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
+   ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
+   p%n = n ; p%m = m ; d%f = 1.0_wp         ! dimensions & objective constant
+   p%Hessian_kind = - 1 ; p%gradient_kind = - 1 ! generic quadratic program
+   p%G = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /) ! objective gradient
+   p%C_l = (/ 1.0_wp, 2.0_wp /)               ! constraint lower bound
+   p%C_u = (/ 2.0_wp, 2.0_wp /)               ! constraint upper bound
+   p%X_l = (/ - 1.0_wp, - infinity, 1.0_wp, - infinity /) ! variable lower bound
+   p%X_u = (/ 1.0_wp, infinity, 1.0_wp, 2.0_wp /)         ! variable upper bound
+   CALL QPP_initialize( map, control )          ! Initialize control parameters
+   control%infinity = infinity                   ! Set infinity
+! reorder problem
+   CALL QPP_reorder( map, control, info, d, p, .TRUE., .TRUE., .TRUE. )
+   IF ( info%status /= 0 ) & !  Error returns
+     WRITE( 6, "( ' QPP_solve exit status = ', I6 ) " ) info%status
+   WRITE( 6, "( ' problem now involves ', I1, ' variables and ',               &
+  &       I1, ' constraints. f is now', ES12.4 )" ) p%n, p%m, d%f
+! re-ordered variables
+   WRITE( 6, "( /, 5X, 'i', 6x, 'v', 11X, 'l', 11X, 'u', 11X, 'z', 11X,        &
+  &            'g', 6X, 'type' )" )
+   DO i = 1, d%x_free                      ! free variables
+     WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ), '  '
+   END DO
+   DO i = d%x_free + 1, d%x_l_start - 1    ! non-negativities
+    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ), '0< '
+   END DO
+   DO i = d%x_l_start, d%x_u_start - 1     ! lower-bounded variables
+    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ), 'l< '
+   END DO
+   DO i = d%x_u_start, d%x_l_end           ! range-bounded variables
+    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ), 'l<u'
+   END DO
+   DO i = d%x_l_end + 1, d%x_u_end         ! upper-bounded variables
+    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ), ' <u'
+   END DO
+   DO i = d%x_u_end + 1, p%n                ! non-positivities
+    WRITE( 6, 10 ) i, p%X( i ), p%X_l( i ), p%X_u( i ), p%Z( i ), p%G( i ), ' <0'
+   END DO
+! re-ordered constraints
+   WRITE( 6, "( /, 5X,'i', 5x, 'A*v', 10X, 'l', 11X, 'u', 11X, 'y',            &
+  &                6X, 'type' )" )
+   DO i = 1, d%c_l_start - 1                ! equality constraints
+    WRITE( 6, 20 ) i, p%C( i ), p%C_l( i ), p%C_u( i ), p%Y( i ), 'l=u'
+   END DO
+   DO i = d%c_l_start, d%c_u_start - 1      ! lower-bounded constraints
+    WRITE( 6, 20 ) i, p%C( i ), p%C_l( i ), p%C_u( i ), p%Y( i ), 'l< '
+   END DO
+   DO i = d%c_u_start, d%c_l_end            ! range-bounded constraints
+    WRITE( 6, 20 ) i, p%C( i ), p%C_l( i ), p%C_u( i ), p%Y( i ), 'l<u'
+   END DO
+   DO i = d%c_l_end + 1, d%c_u_end          ! upper-bounded constraints
+     WRITE( 6, 20 ) i, p%C( i ), p%C_l( i ), p%C_u( i ), p%Y( i ), ' <u'
+   END DO
+! re-ordered matrices
+   WRITE( 6, 30 ) 'Hessian ', ( ( 'H', i, p%H%col( j ), p%H%val( j ),          &
+     j = p%H%ptr( i ), p%H%ptr( i + 1 ) - 1 ), i = 1, p%n ) ! Hessian
+   WRITE( 6, 30 ) 'Jacobian', ( ( 'A', i, p%A%col( j ), p%A%val( j ),          &
+     j = p%A%ptr( i ), p%A%ptr( i + 1 ) - 1 ), i = 1, p%m )  ! Jacobian
+   CALL QPP_terminate( map, control, info ) !  delete internal workspace
+10 FORMAT( I6, 5ES12.4, 2X, A3 )
+20 FORMAT( I6, 4ES12.4, 2X, A3 )
+30 FORMAT( /, 1X, A8, /, ( :, 3 ( 1X, A1, '(', 2I2, ') =', ES12.4, : ) ) )
+   END PROGRAM GALAHAD_QPP_EXAMPLE
+\end{verbatim}
+}
+\noindent
+This produces the following output:
+{\tt \small
+\begin{verbatim}
+ problem now involves 3 variables and 2 constraints. f is now 6.5000E+00 
+ 
+     i      v           l           u           z           g      type
+     1  0.0000E+00 -1.0000E+20  1.0000E+20  0.0000E+00  1.0000E+00
+     2  0.0000E+00 -1.0000E+00  1.0000E+00  0.0000E+00  1.0000E+00  l<u
+     3  1.0000E+00 -1.0000E+20  2.0000E+00 -1.0000E+00  4.0000E+00   <u
+
+     i     A*v          l           u           y      type
+     1  1.0000E+00  1.0000E+00  1.0000E+00  1.0000E+00  l=u
+     2  0.0000E+00  1.0000E+00  2.0000E+00  1.0000E+00  l<u
+
+ Hessian
+ H( 1 1) =  2.0000E+00 H( 2 2) =  1.0000E+00 H( 3 2) =  4.0000E+00
+
+ Jacobian
+ A( 1 1) =  1.0000E+00 A( 1 3) =  1.0000E+00 A( 2 1) =  1.0000E+00
+ A( 2 2) =  2.0000E+00
+\end{verbatim}
+}
+\noindent
+and corresponds to the reordered problem of minimizing 
+$v_1^2 + \half v_2^2 + 4 v_3 v_2 + v_1 + v_2 + 4 v_3 + 6.5$ 
+subject to the general linear constraints 
+$v_1 + v_3 = 1$, $1 \leq v_1 + 2 v_2 \leq 2$, 
+and simple bounds 
+$-1 \leq v_1 \leq 1$ and $v_3 \leq 2$. Notice how the 
+fixed variable has been removed, and $f$, $\bmg$, $\bmc^l$ and $\bmc^u$ 
+adjusted appropriately. 
+
+The same problem may be solved holding the data in 
+a sparse row-wise storage format by replacing the lines
+{\tt \small
+\begin{verbatim}
+! sparse co-ordinate storage format
+...
+! arrays complete   
+\end{verbatim}
+}
+\noindent
+by
+{\tt \small
+\begin{verbatim}
+! sparse row-wise storage format
+   CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS' )  ! Specify sparse-by-row
+   CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS' )  ! storage for H and A
+   ALLOCATE( p%H%val( h_ne ), p%H%col( h_ne ), p%H%ptr( n + 1 ) )
+   ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( m + 1 ) )
+   p%H%val = (/ 1.0_wp, 2.0_wp, -1.0_wp, 5.0_wp, 4.0_wp /) ! Hessian H
+   p%H%col = (/ 1, 2, 2, 3, 1 /)                           ! NB lower triangular
+   p%H%ptr = (/ 1, 2, 3, 5, 6 /)                           ! Set row pointers
+   p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)  ! Jacobian A
+   p%A%col = (/ 1, 2, 2, 3, 4 /)
+   p%A%ptr = (/ 1, 3, 6 /)                                 ! Set row pointers  
+! arrays complete 
+\end{verbatim}
+}
+\noindent
+or using a dense storage format with the replacement lines
+{\tt \small
+\begin{verbatim}
+! dense storage format
+   CALL SMT_put( p%H%type, 'DENSE' )  ! Specify dense
+   CALL SMT_put( p%A%type, 'DENSE' )  ! storage for H and A
+   ALLOCATE( p%H%val( n * ( n + 1 ) / 2) )
+   ALLOCATE( p%A%val( n * m ) )
+   p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, -1.0_wp, 5.0_wp,              &
+                4.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)          ! Hessian
+   p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp,               &
+                1.0_wp, 1.0_wp /)                          ! Jacobian
+! arrays complete 
+\end{verbatim}
+}
+\noindent
+(If instead $\bmH$ had been the diagonal matrix
+\disp{\bmH = \mat{ccc}{1 & &   \\ & 0 & \\  &  & 3}}
+but the other data is as before, the diagonal storage scheme 
+might be used for $\bmH$, and in this case we would instead 
+{\tt \small
+\begin{verbatim}
+   CALL SMT_put( p%H%type, 'DIAGONAL' )  ! Specify dense storage for H
+   ALLOCATE( p%H%val( n ) )
+   p%H%val = (/ 1.0_wp, 0.0_wp, 3.0_wp /) ! Hessian values
+\end{verbatim}
+}
+\noindent
+Notice here that zero diagonal entries are stored.)
+
+The solution to the reordered problem is $(1.6, 0.2, -0.6)$---this may 
+be found, for example, by using 
+the \galahad\ package {\tt GALAHAD\_QPB}. To recover the solution to the 
+original problem, insert the following lines just before the 
+above call to {\tt \packagename\_terminate}: 
+{\tt \small
+\begin{verbatim}
+   p%X( : 3 ) = (/ 1.6_wp, 0.2_wp, -0.6_wp /)
+   CALL QPP_get_values( map, info, p, X_val = X_orig )
+   WRITE( 6, "( /, ' solution = ', ( 4ES12.4 ) )" ) X_orig( : n )
+\end{verbatim}
+}
+\noindent
+This yields 
+{\tt \small
+\begin{verbatim}
+ solution =   2.0000E-01  1.6000E+00  1.0000E+00 -6.0000E-01
+\end{verbatim}
+}
+\noindent
+Finally, suppose we now wish to change the linear 
+inequality constraint to $1 \leq 2 x_1 + x_2 \leq 3$, and 
+to find out what effect this has on the reordered problem. Then 
+we might insert the following lines just before the 
+above call to {\tt \packagename\_terminate}: 
+{\tt \small
+\begin{verbatim}
+! recover constraint bounds
+   CALL QPP_restore( map, info, d, p, get_c_bounds = .TRUE. )
+! change upper bound
+   p%C_u( 1 ) = 3.0_wp
+! reorder new problem
+   CALL QPP_apply( map, info, d, p, get_c_bounds = .TRUE. ) 
+! re-ordered new constraints
+   WRITE( 6, "( /, 5X,'i', 5x, 'A*v', 10X, 'l', 11X, 'u', 11X, 'y',            &
+  &                6X, 'type' )" )
+   DO i = 1, d%c_l_start - 1                ! equality constraints
+    WRITE( 6, 20 ) i, p%C( i ), p%C_l( i ), p%C_u( i ), p%Y( i ), 'l=u'
+   END DO
+   DO i = d%c_l_start, d%c_u_start - 1      ! lower-bounded constraints
+    WRITE( 6, 20 ) i, p%C( i ), p%C_l( i ), p%C_u( i ), p%Y( i ), 'l< '
+   END DO
+   DO i = d%c_u_start, d%c_l_end            ! range-bounded constraints
+    WRITE( 6, 20 ) i, p%C( i ), p%C_l( i ), p%C_u( i ), p%Y( i ), 'l<u'
+   END DO
+   DO i = d%c_l_end + 1, d%c_u_end          ! upper-bounded constraints
+    WRITE( 6, 20 ) i, p%C( i ), p%C_l( i ), p%C_u( i ), p%Y( i ), ' <u'
+   END DO
+\end{verbatim}
+}
+\noindent
+This gives 
+{\tt \small
+\begin{verbatim}
+     i     A*v          l           u           y      type
+     1  1.0000E+00  1.0000E+00  1.0000E+00  1.0000E+00  l=u
+     2  0.0000E+00  1.0000E+00  3.0000E+00  1.0000E+00  l<u
+\end{verbatim}
+}
+\noindent
+which is to say that the inequality constraint for the reordered problem is now 
+$1 \leq v_1 + 2 v_2 \leq 3$. 
+
+\end{document}

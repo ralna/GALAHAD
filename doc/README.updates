@@ -1,0 +1,341 @@
+Version (date):
+ Comment.
+
+Version 1.0
+-----------
+
+1.00000 (25/Apr/2002 07:30 GMT):
+ Initial library release.
+
+1.00001 (29/Apr/2002 16:00 GMT): 
+ Fix for attempt to deallocate unassociated pointer in runpre.f90.
+
+1.00002 (07/May/2002 10:00 GMT):
+ Fix for inefficient sort in QPP_order_row in qpp.f90.
+
+1.00003 (10/May/2002 13:30 GMT):
+ Makefiles for non-default use of HSL_MA57 corrected.
+
+1.00004 (14/May/2002 09:30 GMT):
+ Fixes for too small dual variables/barrier terms in qpb.f90.
+ Fix for bad "range" section assignment in QPT_write_to_sif in qpt.f90.
+ Argument lists for MA27 subroutines updated in ma27s.f and ma27d.f.
+
+1.00005 (15/May/2002 11:30 GMT):
+ Huge equality rhs/fixed variables handled correctly by QPP_reorder in qpp.f90.
+ prob%gradient_type properly initialized in runqpa.f90, runqpb.f90 & runpre.f90.
+
+1.00006 (16/May/2002 13:30 GMT):
+ Fix to always allow output following successful run in runqpa.f90 & runqpb.f90.
+
+1.00007 (05/June/2002 12:00 GMT):
+ Fix to stop large increase in store with automatic factors in qpb.f90.
+ Infinite bound default increased to 10**19 in qpa.f90, qpb.f90, lsqp.f90,
+   runqpa.f90, runqpb.f90 and runpre.f90.
+ New warning diagonostic added to presolve.f90.
+ Diagonal rescaled when checking for dependencies in lsqp.f90.
+ Extra refinements allowed when residuals are small in lsqp.f90.
+ Extra preproccsing stage added to detect free constraints in presolve.f90.
+ Skip fixed variables in QPT_write_to_sif in qpt.f90.
+ Ouput the sizes of the presolved problem in runqpb.f90.
+
+1.00008 (25/June/2002 14:00 GMT):
+ Additional warning information added for all dummy HSL and MINPACK routines.
+
+1.00009 (22/July/2002 10:30 GMT)
+ Fix for incorrectly perturbed equality constraints in qpa.f90.
+ Improve the way that active constraints are counted in runqpb.f90.
+ Guard against unwanted data growth in the reduced problem in presolve.f90.
+ Status vectors properly initialized in runpre.f90.
+ Avoid using default gradient values in QPT_write_to_sif in qpt.f90.
+
+Version 1.1
+-----------
+
+1.10000 (19/August/2002 14:00 GMT)
+ Extra subroutine SORT_reorder_by_rows added to sort.f90.
+ Avoid overriding defaults for objective constants, fixed further bad "range" 
+   section assignments, and correct  repeated quadratic Hessian terms 
+   in QPT_write_to_sif in qpt.f90.
+ Internal ordering routine replaced by SORT_reorder_by_row and full array 
+   extents provided when outputing problem in runqpa.f90 & runqpb.f90.
+ Load order of GALAHAD and CUTEr packages interchanged in gal script
+ Do not perturbed constraints if they are only simple bounds in qpa.f90.
+
+1.10001 (20/August/2002 19:50 GMT)
+ a_ne set correctly when m = 0 in presolve.f90.
+ GRJAC changed to intent INOUT in LANCELOT_form_gradients in lancelot.f90.
+
+1.10002 (03/September/2002 16:30 GMT)
+ Full solution printed if print_level > 1 in lancelot.f90.
+ Multipliers for violated constituents correctly set in qpa.f90.
+ inform%nfacts correctly updated for Schur complement in lsqp.f90 and qpb.f90.
+
+1.10003 (18/November/2002: 09:20 GMT)
+ SORT_reorder_by_rows now copes with matrices with no rows in sort.f90.
+
+1.10004 (22/November/2002: 10:30 GMT)
+  Ensure that the perturbation when using inverse iteration in 
+  GLTR_leftmost_eigenvector is large enough in gltr.f90.
+
+1.10005 (29/November/2002: 13:10 GMT)
+  Extra arguments introduced to allow changing bandwidth in bndsl.f90 
+    and precn.f90.
+  Corrected sign assigment for the re-entry option in gltr.f90.
+
+1.10006 (5/December/2002: 10:10 GMT)
+  Bodge for possible infinite stepsize in gltr.f90 (fix properly later).
+
+1.10007 (17/December/2002 17:00 GMT)
+  maxaie, nylio, nyuio, ncuio, nclio correctly initialized in presolve.f90.
+
+Version 1.2
+-----------
+
+1.20000 (7/January/2003 14:00 GMT)
+  Load libraries for BLAS, LAPACK and HSL now provided so that any of these
+    may be replaced by machine-optimized versions.
+
+1,20001 (14/March/2003 10:20 GMT)
+  Stop removed from dummy routines MA27I/ID in dum/ma27s.f and dum/ma27d.f.
+  Install program no longer checks for CUTEr with LANCELOT B.
+  Unmatched ' in compiler.sun.sol.f95 corrected.
+  F95SUFFIX variable changed to f90 in  compiler.sun.sol.f90.
+
+Version 1.3
+-----------
+
+1.30000 (14/May/2003 09:30 GMT)
+  All run* main programs replaced by use* main programns and auxiliary 
+    use* modules to prepare for both SIF and AMPL interfaces.
+  Makefiles and gal script updated accordingly.
+  AMPL support now provided for the QP solvers and preprocessor.
+
+1.30001 (16/May/2003 12:00 GMT)
+  Bug fixes for install script and makemaster files for independent 
+  AMPL compilation.
+
+Version 1.4
+-----------
+
+1.40000 (10/June/2003 14:30 GMT)
+  Major new module FILTRANE added. Filtrane finds a feasible point for a
+    system of (nonlinear) equations and inequalities using a trust-region
+    filter algorithm.
+  Auxiliary module NLPT also added to provide a derived type and 
+    associated functionality for holding nonlinear optimization problems.
+  Extra variables defined in symbols.f90.
+  Documentation updated to reflect the above.
+
+1.40001 (30/June/2003 11:00 GMT)
+  AMPL interface to Filtrane added.
+  QPA internal procedures QPA_is_are and QPA_s moved to module TOOLS and
+    renamed TOOLS_is_are and TOOLS_s in tools.f90.
+  Stop statement in use_* subroutines changed to return.
+  Checking for non-existent problem name now handled solely by SIF decoder.
+
+1.40002 (23/July/2003 14:00 GMT)
+  Invalid "END INTERFACE" arguments removed from tools.f90.
+
+1.40003 (01/August/2003 08:30 GMT)
+  zeta now correctly set if there are no inequality constraints in qpb.f90.
+  RHS randomization removed on error exit from qpa.f90.
+  Bug in makemaster file for filtrane fixed.
+
+1.40004 (04/August/2003 17:00 GMT)
+  control%multiplier_tol introduced to allow slightly infeasible dual 
+    variables and multipliers in qpa.f90.
+
+1.40005 (14/August/2003 11:30 GMT)
+  new_problem_structure correctly restored on exit from lsqp.f90,
+    qpa.f90 and qpb.f90.
+  Proper exit from qpa.f90 if problem is an unbounded l_1 QP.
+  Very close pairs of problem bounds will be changed to equalities in lsqp.f90 
+    and qpb.f90; control%identical_bounds_tol introduced to handle this.
+  Incorrect choice of dependent constraints corrected in lsqp.f90.
+  Documentation updated to reflect the above.
+
+1.40006 (22/August/2003 16:30 GMT)
+  The directory ./src/aux renamed ./src/auxiliary to prevent difficulties with
+  Windows-based UNIX simulators, since aux is a reserved Windows directory!
+  All makemaster files updated.
+
+1.40007 (02/September/2003 09:00 GMT)
+  Improvements to filter margin control included in filtrane.f90.
+
+1.40008 (11/September/2003 09:30 GMT)
+  Added Dilipan Sebastiampillai (U. Cranfield)'s PDF document, on how
+   to install LANCELOT B under Windows, to the doc directory.
+
+1.40009 (21/October/2003 18:00 GMT)
+  Guard against stagnation in GLTR_leftmost_eigenvalue in gltr.f90.
+
+1.40010 (10/November/2003 08:30 GMT)
+  Check to remove pre-existing AUTOMAT.d file in sdgal script.
+
+1.40011 (09/January/2004 12:30 GMT)
+  Correct intent for INFO and IFLAG for MA27 given in hslint.f90.
+  Format number corrected in frntl.f90 and filtrane.f90.
+  Unwanted imported variables removed from useqpa.f90, useqpab.f90, 
+   useqbb.f90, usepre.f90 and presolve.f90.
+
+1.40012 (19/January/2004 10:00 GMT)
+  Keyword typo when reading specfile corrected in uselanb.f90.
+
+1.40013 (02/February/2004 15:15 GMT)
+  Unacceptable initial penalty parameters reset to defaults in useqpa.f90.
+  Incorrect deallocation of IW1 removed from precn.f90.
+
+1.40014 (06/February/2004 12:45 GMT)
+  Missing interfaces to CCFSG and CCIFSG added and wrong array extent in 
+   UBANDH corrected in cuterinter.f90.
+
+1.40015 (28/March/2004 10:30 GMT)
+  Default initial array sizes for factorized changed in sils.f90.
+
+1.40016 (08/April/2004 10:00 GMT)
+  Component name added to QPT_problem_type in qpt.f90.
+
+1.40017 (18/May/2004 08:15 GMT)
+  Depricated SNRM2 replaced by equivalent "streamlined" DNRM2 in blas.f.
+  Mixed precision arguments to MIN separated in sils.f90.
+
+Version 1.5
+-----------
+
+1.50000 (20/May/2004 13:00 GMT)
+ GALAHAD-Python GUI to major packages added (see README.gui)
+ Internal environment variable CUTER changed to CUTERUSED throughout
+ to avoid possible clash with CUTEr variable of the same name.
+ Copyright statement replaced by call to COPYRIGHT routine in filtrane.f90 
+ and all use*.f90 modules.
+
+1.50001 (02/June/2004 08:00 GMT)
+ Corrected C main entries in amplinter.h for g95 and ifort compilers.
+
+1.50002 (08/June/2004 15:45 GMT)
+ Subprogram SILS_solve_refine corrected in sils.f90.
+ Correct signs of dual variables added to tests in presolve.f90.
+
+1.50003 (18/June/2004 09:00 GMT)
+ 16 character string name with embeded blanks now given for character (len=16) 
+  specname in read_specfile for qpa.f90, qpb.f90, lsqp.f90, presolve.f90, 
+  filtrand.f90 and lancelot.f90.
+
+1.50004 (01/July/2004 08:00 GMT)
+ Use of GALAHAD CPU_TIMEr is changed to be compiler dependent in precn.f90,
+ lancelot.f90, lsqp.f90, qpa.f90, qpb.f90, uselanb.f90, useqpa.f90, useqpb.f90, 
+ useqpab.f90, usepre.f90.
+
+1.50005 (09/August/2004 13:35 GMT)
+ Component modstep of SILS_FINFO corectly set in sils.f90.
+
+1.50006 (16/November/2004 14:25 GMT)
+ Components ordering and scaling added to SILS_control in sils.f90.
+
+Version 2.epsilon
+------------------
+
+2.epsilon.0000 (10/September/2006 17:45 GMT)
+ Complete overhall of most components of GALAHAD, with additional
+ packages added.
+
+2.epsilon.0001 (21/October/2006 17:45 GMT)
+ Correct defaults for control%prfeas and %dufeas set in lsqp.f90.
+  ** (thanks to George F. Zhou) **
+ Bugs fixed in galahad_ampl.c and install_galahad.sh.
+  ** (thanks to N. Shamsundar) **
+
+2.epsilon.0002 (23/October/2006 20:15 GMT)
+ Memory leaks fixed in asmbl.f90, lanbs.f90, lanbt.f90, lancelot.f90,
+  smts.f90  and smtt.f90.
+ Unassigned components of ISTEPA and ISTGPA fixed in lanbs.f90.
+  ** (both thanks to N. Shamsundar) **
+
+2.epsilon.0003 (2/November/2006 15:15 GMT)
+ Updates to rpd.f90 to allow for comments and black lines in data files.
+
+2.epsilon.0004 (13/November/2006 10:35 GMT)
+ Internal package names reduced to no larger than 31 characters in sbls.f90.
+ Version for MacOS (g95 and absort compilers) now included.
+
+2.epsilon.0005 (14/November/2006 16:30 GMT)
+ Correction to dgal.sh script.
+
+2.epsilon.0006 (22/December/2006 16:50 GMT)
+ LANCELOT integer output formats inproved.
+ Absent specfile reads skipped in use*.f90.
+
+Version 2.1 (March, 2008)
+-------------------------
+
+New packages GLRT, LSTR, LSRT, L2RT, SBLS and LANCELOT_simple added.
+Numerous improvements and bug fixes for existing packages.
+Streamlined distribution.
+
+Version 2.2 (May, 2008)
+-----------------------
+
+Return status codes standardized across the majority of GALAHAD packages.
+Installation and run scripts in the c-shell removed.
+Interface QPAB removed as this has been succeeded by QPC.
+Distribution put under svn version control.
+
+2.2.0002 (2/June/2008 16:20 GMT)
+ Updates to lstr, lsrt and l2rt and install_galahad.sh.
+ Unnecessary files removed.
+
+2.2.0003 (12/June/2008 16:45 GMT)
+ Updates to gal.sh, /glrt.f90 and sils.pdf
+
+Version 2.3 (January, 2009)
+---------------------------
+
+New packages TRS and RQS added.
+Limited MATLAB support introduced.
+
+Version 2.4 (February, 2011)
+---------------------------
+
+New packages QP, CQP, SCALE, SLS and ULS added.
+Support for shared-memory paralelism using openmp 
+introduced for some linear solvers.
+Hooks for external software added.
+MATLAB support for all QP solvers added.
+Major overhall of makefiles.
+
+2.40000 (18/Feb/2011 16:50 GMT)
+ Official 2.4 library release.
+
+2.40001 (7/Mar/2011 18:30 GMT)
+ Clock times added to all QP packages and their relations.
+ Updates to Matlab versions to accomodate this.
+
+2.40002 (17/Apr/2011 16:30 GMT)
+ Interface to HSL_MA97 added to SLS.
+
+2.40003 (17/Mar/2011 16:30 GMT)
+ Matlab interfaces updated to support Matlab R2011a.
+
+2.40004 (1/Sep/2011 08:30 GMT)
+ Many enhancements to CQP.
+
+2.40005 (2/Sep/2011 09:30 GMT)
+ Additional resolve entry to EQP added.
+
+2.40006 (1/Dec/2011 08:30 GMT)
+ Dense options added to TRS and RQS.
+ LAPACK solver support added to SLS.
+ MC61 band/wavefront reduction added to SLS.
+ Extra subroutines added to SORT.
+
+2.40007 (10/Jan/2012 08:30 GMT)
+ QP cross-over package CRO added.
+ QPC extended to accommodate CRO.  
+
+2.40008 (16/May/2012 13:30 GMT)
+ SBLS solve_iterative added.
+ iterative option added to CQP.
+
+2.40009 (20/Sep/2012 10:30 GMT)
+ Important bug fixes for Matlab interfaces.

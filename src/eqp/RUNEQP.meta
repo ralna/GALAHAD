@@ -1,0 +1,24 @@
+MAIN
+! write-problem-data                                yes
+! problem-data-file-name                            EQP.data
+! problem-data-file-device                          26
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                EQPSOL.d
+! solution-file-device                              62
+! write-result-summary                              yes
+! result-summary-file-name                          EQPRES.d
+! result-summary-file-device                        47
+! write-oneline-result-summary                      yes
+! result-oneline-summary-file-name                  EQPRES_1line.d
+! result-oneline-summary-file-device                48
+
+INCLUDE EQP
+
+INCLUDE SBLS
+
+INCLUDE SLS
+
+INCLUDE GLTR
+
+INCLUDE FDC

@@ -1,0 +1,31 @@
+
+ ==== normal exits ====== 
+
+ problem 1 pass   1 LSTR_solve exit status =      0
+ problem 1 pass   2 LSTR_solve exit status =      0
+ problem 1 pass   3 LSTR_solve exit status =      0
+ problem 1 pass   4 LSTR_solve exit status =      0
+ problem 1 pass   5 LSTR_solve exit status =      0
+ problem 1 pass   6 LSTR_solve exit status =      0
+ problem 1 pass   7 LSTR_solve exit status =      0
+ problem 1 pass   8 LSTR_solve exit status =      0
+ problem 1 pass   9 LSTR_solve exit status =      0
+ problem 1 pass  10 LSTR_solve exit status =      0
+ problem 2 pass   1 LSTR_solve exit status =      0
+ problem 2 pass   2 LSTR_solve exit status =      0
+ problem 2 pass   3 LSTR_solve exit status =      0
+ problem 2 pass   4 LSTR_solve exit status =      0
+ problem 2 pass   5 LSTR_solve exit status =      0
+ problem 2 pass   6 LSTR_solve exit status =      0
+ problem 2 pass   7 LSTR_solve exit status =      0
+ problem 2 pass   8 LSTR_solve exit status =      0
+ problem 2 pass   9 LSTR_solve exit status =      0
+ problem 2 pass  10 LSTR_solve exit status =      0
+
+ ==== error exits ====== 
+
+ pass   1 LSTR_solve exit status =    -30
+ pass   2 LSTR_solve exit status =    -18
+ pass   3 LSTR_solve exit status =    -25
+ pass   4 LSTR_solve exit status =     -3
+ pass   5 LSTR_solve exit status =     -3

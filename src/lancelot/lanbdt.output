@@ -1,0 +1,78 @@
+
+ Testing error retuns ...
+
+ run  1 LANCELOT_solve exit status =      1
+ run  2 LANCELOT_solve exit status =      2
+ run  3 LANCELOT_solve exit status =      3
+ run  7 LANCELOT_solve exit status =      7
+ run  8 LANCELOT_solve exit status =      8
+ run  9 LANCELOT_solve exit status =      9
+ run 10 LANCELOT_solve exit status =     10
+ run 11 LANCELOT_solve exit status =     11
+ run 13 LANCELOT_solve exit status =     13
+ run 14 LANCELOT_solve exit status =     14
+ run 15 LANCELOT_solve exit status =     15
+ run 16 LANCELOT_solve exit status =     16
+ run 17 LANCELOT_solve exit status =     17
+
+ Testing general options ...
+
+ run  1    67 iterations. Optimal objective value =  3.0442E+01
+ run  2    67 iterations. Optimal objective value =  3.0442E+01
+ run  3    67 iterations. Optimal objective value =  3.0442E+01
+ run  4    69 iterations. Optimal objective value =  3.0442E+01
+ run  5    67 iterations. Optimal objective value =  3.0442E+01
+ run  6    67 iterations. Optimal objective value =  3.0442E+01
+ run  7    67 iterations. Optimal objective value =  3.0442E+01
+ run  8    67 iterations. Optimal objective value =  3.0442E+01
+ run  9 LANCELOT_solve exit status =     26
+ run 10    92 iterations. Optimal objective value =  3.0442E+01
+ run 11    92 iterations. Optimal objective value =  3.0442E+01
+ run 12    67 iterations. Optimal objective value =  3.0442E+01
+ run 13    69 iterations. Optimal objective value =  3.0442E+01
+ run 14    64 iterations. Optimal objective value =  3.0442E+01
+ run 15    63 iterations. Optimal objective value =  3.0442E+01
+ run 16    64 iterations. Optimal objective value =  3.0442E+01
+ run 17   242 iterations. Optimal objective value =  3.0442E+01
+ run 18    61 iterations. Optimal objective value =  3.0442E+01
+ run 19    61 iterations. Optimal objective value =  3.0442E+01
+ run 20    67 iterations. Optimal objective value =  3.0442E+01
+ run 21    67 iterations. Optimal objective value =  3.0442E+01
+ run 22    67 iterations. Optimal objective value =  3.0442E+01
+ run 23    67 iterations. Optimal objective value =  3.0442E+01
+ run 24    68 iterations. Optimal objective value =  3.0442E+01
+ run 25    67 iterations. Optimal objective value =  3.0442E+01
+ run 26    67 iterations. Optimal objective value =  3.0442E+01
+
+ Testing optional arguments (general problems) ...
+
+ run  1    14 iterations. Optimal objective value = -6.3130E-01
+ run  2    14 iterations. Optimal objective value = -6.3130E-01
+ run  3    14 iterations. Optimal objective value = -6.3130E-01
+ run  4    14 iterations. Optimal objective value = -6.3130E-01
+ run  5    14 iterations. Optimal objective value = -6.3129E-01
+ run  6    14 iterations. Optimal objective value = -6.3129E-01
+ run  7    14 iterations. Optimal objective value = -6.3129E-01
+ run  8    14 iterations. Optimal objective value = -6.3129E-01
+
+ Testing optional arguments (unconstrained problems) ...
+
+ run  1     6 iterations. Optimal objective value = -1.3441E+00
+ run  2     6 iterations. Optimal objective value = -1.3441E+00
+ run  3     6 iterations. Optimal objective value = -1.3441E+00
+ run  4     6 iterations. Optimal objective value = -1.3441E+00
+ run  5     7 iterations. Optimal objective value = -1.3441E+00
+ run  6     7 iterations. Optimal objective value = -1.3441E+00
+ run  7     7 iterations. Optimal objective value = -1.3441E+00
+ run  8     7 iterations. Optimal objective value = -1.3441E+00
+
+ Testing optional arguments (subset problems) ...
+
+ run  1    14 iterations. Optimal objective value = -7.2387E-01
+ run  2    14 iterations. Optimal objective value = -7.2387E-01
+ run  3    14 iterations. Optimal objective value = -7.2387E-01
+ run  4    14 iterations. Optimal objective value = -7.2387E-01
+ run  5    14 iterations. Optimal objective value = -7.2387E-01
+ run  6    14 iterations. Optimal objective value = -7.2387E-01
+ run  7    14 iterations. Optimal objective value = -7.2387E-01
+ run  8    14 iterations. Optimal objective value = -7.2387E-01

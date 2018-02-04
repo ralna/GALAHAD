@@ -1,0 +1,18 @@
+
+ error status -31 expected from FDH_estimate
+ *** error status = -31
+
+ error status -3 expected from FDH_analyse
+ *** error status = -3
+
+ error status -3 expected from FDH_analyse
+ *** error status = -3
+
+ error status -23 expected from FDH_analyse
+ *** error status = -23
+
+ error status -3 expected from FDH_estimate
+ *** error status = -3
+
+ remaing tests of package FDH successful
+  3.1415926535897930E+00

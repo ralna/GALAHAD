@@ -1,0 +1,22 @@
+MAIN
+! write-problem-data                                no
+! write-result-summary                              yes
+! trs-result-summary-file-name                      TRSRES.d
+! trs-result-summary-file-device                    47
+! ms-result-summary-file-name                       MSRES.d
+! ms-result-summary-file-device                     48
+! print-full-solution                               no
+! write-solution                                    yes
+! trs-solution-file-name                            TRSSOL.d
+! trs-solution-file-device                          62
+! ms-solution-file-name                             MSSOL.d
+! ms-solution-file-device                           63
+! radius                                            1.0
+! use-more-sorensen                                 no
+! use-trs                                           yes
+
+INCLUDE TRS
+
+INCLUDE SLS
+
+INCLUDE IR

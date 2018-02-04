@@ -1,0 +1,228 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{smt}
+\newcommand{\packagename}{SMT}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+This package defines a derived type capable of {\bf supporting 
+a variety of sparse matrix storage schemes.} Its principal use is 
+to allow exchange of data between \galahad\ subprograms  
+and other codes. The derived type is structurally equivalent to 
+the type {\tt ZD11\_type} available from the HSL package {\tt ZD11}.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses None.
+\galdate March 1998.
+\galorigin N. I. M. Gould and J. K. Reid, Rutherford Appleton Laboratory.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived type
+{\tt \packagename\_type} 
+(Section~\ref{galtype}),
+the subroutine
+{\tt \packagename\_put}, 
+and the function
+{\tt \packagename\_get} 
+(Section~\ref{galarguments})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtype
+A single derived data type, {\tt \packagename\_type},
+is accessible from the package. It is intended that, for any particular
+application, only those components which are needed will be set.
+The components are:
+
+\begin{description}
+\ittf{id} is an allocatable array of rank one and type default \character\, that  
+may be used to hold the name of the matrix. 
+ 
+\ittf{type} is an allocatable array of rank one and type default \character\, that  
+may be used to hold a key which indicates the type (or kind) of the matrix in 
+question.  
+ 
+\ittf{m} is a scalar component of type default \integer\, 
+that may be used to hold the number of rows in the matrix. 
+ 
+\ittf{n} is a scalar component of type default \integer\, 
+that may be used to hold the number of columns in the matrix. 
+ 
+\ittf{ne} is a scalar component of type default \integer\, 
+that may be used to hold the number of entries in the matrix. 
+ 
+\ittf{row} is an allocatable array of rank one and  
+type default \integer\, that may be used to hold 
+the row indices of the entries of the matrix. 
+ 
+\ittf{col} is an allocatable array of rank one and  
+type default \integer\, that may be used to hold 
+the column indices of the entries of the matrix. 
+ 
+\ittf{val} is an allocatable array of rank one and  
+type default \realdp\, that may be used to hold 
+the numerical values of the entries of the matrix. 
+ 
+\ittf{ptr} is an allocatable array of rank one and  
+type default \integer\, that may be used to hold 
+the starting positions of each row in a row-wise storage scheme, 
+or the starting positions of each column in a column-wise storage  
+scheme. 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+
+To assist use of the character arrays in the components {\tt \%id} and
+{\tt \%type}, the module provides two procedures:
+
+\begin{enumerate}
+\item The subroutine {\tt \packagename\_put}
+allocates a character array and sets
+its components from a character variable.
+
+\item The function {\tt \packagename\_get} 
+obtains the elements of a character array as a character variable.
+\end{enumerate}
+We use square brackets {\tt [ ]} to indicate \optional\ arguments.
+
+\subsubsection{Allocate a character array and set its components}
+
+To allocate a character array and set its components from a character variable,
+\vspace*{-2mm}
+{\tt 
+\begin{verbatim}
+        CALL SMT_put( array, string, stat )
+\end{verbatim}
+}
+\vspace*{-4mm}
+\begin{description}
+
+\itt{array} is a rank one allocatable array of type default \character.
+If {\tt string} is present, {\tt array} is allocated with size 
+{\tt LEN\_TRIM(string)} and
+its elements are given the values {\tt string(i:i), i} = 1, 2, \ldots ;
+otherwise, {\tt array} is allocated to be of size zero.
+
+\itt{string} is an \optional, \intentin\ argument of type \character
+with any character length. 
+
+\itt{stat} is an 
+%\optional, 
+\intentout\ argument of type default \integer.
+%If present, 
+An {\tt ALLOCATE} statement with this as its {\tt STAT=}
+variable is executed and a successful allocation will be indicated
+by the value zero. 
+%If absent, an {\tt ALLOCATE} statement without a {\tt STAT=} 
+%variable is executed.
+\end{description}
+
+\subsubsection{Obtain the elements of a character array as a character variable}
+
+To obtain the elements of a character array as a character variable,
+\vspace*{-2mm}
+{\tt 
+\begin{verbatim}
+        string = SMT_get( array )
+\end{verbatim}
+}
+\vspace*{-4mm}
+\begin{description}
+
+\itt{array} is an \intentin\ array of rank one and type default \character.
+It is not altered.
+\end{description}
+The result is scalar and of type {\tt CHARACTER(LEN=SIZE(array))}.
+{\tt SMT\_get(i:i)} is given the value {\tt array(i), i} = 1, 2, \ldots ,
+{\tt SIZE(array)}.
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galmodules None.
+\galio None.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
+The package is thread-safe.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose that we wish to store the symmetric matrix  
+\disp{\mat{ccc}{ 1.0 \\ & & 1.0 \\ & 1.0 },}
+whose name is ``Sparse'', using a coordinate sparse matrix storage format.  
+Then the following code is appropriate: 
+{\tt \small
+\begin{verbatim}
+   PROGRAM GALAHAD_SMT_example
+   USE GALAHAD_SMT_double 
+   INTEGER :: i
+   TYPE ( SMT_type ) :: A 
+   A%n = 3 ; A%ne = 2 
+   ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) ) 
+   CALL SMT_put( A%id, 'Sparse' )      ! Put name into A%id
+   CALL SMT_put( A%type )              ! Allocate space for A%type
+   A%row( 1 ) = 1 ; A%col( 1 ) = 1 ; A%val( 1 ) = 1.0 
+   A%row( 2 ) = 2 ; A%col( 2 ) = 3 ; A%val( 2 ) = 1.0 
+   WRITE( 6, "( 3A, I2, //, A )" ) ' Matrix ', SMT_get( A%id ), & 
+          ' dimension', A%n, ' row col  value ' 
+   DO i = 1, A%ne 
+      WRITE( 6, "( I3, 1X, I3, ES9.1 )" ) A%row( i ), A%col( i ), A%val( i ) 
+   END DO 
+   DEALLOCATE( A%id, A%row, A%col, A%val )
+   END PROGRAM GALAHAD_SMT_example
+\end{verbatim}
+}
+\noindent
+This produces the following output: 
+{\tt \small
+\begin{verbatim}
+ Matrix Sparse dimension 3 
+ 
+ row col  value  
+  1   1  1.0E+00 
+  2   3  1.0E+00 
+\end{verbatim}
+}
+\noindent
+
+For examples of how the derived data type
+{\tt packagename\_problem\_type} may be used in conjunction with the
+\galahad\ linear equation solver, see the specification sheet
+for the package
+{\tt \libraryname\_SILS}.
+\end{document}

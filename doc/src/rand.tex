@@ -1,0 +1,255 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{rand}
+\newcommand{\packagename}{RAND}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+
+{\tt \fullpackagename} is a suite of Fortran procedures for
+generating {\bf uniformly distributed pseudo-random
+ numbers. } Random reals are generated in the range $0 < \xi < 1$ or
+ the range $-1 < \eta < 1$ and random integers in the range
+ $1 \leq k \leq N$ where $N$ is specified by the user.
+
+A multiplicative congruent method is used where a 31 bit generator
+ word $g$ is maintained. On each call to a procedure of the package,
+ $g_{n+1} $ is updated to $7^5 g_n mod (2^{31} - 1)$; the
+ initial value of $g$ is $2^{16} - 1$.
+ Depending upon the type of random number
+ required the following are computed $\xi = g_{n+1} /(2^{31} - 1)$;
+ $\eta = 2 \xi - 1$ or $k = \mbox{integer part}\, \xi N +1$.
+
+The package also provides the facility for saving the current
+ value of the generator word and for restarting with any specified
+ value.
+
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double},
+\galuses None.
+\galdate March 2001.
+\galorigin
+N. I. M. Gould and J. K. Reid, Rutherford Appleton Laboratory.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hskip0.5in {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hskip0.5in {\tt USE  \fullpackagename\_double}
+
+\medskip
+If it is required to use both modules at the same time, the derived type
+{\tt \packagename\_seed}
+(Section~\ref{galtypes})
+and the subroutines{\tt \packagename\_random\_real},
+{\tt \packagename\_random\_integer},
+{\tt \packagename\_get\_seed},
+and {\tt \packagename\_set\_seed}
+(Section~\ref{galarguments})
+must be renamed on one of the {\tt USE} statements.
+Their seeds will be independent.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+The user must provide a variable of derived type
+{\tt \packagename\_seed}
+to hold the current seed value which must be passed to all calls of
+{\tt \packagename}.
+The seed value component is private and can only be set and retrieved
+through the
+{\tt \packagename\_set\_seed}  and {\tt \packagename\_get\_seed} entries.
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are five procedures for user calls.
+%When using the Fortran 90 version
+The initialization entry must be called before any call to the
+{\tt \packagename\_random\_real},
+{\tt \packagename\_random\_integer} and
+{\tt \packagename\_get\_seed}  entries.
+
+%%%%%% Subroutine to initialize the generator word %%%%%%
+
+\subsubsection{Subroutine to initialize the generator word}\label{subinit}
+This entry must be called first to initialize the generator word.
+\vspace*{1mm}
+
+\hskip 0.5in
+{\tt CALL \packagename\_initialize( seed )}
+
+\vspace*{-2mm}
+\begin{description}
+\ittf{seed} is a scalar \intentout\ argument of derived type
+{\tt \packagename\_seed}
+that holds the seed value.
+\end{description}
+
+%%%%%%%%% Subroutine to obtain a random real value %%%%%%
+
+\subsubsection{Subroutine to obtain random real values}
+A random real value or values may be obtained as follows:
+\vspace*{1mm}
+
+\hskip 0.5in
+{\tt CALL \packagename\_random\_real( seed, positive, random\_real )}
+
+\vspace*{-2mm}
+\begin{description}
+\ittf{seed} is a scalar \intentinout\ argument of derived type
+{\tt \packagename\_seed} that holds the seed value.
+
+\itt{positive} is a scalar \intentin\ argument of type default
+\logical. If {\tt positive} is \true,
+the generated random number is a real value in the range $0 < \xi < 1$,
+while if {\tt positive} is \false, the generated random number
+is a real value in the range  $-1 < \eta < 1$.
+
+\itt{random\_real} is a scalar or rank 1 or 2 array
+\intentout\ argument of type \realdp.
+It is set to the required random number(s).
+
+\end{description}
+
+%%%%%%% Subroutine to obtain a random integer value %%%%%%
+
+\subsubsection{Subroutine to obtain random integer values}
+A random integer value or values may be obtained as follows:
+\vspace*{1mm}
+
+\hskip0.5in
+{\tt CALL \packagename\_random\_integer( seed, n, random\_integer )}
+
+\vspace*{-2mm}
+\begin{description}
+\itt{seed} is a scalar \intentinout\ argument of derived type
+{\tt \packagename\_seed}  that holds the seed value.
+
+\ittf{n} is a scalar \intentin\ argument of type default \integer.
+It must be  set by the user to specify the upper bound for the range
+$1 \leq k \leq ${\tt n}  within which the generated random number(s) $k$
+is/are required to lie.
+{\bf Restriction:}  {\tt n} must be positive.
+
+\itt{random\_integer} is a scalar  or rank 1 or 2 array
+\intentout\ argument of type default  \integer.
+It is set to the required random integer $k$
+or an array of such integers.
+
+\end{description}
+
+%%%%%%% Subroutine to obtain the current generator word %%%%%%
+
+\subsubsection{Subroutine to obtain the current generator word}
+The current generator word may be obtained as follows:
+\vspace*{1mm}
+
+\hskip0.5in
+{\tt CALL \packagename\_get\_seed( seed, value )}
+
+\vspace*{-2mm}
+\begin{description}
+\itt{seed} is a scalar \intentin\ argument of derived type
+{\tt \packagename\_seed} that must be provided to hold the seed value.
+
+\itt{value} is a scalar \intentout\ argument of type default
+{\tt INTEGER}.
+It is set to the current value of the generator \linebreak word $g$.
+\end{description}
+
+%%%%%%% Subroutine to reset the current value of the generator word %%%%%%
+
+\subsubsection{Subroutine to reset the current value of the generator word}
+The current value of the generator word may be reset as follows:
+\vspace*{1mm}
+
+\hskip0.5in
+{\tt CALL \packagename\_set\_seed( seed, value )}
+
+\vspace*{-2mm}
+\begin{description}
+\itt{seed} is a scalar \intentout\ argument of derived type
+{\tt \packagename\_seed}  that holds the seed value.
+
+\itt{value} is a scalar \intentin\ argument of type default
+{\tt INTEGER} that
+ must be set by the user to the required value of the generator word. It
+ is recommended that the value
+ should have been obtained by a previous call of {\tt \packagename\_get\_seed}.
+ It should have a value in the range 0 $<$ {\tt value} $\leq$ {\tt P},
+ where {\tt P} =
+ $2^{31}  - 1$  = 2147483647. If it is outside this range, the value
+ {\tt value} mod($2^{31}  - 1$) is used.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace None.
+\galroutines None.
+\galmodules None.
+\galio None.
+\galrestrictions {\tt n} $> 0$.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+The code is based on that of L.Schrage, ``A More
+ Portable Fortran Random Number Generator'', TOMS, {\bf 5}(2) June 1979.
+ The method employed is a multiplicative congruential method. The
+ generator word $g$ is held as an integer and is updated on each call
+ as follows
+ \disp{g_{n+1} = 7^5 g_n mod (2^{31} - 1)}
+ The result returned from {\tt \packagename\_random\_real},
+ for a non-negative argument, is $\xi$, where
+ \disp{\xi = g_{n+1} /(2^{31} - 1)}
+ and for a negative argument is
+ \disp{2 \xi - 1.}
+ The value of $k$ returned by {\tt \packagename\_random\_integer} is
+ \disp{\mbox{integer part}\, \xi N  +1.}
+Arrays or random reals and integers are formed by calling the above
+sequentially in Fortran column order.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose we wish to generate two random real numbers lying between plus
+and minus one, reset the generator word to its original value, and then
+find two positive random integers with values no larger than one hundred.
+Then we might use the following piece of code.
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+
+\end{document}
+

@@ -1,0 +1,13 @@
+! error-printout-device                             6
+! printout-device                                   6
+! print-level                                       0
+! scale-problem                                     0
+! sif-file-device                                   52
+! infinity-value                                    1.0D+19
+! pre-solve-problem                                 no
+! space-critical                                    no
+! deallocate-error-fatal                            no
+! generate-sif-file                                 no
+! quadratic-programming-solver                      qpc
+! sif-file-name                                     QPPROB.SIF
+! output-line-prefix                                ""

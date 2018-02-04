@@ -1,0 +1,41 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            LANB.data
+! problem-data-file-device                          26
+! print-full-solution                               no
+! write-solution                                    yes
+! solution-file-name                                LANBSOL.d
+! solution-file-device                              62
+! write-result-summary                              yes
+! result-summary-file-name                          LANBRES.d
+! result-summary-file-device                        47
+! check-all-derivatives                             no
+! check-derivatives                                 yes
+! check-element-derivatives                         yes
+! check-group-derivatives                           yes
+! ignore-derivative-bugs                            no
+! ignore-element-derivative-bugs                    no
+! ignore-group-derivative-bugs                      no
+! get-scaling-factors                               no
+! scaling-print-level                               1
+! use-scaling-factors                               no
+! use-constraint-scaling-factors                    no
+! use-variable-scaling-factors                      no
+! maximizer-sought                                  no
+! restart-from-previous-point                       no
+! restart-data-file-name                            LANBSAVE.d
+! restart-data-file-device                          59
+! save-data-for-restart-every                       0
+! rho-used                                          1.0D+2
+! one-norm-penalty                                  yes
+
+INCLUDE LPSQP
+
+INCLUDE LPQPB
+
+INCLUDE QPA
+
+INCLUDE LSQP
+
+INCLUDE PRESOLVE
+

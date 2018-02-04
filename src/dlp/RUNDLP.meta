@@ -1,0 +1,41 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            DLP.data
+! problem-data-file-device                          26
+! write-initial-sif                                 no
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! least-squares-qp                                  no
+! scale-problem                                     0
+! pre-solve-problem                                 no
+! presolved-sif-file-name                           PRESOLVE.SIF
+! presolved-sif-file-device                         50
+! write-scaled-sif                                  no
+! scaled-sif-file-name                              SCALED.SIF
+! scaled-sif-file-device                            58
+! solve-problem                                     yes
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                DLPSOL.d
+! solution-file-device                              62
+! write-result-summary                              no
+! result-summary-file-name                          DLPRES.d
+! result-summary-file-device                        47
+! perturb-bounds-by                                 0.0
+! objective-type                                    0
+
+INCLUDE DLP
+
+INCLUDE SBLS
+
+INCLUDE SLS
+
+INCLUDE ULS
+
+INCLUDE GLTR
+REPLACE
+! zero-gradient-tolerance                           1.0D-20
+
+INCLUDE FDC
+
+INCLUDE PRESOLVE

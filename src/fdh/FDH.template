@@ -1,0 +1,6 @@
+! error-printout-device                             6
+! printout-device                                   6
+! print-level                                       0
+! space-critical                                    no
+! deallocate-error-fatal                            no
+! output-line-prefix                                ""

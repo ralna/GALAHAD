@@ -1,0 +1,10 @@
+MAIN
+! print-level                                       1
+! write-result-summary                              no
+! result-summary-file-name                          FDHRES.d
+! result-summary-file-device                        47
+! write-solution                                    no
+! solution-file-name                                FDHSOL.d
+! solution-file-device                              62
+
+INCLUDE FDH

@@ -1,0 +1,11 @@
+Files "really using pointers"
+
+fastr/fastr.f90                     ok
+filtrane/filtrane.f90               ok
+lanb/lancelot.f90                   ok
+lpb/lpb.f90
+lsqp/lsqp.f90                       ok
+qpb/qpb.f90                         ok
+qpc/qpc.f90                         ok
+superb/superb.f90                   ok
+wcp/wcp.f90                         ok

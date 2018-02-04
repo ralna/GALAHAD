@@ -1,0 +1,24 @@
+
+  *******************************************************
+  TEST RESULTS FOR SUBROUTINE : mop_Ax
+
+     Number of Problems Tested : 104
+     Number of Problems Wrong  :   0
+
+  *******************************************************
+
+  *******************************************************
+  TEST RESULTS FOR SUBROUTINE : mop_getval
+
+     Number of Problems Tested :  40
+     Number of Problems Wrong  :   0
+
+  *******************************************************
+
+  *******************************************************
+  TEST RESULTS FOR SUBROUTINE : mop_scaleA
+
+     Number of Problems Tested :  91
+     Number of Problems Wrong  :   0
+
+  *******************************************************

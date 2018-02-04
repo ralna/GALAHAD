@@ -1,0 +1,1112 @@
+#  Main body of the installation makefile for the SPRAL SSIDS package
+#  SPRAL SSIDS was developed by Jonathan Hogg (now at Apple) and is
+#  available under a BSD licence
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version:  6 IX 2016
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS        = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS       = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN       = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77      = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S     = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP     = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+                $(OPENMP)
+FFLAGSNOMP    = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(OPENMP)
+RUNFFLAGS     =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSCUDA =          $(OPTIMIZATION)          $(MODULES)
+RUNFFLAGSOMP  =          $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+CXXFLAGSOMP   = $(CXXBASIC) $(OPTIMIZATION) $(CXXDEBUG)  $(OPENMP)
+CXXFLAGSNOMP  = $(CXXBASIC) $(NOOPTIMIZATION) $(CXXDEBUG) $(OPENMP)
+
+CUDAFLAGS   = -arch=$(CUDAARCH) -code=$(CUDACODE) $(CUDABASIC) $(OPTIMIZATION)
+CUDAFLAGSN  = -arch=$(CUDAARCH) -code=$(CUDACODE) $(CUDABASIC) $(NOOPTIMIZATION)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+RLG  = $(OBJ)/libgalahad_spral.a
+RLGS = $(OBJS)/libgalahad_spral.a
+RLGD = $(OBJD)/libgalahad_spral.a
+
+#  Libraries used
+
+LIBS = $(METIS) $(LAPACK) $(BLAS)
+PLIBS = $(LIBS) -lgalahad_problem
+
+#  Archive manipulation strings
+
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+RARR = $(AR) $(ARREPFLAGS) $(RLG)
+RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(RLG)
+
+#  sed scripts
+
+#  compilation agenda
+
+SSIDSSS = $(SSIDSS) $(OBJS)/ssidss.o
+SSIDSST = $(SSIDSS) $(OBJS)/ssidst.o
+SSIDSDS = $(SSIDSD) $(OBJD)/ssidss.o
+SSIDSDT = $(SSIDSD) $(OBJD)/slst.o
+
+RSSIDSSS = $(OBJS)/ssidss.o -L$(OBJS) $(SPRAL) $(LIBS)
+RSSIDSST = $(OBJS)/ssidst.o -L$(OBJS) $(SPRAL) $(LIBS)
+RSSIDSDS = $(OBJD)/ssidss.o -L$(OBJD) $(SPRAL) $(LIBS)
+RSSIDSDT = $(OBJD)/ssidst.o -L$(OBJD) $(SPRAL) $(LIBS)
+
+CUDAS = $(RLGS)(cuda_nocuda.o)
+CUDAScuda = $(RLGS)(api_wrappers.o) $(RLGS)(cuda.o)
+CUDAD = $(RLGD)(cuda_nocuda.o)
+CUDADcuda = $(RLGD)(api_wrappers.o) $(RLGD)(cuda.o)
+
+CUDASUSE = $(CUDAS$(CUDA))
+CUDADUSE = $(CUDAD$(CUDA))
+GPUDUSE = $(GPUS$(CUDA))
+GPUDUSE = $(GPUD$(CUDA))
+
+GPUS = $(RLGS)(gpu_subtree_no_cuda.o)
+GPUScuda = $(RLGS)(gpu_alloc.o) $(RLGS)(cpu_solve.o) \
+           $(RLGS)(gpu_datatypes.o) $(RLGS)(gpu_interfaces.o) \
+           $(RLGS)(gpu_dense_factor.o) $(RLGS)(gpu_solve.o) \
+           $(RLGS)(gpu_smalloc.o) $(RLGS)(gpu_factor.o) \
+           $(RLGS)(gpu_subtree.o) $(RLGS)(assemble.o) \
+           $(RLGS)(dense_factor.o) $(RLGS)(reorder.o) \
+           $(RLGS)(solve.o) $(RLGS)(syrk.o)
+GPUD = $(RLGD)(gpu_subtree_no_cuda.o)
+GPUDcuda = $(RLGD)(gpu_alloc.o) $(RLGD)(cpu_solve.o) \
+           $(RLGD)(gpu_datatypes.o) $(RLGD)(gpu_interfaces.o) \
+           $(RLGD)(gpu_dense_factor.o) $(RLGD)(gpu_solve.o) \
+           $(RLGD)(gpu_smalloc.o) $(RLGD)(gpu_factor.o) \
+           $(RLGD)(gpu_subtree.o) $(RLGD)(assemble.o) \
+           $(RLGD)(dense_factor.o) $(RLGD)(reorder.o) \
+           $(RLGD)(solve.o) $(RLGD)(syrk.o)
+
+SSIDSS = $(CUDAS$(CUDA)) \
+         $(RLGS)(compat.o) \
+         $(RLGS)(guess_topology.o) $(RLGS)(omp.o) $(RLGS)(NumericSubtree.o) \
+         $(RLGS)(profile.o) $(RLGS)(SymbolicSubtree.o) $(RLGS)(cholesky.o) \
+         $(RLGS)(ldlt_app.o) $(RLGS)(ldlt_nopiv.o) $(RLGS)(ldlt_tpp.o) \
+         $(RLGS)(wrappers.o) $(RLGS)(ThreadStats.o) \
+         $(RLGS)(hw_topology.o) \
+         $(RLGS)(metis4_wrapper.o) $(RLGS)(matrix_util.o) $(RLGS)(scaling.o) \
+         $(RLGS)(match_order.o) $(RLGS)(datatypes.o) \
+         $(RLGS)(core_analyse.o) $(RLGS)(pgm.o) $(RLGS)(inform.o) \
+         $(RLGS)(contrib.o) $(RLGS)(subtree.o) \
+         $(RLGS)(akeep.o) $(RLGS)(cpu_iface.o) $(RLGS)(cpu_subtree.o) \
+         $(RLGS)(profile_iface.o) \
+         $(GPUS$(CUDA)) \
+         $(RLGS)(anal.o) $(RLGS)(fkeep.o) \
+         $(RLGS)(random.o) $(RLGS)(rutherford_boeing.o) \
+         $(RLGS)(ssids.o) \
+         $(RLGS)(contrib_free.o)
+SSIDSD = $(CUDAD$(CUDA)) \
+         $(RLGD)(compat.o) \
+         $(RLGD)(guess_topology.o) $(RLGD)(omp.o) $(RLGD)(NumericSubtree.o) \
+         $(RLGD)(profile.o) $(RLGD)(SymbolicSubtree.o) $(RLGD)(cholesky.o) \
+         $(RLGD)(ldlt_app.o) $(RLGD)(ldlt_nopiv.o) $(RLGD)(ldlt_tpp.o) \
+         $(RLGD)(wrappers.o) $(RLGD)(ThreadStats.o) \
+         $(RLGD)(hw_topology.o) \
+         $(RLGD)(metis4_wrapper.o) $(RLGD)(matrix_util.o) $(RLGD)(scaling.o) \
+         $(RLGD)(match_order.o) $(RLGD)(datatypes.o) \
+         $(RLGD)(core_analyse.o) $(RLGD)(pgm.o) $(RLGD)(inform.o) \
+         $(RLGD)(contrib.o) $(RLGD)(subtree.o) \
+         $(RLGD)(akeep.o) $(RLGD)(cpu_iface.o) $(RLGD)(cpu_subtree.o) \
+         $(RLGD)(profile_iface.o) \
+         $(GPUD$(CUDA)) \
+         $(RLGD)(anal.o) $(RLGD)(fkeep.o) \
+         $(RLGD)(random.o) $(RLGD)(rutherford_boeing.o) \
+         $(RLGD)(ssids.o) \
+         $(RLGD)(contrib_free.o)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+all: ssids
+
+# ssids
+
+ssids_silent: ssids_silent_$(PRECIS)
+ssids_silent_single: $(SSIDSS)
+	$(RANLIB) $(RLGS)
+ssids_silent_double: $(SSIDSD)
+	$(RANLIB) $(RLGD)
+
+ssids: ssids_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SSIDS ($(PRECIS) $(SUCC)"
+ssids_single: $(SSIDSS)
+	$(RANLIB) $(RLGS)
+ssids_double: $(SSIDSD)
+	$(RANLIB) $(RLGD)
+
+# run spec-sheet example tests
+
+ssidsds: $(SSIDSDS)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDS)
+	- ../ssids//run_ssids < ../ssids/ssidss.data
+#	- ../ssids//run_ssids < ../ssids/ssidss.data >& ../ssids/ssidsds.output
+	cat ../ssids/ssidsds.output
+	rm ../ssids/run_ssids
+
+ssidsds_valgrind: $(SSIDSDS)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDS)
+	- valgrind -v --tool=memcheck --leak-check=yes \
+            --show-reachable=yes ../ssids/run_ssids < ../ssids/ssidss.data
+	rm ../ssids/run_ssids
+
+ssidsds_cuda: $(SSIDSDS)
+	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
+                      $(RSSIDSDS) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
+#	- ../ssids//run_ssids < ../ssids/ssidss.data
+	- ../ssids//run_ssids < ../ssids/ssidss.data >& ../ssids/ssidsds.output
+	cat ../ssids/ssidsds.output
+	rm ../ssids/run_ssids
+
+ssidsds_cuda_valgrind: $(SSIDSDS)
+	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
+                      $(RSSIDSDS) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
+	- valgrind -v --tool=memcheck --leak-check=yes \
+            --show-reachable=yes ../ssids/run_ssids < ../ssids/ssidss.data
+	rm ../ssids/run_ssids
+
+ssidsdt: $(SSIDSDT)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDT)
+#	- ../ssids/run_ssids
+	- ../ssids/run_ssids  >& ../ssids/ssidsdt.output
+	cat ../ssids/ssidsdt.output
+	rm ../ssids/run_ssids
+
+ssidsdt_cuda: $(SSIDSDT)
+	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
+                      $(RSSIDSDT) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
+#	- ../ssids//run_ssids
+	- ../ssids//run_ssids >& ../ssids/ssidsdt.output
+	cat ../ssids/ssidsdt.output
+	rm ../ssids/run_ssids
+
+ssidsdt_valgrind: $(SSIDSDT)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSDT)
+#	- ../ssids/run_ssids
+	- valgrind -v --tool=memcheck --leak-check=yes \
+            --show-reachable=yes --track-origins=yes ../ssids/run_ssids
+	rm ../ssids/run_ssids
+
+ssidsdt_cuda_valgrind: $(SSIDSDT)
+	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
+                      $(RSSIDSDT) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
+	- valgrind -v --tool=memcheck --leak-check=yes \
+            --show-reachable=yes ../ssids/run_ssids
+	rm ../ssids/run_ssids
+
+ssidsss: $(SSIDSSS)
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSSS)
+#	- ../ssids/run_ssids < ../ssids/ssidss.data
+	- ../ssids/run_ssids < ../ssids/ssidss.data >& ../ssids/ssidss.output
+	cat ../ssids/ssidss.output
+	rm ../ssids/run_ssids
+
+ssidsst: $(SSIDSST)
+	echo " Exhaustive test of subroutine interface to ssids"
+	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+          -o run_ssids $(RSSIDSST)
+#	- ../ssids/run_ssids < ../ssids/ssidss.data
+	- ../ssids/run_ssids >& ../ssids/ssidst.output
+	cat ../ssids/ssidst.output
+	rm ../ssids/run_ssids
+
+#  individual compilations
+
+compat.o: $(RLG)(compat.o)
+
+$(RLG)(compat.o): ../spral/compat.cxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "compat  "
+	$(CP)  ../spral/config.h $(OBJ)/
+	$(CP)  ../spral/compat.cxx $(OBJ)/
+	$(CP)  ../spral/compat.hxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o compat.o $(CXXFLAGSOMP) \
+          compat.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o compat.o $(CXXFLAGSNCOMP) \
+                      compat.cxx )
+	cd $(OBJ) ; $(RARR) compat.o ; \
+          $(RM) -r compat.cxx compat.hxx compat.o config.h
+	@printf '[ OK ]\n'
+
+guess_topology.o: $(RLG)(guess_topology.o)
+
+$(RLG)(guess_topology.o): ../spral/guess_topology.cxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "guess_topology  "
+	$(MKDIR) -p $(OBJ)/hw_topology
+	$(CP)  ../spral/config.h $(OBJ)/
+	$(CP)  ../spral/compat.hxx $(OBJ)/
+	$(CP)  ../spral/guess_topology.cxx $(OBJ)/
+	$(CP)  ../spral/guess_topology.hxx $(OBJ)/hw_topology/
+	$(CP)  ../spral/hwloc_wrapper.hxx $(OBJ)/hw_topology/
+	cd $(OBJ) ; $(CXX) -I. -o guess_topology.o $(CXXFLAGSOMP) \
+          guess_topology.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o guess_topology.o $(CXXFLAGSNOMP) \
+                      guess_topology.cxx )
+	cd $(OBJ) ; $(RARR) guess_topology.o ; \
+          $(RM) -r guess_topology.cxx config.h compat.hxx hw_topology \
+            guess_topology.o
+	@printf '[ OK ]\n'
+
+omp.o: $(RLG)(omp.o)
+
+$(RLG)(omp.o): ../spral/omp.cxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "omp  "
+	$(CP)  ../spral/omp.cxx $(OBJ)/
+	$(CP)  ../spral/omp.hxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o omp.o $(CXXFLAGSOMP) \
+          omp.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o omp.o $(CXXFLAGSNOMP) \
+                      omp.cxx )
+	cd $(OBJ) ; $(RARR) omp.o ; \
+          $(RM) -r omp.cxx omp.hxx omp.o
+	@printf '[ OK ]\n'
+NumericSubtree.o: $(RLG)(NumericSubtree.o)
+
+$(RLG)(NumericSubtree.o): ../ssids/NumericSubtree.cxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "NumericSubtree  "
+	$(MKDIR) -p $(OBJ)/ssids
+	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
+	$(MKDIR) -p $(OBJ)/hw_topology
+	$(CP)  ../spral/guess_topology.hxx $(OBJ)/hw_topology/
+	$(CP)  ../spral/config.h $(OBJ)/
+	$(CP)  ../spral/compat.hxx $(OBJ)/
+	$(CP)  ../spral/omp.hxx $(OBJ)/
+	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
+	$(CP)  ../ssids/profile.hxx $(OBJ)/ssids/
+	$(CP)  ../ssids/NumericSubtree.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o NumericSubtree.o $(CXXFLAGSOMP) \
+          NumericSubtree.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o NumericSubtree.o $(CXXFLAGSNOMP) \
+                      NumericSubtree.cxx )
+	cd $(OBJ) ; $(RARR) NumericSubtree.o ; $(RM) -r NumericSubtree.cxx \
+          NumericSubtree.o omp.hxx compat.hxx config.h ssids hw_topology
+	@printf '[ OK ]\n'
+
+profile.o: $(RLG)(profile.o)
+
+$(RLG)(profile.o): ../ssids/profile.cxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "profile  "
+	$(MKDIR) -p $(OBJ)/ssids
+	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
+	$(MKDIR) -p $(OBJ)/hw_topology
+	$(CP)  ../spral/guess_topology.hxx $(OBJ)/hw_topology/
+	$(CP)  ../spral/config.h $(OBJ)/
+	$(CP)  ../spral/omp.hxx $(OBJ)/
+	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
+	$(CP)  ../ssids/profile.cxx $(OBJ)/
+	$(CP)  ../ssids/profile.hxx $(OBJ)/ssids/
+	cd $(OBJ) ; $(CXX) -I. -o profile.o $(CXXFLAGSOMP) \
+          profile.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o profile.o $(CXXFLAGSNOMP) \
+                      profile.cxx )
+	cd $(OBJ) ; $(RARR) profile.o ; $(RM) -r profile.cxx \
+          profile.o omp.hxx config.h ssids hw_topology
+	@printf '[ OK ]\n'
+
+SymbolicSubtree.o: $(RLG)(SymbolicSubtree.o)
+
+$(RLG)(SymbolicSubtree.o): ../ssids/SymbolicSubtree.cxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "SymbolicSubtree  "
+	$(MKDIR) -p $(OBJ)/ssids
+	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
+	$(CP)  ../spral/config.h $(OBJ)/
+	$(CP)  ../spral/omp.hxx $(OBJ)/
+	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
+	$(CP)  ../ssids/SymbolicSubtree.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o SymbolicSubtree.o $(CXXFLAGSOMP) \
+          SymbolicSubtree.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o SymbolicSubtree.o $(CXXFLAGSNOMP) \
+                      SymbolicSubtree.cxx )
+	cd $(OBJ) ; $(RARR) SymbolicSubtree.o ; $(RM) -r SymbolicSubtree.cxx \
+          SymbolicSubtree.o omp.hxx config.h ssids
+	@printf '[ OK ]\n'
+
+cholesky.o: $(RLG)(cholesky.o)
+
+$(RLG)(cholesky.o): ../ssids/cholesky.cxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "cholesky  "
+	$(MKDIR) -p $(OBJ)/ssids
+	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
+	$(MKDIR) -p $(OBJ)/hw_topology
+	$(CP)  ../spral/guess_topology.hxx $(OBJ)/hw_topology/
+	$(CP)  ../spral/config.h $(OBJ)/
+	$(CP)  ../spral/omp.hxx $(OBJ)/
+	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
+	$(CP)  ../ssids/cholesky.cxx $(OBJ)/
+	$(CP)  ../ssids/profile.hxx $(OBJ)/ssids/
+	cd $(OBJ) ; $(CXX) -I. -o cholesky.o $(CXXFLAGSOMP) \
+          cholesky.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o cholesky.o $(CXXFLAGSNOMP) \
+                      cholesky.cxx )
+	cd $(OBJ) ; $(RARR) cholesky.o ; $(RM) -r cholesky.cxx \
+          cholesky.o omp.hxx config.h ssids hw_topology
+	@printf '[ OK ]\n'
+
+ldlt_app.o: $(RLG)(ldlt_app.o)
+
+$(RLG)(ldlt_app.o): ../ssids/ldlt_app.cxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "ldlt_app  "
+	$(MKDIR) -p $(OBJ)/ssids
+	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
+	$(MKDIR) -p $(OBJ)/hw_topology
+	$(CP)  ../spral/guess_topology.hxx $(OBJ)/hw_topology/
+	$(CP)  ../spral/config.h $(OBJ)/
+	$(CP)  ../spral/compat.hxx $(OBJ)/
+	$(CP)  ../spral/omp.hxx $(OBJ)/
+	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
+	$(CP)  ../ssids/ldlt_app.cxx $(OBJ)/
+	$(CP)  ../ssids/profile.hxx $(OBJ)/ssids/
+	cd $(OBJ) ; $(CXX) -I. -o ldlt_app.o $(CXXFLAGSOMP) \
+          ldlt_app.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o ldlt_app.o $(CXXFLAGSNOMP) \
+                      ldlt_app.cxx )
+	cd $(OBJ) ; $(RARR) ldlt_app.o ; $(RM) -r ldlt_app.cxx \
+          ldlt_app.o omp.hxx compat.hxx config.h ssids hw_topology
+	@printf '[ OK ]\n'
+
+ldlt_nopiv.o: $(RLG)(ldlt_nopiv.o)
+
+$(RLG)(ldlt_nopiv.o): ../ssids/ldlt_nopiv.cxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "ldlt_nopiv  "
+	$(MKDIR) -p $(OBJ)/ssids
+	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
+	$(CP)  ../spral/config.h $(OBJ)/
+	$(CP)  ../spral/omp.hxx $(OBJ)/
+	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
+	$(CP)  ../ssids/ldlt_nopiv.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o ldlt_nopiv.o $(CXXFLAGSOMP) \
+          ldlt_nopiv.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o ldlt_nopiv.o $(CXXFLAGSNOMP) \
+                      ldlt_nopiv.cxx )
+	cd $(OBJ) ; $(RARR) ldlt_nopiv.o ; $(RM) -r ldlt_nopiv.cxx \
+          ldlt_nopiv.o omp.hxx config.h ssids
+	@printf '[ OK ]\n'
+
+ldlt_tpp.o: $(RLG)(ldlt_tpp.o)
+
+$(RLG)(ldlt_tpp.o): ../ssids/ldlt_tpp.cxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "ldlt_tpp  "
+	$(MKDIR) -p $(OBJ)/ssids
+	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
+	$(CP)  ../spral/config.h $(OBJ)/
+	$(CP)  ../spral/omp.hxx $(OBJ)/
+	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
+	$(CP)  ../ssids/ldlt_tpp.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o ldlt_tpp.o $(CXXFLAGSOMP) \
+          ldlt_tpp.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o ldlt_tpp.o $(CXXFLAGSNOMP) \
+                      ldlt_tpp.cxx )
+	cd $(OBJ) ; $(RARR) ldlt_tpp.o ; $(RM) -r ldlt_tpp.cxx \
+          ldlt_tpp.o omp.hxx config.h ssids
+	@printf '[ OK ]\n'
+
+wrappers.o: $(RLG)(wrappers.o)
+
+$(RLG)(wrappers.o): ../ssids/wrappers.cxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "wrappers  "
+	$(MKDIR) -p $(OBJ)/ssids
+	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
+	$(CP)  ../spral/config.h $(OBJ)/
+	$(CP)  ../spral/omp.hxx $(OBJ)/
+	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
+	$(CP)  ../ssids/wrappers.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o wrappers.o $(CXXFLAGSOMP) \
+          wrappers.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o wrappers.o $(CXXFLAGSNOMP) \
+                      wrappers.cxx )
+	cd $(OBJ) ; $(RARR) wrappers.o ; $(RM) -r wrappers.cxx \
+          wrappers.o omp.hxx compat.hxx config.h ssids
+	@printf '[ OK ]\n'
+
+ThreadStats.o: $(RLG)(ThreadStats.o)
+
+$(RLG)(ThreadStats.o): ../ssids/ThreadStats.cxx
+	@printf ' %-9s %-15s\t\t' "Compiling" "ThreadStats  "
+	$(MKDIR) -p $(OBJ)/ssids
+	$(LN) -fs $(PWD)/cpu $(OBJ)/ssids/.
+	$(CP)  ../spral/config.h $(OBJ)/
+	$(CP)  ../spral/omp.hxx $(OBJ)/
+	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
+	$(CP)  ../ssids/ThreadStats.cxx $(OBJ)/
+	cd $(OBJ) ; $(CXX) -I. -o ThreadStats.o $(CXXFLAGSOMP) \
+          ThreadStats.cxx \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CXX) -I. -o ThreadStats.o $(CXXFLAGSNOMP) \
+                      ThreadStats.cxx )
+	cd $(OBJ) ; $(RARR) ThreadStats.o ; $(RM) -r ThreadStats.cxx \
+          ThreadStats.o omp.hxx compat.hxx config.h ssids
+	@printf '[ OK ]\n'
+
+api_wrappers.o: $(RLG)(api_wrappers.o)
+
+$(RLG)(api_wrappers.o): ../spral/api_wrappers.cu
+	@printf ' %-9s %-15s\t\t' "Compiling" "api_wrappers  "
+	$(SED) -f $(SEDS) ../spral/api_wrappers.cu > $(OBJ)/api_wrappers.cu
+	cd $(OBJ) ; $(CUDACOMP) -o api_wrappers.o $(CUDAFLAGS) api_wrappers.cu \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CUDACOMP) -o api_wrappers.o $(CUDAFLAGSN) \
+                    api_wrappers.cu )
+	cd $(OBJ) ; $(RARR) api_wrappers.o ; \
+          $(RM) api_wrappers.cu api_wrappers.o
+	$(RRMARFILE) cuda.o
+#	$(RANLIB) $(RLG)
+#	$(MVMODS)
+	@printf '[ OK ]\n'
+
+cuda.o: $(RLG)(cuda.o)
+
+$(RLG)(cuda.o): ../spral/cuda.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "cuda  "
+	$(SED) -f $(SEDS) ../spral/cuda.f90 > $(OBJ)/cuda.f90
+	cd $(OBJ) ; $(FORTRAN) -o cuda.o $(FFLAGSOMP) cuda.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o cuda.o $(FFLAGSNOMP) cuda.f90 )
+	cd $(OBJ) ; $(RARR) cuda.o ; $(RM) cuda.f90 cuda.o
+	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+cuda_nocuda.o: $(RLG)(cuda_nocuda.o)
+
+$(RLG)(cuda_nocuda.o): ../spral/cuda_nocuda.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "cuda_nocuda  "
+	$(SED) -f $(SEDS) ../spral/cuda_nocuda.f90 > $(OBJ)/cuda_nocuda.f90
+	cd $(OBJ) ; $(FORTRAN) -o cuda_nocuda.o $(FFLAGSOMP) cuda_nocuda.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o cuda_nocuda.o $(FFLAGSNOMP) cuda_nocuda.f90 )
+	cd $(OBJ) ; $(RARR) cuda_nocuda.o ; $(RM) cuda_nocuda.f90 cuda_nocuda.o
+	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+gpu_subtree.o: $(RLG)(gpu_subtree.o)
+
+$(RLG)(gpu_subtree.o): ../ssids/gpu_subtree.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_subtree  "
+	$(SED) -f $(SEDS) ../ssids/gpu_subtree.f90 > $(OBJ)/gpu_subtree.f90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_subtree.o $(FFLAGSOMP) gpu_subtree.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o gpu_subtree.o $(FFLAGSNOMP) gpu_subtree.f90 )
+	cd $(OBJ) ; $(RARR) gpu_subtree.o ; $(RM) gpu_subtree.f90 gpu_subtree.o
+	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+assemble.o: $(RLG)(assemble.o)
+
+$(RLG)(assemble.o): ../ssids/assemble.cu
+	@printf ' %-9s %-15s\t\t' "Compiling" "assemble  "
+	$(SED) -f $(SEDS) ../ssids/assemble.cu > $(OBJ)/assemble.cu
+	$(MKDIR) -p $(OBJ)/cuda
+	$(CP)  ../spral/cuda/cuda_check.h $(OBJ)/cuda/
+	$(MKDIR) -p $(OBJ)/ssids/gpu/kernels
+	$(CP)  ../ssids/gpu/kernels/datatypes.h $(OBJ)/ssids/gpu/kernels/
+	cd $(OBJ) ; $(CUDACOMP) -o assemble.o $(CUDAFLAGS) assemble.cu \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CUDACOMP) -o assemble.o $(CUDAFLAGSN) \
+                    assemble.cu )
+	cd $(OBJ) ; $(RARR) assemble.o ; \
+          $(RM) -r assemble.cu assemble.o cuda ssids
+#	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+#	$(MVMODS)
+	@printf '[ OK ]\n'
+
+
+dense_factor.o: $(RLG)(dense_factor.o)
+
+$(RLG)(dense_factor.o): ../ssids/dense_factor.cu
+	@printf ' %-9s %-15s\t\t' "Compiling" "dense_factor  "
+	$(SED) -f $(SEDS) ../ssids/dense_factor.cu > \
+           $(OBJ)/dense_factor.cu
+	$(MKDIR) -p $(OBJ)/cuda
+	$(CP)  ../spral/cuda/cuda_check.h $(OBJ)/cuda/
+	$(MKDIR) -p $(OBJ)/ssids/gpu/kernels
+	$(CP)  ../ssids/gpu/kernels/datatypes.h $(OBJ)/ssids/gpu/kernels/
+	cd $(OBJ) ; $(CUDACOMP) -o dense_factor.o \
+           $(CUDAFLAGS) dense_factor.cu \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CUDACOMP) -o dense_factor.o $(CUDAFLAGSN) \
+                    dense_factor.cu )
+	cd $(OBJ) ; $(RARR) dense_factor.o ; \
+          $(RM) -r dense_factor.cu dense_factor.o cuda ssids
+#	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+#	$(MVMODS)
+	@printf '[ OK ]\n'
+
+reorder.o: $(RLG)(reorder.o)
+
+$(RLG)(reorder.o): ../ssids/reorder.cu
+	@printf ' %-9s %-15s\t\t' "Compiling" "reorder  "
+	$(SED) -f $(SEDS) ../ssids/reorder.cu > $(OBJ)/reorder.cu
+	$(MKDIR) -p $(OBJ)/cuda
+	$(CP)  ../spral/cuda/cuda_check.h $(OBJ)/cuda/
+	$(MKDIR) -p $(OBJ)/ssids/gpu/kernels
+	$(CP)  ../ssids/gpu/kernels/datatypes.h $(OBJ)/ssids/gpu/kernels/
+	cd $(OBJ) ; $(CUDACOMP) -o reorder.o $(CUDAFLAGS) reorder.cu \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CUDACOMP) -o reorder.o $(CUDAFLAGSN) \
+                    reorder.cu )
+	cd $(OBJ) ; $(RARR) reorder.o ; \
+          $(RM) -r reorder.cu reorder.o cuda ssids
+#	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+#	$(MVMODS)
+	@printf '[ OK ]\n'
+
+solve.o: $(RLG)(solve.o)
+
+$(RLG)(solve.o): ../ssids/solve.cu
+	@printf ' %-9s %-15s\t\t' "Compiling" "solve  "
+	$(SED) -f $(SEDS) ../ssids/solve.cu > $(OBJ)/solve.cu
+	$(MKDIR) -p $(OBJ)/cuda
+	$(CP)  ../spral/cuda/cuda_check.h $(OBJ)/cuda/
+	$(MKDIR) -p $(OBJ)/ssids/gpu/kernels
+	$(CP)  ../ssids/gpu/kernels/dtrsv.h $(OBJ)/ssids/gpu/kernels/
+	cd $(OBJ) ; $(CUDACOMP) -o solve.o $(CUDAFLAGS) solve.cu \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CUDACOMP) -o solve.o $(CUDAFLAGSN) \
+                    solve.cu )
+	cd $(OBJ) ; $(RARR) solve.o ; \
+          $(RM) -r solve.cu solve.o cuda ssids
+#	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+#	$(MVMODS)
+	@printf '[ OK ]\n'
+
+syrk.o: $(RLG)(syrk.o)
+
+$(RLG)(syrk.o): ../ssids/syrk.cu
+	@printf ' %-9s %-15s\t\t' "Compiling" "syrk  "
+	$(SED) -f $(SEDS) ../ssids/syrk.cu > $(OBJ)/syrk.cu
+	$(MKDIR) -p $(OBJ)/ssids/gpu/kernels
+	$(CP)  ../ssids/gpu/kernels/datatypes.h $(OBJ)/ssids/gpu/kernels/
+	cd $(OBJ) ; $(CUDACOMP) -o syrk.o $(CUDAFLAGS) syrk.cu \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(CUDACOMP) -o syrk.o $(CUDAFLAGSN) \
+                    syrk.cu )
+	cd $(OBJ) ; $(RARR) syrk.o ; \
+          $(RM) -r syrk.cu syrk.o ssids
+#	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+#	$(MVMODS)
+	@printf '[ OK ]\n'
+
+gpu_subtree_no_cuda.o: $(RLG)(gpu_subtree_no_cuda.o)
+
+$(RLG)(gpu_subtree_no_cuda.o): ../ssids/gpu_subtree_no_cuda.f90
+	@printf ' %-9s %-15s\t' "Compiling" "gpu_subtree_no_cuda  "
+	$(SED) -f $(SEDS) ../ssids/gpu_subtree_no_cuda.f90 > \
+          $(OBJ)/gpu_subtree_no_cuda.f90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_subtree_no_cuda.o $(FFLAGSOMP) \
+           gpu_subtree_no_cuda.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o gpu_subtree_no_cuda.o $(FFLAGSNOMP) \
+             gpu_subtree_no_cuda.f90 )
+	cd $(OBJ) ; $(RARR) gpu_subtree_no_cuda.o ; \
+          $(RM) gpu_subtree_no_cuda.f90 gpu_subtree_no_cuda.o
+	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+hw_topology.o: $(RLG)(hw_topology.o)
+
+$(RLG)(hw_topology.o): ../spral/hw_topology.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hw_topology  "
+	$(SED) -f $(SEDS) ../spral/hw_topology.f90 > $(OBJ)/hw_topology.f90
+	cd $(OBJ) ; $(FORTRAN) -o hw_topology.o $(FFLAGSOMP) hw_topology.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o hw_topology.o $(FFLAGSNOMP) hw_topology.f90 )
+	cd $(OBJ) ; $(RARR) hw_topology.o ; $(RM) hw_topology.f90 hw_topology.o
+	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+metis4_wrapper.o: $(RLG)(metis4_wrapper.o)
+
+$(RLG)(metis4_wrapper.o): ../spral/metis4_wrapper.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "metis4_wrapper  "
+	$(SED) -f $(SEDS) ../spral/metis4_wrapper.f90 > \
+           $(OBJ)/metis4_wrapper.f90
+	cd $(OBJ) ; $(FORTRAN) -o metis4_wrapper.o $(FFLAGSOMP) \
+           metis4_wrapper.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o metis4_wrapper.o $(FFLAGSNOMP) \
+           metis4_wrapper.f90 )
+	cd $(OBJ) ; $(RARR) metis4_wrapper.o ; \
+          $(RM) metis4_wrapper.f90 metis4_wrapper.o
+	$(RRMARFILE) match_order.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+match_order.o: $(RLG)(match_order.o)
+
+$(RLG)(match_order.o): ../spral/match_order.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "match_order  "
+	$(SED) -f $(SEDS) ../spral/match_order.f90 > $(OBJ)/match_order.f90
+	cd $(OBJ) ; $(FORTRAN) -o match_order.o $(FFLAGSOMP) match_order.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o match_order.o $(FFLAGSNOMP) match_order.f90 )
+	cd $(OBJ) ; $(RARR) match_order.o ; $(RM) match_order.f90 match_order.o
+	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+matrix_util.o: $(RLG)(matrix_util.o)
+
+$(RLG)(matrix_util.o): ../spral/matrix_util.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "matrix_util  "
+	$(SED) -f $(SEDS) ../spral/matrix_util.f90 > $(OBJ)/matrix_util.f90
+	cd $(OBJ) ; $(FORTRAN) -o matrix_util.o $(FFLAGSOMP) matrix_util.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o matrix_util.o $(FFLAGSNOMP) matrix_util.f90 )
+	cd $(OBJ) ; $(RARR) matrix_util.o ; $(RM) matrix_util.f90 matrix_util.o
+	$(RRMARFILE) scaling.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+scaling.o: $(RLG)(scaling.o)
+
+$(RLG)(scaling.o): ../spral/scaling.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "scaling  "
+	$(SED) -f $(SEDS) ../spral/scaling.f90 > $(OBJ)/scaling.f90
+	cd $(OBJ) ; $(FORTRAN) -o scaling.o $(FFLAGSOMP) scaling.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o scaling.o $(FFLAGSNOMP) scaling.f90 )
+	cd $(OBJ) ; $(RARR) scaling.o ; $(RM) scaling.f90 scaling.o
+	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+datatypes.o: $(RLG)(datatypes.o)
+
+$(RLG)(datatypes.o): ../ssids/datatypes.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "datatypes  "
+	$(SED) -f $(SEDS) ../ssids/datatypes.f90 > $(OBJ)/datatypes.f90
+	cd $(OBJ) ; $(FORTRAN) -o datatypes.o $(FFLAGSOMP) datatypes.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o datatypes.o $(FFLAGSNOMP) datatypes.f90 )
+	cd $(OBJ) ; $(RARR) datatypes.o ; $(RM) datatypes.f90 datatypes.o
+	$(RRMARFILE) cpu_subtree.o
+	$(RRMARFILE) gpu_alloc.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+$(RLG)(gpu_alloc.o): ../ssids/gpu_alloc.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_alloc  "
+	$(SED) -f $(SEDS) ../ssids/gpu_alloc.f90 > $(OBJ)/gpu_alloc.f90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_alloc.o $(FFLAGSOMP) gpu_alloc.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o gpu_alloc.o $(FFLAGSNOMP) gpu_alloc.f90 )
+	cd $(OBJ) ; $(RARR) gpu_alloc.o ; $(RM) gpu_alloc.f90 gpu_alloc.o
+#	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+$(RLG)(cpu_solve.o): ../ssids/cpu_solve.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_solve  "
+	$(SED) -f $(SEDS) ../ssids/cpu_solve.f90 > $(OBJ)/cpu_solve.f90
+	cd $(OBJ) ; $(FORTRAN) -o cpu_solve.o $(FFLAGSOMP) cpu_solve.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o cpu_solve.o $(FFLAGSNOMP) cpu_solve.f90 )
+	cd $(OBJ) ; $(RARR) cpu_solve.o ; $(RM) cpu_solve.f90 cpu_solve.o
+#	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+$(RLG)(gpu_datatypes.o): ../ssids/gpu_datatypes.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_datatypes  "
+	$(SED) -f $(SEDS) ../ssids/gpu_datatypes.f90 > \
+           $(OBJ)/gpu_datatypes.f90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_datatypes.o $(FFLAGSOMP) \
+           gpu_datatypes.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o gpu_datatypes.o $(FFLAGSNOMP) \
+                       gpu_datatypes.f90 )
+	cd $(OBJ) ; $(RARR) gpu_datatypes.o ; \
+          $(RM) gpu_datatypes.f90 gpu_datatypes.o
+#	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+$(RLG)(gpu_interfaces.o): ../ssids/gpu_interfaces.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_interfaces  "
+	$(SED) -f $(SEDS) ../ssids/gpu_interfaces.f90 > \
+           $(OBJ)/gpu_interfaces.f90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_interfaces.o $(FFLAGSOMP) \
+           gpu_interfaces.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o gpu_interfaces.o $(FFLAGSNOMP) \
+                       gpu_interfaces.f90 )
+	cd $(OBJ) ; $(RARR) gpu_interfaces.o ; \
+          $(RM) gpu_interfaces.f90 gpu_interfaces.o
+#	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+$(RLG)(gpu_dense_factor.o): ../ssids/gpu_dense_factor.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_dense_factor  "
+	$(SED) -f $(SEDS) ../ssids/gpu_dense_factor.f90 > \
+           $(OBJ)/gpu_dense_factor.f90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_dense_factor.o $(FFLAGSOMP) \
+           gpu_dense_factor.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o gpu_dense_factor.o $(FFLAGSNOMP) \
+                       gpu_dense_factor.f90 )
+	cd $(OBJ) ; $(RARR) gpu_dense_factor.o ; \
+          $(RM) gpu_dense_factor.f90 gpu_dense_factor.o
+#	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+$(RLG)(gpu_solve.o): ../ssids/gpu_solve.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_solve  "
+	$(SED) -f $(SEDS) ../ssids/gpu_solve.f90 > $(OBJ)/gpu_solve.f90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_solve.o $(FFLAGSOMP) gpu_solve.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o gpu_solve.o $(FFLAGSNOMP) gpu_solve.f90 )
+	cd $(OBJ) ; $(RARR) gpu_solve.o ; $(RM) gpu_solve.f90 gpu_solve.o
+#	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+$(RLG)(gpu_smalloc.o): ../ssids/gpu_smalloc.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_smalloc  "
+	$(SED) -f $(SEDS) ../ssids/gpu_smalloc.f90 > $(OBJ)/gpu_smalloc.f90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_smalloc.o $(FFLAGSOMP) gpu_smalloc.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o gpu_smalloc.o $(FFLAGSNOMP) gpu_smalloc.f90 )
+	cd $(OBJ) ; $(RARR) gpu_smalloc.o ; $(RM) gpu_smalloc.f90 gpu_smalloc.o
+#	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+$(RLG)(gpu_factor.o): ../ssids/gpu_factor.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_factor  "
+	$(SED) -f $(SEDS) ../ssids/gpu_factor.f90 > $(OBJ)/gpu_factor.f90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_factor.o $(FFLAGSOMP) gpu_factor.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o gpu_factor.o $(FFLAGSNOMP) gpu_factor.f90 )
+	cd $(OBJ) ; $(RARR) gpu_factor.o ; $(RM) gpu_factor.f90 gpu_factor.o
+#	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+core_analyse.o: $(RLG)(core_analyse.o)
+
+$(RLG)(core_analyse.o): ../spral/core_analyse.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "core_analyse  "
+	$(SED) -f $(SEDS) ../spral/core_analyse.f90 > $(OBJ)/core_analyse.f90
+	cd $(OBJ) ; $(FORTRAN) -o core_analyse.o $(FFLAGSOMP) core_analyse.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                  $(FORTRAN) -o core_analyse.o $(FFLAGSNOMP) core_analyse.f90 )
+	cd $(OBJ) ; $(RARR) core_analyse.o ; \
+          $(RM) core_analyse.f90 core_analyse.o
+	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+pgm.o: $(RLG)(pgm.o)
+
+$(RLG)(pgm.o): ../spral/pgm.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pgm  "
+	$(SED) -f $(SEDS) ../spral/pgm.f90 > $(OBJ)/pgm.f90
+	cd $(OBJ) ; $(FORTRAN) -o pgm.o $(FFLAGSOMP) pgm.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o pgm.o $(FFLAGSNOMP) pgm.f90 )
+	cd $(OBJ) ; $(RARR) pgm.o ; $(RM) pgm.f90 pgm.o
+	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+inform.o: $(RLG)(inform.o)
+
+$(RLG)(inform.o): ../ssids/inform.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "inform  "
+	$(SED) -f $(SEDS) ../ssids/inform.f90 > $(OBJ)/inform.f90
+	cd $(OBJ) ; $(FORTRAN) -o inform.o $(FFLAGSOMP) inform.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o inform.o $(FFLAGSNOMP) inform.f90 )
+	cd $(OBJ) ; $(RARR) inform.o ; $(RM) inform.f90 inform.o
+	$(RRMARFILE) cpu_subtree.o
+	$(RRMARFILE) akeep.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+contrib.o: $(RLG)(contrib.o)
+
+$(RLG)(contrib.o): ../ssids/contrib.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "contrib  "
+	$(SED) -f $(SEDS) ../ssids/contrib.f90 > $(OBJ)/contrib.f90
+	cd $(OBJ) ; $(FORTRAN) -o contrib.o $(FFLAGSOMP) contrib.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o contrib.o $(FFLAGSNOMP) contrib.f90 )
+	cd $(OBJ) ; $(RARR) contrib.o ; $(RM) contrib.f90 contrib.o
+	$(RRMARFILE) cpu_subtree.o
+	$(RRMARFILE) subtree.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+subtree.o: $(RLG)(subtree.o)
+
+$(RLG)(subtree.o): ../ssids/subtree.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "subtree  "
+	$(SED) -f $(SEDS) ../ssids/subtree.f90 > $(OBJ)/subtree.f90
+	cd $(OBJ) ; $(FORTRAN) -o subtree.o $(FFLAGSOMP) subtree.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o subtree.o $(FFLAGSNOMP) subtree.f90 )
+	cd $(OBJ) ; $(RARR) subtree.o ; $(RM) subtree.f90 subtree.o
+	$(RRMARFILE) cpu_subtree.o
+	$(RRMARFILE) akeep.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+cpu_iface.o: $(RLG)(cpu_iface.o)
+
+$(RLG)(cpu_iface.o): ../ssids/cpu_iface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_iface  "
+	$(SED) -f $(SEDS) ../ssids/cpu_iface.f90 > $(OBJ)/cpu_iface.f90
+	cd $(OBJ) ; $(FORTRAN) -o cpu_iface.o $(FFLAGSOMP) cpu_iface.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o cpu_iface.o $(FFLAGSNOMP) cpu_iface.f90 )
+	cd $(OBJ) ; $(RARR) cpu_iface.o ; $(RM) cpu_iface.f90 cpu_iface.o
+	$(RRMARFILE) cpu_subtree.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+cpu_subtree.o: $(RLG)(cpu_subtree.o)
+
+$(RLG)(cpu_subtree.o): ../ssids/cpu_subtree.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_subtree  "
+	$(SED) -f $(SEDS) ../ssids/cpu_subtree.f90 > $(OBJ)/cpu_subtree.f90
+	cd $(OBJ) ; $(FORTRAN) -o cpu_subtree.o $(FFLAGSOMP) cpu_subtree.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o cpu_subtree.o $(FFLAGSNOMP) cpu_subtree.f90 )
+	cd $(OBJ) ; $(RARR) cpu_subtree.o ; $(RM) cpu_subtree.f90 cpu_subtree.o
+	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+akeep.o: $(RLG)(akeep.o)
+
+$(RLG)(akeep.o): ../ssids/akeep.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "akeep  "
+	$(SED) -f $(SEDS) ../ssids/akeep.f90 > $(OBJ)/akeep.f90
+	cd $(OBJ) ; $(FORTRAN) -o akeep.o $(FFLAGSOMP) akeep.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o akeep.o $(FFLAGSNOMP) akeep.f90 )
+	cd $(OBJ) ; $(RARR) akeep.o ; $(RM) akeep.f90 akeep.o
+	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+anal.o: $(RLG)(anal.o)
+
+$(RLG)(anal.o): ../ssids/anal.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "anal  "
+	$(SED) -f $(SEDS) ../ssids/anal.f90 > $(OBJ)/anal.f90
+	cd $(OBJ) ; $(FORTRAN) -o anal.o $(FFLAGSOMP) anal.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o anal.o $(FFLAGSNOMP) anal.f90 )
+	cd $(OBJ) ; $(RARR) anal.o ; $(RM) anal.f90 anal.o
+	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+profile_iface.o: $(RLG)(profile_iface.o)
+
+$(RLG)(profile_iface.o): ../ssids/profile_iface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "profile_iface  "
+	$(SED) -f $(SEDS) ../ssids/profile_iface.f90 > \
+          $(OBJ)/profile_iface.f90
+	cd $(OBJ) ; $(FORTRAN) -o profile_iface.o $(FFLAGSOMP) \
+          profile_iface.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o profile_iface.o $(FFLAGSNOMP) \
+                      profile_iface.f90 )
+	cd $(OBJ) ; $(RARR) profile_iface.o ; \
+           $(RM) profile_iface.f90 profile_iface.o
+	$(RRMARFILE) fkeep.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+fkeep.o: $(RLG)(fkeep.o)
+
+$(RLG)(fkeep.o): ../ssids/fkeep.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "fkeep  "
+	$(SED) -f $(SEDS) ../ssids/fkeep.f90 > $(OBJ)/fkeep.f90
+	cd $(OBJ) ; $(FORTRAN) -o fkeep.o $(FFLAGSOMP) fkeep.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o fkeep.o $(FFLAGSNOMP) fkeep.f90 )
+	cd $(OBJ) ; $(RARR) fkeep.o ; $(RM) fkeep.f90 fkeep.o
+	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+random.o: $(RLG)(random.o)
+
+$(RLG)(random.o): ../spral/random.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "random  "
+	$(SED) -f $(SEDS) ../spral/random.f90 > \
+           $(OBJ)/random.f90
+	cd $(OBJ) ; $(FORTRAN) -o random.o $(FFLAGSOMP) \
+           random.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o random.o $(FFLAGSNOMP) \
+           random.f90 )
+	cd $(OBJ) ; $(RARR) random.o ; \
+          $(RM) random.f90 random.o
+	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+rutherford_boeing.o: $(RLG)(rutherford_boeing.o)
+
+$(RLG)(rutherford_boeing.o): ../spral/rutherford_boeing.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "rutherford_boeing  "
+	$(SED) -f $(SEDS) ../spral/rutherford_boeing.f90 > \
+           $(OBJ)/rutherford_boeing.f90
+	cd $(OBJ) ; $(FORTRAN) -o rutherford_boeing.o $(FFLAGSOMP) \
+           rutherford_boeing.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o rutherford_boeing.o $(FFLAGSNOMP) \
+           rutherford_boeing.f90 )
+	cd $(OBJ) ; $(RARR) rutherford_boeing.o ; \
+          $(RM) rutherford_boeing.f90 rutherford_boeing.o
+	$(RRMARFILE) ssids.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+ssids.o: $(RLG)(ssids.o)
+
+$(RLG)(ssids.o): ../ssids/ssids.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssids  "
+	$(SED) -f $(SEDS) ../ssids/ssids.f90 > $(OBJ)/ssids.f90
+	cd $(OBJ) ; $(FORTRAN) -o ssids.o $(FFLAGSOMP) ssids.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o ssids.o $(FFLAGSNOMP) ssids.f90 )
+	cd $(OBJ) ; $(RARR) ssids.o ; $(RM) ssids.f90 ssids.o
+	$(RMARFILE) sls.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+contrib_free.o: $(RLG)(contrib_free.o)
+
+$(RLG)(contrib_free.o): ../ssids/contrib_free.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "contrib_free  "
+	$(SED) -f $(SEDS) ../ssids/contrib_free.f90 > $(OBJ)/contrib_free.f90
+	cd $(OBJ) ; $(FORTRAN) -o contrib_free.o $(FFLAGSOMP) \
+                     contrib_free.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o contrib_free.o $(FFLAGSNOMP) \
+                       contrib_free.f90 )
+	cd $(OBJ) ; $(RARR) contrib_free.o ; \
+          $(RM) contrib_free.f90 contrib_free.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  test decks
+
+ssidss.o: $(OBJ)/ssidss.o
+
+$(OBJ)/ssidss.o: ../ssids/ssidss.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidss  "
+	$(SED) -f $(SEDS) ../ssids/ssidss.f90 > $(OBJ)/ssidss.f90
+	cd $(OBJ) ; $(FORTRAN) -o ssidss.o $(FFLAGS) ssidss.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+ssidst.o: $(OBJ)/ssidst.o
+
+$(OBJ)/ssidst.o: ../ssids/ssidst.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidst  "
+	$(SED) -f $(SEDS) ../ssids/ssidst.f90 > $(OBJ)/ssidst.f90
+	cd $(OBJ) ; $(FORTRAN) -o ssidst.o $(FFLAGSS) ssidst.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LGS) $(LGD) $(OBJ)/ssids*.o $(OBJ)/libgalahad_spral.a $(MOD)/spral*
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmssids:
+	@printf ' %-9s %-15s\t\t' "Removing" "ssids from archive "
+	$(RRMARFILE) ssids.o
+	@printf '[ OK ]\n'
+
+
+

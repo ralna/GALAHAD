@@ -1,0 +1,217 @@
+***************************
+* SET UP THE INITIAL DATA *
+***************************
+
+NAME          ALLINITC
+
+*   Problem :
+*   *********
+
+*   A problem with "all in it". Intended to verify that changes
+*   to LANCELOT are safe.
+
+*   Source:
+*   N. Gould: private communication.
+
+*   SIF input: Nick Gould, June 1990.
+
+*   classification OOR2-AY-4-1
+
+VARIABLES
+
+    X1
+    X2
+    X3
+    X4
+
+GROUPS
+
+  N FT1
+  N FT2       X3        1.0
+  N FT3
+  N FT4
+  N FT5       X4        1.0
+  N FT6
+  N FNT1
+  N FNT2      X4        1.0
+  N FNT3
+  N FNT4
+  N FNT5      X1        1.0
+  N FNT6
+  E C1
+
+CONSTANTS
+
+    ALLINITC  FT2       1.0
+    ALLINITC  FT5       3.0
+    ALLINITC  FNT2      1.0
+    ALLINITC  FNT5      4.0
+    ALLINITC  C1        1.0
+
+BOUNDS
+
+ FR ALLINITC  X1
+ LO ALLINITC  X2        1.0
+ LO ALLINITC  X3        -1.0D+10
+ UP ALLINITC  X3        1.0
+ FX ALLINITC  X4        2.0
+
+ELEMENT TYPE
+
+ EV SQR       X
+ EV SQR2      Y                        Z
+ IV SQR2      X
+ EP SQR2      P
+ EV SINSQR    X
+ EV PRODSQR   X                        Y
+
+ELEMENT USES
+
+ T  'DEFAULT' SQR
+
+ V  FT3E1     X                        X1
+
+ V  FT4E1     X                        X2
+
+ T  FT4E2     SQR2
+ V  FT4E2     Y                        X3
+ V  FT4E2     Z                        X4
+ P  FT4E2     P         1.0
+
+ T  FT56E1    SINSQR
+ V  FT56E1    X                        X3
+
+ T  FT5E2     PRODSQR
+ V  FT5E2     X                        X1
+ V  FT5E2     Y                        X2
+
+ V  FNT3E1    X                        X2
+
+ V  FNT4E1    X                        X3
+
+ T  FNT4E2    SQR2
+ V  FNT4E2    Y                        X4
+ V  FNT4E2    Z                        X1
+ P  FNT4E2    P         1.0
+
+ T  FNT56E1   SINSQR
+ V  FNT56E1   X                        X4
+
+ T  FNT5E2    PRODSQR
+ V  FNT5E2    X                        X2
+ V  FNT5E2    Y                        X3
+
+GROUP TYPE
+
+ GV TRIVIAL   GVAR
+ GV L2        GVAR
+ GP L2        P
+
+GROUP USES
+
+ T  'DEFAULT' L2
+
+ T  FT1       TRIVIAL
+ T  FT2       TRIVIAL
+ T  FT3       TRIVIAL
+ E  FT3       FT3E1
+ T  FT4       TRIVIAL
+ E  FT4       FT4E1                    FT4E2
+ T  FT5       TRIVIAL
+ E  FT5       FT56E1                   FT5E2
+ T  FT6       TRIVIAL
+ E  FT6       FT56E1
+
+ P  FNT1      P         1.0
+ P  FNT2      P         1.0
+ E  FNT3      FNT3E1
+ P  FNT3      P         1.0
+ E  FNT4      FNT4E1                   FNT4E2
+ P  FNT4      P         1.0
+ E  FNT5      FNT56E1                  FNT5E2
+ P  FNT5      P         1.0
+ E  FNT6      FNT56E1
+ P  FNT6      P         1.0
+
+ T  C1        TRIVIAL
+ E  C1        FT3E1                    FT4E1
+
+ENDATA
+
+***********************
+* SET UP THE FUNCTION *
+* AND RANGE ROUTINES  *
+***********************
+
+ELEMENTS      ALLINITC
+
+TEMPORARIES
+
+ R  SINX
+ R  COSX
+ R  XX
+ R  YY
+ M  SIN
+ M  COS
+
+INDIVIDUALS
+
+*  square of x
+
+ T  SQR
+ F                      X * X
+ G  X                   X + X
+ H  X         X         2.0
+
+*  square of x = y + z
+
+ T  SQR2
+ R  X         Y         1.0            Z         1.0
+ F                      P * X * X
+ G  X                   P * ( X + X ) 
+ H  X         X         2.0 * P
+
+*  square of sin x
+
+ T  SINSQR
+ A  SINX                SIN( X )
+ A  COSX                COS( X )
+ F                      SINX * SINX
+ G  X                   2.0 * SINX * COSX
+ H  X         X         2.0 * ( COSX * COSX - SINX * SINX )
+
+*  square of x times y
+
+ T  PRODSQR
+ A  XX                  X * X
+ A  YY                  Y * Y
+ F                      XX * YY
+ G  X                   2.0 * X * YY
+ G  Y                   2.0 * XX * Y
+ H  X         X         2.0 * YY
+ H  X         Y         4.0 * X * Y
+ H  Y         Y         2.0 * XX
+
+
+ENDATA
+
+*********************
+* SET UP THE GROUPS *
+* ROUTINE           *
+*********************
+
+GROUPS        ALLINITC
+
+INDIVIDUALS
+
+ T  TRIVIAL
+ F                      GVAR
+ G                      1.0
+ H                      0.0
+
+ T  L2
+ F                      P * GVAR * GVAR
+ G                      P * ( GVAR + GVAR )
+ H                      2.0 * P
+
+ENDATA

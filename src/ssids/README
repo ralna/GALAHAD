@@ -1,0 +1,181 @@
+# cpu make
+
+gfortran-6 -fopenmp  -g -O2 -c -o src/blas_iface.o ../src/blas_iface.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/core_analyse.o ../src/core_analyse.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/cuda/cuda_nocuda.o ../src/cuda/cuda_nocuda.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/hw_topology/hw_topology.o ../src/hw_topology/hw_topology.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/lapack_iface.o ../src/lapack_iface.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/lsmr.o ../src/lsmr.f90
+gfortran-6 -fopenmp  -g -O2 -c -o interfaces/C/lsmr.o ../interfaces/C/lsmr.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/metis4_wrapper.o ../src/metis4_wrapper.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/matrix_util.o ../src/matrix_util.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/scaling.o ../src/scaling.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/match_order.o ../src/match_order.f90
+gfortran-6 -fopenmp  -g -O2 -c -o interfaces/C/matrix_util.o ../interfaces/C/matrix_util.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/pgm.o ../src/pgm.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/random.o ../src/random.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/rutherford_boeing.o ../src/rutherford_boeing.f90
+gfortran-6 -fopenmp  -g -O2 -c -o interfaces/C/rutherford_boeing.o ../interfaces/C/rutherford_boeing.f90
+gfortran-6 -fopenmp  -g -O2 -c -o interfaces/C/scaling.o ../interfaces/C/scaling.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/timer.o ../src/timer.f90
+gfortran-6 -fopenmp  -g -O2 -c -o interfaces/C/random.o ../interfaces/C/random.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/random_matrix.o ../src/random_matrix.f90
+gfortran-6 -fopenmp  -g -O2 -c -o interfaces/C/random_matrix.o ../interfaces/C/random_matrix.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/datatypes.o ../src/ssids/datatypes.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/contrib.o ../src/ssids/contrib.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/inform.o ../src/ssids/inform.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/subtree.o ../src/ssids/subtree.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/gpu/subtree_no_cuda.o ../src/ssids/gpu/subtree_no_cuda.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/alloc.o ../src/ssids/alloc.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/akeep.o ../src/ssids/akeep.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/cpu/cpu_iface.o ../src/ssids/cpu/cpu_iface.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/cpu/subtree.o ../src/ssids/cpu/subtree.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/anal.o ../src/ssids/anal.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/contrib_free.o ../src/ssids/contrib_free.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/cpu/profile_iface.o ../src/ssids/cpu/profile_iface.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/fkeep.o ../src/ssids/fkeep.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssids/ssids.o ../src/ssids/ssids.f90
+gfortran-6 -fopenmp  -g -O2 -c -o interfaces/C/ssids.o ../interfaces/C/ssids.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssmfe/core.o ../src/ssmfe/core.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssmfe/expert.o ../src/ssmfe/expert.f90
+gfortran-6 -fopenmp  -g -O2 -c -o src/ssmfe/ssmfe.o ../src/ssmfe/ssmfe.f90
+gfortran-6 -fopenmp  -g -O2 -c -o interfaces/C/ssmfe_core.o ../interfaces/C/ssmfe_core.f90
+gfortran-6 -fopenmp  -g -O2 -c -o interfaces/C/ssmfe_expert.o ../interfaces/C/ssmfe_expert.f90
+gfortran-6 -fopenmp  -g -O2 -c -o interfaces/C/ssmfe.o ../interfaces/C/ssmfe.f90
+gfortran-6 -fopenmp  -g -O2 -c -o driver/cuda_helper_nogpu.o ../driver/cuda_helper_nogpu.f90
+gfortran-6 -fopenmp  -g -O2 -c -o driver/spral_ssids.o ../driver/spral_ssids.f90
+
+
+
+
+g++-6 -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/kernels/ldlt_tpp.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/kernels/ldlt_tpp.o ../src/ssids/cpu/kernels/ldlt_tpp.cxx &&\
+icc   -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/kernels/ldlt_app.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/kernels/ldlt_app.o ../src/ssids/cpu/kernels/ldlt_app.cxx
+
+depbase=`echo src/ssids/cpu/kernels/cholesky.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	icc -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp  \
+          -g -O2 -MT src/ssids/cpu/kernels/cholesky.o -MD -MP -MF $depbase.Tpo \
+          -c -o src/ssids/cpu/kernels/cholesky.o ../src/ssids/cpu/kernels/cholesky.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+
+
+
+g++-6 -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/hw_topology/guess_topology.o -MD -MP -MF $depbase.Tpo -c -o src/hw_topology/guess_topology.o ../src/hw_topology/guess_topology.cxx &&
+
+
+
+
+g++-6 -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/hw_topology/guess_topology.o -MD -MP -MF $depbase.Tpo -c -o src/hw_topology/guess_topology.o ../src/hw_topology/guess_topology.cxx &&\
+g++-6 -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/omp.o -MD -MP -MF $depbase.Tpo -c -o src/omp.o ../src/omp.cxx &&\
+g++-6 -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/NumericSubtree.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/NumericSubtree.o ../src/ssids/cpu/NumericSubtree.cxx &&\
+g++-6 -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/profile.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/profile.o ../src/ssids/cpu/profile.cxx &&\
+g++-6 -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/SymbolicSubtree.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/SymbolicSubtree.o ../src/ssids/cpu/SymbolicSubtree.cxx &&\
+g++-6 -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/kernels/cholesky.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/kernels/cholesky.o ../src/ssids/cpu/kernels/cholesky.cxx &&\
+g++-6 -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/kernels/ldlt_app.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/kernels/ldlt_app.o ../src/ssids/cpu/kernels/ldlt_app.cxx &&\
+g++-6 -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/kernels/ldlt_nopiv.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/kernels/ldlt_nopiv.o ../src/ssids/cpu/kernels/ldlt_nopiv.cxx &&\
+g++-6 -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/kernels/ldlt_tpp.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/kernels/ldlt_tpp.o ../src/ssids/cpu/kernels/ldlt_tpp.cxx &&\
+g++-6 -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/kernels/wrappers.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/kernels/wrappers.o ../src/ssids/cpu/kernels/wrappers.cxx &&\
+
+ ###############################################################################
+ ###############################################################################
+ ##################################### gpu make ################################
+ ###############################################################################
+ ###############################################################################
+
+gfortran -fopenmp  -g -O2 -c -o src/blas_iface.o ../src/blas_iface.f90
+gfortran -fopenmp  -g -O2 -c -o src/core_analyse.o ../src/core_analyse.f90
+depbase=`echo src/compat.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	g++ -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/compat.o -MD -MP -MF $depbase.Tpo -c -o src/compat.o ../src/compat.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+nvcc -arch=compute_35 -code=sm_35 -I../include -I../src -dc -o src/cuda/api_wrappers.o ../src/cuda/api_wrappers.cu
+gfortran -fopenmp  -g -O2 -c -o src/cuda/cuda.o ../src/cuda/cuda.f90
+gfortran -fopenmp  -g -O2 -c -o src/hw_topology/hw_topology.o ../src/hw_topology/hw_topology.f90
+
+depbase=`echo src/hw_topology/guess_topology.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	g++ -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/hw_topology/guess_topology.o -MD -MP -MF $depbase.Tpo -c -o src/hw_topology/guess_topology.o ../src/hw_topology/guess_topology.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+gfortran -fopenmp  -g -O2 -c -o src/lapack_iface.o ../src/lapack_iface.f90
+gfortran -fopenmp  -g -O2 -c -o src/lsmr.o ../src/lsmr.f90
+gfortran -fopenmp  -g -O2 -c -o interfaces/C/lsmr.o ../interfaces/C/lsmr.f90
+gfortran -fopenmp  -g -O2 -c -o src/metis4_wrapper.o ../src/metis4_wrapper.f90
+gfortran -fopenmp  -g -O2 -c -o src/matrix_util.o ../src/matrix_util.f90
+gfortran -fopenmp  -g -O2 -c -o src/scaling.o ../src/scaling.f90
+gfortran -fopenmp  -g -O2 -c -o src/match_order.o ../src/match_order.f90
+gfortran -fopenmp  -g -O2 -c -o interfaces/C/matrix_util.o ../interfaces/C/matrix_util.f90
+depbase=`echo src/omp.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	g++ -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/omp.o -MD -MP -MF $depbase.Tpo -c -o src/omp.o ../src/omp.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+gfortran -fopenmp  -g -O2 -c -o src/pgm.o ../src/pgm.f90
+gfortran -fopenmp  -g -O2 -c -o src/random.o ../src/random.f90
+gfortran -fopenmp  -g -O2 -c -o src/rutherford_boeing.o ../src/rutherford_boeing.f90
+gfortran -fopenmp  -g -O2 -c -o interfaces/C/rutherford_boeing.o ../interfaces/C/rutherford_boeing.f90
+gfortran -fopenmp  -g -O2 -c -o interfaces/C/scaling.o ../interfaces/C/scaling.f90
+gfortran -fopenmp  -g -O2 -c -o src/timer.o ../src/timer.f90
+gfortran -fopenmp  -g -O2 -c -o interfaces/C/random.o ../interfaces/C/random.f90
+gfortran -fopenmp  -g -O2 -c -o src/random_matrix.o ../src/random_matrix.f90
+gfortran -fopenmp  -g -O2 -c -o interfaces/C/random_matrix.o ../interfaces/C/random_matrix.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/gpu/alloc.o ../src/ssids/gpu/alloc.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/datatypes.o ../src/ssids/datatypes.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/gpu/cpu_solve.o ../src/ssids/gpu/cpu_solve.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/gpu/datatypes.o ../src/ssids/gpu/datatypes.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/gpu/interfaces.o ../src/ssids/gpu/interfaces.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/gpu/dense_factor.o ../src/ssids/gpu/dense_factor.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/contrib.o ../src/ssids/contrib.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/profile_iface.o ../src/ssids/profile_iface.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/gpu/solve.o ../src/ssids/gpu/solve.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/gpu/smalloc.o ../src/ssids/gpu/smalloc.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/gpu/factor.o ../src/ssids/gpu/factor.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/inform.o ../src/ssids/inform.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/subtree.o ../src/ssids/subtree.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/gpu/subtree.o ../src/ssids/gpu/subtree.f90
+nvcc -arch=compute_35 -code=sm_35 -I../include -I../src -dc -o src/ssids/gpu/kernels/assemble.o ../src/ssids/gpu/kernels/assemble.cu
+nvcc -arch=compute_35 -code=sm_35 -I../include -I../src -dc -o src/ssids/gpu/kernels/dense_factor.o ../src/ssids/gpu/kernels/dense_factor.cu
+nvcc -arch=compute_35 -code=sm_35 -I../include -I../src -dc -o src/ssids/gpu/kernels/reorder.o ../src/ssids/gpu/kernels/reorder.cu
+nvcc -arch=compute_35 -code=sm_35 -I../include -I../src -dc -o src/ssids/gpu/kernels/solve.o ../src/ssids/gpu/kernels/solve.cu
+nvcc -arch=compute_35 -code=sm_35 -I../include -I../src -dc -o src/ssids/gpu/kernels/syrk.o ../src/ssids/gpu/kernels/syrk.cu
+gfortran -fopenmp  -g -O2 -c -o src/ssids/akeep.o ../src/ssids/akeep.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/cpu/cpu_iface.o ../src/ssids/cpu/cpu_iface.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/cpu/subtree.o ../src/ssids/cpu/subtree.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/anal.o ../src/ssids/anal.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/contrib_free.o ../src/ssids/contrib_free.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssids/fkeep.o ../src/ssids/fkeep.f90
+depbase=`echo src/ssids/profile.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	g++ -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/profile.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/profile.o ../src/ssids/profile.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+gfortran -fopenmp  -g -O2 -c -o src/ssids/ssids.o ../src/ssids/ssids.f90
+depbase=`echo src/ssids/cpu/NumericSubtree.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	g++ -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/NumericSubtree.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/NumericSubtree.o ../src/ssids/cpu/NumericSubtree.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+depbase=`echo src/ssids/cpu/SymbolicSubtree.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	g++ -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/SymbolicSubtree.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/SymbolicSubtree.o ../src/ssids/cpu/SymbolicSubtree.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+depbase=`echo src/ssids/cpu/ThreadStats.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	g++ -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/ThreadStats.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/ThreadStats.o ../src/ssids/cpu/ThreadStats.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+depbase=`echo src/ssids/cpu/kernels/cholesky.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	g++ -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/kernels/cholesky.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/kernels/cholesky.o ../src/ssids/cpu/kernels/cholesky.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+depbase=`echo src/ssids/cpu/kernels/ldlt_app.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	g++ -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/kernels/ldlt_app.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/kernels/ldlt_app.o ../src/ssids/cpu/kernels/ldlt_app.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+depbase=`echo src/ssids/cpu/kernels/ldlt_nopiv.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	g++ -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/kernels/ldlt_nopiv.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/kernels/ldlt_nopiv.o ../src/ssids/cpu/kernels/ldlt_nopiv.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+depbase=`echo src/ssids/cpu/kernels/ldlt_tpp.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	g++ -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/kernels/ldlt_tpp.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/kernels/ldlt_tpp.o ../src/ssids/cpu/kernels/ldlt_tpp.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+depbase=`echo src/ssids/cpu/kernels/wrappers.o | sed 's|[^/]*$|.deps/&|;s|\.o$||'`;\
+	g++ -DHAVE_CONFIG_H -I. -I..    -I../include -I../src -std=c++11 -fopenmp   -g -O2 -MT src/ssids/cpu/kernels/wrappers.o -MD -MP -MF $depbase.Tpo -c -o src/ssids/cpu/kernels/wrappers.o ../src/ssids/cpu/kernels/wrappers.cxx &&\
+	mv -f $depbase.Tpo $depbase.Po
+gfortran -fopenmp  -g -O2 -c -o interfaces/C/ssids.o ../interfaces/C/ssids.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssmfe/core.o ../src/ssmfe/core.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssmfe/expert.o ../src/ssmfe/expert.f90
+gfortran -fopenmp  -g -O2 -c -o src/ssmfe/ssmfe.o ../src/ssmfe/ssmfe.f90
+gfortran -fopenmp  -g -O2 -c -o interfaces/C/ssmfe_core.o ../interfaces/C/ssmfe_core.f90
+gfortran -fopenmp  -g -O2 -c -o interfaces/C/ssmfe_expert.o ../interfaces/C/ssmfe_expert.f90
+gfortran -fopenmp  -g -O2 -c -o interfaces/C/ssmfe.o ../interfaces/C/ssmfe.f90
+rm -f libspral.a
+ar cru libspral.a src/blas_iface.o src/core_analyse.o src/compat.o src/cuda/api_wrappers.o src/cuda/cuda.o  src/hw_topology/hw_topology.o src/hw_topology/guess_topology.o src/lapack_iface.o src/lsmr.o interfaces/C/lsmr.o src/match_order.o src/matrix_util.o interfaces/C/matrix_util.o src/metis4_wrapper.o src/omp.o src/pgm.o src/rutherford_boeing.o interfaces/C/rutherford_boeing.o src/scaling.o interfaces/C/scaling.o src/timer.o src/random.o interfaces/C/random.o src/random_matrix.o interfaces/C/random_matrix.o src/ssids/gpu/alloc.o src/ssids/gpu/cpu_solve.o src/ssids/gpu/datatypes.o src/ssids/gpu/dense_factor.o src/ssids/gpu/factor.o src/ssids/gpu/interfaces.o src/ssids/gpu/solve.o src/ssids/gpu/smalloc.o src/ssids/gpu/subtree.o src/ssids/gpu/kernels/assemble.o src/ssids/gpu/kernels/dense_factor.o src/ssids/gpu/kernels/reorder.o src/ssids/gpu/kernels/solve.o src/ssids/gpu/kernels/syrk.o  src/ssids/akeep.o src/ssids/anal.o src/ssids/contrib.o src/ssids/contrib_free.o src/ssids/datatypes.o src/ssids/fkeep.o src/ssids/inform.o src/ssids/profile.o src/ssids/profile_iface.o src/ssids/ssids.o src/ssids/subtree.o src/ssids/cpu/cpu_iface.o src/ssids/cpu/NumericSubtree.o src/ssids/cpu/subtree.o src/ssids/cpu/SymbolicSubtree.o src/ssids/cpu/ThreadStats.o src/ssids/cpu/kernels/cholesky.o src/ssids/cpu/kernels/ldlt_app.o src/ssids/cpu/kernels/ldlt_nopiv.o src/ssids/cpu/kernels/ldlt_tpp.o src/ssids/cpu/kernels/wrappers.o interfaces/C/ssids.o src/ssmfe/ssmfe.o src/ssmfe/core.o src/ssmfe/expert.o interfaces/C/ssmfe.o interfaces/C/ssmfe_core.o interfaces/C/ssmfe_expert.o
+ranlib libspral.a
+gfortran -fopenmp  -g -O2 -c -o driver/cuda_helper_gpu.o ../driver/cuda_helper_gpu.f90
+gfortran -fopenmp  -g -O2 -c -o driver/spral_ssids.o ../driver/spral_ssids.f90
+nvcc -arch=compute_35 -code=sm_35 -I../include -I../src -lcuda  -lgomp  -o spral_ssids driver/spral_ssids.o driver/cuda_helper_gpu.o  -L. -lspral -L/home/stfc/stfc006/src/metis-4.0.3 -lmetis  -lmkl_gf_lp64 -lmkl_sequential -lmkl_core -lpthread   -L/apps/gcc/4.9.2/lib/gcc/x86_64-unknown-linux-gnu/4.9.2 -L/apps/gcc/4.9.2/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/apps/intel/2015.0.090/composer_xe_2015.0.090/compiler/lib/intel64 -L/apps/intel/2015.0.090/composer_xe_2015.0.090/mkl/lib/intel64 -L/apps/gcc/4.9.2/lib/gcc/x86_64-unknown-linux-gnu/4.9.2/../../.. -lgfortran -lm -lquadmath -lrt -lcublas

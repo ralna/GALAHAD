@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# script to start the GALAHAD python/Tk windowing environment
+
+Background=Grey90
+Foreground=Black
+Geometry=105x68+320+10
+#Background=DarkGreen
+#Foreground=Yellow
+
+exec xterm -xrm "XTerm*pointerShape: xterm" -bg $Background -fg $Foreground \
+  -geometry $Geometry -T "GALAHAD results" -sb -sl 2500 \
+   -e python -O -u $GALAHAD/python/galahad_main.py
+

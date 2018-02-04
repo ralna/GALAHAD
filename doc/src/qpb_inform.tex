@@ -1,0 +1,96 @@
+\begin{description}
+
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm. 
+%See Sections~\ref{galerrors} and \ref{galinfo}
+See Section~\ref{galerrors} 
+for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array 
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}. 
+
+\ittf{iter} is a scalar variable of type default \integer, that gives the
+total number of iterations required.
+
+\itt{factorization\_status} is a scalar variable of type default \integer, that 
+gives the return status from the matrix factorization.
+
+\itt{factorization\_integer} is a scalar variable of type long
+\integer, that gives the amount of integer storage used for the matrix 
+factorization.
+
+\itt{factorization\_real} is a scalar variable of type long \integer, 
+that gives the amount of real storage used for the matrix factorization.
+
+\itt{nfacts} is a scalar variable of type default \integer, that gives the
+total number of factorizations performed.
+
+\itt{nbacts} is a scalar variable of type default \integer, that gives the
+total number of backtracks performed during the sequence of linesearches.
+
+\itt{nmods} is a scalar variable of type default \integer, that gives the
+total number of factorizations which were modified to 
+ensure that the matrix is an appropriate preconditioner. 
+
+\ittf{obj} is a scalar variable of type default \realdp, that holds the
+value of the objective function at the best estimate of the solution found.
+
+\itt{non\_negligible\_pivot} is a scalar variable of type default \realdp, 
+that holds the value of the smallest pivot larger than {\tt control\%zero\_pivot}
+when searching for dependent linear constraints. If 
+{\tt non\_negligible\_pivot} is close to  {\tt control\%zero\_pivot},
+this may indicate that there are further dependent constraints, and
+it may be worth increasing {\tt control\%zero\_pivot} above 
+{\tt non\_negligible\_pivot} and solving again.
+
+\itt{feasible} is a scalar variable of type default \logical, that has the
+value \true\ if the output value of $\bmx$ satisfies the constraints,
+and the value \false\ otherwise.
+
+\ittf{time} is a scalar variable of type {\tt \packagename\_time\_type} 
+whose components are used to hold elapsed CPU  and system clock 
+times for the various parts of the calculation (see Section~\ref{typetime}).
+
+\itt{LSQP\_inform} is a scalar variable of type 
+{\tt LSQP\_inform\_type}
+whose components are used to provide information about the 
+initial feasible point calculation
+performed by the package 
+{\tt \libraryname\_LSQP}. 
+See the specification sheet for the package 
+{\tt \libraryname\_LSQP} 
+for details, and appropriate default values.
+
+\itt{FDC\_inform} is a scalar variable of type 
+{\tt FDC\_inform\_type}
+whose components are used to provide information about 
+any detection of linear dependencies
+performed by the package 
+{\tt \libraryname\_FDC}. 
+See the specification sheet for the package 
+{\tt \libraryname\_FDC} for details.
+
+\itt{SBLS\_inform} is a scalar variable of type 
+{\tt SBLS\_inform\_type}
+whose components are used to provide information about factorizations
+performed by the package 
+{\tt \libraryname\_SBLS}. 
+See the specification sheet for the package 
+{\tt \libraryname\_SBLS} for details.
+
+\itt{GLTR\_inform} is a scalar variable of type 
+{\tt GLTR\_inform\_type}
+whose components are used to provide information about the step calculation
+performed by the package 
+{\tt \libraryname\_GLTR}. 
+See the specification sheet for the package 
+{\tt \libraryname\_GLTR} 
+for details.
+
+\end{description}

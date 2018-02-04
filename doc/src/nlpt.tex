@@ -1,0 +1,883 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{nlpt}
+\newcommand{\packagename}{NLPT}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+\newcommand{\sym}{\sf\small}
+
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+This package defines a derived type capable of supporting the storage of
+a variety of smooth {\bf nonlinear programming problems} of the form
+\[
+\min \, \bmf(\bmx)
+\]
+subject to the general constraints
+\[
+\bmc^l \leq \bmc(\bmx) \leq \bmc^u,
+\]
+and
+\[
+\bmx^l \leq \bmx \leq \bmx^u,
+\]
+where $\bmf$ is a smooth ``objective function'', where $\bmc(x)$ is a smooth
+function from $\Re^n$ into $\Re^m$ and where inequalities are understood
+componentwise. The vectors $\bmc^l \leq \bmc^u$ and $\bmx^l \leq \bmx^u$ are
+$m$- and $n$-dimensional, respectively, and may contain components equal to
+minus or plus infinity. An important function associated with the problem
+is its Lagrangian
+\[
+\bmL( \bmx,\bmy, \bmz) = \bmf(\bmx) - \bmy^T\bmc(\bmx) - \bmz^T\bmx
+\]
+where $\bmy$ belongs to $\Re^m$ and $\bmz$ belongs to $\Re^n$.
+The solution of such problem may require the storage of the objective
+function's gradient 
+\[
+\bmg(\bmx) = \nabla_{\bmx} \bmf(\bmx),
+\]
+the $n \times n$ symmetric objective function's Hessian
+\[
+\bmH_f(\bmx) = \nabla_{\bmx\bmx} \bmf(\bmx)
+\]
+the $m \times n$ constraints' Jacobian whose $i$-th row is the 
+gradient of the $i$-th constraint:
+\[
+\bme_i^T \bmJ(\bmx) = [ \nabla_{\bmx} \bmc_i(\bmx) ]^T,
+\]
+the gradient of the Lagrangian with respect to $\bmx$,
+\[
+\bmg_L(\bmx,\bmy,\bmz) = \nabla_{\bmx} \bmL( \bmx,\bmy, \bmz)
+\]
+and of the Lagrangian's Hessian with respect to $\bmx$
+\[
+\bmH_L(\bmx,\bmy,\bmz) = \nabla_{\bmx\bmx} \bmL( \bmx,\bmy, \bmz).
+\]
+Note that this last matrix is equal to the Hessian of the objective function
+when the problem is unconstrained ($m=0$), which autorizes us
+to use the same symbol $\bmH$ for both cases.
+
+\noindent
+Full advantage can be taken of any zero coefficients in the matrices $\bmH$ 
+or $\bmJ$.
+
+\noindent
+The module also contains subroutines that are designed for printing parts 
+of the problem data, and for matrix storage scheme conversions. 
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double},
+\galcalls {\tt GALAHAD\_TOOLS}.
+\galdate May 2003.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory, and
+Ph. L. Toint, University of Namur, Belgium.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived type
+{\tt NLPT\_problem\_type}, 
+(Section~\ref{galtype})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmatrix
+Both the Hessian matrix $\bmH$ and the Jacobian $\bmJ$
+may be stored in one of three input formats (the format for the two matrices
+being possibly different).
+
+\subsubsection{Dense storage format}\label{dense}
+
+The matrix $\bmJ$ is stored as a compact 
+dense matrix by rows, that is, the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+Component $n \ast (i-1) + j$ of the storage array {\tt J\_val} will hold the 
+value $J_{ij}$ for $i = 1, \ldots , m$, $j = 1, \ldots , n$.
+Since $\bmH$ is symmetric, only the lower triangular part (that is the part 
+$h_{ij}$ for $1 \leq j \leq i \leq n$) need be held. In this case
+the lower triangle will be stored by rows, that is 
+component $i \ast (i-1)/2 + j$ of the storage array {\tt H\_val}  
+will hold the value $h_{ij}$ (and, by symmetry, $h_{ji}$)
+for $1 \leq j \leq i \leq n$.
+
+\noindent
+If this storage scheme is used, {\tt J\_type} and/or {\tt H\_type} must be set
+the value of the symbol {\sym GALAHAD\_DENSE}.
+
+\subsubsection{Sparse co-ordinate storage format}\label{coordinate}
+
+Only the nonzero entries of the matrices are stored. For the 
+$l$-th entry of $\bmJ$, its row index $i$, column index $j$ 
+and value $J_{ij}$
+are stored in the $l$-th components of the integer arrays {\tt J\_row}, 
+{\tt J\_col} and real array {\tt J\_val}. 
+The order is unimportant, but the total
+number of entries {\tt J\_ne} is also required. 
+The same scheme is applicable to
+$\bmH$ (thus requiring integer arrays {\tt H\_row}, {\tt H\_col}, a real array 
+{\tt H\_val} and an integer value {\tt H\_ne}),
+except that only the entries in the lower triangle need be stored.
+
+\noindent
+If this storage scheme is used, {\tt J\_type} and/or {\tt H\_type} must be set
+the value of the symbol {\sym GALAHAD\_COORDINATE}.
+
+\subsubsection{Sparse row-wise storage format}\label{rowwise}
+
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row $i$ appear directly before those
+in row $i+1$. For the $i$-th row of $\bmJ$, the $i$-th component of a 
+integer array {\tt J\_ptr} holds the position of the first entry in this row,
+while {\tt J\_ptr} $(m+1)$ holds the total number of entries plus one.
+The column indices $j$ and values $J_{ij}$ of the entries in the $i$-th row 
+are stored in components 
+$l =$ {\tt J\_ptr}$(i)$, \ldots ,{\tt J\_ptr} $(i+1)-1$ of the 
+integer array {\tt J\_col}, and real array {\tt J\_val}, respectively. 
+The same scheme is applicable to
+$\bmH$ (thus requiring integer arrays {\tt H\_ptr}, {\tt H\_col}, and 
+a real array {\tt H\_val}),
+except that only the entries in the lower triangle need be stored.
+The values of {\tt J\_ne} and {\tt H\_ne} are not mandatory, since they can be
+recovered from
+\[
+{\tt J\_ne} = {\tt J\_ptr}({\tt n}+1) - 1
+\;\;\;\; \mbox{and} \;\;\;\;
+{\tt H\_ne} = {\tt H\_ptr}({\tt n}+1) - 1
+\]
+For sparse matrices, this scheme almost always requires less storage than 
+its predecessor.
+
+\noindent
+If this storage scheme is used, {\tt J\_type} and/or {\tt H\_type} must be set
+the value of the symbol {\sym GALAHAD\_SPARSE\_BY\_ROWS}.
+
+%%%%%%%%%%%%%%%%%%% optimality conditions %%%%%%%%%%%%%%%%%%%
+
+\subsection{Optimality conditions\label{galopt}}
+
+The solution $\bmx$ necessarily satisfies 
+the primal first-order optimality conditions
+\[
+\bmc^l \leq \bmc(\bmx) \leq \bmc^u,
+\;\;\;\; \mbox{and} \;\;\;\;
+\bmx^l \leq \bmx \leq \bmx^u,
+\]
+the dual first-order optimality conditions
+\[
+\bmg( \bmx ) = \bmJ(\bmx)^{T} \bmy + \bmz \;\;
+\]
+where
+\[
+\bmy = \bmy^{l} + \bmy^{u}, \;\;
+ \bmz = \bmz^{l} + \bmz^{u}\,\,
+ \bmy^{l} \geq 0 , \;\;
+ \bmy^{u} \leq 0 , \;\;
+ \bmz^{l} \geq 0 \tim{and}
+ \bmz^{u} \leq 0 ,
+\]
+and the complementary slackness conditions 
+\disp{
+ (\bmc(\bmx) -\bmc^l)^{T} \bmy^{l} = 0  ,\;\;
+ ( \bmc(\bmx) - \bmc^{u} )^{T} \bmy^{u} = 0  ,\;\;
+ (\bmx -\bmx^{l} )^{T} \bmz^{l} = 0   \tim{and}
+ (\bmx -\bmx^{u} )^{T} \bmz^{u} = 0 ,}
+where the vectors $\bmy$ and $\bmz$ are 
+known as the Lagrange multipliers for
+the general constraints, and the dual variables for the bounds,
+respectively, and where the vector inequalities hold componentwise.
+The dual first-order optimality condition is equivalent to
+the condition that $\bmg_L( \bmx,\bmy, \bmz) = 0$.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtype
+A single derived data type, {\tt \packagename\_problem\_type},
+is accessible from the package. It is intended that, for any particular
+application, only those components which are needed will be set.
+The components are:
+
+\begin{description}
+\itt{pname} is a scalar variable of type default {\tt CHARACTER( LEN = 10 )},
+that holds the problem's name.
+
+\ittf{n} is a scalar variable of type default \integer, 
+ that holds the number of optimization variables, $n$.  
+
+\itt{vnames} is a rank-one allocatable array of dimension {\tt n} and type 
+{\tt CHARACTER( LEN = 10 )} that holds the names of the problem's
+variables. The $j$-th component of {\tt vnames}, $j = 1,  \ldots , n$, 
+contains the name of $x_{j}$.  
+              
+\ittf{x} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, 
+that holds the values $\bmx$ of the optimization variables.
+The $j$-th component of {\tt x}, $j = 1,  \ldots , n$, contains $x_{j}$.  
+
+\ittf{x\_l} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds
+the vector of lower bounds $\bmx^{l}$ on the variables.
+The $j$-th component of {\tt x\_l}, $j = 1, \ldots , n$, 
+contains $\bmx_{j}^{l}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt x\_l} to any value smaller than {\tt -infinity}.
+
+\ittf{x\_u} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds
+the vector of upper bounds $\bmx^{u}$ on the variables.
+The $j$-th component of {\tt x\_u}, $j = 1, \ldots , n$, 
+contains $\bmx_{j}^{u}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt X\_u} to any value larger than that {\tt infinity}. 
+
+\ittf{z} is a rank-one allocatable array of dimension {\tt n} and type default 
+\realdp, that holds
+the values $\bmz$ of estimates  of the dual variables 
+corresponding to the simple bound constraints (see Section~\ref{galopt}).
+The $j$-th component of {\tt z}, $j = 1,  \ldots ,  n$, contains $z_{j}$.  
+
+\itt{x\_status} is  a rank-one allocatable array of dimension {\tt n} and type 
+default \integer, that holds the status of the problem's variables
+corresponding to the presence of their bounds. The $j$-th component of 
+{\tt x\_status}, $j = 1,  \ldots ,  n$, contains the status of $\bmx_j$.
+Typical values are
+{\sym GALAHAD\_FREE},  {\sym GALAHAD\_LOWER}, {\sym GALAHAD\_UPPER},
+{\sym GALAHAD\_RANGE}, {\sym GALAHAD\_FIXED}, {\sym GALAHAD\_STRUCTURAL},
+{\sym GALAHAD\_ELIMINATED}, {\sym GALAHAD\_ACTIVE}, 
+{\sym GALAHAD\_INACTIVE} or {\sym GALAHAD\_UNDEFINED}.
+        
+\ittf{f} is a scalar variable of type default \realdp,
+that holds the current value of the objective function.
+
+\ittf{g} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds the gradient $\bmg$ 
+of of the objective function.
+The $j$-th component of 
+{\tt g}, $j = 1,  \ldots ,  n$, contains $\bmg_{j}$.
+
+\itt{H\_type} is a scalar variable of type default \integer, 
+that specifies the type of storage used for the lower triangle of the 
+objective function's or Lagrangian's Hessian $\bmH$
+Possible values are {\sym GALAHAD\_DENSE}, {\sym GALAHAD\_COORDINATE} 
+or {\sym GALAHAD\_SPARSE\_BY\_ROWS}.
+
+\itt{H\_ne} is a scalar variable of type default \integer, 
+that holds the number of non-zero entries in the lower triangle of the
+objective function's or Lagrangian's Hessian $\bmH$.
+
+\itt{H\_val} is a rank-one allocatable array of type default \realdp, that holds
+the values of the entries of the {\bf lower triangular} part
+of the Hessian matrix $\bmH$ in any of the 
+storage schemes discussed in Section~\ref{galmatrix}.
+
+\itt{H\_row} is a rank-one allocatable array of type default \integer,
+that holds the row indices of the {\bf lower triangular} part of $\bmH$ 
+in the sparse co-ordinate storage
+scheme (see Section~\ref{coordinate}). 
+It need not be allocated for either of the other two schemes.
+
+\itt{H\_col} is a rank-one allocatable array variable of type default \integer,
+that holds the column indices of the {\bf lower triangular} part of 
+$\bmH$ in either the sparse co-ordinate 
+(see Section~\ref{coordinate}), or the sparse row-wise 
+(see Section~\ref{rowwise}) storage scheme.
+It need not be allocated when the dense storage scheme is used.
+
+\itt{H\_ptr} is a rank-one allocatable array of dimension {\tt n+1} and type 
+default \integer, that holds the starting position of 
+each row of the {\bf lower triangular} part of $\bmH$, as well
+as the total number of entries plus one, in the sparse row-wise storage
+scheme (see Section~\ref{rowwise}). It need not be allocated when the
+other schemes are used.
+
+\ittf{m} is a scalar variable of type default \integer, 
+ that holds the number of general linear constraints, $m$.
+
+\ittf{c} is a rank-one allocatable array of dimension {\tt m} and type default 
+\realdp, that holds
+the values $\bmc(\bmx )$ of the constraints.
+The $i$-th component of {\tt c}, $i = 1,  \ldots ,  m$, contains 
+$\bmc_{i}(\bmx)$.  
+
+\ittf{c\_l} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds the vector of lower bounds $\bmc^{l}$ 
+on the general constraints. The $i$-th component of 
+{\tt c\_l}, $i = 1, \ldots , m$, contains $\bmc_{i}^{l}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt c\_l} to any value smaller than {\tt -infinity}. 
+
+\ittf{c\_u} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds the vector of upper bounds $\bmc^{u}$ 
+on the general constraints. The $i$-th component of 
+{\tt c\_u}, $i = 1,  \ldots ,  m$, contains $\bmc_{i}^{u}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt c\_u} to any value larger than {\tt infinity}.
+
+\itt{equation} is a rank-one allocatable array of dimension {\tt m} and
+type default \logical, that specifies if each constraint is an equality
+or an inequality. The $i$-th component of {\tt equation} is {\tt .TRUE.}
+iff the $i$-th constraint is an equality, i.e.\ iff $\bmc^l_i = \bmc^u_i$.
+
+\itt{linear} is a rank-one allocatable array of dimension {\tt m} and
+type default \logical, that specifies if each constraint is linear.
+The $i$-th component of {\tt linear} is {\tt .TRUE.}
+iff the $i$-th constraint is linear.
+
+\ittf{y} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds
+the values $\bmy$ of estimates  of the Lagrange multipliers
+corresponding to the general constraints (see Section~\ref{galopt}).
+The $i$-th component of {\tt y}, $i = 1,  \ldots ,  m$, contains $\bmy_{i}$.  
+
+\itt{c\_status} is  a rank-one allocatable array of dimension {\tt m} and type 
+default \integer, that holds the status of the problem's constraints
+corresponding to the presence of their bounds. The $i$-th component of 
+{\tt c\_status}, $j = 1,  \ldots ,  m$, contains the status of $\bmc_i$.
+Typical values are
+{\sym GALAHAD\_FREE},  {\sym GALAHAD\_LOWER}, {\sym GALAHAD\_UPPER},
+{\sym GALAHAD\_RANGE}, {\sym GALAHAD\_FIXED}, {\sym GALAHAD\_STRUCTURAL},
+{\sym GALAHAD\_ELIMINATED}, {\sym GALAHAD\_ACTIVE}, 
+{\sym GALAHAD\_INACTIVE} or {\sym GALAHAD\_UNDEFINED}.
+        
+\itt{J\_type} is a scalar variable of type default \integer, 
+that specifies the type of storage used for the 
+constraints' Jacobian $\bmJ$.
+Possible values are {\sym GALAHAD\_DENSE}, {\sym GALAHAD\_COORDINATE} 
+or {\sym GALAHAD\_SPARSE\_BY\_ROWS}.
+              
+\itt{J\_ne} is a scalar variable of type default \integer, 
+that holds the number of non-zero entries in the 
+constraints' Jacobian $\bmJ$.
+
+\itt{J\_val} is a rank-one allocatable array of type default \realdp, that holds
+the values of the entries of the Jacobian matrix $\bmJ$ in any of the 
+storage schemes discussed in Section~\ref{galmatrix}.
+
+\itt{J\_row} is a rank-one allocatable array of type default \integer,
+that holds the row indices of $\bmJ$ in the sparse co-ordinate storage
+scheme (see Section~\ref{coordinate}). 
+It need not be allocated for either of the other two schemes.
+
+\itt{J\_col} is a rank-one allocatable array variable of type default \integer,
+that holds the column indices of $\bmJ$ in either the sparse co-ordinate 
+(see Section~\ref{coordinate}), or the sparse row-wise 
+(see Section~\ref{rowwise}) storage scheme.
+It need not be allocated when the dense storage scheme is used.
+
+\itt{J\_ptr} is a rank-one allocatable array of dimension {\tt m+1} and type 
+default \integer, that holds the 
+starting position of each row of $\bmJ$, as well
+as the total number of entries plus one, in the sparse row-wise storage
+scheme (see Section~\ref{rowwise}). It need not be allocated when the
+other schemes are used.
+
+\ittf{gL} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds the gradient $\bmg_L$ 
+of of the problem's Lagrangian $\bmL$ with respect to $\bmx$.
+The $j$-th component of 
+{\tt gL}, $j = 1,  \ldots ,  n$, contains $[\bmg_L]_{j}$.
+
+\end{description}
+
+\noindent
+Note that not every component of this data type is used by every package.
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are seven procedures for user calls:
+
+\begin{enumerate}
+\item The subroutine {\tt \packagename\_write\_stats} 
+      is used to write general information on the problem such
+      as the number of variables and constraints of different types.
+\item The subroutine {\tt \packagename\_write\_variables}
+      is used to write the current values of the problem's variables, bounds
+      and of their associated duals.
+\item The subroutine {\tt \packagename\_write\_constraints}
+      is used to write the current values of the problem's constraints, bounds
+      and of their associated multipliers.
+\item The subroutine {\tt \packagename\_write\_problem}
+      is used to write the problem's number of variables and
+      constraints per type, as well as current values of the problem's 
+      variables and constraints. This broadly corresponds to successively 
+      calling the three subroutines mentioned above. The subroutine
+      additionally (optionally) writes the values of the Lagrangian's Hessian
+      $\bmH$ and constraints Jacobian $\bmJ$.
+\item The subroutine {\tt \packagename\_J\_from\_C\_to\_Srow}
+      builds the permutation that transforms the Jacobian from
+      coordinate storage to sparse-by-row storage, as well as the
+      {\tt J\_ptr} and {\tt J\_col} vectors.
+\item The subroutine {\tt \packagename\_J\_from\_C\_to\_Scol}
+      builds the permutation that transforms the Jacobian from
+      coordinate storage to sparse-by-column storage, as well as the
+      {\tt J\_ptr} and {\tt J\_row} vectors.
+\item The subroutine {\tt \packagename\_cleanup} is used to deallocate
+      the memory space used by a problem data structure.
+\end{enumerate}
+
+\subsubsection{Writing the problem's statistics}\label{w_stats}
+
+The number of variables and constraints for each type of bounds (free,
+lower/upper bounded, range bounded, linear, equalities/fixed) is output
+by using the call
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_write\_stats( problem, out )}
+
+\noindent where
+\begin{description}
+\itt{problem} is a scalar \intentin\ argument of type {\tt NLPT\_problem\_type},
+that holds the problem for which statistics must be written.
+
+\ittf{out} is a scalar \intentin\ argument of type default \integer, that
+holds the device number on which problem statistics should be written.
+\end{description}
+
+\noindent
+Note that {\tt problem\%pname} is assumed to be defined and that both
+{\tt problem\%c\_l} and {\tt problem\%c\_u} are assumed to be associated
+whenever {\tt problem\%m} $> 0$.
+
+\subsubsection{Writing the problem's variables, bounds and duals}
+\label{w_vars}
+
+
+The values of the variables and associated bounds and duals is output
+by using the call
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_write\_variables( problem, out )}
+
+\noindent where
+\begin{description}
+\itt{problem} is a scalar \intentin\ argument of type {\tt NLPT\_problem\_type},
+that holds the problem for which variables values, bounds and duals must be
+written.
+
+\ittf{out} is a scalar \intentin\ argument of type default \integer, that
+holds the device number on which problem variables values, bounds and duals
+should be written.
+\end{description}
+
+\noindent
+This routine assumes that {\tt problem\%pname} and {\tt problem\%x} are
+associated. The bounds are printed whenever {\tt problem\%x\_l} and 
+{\tt problem\%x\_u} are associated. Moreover, it is also
+assumed in this case that {\tt problem\%g} is associated when {\tt problem\%m}
+$= 0$, and that {\tt problem\%z}  is associated when {\tt problem\%m} $> 0$. 
+The variables' names are used whenever {\tt problem\%vnames} is associated, but
+this is not mandatory.
+
+\subsubsection{Writing the problem's constraints, bounds and multipliers}
+\label{w_cons}
+
+The values of the constraints and associated bounds and multipliers is output
+by using the call
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_write\_constraints( problem, out )}
+
+\noindent where
+\begin{description}
+\itt{problem} is a scalar \intentin\ argument of type {\tt NLPT\_problem\_type},
+that holds the problem for which constraints values, bounds and multipliers
+must be written.
+
+\ittf{out} is a scalar \intentin\ argument of type default \integer, that
+holds the device number on which problem constraints values, bounds and
+multipliers should be written.
+\end{description}
+
+\noindent
+This routine assumes that {\tt problem\%pname}, {\tt problem\%c} {\tt
+problem\%c\_l}, {\tt problem\%c\_u} and {\tt problem\%y} are associated.  The
+types of constraints are used whenever {\tt problem\%equation} and/or {\tt
+problem\%linear} are associated, but this is not mandatory.  The constraints'
+names are used whenever {\tt problem\%cnames} is associated, but this is not
+mandatory.
+
+\subsubsection{Writing the entire problem}
+\label{w_prob}
+
+The most important data of a problem can be output by the call
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_write\_problem( problem, out, print\_level )}
+
+\noindent where
+\begin{description}
+\itt{problem} is a scalar \intentin\ argument of type {\tt NLPT\_problem\_type},
+that holds the problem whose data must be written.
+
+\ittf{out} is a scalar \intentin\ argument of type default \integer, that
+holds the device number on which the problem data should be written.
+
+\itt{print\_level} is a scalar \intentin\ argument of type default \integer,
+that holds the level of details required for output. Possible values are:
+\begin{description}
+\item[\sym GALAHAD\_SILENT:] no output is produced;
+\item[\sym GALAHAD\_TRACE:] the problem's statistics are output, plus the
+norms of the current vector of variables, the objective function's value and
+the norm of its gradient, and the maximal bound and constraint violations.
+\item[\sym GALAHAD\_ACTION:] the problem's statistics are output, plus the
+values of the variables, bounds and associated duals, the value of the
+objective function, the value of the objective function's gradient, the values
+of the constraints and associated bounds and multipliers.
+\item[\sym GALAHAD\_DETAILS:] as for {\sym GALAHAD\_ACTION}, plus the values
+of the Lagrangian's Hessian and of the constraints' Jacobian.
+\end{description}
+
+\noindent
+This routine assumes that {\tt problem\%pname} and {\tt problem\%x} are
+associated. The bounds on the variables are printed whenever {\tt
+problem\%x\_l} and {\tt problem\%x\_u} are associated. Moreover, it is also
+assumed in this case that {\tt problem\%g} is associated when {\tt problem\%m}
+$= 0$, and that {\tt problem\%z} is associated when {\tt problem\%m} $> 0$.
+The variables' names are used whenever {\tt problem\%vnames} is associated,
+but this is not mandatory. In the case where {\tt problem\%m} $>0$, it is
+furthermore assumed that {\tt problem\%c} {\tt problem\%c\_l}, {\tt
+problem\%c\_u} and {\tt problem\%y} are associated.  The types of constraints
+are used whenever {\tt problem\%equation} and/or {\tt problem\%linear} are
+associated, but this is not mandatory.  The constraints' names are used
+whenever {\tt problem\%cnames} is associated, but this is not
+
+\end{description}
+
+\subsubsection{Problem cleanup}
+\label{cleanup}
+
+The memory space allocated to allocatable in the problem data structure is
+deallocated by the call
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_cleanup( problem )}
+
+\noindent where
+\begin{description}
+\itt{problem} is a scalar \intentin\ argument of type {\tt NLPT\_problem\_type},
+that holds the problem whose memory space must be deallocated.
+\end{description}
+
+\subsubsection{Transforming the Jacobian from co-ordinate storage to
+sparse-by-rows}
+\label{toSrow}
+
+The permutation that transforms the Jacobian from co-ordinate 
+storage to sparse-by-rows, as well as the associated {\tt ptr} and {\tt col}
+vectors can be obatined by the call
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_J\_perm\_from\_C\_to\_Srow( problem, perm, col, ptr )}
+
+\noindent where
+\begin{description}
+\itt{problem} is a scalar \intentin\ argument of type {\tt
+NLPT\_problem\_type}, that holds the Jacobian matrix to transform. Note that
+we must have {problem\%J\_type} $=$ {\sym GALAHAD\_COORDINATE}.
+
+\itt{perm} is an allocatable to a vector \intentout\ of type default \integer\ and
+dimension equal to {\tt problem\%J\_nnz}, that returns the permutation of the
+elements of {\tt problem\%J\_val} that must be applied to transform the
+Jacobian from co-ordinate storage to sparse-by-rows.
+
+\ittf{col} is an allocatable to a vector \intentout\ of type default \integer\ and
+dimension {\tt problem\%J\_ne} whose $k$-th component is the column index of 
+the $k$-th element of {\tt problem\%J\_val} after permutation by {\tt perm}.
+
+\ittf{ptr} is an allocatable to a vector \intentout\ of type default \integer\ and
+dimension {\tt problem\%m} $+1$ whose $i$-the component is the index in {\tt
+problem\%J\_val} (after permutation by {\tt perm}) of the first entry of row
+$i$. Moreover,
+\[
+{\tt ptr}({\tt problem\%m}+1 ) = {\tt problem\%J\_ne} + 1.
+\]
+\end{description}
+
+\subsubsection{Transforming the Jacobian from co-ordinate storage to
+sparse-by-columns}
+\label{toScol}
+
+The permutation that transforms the Jacobian from co-ordinate 
+storage to sparse-by-columns, as well as the associated {\tt ptr} and {\tt row}
+vectors can be obtained by the call
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_J\_perm\_from\_C\_to\_Scol( problem, perm, row, ptr )}
+
+\noindent where
+\begin{description}
+\itt{problem} is a scalar \intentin\ argument of type {\tt
+NLPT\_problem\_type}, that holds the Jacobian matrix to transform. Note that
+we must have {problem\%J\_type} $=$ {\sym GALAHAD\_COORDINATE}.
+
+\itt{perm} is an allocatable to a vector \intentout\ of type default \integer\ and
+dimension equal to {\tt problem\%J\_nnz}, that returns the permutation of the
+elements of {\tt problem\%J\_val} that must be applied to transform the
+Jacobian from co-ordinate storage to sparse-by-columns.
+
+\ittf{col} is an allocatable to a vector \intentout\ of type default \integer\ and
+dimension {\tt problem\%J\_ne} whose $k$-th component is the row index of 
+the $k$-th element of {\tt problem\%J\_val} after permutation by {\tt perm}.
+
+\ittf{ptr} is an allocatable to a vector \intentout\ of type default \integer\ and
+dimension {\tt problem\%m} $+1$ whose $i$-the component is the index in {\tt
+problem\%J\_val} (after permutation by {\tt perm}) of the first entry of column
+$i$. Moreover,
+\[
+{\tt ptr}({\tt problem\%m}+1 ) = {\tt problem\%J\_ne} + 1.
+\]
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galmodules None.
+\galroutines {\tt \packagename\_solve} calls the BLAS functions {\tt *NRM2},
+where {\tt *} is {\tt S} for the default real version and {\tt D} for the
+double precision version.
+\galmodules {\tt \packagename} calls the {\tt TOOLS} \galahad\ module.
+\galio Output is under the control of the {\tt print\_level} argument for
+the {\tt \packagename\_write\_problem} subroutine.
+\galrestrictions {\tt problem\%n} $> 0$, 
+{\tt problem\%m} $\geq  0$. Additionally, the subroutines
+{\tt \packagename\_write\_*} require that {\tt problem\%n} $<10^{14}$ and
+{\tt problem\%m} $< 10^{14}$.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
+The package is thread-safe.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose we wish to present the data for the problem of minimizing
+the objective function
+$(\bmx_1 - 2 ) \bmx_2$
+subject to the constraints
+$\bmx_1^2 +\bmx_2^2 \leq 1$,
+$0 \leq -\bmx_1 + \bmx_2 $, and the simple bound
+$0 \leq  \bmx_1$, where the values are computed at the point
+$\bmx^T = (0,1)$, which, together with the values $z_1 = 1$
+and $\bmy^T = ( -1, 0 )$ defines a first-order critical point for the problem.
+Assume that we wish to store the Lagrangian's Hessian and the Jacobian in
+co-ordinate format. Assume also that we wish to write this data.  We may
+accomplish these objectives by using the code:
+{\tt \small
+\begin{verbatim}
+PROGRAM GALAHAD_NLPT_EXAMPLE
+  USE GALAHAD_NLPT_double      ! the problem type
+  USE GALAHAD_SYMBOLS
+  IMPLICIT NONE
+  INTEGER, PARAMETER                :: wp = KIND( 1.0D+0 )
+  INTEGER,           PARAMETER      :: iout = 6        ! stdout and stderr
+  REAL( KIND = wp ), PARAMETER      :: INFINITY = (10.0_wp)**19
+  TYPE( NLPT_problem_type     )     :: problem 
+! Set the problem up.
+  problem%pname    = 'NLPT-TEST'
+  problem%infinity = INFINITY
+  problem%n        = 2
+  ALLOCATE( problem%vnames( problem%n ), problem%x( problem%n )  ,             &
+            problem%x_l( problem%n )   , problem%x_u( problem%n ),             &
+            problem%g( problem%n )     , problem%z( problem%n )  )
+  problem%m        = 2
+  ALLOCATE( problem%equation( problem%m ), problem%linear( problem%m ),        &
+            problem%c( problem%m ) , problem%c_l( problem%m ),                 &
+            problem%c_u( problem%m), problem%y( problem%m ),                   &
+            problem%cnames( problem%m ) ) 
+  problem%J_ne     = 4
+  ALLOCATE( problem%J_val( problem%J_ne ), problem%J_row( problem%J_ne ),      &
+            problem%J_col( problem%J_ne ) )
+  problem%H_ne     = 3
+  ALLOCATE( problem%H_val( problem%H_ne ), problem%H_row( problem%H_ne ),      &
+            problem%H_col( problem%H_ne ) )
+  problem%H_type   = GALAHAD_COORDINATE
+  problem%J_type   = GALAHAD_COORDINATE
+  problem%vnames   = (/    'X1'  ,    'X2'   /)
+  problem%x        = (/   0.0D0  ,   1.0D0   /)
+  problem%x_l      = (/   0.0D0  , -INFINITY /)
+  problem%x_u      = (/  INFINITY,  INFINITY /)
+  problem%cnames   = (/    'C1'  ,    'C2'   /)
+  problem%c        = (/   0.0D0  ,   1.0D0   /)
+  problem%c_l      = (/ -INFINITY,   0.0D0   /)
+  problem%c_u      = (/   1.0D0  ,  INFINITY /)
+  problem%y        = (/  -1.0D0  ,   0.0D0   /)
+  problem%equation = (/  .FALSE. ,  .FALSE.  /)
+  problem%linear   = (/  .FALSE. ,   .TRUE.  /)
+  problem%z        = (/   1.0D0  ,   0.0D0   /)
+  problem%f        = -2.0_wp
+  problem%g        = (/   1.0D0  ,  -1.0D0   /)
+  problem%J_row    = (/     1    ,     1     ,     2     ,     2     /)
+  problem%J_col    = (/     1    ,     2     ,     1     ,     2     /)
+  problem%J_val    = (/   0.0D0  ,   2.0D0   ,  -1.0D0   ,   1.0D0   /)
+  problem%H_row    = (/     1    ,     2     ,     2     /)
+  problem%H_col    = (/     1    ,     1     ,     2     /)
+  problem%H_val    = (/   2.0D0  ,   1.0D0   ,   2.0D0   /)
+  NULLIFY( problem%x_status, problem%H_ptr, problem%J_ptr, problem%gL )
+  CALL NLPT_write_problem( problem, iout, GALAHAD_DETAILS )
+! Cleanup the problem.
+  CALL NLPT_cleanup( problem )
+  STOP
+END PROGRAM GALAHAD_NLPT_EXAMPLE
+\end{verbatim}
+}
+which gives the following output:
+{\small
+\begin{verbatim}
+
+           +--------------------------------------------------------+
+           |                  Problem : NLPT-TEST                   |
+           +--------------------------------------------------------+
+
+                 Free    Lower    Upper    Range     Fixed/   Linear  Total
+                       bounded  bounded  bounded  equalities
+ Variables          1        1        0        0        0                 2
+ Constraints                 1        1        0        0        1        2
+
+
+           +--------------------------------------------------------+
+           |                  Problem : NLPT-TEST                   |
+           +--------------------------------------------------------+
+
+     j Name           Lower         Value        Upper     Dual value
+
+     1 X1           0.0000E+00   0.0000E+00                1.0000E+00
+     2 X2                        1.0000E+00
+
+
+ OBJECTIVE FUNCTION value     = -2.0000000E+00
+
+ GRADIENT of the objective function:
+  
+    1   1.000000E+00  -1.000000E+00
+  
+
+ Lower triangle of the HESSIAN of the Lagrangian:
+ 
+    i    j       value          i    j       value          i    j       value  
+  
+    1    1    2.0000E+00        2    1    1.0000E+00        2    2    2.0000E+00
+ 
+
+           +--------------------------------------------------------+
+           |                  Problem : NLPT-TEST                   |
+           +--------------------------------------------------------+
+
+     i Name           Lower         Value        Upper     Dual value
+
+     1 C1                        0.0000E+00   1.0000E+00  -1.0000E+00           
+     2 C2           0.0000E+00   1.0000E+00                0.0000E+00     linear
+
+
+
+ JACOBIAN matrix:
+ 
+    i    j       value          i    j       value          i    j       value  
+  
+    1    1    0.0000E+00        1    2    2.0000E+00        2    1   -1.0000E+00
+    2    2    1.0000E+00
+ 
+
+           -------------------- END OF PROBLEM ----------------------
+
+\end{verbatim}
+}
+\noindent
+We could choose to hold the lower triangle of $\bmH$ is sparse-by-rows format
+by replacing the lines
+{\tt \small
+\begin{verbatim}
+  ALLOCATE( problem%H_val( problem%H_ne ), problem%H_row( problem%H_ne ),      &
+            problem%H_col( problem%H_ne ) )
+  problem%H_type   = GALAHAD_COORDINATE
+\end{verbatim}
+}
+\noindent
+and
+{\tt \small
+\begin{verbatim}
+  problem%H_row    = (/     1    ,     2     ,     2     /)
+  problem%H_col    = (/     1    ,     1     ,     2     /)
+  problem%H_val    = (/   2.0D0  ,   1.0D0   ,   2.0D0   /)
+  NULLIFY( problem%x_status, problem%H_ptr, problem%J_ptr, problem%gL )
+\end{verbatim}
+}
+\noindent
+by
+{\tt \small
+\begin{verbatim}
+  ALLOCATE( problem%H_val( problem%H_ne ), problem%H_col( problem%H_ne ),      &
+            problem%H_ptr( problem%n + 1 ) )
+  problem%H_type   = GALAHAD_SPARSE_BY_ROWS
+\end{verbatim}
+}
+\noindent
+and
+{\tt \small
+\begin{verbatim}
+  problem%H_ptr    = (/     1    ,     2     ,     4     /)
+  problem%H_col    = (/     1    ,     1     ,     2     /)
+  problem%H_val    = (/   2.0D0  ,   1.0D0   ,   2.0D0   /)
+  NULLIFY( problem%x_status, problem%H_row, problem%J_ptr, problem%gL )
+\end{verbatim}
+}
+\noindent
+or using a dense storage format with the replacement lines
+{\tt \small
+\begin{verbatim}
+  ALLOCATE( problem%H_val( ( ( problem%n + 1 ) * problem%n ) / 2 ) )
+  problem%H_type   = GALAHAD_DENSE
+\end{verbatim}
+}
+\noindent
+and 
+{\tt \small
+\begin{verbatim}
+  problem%H_val    = (/   2.0D0  ,   1.0D0   ,   2.0D0   /)
+  NULLIFY( problem%x_status, problem%H_row, problem%H_col, problem%H_ptr,      &
+           problem%J_ptr, problem%gL )
+\end{verbatim}
+}
+\noindent
+respectively.
+
+For examples of how the derived data type
+{\tt \packagename\_problem\_type} may be used in conjunction with the
+\galahad\ nonlinear feasibility code, see the specification sheets 
+for the {\tt \libraryname\_FILTRANE} package.
+\end{document}
+
+

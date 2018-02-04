@@ -1,0 +1,148 @@
+#  Main body of the installation makefile for the GALAHAD LPQP package
+
+#  N. Gould and Ph. L. Toint.
+#  This version: 20 VII 2005
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad -lgalahad_hsl -lgalahad_metis -lgalahad_lapack -lgalahad_blas
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LINEARSOLVERS = $(LINEARSOLVER)s
+LINEARSOLVERD = $(LINEARSOLVER)d
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SLPQP = basics $(LGS)(lpqp.o)
+DLPQP = basics $(LGD)(lpqp.o)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  cutest interface subroutines
+
+LPQP_CUTEST_single = $(SLPQP) copyright $(OBJS)/runlpqp.o
+LPQP_CUTEST_double = $(DLPQP) copyright $(OBJD)/runlpqp.o
+
+#  main compilations and runs
+
+all: lpqp_silent
+
+lpqp_silent: lpqp_$(PRECIS)
+lpqp: lpqp_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: LPQP ($(PRECIS) $(SUCC)"
+lpqp_single: $(SLPQP)
+	$(RANLIB) $(LGS)
+lpqp_double: $(DLPQP)
+	$(RANLIB) $(LGD)
+
+lpqp_cutest: lpqp_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: LPQP ($(PRECIS) $(SUCC_CUTEST)"
+lpqp_cutest_single: $(LPQP_CUTEST_single)
+	$(RANLIB) $(LGS)
+lpqp_cutest_double: $(LPQP_CUTEST_double)
+	$(RANLIB) $(LGD)
+
+#  basic packages
+
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+copyright:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+
+lpqp.o: $(LG)(lpqp.o)
+
+$(LG)(lpqp.o):  ../lpqp/lpqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "lpqp  "
+	$(SED) -f $(SEDS)  ../lpqp/lpqp.f90 > $(OBJ)/lpqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/lpqp1.f90 > $(OBJ)/lpqp2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/lpqp2.f90 > $(OBJ)/lpqp.f90
+	cd $(OBJ); $(FORTRAN) -o lpqp.o $(FFLAGSS) lpqp.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o lpqp.o $(FFLAGSN) lpqp.f90 )
+	cd $(OBJ); $(ARR) lpqp.o ; $(RM) lpqp.f90 lpqp1.f90 lpqp2.f90 lpqp.o
+	$(RMARFILE) lpqpa.o
+	$(RMARFILE) lpqpb.o
+	$(RMOBFILE) runlpqp.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runlpqp.o: $(OBJ)/runlpqp.o
+
+$(OBJ)/runlpqp.o: ../lpqp/runlpqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runlpqp"
+	$(SED) -f $(SEDS) ../lpqp/runlpqp.f90 > $(OBJ)/runlpqp.f90
+	cd $(OBJ); $(FORTRAN) -o runlpqp.o $(FFLAGSS) runlpqp.f90
+	rm $(OBJ)/runlpqp.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmlpqp:
+	@printf ' %-9s %-15s\t\t' "Removing" "lpqp from archive "
+	$(RMARFILE) lpqp.o
+	@printf '[ OK ]\n'
+

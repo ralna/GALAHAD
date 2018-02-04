@@ -1,0 +1,46 @@
+#!/bin/bash
+# Collect all symbolic links under the current directory and output a shell
+# script that restores them. This is useful on systems that do not support
+# true symbolic links, such as MSYS.
+# D. Orban, 2012.
+
+# Redefine some functions in case they are not implemented on the host platform
+
+dir_name () {
+    ## http://www.opengroup.org/onlinepubs/000095399/functions/dirname.html
+    # the dir name excludes the least portion behind the last slash.
+    echo "${1%/*}"
+}
+
+base_name () {
+    ## http://www.opengroup.org/onlinepubs/000095399/functions/basename.html
+    # the base name excludes the greatest portion in front of the last slash.
+    echo "${1##*/}"
+}
+
+real_path () {
+    ## http://goo.gl/Bk5RG
+    # Resolve a link recursively. Return an *absolute* path.
+    python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $1
+}
+
+# Process all links.
+# Probably won't work if names have spaces in them.
+# But then if you have spaces in your file names, you have other problems than
+# just restoring symbolic links...
+echo "#!/bin/bash"
+for symlink in `find . -type l`
+do
+    #pointsto=`real_path $symlink`
+    pointsto=`readlink $symlink`
+    while [[ -h $pointsto ]]
+    do
+        pointsto=`readlink $pointsto`
+    done
+    symname=`base_name $symlink`
+    symdir=`dir_name $symlink`
+    echo "if [[ -f $symlink ]]; then"
+#    echo "  rm $symlink; ln -s $symdir/$pointsto $symlink"
+    echo "  rm $symlink; ln -s $pointsto $symlink"
+    echo "fi ;"
+done

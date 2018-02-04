@@ -1,0 +1,295 @@
+\documentclass{galahad}
+%  SYMBOLS documentation (Ph.L. Toint)
+%  This version 19 V 2003.
+
+% set the package name
+
+\newcommand{\package}{sym}
+\newcommand{\packagename}{SYMBOLS}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+\newcommand{\sym}{\sf\small}
+\newcommand{\fwbox}[1]{\fbox{\rule[-0.1cm]{0cm}{0.35cm}#1}}
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+
+This module does not directly provide an algorithm, but rather the definitions
+of \emph{symbols} that are used througout \libraryname . A symbol is a
+publicly available predefined string which can be used as an integer value.
+The purpose of symbols to is allow meaningful names to be given to these
+integers, thus allowing a more natural expression of algorithmic or storage
+options, otherwise represented by integer values that may not be illuminating
+or mnemonic.
+
+\noindent
+In order to avoid conflicts with other user variable names , all symbols are
+of the form {\tt GALAHAD\_NAME}, where we refer to {\tt NAME} as the name of
+this symbol.
+
+\galattributes
+\galversions{\tt  \fullpackagename}.
+
+\galdate March 2002.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory, and
+Ph. L. Toint, The University of Namur, Belgium.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+Access to the package requires a {\tt USE} statement such as
+
+\hspace{8mm} {\tt USE \fullpackagename}
+
+\noindent
+Note that the symbol's name may be redefined in the use statement, as in 
+
+\hspace{8mm} {\tt USE \fullpackagename, DENSE => GALAHAD\_DENSE}
+
+\noindent
+allowing the use of the shorter {\tt DENSE} symbol within the code that uses
+the module. It is then good policy to make the {\tt DENSE} symbol private to
+the code.
+
+%%%%%%%%%%%%%%%%%%%%%% symbols %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsymbols
+
+The symbols provided by the {\tt \packagename}\ module are listed in
+Tables~\ref{symb1} and \ref{symb2} with their associated integer value and by
+broad categories.
+
+\begin{figure}[htbf]
+\begin{center}
+\begin{tabular}{|l|c|}
+\hline
+Symbol                             & Value \\
+\hline
+{\tt GALAHAD\_DIAGONAL}            & -3 \\
+{\tt GALAHAD\_DENSE}               & -2 \\
+{\tt GALAHAD\_SPARSE\_by\_ROWS}    & -1 \\
+{\tt GALAHAD\_COORDINATE}          &  0 \\
+\hline
+{\tt GALAHAD\_INACTIVE}            & -2 \\
+{\tt GALAHAD\_STRUCTURAL}          & -1 \\
+{\tt GALAHAD\_ELIMINATED}          &  0 \\
+{\tt GALAHAD\_ACTIVE}              &  1 \\
+{\tt GALAHAD\_RANGE}               &  2 \\
+{\tt GALAHAD\_UPPER}               &  3 \\
+{\tt GALAHAD\_LOWER}               &  4 \\
+{\tt GALAHAD\_FREE}                &  5 \\
+\hline
+{\tt GALAHAD\_POSITIVE}            &  1 \\
+{\tt GALAHAD\_NEGATIVE}            & -1 \\
+\hline
+{\tt GALAHAD\_ALL\_ZEROS}          &  0 \\
+{\tt GALAHAD\_ALL\_ONES}           &  1 \\
+\hline
+{\tt GALAHAD\_SILENT}               &  0 \\
+{\tt GALAHAD\_TRACE}                &  1 \\
+{\tt GALAHAD\_ACTION}               &  2 \\
+{\tt GALAHAD\_DETAILS}              &  3 \\
+{\tt GALAHAD\_DEBUG}                &  4 \\
+{\tt GALAHAD\_CRAZY}                &  5 \\
+\hline
+{\tt GALAHAD\_NONE}                 &  0 \\
+{\tt GALAHAD\_BASIC}                &  1 \\
+{\tt GALAHAD\_SEVERE}               &  2 \\
+\hline
+{\tt GALAHAD\_UNDEFINED}            & -100 \\
+{\tt GALAHAD\_NONE}                 &  0 \\
+{\tt GALAHAD\_USER\_DEFINED}        &  2 \\
+{\tt GALAHAD\_AUTOMATIC}            & 10 \\
+\hline
+{\tt GALAHAD\_NEVER}                &  3 \\
+{\tt GALAHAD\_INITIAL}              &  4 \\
+{\tt GALAHAD\_ALWAYS}               &  5 \\
+\hline
+{\tt GALAHAD\_UNCONSTRAINED}        &  0 \\
+{\tt GALAHAD\_CONSTRAINED}          &  1 \\
+\hline
+{\tt GALAHAD\_SUCCESS}              &  0 \\
+{\tt GALAHAD\_MEMORY\_FULL}         & -1 \\
+{\tt GALAHAD\_FILE\_NOT\_OPENED}    & -2 \\
+{\tt GALAHAD\_COULD\_NOT\_WRITE}    & -3 \\
+{\tt GALAHAD\_TOO\_FEW\_BITS\_PER\_BYTE} &  -4 \\
+{\tt GALAHAD\_FURTHER\_PROGRESS\_IMPOSSIBLE} & -5 \\
+{\tt GALAHAD\_MAX\_ITERATIONS\_REACHED} & -6 \\
+{\tt GALAHAD\_NOT\_INITIALIZE}      & -7 \\
+{\tt GALAHAD\_WRONG\_N}             & -8 \\
+{\tt GALAHAD\_WRONG\_M}             & -9 \\
+{\tt GALAHAD\_SORT\_TOO\_LONG}      & -10 \\
+{\tt GALAHAD\_NOT\_DIAGONAL}        & -11 \\
+\hline
+{\tt GALAHAD\_REDUCE\_SIZE}         &  1 \\
+{\tt GALAHAD\_FULL\_PRESOLVE}       &  2 \\
+\hline
+\end{tabular}
+\hspace*{1cm}
+\begin{tabular}{|l|c|}
+\hline
+Symbol                              & Value \\
+\hline
+{\tt GALAHAD\_TIGHTEST}             &  0 \\
+{\tt GALAHAD\_NON\_DEGENERATE}      &  1 \\
+{\tt GALAHAD\_LOOSEST}              &  2 \\
+\hline
+{\tt GALAHAD\_GAUSS\_NEWTON}        &  0 \\
+{\tt GALAHAD\_NEWTON}               &  1 \\
+\hline
+{\tt GALAHAD\_ADAPTIVE}             &  0 \\
+{\tt GALAHAD\_FULL}                 &  1 \\
+\hline
+{\tt GALAHAD\_CURRENT}              &  0 \\
+{\tt GALAHAD\_SMALLEST}             &  1 \\
+\hline
+{\tt GALAHAD\_BEST\_FIT}            &  0 \\
+{\tt GALAHAD\_BEST\_REDUCTION}      &  1 \\
+\hline
+{\tt GALAHAD\_FORCE\_TO\_ZERO}      &  0 \\
+{\tt GALAHAD\_LEAVE\_AS\_IS}        &  1 \\
+\hline
+{\tt GALAHAD\_KEEP}                 &  0 \\
+{\tt GALAHAD\_DELETE}               &  1 \\
+\hline
+{\tt GALAHAD\_1}                    &  1 \\
+{\tt GALAHAD\_2}                    &  2 \\
+{\tt GALAHAD\_3}                    &  3 \\
+{\tt GALAHAD\_4}                    &  4 \\
+{\tt GALAHAD\_5}                    &  5 \\
+{\tt GALAHAD\_6}                    &  6 \\
+{\tt GALAHAD\_7}                    &  7 \\
+{\tt GALAHAD\_8}                    &  8 \\
+{\tt GALAHAD\_9}                    &  9 \\
+{\tt GALAHAD\_10}                   & 10 \\
+{\tt GALAHAD\_11}                   & 11 \\
+{\tt GALAHAD\_12    }               & 12 \\
+\hline
+{\tt GALAHAD\_EXACT}                &  0 \\
+{\tt GALAHAD\_FORWARD}              &  1 \\
+{\tt GALAHAD\_CENTRAL}              &  2 \\
+\hline
+{\tt GALAHAD\_BFGS}                 &  1 \\
+{\tt GALAHAD\_DFP}                  &  2 \\
+{\tt GALAHAD\_PSB}                  &  3 \\
+{\tt GALAHAD\_SR1}                  &  4 \\
+\hline
+{\tt GALAHAD\_CG}                   &  1 \\
+{\tt GALAHAD\_DIAGONAL\_CG}         &  2 \\
+{\tt GALAHAD\_USERS\_CG}            &  3 \\
+{\tt GALAHAD\_EXPANDING\_BAND\_CG}  &  4 \\
+{\tt GALAHAD\_MUNKSGAARD\_CG}       &  5 \\
+{\tt GALAHAD\_SCHNABEL\_ESKOW\_CG}  &  6 \\
+{\tt GALAHAD\_GMPS\_CG}             &  7 \\
+{\tt GALAHAD\_BAND\_CG}             &  8 \\
+{\tt GALAHAD\_LIN\_MORE\_CG}        &  9 \\
+{\tt GALAHAD\_MULTIFRONTAL}         &  11 \\
+{\tt GALAHAD\_MODIFIED\_MULTIFRONTAL} &  12 \\
+\hline
+\end{tabular}
+\end{center}
+\caption{\label{symb1}GALAHAD symbols.}
+\end{figure}
+
+
+\begin{figure}[t]
+\begin{center}
+
+\begin{tabular}{|l|r||l|r|}
+\hline
+Symbol                             & Value &
+Symbol                             & Value \\
+\hline
+{\tt GALAHAD\_ok}                        &   0 &
+{\tt GALAHAD\_error\_allocate}           & - 1 \\
+{\tt GALAHAD\_error\_deallocate}         & - 2 &
+{\tt GALAHAD\_error\_restrictions}       & - 3 \\
+{\tt GALAHAD\_error\_bad\_bounds}        & - 4 &
+{\tt GALAHAD\_error\_primal\_infeasible} & - 5 \\
+{\tt GALAHAD\_error\_dual\_infeasible}   & - 6 &
+{\tt GALAHAD\_error\_unbounded}          & - 7 \\
+{\tt GALAHAD\_error\_no\_center}         & - 8 &
+{\tt GALAHAD\_error\_analysis}           & - 9 \\
+{\tt GALAHAD\_error\_factorization}      & - 10 &
+{\tt GALAHAD\_error\_solve}              & - 11 \\
+{\tt GALAHAD\_error\_uls\_analysis}      & - 12 &
+{\tt GALAHAD\_error\_uls\_factorization} & - 13 \\
+{\tt GALAHAD\_error\_uls\_solve}         & - 14 &
+{\tt GALAHAD\_error\_preconditioner}     & - 15 \\
+{\tt GALAHAD\_error\_ill\_conditioned}   & - 16 &
+{\tt GALAHAD\_error\_tiny\_step}         & - 17 \\
+{\tt GALAHAD\_error\_max\_iterations}    & - 18 &
+{\tt GALAHAD\_error\_cpu\_limit}         & - 19 \\
+{\tt GALAHAD\_error\_inertia}            & - 20 &
+{\tt GALAHAD\_error\_file}               & - 21 \\
+{\tt GALAHAD\_error\_io}                 & - 22 &
+{\tt GALAHAD\_error\_upper\_entry}       & - 23 \\
+{\tt GALAHAD\_error\_sort}               & - 24 &
+{\tt GALAHAD\_error\_input\_status}      & - 25 \\
+{\tt GALAHAD\_error\_unknown\_solver}    & - 26 &
+{\tt GALAHAD\_not\_yet\_implemented}     & - 27 \\
+{\tt GALAHAD\_error\_qp\_solve}          & - 28 &
+{\tt GALAHAD\_unavailable\_option}       & - 29 \\
+{\tt GALAHAD\_warning\_on\_boundary}     & - 30 &
+{\tt GALAHAD\_error\_call\_order}        & - 31 \\
+{\tt GALAHAD\_error\_integer\_ws}        & - 32 &
+{\tt GALAHAD\_error\_real\_ws}           & - 33 \\
+{\tt GALAHAD\_error\_pardiso}            & - 34 &
+{\tt GALAHAD\_error\_wsmp}               & - 35 \\
+{\tt GALAHAD\_error\_mc64}               & - 36 &
+{\tt GALAHAD\_error\_mc77}               & - 37 \\
+{\tt GALAHAD\_error\_lapack}             & - 38 &
+{\tt GALAHAD\_error\_permutation}        & - 39 \\
+{\tt GALAHAD\_error\_alter\_diagonal}    & - 40 &
+{\tt GALAHAD\_error\_access\_pivots}     & - 41 \\
+{\tt GALAHAD\_error\_access\_pert}       & - 42 &
+{\tt GALAHAD\_error\_direct\_access}     & - 43 \\
+{\tt GALAHAD\_error\_f\_min}             & - 44 &
+{\tt GALAHAD\_error\_unknown\_precond}   & - 45 \\
+{\tt GALAHAD\_error\_schur\_complement}  & - 46 &
+{\tt GALAHAD\_error\_technical}          & - 50 \\
+{\tt GALAHAD\_error\_reformat}           & - 52 &
+{\tt GALAHAD\_error\_ah\_unordered}      & - 53 \\
+{\tt GALAHAD\_error\_y\_unallocated}     & - 54 &
+{\tt GALAHAD\_error\_z\_unallocated}     & - 55 \\
+{\tt GALAHAD\_error\_scale}              & - 61 &
+{\tt GALAHAD\_error\_presolve}           & - 62 \\
+{\tt GALAHAD\_error\_qpa}                & - 63 &
+{\tt GALAHAD\_error\_qpb}                & - 64 \\
+{\tt GALAHAD\_error\_qpc}                & - 65 &
+{\tt GALAHAD\_error\_cqp}                & - 66 \\
+{\tt GALAHAD\_error\_dqp}                & - 67 &
+{\tt GALAHAD\_error\_mc61}               & - 69 \\
+{\tt GALAHAD\_error\_mc68}               & - 70 &
+{\tt GALAHAD\_error\_metis}              & - 71 \\
+{\tt GALAHAD\_error\_spral}              & - 72 &
+{\tt GALAHAD\_warning\_repeated\_entry}  & - 73 \\
+\hline
+\end{tabular}
+
+\end{center}
+\caption{\label{symb2}GALAHAD symbols: error codes.}
+\end{figure}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace None.
+\galroutines None. 
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
+The package is thread-safe.
+
+\end{description}
+
+\end{document}
+

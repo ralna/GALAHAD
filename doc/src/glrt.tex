@@ -1,0 +1,822 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{glrt}
+\newcommand{\packagename}{GL\-RT}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+Given real $n$ by $n$ symmetric matrices $\bmH$ and $\bmM$
+(with $\bmM$ positive definite), real
+$n$ vectors $\bmc$ and $\bmo$, and scalars $\sigma\geq 0$, $\epsilon\geq 0$
+and $f_0$, this package finds an
+{\bf approximate minimizer of the regularised objective function}
+\disp{\half \bmx^T \bmH \bmx + \bmc^T \bmx + f_0 +
+\sfrac{1}{p} \sigma [ \| \bmx + \bmo \|_{\bmM}^2 + \epsilon ]^{p/2},}
+where $\|  \bmv \|_{\bmM} = \sqrt{\bmv^T \bmM \bmv}$ is
+the $\bmM$-norm of $\bmv$.
+This problem commonly occurs as a subproblem in nonlinear
+optimization calculations involving cubic regularisation.
+The method may be suitable for large $n$ as no factorization of $\bmH$ is
+required. Reverse communication is used to obtain
+matrix-vector products of the form $\bmH \bmz$, $\bmM^{-1} \bmz$
+and, perhaps, $\bmM \bmz$.
+
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses
+{\tt \libraryname\_SY\-M\-BOLS},
+{\tt \libraryname\_SPACE}, {\tt \libraryname\_\-RAND},
+{\tt \libraryname\_\-NORMS}, {\tt \libraryname\_\-GLTR},
+{\tt \libraryname\_ROOTS}, {\tt \libraryname\_SPECFILE},
+{\tt *TTRF}.
+\galdate November 2007.
+\galorigin N. I. M. Gould, Oxford University and Rutherford Appleton Laboratory.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hskip0.5in {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hskip0.5in {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types
+{\tt \packagename\_control\_type}, {\tt \packagename\_inform\_type},
+{\tt \packagename\_data\_type},
+(Section~\ref{galtypes})
+and the subroutines
+{\tt \packagename\_initialize},
+{\tt \packagename\_solve}, {\tt \packagename\_terminate}
+(Section~\ref{galarguments})
+and
+{\tt \packagename\_read\_specfile}
+(Section~\ref{galfeatures})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Three derived data types are accessible from the package.
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control
+ parameters}\label{typecontrol}
+The derived data type
+{\tt \packagename\_control\_type}
+is used to hold controlling data. Default values may be obtained by calling
+{\tt \packagename\_initialize}
+(see Section~\ref{subinit}). The components of
+{\tt \packagename\_control\_type}
+are:
+
+\begin{description}
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages.
+Printing of error messages in
+{\tt \packagename\_solve} and {\tt \packagename\_terminate}
+is suppressed if ${\tt error} \leq {\tt 0}$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages.
+Printing of informational messages in
+{\tt \packagename\_solve} is suppressed if ${\tt out} < {\tt 0}$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer,
+that is used
+to control the amount of informational output which is required. No
+informational output will occur if ${\tt print\_level} \leq {\tt 0}$. If
+{\tt print\_level = 1} a single line of output will be produced for each
+iteration of the process. If {\tt print\_level} $\geq$ {\tt 2} this output
+will be increased to provide significant detail of each iteration.
+The default is {\tt print\_level = 0}.
+
+\itt{itmax} is a scalar variable of type default \integer, that holds the
+maximum number of iterations which will be allowed in
+{\tt \packagename\_solve}.
+If {\tt itmax} is set to a negative number, it will be reset by
+{\tt \packagename\_solve} to $n$.
+The default is {\tt itmax = -1}.
+
+\itt{extra\_vectors} is a scalar variable of type default \integer,
+that specifies the number of additional vectors of length $n$
+that will be allocated to try to speed up the computation during the
+second pass.
+The default is {\tt extra\_vectors = 0}.
+
+\itt{stopping\_rule} is a scalar variable of type default \integer, that
+flags the stopping rule to be used (see {\tt stop\_relative} and
+{\tt stop\_absolute} below).
+Appropriate values are in the range $[0,2]$, and any value outside this range
+will be interpreted as 0.
+The default is {\tt stopping\_rule = 0}.
+
+\itt{freq} is a scalar variable of type default \integer, that
+defines the frequency at which the tridiagonal subproblem will
+be solved. Specifically, the subproblem will be solved on iterations
+$k=1+$ {\tt freq} $\ast i$, for $i = 1, 2, \ldots.$.
+If {\tt itmax} is $\leq 1$, it will be reset by
+{\tt \packagename\_solve} to 1.
+The default is {\tt freq = 1}.
+
+\itt{unitm} is a scalar variable of type default \logical, that
+must be set \true\ if the matrix $\bmM$ is the identity matrix, and
+\false\ otherwise.
+The default is {\tt unitm = \true}.
+
+\itt{space\_critical} is a scalar variable of type default \logical, that
+may be set \true\ if the user wishes the package to allocate as little
+internal storage as possible, and \false\ otherwise. The package may
+be more efficient if {\tt space\_critical} is set \false.
+The default is {\tt space\_critical = \false}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical,
+that may be set \true\ if the user wishes the package to return to the user
+in the unlikely event that an internal array deallocation fails,
+and \false\ if the package should be allowed to try to continue.
+The default is {\tt deallocate\_error\_fatal = \false}.
+
+\itt{stop\_relative} and {\tt stop\_absolute} are scalar variables of type
+\realdp, that holds the
+relative and absolute convergence tolerances (see Section~\ref{galmethod}).
+The computed solution $\bmx$ is accepted by {\tt \packagename\_solve}
+if the computed value of
+$\|\bmH \bmx + \lambda \bmM \bmx + \bmc\|_{{\bmM^{-1}}} $ is less than or equal
+to $\max (\nu \| \bmc\|_{\bmM^{-1}} \ast$ {\tt stop\_relative},
+{\tt stop\_absolute}$)$, where $\lambda =
+\sigma [ \|\bmx+\bmo\|_{\bmM}^2 + \epsilon]^{p/2-1}$ and $\nu$
+depends on the stopping rule selected by %\linebreak
+{\tt stopping\_\_rule}:
+for  {\tt stopping\_rule} = 0, $\nu = 1$,
+for  {\tt stopping\_rule} = 1, $\nu = \min( 1, \|\bmx\|)$, and
+for  \linebreak {\tt stopping\_rule} = 2,
+$\nu = \min( 1, \|\bmx\|/ \max(1,\sigma))$.
+The defaults are {\tt stop\_relative = $\sqrt{u}$} and
+{\tt stop\_absolute = 0.0},
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+\itt{fraction\_opt} is a scalar variable of type default
+\realdp, that specifies the fraction
+of the optimal value which is to be considered acceptable by the algorithm.
+A negative value is considered to be zero, and a value of larger than one
+is considered to be one. Reducing {\tt fraction\_opt} below one will result
+in a reduction of the computation performed at the expense of an inferior
+optimal value.
+The default is {\tt fraction\_opt = 1.0}.
+
+\itt{f\_0} is a scalar variable of type default
+\realdp, that gives the value of the constant term $f_0$ in the
+objective function. This value has no effect on the
+computed minimizer $\bmx$. The default is {\tt f\_0 = 0.0}.
+
+\itt{rminvr\_zero} is a scalar variable of type default
+\realdp, that gives the smallest value that the square of the $\bmM$-norm of
+the gradient of the objective function may be before it is considered to be
+zero.
+The default is {\tt rminvr\_zero = 10 $u$},
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected
+character string to preface every line of printed output.
+Specifically, each line of output will be prefaced by the string
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoring the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\end{description}
+
+%%%%%%%%%%% inform type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinfo}
+The derived data type
+{\tt \packagename\_inform\_type}
+is used to hold parameters that give information about the progress and needs
+of the algorithm. The components of
+{\tt \packagename\_inform\_type}
+are:
+
+\begin{description}
+\itt{status} is a scalar variable of type default \integer, that gives the
+current status of the algorithm. See Sections~\ref{galreverse} and
+\ref{galerrors} for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer,
+that gives the status of the last internal array allocation
+or deallocation. This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}.
+
+\itt{obj} is a scalar variable of type default \realdp, that holds the
+value of the quadratic function $\half \bmx^T \bmH \bmx + \bmc^T \bmx + f_0$.
+
+\itt{obj\_regularized} is a scalar variable of type default \realdp, that
+holds the value of the regularized objective function $\half \bmx^T \bmH \bmx
+ + \bmc^T \bmx + f_0 +
+  \sfrac{1}{p} \sigma [ \| \bmx + \bmo \|_{\bmM}^2 + \epsilon ]^{p/2}$.
+
+\itt{multiplier} is a scalar variable of type default
+\realdp, that holds the value of the multiplier $\lambda =
+\sigma [ \|\bmx+\bmo\|_{\bmM}^2 + \epsilon]^{p/2-1}$.
+
+\itt{leftmost} is a scalar variable of type default
+\realdp, that holds an estimate of the leftmost eigenvalue of the
+matrix pencil $(\bmH,\bmM)$.
+
+\ittf{iter} is a scalar variable of type default \integer, that holds the
+current number of Lanczos vectors used.
+
+\itt{iter\_pass2} is a scalar variable of type default \integer, that holds the
+current number of Lanczos vectors used in the second pass.
+
+\itt{negative\_curvature} is a scalar variable of type default \logical, that
+is set \true\ if $\bmH$ has been found to be indefinite during the calculation
+and \false\ otherwise.
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type
+{\tt \packagename\_data\_type}
+is used to hold all the data for a particular problem between calls of
+{\tt \packagename} procedures.
+This data should be preserved, untouched, from the initial call to
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}.
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are three procedures for user calls
+(see Section~\ref{galfeatures} for further features):
+
+\begin{enumerate}
+\item The subroutine
+      {\tt \packagename\_initialize}
+      is used to set default values, and initialize private data.
+\item The subroutine
+      {\tt \packagename\_solve}
+      is called repeatedly to solve the problem.
+      On each exit, the user may be expected to provide additional
+      information and, if necessary, re-enter the subroutine.
+\item The subroutine
+      {\tt \packagename\_terminate}
+      is provided to allow the user to automatically deallocate array
+       components of the private data, allocated by
+       {\tt \packagename\_solve},
+       at the end of the solution process.
+       It is important to do this if the data object is re-used for another
+       problem since {\tt \packagename\_initialize} cannot test for this
+       situation,
+       and any existing associated targets will subsequently become
+       unreachable.
+\end{enumerate}
+We use square brackets {\tt [ ]} to indicate \optional\ arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+
+\hskip0.5in
+{\tt CALL \packagename\_initialize( data, control, inform )}
+
+\begin{description}
+
+\itt{data} is a scalar \intentinout argument of type
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved.
+
+\itt{control} is a scalar \intentout argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}).
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinfo}). A successful call to
+{\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% problem solution subroutine %%%%%%
+
+\subsubsection{The optimization problem solution subroutine}
+The optimization problem solution algorithm is called as follows:
+
+\hskip0.5in
+{\tt CALL \packagename\_solve( n, p, sigma, X, R, VECTOR, data, control, inform[, eps, O] )}
+
+\begin{description}
+
+\ittf{n} is a scalar \intentin\ argument of type default \integer, that must be
+set to the number of unknowns, $n$. {\bf Restriction: } $n  >  0$.
+
+\ittf{p} is a scalar \intentin\ variable of type default
+\realdp,
+that must be set on initial entry to the desired order $p$ of regularisation.
+{\bf Restriction: } $p \geq 2$.
+
+\itt{sigma} is a scalar \intentin\ variable of type default
+\realdp,
+that must be set on initial entry
+to the value of the weight $\sigma$ associated with the regularisation term.
+{\bf Restriction: } $\sigma \geq 0$.
+
+\ittf{X} is an array \intentinout\ argument of dimension {\tt n} and
+type default \realdp,
+that holds an estimate of the solution $\bmx$ of the linear system.
+On initial entry, {\tt X} need not be set.
+It must not be changed between entries.
+On exit, {\tt X} contains the current best estimate of the solution.
+
+\ittf{R} is an array \intentinout\ argument of dimension {\tt n} and
+type default \realdp,
+that is used to hold the gradient $\bmH \bmx  +  \bmc$ of the objective
+function at the current estimate of the solution.
+On initial entry, {\tt R} must contain the vector $\bmc$.
+If {\tt inform\%status} = 5 on exit, it must be reset to  $\bmc$; otherwise
+it must be left unchanged. On exit, {\tt R} contains the gradient of the
+objective   function at the current best estimate of the solution.
+
+\itt{VECTOR} is an array \intentinout\ argument of dimension {\tt n}
+and type default \realdp,
+that is used to pass information from and to {\tt \packagename\_solve},
+as explained in Section~\ref{galreverse}.
+On initial entry, {\tt VECTOR} need not be set. On exit, the actual content of
+the array depends on the value of the parameter {\tt inform\%status}
+(see Section~\ref{galreverse}).
+
+\itt{data} is a scalar \intentinout argument of type
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved. It must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_initialize}.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}.
+(see Section~\ref{typecontrol}).
+Default values may be assigned by calling {\tt \packagename\_initialize}
+prior to the first call to {\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentinout argument of type
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinfo}).
+On initial entry, the component {\tt status} must be set to {\tt 1.}
+The remaining components need not be set.
+A successful call to
+{\tt \packagename\_solve}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Sections~\ref{galreverse}
+and \ref{galerrors}.
+
+\ittf{eps} is an optional scalar \intentin\ variable of type default
+\realdp. If {\tt eps} is \present, it must be set on initial entry
+to the value of the shift $\epsilon$ associated with the regularisation term.
+{\bf Restriction: } $\epsilon \geq 0$.
+
+\ittf{O} is an optional array \intentin\ variable of type default
+\realdp. If {\tt O} is \present, it must be set on initial entry
+to the value of the offset $o$ associated with the regularisation term.
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+
+\hskip0.5in
+{\tt CALL \packagename\_terminate( data, control, inform )}
+
+\begin{description}
+
+\itt{data} is a scalar \intentinout argument of type
+{\tt \packagename\_data\_type}
+exactly as for
+{\tt \packagename\_solve}
+that must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_initialize}.
+On exit, array components will have been deallocated.
+
+\itt{control} is a scalar \intentin argument of type
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentout argument of type {\tt \packagename\_type}
+exactly as for
+{\tt \packagename\_solve}.
+Only the component {\tt status} will be set on exit, and a
+successful call to
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Reverse communications %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galreverse
+A positive value of {\tt inform\%status} on exit from
+{\tt \packagename\_solve} indicates that the user needs to take appropriate
+action before re-entering the subroutine. Possible values are:
+
+\begin{description}
+
+\itt{2.} The user must perform the preconditioning operation
+\disp{\bmy := \bmM^{-1} \bmz,}
+and recall {\tt \packagename\_solve}.
+The vector $\bmz$ is available in the array {\tt VECTOR}, and the result
+$\bmy$ must be placed in {\tt VECTOR}.
+No argument except {\tt VECTOR} should be altered before recalling
+{\tt \packagename\_solve}. This return can only occur when
+{\tt control\%unitm} is \false.
+
+\itt{3.} The user must perform the matrix-vector product
+\disp{\bmy := \bmH \bmz}
+and recall {\tt \packagename\_solve}.
+The vector $\bmz$ is available in the array {\tt VECTOR}, and the result
+$\bmy$ must be placed in {\tt VECTOR}.
+No argument except {\tt VECTOR} should be altered before recalling
+{\tt \packagename\_solve}.
+
+\itt{4.}  The user should reset {\tt R} to $\bmc$ and recall
+{\tt \packagename\_solve}.
+No argument except {\tt R} should be altered before recalling
+{\tt \packagename\_solve}.
+
+\itt{5.} The user must perform the operation
+\disp{\bmy := \bmM \bmz,}
+and recall {\tt \packagename\_solve}.
+The vector $\bmz$ is available in the array {\tt VECTOR}, and the result
+$\bmy$ must be placed in {\tt VECTOR}.
+No argument except {\tt VECTOR} should be altered before recalling
+{\tt \packagename\_solve}. This return can only occur when
+both {\tt control\%unitm} is \false\ and {\tt O} is \present.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of  {\tt inform\%status} on exit from
+{\tt \packagename\_solve}
+or
+{\tt \packagename\_terminate}
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+ \itt{\galerrallocate.} An allocation error occurred. A message indicating
+the offending
+array is written on unit {\tt control\%error}, and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrdeallocate.} A deallocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error} and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrrestrictions.} ({\tt \packagename\_solve} only)
+One or more of the restrictions
+{\tt n > 0}, {\tt sigma} $\geq 0$, {\tt eps} $\geq 0$ or {\tt p} $\geq 2$
+has been violated.
+
+\itt{\galerrunbounded.} ({\tt \packagename\_solve} only) The problem is unbounded
+from below. This can only happen if $p \leq 2$. In this case, the
+problem is unbounded along the arc {\tt X} $+\alpha$ {\tt VECTOR} as
+$\alpha$ increases.
+
+\itt{\galerrpreconditioner.} ({\tt \packagename\_solve} only)
+The matrix $\bmM$ appears not to be positive definite.
+
+\itt{\galerrmaxiterations.} ({\tt \packagename\_solve} only) More than
+{\tt control\%itmax} iterations have been performed without obtaining
+convergence.
+
+\itt{\galerrinput.} ({\tt \packagename\_solve} only)  {\tt inform\%status} is
+not $>$ 0 on entry.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Re-entry %%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Re-entry with a new value of $\sigma$}
+It commonly happens that, having solved the problem for a particular value
+of the weight $\sigma$, a user now wishes to solve the problem for a different
+value of $\sigma$. Rather than restarting the calculation with
+{\tt inform\%status = 1,} a useful approximation may be found
+resetting {\tt sigma} to the new required value and {\tt R} to $\bmc$,
+and recalling {\tt \packagename\_solve}
+with {\tt inform\%status = 6} and the remaining arguments unchanged.
+This will determine the best solution within the Krylov space investigated
+in the previous minimization (see Section~\ref{galmethod}).
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}),
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of
+"specification commands". Each command occurs on a separate line,
+and comprises a "keyword",
+which is a string (in a close-to-natural language) used to identify a
+control parameter, and
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive,
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+The portion of the specification file used by
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by GLRT_read_specfile .. )
+    BEGIN GLRT
+       keyword    value
+       .......    .....
+       keyword    value
+    END
+  ( .. lines ignored by GLRT_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
+may contain additional (trailing) strings so long as such strings are
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN GLRT SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END GLRT SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore,
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored.
+The content
+of a line after a {\tt !} or {\tt *} character is also
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some
+specification commands, or to comment specific values
+of certain control parameters.
+
+The value of a control parameters may be of three different types, namely
+integer, logical or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}",
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}".
+Empty values are also allowed for
+logical control parameters, and are interpreted as "{\tt TRUE}".
+
+The specification file must be open for
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number
+passed to the routine in device (see below).
+Note that the corresponding
+file is {\tt REWIND}ed, which makes it possible to combine the specifications
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in
+\def\baselinestretch{0.8} {\tt \begin{verbatim}
+     CALL GLRT_read_specfile( control, device )
+\end{verbatim}}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}).
+Default values should have already been set, perhaps by calling
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and
+the component (see Section~\ref{typecontrol}) of {\tt control}
+that each affects are given in Table~\ref{specfile}.
+
+\bctable{|l|l|l|}
+\hline
+  command & component of {\tt control} & value type \\
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+  {\tt maximum-number-of-iterations} & {\tt \%itmax} & integer \\
+  {\tt number-extra-n-vectors-used} & {\tt \%extra\_vectors} & integer \\
+  {\tt stopping-rule} & {\tt \%stopping\_rule} & integer \\
+  {\tt tri-diagonal-solve-frequency} & {\tt \%freq} & integer \\
+  {\tt relative-accuracy-required} & {\tt \%stop\_relative} & real \\
+  {\tt absolute-accuracy-required} & {\tt \%stop\_absolute} & real \\
+  {\tt fraction-optimality-required} & {\tt \%fraction\_opt} & real \\
+  {\tt constant-term-in-objective} & {\tt \%f\_0} & real \\
+  {\tt zero-gradient-tolerance} & {\tt \%rminvr\_zero} & real \\
+  {\tt two-norm-regularisation} & {\tt \%unitm} & logical \\
+  {\tt space-critical} & {\tt \%space\_critical} & logical \\
+  {\tt deallocate-error-fatal} & {\tt \%deallocate\_error\_fatal} & logical \\
+\hline
+
+\ectable{\label{specfile}Specfile commands and associated
+components of {\tt control}.}
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+If {\tt control\%print\_level} is positive, information about the progress
+of the algorithm will be printed on unit {\tt control\-\%\-out}.
+If {\tt control\%print\_level = 1}, a single line of output will be produced
+for each iteration of the process. This will include
+the iteration number, the value of the objective function, the
+$\bmM^{-1}$-norm of its gradient
+$\| ( \bmH + \lambda \bmM ) \bmx + \bmc \|_{\bmM^{-1}}$,
+the value of the multiplier $\lambda =
+\sigma [ \|\bmx+\bmo\|_{\bmM}^2 + \epsilon ]^{p/2-1}$,
+the number of Newton steps required to find $\lambda$, and the exit
+code from this calculation (0 = successful, 1 = 1, stalled, 2 = more than
+100 steps).
+If {\tt control\%print\_level} $\geq$ {\tt 2}, this
+output will be increased to provide significant detail of each iteration.
+This extra output includes a complete history of the inner iteration required
+to solve the ``tridiagonal'' subproblem, and for each Newton iteration records
+the estimate of $\lambda$, the error
+$\theta(\lambda) = [ \|\bmx+\bmo\|_{\bmM}^2 + \epsilon ]^{p/2-1}
+- \lambda / \sigma$ and the $\bmM$-norm of $\bmx$.
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines {\tt \packagename\_solve} calls the LAPACK subroutine
+{\tt *PTTRF}, where {\tt *} is {\tt S} for
+the default real version and {\tt D} for the double precision version.
+\galmodules {\tt \packagename\_solve} calls the \galahad\ packages
+{\tt \libraryname\_SY\-M\-BOLS},
+{\tt \libraryname\_SPACE},
+{\tt \libraryname\_RAND},
+{\tt \libraryname\_\-NORMS},
+{\tt \libraryname\_\-GLTR},
+{\tt \libraryname\_\-ROOTS} and
+{\tt \libraryname\_SPECFILE}.
+\galio Output is under control of the arguments
+{\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
+\galrestrictions $n  >  0, \;  \sigma  >  0$.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+The required solution $\bmx$ necessarily satisfies the optimality condition
+$\bmH \bmx + \lambda \bmM \bmx + \bmc + \lambda \bmo = 0$, where
+$\lambda = \sigma [ \|\bmx+\bmo\|_{\bmM}^2 + \epsilon ]^{p/2-1}$.
+In addition, the matrix $\bmH + \lambda \bmM$ will be positive semi-definite.
+
+\noindent
+The method is iterative. Starting  with the vector $\bmM^{-1} \bmc$,
+a matrix of Lanczos vectors is built one column at a time
+so that the $k$-th column is generated during
+iteration $k$. These columns span a so-called Krylov space.
+The resulting $n$ by $k$ matrix $\bmQ_k $ has the
+property that $\bmQ_{k}^T \bmH \bmQ_k^{}  =  \bmT_{k}^{}$,
+where $\bmT_k$ is tridiagonal. An approximation to the
+required solution may then be expressed formally as
+\disp{\bmx_{k+1}  =  \bmQ_k \bmy_k}
+where $\bmy_k $ solves the ``tridiagonal'' subproblem of minimizing
+\eqn{4.1}{\half  \bmy^T \bmT_k \bmy  + \| \bmc\|_{\bmM^{-1} } \bme_{1}^T \bmy +
+\sfrac{1}{p} \sigma [ \| \bmy + \bmd \|_2^2 + \epsilon ]^{p/2},}
+where $\bmd = \bmQ_k^T \bmM \bmo$ and $\bme_1$ is the first unit vector.
+
+To minimize \req{4.1}, the optimality conditions
+\eqn{4.2}{ ( \bmT_k + \lambda \bmI ) \bmy(\lambda) = - \bmc - \lambda \bmd,}
+where $\lambda = \sigma [ \|\bmy(\lambda)+\bmd\|_{\bmM}^2 + \epsilon]^{p/2-1}$
+are used as the basis of an iteration. Specifically, given an estimate
+$\lambda$ for which $ \bmT_k + \lambda \bmI$ is positive definite,
+the tridiagonal system \req{4.2} may be efficiently solved to give
+$\bmy(\lambda)$. It is then simply a matter of adjusting $\lambda$
+(for example by a Newton-like process) to solve the scalar nonlinear equation
+\eqn{4.3}{\theta(\lambda) \equiv
+[ \|\bmy(\lambda)+\bmd\|_{\bmM}^2 + \epsilon]^{p/2-1}
+ - \frac{\lambda}{\sigma} = 0.}
+In practice \req{4.3} is reformulated, and a more rapidly converging iteration is
+used.
+
+It is possible to measure the optimality measure
+$\|\bmH \bmx  +  \lambda \bmM \bmx  +  \bmc + \lambda \bmo\|_{\bmM^{-1}}$
+without computing $\bmx_{k+1}$, and thus without
+needing $\bmQ_k $. Once this measure is sufficiently small, a second pass
+is required to obtain the estimate $\bmx_{k+1} $ from $\bmy_k $.
+As this second pass is an additional expense, a record is kept of the
+optimal objective function values for each value of $k$, and the second
+pass is only performed so far as to ensure a given fraction of the
+final optimal objective value. Large savings may be made in the second
+pass by choosing the required fraction to be significantly smaller than one.
+
+Special code is used in the special case $p=2$, as in this case a single
+pass suffices.
+
+\galreference
+The method is described in detail in
+\vspace*{1mm}
+
+\noindent
+C. Cartis, N. I. M. Gould and Ph. L. Toint,
+Adaptive cubic regularisation methods for unconstrained
+optimization. Part {I}: motivation, convergence and numerical results.
+{\em Mathematical Programming} {\bf 127(2)}, pp.245-295, 2011.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose we wish to solve a problem in 10,000 unknowns, whose data is
+\disp{\bmH  = \mat{ccccc}{ -2 & 1 \\ 1 & -2 & . \\ & . & . & . \\ & & . & -2 & 1
+                           \\ & & & 1 & -2 }, \;\;
+\bmM  = \mat{ccccc}{ 2 &   \\   & 2  &   \\ & & . \\ & & & 2 & \\ & & & & 2 }, \;\;
+\bmc  =  \vect{ 1 \\ 1 \\ . \\ 1 \\ 1 }
+\tim{and}
+\bmo  =  - \vect{ 1 \\ 1 \\ . \\ 1 \\ 1 },}
+with a weight $\sigma = 10$ and shift $\epsilon = 1$.
+Suppose further that we are content with an approximation which is within 99\%
+of the best. Then we may use the following code
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+
+\end{document}

@@ -1,0 +1,814 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{qpt}
+\newcommand{\packagename}{QPT}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+This package defines a derived type capable of supporting
+a variety of {\bf quadratic programming problem storage schemes.}
+Quadratic programming aims to minimize or maximize either
+a general objective function
+\eqn{qp}{\half \bmx^T \bmH \bmx + \bmg^T \bmx + f,}
+or sometimes a (shifted) squared-least-distance objective function,
+\eqn{lsqp}{\half \sum_{j=1}^n w_j^2 ( x_j^{ } - x_j^0 )^2 + \bmg^T \bmx + f,}
+subject to the general linear constraints
+\disp{c_{i}^{l}  \leq  \bma_{i}^{T}\bmx  \leq  c_{i}^{u}, \;\;\;
+ i = 1, \ldots , m,}
+and the simple bound constraints
+\disp{x_{j}^{l} \leq x_{j}^{ } \leq x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
+where the $n$ by $n$ symmetric matrix $\bmH$,
+the vectors $\bmg$, $\bmw$, $\bmx^{0}$,
+$\bma_{i}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$,
+and $\bmx^{u}$, and the scalar $f$ are given.
+Full advantage is taken of any zero coefficients in the matrix $\bmH$ or the
+vectors $\bma_{i}$.
+Any of the constraint bounds $c_{i}^{l}$, $c_{i}^{u}$,
+$x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
+
+The derived type is also capable of supporting {\em parametric}
+quadratic programming problems, in which an additional objective
+term $\theta \delta \bmg^T \bmx$ is included, and the trajectory of
+solution are required for all $0 \leq \theta \leq \theta_{\max}$
+for which
+\disp{
+c_{i}^{l}  + \theta \delta c_{i}^{l}
+\leq  \bma_{i}^{T}\bmx  \leq  c_{i}^{u} + \theta \delta c_{i}^{u}, \;\;\;
+ i = 1, \ldots , m,}
+and
+\disp{x_{j}^{l} + \theta x_{j}^{l} \leq x_{j}^{ } \leq
+x_{j}^{u} + \delta x_{j}^{u} , \;\;\; j = 1, \ldots , n.}
+
+The principal use of the package is to allow exchange of data between
+\galahad\ subprograms and other codes.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses {\tt \libraryname\_SMT}.
+\galdate April 2001.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory, and
+Ph. L. Toint, University of Namur, Belgium.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types
+{\tt SMT\_TYPE}
+and
+{\tt QPT\_problem\_type},
+(Section~\ref{galtype})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmatrix
+Both the Hessian matrix $\bmH$ and
+the constraint Jacobian $\bmA$, the matrix
+whose rows are the vectors $\bma_{i}^{T}$, $i = 1, \ldots , m$,
+may be stored in a variety of input formats.
+
+\subsubsection{Dense storage format}\label{dense}
+The matrix $\bmA$ is stored as a compact
+dense matrix by rows, that is, the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+Component $n \ast (i-1) + j$ of the storage array {\tt A\%val} will hold the
+value $a_{ij}$ for $i = 1, \ldots , m$, $j = 1, \ldots , n$.
+Since $\bmH$ is symmetric, only the lower triangular part (that is the part
+$h_{ij}$ for $1 \leq j \leq i \leq n$) need be held. In this case
+the lower triangle will be stored by rows, that is
+component $i \ast (i-1)/2 + j$ of the storage array {\tt H\%val}
+will hold the value $h_{ij}$ (and, by symmetry, $h_{ji}$)
+for $1 \leq j \leq i \leq n$.
+
+\subsubsection{Sparse co-ordinate storage format}\label{coordinate}
+Only the nonzero entries of the matrices are stored. For the
+$l$-th entry of $\bmA$, its row index $i$, column index $j$
+and value $a_{ij}$
+are stored in the $l$-th components of the integer arrays {\tt A\%row},
+{\tt A\%col} and real array {\tt A\%val}, respectively.
+The order is unimportant, but the total
+number of entries {\tt A\%ne} is also required.
+The same scheme is applicable to
+$\bmH$ (thus requiring integer arrays {\tt H\%row}, {\tt H\%col}, a real array
+{\tt H\%val} and an integer value {\tt H\%ne}),
+except that only the entries in the lower triangle need be stored.
+
+\subsubsection{Sparse row-wise storage format}\label{rowwise}
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row $i$ appear directly before those
+in row $i+1$. For the $i$-th row of $\bmA$, the $i$-th component of a
+integer array {\tt A\%ptr} holds the position of the first entry in this row,
+while {\tt A\%ptr} $(m+1)$ holds the total number of entries plus one.
+The column indices $j$ and values $a_{ij}$ of the entries in the $i$-th row
+are stored in components
+$l =$ {\tt A\%ptr}$(i)$, \ldots ,{\tt A\%ptr} $(i+1)-1$ of the
+integer array {\tt A\%col}, and real array {\tt A\%val}, respectively.
+The same scheme is applicable to
+$\bmH$ (thus requiring integer arrays {\tt H\%ptr}, {\tt H\%col}, and
+a real array {\tt H\%val}),
+except that only the entries in the lower triangle need be stored.
+
+For sparse matrices, this scheme almost always requires less storage than
+its predecessor.
+
+\subsubsection{Diagonal storage format}\label{diagonal}
+If $\bmH$ is diagonal (i.e., $h_{ij} = 0$ for all $1 \leq i \neq j \leq n$)
+only the diagonals entries $h_{ii}$, $1 \leq i \leq n$,  need be stored,
+and the first $n$ components of the array {\tt H\%val} may be used for
+the purpose. There is no sensible equivalent for the non-square $\bmA$.
+
+\subsubsection{Scaled-identity-matrix storage format}\label{scaled-identity}
+If $\bmH$ is a scalar multiple of the identity matrix
+(i.e., $h_{ii} = h_{11}$  and $h_{ij} = 0$ for all $1 \leq i \neq j \leq n$)
+only the first diagonal entry $h_{11}$ needs be stored,
+and the first component of the array {\tt H\%val} may be used for
+the purpose. Again, there is no sensible equivalent for the non-square $\bmA$.
+
+\subsubsection{Identity-matrix storage format}\label{identity}
+If $\bmH$ is the identity matrix
+(i.e., $h_{ii} = 1$ and $h_{ij} = 0$ for all $1 \leq i \neq j \leq n$),
+no explicit entries needs be stored.
+
+\subsubsection{Zero-matrix storage format}\label{zero}
+If $\bmH = \bmzero$ (i.e., $h_{ij} = 0$ for all $1 \leq i, j \leq n$),
+no explicit entries needs be stored.
+
+%%%%%%%%%%%%%%%%%%% optimality conditions %%%%%%%%%%%%%%%%%%%
+
+\subsection{Optimality conditions\label{galopt}}
+
+The required solution $\bmx$ necessarily satisfies
+the primal optimality conditions
+\disp{\bmA \bmx = \bmc, \;\;
+ \bmc^{l} \leq \bmc \leq \bmc^{u}, \tim{and}
+ \bmx^{l} \leq\bmx \leq\bmx^{u},}
+the dual optimality conditions
+\disp{
+ \bmH \bmx + \bmg = \bmA^{T} \bmy + \bmz \;\;
+ (\mbox{or} \;\; \bmW^{2} (\bmx -\bmx^{0}) + \bmg =
+ \bmA^{T} \bmy + \bmz \;\; \mbox{for the least-distance type objective})}
+where
+\disp{\bmy = \bmy^{l} + \bmy^{u}, \;\;
+ \bmz = \bmz^{l} + \bmz^{u}\,\,
+ \bmy^{l} \geq 0 , \;\;
+ \bmy^{u} \leq 0 , \;\;
+ \bmz^{l} \geq 0 \tim{and}
+ \bmz^{u} \leq 0 ,}
+and the complementary slackness conditions
+\disp{
+ ( \bmA \bmx - \bmc^{l} )^{T} \bmy^{l} = 0  ,\;\;
+ ( \bmA \bmx - \bmc^{u} )^{T} \bmy^{u} = 0  ,\;\;
+ (\bmx -\bmx^{l} )^{T} \bmz^{l} = 0   \tim{and}
+ (\bmx -\bmx^{u} )^{T} \bmz^{u} = 0 ,}
+where the diagonal matrix $\bmW^{2}$ has diagonal entries $w_{j}^{2}$,
+$j = 1, \ldots , n$, where the vectors $\bmy$ and $\bmz$ are
+known as the Lagrange multipliers for
+the general linear constraints, and the dual variables for the bounds,
+respectively, and where the vector inequalities hold componentwise.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtype
+Two derived data types,
+{\tt SMT\_TYPE} and
+{\tt \packagename\_problem\_type},
+are accessible from the package. It is intended that, for any particular
+application, only those components which are needed will be set.
+
+%%%%%%%%%%% matrix data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding matrices}\label{typesmt}
+The derived data type {\tt SMT\_TYPE} is used to hold the matrices $\bmA$
+and $\bmH$. The components of {\tt SMT\_TYPE} used here are:
+
+\begin{description}
+
+\ittf{type} is an allocatable array of rank one and type default \character, that
+holds a string which indicates the storage scheme used.
+
+\ittf{m} is a scalar component of type default \integer,
+that holds the number of rows in the matrix.
+
+\ittf{n} is a scalar component of type default \integer,
+that holds the number of columns in the matrix.
+
+\ittf{ne} is a scalar variable of type default \integer, that may
+hold the number of matrix entries (see \S\ref{coordinate}).
+
+\ittf{val} is a rank-one allocatable array of type default \realdp\,
+and dimension at least {\tt ne}, that holds the values of the entries.
+Each pair of off-diagonal entries $h_{ij} = h_{ji}$ of a {\em symmetric}
+matrix $\bmH$ is represented as a single entry
+(see \S\ref{dense}--\ref{rowwise}).
+Any duplicated entries that appear in the sparse
+co-ordinate or row-wise schemes will be summed.
+
+\ittf{row} is a rank-one allocatable array of type default \integer,
+and dimension at least {\tt ne}, that may hold the row indices of the entries
+(see \S\ref{coordinate}).
+
+\ittf{col} is a rank-one allocatable array of type default \integer,
+and dimension at least {\tt ne}, that may hold the column indices of the entries
+(see \S\ref{coordinate}--\ref{rowwise}).
+
+\ittf{ptr} is a rank-one allocatable array of type default \integer,
+and dimension at least {\tt m + 1}, that may hold the pointers to
+the first entry in each row (see \S\ref{rowwise}).
+
+\end{description}
+
+%%%%%%%%%%% problem type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding quadratic programs}
+\label{typeprob}
+
+The derived data type
+{\tt \packagename\_problem\_type}
+is used to hold the problem.
+The components of
+{\tt \packagename\_problem\_type}
+are:
+
+\begin{description}
+
+\ittf{name} is a rank-one allocatable array of type default \character\, that
+may be used to hold the name of the problem.
+
+\itt{new\_problem\_structure} is a scalar variable of type default \logical,
+ that is \true\ if this is the first (or only) problem in a sequence of
+ problems with identical "structure" to be attempted, and \false\ if
+ a previous problem with the same "structure" (but different
+ numerical data) has been solved. Here, the term "structure" refers both to
+ the sparsity patterns of the Jacobian matrices $\bmA$ involved
+ (but not their numerical values), to the zero/nonzero/infinity patterns
+ (a bound is either zero, $\pm$ infinity, or a finite but arbitrary
+ nonzero) of each of the constraint bounds, and to the variables and constraints
+ that are fixed (both bounds are the same) or free (the lower and upper
+ bounds are $\pm$ infinity, respectively).
+
+\ittf{n} is a scalar variable of type default \integer,
+ that holds the number of optimization variables, $n$.
+
+\ittf{m} is a scalar variable of type default \integer,
+ that holds the number of general linear constraints, $m$.
+
+\itt{Hessian\_kind} is a scalar variable of type default \integer,
+that is used to indicate what type of Hessian the problem involves.
+Possible values for {\tt Hessian\_kind} are:
+
+\begin{description}
+\itt{<0}  In this case, a general quadratic program of the form
+\req{qp} is given. The Hessian matrix $\bmH$ will be provided in the
+component {\tt H} (see below).
+
+\itt{0}  In this case, a linear program, that is a problem of the form
+\req{lsqp} with weights $\bmw = 0$, is given.
+
+\itt{1} In this case, a least-distance problem of the form \req{lsqp}
+with weights $w_{j} = 1$ for $j = 1, \ldots , n$ is given.
+
+\itt{>1} In this case, a weighted least-distance problem of the form \req{lsqp}
+with general weights $\bmw$ is given. The weights will be
+provided in the component {\tt WEIGHT} (see below).
+\end{description}
+
+\ittf{H} is scalar variable of type {\tt SMT\_TYPE}
+that contains the Hessian matrix $\bmH$ whenever {\tt Hessian\_kind} $<0$.
+The following components are used:
+
+\begin{description}
+
+\itt{H\%type} is an allocatable array of rank one and type default \character, that
+is used to indicate the storage scheme used. If the dense storage scheme
+(see Section~\ref{dense}) is used,
+the first five components of {\tt H\%type} must contain the
+string {\tt DENSE}.
+For the sparse co-ordinate scheme (see Section~\ref{coordinate}),
+the first ten components of {\tt H\%type} must contain the
+string {\tt COORDINATE},
+for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
+the first fourteen components of {\tt H\%type} must contain the
+string {\tt SPARSE\_BY\_ROWS},
+for the diagonal storage scheme (see Section~\ref{diagonal}),
+the first eight components of {\tt H\%type} must contain the
+string {\tt DIAGONAL},
+for the scaled-identity matrix storage scheme
+(see Section~\ref{scaled-identity}),
+the first fifteen components of {\tt H\%type} must contain the
+string {\tt SCALED\_IDENTITY},
+for the identity matrix storage scheme
+(see Section~\ref{identity}),
+the first eight components of {\tt H\%type} must contain the
+string {\tt IDENTITY}, and
+for the zero matrix storage scheme
+(see Section~\ref{zero}),
+the first four components of {\tt H\%type} must contain the
+string {\tt ZERO}.
+
+For convenience, the procedure {\tt SMT\_put}
+may be used to allocate sufficient space and insert the required keyword
+into {\tt H\%type}.
+For example, if {\tt prob} is of derived type {\tt \packagename\_problem\_type}
+and involves a Hessian we wish to store using the co-ordinate scheme,
+we may simply
+%\vspace*{-2mm}
+{\tt
+\begin{verbatim}
+        CALL SMT_put( prob%H%type, 'COORDINATE' )
+\end{verbatim}
+}
+%\vspace*{-4mm}
+\noindent
+See the documentation for the \galahad\ package {\tt SMT}
+for further details on the use of {\tt SMT\_put}.
+
+\itt{H\%ne} is a scalar variable of type default \integer, that
+holds the number of entries in the {\bf lower triangular} part of $\bmH$
+in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
+It need not be set for any of the other schemes.
+
+\itt{H\%val} is a rank-one allocatable array of type default \realdp, that holds
+the values of the entries of the {\bf lower triangular} part
+of the Hessian matrix $\bmH$ in any of non-trivial storage schemes
+mentioned in Sections~\ref{coordinate}--\ref{diagonal}.
+For the scaled-identity scheme (see Section~\ref{scaled-identity}),
+the first component, {\tt H\%val(1)}, holds the scale factor $h_{11}$.
+It need not be allocated for any of the remaining schemes.
+
+\itt{H\%row} is a rank-one allocatable array of type default \integer,
+that holds the row indices of the {\bf lower triangular} part of $\bmH$
+in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
+It need not be allocated for any of the other schemes.
+
+\itt{H\%col} is a rank-one allocatable array variable of type default \integer,
+that holds the column indices of the {\bf lower triangular} part of
+$\bmH$ in either the sparse co-ordinate
+(see Section~\ref{coordinate}), or the sparse row-wise
+(see Section~\ref{rowwise}) storage scheme.
+It need not be allocated when any of the other storage schemes are used.
+
+\itt{H\%ptr} is a rank-one allocatable array of dimension {\tt n+1} and type
+default \integer, that holds the starting position of
+each row of the {\bf lower triangular} part of $\bmH$, as well
+as the total number of entries plus one, in the sparse row-wise storage
+scheme (see Section~\ref{rowwise}). It need not be allocated when the
+other schemes are used.
+\end{description}
+If {\tt Hessian\_kind} $\geq 0$, the components of {\tt H} need not be set.
+
+\itt{WEIGHT} is a rank-one allocatable array type default \realdp, that
+should be allocated to have length {\tt n}, and its $j$-th component
+filled with the value $w_{j}$ for $j = 1, \ldots , n$,
+whenever {\tt Hessian\_kind} $>1$.
+If {\tt Hessian\_kind} $\leq 1$, {\tt WEIGHT} need not be allocated.
+
+\itt{target\_kind} is a scalar variable of type default \integer,
+that is used to indicate whether the components of the targets $\bmx^0$
+(if they are used) have special or general values. Possible values for
+{\tt target\_kind} are:
+\begin{description}
+\itt{0}  In this case, $\bmx^0 = 0$.
+
+\itt{1} In this case, $x^0_{j} = 1$ for $j = 1, \ldots , n$.
+
+\itt{$\neq$ 0,1} In this case, general values of $\bmx^0$ will be used,
+     and will be provided in the component {\tt X0} (see below).
+\end{description}
+
+\ittf{X0} is a rank-one allocatable array type default \realdp, that
+should be allocated to have length {\tt n}, and its $j$-th component
+filled with the value $x_{j}^0$ for $j = 1, \ldots , n$,
+whenever {\tt Hessian\_kind} $>0$ and {\tt target\_kind} $\neq 0,1$.
+If {\tt Hessian\_kind} $\leq 0$ or {\tt target\_kind} $= 0,1$,
+{\tt X0} need not be allocated.
+
+\itt{gradient\_kind} is a scalar variable of type default \integer,
+that is used to indicate whether the components of the gradient $\bmg$
+have special or general values. Possible values for {\tt gradient\_kind} are:
+\begin{description}
+\itt{0}  In this case, $\bmg = 0$.
+
+\itt{1} In this case, $g_{j} = 1$ for $j = 1, \ldots , n$.
+
+\itt{$\neq$ 0,1} In this case, general values of $\bmg$ will be used,
+     and will be provided in the component {\tt G} (see below).
+\end{description}
+
+\ittf{G} is a rank-one allocatable array type default \realdp, that
+should be allocated to have length {\tt n}, and its $j$-th component
+filled with the value $g_{j}$ for $j = 1, \ldots , n$,
+whenever {\tt gradient\_kind} $\neq$ 0,1.
+If {\tt gradient\_kind} {= 0, 1}, {\tt G} need not be allocated.
+
+\ittf{DG} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp, that may hold the gradient $\delta \bmg$
+of the parametric linear term of the quadratic objective function.
+The $j$-th component of
+{\tt DG}, $j = 1,  \ldots ,  n$, contains $\delta g_{j}$.
+
+\ittf{f} is a scalar variable of type
+default \realdp, that holds
+the constant term, $f$, in the objective function.
+
+\ittf{A} is scalar variable of type {\tt SMT\_TYPE}
+that holds the Jacobian matrix $\bmA$. The following components are used:
+
+\begin{description}
+
+\itt{A\%type} is an allocatable array of rank one and type default
+\character, that
+is used to indicate the storage scheme used. If the dense storage scheme
+(see Section~\ref{dense}) is used,
+the first five components of {\tt A\%type} must contain the
+string {\tt DENSE}.
+For the sparse co-ordinate scheme (see Section~\ref{coordinate}),
+the first ten components of {\tt A\%type} must contain the
+string {\tt COORDINATE}, while
+for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
+the first fourteen components of {\tt A\%type} must contain the
+string {\tt SPARSE\_BY\_ROWS}.
+
+Just as for {\tt H\%type} above, the procedure {\tt SMT\_put}
+may be used to allocate sufficient space and insert the required keyword
+into {\tt A\%type}.
+Once again, if {\tt prob} is of derived type {\tt \packagename\_problem\_type}
+and involves a Jacobian we wish to store using the sparse row-wise
+storage scheme, we may simply
+%\vspace*{-2mm}
+{\tt
+\begin{verbatim}
+        CALL SMT_put( prob%A%type, 'SPARSE_BY_ROWS' )
+\end{verbatim}
+}
+%\vspace*{-4mm}
+\noindent
+
+\itt{A\%ne} is a scalar variable of type default \integer, that
+holds the number of entries in $\bmA$
+in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
+It need not be set for either of the other two appropriate schemes.
+
+\itt{A\%val} is a rank-one allocatable array of type default \realdp, that holds
+the values of the entries of the Jacobian matrix $\bmA$ in any of the
+appropriate storage schemes discussed in Section~\ref{galmatrix}.
+
+\itt{A\%row} is a rank-one allocatable array of type default \integer,
+that holds the row indices of $\bmA$ in the sparse co-ordinate storage
+scheme (see Section~\ref{coordinate}).
+It need not be allocated for either of the other two appropriate schemes.
+
+\itt{A\%col} is a rank-one allocatable array variable of type default \integer,
+that holds the column indices of $\bmA$ in either the sparse co-ordinate
+(see Section~\ref{coordinate}), or the sparse row-wise
+(see Section~\ref{rowwise}) storage scheme.
+It need not be allocated when the dense storage scheme is used.
+
+\itt{A\%ptr} is a rank-one allocatable array of dimension {\tt m+1} and type
+default \integer, that holds the
+starting position of each row of $\bmA$, as well
+as the total number of entries plus one, in the sparse row-wise storage
+scheme (see Section~\ref{rowwise}). It need not be allocated when the
+other appropriate schemes are used.
+
+\end{description}
+
+\ittf{C\_l} is a rank-one allocatable array of dimension {\tt m} and type
+default \realdp, that holds the vector of lower bounds $\bmc^{l}$
+on the general constraints. The $i$-th component of
+{\tt C\_l}, $i = 1, \ldots , m$, contains $c_{i}^{l}$.
+Infinite bounds are allowed by setting the corresponding
+components of {\tt C\_l} to any value smaller than {\tt -infinity},
+where {\tt infinity} is a  solver-dependent value that will be recognised as
+infinity.
+
+\ittf{C\_u} is a rank-one allocatable array of dimension {\tt m} and type
+default \realdp, that holds the vector of upper bounds $\bmc^{u}$
+on the general constraints. The $i$-th component of
+{\tt C\_u}, $i = 1,  \ldots ,  m$, contains $c_{i}^{u}$.
+Infinite bounds are allowed by setting the corresponding
+components of {\tt C\_u} to any value larger than {\tt infinity},
+where {\tt infinity} is a  solver-dependent value that will be recognised as
+infinity.
+
+\ittf{DC\_l} is a rank-one allocatable array of dimension {\tt m} and type
+default \realdp, that may hold the vector of parametric lower bounds
+$\delta \bmc^{l}$ on the general constraints. The $i$-th component of
+{\tt DC\_l}, $i = 1, \ldots , m$, contains $\delta c_{i}^{l}$.
+Only components corresponding to finite lower bounds $c_{i}^{l}$
+need be set.
+
+\ittf{DC\_u} is a rank-one allocatable array of dimension {\tt m} and type
+default \realdp, that may hold the vector of parametric upper bounds
+$\delta \bmc^{u}$  on the general constraints. The $i$-th component of
+{\tt DC\_u}, $i = 1,  \ldots ,  m$, contains $\delta c_{i}^{u}$.
+Only components corresponding to finite upper bounds $c_{i}^{u}$
+need be set.
+
+\ittf{X\_l} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp, that holds
+the vector of lower bounds $\bmx^{l}$ on the variables.
+The $j$-th component of {\tt X\_l}, $j = 1, \ldots , n$,
+contains $x_{j}^{l}$.
+Infinite bounds are allowed by setting the corresponding
+components of {\tt X\_l} to any value smaller than {\tt -infinity},
+where {\tt infinity} is a  solver-dependent value that will be recognised as
+infinity.
+
+\ittf{X\_u} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp, that holds
+the vector of upper bounds $\bmx^{u}$ on the variables.
+The $j$-th component of {\tt X\_u}, $j = 1, \ldots , n$,
+contains $x_{j}^{u}$.
+Infinite bounds are allowed by setting the corresponding
+components of {\tt X\_u} to any value larger than that {\tt infinity},
+where {\tt infinity} is a  solver-dependent value that will be recognised as
+infinity.
+
+\ittf{DX\_l} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp, that may hold the vector of parametric lower bounds
+$\delta \bmx^{l}$ on the variables. The $j$-th component of
+{\tt DX\_l}, $j = 1, \ldots , n$, contains $\delta x_{j}^{l}$.
+Only components corresponding to finite lower bounds $x_{j}^{l}$
+need be set.
+
+\ittf{DX\_u} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp, that may hold the vector of parametric upper bounds
+$\delta \bmx^{u}$  on the variables. The $j$-th component of
+{\tt DX\_u}, $j = 1,  \ldots ,  n$, contains $\delta x_{j}^{u}$.
+Only components corresponding to finite upper bounds $x_{j}^{u}$
+need be set.
+
+\ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp,
+that holds the values $\bmx$ of the optimization variables.
+The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.
+
+\itt{X\_status} is a rank-one allocatable array of dimension {\tt m} and type
+default \integer, that holds the status of the problem variables (active or
+inactive). Variable $j$ is said to be inactive if its value is fixed to the
+current value of {\tt X(j)}, in which case it can be interpreted as a
+parameter of the problem.
+
+\ittf{Z} is a rank-one allocatable array of dimension {\tt n} and type default
+\realdp, that holds
+the values $\bmz$ of estimates  of the dual variables
+corresponding to the simple bound constraints (see Section~\ref{galopt}).
+The $j$-th component of {\tt Z}, $j = 1,  \ldots ,  n$, contains $z_{j}$.
+
+\ittf{Z\_l} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp, that may be used to hold
+a vector of lower bounds $\bmz^{l}$ on the dual variables.
+The $j$-th component of {\tt Z\_l}, $j = 1, \ldots , n$,
+contains $z_{j}^{l}$.
+Infinite bounds are allowed by setting the corresponding
+components of {\tt Z\_l} to any value smaller than {\tt -infinity},
+where {\tt infinity} is a  solver-dependent value that will be recognised as
+infinity.
+
+\ittf{Z\_u} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp, that may be used to hold
+a vector of upper bounds $\bmz^{u}$ on the dual variables.
+The $j$-th component of {\tt Z\_u}, $j = 1, \ldots , n$,
+contains $z_{j}^{u}$.
+Infinite bounds are allowed by setting the corresponding
+components of {\tt Z\_u} to any value larger than that {\tt infinity},
+where {\tt infinity} is a  solver-dependent value that will be recognised as
+infinity.
+
+\ittf{C} is a rank-one allocatable array of dimension {\tt m} and type default
+\realdp, that holds
+the values $\bmA \bmx$ of the constraints.
+The $i$-th component of {\tt C}, $i = 1,  \ldots ,  m$, contains
+$\bma_{i}^{T}\bmx \equiv (\bmA \bmx)_{i}$.
+
+\itt{C\_status} is a rank-one allocatable array of dimension {\tt m} and type
+default \integer, that holds the status of the problem constraints (active or
+inactive). A constraint is said to be inactive if it is not included in the
+formulation of the problem under consideration.
+
+\ittf{Y} is a rank-one allocatable array of dimension {\tt m} and type
+default \realdp, that holds
+the values $\bmy$ of estimates  of the Lagrange multipliers
+corresponding to the general linear constraints (see Section~\ref{galopt}).
+The $i$-th component of {\tt Y}, $i = 1,  \ldots ,  m$, contains $y_{i}$.
+
+\ittf{Y\_l} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp, that may be used to hold
+a vector of lower bounds $\bmy^{l}$ on the Lagrange multipliers
+The $i$-th component of {\tt Y\_l}, $i = 1, \ldots , m$,
+contains $y_{i}^{l}$.
+Infinite bounds are allowed by setting the corresponding
+components of {\tt Y\_l} to any value smaller than {\tt -infinity},
+where {\tt infinity} is a  solver-dependent value that will be recognised as
+infinity.
+
+\ittf{Y\_u} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp, that may be used to hold
+a vector of upper bounds $\bmy^{u}$ on the Lagrange multipliers
+The $i$-th component of {\tt Y\_u}, $i = 1, \ldots , m$,
+contains $y_{i}^{u}$.
+Infinite bounds are allowed by setting the corresponding
+components of {\tt Y\_u} to any value larger than that {\tt infinity},
+where {\tt infinity} is a  solver-dependent value that will be recognised as
+infinity.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galmodules {\tt GALAHAD\_SMT}.
+\galio None.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
+The package is thread-safe.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose we wish to present the data for the problem, ``{\tt QPprob}'',
+of minimizing the objective function
+$\half x_1^2 + x_2^2 + \threehalves x_3^2 + 4 x_1 x_3 + 2 x_2 + 1$
+subject to the general linear constraints
+$1 \leq  2 x_{1}  +  x_{2}  \leq  2$,
+$x_{2}  +  x_{3}  =  2$, and simple bounds
+$-1  \leq  x_{1}  \leq  1$ and $x_{3}  \leq  2$
+to a minimizer in sparse co-ordinate format.
+Then, on writing the data for this problem as
+\disp{\bmH = \mat{ccc}{1 & & 4 \\ & 2 & \\ 4 &  & 3}, \;\;
+ \bmg = \vect{ 0 \\ 2 \\ 2 }, \;\;
+\bmx^{l} = \vect{ -1 \\ - \infty \\ - \infty } \tim{and}
+\bmx^{u} = \vect{ 1 \\ \infty \\ 2 },}
+and
+\disp{
+ \bmA = \mat{ccc}{ 2 & 1 & \\ & 1 & 1},\;\;
+ \bmc^{l} = \vect{ 1 \\ 2 }, \tim{and}
+ \bmc^{u} = \vect{ 2 \\ 2 }}
+we may use the following code segment:
+
+{\tt \small
+\begin{verbatim}
+   PROGRAM GALAHAD_QPT_EXAMPLE
+   USE GALAHAD_QPT_double                       ! double precision version
+   IMPLICIT NONE
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
+   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20 ! solver-dependent
+   TYPE ( QPT_problem_type ) :: p
+   INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
+! start problem data
+   ALLOCATE( p%name( 6 ) )
+   ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
+   ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
+   ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
+   p%name = TRANSFER( 'QPprob', p%name )      ! name
+   p%new_problem_structure = .TRUE.           ! new structure
+   p%Hessian_kind = - 1 ; p%gradient_kind = - 1 ! generic quadratic program
+   p%n = n ; p%m = m ; p%f = 1.0_wp           ! dimensions & objective constant
+   p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)         ! objective gradient
+   p%C_l = (/ 1.0_wp, 2.0_wp /)               ! constraint lower bound
+   p%C_u = (/ 2.0_wp, 2.0_wp /)               ! constraint upper bound
+   p%X_l = (/ - 1.0_wp, - infinity, - infinity /) ! variable lower bound
+   p%X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
+   p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp ! start from zero
+!  sparse co-ordinate storage format
+   CALL SMT_put( p%H%type, 'COORDINATE' )  ! Specify co-ordinate
+   CALL SMT_put( p%A%type, 'COORDINATE' )  ! storage for H and A
+   ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
+   ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
+   p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /) ! Hessian H
+   p%H%row = (/ 1, 2, 3, 3 /)                     ! NB lower triangle
+   p%H%col = (/ 1, 2, 3, 1 /) ; p%H%ne = h_ne
+   p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
+   p%A%row = (/ 1, 1, 2, 2 /)
+   p%A%col = (/ 1, 2, 2, 3 /) ; p%A%ne = a_ne
+! problem data complete
+! now call minimizer ....
+! ...
+! ... minimization call completed. Deallocate arrays
+   DEALLOCATE( p%name, p%G, p%X_l, p%X_u, p%C, p%C_l, p%C_u, p%X, p%Y, p%Z )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%A%val, p%A%row, p%A%col )
+   END PROGRAM GALAHAD_QPT_EXAMPLE
+\end{verbatim}
+}
+\noindent
+The same problem may be handled holding the data in
+a sparse row-wise storage format by replacing the lines
+{\tt \small
+\begin{verbatim}
+!  sparse co-ordinate storage format
+...
+! problem data complete
+\end{verbatim}
+}
+\noindent
+and
+{\tt \small
+\begin{verbatim}
+  DEALLOCATE( p%H%val, p%H%row, p%H%col, p%A%val, p%A%row, p%A%col )
+\end{verbatim}
+}
+\noindent
+by
+{\tt \small
+\begin{verbatim}
+!  sparse row-wise storage format
+   CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS' )  ! Specify sparse row-wise
+   CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS' )  ! storage for H and A
+   ALLOCATE( p%H%val( h_ne ), p%H%col( h_ne ), p%H%ptr( n + 1 ) )
+   ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( m + 1 ) )
+   p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /) ! Hessian H
+   p%H%col = (/ 1, 2, 3, 1 /)
+   p%H%ptr = (/ 1, 2, 3, 5 /)                     ! Set row pointers
+   p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
+   p%A%col = (/ 1, 2, 2, 3 /)
+   p%A%ptr = (/ 1, 3, 5 /)                        ! Set row pointers
+! problem data complete
+\end{verbatim}
+}
+\noindent
+and
+{\tt \small
+\begin{verbatim}
+   DEALLOCATE( p%H%val, p%H%col, p%H%ptr, p%A%val, p%A%col, p%A%ptr )
+\end{verbatim}
+}
+\noindent
+or using a dense storage format with the replacement lines
+{\tt \small
+\begin{verbatim}
+!  dense storage format
+   CALL SMT_put( p%H%type, 'DENSE' )  ! Specify dense
+   CALL SMT_put( p%A%type, 'DENSE' )  ! storage for H and A
+   ALLOCATE( p%H%val( n*(n+1)/2 ), p%A%val( n*m ) )
+   p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 4.0_wp, 0.0_wp, 3.0_wp /) ! Hessian
+   p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian
+! problem data complete
+\end{verbatim}
+}
+\noindent
+and
+{\tt \small
+\begin{verbatim}
+! dense storage format: real components
+   DEALLOCATE( p%H%val, p%A%val )
+! real components complete
+\end{verbatim}
+}
+\noindent
+respectively.
+
+If instead $\bmH$ had been the diagonal matrix
+\disp{\bmH = \mat{ccc}{1 & &   \\ & 0 & \\  &  & 3}}
+but the other data is as before, the diagonal storage scheme
+might be used for $\bmH$, and in this case we would instead
+{\tt \small
+\begin{verbatim}
+   CALL SMT_put( p%H%type, 'DIAGONAL' )  ! Specify dense storage for H
+   ALLOCATE( p%H%val( n ) )
+   p%H%val = (/ 1.0_wp, 0.0_wp, 3.0_wp /) ! Hessian values
+\end{verbatim}
+}
+\noindent
+Notice here that zero diagonal entries are stored.
+
+For examples of how the derived data type
+{\tt packagename\_problem\_type} may be used in conjunction with
+\galahad\ quadratic and least-distance programming codes,
+see the specification sheets
+for the packages
+{\tt \libraryname\_QPA},
+{\tt \libraryname\_QPB},
+{\tt \libraryname\_LSQP}
+and
+{\tt \libraryname\_PRESOLVE}.
+\end{document}
+
+

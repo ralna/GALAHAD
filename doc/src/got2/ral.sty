@@ -1,0 +1,188 @@
+% NAME: ral.sty
+
+% Nick Gould, September, 1994
+% This file implements citations for the ``ral'' bibliography style.
+% Place it in a file called named.sty in the TeX search path.  (Placing it
+% in the same directory as the LaTeX document should also work.)
+% This is based on the ``named'' and ``agsm'' bibliography styles.
+
+% The ``ral'' bibliography style creates citations with labels like
+%	\citeauthoryear{author-info}{year}{,further details}
+%
+% these labels are processed by the following commands:
+%
+%	\citeasnoun[further details]{key}
+%		which produces citations with author, followed by year 
+%               and optional further details enclosed in round brackets
+%	\cite[further details]{key}
+%		which produces citations with author, year and optional
+%		further details all enclosed in round brackets
+%	\citeasis[further details]{key}
+%		which produces citations with author, year and optional
+%		further details
+%	\citeauthor{key}
+%		which produces the author information only
+%	\citeyear{key}
+%		which produces the year information only
+
+\message{ral-type citation}
+
+%  ----------------------------------------------------------------
+%  Harvard (agsm) style of reference - use with agsm.bst style file
+%  ----------------------------------------------------------------
+
+\def\@hiteml[#1]#2#3#4{\item[]\if@filesw%
+      { \def\protect##1{\string ##1\space}\immediate%
+\write\@auxout{\string\harvardcite{#4}{#2}{#1}{#3}}}\fi%
+\protect\hspace*{-\labelwidth}\protect\hspace*{-\labelsep}\ignorespaces}
+
+\def\@hitem#1#2#3{\item[]\if@filesw%
+      { \def\protect##1{\string ##1\space}\immediate%
+\write\@auxout{\string\harvardcite{#3}{#1}{#1}{#2}}}\fi%
+\protect\hspace*{-\labelwidth}\protect\hspace*{-\labelsep}\ignorespaces}
+
+\def\harvarditem{\@ifnextchar [{\@hiteml}{\@hitem}}
+
+\def\harvardcite#1#2#3#4{
+  \global\@namedef{bhf@#1}{#2}
+  \global\@namedef{bha@#1}{#3}
+  \global\@namedef{bhy@#1}{#4}\global\@namedef{b@#1}{\csname bhf@#1\endcsname}
+}
+
+%  --------------------------------------------------------------------
+%  Scribe (bibtex) style of reference - use with the ral.bst style file
+%  --------------------------------------------------------------------
+
+\def\@siteml[#1]#2#3#4{\item[]\if@filesw%
+      { \def\protect##1{\string ##1\space}\immediate%
+\write\@auxout{\string\scribecite{#4}{#2}{#1}{#3}}}\fi%
+\protect\hspace*{-\labelwidth}\protect\hspace*{-\labelsep}\ignorespaces}
+
+\def\@sitem#1#2#3{\item[]\if@filesw%
+      { \def\protect##1{\string ##1\space}\immediate%
+\write\@auxout{\string\scribecite{#3}{#1}{#1}{#2}}}\fi%
+\protect\hspace*{-\labelwidth}\protect\hspace*{-\labelsep}\ignorespaces}
+
+\def\scribeitem{\@ifnextchar [{\@siteml}{\@sitem}}
+
+\def\scribecite#1#2#3#4{
+  \global\@namedef{bhf@#1}{#2}
+  \global\@namedef{bha@#1}{#3}
+  \global\@namedef{bhy@#1}{#4}\global\@namedef{b@#1}{\csname bhf@#1\endcsname}
+}
+
+%  -------------------
+%  general definitions
+%  -------------------
+
+\def\@enamedef#1{\expandafter\edef\csname #1\endcsname}
+
+\gdef\hysep@agsm{\ }\gdef\hisep@agsm{,}%
+\gdef\hysep@dcu{, }\gdef\hisep@dcu{;}%
+\let\@hysep\hysep@agsm \let\@hisep\hisep@agsm
+\def\citationstyle#1{%
+\global\@namedef{@hysep}{\csname hysep@#1\endcsname}%
+\global\@namedef{@hisep}{\csname hisep@#1\endcsname}}
+
+%  ----
+%  cite
+%  ----
+
+\def\cite{\@ifnextchar [{\@tempswatrue\@citex}{\@tempswafalse\@citex[]}}
+\def\@citex[#1]#2{\if@filesw\immediate\write\@auxout{\string\citation{#2}}\fi
+  \def\@citea{}\@cite{\@for\@citeb:=#2\do
+    {\@citea\def\@citea{\@hisep\penalty\@m\ }\@ifundefined
+       {b@\@citeb}{{\bf ?}\@warning
+       {Citation `\@citeb' on page \thepage \space undefined}}%
+{{\csname b@\@citeb\endcsname\@hysep\csname bhy@\@citeb\endcsname}%
+\global\@enamedef{b@\@citeb}{\csname bha@\@citeb\endcsname}}%
+}}{#1}}
+\def\@cite#1#2{({#1\if@tempswa , #2\fi})}
+
+%  ----------
+%  citeasnoun
+%  ----------
+
+\def\citeasnoun{\@ifnextchar [{\@tempswatrue\@citexasnoun}
+                           {\@tempswafalse\@citexasnoun[]}}
+\def\@citexasnoun[#1]#2{%
+\if@filesw\immediate\write\@auxout{\string\citation{#2}}\fi%
+\@citeasnoun{{\@ifundefined%
+{b@#2}%
+{{\bf ?}\@warning{Citation `#2' on page \thepage \space undefined}}%
+{{\csname b@#2\endcsname\ (\csname bhy@#2\endcsname}%
+\global\@namedef{b@#2}{\csname bha@#2\endcsname}}%
+}}{#1}}
+\def\@citeasnoun#1#2{{#1\if@tempswa , #2\fi)}}
+
+%  --------
+%  citeasis
+%  --------
+
+\def\citeasis{\@ifnextchar [{\@tempswatrue\@citexasis}
+                           {\@tempswafalse\@citexasis[]}}
+\def\@citexasis[#1]#2{%
+\if@filesw\immediate\write\@auxout{\string\citation{#2}}\fi%
+\@citeasis{{\@ifundefined%
+{b@#2}%
+{{\bf ?}\@warning{Citation `#2' on page \thepage \space undefined}}%
+{{\csname b@#2\endcsname , \csname bhy@#2\endcsname}%
+\global\@namedef{b@#2}{\csname bha@#2\endcsname}}%
+}}{#1}}
+\def\@citeasis#1#2{{#1\if@tempswa , #2\fi}}
+
+%  ----------
+%  citeauthor
+%  ----------
+
+\def\citeauthor{\@ifnextchar [{\@tempswatrue\@citexauthor}
+                           {\@tempswafalse\@citexauthor}}
+\def\@citexauthor#1{%
+\if@filesw\immediate\write\@auxout{\string\citation{#1}}\fi%
+\@citeauthor{{\@ifundefined%
+{b@#1}%
+{{\bf ?}\@warning{Citation `#1' on page \thepage \space undefined}}%
+{{\csname b@#1\endcsname}}%
+}}}
+\def\@citeauthor#1{{#1}}
+
+%  --------
+%  citeyear
+%  --------
+
+\def\citeyear{\@ifnextchar [{\@tempswatrue\@citexyear}
+                           {\@tempswafalse\@citexyear}}
+\def\@citexyear#1{%
+\if@filesw\immediate\write\@auxout{\string\citation{#1}}\fi%
+\@citeyear{{\@ifundefined%
+{b@#1}%
+{{\bf ?}\@warning{Citation `#1' on page \thepage \space undefined}}%
+{{\csname bhy@#1\endcsname}%
+\global\@namedef{b@#1}{\csname bha@#1\endcsname}}%
+}}}
+\def\@citeyear#1{{#1}}
+
+% ----------------------------------------------------
+% CHANGE \end{document} - to handle double definitions
+% ----------------------------------------------------
+
+\def\enddocument{\@checkend{document}\clearpage\begingroup
+\if@filesw \immediate\closeout\@mainaux
+\def\global\@namedef##1##2{}\def\newlabel{\@testdef r}%
+\def\bibcite{\@testdef b}%
+\def\harvardcite{\@testbibh}\@tempswafalse \makeatletter\input \jobname.aux
+\if@tempswa \@warning{Label(s) may have changed.  Rerun to get
+cross-references right}\fi\fi\endgroup\deadcycles\z@\@@end}
+
+\def\@testbibh #1#2#3{
+  \def\@tempa{#2}\expandafter
+  \ifx \csname bhf@#1\endcsname \@tempa
+     \def\@tempa{#3}\expandafter
+     \ifx \csname bha@#1\endcsname \@tempa
+     \else \@tempswatrue
+     \fi
+  \else
+     \@tempswatrue
+  \fi
+}
+

@@ -1,0 +1,49 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            QPC.data
+! problem-data-file-device                          26
+! write-initial-sif                                 no
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! scale-problem                                     0
+! pre-solve-problem                                 no
+! write-presolved-sif                               no
+! presolved-sif-file-name                           PRESOLVE.SIF
+! presolved-sif-file-device                         52
+! write-scaled-sif                                  no
+! scaled-sif-file-name                              SCALED.SIF
+! scaled-sif-file-device                            58
+! solve-problem                                     no
+! print-full-solution                               no
+! write-solution                                    yes
+! solution-file-name                                QPCSOL.d
+! solution-file-device                              62
+! write-result-summary                              yes
+! result-summary-file-name                          QPCRES.d
+! result-summary-file-device                        47
+
+INCLUDE QPC
+
+INCLUDE QPA
+
+INCLUDE QPB
+
+INCLUDE LSQP
+
+INCLUDE CQP
+
+INCLUDE EQP
+
+INCLUDE SBLS
+
+INCLUDE SLS
+
+INCLUDE GLTR
+
+INCLUDE FDC
+
+INCLUDE FIT
+
+INCLUDE PRESOLVE
+
+INCLUDE CRO

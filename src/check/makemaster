@@ -1,0 +1,208 @@
+#  Main body of the installation makefile for the GALAHAD TRIMSQP package
+
+#  N. Gould, D. Orban, D. Robinson and Ph. L. Toint.
+#  This version: 7 XII 2007
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SCHECK = nlpt mop space check
+DCHECK = nlpt mop space check
+
+CHECKS = nlpt mop space $(LGS)(check.o)
+CHECKD = nlpt mop space $(LGD)(check.o)
+
+CHECKSS = $(SCHECK) $(OBJS)/checks.o
+CHECKDS = $(DCHECK) $(OBJD)/checks.o
+CHECKST = $(CHECKS) $(OBJS)/checkt.o
+CHECKDT = $(CHECKD) $(OBJD)/checkt.o
+
+RCHECKSS = $(OBJD)/checks.o -L$(OBJD) $(LIBS)
+RCHECKDS = $(OBJD)/checks.o -L$(OBJD) $(LIBS)
+RCHECKST = $(OBJS)/checkt.o -L$(OBJS) $(LIBS)
+RCHECKDT = $(OBJD)/checkt.o -L$(OBJD) $(LIBS)
+
+SUCC = precision version) compiled successfully
+
+#  main compilations and runs
+
+all: check
+
+# check
+
+check_silent: check_$(PRECIS)
+check: check_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: CHECK ($(PRECIS) $(SUCC)"
+check_single: $(CHECKS)
+	$(RANLIB) $(LGS)
+check_double: $(CHECKD)
+	$(RANLIB) $(LGD)
+
+#  basic packages
+
+mop:
+	( cd ../mop ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mop.o PRECIS=$(PRECIS) PWD=$(PWD)/../mop )
+
+nlpt:
+	( cd ../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../filtrane )
+
+space:
+	( cd ../space ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            space.o PRECIS=$(PRECIS) PWD=$(PWD)/../space )
+
+# run spec-sheet example tests
+
+checks.o: $(OBJ)/checks.o
+
+$(OBJ)/checks.o: ../check/checks.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "checks  "
+	$(SED) -f $(SEDS) ../check/checks.f90 > $(OBJ)/checks1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/checks1.f90 > $(OBJ)/checks.f90
+	cd $(OBJ) ; $(FORTRAN) -o checks.o $(FFLAGS) checks.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+checkds: $(CHECKDS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o dummy_file $(RCHECKDS)
+	- ./dummy_file >& checkds.output
+	cat checkds.output
+	rm ./dummy_file
+
+#  Substantial GALAHAD packages
+
+check.o: $(LG)(check.o)
+
+$(LG)(check.o): ../check/check.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "check   "
+	$(SED) -f $(SEDS) ../check/check.f90 > $(OBJ)/check1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/check1.f90 > $(OBJ)/check2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/check2.f90 > $(OBJ)/check3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/check3.f90 > $(OBJ)/check.f90
+	cd $(OBJ); $(FORTRAN) -o check.o $(FFLAGSS) check.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o check.o $(FFLAGSN) check.f90 )
+	cd $(OBJ); $(ARR) check.o ; $(RM) check.f90 check1.f90 \
+                          check2.f90 check3.f90 check.o
+	$(RMOBFILE) checks.o
+	$(RMOBFILE) checkt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+mop.o: $(LG)(mop.o)
+
+$(LG)(mop.o): ../mop/mop.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mop   "
+	$(SED) -f $(SEDS) ../mop/mop.f90 > $(OBJ)/mop1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/mop1.f90 > $(OBJ)/mop2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/mop2.f90 > $(OBJ)/mop3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/mop3.f90 > $(OBJ)/mop.f90
+	cd $(OBJ); $(FORTRAN) -o mop.o $(FFLAGSS) mop.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o mop.o $(FFLAGSN) mop.f90 )
+	cd $(OBJ); $(ARR) mop.o ; $(RM) mop.f90 mop1.f90 \
+                          mop2.f90 mop3.f90 mop.o
+	$(RMOBFILE) mops.o
+	$(RMOBFILE) mopt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  test decks
+
+checkt.o: $(OBJ)/checkt.o
+
+$(OBJ)/checkt.o: ../check/checkt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "checkt  "
+	$(SED) -f $(SEDS) ../check/checkt.f90 > $(OBJ)/checkt1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/checkt1.f90 > $(OBJ)/checkt.f90
+	cd $(OBJ) ; $(FORTRAN) -o checkt.o $(FFLAGS) checkt.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+checkst: $(CHECKST)
+	echo " Exhaustive test of subroutine interface within check "
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o dummy_file $(RCHECKST)
+	- ./dummy_file >& checkt.output
+	cat checkt.output
+	rm ./dummy_file
+
+checkdt: $(CHECKDT)
+	echo " Exhaustive test of subroutine interface to check"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o dummy_file $(RCHECKDT)
+	- ./dummy_file >& checkt.output
+	cat checkt.output
+	rm ./dummy_file
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LG) $(OBJ)/checkt.o $(OBJ)/checks.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+

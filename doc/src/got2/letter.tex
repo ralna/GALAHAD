@@ -1,0 +1,92 @@
+\documentclass[12pt,a4paper]{letter}    
+\newcommand{\gal}{{\sf GALAHAD}}
+%\makelabels
+\include{cseletter}
+\begin{document}
+%\vspace*{-1.0in}
+\begin{letter}{Professor Michael Saunders \\
+Dept. of Management Science and Engineering \\
+Terman Building \\
+Stanford University \\
+Stanford, CA 94305-4062, USA}
+
+\noindent
+\opening{Dear Michael,}
+   
+Thank you very much for your letter of  February 28th concerning the paper
+\begin{center}
+ \gal, a library of thread-safe Fortran 90 
+packages for large-scale nonlinear optimization
+\end{center}
+that I wrote with Dominique Orban and Philippe Toint, and that
+you have been handling for {\em ACM TOMS}.
+
+We have now looked through your review, and have prepared a
+revision that aims to take into account all of your comments.
+
+In response to the specific comments:
+
+\begin{enumerate}
+\item We understand your perspective, but we feel that a change of
+name at this stage would confuse both us and our user community.
+Certainly, although we view some of the routines as being of perhaps
+less global use that others, they all have their own documentation,
+and we believe they stand on their own. Of course, each module has
+its own internal procedures, but one of the nice features of
+modern Fortran is that these may safely be hidden from users. We hope
+you understand our reluctance to change after so long!
+
+\item Done.
+
+\item Done.
+
+\item Done, although we called this $m^Q(s)$.
+
+\item Yes, this was poorly written. We have tried to clarify this.
+
+\item Comment added. The reason is simply that for the QPBAND case, 
+the linear solver chose to perform additional pivoting for stability,
+and this led to significant fill in.
+
+\item Phrase removed.
+
+\item Done.
+
+\item Done.
+
+\item Explained. We simply mean that the variable is not involved in
+any of the general constraints.
+
+\item This is indeed the case. We allow certain options to change
+between presolving one problem and a succeeding `structurally similar'' one.
+
+\item No. If an unsymmetric change is made to the extended matrix, it
+is more efficient to be able to solve with both $A$ and its transpose.
+
+\item Yes, they are updated too. Comment added.
+\end{enumerate}
+Although we still plan to add SQP solvers, we are still working on this,
+so it is unfortunately a bit premature to add details now.
+
+As for the marked-up manuscript, we have adopted all of your suggestions
+except (old manuscript pages):
+
+\begin{description}
+\item p3. We have not reversed the orders of 
+{\tt QPB} and {\tt QPA} as we believe that
+{\tt QPB} is generally superior, and we really intend that
+people try the latter before the former!
+
+\item p7, eq (2.2) trailing comma retained.
+
+\item p7, eq (2.3) trailing full-stop changed to a comma.
+\end{description}
+
+We all feel that you have done a superb job in reading the
+paper very carefully, and are extremely grateful for your help.
+
+\closing{With best wishes,}
+
+\end{letter} 
+
+\end{document}

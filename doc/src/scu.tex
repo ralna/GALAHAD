@@ -1,0 +1,1042 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{scu}
+\newcommand{\packagename}{SCU}
+\newcommand{\fullpackagename}{\libraryname\-\_\-\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+
+{\tt \fullpackagename} is a suite of Fortran procedures for 
+computing the 
+the {\bf solution to an extended system of $n + m$ 
+sparse real linear equations in $n  +  m$ unknowns,} 
+\eqn{1}{\mat{cc}{ \bmA & \bmB \\ \bmC & \bmD } \vect{\bmx_1 \\ \bmx_2}
+ =  \vect{\bmb_1 \\ \bmb_2}.}
+in the case where the $n$ by $n$ matrix $\bmA$ is nonsingular 
+and solutions to the systems 
+\disp{\bmA \bmx  =  \bmb \tim{and} \bmA^T \bmy  =  \bmc}
+may be obtained from an external source, such as an existing 
+factorization.  The subroutine uses reverse communication to obtain 
+the solution to such smaller systems.  The method makes use of 
+the Schur complement matrix 
+\disp{\bmS  =  \bmD  -  \bmC    \bmA^{-1} \bmB.}
+The Schur complement is stored and factorized as a dense matrix 
+and the subroutine is thus appropriate only if there is 
+sufficient storage for this matrix. Special advantage is taken 
+of symmetry and definiteness in the coefficient matrices. 
+Provision is made for introducing additional rows and columns 
+to, and removing existing rows and columns from, the extended 
+matrix. 
+ 
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double},
+\galuses {\tt \_ROT}, {\tt \_ROTG}. 
+\galdate October 2001.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory, and
+Ph. L. Toint, University of Namur, Belgium.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hskip0.5in {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hskip0.5in {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types 
+{\tt \packagename\_matrix\_type}, 
+{\tt \packagename\_info\_type}, and
+{\tt \packagename\_data\_type} 
+(Section~\ref{galtypes}),
+and the subroutines
+{\tt \packagename\_factorize},  
+{\tt \packagename\_solve},  
+{\tt \packagename\_append},  
+{\tt \packagename\_delete}, 
+and 
+{\tt \packagename\_terminate} 
+(Section~\ref{galarguments})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Three derived data types are accessible from the package.
+
+%%%%%%%%%%% matrix type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding matrix information}
+\label{typematrix}
+The derived data type {\tt \packagename\_matrix\_type} is used to hold 
+data about the extended matrix and its factors. The components of 
+{\tt \packagename\_matrix\_type} 
+are:
+
+\begin{description}
+
+\ittf{n} is a scalar of type default \integer, that holds the value of 
+$n$, the dimension of the matrix $ \bmA$. 
+ 
+\ittf{m} is a scalar of type default \integer, that holds the value of  
+$m$, dimension of the matrix $\bmD$. 
+ 
+\itt{m\_max} is an scalar of type default \integer,
+that holds the dimension of the largest possible matrix $\bmD$ to be permitted
+by the package. 
+
+\itt{class} is a scalar of type default \integer,
+that indicates the type of matrix to be processed. Permitted values are: 
+
+\begin{description} 
+\itt{1} the extended matrix is unsymmetric, 
+\itt{2} the extended matrix is symmetric, 
+\itt{3} the extended matrix is symmetric and the Schur complement matrix 
+$\bmS$ is known to be positive definite. 
+\itt{4} the extended matrix is symmetric and the Schur complement matrix 
+$\bmS$ is known to be negative definite. 
+\end{description} 
+
+\itt{BD\_val} is a rank-one allocatable of  
+type default \realdp, 
+that holds the values of the entries in the partitioned matrix 
+\eqn{2}{\vect{\bmB \\ \bmD_U},}
+where $\bmD_U$ is the upper triangular part of $\bmD$, ie, 
+$( \bmD_U )_{ij}  =  ( \bmD )_{ij} $ if $i  \leq  j$ and zero otherwise. 
+The entries must be ordered by columns, with the entries in each column 
+contiguous and those of column 
+$j$ preceding those of column $j+1$ $(j = 1, ...., m)$. The ordering 
+within each column is unimportant. 
+ 
+\itt{BD\_row} is a rank-one allocatable of type default \integer, that holds 
+the row indices of the corresponding entries in {\tt BD\_val.} 
+ 
+\itt{BD\_col\_start} is a rank-one allocatable of type default \integer, that  
+must be set so that {\tt BD\_col\_start(j)} holds the positions 
+in the arrays {\tt BD\_val} and {\tt BD\_row} of the first entry in column $j$ 
+$(j = 1, ...., m)$. {\tt BD\_col\_start(m+1)} must be set to 
+the number of entries in the matrix (2) plus one. 
+ 
+\itt{CD\_val} is a rank-one allocatable of type default  
+\realdp, that need not be 
+set in the symmetric case. In the unsymmetric case, it 
+holds the values of the entries in the partitioned matrix 
+\eqn{3}{ ( \bmC \;\;   \bmD_L ),}
+where $\bmD_L$ is the strict lower triangular part of $\bmD$, ie, 
+$( \bmD_L )_{ij}  =  ( \bmD )_{ij} $ if $i  >  j$ and zero 
+otherwise. 
+The entries must be ordered by rows, with the entries in each row 
+contiguous and those of row 
+$i$ preceding those of row $i+1$ $(i = 1, ...., m)$. 
+The ordering within each row is unimportant. 
+ 
+\itt{CD\_col} is a rank-one allocatable of type default \integer, 
+that need not be set in the symmetric case. In the unsymmetric case, it holds 
+the column indices of the corresponding entries in {\tt CD\_val}. 
+ 
+\itt{CD\_row\_start} is a rank-one allocatable of type default \integer, 
+that need not be set in the symmetric case. In the unsymmetric case, it  
+must be set so that {\tt CD\_row\_start(i)} points to the  
+positions in the arrays {\tt CD\_val} and {\tt CD\_col} of the first entry in row $i$ 
+$(i = 1, ...., m)$. {\tt CD\_row\_start(m+1)} must be set to 
+the number of entries in the matrix \req{3} plus one. 
+ 
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type 
+{\tt \packagename\_data\_type} 
+is used to hold all the data for a particular problem between calls of 
+{\tt \packagename} procedures. 
+This data should be preserved, untouched, from the initial call to 
+{\tt \packagename\_factorize}
+to the final call to
+{\tt \packagename\_terminate}.
+All components of {\tt \packagename\_data\_type} are private.
+
+%%%%%%%%%%% info type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinfo}
+The derived data type 
+{\tt \packagename\_info\_type} 
+is used to hold parameters that give information about the factorization.
+The components of
+{\tt \packagename\_info\_type} 
+are:
+
+\begin{description}
+\itt{alloc\_status} is a scalar of type default \integer, that contains 
+the return status from the last attempted internal  
+workspace array allocation or deallocation. 
+A non-zero value indicates that the allocation or deallocation was
+ unsuccessful, and corresponds to the {\tt STAT=} value on the user's system. 
+Consult local compiler documentation for further details. 
+ 
+\itt{inertia} is a rank-one array of length 3 and type default \integer, 
+that holds the inertia of $\bmS$ when the extended matrix is symmetric. 
+Specifically, {\tt inertia(i),} {\tt i=1,2,3},  
+give the number of positive, negative and zero eigenvalues of  
+$\bmS$ respectively. 
+ 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+To solve the extended system, 
+%the user must first call 
+%{\tt \packagename\_initialize} to set up the internal data structures that 
+%will be used 
+%to hold the factors of the Schur complement matrix $\bmS$. 
+%Next, 
+the user must first call {\tt \packagename\_factorize} to form and factorize 
+the Schur complement, 
+and then call {\tt \packagename\_solve} to compute the solution to the extended 
+system. The solution of additional extended systems, with the 
+same coefficient matrix but different right-hand sides, may 
+be found by further calls to 
+{\tt \packagename\_solve.} 
+
+The solution of further-extended systems of the form 
+\disp{\mat{ccc}{ \bmA & \bmB & \bmc_1 \\ \bmC & \bmD & \bmc_2 \\ 
+ \bmr_1^T &  \bmr_2^T & d } \vect{\bmx_1 \\ \bmx_2 \\ x_{n+m+1}} = 
+ \vect{\bmb_1 \\ \bmb_2 \\ b_{n+m+1}}.}
+may be found by firstly calling {\tt \packagename\_append} to update the 
+existing factorization of $\bmS$ 
+(obtained from {\tt \packagename\_factorize)} to give that of 
+the Schur complement of $ \bmA$ 
+in the further-extended coefficient matrix and then by calling 
+{\tt \packagename\_solve.} 
+Likewise, the solution of extended systems of the form 
+\disp{\mat{cc}{ \bmA & \bar{\bmB} \\ \bar{\bmC} & \bar{\bmD} }
+ \vect{\bmx_1 \\ \bmx_2} = \vect{\bmb_1 \\ \bmb_2}.}
+in which a row and column are removed from the 
+coefficient matrix of \req{1}, 
+may be found by firstly calling {\tt \packagename\_delete} to update the 
+existing factorization of $\bmS$ 
+(obtained from {\tt \packagename\_factorize)} to give that of 
+the Schur complement of $ \bmA$ 
+in the new extended coefficient matrix and then once again by calling 
+{\tt \packagename\_solve.} 
+
+Finally, the user may call {\tt \packagename\_terminate} 
+to deallocate any workspace used to hold the factors of $\bmS$. 
+
+We use square brackets {\tt [ ]} to indicate \optional arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+%\subsubsection{The initialization stage}\label{subinit}
+
+%Internal data structures required to hold the factors of 
+%the (sequence of) Schur complement(s) must be initialized
+%as follows: 
+%\vspace*{1mm}%
+
+%\hskip0.5in 
+%{\tt CALL \packagename\_initialize( data )}
+
+%\begin{description}
+
+%\itt{data} is a scalar \intentout\ argument of type 
+%{\tt \packagename\_data\_type} 
+%(see Section~\ref{typedata}) used to hold the factors of $\bmS$. 
+ 
+%\end{description}
+
+%%%%%%%%% factorization subroutine %%%%%%
+
+\subsubsection{The factorization stage}
+The Schur complement matrix may be factorized as follows:
+\vspace*{1mm}
+
+\hskip0.5in 
+{\tt CALL \packagename\_factorize( matrix, data, VECTOR, status, info )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{matrix} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_matrix\_type} 
+(see Section~\ref{typematrix}). 
+The following components are used by {\tt \packagename\_factorize} : 
+ 
+\begin{description} 
+\itt{n} must be set to $n$, the dimension of the matrix $ \bmA$. 
+It is unchanged by the subroutine. {\bf Restriction:} ${\tt n} \geq 0$.
+ 
+\itt{m\_max} must be set to the 
+dimension of the largest matrix $\bmD$ that will be allowed 
+by the package. Internal workspace of dimension 
+{\tt m\_max} $\ast$ {\tt (m\_max+3)/2} 
+(or {\tt 3m\_max} $\ast$ {\tt (m\_max+1)/2} if {\tt class = 1}) 
+will be used by the package. Thus care should be taken not to set {\tt m\_max} 
+larger than is absolutely necessary to account for the sequence of  
+extended matrices likely to be encountered. 
+{\bf Restriction:} ${\tt m\_max} \geq 0$.
+ 
+\itt{m} must be set to $m$, dimension of the matrix $\bmD$. 
+It is unchanged by the subroutine. 
+{\bf Restriction:} ${\tt 0} \leq {\tt m} \leq {\tt m\_max}$.
+ 
+\itt{class} must be set to indicate the type of matrix that will be
+processed (see Section~\ref{typematrix}). 
+If $\bmS$ is known 
+to be (positive or negative) definite throughout the sequence 
+of extended matrices to be considered, it is more efficient to set 
+{\tt class} $= 3$ or 4. Likewise, if the matrix is known 
+to be symmetric throughout the sequence 
+of extended matrices to be considered, it is more efficient to set 
+{\tt class} $> 1$.  
+{\bf Restriction:} $1 \leq  {\tt class} \leq 4$. 
+ 
+\itt{BD\_val} and {\tt BD\_row} must be set as described in 
+Section~\ref{typematrix}  to hold the values and row indices, respectively, 
+of the matrix \req{2}.  Before use, the arrays must be {\tt ALLOCATE}d 
+to be of sufficient length to hold any matrix of the form \req{2} 
+to be encountered in the sequence of 
+extended matrices to be considered. Any elements in {\tt BD\_val} and 
+{\tt BD\_row} 
+that lie below the diagonal of $\bmD$ will be removed by 
+{\tt \packagename\_factorize}. 
+ 
+\itt{BD\_col\_start} must be set as described in Section~\ref{typematrix}
+to hold the 
+positions of the start of the columns of \req{2}, as well as to the first 
+position past the end of the last column. 
+Before use, this array must be {\tt ALLOCATE}d to be of length at least 
+{\tt m\_max+1}. 
+The values of this array may be altered if entries that lie 
+below the diagonal of $\bmD$ are removed by {\tt \packagename\_factorize}. 
+ 
+\itt{CD\_val} and {\tt CD\_col}.   
+When {\tt class=1}, 
+these must be set as described in Section~\ref{typematrix} to hold the 
+values and column indices, respectively, of the matrix \req{3}.  
+Before use, the arrays must be {\tt ALLOCATE}d 
+to be of sufficient length to hold any matrix of the form \req{3} 
+to be encountered in the sequence of 
+extended matrices to be considered. Any elements in 
+{\tt CD\_val} and {\tt CD\_col} 
+that lie on or to the right of the diagonal of $\bmD$ will be removed by  
+{\tt \packagename\_factorize}. 
+This component need not be {\tt ALLOCATE}d or set if {\tt class} $> 1$. 
+ 
+\itt{CD\_row\_start}. When {\tt class=1}, 
+this must be set as described in Section~\ref{typematrix} to hold the 
+positions of the start of the rows in \req{3}, as well as to the first 
+position past the end of the last row. 
+Before use, this array must be {\tt ALLOCATE}d to be of length at least 
+{\tt m\_max+1}. 
+The values of this array may be altered if entries that lie on or to the 
+right of the diagonal of $\bmD$ are removed by {\tt \packagename\_factorize}. 
+This component need not be {\tt ALLOCATE}d or set if {\tt class} $> 1$. 
+ 
+\end{description} 
+ 
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}. 
+It must not have been altered since the last call to  
+%{\tt \packagename\_initialize}, 
+{\tt \packagename\_factorize}, 
+{\tt \packagename\_append} or 
+{\tt \packagename\_delete}. 
+ 
+\itt{VECTOR} is an \intentinout\ rank-one array argument of length 
+{\tt matrix\%n} 
+and type \realdp, 
+that needs not be set by 
+the user on initial ({\tt status=1)} entry. If {\tt status} is greater than 
+1 on exit, a re-entry must be made with {\tt VECTOR} set appropriately 
+(see Section~\ref{galreverse}). 
+ 
+\itt{status} is an scalar \intentinout\ argument of type 
+default {\tt INTEGER,} that  
+must be set by the user on initial input to 1. On output, the value of 
+{\tt status} 
+is used to request additional information, to signal an error 
+in the input data or to indicate a successful call to the subroutine. 
+A successful call is indicated by the exit value {\tt status=0}. 
+For other values, see Sections~\ref{galreverse} and \ref{galerrors}. 
+ 
+\itt{info} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_info\_type} 
+(see Section~\ref{typeinfo}). 
+ 
+\end{description}
+
+%%%%%%% solution subroutine %%%%%%
+
+\subsubsection{The solution stage}
+Solve the extended system of equations using 
+the  factorization produced by a previous call to  
+{\tt \packagename\_factorize}, {\tt \packagename\_append} 
+or {\tt \packagename\_delete}, 
+as follows: 
+\vspace*{1mm}
+
+\hskip0.5in 
+{\tt CALL \packagename\_solve( matrix, data, RHS, X, VECTOR, status )}
+
+\vspace*{-2mm}
+\begin{description}
+\itt{matrix} is a scalar \intentin\ argument of type 
+{\tt \packagename\_matrix\_type} 
+(see Section~\ref{typematrix}), that must not have been changed since the 
+last call to 
+{\tt \packagename\_factorize}, {\tt \packagename\_append} or 
+{\tt \packagename\_delete}. 
+ 
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}. 
+It must not have been altered since the last call to  
+%{\tt \packagename\_initialize}, 
+{\tt \packagename\_factorize}, 
+{\tt \packagename\_append} or 
+{\tt \packagename\_delete}. 
+ 
+\itt{RHS} is an \intentin\ rank-one array argument of length  
+{\tt matrix\%n+matrix\%m} 
+and type \realdp, 
+that must be set on entry to the values of the right-hand-side vector 
+\disp{\vect{ \bmb_1 \\ \bmb_2}}
+of the extended 
+system of equations. {\tt RHS} is not altered by the subroutine. 
+ 
+\itt{X} is an \intentout\ rank-one array argument of length  
+{\tt matrix\%n+matrix\%m} 
+and type \realdp. 
+On final ({\tt status=0)} exit, {\tt X} contains the values of the solution 
+\disp{\vect{ \bmx_1 \\ \bmx_2}}
+to the extended system of equations. 
+ 
+\itt{VECTOR} is an \intentinout\ rank-one array argument of length 
+{\tt matrix\%n} 
+and type \realdp, that needs not be set by 
+the user on initial ({\tt status=1)} entry. If {\tt status} is greater than 
+1 on exit, a re-entry must be made with {\tt VECTOR} set appropriately 
+(see Section~\ref{galreverse}). 
+ 
+\itt{status} is an scalar \intentinout\ argument of type default 
+{\tt INTEGER,} that  
+must be set by the user on initial input to 1. On output, the value of 
+{\tt status} 
+is used to request additional information, to signal an error 
+in the input data or to indicate a successful call to the subroutine. 
+A successful call is indicated by the exit value {\tt status=0}. 
+For other values, see Section~\ref{galreverse}. 
+
+\end{description}
+
+%%%%%%% updating subroutine %%%%%%
+
+\subsubsection{The updating stage}
+Call {\tt \packagename\_append} to extend the factorization of the Schur 
+complement when a new row and column are appended to the 
+extended matrix. Subsequent systems of equations with the larger 
+coefficient matrix may then be solved by calls to {\tt \packagename\_solve.} 
+Note in particular that the arrays {\tt matrix\_CD\_val}, 
+{\tt matrix\_CD\_col}, {\tt matrix\_CD\_row\_start}, {\tt matrix\_BD\_val},  
+{\tt matrix\_BD\_row} and {\tt matrix\_BD\_col\_start} 
+must be sufficiently large to allow for the incoming row and column. 
+The factorization may be extended as follows:
+\vspace*{1mm}
+
+\hskip0.5in 
+{\tt CALL \packagename\_append( matrix, data, VECTOR, status, info )}
+
+\vspace*{-2mm}
+\begin{description}
+\itt{matrix} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_matrix\_type} 
+(see Section~\ref{typematrix}). The following components are used by 
+{\tt \packagename\_append} : 
+ 
+\begin{description} 
+\ittf{n}, {\tt m\_max}, {\tt m} and {\tt class}.
+These should not have been changed since the last call to 
+{\tt \packagename\_factorize}, {\tt \packagename\_append} or 
+{\tt \packagename\_delete}. 
+On a successful exit ({\tt status} = 0) from {\tt \packagename\_append},  
+{\tt n} will be unaltered and {\tt m} will have 
+been increased by 1 to account for the appended row and column. 
+{\bf Restriction:} ${\tt 0} \leq {\tt m} \leq {\tt m\_max}-1$.
+ 
+\itt{BD\_val} and {\tt BD\_row}. These must be set as described  
+in Section~\ref{typematrix} to hold the values and row indices, respectively, 
+of the further extended matrix  
+\eqn{4}{\mat{cc}{ \bmB & \bmc_1 \\ \bmD_U &  \bmc_2 \\ & d}.}
+Specifically, the first {\tt col\_start(m+1)-1} elements 
+of {\tt BD\_val} and {\tt BD\_row} should not have been changed since the 
+last call to 
+{\tt \packagename\_factorize}, {\tt \packagename\_append} or 
+{\tt \packagename\_delete}, while 
+elements {\tt col\_start(m+1)}, ... should contain 
+the values and row indices of the appended column 
+\disp{\vect{ \bmc_1 \\ \bmc_2 \\ d},}
+the ordering within this column being unimportant. 
+ 
+\itt{BD\_col\_start} must be set as described in 
+Section~\ref{typematrix} to hold the 
+positions of the start of the columns of \req{4}, as well as to the first 
+position past the end of the last column. 
+Specifically, the first {\tt m+1} elements 
+of {\tt BD\_col\_start} should not have been changed since the last call to 
+{\tt \packagename\_factorize}, {\tt \packagename\_append} or 
+{\tt \packagename\_delete}, while 
+{\tt BD\_col\_start(m+2)} should be set to the number of entries in 
+\req{4} plus one. 
+ 
+\itt{CD\_val} and {\tt CD\_col}. 
+When {\tt \packagename\_factorize} was last called with {\tt matrix\%class=1}, 
+these must be set as described in Section~\ref{typematrix} to hold the 
+values and column indices respectively of the further extended matrix  
+\eqn{5}{\mat{cc}{\bmC & \bmD_L \\ \bmr_1^T & \bmr_2^T}.}
+Specifically, the first {\tt row\_start(m+1)-1} elements 
+of {\tt CD\_val} and {\tt CD\_col} should not have been changed since the 
+last call to 
+{\tt \packagename\_factorize}, {\tt \packagename\_append} or 
+{\tt \packagename\_delete}, while 
+elements {\tt row\_start(m+1)}, ... should contain 
+the values and column indices of the appended row 
+\disp{( \bmr_1 \;\; \bmr_2^T ),}
+the ordering within this row being unimportant. 
+This component need not be {\tt ALLOCATE}d or set if
+{\tt \packagename\_fac\-torize} was last called with {\tt matrix\%class} $> 1$. 
+ 
+\itt{CD\_row\_start.} 
+When {\tt \packagename\_factorize} was last called with {\tt matrix\%class=1}, 
+this must be set as described in Section~\ref{typematrix} to hold the 
+positions of the start of the rows of (6), as well as to the first 
+position past the end of the last row. 
+Specifically, the first {\tt m+1} elements 
+of {\tt CD\_row\_start} should not have been changed since the last call to 
+{\tt \packagename\_factorize}, {\tt \packagename\_append} or 
+{\tt \packagename\_delete}, while 
+{\tt CD\_row\_start(m+2)} should be set to the number of entries in 
+\req{5} plus one. 
+This component need not be {\tt ALLOCATE}d or set if 
+{\tt \packagename\_factorize} was last called with {\tt matrix\%class} $> 1$. 
+ 
+\end{description} 
+ 
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}. 
+It must not have been altered since the last call to  
+%{\tt \packagename\_initialize}, 
+{\tt \packagename\_factorize}, 
+{\tt \packagename\_append} or 
+{\tt \packagename\_delete}. 
+ 
+\itt{VECTOR} is an \intentinout\ rank-one array argument of length 
+{\tt matrix\%n} 
+and type \realdp, that needs not be set by 
+the user on initial ({\tt status=1)} entry. If {\tt status} is greater than 
+1 on exit, a re-entry must be made with {\tt VECTOR} set appropriately 
+(see Section~\ref{galreverse}). 
+ 
+\itt{status} is an scalar \intentinout\ argument of type default 
+{\tt INTEGER,} that  
+must be set by the user on initial input to 1. On output, the value of 
+{\tt status} 
+is used to request additional information, to signal an error 
+in the input data or to indicate a successful call to the subroutine. 
+A successful call is indicated by the exit value {\tt status=0}. 
+For other values, see Section~\ref{galreverse} and \ref{galerrors}. 
+ 
+\itt{info} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_info\_type} (see Section~\ref{typeinfo}). 
+ 
+\end{description}
+
+%%%%%%% deletion subroutine %%%%%%
+
+\subsubsection{The deletion stage}
+Call {\tt \packagename\_delete} to extend the factorization of the Schur 
+complement when a row and column of the existing 
+extended matrix are to be removed. 
+Subsequent systems of equations with the smaller 
+coefficient matrix may then be solved by calls to {\tt \packagename\_solve.} 
+The data structures for holding $\bmB$, $\bmC$ and $\bmD$ will be 
+automatically updated to account for the row and column deletions. 
+Compute the factorization of the extended matrix 
+following a row and column removal as follows:
+\vspace*{1mm}
+
+\hskip0.5in 
+{\tt CALL \packagename\_delete( matrix, data, VECTOR, status, info,  
+col\_del [, row\_del ] )}
+
+\vspace*{-2mm}
+\begin{description}
+\itt{matrix} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_matrix\_type} 
+(see Section~\ref{typematrix}). The following components are used by 
+{\tt \packagename\_delete} : 
+ 
+\begin{description} 
+\ittf{n}, {\tt m\_max}, {\tt m}, {\tt class},
+{\tt BD\_val}, {\tt BD\_row}, {\tt BD\_col\_start}, 
+{\tt CD\_val}, {\tt CD\_col} and {\tt CD\_row\_start}.  
+These should not have been changed since the last call to 
+{\tt \packagename\_factorize}, {\tt \packagename\_append} or 
+{\tt \packagename\_delete}. 
+On a successful exit ({\tt status} = 0) from {\tt \packagename\_delete},  
+{\tt n} will be unchanged, {\tt m} will have 
+been decreased by 1 to account for the deleted row and column, and 
+the contents of the arrays may have been changed. 
+\end{description} 
+ 
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}. 
+It must not have been altered since the last call to  
+%{\tt \packagename\_initialize}, 
+{\tt \packagename\_factorize}, 
+{\tt \packagename\_append} or 
+{\tt \packagename\_delete}. 
+ 
+\itt{VECTOR} is an \intentout\ rank-one array argument of length 
+{\tt matrix\%n} 
+and type \realdp, that is used as workspace. 
+ 
+\itt{status} is an scalar \intentout\ argument of type default 
+\integer. 
+On output, the value of {\tt status} is used to signal an error 
+in the input data or to indicate a successful call to the subroutine. 
+A successful call is indicated by the exit value {\tt status=0}. 
+For other values, see Section~\ref{galerrors}. 
+ 
+\itt{info} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_info\_type} 
+(see Section~\ref{typeinfo}). 
+ 
+\itt{col\_del} is an scalar \intentin\ argument of type 
+default \integer. 
+On input, this must be set by the user to the index of the column of 
+\req{2} that is to be removed.  
+{\bf Restriction:} ${\tt 1} \leq {\tt col\_del} \leq {\tt m}$.
+ 
+\itt{row\_del} is an optional scalar \intentin\ argument of type  
+default \integer. 
+If {\tt \packagename\_factorize} was last called with {\tt matrix\%class=1}, 
+this can be set by the user to the index of  
+the row of \req{3} that is to be removed. If the argument is absent, or if 
+{\tt  matrix\%class} $> 1$, row {\tt col\_del} will be removed. 
+{\bf Restriction:} ${\tt 1} \leq {\tt row\_del} \leq {\tt m}$. 
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The final stage}
+Deallocate the space required to hold the factors of the 
+(sequence of) Schur complement(s) as follows:
+\vspace*{1mm}
+
+\hskip0.5in 
+{\tt CALL \packagename\_terminate( data, status, info )}
+
+\vspace*{-2mm}
+\begin{description}
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type.} 
+It must not have been altered since the last call to  
+%{\tt \packagename\_initialize}, 
+{\tt \packagename\_factorize}, 
+{\tt \packagename\_append} or {\tt \packagename\_delete}. 
+ 
+\itt{status} is an scalar \intentout\ argument of type default 
+{\tt INTEGER,} that  
+contains the exit status following a call to {\tt \packagename\_terminate.} 
+A successful call is indicated by the exit value {\tt status=0}. 
+For other values, see Section~\ref{galerrors}. 
+ 
+\itt{info} is a scalar \intentout\ argument of type 
+{\tt \packagename\_info\_type} 
+(see Section~\ref{typeinfo}). 
+ 
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Re-entries %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galreverse
+If one of the subroutines 
+{\tt \packagename\_factorize},  
+{\tt \packagename\_solve} or  
+{\tt \packagename\_append} 
+returns with a strictly possible value of {\tt status},  
+the subroutine in question requires the user to manipluate the vector  
+{\tt VECTOR}, and to re-enter with {\tt status} and all other arguments 
+unchanged. 
+Possible values of {\tt status} and their consequences are as follows: 
+
+\begin{description} 
+\itt{2} The user must obtain the solution to the system of equations 
+$ \bmA \bmx  =  \bmb$. 
+The particular vector $\bmb$ is returned in the array {\tt VECTOR;} 
+the user must calculate $\bmx$ and pass this vector back in {\tt VECTOR.} 
+\itt{3} The user must obtain the solution to the system of equations 
+$ \bmA^T \bmy  =  \bmc$. 
+The particular vector $\bmc$ is returned in the array {\tt VECTOR;} 
+the user must calculate $\bmy$ and pass this vector back in {\tt VECTOR.} 
+\end{description} 
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt status} on exit from any of the preceding subroutines
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\item{-1} One or more of the stated restrictions on the components 
+$1 \leq  {\tt  matrix\%class} \leq 4$, 
+${\tt matrix\%n} \geq 0$,
+$0 \leq {\tt matrix\%m} \\ \leq {\tt matrix\%m\_max}$,
+($0 \leq {\tt matrix\%m} \leq {\tt matrix\%m\_max}-1$ in 
+{\tt \packagename\_append} ) 
+$1 \leq {\tt col\_del} \leq {\tt matrix\%m}$ and 
+$1 \leq {\tt row\_del} \leq {\tt matrix\%m}$
+has been violated.  
+
+\item{-2} The subroutine has been called with an initial value {\tt status} 
+$\leq 0$. 
+
+\item{-3} The factors of $\bmS$ have not yet been formed in {\tt data}. 
+This indicates that either  
+{\tt \packagename\_factorize} has not yet been called, or that the last call to 
+{\tt \packagename\_factorize}, {\tt \packagename\_append} or 
+{\tt \packagename\_delete} 
+ended in a failure.  
+
+\item{-4} One or more of the arrays {\tt matrix\%BD\_val}, 
+{\tt matrix\%BD\_row} and 
+{\tt matrix\%BD\_col\_start} has not been allocated. 
+
+\item{-5} When the extended matrix is unsymmetric, one or more of the arrays  
+{\tt matrix\%CD\_val}, {\tt matrix\%CD\_col} and 
+{\tt matrix\%CD\_row\_start} has not been allocated. 
+
+\item{-6} One or more of the arrays {\tt matrix\%BD\_val}, 
+{\tt matrix\%BD\_row} and 
+{\tt matrix\%BD\_col\_start} is not large enough. Check that the dimension 
+of {\tt matrix\%BD\_col\_start} is no smaller than  
+{\tt matrix\%m+1} 
+({\tt matrix\%m+2} for {\tt \packagename\_a\-pp\-end} ), 
+and that those of  
+{\tt matrix\%BD\_val} and {\tt matrix\%BD\_row} are no smaller than 
+{\tt matrix\%BD\_col\_start(mat\-rix\%m+1)-1}, and re-enter. 
+({\tt matrix\%BD\_col\_start(matrix\%m+2)-1} for {\tt \packagename\_append} 
+and {\tt matrix\%BD\_col\_st\-art(matrix\%m+1)+} 
+{\tt |matrix\%col\_del-matrix\%row\_del|-1} for {\tt \packagename\_delete} ). 
+
+\item{-7} When the extended matrix is unsymmetric, one or more of the arrays  
+{\tt matrix\%CD\_val}, {\tt matrix\%CD\_col} and 
+{\tt matrix\%CD\_row\_start} is not large enough. Check that the dimension 
+of {\tt matrix\%CD\_row\_start} is no smaller than {\tt matrix\%m+1} 
+({\tt matrix\%m+2} for {\tt \packagename\_append} ), and that those of  
+{\tt matrix\%CD\_val} and {\tt matrix\%CD\_col} are no smaller than 
+{\tt matrix\%CD\_row\_start(matrix\%m+1)-1} 
+({\tt matrix\%CD\_row\_start(matrix\%m+2)-1} for {\tt \packagename\_app\-end} 
+and {\tt matrix\%CD\_row\_start(matrix\%m+1)+} 
+{\tt |matrix\%col\_del-matrix\%row\_del|-1} for {\tt \packagename\_delete} ). 
+
+\item{-8} The value recorded in {\tt matrix\_m} does not correspond to the 
+dimension of $\bmD$.  
+
+\item{-9} The Schur complement matrix is singular; this has been 
+detected during the {\bf QR } factorization of $\bmS$. 
+
+\item{-10} The Schur complement matrix is expected to be positive definite, 
+but this has been found not to be the case  
+during the Cholesky factorization of $\bmS$. 
+
+\item{-11} The Schur complement matrix is expected to be negative definite, 
+but this has been found not to be the case  
+during the Cholesky factorization of $-  \bmS$. 
+
+\item{-12} An internal array allocation or deallocation failed.  
+See {\tt info\%alloc\_status} for further details. 
+ 
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Multiple updates %%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Multiple updates}
+Once {\tt \packagename\_append} or {\tt \packagename\_delete} 
+has been used to update the factorization of 
+the Schur complement matrix, it is as if the enlarged or 
+reduced matrix were 
+that originally factorized by {\tt \packagename\_factorize.} 
+Consequently {\em sequences} of row and column additions and removals 
+may be performed so long as sufficient storage is 
+available. 
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines the basic linear algebra subprograms (BLAS) 
+       {\tt SROT} and {\tt SROTG} ({\tt DROT} and {\tt DROTG} in  
+        {\tt GALAHAD\_\packagename\_DOUBLE} ) are called. 
+\galmodules None.
+\galio None.
+\galrestrictions ${\tt matrix\%n} \geq {\tt 0}$, 
+       $ 0 \leq {\tt matrix\%m} \leq {\tt matrix\%m\_max}$ and 
+       ${\tt 1} \leq {\tt matrix\%class} \leq 4$. Also 
+       ${\tt 1} \leq {\tt row\_del} \leq {\tt matrix\%m}$ and 
+       ${\tt 1} \leq {\tt col\_del} \leq {\tt matrix\%m}$
+       for {\tt \packagename\_delete.} 
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+The subroutine {\tt \packagename\_factorize} forms the Schur complement 
+$\bmS  =  \bmD  -  \bmC    \bmA^{-1} \bmB$ of $ \bmA$ 
+in the extended matrix by repeated reverse communication to 
+obtain the columns of 
+$ \bmA^{-1} \bmB$. The Schur complement or its negative 
+is then factorized 
+into its {\bf QR } or, if possible, Cholesky factors. 
+ 
+
+The subroutine {\tt \packagename\_solve} solves the extended system using 
+the following well-known scheme: 
+
+\begin{description} 
+\item[(i)] Compute the solution to $ \bmA \bmu  =  \bmb_1$; 
+\item[(ii)] Compute $\bmx_2$ from $ \bmS \bmx_2  =  \bmb_2  -  \bmC \bmu$; 
+\item[(iii)] Compute the solution to $ \bmA \bmv  =  \bmB \bmx_2$; and 
+\item[(iv)] Compute $\bmx_1  =  \bmu  -  \bmv$. 
+\end{description} 
+
+
+The subroutines {\tt \packagename\_append} and {\tt \packagename\_delete} 
+compute the factorization 
+of the Schur complement after a row and column have been appended 
+to, and removed from, 
+the extended matrix, respectively. 
+The existing factorization is updated 
+to obtain the new one; this is normally more efficient than 
+forming the factorization from scratch. 
+ 
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+As a simple example, suppose we wish to solve the system of 
+equations 
+\disp{\mat{ccccccc}{ 1 & 0 & 0 & 0 & 0 & 1 & 0 \\
+               0 & 2 & 0 & 0 & 0 & 1 & 0 \\
+               0 & 0 & 3 & 0 & 0 & 1 & 0 \\
+               0 & 0 & 0 & 4 & 0 & 1 & 0 \\
+               0 & 0 & 0 & 0 & 5 & 1 & 1 \\
+               1 & 1 & 1 & 1 & 1 & 1 & 2 \\
+               1 & 0 & 1 & 0 & 1 & 3 & 4 }
+\vect{x_1 \\ x_2 \\ x_3 \\ x_4 \\ x_5 \\ x_6 \\ x_7} = 
+\vect{2  \\ 3  \\ 4  \\ 5  \\ 7  \\ 8  \\ 10 }.}
+Notice that the leading 5 by 5 coefficient matrix is diagonal and 
+hence easily invertible. So we might choose $n = 5$, $m = 2$, 
+and use {\tt \packagename\_factorize}/{\tt \packagename\_solve} to find the required 
+solution. As the matrix is unsymmetric, we must set {\tt matrix\%class=1}.
+
+Now suppose that we have solved this system as described and are now 
+confronted with the further system 
+\disp{\mat{cccccccc}{ 1 & 0 & 0 & 0 & 0 & 1 & 0 & 1 \\
+               0 & 2 & 0 & 0 & 0 & 1 & 0 & 0 \\
+               0 & 0 & 3 & 0 & 0 & 1 & 0 & 0 \\
+               0 & 0 & 0 & 4 & 0 & 1 & 0 & 0 \\
+               0 & 0 & 0 & 0 & 5 & 1 & 1 & 0 \\
+               1 & 1 & 1 & 1 & 1 & 1 & 2 & 1 \\
+               1 & 0 & 1 & 0 & 1 & 3 & 4 & 0 \\
+               1 & 0 & 0 & 0 & 0 & 0 & 1 & 1 }
+\vect{x_1 \\ x_2 \\ x_3 \\ x_4 \\ x_5 \\ x_6 \\ x_7 \\ x_8 } = 
+\vect{5  \\ 5  \\ 4  \\ 5  \\ 7  \\ 12  \\ 12  \\ 4}.}
+Rather than applying {\tt \packagename\_factorize} /{\tt \packagename\_solve} 
+with $n = 5$, $m = 3$, we note 
+that the new coefficient matrix differs from the old one merely 
+in having 
+an extra row and column. Thus, we can use 
+{\tt \packagename\_append} with $n = 5$, $m = 2$ to update the existing factorization 
+and then call 
+{\tt \packagename\_solve} with $n = 5$, $m = 3$ to calculate the desired solution. 
+
+Finally, suppose that we have solved this second system and now wish 
+to solve 
+\disp{\mat{ccccccc}{ 1 & 0 & 0 & 0 & 0 & 1 & 1 \\
+               0 & 2 & 0 & 0 & 0 & 1 & 0 \\
+               0 & 0 & 3 & 0 & 0 & 1 & 0 \\
+               0 & 0 & 0 & 4 & 0 & 1 & 0 \\
+               0 & 0 & 0 & 0 & 5 & 1 & 0 \\
+               1 & 0 & 1 & 0 & 1 & 3 & 0 \\
+               1 & 0 & 0 & 0 & 0 & 0 & 1 }
+\vect{x_1 \\ x_2 \\ x_3 \\ x_4 \\ x_5 \\ x_6 \\ x_7} = 
+\vect{3  \\ 5  \\ 4  \\ 5 \\ 6  \\ 6  \\ 2}.}
+Again, rather than applying {\tt \packagename\_factorize} /{\tt \packagename\_solve} 
+with $n = 5$, $m = 2$, we note 
+that this third coefficient matrix is the second one with its 
+$n + 1$-st row and $n + 2$-nd column removed. Thus, we can use 
+{\tt \packagename\_delete} with $n = 5$, $m = 3$ to update the existing factorization 
+and then call 
+{\tt \packagename\_solve} with $n = 5$, $m = 2$ to calculate the desired solution. 
+
+To carry out these calculations, we might use the following piece of code. 
+Notice how the extra row and column for the second problem are 
+simply introduced at the end of the existing data structures. 
+{\tt
+\begin{verbatim}
+   PROGRAM GALAHAD_SCU_EXAMPLE 
+   USE GALAHAD_SCU_DOUBLE                    ! double precision version
+   IMPLICIT NONE 
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
+   INTEGER :: i, row_del, col_del, status 
+   INTEGER, PARAMETER :: n = 5, m = 2, mmax = m + 1 
+   TYPE ( SCU_matrix_type ) :: mat 
+   TYPE ( SCU_data_type ) :: data 
+   TYPE ( SCU_info_type ) :: info 
+   REAL ( KIND = wp ) :: X1( n + m ), RHS1( n + m )
+   REAL ( KIND = wp ) :: X2( n + m + 1 ), RHS2( n + m + 1 )
+   REAL ( KIND = wp ) :: X3( n + m ), RHS3( n + m ), VECTOR( n ) 
+   mat%m_max = mmax ; mat%class = 1 
+   mat%n = n ; mat%m = m 
+   ALLOCATE ( mat%BD_val( 15 ), mat%BD_row( 15 ), mat%BD_col_start( mmax+1 ),& 
+              mat%CD_val( 13 ), mat%CD_col( 13 ), mat%CD_row_start( mmax+1 ) ) 
+   mat%BD_col_start( : 3 ) = (/1, 7, 10/) 
+   mat%CD_row_start( : 3 ) = (/1, 6, 10/) 
+   mat%BD_row( : 9 ) = (/1, 2, 3, 4, 5, 6, 5, 6, 7/) 
+   mat%BD_val( : 9 ) = (/1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, & 
+                     1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp, 4.0_wp/) 
+   mat%CD_col( : 9 ) = (/1, 2, 3, 4, 5, 1, 3, 5, 6/) 
+   mat%CD_val( : 9 ) = (/1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, & 
+                       1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 3.0_wp/) 
+   RHS1 = (/2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp, 7.0_wp, 8.0_wp, 10.0_wp/) 
+   RHS2 = (/5.0_wp, 5.0_wp, 4.0_wp, 5.0_wp, 7.0_wp, 12.0_wp, 12.0_wp, 4.0_wp/) 
+   RHS3 = (/3.0_wp, 5.0_wp, 4.0_wp, 5.0_wp, 6.0_wp, 6.0_wp, 2.0_wp/) 
+!  First system 
+   status = 1 
+   DO 
+     CALL SCU_factorize( mat, data, VECTOR, status, info ) 
+     IF ( status <= 0 ) EXIT 
+     DO i = 1, n 
+        VECTOR( i ) = VECTOR( i ) / DBLE( FLOAT( i ) ) 
+     END DO 
+   END DO 
+   WRITE( 6, "( /, ' On exit from SCU_factorize,  status = ', I3 )" ) status 
+   IF ( status < 0 ) STOP 
+   status = 1 
+   DO 
+     CALL SCU_solve( mat, data, RHS1, X1, VECTOR, status ) 
+     IF ( status <= 0 ) EXIT 
+     DO i = 1, n        !  multiply by the inverse of A 
+        VECTOR( i ) = VECTOR( i ) / DBLE( FLOAT( i ) ) 
+     END DO 
+   END DO 
+   WRITE( 6, "( ' On exit from SCU_solve,      status = ', I3 )" ) status 
+   IF ( status < 0 ) STOP 
+   WRITE( 6, "( /, ' Solution (first system)', /, ( 8ES9.2 ) )" ) X1( : ) 
+!  Second system 
+   mat%BD_row( 10 : 12 ) = (/ 1, 6, 8 /) 
+   mat%BD_val( 10 : 12 ) = (/ 1.0_wp, 1.0_wp, 1.0_wp /) 
+   mat%BD_col_start( 4 ) = 13 
+   mat%CD_col( 10 ) = 1 
+   mat%CD_val( 10 ) = 1.0_wp 
+   mat%CD_row_start( 4 ) = 11 
+   status = 1 
+   DO 
+     CALL SCU_append( mat, data, VECTOR, status, info ) 
+     IF ( status <= 0 ) EXIT 
+     DO i = 1, n 
+        VECTOR( i ) = VECTOR( i ) / DBLE( FLOAT( i ) ) 
+     END DO 
+   END DO 
+   WRITE( 6, "( /, ' On exit from SCU_append,     status = ', I3 )" ) status 
+   IF ( status < 0 ) STOP 
+   status = 1 
+   DO 
+     CALL SCU_solve( mat, data, RHS2, X2, VECTOR, status ) 
+     IF ( status <= 0 ) EXIT 
+     DO i = 1, n 
+        VECTOR( i ) = VECTOR( i ) / DBLE( FLOAT( i ) ) 
+     END DO 
+   END DO 
+   WRITE( 6, "( ' On exit from SCU_solve,      status = ', I3 )" ) status 
+   IF ( status < 0 ) STOP 
+   WRITE( 6, "( /, ' Solution (second system)', /, ( 8ES9.2 ) )" ) X2 
+!  Third system 
+   row_del = 1 
+   col_del = 2 
+   status = 1 
+   CALL SCU_delete( mat, data, VECTOR, status, info, col_del, & 
+                     row_del = row_del ) 
+   WRITE( 6, "( /, ' On exit from SCU_delete,     status = ', I3 )" ) status 
+   IF ( status < 0 ) STOP 
+   status = 1 
+   DO 
+     CALL SCU_solve( mat, data, RHS3, X3, VECTOR, status ) 
+     IF ( status <= 0 ) EXIT 
+       DO i = 1, n 
+        VECTOR( i ) = VECTOR( i ) / DBLE( FLOAT( i ) ) 
+     END DO 
+   END DO 
+   WRITE( 6, "( ' On exit from SCU_solve,      status = ', I3 )" ) status 
+   IF ( status < 0 ) STOP 
+   WRITE( 6, "( /, ' Solution (third system)', /, ( 8ES9.2 ) )" ) X3 
+   CALL SCU_terminate( data, status, info ) 
+   WRITE( 6, "( /, ' On exit from SCU_terminate,  status = ', I3 )" ) status 
+   END PROGRAM GALAHAD_SCU_EXAMPLE 
+\end{verbatim}
+}
+This produces the following output:
+{\tt
+\begin{verbatim}
+ On exit from SCU_factorize,  status =   0
+ On exit from SCU_solve,      status =   0
+
+ Solution (first system)
+ 1.00E+00 1.00E+00 1.00E+00 1.00E+00 1.00E+00 1.00E+00 1.00E+00
+
+ On exit from SCU_append,     status =   0
+ On exit from SCU_solve,      status =   0
+
+ Solution (second system)
+ 3.00E+00 2.00E+00 1.00E+00 1.00E+00 1.00E+00 1.00E+00 1.00E+00 1.00E+00
+
+ On exit from SCU_delete,     status =   0
+ On exit from SCU_solve,      status =   0
+
+ Solution (third system)
+ 1.00E+00 2.00E+00 1.00E+00 1.00E+00 1.00E+00 1.00E+00 1.00E+00
+
+ On exit from SCU_terminate,  status =   0
+\end{verbatim}
+}
+
+\end{document}
+

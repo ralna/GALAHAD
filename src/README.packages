@@ -1,0 +1,152 @@
+package     | status | purpose
+--------------------------------------------------------------------------------
+ampl        | ok     | ampl interfaces to QP routines
+arc         | ok     | unconstrained optimization, regularization method
+ats         | beta   | minimize a quadratic within abs value trust region, sls
+auxiliary   | ok     | auxiliary packages (norms, time, cutest interaces ... )
+bqp         | ok     | bound-constrained QP, proconditioned projected gradients
+bqpb        | beta   | bound-constrained QP, interior point
+bsc         | ok     | assemble the Schur complement
+ccqp        | beta   | QP, crossover interior-point to dual gradient prohection
+check       | ok     | check derivatives
+clock       | ok     | record system clock times
+convert     | beta   | convert between sparse-matrix formats
+cqp         | ok     | convex QP, interior-point
+cqps        | alpha  | convex QP, Spelucci's BC exact penalty reformuation
+cro         | ok     | QP crossover from interior-point to basic solution
+demo        | ok     | template for GALAHAD packages
+dqp         | ok     | strictly-convex QP, dual projection
+dum         | ok     | replacement no-use packages for unsupplied externals
+eqp         | ok     | equality-constrained QP
+fdc         | ok     | find dependent equality linear constraints
+fdh         | ok     | obtain a finite-difference sparse Hessian approximation
+filter      | beta   | basic filter mechanism
+filtrane    | ok     | nonlinear least-squares using a filter
+fisqp       | alpha  | SQP filter method for NLP
+fit         | ok     | fit polynomials to function and derivative data (no doc)
+general     | ok     | makemaster for general packages
+glrt        | ok     | minimize a quadratic + a regularization term via Lanczos
+gls         | ok     | modern fortran interface to ma33
+gltr        | ok     | minimize a quadratic within a trust region via Lanczos
+gmtr        | alpha  | minimize a quadratic within a trust region via MINRES
+ir          | ok     | apply iterative refinement for sls
+l2rt        | ok     | regularized root linear least-squares via Lanczos
+lanb        | ok     | LANCELOT, augmented Lagrangian using partial separability
+lanb_simple | ok     | easy-to-use dense LANCELOT
+lanc        | alpha  | improved LANCELOT
+lapack      | ok     | required LAPACK/BLAS (no doc)
+lls         | beta   | trust-region constrained linear-least squares via PCG
+llst        | ok     | trust-region regularized linear least-squares via sbls
+lms         | ok     | limited-memory Hessian approximation
+lmsc        | alpha  | limited-memory Hessian approximation with constraints
+lmt         | ok     | derived type for limited-memory Hessian approximation
+lpqp        | beta   | convert QP to l_1 QP
+lsqp        | old    | LP/separable QP, interior-point
+lsrt        | ok     | regularized linear least-squares via Lanczos
+lstr        | ok     | trust-region regularized linear least-squares via Lanczos
+matlab      | ok     | Matlab interfaces to main GALAHAD packages
+miqr        | ok     | Incomplete QR factorization
+mop         | ok     | various matrix operations
+nlpt        | ok     | NLP structure
+nls         | beta   | nonlinear least-squares
+nlstr       | alpha  | nonlinear least-squares, trust-region
+opt         | ok     | optimality statistics (no doc)
+pre         | ok     | QP, presolve
+psls        | beta   | definite symmetric linear solver, multiple interfaces
+ptrans      | beta   | apply scalings to CUTEst calls
+qp          | ok     | QP, generic interface
+qpa         | ok     | non-convex QP, active set
+qpb         | ok     | non-convex QP, interior-point
+qpc         | ok     | non-convex QP, crossover interior-point to active set
+qpd         | ok     | QP derived types (no doc)
+qpe         | dead   | convex QP, primal-dual active set
+qpp         | ok     | reorder QP to 'standard form'
+qps         | ok     | scale QP data (no doc)
+qpt         | ok     | QP structure
+qtrans      | ok     | compute scavlings and scale QP data (no doc)
+rand        | ok     | generate pseudo random numbers
+rlls        | beta   | regularized linear least-squares via sbls
+roots       | ok     | find roots of scalar polynomials
+rpd         | ok     | read QP data from QPLib format (no doc)
+rq          | ok     | makemaster for regularised quadratic subbroblem-solving packages
+rqs         | ok     | minimize a quadratic + regularization term via sbls
+sbls        | ok     | symmetric block linear solver, multiple interfaces
+scale       | ok     | compute scale factors in various ways
+scu         | ok     | Schur-compleemnt updating for evolving linear systems
+sha         | beta   | sparse Hessian approximation via secant equations
+sils        | ok     | modern fortran interface to ma27
+sls         | ok     | symmetric linear solver, multiple interfaces
+smt         | ok     | alias for zd11
+sort        | ok     | various sorting algorithms
+space       | ok     | allocate and deallocate space (no doc)
+spec        | ok     | read package option data (no doc)
+spral       | ok     | SPRAL generic tools
+ssids       | ok     | SPRAL symmetric indefinite system solver
+string      | ok     | manipulate strings (no doc)
+sym         | ok     | associate symbols with numerical values
+tools       | ok     | simple tools (like in auxiliary, no doc)
+trans       | ok     | apply scale factors (no doc)
+trimsqp     | old    | predecessor of s2qp
+trs         | ok     | minimize a quadratic within a trust region via sbls
+tru         | ok     | unconstrained optimization, trust-region method
+uls         | ok     | unsymmetric linear solver, multiple interfaces
+warm        | beta   | test warmstart capabilities
+wcp         | ok     | find a 'well-centred' point in a polyhedron
+zd11        | ok     | HSL archive sparse-matrix structure
+
+non-free packages lie in non-free/
+
+ad02        | ok     | HSL archive automatic differentiation
+icfs        | stub   | Lin-More' incomplete factorization
+ls27        | stub   | HSL incomplete QR factorization
+ls28        | stub   | HSL incomplete QR factorization v2
+ls29        | stub   | HSL incomplete QR factorization v3
+ma27        | ok     | HSL archive symmetric indefinite linear solver
+ma33        | ok     | HSL archive automatic unsymmetric solver
+ma48        | stub   | HSL unsymmetric solver
+ma57        | stub   | HSL symmetric indefinite linear solver
+ma61        | ok     | HSL archive preconditioned conjugate gradient solver
+ma77        | stub   | HSL symmetric indefinite out-of-core linear solver
+ma86        | stub   | HSL symmetric indefinite linear solver
+ma87        | stub   | HSL symmetric positive definite linear solver
+ma97        | stub   | HSL symmetric indefinite linear solver
+mc61        | stub   | HSL profile/bandwidth reduction
+mc64        | stub   | HSL reordering for large diagonals
+mc68        | stub   | HSL sparse reorderings
+mc77        | stub   | HSL diagonal scaling
+minpack     | stub   | MINPACK
+mi20        | stub   | HSL algebraic multigrid
+mi28        | stub   | HSL incomplete Cholesky factorization
+
+packages that are far from ready but seem promising are in forthcoming/
+
+barc        | alpha  | bound constrained optimization, regularization method
+bgo         | alpha  | bound-constrained global optimization
+dlp         | alpha  | LP using dual gradient projection
+lhs         | beta   | Latin Hypercube samples
+lpb         | alpha  | LP, interior-point
+trace       | alpha  | unconstrained optimization, enhanced trust-region method
+tral        | alpha  | trust-region augmeted Lagrangian
+trb         | alpha  | bound-constrained optimization, trust-region method
+ugo         | alpha  | univariate global optimization
+
+expired/unfinished packages have been cast into oblivion/
+
+ermo        | beta   | enriched-recursive multilevel unconstrained optimization
+fastr       | beta   | filter, active set, trust-region SQP method for NLP
+funnel      | alpha  | SQP funnel method for NLP
+ism         | alpha  | iterated-subspace unconstrained minimization
+lcf         | beta   | feasible point within the polytope using projection
+lpqpa       | beta   | L_1 QP, active set using QPA
+lpqpb       | beta   | L_1 QP, interior point using QPB
+lpsqp       | alpha  | l_p SQP for NLP
+nllsrt      | alpha  | nonlinear least-squares, regularization
+pqp         | alpha  | parametric QP
+sqp         | alpha  | SQP without any globalization
+s2qp        | beta   | trust-region SQP for NLP
+superb      | beta   | trust-region interior-point for NLP
+trtn        | alpha  | bound-constrained optimization via transformation
+
+
+
+

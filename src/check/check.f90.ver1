@@ -1,0 +1,294 @@
+! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*                             *-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*     check  M O D U L E    *-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*                             *-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!
+!  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+!  Principal authors: Daniel Robinson
+
+!  For full documentation, see 
+!   http://galahad.rl.ac.uk/galahad-www/specs.html
+
+   MODULE GALAHAD_CHECK
+
+!  This module checks the derivatives for problem functions.
+!
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+     IMPLICIT NONE
+     
+     PRIVATE
+     PUBLIC :: CHECK_gJ, CHECK_H
+
+!  Define the working precision to be double
+
+     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+
+     TYPE, PUBLIC :: CHECK_derivatives_type
+        INTEGER :: g_level, J_level, H_level
+        INTEGER :: status, print_device, print_level
+        INTEGER :: J_implicit, H_implicit
+     END TYPE CHECK_deriviatives_type
+      
+   CONTAINS
+     
+
+!-*-*-*-*-*-  C H E C K _ G J  S U B R O U T I N E  *-*-*-*-*-*-
+
+     SUBROUTINE CHECK_GJ ( nlp, check, funFC, funG, funJ, funGJ, funJv, v, userdata )
+
+       ! Checks the first derivatives of the objective and constraint functions.
+
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+
+       TYPE( NLPT_problem_type ), INTENT( INOUT ) :: nlp
+       TYPE( CHECK_derivatives_type ) :: check
+       TYPE( TRIMSQP_userdata_type ), OPTIONAL :: userdata
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( INOUT ), OPTIONAL :: v
+       OPTIONAL funFC, funG, funJ, funGJ, funJv
+       
+       ! Check whether this is first call or whether this is a return
+       ! from reverse communication.
+       
+       IF ( status /= 1 ) THEN
+          ! returned from reverse communcation
+          ! GO TO blah
+       END IF
+
+
+       ! Defind a step.
+
+       scale = one
+
+       DO i = 1, nlp%n
+          p(i) = scale
+          p_back(i) = p(i)  ! p_back = p
+          pnorm = -pnorm
+       END DO
+
+       ! Ensure step is feasible with respect to bounds.
+       ! If this results in a step p=0, then resort back to original p.
+
+       p    = MIN( MAX( nlp%Xl - nlp%X, p ), nlp%Xu - nlp%X )
+       maxp = MAX( ABS(p) )
+
+       IF ( maxp <= some_tol ) THEN
+          p = p_back
+       END IF
+      
+       ! Define step length.
+
+       normx = DNRM2( nlp%n, nlp%X, 1 )
+
+       alpha =  fd_len * (one +  normx)
+
+
+       ! No check of the gradient of f(x) is done.
+       ! *****************************************
+
+       IF ( check%G_level <= 0 ) THEN
+
+          ! print grad f is not checked.
+
+       END IF
+
+
+       ! Cheap check of the gradient of f(x).
+       ! *************************************
+
+       IF ( check%G_level == 1 ) THEN
+
+          IF ( PRESENT( funFC ) ) THEN
+             !CALL funFC( f, c, nlp%X ) assume already have from above.
+             CALL funFC( fnew, cnew, nlp%X + alpha*p )
+          ELSE
+             ! reverse give me f
+             !GO TO
+          END IF
+
+          diff_quot = (fnew - f )/ alpha
+          gtp       = DDOT( nlp%n, nlp%G, 1, p, 1)
+          G_error   = ABS( diff_quot - gtp ) / ( one + diff_quot )
+
+          IF ( G_error < tol ) THEN
+
+             write(*,*) 'print derivitive okay.'
+
+          ELSE
+             
+             write(*,*) 'print derivitive is wrong'
+
+          END IF
+
+       END IF
+
+       ! A more expensive check of the gradient of f(x).
+       ! **********************************************
+
+       IF ( check%G_level == 2 ) THEN
+
+          p_back = zero          
+
+          DO i = 1, nlp%n
+
+             p_back(i) = one
+             
+             IF ( PRESENT( funFC ) ) THEN
+                !CALL funFC( f, c, nlp%X ) assume already have from above.
+                CALL funFC( fnew, cnew, nlp%X + alpha*p_back )
+             ELSE
+                ! reverse.
+                !GO TO
+             END IF
+             
+             diff_quot = (fnew - f )/ alpha
+             g_i       = nlp%G(i)
+             G_error   = ABS( diff_quot - g_i ) / ( one + diff_quot )
+             
+             IF ( G_error < tol ) THEN
+                
+                write(*,*) 'print f derivitive okay and which one it is.'
+                
+             ELSE
+                
+                write(*,*) ' print f derivitive is wrong and which one it is'
+                
+             END IF
+
+             p_back(i) = zero
+             
+          END DO
+
+       END IF
+
+       ! No check of the gradients of c(x) is done.
+       ! *****************************************
+
+       IF ( check%J_level <= 0 ) THEN
+
+          ! print J is not checked.
+
+       END IF
+
+
+       ! Cheap check of the gradients of c(x).
+       ! *************************************
+
+       IF ( check%J_level == 1 ) THEN
+          
+          IF ( PRESENT( funFC ) ) THEN
+             !CALL funFC( f, c, nlp%X ) assume already have from above.
+             CALL funFC( fnew, cnew, nlp%X + alpha*p )
+          ELSE
+             ! reverse give me f
+             !GO TO
+          END IF
+          
+          diff_quot = (cnew - c )/ alpha
+          
+          IF ( J_implicit ) THEN
+             
+             IF ( PRESENT( funJv ) ) THEN
+                CALL funJv( compute Jp )
+             ELSE
+                ! reverse give me Jp
+                !GO TO
+             END IF
+
+          ELSE ! J_explicit
+
+             ! multiply J*p and stuff into Jp
+
+          END IF
+             
+          J_error   = MAX( ABS( diff_quot - Jp ) / ( one + diff_quot ) )
+          
+          IF ( J_error < tol ) THEN
+             
+             write(*,*) 'print c derivitive okay.'
+             
+          ELSE
+             
+             write(*,*) 'print c derivitive is wrong'
+             
+          END IF
+          
+       END IF
+       
+       ! A more expensive check of the gradient of c(x).
+       ! **********************************************
+       
+       IF ( check%J_level == 2 ) THEN
+
+          p_back = zero
+          
+          DO i = 1, nlp%n
+             
+             p_back(i) = one
+
+             IF ( PRESENT( funFC ) ) THEN
+                !CALL funFC( f, c, nlp%X ) assume already have from above.
+                CALL funFC( fnew, cnew, nlp%X + alpha*p_back )
+             ELSE
+                ! reverse.
+                !GO TO
+             END IF
+
+             IF ( J_implicit ) THEN
+
+                IF ( PRESENT( funJv ) ) THEN
+                   !CALL funFC( f, c, nlp%X ) assume already have from above.
+                   CALL funJv( get J*p_back and stuff into Jp )
+                ELSE
+                   ! reverse. give me J*p_back
+                   !GO TO
+                END IF
+
+             ELSE
+
+                ! no need to mltiply.  Just stuff ith column of J into Jp
+
+             END IF
+
+             diff_quot = (cnew - c )/ alpha
+             Jp_i       = Jp(i)
+             G_error   = ABS( diff_quot(i) - Jp_i ) / ( one + diff_quot(i) )
+             
+             IF ( G_error < tol ) THEN
+                
+                write(*,*) 'print c derivitive okay and which one it is.'
+                
+             ELSE
+                
+                write(*,*) ' print c derivitive is wrong and which one it is'
+                
+             END IF
+             
+             p_back(i) = zero 
+             
+          END DO
+          
+       END IF
+
+     END SUBROUTINE CHECK_GJ
+
+   END MODULE GALAHAD_CHECK
+
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*                             *-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*   END CHECK  M O D U L E  *-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*                             *-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

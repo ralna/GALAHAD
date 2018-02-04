@@ -1,0 +1,1801 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{wcp}
+\newcommand{\packagename}{WCP}
+\newcommand{\fullpackagename}{\libraryname\_\-\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+This package uses a primal-dual interior-point method
+to {\bf find a well-centered interior point} $\bmx$ for a set of
+general linear constraints
+\eqn{lc}{c_{i}^{l}  \leq  \bma_{i}^{T}\bmx  \leq  c_{i}^{u}, \;\;\;
+ i = 1, \ldots , m,}
+and simple bounds
+\eqn{bc}{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u}, \;\;\; j = 1, \ldots , n,}
+where the vectors 
+$\bma_{i}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$ and $\bmx^{u}$ are given.
+More specifically, if possible, the package finds a solution to the 
+system of  primal optimality equations
+\eqn{prim}{\bmA \bmx = \bmc,}
+dual optimality equations
+\eqn{dual}{\bmg = 
+ \bmA^{T} \bmy + \bmz,\;\;
+ \bmy = \bmy^{l} + \bmy^{u} \tim{and}
+ \bmz = \bmz^{l} + \bmz^{u} ,}
+and perturbed complementary slackness equations
+\eqn{slknessc}{
+( c_i^{} - c^l_i ) y^{l}_i = (\mu_c^{l})_i^{} \tim{and}
+( c_i^{} - c_i^u ) y^{u}_i = (\mu_c^{u})_i^{}, \;\;\;
+ i = 1, \ldots , m,}
+and
+\eqn{slknessx}{
+((x^{}_j - x^l_j ) z_j^{l} = (\mu_x^{l})_j^{}  \tim{and}
+( x^{}_j - x^u_j ) z_j^{u} = (\mu_x^{u})_j^{}, \;\;\; 
+ j = 1, \ldots , n,}
+for which
+\eqn{boundary}{
+ \bmc^{l} \leq \bmc \leq \bmc^{u}, \;\; \bmx^{l} \leq \bmx \leq \bmx^{u}, \;\;
+ \bmy^{l} \geq \bmzero , \;\;  \bmy^{u} \leq \bmzero , \;\;
+ \bmz^{l} \geq \bmzero \;\; \mbox{and} \;\;  \bmz^{u} \leq \bmzero .}
+Here $\bmA$ is the matrix whose rows are the $\bma_i^T$, $i = 1, \ldots , m$,
+$\bmmu_c^{l}$, $\bmmu_c^{u}$, $\bmmu_x^{l}$ and $\bmmu_x^{u}$ are
+vectors of strictly positive {\em targets}, $\bmg$ is another given vector,
+and $(\bmy^{l}, \bmy^{u})$ and $(\bmz^{l}, \bmz^{u})$ are dual variables
+for the linear constraints and simple bounds respectively; 
+$\bmc$ gives the constraint value $\bmA \bmx$.
+Since \req{slknessc}--\req{boundary} normally imply that
+\eqn{interior}{
+ \bmc^{l} < \bmc < \bmc^{u}, \;\; \bmx^{l} < \bmx < \bmx^{u}, \;\;
+ \bmy^{l} > \bmzero , \;\;  \bmy^{u} < \bmzero , \;\;
+ \bmz^{l} > \bmzero \;\; \mbox{and} \;\;  \bmz^{u} < \bmzero,}
+such a primal-dual point $(\bmx, \bmc, \bmy^{l}, \bmy^{u}, \bmz^{l}, \bmz^{l})$
+may be used, for example, as a feasible starting point for primal-dual 
+interior-point methods for solving the linear programming problem 
+of minimizing $\bmg^T \bmx$ subject to \req{lc} and \req{bc}.
+
+Full advantage is taken of any zero coefficients in the 
+vectors $\bma_{i}$. 
+Any of the constraint bounds $c_{i}^{l}$, $c_{i}^{u}$, 
+$x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
+The package identifies infeasible problems, and problems for which there
+is no strict interior, that is one or more of \req{boundary}
+only holds as an equality for all feasible points.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses 
+{\tt GALAHAD\_\-CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS}, 
+{\tt GALAHAD\_SMT},
+{\tt GALAHAD\_QPT}, {\tt GALAHAD\_QPD}, {\tt GALAHAD\_SPECFILE}, 
+{\tt GALAHAD\_QPP}, {\tt GALAHAD\_SPACE}, {\tt GALAHAD\_\-SORT}, 
+{\tt GALAHAD\_STRING}, {\tt GALAHAD\_\-ROOTS}, {\tt GALAHAD\_\-SBLS},
+{\tt GALAHAD\_FDC}.
+\galdate July 2006.
+\galorigin C. Cartis and N. I. M. Gould, Rutherford Appleton Laboratory.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+\galparallelism Some options may use OpenMP and its runtime library.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types 
+{\tt SMT\_type}, 
+{\tt QPT\_problem\_type}, 
+{\tt \packagename\_time\_type}, 
+{\tt \packagename\_control\_type}, 
+{\tt \packagename\_inform\_type} 
+and
+{\tt \packagename\_data\_type}
+(Section~\ref{galtypes})
+and the subroutines
+{\tt \packagename\_initialize}, 
+{\tt \packagename\_\-solve},
+{\tt \packagename\_terminate},
+(Section~\ref{galarguments})
+and 
+{\tt \packagename\_read\_specfile}
+(Section~\ref{galfeatures})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmatrix
+The constraint Jacobian $\bmA$, that is, the matrix 
+whose rows are the vectors $\bma_{i}^{T}$, $i = 1, \ldots , m$, 
+may be stored in one of three input formats.
+
+\subsubsection{Dense storage format}\label{dense}
+The matrix is stored as a compact 
+dense matrix by rows, that is, the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+Component $n \ast (i-1) + j$ of the storage array {\tt A\%val} will hold the 
+value $a_{ij}$ for $i = 1, \ldots , m$, $j = 1, \ldots , n$.
+
+\subsubsection{Sparse co-ordinate storage format}\label{coordinate}
+Only the nonzero entries of the matrix are stored. For the 
+$l$-th entry of $\bmA$, its row index $i$, column index $j$ 
+and value $a_{ij}$
+are stored in the $l$-th components of the integer arrays {\tt A\%row}, 
+{\tt A\%col} and real array {\tt A\%val}, respectively.
+The order is unimportant, but the total
+number of entries {\tt A\%ne} is also required. 
+
+\subsubsection{Sparse row-wise storage format}\label{rowwise}
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row $i$ appear directly before those
+in row $i+1$. For the $i$-th row of $\bmA$, the $i$-th component of a 
+integer array {\tt A\%ptr} holds the position of the first entry in this row,
+while {\tt A\%ptr} $(m+1)$ holds the total number of entries plus one.
+The column indices $j$ and values $a_{ij}$ of the entries in the $i$-th row 
+are stored in components 
+$l =$ {\tt A\%ptr}$(i)$, \ldots ,{\tt A\%ptr} $(i+1)-1$ of the 
+integer array {\tt A\%col}, and real array {\tt A\%val}, respectively. 
+
+For sparse matrices, this scheme almost always requires less storage than 
+its predecessor.
+
+%%%%%%%%%%%%%%%%%%%%%% long integers %%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Integer kinds}\label{Integer kinds}
+We use the term
+long \integer\ to denote {\tt INTEGER\-(kind=long)}, where 
+{\tt long = selected\_int\_kind(18))}.
+
+%%%%%%%%%%%%%%%%%%%%%% OpenMP usage %%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{OpenMP}
+OpenMP may be used by the {\tt \fullpackagename} package to provide 
+parallelism for some solver options in shared memory environments.  
+See the documentation for the \galahad\ package {\tt SLS} for more details.
+To run in parallel, OpenMP 
+must be enabled at compilation time by using the correct compiler flag 
+(usually some variant of {\tt -openmp}). 
+The number of threads may be controlled at runtime
+by setting the environment variable {\tt OMP\_NUM\_THREADS}.
+
+\noindent
+The code may be compiled and run in serial mode.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Six derived data types are accessible from the package.
+
+%%%%%%%%%%% matrix data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding matrices}\label{typesmt}
+The derived data type {\tt SMT\_TYPE} is used to hold the matrix $\bmA$.
+The components of {\tt SMT\_TYPE} used here are:
+
+\begin{description}
+
+\ittf{m} is a scalar component of type default \integer, 
+that holds the number of rows in the matrix. 
+ 
+\ittf{n} is a scalar component of type default \integer, 
+that holds the number of columns in the matrix. 
+ 
+\ittf{ne} is a scalar variable of type default \integer, that
+holds the number of matrix entries
+
+\ittf{type} is a rank-one allocatable array of type default \character, that
+is used to indicate the matrix storage scheme used. Its precise length and
+content depends on the type of matrix to be stored (see \S\ref{typeprob}).
+
+\ittf{val} is a rank-one allocatable array of type default \realdp\, 
+and dimension at least {\tt ne}, that holds the values of the entries. 
+Each pair of off-diagonal entries $a_{ij} = a_{ji}$ of a matrix $\bmA$ 
+is represented as a single entry 
+(see \S\ref{dense}--\ref{rowwise}).
+Any duplicated entries that appear in the sparse 
+co-ordinate or row-wise schemes will be summed. 
+
+\ittf{row} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt ne}, that may hold the row indices of the entries. 
+(see \S\ref{coordinate}).
+
+\ittf{col} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt ne}, that may hold the column indices of the entries
+(see \S\ref{coordinate}--\ref{rowwise}).
+
+\ittf{ptr} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt m + 1}, that may hold the pointers to
+the first entry in each row (see \S\ref{rowwise}).
+
+\end{description}
+
+%%%%%%%%%%% problem type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding the problem}\label{typeprob}
+The derived data type {\tt QPT\_problem\_type} is used to hold 
+the problem. The components of 
+{\tt QPT\_problem\_type} 
+are:
+
+\begin{description}
+
+\itt{new\_problem\_structure} is a scalar variable of type default \logical, 
+ that is \true\ if this is the first (or only) problem in a sequence of 
+ problems with identical "structure" to be attempted, and \false\ if 
+ a previous problem with the same "structure" (but different
+ numerical data) has been solved. Here, the term "structure" refers both to 
+ the sparsity patterns of the Jacobian matrices $\bmA$ involved 
+ (but not their numerical values), to the zero/nonzero/infinity patterns 
+ (a bound is either zero, $\pm$ infinity, or a finite but arbitrary 
+ nonzero) of each of the constraint bounds, and to the variables and constraints
+ that are fixed (both bounds are the same) or free (the lower and upper
+ bounds are $\pm$ infinity, respectively).
+
+\ittf{n} is a scalar variable of type default \integer, 
+ that holds the number of optimization variables, $n$.  
+              
+\ittf{m} is a scalar variable of type default \integer, 
+ that holds the number of general linear constraints, $m$.
+              
+\itt{gradient\_kind} is a scalar variable of type default \integer, 
+that is used to indicate whether the components of the gradient $\bmg$ 
+have special or general values. Possible values for {\tt gradient\_kind} are:
+\begin{description}
+\itt{0}  In this case, $\bmg = 0$.
+
+\itt{1} In this case, $g_{i} = 1$ for $i = 1, \ldots ,n$.
+
+\itt{$\neq$ 0,1} In this case, general values of $\bmg$ will be used,
+     and will be provided by the user in the component {\tt G}.
+\end{description}
+
+\ittf{G} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds the gradient $\bmg$ 
+of the linear term of the quadratic objective function.
+The $j$-th component of 
+{\tt G}, $j = 1,  \ldots ,  n$, contains $\bmg_{j}$.
+If {\tt gradient\_kind} {= 0, 1}, {\tt G} need not be allocated.
+
+\ittf{A} is scalar variable of type {\tt SMT\_TYPE} 
+that holds the Jacobian matrix $\bmA$. The following components are used:
+
+\begin{description}
+
+\itt{A\%type} is an allocatable array of rank one and type default \character, that
+is used to indicate the storage scheme used. If the dense storage scheme 
+(see Section~\ref{dense}) is used, 
+the first five components of {\tt A\%type} must contain the
+string {\tt DENSE}.
+For the sparse co-ordinate scheme (see Section~\ref{coordinate}), 
+the first ten components of {\tt A\%type} must contain the
+string {\tt COORDINATE}, while 
+for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
+the first fourteen components of {\tt A\%type} must contain the
+string {\tt SPARSE\_BY\_ROWS}.
+
+For convenience, the procedure {\tt SMT\_put} 
+may be used to allocate sufficient space and insert the required keyword
+into {\tt A\%type}.
+For example, if {\tt prob} is of derived type {\tt \packagename\_problem\_type}
+and involves a Jacobian we wish to store using the sparse row-wise 
+storage scheme, we may simply
+%\vspace*{-2mm}
+{\tt 
+\begin{verbatim}
+        CALL SMT_put( prob%A%type, 'SPARSE_BY_ROWS' )
+\end{verbatim}
+}
+%\vspace*{-4mm}
+\noindent
+See the documentation for the \galahad\ package {\tt SMT} 
+for further details on the use of {\tt SMT\_put}.
+
+\itt{A\%ne} is a scalar variable of type default \integer, that 
+holds the number of entries in $\bmA$
+in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}). 
+It need not be set for either of the other two schemes.
+
+\itt{A\%val} is a rank-one allocatable array of type default \realdp, that holds
+the values of the entries of the Jacobian matrix $\bmA$ in any of the 
+storage schemes discussed in Section~\ref{galmatrix}.
+
+\itt{A\%row} is a rank-one allocatable array of type default \integer,
+that holds the row indices of $\bmA$ in the sparse co-ordinate storage
+scheme (see Section~\ref{coordinate}). 
+It need not be allocated for either of the other two schemes.
+
+\itt{A\%col} is a rank-one allocatable array variable of type default \integer,
+that holds the column indices of $\bmA$ in either the sparse co-ordinate 
+(see Section~\ref{coordinate}), or the sparse row-wise 
+(see Section~\ref{rowwise}) storage scheme.
+It need not be allocated when the dense storage scheme is used.
+
+\itt{A\%ptr} is a rank-one allocatable array of dimension {\tt m+1} and type 
+default \integer, that holds the 
+starting position of each row of $\bmA$, as well
+as the total number of entries plus one, in the sparse row-wise storage
+scheme (see Section~\ref{rowwise}). It need not be allocated when the
+other schemes are used.
+
+\end{description}
+
+\ittf{C\_l} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds the vector of lower bounds $\bmc^{l}$ 
+on the general constraints. The $i$-th component of 
+{\tt C\_l}, $i = 1, \ldots , m$, contains $\bmc_{i}^{l}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt C\_l} to any value smaller than {\tt -infinity}, 
+where {\tt infinity} is a component of the control array {\tt control} 
+(see Section~\ref{typecontrol}).
+
+\ittf{C\_u} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds the vector of upper bounds $\bmc^{u}$ 
+on the general constraints. The $i$-th component of 
+{\tt C\_u}, $i = 1,  \ldots ,  m$, contains $\bmc_{i}^{u}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt C\_u} to any value larger than {\tt infinity}, 
+where {\tt infinity} is a component of the control array {\tt control} 
+(see Section~\ref{typecontrol}).
+
+\ittf{X\_l} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds
+the vector of lower bounds $\bmx^{l}$ on the the variables.
+The $j$-th component of {\tt X\_l}, $j = 1, \ldots , n$, 
+contains $\bmx_{j}^{l}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt X\_l} to any value smaller than {\tt -infinity}, 
+where {\tt infinity} is a component of the control array {\tt control} 
+(see Section~\ref{typecontrol}).
+
+\ittf{X\_u} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds
+the vector of upper bounds $\bmx^{u}$ on the variables.
+The $j$-th component of {\tt X\_u}, $j = 1, \ldots , n$, 
+contains $\bmx_{j}^{u}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt X\_u} to any value larger than that {\tt infinity}, 
+where {\tt infinity} is a component of the control array {\tt control} 
+(see Section~\ref{typecontrol}).
+
+\ittf{X} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, 
+that holds the values $\bmx$ of the optimization variables.
+The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.  
+
+\ittf{Z\_l} is a rank-one allocatable array of dimension {\tt n} and type default 
+\realdp, that holds
+the values $\bmz^{l}$ of estimates  of the dual variables 
+corresponding to the lower simple bound constraints $\bmx^{l} \leq \bmx$
+(see equation \req{dual}).
+The $j$-th component of {\tt Z\_l}, $j = 1,  \ldots ,  n$, 
+contains $z_{j}^{l}$.  
+
+\ittf{Z\_u} is a rank-one allocatable array of dimension {\tt n} and type default 
+\realdp, that holds
+the values $\bmz^{u}$ of estimates  of the dual variables 
+corresponding to the upper simple bound constraints $\bmx \leq \bmx^{u}$
+(see equation \req{dual}).
+The $j$-th component of {\tt Z\_l}, $j = 1,  \ldots ,  n$, 
+contains $z_{j}^{l}$.  
+
+\ittf{C} is a rank-one allocatable array of dimension {\tt m} and type default 
+\realdp, that holds
+the values $\bmA \bmx$ of the constraints.
+The $i$-th component of {\tt C}, $i = 1,  \ldots ,  m$, contains 
+$\bma_{i}^{T}\bmx \equiv (\bmA \bmx)_{i}$.  
+
+\ittf{Y\_l} is a rank-one allocatable array of dimension {\tt m} and type default 
+\realdp, that holds
+the values $\bmy^{l}$ of estimates  of the Lagrange multipliers
+corresponding to the lower general constraints $\bmc^{l} \leq \bmA \bmx$
+(see equation \req{dual}).
+The $i$-th component of {\tt Y\_l}, $i = 1,  \ldots ,  m$, 
+contains $y_{i}^{l}$.  
+
+\ittf{Y\_u} is a rank-one allocatable array of dimension {\tt m} and type default 
+\realdp, that holds
+the values $\bmy^{u}$ of estimates  of the Lagrange multipliers
+corresponding to the upper general constraints $\bmA \bmx \leq \bmc^{u}$
+(see equation \req{dual}).
+The $i$-th component of {\tt Y\_u}, $i = 1,  \ldots ,  m$, 
+contains $y_{i}^{u}$.  
+
+\end{description}
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control 
+ parameters}\label{typecontrol}
+The derived data type 
+{\tt \packagename\_control\_type} 
+is used to hold controlling data. Default values may be obtained by calling 
+{\tt \packagename\_initialize}
+(see Section~\ref{subinit}),
+while components may also be changed by calling 
+{\tt \fullpackagename\_read\-\_spec}
+(see Section~\ref{readspec}). 
+The components of 
+{\tt \packagename\_control\_type} 
+are:
+
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in 
+{\tt \packagename\_solve} and {\tt \packagename\_terminate} is suppressed if 
+{\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in 
+{\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No 
+informational output will occur if {\tt print\_level} $\leq 0$. If 
+{\tt print\_level} $= 1$, a single line of output will be produced for each
+iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
+increased to provide significant detail of each iteration.
+The default is {\tt print\_level = 0}.
+
+\itt{maxit} is a scalar variable of type default \integer, that holds the
+maximum number of iterations which will be allowed in {\tt \packagename\_solve}.
+The default is {\tt maxit = 1000}.
+
+\itt{start\_print} is a scalar variable of type default \integer, that specifies
+the first iteration for which printing will occur in {\tt \packagename\_solve}.
+If {\tt start\_print} is negative, printing will occur from the outset.
+The default is {\tt start\_print = -1}.
+
+\itt{stop\_print} is a scalar variable of type default \integer, that specifies
+the last iteration for which printing will occur in  {\tt \packagename\_solve}.
+If {\tt stop\_print} is negative, printing will occur once it has been 
+started by {\tt start\_print}.
+The default is {\tt stop\_print = -1}.
+
+\itt{initial\_point} is a scalar variable of type default \integer, 
+that indicates how the initial point is chosen.
+Possible values are:
+
+\begin{description}
+\itt{0} the input point $\bmx$ may be perturbed to ensure that its $j$-th
+component is feasible with respect to its
+bounds $x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u}$, and
+if possible at least {\tt prfeas} from either bound. If possible, 
+the slack variable $\bmc$ will be feasible and at least {\tt prfeas} from 
+its bounds $\bmc^{l} \leq \bmc \leq \bmc^{u}$.
+The input dual variables/Lagrange multipliers will be perturbed so that they 
+are feasible and at least 
+{\tt dufeas} from their bounds  $\bmy^{l} \geq 0$, $\bmy^{u} \leq 0$,
+$\bmz^{l} \geq 0$ and  $\bmz^{u} \leq 0$. The remaining constraints
+\req{prim}--\req{slknessx} will most likely not be satisfied. The feasible region
+is that enlarged by perturbing all inequality constraints by 
+{\tt perturb\_start} (see below and \S\ref{galmethod}).
+\itt{1} a point satisfying \req{prim}--\req{dual} that also tries to satisfy
+\req{interior} will be computed. The feasible region is enlarged by perturbing
+each inequality constraints so that its residual is at least
+{\tt prfeas} (primal and slack variables) or
+{\tt dufeas} (dual variables and Lagrange multipliers).
+\itt{2} as in {\tt 1}, but the perturbations are equal and chosen so that
+the smallest residual is at least {\tt prfeas} (primal and slack variables) or
+{\tt dufeas} (dual variables and Lagrange multipliers).
+\end{description}
+The default is {\tt initial\_point = 0}.
+
+%\itt{factor} is a scalar variable of type default \integer, that indicates
+%the type of factorization of the Newton-equation matrix to be used.  
+%Possible values are:
+
+%\begin{description}
+%\itt{0} the type is chosen automatically on the basis of which option looks
+%        likely to be the most efficient.
+%\itt{1} a Schur-complement factorization will be used.
+%\itt{2} an augmented-system factorization will be used.
+%\end{description}
+%The default is {\tt factor = 0}.
+
+%\itt{max\_col} is a scalar variable of type default \integer, that specifies
+%the maximum number of nonzeros in a column of $\bmA$ which is permitted
+%by the Schur-complement factorization.
+%The default is {\tt max\_col = 35}.
+
+%\itt{indmin} is a scalar variable of type default \integer, that specifies
+%an initial estimate as to the amount of integer workspace required by 
+%the factorization package {\tt SBLS}.
+%The default is {\tt indmin = 1000}.
+
+%\itt{valmin} is a scalar variable of type default \integer, that specifies
+%an initial estimate as to the amount of real workspace required by 
+%the factorization package {\tt SBLS}.
+%The default is {\tt valmin = 1000}.
+
+\itt{perturbation\_strategy} is a scalar variable of type default \integer, 
+that specifies the strategy used for perturbing and then tightening
+the inequality constraints. The perturbations are chosen so that the
+iterates lie interior to the perturbed constraints (see \S\ref{galmethod}).
+Possible values are:
+
+\begin{description}
+\itt{$\leq$ 0} no perturbation is allowed.
+\itt{1} the initial perturbation is determined by the initial-point
+strategy (see {\tt initial\_point} above). The perturbation $\theta$, say,
+on a generic constraint $w \geq w^l$ is subsequently 
+reduced to $\bar{\theta}$ so that $w - w^l + \bar{\theta}
+= ( 1 - \eta ) ( w - w^l + \theta )$
+where $\eta$ has the value {\tt frac\_perturb}.
+\itt{2} the initial perturbation is determined by the initial-point
+strategy (see {\tt initial\_point} above). The perturbation $\theta$, say,
+on a generic constraint $w \geq w^l$ is subsequently 
+reduced to $\bar{\theta}$ so that $w - w^l + \bar{\theta}
+= ( 1 - \eta ) ( w - w^l + \theta )$,
+where $\eta$ has the value {\tt frac\_perturb}, whenever $w \leq w^l$. If 
+$w > w^l$, the perturbation  $\bar{\theta}$ is set to zero.
+\itt{3} the same as {\tt 1}, except that $\eta \leq$ {\tt frac\_perturb}
+is reduced gradually to zero.
+\itt{4} the same as {\tt 2}, except that $\eta \leq$ {\tt frac\_perturb}
+is reduced gradually to zero.
+\end{description}
+The default is {perturbation\_strategy = 2}.
+
+%\itt{itref\_max} is a scalar variable of type default \integer, that specifies 
+%the maximum number of iterative refinements allowed for each solution of
+%the Newton equations.
+%The default is {\tt itref\_max = 1}.
+
+\itt{infeas\_max} is a scalar variable of type default \integer, that specifies
+the number of iterations for which the overall infeasibility
+of the problem is not reduced by at least a factor 
+{\tt required\_infeas\_reduction
+before} the problem is flagged as infeasible 
+(see {\tt required\_infeas\_reduction}).
+The default is {\tt infeas\_max = 200}.
+%The default is {\tt infeas\_max = 10}.
+
+\itt{restore\_problem} is a scalar variable of type default \integer, that 
+specifies how much of the input problem is to be retored on output. 
+Possible values are:
+\begin{description}
+\itt{0} nothing is restored. 
+\itt{1} the vector data $\bmw$, $\bmg$, 
+   $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$, and $\bmx^{u}$ 
+   will be restored to their input values.
+\itt{2} the entire problem, that is the above vector data along with 
+the Jacobian matrix $\bmA$, will be restored.
+\end{description}
+The default is {\tt restore\_problem = 2}.
+
+\itt{infinity} is a scalar variable of type default \realdp, that is used to
+specify which constraint bounds are infinite.
+Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
+The default is {\tt infinity =} $10^{19}$.
+
+\itt{stop\_p} is a scalar variable of type default \realdp, that holds the
+required accuracy for the primal infeasibility \req{prim}.
+The default is {\tt stop\_p =} $u^{1/3}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{stop\_d} is a scalar variable of type default 
+\realdp, that holds the
+required accuracy for the dual infeasibility \req{dual}
+The default is {\tt stop\_d =} $u^{1/3}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{stop\_c} is a scalar variable of type default 
+\realdp, that holds the
+required accuracy for the violation of perturbed complementarity slackness 
+\req{slknessc}--\req{slknessx}.
+The default is {\tt stop\_c =} $u^{1/3}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{perturb\_start} is a scalar variable of type default \realdp, 
+that is used to assign the initial value of the perturbations
+to each bound constraint ((see \S\ref{galmethod}) 
+whenever the initial point strategy {\tt initial\_point = 0} is used (see above).
+If {\tt perturb\_start}$\leq$ {\tt 0}, a suitable value will be
+computed by the package. The default is {\tt perturb\_start = - 1.0}.
+
+\itt{reduce\_perturb\_factor} is a scalar variable of type default \realdp, 
+that is used to adjust the perturbations. This corresponds to the
+value $\xi$ in \S\ref{galmethod}, and should lie strictly between zero and
+one. Any value outside $(0,1)$ will be reset to a suitable value by
+the package. The default is {\tt reduce\_perturb\_factor = 0.25}.
+
+\itt{reduce\_perturb\_multiplier} is a scalar variable of type default \realdp, 
+that is used to adjust the perturbations. This corresponds to the
+value $\rho$ in \S\ref{galmethod}, and should lie strictly between zero and
+one. Any value outside $(0,1)$ will be reset to a suitable value by
+The default is {\tt reduce\_perturb\_factor = 0.01}.
+
+\itt{insufficiently\_feasible} is a scalar variable of type default \realdp, 
+that is used to adjust the perturbations. This corresponds to the
+value $\epsilon$ in \S\ref{galmethod}, and should be strictly positive.
+Any value non-negative value will be reset to a suitable value by the package.
+The default is {\tt insufficiently\_fe\-asible =} $u^{1/4}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{implicit\_tol} is a scalar variable of type default \realdp, 
+that is used to assess whether a constraint defines an implicit equality
+(see \S\ref{galmethod}). Any of the constraints \req{boundary}
+that is less feasible than {\tt implicit\_tol} will be regarded as defining 
+an implicit equality.
+The default is {\tt implicit\_tol =} $u^{1/3}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{perturbation\_small} is a scalar variable of type default \realdp, 
+that is used to determine whether the problem is feasible, but not
+an interior, point. If the maximum constraint perturbation is strictly 
+positive but smaller than {\tt perturbation\_small} and the maximum violation 
+of \req{boundary} is smaller than {\tt implicit\_tol}, the 
+method will deduce that there is a feasible point but no interior.
+If {\tt perturbation\_sm\-all}$\leq$ {\tt 0}, a suitable value will be
+computed by the package. The default is {\tt perturbation\_sm\-all = - 1.0}.
+
+\itt{prfeas} is a scalar variable of type default \realdp, that aims to specify
+the closest that any initial variable may be to infeasibility. Any variable
+closer to infeasibility than {\tt prfeas} will be moved to {\tt prfeas} from 
+the offending bound. However, if a variable is range bounded, and its bounds 
+are closer than {\tt prfeas} apart, it will be moved to the mid-point of the 
+two bounds.
+The default is {\tt prfeas = 1.0}.
+
+\itt{dufeas} is a scalar variable of type default \realdp, that aims to specify
+the closest that any initial dual variable or Lagrange multiplier may be to 
+infeasibility. Any variable closer to infeasibility than {\tt prfeas} will be
+moved to {\tt dufeas} from the offending bound. However, if a dual variable
+is range bounded, and its bounds are closer than {\tt dufeas} apart, it will
+be moved to the mid-point of the two bounds.
+The default is {\tt dufeas = 1.0}.
+
+\itt{required\_infeas\_reduction}  is a scalar variable of type default 
+\realdp, that specifies the
+least factor by which the overall infeasibility of the problem must be reduced,
+over {\tt infeas\_max} consecutive iterations, 
+for it not be declared infeasible (see {\tt infeas\_max)}.
+The default is {\tt required\_infeas\_re\-duction = 0.99}.
+
+%\itt{pivot\_tol}  is a scalar variable of type default 
+%\realdp, that holds the
+%threshold pivot tolerance used by the matrix factorization.  See 
+%the documentation for the package {\tt SBLS} for details.
+%The default is {\tt pivot\_tol =} $u^{3/4}$,
+%%The default is {\tt pivot\_tol =} $0.1 \sqrt{u}$,
+%where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+%{\tt \fullpackagename\_double}).
+%%The default is {\tt pivot\_tol = 0.01}.
+
+%\itt{pivot\_tol\_for\_dependencies} is a scalar variable of type default 
+%\realdp, that holds the
+%threshold pivot  tolerance used by the matrix factorization when 
+%attempting to detect linearly dependent constraints. A value larger
+%than  {\tt pivot\_tol} is appropriate. See 
+%the documentation for the package {\tt SBLS} for details.
+%The default is {\tt pivot\_tol\_for\_dependencies = 0.5}.
+
+%\itt{zero\_pivot} is a scalar variable of type default \realdp.
+%Any pivots smaller than  {\tt zero\_pivot} in absolute value will be regarded 
+%to be zero when attempting to detect linearly dependent constraints. 
+%The default is {\tt zero\_pivot =} $u^{3/4}$,
+%where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+%{\tt \fullpackagename\_double}).
+
+\itt{alpha\_scale} is a scalar variable of type default \realdp, that is used to
+specify the scaling factor $\alpha > 0$ that is used to assess dependent 
+constraints (see \S\ref{galmethod}). Any non-positive value will be
+reset by the package to the default. The default is {\tt alpha\_scale = 0.01}.
+
+\itt{identical\_bounds\_tol}
+is a scalar variable of type default \realdp.
+Every pair of constraint bounds 
+$(c_{i}^{l}, c_{i}^{u})$ or $(x_{j}^{l}, x_{j}^{u})$
+that is closer than {\tt identical\_bounds\_tol} 
+will be reset to the average of their values,
+$\half (c_{i}^{l} + c_{i}^{u})$ or $\half (x_{j}^{l} + x_{j}^{u})$
+respectively.
+The default is {\tt identical\_bounds\_tol =} $u$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{mu\_target} is a scalar variable of type default \realdp, 
+that gives the initial value for each of the targets
+$\bmmu_c^{l}$, $\bmmu_c^{u}$, $\bmmu_x^{l}$ and $\bmmu_x^{u}$.
+If {\tt mu\_target\_start}$\leq$ {\tt 0}, a suitable value will be
+computed by the package. The default is {\tt mu\_target = - 1.0}.
+
+\itt{mu\_accept\_fraction} is a scalar variable of type default \realdp, 
+is used to allow flexibility when attempting to satisfy the perturbed 
+complementarity equations \req{slknessc}--\req{slknessx}. The value
+corresponds to the parameter $\gamma > 0$ in the termination condition
+\req{req-pert-slkness} (see \S\ref{galmethod}).
+If {\tt mu\_accept\_fraction}$\leq$ {\tt 0}, a suitable positive value will be
+computed by the package. The default is {\tt mu\_accept\_fraction = 1.0}.
+
+\itt{mu\_increase\_factor} is a scalar variable of type default \realdp, 
+that is used to specify the value $\beta \geq 1$ by which the targets
+corresponding to nonzero bound perturbations will be increased
+(see \S\ref{galmethod}). Any value smaller than one will be reset to one.
+The default is {\tt mu\_increase\_factor = 2.0}.
+
+\itt{cpu\_time\_limit} is a scalar variable of type default \realdp, 
+that is used to specify the maximum permitted CPU time. Any negative
+value indicates no limit will be imposed. The default is 
+{\tt cpu\_time\_limit = - 1.0}.
+
+\itt{clock\_time\_limit} is a scalar variable of type default \realdp, 
+that is used to specify the maximum permitted elapsed system clock time. 
+Any negative value indicates no limit will be imposed. The default is 
+{\tt clock\_time\_limit = - 1.0}.
+
+\itt{remove\_dependencies} is a scalar variable of type 
+default \logical, that must be set \true\ if the algorithm
+is to attempt to remove any linearly dependent constraints before
+solving the problem, and \false\ otherwise. 
+We recommend removing linearly dependencies.
+The default is {\tt remove\_dependencies = .TRUE.}.
+
+\itt{treat\_zero\_bounds\_as\_general} is a scalar variable of type 
+default \logical.
+If it is set to \false, variables which 
+are only bounded on one side, and whose bound is zero,
+will be recognised as non-negativities/non-positivities rather than simply as
+lower- or upper-bounded variables.
+If it is set to \true, any variable bound 
+$x_{j}^{l}$ or $x_{j}^{u}$ which has the value 0.0 will be
+treated as if it had a general value.
+Setting {\tt treat\_zero\_bounds\_as\_general} to \true\ has the advantage
+that if a sequence of problems are reordered, then bounds which are
+``accidentally'' zero will be considered to have the same structure as
+those which are nonzero. However, {\tt \fullpackagename} is
+able to take special advantage of non-negativities/non-positivities, so
+if a single problem, or if a sequence of problems whose 
+bound structure is known not to change, is/are to be solved, 
+it will pay to set the variable to \false.
+The default is {\tt treat\_zero\_bounds\_as\_general = .FALSE.}.
+
+\itt{just\_feasible} is a scalar variable of type default \logical, that 
+must be set \true\ if the algorithm should stop as soon as a feasible 
+interior point of the constraint set is found. Otherwise a a well-centered
+interior point will be sought
+The default is {\tt just\_feasible = .FALSE.}.
+
+\itt{balance\_initial\_complementarity} is a scalar variable of type 
+default \logical, that must be set \true\ if the initial dual variables
+and Lagrange multipliers are to be reset to ensure that the
+perturbed complementarity \req{pert-slknessc}--\req{pert-interior}
+is satisfied (see \S\ref{galmethod}), and \false\ otherwise.
+The default is {\tt balance\_initial\_complementarity = .FALSE.}.
+
+\itt{use\_corrector} is a scalar variable of type 
+default \logical, that must be set \true\ if a corrector step $\ddot{\bmv}$
+is to be used (see \S\ref{galmethod}), and \false\ otherwise. 
+The default is {\tt use\_corrector = .FALSE.}.
+
+\itt{record\_x\_status} is a scalar variable of type 
+default \logical, that must be set \true\ if the array 
+{\tt inform\%X\_status} (see \S\ref{typeinform})
+is to be allocated and the status of the bound 
+constraints reported on exit. Otherwise, {\tt inform\%X\_status} will
+not be allocated. The default is {\tt record\_x\_status = .TRUE.}.
+
+\itt{record\_c\_status} is a scalar variable of type 
+default \logical, that must be set \true\ if the array 
+{\tt inform\%C\_status} (see \S\ref{typeinform})
+is to be allocated and the status of the bound 
+constraints reported on exit. Otherwise, {\tt inform\%C\_status} will
+not be allocated. The default is {\tt record\_c\_status = .TRUE.}.
+
+\itt{space\_critical} is a scalar variable of type default \logical, 
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if 
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical, 
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{feasol} is a scalar variable of type default \logical, that 
+should be set \true\ 
+if the final solution obtained will be perturbed 
+so that variables close to their bounds are moved onto these bounds,
+and \false\ otherwise. 
+The default is {\tt feasol = .FALSE.}.
+%The default is {\tt feasol = .TRUE.}.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected 
+character string to preface every line of printed output. 
+Specifically, each line of output will be prefaced by the string 
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoreing the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\itt{FDC\_control} is a scalar variable of type 
+{\tt FDC\_control\_type}
+whose components are used to control any detection of linear dependencies
+performed by the package 
+{\tt \libraryname\_FDC}. 
+See the specification sheet for the package 
+{\tt \libraryname\_FDC} 
+for details, and appropriate default values.
+
+\itt{SBLS\_control} is a scalar variable of type 
+{\tt SBLS\_control\_type}
+whose components are used to control factorizations
+performed by the package 
+{\tt \libraryname\_SBLS}. 
+See the specification sheet for the package 
+{\tt \libraryname\_SBLS} 
+for details, and appropriate default values.
+
+\end{description}
+
+%%%%%%%%%%% time type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding timing 
+ information}\label{typetime}
+The derived data type 
+{\tt \packagename\_time\_type} 
+is used to hold elapsed CPU and system clock times for the various parts of 
+the calculation. The components of 
+{\tt \packagename\_time\_type} 
+are:
+\begin{description}
+\itt{total} is a scalar variable of type default \realdp, that gives
+ the total CPU time spent in the package.
+
+\itt{preprocess} is a scalar variable of type default \realdp, that gives
+ the CPU time spent reordering the problem to standard form prior to solution.
+
+\itt{find\_dependent} is a scalar variable of type default \realdp, that gives
+ the CPU time spent detecting and removing linearly-dependent equality 
+constraints
+
+\itt{analyse} is a scalar variable of type default \realdp, that gives
+ the CPU time spent analysing the required matrices prior to factorization.
+
+\itt{factorize} is a scalar variable of type default \realdp, that gives
+ the CPU time spent factorizing the required matrices.
+
+\itt{solve} is a scalar variable of type default \realdp, that gives
+ the CPU time spent computing the search direction.
+
+\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+ the total elapsed system clock time spent in the package.
+
+\itt{clock\_preprocess} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent reordering the problem to standard form 
+prior to solution.
+
+\itt{clock\_find\_dependent} is a scalar variable of type default \realdp, that 
+gives  the elapsed system clock time spent detecting and removing 
+linearly-dependent equality 
+ constraints
+
+\itt{clock\_analyse} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent analysing the required matrices prior to 
+factorization.
+
+\itt{clock\_factorize} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent factorizing the required matrices.
+
+\itt{clock\_solve} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent computing the search direction.
+
+\end{description}
+
+%%%%%%%%%%% info type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type 
+{\tt \packagename\_inform\_type} 
+is used to hold parameters that give information about the progress and needs 
+of the algorithm. The components of 
+{\tt \packagename\_inform\_type} 
+are:
+
+\begin{description}
+
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm. 
+%See Sections~\ref{galerrors} and \ref{galinfo}
+See Section~\ref{galerrors}
+for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array 
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}. 
+
+\ittf{iter} is a scalar variable of type default \integer, that gives the
+total number of iterations required.
+
+\itt{factorization\_status} is a scalar variable of type default \integer, that 
+gives the return status from the matrix factorization.
+
+\itt{factorization\_integer} is a scalar variable of type long
+\integer, that gives the amount of integer storage used for the matrix 
+factorization.
+
+\itt{factorization\_real} is a scalar variable of type long \integer, 
+that gives the amount of real storage used for the matrix factorization.
+
+\itt{c\_implicit} is a scalar variable of type default \integer, that gives the
+number of variables $\bmc$ that lie on (one) of their bounds for all
+feasible solutions to \req{prim}--\req{boundary}. Each of these variables 
+implies that the corresponding value of the constraint $\bmA \bmx$ may
+be fixed at the appropriate bound, and the constraint subsequently treated as
+an equality. See {\tt C\_status}.
+
+\itt{x\_implicit} is a scalar variable of type default \integer, that gives the
+number of variables $\bmx$ that lie on (one) of their bounds for all
+feasible solutions to \req{prim}--\req{boundary}. Each of these variables 
+may then be fixed at its appropriate bound, and the variable subsequently
+removed from the problem.
+See {\tt X\_status}.
+
+\itt{y\_implicit} is a scalar variable of type default \integer, that gives the
+number of Lagrange multipliers $\bmy^l$ and $\bmy^u$ that lie on their bounds 
+for all feasible solutions to \req{prim}--\req{boundary}. Each of the
+corresponding constraints $\bmA \bmx \geq \bmc^l$ and/or 
+$\bmA \bmx \leq \bmc^u$ may subsequently be removed from the problem.
+See {\tt C\_status}.
+
+\itt{z\_implicit} is a scalar variable of type default \integer, that gives the
+number of dual variables $\bmz^l$ and $\bmz^u$ that lie on their bounds 
+for all feasible solutions to \req{prim}--\req{boundary}. Each of the
+corresponding simple bounds $\bmx \geq \bmx^l$ and/or 
+$\bmx \leq \bmx^u$ may subsequently be removed from the problem.
+See {\tt X\_status}.
+
+\ittf{obj} is a scalar variable of type default \realdp, that holds the
+value of the (primal) objective function, $\bmg^T \bmx$, 
+at the well-centered point found.
+
+\itt{non\_negligible\_pivot} is a scalar variable of type default \realdp, 
+that holds the value of the smallest pivot larger than {\tt control\%zero\_pivot}
+when searching for dependent linear constraints. If 
+{\tt non\_negligible\_pivot} is close to  {\tt control\%zero\_pivot},
+this may indicate that there are further dependent constraints, and
+it may be worth increasing {\tt control\%zero\_pivot} above 
+{\tt non\_negligible\_pivot} and solving again.
+
+\itt{feasible} is a scalar variable of type default \logical, that has the
+value \true\ if the output value of $\bmx$ satisfies the constraints,
+and the value \false\ otherwise.
+
+\ittf{time} is a scalar variable of type {\tt \packagename\_time\_type} 
+whose components are used to hold elapsed CPU and system clock times for 
+the various parts of the calculation (see Section~\ref{typetime}).
+
+\itt{X\_status} is a rank-one allocatable array of type default \integer,
+that will be allocated to be of length {\tt n} and filled with values
+that give the status of each of the bound constraints on $x$ if 
+{\tt record\_x\_status} is \true. In this case, the $j$-th component of 
+{\tt X\_status} will have one of the following values:
+\begin{description}
+\itt{\,\,\,0} variable $x_j$ lies between its bounds.
+\itt{-1} variable $x_j$ lies on its lower bound for all feasible $x$ (and thus 
+may be fixed at the value {\tt X\_l}$(j)$ and removed from the problem).
+\itt{\,\,\,1} variable $x_j$ lies on its upper bound for all feasible $x$ 
+(and thus 
+may be fixed at the value {\tt X\_u}$(j)$ and removed from the problem).
+\itt{-2} variable $x_j$ never lies on its lower bound for any feasible $x$ 
+(and thus the lower bound {\tt X\_l}$(j)$ may be set to minus infinity).
+\itt{\,\,\,2} variable $x_j$ never lies on its upper bound for any feasible $x$ 
+(and thus the upper bound {\tt X\_u}$(j)$ may be set to infinity).
+\itt{\,\,\,3} the bounds on variable $x_j$ are equal
+(and thus $x_j$
+may be fixed at the value {\tt X\_l}$(j)$ and removed from the problem).
+\itt{-3} variable $x_j$ never lies on its either bound for any feasible $x$ 
+(and thus the lower bound {\tt X\_l}$(j)$ may be set to minus infinity
+and the upper bound {\tt X\_u}$(j)$ may be set to infinity).
+\end{description}
+{\tt X\_status} will remain unallocated if
+{\tt record\_x\_status} is \false.
+
+\itt{C\_status} is a rank-one allocatable array of  
+type default \integer, that will be allocated to be of length {\tt m}
+and filled with values that give the status of each of the general constraints
+on $x$ if {\tt record\_c\_status} is \true. In this case, the $i$-th
+component of {\tt C\_status} will have one of the following values:
+\begin{description}
+\itt{\,\,\,0} constraint value $(\bmA \bmx)_i$ lies between its bounds.
+\itt{-1} constraint $(\bmA \bmx)_i$ lies on its lower bound for all feasible 
+$x$ (and thus 
+may be fixed at the value {\tt C\_l}$(i)$ and treated as an equality constraint).
+\itt{\,\,\,1} constraint value $(\bmA \bmx)_i$ lies on its upper bound for all 
+feasible $x$ (and thus may be fixed at the value 
+{\tt C\_u}$(i)$ and removed from the problem).
+\itt{-2} constraint value $(\bmA \bmx)_i$ never lies on its lower bound for 
+any feasible $x$ 
+(and thus the lower bound {\tt C\_l}$(i)$ may be set to minus infinity).
+\itt{\,\,\,2} constraint value $(\bmA \bmx)_i$  never lies on its upper 
+bound for any feasible $x$ 
+(and thus the upper bound {\tt C\_u}$(i)$ may be set to infinity).
+\itt{\,\,\,3} the bounds on constraint value $(\bmA \bmx)_i$ are equal
+(and thus $(\bmA \bmx)_i$ is equality constrained).
+\itt{-3} constraint value $(\bmA \bmx)_i$ never lies on its either bound for any 
+feasible $x$ (and thus the constraint may be removed from the problem).
+\itt{\,\,\,4} constraint $i$ is implied by others 
+(and thus may be removed from the problem).
+\end{description}
+{\tt C\_status} will remain unallocated if
+{\tt record\_c\_status} is \false.
+
+\itt{FDC\_inform} is a scalar variable of type 
+{\tt FDC\_inform\_type}
+whose components are used to provide information about 
+any detection of linear dependencies
+performed by the package 
+{\tt \libraryname\_FDC}. 
+See the specification sheet for the package 
+{\tt \libraryname\_FDC} 
+for details, and appropriate default values.
+
+\itt{SBLS\_inform} is a scalar variable of type 
+{\tt SBLS\_inform\_type}
+whose components are used to provide information about factorizations
+performed by the package 
+{\tt \libraryname\_SBLS}. 
+See the specification sheet for the package 
+{\tt \libraryname\_SBLS} 
+for details, and appropriate default values.
+
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type 
+{\tt \packagename\_data\_type} 
+is used to hold all the data for a particular problem,
+or sequences of problems with the same structure, between calls of 
+{\tt \packagename} procedures. 
+This data should be preserved, untouched, from the initial call to 
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}.
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are three procedures for user calls
+(see Section~\ref{galfeatures} for further features): 
+
+\begin{enumerate}
+\item The subroutine 
+      {\tt \packagename\_initialize} 
+      is used to set default values, and initialize private data, 
+      before solving one or more problems with the
+      same sparsity and bound structure.
+\item The subroutine 
+      {\tt \packagename\_solve} 
+      is called to solve the problem.
+\item The subroutine 
+      {\tt \packagename\_terminate} 
+      is provided to allow the user to automatically deallocate array 
+       components of the private data, allocated by 
+       {\tt \packagename\_solve}, 
+       at the end of the solution process. 
+       It is important to do this if the data object is re-used for another 
+       problem {\bf with a different structure}
+       since {\tt \packagename\_initialize} cannot test for this situation, 
+       and any existing associated targets will subsequently become unreachable.
+\end{enumerate}
+%We use square brackets {\tt [ ]} to indicate \optional arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize( data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. 
+
+\itt{control} is a scalar \intentout\ argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). 
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling 
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% main solution subroutine %%%%%%
+
+\subsubsection{The linear or separable convex quadratic programming problem 
+solution subroutine}
+The  constrained least-distance problem solution algorithm is called as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_solve( p, data, control, info )}
+
+\vspace*{-3mm}
+\begin{description}
+\ittf{p} is a scalar \intentinout\ argument of type 
+{\tt QPT\_problem\_type}
+(see Section~\ref{typeprob}). 
+It is used to hold data about the problem being solved.
+For a new problem, the user must allocate all the array components,
+and set values for all components except {\tt p\%C}.
+{\tt p\%new\_problem\_structure} must be set \true, but will have been reset
+to \false\ on exit from {\tt \packagename\_solve}.
+Users are free to choose whichever
+of the three matrix formats described in Section~\ref{galmatrix} 
+is appropriate for $\bmA$ for their application.
+
+For a problem with the same structure as one that has just been 
+solved, the user may set {\tt p\%new\_problem\_str\-u\-cture} to \false,
+so long as {\tt \packagename\_terminate} has not been called in the interim.
+The \integer\ components must be unaltered since the
+previous call to {\tt \packagename\_solve}, but the \realdp\ 
+may be altered to reflect the new problem.
+
+The components {\tt p\%X}, {\tt p\%Y\_l}, {\tt p\%Y\_u}, {\tt p\%Z\_l} 
+and {\tt p\%Z\_u}
+must be set to initial estimates, $\bmx^{0}$, of the primal variables, 
+$\bmx$, Lagrange multipliers for the general constraints, $\bmy_l$ and $\bmy_u$, 
+and dual variables for the bound constraints, $\bmz_l$ and $\bmz_u$, 
+respectively.
+Inappropriate initial values will be altered, so the user should
+not be overly concerned if suitable values are not apparent, and may be
+content with merely setting {\tt p\%X=0.0},
+{\tt p\%Y\_l=0.0}, {\tt p\%Y\_u=0.0}, {\tt p\%Z\_l=0.0} 
+and 
+{\tt p\%Z\_u=0.0}.
+The component {\tt p\%C} need not be set on entry.
+
+On exit, the components {\tt p\%X},
+{\tt p\%Y\_l}, {\tt p\%Y\_u}, {\tt p\%Z\_l}, {\tt p\%Z\_u} and {\tt p\%C}
+will contain the best estimates of the primal variables $\bmx$, 
+Lagrange multipliers for the general
+constraints $\bmy_l$ and $\bmy_u$, 
+dual variables for the bound constraints $\bmz_l$ and $\bmz_u$, 
+and values of the constraints $\bmA \bmx$ respectively.
+What of the remaining problem data has been restored depends upon
+the input value of the control parameter {\tt control\%restore\_problem}.
+The return format for a restored array component will be the same as its
+input format.
+\restrictions {\tt p\%n} $> 0$, {\tt p\%m} $\geq 0$ and {\tt p\%A\_ne} 
+              $\geq -2$.
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. It must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). Default values may be assigned by calling 
+{\tt \packagename\_initialize} prior to the first call to 
+{\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_solve}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+%\itt{v} is an \optional rank-one \intentin\ allocatable array of type 
+% default \realdp,  that holds \ldots
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_terminate( data, control, info )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type} 
+exactly as for
+{\tt \packagename\_solve},
+which must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+On exit, array components will have been deallocated.
+
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_solve}.
+Only the component {\tt status} will be set on exit, and a 
+successful call to 
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt inform\%status} on exit from 
+{\tt \packagename\_solve}
+or 
+{\tt \packagename\_terminate}
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\itt{-1.} An allocation error occurred. A message indicating the offending 
+array is written on unit {\tt control\%error}, and the returned allocation 
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{-2.} A deallocation error occurred. A message indicating the offending 
+array is written on unit {\tt control\%error} and the returned allocation 
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+status is given by the value {\tt inform\%alloc\_status}.
+
+\itt{-3.} One of the restrictions {\tt prob\%n} $> 0$ or {\tt prob\%m} $\geq  0$
+    or requirements that {\tt prob\%A\_type} contains its relevant string
+    {\tt 'DENSE'}, {\tt 'COORDINATE'}  or {\tt 'SPARSE\_BY\_ROWS'} 
+    has been violated.
+
+\itt{-4.} The equality constraints are inconsistent.
+
+\itt{-5.} The constraints appear to have no feasible point.
+
+\itt{-10.} The factorization failed; the return status from the factorization
+    package is given in the component {\tt inform\%fac\-t\-or\_status}.
+
+\itt{-17.} The problem is so ill-conditioned that further progress is 
+   impossible.
+
+\itt{-18} Too many iterations have been performed. This may happen if
+    {\tt control\%maxit} is too small, but may also be symptomatic of 
+    a badly scaled problem.
+
+\itt{\galerrcpulimit.} The elapsed CPU or system clock time limit has been 
+    reached. This may happen if either {\tt control\%cpu\_time\_limit} or
+    {\tt control\%clock\_time\_limit} is too small, but may also be symptomatic 
+    of a badly scaled problem.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting 
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}), 
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters 
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of 
+"specification commands". Each command occurs on a separate line, 
+and comprises a "keyword", 
+which is a string (in a close-to-natural language) used to identify a 
+control parameter, and 
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive, 
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and 
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+The portion of the specification file used by 
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an 
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by WCP_read_specfile .. )
+    BEGIN WCP
+       keyword    value
+       .......    .....
+       keyword    value
+    END 
+  ( .. lines ignored by WCP_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines 
+may contain additional (trailing) strings so long as such strings are 
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN WCP SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END WCP SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore, 
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored. 
+The content 
+of a line after a {\tt !} or {\tt *} character is also 
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some 
+specification commands, or to comment specific values 
+of certain control parameters.  
+
+The value of a control parameters may be of three different types, namely
+integer, logical or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}", 
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}". 
+Empty values are also allowed for 
+logical control parameters, and are interpreted as "{\tt TRUE}".  
+
+The specification file must be open for 
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number 
+passed to the routine in device (see below). 
+Note that the corresponding 
+file is {\tt REWIND}ed, which makes it possible to combine the specifications 
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+Control parameters corresponding to the components 
+{\tt FDC\_control}
+and
+{\tt SBLS\_control} may be changed by including additional sections enclosed by
+``{\tt BEGIN FDC}'' and 
+``{\tt END FDC}'', and
+``{\tt BEGIN SBLS}'' and 
+``{\tt END SBLS}'', respectively. 
+See the specification sheets for the packages 
+{\tt \libraryname\_FDC} 
+and
+{\tt \libraryname\_SBLS}
+for further details.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in 
+\def\baselinestretch{0.8} {\tt \begin{verbatim}
+     CALL WCP_read_specfile( control, device )
+\end{verbatim}}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). 
+Default values should have already been set, perhaps by calling 
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and 
+the component (see Section~\ref{typecontrol}) of {\tt control} 
+that each affects are given in Table~\ref{specfile}.
+
+\pctable{|l|l|l|} 
+\hline
+  command & component of {\tt control} & value type \\ 
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+  {\tt maximum-number-of-iterations} & {\tt \%maxit} & integer \\
+  {\tt start-print} & {\tt \%start\_print} & integer \\
+  {\tt stop-print} & {\tt \%stop\_print} & integer \\
+  {\tt initial-point-used} & {\tt \%initial\_point} & integer \\
+%  {\tt factorization-used} & {\tt \%factor} & integer \\
+%  {\tt maximum-column-nonzeros-in-schur-complement} & {\tt \%max\_col} & integer \\
+%  {\tt initial-integer-workspace} & {\tt \%indmin} & integer \\
+%  {\tt initial-real-workspace} & {\tt \%valmin} & integer \\
+%  {\tt maximum-refinements} & {\tt \%itref\_max} & integer \\
+  {\tt maximum-poor-iterations-before-infeasible} & {\tt \%infeas\_max} & integer \\
+  {\tt perturbation-strategy} & {\tt \%perturbation\_strategy} & integer \\
+  {\tt restore-problem-on-output} & {\tt \%restore\_problem} & integer \\
+  {\tt infinity-value} & {\tt \%infinity} & real \\
+  {\tt primal-accuracy-required} & {\tt \%stop\_p} & real \\
+  {\tt dual-accuracy-required} & {\tt \%stop\_d} & real \\
+  {\tt complementary-slackness-accuracy-required} & {\tt \%stop\_c} & real \\
+  {\tt initial-bound-perturbation} & {\tt perturb\_start} & real \\
+  {\tt perturbation-small} & {\tt \%perturbation\_small} & real \\
+  {\tt reduce-perturbation-factor} & {\tt \%reduce\_perturb\_factor} & real \\
+  {\tt reduce-perturbation-multiplier} & {\tt \%reduce\_perturb\_multiplier} & real \\
+  {\tt insufficiently-feasible-tolerance} & {\tt \%insufficiently\_feasible} & real \\
+  {\tt implicit-variable-tolerance} & {\tt \%implicit\_tol} & real \\
+  {\tt mininum-initial-primal-feasibility} & {\tt \%prfeas} & real \\
+  {\tt mininum-initial-dual-feasibility} & {\tt \%dufeas} & real \\
+  {\tt target-barrier-parameter} & {\tt \%mu\_target} & real \\
+  {\tt target-barrier-accept-fraction} & {\tt \%mu\_accept\_fraction} & real \\
+  {\tt increase-barrier-parameter-by} & {\tt \%mu\_increase\_factor} & real \\
+  {\tt required-infeasibility-reduction} & {\tt \%required\_infeas\_reduction} & real \\
+%  {\tt pivot-tolerance-used} & {\tt \%pivot\_tol} & real \\
+%  {\tt pivot-tolerance-used-for-dependencies} & {\tt \%pivot\_tol\_for\_dependencies} & real \\
+%  {\tt zero-pivot-tolerance} & {\tt \%zero\_pivot} & real \\
+  {\tt alpha-scaling-tolerance} & {\tt \%alpha\_scale} & real \\
+  {\tt identical-bounds-tolerance} & {\tt \%identical\_bounds\_tol} & real \\
+  {\tt maximum-cpu-time-limit} & {\tt \%cpu\_time\_limit} & real \\
+  {\tt maximum-clock-time-limit} & {\tt \%clock\_time\_limit} & real \\
+  {\tt remove-linear-dependencies} & {\tt \%remove\_dependencies} & logical \\
+  {\tt treat-zero-bounds-as-general} & {\tt \%treat\_zero\_bounds\_as\_general} & logical \\
+  {\tt just-find-feasible-point} & {\tt \%just\_feasible} & logical \\
+  {\tt balance-initial-complementarity} & {\tt \%balance\_initial\_complementarity} & logical \\
+  {\tt use-corrector-step} & {\tt \%use\_corrector} & logical \\
+  {\tt space-critical}   & {\tt \%space\_critical} & logical \\
+  {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
+  {\tt record-x-status} & {\tt \%record\_x\_status} & logical \\
+  {\tt record-c-status} & {\tt \%record\_c\_status} & logical \\
+\hline
+\ectable{\label{specfile}Specfile commands and associated 
+components of {\tt control}.}
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+If {\tt control\%print\_level} is positive, information about the progress 
+of the algorithm will be printed on unit {\tt control\-\%out}.
+If {\tt control\%print\_level} $= 1$, a single line of output will be produced 
+for each iteration of the process. 
+This will include values of the current primal and dual infeasibility, and
+violation of complementary slackness, the feasibility-phase objective value,
+the current steplength, the value of the barrier parameter, the
+number of backtracks in the linesearch and the elapsed clock time in seconds.
+
+If {\tt control\%print\_level} $\geq 2$ this 
+output will be increased to provide significant detail of each iteration. 
+This extra output includes residuals of the linear systems solved, and,
+for larger values of {\tt control\%print\_level}, values of the primal and dual
+variables and Lagrange multipliers. 
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines None. 
+\galmodules {\tt \packagename\_solve} calls the \galahad\ packages
+{\tt GALAHAD\_\-CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS}, 
+{\tt GALAHAD\_SMT},
+{\tt GALAHAD\_QPT}, {\tt GALAHAD\_QPD}, {\tt GALAHAD\_SPECFILE}, 
+{\tt GALAHAD\_QPP}, {\tt GALAHAD\_SPACE}, {\tt GALAHAD\_SORT}, 
+{\tt GALAHAD\_STRING}, {\tt GALAHAD\_\-ROOTS}, \linebreak {\tt GALAHAD\_\-SBLS},
+{\tt GALAHAD\_FDC}.
+\galio Output is under control of the arguments
+ {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
+\galrestrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $\geq  0$, 
+{\tt prob\%A\_type} $\in \{${\tt 'DENSE'}, 
+ {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}$\}$. 
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+
+The algorithm is iterative, and at each major iteration attempts
+to find a solution to the perturbed system
+\req{prim}, \req{dual},
+\eqn{pert-slknessc}{
+( c_i^{} - c^l_i + (\theta_c^l)_i^{} ) 
+( y^{l}_i + (\theta_y^l)_i^{} )
+= (\mu_c^{l})_i^{} \tim{and}
+( c_i^{} - c_i^u - (\theta_c^u)_i^{} ) 
+( y^{u}_i - (\theta_y^u)_i^{} )
+= (\mu_c^{u})_i^{}, \;\;\;
+ i = 1, \ldots , m,}
+\eqn{pert-slknessx}{
+( x_j^{} - x^l_j + (\theta_x^l)_j^{} ) 
+( z^{l}_j + (\theta_z^l)_j^{} )
+= (\mu_x^{l})_j^{} \tim{and}
+( x_j^{} - x_j^u - (\theta_x^u)_j^{} ) 
+( z^{u}_j - (\theta_z^u)_j^{} )
+= (\mu_x^{u})_j^{}, \;\;\;
+ j = 1, \ldots , n,}
+and
+\eqn{pert-interior}{
+\bmc^{l} - \bmtheta_c^l < \bmc < \bmc^{u} + \bmtheta_c^u, \;\;
+\bmx^{l} - \bmtheta_x^l < \bmx < \bmx^{u} + \bmtheta_x^u, \;\;
+ \bmy^{l} > - \bmtheta_y^l , \;\;
+ \bmy^{u} < \bmtheta_y^u , \;\;
+ \bmz^{l} > - \bmtheta_z^l \;\; \mbox{and} \;\;
+ \bmz^{u} < \bmtheta_z^u ,}
+where the vectors of perturbations 
+$\bmtheta^l_c$,
+$\bmtheta^u_c$,
+$\bmtheta^l_x$,
+$\bmtheta^u_x$,
+$\bmtheta^l_x$,
+$\bmtheta^u_x$,
+$\bmtheta^l_y$,
+$\bmtheta^u_y$,
+$\bmtheta^l_z$ and
+$\bmtheta^u_z$,
+are non-negative. Rather than solve 
+\req{prim}--\req{dual} and \req{pert-slknessc}--\req{pert-interior}
+exactly, we instead seek a feasible point for the easier relaxation
+\req{prim}--\req{dual} and
+\eqn{req-pert-slkness}{\arr{cccccl}{
+\gamma (\mu_c^{l})_i^{} & \leq &
+( c_i^{} - c^l_i + (\theta_c^l)_i^{} ) ( y^{l}_i + (\theta_y^l)_i^{} )
+& \leq & (\mu_c^{l})_i^{} / \gamma & \tim{and} \\
+\gamma (\mu_c^{u})_i^{} & \leq &
+( c_i^{} - c_i^u - (\theta_c^u)_i^{} ) ( y^{u}_i - (\theta_y^u)_i^{} )
+& \leq & (\mu_c^{u})_i^{}, /\gamma &
+\;\;\;  i = 1, \ldots , m, \tim{and} \\
+\gamma (\mu_x^{l})_j^{} & \leq &
+( x_j^{} - x^l_j + (\theta_x^l)_j^{} ) ( z^{l}_j + (\theta_z^l)_j^{} )
+& \leq & (\mu_x^{l})_j^{} /\gamma & \tim{and} \\
+\gamma (\mu_x^{u})_j^{}  & \leq &
+( x_j^{} - x_j^u - (\theta_x^u)_j^{} ) 
+( z^{u}_j - (\theta_z^u)_j^{} ) 
+& \leq & (\mu_x^{u})_j^{} /\gamma , & \;\;\; j = 1, \ldots , n,}}
+for some $\gamma \in (0,1]$ which is allowed to be smaller than one 
+if there is a nonzero perturbation.
+
+Given any solution to \req{prim}--\req{dual} and \req{req-pert-slkness}
+satisfying \req{pert-interior},,
+the perturbations are reduced (sometimes to zero) so as to ensure that the 
+current solution is feasible for the next perturbed problem. Specifically,
+the perturbation $(\theta^l_c)_i^{}$ for the constraint $c_i^{} \geq c^l_i$
+is set to zero if $c_i$ is larger than some given parameter $\epsilon > 0$.
+If not, but $c_i$ is strictly positive, the perturbation will be
+reduced by a multiplier $\rho \in (0,1)$. Otherwise, the new perturbation 
+will be set to $\xi (\theta^l_c)_i^{} + ( 1 - \xi ) ( c_i^l - c_i^{} )$
+for some factor $\xi \in (0,1)$. Identical rules are used to reduce the
+remaining primal and dual perturbations. 
+The targets $\bmmu_c^{l}$, $\bmmu_c^{u}$, $\bmmu_x^{l}$ and $\bmmu_x^{u}$
+will also be increased by the factor $\beta \geq 1$ for those
+(primal and/or dual) variables with strictly 
+positive perturbations so as to try to accelerate the convergence. 
+
+Ultimately the intention is to drive all the perturbations to zero. 
+It can be shown that if the original problem \req{prim}--\req{slknessx}
+and \req{interior}
+has a solution, the perturbations will be zero after a finite number of major 
+iterations. Equally, if there is no interior solution  \req{interior}, 
+the sets of (primal and dual) variables that are necessarily at (one of) their
+bounds for all feasible points---we refer to these as {\em implicit} 
+equalities---will be identified, as will the possibility that there is
+no point (interior or otherwise) in the primal and/or dual feasible regions.
+
+Each major iteration requires the solution 
+$\bmv = (\bmx,\bmc,\bmz^l,\bmz^u,\bmy^l,\bmy^u)$
+of the nonlinear system
+\req{prim}, \req{dual} and \req{pert-slknessc}--\req{pert-interior}
+for fixed perturbations, using a minor iteration. The minor iteration
+uses a stabilized (predictor-corrector) Newton method, 
+in which the arc 
+$\bmv(\alpha) = \bmv + \alpha \dot{\bmv} + \alpha^2 \ddot{\bmv}$, $\alpha \in 
+[0,1]$,
+involving the standard Newton step $\dot{\bmv}$
+for the equations \req{prim}, \req{dual}, \req{pert-slknessc}
+and \req{pert-slknessx}, optionally augmented by a corrector $\ddot{\bmv}$
+to account fir the nonlinearity in \req{pert-slknessc}--\req{pert-slknessx},
+is truncated so as to ensure that
+\disp{
+( c_i^{}(\alpha) - c^l_i + (\theta_c^l)_i^{} ) 
+( y^{l}_i(\alpha) + (\theta_y^l)_i^{} )
+\geq \tau (\mu_c^{l})_i^{} \tim{and}
+( c_i^{}(\alpha) - c_i^u - (\theta_c^u)_i^{} ) 
+( y^{u}_i(\alpha) - (\theta_y^u)_i^{} )
+\geq \tau (\mu_c^{u})_i^{}, \;\;\;
+ i = 1, \ldots , m,}
+and 
+\disp{
+( x_j^{}(\alpha) - x^l_j + (\theta_x^l)_j^{} ) 
+( z^{l}_j(\alpha) + (\theta_z^l)_j^{} )
+\geq \tau (\mu_x^{l})_j^{} \tim{and}
+( x_j^{}(\alpha) - x_j^u - (\theta_x^u)_j^{} ) 
+( z^{u}_j(\alpha) - (\theta_z^u)_j^{} )
+\geq \tau (\mu_x^{u})_j^{}, \;\;\;
+ j = 1, \ldots , n,}
+for some $\tau \in (0,1)$, always holds, and also so that the norm
+of the residuals to 
+\req{prim}, \req{dual}, \req{pert-slknessc} and \req{pert-slknessx}
+is reduced as much as possible. 
+The Newton and corrector systems are solved using a factorization of
+the Jacobian of its defining functions (the so-called ``augmented system''
+approach) or of a reduced system in which some of the trivial equations are
+eliminated (the ``Schur-complement'' approach).
+The factors are obtained using the \galahad\ package {\tt GALAHAD\_SBLS}.
+
+In order to make the solution as efficient as possible, the 
+variables and constraints are reordered internally
+by the \galahad\ package {\tt GALAHAD\_QPP} prior to solution. 
+In particular, fixed variables, and 
+free (unbounded on both sides) constraints are temporarily removed.
+In addition, an attempt to identify and remove linearly dependent
+equality constraints may be made by factorizing
+\disp{ \mat{cc}{\alpha \bmI & \bmA^T_{\cal E} \\ \bmA^{}_{\cal E} & \bmzero},}
+where $\bmA_{\cal E}$  denotes the gradients of the equality constraints and
+$\alpha > 0$ is a given scaling factor,
+using {\tt GALAHAD\_SBLS}, and examining small pivot blocks.
+
+\vspace*{1mm}
+
+\galreferences
+\vspace*{1mm}
+
+\noindent
+The basic algorithm, its convergence analysis and results of
+numerical experiments are given in
+\vspace*{1mm}
+
+\noindent
+C. Cartis and N. I. M. Gould (2006).
+Finding a point n the relative interior of a polyhedron.
+Technical Report TR-2006-016, Rutherford Appleton Laboratory.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose we wish to find a well-centered interior point
+that satisfies the general linear constraints
+$1 \leq  2 x_{1}  +  x_{2}  \leq  2$, 
+$x_{2}  +  x_{3}  =  2$, and simple bounds
+$-1  \leq  x_{1}  \leq  1$ and $x_{3}  \leq  2$.
+starting from $\bmx^{0}  =  ( -2, 1, 3 )^{T}$.
+Then, on writing the data for this problem as
+\disp{\bmA = \mat{ccc}{ 2 & 1 & \\ & 1 & 1},\;\;
+ \bmc^{l} = \vect{ 1 \\ 2 }, \;\;
+ \bmc^{u} = \vect{ 2 \\ 2 }, \;\;
+\bmx^{l} = \vect{ -1 \\ - \infty \\ - \infty } \tim{and}
+\bmx^{u} = \vect{ 1 \\ \infty \\ 2 }, }
+we may use the following code.
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+
+\noindent
+The same problem may be solved holding the data in 
+a sparse row-wise storage format by replacing the lines
+{\tt \small
+\begin{verbatim}
+! sparse co-ordinate storage format: integer components
+...
+! integer components complete 
+\end{verbatim}
+}
+\noindent
+by
+{\tt \small
+\begin{verbatim}
+! sparse row-wise storage format: integer components
+   CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS' )  ! Specify sparse-by-row storage
+   ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( m + 1 )  )
+   p%A%col = (/ 1, 2, 2, 3 /)                 ! Jacobian A
+   p%A%ptr = (/ 1, 3, 5 /)                    ! Set row pointers  
+! integer components complete
+\end{verbatim}
+}
+\noindent
+and
+{\tt \small
+\begin{verbatim}
+! sparse co-ordinate storage format: real components
+...
+! real components complete   
+\end{verbatim}
+}
+\noindent
+by
+{\tt \small
+\begin{verbatim}
+! sparse row-wise storage format: real components
+     p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
+! real components complete   
+\end{verbatim}
+}
+\noindent
+or using a dense storage format with the replacement lines
+{\tt \small
+\begin{verbatim}
+! dense storage format: integer components
+   CALL SMT_put( p%A%type, 'DENSE' )  ! Specify dense storage for A
+   ALLOCATE( p%A%val( n * m ) )
+! integer components complete
+\end{verbatim}
+}
+\noindent
+and 
+{\tt \small
+\begin{verbatim}
+! dense storage format: real components
+     p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian
+! real components complete   
+\end{verbatim}
+}
+\noindent
+respectively.
+
+\end{document}
+
+
+
+
+
+
+

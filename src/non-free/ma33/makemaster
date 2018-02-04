@@ -1,0 +1,210 @@
+#  Main body of the installation makefile for the MA33 packages
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 11 IV 2006
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Archive manipulation strings
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+HRMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  compilation agenda
+
+ma33s = $(HLGS)(mc13s.o) $(HLGS)(mc20s.o) $(HLGS)(mc21s.o) $(HLGS)(ma33s.o)
+ma33d = $(HLGD)(mc13d.o) $(HLGD)(mc20d.o) $(HLGD)(mc21d.o) $(HLGD)(ma33d.o)
+
+RMA33S = $(OBJS)/ma33ss.o -L$(OBJS) $(LAPACK) $(BLAS)
+RMA33D = $(OBJD)/ma33ds.o -L$(OBJD) $(LAPACK) $(BLAS)
+
+RHSLMA33S = $(OBJS)/ma33ss.o -L$(OBJS) $(LAPACK) $(BLAS)
+RHSLMA33D = $(OBJD)/ma33ds.o -L$(OBJD) $(LAPACK) $(BLAS)
+
+SUCC = precision version) compiled successfully
+
+#  main compilations and runs
+
+all: ma33
+test: test_ma
+
+#  all qp routines
+
+ma33: ma33_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA33 routines ($(PRECIS) $(SUCC)"
+ma33_silent: ma33_$(PRECIS)
+ma33_single: $(ma33s)
+ma33_double: $(ma33d)
+
+test_ma33s: $(ma33s) $(OBJS)/ma33tests.o
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o ./run_ma33 $(RMA33S)
+	- ./run_ma33 < ./ma33tests.data >& ma33ds.output
+	cat ma33ds.output
+	rm ./run_ma33
+
+test_ma33d: $(ma33d) $(OBJD)/ma33testd.o
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o ./run_ma33 $(RMA33D)
+	- ./run_ma33 < ./ma33testd.data2 >& ma33dd.output
+	cat ma33dd.output
+	rm ./run_ma33
+
+test_new_hsl_ma33s: $(new_hsl_ma33s) $(OBJS)/new_hsl_ma33tests.o
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_new_hsl_ma33 $(RHSLMA33S)
+	- ./run_new_hsl_ma33 < ./new_hsl_ma33tests.data >& new_hsl_ma33ds.output
+	cat new_hsl_ma33ds.output
+	rm ./run_new_hsl_ma33
+
+test_new_hsl_ma33d: $(new_hsl_ma33d) $(OBJD)/new_hsl_ma33testd.o
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_new_hsl_ma33 $(RHSLMA33D)
+	- ./run_new_hsl_ma33 < ./new_hsl_ma33testd.data >& new_hsl_ma33dd.output
+	cat new_hsl_ma33dd.output
+	rm ./run_new_hsl_ma33
+
+#  main compilations
+
+#  ma33 and its dependencies
+
+mc13s.o: $(HLG)(mc13s.o)
+
+$(HLG)(mc13s.o): ../ma33/mc13s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc13s"
+	$(CP) ../ma33/mc13s.f $(OBJ)/mc13s.f90
+	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc13s.f90
+	cd $(OBJ) ; $(HARR) mc13s.o ; $(RM) mc13s.f90 mc13s.o
+	@printf '[ OK ]\n'
+
+mc13d.o: $(HLG)(mc13d.o)
+
+$(HLG)(mc13d.o): ../ma33/mc13d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc13d"
+	$(CP) ../ma33/mc13d.f $(OBJ)/mc13d.f90
+	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc13d.f90
+	cd $(OBJ) ; $(HARR) mc13d.o ; $(RM) mc13d.f90 mc13d.o
+	@printf '[ OK ]\n'
+
+mc20s.o: $(HLG)(mc20s.o)
+
+$(HLG)(mc20s.o): ../ma33/mc20s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc20s"
+	$(CP) ../ma33/mc20s.f $(OBJ)/mc20s.f90
+	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc20s.f90
+	cd $(OBJ) ; $(HARR) mc20s.o ; $(RM) mc20s.f90 mc20s.o
+	@printf '[ OK ]\n'
+
+mc20d.o: $(HLG)(mc20d.o)
+
+$(HLG)(mc20d.o): ../ma33/mc20d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc20d"
+	$(CP) ../ma33/mc20d.f $(OBJ)/mc20d.f90
+	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc20d.f90
+	cd $(OBJ) ; $(HARR) mc20d.o ; $(RM) mc20d.f90 mc20d.o
+	@printf '[ OK ]\n'
+
+mc21s.o: $(HLG)(mc21s.o)
+
+$(HLG)(mc21s.o): ../ma33/mc21s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc21s"
+	$(CP) ../ma33/mc21s.f $(OBJ)/mc21s.f90
+	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc21s.f90
+	cd $(OBJ) ; $(HARR) mc21s.o ; $(RM) mc21s.f90 mc21s.o
+	@printf '[ OK ]\n'
+
+mc21d.o: $(HLG)(mc21d.o)
+
+$(HLG)(mc21d.o): ../ma33/mc21d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc21d"
+	$(CP) ../ma33/mc21d.f $(OBJ)/mc21d.f90
+	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc21d.f90
+	cd $(OBJ) ; $(HARR) mc21d.o ; $(RM) mc21d.f90 mc21d.o
+	@printf '[ OK ]\n'
+
+ma33s.o: $(HLG)(ma33s.o)
+
+$(HLG)(ma33s.o): ../ma33/ma33s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma33s"
+	$(CP) ../ma33/ma33s.f $(OBJ)/ma33s.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ma33s.f90
+	cd $(OBJ); $(HARR) ma33s.o ; $(RM) ma33s.f90 ma33s.o
+	$(HRMARFILE) new_hsl_ma33s.o
+#	$(HRMARFILE) ma51s.o
+	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+ma33d.o: $(HLG)(ma33d.o)
+
+$(HLG)(ma33d.o): ../ma33/ma33d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma33d"
+	$(CP) ../ma33/ma33d.f $(OBJ)/ma33d.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ma33d.f90
+	cd $(OBJ); $(HARR) ma33d.o ; $(RM) ma33d.f90 ma33d.o
+	$(HRMARFILE) new_hsl_ma33d.o
+#	$(HRMARFILE) ma51d.o
+	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+#  test programs
+
+$(OBJS)/ma33tests.o: ma33tests.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma33tests "
+	$(CP) ../ma33/ma33tests.f $(OBJ)/ma33tests.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ma33tests.f90
+	@printf '[ OK ]\n'
+
+$(OBJD)/ma33testd.o: ma33testd.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma33testd "
+	$(CP) ../ma33/ma33testd.f $(OBJ)/ma33testd.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ma33testd.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean: cleanall
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'

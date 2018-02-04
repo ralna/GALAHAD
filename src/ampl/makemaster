@@ -1,0 +1,331 @@
+#  Main body of the AMPL/GALAHAD interface installation makefile
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 26 VII 2005
+
+SHELL = /bin/$(BINSHELL)
+
+#  Archive manipulation strings
+
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+# Preprocessing commands
+
+DPRECISION = DPRECISION_$(PRECIS)
+DPRECISION_single = DSinglePrecision
+DPRECISION_double = DDoublePrecision
+CUSTOM_AMPL_FLAGS =
+CUSTOM_INSTALL_FLAGS = -$(DPRECISION) $(CCONDEF) $(CUSTOM_AMPL_FLAGS)
+#-DQPA -DQPB -DPRESOLVE -DFILTRANE -DLANCELOT
+
+#  compiler flags
+
+RUNFFLAGS = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+FFLAGSS   = $(BASIC) $(RUNFFLAGS) $(F90) $(SPECIAL)
+CFLAGS    = $(CCBASIC) $(CCISO) -I. -I$(AMPLDIR) $(CUSTOM_INSTALL_FLAGS) $(CCDEBUG)
+
+#  compilation agenda
+
+OBJECTSS_AMPL = $(OBJS)/galahad_ampl.o \
+  $(OBJS)/wrap_qp.o $(OBJS)/wrap_qpa.o $(OBJS)/wrap_qpb.o  \
+  $(OBJS)/wrap_qpc.o $(OBJS)/wrap_cqp.o $(OBJS)/wrap_presolve.o \
+  $(OBJS)/wrap_filtrane.o $(OBJS)/wrap_lancelot.o
+
+OBJECTSD_AMPL = $(OBJD)/galahad_ampl.o \
+  $(OBJD)/wrap_qp.o $(OBJD)/wrap_qpa.o $(OBJD)/wrap_qpb.o  \
+  $(OBJD)/wrap_qpc.o $(OBJD)/wrap_cqp.o $(OBJD)/wrap_presolve.o \
+  $(OBJD)/wrap_filtrane.o $(OBJD)/wrap_lancelot.o
+
+OBJECTSS_AMPL_CURRENT = $(OBJECTSS_AMPL) $(OBJS)/wrap_bqp.o
+OBJECTSD_AMPL_CURRENT = $(OBJECTSD_AMPL) $(OBJD)/wrap_bqp.o
+
+OBJECTSS_AMPL_JUST_QP = $(OBJS)/galahad_ampl.o \
+  $(OBJS)/wrap_qp.o  $(OBJS)/wrap_qpa.o $(OBJS)/wrap_qpb.o $(OBJS)/wrap_qpc.o \
+  $(OBJS)/wrap_cqp.o $(OBJS)/wrap_presolve.o
+
+OBJECTSD_AMPL_JUST_QP = $(OBJD)/galahad_ampl.o \
+  $(OBJD)/wrap_qp.o  $(OBJD)/wrap_qpa.o $(OBJD)/wrap_qpb.o $(OBJD)/wrap_qpc.o \
+  $(OBJD)/wrap_cqp.o $(OBJD)/wrap_presolve.o
+
+OBJECTSS_AMPL_JUST_QP_CURRENT = $(OBJECTSS_AMPL_JUST_QP) $(OBJS)/wrap_bqp.o
+OBJECTSD_AMPL_JUST_QP_CURRENT = $(OBJECTSD_AMPL_JUST_QP) $(OBJD)/wrap_bqp.o
+
+OBJECTSS_AMPL_JUST_FILTRANE = $(OBJS)/galahad_ampl.o $(OBJS)/wrap_filtrane.o
+OBJECTSD_AMPL_JUST_FILTRANE = $(OBJD)/galahad_ampl.o $(OBJD)/wrap_filtrane.o
+
+OBJECTSS_AMPL_JUST_LANCELOTB = $(OBJS)/galahad_ampl.o $(OBJS)/wrap_lancelot.o
+OBJECTSD_AMPL_JUST_LANCELOTB = $(OBJD)/galahad_ampl.o $(OBJD)/wrap_lancelot.o
+
+SUCC_AMPL = precision version) for AMPL compiled successfully
+FAIL_AMPL = precision version) for AMPL not available
+
+#  AMPL components
+
+GALAHADMAIN  = $(GALAHAD)/ampl_bin/$(VERSION)
+AMPL_OBJS    = $(AMPLDIR)/funcadd0.o $(AMPLDIR)/amplsolver.a
+LIB_DIR      = -L$(AMPLDIR) -L$(OBJ) \
+               -L$(CUTEST)/objects/$(CUTESTVERSION)/$(PRECIS) -L.
+LIBS         = -lgalahad -lcutest $(HSL) $(SPRAL) $(PARDISO) $(WSMP) \
+                $(METIS) $(LAPACK) $(BLAS) -lm
+LIBS_JUST_QP = -lgalahad -lcutest $(HSL) $(SPRAL) $(PARDISO) $(WSMP) \
+                $(METIS) $(LAPACK) $(BLAS) -lm
+LIBS_JUST_FILTRANE = -lgalahad -lcutest $(LAPACK) $(BLAS) -lm
+LIBS_JUST_LANCELOTB = -lgalahad -lcutest $(HSL) $(SPRAL) $(PARDISO) \
+                      $(WSMP) $(METIS) $(LAPACK) $(BLAS) -lm
+
+JUST_QP_FLAGS = -DQP -DCQP -DQPA -DQPB -DQPC -DQP -DPRESOLVE
+JUST_QP_FLAGS_CURRENT = $(JUST_QP_FLAGS) -DBQP
+JUST_FILTRANE_FLAGS = -DFILTRANE
+JUST_LANCELOT_FLAGS = -DLANCELOT
+ALL_AMPL_FLAGS = $(JUST_QP_FLAGS) $(JUST_FILTRANE_FLAGS) $(JUST_LANCELOT_FLAGS)
+ALL_AMPL_FLAGS_CURRENT = $(JUST_QP_FLAGS_CURRENT) \
+                         $(JUST_FILTRANE_FLAGS) $(JUST_LANCELOT_FLAGS)
+
+#  main compilations and runs
+
+galahad_ampl: galahad_ampl_$(PRECIS)
+	:
+
+galahad_ampl_single: galahad_single ampl_single
+galahad_ampl_double: galahad_double ampl_double
+
+qp_ampl: qp_ampl_$(PRECIS)
+	:
+
+qp_ampl_single: qp_single ampl_just_qp_single
+qp_ampl_double: qp_double ampl_just_qp_double
+
+filtrane_ampl: filtrane_ampl_$(PRECIS)
+	:
+
+filtrane_ampl_single: filtrane_single ampl_just_filtrane_single
+filtrane_ampl_double: filtrane_double ampl_just_filtrane_double
+
+lancelotb_ampl: lancelotb_ampl_$(PRECIS)
+	:
+
+lancelotb_ampl_single: lancelotb_single ampl_just_lancelotb_single
+lancelotb_ampl_double: lancelotb_double ampl_just_lancelotb_double
+
+ampl: ampl_$(PRECIS)
+
+ampl_single: $(OBJECTSS_AMPL)
+	cd $(OBJ); $(FORTRAN) -o $(GALAHADMAIN) \
+                   $(NOFMAIN) $(RUNFFLAGS) $(OBJECTSS_AMPL) \
+                   $(AMPL_OBJS) $(LIB_DIR) $(LIBS)
+	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_AMPL)"
+
+ampl_double: $(OBJECTSD_AMPL)
+	cd $(OBJ); $(FORTRAN) -o $(GALAHADMAIN) \
+                   $(NOFMAIN) $(RUNFFLAGS) $(OBJECTSD_AMPL) \
+                   $(AMPL_OBJS) $(LIB_DIR) $(LIBS)
+	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_AMPL)"
+
+ampl_just_qp_single: $(OBJECTSS_AMPL_JUST_QP)
+	cd $(OBJ); $(FORTRAN) -o $(GALAHADMAIN) \
+                   $(NOFMAIN) $(RUNFFLAGS) $(OBJECTSS_AMPL_JUST_QP) \
+                   $(AMPL_OBJS) $(LIB_DIR) $(LIBS_JUST_QP)
+	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_AMPL)"
+
+ampl_just_qp_double: $(OBJECTSD_AMPL_JUST_QP)
+	cd $(OBJ); $(FORTRAN) -o $(GALAHADMAIN) \
+                   $(NOFMAIN) $(RUNFFLAGS) $(OBJECTSD_AMPL_JUST_QP) \
+                   $(AMPL_OBJS) $(LIB_DIR) $(LIBS_JUST_QP)
+	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_AMPL)"
+
+ampl_just_qp_single_current: $(OBJECTSS_AMPL_JUST_QP_CURRENT)
+	cd $(OBJ); $(FORTRAN) -o $(GALAHADMAIN) \
+                   $(NOFMAIN) $(RUNFFLAGS) $(OBJECTSS_AMPL_JUST_QP_CURRENT) \
+                   $(AMPL_OBJS) $(LIB_DIR) $(LIBS_JUST_QP)
+	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_AMPL)"
+
+ampl_just_qp_double_current: $(OBJECTSD_AMPL_JUST_QP_CURRENT)
+	cd $(OBJ); $(FORTRAN) -o $(GALAHADMAIN) \
+                   $(NOFMAIN) $(RUNFFLAGS) $(OBJECTSD_AMPL_JUST_QP_CURRENT) \
+                   $(AMPL_OBJS) $(LIB_DIR) $(LIBS_JUST_QP)
+	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_AMPL)"
+
+ampl_just_filtrane_single: $(OBJECTSS_AMPL_JUST_FILTRANE)
+	cd $(OBJ); $(FORTRAN) -o $(GALAHADMAIN) \
+                   $(NOFMAIN) $(RUNFFLAGS) $(OBJECTSS_AMPL_JUST_FILTRANE) \
+                   $(AMPL_OBJS) $(LIB_DIR) $(LIBS_JUST_FILTRANE)
+	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_AMPL)"
+
+ampl_just_filtrane_double: $(OBJECTSD_AMPL_JUST_FILTRANE)
+	cd $(OBJ); $(FORTRAN) -o $(GALAHADMAIN) \
+                   $(NOFMAIN) $(RUNFFLAGS) $(OBJECTSD_AMPL_JUST_FILTRANE) \
+                   $(AMPL_OBJS) $(LIB_DIR) $(LIBS_JUST_FILTRANE)
+	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_AMPL)"
+
+ampl_just_lancelotb_single: $(OBJECTSS_AMPL_JUST_LANCELOTB)
+	cd $(OBJ); $(FORTRAN) -o $(GALAHADMAIN) \
+                   $(NOFMAIN) $(RUNFFLAGS) $(OBJECTSS_AMPL_JUST_LANCELOTB) \
+                   $(AMPL_OBJS) $(LIB_DIR) $(LIBS_JUST_LANCELOTB)
+	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_AMPL)"
+
+ampl_just_lancelotb_double: $(OBJECTSD_AMPL_JUST_LANCELOTB)
+	cd $(OBJ); $(FORTRAN) -o $(GALAHADMAIN) \
+                   $(NOFMAIN) $(RUNFFLAGS) $(OBJECTSD_AMPL_JUST_LANCELOTB) \
+                   $(AMPL_OBJS) $(LIB_DIR) $(LIBS_JUST_LANCELOTB)
+	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_AMPL)"
+
+
+galahad_double: lancelotb_double qp_double filtrane_double
+
+lancelotb_double:
+	( cd ../lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                       use_lancelotb_silent PRECIS=double PWD=$(PWD)/../lancelot )
+
+qp_double:
+	( cd ../qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                       use_qp_silent PRECIS=double PWD=$(PWD)/../qp )
+
+filtrane_double:
+	( cd ../filtrane   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                       use_filtrane_silent PRECIS=double PWD=$(PWD)/../filtrane )
+
+galahad_single: lancelotb_single qp_single filtrane_single
+
+lancelotb_single:
+	( cd ../lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                       use_lancelotb_silent PRECIS=single PWD=$(PWD)/../lancelot )
+
+qp_single:
+	( cd ../qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                       use_qp_silent PRECIS=single PWD=$(PWD)/../qp )
+
+filtrane_single:
+	( cd ../filtrane   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                       use_filtrane_silent PRECIS=single PWD=$(PWD)/../filtrane )
+
+all:
+	$(RMOBFILE) galahad_ampl.o
+	( cd .. ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                       all_ampl PRECIS=double PWD=$(PWD)/.. )
+
+qp:
+	$(RMOBFILE) galahad_ampl.o
+	( cd .. ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                       qp_ampl PRECIS=double PWD=$(PWD)/.. )
+
+lancelotb:
+	$(RMOBFILE) galahad_ampl.o
+	( cd .. ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                       lancelotb_ampl PRECIS=double PWD=$(PWD)/.. )
+
+filtrane:
+	$(RMOBFILE) galahad_ampl.o
+	( cd .. ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                       filtrane_ampl PRECIS=double PWD=$(PWD)/.. )
+
+
+#  constituent packages
+
+galahad_ampl.o: $(OBJ)/galahad_ampl.o
+
+$(OBJ)/galahad_ampl.o: galahad_ampl.c galahad_ampl.h
+	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_ampl"
+	$(SED) -f $(SEDS) galahad_ampl.c > $(OBJ)/galahad_ampl.c
+	$(SED) -e 's/\(extern void MAIN__(VOID);\)/\/\*\1\*\//' \
+               $(AMPLDIR)/asl.h > $(OBJ)/asl.h
+	$(CP) galahad_ampl.h amplinter.h $(OBJ)/
+	cd $(OBJ); $(CC) $(CFLAGS) galahad_ampl.c
+	$(RM) $(OBJ)/galahad_ampl.c $(OBJ)/galahad_ampl.h
+	$(RM) $(OBJ)/amplinter.h $(OBJ)/asl.h
+	$(RMOBFILE) wrap_qp.o
+	$(RMOBFILE) wrap_qpa.o
+	$(RMOBFILE) wrap_qpb.o
+	$(RMOBFILE) wrap_qpc.o
+	$(RMOBFILE) wrap_bqp.o
+	$(RMOBFILE) wrap_cqp.o
+	$(RMOBFILE) wrap_presolve.o
+	$(RMOBFILE) wrap_lancelot.o
+	$(RMOBFILE) wrap_filtrane.o
+	@printf '[ OK ]\n'
+
+wrap_qp.o: $(OBJ)/wrap_qp.o
+
+$(OBJ)/wrap_qp.o: wrap_qp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "wrap_qp"
+	$(SED) -f $(SEDS) wrap_qp.f90 > $(OBJ)/wrap_qp.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGSS) wrap_qp.f90
+	$(RM) $(OBJ)/wrap_qp.f90
+	@printf '[ OK ]\n'
+
+wrap_qpa.o: $(OBJ)/wrap_qpa.o
+
+$(OBJ)/wrap_qpa.o: wrap_qpa.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "wrap_qpa"
+	$(SED) -f $(SEDS) wrap_qpa.f90 > $(OBJ)/wrap_qpa.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGSS) wrap_qpa.f90
+	$(RM) $(OBJ)/wrap_qpa.f90
+	@printf '[ OK ]\n'
+
+wrap_qpb.o: $(OBJ)/wrap_qpb.o
+
+$(OBJ)/wrap_qpb.o: wrap_qpb.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "wrap_qpb"
+	$(SED) -f $(SEDS) wrap_qpb.f90 > $(OBJ)/wrap_qpb.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGSS) wrap_qpb.f90
+	$(RM) $(OBJ)/wrap_qpb.f90
+	@printf '[ OK ]\n'
+
+wrap_qpc.o: $(OBJ)/wrap_qpc.o
+
+$(OBJ)/wrap_qpc.o: wrap_qpc.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "wrap_qpc"
+	$(SED) -f $(SEDS) wrap_qpc.f90 > $(OBJ)/wrap_qpc.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGSS) wrap_qpc.f90
+	$(RM) $(OBJ)/wrap_qpc.f90
+	@printf '[ OK ]\n'
+
+wrap_bqp.o: $(OBJ)/wrap_bqp.o
+
+$(OBJ)/wrap_bqp.o: wrap_bqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "wrap_bqp"
+	$(SED) -f $(SEDS) wrap_bqp.f90 > $(OBJ)/wrap_bqp.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGSS) wrap_bqp.f90
+	$(RM) $(OBJ)/wrap_bqp.f90
+	@printf '[ OK ]\n'
+
+wrap_cqp.o: $(OBJ)/wrap_cqp.o
+
+$(OBJ)/wrap_cqp.o: wrap_cqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "wrap_cqp"
+	$(SED) -f $(SEDS) wrap_cqp.f90 > $(OBJ)/wrap_cqp.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGSS) wrap_cqp.f90
+	$(RM) $(OBJ)/wrap_cqp.f90
+	@printf '[ OK ]\n'
+
+wrap_presolve.o: $(OBJ)/wrap_presolve.o
+
+$(OBJ)/wrap_presolve.o: wrap_presolve.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "wrap_presolve"
+	$(SED) -f $(SEDS) wrap_presolve.f90 > $(OBJ)/wrap_presolve.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGSS) wrap_presolve.f90
+	$(RM) $(OBJ)/wrap_presolve.f90
+	@printf '[ OK ]\n'
+
+wrap_lancelot.o: $(OBJ)/wrap_lancelot.o
+
+$(OBJ)/wrap_lancelot.o: wrap_lancelot.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "wrap_lancelot"
+	$(SED) -f $(SEDS) wrap_lancelot.f90 > $(OBJ)/wrap_lancelot.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGSS) wrap_lancelot.f90
+	$(RM) $(OBJ)/wrap_lancelot.f90
+	@printf '[ OK ]\n'
+
+$(OBJ)/wrap_filtrane.o: wrap_filtrane.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "wrap_filtrane"
+	$(SED) -f $(SEDS) wrap_filtrane.f90 > $(OBJ)/wrap_filtrane.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGSS) wrap_filtrane.f90
+	$(RM) $(OBJ)/wrap_filtrane.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(OBJECTSD_AMPL) $(OBJ)/$(GALAHADMAIN)
+	@printf '[ OK ]\n'
+

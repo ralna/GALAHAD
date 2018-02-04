@@ -1,0 +1,259 @@
+
+
+
+
+!  - - - - - - - - - - - - - - - - - - - - - - - - - - -
+!  Munksgaard's preconditioner, ICCG, is to be used
+!  - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+      IF ( munks ) THEN
+
+!  Initialize data for ICCG
+
+        CALL MA61_initialize( S%ICNTL_iccg, S%CNTL_iccg, S%KEEP_iccg )
+        IF ( iprint >= 1000 ) THEN
+          S%ICNTL_iccg( 1 ) = 6 ; S%ICNTL_iccg( 2 ) = 6
+        ELSE
+          S%ICNTL_iccg( 1 ) = 0 ; S%ICNTL_iccg( 2 ) = 0
+        END IF
+
+!  Decide how much room is available for the incomplete factorization.
+!  nextra gives the amount of workspace above the minimum required
+!  for the factorization which is to be allowed for fill-in
+
+        S%nextra = nnzh
+        iai = nnzh + S%nextra
+        S%iaj = 2 * nnzh + S%nextra
+
+!  Extend the arrays matrix%row, %col and %val to accomodate this extra room
+
+        IF ( iai > lirnh ) THEN
+          nlh = iai ; ulh = nnzh; mlh = nnzh
+          CALL EXTEND_arrays( data%P%row, lirnh, ulh, nlh, mlh, buffer,       &
+                              status, alloc_status )
+          IF ( status /= 0 ) THEN 
+            bad_alloc = 'data%P%row' ; GO TO 990 ; END IF
+          lirnh = nlh ; iai = lirnh
+        END IF
+        IF ( S%iaj > ljcnh ) THEN
+          nlh = S%iaj ; ulh = nnzh; mlh = 2 * nnzh
+          CALL EXTEND_arrays( data%P%col, ljcnh, ulh, nlh, mlh, buffer,       &
+                              status, alloc_status )
+          IF ( status /= 0 ) THEN
+            bad_alloc = 'data%P%col' ; GO TO 990 ; END IF
+          ljcnh = nlh
+        END IF
+        IF ( S%iaj > lh ) THEN
+          nlh = S%iaj ; ulh = nnzh; mlh = 2 * nnzh
+          CALL EXTEND_arrays( data%P%val, lh, ulh, nlh, mlh, buffer,          &
+                              status, alloc_status )
+          IF ( status /= 0 ) THEN ; bad_alloc = 'H' ; GO TO 990 ; END IF
+          lh = nlh ; S%iaj = MIN( ljcnh, lh )
+        END IF
+
+!  Allocate workspace arrays for MA61
+
+        array_name = 'spls: IKEEP'
+        CALL SPACE_resize_array( n, 4, data%IKEEP,                          &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= 0 ) GO TO 960
+
+        array_name = 'spls: IW1'
+        CALL SPACE_resize_array( n, 4, data%IW1,                            &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= 0 ) GO TO 960
+
+        array_name = 'spls: W1'
+        CALL SPACE_resize_array( n, 3, data%W1,                             &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= 0 ) GO TO 960
+
+!  Form and factorize Munksgaard's preconditioner
+
+        CALL MDCHL_iccga( n, nnzh, data%P%val, data%P%row, data%P%col,     &
+                          iai, S%iaj, data%IKEEP, data%IW1, W1, ciccg,                  &
+                          S%ICNTL_iccg, S%CNTL_iccg, S%INFO_iccg, S%KEEP_iccg )
+        IF ( prnter .OR. out > 0 .AND. iprint == 2 ) THEN
+          IF ( prnter ) THEN
+            WRITE( out, 2140 ) n, nnzh, S%INFO_iccg( 2 )
+          ELSE
+            WRITE( out, 2150 ) n, nnzh, S%INFO_iccg( 2 )
+          END IF
+        END IF
+        IF ( ( S%INFO_iccg( 1 ) < 0 .AND. out > 0 ) .OR.                      &
+             ( S%INFO_iccg( 1 ) > 0 .AND. prnter ) )                          &
+          WRITE( out, 2160 ) S%INFO_iccg( 1 )
+
+!  Compress the vector IW to remove unused locations
+
+         nz0 = nnzh - S%INFO_iccg( 5 )
+         S%nz01 = nz0 + 1
+         S%liccgg = S%iaj - nz0
+
+!  Record the relative fill-in
+
+        IF ( nnzh > 0 ) THEN
+          ratio = DBLE( FLOAT( S%liccgg ) ) / DBLE( FLOAT( nnzh ) )
+        ELSE
+          ratio = one
+        END IF
+
+!  - - - - - - - - - - - - - - - - - - - - - - - - - -
+!  Lin and More's preconditioner, ICFS, is to be used
+!  - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+      ELSE IF ( icfs ) THEN
+
+!  Allocate workspace arrays for ICFS
+
+        array_name = 'spls: IW'
+        CALL SPACE_resize_array( 3 * n, data%IW,                            &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= 0 ) GO TO 960
+
+        array_name = 'spls: A_col_ptr'
+        CALL SPACE_resize_array( n + 1, data%A_col_ptr,                     &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= 0 ) GO TO 960
+        
+        array_name = 'spls: L_col_ptr'
+        CALL SPACE_resize_array( n + 1, data%L_col_ptr,                     &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= 0 ) GO TO 960
+
+        array_name = 'spls: DIAG'
+        CALL SPACE_resize_array( n, data%DIAG,                              &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= 0 ) GO TO 960
+
+        array_name = 'spls: W'
+        CALL SPACE_resize_array( n, data%W,                                 &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= 0 ) GO TO 960
+
+!  Check to see if H contains a diagonal entry in each row
+
+        data%IW( : n ) = 0
+        DO j = 1, nnzh        
+         i = data%P%row( j )
+         IF ( i == data%P%col( j ) ) data%IW( i ) = data%IW( i ) + 1
+        END DO
+        ndiag = COUNT( data%IW( : n ) == 0 )
+        nz0 = nnzh + ndiag
+
+!  Decide how much room is available for the incomplete factorization.
+!  nextra gives the amount of workspace above the minimum required
+!  for the factorization which is to be allowed for fill-in
+
+        S%nextra = nz0 + n * icfact
+        ntotal = nz0 + S%nextra
+
+!  Extend the arrays data%P%row, %col and val to accomodate this extra room
+
+        IF ( ntotal > lirnh ) THEN
+          mlh = ntotal ; nlh = MAX( mlh, ( 3 * lirnh ) / 2 ) ; ulh = nnzh
+          CALL EXTEND_arrays( data%P%row, lirnh, ulh, nlh, mlh, buffer,       &
+                              status, alloc_status )
+          IF ( status /= 0 ) THEN ; bad_alloc = 'data%P%row' ; GO TO 990
+          END IF
+          lirnh = nlh
+        END IF
+        IF ( ntotal > lh ) THEN
+          mlh = ntotal ; nlh = MAX( mlh, ( 3 * lh ) / 2 ) ; ulh = nnzh
+          CALL EXTEND_arrays( data%P%val, lh, ulh, nlh, mlh, buffer,          &
+                              status, alloc_status )
+          IF ( status /= 0 ) THEN ; bad_alloc = 'H' ; GO TO 990
+          END IF
+          lh = nlh
+        END IF
+
+!  Reorder H so that its lower triangle is stored in compressed column format.
+!  First count how many nonzeros there are in each column
+
+        data%IW( : n ) = 0
+        DO j = 1, nnzh        
+         i = data%P%row( j )
+         IF ( i /= data%P%col( j ) ) data%IW( i ) = data%IW( i ) + 1
+        END DO
+
+!  Now find the starting address for each columm in the storage format
+
+        data%A_col_ptr( 1 ) = S%nextra + n + 1
+        DO i = 1, n
+          data%A_col_ptr( i + 1 ) = data%A_col_ptr( i ) + data%IW( i )
+        END DO
+
+!  Finally copy the data into its correct position ...
+
+        DO j = 1, nnzh        
+          i = data%P%row( j )
+          IF ( i /= data%P%col( j ) ) THEN  ! off-diagonal term
+            data%P%val( data%A_col_ptr( i ) ) = data%P%val( j )
+            data%P%row( data%A_col_ptr( i ) ) = data%P%col( j )
+            data%A_col_ptr( i ) = data%A_col_ptr( i ) + 1
+          ELSE                        ! diagonal term
+            data%P%val( S%nextra + i ) = data%P%val( j )
+          END IF
+        END DO
+
+!   ... and reposition the starting addresses 
+
+        data%A_col_ptr( 1 ) = 1
+        DO i = 1, n
+          data%A_col_ptr( i + 1 ) = data%A_col_ptr( i ) + data%IW( i )
+        END DO
+
+!  Form and factorize Lin and More's preconditioner
+
+        pertur = zero
+        CALL DICFS( n, nz0 - n,                                         &
+                    data%P%val( S%nextra + n + 1 : ntotal ),               &
+                    data%P%val( S%nextra + 1 : S%nextra + n ),             &
+                    data%A_col_ptr, data%P%row( S%nextra + n + 1 : ntotal ),    &
+                    data%P%val( n + 1 : S%nextra ), data%P%val( : n ),  &
+                    data%L_col_ptr, data%P%row( n + 1 : S%nextra ),             &
+                    icfact, pertur, data%IW, data%DIAG, W )                            
+                                                                              
+!  - - - - - - - - - - - - - - - - - -
+!  A band preconditioner is to be used
+!  - - - - - - - - - - - - - - - - - -
+
+      ELSE
+
+!  Factorize the band matrix
+
+        IF ( use_band ) THEN
+        ELSE
+
+!  - - - - - - - - - - - - - - - - - - - - - - - - - -
+!  A multi-frontal preconditioner, SILS, is to be used
+!  - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+!  Allocate the arrays for the analysis phase
+
+          S%liw = 1.2 * ( 2 * nnzh + 3 * n + 1 )
+       

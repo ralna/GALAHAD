@@ -1,0 +1,4 @@
+ 59 1st pass and 26 2nd pass iterations
+ objective recurred and calculated =   2.19903278E+01  2.19903278E+01
+    ||x||  recurred and calculated =   9.04718377E-01  9.04718377E-01
+  ||Ax-b|| recurred and calculated =   6.59446524E+00  6.59446524E+00

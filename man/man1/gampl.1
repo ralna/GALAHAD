@@ -1,0 +1,138 @@
+.\" @(#)GALAHAD/AMPL v1.0 03/2003;
+.TH gampl 1 "22 Mar 2003"
+.SH NAME
+gampl \- AMPL interface to the GALAHAD Optimization Library.
+.SH SYNOPSIS
+\fBgampl\fP \fIarchitecture\fP [\-=] [\-h]
+[\-l secs] [\-e] [\-s] [\-v] [\-\-] \fIprob\fP [\fIpkg\fP=1] [\fIstats\fP=1]
+
+where \fIarchitecture\fP is a string of the form machine.os.compiler
+indicating the machine/operating system/compiler combination to be
+used.
+
+The name \fIarchitecture\fP must match that of one of the files in the
+directory $GALAHAD/ampl_bin/ .
+
+.SH DESCRIPTION
+\fIgampl\fP interfaces packages in the GALAHAD Optimization Library
+[1,2] with the AMPL Library [3], allowing solution of optimization
+problems modeled in the AMPL modeling language [4]. The available
+solvers are \fIQPA\fP, \fIQPB\fP, \fIPRE\fP, \fIFILTRANE\fP and \fILANCELOT
+B\fP (see below for description). The \fIgampl\fP interface may be invoked
+from the command line or from within an AMPL session, in which case
+a sample invokation looks like (in the following commands, \fIampl:\fP
+represents the AMPL prompt, and $GALAHAD is the full path name
+corresponding to the GALAHAD environment variable)
+.TP
+  \fIampl:\fP model \fIprob\fP.mod;
+.TP
+  \fIampl:\fP data \fIprob\fP.dat;
+.TP
+  \fIampl:\fP option solver $GALAHAD/ampl_bin/\fIarchitecture\fP;
+.TP
+  \fIampl:\fP option galahad_options "qpa=1";
+.TP
+  \fIampl:\fP solve;
+
+.LP 
+.SH OPTIONS
+From within an AMPL session, options may be set using the syntax
+
+  \fIampl:\fP option \fIkeyword\fP=\fIvalue\fP.
+
+You can start gampl from the command line with the following options:
+.TP 5
+.B \fIprob\fP
+name, without the \fI.nl\fP extension, of the problem to be
+solved. \fIprob.nl\fP must have been produced by Ampl beforehand using
+one of the two following commands
+
+\fBampl -og\fP\fIprob\fP \fIprob\fP\fB.mod\fP [\fIprob\fP\fB.dat\fP]
+
+\fBampl -ob\fP\fIprob\fP \fIprob\fP\fB.mod\fP [\fIprob\fP\fB.dat\fP]
+
+Note that this causes AMPL to write a \fIprob\fP.sol file. Refer to
+the AMPL documentation for more information.
+.TP
+.B \fIpkg\fP
+Solve problem specified by \fIprob\fP using the package \fIpkg\fP from
+the GALAHAD Library. Currently accepted values of \fIpkg\fP are
+
+\fIqpa\fP to use the active set quadratic programming package QPA,
+
+\fIqpb\fP to use the primal-dual interior-point quadratic programming
+package QPB,
+
+\fIpre\fP to use the quadratic program preprocessor PRESOLVE,
+
+\fIfilt\fP to use the filter method for feasibility problems FILTRANE,
+
+\fIlanb\fP to use the augmented-Lagrangian nonlinear programming
+package LANCELOT-B.
+
+The default is \fIqpb\fP. Refer to
+GALAHAD-specific documentation for more information on these packages.
+.TP
+.B \fIstats\fP
+Causes detailed statistics on the problem, its variables and
+constraints to be output at the end of the run.
+.TP
+.B \-h
+Displays a usage message and stop.
+.TP
+.B \-=
+Displays a list of \fIkeyword=value\fP possibilities.
+.TP
+.B \-e
+Disables echoing of \fIkeyword=value\fP assignments.
+.TP
+.BI \-l " secs"
+Set a limit of
+.IR secs
+seconds on the GALAHAD run. The default is 99999999 seconds.
+.TP
+.BI \-s
+Writes a \fIprob\fP.sol file
+.TP
+.BI \-v
+Displays version information and stop.
+.TP
+.B \--
+Indicates the end of options.
+.SH GALAHAD-specific options
+Each GALAHAD package may read execution options from a specification file.
+Please refer to package-specific
+documentation to pass options by means of its specification file.
+.SH FILES
+.TP
+.IB RUN pkg .SPC
+User-supplied option specification file.
+.TP
+$GALAHAD/ampl_bin/\fIarchitecture\fP
+GALAHAD-AMPL object file for the required \fIarchitecture\fP.
+.SH ENVIRONMENT 
+.TP
+.SB GALAHAD
+Main GALAHAD installation directory.
+.SH AUTHORS
+Nick Gould, Rutherford Appleton Laboratory, 
+Dominique Orban, Ecole Polytechnique,
+and
+Philippe Toint, University of Namur
+.SH "REFERENCES"
+.TP 5
+.B [1]
+\fIGALAHAD: A library of thread-safe Fortran 90 packages for
+large-scale nonlinear optimization\fP, N.I.M. Gould, D. Orban and
+Ph.L. Toint, 2002.
+.TP
+.B [2]
+\fIhttp://galahad.rl.ac.uk/galahad-www/\fP
+.TP
+.B [3]
+\fIhttp://netlib.bell-labs.com/netlib/ampl/\fP
+.TP
+.B [4]
+\fIhttp://www.ampl.com/\fP
+.SH "SEE ALSO"
+sdgal(1), gal(1)

@@ -1,0 +1,600 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{ir}
+\newcommand{\packagename}{IR}
+\newcommand{\fullpackagename}{\libraryname\_\-\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+
+Given a sparse symmetric matrix $\bmA = \{ a_{ij} \}_{n \times n}$
+and the factorization of $\bmA$ found by the \galahad\ 
+package {\tt \libraryname\_SLS}, this package 
+{\bf solves the system of linear equations $\bmA \bmx = \bmb$ using
+iterative refinement.}
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses {\tt \libraryname\_SY\-M\-BOLS}, 
+{\tt \libraryname\_\-SPACE}, 
+{\tt \libraryname\_\-SMT}, 
+{\tt \libraryname\_\-QPT}, 
+{\tt \libraryname\_SLS}, 
+{\tt \libraryname\_SPECFILE}.
+\galdate October 2008.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hskip0.5in {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hskip0.5in {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types 
+{\tt SMT\_type},
+{\tt \packagename\_control\_type}, 
+{\tt \packagename\_inform\_type}, 
+{\tt \packagename\_data\_type},
+{\tt SLS\_factors},
+(Section~\ref{galtypes})
+and the subroutines
+{\tt \packagename\_initialize},  
+{\tt \packagename\_solve}, {\tt \packagename\_terminate}
+(Section~\ref{galarguments})
+and 
+{\tt \packagename\_read\_specfile}
+(Section~\ref{galfeatures})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Five derived data types are accessible from the package.
+
+%%%%%%%%%%% problem type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding the matrix}\label{typeprob}
+The derived data type {\tt SMT\_type} is used to hold the matrix $\bmA$. 
+The components of {\tt SMT\_type} are:
+
+\begin{description}
+
+\ittf{n} is a scalar variable of type default \integer, that holds
+the order $n$ of the matrix  $\bmA$. 
+\restriction {\tt n} $\geq$ {\tt 1}. 
+
+\ittf{ne} is a scalar variable of type default \integer, that holds the 
+number of matrix entries.  
+\restriction {\tt ne} $\geq$ {\tt 0}.
+
+\ittf{VAL} is a rank-one allocatable array of type default \realdp, 
+and dimension at least {\tt ne}, that holds the values of the entries. 
+Each pair of off-diagonal entries $a_{ij} = a_{ji} $ 
+is represented as a single entry. Duplicated entries are summed. 
+
+\ittf{ROW} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt ne}, that holds the row indices of the entries. 
+
+\ittf{COL} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt ne}, that holds the column indices of the entries. 
+
+\end{description}
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control 
+ parameters}\label{typecontrol}
+The derived data type 
+{\tt \packagename\_control\_type} 
+is used to hold controlling data. Default values may be obtained by calling 
+{\tt \packagename\_initialize}
+(see Section~\ref{subinit}). The components of 
+{\tt \packagename\_control\_type} 
+are:
+
+\begin{description}
+\itt{error} is a scalar variable of type default \integer, that holds the 
+stream number for error messages. 
+Printing of error messages in  
+{\tt \packagename\_solve} and {\tt \packagename\_terminate} 
+is suppressed if ${\tt error} \leq {\tt 0}$. 
+The default is {\tt error = 6}.
+ 
+\ittf{out} is a scalar variable of type default \integer, that holds the 
+stream number for informational messages. 
+Printing of informational messages in  
+{\tt \packagename\_solve} is suppressed if ${\tt out} < {\tt 0}$. 
+The default is {\tt out = 6}.
+ 
+\itt{print\_level} is a scalar variable of type default \integer, 
+that is used 
+to control the amount of informational output which is required. No  
+informational output will occur if ${\tt print\_level} \leq {\tt 0}$. If  
+{\tt print\_level = 1} a single line of output will be produced for each 
+iteration of the process. If {\tt print\_level} $\geq$ {\tt 2} this output 
+will be increased to provide significant detail of each iteration. 
+The default is {\tt print\_level = 0}.
+ 
+\itt{itref\_max} is a scalar variable of type default \integer, that holds 
+the maximum number of iterative refinements which will be allowed.
+The default is {\tt itref\_max = 1}.
+
+\itt{acceptable\_residual\_relative}  and {\tt acceptable\_residual\_absolute} 
+are scalar variables of type \realdp, that 
+specify an acceptable level for the residual $\bmA \bmx - \bmb$.
+In particular, iterative refinement will cease as soon as
+$\|\bmA \bmx - \bmb\|_{\infty}$ falls below
+$\max (\| \bmb\|_{\infty} \ast$ {\tt acceptable\_residual\_relative}, 
+{\tt acceptable\_residual\_absolute}$)$.
+The defaults are {\tt acceptable\_residual\_relative =}{\tt 
+acceptable\_resi\-dual\_absolute = }$10 u$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{space\_critical} is a scalar variable of type default \logical, that
+may be set \true\ if the user wishes the package to allocate as little
+internal storage as possible, and \false\ otherwise. The package may
+be more efficient if {\tt space\_critical} is set \false.
+The default is {\tt space\_critical = \false}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical, 
+that may be set \true\ if the user wishes the package to return to the user 
+in the unlikely event that an internal array deallocation fails, 
+and \false\ if the package should be allowed to try to continue.
+The default is {\tt deallocate\_error\_fatal = \false}.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected 
+character string to preface every line of printed output. 
+Specifically, each line of output will be prefaced by the string 
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoring the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\end{description}
+
+%%%%%%%%%%% inform type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type 
+{\tt \packagename\_inform\_type} 
+is used to hold parameters that give information about the progress and needs 
+of the algorithm. The components of
+{\tt \packagename\_inform\_type} 
+are:
+
+\begin{description}
+\itt{status} is a scalar variable of type default \integer, that gives the 
+current status of the algorithm. See Section~\ref{galerrors} for details. 
+
+\itt{alloc\_status} is a scalar variable of type default \integer, 
+that gives the status of the last internal array allocation 
+or deallocation. This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array 
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}. 
+
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type 
+{\tt \packagename\_data\_type} 
+is used to hold all the data for a particular problem between calls of 
+{\tt \packagename} procedures. 
+This data should be preserved, untouched, from the initial call to 
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}.
+
+%%%%%%%%%%% factors type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding factors of a matrix}
+\label{typefactors}
+The derived data type 
+{\tt SLS\_FACTORS} 
+is used to hold the factors and related data for a matrix.
+All components are private.
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are three procedures for user calls
+(see Section~\ref{galfeatures} for further features): 
+
+\begin{enumerate}
+\item The subroutine 
+      {\tt \packagename\_initialize} 
+      is used to set default values, and initialize private data.
+\item The subroutine 
+      {\tt \packagename\_solve} 
+      is called to solve $\bmA \bmx = \bmb$; this must have been preceded
+      by a call to {\tt SLS\_factorize} to obtain the factors of $\bmA$.
+\item The subroutine 
+      {\tt \packagename\_terminate} 
+      is provided to allow the user to automatically deallocate array 
+       components of the private data, allocated by 
+       {\tt \packagename\_solve}, 
+       at the end of the solution process. 
+\end{enumerate}
+%We use square brackets {\tt [ ]} to indicate \optional\ arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+
+\hskip0.5in 
+{\tt CALL \packagename\_initialize( data, control, inform )}
+
+\begin{description}
+
+\itt{data} is a scalar \intentinout argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. 
+
+\itt{control} is a scalar \intentout argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). 
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling 
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% problem solution subroutine %%%%%%
+
+\subsubsection{The iterative refinement subroutine}
+The iterative refinement algorithm is called as follows:
+
+\hskip0.5in 
+{\tt CALL \packagename\_solve( A, X, data, SLS\_data, control, SLS\_control,  inform, SLS\_inform )}
+
+\begin{description}
+
+\itt{A} is scalar, of \intentin\ and of type {\tt SMT\_TYPE} that holds
+the matrix $\bmA$.  All components must be unaltered since the call 
+to {\tt SLS\_factorize}. 
+ 
+\ittf{X} is an array \intentinout\ argument of dimension {\tt A\%n} and  
+type default \realdp, that must be set on input to contain the vector $\bmb$.
+On exit, {\tt X} holds an estimate of the solution $\bmx$ 
+ 
+\itt{data} is a scalar \intentinout argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. It must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+
+\itt{SLS\_data} is scalar, of \intentinout\ and of type {\tt SLS\_data\_type} 
+that holds the factors of $\bmA$ and related data.  
+All components must be unaltered since the call to {\tt SLS\_factorize}. 
+ 
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}. 
+(see Section~\ref{typecontrol}). 
+Default values may be assigned by calling {\tt \packagename\_initialize} 
+prior to the first call to {\tt \packagename\_solve}.  
+
+\itt{SLS\_control} is a scalar \intentin\ argument of type 
+{\tt SLS\_control\_type} that is used to control various aspects of the
+external packages used to solve the symmetric linear systems that arise. 
+See the documentation for the \galahad\ package {\tt SLS} for further details. 
+All components must be unaltered since the call to {\tt SLS\_factorize}. 
+ 
+\itt{inform} is a scalar \intentinout argument of type 
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). 
+A successful call to
+{\tt \packagename\_solve}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\itt{SLS\_inform} is a scalar \intentinout argument of type 
+{\tt SLS\_inform\_type} that is used to pass information
+concerning the progress of the external packages used to solve the symmetric
+linear systems that arise. 
+See the documentation for the \galahad\ package {\tt SLS} for further details. 
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+
+\hskip0.5in 
+{\tt CALL \packagename\_terminate( data, control, inform )}
+
+\begin{description}
+
+\itt{data} is a scalar \intentinout argument of type 
+{\tt \packagename\_data\_type} 
+exactly as for
+{\tt \packagename\_solve}
+that must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+On exit, array components will have been deallocated. 
+
+\itt{control} is a scalar \intentin argument of type 
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentout argument of type 
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_solve}.
+Only the component {\tt status} will be set on exit, and a 
+successful call to 
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of  {\tt inform\%status} on exit from 
+{\tt \packagename\_solve}
+or 
+{\tt \packagename\_terminate}
+indicates that an error might have occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+\itt{\galerrallocate.} An allocation error occurred. A message indicating 
+the offending 
+array is written on unit {\tt control\%error}, and the returned allocation 
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc}, respectively.
+
+\itt{\galerrdeallocate.} A deallocation error occurred. 
+A message indicating the offending 
+array is written on unit {\tt control\%error} and the returned allocation 
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc}, respectively.
+
+\end{description} 
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting 
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}), 
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters 
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of 
+"specification commands". Each command occurs on a separate line, 
+and comprises a "keyword", 
+which is a string (in a close-to-natural language) used to identify a 
+control parameter, and 
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive, 
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and 
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+The portion of the specification file used by 
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an 
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by IR_read_specfile .. )
+    BEGIN IR
+       keyword    value
+       .......    .....
+       keyword    value
+    END 
+  ( .. lines ignored by IR_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines 
+may contain additional (trailing) strings so long as such strings are 
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN IR SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END IR SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore, 
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored. 
+The content 
+of a line after a {\tt !} or {\tt *} character is also 
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some 
+specification commands, or to comment specific values 
+of certain control parameters.  
+
+The value of a control parameters may be of three different types, namely
+integer, logical or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}", 
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}". 
+Empty values are also allowed for 
+logical control parameters, and are interpreted as "{\tt TRUE}".  
+
+The specification file must be open for 
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number 
+passed to the routine in device (see below). 
+Note that the corresponding 
+file is {\tt REWIND}ed, which makes it possible to combine the specifications 
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in 
+\def\baselinestretch{0.8} {\tt \begin{verbatim}
+     CALL IR_read_specfile( control, device )
+\end{verbatim}}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). 
+Default values should have already been set, perhaps by calling 
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and 
+the component (see Section~\ref{typecontrol}) of {\tt control} 
+that each affects are given in Table~\ref{specfile}.
+
+\bctable{|l|l|l|} 
+\hline
+  command & component of {\tt control} & value type \\ 
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+  {\tt maximum-refinements} & {\tt \%itref\_max} & integer \\
+  {\tt acceptable-residual-relative} & 
+     {\tt \%acceptable\_residual\_relative} & real \\
+  {\tt acceptable-residual-absolute} & 
+     {\tt \%acceptable\_residual\_absolute} & real \\
+  {\tt space-critical} & {\tt \%space\_critical} & logical \\
+  {\tt deallocate-error-fatal} & {\tt \%deallocate\_error\_fatal} & logical \\
+% {\tt output-line-prefix} & {\tt \%prefix} & character \\
+\hline
+
+\ectable{\label{specfile}Specfile commands and associated 
+components of {\tt control}.}
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+If {\tt control\%print\_level} is positive, information about the progress 
+of the algorithm will be printed on unit {\tt control\-\%\-out}.
+If {\tt control\%print\_level = 1}, the final value of the norm 
+of the residual will be given.
+If {\tt control\%print\_level > 1}, the norm 
+of the residual at each iteration will be printed. 
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines None.
+\galmodules {\tt \packagename\_solve} calls the \galahad\ packages 
+{\tt \libraryname\_SY\-M\-BOLS}, 
+{\tt \libraryname\_\-SPACE}, 
+{\tt \libraryname\_\-SMT}, 
+{\tt \libraryname\_\-QPT}, 
+{\tt \libraryname\_SLS},
+and
+{\tt \libraryname\_SPECFILE}.
+\galio Output is under control of the arguments 
+{\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
+\galrestrictions None.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+Iterative refinement proceeds as follows. First obtain the floating-point
+solution to $\bmA \bmx = \bmb$ using the factors of $\bmA$. Then iterate
+until either the desired residual accuracy (or the iteration limit is 
+reached) as follows: evaluate the residual $\bmr = \bmb - \bmA \bmx$, 
+find the floating-point solution $\delta \bmx$ to $\bmA \delta \bmx = \bmr$,
+and replace $\bmx$ by $\bmx + \delta \bmx$.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose we wish to solve the set of equations
+\disp{\mat{ccccc}{ 2 & 3 &   &   &   \\ 
+                   3 &   & 4 &   & 6 \\
+                     & 4 & 1 & 5 &   \\
+                     &   & 5 &   &   \\
+                     & 6 & &     & 1 } \bmx = 
+       \vect{ 8 \\ 45 \\ 31 \\ 15 \\ 17}}
+Then we may use the following code
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+with the following data
+{\tt \small
+\VerbatimInput{\packagedata}
+}
+\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+
+
+\end{document}
+

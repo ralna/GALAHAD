@@ -1,0 +1,525 @@
+%  mystyle.sty
+%  
+%  this version: 20 VI 2006
+
+% unit length for figures        
+
+\setlength{\unitlength}{1mm}
+
+% float instructions
+
+\setcounter{topnumber}{10}
+\newcommand{\defaulttopfraction}{1.0}
+\renewcommand{\topfraction}{\defaulttopfraction}
+\setcounter{bottomnumber}{10}
+\newcommand{\defaultbottomfraction}{1.0}
+\renewcommand{\bottomfraction}{\defaultbottomfraction}
+
+\newcommand{\pagenumbers}{\arabic{page}}
+\renewcommand{\thepage}{\pagenumbers}
+
+% section numbering
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{2}
+
+%       Sections withe theirr own equation numbers
+
+\newcommand{\numsection}[1]{\section{#1}\setcounter{equation}{0}}
+
+%       Equations, tables and figures numbered by chapter and section
+
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+\renewcommand{\thetable}{\arabic{section}.\arabic{table}}
+\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}
+\renewcommand{\thefootnote}{(\arabic{footnote})}
+
+%        Begin and end equation with a label
+%        syntax: \beqn{label} ... \eeqn
+
+\newcommand{\beqn}[1]{\begin{equation}\label{#1}}
+\newcommand{\eeqn}{\end{equation}}
+
+%        matrix with and without round brackets
+%        syntax: \mat{column format}{rows}
+%                \arr{column format}{rows}
+
+\newcommand{\vect}[1]{\left(\begin{array}{c}#1\end{array}\right)}
+\newcommand{\mat}[2]{\left(\begin{array}{#1}#2\end{array}\right)}
+\newcommand{\matinv}[2]{\left(\begin{array}{#1}#2\end{array}\right)^{-1}}
+\newcommand{\arr}[2]{\begin{array}{#1}#2\end{array}}
+
+%        put a reference with brackets
+%        syntax: \req{reference}
+
+\newcommand{\req}[1]{(\ref{#1})}
+\newcommand{\reqa}[1]{(\ref{#1}a)}
+\newcommand{\reqb}[1]{(\ref{#1}b)}
+\newcommand{\reqc}[1]{(\ref{#1}c)}
+\newcommand{\reqd}[1]{(\ref{#1}d)}
+\newcommand{\reqe}[1]{(\ref{#1}e)}
+
+%        references with page number
+
+\newcommand{\preq}[1]{(\ref{#1}), page~\pageref{#1}}
+\newcommand{\pref}[1]{\ref{#1}, page~\pageref{#1}}
+
+%        begin and end proof
+%        syntax: \bpr ... \epr
+
+\newcommand{\bpr}{{\bf Proof.} \hspace{1.5mm}}
+\newcommand{\epr}{\hfill $\Box$ \vspace*{1em}}
+
+\newcommand{\proof}[1]{
+\begin{list}{}{
+\setlength{\topsep}{0.0pt}
+\setlength{\partopsep}{0.0pt}
+\setlength{\leftmargin}{0.025\textwidth}
+\setlength{\rightmargin}{0.5\leftmargin}
+\setlength{\labelwidth}{0.5\leftmargin}
+\setlength{\labelsep}{0.25\leftmargin}}
+\item \bpr #1 \epr \noindent
+\end{list}}
+
+%  figures
+
+\newcommand{\psfigure}[2]{\begin{figure}[htbp]
+\centerline{\psfig{#1,silent=}} \caption{#2} \end{figure}}
+
+\newcommand{\fig}[2]{\begin{figure}[htbp]
+\begin{center} {#1} \caption{#2} \end{center} \end{figure}}
+
+%        Begin and end a quote (with or without label)
+%        syntax: \bqa{label} ... \eq or \bq ... \eq
+
+\newcommand{\bqa}[1]{\begin{quote} \label{#1} \small \begin{verbatim}}
+\newcommand{\bq}{\begin{quote} \small \begin{verbatim}}
+\newcommand{\eq}{\end{quote}}
+
+%        A reasonable space between two mathematical symbols
+%        syntax: \ms 
+
+\newcommand{\ms}{\;\;\;\;}
+
+%        Put text within an equation with a large or small space around the text
+%        syntax: \rim{text} or \tim{text}
+
+\newcommand{\rim}[1]{\;\;\; \mbox{#1} \;\;\;}
+\newcommand{\tim}[1]{\;\; \mbox{#1} \;\;}
+
+%        Begin and end table mode with a label and caption
+%        syntax: \bctb{label} ... \ecftable{caption}
+
+\newcommand{\bctable}[1]{\begin{table}[htbp]
+                         \begin{center}
+                         \begin{tabular}{#1} }
+\newcommand{\ectable}[1]{\end{tabular}
+                         \caption{#1}
+                         \end{center}
+                         \end{table}}
+
+%  Theorem-like environments
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{algorithm}{Algorithm}[section]
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}[section]
+\renewcommand{\theexample}{\arabic{section}.\arabic{example}}
+\newcommand{\lex}[2]{\begin{example} \label{#1} \rm #2 \end{example}}
+
+%     single box environment
+
+\newcommand{\lem}[1]{\vspace{\baselineskip} 
+\noindent\framebox[\textwidth]{\parbox{0.95\textwidth}{
+\begin{lemma} \rm #1 \end{lemma} } } \vspace{\baselineskip} }
+
+\newcommand{\llem}[2]{\vspace{\baselineskip} 
+\noindent\framebox[\textwidth]{\parbox{0.95\textwidth}{
+\begin{lemma} \label{#1} \rm #2 \end{lemma} } } \vspace{\baselineskip} }
+
+\newcommand{\thm}[1]{\vspace{\baselineskip} 
+\noindent\framebox[\textwidth]{\parbox{0.95\textwidth}{
+\begin{theorem} \rm #1 \end{theorem} } } \vspace{\baselineskip} }
+
+\newcommand{\lthm}[2]{\vspace{\baselineskip} 
+\noindent\framebox[\textwidth]{\parbox{0.95\textwidth}{
+\begin{theorem} \label{#1} \rm #2 \end{theorem} } } \vspace{\baselineskip} }
+
+\newcommand{\cor}[1]{\vspace{\baselineskip} 
+\noindent\framebox[\textwidth]{\parbox{0.95\textwidth}{
+\begin{corollary} \rm #1 \end{corollary} } } \vspace{\baselineskip} }
+
+\newcommand{\lcor}[2]{\vspace{\baselineskip} 
+\noindent\framebox[\textwidth]{\parbox{0.95\textwidth}{
+\begin{corollary} \label{#1} \rm #2 \end{corollary} } } \vspace{\baselineskip} }
+
+\newcommand{\prop}[1]{\vspace{\baselineskip} 
+\noindent\framebox[\textwidth]{\parbox{0.95\textwidth}{
+\begin{proposition} \rm #1 \end{proposition} } } \vspace{\baselineskip} }
+
+\newcommand{\lprop}[2]{\vspace{\baselineskip} 
+\noindent\framebox[\textwidth]{\parbox{0.95\textwidth}{
+\begin{proposition} \label{#1} \rm #2 \end{proposition} } } \vspace{\baselineskip} }
+
+%     split boxes environments
+
+\newlength{\thmw}
+\setlength{\thmw}{\textwidth}
+\addtolength{\thmw}{-6\fboxsep}
+\addtolength{\thmw}{-2\fboxrule}
+
+\newcommand{\blem}[2]{\vspace{\baselineskip}\noindent\hbox{%
+  \lower\fboxrule\hbox{\vbox{\hrule\hbox{\vrule \kern-\fboxrule \vbox{%
+  \vspace{\fboxsep} \noindent\hspace{2\fboxsep}\parbox{\thmw}{
+  \begin{lemma}{\rm #1}\end{lemma}\vspace{-\lastskip}}\hspace{\fboxsep}}%
+  \kern-\fboxrule \vrule }}}}\newpage \hbox{%
+  \lower\fboxrule\hbox{\vbox{\hbox{\vrule \kern-\fboxrule \vbox{%
+  \noindent\hspace{2\fboxsep}\parbox{\thmw}{\rm #2}\hspace{\fboxsep}
+  \vspace{4\fboxsep}}\kern-\fboxrule \vrule }\hrule }}}\vspace{\baselineskip}
+}
+
+\newcommand{\lblem}[3]{\vspace{\baselineskip}\noindent\hbox{%
+  \lower\fboxrule\hbox{\vbox{\hrule\hbox{\vrule \kern-\fboxrule \vbox{%
+  \vspace{\fboxsep} \noindent\hspace{2\fboxsep}\parbox{\thmw}{
+  \begin{lemma}\label{#1}{\rm #2}\end{lemma}\vspace{-\lastskip}}
+  \hspace{\fboxsep}}\kern-\fboxrule \vrule }}}}\newpage \hbox{%
+  \lower\fboxrule\hbox{\vbox{\hbox{\vrule \kern-\fboxrule \vbox{%
+  \noindent\hspace{2\fboxsep}\parbox{\thmw}{\rm #3}\hspace{\fboxsep}
+  \vspace{4\fboxsep}}\kern-\fboxrule \vrule }\hrule }}}\vspace{\baselineskip}
+}
+
+\newcommand{\bthm}[2]{\vspace{\baselineskip}\noindent\hbox{%
+  \lower\fboxrule\hbox{\vbox{\hrule\hbox{\vrule \kern-\fboxrule \vbox{%
+  \vspace{\fboxsep} \noindent\hspace{2\fboxsep}\parbox{\thmw}{
+  \begin{theorem}{\rm #1}\end{theorem}\vspace{-\lastskip}}\hspace{\fboxsep}}%
+  \kern-\fboxrule \vrule }}}}\newpage \hbox{%
+  \lower\fboxrule\hbox{\vbox{\hbox{\vrule \kern-\fboxrule \vbox{%
+  \noindent\hspace{2\fboxsep}\parbox{\thmw}{\rm #2}\hspace{\fboxsep}
+  \vspace{4\fboxsep}}\kern-\fboxrule \vrule }\hrule }}}\vspace{\baselineskip}
+}
+
+\newcommand{\lbthm}[3]{\vspace{\baselineskip}\noindent\hbox{%
+  \lower\fboxrule\hbox{\vbox{\hrule\hbox{\vrule \kern-\fboxrule \vbox{%
+  \vspace{\fboxsep} \noindent\hspace{2\fboxsep}\parbox{\thmw}{
+  \begin{theorem}\label{#1}{\rm #2}\end{theorem}\vspace{-\lastskip}}
+  \hspace{\fboxsep}}\kern-\fboxrule \vrule }}}}\newpage \hbox{%
+  \lower\fboxrule\hbox{\vbox{\hbox{\vrule \kern-\fboxrule \vbox{%
+  \noindent\hspace{2\fboxsep}\parbox{\thmw}{\rm #3}\hspace{\fboxsep}
+  \vspace{4\fboxsep}}\kern-\fboxrule \vrule }\hrule }}}\vspace{\baselineskip}
+}
+
+\newcommand{\bcor}[2]{\vspace{\baselineskip}\noindent\hbox{%
+  \lower\fboxrule\hbox{\vbox{\hrule\hbox{\vrule \kern-\fboxrule \vbox{%
+  \vspace{\fboxsep} \noindent\hspace{2\fboxsep}\parbox{\thmw}{
+  \begin{corollary}{\rm #1}\end{corollary}\vspace{-\lastskip}}\hspace{\fboxsep}}%
+  \kern-\fboxrule \vrule }}}}\newpage \hbox{%
+  \lower\fboxrule\hbox{\vbox{\hbox{\vrule \kern-\fboxrule \vbox{%
+  \noindent\hspace{2\fboxsep}\parbox{\thmw}{\rm #2}\hspace{\fboxsep}
+  \vspace{4\fboxsep}}\kern-\fboxrule \vrule }\hrule }}}\vspace{\baselineskip}
+}
+
+\newcommand{\lbcor}[3]{\vspace{\baselineskip}\noindent\hbox{%
+  \lower\fboxrule\hbox{\vbox{\hrule\hbox{\vrule \kern-\fboxrule \vbox{%
+  \vspace{\fboxsep} \noindent\hspace{2\fboxsep}\parbox{\thmw}{
+  \begin{corollary}\label{#1}{\rm #2}\end{corollary}\vspace{-\lastskip}}
+  \hspace{\fboxsep}}\kern-\fboxrule \vrule }}}}\newpage \hbox{%
+  \lower\fboxrule\hbox{\vbox{\hbox{\vrule \kern-\fboxrule \vbox{%
+  \noindent\hspace{2\fboxsep}\parbox{\thmw}{\rm #3}\hspace{\fboxsep}
+  \vspace{4\fboxsep}}\kern-\fboxrule \vrule }\hrule }}}\vspace{\baselineskip}
+}
+
+\newcommand{\bprop}[2]{\vspace{\baselineskip}\noindent\hbox{%
+  \lower\fboxrule\hbox{\vbox{\hrule\hbox{\vrule \kern-\fboxrule \vbox{%
+  \vspace{\fboxsep} \noindent\hspace{2\fboxsep}\parbox{\thmw}{
+ \begin{proposition}{\rm #1}\end{proposition}\vspace{-\lastskip}}\hspace{\fboxsep}}%
+  \kern-\fboxrule \vrule }}}}\newpage \hbox{%
+  \lower\fboxrule\hbox{\vbox{\hbox{\vrule \kern-\fboxrule \vbox{%
+  \noindent\hspace{2\fboxsep}\parbox{\thmw}{\rm #2}\hspace{\fboxsep}
+  \vspace{4\fboxsep}}\kern-\fboxrule \vrule }\hrule }}}\vspace{\baselineskip}
+}
+
+\newcommand{\lbprop}[3]{\vspace{\baselineskip}\noindent\hbox{%
+  \lower\fboxrule\hbox{\vbox{\hrule\hbox{\vrule \kern-\fboxrule \vbox{%
+  \vspace{\fboxsep} \noindent\hspace{2\fboxsep}\parbox{\thmw}{
+  \begin{proposition}\label{#1}{\rm #2}\end{proposition}\vspace{-\lastskip}}
+  \hspace{\fboxsep}}\kern-\fboxrule \vrule }}}}\newpage \hbox{%
+  \lower\fboxrule\hbox{\vbox{\hbox{\vrule \kern-\fboxrule \vbox{%
+  \noindent\hspace{2\fboxsep}\parbox{\thmw}{\rm #3}\hspace{\fboxsep}
+  \vspace{4\fboxsep}}\kern-\fboxrule \vrule }\hrule }}}\vspace{\baselineskip}
+}
+
+%     algorithms
+
+\newcounter{algo}[section]
+\renewcommand{\thealgo}{\thesection.\arabic{algo}}
+
+\newcommand{\algo}[3]{\refstepcounter{algo}
+\begin{center}\begin{figure}[htbf]
+\framebox[\textwidth]{
+\parbox{0.95\textwidth} {\vspace{\topsep}
+{\bf Algorithm \thealgo : #2}\label{#1}\\
+\vspace*{-\topsep} \mbox{ }\\
+{#3} \vspace{\topsep} }}
+\end{figure}\end{center}}
+
+\newcommand{\balgo}[4]{\refstepcounter{algo}
+\begin{center}\begin{figure}[htbf]
+\vspace{\baselineskip}\noindent\hbox{%
+  \lower\fboxrule\hbox{\vbox{\hrule\hbox{\vrule \kern-\fboxrule \vbox{%
+  \vspace{\topsep} \noindent\hspace{2\fboxsep}\parbox{\thmw}{\vspace{0.5\topsep}
+  {\bf Algorithm \thealgo : #2}\label{#1}\\
+  \vspace*{-\topsep} \mbox{ }\\
+  {\rm #3}\vspace{-\lastskip}}
+  \hspace{\fboxsep}}\kern-\fboxrule \vrule }}}}
+\end{figure}\end{center}
+\newpage \hbox{%
+  \lower\fboxrule\hbox{\vbox{\hbox{\vrule \kern-\fboxrule \vbox{%
+  \noindent\hspace{2\fboxsep}\parbox{\thmw}{\rm #4}\hspace{\fboxsep}
+  \vspace{\fboxsep}}\kern-\fboxrule \vrule }\hrule }}}\vspace{\baselineskip}
+}
+
+%        Calligraphic letters
+%        syntax: \cal[A-Z,a-z]
+
+\newcommand{\calA}{{\cal A}} \newcommand{\calB}{{\cal B}}
+\newcommand{\calC}{{\cal C}} \newcommand{\calD}{{\cal D}}
+\newcommand{\calE}{{\cal E}} \newcommand{\calF}{{\cal F}}
+\newcommand{\calG}{{\cal G}} \newcommand{\calH}{{\cal H}}
+\newcommand{\calI}{{\cal I}} \newcommand{\calJ}{{\cal J}}
+\newcommand{\calK}{{\cal K}} \newcommand{\calL}{{\cal L}}
+\newcommand{\calM}{{\cal M}} \newcommand{\calN}{{\cal N}}
+\newcommand{\calO}{{\cal O}} \newcommand{\calP}{{\cal P}}
+\newcommand{\calQ}{{\cal Q}} \newcommand{\calR}{{\cal R}}
+\newcommand{\calS}{{\cal S}} \newcommand{\calT}{{\cal T}}
+\newcommand{\calU}{{\cal U}} \newcommand{\calV}{{\cal V}}
+\newcommand{\calW}{{\cal W}} \newcommand{\calX}{{\cal X}}
+\newcommand{\calY}{{\cal Y}} \newcommand{\calZ}{{\cal Z}}
+
+%        Boldmath
+%        syntax: \bf[A-Z,a-z,lambda,zero]
+
+\newcommand{\bfa}{\mbox{\boldmath $a$}} \newcommand{\bfb}{\mbox{\boldmath $b$}}
+\newcommand{\bfc}{\mbox{\boldmath $c$}} \newcommand{\bfd}{\mbox{\boldmath $d$}}
+\newcommand{\bfe}{\mbox{\boldmath $e$}} \newcommand{\bff}{\mbox{\boldmath $f$}}
+\newcommand{\bfg}{\mbox{\boldmath $g$}} \newcommand{\bfh}{\mbox{\boldmath $h$}}
+\newcommand{\bfi}{\mbox{\boldmath $i$}} \newcommand{\bfj}{\mbox{\boldmath $j$}}
+\newcommand{\bfk}{\mbox{\boldmath $k$}} \newcommand{\bfl}{\mbox{\boldmath $l$}}
+\newcommand{\bfm}{\mbox{\boldmath $m$}} \newcommand{\bfn}{\mbox{\boldmath $n$}}
+\newcommand{\bfo}{\mbox{\boldmath $o$}} \newcommand{\bfp}{\mbox{\boldmath $p$}}
+\newcommand{\bfq}{\mbox{\boldmath $q$}} \newcommand{\bfr}{\mbox{\boldmath $r$}}
+\newcommand{\bfs}{\mbox{\boldmath $s$}} \newcommand{\bft}{\mbox{\boldmath $t$}}
+\newcommand{\bfu}{\mbox{\boldmath $u$}} \newcommand{\bfv}{\mbox{\boldmath $v$}}
+\newcommand{\bfw}{\mbox{\boldmath $w$}} \newcommand{\bfx}{\mbox{\boldmath $x$}}
+\newcommand{\bfy}{\mbox{\boldmath $y$}} \newcommand{\bfz}{\mbox{\boldmath $z$}}
+
+\newcommand{\bfA}{\mbox{\boldmath $A$}} \newcommand{\bfB}{\mbox{\boldmath $B$}}
+\newcommand{\bfC}{\mbox{\boldmath $C$}} \newcommand{\bfD}{\mbox{\boldmath $D$}}
+\newcommand{\bfE}{\mbox{\boldmath $E$}} \newcommand{\bfF}{\mbox{\boldmath $F$}}
+\newcommand{\bfG}{\mbox{\boldmath $G$}} \newcommand{\bfH}{\mbox{\boldmath $H$}}
+\newcommand{\bfI}{\mbox{\boldmath $I$}} \newcommand{\bfJ}{\mbox{\boldmath $J$}}
+\newcommand{\bfK}{\mbox{\boldmath $K$}} \newcommand{\bfL}{\mbox{\boldmath $L$}}
+\newcommand{\bfM}{\mbox{\boldmath $M$}} \newcommand{\bfN}{\mbox{\boldmath $N$}}
+\newcommand{\bfO}{\mbox{\boldmath $O$}} \newcommand{\bfP}{\mbox{\boldmath $P$}}
+\newcommand{\bfQ}{\mbox{\boldmath $Q$}} \newcommand{\bfR}{\mbox{\boldmath $R$}}
+\newcommand{\bfS}{\mbox{\boldmath $S$}} \newcommand{\bfT}{\mbox{\boldmath $T$}}
+\newcommand{\bfU}{\mbox{\boldmath $U$}} \newcommand{\bfV}{\mbox{\boldmath $V$}}
+\newcommand{\bfW}{\mbox{\boldmath $W$}} \newcommand{\bfX}{\mbox{\boldmath $X$}}
+\newcommand{\bfY}{\mbox{\boldmath $Y$}} \newcommand{\bfZ}{\mbox{\boldmath $Z$}}
+
+\newcommand{\bnabla}{\mbox{\boldmath $\nabla$}} 
+\newcommand{\bdelta}{\mbox{\boldmath $\delta$}} 
+\newcommand{\blambda}{\mbox{\boldmath $\lambda$}} 
+\newcommand{\btau}{\mbox{\boldmath $\tau$}}
+\newcommand{\bmu}{\mbox{\boldmath $\mu$}}
+\newcommand{\bphi}{\mbox{\boldmath $\phi$}} 
+\newcommand{\bpi}{\mbox{\boldmath $\pi$}} 
+\newcommand{\bLambda}{\mbox{\boldmath $\Lambda$}} 
+\newcommand{\bDelta}{\mbox{\boldmath $\Delta$}} 
+\newcommand{\bfzero}{\mbox{\bf 0}}
+
+\newcommand{\blambdastar}{\stackrel{*}{\blambda}}
+\newcommand{\bfxstar}{\stackrel{*}{\bfx}}
+\newcommand{\bfrstar}{\stackrel{*}{\bfr}}
+
+%
+%        Overlined math
+%        syntax: \bar[A-Z,a-z]
+
+\newcommand{\bara}{\overline{a}} \newcommand{\barb}{\overline{b}}
+\newcommand{\barc}{\overline{c}} \newcommand{\bard}{\overline{d}}
+\newcommand{\bare}{\overline{e}} \newcommand{\barf}{\overline{f}}
+\newcommand{\barg}{\overline{g}} \newcommand{\barh}{\overline{h}}
+\newcommand{\bari}{\overline{\imath}} \newcommand{\barj}{\overline{\jmath}}
+\newcommand{\bark}{\overline{k}} \newcommand{\barl}{\overline{l}}
+\newcommand{\barm}{\overline{m}} \newcommand{\barn}{\overline{n}}
+\newcommand{\baro}{\overline{o}} \newcommand{\barp}{\overline{p}}
+\newcommand{\barq}{\overline{q}} \newcommand{\barr}{\overline{r}}
+\newcommand{\bars}{\overline{s}} \newcommand{\bart}{\overline{t}}
+\newcommand{\baru}{\overline{u}} \newcommand{\barv}{\overline{v}}
+\newcommand{\barw}{\overline{w}} \newcommand{\barx}{\overline{x}}
+\newcommand{\bary}{\overline{y}} \newcommand{\barz}{\overline{z}}
+
+\newcommand{\barA}{\overline{A}} \newcommand{\barB}{\overline{B}}
+\newcommand{\barC}{\overline{C}} \newcommand{\barD}{\overline{D}}
+\newcommand{\barE}{\overline{E}} \newcommand{\barF}{\overline{F}}
+\newcommand{\barG}{\overline{G}} \newcommand{\barH}{\overline{H}}
+\newcommand{\barI}{\overline{I}} \newcommand{\barJ}{\overline{J}}
+\newcommand{\barK}{\overline{K}} \newcommand{\barL}{\overline{L}}
+\newcommand{\barM}{\overline{M}} \newcommand{\barN}{\overline{N}}
+\newcommand{\barO}{\overline{O}} \newcommand{\barP}{\overline{P}}
+\newcommand{\barQ}{\overline{Q}} \newcommand{\barR}{\overline{R}}
+\newcommand{\barS}{\overline{S}} \newcommand{\barT}{\overline{T}}
+\newcommand{\barU}{\overline{U}} \newcommand{\barV}{\overline{V}}
+\newcommand{\barW}{\overline{W}} \newcommand{\barX}{\overline{X}}
+\newcommand{\barY}{\overline{Y}} \newcommand{\barZ}{\overline{Z}}
+
+%
+%        Hatted math
+%        syntax: \hat[A-Z,a-z]
+
+\newcommand{\hata}{\hat{a}} \newcommand{\hatb}{\hat{b}}
+\newcommand{\hatc}{\hat{c}} \newcommand{\hatd}{\hat{d}}
+\newcommand{\hate}{\hat{e}} \newcommand{\hatf}{\hat{f}}
+\newcommand{\hatg}{\hat{g}} \newcommand{\hath}{\hat{h}}
+\newcommand{\hati}{\hat{\imath}} \newcommand{\hatj}{\hat{\jmath}}
+\newcommand{\hatk}{\hat{k}} \newcommand{\hatl}{\hat{l}}
+\newcommand{\hatm}{\hat{m}} \newcommand{\hatn}{\hat{n}}
+\newcommand{\hato}{\hat{o}} \newcommand{\hatp}{\hat{p}}
+\newcommand{\hatq}{\hat{q}} \newcommand{\hatr}{\hat{r}}
+\newcommand{\hats}{\hat{s}} \newcommand{\hatt}{\hat{t}}
+\newcommand{\hatu}{\hat{u}} \newcommand{\hatv}{\hat{v}}
+\newcommand{\hatw}{\hat{w}} \newcommand{\hatx}{\hat{x}}
+\newcommand{\haty}{\hat{y}} \newcommand{\hatz}{\hat{z}}
+
+\newcommand{\hatA}{\hat{A}} \newcommand{\hatB}{\hat{B}}
+\newcommand{\hatC}{\hat{C}} \newcommand{\hatD}{\hat{D}}
+\newcommand{\hatE}{\hat{E}} \newcommand{\hatF}{\hat{F}}
+\newcommand{\hatG}{\hat{G}} \newcommand{\hatH}{\widehat{H}}
+\newcommand{\hatI}{\hat{I}} \newcommand{\hatJ}{\hat{J}}
+\newcommand{\hatK}{\hat{K}} \newcommand{\hatL}{\hat{L}}
+\newcommand{\hatM}{\hat{M}} \newcommand{\hatN}{\hat{N}}
+\newcommand{\hatO}{\hat{O}} \newcommand{\hatP}{\hat{P}}
+\newcommand{\hatQ}{\hat{Q}} \newcommand{\hatR}{\hat{R}}
+\newcommand{\hatS}{\hat{S}} \newcommand{\hatT}{\hat{T}}
+\newcommand{\hatU}{\hat{U}} \newcommand{\hatV}{\hat{V}}
+\newcommand{\hatW}{\hat{W}} \newcommand{\hatX}{\hat{X}}
+\newcommand{\hatY}{\hat{Y}} \newcommand{\hatZ}{\hat{Z}}
+
+%        common mathematical symbols
+
+%\renewcommand{\Re}{{\bf R}}
+\renewcommand{\Re}{\hbox{I\hskip -2pt R}}
+\newcommand{\smallRe}{\hbox{\footnotesize I\hskip -2pt R}}
+\newcommand{\Na}{\hbox{I\hskip -1.8pt N}}
+  
+%\newcommand{\Co}{{\bf C}}
+
+%        fractions
+
+\newcommand{\sfrac}[2]{{\scriptstyle \frac{#1}{#2}}}
+\newcommand{\half}{\sfrac{1}{2}}
+\newcommand{\third}{\sfrac{1}{3}}
+\newcommand{\fourth}{\sfrac{1}{4}}
+\newcommand{\quarter}{\sfrac{1}{4}}
+\newcommand{\fifth}{\sfrac{1}{5}}
+\newcommand{\sixth}{\sfrac{1}{6}}
+\newcommand{\seventh}{\sfrac{1}{7}}
+\newcommand{\eighth}{\sfrac{1}{8}}
+\newcommand{\ninth}{\sfrac{1}{9}}
+\newcommand{\tenth}{\sfrac{1}{10}}
+\newcommand{\threequarters}{\sfrac{3}{4}}
+\newcommand{\twothirds}{\sfrac{2}{3}}
+\newcommand{\threehalves}{\sfrac{3}{2}}
+\newcommand{\fivehalves}{\sfrac{5}{2}}
+\newcommand{\fivesixths}{\sfrac{5}{6}}
+\newcommand{\twelfth}{\sfrac{1}{12}}
+\newcommand{\twentyforth}{\sfrac{1}{24}}
+\newcommand{\hundreth}{\sfrac{1}{100}}
+
+%        Format for references
+
+\newcommand{\citebb}[1]{\citeauthor{#1}\ (\citeyear{#1})}
+\newcommand{\citebbs}[1]{\citeauthor{#1}'s\ (\citeyear{#1})}
+\newcommand{\citebba}[1]{\citeauthor{#1}'\ (\citeyear{#1})}
+\newcommand{\bciteb}[1]{\citeauthor{#1}, \citeyear{#1}}
+\newcommand{\citeb}[1]{\citeauthor{#1}\ (\citeyear{#1}}
+\newcommand{\citet}[1]{\citeauthor{#1}, \citeyear{#1}}
+\newcommand{\cites}[1]{\citeauthor{#1}'s}
+\newcommand{\citeyearinbrackets}[1]{\citebb{#1}}
+\newcommand{\citewithinbrackets}[1]{\bciteb{#1}}
+
+%        Summary environment
+
+\def\summary{\list{}{\rightmargin 1.5mm \leftmargin 1.5mm}\item[]}
+\let\endsummary=\endlist
+
+%        Misc other utilities
+
+\newcommand{\comment}[1]{}
+\newcommand{\sz}{\scriptsize}
+\newcommand{\itt}[1]{\item[\tt #1]}
+\newcommand{\eqdef}{\stackrel{\rm def}{=}}
+\newcommand{\blackbox}{\vrule height 5pt width 5pt depth 0pt}
+\newcommand{\bigfrac}[2]{\frac{\displaystyle #1}{\displaystyle #2}}
+\newcommand{\bigprod}{\displaystyle \prod}
+\newcommand{\bigsum}{\displaystyle \sum}
+\newcommand{\bigint}{\displaystyle \int}
+\newcommand{\bigmin}{\displaystyle \min}
+\newcommand{\bigmax}{\displaystyle \max}
+\newcommand{\biglim}{\displaystyle \lim}
+\newcommand{\bigliminf}{\displaystyle \liminf}
+\newcommand{\bigsup}{\displaystyle \sup}
+\newcommand{\spanset}[1]{\mbox{span}\left\{ #1 \right\}}
+\newcommand{\smallspanset}[1]{\mbox{\small span}\left\{ #1 \right\}}
+\newcommand{\ip}[2]{\langle #1, #2 \rangle}
+\newcommand{\bip}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\cvect}[1]{\left( \begin{array}{c} #1 \end{array} \right) }
+\newcommand{\lvect}[1]{\left( \begin{array}{l} #1 \end{array} \right) }
+\newcommand{\rvect}[1]{\left( \begin{array}{r} #1 \end{array} \right) }
+\newcommand{\matr}[2]{\left( \begin{array}{#1} #2 \end{array} \right) }
+\newcommand{\deter}[2]{\left| \begin{array}{#1} #2 \end{array} \right| }
+\newcommand{\tr}{{\rm tr}}
+% \newcommand{\mod}{{\rm mod}}
+\newcommand{\sgn}{{\rm sgn}}
+\newcommand{\sign}{{\rm sign}}
+\newcommand{\diag}{{\rm diag}}
+\newcommand{\slimk}[1]{\lim_{\stackrel{k \rightarrow \infty}{k \in #1}}}
+\newcommand{\limk}{\lim_{k \rightarrow \infty}}
+\newcommand{\biglimk}{\displaystyle \lim_{k \rightarrow \infty}}
+\newcommand{\kap}[1]{\kappa_{\mbox{\tiny #1}}}
+%\newcommand{\sig}[1]{\sigma_{\mbox{\tiny #1}}}
+\newcommand{\ul}[1]{\underline{#1}}
+\newcommand{\s}[1]{^{\mbox{\protect\tiny #1}}}
+\newcommand{\sub}[1]{_{\mbox{\protect\tiny #1}}}
+\newcommand{\ii}[1]{\{1, \ldots, #1 \}}
+\newcommand{\deltaf}[1]{\delta \! f_{#1}}
+\newcommand{\deltam}[1]{\delta m_{#1}}
+\newcommand{\ri}[1]{{\rm ri}\{#1\}}
+\newcommand{\cl}[1]{{\rm cl}\{#1\}}
+\newcommand{\di}[1]{{\rm dist}(#1)}
+\newcommand{\inte}[1]{{\rm int}\{#1\}}
+\newcommand{\halfmu}{\frac{1}{2 \mu}}
+\newcommand{\oneovermu}{\frac{1}{\mu}}
+\newcommand{\nusup}{\nu_{\mbox{\tiny max}}}
+\newcommand{\nuinf}{\nu_{\mbox{\tiny min}}}
+\newcommand{\Delmax}{\Delta_{\mbox{\tiny max}}}
+\newcommand{\pr}{{}^{\prime}}
+\newcommand{\co}{\mbox{co}}
+\newcommand{\st}{\,\mid\,}
+\newcommand{\triple}[3]{{#1},{#2},{#3}}
+\newcommand{\dual}{_{\mbox{\tiny D}}}
+\newcommand{\bigleft}[1]{\left#1\arr{c}{\\}\!\!\!\!\!\!}
+\newcommand{\E}{_{\calE}}
+\newcommand{\I}{_{\calI}}
+\newcommand{\Ip}{^{\calI +}}
+\renewcommand{\Im}{^{\calI -}}
+\newcommand{\substackrel}[2]{_{\stackrel{\scriptstyle #1}{#2}}}
+\newcommand{\mystack}[2]{_{\stackrel{\scriptstyle #1}{\scriptstyle #2}}}
+
+\newcommand{\fcbox}[2]{\fcolorbox{black}{#1}{\scriptsize #2}}
+\newcommand{\cfcbox}[2]{\begin{center}
+                        \fcolorbox{black}{#1}{\scriptsize #2}
+                        \end{center}}

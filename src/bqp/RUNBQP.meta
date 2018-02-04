@@ -1,0 +1,24 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            BQP.data
+! problem-data-file-device                          26
+! write-initial-sif                                 no
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! least-squares-qp                                  no
+! scale-problem                                     0
+! solve-problem                                     yes
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                BQPSOL.d
+! solution-file-device                              62
+! write-result-summary                              no
+! result-summary-file-name                          BQPRES.d
+! result-summary-file-device                        47
+! perturb-bounds-by                                 0.0
+
+INCLUDE BQP
+
+INCLUDE SBLS
+
+INCLUDE SLS

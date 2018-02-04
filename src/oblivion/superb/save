@@ -1,0 +1,605 @@
+!        RES = zero
+!        DO l = 1, A_ne + m
+!          RES( data%K%row( l ) ) = RES( data%K%row( l ) )                     &
+!            + data%K%val( l ) * DV( data%K%col( l ) )
+!        END DO
+
+!        DO l = 1, data%prob%H_ne
+!          i = data%prob%H_row( l )
+!          j = data%prob%H_col( l )
+!          val = data%prob%H_val( l )
+!          RES( i ) = RES( i ) + val * DV( j )
+!          IF ( j /= i ) RES( j ) = RES( j ) + val * DV( i )
+!        END DO
+
+!        DO l = nnzks + 1, nnzks + npm 
+!          RES( data%K%row( l ) ) = RES( data%K%row( l ) )                     &
+!            + data%K%val( l ) * DV( data%K%col( l ) )
+!        END DO
+
+!        curv = DOT_PRODUCT( DV( : npm ), RES( : npm ) )
+!        DO i = npm + 1, npm + m
+!          curv = curv - RES( i ) ** 2 / data%K%val( nnzks + i )
+!        END DO
+
+           model = merit + slope + half * curv
+
+
+
+
+! ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+!  Find the largest feasible step for the primal variables
+! ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+          IF ( printw ) WRITE( out,                                            &
+               "( ' .............. get steplength  .............. ' )" )
+
+          step_max = infinity
+
+!  Problem variables:
+
+          DO i = dims%x_free + 1, dims%x_l_start - 1
+            IF ( DV( i ) < zero ) step_max = MIN( step_max, - X( i ) / DV( i ) ) 
+          END DO
+
+          DO i = dims%x_l_start, dims%x_l_end
+            IF ( DV( i ) < zero )                                               &
+              step_max = MIN( step_max, - DIST_X_l( i ) / DV( i ) ) 
+          END DO
+
+          DO i = dims%x_u_start, dims%x_u_end
+            IF ( DV( i ) > zero )                                               &
+              step_max = MIN( step_max, DIST_X_u( i ) / DV( i ) ) 
+          END DO 
+
+          DO i = dims%x_u_end + 1, dims%n
+            IF ( DV( i ) > zero ) step_max = MIN( step_max, - X( i ) / DV( i ) ) 
+          END DO 
+
+!  Slack variables:
+
+          DO i = dims%c_l_start, dims%c_l_end
+            IF ( DV( dims%c_b + i ) < zero )                                    &
+              step_max = MIN( step_max, - DIST_C_l( i ) / DV( dims%c_b + i ) ) 
+          END DO
+
+          DO i = dims%c_u_start, dims%c_u_end
+            IF ( DV( dims%c_b + i ) > zero )                                    &
+              step_max = MIN( step_max, DIST_C_u( i ) / DV( dims%c_b + i ) ) 
+          END DO 
+
+!  Test whether the new point is acceptable
+!  ----------------------------------------   
+
+!  If x + s - X_l >= zeta(x - l) and X_u - x - s >= zeta(u - x),
+!  compute phi at x+s and define the ratio
+!       (phi(x+s) - phi(x))/m(x+s) - m(x))
+
+          got_ratio = .TRUE.
+
+          DO i = dims%x_free + 1, dims%x_l_start - 1
+
+!  Check that x + s >= zeta(x)
+
+            IF ( X( i ) + DV( i ) < zeta * X( i ) ) THEN
+               got_ratio = .FALSE.
+               EXIT
+            END IF
+          END DO
+
+          IF ( got_ratio ) THEN
+            DO i = dims%x_l_start, dims%x_l_end
+
+!  Calculate x + s - x_l
+
+              DIST_X_l_trial( i ) = DIST_X_l( i ) + DV( i ) 
+
+!  Check that x + s - x_l >= zeta(x - x_l)
+
+              IF ( DIST_X_l_trial( i ) < zeta * DIST_X_l( i ) ) THEN
+                 got_ratio = .FALSE.
+                 EXIT
+              END IF
+            END DO
+          END IF
+
+          IF ( got_ratio ) THEN
+            DO i = dims%x_u_start, dims%x_u_end
+
+!  Calculate x_u - x - s
+
+              DIST_X_u_trial( i ) = DIST_X_u( i ) - DV( i ) 
+
+!  Check that x_u - x - s >= zeta(x_u - x)
+
+              IF ( DIST_X_u_trial( i ) < zeta * DIST_X_u( i ) ) THEN
+                 got_ratio = .FALSE.
+                 EXIT
+              END IF
+            END DO 
+          END IF
+
+          IF ( got_ratio ) THEN
+            DO i = dims%x_u_end + 1, dims%n
+
+!  Check that x + s <= zeta(x)
+
+              IF ( X( i ) + DV( i ) > zeta * X( i ) ) THEN
+                 got_ratio = .FALSE.
+                 EXIT
+              END IF
+            END DO 
+          END IF
+
+!  Do the same for the slack variables
+
+!  Calculate x + s - l
+
+          IF ( got_ratio ) THEN
+            DO i = dims%c_l_start, dims%c_l_end
+              DIST_C_l_trial( i ) = DIST_C_l( i ) + DV( dims%c_b + i ) 
+
+
+!  Check that x + s - X_l >= zeta(x - l)
+
+              IF ( DIST_C_l_trial( i ) < zeta * DIST_C_l( i ) ) THEN
+                 got_ratio = .FALSE.
+                 EXIT
+              END IF
+            END DO
+          END IF
+
+          IF ( got_ratio ) THEN
+            DO i = dims%c_u_start, dims%c_u_end
+
+!  Calculate X_u - x - s
+
+              DIST_C_u_trial( i ) = DIST_C_u( i ) - DV( dims%c_b + i ) 
+
+!  Check that X_u - x - s >= zeta(u - x)
+
+              IF ( DIST_C_u_trial( i ) < zeta * DIST_C_u( i ) ) THEN
+                 got_ratio = .FALSE.
+                 EXIT
+              END IF
+            END DO 
+          END IF
+
+!  The new point is feasible. Calculate the new value of the objective function
+
+          IF ( got_ratio ) THEN
+      
+!  Calculate x + s
+
+            IF ( control%array_syntax_worse_than_do_loop ) THEN
+              DO i = dims%x_s, dims%x_e ; X_trial( i ) = X( i ) + DV( i ); END DO
+            ELSE
+              X_trial = X + DV( dims%x_s : dims%x_e )
+            END IF
+            nbacts = 0
+            gltr_control%boundary = .FALSE.
+            gltr_info%status = 1
+
+!  Compute the product between H and x + s
+
+            IF ( control%array_syntax_worse_than_do_loop ) THEN
+              DO i = 1, dims%n ; HX( i ) = zero ; END DO
+            ELSE
+              ptr_HX = zero
+            END IF
+            CALL QPB_HX( dims, ptr_HX, H_ne, H_val, H_col, H_ptr,     &
+                          X_trial, '+' )
+
+!  Now evaluate the objective function ...
+
+            obj_trial = half * DOT_PRODUCT( X_trial, ptr_HX ) +        &
+                               DOT_PRODUCT( X_trial, G )
+
+!  ... and the barrier function
+
+            phi_trial = QPB_barrier_value( dims, obj_trial, X_trial,          &
+                                            DIST_X_l_trial, DIST_X_u_trial,    &
+                                            DIST_C_l_trial, DIST_C_u_trial,    &
+                                            mu )
+
+!  Compute the ratio of actual to predicted reduction over the current iteration
+
+            ared   = ( phi - phi_trial ) + MAX( one, ABS( phi ) ) * teneps
+            prered = - model + MAX( one, ABS( phi ) ) * teneps
+            IF ( ABS( ared ) < teneps .AND. ABS( phi ) > teneps )              &
+               ared = prered
+            ratio = ared / prered
+
+            IF ( printt )                                                      &
+                WRITE( out, " ( ' ared, pred ', 2ES12.4 ) " ) ared, prered
+
+          ELSE
+            nbacts = 1 ; gltr_control%boundary = .TRUE.
+          END IF
+
+!  If ratio >= eta_1, the iteration was successful
+
+          IF ( got_ratio .AND. ratio >= eta_1 ) THEN
+
+            IF ( printw ) WRITE( out,                                          &
+                 "( ' ............... successful step ............... ' )" )
+
+!  Compute new dual variables so that z_l > 0 and z_u > 0
+!  ------------------------------------------------------
+
+!  Problem variables:
+
+!  For the lower bounds ...
+ 
+            DO i = dims%x_free + 1, dims%x_l_start - 1
+              Z_l( i ) = MAX( z_min, ( mu - Z_l( i ) * S( i ) ) / X( i ),      &
+                                nu_1 * MIN( one, Z_l( i ), mu / X_trial( i ) ) )
+            END DO
+
+            DO i = dims%x_l_start, dims%x_l_end
+              Z_l( i ) = MAX( z_min,                                           &
+                              ( mu - Z_l( i ) * S( i ) ) / DIST_X_l( i ),      &
+                           nu_1 * MIN( one,                                    &
+                                       Z_l( i ), mu / DIST_X_l_trial( i ) ) )
+            END DO
+     
+!  .... and now the upper bounds
+
+            DO i = dims%x_u_start, dims%x_u_end
+              Z_u( i ) = MIN( - z_min,                                         &
+                              ( - mu + Z_u( i ) * S( i ) ) / DIST_X_u( i ),    &
+                           nu_1 * MAX( - one,                                  &
+                                       Z_u( i ), - mu / DIST_X_u_trial( i ) ) )
+            END DO       
+
+            DO i = dims%x_u_end + 1, dims%n
+              Z_u( i ) = MIN( - z_min, ( mu - Z_u( i ) * S( i ) ) / X( i ),    &
+                           nu_1 * MAX( - one, Z_u( i ), mu / X_trial( i ) ) )
+            END DO       
+
+!  Now replace x by x + s
+
+            IF ( control%array_syntax_worse_than_do_loop ) THEN
+              DO i = 1, dims%n 
+                X( i ) = X_trial( i ) ; END DO
+              DO i = dims%x_l_start, dims%x_l_end
+                DIST_X_l( i ) = DIST_X_l_trial( i ) ; END DO
+              DO i = dims%x_u_start, dims%x_u_end
+                DIST_X_u( i ) = DIST_X_u_trial( i ) ; END DO
+            ELSE
+              X = X_trial
+              DIST_X_l = DIST_X_l_trial
+              DIST_X_u = DIST_X_u_trial
+            END IF
+
+!  Slack variables:
+
+!  For the lower bounds ...
+ 
+            DO i = dims%c_l_start, dims%c_l_end
+              Y_l( i ) = MAX( ( mu - Y_l( i ) * S( dims%c_b + i ) ) /          &
+                                DIST_C_l( i ), nu_1 * MIN( one,                &
+                                       Y_l( i ), mu / DIST_C_l_trial( i ) ) )
+            END DO
+     
+!  .... and now the upper bounds
+
+            DO i = dims%c_u_start, dims%c_u_end
+              Y_u( i ) = MIN( ( - mu + Y_u( i ) * S( dims%c_b + i ) ) /        &
+                                DIST_C_u( i ), nu_1 * MAX( - one,              &
+                                       Y_u( i ), - mu / DIST_C_u_trial( i ) ) )
+            END DO       
+
+!  Now replace c by c + s
+
+            IF ( control%array_syntax_worse_than_do_loop ) THEN
+              DO i = dims%c_l_start, dims%c_u_end
+                C( i ) = C( i ) + S( dims%c_b + i ) ; END DO
+              DO i = dims%c_l_start, dims%c_l_end
+                DIST_C_l( i ) = DIST_C_l_trial( i ) ; END DO
+              DO i = dims%c_u_start, dims%c_u_end
+                DIST_C_u( i ) = DIST_C_u_trial( i ) ; END DO
+            ELSE
+              C = C + S( dims%c_s : dims%c_e )
+              DIST_C_l = DIST_C_l_trial
+              DIST_C_u = DIST_C_u_trial
+            END IF
+
+!  Update the objective and barrier function values
+
+            phi  = phi_trial
+            obj  = obj_trial
+            inform%obj = obj + dims%f
+
+!  Compute the derivatives of the objective function
+
+            IF ( control%array_syntax_worse_than_do_loop ) THEN
+              DO i = 1, dims%n ; GRAD( i ) = HX( i ) + G( i ) ; END DO
+            ELSE
+              GRAD = ptr_HX + G
+            END IF
+            refact = .TRUE.
+          ELSE
+
+            IF ( printw ) WRITE( out,                                          &
+                 "( ' .............. unsuccessful step .............. ' )" )
+
+!  As we have not achieved a sufficient reduction, use the Nocedal-Yuan 
+!  technique to achieve one. To do this, perform a line-search to find
+!  a point x + alpha s which sufficiently reduces the barrier function
+
+!  Find the largest feasible step for x
+
+            alpha = one
+   
+!  Problem variables:
+
+            DO i = dims%x_free + 1, dims%x_l_start - 1
+              IF( S( i ) < zero ) alpha = MIN( alpha, - X( i ) / S( i ) )
+            END DO
+            DO i = dims%x_l_start, dims%x_l_end
+              IF( S( i ) < zero ) alpha = MIN( alpha, - DIST_X_l( i ) / S( i ) )
+            END DO
+
+            DO i = dims%x_u_start, dims%x_u_end
+              IF( S( i ) > zero ) alpha = MIN( alpha, DIST_X_u( i ) / S( i ) ) 
+            END DO 
+            DO i = dims%x_u_end + 1, dims%n
+              IF( S( i ) > zero ) alpha = MIN( alpha, - X( i ) / S( i ) ) 
+            END DO 
+
+!  Slack variables:
+
+            DO i = dims%c_l_start, dims%c_l_end
+              IF ( S( dims%c_b + i ) < zero )                                  &
+                alpha = MIN( alpha, - DIST_C_l( i ) / S( dims%c_b + i ) )
+            END DO
+
+            DO i = dims%c_u_start, dims%c_u_end
+              IF ( S( dims%c_b + i ) > zero )                                  &
+                alpha = MIN( alpha, DIST_C_u( i ) / S( dims%c_b + i ) ) 
+            END DO 
+
+!  A step of no larger than zeta of the distance to the nearest 
+!  bound will be attempted
+
+            alpha = ( one - zeta ) * alpha
+!           alpha = half * alpha
+
+! ::::::::::::::::::::::::::::::::::::::::::::
+!  Record the slope along the search direction
+! ::::::::::::::::::::::::::::::::::::::::::::
+
+!  Compute the product between H and s
+
+            IF ( control%array_syntax_worse_than_do_loop ) THEN
+              DO i = 1, dims%n ; HX( i ) = zero ; END DO
+            ELSE
+              ptr_HX = zero
+            END IF
+            CALL QPB_HX( dims, ptr_HX, H_ne, H_val, H_col, H_ptr,     &
+                          S( : dims%n ), '+' )
+
+!  Compute the slope and curvature of the objective function
+
+            obj_slope = DOT_PRODUCT( GRAD( : dims%n ), S( : dims%n ) ) 
+            obj_curv  = half * DOT_PRODUCT( ptr_HX, S( : dims%n ) ) 
+
+!  Compute the slope of the barrier function
+
+            phi_slope = DOT_PRODUCT( GRAD_L, S ) 
+
+! ::::::::::::::::::::::::::::::::::::::::::::::::::::::
+!  Use a backtracking line-search, starting from alpha_v
+! ::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+            IF ( printt ) WRITE( out, "( /, ' value = ', ES12.4, ' slope = ',  &
+           &     ES12.4 )" ) phi, phi_slope
+            IF ( printw ) WRITE( out,                                          &
+                 "( ' ................ linesearch ................ ' )" )
+            IF ( printt ) WRITE( out, 2140 ) 
+            DO
+
+!  The barrier value should  be smaller than a linear model
+
+              phi_model = phi + alpha * eta * phi_slope
+
+!  Calculate the distances of x + alpha s from the bounds
+
+              IF ( control%array_syntax_worse_than_do_loop ) THEN
+                DO i = 1, dims%n
+                  X_trial( i ) = X( i ) + alpha * S( i ) ; END DO
+              ELSE
+                X_trial = X + alpha * S( : dims%n )
+              END IF
+
+!  Problem variables:
+
+              DO i = dims%x_l_start, dims%x_l_end
+                DIST_X_l_trial( i ) = DIST_X_l( i ) + alpha * S( i ) 
+              END DO 
+              DO i = dims%x_u_start, dims%x_u_end
+                DIST_X_u_trial( i ) = DIST_X_u( i ) - alpha * S( i ) 
+              END DO 
+        
+!  Slack variables:
+
+              DO i = dims%c_l_start, dims%c_l_end
+                DIST_C_l_trial( i ) = DIST_C_l( i ) + alpha * S( dims%c_b + i )
+              END DO 
+              DO i = dims%c_u_start, dims%c_u_end
+                DIST_C_u_trial( i ) = DIST_C_u( i ) - alpha * S( dims%c_b + i )
+              END DO 
+        
+              obj_trial = obj + alpha * ( obj_slope + alpha * obj_curv )
+              phi_trial = QPB_barrier_value( dims, obj_trial, X_trial,        &
+                                              DIST_X_l_trial, DIST_X_u_trial,  &
+                                              DIST_C_l_trial, DIST_C_u_trial,  &
+                                              mu )
+
+              IF ( printt ) WRITE( out, 2150 ) alpha, phi_trial, phi_model 
+
+!  Check to see if the Armijo criterion is satisfied. If not, halve the 
+!  steplength
+
+              IF ( phi_trial <= phi_model ) EXIT
+              alpha = half * alpha ;  nbacts = nbacts + 1 
+              IF ( alpha < epsmch ) THEN
+                 inform%status = - 9
+                 GO TO 500
+              END IF
+            END DO
+            inform%nbacts = inform%nbacts + nbacts
+            refact = .TRUE.
+
+!  Update the objective and barrier function values
+
+            phi  = phi_trial ; obj  = obj_trial ; inform%obj = obj + dims%f
+
+!  Update the primal variables and derivatives of the objective function
+
+            IF ( control%array_syntax_worse_than_do_loop ) THEN
+              DO i = 1, dims%n
+                X( i ) = X( i ) + alpha * S( i )
+                GRAD( i ) = GRAD( i ) + alpha * HX( i ) ; END DO
+              DO i = dims%c_l_start, dims%c_u_end
+                C( i ) = C( i ) + alpha * S( dims%c_b + i ) ; END DO
+            ELSE
+              X = X + alpha * S( dims%x_s : dims%x_e )
+              C = C + alpha * S( dims%c_s : dims%c_e )
+              GRAD = GRAD + alpha * ptr_HX 
+            END IF
+
+!  Update the distances to the bounds
+
+            IF ( control%array_syntax_worse_than_do_loop ) THEN
+              DO i = dims%x_l_start, dims%x_l_end
+                DIST_X_l( i ) = DIST_X_l_trial( i ) ; END DO 
+              DO i = dims%x_u_start, dims%x_u_end
+                DIST_X_u( i ) = DIST_X_u_trial( i ) ; END DO 
+              DO i = dims%c_l_start, dims%c_l_end
+                DIST_C_l( i ) = DIST_C_l_trial( i ) ; END DO 
+              DO i = dims%c_u_start, dims%c_u_end
+                DIST_C_u( i ) = DIST_C_u_trial( i ) ; END DO 
+            ELSE
+              DIST_X_l = DIST_X_l_trial ; DIST_X_u = DIST_X_u_trial
+              DIST_C_l = DIST_C_l_trial ; DIST_C_u = DIST_C_u_trial
+            END IF
+
+          END IF
+!         write(6,"( ' X, C ', 2ES12.4 )" ) X(2), C(79)
+
+          IF ( printt ) WRITE( out, "( /, ' value = ', ES12.4, ' slope = ',   &
+          &     ES12.4 )" ) merit, slope
+           IF ( printw ) WRITE( out,                                           &
+                "( ' ................ linesearch ................ ' )" )
+           IF ( printt ) WRITE( out, "( ' ',/,'       ***  Linesearch    ',    &
+          &                 ' step      trial value           model value ' )" )
+
+           DO
+
+!  The barrier value should  be smaller than a linear model
+
+             linear_model = merit + alpha * eta * slope
+
+!  Compute the trial point v + alpha dv
+
+             X_trial( IFREE ) = X( IFREE ) + alpha * DV( : nfree )
+             S_trial = S + alpha * DV( nfree + 1 : nfreepm )
+
+!  Compute the new function and constraint values
+
+             CALL CFN( n, m, X_trial, f_trial, m, C_trial )
+             inform%f_eval = inform%f_eval + 1
+
+!            write(out,"( ' f_trial ', /, ES16.8 )" ) f_trial
+!            write(out,"( ' c_trial ', /, ( 4ES16.8 ) )" ) C_trial
+
+!  Compute the value of the merit function
+
+             merit_trial = SUPERB_merit( n, m, nfree, IFREE, f_trial, mu, nu,  &
+                                         X_trial, X_l, X_u, C_trial, C_l, C_u, &
+                                         S_trial, control%infinity,            &
+                                         inform%pr_feas, barrier, penalty,     &
+                                         merit_error, print_level, out )
+
+             IF ( merit_error == 0 ) THEN
+               IF ( printt ) WRITE( out, "( 20X, ES12.4, 2ES22.14 )" )         &
+                 alpha, merit_trial, linear_model 
+               IF ( printt ) WRITE( out, "( ' change in barrier term ',        &
+              &                     E12.4 )" ) mu * ( old_barrier - barrier )
+
+!  Check to see if the Armijo criterion is satisfied. If not, halve the 
+!  steplength
+
+               IF ( merit_trial <= linear_model ) EXIT
+             ELSE
+               IF ( printt ) WRITE( out, "( 20X, ES12.4,                       &
+              &  '  infinite logarithm  ', ES22.14 )" ) alpha, linear_model 
+             END IF
+             alpha = half * alpha ; nbacts = nbacts + 1 
+             IF ( alpha < epsmch ) THEN
+                IF ( printi ) WRITE(out,"(' Exit inner loop - step too small')")
+!               Y = Y - D( nfreepm + 1 : )
+                inform%status = - 9 ; GO TO 810
+             END IF
+           END DO
+
+
+          IF ( printt ) WRITE( out, "( /, ' value = ', ES12.4, ' slope = ',   &
+          &     ES12.4 )" ) merit, slope
+           IF ( printw ) WRITE( out,                                           &
+                "( ' ................ linesearch ................ ' )" )
+           IF ( printt ) WRITE( out, "( ' ',/,'       ***  Linesearch    ',    &
+          &                 ' step      trial value           model value ' )" )
+
+           DO
+
+!  The barrier value should  be smaller than a linear model
+
+             linear_model = merit + alpha * eta * slope
+
+!  Compute the trial point v + alpha dv
+
+             X_trial( IFREE ) = X( IFREE ) + alpha * DV( : nfree )
+             S_trial = S + alpha * DV( nfree + 1 : nfreepm )
+
+!  Compute the new function and constraint values
+
+             CALL CFN( n, m, X_trial, f_trial, m, C_trial )
+             inform%f_eval = inform%f_eval + 1
+
+!            write(out,"( ' f_trial ', /, ES16.8 )" ) f_trial
+!            write(out,"( ' c_trial ', /, ( 4ES16.8 ) )" ) C_trial
+
+!  Compute the value of the merit function
+
+             merit_trial = SUPERB_merit( n, m, nfree, IFREE, f_trial, mu, nu,  &
+                                         X_trial, X_l, X_u, C_trial, C_l, C_u, &
+                                         S_trial, control%infinity,            &
+                                         inform%pr_feas, barrier, penalty,     &
+                                         merit_error, print_level, out )
+
+             IF ( merit_error == 0 ) THEN
+               IF ( printt ) WRITE( out, "( 20X, ES12.4, 2ES22.14 )" )         &
+                 alpha, merit_trial, linear_model 
+               IF ( printt ) WRITE( out, "( ' change in barrier term ',        &
+              &                     E12.4 )" ) mu * ( old_barrier - barrier )
+
+!  Check to see if the Armijo criterion is satisfied. If not, halve the 
+!  steplength
+
+               IF ( merit_trial <= linear_model ) EXIT
+             ELSE
+               IF ( printt ) WRITE( out, "( 20X, ES12.4,                       &
+              &  '  infinite logarithm  ', ES22.14 )" ) alpha, linear_model 
+             END IF
+             alpha = half * alpha ; nbacts = nbacts + 1 
+             IF ( alpha < epsmch ) THEN
+                IF ( printi ) WRITE(out,"(' Exit inner loop - step too small')")
+!               Y = Y - D( nfreepm + 1 : )
+                inform%status = - 9 ; GO TO 810
+             END IF
+           END DO
+
+          search_error = 0 

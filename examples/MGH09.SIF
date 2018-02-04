@@ -1,0 +1,183 @@
+***************************
+* SET UP THE INITIAL DATA *
+***************************
+
+NAME          MGH09
+
+*   Problem :
+*   *********
+
+*   NIST Data fitting problem MGH09 given as an inconsistent set of
+*   nonlinear equations.
+
+*   Fit: y = b1*(x**2+x*b2) / (x**2+x*b3+b4) + e
+
+*   Source:  Problem from the NIST nonlinear regression test set
+*     http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml
+
+*   Reference: Kowalik, J.S., and M. R. Osborne, (1978).  
+*     Methods for Unconstrained Optimization Problems.  
+*     New York, NY:  Elsevier North-Holland.
+
+*   SIF input: Nick Gould and Tyrone Rees, Oct 2015
+
+*   classification NOR2-MN-4-11
+
+*   Number of data values
+
+ IE M                   11
+
+*   Number of variables
+
+ IE N                   4
+
+*   Useful parameters
+
+ IE 1                   1
+
+*  Data values
+
+ RE X1                  4.0E+0 
+ RE X2                  2.0E+0 
+ RE X3                  1.0E+0 
+ RE X4                  5.00E-1
+ RE X5                  2.50E-1
+ RE X6                  1.67E-1
+ RE X7                  1.25E-1
+ RE X8                  1.00E-1
+ RE X9                  8.33E-2
+ RE X10                 7.14E-2
+ RE X11                 6.25E-2
+
+ RE Y1                  1.957E-1
+ RE Y2                  1.947E-1
+ RE Y3                  1.735E-1
+ RE Y4                  1.60E-1 
+ RE Y5                  8.44E-2 
+ RE Y6                  6.27E-2 
+ RE Y7                  4.56E-2 
+ RE Y8                  3.42E-2 
+ RE Y9                  3.23E-2 
+ RE Y10                 2.35E-2 
+ RE Y11                 2.46E-2 
+
+VARIABLES
+
+ DO I         1                        N
+ X  B(I)
+ ND
+
+GROUPS
+
+ DO I         1                        M
+ XE F(I)
+ ND
+
+CONSTANTS
+
+ DO I         1                        M
+ Z  MGH09     F(I)                     Y(I)
+ ND        
+
+BOUNDS
+
+ FR MGH09     'DEFAULT'
+
+START POINT
+
+    START1    B1        25.0
+    START1    B2        39.0
+    START1    B3        41.5
+    START1    B4        39.0
+
+*  Alternative start point
+
+    START2    B1        0.25 
+    START2    B2        0.39 
+    START2    B3        0.415
+    START2    B4        0.39 
+
+ELEMENT TYPE
+
+ EV E10       V1
+ EV E10       V2
+ EV E10       V3
+ EV E10       V4
+ EP E10       X
+
+ELEMENT USES
+
+ DO I         1                        M
+ XT E(I)      E10
+ ZV E(I)      V1                       B1
+ ZV E(I)      V2                       B2
+ ZV E(I)      V3                       B3
+ ZV E(I)      V4                       B4
+ ZP E(I)      X                        X(I)
+ ND
+
+GROUP USES
+
+ DO I         1                        M
+ XE F(I)      E(I)
+ ND
+
+OBJECT BOUND
+
+*   Least square problems are bounded below by zero
+
+ LO MGH09               0.0
+
+*   Solution
+
+*LO SOLTN               
+
+ENDATA
+
+***********************
+* SET UP THE FUNCTION *
+* AND RANGE ROUTINES  *
+***********************
+
+ELEMENTS      MGH09
+
+TEMPORARIES
+
+ R  X2
+ R  T
+ R  B
+ R  B2
+ R  B3
+ R  V1X
+ R  V1X2
+ R  V1T
+ R  V1XT
+
+INDIVIDUALS
+
+ T  E10
+ A  X2                  X * X
+ A  T                   V2 * X + X2
+ A  B                   V4 + V3 * X + X2
+ A  B2                  B * B
+ A  B3                  B * B2
+ A  V1X                 V1 * X
+ A  V1X2                V1 * X2
+ A  V1T                 V1 * T
+ A  V1XT                V1X * T
+
+ F                      V1T / B 
+ G  V1                  T / B 
+ G  V2                  V1X / B 
+ G  V3                  - V1XT / B2 
+ G  V4                  - V1T / B2 
+ H  V1        V2        X / B 
+ H  V1        V3        - X * T / B2 
+ H  V1        V4        - T / B2 
+ H  V2        V3        - V1X2 / B2 
+ H  V2        V4        - V1X / B2 
+ H  V3        V3        2.0 * V1X2 * T / B3 
+ H  V3        V4        2.0 * V1XT / B3 
+ H  V4        V4        2.0 * V1T / B3 
+
+ENDATA

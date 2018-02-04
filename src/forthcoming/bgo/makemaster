@@ -1,0 +1,288 @@
+#  Main body of the installation makefile for the GALAHAD bgo package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 20 VI 2016
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(OPENMP)
+FFLAGSNOMP = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(OPENMP)
+RUNFFLAGS  =         $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SBGO =  basics lhs ugo trb $(LGS)(bgo.o)
+DBGO =  basics lhs ugo trb $(LGD)(bgo.o)
+
+SRUNBGO = cutest_functions copyright $(LGS)(usebgo.o) $(OBJS)/runbgo_sif.o
+DRUNBGO = cutest_functions copyright $(LGD)(usebgo.o) $(OBJD)/runbgo_sif.o
+
+BGOOBJECTSS_CUTEST = $(SBGO) $(SRUNBGO)
+BGOOBJECTSD_CUTEST = $(DBGO) $(DRUNBGO)
+
+BGODS = $(DBGO) $(OBJD)/bgos.o
+BGODS2 = $(DBGO) $(OBJD)/bgos2.o
+BGODT = $(DBGO) $(OBJD)/bgot.o
+BGOSS = $(SBGO) $(OBJS)/bgos.o
+BGOST = $(SBGO) $(OBJS)/bgot.o
+
+RBGODS = $(OBJD)/bgos.o -L$(OBJD) $(LIBS)
+RBGODS2 = $(OBJD)/bgos2.o -L$(OBJD) $(LIBS)
+RBGODT = $(OBJD)/bgot.o -L$(OBJD) $(LIBS)
+RBGOSS = $(OBJS)/bgos.o -L$(OBJS) $(LIBS)
+RBGOST = $(OBJS)/bgot.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+bgo: bgo.o
+all: bgo_cutest
+test: test_bgo
+test_nocutest: test_bgo_nocutest
+
+# bgo
+
+bgo_silent: bgo_$(PRECIS)
+bgo: bgo_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: BGO ($(PRECIS) $(SUCC)"
+bgo_single: $(SBGO)
+	$(RANLIB) $(LGS)
+bgo_double: $(DBGO)
+	$(RANLIB) $(LGD)
+
+bgo_cutest: bgo_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: BGO ($(PRECIS) $(SUCC_CUTEST)"
+bgo_cutest_single: $(BGOOBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+bgo_cutest_double: $(BGOOBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+bgosrunall: bgoss bgost
+bgodrunall: bgods bgodt
+bgorunall: bgodrunall bgosrunall
+
+#  basic packages
+
+basics:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+	( cd ../../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            qpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../../qp )
+lhs:
+	( cd ../lhs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lhs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../lhs )
+ugo:
+	( cd ../ugo ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ugo_silent PRECIS=$(PRECIS) PWD=$(PWD)/../ugo )
+trb:
+	( cd ../trb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            trb_silent PRECIS=$(PRECIS) PWD=$(PWD)/../trb )
+cutest_functions:
+	( cd ../../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_silent PRECIS=$(PRECIS) \
+            PWD=$(PWD)/../../auxiliary )
+copyright:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+# run spec-sheet example tests
+
+bgods: $(BGODS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bgo $(RBGODS)
+	- ./run_bgo
+#	- ./run_bgo >& bgods.output
+#	cat bgods.output
+	rm ./run_bgo
+
+bgods2: $(BGODS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bgo $(RBGODS2)
+	- ./run_bgo
+	rm ./run_bgo
+
+bgodt: $(BGODT)
+	echo " Exhaustive test of subroutine interface to bgo"
+	echo $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bgo $(RBGODT)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bgo $(RBGODT)
+	- ./run_bgo >& bgodt.output
+	cat bgodt.output
+	rm ./run_bgo
+
+bgoss: $(BGOSS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bgo $(RBGOSS)
+	- ./run_bgo >& bgos.output
+	cat bgos.output
+	rm ./run_bgo
+
+bgost: $(BGOST)
+	echo " Exhaustive test of subroutine interface to bgo"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bgo $(RBGOST)
+	- ./run_bgo >& bgot.output
+	cat bgot.output
+	rm ./run_bgo
+
+#  Substantial GALAHAD packages
+
+bgo.o: $(LG)(bgo.o)
+
+$(LG)(bgo.o):  ../bgo/bgo.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bgo  "
+	$(SED) -f $(SEDS)  ../bgo/bgo.f90 > $(OBJ)/bgo1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/bgo1.f90 > $(OBJ)/bgo2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/bgo2.f90 > $(OBJ)/bgo3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/bgo3.f90 > $(OBJ)/bgo.f90
+	cd $(OBJ); $(FORTRAN) -o bgo.o $(FFLAGSS) bgo.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o bgo.o $(FFLAGSN) bgo.f90 )
+	cd $(OBJ); $(ARR) bgo.o ; $(RM) bgo.f90 bgo1.f90 bgo2.f90 \
+                                         bgo3.f90 bgo.o
+	$(RMARFILE) usebgo.o
+	$(RMOBFILE) bgos.o
+	$(RMOBFILE) bgos2.o
+	$(RMOBFILE) bgot.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usebgo.o: $(LG)(usebgo.o)
+
+$(LG)(usebgo.o): ../bgo/usebgo.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usebgo   "
+	$(SED) -f $(SEDS) ../bgo/usebgo.f90 > $(OBJ)/usebgo1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usebgo1.f90 > $(OBJ)/usebgo2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usebgo2.f90 > $(OBJ)/usebgo.f90
+	cd $(OBJ); $(FORTRAN) -o usebgo.o $(FFLAGSS) usebgo.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usebgo.o $(FFLAGSN) usebgo.f90 )
+	cd $(OBJ); $(ARR) usebgo.o ; $(RM) usebgo.f90 usebgo1.f90 \
+                                           usebgo2.f90 usebgo.o
+	$(RMOBFILE) runbgo_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runbgo_sif.o: $(OBJ)/runbgo_sif.o
+
+$(OBJ)/runbgo_sif.o: ../bgo/runbgo_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runbgo_sif"
+	$(SED) -f $(SEDS) ../bgo/runbgo_sif.f90 > $(OBJ)/runbgo_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runbgo_sif.o $(FFLAGSS) runbgo_sif.f90
+	rm $(OBJ)/runbgo_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+bgos.o: $(OBJ)/bgos.o
+
+$(OBJ)/bgos.o: ../bgo/bgos.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bgos  "
+	$(SED) -f $(SEDS) ../bgo/bgos.f90 > $(OBJ)/bgos1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/bgos1.f90 > $(OBJ)/bgos.f90
+	cd $(OBJ) ; $(FORTRAN) -o bgos.o $(FFLAGS) bgos.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+bgos.o: $(OBJ)/bgos.o
+
+$(OBJ)/bgos2.o: ../bgo/bgos2.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bgos2  "
+	$(SED) -f $(SEDS) ../bgo/bgos2.f90 > $(OBJ)/bgos1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/bgos1.f90 > $(OBJ)/bgos2.f90
+	cd $(OBJ) ; $(FORTRAN) -o bgos2.o $(FFLAGS) bgos2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+bgot.o: $(OBJ)/bgot.o
+
+$(OBJ)/bgot.o: ../bgo/bgot.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bgot  "
+	$(SED) -f $(SEDS) ../bgo/bgot.f90 > $(OBJ)/bgot1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/bgot1.f90 > $(OBJ)/bgot.f90
+	cd $(OBJ) ; $(FORTRAN) -o bgot.o $(FFLAGSS) bgot.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  generate HSL codes from GALAHAD ones
+
+hslgen:
+	$(SED) -f ../hsl/gal2hsl ../eqp/bgo.f90 > ../hsl/hsl_ve16/ve16d.f90
+	$(SED) -f ../hsl/gal2hsl ../sbls/sbls.f90 > ../hsl/hsl_mi14/mi14d.f90
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LGS) $(LGD) $(LG) $(OBJ)/bgos.o $(OBJ)/bgot.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmbgo:
+	@printf ' %-9s %-15s\t\t' "Removing" "bgo from archive "
+	$(RMARFILE) bgo.o
+	@printf '[ OK ]\n'
+

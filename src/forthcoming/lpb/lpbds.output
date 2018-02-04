@@ -1,0 +1,417 @@
+
+ problem dimensions before preprocessing: 
+ n =        3 m =        2 a_ne =        4
+
+ problem dimensions after preprocessing: 
+ n =        3 m =        2 a_ne =        4
+
+ 1 equalities from 2 constraints 
+
+ - - - - - - - test for rank defficiency -  -  -  -  -  -  - 
+ real/integer space required for factors          7        11
+ ** analysis time =       0.00
+ ** factorize time =       0.00
+ smallest,largest block eigenvalues =  1.0000E-02  1.0050E+00
+ smallest non-negligible eigenvalue =  1.0000E-02
+      0 constraints appear to be dependent 
+ - - - - - - end of test for rank defficiency -  -  -  -  - 
+
+ >>>>> factorization package MA57 used <<<<<
+
+ largest/smallest scale factor   1.0000E+00  1.0000E+00
+                      == >  mu estimated   =   1.0E+00
+                            mu_x estimated =   1.3E+00
+                            mu_c estimated =   5.0E-01
+                       min/max slackness_x =   1.0000E+00  2.0000E+00
+                       min/max slackness_c =   5.0000E-01  5.0000E-01
+                       min/max primal feasibility =   5.0000E-01  2.0000E+00
+                       min/max dual   feasibility =   1.0000E+00  1.0000E+00
+  maximum element of A =   2.0000E+00
+ 
+ merit function value =   7.6926E+00
+
+  Schur-complement method used 
+
+ ** There are free variables - abandon the Schur-complement
+    factorization in favour of one of the augmented matrix
+
+  Augmented system method used 
+ real/integer space required for factors         15        14
+ ** analysis time =       0.00
+
+  Primal    convergence tolerance =   6.8285E-06
+  Dual      convergence tolerance =   6.8285E-06
+  Slackness convergence tolerance =   6.8285E-06
+
+ Iter   p-feas  d-feas com-slk   obj      step      mu    bac    time
+    0  2.0E+00 1.0E+00 1.0E+00  0.0E+00     -    1.0E-02   -     0.00
+ real/integer space used for factors         15        14
+ ** factorize time =       0.00
+      14 integer and       15 real words needed for factorization
+ ** solve time =       0.00
+ 
+         ***  Max component of gradient  residuals =   4.3368E-18
+         ***  Max component of contraint residuals =   0.0000E+00
+         ***  Max component of search direction    =   1.7700E+00
+ alpha_b, alpha_f =   9.0090E-01  1.0478E+00
+  Value and slope =   7.6926D+00 -7.6426D+00
+ 
+       ***  Linesearch        step trial value model value 
+                        9.0090E-01  9.4535E-01  7.6919E+00
+  Constraint residual   1.9820E-01
+ Increasing # refinements .. 
+                      == >  mu estimated   =   1.4E-01
+                            mu_x estimated =   1.9E-01
+                            mu_c estimated =   5.7E-02
+                       min/max slackness_x =   6.7852E-07  3.7148E-01
+                       min/max slackness_c =   3.3236E-02  8.0960E-02
+                       min/max primal feasibility =   4.7297E-01  1.7928E+00
+                       min/max dual   feasibility =   6.1232E-07  2.1622E-01
+
+ Iter   p-feas  d-feas com-slk   obj      step      mu    bac    time
+    1r 2.0E-01 9.9E-02 1.4E-01  0.0E+00 9.0E-01  1.4E-03   0     0.00
+ real/integer space used for factors         15        14
+ ** factorize time =       0.00
+      14 integer and       15 real words needed for factorization
+ ** solve time =       0.00
+ 
+         ***  Max component of gradient  residuals =   0.0000E+00
+         ***  Max component of contraint residuals =   0.0000E+00
+         ***  Max component of search direction    =   1.8595E-01
+ alpha_b, alpha_f =   1.0106E+00  1.0201E+00
+  Value and slope =   9.4535D-01 -9.3857D-01
+ 
+       ***  Linesearch        step trial value model value 
+                        1.0000E+00  1.3248E-02  9.4526E-01
+  Constraint residual   1.1102E-16
+ Increasing # refinements .. 
+                      == >  mu estimated   =   2.6E-03
+                            mu_x estimated =   3.4E-03
+                            mu_c estimated =   1.6E-03
+                       min/max slackness_x =   1.3775E-03  4.8748E-03
+                       min/max slackness_c =   1.1193E-03  2.0080E-03
+                       min/max primal feasibility =   4.6907E-01  1.7805E+00
+                       min/max dual   feasibility =   1.2246E-03  5.5700E-03
+
+ ====================== feasible point found ======================= 
+
+
+ Iter   p-feas  d-feas com-slk   obj      step      mu    bac    time
+    2r 0.0E+00 1.4E-17 2.6E-03  0.0E+00 1.0E+00  2.6E-05   0     0.00
+ real/integer space used for factors         15        14
+ ** factorize time =       0.00
+      14 integer and       15 real words needed for factorization
+ ** solve time =       0.00
+ 
+         ***  Max component of gradient  residuals =   0.0000E+00
+         ***  Max component of contraint residuals =   5.8981E-17
+         ***  Max component of search direction    =   5.2932E-01
+ 
+       ***  Linesearch        step trial centr model centr 
+                        1.0000E+00  7.1509E-01  8.2891E-01
+  Constraint residual   3.3307E-16
+                      == >  mu estimated   =   2.6E-05
+                            mu_x estimated =   2.6E-05
+                            mu_c estimated =   2.6E-05
+                       min/max slackness_x =   2.6496E-05  2.6496E-05
+                       min/max slackness_c =   2.6496E-05  2.6496E-05
+                       min/max primal feasibility =   4.5099E-01  2.3099E+00
+                       min/max dual   feasibility =   1.1471E-05  5.8751E-05
+
+ Iter   p-feas  d-feas com-slk   obj      step      mu    bac    time
+    3r 0.0E+00 2.8E-06 2.6E-05  0.0E+00 1.0E+00  2.6E-07   0     0.00
+ real/integer space used for factors         15        14
+ ** factorize time =       0.00
+      14 integer and       15 real words needed for factorization
+ ** solve time =       0.00
+ 
+         ***  Max component of gradient  residuals =   0.0000E+00
+         ***  Max component of contraint residuals =   8.6736E-19
+         ***  Max component of search direction    =   8.4581E-03
+ 
+       ***  Linesearch        step trial centr model centr 
+                        1.0000E+00  7.1493E-01  7.1509E-01
+  Constraint residual   4.4409E-16
+                      == >  mu estimated   =   2.6E-07
+                            mu_x estimated =   2.6E-07
+                            mu_c estimated =   2.6E-07
+                       min/max slackness_x =   2.6496E-07  2.6496E-07
+                       min/max slackness_c =   2.6496E-07  2.6496E-07
+                       min/max primal feasibility =   4.4630E-01  2.3014E+00
+                       min/max dual   feasibility =   1.1513E-07  5.9369E-07
+
+ Iter   p-feas  d-feas com-slk   obj      step      mu    bac    time
+    4r 0.0E+00 5.2E-11 2.6E-07  0.0E+00 1.0E+00  2.6E-09   0     0.00
+
+
+  Final objective function value   0.00000000000000E+00
+  Total number of iterations =      4
+  Total number of backtracks =      0
+
+  Norm of projected gradient is   2.3026E-07
+  Norm of infeasibility is        0.0000E+00
+
+  Augmented system method used 
+  Constraint residual   4.4409E-16
+
+               =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+               =                  LSQP total time                  =
+               =                        0.00                       =
+               =    preprocess    analyse    factorize     solve   =
+               =        0.00        0.00        0.00        0.00   =
+               =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+        14 integer and         15 real words required for the factorization
+
+ ===================== end of feasible point phase  ==================== 
+
+ >>>>> factorization package MA57 used <<<<<
+
+ largest/smallest scale factor   1.0000E+00  1.0000E+00
+  maximum element of A =   2.0000E+00 maximum element of H =   1.0000E+00
+ 
+  Automatic preconditioner 
+  Barrier Hessian 
+  Schur-complement method used 
+
+  maximum, average column lengths       2       1.3
+  number of columns longer than        35 is      0
+ real/integer space required for factors          3         7
+ analysis time =       0.00
+
+ min/max primal =   4.4630E-01  2.3014E+00
+ min/max dual   =   1.0000E+00  1.0000E+00
+       7 integer and        3 real words needed for factorization
+ factorize time =       0.00
+ real/integer space used for factors          3         7
+
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  mu =   1.0000E+00  theta_c =   1.0000E+00  theta_d =   1.0000E+00
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    0r 7.2E-01 1.3E+00  5.6E+00     -    1.0E+03      -     -      0.00
+
+ stopping tolerance =   1.4350E-02, radius =   1.0000E+03
+
+   Iter        f         pgnorm    step    norm p   norm x     curv 
+      0  0.00000000E+00 1.43E+00    -        -        -         -
+      1 -2.12161232E+00 1.43E-05 2.06E+00 1.53E+00 2.96E+00  4.85E-01
+ pgnorm   1.4325E-05 <   1.4350E-02
+ solve time =       0.00
+ ared, pred   1.2904E+00  2.1216E+00
+
+ min/max primal =   1.7988E-01  1.5537E+00
+ min/max dual   =   1.1574E-01  2.2873E+00
+       7 integer and        3 real words needed for factorization
+ factorize time =       0.00
+ real/integer space used for factors          3         7
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    1r 9.3E-06 8.2E-01  1.4E+00  6.1E-01 1.0E+03      0     1      0.00
+
+  Constraint residual   4.440892E-16  objective value   1.359754E+00
+
+ min/max primal =   1.7988E-01  1.5537E+00
+ min/max dual   =   1.1574E-01  2.2873E+00
+
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  mu =   1.0000E-01  theta_c =   9.7724E-02  theta_d =   9.7724E-02
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    1  9.3E-06 1.1E+00  1.4E+00     -    1.0E+03      -     -      0.00
+
+ stopping tolerance =   4.4628E-03, radius =   1.0000E+03
+
+   Iter        f         pgnorm    step    norm p   norm x     curv 
+      0  0.00000000E+00 4.46E-01    -        -        -         -
+      1 -1.11499863E-01 4.62E-03 1.12E+00 2.19E-01 5.00E-01  8.93E-01
+      2 -1.11510547E-01 0.00E+00 1.00E+00 1.54E-03 5.00E-01  9.99E-01
+ pgnorm   0.0000E+00 <   4.4628E-03
+ solve time =       0.00
+ ared, pred   7.2187E-02  1.1151E-01
+
+ min/max primal =   1.6368E-02  1.6353E+00
+ min/max dual   =   5.8285E-02  1.7889E+00
+       7 integer and        3 real words needed for factorization
+ factorize time =       0.00
+ real/integer space used for factors          3         7
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    2r 1.3E-16 7.5E-02  1.0E+00  6.5E-01 1.0E+03      0     2      0.00
+
+  Constraint residual   4.440892E-16  objective value   1.032736E+00
+
+ min/max primal =   1.6368E-02  1.6353E+00
+ min/max dual   =   5.8285E-02  1.7889E+00
+
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  mu =   1.0000E-02  theta_c =   9.5499E-03  theta_d =   9.5499E-03
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    2  2.5E-17 1.7E-01  1.0E+00     -    1.0E+03      -     -      0.00
+
+ stopping tolerance =   1.3113E-03, radius =   1.0000E+03
+
+   Iter        f         pgnorm    step    norm p   norm x     curv 
+      0  0.00000000E+00 1.31E-01    -        -        -         -
+      1 -8.67573729E-03 7.00E-05 1.01E+00 1.96E-02 1.32E-01  9.91E-01
+ pgnorm   6.9976E-05 <   1.3113E-03
+ solve time =       0.00
+ ared, pred   1.0434E-02  8.6757E-03
+
+ min/max primal =   3.8055E-03  1.6433E+00
+ min/max dual   =   5.8302E-03  1.9839E+00
+       7 integer and        3 real words needed for factorization
+ factorize time =       0.00
+ real/integer space used for factors          3         7
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    3r 2.4E-04 3.5E-03  1.0E+00  1.2E+00 1.0E+03      0     1      0.00
+
+  Constraint residual   4.440892E-16  objective value   1.007611E+00
+
+ min/max primal =   3.8055E-03  1.6433E+00
+ min/max dual   =   5.8302E-03  1.9839E+00
+
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  mu =   1.0000E-03  theta_c =   9.3325E-04  theta_d =   9.3325E-04
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    3  9.3E-05 1.3E-02  1.0E+00     -    1.0E+03      -     -      0.00
+
+ stopping tolerance =   7.5992E-04, radius =   1.0000E+03
+
+   Iter        f         pgnorm    step    norm p   norm x     curv 
+      0  0.00000000E+00 7.60E-02    -        -        -         -
+      1 -2.89295302E-03 4.58E-06 1.00E+00 8.48E-03 7.61E-02  9.98E-01
+ pgnorm   4.5838E-06 <   7.5992E-04
+ solve time =       0.00
+ ared, pred   4.5813E-03  2.8930E-03
+
+ min/max primal =   4.7577E-04  1.6477E+00
+ min/max dual   =   5.9286E-04  1.9987E+00
+       7 integer and        3 real words needed for factorization
+ factorize time =       0.00
+ real/integer space used for factors          3         7
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    4r 1.5E-05 1.5E-04  1.0E+00  1.6E+00 1.0E+03      0     1      0.00
+
+  Constraint residual   2.220446E-16  objective value   1.000952E+00
+
+ min/max primal =   4.7577E-04  1.6477E+00
+ min/max dual   =   5.9286E-04  1.9987E+00
+
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  mu =   1.0000E-04  theta_c =   9.1201E-05  theta_d =   9.1201E-05
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    4  3.7E-06 1.1E-03  1.0E+00     -    1.0E+03      -     -      0.00
+
+ stopping tolerance =   2.7619E-04, radius =   1.0000E+03
+
+   Iter        f         pgnorm    step    norm p   norm x     curv 
+      0  0.00000000E+00 2.76E-02    -        -        -         -
+      1 -3.81481718E-04 1.68E-07 1.00E+00 6.67E-03 2.76E-02  1.00E-00
+ pgnorm   1.6826E-07 <   2.7619E-04
+ solve time =       0.00
+ ared, pred   6.2668E-04  3.8148E-04
+
+ min/max primal =   4.9744E-05  1.6508E+00
+ min/max dual   =   5.9561E-05  1.9999E+00
+       7 integer and        3 real words needed for factorization
+ factorize time =       0.00
+ real/integer space used for factors          3         7
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    5r 5.4E-07 1.5E-05  1.0E+00  1.6E+00 1.0E+03      0     1      0.00
+
+  Constraint residual   2.220446E-16  objective value   1.000099E+00
+
+ min/max primal =   4.9744E-05  1.6508E+00
+ min/max dual   =   5.9561E-05  1.9999E+00
+
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  mu =   1.0000E-05  theta_c =   8.9125E-06  theta_d =   8.9125E-06
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    5  2.8E-07 9.9E-05  1.0E+00     -    1.0E+03      -     -      0.00
+
+ stopping tolerance =   8.9742E-05, radius =   1.0000E+03
+
+   Iter        f         pgnorm    step    norm p   norm x     curv 
+      0  0.00000000E+00 8.97E-03    -        -        -         -
+      1 -4.02690694E-05 0.00E+00 1.00E+00 6.07E-03 8.97E-03  1.00E-00
+ pgnorm   0.0000E+00 <   8.9742E-05
+ solve time =       0.00
+ ared, pred   6.6552E-05  4.0269E-05
+
+ min/max primal =   4.9975E-06  1.6536E+00
+ min/max dual   =   5.9589E-06  2.0000E+00
+       7 integer and        3 real words needed for factorization
+ factorize time =       0.00
+ real/integer space used for factors          3         7
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    6r 1.6E-08 1.4E-06  1.0E+00  1.7E+00 1.0E+03      0     1      0.00
+
+ min/max primal =   4.9975E-06  1.6536E+00
+ min/max dual   =   5.9589E-06  2.0000E+00
+
+  Constraint residual   2.220446E-16  objective value   1.000010E+00
+
+ min/max primal =   4.9975E-06  1.6536E+00
+ min/max dual   =   5.9589E-06  2.0000E+00
+
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  mu =   1.0000E-06  theta_c =   6.7602E-06  theta_d =   6.7602E-06
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    6  1.6E-08 9.8E-06  1.0E+00     -    1.0E+03      -     -      0.00
+
+ stopping tolerance =   2.8458E-05, radius =   1.0000E+03
+
+   Iter        f         pgnorm    step    norm p   norm x     curv 
+      0  0.00000000E+00 2.85E-03    -        -        -         -
+      1 -4.04916131E-06 0.00E+00 1.00E+00 5.47E-03 2.85E-03  1.00E-00
+ pgnorm   0.0000E+00 <   2.8458E-05
+ solve time =       0.00
+ ared, pred   6.6960E-06  4.0492E-06
+
+ min/max primal =   4.9997E-07  1.6560E+00
+ min/max dual   =   5.9592E-07  2.0000E+00
+       7 integer and        3 real words needed for factorization
+ factorize time =       0.00
+ real/integer space used for factors          3         7
+
+ Iter   d-feas com-slk    obj     ratio   radius nbacts cgits      time
+    7r 4.5E-10 1.2E-07  1.0E+00  1.7E+00 1.0E+03      0     1      0.00
+
+ min/max primal =   4.9997E-07  1.6560E+00
+ min/max dual   =   5.9592E-07  2.0000E+00
+ 
+  Final objective function value   1.00000099994967E+00
+  Total number of iterations =      7
+  Total number of c.g. its   =      8
+  Constraint residual   4.4409E-16
+  Automatic preconditioner 
+  Barrier Hessian 
+
+  Schur-complement method used 
+
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=
+ =                            LPB timing statistics                           =
+ =                   total           preprocess         phase 1               =
+ =                    0.00              0.00              0.00                =
+ =      analyse    factorize     solve      analyse    factorize     solve    =
+ =        0.00        0.00        0.00        0.00        0.00        0.00    =
+ =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=
+ LPB: 7 iterations. Optimal objective value =  1.0000E+00
+ Optimal solution =   6.5601E-01  4.9997E-07  2.0000E+00

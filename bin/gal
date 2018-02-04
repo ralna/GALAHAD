@@ -1,0 +1,1081 @@
+#!/bin/bash
+
+# gal: generic script to apply package on architecture and delete the
+#      executable after use.
+#  * version for Bourne/bash shell
+
+# Use: gal architecture package [-e] [-h] [-r] [-s] [-k] [-m] [-p]
+#                               [-u] [-o i] [-l secs]
+
+# where: options -e : use the load module architecture.package if it exists
+#                     (Default: create a new load module)
+#                -h : print this help and stop execution
+#                -r : do not recompile the problem functions
+#                -s : run the single precision version
+#                     (Default: run the double precision version)
+#                -k : keep the load module after use
+#                     (Default: delete the load module)
+#                -m : check for memory leaks (when possible) using valgrind
+#                -p : profile the code (when possible)
+#                -u : update the specfile to include the latest options
+#                -o : 0 for silent mode, 1 for brief description of
+#                     the stages executed
+#                     (Default: -o 0)
+#                -l : limit the cputime used to secs seconds
+#                     (Default: -l 99999999)
+
+#  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+#  Principal authors: Nick Gould, Dominique Orban and Philippe Toint
+
+#  History -
+#   originally released pre GALAHAD Version 1.0. August 20th, 1999 (for csh)
+#   update released with GALAHAD Version 2.0. May 11th 2006 (for sh)
+
+if [[ -z $GALAHAD ]]; then
+  echo ' You have not set the GALAHAD environment variable. '
+  echo ' This needs to point to the main directory in which '
+  echo ' you have installed the GALAHAD package. '
+  exit 5
+fi
+
+let last=$#
+
+stop_early="false"
+if (( last < 2 )); then
+    stop_early="true"
+elif [[ "`echo $1 | grep -e '^-'`" != "" || "`echo $2 | grep -e '^-'`" != ""  ]]; then
+    stop_early="true"
+fi
+
+if [[ "$stop_early" == "true" ]]; then
+    echo " Use: gal architecture package [-e] [-h] [-r] [-s] [-k] [-m] [-p] [-u] [-o i] [-l secs]"
+    exit 1
+fi
+
+set +C
+
+#  directory for the main executable file
+
+EXEC=$PWD
+
+#  directory for temporary files
+
+TMP=/tmp
+
+#  variables for each option
+
+# PRECISION = 0 (single precision), = 1 (double precision)
+
+PRECISION=1
+
+# RECOMPILE = 0 (use existing problem objects), = 1 (recompile problem objects)
+
+RECOMPILE=0
+
+# UPDATE = 0 (use existing specfile),
+#        = 1 (update specfile to include latest options)
+
+UPDATE=0
+
+#  AUTOMATIC = 0 (provided), = 1 (automatic forward), = 2 (automatic backward)
+#  AD = 0 (none), >0 (AD02 used)
+
+if [[ -e AUTOMAT.d ]]; then
+  DUM=( `cat AUTOMAT.d` )
+  AUTOMATIC=${DUM[1]}
+  AD0=2
+else
+  AUTOMATIC=0
+  AD0=0
+fi
+
+# NEW = 0 (run existing f module), = 1 (build a new module)
+
+NEW=1
+
+# KEEP = 0 (discard f load module after use), = 1 (keep it)
+
+KEEP=0
+
+# MEMCHECK = 0 (do not grind the code for memory leaks), = 1 (grind it)
+
+MEMCHECK=0
+
+# PROFILE = 0 (do not profile the code), = 1 (profile it)
+
+PROFILE=0
+
+# OUTPUT = 0 (summary output), = 1 (detailed output from decoder)
+
+OUTPUT=0
+
+# LIMIT = 0 (no cputime limit)
+
+LIMIT=999999
+#LIMIT=1800
+
+#  name of executable module
+
+galmin=$1.$2
+
+#  interpret arguments
+
+let i=3
+
+while (( i <= last ))
+do
+  opt=${!i}
+  if [[ "$opt" == '-e' ]]; then
+    NEW=0
+  elif [[ "$opt" == '-r' ]]; then
+    RECOMPILE=1
+  elif [[ "$opt" == '-u' ]]; then
+    UPDATE=1
+  elif [[ "$opt" == '-s' ]]; then
+    PRECISION=0
+  elif [[ "$opt" == '-h' || "$opt" == '--help' ]]; then
+    echo " Use: gal architecture package [-e] [-h] [-r] [-s] [-k] [-m] [-p] [-u] [-o i] [-l secs]"
+    echo ' '
+    echo " where: options -e : use the load module $galmin if it exists"
+    echo '                     (Default: create a new load module)'
+    echo '                -h : print this help and stop execution'
+    echo '                -r : recompile the problem functions'
+    echo '                -s : run the single precision version'
+    echo '                     (Default: run the double precision version)'
+    echo '                -k : keep the load module after use '
+    echo '                     (Default: delete the load module)'
+    echo '                -m : check for memory leaks (when possible) using valgrind'
+    echo '                -p : profile the code (when possible)'
+    echo '                -u : update the specfile to include the latest options'
+    echo '                -o : 0 for silent mode, 1 for brief description of'
+    echo '                     the stages executed'
+    echo '                     (Default: -o 0)'
+    echo '                -l : limits the cputime to secs seconds'
+    echo '                     (Default: -l 99999999)'
+    exit 0
+  elif [[ "$opt" == '-k' ]]; then
+    KEEP=1
+  elif [[ "$opt" == '-m' ]]; then
+    MEMCHECK=1
+    VALGRIND="-v --tool=memcheck --leak-check=yes --show-reachable=yes --track-origins=yes"
+  elif [[ "$opt" == '-p' ]]; then
+    PROFILE=1
+  elif [[ "$opt" == '-o' ]]; then
+    (( i++ ))
+    OUTPUT=${!i}
+  elif [[ "$opt" == '-l' ]]; then
+    (( i++ ))
+    LIMIT=${!i}
+  else
+    echo " Use: gal architecture package [-e] [-h] [-r] [-s] [-k] [-m] [-p] [-u] [-o i] [-l secs]"
+    exit 1
+  fi
+  (( i++ ))
+done
+
+#  minimizer object codes to link
+
+if [[ $PRECISION == "0" ]]; then
+   PRECIS=single
+   DOUBLE="s"
+else
+   PRECIS=double
+   DOUBLE="d"
+fi
+
+#  ----------------------------------------------------------------------------
+#  -*- Default values that will be overridden if set in $GALAHAD/bin/sys/$1 -*-
+#  ----------------------------------------------------------------------------
+
+#  standard unix commands (rm, make, cat, sed, mv, ls)
+
+RM="rm -f"
+MAKE="make"
+CAT="cat"
+SED="sed"
+MV="mv"
+LS="ls"
+
+#  the command that invokes the fortran 95 compiler
+
+FORTRAN="f95"
+
+#  compiler flags for linking
+
+FFLAGS=""
+CUDAFLAGS=""
+
+#  flags for compiling the fortran 77 problem-dependent roiutines
+
+PROBFLAGS="-c -fixed"
+
+#  If there are compiled, library versions of the blas
+#  (basic linear algebra subprograms), set BLAS to a list of
+#  names of the object library suffix -lx, where the object library
+#  libx.a contains relevant blas. For instance if the blas are
+#  shared between object libraries libblas1.a and libblas2.a,
+#  BLAS should be set to "-lblas1 -lblas2", noting that those in
+#  libblas1.a will take precedence over those in libblas2.a.
+#  If compiled blas are unavailable, BLAS should be set to "".
+#  If the user wishes not to link blas separately, set BLAS to
+#  "-galahad_dummy"
+
+BLAS=""
+
+#  If there are compiled, library versions of the LAPACK library
+#  set LAPACK to a list of names of the object library suffix -lx,
+#  where the object library libx.a contains relevant lapack. For instance
+#  if LAPACK is shared between object libraries liblapack1.a and liblapack2.a,
+#  LAPACK should be set to "-llapack1 -llapack2", noting that those in
+#  liblapack1.a will take precedence over those in liblapack2.a.
+#  If compiled lapack are unavailable, LAPACK should be set to ""
+#  If the user wishes not to link lapack separately, set LAPACK to
+#  "-galahad_dummy"
+
+LAPACK=""
+
+#  If there is a compiled, library version of the Harwell
+#  Subroutine Library, set HSL to -lx, where the object library
+#  libx.a contains the relevant Harwell Subroutine Library.
+#  For instance if the Harwell Subroutine Library is contained
+#  in the object library libhsl.a, HSL should be set to "-lhsl".
+#  If a compiled version of the Harwell Subroutine Library is
+#  unavailable, HSL should be set to ""
+
+HSL=""
+
+#  If there is a compiled, library version of the Metis graph partitioning
+#  package (http://www-users.cs.umn.edu/~karypis/metis/) , set METIS to -lx,
+#  where the object library libx.a contains Metis.  For instance if Metis
+#  is contained in the object library libmetis.a, METIS should be set to
+#  "-lmetis".  If the library is in a "non-standard" place, METIS should
+#  also point to the full path to the library. For example, if libmetis.so
+#  is in the directory /mylibrary, METIS should be set to
+#  "-L/mylibrary -lmetis" If a compiled version of Metis is unavailable,
+#  METIS should be set to "-lgalahad_metis".
+#  N.B. Metis is only required if MA57 (version 2 or later) is to be used.
+
+METIS=""
+
+#  If there is a compiled, library version of the SPRAL sparse factorization
+#  package (http://ccpforge.cse.rl.ac.uk/gf/project/asearchralna/), set SPRAL
+#  to -lx, where the object library libx.so contains SPRAL.  For instance if
+#  SPRAL is contained in the object library libspral.so, SPRAL should be
+#  set to "-lspral". If the library is in a "non-standard place", SPRAL
+#  should also point to the full path to the library. For example, if
+#  libspral.so is in the directory /mylibrary, SPRAL should be set to
+#  "-L/mylibrary -lspral" If a compiled version of SPRAL is unavailable,
+#  SPRAL should be set to "-lgalahad_spral".
+#  N.B. SPRAL is only optionally required but may improve performance.
+
+SPRAL=""
+
+#  If there is a compiled, library version of the PARDISO sparse factorization
+#  package (http://www.pardiso-project.org/) , set PARDISO to -lx,
+#  where the object library libx.so contains PARDISO.  For instance if PARDISO
+#  is contained in the object library libpardiso.so, PARDISO should be set to
+#  "-lpardiso". If the library is in a "non-standard place", PARDISO should
+#  also point to the full path to the library. For example, if libpardiso.so
+#  is in the directory /mylibrary, PARDISO should be set to
+#  "-L/mylibrary -lpardiso" If a compiled version of PARDISO is unavailable,
+#  PARDISO should be set to "-lgalahad_pardiso".
+#  N.B. PARDISO is only optionally required but may improve performance.
+
+PARDISO=""
+
+#  If there is a compiled, library version of the WSMP sparse factorization
+#  package (http://www.wsmp-project.org/) , set WSMP to -lx,
+#  where the object library libx.so contains WSMP.  For instance if WSMP
+#  is contained in the object library libwsmp.so, wsmp should be set to
+#  "-lwsmp". If the library is in a "non-standard place", WSMP should
+#  also point to the full path to the library. For example, if libwsmp.so
+#  is in the directory /mylibrary, WSMP should be set to
+#  "-L/mylibrary -lwsmp" If a compiled version of WSMP is unavailable,
+#  wsmp should be set to "-lgalahad_wsmp".
+#  N.B. WSMP is only optionally required but may improve performance.
+
+WSMP=""
+
+#  If the PLplot graphics library is available, some packages optionally
+#  produce grapical output for debugging purposes. The precise list of
+#  link options required may be obtained by executing the command
+#    pkg-config --cflags --libs plplotd-f95
+#  and PLPLOT should be set to the output of this command.
+#  N.B. PLPLOT is only optionally required.
+
+PLPLOT=""
+
+
+#  ----------------------------------------------------------------------------
+#  -*- end of default values that may be overridden in $GALAHAD/bin/sys/$1 -*-
+#  ----------------------------------------------------------------------------
+
+#  machine-dependent bits
+
+#eval "`cat $GALAHAD/bin/sys/$1`"
+. ${GALAHAD}/bin/sys/$1
+
+#  run galmin without rebuilding it
+
+if [[ $NEW == "0" ]]; then
+  if [[ ! -e $EXEC/$galmin || ! -x $EXEC/$galmin ]]; then
+    echo ' '
+    echo 'load module gal not found/executable. Rerun with -e option'
+    echo ' '
+    exit 3
+  fi
+  if [[ $OUTPUT ]]; then
+    echo ' '
+    echo "running $2 on current test problem ... "
+    echo ' '
+  fi
+  #limit cputime $LIMIT
+  ulimit -t $LIMIT
+  if [[ $PROFILE == "1" ]]; then
+#    which pixie > /dev/null 2>&1
+    which gprof > /dev/null 2>&1
+    if [[ $? == "0" ]]; then
+#      pixie -quiet $EXEC/$galmin > /dev/null 2>&1
+#      $EXEC/$galmin.pixie
+#      prof -pixie -lines $EXEC/$galmin > $EXEC/$galmin.pixie.out
+#      $RM $EXEC/$galmin.pixie $EXEC/$galmin.Counts $EXEC/$galmin.Addrs
+       $EXEC/$galmin
+       gprof $EXEC/$galmin > profile.out
+    else
+      if [[ $OUTPUT == "1" ]]; then
+        echo 'no profiling available, sorry ... '
+        echo ' '
+      fi
+      $EXEC/$galmin
+    fi
+  elif [[ $MEMCHECK == "1" ]]; then
+    which valgrind > /dev/null 2>&1
+    if [[ $? == "0" ]]; then
+      valgrind $VALGRIND  $EXEC/$galmin
+    else
+      if [[ $OUTPUT == "1" ]]; then
+        echo 'no memory checking available, sorry ... '
+        echo ' '
+      fi
+      $EXEC/$galmin
+    fi
+  else
+    $EXEC/$galmin
+  fi
+
+#  tidy up the current directory, deleting all junk.
+
+  [[ $KEEP == "0" ]] && $RM $EXEC/$galmin
+  exit 0
+fi
+
+#  check that CUTEst has been installed in the location indicated
+
+if [[ $2 != 'lancelot' && $2 != 'lancelot_steering' ]]; then
+  if [[ ! -d $CUTEST/objects/$CUTESTVERSION ]]; then
+    echo ' The CUTESTVERSION environment variable does not point.to'
+    echo ' an installed version of CUTEST. Set the correct location'
+    echo " in  $GALAHAD/bin/sys/$1"
+    echo " (currently CUTESTVERSION = $CUTESTVERSION)"
+    exit 6
+  fi
+fi
+
+#  build $galmin and tools
+
+#  directory for object files
+
+GALOBJ=$GALAHAD/objects/$1/$PRECIS
+
+if [[ $PRECISION == "0" ]]; then
+   CUTESTLIB="-L$CUTEST/objects/$CUTESTVERSION/single -lcutest"
+else
+   CUTESTLIB="-L$CUTEST/objects/$CUTESTVERSION/double -lcutest"
+fi
+PROBLIB=""
+
+#  libraries for BLAS, LAPACK, HSL, METIS, SPRAL, PARDISO, WSMP and SUITESPARSE
+
+if [[ "$BLAS" == "" ]]; then
+  BLASLIB="-lgalahad_blas"
+else
+  BLASLIB="$BLAS"
+fi
+
+if [[ "$LAPACK" == "" ]]; then
+  LAPACKLIB="-lgalahad_lapack"
+else
+  LAPACKLIB="$LAPACK"
+fi
+
+if [[ "$HSL" == "" ]]; then
+  HSLLIB="-lgalahad_hsl"
+else
+  HSLLIB="$HSL"
+fi
+
+if [[ "$METIS" == "" ]]; then
+  METISLIB="-lgalahad_metis"
+else
+  METISLIB="$METIS"
+fi
+
+if [[ "$SPRAL" == "" ]]; then
+  SPRALLIB="-lgalahad_spral"
+else
+  SPRALLIB="$SPRAL"
+fi
+
+if [[ "$PARDISO" == "" ]]; then
+  PARDISOLIB="-lgalahad_pardiso"
+else
+  PARDISOLIB="$PARDISO"
+fi
+
+if [[ "$WSMP" == "" ]]; then
+  WSMPLIB="-lgalahad_wsmp"
+else
+  WSMPLIB="$WSMP"
+fi
+
+if [[ "$SUITESPARSE" == "" ]]; then
+  SUITESPARSELIB=""
+else
+  SUITESPARSELIB="$SUITESPARSE"
+fi
+
+#  remove any hanging out-of-core files
+
+[[ -e factor_integer_ooc ]] && $RM factor_integer_ooc*
+[[ -e factor_real_ooc ]] && $RM factor_real_ooc*
+[[ -e work_indefinite_ooc ]] && $RM work_indefinite_ooc*
+[[ -e work_real_ooc ]] && $RM work_real_ooc*
+
+# ensure that the current test problem has been compiled
+
+if [[ $OUTPUT == "1" ]]; then
+  echo 'compiling the current test problem, if that is necessary ... '
+  echo ' '
+fi
+
+[[ -e RANGE.o && $RECOMPILE == '0' ]] && $RM RANGE.o
+[[ -e ELFUN.o && $RECOMPILE == '0' ]] && $RM ELFUN.o
+[[ -e GROUP.o && $RECOMPILE == '0' ]] && $RM GROUP.o
+[[ -e EXTER.o && $RECOMPILE == '0' ]] && $RM EXTER.o
+
+NSUB=( "ELFUN.o GROUP.o RANGE.o" )
+[[ -s EXTER.f ]] && NSUB=( "$NSUB EXTER.o" )
+
+for i  in  $NSUB; do
+  if [[ ! -e $i ]]; then
+    j=`basename $i .o`
+    cp ${j}.f ${j}.f90
+    $FORTRAN $PROBFLAGS ${j}.f90
+    if [[ $? != 0 ]]; then
+      exit 1
+    fi
+    $RM ${j}.f90
+  fi
+done
+
+# link all the tools files together.
+
+if [[ $OUTPUT == "1" ]]; then
+  echo ' '
+  echo 'linking all the object files together ... '
+  echo ' '
+fi
+
+#  ensure that package-dependent specification files are present
+
+if [[ ! -e ~/.galahad/specs ]] ; then
+  mkdir -p ~/.galahad/specs
+  chmod 755 -Rf ~/.galahad
+fi
+
+# assign the main program and ensure that a specfile is available
+
+# qp
+
+if [[ $2 == 'qp' ]]; then
+  RUNMAIN=$GALOBJ/runqp_sif.o
+  [[ ! -e ~/.galahad/specs/RUNQP.SPC ]] && $GALOBJ/buildspec qp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qp update
+  [[ ! -e RUNQP.SPC ]] && ln -s ~/.galahad/specs/RUNQP.SPC RUNQP.SPC
+
+# qpa
+
+elif [[ $2 == 'qpa' ]]; then
+  RUNMAIN=$GALOBJ/runqpa_sif.o
+  [[ ! -e ~/.galahad/specs/RUNQPA.SPC ]] && $GALOBJ/buildspec qpa
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpa update
+  [[ ! -e RUNQPA.SPC ]] && ln -s ~/.galahad/specs/RUNQPA.SPC RUNQPA.SPC
+
+# qpb
+
+elif [[ $2 == 'qpb' ]]; then
+  RUNMAIN=$GALOBJ/runqpb_sif.o
+  [[ ! -e ~/.galahad/specs/RUNQPB.SPC ]] && $GALOBJ/buildspec qpb
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpb update
+  [[ ! -e RUNQPB.SPC ]] && ln -s ~/.galahad/specs/RUNQPB.SPC RUNQPB.SPC
+
+# qpc
+
+elif [[ $2 == 'qpc' ]]; then
+  RUNMAIN=$GALOBJ/runqpc_sif.o
+  [[ ! -e ~/.galahad/specs/RUNQPC.SPC ]] && $GALOBJ/buildspec qpc
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpc update
+  [[ ! -e RUNQPC.SPC ]] && ln -s ~/.galahad/specs/RUNQPC.SPC RUNQPC.SPC
+
+# cqp
+
+elif [[ $2 == 'cqp' ]]; then
+  RUNMAIN=$GALOBJ/runcqp_sif.o
+  [[ ! -e ~/.galahad/specs/RUNCQP.SPC ]] && $GALOBJ/buildspec cqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec cqp update
+  [[ ! -e RUNCQP.SPC ]] && ln -s ~/.galahad/specs/RUNCQP.SPC RUNCQP.SPC
+
+# dqp
+
+elif [[ $2 == 'dqp' ]]; then
+  RUNMAIN=$GALOBJ/rundqp_sif.o
+  [[ ! -e ~/.galahad/specs/RUNDQP.SPC ]] && $GALOBJ/buildspec dqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec dqp update
+  [[ ! -e RUNDQP.SPC ]] && ln -s ~/.galahad/specs/RUNDQP.SPC RUNDQP.SPC
+
+# l1qp
+
+elif [[ $2 == 'l1qp' ]]; then
+  RUNMAIN=$GALOBJ/runl1qp_sif.o
+  [[ ! -e ~/.galahad/specs/RUNL1QP.SPC ]] && $GALOBJ/buildspec l1qp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec l1qp update
+  [[ ! -e RUNL1QP.SPC ]] && ln -s ~/.galahad/specs/RUNL1QP.SPC RUNL1QP.SPC
+
+# bqp
+
+elif [[ $2 == 'bqp' ]]; then
+  RUNMAIN=$GALOBJ/runbqp_sif.o
+  [[ ! -e ~/.galahad/specs/RUNBQP.SPC ]] && $GALOBJ/buildspec bqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec bqp update
+  [[ ! -e RUNBQP.SPC ]] && ln -s ~/.galahad/specs/RUNBQP.SPC RUNBQP.SPC
+
+# bqpb
+
+elif [[ $2 == 'bqpb' ]]; then
+  RUNMAIN=$GALOBJ/runbqpb_sif.o
+  [[ ! -e ~/.galahad/specs/RUNBQPB.SPC ]] && $GALOBJ/buildspec bqpb
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec bqpb update
+  [[ ! -e RUNBQPB.SPC ]] && ln -s ~/.galahad/specs/RUNBQPB.SPC RUNBQPB.SPC
+
+# dlp
+
+elif [[ $2 == 'dlp' ]]; then
+  RUNMAIN=$GALOBJ/rundlp_sif.o
+  [[ ! -e ~/.galahad/specs/RUNDLP.SPC ]] && $GALOBJ/buildspec dlp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec dlp update
+  [[ ! -e RUNDLP.SPC ]] && ln -s ~/.galahad/specs/RUNDLP.SPC RUNDLP.SPC
+
+# ccqp
+
+elif [[ $2 == 'ccqp' ]]; then
+  RUNMAIN=$GALOBJ/runccqp_sif.o
+  [[ ! -e ~/.galahad/specs/RUNCCQP.SPC ]] && $GALOBJ/buildspec ccqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec ccqp update
+  [[ ! -e RUNCCQP.SPC ]] && ln -s ~/.galahad/specs/RUNCCQP.SPC RUNCCQP.SPC
+
+# qpe
+
+elif [[ $2 == 'qpe' ]]; then
+  RUNMAIN=$GALOBJ/runqpe_sif.o
+  [[ ! -e ~/.galahad/specs/RUNQPE.SPC ]] && $GALOBJ/buildspec qpe
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpe update
+  [[ ! -e RUNQPE.SPC ]] && ln -s ~/.galahad/specs/RUNQPE.SPC RUNQPE.SPC
+
+# lpb
+
+elif [[ $2 == 'lpb' ]]; then
+  RUNMAIN=$GALOBJ/runlpb_sif.o
+  [[ ! -e ~/.galahad/specs/RUNLPB.SPC ]] && $GALOBJ/buildspec lpb
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpb update
+  [[ ! -e RUNLPB.SPC ]] && ln -s ~/.galahad/specs/RUNLPB.SPC RUNLPB.SPC
+
+# lpqp
+
+elif [[ $2 == 'lpqp' ]]; then
+  RUNMAIN=$GALOBJ/runlpqp.o
+  [[ ! -e ~/.galahad/specs/RUNLPQP.SPC ]] && $GALOBJ/buildspec lpqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpqp update
+  [[ ! -e RUNLPQP.SPC ]] && ln -s ~/.galahad/specs/RUNLPQP.SPC RUNLPQP.SPC
+
+# eqp
+
+elif [[ $2 == 'eqp' ]]; then
+  RUNMAIN=$GALOBJ/runeqp_sif.o
+  [[ ! -e ~/.galahad/specs/RUNEQP.SPC ]] && $GALOBJ/buildspec eqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec eqp update
+  [[ ! -e RUNEQP.SPC ]] && ln -s ~/.galahad/specs/RUNEQP.SPC RUNEQP.SPC
+
+# lls
+
+elif [[ $2 == 'lls' ]]; then
+  RUNMAIN=$GALOBJ/runlls_sif.o
+  [[ ! -e ~/.galahad/specs/RUNLLS.SPC ]] && $GALOBJ/buildspec lls
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lls update
+  [[ ! -e RUNLLS.SPC ]] && ln -s ~/.galahad/specs/RUNLLS.SPC RUNLLS.SPC
+
+# warm
+
+elif [[ $2 == 'warm' ]]; then
+  RUNMAIN=$GALOBJ/runwarm_sif.o
+  [[ ! -e ~/.galahad/specs/RUNWARM.SPC ]] && $GALOBJ/buildspec warm
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec warm update
+  [[ ! -e RUNWARM.SPC ]] && ln -s ~/.galahad/specs/RUNWARM.SPC RUNWARM.SPC
+
+# wcp
+
+elif [[ $2 == 'wcp' ]]; then
+  RUNMAIN=$GALOBJ/runwcp_sif.o
+  [[ ! -e ~/.galahad/specs/RUNWCP.SPC ]] && $GALOBJ/buildspec wcp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec wcp update
+  [[ ! -e RUNWCP.SPC ]] && ln -s ~/.galahad/specs/RUNWCP.SPC RUNWCP.SPC
+
+# miqr
+
+elif [[ $2 == 'miqr' ]]; then
+  RUNMAIN=$GALOBJ/runmiqr_sif.o
+  [[ ! -e ~/.galahad/specs/RUNMIQR.SPC ]] && $GALOBJ/buildspec miqr
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec miqr update
+  [[ ! -e RUNMIQR.SPC ]] && ln -s ~/.galahad/specs/RUNMIQR.SPC RUNMIQR.SPC
+
+# lcf
+
+elif [[ $2 == 'lcf' ]]; then
+  RUNMAIN=$GALOBJ/runlcf_sif.o
+  [[ ! -e ~/.galahad/specs/RUNLCF.SPC ]] && $GALOBJ/buildspec lcf
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lcf update
+  [[ ! -e RUNLCF.SPC ]] && ln -s ~/.galahad/specs/RUNLCF.SPC RUNLCF.SPC
+
+# pre
+
+elif [[ $2 == 'pre' ]]; then
+  RUNMAIN=$GALOBJ/runpre_sif.o
+  [[ ! -e ~/.galahad/specs/RUNPRE.SPC ]] && $GALOBJ/buildspec pre
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec pre update
+  [[ ! -e RUNPRE.SPC ]] && ln -s ~/.galahad/specs/RUNPRE.SPC RUNPRE.SPC
+
+# nls
+
+elif [[ $2 == 'nls' ]]; then
+  RUNMAIN=$GALOBJ/runnls_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNNLS.SPC ]] && $GALOBJ/buildspec nls
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec nls update
+  [[ ! -e RUNNLS.SPC ]] && ln -s ~/.galahad/specs/RUNNLS.SPC RUNNLS.SPC
+
+# nlso
+
+elif [[ $2 == 'nlso' ]]; then
+  RUNMAIN=$GALOBJ/runnlso_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNNLSO.SPC ]] && $GALOBJ/buildspec nlso
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec nlso update
+  [[ ! -e RUNNLS.SPC ]] && ln -s ~/.galahad/specs/RUNNLS.SPC RUNNLS.SPC
+
+# nlstr
+
+elif [[ $2 == 'nlstr' ]]; then
+  RUNMAIN=$GALOBJ/runnlstr_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNNLSTR.SPC ]] && $GALOBJ/buildspec nlstr
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec nlstr update
+  [[ ! -e RUNNLSTR.SPC ]] && ln -s ~/.galahad/specs/RUNNLSTR.SPC RUNNLSTR.SPC
+
+# nllstr_sparse_fix
+
+elif [[ $2 == 'nllstr_sparse_fix' ]]; then
+  RUNMAIN=$GALOBJ/nllstrma_sparse_fix.o
+
+# nllsrt
+
+elif [[ $2 == 'nllsrt' ]]; then
+  RUNMAIN=$GALOBJ/nllsrtma.o
+
+# filt
+
+elif [[ $2 == 'filtrane' ]]; then
+  RUNMAIN=$GALOBJ/runfiltrane_sif.o
+  [[ ! -e ~/.galahad/specs/RUNFILTRANE.SPC ]] && $GALOBJ/buildspec filtrane
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec filtrane update
+  [[ ! -e RUNFILTRANE.SPC ]] && \
+    ln -s ~/.galahad/specs/RUNFILTRANE.SPC RUNFILTRANE.SPC
+
+# superb
+
+elif [[ $2 == 'superb' ]]; then
+  RUNMAIN=$GALOBJ/runsuperb_sif.o
+  [[ ! -e ~/.galahad/specs/RUNSUPERB.SPC ]] && $GALOBJ/buildspec superb
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec superb update
+  [[ ! -e RUNSUPERB.SPC ]] && ln -s ~/.galahad/specs/RUNSUPERB.SPC RUNSUPERB.SPC
+
+# trs
+
+elif [[ $2 == 'trs' ]]; then
+  RUNMAIN=$GALOBJ/runtrs_sif.o
+  PROBLIB="-lgalahad_minpack"
+  [[ ! -e ~/.galahad/specs/RUNTRS.SPC ]] && $GALOBJ/buildspec trs
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec trs update
+  [[ ! -e RUNTRS.SPC ]] && ln -s ~/.galahad/specs/RUNTRS.SPC RUNTRS.SPC
+
+# tru
+
+elif [[ $2 == 'tru' ]]; then
+  RUNMAIN=$GALOBJ/runtru_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNTRU.SPC ]] && $GALOBJ/buildspec tru
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec tru update
+  [[ ! -e RUNTRU.SPC ]] && ln -s ~/.galahad/specs/RUNTRU.SPC RUNTRU.SPC
+
+# bgo
+
+elif [[ $2 == 'bgo' ]]; then
+  RUNMAIN=$GALOBJ/runbgo_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNBGO.SPC ]] && $GALOBJ/buildspec bgo
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec bgo update
+  [[ ! -e RUNBGO.SPC ]] && ln -s ~/.galahad/specs/RUNBGO.SPC RUNBGO.SPC
+
+# trb
+
+elif [[ $2 == 'trb' ]]; then
+  RUNMAIN=$GALOBJ/runtrb_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNTRB.SPC ]] && $GALOBJ/buildspec trb
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec trb update
+  [[ ! -e RUNTRB.SPC ]] && ln -s ~/.galahad/specs/RUNTRB.SPC RUNTRB.SPC
+
+# trace
+
+elif [[ $2 == 'trace' ]]; then
+  RUNMAIN=$GALOBJ/runtrace_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNTRACE.SPC ]] && $GALOBJ/buildspec trace
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec trace update
+  [[ ! -e RUNTRACE.SPC ]] && ln -s ~/.galahad/specs/RUNTRACE.SPC RUNTRACE.SPC
+
+# ugo
+
+elif [[ $2 == 'ugo' ]]; then
+  RUNMAIN=$GALOBJ/runugo_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNUGO.SPC ]] && $GALOBJ/buildspec ugo
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec ugo update
+  [[ ! -e RUNUGO.SPC ]] && ln -s ~/.galahad/specs/RUNUGO.SPC RUNUGO.SPC
+
+# ism
+
+elif [[ $2 == 'ism' ]]; then
+  RUNMAIN=$GALOBJ/runism_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNISM.SPC ]] && $GALOBJ/buildspec ism
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec ism update
+  [[ ! -e RUNISM.SPC ]] && ln -s ~/.galahad/specs/RUNISM.SPC RUNISM.SPC
+
+# sbls
+
+elif [[ $2 == 'sbls' ]]; then
+  RUNMAIN=$GALOBJ/runsbls_sif.o
+  [[ ! -e ~/.galahad/specs/RUNSBLS.SPC ]] && $GALOBJ/buildspec sbls
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec sbls update
+  [[ ! -e RUNSBLS.SPC ]] && ln -s ~/.galahad/specs/RUNSBLS.SPC RUNSBLS.SPC
+
+# sls
+
+elif [[ $2 == 'sls' ]]; then
+  RUNMAIN=$GALOBJ/runsls_sif.o
+  [[ ! -e ~/.galahad/specs/RUNSLS.SPC ]] && $GALOBJ/buildspec sls
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec sls update
+  [[ ! -e RUNSLS.SPC ]] && ln -s ~/.galahad/specs/RUNSLS.SPC RUNSLS.SPC
+
+# ermo
+
+elif [[ $2 == 'ermo' ]]; then
+  RUNMAIN=$GALOBJ/runermo_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNERMO.SPC ]] && $GALOBJ/buildspec ermo
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec ermo update
+  [[ ! -e RUNERMO.SPC ]] && ln -s ~/.galahad/specs/RUNERMO.SPC RUNERMO.SPC
+
+# rqs
+
+elif [[ $2 == 'rqs' ]]; then
+  RUNMAIN=$GALOBJ/runrqs_sif.o
+  [[ ! -e ~/.galahad/specs/RUNRQS.SPC ]] && $GALOBJ/buildspec rqs
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec rqs update
+  [[ ! -e RUNRQS.SPC ]] && ln -s ~/.galahad/specs/RUNRQS.SPC RUNRQS.SPC
+
+# arc
+
+elif [[ $2 == 'arc' ]]; then
+  RUNMAIN=$GALOBJ/runarc_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNARC.SPC ]] && $GALOBJ/buildspec arc
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec arc update
+  [[ ! -e RUNARC.SPC ]] && ln -s ~/.galahad/specs/RUNARC.SPC RUNARC.SPC
+
+# barc
+
+elif [[ $2 == 'barc' ]]; then
+  RUNMAIN=$GALOBJ/runbarc_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNBARC.SPC ]] && $GALOBJ/buildspec barc
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec barc update
+  [[ ! -e RUNBARC.SPC ]] && ln -s ~/.galahad/specs/RUNBARC.SPC RUNBARC.SPC
+
+# fastr
+
+elif [[ $2 == 'fastr' ]]; then
+  RUNMAIN=$GALOBJ/runfastr_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNFASTR.SPC ]] && $GALOBJ/buildspec fastr
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec fastr update
+  [[ ! -e RUNFASTR.SPC ]] && ln -s ~/.galahad/specs/RUNFASTR.SPC RUNFASTR.SPC
+
+# fisqp
+
+elif [[ $2 == 'fisqp' ]]; then
+  RUNMAIN=$GALOBJ/runfisqp_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNFISQP.SPC ]] && $GALOBJ/buildspec fisqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec fisqp update
+  [[ ! -e RUNFISQP.SPC ]] && ln -s ~/.galahad/specs/RUNFISQP.SPC RUNFISQP.SPC
+
+# funnel
+
+elif [[ $2 == 'funnel' ]]; then
+  RUNMAIN=$GALOBJ/runfunnel_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNFUNNEL.SPC ]] && $GALOBJ/buildspec funnel
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec funnel update
+  [[ ! -e RUNFUNNEL.SPC ]] && ln -s ~/.galahad/specs/RUNFUNNEL.SPC RUNFUNNEL.SPC
+
+# sqp
+
+elif [[ $2 == 'sqp' ]]; then
+  RUNMAIN=$GALOBJ/runsqp_sif.o
+  [[ ! -e ~/.galahad/specs/RUNSQP.SPC ]] && $GALOBJ/buildspec sqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec sqp update
+  [[ ! -e RUNSQP.SPC ]] && ln -s ~/.galahad/specs/RUNSQP.SPC RUNSQP.SPC
+
+# trimsqp
+
+elif [[ $2 == 'trimsqp' ]]; then
+  RUNMAIN=$GALOBJ/runtrimsqp_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNTRIMSQP.SPC ]] && $GALOBJ/buildspec trimsqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec trimsqp update
+  [[ ! -e RUNTRIMSQP.SPC ]] && \
+    ln -s ~/.galahad/specs/RUNTRIMSQP.SPC RUNTRIMSQP.SPC
+
+# s2qp
+
+elif [[ $2 == 's2qp' ]]; then
+  RUNMAIN=$GALOBJ/runs2qp_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNS2QP.SPC ]] && $GALOBJ/buildspec s2qp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec s2qp update
+  [[ ! -e RUNS2QP.SPC ]] && ln -s ~/.galahad/specs/RUNS2QP.SPC RUNS2QP.SPC
+
+# trtn
+
+elif [[ $2 == 'trtn' ]]; then
+  RUNMAIN=$GALOBJ/runtrtn_sif.o
+  [[ ! -e ~/.galahad/specs/RUNTRTN.SPC ]] && $GALOBJ/buildspec trtn
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec trtn update
+  [[ ! -e RUNTRTN.SPC ]] && ln -s ~/.galahad/specs/RUNTRTN.SPC RUNTRTN.SPC
+
+# lpsqpa
+
+elif [[ $2 == 'lpsqpa' ]]; then
+  RUNMAIN=$GALOBJ/runlpsqpa.o
+  [[ ! -e ~/.galahad/specs/RUNLPSQPA.SPC ]] && $GALOBJ/buildspec lpsqpa
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpsqpa update
+  [[ ! -e RUNLPSQP.SPC ]] && ln -s ~/.galahad/specs/RUNLPSQP.SPC RUNLPSQP.SPC
+
+# sha
+
+elif [[ $2 == 'sha' ]]; then
+  RUNMAIN=$GALOBJ/runsha_sif.o
+  [[ ! -e ~/.galahad/specs/RUNSHA.SPC ]] && $GALOBJ/buildspec sha
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec sha update
+  [[ ! -e RUNSHA.SPC ]] && ln -s ~/.galahad/specs/RUNSHA.SPC RUNSHA.SPC
+
+# fdh
+
+elif [[ $2 == 'fdh' ]]; then
+  RUNMAIN=$GALOBJ/runfdh_sif.o
+  [[ ! -e ~/.galahad/specs/RUNFDH.SPC ]] && $GALOBJ/buildspec fdh
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec fdh update
+  [[ ! -e RUNFDH.SPC ]] && ln -s ~/.galahad/specs/RUNFDH.SPC RUNFDH.SPC
+
+# lpsqp
+
+elif [[ $2 == 'lpsqp' ]]; then
+  RUNMAIN=$GALOBJ/runlpsqp.o
+  [[ ! -e ~/.galahad/specs/RUNLPSQP.SPC ]] && $GALOBJ/buildspec lpsqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpsqp update
+  [[ ! -e RUNLPSQP.SPC ]] && ln -s ~/.galahad/specs/RUNLPSQP.SPC RUNLPSQP.SPC
+
+# lstr
+
+elif [[ $2 == 'lstr' ]]; then
+  RUNMAIN=$GALOBJ/runlstr_sif.o
+  [[ ! -e ~/.galahad/specs/RUNLSTR.SPC ]] && $GALOBJ/buildspec lstr
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lstr update
+  [[ ! -e RUNLSTR.SPC ]] && ln -s ~/.galahad/specs/RUNLSTR.SPC RUNLSTR.SPC
+
+# lsrt
+
+elif [[ $2 == 'lsrt' ]]; then
+  RUNMAIN=$GALOBJ/runlsrt_sif.o
+  [[ ! -e ~/.galahad/specs/RUNLSRT.SPC ]] && $GALOBJ/buildspec lsrt
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lsrt update
+  [[ ! -e RUNLSRT.SPC ]] && ln -s ~/.galahad/specs/RUNLSRT.SPC RUNLSRT.SPC
+
+# l2rt
+
+elif [[ $2 == 'l2rt' ]]; then
+  RUNMAIN=$GALOBJ/runl2rt_sif.o
+  [[ ! -e ~/.galahad/specs/RUNL2RT.SPC ]] && $GALOBJ/buildspec l2rt
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec l2rt update
+  [[ ! -e RUNL2RT.SPC ]] && ln -s ~/.galahad/specs/RUNL2RT.SPC RUNL2RT.SPC
+
+# gltr
+
+elif [[ $2 == 'gltr' ]]; then
+  RUNMAIN=$GALOBJ/rungltr_sif.o
+  [[ ! -e ~/.galahad/specs/RUNGLTR.SPC ]] && $GALOBJ/buildspec gltr
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec gltr update
+  [[ ! -e RUNGLTR.SPC ]] && ln -s ~/.galahad/specs/RUNGLTR.SPC RUNGLTR.SPC
+
+# glrt
+
+elif [[ $2 == 'glrt' ]]; then
+  RUNMAIN=$GALOBJ/runglrt_sif.o
+  [[ ! -e ~/.galahad/specs/RUNGLRT.SPC ]] && $GALOBJ/buildspec glrt
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec glrt update
+  [[ ! -e RUNGLRT.SPC ]] && ln -s ~/.galahad/specs/RUNGLRT.SPC RUNGLRT.SPC
+
+#  lancelot_steering
+
+elif [[ $2 == 'lancelot_steering' ]]; then
+  RUNMAIN=$GALOBJ/runlancelot_steering_sif.o
+  [[ ! -e ~/.galahad/specs/RUNLANCELOT.SPC ]] && $GALOBJ/buildspec lancelot
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lancelot update
+  [[ ! -e RUNLANCELOT.SPC ]] && \
+    ln -s ~/.galahad/specs/RUNLANCELOT.SPC RUNLANCELOT.SPC
+  CUTESTLIB=""
+  LAPACKLIB=""
+
+#  lancelot b
+
+else
+# Default to LANCELOT B if necessary -
+# CUTEst and LAPACK are not needed in this case
+  RUNMAIN=$GALOBJ/runlancelot_sif.o
+  [[ ! -e ~/.galahad/specs/RUNLANCELOT.SPC ]] && $GALOBJ/buildspec lancelot
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lancelot update
+  [[ ! -e RUNLANCELOT.SPC ]] && \
+     ln -s ~/.galahad/specs/RUNLANCELOT.SPC RUNLANCELOT.SPC
+  CUTESTLIB=""
+  LAPACKLIB=""
+fi
+
+# See if there already is a decoded problem in the current directory
+# and make sure it is suitable for the required package
+
+if [ -e OUTSDIF.d ]; then
+  m=`head -2 OUTSDIF.d | tail -1 | ${SED} -e 's/^[ ]*//' | cut -c 1`
+  if [[ $2 == 'lancelot' || $2 == 'lancelot_steering' ]]; then
+    if [ "$m" == "3" ]; then
+      echo 'The decoded files in the current directory are not suitable'
+      echo 'for input to LANCELOT-B. Please re-run with sdgal'
+      exit 10
+    fi
+  else
+    if [ "$m" != "3" ]; then
+      echo 'The decoded files in the current directory are only suitable'
+      echo 'for input to LANCELOT-B. Please re-run with sdgal'
+      exit 10
+    fi
+  fi
+else
+  echo 'There does not appear to be a decoded problem in the current directory'
+  echo 'Please re-run with sdgal'
+fi
+
+#  create the executable
+
+#EXECUTABLE="$FORTRAN $FFLAGS -o $galmin $RUNMAIN $NSUB\
+# -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad\
+# $HSLLIB $SPRALLIB $PARDISOLIB $WSMPLIB $SUITESPARSELIB $METISLIB $LAPACKLIB\
+# $BLASLIB $PLPLOT"
+
+EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN $NSUB\
+ -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad\
+ $HSLLIB $SPRALLIB $PARDISOLIB $WSMPLIB $SUITESPARSELIB $METISLIB $LAPACKLIB\
+ $BLASLIB $PLPLOT $CUDALIBS"
+
+if [[ $OUTPUT == "1" ]]; then
+  echo " $EXECUTABLE"
+fi
+
+$EXECUTABLE
+
+[[ $PWD != $EXEC ]] && $MV $galmin $EXEC/$galmin
+
+#  run $galmin on the current test problem.
+
+if [[ $OUTPUT == "1" ]]; then
+  echo ' '
+  echo "running $2 on current test problem ... "
+  echo ' '
+fi
+
+#limit cputime $LIMIT
+ulimit -t $LIMIT
+if [[ $PROFILE == "1" ]]; then
+#  which pixie > /dev/null 2>&1
+  which gprof > /dev/null 2>&1
+  if [[ $? == "0" ]]; then
+#   atom $EXEC/$galmin -tool pixie -w0 -toolargs="-quiet" >  2>&1/dev/null
+#    pixie -quiet $EXEC/$galmin > /dev/null 2>&1
+#    $EXEC/$galmin.pixie
+#    prof -pixie -lines $EXEC/$galmin > $EXEC/$galmin.pixie.out
+#    $RM $EXEC/$galmin.pixie $EXEC/$galmin.Counts $EXEC/$galmin.Addrs
+       $EXEC/$galmin
+       gprof $EXEC/$galmin > profile.out
+  else
+    if [[ $OUTPUT == "1" ]]; then
+      echo 'no profiling available, sorry ... '
+      echo ' '
+    fi
+    $EXEC/$galmin
+  fi
+elif [[ $MEMCHECK == "1" ]]; then
+  which valgrind > /dev/null 2>&1
+  if [[ $? == "0" ]]; then
+    valgrind $VALGRIND $EXEC/$galmin
+  else
+    if [[ $OUTPUT == "1" ]]; then
+      echo 'no memory checking available, sorry ... '
+      echo ' '
+    fi
+    $EXEC/$galmin
+  fi
+else
+  $EXEC/$galmin
+fi
+
+#  tidy up the current directory, deleting all junk.
+
+[[ $KEEP == "0" ]] && $RM $EXEC/$galmin

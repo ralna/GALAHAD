@@ -1,0 +1,1472 @@
+%
+%   GALAHAD
+%   started        17 March 2002
+%   this version   24 April 2003
+%
+\documentclass[twoside]{article}
+\usepackage{psfig,repdefs,ral,equations}
+%\usepackage{psfig,repdefs,ral,equations,times,latexsym}
+
+\newcommand{\fwbox}[1]{\fbox{\rule[-0.1cm]{0cm}{0.35cm}#1}}
+\newcommand{\fwpbox}[1]{\fbox{\parbox{.44in}{#1}}}
+\newcommand{\fwpbbox}[1]{\fbox{\parbox{.95in}{#1}}}
+
+\textwidth  15.2cm 
+\textheight 21.5cm
+\oddsidemargin 0.0mm                      % -4.2 mm
+\evensidemargin 0.0cm
+\topmargin -8.4mm                          % 2.64 cm
+
+\renewcommand{\argminover}[1]{ {\renewcommand{\arraystretch}{0.8}
+                     \begin{array}[t]{c} 
+                     \mbox{arg min} \vspace*{-1mm} \\ \mbox{$\scriptstyle #1 $} 
+                     \end{array} } }
+\newcommand{\gal}{{\sf GALAHAD}}
+\newcommand{\lan}{{\sf LANCELOT}}
+\newcommand{\lana}{{\sf LANCELOT A}}
+\newcommand{\lanb}{{\sf LANCELOT B}}
+\newcommand{\cute}{{\sf CUTE}}
+\newcommand{\cuter}{{\sf CUTEr}}
+\newcommand{\sifdec}{{\sf SifDec}}
+\newcommand{\ltsubsection}[1]{\subsection{{\tt #1}} \label{#1}}
+\newcommand{\ltsubsubsection}[1]{\subsubsection{{\tt #1}} \label{#1}}
+\renewcommand{\itt}[1]{\item{{\tt #1}}}
+
+
+\newcommand{\paperauthor}{Nicholas I. M. Gould, Dominique Orban 
+and Philippe L. Toint}
+\newcommand{\papertitle}{\gal, a library of thread-safe Fortran 90 
+packages for large-scale nonlinear optimization}
+\newcommand{\shortpapertitle}{\gal, a library 
+for large-scale optimization}
+
+\pagestyle{myheadings}
+%\markboth{N. I. M. Gould, D. Orban \& Ph. L. Toint: 
+%\shortpapertitle}{Draft version ({\tt got2.tex}) - not for circulation}
+\markboth{\paperauthor}{\papertitle}
+
+\title{\papertitle}
+\author{\paperauthor}
+
+\newcommand{\theabstract}{We describe the
+design of version 1.0 of \gal, a library of Fortran 90 packages for 
+large-scale nonlinear optimization.
+The library particularly addresses quadratic programming problems,
+containing both interior point and active set algorithms, as well as
+tools for preprocessing problems prior to solution.
+It also contains an updated version of the venerable nonlinear
+programming package, \lan.}
+
+\begin{document}
+
+%\input{ralheader}
+
+% ====================== start of header ==================
+
+\begin{titlepage}
+
+\begin{flushright} {\large \bf RAL-TR-2002-014} \end{flushright}           
+\vspace*{-0.6 cm}
+\begin{flushright} {\large \bf (Revised)} \end{flushright}           
+\vspace*{0.2 cm}
+
+{\LARGE \bf
+\begin{center}
+\gal, a library of thread-safe Fortran 90 \\
+packages for large-scale nonlinear optimization
+\end{center}}
+\vspace*{0.1 cm}
+\begin{center}
+\mbox{} \\
+      Nicholas I. M. Gould$^{1,2}$,
+      Dominique Orban$^{3}$
+      and
+      Philippe L. Toint$^{4,5}$
+\\
+\end{center}
+
+\vspace{0.4cm}
+
+\begin{center}
+\parbox{\textwidth}{
+{
+{\bf  ABSTRACT \newline}
+\theabstract}
+}
+\end{center}
+
+\vspace{0.2 cm}
+
+\noindent \rule{\textwidth}{0.001in}
+\vspace{0.1 cm}
+
+{\small
+\begin{description}
+\item  $^1$ Computational Science and Engineering Department,
+       Rutherford Appleton Laboratory, 
+       Chilton, \\ Oxfordshire, OX11 0QX, England, EU. 
+       Email : n.gould@rl.ac.uk
+\item  $^2$ Current reports available from %\\
+       ``http://www.numerical.rl.ac.uk/reports/reports.html''.
+\item $^3$ ECE Department,  Northwestern University, Evanston Il 60208, USA. 
+       Email: orban@ece.northwestern.edu
+\item  $^4$ Department of Mathematics, University of Namur, 
+       61, rue de Bruxelles, B-5000 Namur, Belgium, EU. \\
+       Email : philippe.toint@fundp.ac.be
+\item  $^5$ Current reports available from %\\
+       ``ftp://thales.math.fundp.ac.be/pub/reports''.
+\end{description}
+}
+
+\vspace{0.6 cm}
+
+\noindent 
+Computational Science and Engineering Department
+\\
+Atlas Centre
+\\
+Rutherford Appleton Laboratory
+\\
+Oxfordshire OX11 0QX
+
+\vspace{0.1 cm}
+\noindent May 16, 2002 \hspace*{0.01cm} (revised \today).
+\vspace{0.5 cm}
+
+\noindent \rule{\textwidth}{0.001in}
+
+\vspace{0.2 cm}
+\noindent
+Categories and subject descriptors: G.4 (Mathematical Software). \\
+General terms: Algorithm design and analysis. \\
+Keywords and phrases: \gal, \lan, large-scale nonlinear optimization, 
+large-scale quadratic programming,
+Fortran 90.
+
+\end{titlepage}
+
+% Put in a table of contents
+
+%\pagenumbering{roman}
+%\tableofcontents
+%\newpage
+%\pagenumbering{arabic}
+
+% ====================== end of header ==================
+
+\setcounter{page}{1}
+\lsection{Introduction}
+
+We released our large-scale nonlinear programming package \lan\
+(\bciteb{ConnGoulToin92}) late in 1991. Over the intervening
+years, \lana\ has been used by a large number of people, both
+via free source downloads from our WWW sites
+and by means of the NEOS facility (\bciteb{CzyzMessMore98})
+from the Optimization Technology Center at
+Argonne National Laboratory and Northwestern University in the USA.
+It is fair to say that we (and others) recognised its limitations
+from the outset, and it has long been our goal eventually to provide 
+a suitable successor.
+
+\lana\ was written in Fortran 77. 
+Despite the widespread availability of good 
+Fortran~77 compilers, the limitations of the language, particularly
+the absence of standardised memory allocation facilities, proved to be
+a serious limitation, especially for large problems. 
+Work started in 1995 on a Fortran 90 implementation,
+particularly to take advantage of the new language's 
+memory manipulation features and array constructs, and by 1997 we had a 
+working prototype of the improved \lanb. We had chosen to stay with
+Fortran rather than C, say, partially because many of the package's 
+key (external) components, most especially the \citebb{hsl:2002}
+sparse matrix codes
+produced by our colleagues, are all Fortran based, and also because
+we believed (and still believe) Fortran 90 capable of providing
+all of the facilities we needed.
+
+Regrettably, at or around that time, a number of our colleagues 
+had started to release the results of comparative tests of their
+new codes---for instance SNOPT (\bciteb{gillmurrsaun02:siopt}),
+LOQO (\bciteb{VandShan99}), 
+KNITRO (\bciteb{ByrdHribNoce99:siopt}), and
+FilterSQP (\bciteb{FletLeyf02})---against \lana,
+and the results made frankly rather depressing reading for us
+(\bciteb{DolaMore00}, \bciteb{BensShanVand01}, and \bciteb{Chin01}), \lan\
+often, but far from always, being significantly outperformed. 
+Quite clearly, the promise always held for large-scale 
+sequential quadratic programming (SQP) methods,
+based on how they outperformed other techniques in comparative tests
+such as those due to \cite{HockSchi81}, was now being realised, and the 
+limit of what might be achieved by augmented Lagrangian methods
+such as \lana\ had probably been reached.
+
+Reluctantly, we abandoned any plans to release \lanb\ at that time, and turned
+our attention instead to SQP methods. To our minds, there had never
+really been much doubt that SQP methods would be more successful in the
+long term, but there had been  general concerns over 
+how to solve (approximately) their all-important (large-scale) quadratic 
+programming (QP) subproblems. Thus, we decided that our next goal
+should be to produce high-quality QP codes for eventual incorporation 
+in our own SQP algorithm(s). Since we believe that there might
+be considerable interest from others in such codes, we have decided to release
+these before we have finalised our SQP solver(s). And since we realised that
+far from producing a single package, we are now in effect building a 
+library of independent but inter-related packages, we have chosen to
+release an (evolving) large-scale nonlinear optimization library, \gal.
+
+In some sense \gal\ Version 1.0 is a stop-gap, since, although
+it includes the upgraded B version of \lan, we doubt seriously whether 
+\lanb\ is a state-of-the-art solver for general nonlinear programming
+problems. What \gal\ V1.0 does provide are the quadratic programming solvers
+and related tools that we anticipate will allow us to develop the 
+next-generation SQP solvers 
+we intend to introduce in Version 2 of the library.
+
+%In this paper, we describe the scope and content of \gal.
+
+\lsection{Library contents}
+
+Each package in \gal\ is written as a Fortran 90 module, and the codes
+are all threadsafe. The default
+precision for real arguments is double, but this is easily transformed
+to single in a UNIX environment using provided {\tt sed} scripts. 
+Each package has accompanying
+documentation and a test program. The latter attempts to execute as 
+much of the package as
+realistically possible. (The fact that some of the packages are
+intended for nonlinear problems makes it difficult to ensure that
+every statement is executed, since some segments of code are
+intended to cope with pathological behaviour that cannot be ruled out
+in theory but nevertheless seems never to occur in practice.)
+Options to packages may be passed both directly, through subroutine arguments,
+and indirectly, via option-specification files. The second mechanism is
+particularly useful when there is a hierarchy of packages for which
+a user wishes to change an option for one of the dependent packages without
+recompilation.
+
+\lsubsection{Overview}
+
+\gal\ comprises the following major packages:
+
+\begin{description}
+
+\itt{LANCELOT B} is a sequential augmented Lagrangian method for 
+minimizing a (nonlinear) objective subject to general (nonlinear) constraints
+and simple bounds.
+
+\itt{QPB} is a primal-dual interior-point trust-region method for 
+minimizing a general quadratic objective function over a polyhedral region.
+
+\itt{QPA} is an active/working-set method for 
+minimizing a general quadratic objective function over a polyhedral region.
+
+\itt{LSQP} is an interior-point method for minimizing a linear or 
+separable convex quadratic function over a polyhedral region.
+
+\itt{PRESOLVE} is a method for preprocessing linear and quadratic programming 
+problems prior to solution by other packages.
+
+\itt{GLTR} is a method for minimizing a general quadratic objective function 
+over the interior or boundary of a (scaled) hyper-sphere.
+
+\itt{SILS} provides an interface to the HSL sparse-matrix package {\tt MA27} 
+that is functionally equivalent to the more recent HSL package {\tt HSL\_MA57}.
+
+\itt{SCU} uses a Schur complement update to find the solution of 
+a sequence of linear systems for which the solution
+involving a leading sub-matrix may be found by other means.
+
+\end{description}
+In addition, \gal\ contains the following auxiliary packages:
+
+\begin{description}
+
+\itt{QPP} reorders linear and quadratic programming 
+problems to a convenient form prior to solution by other packages.
+
+\itt{QPT} provides a derived type for holding linear and quadratic programming 
+problems.
+
+\itt{SMT} provides a derived type for holding sparse matrices in a variety of
+formats.
+
+\itt{SORT} gives implementations of both Quick-sort and Heap-sort methods.
+
+\itt{RAND} provides pseudo-random numbers.
+
+\itt{SPECFILE} allows users to provide options to other packages, using lists
+of keyword-value pairs given in package-dependent option-specification files.
+
+\itt{SYMBOLS} assigns values to a list of commonly used \gal\ variables.
+
+\end{description}
+
+\subsection{Details of major \gal\ packages\label{major}}
+
+\subsubsection{{\tt LANCELOT B}\label{lanb}}
+
+\lana\ is fully described in \citebb{ConnGoulToin92}, and the results
+of comprehensive tests are given in \citebb{ConnGoulToin96a}.
+The enlivened \lanb\ offers a number of improvements over its predecessor.
+New features include
+\begin{itemize}
+\item automatic allocation of workspace,
+\item a non-monotone descent strategy (see \bciteb{Toin96b}, and 
+\bciteb{ConnGoulToin00}, \S10.1) to be used by default,
+\item optional use of \citebb{MoreTora91}-type projections 
+   (see also \bciteb{LinMore99b}) 
+   during the subproblem solution phase,
+\item an interface to \citebbs{LinMore99} public domain incomplete Cholesky 
+   factorization package ICFS for use as a preconditioner,
+\item optional use of structured trust regions to model 
+   structured problems better (see \bciteb{ConnGoulSartToin96a}, and
+   \bciteb{ConnGoulToin00}, \S10.2),
+\item more flexibility over the choice of derivatives, which need
+   only be provided for a subset of the element functions from which the 
+   problem is built, the remainder being estimated by differences or secant 
+   approximations.  
+\end{itemize}
+The main reason for extending \lan's life is as a prototype
+for what may be achieved using Fortran 90/95 in preparation for 
+future \gal\ SQP solvers, since the problem data structure and
+interface is unlikely to change significantly.
+
+To illustrate the effects of the new features, 
+both \lana\ and  \lanb\ (using a number of new options)
+were run on all the examples (except linear and quadratic programs) from
+the \cuter\ test set (\bciteb{GoulOrbaToin02b}). The \cuter\ 
+set differs from its predecessor
+in \cute\ (\bciteb{BongConnGoulToin95})
+both in the number of problems and by virtue of a long-overdue
+increase in default dimensions for all variable-dimensional problems.  
+The options new to \lanb\ that we considered were as follows:
+\begin{itemize}
+%\begin{enumerate}
+\item The default: a non-monotone descent strategy with a
+history length of 1, a band preconditioner with semi-bandwidth 5, 
+and exact second derivatives.
+\item The default, except that a monotone descent strategy is used.
+\item The default, except that SR1 approximations to the second derivatives
+are used.
+\item The default, except that the \citebbs{LinMore99} incomplete Cholesky 
+   factorization preconditioner, ICFS, with 5 extra work vectors, is used.
+\item The default, except that the \citebb{MoreTora91} projected search,
+with 5 restarts is used.
+\item The default, except that a structured trust region
+   (\bciteb{ConnGoulSartToin96a}) is used.
+\item The default, except that the history length for the 
+non-monotone descent strategy is increased to 5.
+%\end{enumerate}
+\end{itemize}
+\lana\ was run with its defaults, since an exhaustive test
+of other \lana\ options has already been performed 
+(\bciteb{ConnGoulToin96a}).
+
+In Figure~\ref{prof.ps}
+the performance profiles (\bciteb{DolaMore01}) for the CPU time
+(in seconds) and the numbers of function evaluations  
+from these tests are reported. All experiments were performed 
+on a single processor of a Compaq AlphaServer DS20 with 3.5 Gbytes of RAM,
+using the Compaq f90 compiler with full machine-specific optimization.
+Runs were regarded as unsuccessful (and terminated) if they reached 
+30 minutes CPU time or 10000 function evaluations.
+Of the 749 problems thus considered (and for the best of the 
+options), 151 (roughly 20\%) 
+were terminated for that reason or because
+the evaluation of problem functions led to floating-point exceptions. Of
+those requiring more than 30 minutes/10000 calls, most could ultimately 
+be solved by increasing the CPU and iteration limits.
+\begin{figure}[htbp]
+\centerline{\psfig{figure=time.ps,height=10.0cm,silent=}
+}\centerline{
+            \psfig{figure=its.ps,height=10.0cm,silent=}}
+\caption{Performance profile for LANCELOT options: CPU times (top)
+and number of function evaluations (bottom). The horizontal axis
+gives the argument $\sigma$, while the vertical axis records $p_i(\sigma)$ 
+for each of the competing options, $i$.}
+\label{prof.ps}
+\end{figure}
+
+Suppose that a given algorithm $i$ from a competing set $\calA$
+reports a statistic $s_{ij} \geq 0$ 
+when run on example $j$ from our test set $\calT$,
+and that the smaller this statistic the better the algorithm is considered.
+Let 
+\disp{k(s,s^*,\sigma) = 
+ \left\{ 
+\begin{array}{rl}
+ 1 & \mbox{if} \;\; s \leq \sigma s^* \\ 0 & \mbox{otherwise.}
+\end{array} 
+\right.
+}
+Then, the {\em performance profile} of algorithm $i$ is the function 
+\disp{p_i(\sigma) = \frac{ 
+\sum_{j \in \calT} k(s_{i,j},s^*_{j},\sigma)}{|\calT|} \;\;\mbox{with}\;\; 
+\sigma \geq 1,}
+where $s^*_j = \min_{i \in \calA} s_{ij}$.
+Thus $p_i(1)$ gives the fraction of the number of examples for which 
+algorithm $i$ was the most effective (according to statistics $s_{ij}$),
+$p_i(2)$ gives 
+the fraction for which algorithm $i$ 
+is within a factor of 2 of the best, and $\lim_{\sigma\longrightarrow\infty}
+p_i(\sigma)$ gives the fraction of examples for which the algorithm
+succeeded. We consider such a profile to be a very effective means
+of comparing algorithms and (in this case)
+the relative merits of the new options available in \lanb.
+
+The benefits of the non-monotone strategy
+are apparent in terms of both CPU time and function evaluation reductions.
+Likewise, the Lin-Mor\'{e} (for function evaluations) 
+and Mor\'{e}-Toraldo (for CPU time) options both prove to be advantageous.
+In addition, we are pleased to see that 
+the best of the new options show some gain with respect to 
+\lana, particularly as we were initially concerned that moving from 
+Fortran 77 to 90 might give rise to some performance penalties.
+The only new option that we are disappointed with is the use of a
+structured trust region, and, on the basis of these tests, 
+we cannot really recommend this strategy. The full set of results
+are available as an internal report (\bciteb{goulorbatoin02c}).
+
+\ltsubsubsection{QPB}
+
+The module {\tt QPB} is an implementation of a primal-dual 
+feasible interior-point trust-region method for quadratic programming.
+
+To set the scene, the {\em quadratic programming} problem is to
+\eqn{1.2}{\minin{x \in \smallRe^n} q(x) \equiv 
+\half x^T H x + g^T x}
+subject to the general linear constraints
+\eqn{1.3}{c_{i}^{l}  \leq  a_{i}^{T}x  \leq  c_{i}^{u}, \;\;\; 
+ i = 1, \ldots , m,}
+and the simple bound constraints
+\eqn{1.4}{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; 
+ j = 1, \ldots , n,}
+for given
+vectors $g$, $a_{i}$, $c^{l}$, $c^{u}$, $x^{l}$, $x^{u}$ 
+and a given symmetric (but not necessarily definite) matrix $H$. Equality 
+constraints and fixed variables are allowed by setting
+$c_{i}^{u} = c_{i}^{l}$ and $x_{j}^{u} = x_{j}^{l}$ as required,
+and any or all of the constraint bounds may be infinite.
+The required solution $x$ to \req{1.2}--\req{1.4} satisfies 
+the primal optimality conditions
+\eqn{4.1a}{A x = c}
+and 
+\eqn{4.1b}{
+ c^{l} \leq c \leq c^{u}, \;\;
+x^{l} \leq x \leq x^{u},}
+the dual optimality conditions
+\eqn{4.2a}{
+ H x + g =
+ A^{T} y + z,\;\;
+ y = y^{l} + y^{u} \tim{and}
+ z = z^{l} + z^{u} ,}
+and 
+\eqn{4.2b}{
+ y^{l} \geq 0 , \;\;
+ y^{u} \leq 0 , \;\;
+ z^{l} \geq 0 \;\; \mbox{and} \;\;
+ z^{u} \leq 0 ,}
+and the complementary slackness conditions 
+\eqn{4.3}{
+( A x - c^{l} )^{T} y^{l} = 0  ,\;\;
+( A x - c^{u} )^{T} y^{u} = 0  ,\;\;
+(x -x^{l} )^{T} z^{l} = 0   \tim{and}
+(x -x^{u} )^{T} z^{u} = 0 ,}
+where $c$ is an additional vector of primal variables,
+the vectors $y$ and $z$ are Lagrange multipliers for
+the general linear constraints and the dual variables for the bounds,
+respectively, and where the vector inequalities hold componentwise.
+
+Primal-dual interior-point methods iterate towards a point
+that satisfies the optimality conditions \req{4.1a}--\req{4.3}
+by ultimately aiming to satisfy
+\req{4.1a}, \req{4.2a} and \req{4.3}, while ensuring that 
+\req{4.1b} and \req{4.2b} are 
+satisfied as strict inequalities at each stage. 
+Appropriate norms of the amounts by 
+which \req{4.1a}, \req{4.2a} and \req{4.3} fail to be satisfied are known as the
+primal and dual infeasibility, and the violation of complementary slackness,
+respectively. The fact that \req{4.1b} and \req{4.2b} are satisfied as strict 
+inequalities gives such methods their name, interior-point methods.
+
+The problem is solved in two phases. The goal of the first 
+``initial feasible point'' phase is
+to find a strictly interior point that is primal feasible (satisfies
+\req{4.1a}). The \gal\ package {\tt LSQP} (see \S\ref{LSQP})
+is used for this purpose, and offers the options of either accepting the first 
+strictly feasible point found, or preferably of aiming for the
+so-called ``analytic center'' of the feasible region.
+Given such a suitable initial feasible point, the second ``optimality''
+phase ensures that \req{4.1a} remains satisfied while iterating to
+satisfy dual feasibility \req{4.2a} and complementary slackness \req{4.3}.
+It proceeds by approximately minimizing a 
+sequence of barrier functions
+\disp{q(x) - \mu \left[ \sum_{i=1}^{m} \log ( c_{i}  -  c_{i}^{l} )
+ + \sum_{i=1}^{m} \log ( c_{i}^{u}  -  c_{i} )
+ + \sum_{j=1}^{n} \log ( x_{j}  -  x_{j}^{l} ) 
+ + \sum_{j=1}^{n} \log ( x_{j}^{u}  -  x_{j} ) \right] ,}
+for an appropriate sequence of positive barrier parameters $\mu$ 
+converging to zero,
+while ensuring that \req{4.1a} remains satisfied and that 
+$x$ and $c$ are strictly interior points for \req{4.1b}. 
+Note that terms in the above summations corresponding to infinite bounds are
+ignored, and that equality constraints are treated specially.
+
+Each of the barrier subproblems is solved using a trust-region method.
+Such a method generates a trial correction step $(\delta x, \delta c)$
+to the current iterate $(x, c)$
+by replacing the nonlinear barrier function locally by a suitable 
+quadratic model, and approximately minimizing this model in the 
+intersection of \req{4.1a}
+and a trust region $\|( \delta x,  \delta c)\| \leq \Delta$
+for some appropriate
+positive trust-region radius $\Delta$ and norm $\| \cdot \|$.
+The step is accepted/rejected
+and the radius adjusted on the basis of how accurately the model reproduces the
+value of the barrier function at the trial step. If the step proves to be 
+unacceptable, a linesearch is performed along the step to obtain an acceptable 
+new iterate. In practice, the natural primal ``Newton'' model of the barrier 
+function is almost always 
+less successful than an alternative primal-dual model, 
+and consequently the primal-dual model is usually to be preferred.
+
+The trust-region subproblem is approximately solved using the 
+combined conjugate-gradient/Lan\-czos method (see \bciteb{GoulHribNoce98} and
+\bciteb{GoulLuciRomaToin99:siopt}) implemented in the \gal\ module {\tt GLTR}
+(see \S\ref{GLTR}).
+Such a method requires a suitable preconditioner,
+and in our case, the only flexibility we have is in approximating the
+model of the Hessian. Although using a fixed form of preconditioning is
+sometimes effective, we have provided the option of an automatic choice
+that aims to balance the cost of applying the preconditioner against
+the need for an accurate solution of the trust-region subproblem. 
+The preconditioner is applied using the \gal\ factorization package
+{\tt SILS} (see \S\ref{SILS})---or optionally using {\tt HSL\_MA57} 
+from HSL if this is available---but options at this stage are
+to factorize the preconditioner as a whole (the so-called ``augmented system''
+approach) or to perform a block elimination first (the ``Schur-complement''
+approach). The latter is usually to be preferred when a (non-singular) diagonal 
+preconditioner is used, but may be inefficient if any of the columns
+of $A$ is too dense.
+
+The theoretical justification of the
+overall scheme, for problems with general objectives and 
+inequality constraints, 
+is given by \citebb{ConnGoulOrbaToin00:mp}, in which we also present
+numerical results that suggest it is indeed able to solve 
+some problems of the size we had been aiming for. 
+More recently, we investigated the ultimate rate of convergence
+of such schemes, and have shown that, under fairly general conditions, 
+a componentwise superlinear rate is achievable for both quadratic and general 
+nonlinear programs (\bciteb{GoulOrbaSartToin01}).
+
+Full advantage is taken of any zero elements in the matrix $H$ or the
+vectors $a_{i}$.
+An older version of {\tt QPB} (using {\tt HSL\_MA57} rather than {\tt SILS},
+see \S\ref{SILS}, but without some of the most recent features in {\tt QPB})
+is available commercially as {\tt HSL\_VE12} within HSL.
+
+\ltsubsubsection{QPA}
+
+The module {\tt QPA} is an implementation of a second approach
+to quadratic programming, this time of the active/working set variety.
+{\tt QPA} is primarily intended within \gal\ to deal with the case 
+where a good
+estimate of the optimal active set has been determined (so that
+relatively few iterations will be required). The method is actually more
+general in scope, and is geared toward solving
+{\em $\mathbf{\ell_1}$-quadratic programming} problems of the form
+\eqn{1.1}{\minin{x \in \smallRe^n} m(x, \rho_g, \rho_b ) \eqdef
+q(x) + \rho_g v_g(x) + \rho_b v_b(x)}
+involving the quadratic objective $q(x)$ and the infeasibilities
+\disp{v_g(x) = 
+   \sum_{i=1}^{m} \max ( c_{i}^{l} - a_i^T x, 0 )
+ + \sum_{i=1}^{m} \max ( a_i^T x - c_{i}^{u}, 0 )}
+and
+\disp{v_b(x) = 
+   \sum_{j=1}^{n} \max ( x_{j}^{l} - x_{j}  , 0 )
+ + \sum_{j=1}^{n} \max ( x_{j}  - x_{j}^{u} , 0 ) .}
+
+At the $k$-th iteration of the method, an improvement to the value
+of the merit function $m(x, \rho_g, \rho_b )$ 
+at $x = x^{(k)}$ is sought. This is achieved by first 
+computing a search direction $s^{(k)}$
+and then setting $x^{(k+1)} = x^{(k)} + \alpha^{(k)} s^{(k)}$,
+where the stepsize $\alpha^{(k)}$ is chosen as the first local minimizer of 
+$\phi ( \alpha ) = m( x^{(k)} + \alpha s^{(k)} , \rho_g, \rho_b )$
+as $\alpha$ increases from zero. 
+The stepsize calculation is straightforward, and exploits the fact that
+$\phi ( \alpha )$ is a piecewise quadratic function of $\alpha$.
+
+The search direction is defined by a subset of the ``active'' terms in 
+$v(x)$, i.e., those for which 
+$a_i^T x = c_i^l$ or $c_i^u$ (for $i=1,\ldots ,m$) or 
+$x_j = x_j^l$ or $x_j^u$ (for $j=1,\ldots ,n$).
+The ``working set'' $W^{(k)}$ is chosen as the intersection of 
+subsets of indices $i$ and $-j$ from the active terms, and is such 
+that its members have linearly independent gradients. 
+The search direction $s^{(k)}$ is chosen as an approximate solution of 
+the equality-constrained quadratic program
+\eqn{4.1}{\minin{s \in \smallRe^n} 
+m\s{Q}(s) \eqdef q(x^{(k)} + s) + 
+ \rho_g l_g^{(k)} (s) + \rho_b l_b^{(k)} (s),}
+subject to 
+\eqn{4.2}{a_i^T s = 0,\;\;  i \in \{ 1, \ldots , m \} \cap W^{(k)},
+\tim{and}
+x_j = 0, \;\;  - j  \in \{-1, \ldots , -n \} \cap W^{(k)},}
+where
+\disp{l_g^{(k)} (s) = 
+     - \sum_{\stackrel{i=1}{a_i^T x < c_i^l}}^m a_i^T s 
+    \; + \sum_{\stackrel{i=1}{a_i^T x > c_i^u}}^m a_i^T s}
+and
+\disp{l_b^{(k)} (s) = 
+    - \sum_{\stackrel{j=1}{x_j < x_j^l}}^n s_j
+    \; + \sum_{\stackrel{j=1}{x_j > x_j^u}}^n s_j .}
+The equality-constrained quadratic program \req{4.1}--\req{4.2} is solved by
+a projected preconditioned conjugate gradient 
+method (see \bciteb{GoulHribNoce98}). The method terminates
+if the solution is found, or if a pre-specified iteration limit is reached,
+or if a direction of infinite descent is located, along which $m\s{Q}(s)$
+decreases without bound within the feasible region \req{4.2}.
+Successively more accurate approximations are required as suspected 
+solutions of \req{1.1} are approached.
+
+Preconditioning of the conjugate gradient iteration
+requires the solution of one or more linear systems of the form
+\eqn{4.3a}{\mat{cc}{M^{(k)} & A^{(k)T} \\ A^{(k)} & 0 }
+\vect{ p \\ u} = \vect{ g \\ 0 },}
+where $M^{(k)}$ is a ``suitable'' approximation to $H$
+and the rows of $A^{(k)}$ comprise the gradients of the
+terms in the current working set. Rather than recomputing a
+factorization of the preconditioner at every iteration, we use a
+Schur complement method, recognising the fact that
+gradual changes occur to successive working sets. The main
+iteration is divided into a sequence of ``major'' iterations.
+At the start of each major iteration (say, the overall iteration $l$), 
+a factorization of the
+current ``reference'' matrix
+\eqn{4.4}{\mat{cc}{M^{(l)} & A^{(l)T} \\ A^{(l)} & 0 }}
+is obtained using  the \gal\ factorization package
+{\tt SILS} (see \S\ref{SILS})---or, once again, 
+optionally using {\tt HSL\_MA57} from HSL if this is available.
+This reference matrix may be factorized as a whole (the
+augmented system approach). Alternatively, systems involving \req{4.4} may 
+be solved by performing a block elimination of $p$ 
+and then factorizing $A^{(l)} M^{(l)-1} A^{(l)T}$
+(the ``Schur-complement'' approach). The latter is usually to be preferred 
+when a (non-singular) diagonal 
+preconditioner is used, but may be inefficient if any of the columns
+of $A^{(l)}$ is too dense.
+Subsequent iterations within the current major
+iteration obtain solutions to \req{4.3a} via the factors of \req{4.4}
+and an appropriate (dense) Schur complement,
+obtained from {\tt SCU} in \gal\ (see \S\ref{SCU}).
+The major iteration terminates
+once the space required to hold the factors of the (growing) Schur
+complement exceeds a given threshold.
+
+The working set changes by (a) 
+the addition of an active term encountered during 
+the determination of the stepsize, or (b) the removal of a term if $s = 0$
+solves \req{4.1}--\req{4.2}. The  decision on which to remove in the latter 
+case is based upon the expected decrease upon the removal of an individual term,
+and this information is available from the magnitude and sign of the components
+of the auxiliary vector $u$ computed in \req{4.3a}. At optimality, the
+components of $u$ for $a_i$ terms will all lie between 
+$0$ and $\rho_g$---and those for the other terms 
+between $0$ and $\rho_b$---and any violation
+of this rule indicates further progress is possible. 
+%The components
+%of $u$ corresponding to the terms involving $a_i^T x$
+%are sometimes known as Lagrange multipliers (or generalized gradients) and
+%denoted by $y$, while those for the remaining $x_j$ terms are dual variables
+%and denoted by $z$.
+
+To solve quadratic programs of the form \req{1.2}--\req{1.4}, 
+a sequence of problems of the form \req{1.1} are
+solved, each with a larger value of $\rho_g$ and/or $\rho_b$ 
+than its predecessor. The
+required solution has been found once the infeasibilities 
+$v_g(x)$ and $v_b(x)$ have been reduced to zero at the solution of 
+\req{1.1} for the given $\rho_g$ and $\rho_b$.
+
+Having proposed and implemented two very different quadratic programming
+methods, one might ask: how do the methods compare? We examined
+this question in \citebb{GoulToin01c} by comparing {\tt QPA} and {\tt QPB}
+on the \cuter\ QP test set (\bciteb{GoulOrbaToin02b}).
+
+While for modest sized problems, started from ``random'' points, the two
+methods are roughly comparable, the advantages of the interior-point approach
+become quite clear when problem dimensions increase. For problems involving
+tens of thousands of unknowns and/or constraints, our active set approach
+simply takes too many iterations, while the number of iterations 
+required by the interior point approach seems relatively insensitive to 
+problem size. For general problems involving hundreds of thousands or
+even millions of unknowns/constraints, the active set approach is impractical,
+while we illustrate in Table~\ref{figa} that
+{\tt QPB} is able to solve problems of this size.
+{\tt QPB} also appears to scale well with dimension, as can be seen 
+see in Table~\ref{figb}.
+
+\begin{table}[ht]
+%\begin{table}[h]
+\begin{center}
+\begin{tabular}[c]{|lrrc|rr|}
+\hline
+%          &      &  &    & \multicolumn{2}{c|}{QPB} \\
+Name      & $n$ & $m$ & type & its & time\, \\
+%\hline
+%{\tt GOULDQP2}  & 200001 & 100000 & C &  17  & {52} \\
+%{\tt GOULDQP3}  & 200001 & 100000 & C &  46  & {154} \\
+\hline
+{\tt QPBAND}  & 100000 & 50000  & C &   13  & {157} \\
+{\tt QPBAND}  & 200000 & 100000 & C &   17  & {1138} \\
+{\tt QPBAND}  & 400000 & 200000 & C &   17  & {2304} \\
+{\tt QPBAND}  & 500000 & 250000 & C &   17  & {2909} \\
+\hline
+{\tt QPNBAND}  & 100000 & 50000  & NC &   12  & {32} \\
+{\tt QPNBAND}  & 200000 & 100000 & NC &   13  & {71} \\
+{\tt QPNBAND}  & 400000 & 200000 & NC &   14  & {156} \\
+{\tt QPNBAND}  & 500000 & 250000 & NC &   13  & {181} \\
+\hline
+\end{tabular}
+\end{center}
+\caption{\label{figa} {\tt QPB} on large QP examples.
+Runs performed on a Compaq AlphaServer DS20 (3.5 Gbytes RAM),
+time in CPU seconds. $n$ is the number of unknowns, and 
+$m$ is the number of general constraints. 
+C indicates a convex problem, while NC is a convex one.
+Note that the factorization for {\tt QPBAND} fills in 
+considerably more than that for {\tt QPNBAND}, and this
+accounts for the significantly higher CPU times.}
+\end{table}
+
+\begin{table}[htb]
+%\begin{table}[b]
+\begin{center}
+\begin{tabular}[c]{|lrrc|rr|}
+\hline
+%          &      &  &    & \multicolumn{2}{c|}{QPB} \\
+Name      & $n$ & $m$ & type & its & time\, \\
+\hline
+{\tt PORTSQP}  & 10 & 1  & C & 11    & {0.02} \\
+{\tt PORTSQP}  & 100 & 1  & C &  15   & {0.03} \\
+{\tt PORTSQP}  & 1000 & 1  & C &  26   & {0.09} \\
+{\tt PORTSQP}  & 10000 & 1  & C &  37   & {1.26} \\
+{\tt PORTSQP}  & 100000 & 1  & C &  20   & {9.48} \\
+{\tt PORTSQP}  & 1000000 & 1  & C &  11   & {72.31} \\
+\hline
+{\tt PORTSNQP}  & 10 & 2  & NC & 21    & {0.03} \\
+{\tt PORTSNQP}  & 100 & 2  & NC &  30   & {0.04} \\
+{\tt PORTSNQP}  & 1000 & 2  & NC &  39   & {0.17} \\
+{\tt PORTSNQP}  & 10000 & 2  & NC &  32   & {1.70} \\
+{\tt PORTSNQP}  & 100000 & 2  & NC &  107   & { 58.69} \\
+{\tt PORTSNQP}  & 1000000 & 2  & NC &  22   & {209.53} \\
+\hline
+\end{tabular}
+\end{center}
+\caption{\label{figb} How {\tt QPB} scales with dimension.
+Notation as for Table~\ref{figa}.}
+\end{table}
+
+While such figures might seem to indicate that {\tt QPB} should always
+be preferred to {\tt QPA}, this is not the case. In particular, if a
+good estimate of the solution---more particularly, the optimal active 
+set---is known, active-set methods may exploit this, 
+while interior-point methods
+are (currently) less able to do so. In particular
+\citebb{GoulToin01c} illustrate that {\tt QPA} often outperforms {\tt QPB}
+on warm-started problems unless the problem is (close to) degenerate or
+very ill conditioned. Thus, since nonlinear optimization (SQP) algorithms 
+often solve a sequence of related problems for which the optimal active sets
+are almost or actually identical, there is good reason to maintain both
+{\tt QPA} and {\tt QPB} in \gal.
+
+An enhanced version of {\tt QPA} (using {\tt HSL\_MA57} rather than {\tt SILS},
+see \S\ref{SILS}) is available commercially as {\tt HSL\_VE19} within HSL.
+
+\ltsubsubsection{LSQP}
+
+{\tt LSQP} is an interior-point method for minimizing a linear or 
+separable convex quadratic function 
+\disp{\mbox{minimize}\;\; \half {\sum_{i=1}^n w_i^2 
+ ( x_{i}^{ } - x_{i}^{0} )^{2}} + g^T x,}
+for given weights $w$ and gradient $g$, 
+over the polyhedral region \req{1.3}--\req{1.4}.
+In the special case where $w = 0$ and $g = 0$
+the so-called analytic center of the feasible set will be found,
+while linear programming, or constrained least distance, problems
+may be solved by picking $w = 0$, or $g = 0$, respectively.
+The basic algorithm is that of \citebb{Zhan94}.
+{\tt LSQP} is used within \gal\ by {\tt QPB} to find an initial
+strictly-interior feasible point (see \S\ref{QPB}).
+
+Note that since predictor-corrector steps are not taken, the method
+is unlikely to be as efficient as state-of-the-art interior-point 
+methods for linear programming. We intend to remedy this defect for
+Version 2.
+
+\ltsubsubsection{PRESOLVE}
+
+The module {\tt PRESOLVE} is intended to pre-process
+quadratic programming problems of the form \req{1.2}--\req{1.4}.
+The purpose is to exploit the 
+optimality equations \req{4.1a}--\req{4.3} so as to simplify the problem
+and reduce the problem to a standard form (that makes subsequent 
+manipulation easier), defined as follows: 
+\begin{itemize}
+\item The variables are ordered so that their bounds appear in the order
+\begin{center}
+\begin{tabular}{lccccc}
+free                &          &        & $x_j$ &        &          \\
+non-negativity      &   0      & $\leq$ & $x_j$ &        &          \\
+lower               & $x^l_j$ & $\leq$ & $x_j$ &        &          \\
+range               & $x^l_j$ & $\leq$ & $x_j$ & $\leq$ & $x^u_j$ \\
+upper               &          &        & $x_j$ & $\leq$ & $x^u_j$ \\
+non-positivity      &          &        & $x_j$ & $\leq$ &      0   \\
+\end{tabular}
+\end{center}
+
+Fixed variables are removed. Within each category, the variables 
+are further ordered so that those with non-zero diagonal Hessian 
+entries occur before the remainder.
+
+\item
+The constraints are ordered so that their bounds appear in the order
+\begin{center}
+\begin{tabular}{lccccc}
+non-negativity      &     0    & $\leq$ & $( A x)_i$ &        &          \\
+equality            & $c^l_i$ &   $=$  & $(A x)_i$ &        &          \\
+lower               & $c^l_i$ & $\leq$ & $(A x)_i$ &        &          \\
+range               & $c^l_i$ & $\leq$ & $(A x)_i$ & $\leq$ & $c^u_i$ \\
+upper               &          &        & $(A x)_i$ & $\leq$ & $c^u_i$ \\
+non-positivity      &          &        & $(A x)_i$ & $\leq$ &     0    \\
+\end{tabular}
+\end{center}
+Free constraints are removed. 
+
+\item
+In addition, constraints may be removed or bounds tightened, to reduce the
+size of the feasible region or simplify the problem if this is possible, and
+bounds may be tightened on the dual variables and the multipliers 
+associated  with the problem. 
+\end{itemize}
+
+The presolving algorithm (\bciteb{GoulToin01}) 
+proceeds by applying a (potentially long) series of
+simple transformations to the problem.
+These involve the removal of empty and
+singleton rows, the removal of redundant and forcing primal constraints, the
+tightening of primal and dual bounds, the exploitation of 
+empty, singleton, and doubleton colums,
+merging of dependent
+variables, row ``sparsification'' and splitting equalities. Transformations are
+applied in successive passes, each pass involving the following actions:
+\begin{enumerate}
+\item remove empty and singletons rows,
+\item try to eliminate variables that do not appear in the linear constraints,
+\item attempt to exploit the presence of singleton columns,
+\item attempt to exploit the presence of doubleton columns,
+\item complete the analysis of the dual constraints,
+\item remove empty and singleton rows, 
+\item possibly remove dependent variables,
+\item analyze the primal constraints, 
+\item try to make $A$ sparser by combining its rows,
+\item check the current status of the variables, dual variables
+      and multipliers for optimality or infeasibility.
+\end{enumerate}
+All these transformations are applied on the structure of the original
+problem, which is only permuted to standard form after all transformations are
+completed. The reduced problem may
+then be solved by a quadratic or linear programming solver. Finally, the
+solution of the simplified problem is re-translated to the
+variables/constraints format of the original problem in a ``restoration'' phase.
+
+At the overall level, the presolving process follows one of the following two
+sequences:
+
+\vspace*{0.2cm}
+
+\noindent
+\begin{center}
+\fwbox{initialize} 
+$\rightarrow$ $\bigg[$ \fwbox{apply transformations}
+$\rightarrow$ (solve problem) 
+$\rightarrow$ \fwbox{restore}  $\bigg]$
+$\rightarrow$ \fwbox{terminate}
+\end{center}
+\vspace*{0.2cm}
+
+\noindent or
+
+\vspace*{0.2cm}
+\noindent
+\begin{center}
+\fwbox{initialize} 
+$\rightarrow$ $\bigg[$ \fwpbox{read specfile} 
+$\rightarrow$ \fwpbbox{apply\\transformations}
+$\rightarrow$ $\left(\mbox{\parbox{.5in}{solve problem}}\right)$
+$\rightarrow$ \fwbox{restore}  $\bigg]$
+$\rightarrow$ \fwbox{terminate}
+\end{center}
+\vspace*{0.2cm}
+
+\noindent
+where the procedure's control parameter may be modified by reading an external
+``specfile'', and where (solve problem) indicates
+that the reduced problem is solved. Each of the ``boxed'' steps in these
+sequences corresponds to calling a specific routine of the package, while
+a bracketed subsequence of steps means that they can be repeated with problems 
+having the same structure. 
+
+\citebb{GoulToin01} indicate that, when considering all 178 linear 
+and quadratic programming problems in the \cute\ test set
+(\bciteb{BongConnGoulToin95}),
+an average reduction of roughly 20\% in both the number of unknowns and
+the number of constraints results from applying {\tt PRESOLVE}.
+With the \gal\ QP solver {\tt QPB} (see \S\ref{QPB}), 
+an overall average reduction 
+of roughly 10\% in CPU time results. In some cases, the gain is dramatic.
+For example, for the problems {\tt GMNCASE4}, {\tt STNPQ1}, {\tt STNQP2} 
+and {\tt SOSQP1}, {\tt PRESOLVE}
+removes all the variables and constraints, and thus reveals the complete 
+solution to the problem without resorting to a QP solver.
+
+Currently {\tt PRESOLVE} is not embedded within {\tt QPA}/{\tt B} or
+{\tt LSQP} and must be called separately, but we intend to correct this
+defect for Version 2.0.
+
+\ltsubsubsection{GLTR}
+
+{\tt GLTR} aims to find the global solution to the problem of minimizing
+the quadratic function \req{1.2} where the variables are 
+required to satisfy the constraint $\|x\|_{M} \leq  \Delta$, 
+where the $M$-norm of $x$ is $\|x\|_{M} = \sqrt{x^T M x}$ for some symmetric, 
+positive definite $M$, and where $\Delta > 0$ is a given scalar.
+This problem commonly occurs as a trust-region subproblem in nonlinear 
+optimization methods, and is used within \gal\ by {\tt QPB}.
+The method may be suitable for large $n$ as no factorization of $H$ is 
+required. Reverse communication is used to obtain  
+matrix-vector products of the form $H z$ and $M^{-1} z$. 
+The package may also be used to solve the related problem in which $x$ is 
+instead required to satisfy the equality constraint $\|x\|_{M} = \Delta$.
+The method is described in detail in 
+\citebb{GoulLuciRomaToin99:siopt}, and {\tt GLTR} is a slightly improved 
+version of the HSL package {\tt HSL\_VF05}.
+
+\ltsubsubsection{SILS}
+
+The module {\tt SILS} provides a Fortran 90 interface to the Fortran 77 HSL
+sparse linear equation package {\tt MA27} \cite{DuffReid82}. 
+The interface and functionality are 
+designed to be identical to the more recent HSL Fortran 90 
+package {\tt HSL\_MA57} \cite{Duff01}, enabling anyone with {\tt HSL\_MA57}
+to substitute this easily for {\tt SILS} throughout \gal. The reason
+that we are forced to rely on {\tt MA27} rather than the superior 
+{\tt HSL\_MA57} by default is simply that
+the former is available without charge from the HSL Archive
+({\tt http://hsl.rl.ac.uk/hslarchive}), while the latter is only available
+commercially.
+{\tt SILS} (and hence either {\tt MA27} or {\tt HSL\_MA57}) 
+is required by {\tt QPA}/{\tt B} and {\tt LSQP}, and is
+used optionally by {\tt LANCELOT B}.
+
+\ltsubsubsection{SCU}
+
+{\tt SCU} may be used to find the solution
+to an extended system of $n + m$ 
+sparse real linear equations in $n  +  m$ unknowns,
+\disp{\mat{cc}{ A & B \\ C & D } \vect{x_1 \\ x_2}
+ =  \vect{b_1 \\ b_2}.}
+in the case where the $n$ by $n$ matrix $A$ is nonsingular 
+and solutions to the systems 
+\disp{A x  =  b \tim{and} A^T y  =  c}
+may be obtained from an external source, such as an existing 
+factorization.  The subroutine uses reverse communication to obtain 
+the solution to such smaller systems.  The method makes use of 
+the Schur complement matrix 
+\disp{S  =  D  -  C    A^{-1} B.}
+The Schur complement is stored and updated in factored form as a dense matrix 
+(using either Cholesky or QR factors as appropriate)
+and the subroutine is thus appropriate only if there is 
+sufficient storage for this matrix. Special advantage is taken 
+of symmetry and definiteness of the matrices $A$, $D$ and $S$. 
+Provision is made for introducing additional rows and columns 
+to, and removing existing rows and columns from, the extended matrix. 
+
+{\tt SCU} is used by both \lanb\ and {\tt QPA} to cope
+with core linear systems that arise as constraints and variables
+enter and leave their active/working sets. A slightly simplified
+version of {\tt SCU} is available in HSL as {\tt HSL\_MA69}.
+
+\lsection{Installation}
+
+Just as for its immediate predecessors \cuter\ and \sifdec\
+(see \bciteb{GoulOrbaToin02b}),
+\gal\ is designed to be used in a multi-platform, multi-compiler 
+environment in which core (source and script) files are available
+in a single location, and machine/compiler/operating system specific
+components (most especially compiled libraries of binaries) are isolated in
+uniquely identifiable subdirectories. As before, we have concentrated on 
+UNIX and Linux platforms, principally because we have no experience with 
+other systems.
+
+\gal\ is provided as a series of directories and files, all lying beneath
+a root directory that we shall refer to as {\tt \$GALAHAD}. The
+directory structure is illustrated in Figure~\ref{dir_structure}.
+
+\begin{figure}[htbp]
+\begin{center}
+%\setlength{\unitlength}{0.028in}
+\setlength{\unitlength}{0.033in}
+\begin{picture}(145,230)(10,-200)
+\put(0,-100){\framebox(30,7){{\tt  \$GALAHAD}}}
+\put(30,-96.5){\line(1,0){2.5}}
+\put(32.5,-3){\line(0,-1){180}}
+%
+\put(65,-3){\line(1,0){2.5}}
+\put(67.5,17){\line(0,-1){40}}
+\put(67.5,17){\line(1,0){2.5}} \put(70,14){\framebox(30,6){{\tt lanb}}}
+\put(67.5,7){\line(1,0){2.5}} \put(70,4){\framebox(30,6){{\tt qpb}}}
+\put(67.5,-3){\line(1,0){2.5}} \put(72,-3.3){\ldots other packages \ldots} 
+\put(67.5,-13){\line(1,0){2.5}} \put(70,-16){\framebox(30,6){{\tt dum}}}
+\put(67.5,-23){\line(1,0){2.5}} \put(70,-26){\framebox(30,6){{\tt makedefs}}}
+%
+%
+\put(32.5,-3){\line(1,0){2.5}} \put(35,-6){\framebox(30,6){{\tt src}}}
+\put(32.5,-33){\line(1,0){2.5}} \put(35,-36){\framebox(30,6){{\tt makefiles}}}
+\put(32.5,-43){\line(1,0){2.5}} \put(35,-46){\framebox(30,6){{\tt seds}}}
+\put(32.5,-63){\line(1,0){2.5}} \put(35,-66){\framebox(30,6){{\tt objects}}}
+\put(32.5,-103){\line(1,0){2.5}} \put(35,-106){\framebox(30,6){{\tt versions}}}
+\put(32.5,-93){\line(1,0){2.5}} \put(35,-96){\framebox(30,6){{\tt arch}}}
+\put(32.5,-123){\line(1,0){2.5}} \put(35,-126){\framebox(30,6){{\tt modules}}}
+
+\put(32.5,-153){\line(1,0){2.5}} \put(35,-156){\framebox(30,6){{\tt bin}}}
+\put(65,-153){\line(1,0){2.5}}
+\put(67.5,-153){\line(1,0){2.5}} \put(70,-156){\framebox(30,6){{\tt sys}}}
+\put(32.5,-163){\line(1,0){2.5}} \put(35,-166){\framebox(30,6){{\tt doc}}}
+\put(65,-173){\line(1,0){2.5}}
+\put(67.5,-173){\line(1,0){2.5}} \put(70,-176){\framebox(30,6){{\tt man1}}}
+\put(32.5,-173){\line(1,0){2.5}} \put(35,-176){\framebox(30,6){{\tt man}}}
+\put(32.5,-183){\line(1,0){2.5}} \put(35,-186){\framebox(30,6){{\tt examples}}}
+
+\put(65,-63){\line(1,0){2.5}}
+\put(67.5,-43){\line(0,-1){40}}
+\put(67.5,-43){\line(1,0){2.5}} \put(70,-46){\framebox(34,6){{\tt architecture}}}
+\put(67.5,-63){\line(1,0){2.5}} \put(70,-66){\framebox(34,6){{\tt architecture2}}}
+\put(67.5,-83){\line(1,0){2.5}} \put(72,-83.3){\ldots other architectures \ldots} 
+
+\put(104,-43){\line(1,0){2.5}}
+\put(104,-63){\line(1,0){2.5}}
+\put(106.5,-38){\line(0,-1){10}}
+\put(106.5,-58){\line(0,-1){10}}
+
+\put(106.5,-38){\line(1,0){2.5}} \put(109,-41){\framebox(30,6){{\tt double}}}
+\put(106.5,-48){\line(1,0){2.5}} \put(109,-51){\framebox(30,6){{\tt single}}}
+\put(106.5,-58){\line(1,0){2.5}} \put(109,-61){\framebox(30,6){{\tt double}}}
+\put(106.5,-68){\line(1,0){2.5}} \put(109,-71){\framebox(30,6){{\tt single}}}
+
+
+\put(65,-123){\line(1,0){2.5}}
+\put(67.5,-103){\line(0,-1){40}}
+\put(67.5,-103){\line(1,0){2.5}} \put(70,-106){\framebox(34,6){{\tt architecture}}}
+\put(67.5,-123){\line(1,0){2.5}} \put(70,-126){\framebox(34,6){{\tt architecture2}}}
+\put(67.5,-143){\line(1,0){2.5}} \put(72,-143.3){\ldots other architectures \ldots} 
+
+\put(104,-103){\line(1,0){2.5}}
+\put(104,-123){\line(1,0){2.5}}
+\put(106.5,-98){\line(0,-1){10}}
+\put(106.5,-118){\line(0,-1){10}}
+
+\put(106.5,-98){\line(1,0){2.5}} \put(109,-101){\framebox(30,6){{\tt double}}}
+\put(106.5,-108){\line(1,0){2.5}} \put(109,-111){\framebox(30,6){{\tt single}}}
+\put(106.5,-118){\line(1,0){2.5}} \put(109,-121){\framebox(30,6){{\tt double}}}
+\put(106.5,-128){\line(1,0){2.5}} \put(109,-131){\framebox(30,6){{\tt single}}}
+
+\end{picture}
+\caption{\label{dir_structure}Structure of the \gal\ directories}
+\end{center}
+\end{figure}
+
+Before installation the sub-directories 
+{\tt objects}, 
+{\tt modules}, 
+{\tt makefiles}, 
+{\tt versions}
+and 
+{\tt bin/sys}
+will all be empty. The script {\tt install\_galahad} prompts
+the user for the answers to a series of questions aimed at determining
+what machine type, operating system and compiler (from a large list of 
+predefined possibilities encoded in the {\tt arch} sub-directory) 
+to build \gal\ for---we 
+call this combination of a machine, operating system and
+compiler an \emph{architecture}. Each architecture is assigned a simple
+(mnemonic) architecture {\em code} name, say {\tt architecture}---for example
+a version for the NAG Fortran 95 compiler on a PC runing Linux is
+coded {\tt pc.lnx.n95}, while another for the 
+Compaq Fortran 90 compiler on an Alpha system running Tru64 Unix is
+{\tt alp.t64.f90}.
+Having determined the architecture, the installation script
+builds sub-directories of {\tt objects} and {\tt modules} named 
+{\tt architecture}, as well as further sub-directories 
+{\tt double} and {\tt single} of these to hold architecture-dependent 
+compiled libraries and module file information. In addition, 
+architecture-dependent makefile information and environment variables for
+execution scripts are placed in files named {\tt architecture} in the
+{\tt makefiles} and {\tt bin/sys} sub-directories, and a file recording how
+the code is related to the architecture is put in {\tt versions}.
+
+The Fortran source codes for each \gal\ package occurs 
+in a separate sub-directory of the {\tt src} directory. The sub-directory
+contains the package source, a comprehensive test program (along with
+a simpler second test program, which is used as an illustration on how
+to call the package in the accompanying documentation), and a makefile.
+Since the order of compilation of Fortran modules is important, and as
+we have seen there is a strong interdependency between the \gal\ packages,
+the makefiles have to be carefully crafted. For this reason,
+we have chosen not to use variants of tools such as 
+{\tt imake} to build and
+maintain the makefiles. Postscript and PDF Documentation for all packages
+is contained in {\tt doc}.
+
+Not every component of \gal\ is distributed as part of the package. In
+particular, the HSL Archive code {\tt MA27} must be downloaded prior to 
+the installation from
+\begin{verbatim}
+    http://hsl.rl.ac.uk/archive/hslarchive.html 
+\end{verbatim}
+before any of the QP packages can be used (it is optionally used by \lanb).
+Additionally \gal\ makes optional use of the 
+Lin-Mor\'{e} preconditioner {\tt ICFS}, available as
+part of the MINPACK 2 library via
+\begin{verbatim}
+    http://www-unix.mcs.anl.gov/~more/icfs/ ,
+\end{verbatim}
+and the HSL codes {\tt MA57} and {\tt MC61}, which are only available
+commercially. If any non-default code is used, the file {\tt packages}
+in the directory {\tt src/makedefs} must be edited to describe where
+the external code may be found---details are given in {\tt packages}.
+Default dummy versions of all optional codes are provided in 
+{\tt src/dum} to ensure that linking prior to execution works properly.
+
+Once the correct directory structure is in place, the installation script
+builds a random-access library of the required precision by visiting each 
+of the sub-directories of {\tt src} and calling the Unix utility {\tt make}.
+\gal\ packages are all written in double precision, but if a user prefers to
+use single precision, the makefiles call suitable Unix {\tt sed} 
+scripts (stored in {\tt seds}) to transform the source prior to compilation.
+A user may choose to install all of \gal, or just the QP or \lanb\ components.
+There are also {\tt sed} features to switch automatically from {\tt SILS} (see
+ \S\ref{SILS}) to {\tt MA57} if the latter is available.
+The command {\tt make tests} runs comprehensive tests of all 
+compiled components.
+
+\section{Interfaces to the \cuter\ test set}
+
+As well as providing stand-alone Fortran modules, we provide 
+interfaces between \lanb, {\tt QPA}/{\tt B}, {\tt LSQP} and {\tt PRESOLVE} and
+problems written in the Standard Input Format (SIF, see
+\bciteb{ConnGoulToin92}), most particularly
+the \cuter\ test set (\bciteb{GoulOrbaToin02b}). To use these
+interfaces \lanb\ users will need to have installed
+\sifdec\ (from {\tt http://cuter.rl.ac.uk/cuter-www/sifdec}), 
+while users wishing to use the interfaces to the QP packages 
+will additionally need \cuter\
+(from  {\tt http:// cuter.rl.ac.uk/cuter-www}).
+
+To run one of the supported packages on an example stored in
+{\tt EXAMPLE.SIF}, say, a user needs to issue the command
+\begin{verbatim}
+    sdgal code package EXAMPLE[.SIF] 
+\end{verbatim}
+where {\tt code} is the architecture code discussed in \S\ref{Installation},
+{\tt package} defines the package to be used---it may be one of {\tt lanb},
+{\tt qpa}, {\tt qpb} or {\tt pre}, with access to {\tt LSQP} 
+provided via {\tt qpb}---and the suffix [{\tt .SIF}] is optional.
+This command translates the SIF file into Fortran subroutines and 
+related data using the decoder provided in \sifdec, and then calls
+the required optimization package to solve the problem. Once a problem
+has been decoded, it may be re-used (perhaps with different options)
+using the auxiliary command
+\begin{verbatim}
+    gal code package 
+\end{verbatim}
+A few SIF examples are given in the {\tt examples} sub-directory, while the
+{\tt sdgal} and {\tt gal} commands are in the {\tt bin} sub-directory, and
+have man-page descriptions in the {\tt man/man1} sub-directory.
+
+One additional feature is that if the user has
+access to the HSL automatic differentiation packages {\tt HSL\_AD01} 
+or {\tt HSL\_AD02} (\bciteb{PrycReid98}), 
+these may be used to generate automatic first and second derivatives
+for the element and group functions (\bciteb{ConnGoulToin92}) 
+from which the overall problem is re-assembled by \cuter\ and \lanb.
+Of course it would be better to use one of the more 
+commonly occurring packages 
+such as  ADIFOR (\bciteb{BiscCarlCorlGrieHovl92}),
+and we plan to do this in the future.
+
+As with \lana, options may be passed directly to the solvers by means of
+user-definable option-specification files. Each SIF interface 
+has its own set of options, but overall control is maintained via 
+the \gal\ module {\tt SPECFILE}.
+
+%\newpage
+\lsection{Availability}
+
+\gal\ may be downloaded from
+{\tt http://galahad.rl.ac.uk/galahad-www} .
+There are restrictions on commercial use, and all users are required to
+agree to a number of minor conditions of use.
+
+\lsection{Conclusions}
+
+We have described the scope and design of the first release of \gal,
+a library of Fortran 90 packages for nonlinear optimization.
+Version 1.0 of the library particularly addresses quadratic programming 
+problems, although there is an updated version of \lan\ for more general 
+problems. 
+
+In future, we intend to use the quadratic programming packages as the
+basic tool within one or more SQP methods for nonlinear optimization.
+We are currently developing AMPL (see \bciteb{FourGayKern93}) interfaces 
+for the principal packages so that users will be able to use a more
+natural interface than provided by SIF. In addition, we plan to incorporate
+the preprocessing tools as options within the QP solvers, rather than having
+them stand-alone as at present.
+
+\section*{Acknowledgement}
+
+The authors are extremely grateful to Michael Saunders for his very
+careful reading of this manuscript and for a large number of useful comments.
+
+%\newpage
+
+%\bibliographystyle{ralf}
+%\input{/home/nimg/sp/refs/refs}
+\begin{thebibliography}{xx}
+
+\harvarditem[Benson et al.]{Benson, Shanno and Vanderbei}{2001}{BensShanVand01}
+H.~Benson, D.~F. Shanno, and R.~J. Vanderbei.
+\newblock A comparative study of large-scale nonlinear optimization algorithms.
+\newblock Technical Report ORFE 01-04, Operations Research and Financial
+  Engineering, Princeton University, New Jersey, USA, 2001.
+
+\harvarditem[Bischof et al.]{Bischof, Carle, Corliss, Griewank and
+  Hovland}{1992}{BiscCarlCorlGrieHovl92}
+Chr. Bischof, A.~Carle, G.~Corliss, A.~Griewank, and P.~Hovland.
+\newblock {ADIFOR} - generating derivative codes from {F}ortran programs.
+\newblock {\em Scientific Programming}, {\bf 1},~1--29, 1992.
+
+\harvarditem[Bongartz et al.]{Bongartz, Conn, Gould and
+  Toint}{1995}{BongConnGoulToin95}
+I.~Bongartz, A.~R. Conn, N.~I.~M. Gould, and Ph.~L. Toint.
+\newblock {\sf CUTE}: {C}onstrained and {U}nconstrained {T}esting
+  {E}nvironment.
+\newblock {\em ACM Transactions on Mathematical Software}, {\bf
+  21}(1),~123--160, 1995.
+
+\harvarditem[Byrd et al.]{Byrd, Hribar and Nocedal}{1999}{ByrdHribNoce99:siopt}
+R.~H. Byrd, M.~E. Hribar, and J.~Nocedal.
+\newblock An interior point algorithm for large scale nonlinear programming.
+\newblock {\em SIAM J. on Optimization}, {\bf 9}(4),~877--900, 1999.
+
+\harvarditem[Chin]{Chin}{2001}{Chin01}
+C.~M. Chin.
+\newblock Numerical results of {SLPSQP}, filter{SQP} and {LANCELOT} on selected
+  {CUTE} test problems.
+\newblock Numerical Analysis Report NA/203, Department of Mathematics,
+  University of Dundee, Scotland, 2001.
+
+\harvarditem[Conn et al.]{Conn, Gould and Toint}{1992}{ConnGoulToin92}
+A.~R. Conn, N.~I.~M. Gould, and Ph.~L. Toint.
+\newblock {\em {\sf LANCELOT}: a {F}ortran package for Large-scale Nonlinear
+  Optimization ({R}elease {A})}.
+\newblock Springer Series in Computational Mathematics. Springer Verlag,
+  Heidelberg, Berlin, New York, 1992.
+
+\harvarditem[Conn et al.]{Conn, Gould and Toint}{1996{\em a}}{ConnGoulToin96a}
+A.~R. Conn, N.~I.~M. Gould, and Ph.~L. Toint.
+\newblock Numerical experiments with the {{\sf LANCELOT}} package ({R}elease
+  {A}) for large-scale nonlinear optimization.
+\newblock {\em Mathematical Programming, Series~A}, {\bf 73}(1),~73--110,
+  1996{\em a}.
+
+\harvarditem[Conn et al.]{Conn, Gould and Toint}{2000{\em a}}{ConnGoulToin00}
+A.~R. Conn, N.~I.~M. Gould, and Ph.~L. Toint.
+\newblock {\em Trust-{R}egion {M}ethods}.
+\newblock SIAM, Philadelphia, 2000{\em a}.
+
+\harvarditem[Conn et al.]{Conn, Gould, Orban and Toint}{2000{\em
+  b}}{ConnGoulOrbaToin00:mp}
+A.~R. Conn, N.~I.~M. Gould, D.~Orban, and Ph.~L. Toint.
+\newblock A primal-dual trust-region algorithm for non-convex nonlinear
+  programming.
+\newblock {\em Mathematical Programming}, {\bf 87}(2),~215--249, 2000{\em b}.
+
+\harvarditem[Conn et al.]{Conn, Gould, Sartenaer and Toint}{1996{\em
+  b}}{ConnGoulSartToin96a}
+A.~R. Conn, N.~I.~M. Gould, A.~Sartenaer, and Ph.~L. Toint.
+\newblock Convergence properties of minimization algorithms for convex
+  constraints using a structured trust region.
+\newblock {\em SIAM J. on Optimization}, {\bf 6}(4),~1059--1086, 1996{\em
+  b}.
+
+\harvarditem[Czyzyk et al.]{Czyzyk, Mesnier and Mor\'{e}}{1998}{CzyzMessMore98}
+J. Czyzyk, M.~P. Mesnier, and J.~J. Mor\'{e}.
+\newblock The {NEOS} {S}erver.
+\newblock {\em IEEE J. on Computational Science and Engineering}, {\bf
+  5},~68--75, 1998.
+
+\harvarditem[Dolan and Mor\'{e}]{Dolan and Mor\'{e}}{2000}{DolaMore00}
+E.~D. Dolan and J.~J. Mor\'{e}.
+\newblock Benchmarking optimization software with {COPS}.
+\newblock Technical Report ANL/MCS-246, Argonne National Laboratory, Illinois,
+  USA, 2000.
+
+\harvarditem[Dolan and Mor\'{e}]{Dolan and Mor\'{e}}{2001}{DolaMore01}
+E.~D. Dolan and J.~J. Mor\'{e}.
+\newblock Benchmarking optimization software with performance profiles.
+\newblock {\em Mathematical Programming}, {\bf 91}(2),~201--213, 2002{\em b}.
+
+\harvarditem[Duff]{Duff}{2002}{Duff01}
+I.~S. Duff.
+\newblock {MA57} - a new code for the solution of sparse symmetric 
+  definite and indefinite systems.
+\newblock Technical Report RAL-TR-2002-024, Rutherford Appleton Laboratory,
+  Chilton, Oxfordshire, England, 2002.
+
+\harvarditem[Duff and Reid]{Duff and Reid}{1982}{DuffReid82}
+I.~S. Duff and J.~K. Reid.
+\newblock {MA}27: A set of {F}ortran subroutines for solving sparse symmetric
+  sets of linear equations.
+\newblock Report R-10533, {AERE} {H}arwell Laboratory, Harwell, UK, 1982.
+
+\harvarditem[Fletcher and Leyffer]{Fletcher and Leyffer}{2002}{FletLeyf02}
+R.~Fletcher and S.~Leyffer.
+\newblock Nonlinear programming without a penalty function.
+\newblock {\em Mathematical Programming}, {\bf 91}(2),~239--269, 2002.
+
+\harvarditem[Fourer et al.]{Fourer, Gay and Kernighan}{2003}{FourGayKern93}
+R.~Fourer, D.~M. Gay, and B.~W. Kernighan.
+\newblock {\em {AMPL}: A Modeling Language for Mathematical Programming},
+(2nd. edn.).
+\newblock Brooks/Cole--Thompson Learning, Pacific Grove, California, USA, 2003.
+
+\harvarditem[Gill et al.]{Gill, Murray and
+  Saunders}{2002}{gillmurrsaun02:siopt}
+P.~E. Gill, W.~Murray, and M.~A. Saunders.
+\newblock {SNOPT}: An {SQP} algorithm for large-scale constrained optimization.
+\newblock {\em SIAM J. on Optimization}, {\bf 12} (4),~979--1006, 2002.
+
+\harvarditem[Gould and Toint]{Gould and Toint}{2001}{GoulToin01c}
+N.~I.~M. Gould and Ph.~L. Toint.
+\newblock Numerical methods for large-scale non-convex quadratic programming.
+\newblock In {\em Trends in Industrial and Applied Mathematics}
+(A. H. Siddiqi and M. Ko\v{c}vara, eds.).
+\newblock Kluwer Academic Publishers, Dordrecht, The Netherlands, 149--179, 
+2002.
+
+\harvarditem[Gould and Toint]{Gould and Toint}{2002}{GoulToin01}
+N.~I.~M. Gould and Ph.~L. Toint.
+\newblock Preprocessing for quadratic programming.
+\newblock Technical Report RAL-TR-2002-001, Rutherford Appleton Laboratory,
+  Chilton, Oxfordshire, England, 2002.
+
+\harvarditem[Gould et al.]{Gould, Hribar and Nocedal}{2001}{GoulHribNoce98}
+N.~I.~M. Gould, M.~E. Hribar, and J.~Nocedal.
+\newblock On the solution of equality constrained quadratic problems arising in
+  optimization.
+\newblock {\em SIAM J. on Scientific Computing}, {\bf 23}(4),~1375--1394,
+  2001.
+
+\harvarditem[Gould et al.]{Gould, Lucidi, Roma and Toint}{1999{\em
+  a}}{GoulLuciRomaToin99:siopt}
+N.~I.~M. Gould, S.~Lucidi, M.~Roma, and Ph.~L. Toint.
+\newblock Solving the trust-region subproblem using the {L}anczos method.
+\newblock {\em SIAM J. on Optimization}, {\bf 9}(2),~504--525, 1999{\em
+  a}.
+
+\harvarditem[Gould et al.]{Gould, Orban and Toint}{2002{\em
+  a}}{GoulOrbaToin02b}
+N.~I.~M. Gould, D.~Orban, and Ph.~L. Toint.
+\newblock {\sf CUTEr} (and \sf {SifDec}\rm), a constrained and unconstrained
+  testing environment, revisited.
+\newblock Technical Report RAL-TR-2002-009, Rutherford Appleton Laboratory,
+  Chilton, Oxfordshire, England, 2002{\em a}.
+
+\harvarditem[Gould et al.]{Gould, Orban and Toint}{2002{\em
+  b}}{goulorbatoin02c}
+N.~I.~M. Gould, D.~Orban, and Ph.~L. Toint.
+\newblock Results from a numerical evaluation of \sf {LANCELOT B} \rm.
+\newblock Numerical Analysis Group Internal Report 2002-1, Rutherford Appleton
+  Laboratory, Chilton, Oxfordshire, England, 2002{\em b}.
+
+\harvarditem[Gould et al.]{Gould, Orban, Sartenaer and Toint}{1999{\em
+  b}}{GoulOrbaSartToin01}
+N.~I.~M. Gould, D.~Orban, A.~Sartenaer, and Ph.~L. Toint.
+\newblock Superlinear convergence of primal-dual interior-point algorithms for
+  nonlinear programming.
+\newblock {\em SIAM J. on Optimization}, {\bf 11}(4),~974--1002, 1999{\em
+  b}.
+
+\harvarditem[Hock and Schittkowski]{Hock and Schittkowski}{1981}{HockSchi81}
+W.~Hock and K.~Schittkowski.
+\newblock {\em Test Examples for Nonlinear Programming Codes}.
+\newblock Number 187 {\em In} `Lecture Notes in Economics and Mathematical
+  Systems'. Springer Verlag, Heidelberg, Berlin, New York, 1981.
+
+\harvarditem[HSL]{HSL}{2002}{hsl:2002}
+HSL.
+\newblock A collection of {F}ortran codes for large-scale scientific
+  computation, 2002.
+\newblock See http://www. cse.clrc.ac.uk/Activity/HSL.
+
+\harvarditem[Lin and Mor\'{e}]{Lin and Mor\'{e}}{1999{\em a}}{LinMore99b}
+C.~Lin and J.~J. Mor\'{e}.
+\newblock Incomplete {C}holesky factorizations with limited memory.
+\newblock {\em SIAM J. on Scientific Computing}, {\bf 21}(1),~24--45,
+  1999{\em a}.
+
+\harvarditem[Lin and Mor\'{e}]{Lin and Mor\'{e}}{1999{\em b}}{LinMore99}
+C.~Lin and J.~J. Mor\'{e}.
+\newblock {N}ewton's method for large bound-constrained optimization problems.
+\newblock {\em SIAM J. on Optimization}, {\bf 9}(4),~1100--1127, 1999{\em
+  b}.
+
+\harvarditem[Mor\'{e} and Toraldo]{Mor\'{e} and Toraldo}{1991}{MoreTora91}
+J.~J. Mor\'{e} and G.~Toraldo.
+\newblock On the solution of large quadratic programming problems with bound
+  constraints.
+\newblock {\em SIAM J. on Optimization}, {\bf 1}(1),~93--113, 1991.
+
+\harvarditem[Pryce and Reid]{Pryce and Reid}{1998}{PrycReid98}
+J.~D. Pryce and J.~K. Reid.
+\newblock {\tt AD01}, a {F}ortran 90 code for automatic differentiation.
+\newblock Technical Report RAL-TR-1998-057, Rutherford Appleton Laboratory,
+  Chilton, Oxfordshire, England, 1998.
+
+\harvarditem[Toint]{Toint}{1997}{Toin96b}
+Ph.~L. Toint.
+\newblock A non-monotone trust-region algorithm for nonlinear optimization
+  subject to convex constraints.
+\newblock {\em Mathematical Programming}, {\bf 77}(1),~69--94, 1997.
+
+\harvarditem[Vanderbei and Shanno]{Vanderbei and Shanno}{1999}{VandShan99}
+R.~J. Vanderbei and D.~F. Shanno.
+\newblock An interior point algorithm for nonconvex nonlinear programming.
+\newblock {\em Computational Optimization and Applications}, {\bf
+  13},~231--252, 1999.
+
+\harvarditem[Zhang]{Zhang}{1994}{Zhan94}
+Y.~Zhang.
+\newblock On the convergence of infeasible interior-point methods for the
+  horizontal linear complementarity problem.
+\newblock {\em SIAM J. on Optimization}, {\bf 4}(1),~208--227, 1994.
+
+\end{thebibliography}
+
+\end{document}
+
+

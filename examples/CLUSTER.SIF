@@ -1,0 +1,134 @@
+
+***************************
+* SET UP THE INITIAL DATA *
+***************************
+
+NAME          CLUSTER
+
+*   Problem :
+*   *********
+
+*   Source:  problem 207 in
+*   A.R. Buckley,
+*   "Test functions for unconstrained minimization",
+*   TR 1989CS-3, Mathematics, statistics and computing centre,
+*   Dalhousie University, Halifax (CDN), 1989.
+
+*   SIF input: Ph. Toint, Dec 1989.
+
+*   classification NOR2-AN-2-2
+
+VARIABLES
+
+    X1
+    X2
+
+GROUPS
+
+ E  G1
+ E  G2
+
+BOUNDS
+
+ FR CLUSTER   'DEFAULT'
+
+START POINT
+
+ XV CLUSTER   'DEFAULT' 0.0
+
+ELEMENT TYPE
+
+ EV TA        X                        Y
+ EV TB        X                        Y
+
+ELEMENT USES
+
+ T  EA        TA
+ V  EA        X                        X1
+ V  EA        Y                        X2
+
+ T  EB        TB
+ V  EB        X                        X1
+ V  EB        Y                        X2
+
+GROUP USES
+
+ E  G1        EA
+ E  G2        EB
+
+OBJECT BOUND
+
+*   Solution
+
+*LO SOLTN               0.0
+
+ENDATA
+
+***********************
+* SET UP THE FUNCTION *
+* AND RANGE ROUTINES  *
+***********************
+
+ELEMENTS      CLUSTER
+
+TEMPORARIES
+
+ R  SX
+ R  SY
+ R  CX
+ R  CY
+ R  F1
+ R  F2
+ R  DF1DY
+ R  DF2DY
+ R  DF2DX
+
+ M  SIN
+ M  COS
+
+INDIVIDUALS
+
+*   Element type A
+
+ T  TA
+
+ A  SY                  SIN( Y )
+ A  CY                  COS( Y )
+ A  F1                  X - Y * Y
+ A  F2                  X - SY
+ A  DF1DY               -2.0 * Y
+ A  DF2DY               - CY
+
+ F                      F1 * F2
+
+ G  X                   F2 + F1
+ G  Y                   DF1DY * F2 + F1 * DF2DY
+
+ H  X         X         2.0
+ H  X         Y         DF1DY + DF2DY
+ H  Y         Y         2.0 * ( DF1DY * DF2DY -  F2 )
+ H+                     + F1 * SY
+
+*   Element type B
+
+ T  TB
+
+ A  SY                  SIN( Y )
+ A  CY                  COS( Y )
+ A  CX                  COS( X )
+ A  SX                  SIN( X )
+ A  F1                  CY - X
+ A  F2                  Y - CX
+ A  DF1DY               -SY
+ A  DF2DX               SX
+
+ F                      F1 * F2
+
+ G  X                   F1 * DF2DX - F2
+ G  Y                   F1 + F2 * DF1DY
+
+ H  X         X         - DF2DX + F1 * CX - DF2DX
+ H  X         Y         - SY * DF2DX - 1.0
+ H  Y         Y         2.0 * DF1DY - F2 * CY
+
+ENDATA

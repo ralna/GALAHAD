@@ -1,0 +1,279 @@
+#  Main body of the installation makefile for the GALAHAD SHA package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 08 IV 2013
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(OPENMP)
+FFLAGSNOMP = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(OPENMP)
+RUNFFLAGS  =         $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SSHA =  basics $(LGS)(sha.o)
+DSHA =  basics $(LGD)(sha.o)
+
+SRUNSHA = cutest_functions copyright $(LGS)(usesha.o) $(OBJS)/runsha_sif.o
+DRUNSHA = cutest_functions copyright $(LGD)(usesha.o) $(OBJD)/runsha_sif.o
+
+SHAOBJECTSS_CUTEST = $(SSHA) $(SRUNSHA)
+SHAOBJECTSD_CUTEST = $(DSHA) $(DRUNSHA)
+
+SHADS = $(DSHA) $(OBJD)/shas.o
+SHADS2 = $(DSHA) $(OBJD)/shas2.o
+SHADT = $(DSHA) $(OBJD)/shat.o
+SHASS = $(SSHA) $(OBJS)/shas.o
+SHAST = $(SSHA) $(OBJS)/shat.o
+
+RSHADS = $(OBJD)/shas.o -L$(OBJD) $(LIBS)
+RSHADS2 = $(OBJD)/shas2.o -L$(OBJD) $(LIBS)
+RSHADT = $(OBJD)/shat.o -L$(OBJD) $(LIBS)
+RSHASS = $(OBJS)/shas.o -L$(OBJS) $(LIBS)
+RSHAST = $(OBJS)/shat.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+sha: sha.o
+all: sha_cutest
+test: test_sha
+test_nocutest: test_sha_nocutest
+
+# sha
+
+sha_silent: sha_$(PRECIS)
+sha: sha_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SHA ($(PRECIS) $(SUCC)"
+sha_single: $(SSHA)
+	$(RANLIB) $(LGS)
+sha_double: $(DSHA)
+	$(RANLIB) $(LGD)
+
+sha_cutest: sha_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SHA ($(PRECIS) $(SUCC_CUTEST)"
+sha_cutest_single: $(SHAOBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+sha_cutest_double: $(SHAOBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+shasrunall: shass shast
+shadrunall: shads shadt
+sharunall: shadrunall shasrunall
+
+#  basic packages
+
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+	( cd ../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            qpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../qp )
+cutest_functions:
+	( cd ../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_silent PRECIS=$(PRECIS) PWD=$(PWD)/../auxiliary )
+copyright:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+
+# run spec-sheet example tests
+
+shads: $(SHADS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sha $(RSHADS)
+	- ./run_sha >& shads.output
+	cat shads.output
+	rm ./run_sha
+
+shads2: $(SHADS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sha $(RSHADS2)
+	- ./run_sha <inds.txt >& shads2.output
+	cat shads2.output
+	rm ./run_sha
+
+shadt: $(SHADT)
+	echo " Exhaustive test of subroutine interface to sha"
+	echo $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sha $(RSHADT)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sha $(RSHADT)
+	- ./run_sha >& shadt.output
+	cat shadt.output
+	rm ./run_sha
+
+shass: $(SHASS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sha $(RSHASS)
+	- ./run_sha >& shas.output
+	cat shas.output
+	rm ./run_sha
+
+shast: $(SHAST)
+	echo " Exhaustive test of subroutine interface to sha"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sha $(RSHAST)
+	- ./run_sha >& shat.output
+	cat shat.output
+	rm ./run_sha
+
+#  Substantial GALAHAD packages
+
+sha.o: $(LG)(sha.o)
+
+$(LG)(sha.o):  ../sha/sha.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "sha  "
+	$(SED) -f $(SEDS)  ../sha/sha.f90 > $(OBJ)/sha1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/sha1.f90 > $(OBJ)/sha2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/sha2.f90 > $(OBJ)/sha3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/sha3.f90 > $(OBJ)/sha.f90
+	cd $(OBJ); $(FORTRAN) -o sha.o $(FFLAGSS) sha.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o sha.o $(FFLAGSN) sha.f90 )
+	cd $(OBJ); $(ARR) sha.o ; $(RM) sha.f90 sha1.f90 sha2.f90 \
+                                         sha3.f90 sha.o
+	$(RMARFILE) tru.o
+	$(RMARFILE) arc.o
+	$(RMARFILE) usesha.o
+	$(RMOBFILE) shas.o
+	$(RMOBFILE) shat.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usesha.o: $(LG)(usesha.o)
+
+$(LG)(usesha.o): ../sha/usesha.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usesha   "
+	$(SED) -f $(SEDS) ../sha/usesha.f90 > $(OBJ)/usesha1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usesha1.f90 > $(OBJ)/usesha2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usesha2.f90 > $(OBJ)/usesha.f90
+	cd $(OBJ); $(FORTRAN) -o usesha.o $(FFLAGSS) usesha.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usesha.o $(FFLAGSN) usesha.f90 )
+	cd $(OBJ); $(ARR) usesha.o ; $(RM) usesha.f90 usesha1.f90 \
+                                           usesha2.f90 usesha.o
+	$(RMOBFILE) runsha_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runsha_sif.o: $(OBJ)/runsha_sif.o
+
+$(OBJ)/runsha_sif.o: ../sha/runsha_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runsha_sif"
+	$(SED) -f $(SEDS) ../sha/runsha_sif.f90 > $(OBJ)/runsha_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runsha_sif.o $(FFLAGSS) runsha_sif.f90
+	rm $(OBJ)/runsha_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+shas.o: $(OBJ)/shas.o
+
+$(OBJ)/shas.o: ../sha/shas.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "shas  "
+	$(SED) -f $(SEDS) ../sha/shas.f90 > $(OBJ)/shas1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/shas1.f90 > $(OBJ)/shas.f90
+	cd $(OBJ) ; $(FORTRAN) -o shas.o $(FFLAGS) shas.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+shas2.o: $(OBJ)/shas2.o
+
+$(OBJ)/shas2.o: ../sha/shas2.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "shas2  "
+	$(SED) -f $(SEDS) ../sha/shas2.f90 > $(OBJ)/shas21.f90
+	$(SED) -f $(LSEDS) $(OBJ)/shas21.f90 > $(OBJ)/shas2.f90
+	cd $(OBJ) ; $(FORTRAN) -o shas2.o $(FFLAGS) shas2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+shat.o: $(OBJ)/shat.o
+
+$(OBJ)/shat.o: ../sha/shat.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "shat  "
+	$(SED) -f $(SEDS) ../sha/shat.f90 > $(OBJ)/shat1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/shat1.f90 > $(OBJ)/shat.f90
+	cd $(OBJ) ; $(FORTRAN) -o shat.o $(FFLAGSS) shat.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  generate HSL codes from GALAHAD ones
+
+hslgen:
+	$(SED) -f ../hsl/gal2hsl ../eqp/sha.f90 > ../hsl/hsl_ve16/ve16d.f90
+	$(SED) -f ../hsl/gal2hsl ../sbls/sbls.f90 > ../hsl/hsl_mi14/mi14d.f90
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LGS) $(LGD) $(LG) $(OBJ)/shas.o $(OBJ)/shas2.o $(OBJ)/shat.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmsha:
+	@printf ' %-9s %-15s\t\t' "Removing" "sha from archive "
+	$(RMARFILE) sha.o
+	@printf '[ OK ]\n'
+

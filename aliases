@@ -1,0 +1,14 @@
+qpa      <-> ve19        quadratic programming active-set method
+qpb      <-> ve12        quadratic programming barrier method
+cls      <-> ve13        constrained leas-squares method
+lsqp     <-> ve16        linear/sepable convex-quadratic programming
+qpp      <-> ve15        quadratic programming preprocessor
+gltr     <-> vf05        generalized Lanczos trust-region method
+qpt      <-> zd02        quadratic programming type
+smt      <-> zd01        sparse matrix type
+scu      <-> ma39        Schur complement updating
+sils     <-> ma27        symmetric indefinite linear solver
+rand     <-> fa04        random number generator
+
+GALAHAD_ <-> HSL_        prefix
+

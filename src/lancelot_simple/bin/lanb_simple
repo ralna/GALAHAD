@@ -1,0 +1,24 @@
+!/bin/sh
+
+# lanb_naive: generic script to run the simple 1-element naive interface
+#      to LANCELOT B.
+
+# Use: lanb_simple architecture package [-h] [-o i] [-l secs]
+
+# where: options -h : print this help and stop execution
+#                -r : do not recompile the problem functions
+#                -o : 0 for silent mode, 1 for brief description of
+#                     the stages executed
+#                     (Default: -o 0)
+#                -l : limit the cputime used to secs seconds
+#                     (Default: -l 99999999)
+
+# Ph. Toint
+# ( Last modified on 30 November 2007 at 11:06:00 GMT )
+
+if [ -x /bin/csh ]
+ then
+  lanb_simple.csh $*
+else
+  lanb_simple.sh $*
+fi 

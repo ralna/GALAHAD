@@ -1,0 +1,267 @@
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in 
+{\tt \packagename\_solve} and {\tt \packagename\_terminate} 
+is suppressed if {\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in 
+{\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No 
+informational output will occur if {\tt print\_level} $\leq 0$. If 
+{\tt print\_level} $= 1$, a single line of output will be produced for each
+iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
+increased to provide significant detail of each iteration.
+The default is {\tt print\_level = 0}.
+
+%\itt{preconditioner} is a scalar variable of type default \integer, 
+%that specifies which preconditioner to be used. When finding
+%the required minimizer, the system matrix
+%\disp{ \bmK_{H} = \mat{cc}{ \bmH & \bmA^T \\ \bmA  & \bmzero }}
+%will be replaced by a so-called preconditioner of the form
+%\eqn{prec1}{ \bmK_{G} = \mat{cc}{ \bmG & \bmA^T \\ \bmA  & \bmzero}
+%\equiv \bmP \mat{ccc}{ \bmG_{11}^{} & \bmG_{21}^T & \bmA_1^T \\
+%\bmG_{21}^{} & \bmG_{22}^{} & \bmA_2^T \\
+%\bmA_{1}^{} & \bmA_{2}^{} & \bmzero} \bmP^T.}
+%The leading-block matrix $\bmG$ will be a suitably-chosen 
+%approximation to $\bmH$ for which $\bmK_{G}$ is easier to invert/factor\-ize
+%than $\bmK_{H}$, while $\bmP$ is an appropriately-chosen permutation matrix.
+%Possible values of {\tt preconditioner} are:
+
+%\begin{description}
+%\itt{0} the preconditioner is chosen automatically on the basis of which option 
+%        looks likely to be the most efficient.
+%\itt{1} $\bmG$ is chosen to be the identity matrix.
+%\itt{2} $\bmG$ is chosen to be $\bmH$
+%\itt{3} $\bmG$ is chosen to be the diagonal matrix whose diagonals
+%        are the larger of those of $\bmH$ and a positive constant
+%        (see {\tt min\_diagonal} below).
+%\itt{4} $\bmG$ is chosen to be the band matrix  of given semi-bandwidth
+%        whose entries coincide with those of $\bmH$ within the band.
+%        (see {\tt semi\_bandwidth} below).
+%\itt{11} $\bmG$ is chosen so that $\bmG_{11} = 0$, $\bmG_{21} = 0$
+%        and $\bmG_{22} = \bmH_{22}$.
+%\itt{12} $\bmG$ is chosen so that $\bmG_{11} = 0$, $\bmG_{21} = \bmH_{21}$
+%        and $\bmG_{22} = \bmH_{22}$.
+%\itt{-1} $\bmG$ is chosen so that $\bmG_{11} = 0$, $\bmG_{21} = 0$,
+%        $\bmG_{22}$ is the identity matrix, and the preconditioner is computed
+%        implicitly.
+%\itt{-2} $\bmG$ is chosen so that $\bmG_{11} = 0$, $\bmG_{21} = 0$,
+%        $\bmG_{22} = \bmH_{22}$ and the preconditioner is computed
+%        implicitly.
+%\end{description}
+%Other values may be added in future.
+%The default is {\tt preconditioner = 0}.
+
+%\itt{min\_diagonal} is a scalar variable of type default \realdp, that 
+%specifies the smallest value of the diagonal when diagonal preconditioning,
+%{\tt precon = 3}, is used. The default is {\tt min\_diagonal = 0.00001}.
+
+%\itt{semi\_bandwidth} is a scalar variable of type default \integer, that 
+%specifies the semi-bandwidth of the band preconditioner when {\tt precon = 4}, 
+%if appropriate.
+%The default is {\tt semi\_bandwidth = 5}.
+
+%\itt{factorization} is a scalar variable of type default \integer, that 
+%specifies which factorization of the preconditioner should be used.  
+%Possible values are:
+
+%\begin{description}
+%\itt{0} the factorization is chosen automatically on the basis of which option 
+%        looks likely to be the most efficient.
+%\itt{1} a Schur-complement factorization, involving factors of 
+%       $\bmG$ and $\bmA \bmG^{-1} \bmA^T$, will be used.
+%\itt{2} an augmented-system factorization, involving factors of $\bmK_G$,
+%        will be used.
+%\end{description}
+%The default is {\tt factorization = 0}.
+
+%\itt{max\_col} is a scalar variable of type default \integer, that specifies
+%the maximum number of nonzeros in a column of $\bmA$ which is permitted
+%by the Schur-complement factorization.
+%The default is {\tt max\_col = 35}.
+
+%\itt{indmin} is a scalar variable of type default \integer, that specifies
+%an initial estimate as to the amount of integer workspace required by 
+%the factorization package {\tt SILS}.
+%The default is {\tt indmin = 1000}.
+
+%\itt{valmin} is a scalar variable of type default \integer, that specifies
+%an initial estimate as to the amount of real workspace required by 
+%the factorization package {\tt SILS}.
+%The default is {\tt valmin = 1000}.
+
+%\itt{len\_ulsmin} is a scalar variable of type default \integer, that specifies
+%an initial estimate as to the amount of workspace required by 
+%the factorization package {\tt ULS}.
+%The default is {\tt len\_ulsmin = 1000}.
+
+%\itt{itref\_max} is a scalar variable of type default \integer, that specifies 
+%the maximum number of iterative refinements allowed with each application 
+%of the preconditioner.
+%The default is {\tt itref\_max = 1}.
+
+\itt{new\_h} is a scalar variable of type default \integer, that is used
+to indicate how $\bmH$ has changed (if at all) since the previous call
+to {\tt \packagename\_solve}. Possible values are:
+\begin{description}
+\itt{0} $\bmH$ is unchanged
+\itt{1} the values in $\bmH$ have changed, but its nonzero structure 
+is as before.
+\itt{2} both the values and structure of $\bmH$ have changed.
+\end{description}
+The default is {\tt new\_h = 2}.
+
+\itt{new\_a} is a scalar variable of type default \integer, that is used
+to indicate how $\bmA$ has changed (if at all) since the previous call
+to {\tt \packagename\_solve}. Possible values are:
+\begin{description}
+\itt{0} $\bmA$ is unchanged
+\itt{1} the values in $\bmA$ have changed, but its nonzero structure 
+is as before.
+\itt{2} both the values and structure of $\bmA$ have changed.
+\end{description}
+The default is {\tt new\_a = 2}.
+
+\itt{cg\_maxit} is a scalar variable of type default \integer, that is used
+to limit the number of conjugate-gradient iterations performed in 
+the optimality phase. If 
+{\tt cg\_maxit} is negative, no limit will be impossed. The default
+is {\tt cg\_maxit = 200}.
+
+%\itt{pivot\_tol}  is a scalar variable of type default 
+%\realdp, that holds the
+%threshold pivot tolerance used by the matrix factorization.  See 
+%the documentation for the packages {\tt SILS} and {\tt ULS} for details.
+%The default is {\tt pivot\_tol = 0.01}.
+
+%\itt{pivot\_tol\_for\_basis} is a scalar variable of type default 
+%\realdp, that holds the
+%threshold pivot  tolerance used by the package {\tt ULS} 
+%when computing the non-singular basis matrix $\bmA_1$ for
+%an implicit preconditioner. Since the calculation of a
+%suitable basis is crucial, it is sensible to pick a larger
+%value of {\tt pivot\_tol\_for\_basis} than of {\tt pivot\_tol}.
+%The default is {\tt pivot\_tol\_for\_basis = 0.5}.
+
+%\itt{zero\_pivot} is a scalar variable of type default \realdp, 
+%that is used to detect singularity. Any pivot encountered during the
+%factorization whose absolute value is less than or equal to  {\tt zero\_pivot}
+%will be regarded as zero, and the matrix as singular.
+%The default is {\tt zero\_pivot =} $u^{0.75}$
+%where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+%{\tt \fullpackagename\_double}).
+
+\itt{radius} is a scalar variable of type default 
+\realdp, that may be used to specify an upper bound on the norm
+of the allowed solution (a ``trust-region'' constraint) during the
+iterative solution of the optimality phase of the problem.
+This is particularly useful if the
+problem is unbounded from below. If {\tt radius} is set too small, there
+is a possibility that this will preclude the package from 
+finding the actual solution.
+If {\tt initial\_radius} is not positive, it will be reset to the 
+default value, {\tt initial\_radius = SQRT(0.1*HUGE(1.0))}
+({\tt SQRT(0.1*HUGE(1.0D0))} in {\tt \fullpackagename\_double}).
+
+%\itt{inner\_fraction\_opt} is a scalar variable of type default 
+%\realdp, that specifies the
+%fraction of the optimal value which is acceptable for the 
+%iterative solution of the optimality phase of the problem using the package 
+%{\tt \libraryname\_GLTR},
+%and correspond to the value {\tt control\%inner\_fraction} in that package.
+%A negative value is considered to be zero, and a value of larger than one
+%is considered to be one. Reducing {\tt fraction\_opt} below one will result
+%in a reduction of the computation performed at the expense of an inferior
+%approximation to the optimal value.
+%The default is {\tt inner\_fraction\_opt = 0.1}.
+
+\itt{inner\_stop\_relative} and {\tt inner\_stop\_absolute} 
+are scalar variables of type default \realdp, 
+that hold the relative and absolute convergence tolerances for the
+iterative solution of the optimality phase of the problem using the package 
+{\tt \libraryname\_GLTR},
+and correspond to the values {\tt control\%stop\_relative} and
+{\tt control\%stop\_absolute} in that package.
+The defaults are 
+%{\tt inner\_stop\_relative = 0.0}
+{\tt inner\_stop\_relative = 0.01}
+and \sloppy {\tt inner\_stop\_absolute =} $\sqrt{u}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{max\_infeasibility\_relative} and {\tt max\_infeasibility\_absolute} 
+are scalar variables of type default \realdp, 
+that hold the relative and absolute tolerances for assessing 
+infeasibility in the feasibility phase.  If the constraints are believed to be 
+rank defficient and the norm of the residual $\bmA \bmx_T + \bmc$
+at a "typical" feasiblke point is larger than
+  $\max( ${\tt max\_infeasibility\_relative}$ \ast \| A\|,$ 
+{\tt max\_infeasibility\_absolute}$)$,
+the problem will be marked as infeasible,
+The defaults are 
+{\tt max\_infeasibility\_relative = 
+\tt max\_infeasibility\_absolute =} $u^{0.75}$
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{remove\_dependencies} is a scalar variable of type default \logical, 
+that must be set \true\ if linear dependent constraints
+$\bmA \bmx + \bmc = \bmzero$ should be removed and \false\ otherwise.
+The default is {\tt remove\_dependencies = .TRUE.}.
+
+%\itt{find\_basis\_by\_transpose} is a scalar variable of type default \logical, 
+%that must be set \true\ if the invertible sub-block $\bmA_1$ of the 
+%columns of $\bmA$ is computed by analysing the transpose of $\bmA$ 
+%and \false\ if the analysis is based on $\bmA$ itself. Generally
+%an analysis based on the transpose is faster.
+%The default is {\tt find\_basis\_by\_transpose = .TRUE.}.
+
+\itt{space\_critical} is a scalar variable of type default \logical, 
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if 
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical, 
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{FDC\_control} is a scalar variable of type 
+{\tt FDC\_control\_type}
+whose components are used to control any detection of linear dependencies
+performed by the package 
+{\tt \libraryname\_FDC}. 
+See the specification sheet for the package 
+{\tt \libraryname\_FDC} 
+for details, and appropriate default values.
+
+\itt{GLTR\_control} is a scalar variable argument of type 
+{\tt GLTR\_control\_type} that is used to pass control
+options to the conjugate-gradient solver used to solve linear systems that arise. 
+See the documentation for the \galahad\ package {\tt GLTR} for further details. 
+In particular, default values are as for {\tt GLTR}.
+
+\itt{SBLS\_control} is a scalar variable argument of type 
+{\tt SBLS\_control\_type} that is used to pass control
+options to the symmetric block linear equation preconditioner 
+used to help solve linear systems that arise. 
+See the documentation for the \galahad\ package {\tt SBLS} for further details. 
+In particular, default values are as for {\tt SBLS}.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected 
+character string to preface every line of printed output. 
+Specifically, each line of output will be prefaced by the string 
+{\tt prefix(2:LEN(TRIM( prefix ))-1)},
+thus ignoreing the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\end{description}

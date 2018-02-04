@@ -1,0 +1,7 @@
+ At 1st point, nonzeros in Hessian matrix are 
+  3.0000E+01  1.0000E+00  6.0000E+00  1.0000E+00  6.0000E+00
+  1.0000E+00  6.0000E+00  1.0000E+00  6.0000E+00
+
+ At 2nd point, nonzeros in Hessian matrix are 
+  3.0000E+01  1.0000E+00  1.2000E+01  1.0000E+00  1.8000E+01
+  1.0000E+00  2.4000E+01  1.0000E+00  3.0000E+01

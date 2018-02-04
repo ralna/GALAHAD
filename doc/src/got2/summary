@@ -1,0 +1,54 @@
+GALAHAD packages:
+
+LANCELOT B: a sequential augmented Lagrangian method for 
+minimizing a (nonlinear) objective subject to general (nonlinear) constraints
+and simple bounds.
+
+FILTRANE: finds a feasible point for a system of equations and inequalities
+using a trust-region filter method.
+
+QPB: a primal-dual interior-point trust-region method for 
+minimizing a general quadratic objective function over a polyhedral region.
+(HSL_VE12 in HSL)
+
+QPA: an active/working-set method for 
+minimizing a general quadratic objective function over a polyhedral region.
+(HSL_VE19 in HSL)
+
+LSQP: an interior-point method for minimizing a linear or 
+separable convex quadratic function over a polyhedral region.
+(HSL_VE13 in HSL)
+
+PRESOLVE: a method for preprocessing linear and quadratic programming 
+problems prior to solution by other packages.
+
+GLTR: a method for minimizing a general quadratic objective function 
+over the interior or boundary of a (scaled) hyper-sphere.
+(HSL_VF05 in HSL)
+
+SILS: an interface to the HSL sparse-matrix package MA27 
+that is functionally equivalent to the more recent HSL package HSL_MA57.
+
+SCU: use a Schur complement update to find the solution of 
+a sequence of linear systems for which the solution
+involving a leading sub-matrix may be found by other means.
+(HSL_MA69 in HSL)
+
+QPP reorders linear and quadratic programming 
+problems to a convenient form prior to solution by other packages.
+(HSL_VE15 in HSL)
+
+QPT provides a derived type for holding linear and quadratic programming 
+problems.
+(HSL_ZD02 in HSL)
+
+SMT provides a derived type for holding sparse matrices in a variety of
+formats.
+(HSL_ZD01 in HSL)
+
+SORT gives implementations of both Quick-sort and Heap-sort methods.
+{HSL_KB12 in HSL)
+
+RAND provides pseudo-random numbers.
+(HSL_FA14 in HSL)
+

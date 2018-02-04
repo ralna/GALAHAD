@@ -1,0 +1,22 @@
+Thanks are due to numerous people over the years who have
+directly or inderiectly lead to improvements in GALAHAD packages.
+
+Important direct contributions were made by Coralia Cartis 
+and Sue Thorne (nee Dollar) from RAL, Daniel Robinson from Oxford
+and Margherita Porcelli from Florence.
+
+Less directly, Mario Arioli, Iain Duff, Jonathan Hogg, John Reid
+and Jennifer Scott (RAL), Olaf Schenk (U. Basel) and Anshul Gupta (IBM)
+have all helped by adding design features to HSL and other sparse matrix 
+codes codes to make them usable by GALAHAD packages. Sven Leyffer (Argonne)
+and Jorge Nocedal (Northwestern) both made important suggestions that
+have resulted in better nonlinear programming solvers.
+
+Specific thanks to N. Shamsundar (Houston) for his line-by-line
+analysis of LANCELOT, and his numerous sugestions on how to
+avoid difficulties we had overlooked. 
+
+And of course to Andy Conn (IBM) without whom LANCELOT would
+have never happened.
+
+Nick, Dominique and Philippe

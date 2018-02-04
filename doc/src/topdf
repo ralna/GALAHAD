@@ -1,0 +1,17 @@
+#!/bin/csh
+
+ps2pdf $GALAHAD/doc/galahad.ps $GALAHAD/doc/galahad.pdf
+ps2pdf $GALAHAD/doc/gltr.ps $GALAHAD/doc/gltr.pdf
+ps2pdf $GALAHAD/doc/lancelot.ps $GALAHAD/doc/lancelot.pdf
+ps2pdf $GALAHAD/doc/lsqp.ps $GALAHAD/doc/lsqp.pdf
+ps2pdf $GALAHAD/doc/presolve.ps $GALAHAD/doc/presolve.pdf
+ps2pdf $GALAHAD/doc/qpa.ps $GALAHAD/doc/qpa.pdf
+ps2pdf $GALAHAD/doc/qpb.ps $GALAHAD/doc/qpb.pdf
+ps2pdf $GALAHAD/doc/qpp.ps $GALAHAD/doc/qpp.pdf
+ps2pdf $GALAHAD/doc/qpt.ps $GALAHAD/doc/qpt.pdf
+ps2pdf $GALAHAD/doc/rand.ps $GALAHAD/doc/rand.pdf
+ps2pdf $GALAHAD/doc/scu.ps $GALAHAD/doc/scu.pdf
+ps2pdf $GALAHAD/doc/sils.ps $GALAHAD/doc/sils.pdf
+ps2pdf $GALAHAD/doc/smt.ps $GALAHAD/doc/smt.pdf
+ps2pdf $GALAHAD/doc/sort.ps $GALAHAD/doc/sort.pdf
+ps2pdf $GALAHAD/doc/symbols.ps $GALAHAD/doc/symbols.pdf

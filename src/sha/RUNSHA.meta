@@ -1,0 +1,11 @@
+MAIN
+! print-level                                       1
+! maximum-differences-allowed                       100
+! write-result-summary                              F
+! result-summary-file-name                          SHARES.d
+! result-summary-file-device                        47
+! write-solution                                    F
+! solution-file-name                                SHASOL.d
+! solution-file-device                              62
+
+INCLUDE SHA

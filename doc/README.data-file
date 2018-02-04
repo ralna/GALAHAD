@@ -1,0 +1,255 @@
+PROBLEM-DATA-FILE INPUT FOR LINEAR AND QUADRATIC PROGRAMMING
+------------------------------------------------------------
+
+A new feature for problems that may be described entirely in terns
+of matrix, vector and scalar data (primarily quadratic and linear
+programs) is the ability to input this data directly, and not via
+the more general SIF format. This alternative data format is used 
+by the QPlib2014 (see http://www.lamsade.dauphine.fr/QPlib2014/) 
+test-problem collection
+
+USING A PROBLEM-DATA FILE
+-------------------------
+
+The user will need to prepare a properly-formatted problem-data file
+and then to call the appropriate GALAHAD solver via the dgal command. 
+Options may be passed to the solver using the normal GALAHAD specfile
+mechanism. For example, to use the GALAHAD package QPB, compiled under
+Linux using the NAG f95 compiler, to solve a problem specified in the 
+file example.qplib, the user should issue the command
+
+  dgal pc.lnx.n95 qpb example.qplib
+
+from the directory containing the problem-data file. For details on the
+dgal command, see the its man page.
+
+PROBLEM-DATA FILE SYNTAX
+------------------------
+
+the linear program with quadratic constraints (LPQC)
+
+   minimize           g(T) x + f
+
+   subject to     c_l <= A x + 1/2 vec( x . H_c . x ) <= c_u
+                  x_l <= x <= x_u
+
+the bound-constrained quadratic program (BQP)
+
+   minimize     1/2 x(T) H x + g(T) x + f
+
+   subject to     x_l <= x <= x_u
+
+the quadratic program (QP)
+
+   minimize     1/2 x(T) H x + g(T) x + f
+
+   subject to     c_l <= A x <= c_u
+                  x_l <= x <= x_u
+
+or the quadratic program with quadratic constraints (QPQC)
+
+   minimize     1/2 x(T) H x + g(T) x + f
+
+   subject to     c_l <= A x + 1/2 vec( x . H_c . x ) <= c_u
+                  x_l <= x <= x_u
+
+where vec( x . H_c . x ) is the vector whose ith component is  x(T) H_c x 
+for the i-th constraint. Variables may be continuous or integer
+
+Suppose the user wishes to solve the linear program (LP),
+
+     minimize         g(T) x + f
+
+     subject to     c_l <= A x <= c_u
+                    x_l <=  x <= x_u
+
+the quadratic program (QP)
+
+     minimize     1/2 x(T) H x + g(T) x + f
+
+     subject to     c_l <= A x <= c_u
+                    x_l <=  x <= x_u
+
+or the quadratic program with quadratic constraints (QPQC)
+
+   minimize     1/2 x(T) H x + g(T) x + f
+
+   subject to     c_l <= A x + 1/2 vec( x . H_i . x ) <= c_u
+                  x_l <= x <= x_u
+
+where vec( x . H_i . x ) is the vector whose ith component is  x(T) H_i x 
+for the i-th constraint. Suppose further that variables may be continuous 
+or integer.
+
+The data is in free format (blanks separate values), but must occur in
+the order given here. Any blank lines, or lines starting with any of the
+characters "!", "%" or "#" are ignored. Each term in "quotes" denotes 
+a required value. Any strings beyond those required on a given line will
+be regarded as comments and ignored.
+
+"problem name"
+"problem type"
+"number of variables"
+"number of general linear constraints"                                       [1]
+"number of nonzeros in lower triangle of H"                                  [2]
+"row" "column" "value" for each entry of H (if any), one triple on each line
+"default value for entries in g"
+"number of non-default entries in g"
+"index" "value" for each non-default term in g (if any), one pair per line
+"value of f"
+"number of nonzeros in lower triangles of H_q"                             [1,3]
+"constraint" "row" "column" "value" for each entry of H_c (if any), 
+   one quadruple on each line
+"number of nonzeros in A"                                                    [1]
+"row" "column" "value" for each entry of A (if any), one triple on each line
+"value for infinity" for bounds - any bound greater than or equal to this
+   in absolute value is infinite
+"default value for entries in c_l"                                           [1]
+"number of non-default entries in c_l"                                       [1]
+"index" "value" for each non-default term in c_l (if any), one pair per line
+"default value for entries in c_u"                                           [1]
+"number of non-default entries in c_u"                                       [1]
+"index" "value" for each non-default term in c_u (if any), one pair per line
+"default value for entries in x_l"
+"number of non-default entries in x_l"
+"index" "value" for each non-default term in x_l (if any), one pair per line
+"default value for entries in x_u"
+"number of non-default entries in x_u"
+"index" "value" for each non-default term in x_u (if any), one pair per line
+"default variable type"  (0 for continuous variable, 1 for integer)          [4]
+"number of non-default variables"                                            [4]
+"index" "value" for each non-default variable type (if any), one pair per line
+"default value for starting value for variables x"
+"number of non-default starting entries in x"
+"index" "value" for each non-default term in x (if any), one pair per line
+"default value for starting value for Lagrange multipliers y for constraints"[1]
+"number of non-default starting entries in y"                                [1]
+"index" "value" for each non-default term in y (if any), one pair per line
+"default value for starting value for dual variables z for simple bounds"
+"number of non-default starting entries in z"
+"index" "value" for each non-default term in z (if any), one pair per line
+"number of non-default names of variables" - default for variable i is "i"
+"index" "name" for each non-default name for variable x_i with index i (if any)
+"number of non-default names of constraints" - default for constraint i is "i"
+"index" "name" for each non-default name for constraint with index i (if any)
+
+The "problem type" is one of the following
+
+continuous problems
+
+  LP      a linear program
+  LPQC    a linear program with quadratic constraints
+  BQP     a bound-constrained quadratic program
+  QP      a quadratic program
+  QPQC    a quadratic program with quadratic constraints
+
+integer problems
+
+  ILP     an integer linear program
+  ILPQC   an integer linear program with quadratic constraints
+  IBQP    an integer bound-constrained quadratic program
+  IQP     an integer quadratic program
+  IQPQC   an integer quadratic program with quadratic constraints
+
+mixed-integer problems
+
+  MILP    a mixed-integer linear program
+  MILPQC  a mixed-integer linear program with quadratic constraints
+  MIBQP   a mixed-integer bound-constrained quadratic program
+  MIQP    a mixed-integer quadratic program
+  MIQPQC  a mixed-integer quadratic program with quadratic constraints
+
+[1] for bound-constrained QPs, these sections are omitted.
+[2] for linear program with quadratic constraints, this section is omitted. 
+[3] for problems without quadratic constraints, this section is omitted.
+[4] for purely-continuous or purely-integer problems, this section is omitted.
+
+EXAMPLE
+-------
+
+Suppose the use wishes to solve the banded quadratic program corresponding to
+
+   H = (  2  -1              ), g = ( - 1/5 ), f = 0, x_l = ( 0 ), x_u = ( 2 )
+       ( -1   2  -1          )      ( - 2/5 )               ( 0 )        ( 2 )
+       (     -1   2  -1      )      ( - 3/5 )               ( 0 )        ( 2 )
+       (         -1   2  -1  )      ( - 4/5 )               ( 0 )        ( 2 )
+       (             -1   2  )      ( - 1   )               ( 0 )        ( 2 )
+ 
+   A = (  1       1          ),  c_l = ( 1 ) and c_u = ( infinity ),
+       (      1       1      )         ( 1 )           ( infinity )
+
+starting from zero initial estimates for the variables x, the Lagrange 
+multipliers y for the linear constraints, and the dual variables z for 
+the simple-bound constraints - here a space in the data matrices A and 
+H denotes a zero. Then the following problem-data file is appropriate -
+note that we have represented infinity as 1.0E+20.
+
+------------------- contents of problem-data file QPBAND.qplib ----------------
+
+! ---------------
+! example problem
+! ---------------
+
+QPBAND    problem name (example from QPBAND.SIF with n = 5)
+QP        # problem is a quadratic program
+5         # variables
+2         # general linear constraints
+
+9         # nonzeros in lower triangle of H
+1 1 2.0   9 lines of row & column index & value of nonzeros in lower triangle H
+2 1 -1.0  |
+2 2 2.0   |
+3 2 -1.0  |
+3 3 2.0   |
+4 3 -1.0  |
+4 4 2.0   |
+5 4 -1.0  |
+5 5 2.0   |
+
+-0.2      default value for entries in g
+4         # non default entries in g
+2 -0.4    4 lines of index & value of non-default values in g
+3 -0.6    |
+4 -0.8    |
+5 -1.0    |
+
+0.0       value of f
+
+4         # nonzeros in A
+1 1 1.0   4 lines of row & column index & value of nonzeros in A
+1 3 1.0   |
+2 2 1.0   |
+2 4 1.0   |
+
+1.0E+20   infinity
+
+1.0       default value for entries in c_l
+0         # non default entries in c_l
+
+1.0E+20   default value for entries in c_u
+0         # non default entries in c_u
+
+0.0       default value for entries in x_l
+0         # non default entries in x_l
+
+2.0       default value for entries in x_u
+0         # non default entries in x_u
+
+0.0       default value for initial values for x
+0         # non default entries in x
+
+0.0       default value for initial values for y
+0         # non default entries in y
+
+0.0       default value for initial values for z
+0         # non default entries in z
+
+0         # non default names for variables
+
+0         # non default names for constraints
+
+--------------- end of contents of problem-data file QPBAND.qplib ------------
+
+  
+
+

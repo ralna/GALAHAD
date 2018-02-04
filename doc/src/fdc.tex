@@ -1,0 +1,755 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{fdc}
+\newcommand{\packagename}{FDC}
+\newcommand{\fullpackagename}{\libraryname\_\-\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+Given an under-determined set of linear equations/constraints
+$\bma_i^T \bmx = c_i^{}$,
+$i = 1, \ldots, m$ involving $n \geq m$ unknowns $\bmx$, this package
+{\bf determines whether the constraints are consistent, and if so how many
+of the constraints are dependent}; a list of dependent constraints, that
+is, those which may be removed without changing the solution set, will be found
+and the remaining $\bma_i$ will be linearly independent.
+Full advantage is taken of any zero coefficients in the vectors $\bma_i$.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses
+{\tt GALAHAD\_\-CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS}, {\tt GALAHAD\_\-STRING},
+{\tt GALAHAD\_SMT}, {\tt GALAHAD\_\-ROOTS}, {\tt GALAHAD\_\-SLS},
+{\tt GALAHAD\_\-ULS}, {\tt GALAHAD\_SPECFILE}, {\tt GALAHAD\-\_SPACE}.
+\galdate August  2006.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
+\galparallelism Some options may use OpenMP and its runtime library.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types
+{\tt SMT\_type},
+{\tt \packagename\_time\_type},
+{\tt \packagename\_control\_type},
+and
+{\tt \packagename\_inform\_type}
+(Section~\ref{galtypes})
+and the subroutines
+{\tt \packagename\_initialize},
+{\tt \packagename\_\-find\_dependent},
+{\tt \packagename\_terminate}
+(Section~\ref{galarguments})
+and
+{\tt \packagename\_read\_specfile}
+(Section~\ref{galfeatures})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% long integers %%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Integer kinds}\label{Integer kinds}
+We use the term
+long \integer\ to denote {\tt INTEGER\-(kind=long)}, where
+{\tt long = selected\_int\_kind(18))}.
+
+%%%%%%%%%%%%%%%%%%%%%% OpenMP usage %%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{OpenMP}
+OpenMP may be used by the {\tt \fullpackagename} package to provide
+parallelism for some solver options in shared memory environments.
+See the documentation for the \galahad\ package {\tt SLS} for more details.
+To run in parallel, OpenMP
+must be enabled at compilation time by using the correct compiler flag
+(usually some variant of {\tt -openmp}).
+The number of threads may be controlled at runtime
+by setting the environment variable {\tt OMP\_NUM\_THREADS}.
+
+\noindent
+The code may be compiled and run in serial mode.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Three derived data types are accessible from the package.
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control
+ parameters}\label{typecontrol}
+The derived data type
+{\tt \packagename\_control\_type}
+is used to hold controlling data. Default values may be obtained by calling
+{\tt \packagename\_initialize}
+(see Section~\ref{subinit}),
+while components may also be changed by calling
+{\tt \fullpackagename\_read\-\_spec}
+(see Section~\ref{readspec}).
+The components of
+{\tt \packagename\_control\_type}
+are:
+
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in
+{\tt \packagename\_find\_dependent} and {\tt \packagename\_terminate}
+is suppressed if {\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in
+{\tt \packagename\_find\_dependent} is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No
+informational output will occur if {\tt print\_level} $\leq 0$. If
+{\tt print\_level} $= 1$, basic statistics of the performance of the
+package will be produced. If {\tt print\_level} $\geq 2$, this output will be
+increased to provide details such as the size of each neglected pivot.
+The default is {\tt print\_level = 0}.
+
+%\itt{indmin} is a scalar variable of type default \integer, that specifies
+%an initial estimate as to the amount of integer workspace required by
+%the factorization package {\tt SLS}.
+%The default is {\tt indmin = 1000}.
+
+%\itt{valmin} is a scalar variable of type default \integer, that specifies
+%an initial estimate as to the amount of real workspace required by
+%the factorization package {\tt SLS}.
+%The default is {\tt valmin = 1000}.
+
+\itt{max\_infeas} is a scalar variable of type default \realdp, that holds the
+largest permitted infeasibility for a dependent constraint. Specifically, if
+$\bmx$ satisfies $\bma_i^T \bmx = c_i^{}$ for the constraints deemed to be
+linearly independent, it is required that $|\bma_i^T \bmx - c_i^{}| \leq$
+{\tt max\_infeas} for those classified as dependent.
+The default is {\tt max\_infeas =} $u^{1/3}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+\itt{pivot\_tol} is a scalar variable of type default
+\realdp, that holds the
+relative pivot  tolerance used by the matrix factorization when
+attempting to detect linearly dependent constraints.
+%A value larger than  {\tt pivot\_tol} is appropriate.
+See the documentation for the packages {\tt SLS} and {\tt ULS} for details.
+The default is {\tt pivot\_tol = 0.5}.
+
+%\itt{zero\_pivot} is a scalar variable of type default \realdp.
+%Any pivots smaller than  {\tt zero\_pivot} in absolute value will be regarded
+%to be zero when attempting to detect linearly dependent constraints.
+%The default is {\tt zero\_pivot =} $u^{3/4}$,
+%where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+%{\tt \fullpackagename\_double}).
+
+\itt{use\_sls} is a scalar variable of type default
+\logical, that should be set \true\ if the
+\libraryname\ package {\tt SLS} is to be used
+to detect linearly dependent constraints, or \false\ if
+the \libraryname\ package {\tt ULS} is to be used instead.
+The default is {\tt use\_sls = }\false.
+
+\itt{scale} is a scalar variable of type default \logical,
+that must be set \true\ if the rows of $\bmA$ are to be scaled to
+have unit (infinity) norm and  \false\ otherwise.
+The default is {\tt scale = .FALSE.}.
+
+\itt{space\_critical} is a scalar variable of type default \logical,
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical,
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{symmetric\_linear\_solver} is a scalar variable of type default \character\
+and length 30, that specifies the external package to be used to
+solve any symmetric linear system that might arise. Current possible
+choices are {\tt 'sils'}, {\tt 'ma27'}, {\tt 'ma57'}, {\tt 'ma77'},
+{\tt 'ma86'}, {\tt 'ma97'}, {\tt ssids}, {\tt 'pardiso'}
+and {\tt 'wsmp'},
+although only {\tt 'sils'} and, for OMP 4.0-compliant compilers,
+{\tt 'ssids'} are installed by default.
+See the documentation for the \galahad\ package {\tt SLS} for further details.
+The default is {\tt symmetric\_linear\_solver = 'sils'},
+but we recommend {\tt 'ma97'} if it available.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected
+character string to preface every line of printed output.
+Specifically, each line of output will be prefaced by the string
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoreing the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\itt{SLS\_control} is a scalar variable argument of type
+{\tt SLS\_control\_type} that is used to pass control
+options to external packages used to
+factorize relevant symmetric matrices that arise.
+See the documentation for the \galahad\ package {\tt SLS} for further details.
+In particular, default values are as for {\tt SLS}, except that
+{\tt SLS\_control\%rela\-tive\_pivot\_tolerance} is reset to
+{\tt pivot\_tol}.
+
+\itt{ULS\_control} is a scalar variable argument of type
+{\tt ULS\_control\_type} that is used to pass control
+options to external packages used to
+factorize relevant unsymmetric matrices that arise.
+See the documentation for the \galahad\ package {\tt ULS} for further details.
+In particular, default values are as for {\tt ULS}, except that
+{\tt ULS\_control\%rela\-tive\_pivot\_tolerance} is reset to
+{\tt pivot\_tol}.
+
+\end{description}
+
+%%%%%%%%%%% time type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding timing
+ information}\label{typetime}
+The derived data type
+{\tt \packagename\_time\_type}
+is used to hold elapsed CPU and system clock times for the various parts of
+the calculation. The components of
+{\tt \packagename\_time\_type}
+are:
+\begin{description}
+\itt{total} is a scalar variable of type default \realdp, that gives
+ the total CPU time spent in the package.
+
+\itt{analyse} is a scalar variable of type default \realdp, that gives
+ the CPU time spent analysing the required matrices prior to factorization.
+
+\itt{factorize} is a scalar variable of type default \realdp, that gives
+ the CPU time spent factorizing the required matrices.
+
+\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+ the total elapsed system clock time spent in the package.
+
+\itt{clock\_analyse} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent analysing the required matrices prior to
+factorization.
+
+\itt{clock\_factorize} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent factorizing the required matrices.
+
+\end{description}
+
+%%%%%%%%%%% info type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type
+{\tt \packagename\_inform\_type}
+is used to hold parameters that give information about the progress and needs
+of the algorithm. The components of
+{\tt \packagename\_inform\_type}
+are:
+
+\begin{description}
+
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm.
+%See Sections~\ref{galerrors} and \ref{galinfo}
+See Section~\ref{galerrors}
+for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}.
+
+\itt{factorization\_status} is a scalar variable of type default \integer, that
+gives the return status from the matrix factorization.
+
+\itt{factorization\_integer} is a scalar variable of type long
+\integer, that gives the amount of integer storage used for the matrix
+factorization.
+
+\itt{factorization\_real} is a scalar variable of type long \integer,
+that gives the amount of real storage used for the matrix factorization.
+
+\itt{non\_negligible\_pivot} is a scalar variable of type default \realdp,
+that holds the value of the smallest pivot larger than
+{\tt control\%zero\_pivot}
+when searching for dependent linear constraints. If
+{\tt non\_negligible\_pivot} is close to  {\tt control\%zero\_pivot},
+this may indicate that there are further dependent constraints, and
+it may be worth increasing {\tt control\%zero\_pivot} above
+{\tt non\_negligible\_pivot} and solving again.
+
+\ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
+whose components are used to hold elapsed CPU and system clock
+times for the various parts of the calculation (see Section~\ref{typetime}).
+
+\itt{SLS\_inform} is a scalar variable argument of type
+{\tt SLS\_inform\_type} that is used to pass information
+concerning the progress of the external packages used to
+factorize relevant symmetric matrices that arise.
+See the documentation for the \galahad\ package {\tt SLS} for further details.
+
+\itt{ULS\_inform} is a scalar variable argument of type
+{\tt ULS\_inform\_type} that is used to pass information
+concerning the progress of the external packages used to
+factorize relevant symmetric matrices that arise.
+See the documentation for the \galahad\ package {\tt ULS} for further details.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are three procedures for user calls
+(see Section~\ref{galfeatures} for further features):
+
+\begin{enumerate}
+\item The subroutine
+      {\tt \packagename\_initialize}
+      is used to set default values
+      before attempting to identify dependent constraints.
+\item The subroutine
+      {\tt \packagename\_find\_dependent}
+      is called to identify dependent constraints.
+\item The subroutine
+      {\tt \packagename\_terminate}
+      is provided to allow the user to automatically deallocate
+      workspace array components, previously allocated by
+       {\tt \packagename\_find\_dependent}, after use.
+\end{enumerate}
+We use square brackets {\tt [ ]} to indicate \optional arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize(  data, control, inform )}
+
+\vspace*{1mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+that need not be set on entry and whose components will be used as workspace.
+
+\itt{control} is a scalar \intentout\ argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}).
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentinout\ argument of type
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_find\_dependent}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% main solution subroutine %%%%%%
+
+\subsubsection{The subroutine for finding dependent constraints}
+Dependent constraints are identified as follows:
+
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_find\_dependent( n, m, A\_val, A\_col, A\_ptr, C,
+  \&}
+\vspace*{-1mm}
+
+\hspace{52mm}
+{\tt    n\_depen, C\_depen, data, control, inform )}
+
+%\vspace*{1mm}
+
+\begin{description}
+
+\ittf{m} is a scalar \intentin\ argument of type default \integer,
+that holds the number of constraints, $m$.
+{\bf Restriction: } $m \geq 0$.
+
+\ittf{n} is a scalar \intentin\ argument of type default \integer,
+that holds the number of unknowns, $n$.
+{\bf Restriction: } $n \geq 0$.
+
+\itt{A\_val} is an \intentin\ rank-one array of type default \realdp, that holds
+the values of the entries (that is those component whose values are nonzero)
+of the matrix $\bmA$ whose rows are the vectors $\bma_i^T$, $i = 1, \ldots, m$.
+The entries for row $i$ must directly precede those in row $i$, but the
+order within each row is unimportant.
+
+\itt{A\_col} is an \intentin\ rank-one array of type default \integer, that holds
+the (column) indices of the entries of $\bmA$ corresponding to the
+values input in {\tt A\_val}.
+
+\itt{A\_ptr} is an \intentin\ rank-one array of dimension {\tt m+1} and type
+default \integer, whose $i$-th entry holds the starting position of row $i$
+of $\bmA$ for $i = 1, \ldots, m$. The $m+1$-st entry of {\tt A\_ptr}
+must hold the total number of entries plus one.
+
+\ittf{C} is an \intentin\ rank-one array of dimension {\tt m} and
+type default \realdp, whose $i$-th component must be set to $c_i$ for
+$i = 1, \ldots, m$.
+
+\itt{n\_depen} is a scalar \intentout\ argument of type default \integer,
+that gives the number of dependent constraints.
+
+\itt{C\_depen} is a rank-one allocatable array of type default \integer,
+that should either have been nullified or associated on entry,
+but need not be set.
+On exit, if {\tt n\_depen} $>$ {\tt 0}, it will have been allocated to be of
+length {\tt n\_depen} and its components will be the indices of the dependent
+constraints. It will not be allocated or set if {\tt n\_depen = 0}.
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+that need not be set on entry and whose components will be used as workspace.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). Default values may be assigned by calling
+{\tt \packagename\_initialize} prior to the first call to
+{\tt \packagename\_find\_dependent}.
+
+\itt{inform} is a scalar \intentinout\ argument of type
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_find\_dependent}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_terminate( data, control, inform[, C\_depen ])}
+
+\vspace*{-1mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type} whose array components will be deallocated
+on exit.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_find\_dependent}.
+
+\itt{inform} is a scalar \intentinout\ argument of type
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_find\_dependent}.
+Only the components {\tt status}
+{\tt alloc\_status} and {\tt bad\_alloc}
+will be set on exit, and a
+successful call to
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\itt{C\_depen} is an \optional\ rank-one allocatable array of type default
+\integer, that will be deallocated on exit if \present.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt inform\%status} on exit from
+{\tt \packagename\_find\_dependent}
+or
+{\tt \packagename\_terminate}
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\itt{\galerrallocate.} An allocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error}, and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrdeallocate.} A deallocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error} and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+status is given by the value {\tt inform\%alloc\_status}.
+
+\itt{\galerrrestrictions.} One of the restrictions
+{\tt n} $\geq 0$ or {\tt m} $\geq  0$
+    has been violated.
+
+\itt{\galerrprimalinfeasible} The constraints appear to be inconsistent.
+
+\itt{\galerranalysis.} The analysis phase of the factorization failed;
+    the return status from the factorization
+    package is given in the component {\tt inform\%fac\-t\-orization\_status}.
+
+\itt{\galerrfactorization.} The factorization failed;
+ the return status from the factorization
+    package is given in the component {\tt inform\%fac\-t\-orization\_status}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}),
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of
+"specification commands". Each command occurs on a separate line,
+and comprises a "keyword",
+which is a string (in a close-to-natural language) used to identify a
+control parameter, and
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive,
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+The portion of the specification file used by
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by FDC_read_specfile .. )
+    BEGIN FDC
+       keyword    value
+       .......    .....
+       keyword    value
+    END
+  ( .. lines ignored by FDC_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
+may contain additional (trailing) strings so long as such strings are
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN FDC SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END FDC SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore,
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored.
+The content
+of a line after a {\tt !} or {\tt *} character is also
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some
+specification commands, or to comment specific values
+of certain control parameters.
+
+The value of a control parameters may be of three different types, namely
+integer, logical or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}",
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}".
+Empty values are also allowed for
+logical control parameters, and are interpreted as "{\tt TRUE}".
+
+The specification file must be open for
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number
+passed to the routine in device (see below).
+Note that the corresponding
+file is {\tt REWIND}ed, which makes it possible to combine the specifications
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in
+\def\baselinestretch{0.8} {\tt \begin{verbatim}
+     CALL FDC_read_specfile( control, device )
+\end{verbatim}}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}).
+Default values should have already been set, perhaps by calling
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and
+the component (see Section~\ref{typecontrol}) of {\tt control}
+that each affects are given in Table~\ref{specfile}.
+
+\bctable{|l|l|l|}
+\hline
+  command & component of {\tt control} & value type \\
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+%  {\tt initial-integer-workspace} & {\tt \%indmin} & integer \\
+%  {\tt initial-real-workspace} & {\tt \%valmin} & integer \\
+  {\tt maximum-permitted-infeasibility} & {\tt \%max\_infeas} & real \\
+  {\tt pivot-tolerance-used-for-dependencies} & {\tt \%pivot\_tol} & real \\
+%  {\tt zero-pivot-tolerance} & {\tt \%zero\_pivot} & real \\
+  {\tt use-sls}   & {\tt \%use\_sls} & logical \\
+  {\tt scale-A}   & {\tt \%scale} & logical \\
+  {\tt space-critical}   & {\tt \%space\_critical} & logical \\
+  {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
+  {\tt symmetric-linear-equation-solver} & {\tt \%symmetric\_linear\_solver} & character \\
+ {\tt output-line-prefix} & {\tt \%prefix} & character \\
+\hline
+\ectable{\label{specfile}Specfile commands and associated
+components of {\tt control}.}
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+If {\tt control\%print\_level} is positive, information about the progress
+of the algorithm will be printed on unit {\tt control\-\%out}.
+If {\tt control\%print\_level} $= 1$, basic statistics of the performance of the
+package will be produced.
+If {\tt control\-\%print\_level} $\geq 2$ this
+output will be increased to provide details such as the size of each
+neglected pivot.
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines None.
+\galmodules {\tt \packagename\_find\_dependent} calls the \galahad\ packages
+{\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS},
+{\tt GALAHAD\_STRING},
+{\tt GALAHAD\_SMT}, {\tt GALAHAD\_\-ROOTS}, {\tt GALAHAD\_\-SLS},
+{\tt GALAHAD\_\-ULS}, {\tt GALAHAD\_SPECFILE} and {\tt GALAHAD\_SPACE}.
+\galio Output is under control of the arguments
+ {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
+\galrestrictions {\tt n} $\geq 0$, {\tt m} $\geq  0$.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+
+A choice of two methods is available. In the first, the matrix
+\disp{ \bmK = \mat{cc}{ \alpha \bmI & \bmA^T \\ \bmA & \bmzero } }
+is formed and factorized for some small $\alpha > 0$ using the
+\libraryname\ package {\tt SLS}---the
+factors $\bmK = \bmP \bmL \bmD \bmL^T \bmP^T$ are used to determine
+whether $\bmA$ has dependent rows. In particular, in exact arithmetic
+dependencies in $\bmA$ will correspond to zero pivots in the block
+diagonal matrix $\bmD$.
+
+The second choice of method finds factors
+$\bmA = \bmP \bmL \bmU \bmQ$ of the rectangular matrix $\bmA$
+using the \libraryname\ package {\tt ULS}.
+In this case, dependencies in $\bmA$ will be reflected in zero diagonal
+entries in $\bmU$ in exact arithmetic.
+
+The factorization in either case may also be used to
+determine whether the system is consistent.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose we wish to find whether the linear constraints
+$x_1 + 2 x_2 + 3 x_3 + 4 x_4 = 5, 2 x_1 - 4 x_2 + 6 x_3 - 8 x_4 = 10
+\;\; \mbox{and} \;\; 5 x_2 + 10 x_4 = 0$
+are consistent but redundant.
+Then we may use the following code.
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+
+\end{document}
+
+
+
+
+
+
+

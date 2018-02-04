@@ -1,0 +1,201 @@
+As of November 2006, we are offering GALAHAD on the MAC OS/X platform.  
+The installation is entirely similar to  that on UNIX  platforms  and 
+should be as expected to users who are familiar with the command line.
+
+Before  running the  install_galahad script,  check the  value  of the
+environment variable MACOSX_DEPLOYMENT_TARGET. If this variable is set
+to 10.1 or lower, please reset it temporarily:
+
+% export MACOSX_DEPLOYMENT_TARGET=10.4
+
+So far, two  Fortran 90/95 compilers have been tested  on the MAC OS/X
+platform: the commercial  AbSoft f95 compiler and the  open source g95
+compiler (www.g95.org).
+
+The  ar   and  ranlib  utilities  slightly  differ   from  their  UNIX
+counterparts and during  the installation, you will notice  (a lot of)
+messages of the general form (reformatted for readability):
+
+ranlib: file:
+ /somedir/galahad/objects/mac.osx.g95/double/libgalahad.a(cuterinter.o)
+ has no symbols
+
+This message  appears to be due to  ar and ranlib being  phased out on
+this  platform and being  superceded by  libtool. The  warning message
+however, is inconsequential and can be safely ignored.
+
+=========================
+2014 Update for OSX users
+=========================
+
+If you are a OSX user, there are few tools that you can install on your system
+to make your life easier, especially if you plan to use Matlab.
+
+Compilers
+---------
+
+Recent versions of OSX do not ship with gcc any more but instead with a
+replacement named clang. In order to install the C compiler and various
+command-line utilities that will be necessary to install GALAHAD, you need to
+install the latest version of XCode available for your system.
+
+XCode is available for free from the Mac App Store. If you require an older
+version of XCode (e.g., because you are running OSX 10.6), head to
+https://developer.apple.com/support/xcode.
+
+Important: when you install XCode, make sure to also install the command-line
+tools. For this, start up XCode and go to the menu XCode > Preferences. Click
+on the Downloads icon, select the Components tab and click on the Install
+button located in front of 'Command Line Tools'.
+
+Unfortunately, no Fortran compiler is supplied as part of XCode. We need to
+install gcc. Enter Homebrew.
+
+
+Homebrew
+--------
+
+Homebrew is the equivalent of a package manager for OSX. We have found it to be
+more reliable than other options such as MacPorts. With Homebrew you will be
+able to easily install multiple versions of gcc/gfortran and a multitude of
+other pieces of software.
+
+To install Homebrew, execute the one-liner given at the bottom of its home
+page: http://mxcl.github.io/homebrew
+
+Once Homebrew is installed, we can use it to install a recent version of gcc
+and gfortran. Homebrew's default repository's mission is to provide only
+software that is not provided by Apple. Since Apple ships a program called gcc
+(which in fact calls clang), gcc is found in a non-default Homebrew repository.
+Homebrew repositories are called taps. Execute the following command to tap
+from the 'versions' repository:
+
+    $ brew tap homebrew/versions
+
+We may now install gcc with the command
+
+    $ brew install gcc43 --enable-fortran --enable-profiled-build
+
+Here, we are installing gcc and gfortran 4.3, which are the versions supported
+by the Mathworks for interaction with Matlab. If you intend to use Matlab with
+GALAHAD, this step is mandatory. If you do not intend to use Matlab, you may
+only install a more recent version of gcc / gfortran. Simply substitute 'gcc43'
+above by the version you wish to install. At the time of this writing, the most
+recent Homebrew formula is gcc48. See
+http://github.com/Homebrew/homebrew-versions for a list of versions available.
+
+If you wish to install more than the C and Fortran compilers, you may do so by
+substituting --enable-fortran above with appropriate options. At the command
+line, type
+
+    $ brew info gcc43  # or the version you wish
+
+for information on build options.
+
+The compilers installed are available by invoking the executables gcc-4.3,
+gfortran-4.3, gcc-4.8, gfortran-4.8, etc. When installing GALAHAD, make sure you
+edit the compiler settings and that those executables are correctly specified.
+
+You will have to define the environment variable MATLAB to point to the
+top-level directory of the Matlab tree. Typically, this path will have the form
+
+    /Applications/Matlab/R20xyz   # e.g., R2012a
+
+
+Matlab's MEX
+------------
+
+We need to create a default MEX options file to ensure Matlab uses gcc-4.3 and
+gfortran-4.3 when compiling MEX files. If you do not already have a mexopts.sh
+file (typically located in ~/.matlab/R20xyz/), you may create one using the
+command
+
+    $ /Applications/Matlab/R20xyz/bin/mex -setup
+
+and choosing option 1, which copies Matlab's default mexopts.sh file to your
+~/.matlab/R20xyz/. Edit this file in your favorite editor and locate the
+section named 'maci64'. Now edit this section so it looks as follows:
+
+
+        maci64)
+#----------------------------------------------------------------------------
+            # StorageVersion: 1.0
+            # CkeyName: GNU C
+            # CkeyManufacturer: GNU
+            # CkeyLanguage: C
+            # CkeyVersion:
+            CC='gcc-4.3'
+            SDKROOT='/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX
+.platform/Developer/SDKs/MacOSX10.8.sdk'
+            MACOSX_DEPLOYMENT_TARGET='10.5'
+            ARCHS='x86_64'
+            CFLAGS="-fno-common -march=core2 -isysroot $SDKROOT -mmacosx-version
+-min=$MACOSX_DEPLOYMENT_TARGET"
+            CFLAGS="$CFLAGS  -fexceptions"
+            CLIBS="$MLIBS"
+            COPTIMFLAGS='-O2 -DNDEBUG'
+            CDEBUGFLAGS='-g'
+#
+            CLIBS="$CLIBS -lstdc++"
+            # C++keyName: GNU C++
+            # C++keyManufacturer: GNU
+            # C++keyLanguage: C++
+            # C++keyVersion:
+            CXX='g++-4.3'
+            CXXFLAGS="-fno-common -fexceptions -march=core2 -isysroot $SDKROOT -
+mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET"
+            CXXLIBS="$MLIBS -lstdc++"
+            CXXOPTIMFLAGS='-O2 -DNDEBUG'
+            CXXDEBUGFLAGS='-g'
+#
+            # FortrankeyName: GNU Fortran
+            # FortrankeyManufacturer: GNU
+            # FortrankeyLanguage: Fortran
+            # FortrankeyVersion:
+            FC='gfortran-4.3'
+            FFLAGS='-fexceptions -m64 -fbackslash'
+            FC_LIBDIR='/usr/local/Cellar/gcc43/4.3.6/gcc/lib'
+            FC_LIBDIR2='/usr/local/Cellar/gcc43/4.3.6/gcc/lib/gcc/x86_64-apple-d
+arwin12/4.3.6'
+            FLIBS="$MLIBS -L$FC_LIBDIR -lgfortran -L$FC_LIBDIR2 -lgfortranbegin 
+-lgcc_s.1"
+            FOPTIMFLAGS='-O'
+            FDEBUGFLAGS='-g'
+#
+            LD="$FC"
+            LDEXTENSION='.mexmaci64'
+            LDFLAGS="-Wl,-twolevel_namespace -undefined error -march=core2 -Wl,-
+syslibroot,$SDKROOT -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET"
+            LDFLAGS="$LDFLAGS -bundle -Wl,-exported_symbols_list,$TMW_ROOT/exter
+n/lib/$Arch/$MAPFILE"
+            LDOPTIMFLAGS='-O'
+            LDDEBUGFLAGS='-g'
+#
+            POSTLINK_CMDS=':'
+#----------------------------------------------------------------------------
+
+
+There are two items you may need to modify in the above to suit your system:
+
+1. The line SDKROOT is set for a system running Mountain Lion (10.8). If you
+   are running a different system, look in the directory
+   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Develope
+r/SDKs
+   for the highest version number and specify that in mexopts.sh.
+
+2. The command-line option -march=core2 passed to gcc, g++ and gfortran
+   corresponds to Intel Core2 machines (e.g., MacBook Pros). If you are running
+   a different architecture (e.g., Xeon or you are a nostalgic of the PowerPC
+   era), please change -march= accordingly. Acceptable values can be found in
+   the gcc man page (man gcc).
+
+You should be all set. 
+
+Please send all comments/corrections to us. Good luck!
+
+Nick Gould          (nick.gould@stfc.ac.uk)
+Dominique Orban     (dominique.orban@polymtl.ca)
+Philippe Toint      (philippe.toint@fundp.ac.be)
+
+For GALAHAD productions
+This version: 24th February 2014

@@ -1,0 +1,12 @@
+! error-printout-device                             6
+! printout-device                                   6
+! print-level                                       0
+! pivot-tolerance-used-for-dependencies             0.5
+! maximum-permitted-infeasibility                   1.0D-5
+! use-sls                                           yes
+! scale-A                                           no
+! space-critical                                    no
+! deallocate-error-fatal                            no
+! symmetric-linear-equation-solver                  sils
+! unsymmetric-linear-equation-solver                gls
+! output-line-prefix                                ""

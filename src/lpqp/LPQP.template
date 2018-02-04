@@ -1,0 +1,9 @@
+! error-printout-device                             6
+! printout-device                                   6
+! print-level                                       0
+! infinity-value                                    1.0D+19
+! space-critical                                    no
+! deallocate-error-fatal                            no
+! H-output-format                                   SPARSE_BY_ROWS
+! A-output-format                                   SPARSE_BY_ROWS
+! output-line-prefix                                ""

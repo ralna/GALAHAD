@@ -1,0 +1,7 @@
+ Error return tests -
+ BFGS error status = -85
+ SR1 error status = -85
+
+ Normal tests - 
+ SEC - BFGS: no failures 
+ SEC - SR1: no failures 

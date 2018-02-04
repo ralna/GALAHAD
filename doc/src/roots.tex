@@ -1,0 +1,530 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{roots}
+\newcommand{\packagename}{ROOTS}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+This package uses classical formulae together with Newton's 
+method to find all the real roots of real polynomials.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses
+{\tt GALAHAD\_SY\-M\-BOLS}, 
+{\tt GALAHAD\-\_SPACE}, 
+{\tt GALAHAD\_SPECFILE},
+{\tt GALAHAD\_SORT}.
+\galdate November 2010.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time,
+the derived types 
+{\tt \packagename\_control\_type}, 
+{\tt \packagename\_inform\_type} 
+and
+{\tt \packagename\_data\_type}
+(Section~\ref{galtypes})
+and the subroutine
+{\tt \packagename\_\-solve},
+(Section~\ref{galarguments})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Three derived data types are accessible from the package.
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control 
+ parameters}\label{typecontrol}
+The derived data type 
+{\tt \packagename\_control\_type} 
+is used to hold controlling data. Default values may be obtained by calling 
+{\tt \packagename\_initialize}
+(see Section~\ref{subinit}),
+while components may also be changed by calling 
+{\tt \packagename\_read\-\_specfile}
+(see Section~\ref{readspec}). 
+The components of 
+{\tt \packagename\_control\_type} 
+are:
+
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in 
+{\tt \packagename\_solve} and {\tt \packagename\_terminate} is suppressed if 
+{\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in 
+{\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No 
+informational output will occur if {\tt print\_level} $\leq 0$. If 
+{\tt print\_level} $\geq 1$, debugging information will be provided.
+The default is {\tt print\_level = 0}.
+
+\ittf{tol} is an \intentin\ scalar of type default \realdp\, that should
+be set to the required accuracy of the roots. Every effort
+will be taken to ensure that each computed root $x_c$ lies within
+$\pm$ {\tt tol} $x_e$ of 
+its exact equivalent $x_e$, although sometimes the required accuracy will not
+be possible.
+The default is {\tt tol = EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{space\_critical} is a scalar variable of type default \logical, 
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if 
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical, 
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected 
+character string to preface every line of printed output. 
+Specifically, each line of output will be prefaced by the string 
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoring the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\end{description}
+
+%%%%%%%%%%% inform type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type 
+{\tt \packagename\_inform\_type} 
+is used to hold parameters that give information about the progress and needs 
+of the algorithm. The components of 
+{\tt \packagename\_inform\_type} 
+are:
+
+\begin{description}
+
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm. 
+%See Sections~\ref{galerrors} and \ref{galinfo}
+See Section~\ref{galerrors} 
+for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array 
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}. 
+
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type 
+{\tt \packagename\_data\_type} 
+is used to hold all the data for a particular problem,
+between calls of 
+{\tt \packagename} procedures. 
+This data should be preserved, untouched, from the initial call to 
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}.
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are three procedures for user calls
+(see Section~\ref{galfeatures} for further features): 
+\begin{enumerate}
+\item The subroutine 
+      {\tt \packagename\_initialize} 
+      is used to set default values, and initialize private data.
+\item The subroutine 
+      {\tt \packagename\_solve} 
+      is called to find the real roots of the polynomial 
+\eqn{poly}{\sum_{i=0}^d a_i x^i}
+      of degree $d$, where the coefficients $a_i$, $0 \leq i \leq d$ are real.
+\item The subroutine 
+      {\tt \packagename\_terminate} 
+      allows the user to automatically deallocate array 
+       components of the private data, allocated by 
+       {\tt \packagename\_solve}, 
+       at the end of the solution process. 
+\end{enumerate}
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize( data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. 
+
+\itt{control} is a scalar \intentout\ argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). 
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling 
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0. 
+%For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+
+%%%%%%%%% main solution subroutine %%%%%%
+
+\subsubsection{The solution subroutine}
+The roots of the polynomial \req{poly} are found as follows
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_solve( A, nroots, ROOTS, control, inform, data )}
+
+\vspace*{-1mm}
+\begin{description}
+\ittf{A} is an \intentin\ rank-one array of type default \realdp, whose 
+lower bound must be {\tt 0} and whose upper bound specifies the degree, $d$,
+of the polynomial. The entries {\tt A}$(i), i = 0$, \ldots, {\tt UBOUND(A)},
+must contain the values of the real coefficients $a_i$, $0 \leq i \leq d$.
+\restrictions {\tt UBOUND(A,1)} $\geq 0$.
+
+\itt{nroots} is an \intentout\ scalar of type default \integer,
+that gives the number of real roots of the polynomial.
+
+\itt{ROOTS} is an \intentout\ rank-one array of length $d$ and 
+type default \realdp. On exit, {\tt ROOTS(:nroots)} give the values
+of the real roots of the polynomial in increasing order.
+\restrictions {\tt SIZE(ROOTS)} $\geq$ {\tt UBOUND(A,1)}.
+
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). Default values may be assigned by calling 
+{\tt \packagename\_initialize} prior to the first call to 
+{\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). 
+A successful call to
+{\tt \packagename\_solve}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. It must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_terminate( data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type} 
+exactly as for
+{\tt \packagename\_solve},
+which must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+On exit, array components will have been deallocated.
+
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_solve}.
+Only the component {\tt status} will be set on exit, and a 
+successful call to 
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt inform\%status} on exit from 
+{\tt \packagename\_solve}
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\itt{\galerrallocate.} An allocation error occured. A message indicating 
+the offending 
+array is written on unit {\tt control\%error}, and the returned allocation 
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrdeallocate.} A deallocation error occured. 
+A message indicating the offending 
+array is written on unit {\tt control\%error} and the returned allocation 
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrrestrictions.} 
+Either the specified degree of the polynomial in {\tt degree} is less than 0 
+or the declared dimension of the array {\tt ROOTS} is smaller
+than the specified degree.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting 
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}), 
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters 
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of 
+"specification commands". Each command occurs on a separate line, 
+and comprises a "keyword", 
+which is a string (in a close-to-natural language) used to identify a 
+control parameter, and 
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive, 
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and 
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+
+
+The portion of the specification file used by 
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an 
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by CQP_read_specfile .. )
+    BEGIN CQP
+       keyword    value
+       .......    .....
+       keyword    value
+    END 
+  ( .. lines ignored by CQP_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines 
+may contain additional (trailing) strings so long as such strings are 
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN CQP SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END CQP SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore, 
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored. 
+The content 
+of a line after a {\tt !} or {\tt *} character is also 
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some 
+specification commands, or to comment specific values 
+of certain control parameters.  
+
+The value of a control parameters may be of three different types, namely
+integer, logical or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}", 
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}". 
+Empty values are also allowed for 
+logical control parameters, and are interpreted as "{\tt TRUE}".  
+
+The specification file must be open for 
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number 
+passed to the routine in device (see below). 
+Note that the corresponding 
+file is {\tt REWIND}ed, which makes it possible to combine the specifications 
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in 
+
+\def\baselinestretch{0.8}
+{\tt 
+\begin{verbatim}
+     CALL CQP_read_specfile( control, device )
+\end{verbatim}
+}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). 
+Default values should have already been set, perhaps by calling 
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and 
+the component (see Section~\ref{typecontrol}) of {\tt control} 
+that each affects are given in Table~\ref{specfile}.
+
+\bctable{|l|l|l|} 
+\hline
+  command & component of {\tt control} & value type \\ 
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+  {\tt root-tolerance} & {\tt \%tol} & real \\
+  {\tt space-critical}   & {\tt \%space\_critical} & logical \\
+  {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
+  {\tt output-line-prefix} & {\tt \%prefix} & {\tt character} \\
+\hline
+
+\ectable{\label{specfile}Specfile commands and associated 
+components of {\tt control}.}
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines None. 
+\galmodules {\tt \packagename\_solve} calls the \galahad\ packages
+{\tt GALAHAD\_SY\-M\-BOLS}, 
+{\tt GALAHAD\_SPACE},
+{\tt GALAHAD\_SPECFILE}
+and
+{\tt GAL\-AHAD\_SORT}.
+\galio Output is under control of the arguments
+ {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+Littlewood and Ferrari's algorithms are used to find estimates of the
+real roots of cubic and quartic polynomials, respectively; a stabilized version 
+of the well-known formula is used in the quadratic case. Newton's
+method is used to further refine the computed roots if necessary.
+Madsen and Reid's method is used for polynomials whose degree exceeds four.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose we wish to solve the quadratic, cubic, quartic and quintic equations
+\disp{\arr{rl}{
+x^2 - 3 x + 2 \!\!\!\!\!\!\! & = 0 \\
+x^3 - 6 x^2 + 11 x - 6 \!\!\!\!\!\!\! & = 0 \\
+x^4 - 10 x^3 +35 x^2 - 50 x + 24 \!\!\!\!\!\!\! & = 0 \tim{and} \\
+x^5 - 15 x^4 + 85 x^3 - 225 x^2 + 274 x - 120 \!\!\!\!\!\!\! & = 0 .}}
+Then we may use the following code:
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+
+\end{document}
+

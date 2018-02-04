@@ -1,0 +1,8 @@
+  iprint        1
+  maxiter       1000
+  nout          6
+  eps           1.0E-6
+  infty         1.0E+20
+  rho           10.0
+  tt            0.125
+  ubd           100.0

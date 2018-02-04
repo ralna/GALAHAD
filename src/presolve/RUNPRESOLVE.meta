@@ -1,0 +1,9 @@
+MAIN
+! write-initial-sif                                 yes
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! write-presolved-sif                               yes
+! presolved-sif-file-name                           PRESOLVE.SIF
+! presolved-sif-file-device                         52
+
+INCLUDE PRESOLVE

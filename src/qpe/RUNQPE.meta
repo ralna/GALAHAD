@@ -1,0 +1,27 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            QPE.data
+! problem-data-file-device                          26
+! write-initial-sif                                 no
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! scale-problem                                     0
+! pre-solve-problem                                 no
+! write-presolved-sif                               no
+! presolved-sif-file-name                           PRESOLVE.SIF
+! presolved-sif-file-device                         52
+! solve-problem                                     yes
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                QPESOL.d
+! solution-file-device                              62
+! write-result-summary                              yes
+! result-summary-file-name                          QPERES.d
+! result-summary-file-device                        47
+! perturb-bounds-by                                 0.0
+
+INCLUDE QPE
+
+INCLUDE SBLS
+
+INCLUDE SLS

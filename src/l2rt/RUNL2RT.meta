@@ -1,0 +1,23 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            LSTR.data
+! problem-data-file-device                          26
+! write-initial-sif                                 no
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! solve-problem                                     yes
+! transpose-problem                                 no
+! solve-consistent-system                           no
+! preconditioner                                    0
+! order                                             3.0
+! weight                                            1.0
+! shift                                             0.0
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                LSTRSOL.d
+! solution-file-device                              62
+! write-result-summary                              no
+! result-summary-file-name                          LSTRRES.d
+! result-summary-file-device                        47
+
+INCLUDE L2RT

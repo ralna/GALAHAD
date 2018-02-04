@@ -1,0 +1,906 @@
+\documentclass{galahad}
+
+% set the release and package names
+
+\newcommand{\package}{lms}
+\newcommand{\packagename}{LMS}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+Given a sequence of vectors $\{\bms_k\}$ and $\{\bmy_k\}$ and scale factors
+$\delta_k$, {\bf obtain the product of a limited-memory secant approximation
+$H_k$ (or its inverse) with a given vector}, using one of a variety of
+well-established formulae.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses {\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_\-SY\-M\-BOLS},
+{\tt GALAHAD\-\_SPACE},
+{\tt GALAHAD\_LAPACK\_interface},
+{\tt GALAHAD\_BLAS\_interface},
+{\tt GALAHAD\_SPECFILE}.
+\galdate July 2014.
+\galorigin N. I. M. Gould,
+Rutherford Appleton Laboratory.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
+%\galparallelism Some options may use OpenMP and its runtime library.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types
+{\tt SMT\_type},
+{\tt \packagename\_time\_type},
+{\tt \packagename\_control\_type},
+{\tt \packagename\_inform\_type}
+and
+{\tt \packagename\_data\_type}
+(\S\ref{galtypes})
+and the subroutines
+{\tt \packagename\_initialize},
+{\tt \packagename\_\-setup},
+{\tt \packagename\_\-form},
+{\tt \packagename\_\-form\_shift},
+{\tt \packagename\_\-apply},
+{\tt \packagename\_terminate},
+(\S\ref{galarguments})
+and
+{\tt \packagename\_read\_specfile}
+(\S\ref{galfeatures})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% OpenMP usage %%%%%%%%%%%%%%%%%%%%%%%%
+
+%\subsection{OpenMP}
+%OpenMP may be used by the {\tt \fullpackagename} package to provide
+%parallelism for some solver options in shared memory environments.
+%See the documentatiuon for the \galahad\ package {\tt SLS} for more details.
+%To run in parallel, OpenMP
+%must be enabled at compilation time by using the correct compiler flag
+%(usually some variant of {\tt -openmp}).
+%The number of threads may be controlled at runtime
+%by setting the environment variable {\tt OMP\_NUM\_THREADS}.
+
+%\noindent
+%The code may be compiled and run in serial mode.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Four derived data types are accessible from the package.
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control
+ parameters}\label{typecontrol}
+The derived data type
+{\tt \packagename\_control\_type}
+is used to hold controlling data. Default values may be obtained by calling
+{\tt \packagename\_initialize}
+(see \S\ref{subinit}),
+while components may also be changed by calling
+{\tt \fullpackagename\_read\-\_spec}
+(see \S\ref{readspec}).
+The components of
+{\tt \packagename\_control\_type}
+are:
+
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in
+{\tt \packagename\_setup}, {\tt \packagename\_apply}
+and {\tt \packagename\_terminate}
+is suppressed if {\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in
+{\tt \packagename\_setup}, {\tt \packagename\_apply}
+is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No
+informational output will occur if {\tt print\_level} $\leq 0$. If
+{\tt print\_level} $= 1$, a single line of output will be produced for each
+level of the process. If {\tt print\_level} $\geq 2$, this output will be
+increased to provide significant detail of the factorization.
+The default is {\tt print\_level = 0}.
+
+\itt{memory\_length} is a scalar variable of type default \integer, that is used
+to specify the maximum number of vectors  $\{\bms_k\}$ and $\{\bmy_k\}$
+that will be used when building the secant approximation.
+Any non-positive value will be interpreted as {\tt 1}.
+The default is {\tt memory\_length = 10}.
+
+\itt{method} is a scalar variable of type default \integer, that is used
+to specify the limited-memory formula that will be applied. Possible
+values are
+\begin{description}
+\itt{1}. A limited-memory BFGS formula will be applied.
+\itt{2}. A limited-memory symmetric rank-one formula will be applied.
+\itt{3}. The inverse of the limited-memory BFGS formula will be applied.
+\itt{4}. The inverse of the shifted limited-memory BFGS formula will be applied.
+This should be used instead of {\tt \%method = 3} whenever a shift is
+planned.
+\end{description}
+Any value outside this range will be interpreted as {1}.
+The default is {\tt method = 1}.
+
+\itt{any\_method} is a scalar variable of type default \logical,
+that must be set \true\ if more than one method (see {\tt \%method} above)
+is to be used and  \false\ otherwise. The package will require more
+storage and may run slower if {\tt any\_method} is \true.
+The default is {\tt any\_method = .FALSE.}.
+
+\itt{space\_critical} is a scalar variable of type default \logical,
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical,
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected
+character string to preface every line of printed output.
+Specifically, each line of output will be prefaced by the string
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoring the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\end{description}
+
+%%%%%%%%%%% time type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding timing
+ information}\label{typetime}
+The derived data type
+{\tt \packagename\_time\_type}
+is used to hold elapsed CPU and system clock times for the various parts of
+the calculation. The components of
+{\tt \packagename\_time\_type}
+are:
+\begin{description}
+\itt{total} is a scalar variable of type default \realdp, that gives
+ the total CPU time spent in the package.
+
+\itt{setup} is a scalar variable of type default \realdp, that gives
+ the CPU time spent setting up the data structures to represent
+ the limited-memory matrix.
+
+\itt{form} is a scalar variable of type default \realdp, that gives
+ the CPU time spent forming and updating the limited-memory matrix
+as new data arrives.
+
+\itt{apply} is a scalar variable of type default \realdp, that gives
+ the CPU time spent applying the matrix to given vectors.
+
+\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+ the total elapsed system clock time spent in the package.
+
+\itt{clock\_setup} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent setting up the data structures to
+ represent the limited-memory matrix.
+
+\itt{clock\_form} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent forming and updating the limited-memory
+ matrix as new data arrives.
+
+\itt{clock\_apply} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent  applying the matrix to given vectors.
+factor $\bmR$.
+
+\end{description}
+
+%%%%%%%%%%% inform type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type
+{\tt \packagename\_inform\_type}
+is used to hold parameters that give information about the progress and needs
+of the algorithm. The components of
+{\tt \packagename\_inform\_type}
+are:
+
+\begin{description}
+
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm.
+%See Sections~\ref{galerrors} and \ref{galinfo}
+See \S\ref{galerrors}
+for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}.
+
+\itt{length} is a scalar variable of type default \integer, that
+gives the number of pairs $\{\bms_k,\bmy_k\}$ currently used to represent the
+limited-memory matrix
+
+\itt{updates\_skipped} is a scalar variable of type default \logical, that
+will be \true\ if one or more of the current pairs $\{\bms_k,\bmy_k\}$ has
+been ignored for stability reasons when building the current limited-memory
+matrix, and \false\ otherwise.
+
+\ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
+whose components are used to hold elapsed CPU and system clock times for
+the various parts of the calculation (see Section~\ref{typetime}).
+
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type
+{\tt \packagename\_data\_type}
+is used to hold all the data for the problem and the workspace arrays
+used to construct the multi-level incomplete factorization between calls of
+{\tt \packagename} procedures.
+This data should be preserved, untouched, from the initial call to
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}.
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are seven procedures for user calls
+(see \S\ref{galfeatures} for further features):
+
+\begin{enumerate}
+\item The subroutine
+      {\tt \packagename\_initialize}
+      is used to set default values, and initialize private data,
+      before solving one or more problems with the
+      same sparsity and bound structure.
+\item The subroutine
+      {\tt \packagename\_setup}
+      is called to set up the data structures needed to represent
+      the limited-memory matrix $\bmH_k$ or its inverse.
+\item The subroutine
+      {\tt \packagename\_form}
+      is called to form the limited-memory matrix $\bmH_k$ or its inverse
+      as new data $(\bms_k,\bmy_k,\delta_k)$ arrives. The matrix
+      $\bmH_k+ \lambda_k\bmI$ or its inverse for a specified shift
+      $\lambda_k$ may be formed instead.
+\item The subroutine
+      {\tt \packagename\_form\_shift}
+      is called to update the inverse of the
+      limited-memory matrix $\bmH_k+ \lambda_k\bmI$
+      when a new shift $\lambda_k$ is required.
+\item The subroutine
+      {\tt \packagename\_change\_method}
+      is called to build the limited-memory matrices $\bmH_k$,
+      $\bmH_k+ \lambda_k\bmI$ or their inverse
+      for a new method from the current data.
+\item The subroutine
+      {\tt \packagename\_apply}
+      is called to form the product $\bmu = \bmH_k \bmv$,
+      $\bmu = ( \bmH_k + \lambda_k \bmI ) \bmv$,
+      $\bmu = \bmH_k^{-1} \bmv$ or
+      $\bmu = ( \bmH_k + \lambda_k \bmI) ^{-1} \bmv$ for a given vector $\bmv$.
+\item The subroutine
+      {\tt \packagename\_terminate}
+      is provided to allow the user to automatically deallocate array
+       components of the private data, allocated by
+       {\tt \packagename\_setup}
+       at the end of the solution process.
+\end{enumerate}
+We use square brackets {\tt [ ]} to indicate \optional\ arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize( data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+(see \S\ref{typedata}). It is used to hold data about the problem being
+solved.
+
+\itt{control} is a scalar \intentout\ argument of type
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}).
+On exit, {\tt control} contains default values for the components as
+described in \S\ref{typecontrol}.
+These values should only be changed after calling
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% data initialization subroutine %%%%%%
+
+\subsubsection{The subroutine for setting up the required data structures}
+The data structures needed to represent the limited-memory matrix $\bmH_k$
+or its inverse are set up as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_setup(  n, data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+\ittf{n} is a scalar \intentin\ argument of type default \integer,
+that must be set to the dimension of the limited-memory matrix required.
+\restriction {\tt n} $\geq$ {\tt 1}.
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+(see \S\ref{typedata}). It is used to hold data about the factors obtained.
+It must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_initialize}.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}). Default values may be assigned by calling
+{\tt \packagename\_initialize} prior to the first call to
+{\tt \packagename\_setup}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+(see \S\ref{typeinform}). A successful call to
+{\tt \packagename\_setup}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see \S\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% matrix update  subroutine %%%%%%
+
+\subsubsection{The subroutine for updating the limited memory matrix}
+The required limited memory matrix is updated to accommodate the
+incoming triple $(\bms_k,\bmy_k,\delta_k)$ as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_form( S, Y, delta, data, control, inform[, lambda] )}
+
+\vspace*{-3mm}
+\begin{description}
+\ittf{S} is an \intentin\ rank-1 array of type \realdp and length at
+least as large as the value {\tt n} as set on input to
+{\tt \packagename\_setup}, whose first {\tt n} components must hold the
+incoming vector $\bms_k$.
+
+\ittf{Y} is an \intentin\ rank-1 array of type \realdp and length at
+least as large as the value {\tt n} as set on input to
+{\tt \packagename\_setup}, whose first {\tt n} components must hold the
+incoming vector $\bmy_k$.
+\restriction the update will be skipped for for limited-memory BFGS methods
+if the inner product $\bms_k^T \bmy_k <= 0$.
+
+\itt{delta} is an \intentin\ \realdp scalar that must hold the value $\delta_k$.
+\restriction the update will be skipped if {\tt delta} $\leq 0$.
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+(see \S\ref{typedata}). It is used to hold data about the factors obtained.
+It must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_setup}.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}). Default values may be assigned by calling
+{\tt \packagename\_initialize} prior to the first call to
+{\tt \packagename\_setup}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+(see \S\ref{typeinform}). A successful call to
+{\tt \packagename\_setup}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see \S\ref{galerrors}.
+
+\itt{lambda} is an \optional, \intentin\ \realdp scalar that if present
+will be used to specify the shift $\lambda_k$ that is used by the
+limited memory methods defined by
+{\tt control\%method = 1}, {\tt 2} or {\tt 4}.
+\restriction the update will be skipped if {\tt lambda} $< 0$
+for these methods.
+
+\end{description}
+
+%%%%%%%%% matrix update  subroutine %%%%%%
+
+\subsubsection{The subroutine for shifting the limited-memory matrix}
+The required limited memory matrix is updated to accommodate the
+shift $\lambda_k$ as follows---this call is mandatory when
+{\tt control\%method = 4} if $\lambda_k$ was not set during the
+call to {\tt \packagename\_form}:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_form\_shift( lambda, data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+\itt{lambda} is an \intentin\ \realdp scalar that must hold the value
+$\lambda_k$.
+\restriction the update will be skipped if {\tt lambda} $< 0$
+or if {\tt control\%method = 3}.
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+(see \S\ref{typedata}). It is used to hold data about the factors obtained.
+It must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_form}.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}). Default values may be assigned by calling
+{\tt \packagename\_initialize} prior to the first call to
+{\tt \packagename\_setup}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+(see \S\ref{typeinform}). A successful call to
+{\tt \packagename\_setup}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see \S\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% matrix update  subroutine %%%%%%
+
+\subsubsection{The subroutine for changing the method defining the
+limited-memory matrix}
+The required limited memory matrix is updated to accommodate the
+shift $\lambda_k$ as follows---this call is only permitted if
+{\tt control\%any\_method = .TRUE.} was set when
+{\tt \packagename\_setup} was originally called:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_change\_method( data, control, inform, lambda )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+(see \S\ref{typedata}). It is used to hold data about the factors obtained.
+It must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_form}.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}). Default values may be assigned by calling
+{\tt \packagename\_initialize} prior to the first call to
+{\tt \packagename\_setup}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+(see \S\ref{typeinform}). A successful call to
+{\tt \packagename\_setup}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see \S\ref{galerrors}.
+
+\itt{lambda} is an \optional, \intentin\ \realdp scalar that if present
+will be used to specify the shift $\lambda_k$ that is used by the
+limited memory methods defined by
+{\tt control\%method = 1}, {\tt 2} or {\tt 4}.
+\restriction the update will be skipped if {\tt lambda} $< 0$
+for these methods.
+
+\end{description}
+
+%%%%%%%%% application subroutine %%%%%%
+
+\subsubsection{The subroutine for applying the limited-memory formula to a
+vector}
+Given the vector $\bmv$, the required limited-memory formula,
+as specified in the most recent call to {\tt \packagename\_form},
+{\tt \packagename\_form\_\-shift} or
+{\tt \packagename\_change\_method},
+is applied to $\bmv$ as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_apply( V, U, data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+\ittf{V} is a rank-one  \intentin\ array of type default \real\
+that must be set on entry to hold the components of the vector $\bmv$.
+
+\ittf{U} is a rank-one  \intentout\ array of type default \real\
+that will be set on exit to the result of applying the required
+ limited-memory formula to $\bmv$.
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+(see \S\ref{typedata}). It is used to hold data about the factors obtained.
+It must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_setup}.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}). Default values may be assigned by calling
+{\tt \packagename\_initialize} prior to the first call to
+{\tt \packagename\_setup}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+(see \S\ref{typeinform}). A successful call to {\tt \packagename\_apply}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see \S\ref{galerrors}.
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_terminate( data, control, inform )}
+
+%\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+exactly as for
+{\tt \packagename\_setup},
+which must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_initialize}.
+On exit, array components will have been deallocated.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_setup}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_setup}.
+Only the component {\tt status} will be set on exit, and a
+successful call to
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0.
+For other return values of {\tt status}, see \S\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt inform\%status} on exit from
+{\tt \packagename\_setup},
+{\tt \packagename\_apply}
+or
+{\tt \packagename\_terminate}
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\itt{\galerrallocate.} An allocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error}, and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrdeallocate.} A deallocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error} and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrrestrictions.} One of the restriction
+  {\tt n} $> 0$,  {\tt delta} $> 0$ or {\tt lambda} $\geq 0$.
+  $\bms^T \bmy > 0$ has been violated and the update has
+  been skipped.
+
+\itt{\galerrfactorization.} The matrix cannot be built with
+ from the current vectors $\{\bms_k\}$ and $\{\bmy_k\}$ and values
+ $\delta_k$ and $\lambda_k$ and the update has been skipped.
+
+\itt{\galerrcallorder.} A call to subroutine
+{\tt \packagename\_apply} has been made without a prior call to
+{\tt \packagename\_form\_shift} or
+{\tt \packagename\_form} with {\tt lambda} specified
+ when {\tt control\%method = 4},
+ or {\tt \packagename\_form\_shift} has been called when
+{\tt control\%method = 3}, or
+{\tt \packagename\_change\_method} has been called after
+{\tt control\%any\_method = .FALSE.} was specified when
+calling {\tt \packagename\_setup}.
+
+\vspace*{1mm}
+
+%\hspace{8mm}
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}),
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of
+"specification commands". Each command occurs on a separate line,
+and comprises a "keyword",
+which is a string (in a close-to-natural language) used to identify a
+control parameter, and
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive,
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+The portion of the specification file used by
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by LMS_read_specfile .. )
+    BEGIN LMS
+       keyword    value
+       .......    .....
+       keyword    value
+    END
+  ( .. lines ignored by LMS_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
+may contain additional (trailing) strings so long as such strings are
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN LMS SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END LMS SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore,
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored.
+The content
+of a line after a {\tt !} or {\tt *} character is also
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some
+specification commands, or to comment specific values
+of certain control parameters.
+
+The value of a control parameters may be of three different types, namely
+integer, logical or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}",
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}".
+Empty values are also allowed for
+logical control parameters, and are interpreted as "{\tt TRUE}".
+
+The specification file must be open for
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number
+passed to the routine in device (see below).
+Note that the corresponding
+file is {\tt REWIND}ed, which makes it possible to combine the specifications
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in
+
+\def\baselinestretch{0.8}
+{\tt
+\begin{verbatim}
+     CALL LMS_read_specfile( control, device )
+\end{verbatim}
+}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}).
+Default values should have already been set, perhaps by calling
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and
+the component (see \S\ref{typecontrol}) of {\tt control}
+that each affects are given in Table~\ref{specfile}.
+\bctable{|l|l|l|}
+\hline
+  command & component of {\tt control} & value type \\
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+  {\tt limited-memory-length} & {\tt \%memory\_length} & integer \\
+  {\tt limited-memory-method} & {\tt \%method} & integer \\
+  {\tt allow-any-method}   & {\tt \%any\_method} & logical \\
+  {\tt space-critical}   & {\tt \%space\_critical} & logical \\
+  {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
+  {\tt output-line-prefix} & {\tt \%prefix} & character \\
+\hline
+
+\ectable{\label{specfile}Specfile commands and associated
+components of {\tt control}.}
+
+%Individual components of the components {\tt control\%SLS\_control}
+%and {\tt control\%ULS\_control}
+%may be changed by specifying separate specfiles of the form
+%\begin{verbatim}
+%    BEGIN SLS
+%     .......
+%    END
+%\end{verbatim}
+%and
+%\begin{verbatim}
+%    BEGIN ULS
+%     .......
+%%    END
+%\end{verbatim}
+%just as described in the documentation for the \galahad\ packages
+%{\tt SLS} and {\tt ULS}.
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+If {\tt control\%print\_level} is positive, information about the progress
+of the algorithm will be printed on unit {\tt control\-\%out}.
+If {\tt control\%print\_level} $\geq 1$, statistics concerning the
+formation of $\bmR$
+as well as warning and error messages will be reported.
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines None.
+\galmodules {\tt \packagename} calls the \galahad\ packages
+{\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS}, \\
+{\tt GALAHAD\-\_SPACE},
+{\tt GALAHAD\_LAPACK\_interface},
+{\tt GALAHAD\_BLAS\_interface} and
+{\tt GALAHAD\_SPECFILE},
+\galio Output is under control of the arguments
+ {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
+\galrestrictions {\tt n} $> 0$, {\tt delta} $> 0$, {\tt lambda} $\geq 0$.
+
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
+The package is thread-safe.
+
+%\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+
+Given a sequence of vectors $\{\bms_k\}$ and $\{\bmy_k\}$ and scale factors
+$\delta_k$, a limited-memory secant approximation $\bmH_k$ is chosen so that
+$\bmH_{\max(k-m,0)} = \delta_k \bmI$, $\bmH_{k-j} \bms_{k-j} = \bmy_{k-j}$
+and $\| \bmH_{k-j+1} - \bmH_{k-j}\|$ is ``small'' for
+$j = \min(k-1,m-1), \ldots, 0$.
+Different ways of quantifying ``small'' distinguish different methods,
+but the crucial
+observation is that it is possible to construct $\bmH_k$ quickly from
+$\{\bms_k\}$ and $\{\bmy_k\}$ and $\delta_k$, and to apply it and its inverse
+to a given vector $v$. It is also possible to apply similar formulae
+to the ``shifted'' matrix $\bmH_k + \lambda_k \bmI$ that occurs in
+trust-region methods.
+
+\noindent
+The basic methods are those given by
+\vspace*{1mm}
+
+\noindent
+R. H. Byrd, J. Nocedal and R. B. Schnabel (1994)
+Representations of quasi-Newton matrices and their use in
+limited memory methods.
+Math.\ Programming,  {\bf 63}(2) 129--156,
+\vspace*{1mm}
+
+\noindent
+with obvious extensions.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose that we generate random vectors $\{\bms_k\}$ and $\{\bmy_k\}$
+and scale factors $\delta_k$, that we build the limited-memory BFGS
+matrix $\bmH_k$ and its inverse $\bmH_k^{-1}$ and that we apply
+$\bmH_k$ and then $\bmH_k^{-1}$ to a given vector $\bmv$. Suppose further,
+that at some stage, we instead apply the inverse $(\bmH_k+\lambda_k\bmI)^{-1}$
+with $\lambda_k = 0$. Then we may use the following code; of course since
+we have the identities $\bmv = \bmH_k^{-1} ( \bmH_k \bmv )$ and
+$\bmv = ( \bmH_k + \lambda_k \bmI) ^{-1} ( \bmH_k \bmv )$ when $\lambda_k = 0$,
+we expect to recover the original $\bmv$ after every step:
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+\end{document}
+

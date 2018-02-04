@@ -1,0 +1,332 @@
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in
+{\tt \packagename\_solve} and {\tt \packagename\_terminate} is suppressed if
+{\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in
+{\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No
+informational output will occur if {\tt print\_level} $\leq 0$. If
+{\tt print\_level} $= 1$, a single line of output will be produced for each
+iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
+increased to provide significant detail of each iteration.
+The default is {\tt print\_level = 0}.
+
+\itt{start\_print} is a scalar variable of type default \integer, that specifies
+the first iteration for which printing will occur in {\tt \packagename\_solve}.
+If {\tt start\_print} is negative, printing will occur from the outset.
+The default is {\tt start\_print = -1}.
+
+\itt{stop\_print} is a scalar variable of type default \integer, that specifies
+the last iteration for which printing will occur in  {\tt \packagename\_solve}.
+If {\tt stop\_print} is negative, printing will occur once it has been
+started by {\tt start\_print}.
+The default is {\tt stop\_print = -1}.
+
+\itt{print\_gap} is a scalar variable of type default \integer.
+Once printing has been started, output will occur once every
+{\tt print\_gap} iterations. If {\tt print\_gap} is no larger than 1,
+printing will be permitted on every iteration.
+The default is {\tt print\_gap = 1}.
+
+\itt{maxit} is a scalar variable of type default \integer, that holds the
+maximum number of iterations which will be allowed in {\tt \packagename\_solve}.
+The default is {\tt maxit = 1000}.
+
+\itt{max\_sc} is a scalar variable of type default \integer, that specifies
+the maximum number of columns permitted in the Schur complement of the
+reference matrix (see Section~\ref{galmethod})
+before a refactorization is triggered when there is no Fredholm Alternative.
+The default is {\tt max\_sc = 100}.
+
+\itt{cauchy\_only} is a scalar variable of type default \integer, that specifies
+the maximum number of changes in the active set that may occur in the
+first-phase projected-dual-gradient arc search during an iteration before
+attempting a second phase unconstrained minimization in the space of
+free dual variables \S~\ref{galmethod}). If {\tt cauchy\_only} is negative,
+the second phase will always be tried.
+The default is {\tt cauchy\_only = -1}.
+
+\itt{arc\_search\_maxit} is a scalar variable of type default \integer,
+that holds the maximum number of steps that may be performed
+by the arc-search every iteration.
+If {\tt arc\_search\_maxit} is set to a negative number, as many steps
+as are necessary will be performed.
+The default is {\tt arc\_search\_maxit = -1}.
+
+\itt{cg\_maxit} is a scalar variable of type default \integer, that holds the
+maximum number of conjugate-gradient inner iterations that may be performed
+during the computation of each search direction in {\tt DQP\_solve}.
+If {\tt cg\_maxit} is set to a negative number, it will be reset by
+{\tt DQP\_solve} to the dimension of the relevant linear system $+ 1$.
+The default is {\tt cg\_maxit = 1000}.
+%The default is {\tt cg\_maxit = - 1}.
+
+\itt{dual\_starting\_point} is a scalar variable of type default \integer, that
+specifies how the algorithm computes its staring point.
+Possible values are:
+\begin{description}
+\itt{0} the values $\bmy$ and $\bmz$
+        provided by the user in components {\tt Y} and {\tt Z}
+        of the derived data type {\tt QPT\_problem\_type} will be used.
+\itt{1} values obtained by minimizing a linearized version of the dual
+        will be used.
+\itt{2} values obtained by minimizing a simplified quadratic version of
+        the dual will be used.
+\itt{3} values will be chosen so that all dual variables lie away from
+        their bounds if possible. This corresponds to trying to start
+        from a point in which all primal constraints are active.
+\itt{4} values will be chosen so that all dual variables lie on
+        their bounds if possible. This corresponds to trying to start
+        from a point in which all primal constraints are inactive.
+\end{description}
+Any other value will be interpreted as {\tt dual\_starting\_point = 0},
+and this is the default.
+
+\ifthenelse{\equal{\package}{dqp}}{
+\itt{restore\_problem} is a scalar variable of type default \integer, that
+specifies how much of the input problem is to be restored on output.
+Possible values are:
+\begin{description}
+\itt{0} nothing is restored.
+\itt{1} the vector data $\bmw$, $\bmg$,
+   $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$, and $\bmx^{u}$
+   will be restored to their input values.
+\itt{2} the entire problem, that is the above vector data along with
+the Jacobian matrix $\bmA$, will be restored.
+\end{description}
+The default is {\tt restore\_problem = 2}.
+}{}
+
+\itt{rho} is a scalar variable of type default \realdp, that holds
+the penalty weight, $\rho$. If {\tt rho > 0}, the general linear constraints are
+not enforced explicitly, but instead included in the objective as a penalty term
+weighted by $\rho$. If {\tt rho} $\leq 0$, the general linear constraints are
+explicit (that is, there is no penalty term in the objective function)
+The default is {\tt rho =} $0.0$.
+
+\itt{infinity} is a scalar variable of type default \realdp, that is used to
+specify which constraint bounds are infinite.
+Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
+The default is {\tt infinity =} $10^{19}$.
+
+\itt{stop\_abs\_p} and {\tt stop\_rel\_p}
+are scalar variables of type default \realdp, that hold the
+required absolute and relative accuracy for the primal infeasibility
+(see Section~\ref{galmethod}).
+The absolute value of each component of the primal infeasibility
+on exit is required to be smaller than the larger of {\tt stop\_abs\_p} and
+{\tt stop\_rel\_p} times a ``typical value'' for this component.
+The defaults are {\tt stop\_abs\_p =} {\tt stop\_rel\_p =} $u^{1/3}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+\itt{stop\_abs\_d} and {\tt stop\_rel\_d}
+are scalar variables of type default \realdp, that hold the
+required absolute and relative accuracy for the dual infeasibility
+(see Section~\ref{galmethod}).
+The absolute value of each component of the dual infeasibility
+on exit is required to be smaller than the larger of {\tt stop\_abs\_p} and
+{\tt stop\_rel\_p} times a ``typical value'' for this component.
+The defaults are {\tt stop\_abs\_d =} {\tt stop\_rel\_d =} $u^{1/3}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+\itt{stop\_abs\_c} and {\tt stop\_rel\_c}
+are scalar variables of type default \realdp, that hold the
+required absolute and relative accuracy
+for the violation of complementary slackness
+(see Section~\ref{galmethod}).
+The absolute value of each component of the complementary slackness
+on exit is required to be smaller than the larger of {\tt stop\_abs\_p} and
+{\tt stop\_rel\_p} times a ``typical value'' for this component.
+The defaults are {\tt stop\_abs\_c =} {\tt stop\_rel\_c =} $u^{1/3}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+\itt{stop\_cg\_relative} and {\tt stop\_cg\_absolute}
+are scalar variables of type default \realdp,
+that hold the relative and absolute convergence tolerances for the
+conjugate-gradient iteration that occurs in the face of currently-active
+constraints that may be used to construct the search direction.
+{\tt \_stop\_cg\_relative = 0.01}
+and \sloppy {\tt stop\_cg\_absolute =} $\sqrt{u}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+\itt{cg\_zero\_curvature} is a scalar variable of type default \realdp
+that specifies the threshold below which any curvature
+encountered by the conjugate-gradient iteration is regarded as zero.
+The default is {\tt cg\_zero\_curvature =} $10 u$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+\itt{identical\_bounds\_tol}
+is a scalar variable of type default \realdp.
+Each pair of variable bounds $(x_{j}^{l}, x_{j}^{u})$
+that is closer than {\tt identical\_bounds\_tol}
+will be reset to the average of their values,
+$\half (x_{j}^{l} + x_{j}^{u})$.
+The default is {\tt identical\_bounds\_tol =} $u$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+\itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
+that is used to specify the maximum permitted CPU time. Any negative
+value indicates no limit will be imposed. The default is
+{\tt cpu\_time\_limit = - 1.0}.
+
+\itt{clock\_time\_limit} is a scalar variable of type default \realdp,
+that is used to specify the maximum permitted elapsed system clock time.
+Any negative value indicates no limit will be imposed. The default is
+{\tt clock\_time\_limit = - 1.0}.
+
+\itt{remove\_dependencies} is a scalar variable of type
+default \logical, that must be set \true\ if the algorithm
+is to attempt to remove any linearly dependent constraints before
+solving the problem, and \false\ otherwise.
+We recommend removing linearly dependencies.
+The default is {\tt remove\_dependencies = .TRUE.}.
+
+\itt{treat\_zero\_bounds\_as\_general} is a scalar variable of type
+default \logical.
+If it is set to \false, variables which
+are only bounded on one side, and whose bound is zero,
+will be recognised as non-negativities/non-positivities rather than simply as
+lower- or upper-bounded variables.
+If it is set to \true, any variable bound
+$x_{j}^{l}$ or $x_{j}^{u}$ which has the value 0.0 will be
+treated as if it had a general value.
+Setting {\tt treat\_zero\_bounds\_as\_general} to \true\ has the advantage
+that if a sequence of problems are reordered, then bounds which are
+``accidentally'' zero will be considered to have the same structure as
+those which are nonzero. However, {\tt \fullpackagename} is
+able to take special advantage of non-negativities/non-positivities, so
+if a single problem, or if a sequence of problems whose
+bound structure is known not to change, is/are to be solved,
+it will pay to set the variable to \false.
+The default is {\tt treat\_zero\_bounds\_as\_general = .FALSE.}.
+
+\itt{exact\_arc\_search} is a scalar variable of type default \logical, that
+must be set \true\ if the user wishes to perform an exact arc search
+and \false\ if an inexact search suffices. Usually the exact search is
+beneficial, but occasionally it may be more expensive.
+The default is {\tt exact\_arc\_search = .TRUE.}.
+
+\itt{subspace\_direct} is a scalar variable of type default \logical, that
+must be set \true\ if the user wishes to compute subspace steps using
+matrix factorization,
+and \false\ if conjugate-gradient steps are preferred. Factorization
+often produces a better step, but sometimes the conjugate-gradient method
+may be less expensive and less demanding on storage.
+The default is {\tt subspace\_direct = .FALSE.}, but if more advanced
+symmetric linear solvers such as {\tt MA57} or {\tt MA97} available,
+we recommend setting {\tt subspace\_direct = .TRUE.} and changing
+{\tt symmetric\_linear\_solver} (see below) appropriately.
+
+\itt{subspace\_arc\_search} is a scalar variable of type default \logical, that
+must be set \true\ if the user wishes to perform an arc search following
+the subspace step and \false\ if a step to the nearest inactive bound suffices.
+As before, the exact search is usually beneficial, but it is more expensive.
+The default is {\tt subspace\_arc\_search = .TRUE.}.
+
+\itt{space\_critical} is a scalar variable of type default \logical,
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical,
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{symmetric\_linear\_solver} is a scalar variable of type default \character\
+and length 30, that specifies the external package to be used to
+solve any symmetric linear system that might arise. Current possible
+choices are {\tt 'sils'}, {\tt 'ma27'}, {\tt 'ma57'}, {\tt 'ma77'},
+{\tt 'ma86'}, {\tt 'ma97'}, {\tt ssids}, {\tt 'pardiso'}
+and {\tt 'wsmp'}.
+See the documentation for the \galahad\ package {\tt SLS} for further details.
+Since  {\tt 'sils'} does not currently provide the required Fredholm
+Alternative option, the default is {\tt symmetric\_linear\_solver = 'ma57'},
+but we recommend {\tt 'ma97'} if it is available.
+
+\itt{definite\_linear\_solver} is a scalar variable of type default \character\
+and length 30, that specifies the external package to be used to
+solve any symmetric positive-definite linear system that might arise.
+Current possible
+choices are {\tt 'sils'}, {\tt 'ma27'}, {\tt 'ma57'}, {\tt 'ma77'},
+{\tt 'ma86'}, {\tt 'ma87'}, {\tt 'ma97'}, {\tt ssids}, {\tt 'pardiso'}
+and {\tt 'wsmp'}.
+See the documentation for the \galahad\ package {\tt SLS} for further details.
+The default is {\tt definite\_linear\_solver = 'sils'},
+but we recommend {\tt 'ma87'} if it available.
+
+\itt{unsymmetric\_linear\_solver} is a scalar variable of type default
+\character\
+and length 30, that specifies the external package to be used to
+solve any unsymmetric linear systems that might arise. Possible
+choices are
+{\tt 'gls'},
+{\tt 'ma28'}
+and
+{\tt 'ma48'},
+although only {\tt 'gls'} is installed by default.
+See the documentation for the \galahad\ package {\tt ULS} for further details.
+The default is {\tt unsymmetric\_linear\_solver = 'gls'},
+but we recommend {\tt 'ma48'} if it available.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected
+character string to preface every line of printed output.
+Specifically, each line of output will be prefaced by the string
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoring the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\itt{FDC\_control} is a scalar variable of type
+{\tt FDC\_control\_type}
+whose components are used to control any detection of linear dependencies
+performed by the package
+{\tt \libraryname\_FDC}.
+See the specification sheet for the package
+{\tt \libraryname\_FDC}
+for details, and appropriate default values.
+
+\itt{SLS\_control} is a scalar variable of type
+{\tt SLS\_control\_type}
+whose components are used to control factorizations
+performed by the package
+{\tt \libraryname\_SLS}.
+See the specification sheet for the package
+{\tt \libraryname\_SLS}
+for details, and appropriate default values.
+
+\itt{SBLS\_control} is a scalar variable of type
+{\tt SBLS\_control\_type}
+whose components are used to control factorizations
+performed by the package
+{\tt \libraryname\_SBLS}.
+See the specification sheet for the package
+{\tt \libraryname\_SBLS}
+for details, and appropriate default values.
+
+\itt{GLTR\_control} is a scalar variable of type
+{\tt GLTR\_control\_type}
+whose components are used to control conjugate-gradient solves
+performed by the package
+{\tt \libraryname\_GLTR}.
+See the specification sheet for the package
+{\tt \libraryname\_GLTR}
+for details, and appropriate default values.
+
+\end{description}

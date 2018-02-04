@@ -1,0 +1,96 @@
+
+                       TROUBLESHOOTING
+
+In a perfect world, Unix would be Unix, and compilers
+(and our codes!) would not have bugs. However ....
+
+1. THE INSTALLATION FAILS
+-------------------------
+
+The first stage of the installation generates makefiles and execution
+scripts appropriate for the system you have described. All of the
+systems supported are described in files in the $GALAHAD/arch
+directory. Each file is named
+
+  compiler.machine.os.comp
+
+where machine is the machine you asked for
+      os      is the operating system, and
+      comp    is the requested compiler 
+
+(some of these may be "all", if they apply to more than one case!). If
+you have problems, you should check the contents of the file appropriate
+to your system.  You might try downgrading the level of optimization if
+appropriate, uninstalling (using the uninstall_galahad script) 
+and installing again.
+
+2. THE COMPILATION FAILS
+------------------------
+
+Check (and edit if necessary) the generated makefile header in the file in 
+
+   $GALAHAD/makefiles 
+
+that corresponds to the system you installed.
+
+3. THE RUN FAILS
+----------------
+
+Check (and edit if necessary) the generated script header in the file in
+
+   $GALAHAD/bin/sys 
+
+that corresponds to the system you installed.
+
+
+4. KNOWN PROBLEMS WITH SPECIFIC SYSTEMS
+---------------------------------------
+
+4.1. f90/f95 under SOLARIS
+--------------------------
+
+Optimization has been disabled since any attempt at
+optimization here leads to internal compiler errors here.
+Please grumble to Sun!
+
+4.2 ifc under LINUX
+-------------------
+
+4.2.1 Pre Version 7
+
+If you are using a pre Version 7 version of the Intel fortran compiler (ifc),
+the line 
+
+set MODCMD = '-module $MOD -I$MOD -Vaxlib'
+
+in ./arch/compilers.pc.lnx.ifc should be replaced by
+
+set MODCMD = '-cl,$MOD/work.pcl -Vaxlib'
+
+and lines 383-393 in ./install_galahad should be uncommented.
+
+In addition, you may need to turn off optimization if you are
+compiling the modules presolve.f90 and (the optional) ad02.f90
+
+4.2.2 Version 7.1
+
+N.B. The 7.1 version of the compiler has a bug, and will not
+compile useqpb.f90. Intel have been informed, and we 
+await a suitable patch. Fortunately the 8.0 version works fine,
+so we suggest users ensure that they are using ifc_8 (ifort)
+
+4.3 frt under LINUX
+-------------------
+
+Unfortunately the glibc2.1 libraries required by frt are 
+incompatible with those used by most modern C compilers,
+so we are unable to offer the GALAHAD-AMPL interface in this
+case. If you know of a fix, we would love to know ...
+
+5. BUG REPORTS
+--------------
+
+If you think you have found a bug (even better, if you have
+found and fixed one!), please let us know. We will make
+every effort to issue bug fixes (although, this depends on our 
+having time, so no guarantees).

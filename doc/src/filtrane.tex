@@ -1,0 +1,1471 @@
+\documentclass{galahad}
+%
+%  FILTRANE documentation (Ph.L. Toint)
+%  This version 09 VI 2003.
+
+% set the package name
+
+\newcommand{\package}{filtrane}
+\newcommand{\packagename}{FILTRANE}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+\newcommand{\sym}{\sf\small}
+\newcommand{\fwbox}[1]{\fbox{\rule[-0.1cm]{0cm}{0.35cm}#1}}
+\newcommand{\filtrane}{{\tt \packagename}}
+%\newcommand{\galahad}{{\tt \libraryname}}
+\renewcommand{\Re}{\hbox{I\hskip -1.5pt R}}
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+
+\filtrane\ is a package for solving the general smooth feasibility
+problem, that is the problem to find a ``feasible'' vector $x \in \Re^n$ such
+that 
+\[
+\bmc^l \leq \bmc(\bmx) \leq \bmc^u,
+\]
+and
+\[
+\bmx^l \leq \bmx \leq \bmx^u,
+\]
+where $\bmc(x)$ is a smooth function from $\Re^n$ into
+$\Re^m$ and where inequalities are understood componentwise.
+The vectors $\bmc^l \leq \bmc^u$ and $\bmx^l \leq \bmx^u$ are $m$- and
+$n$-dimensional, respectively, and may contain components equal to minus or
+plus infinity. For a given $i$ between 1 and $m$, it is assumed that the
+$i$-th component of either $\bmc^l$ or $\bmc^u$ is finite, while, for $j$
+between 1 and $n$, the $j$-th components of both $\bmx^l$ and $\bmx^u$ are
+allowed to be infinite.  In what follows, we will say that variable $j$ is
+bounded if the $j$-th component of either $\bmx^l$ or $\bmx^u$ is
+finite. Equalities may be specified by choosing identical lower and upper
+bounds on either $\bmc$ or $\bmx$. The above framework therefore covers all
+combinations of bounds with linear/nonlinear equalities and/or inequalities.
+
+If a feasible point cannot be found, it is desired to find a local minimizer
+of the Euclidean norm $\|\cdot\|$ of the constraints violations, that is to
+find a local minimizer of the function
+\begin{equation}\label{thetadef}
+\min_x \half \| \theta(\bmx) \|^2,
+\end{equation}
+where we define
+\[
+\theta(x) \eqdef \left( \begin{array}{c}
+                 \max( [\bmc^l - \bmc(\bmx)]_+, [ \bmc( \bmx ) - \bmc^u ]_+ ) \\
+                 \max( [\bmx^l - \bmx]_+, [ \bmx - \bmx^u ]_+ )
+                 \end{array} \right) \in \Re^p,
+\]
+where, for a vector $\bmy$, $[\bmy]_+ = \max[0,\bmy]$, and where all maxima
+are taken componentwise.
+
+\filtrane\ also allows the partitioning the problems's constraints and bounded
+variables into $p$ (not necessarily disjoint) sets or ``groups''.
+In this case, each $\theta(x)$ has $p$ components defined as
+\[
+\theta_{\ell}(x) \eqdef 
+\left\| \begin{array}{c}
+    \max( [ \bmc^l_{[\ell]} - \bmc_{[\ell]}( \bmx )]_+,
+          [ \bmc_{[\ell]}( \bmx ) - \bmc^u_{[\ell]} ]_+ ) \\
+    \max( [ \bmx^l_{[\ell]} - \bmx_{[\ell]}]_+,
+          [ \bmx_{[\ell]} ]_+ ) - \bmx^u_{[\ell]} \\
+        \end{array} \right\|
+\tim{for} \ell = 1, \ldots, p, 
+\]
+where the subscript $[\ell]$ indicates that only components belonging to
+the $\ell$-th group are considered.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+
+\galuses {\tt GALAHAD\_NLPT}, {\tt GALAHAD\_SPECFILE}, {\tt GALAHAD\_GLTR},
+{\tt GALAHAD\_BAND}, {\tt GALAHAD\_SYMBOLS}, {\tt GALAHAD\_TOOLS}, {\tt
+*NRM2}, {\tt *DOT}, {\tt *SWAP}.
+
+\galdate May 2003.
+\galorigin Ph. L. Toint, The University of Namur, Belgium.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types 
+{\tt NLPT\_problem\_type}, 
+{\tt \packagename\_control\_type}, 
+{\tt \packagename\_inform\_type} 
+and
+{\tt \packagename\_data\_type}
+(Section~\ref{galtypes})
+and the four subroutines
+{\tt \packagename\_initialize}, 
+{\tt \packagename\_read\_specfile}, 
+{\tt \packagename\_solve}, 
+{\tt \packagename\_terminate}, 
+(Section~\ref{galarguments})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmatrix
+
+The constraint Jacobian matrix $\bmJ(\bmx)$ must be stored in sparse
+co-ordinate format.  In this format, only the nonzero entries of the matrices
+are stored. For the $l$-th entry of $\bmJ(\bmx)$, its row index $i$, column
+index $j$ and value $\bmJ_{ij}$ are stored in the $l$-th components of the
+integer arrays {\tt J\_row}, {\tt J\_col} and real array {\tt J\_val}.  The
+order is unimportant, but the total number of entries {\tt J\_size} is also
+required.
+
+
+%%%%%%%%%%%%%%%%%%%%%% symbols %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsymbols
+
+The following description make use of ``symbols'' that are publicly available
+in the GALAHAD\_SYMBOLS module. These symbols are conventional names given to
+specific integer values, that allow a more natural specification of the
+various options and parameters of the package.  Each symbol provided in the
+SYMBOLS module is of the form {\tt GALAHAD\_NAME}, where {\tt NAME} is the name
+of the symbol.  For clarify and conciseness, we will represent such a symbol
+by {\sym GALAHAD\_NAME} (in sans-serif upper case font) in what follows. See
+Section~\ref{galexample} to see how symbols may be used in the program unit
+that calls the \packagename\ subroutines.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+
+In addition to the problem data type, three derived data types are accessible
+from the package.
+
+\subsubsection{The problem type}\label{problem_type_s}
+
+The derived data type {\tt NLPT\_problem\_type} is used to hold 
+the problem: we refer the reader to the documentation of the {\tt
+GALAHAD\_NLPT} module for a full description. We only consider here the
+components that are of interest in conjunction with \filtrane.
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+\noindent
+We first review the components of the problem data type which must be set on
+entry in {\tt \packagename\_solve}.
+\begin{description}
+\ittf{n} is a scalar variable of type default \integer, 
+ that holds the number of problem variables, $n$.  
+
+\ittf{m} is a scalar variable of type default \integer, 
+ that holds the number of problem constraints, $m$.
+
+\ittf{x} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds the values $x$ of the problem variables at the
+initial point.The $j$-th component of {\tt x}, $j = 1,  \ldots , n$, contains
+$x_{j}$.
+
+\ittf{x\_l} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds
+the vector of lower bounds $\bmx^l$ on the problem variables.
+The $j$-th component of {\tt x\_l}, $j = 1, \ldots , n$, 
+contains $\bmx^l_{j}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt x\_l} to any value smaller than that {\tt -infinity}.
+
+\ittf{x\_u} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds
+the vector of upper bounds $\bmx^u$ on the problem variables.
+The $j$-th component of {\tt x\_u}, $j = 1, \ldots , n$, 
+contains $\bmx^u_{j}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt x\_u} to any value larger than that {\tt infinity}.
+
+\ittf{c\_l} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds the vector of lower bounds $\bmc^{l}$ 
+on the general constraints. The $i$-th component of 
+{\tt c\_l}, $i = 1, \ldots , m$, contains $\bmc_{i}^{l}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt c\_l} to any value smaller than {\tt -infinity}. 
+
+\ittf{c\_u} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds the vector of upper bounds $\bmc^{l}$ 
+on the general constraints. The $i$-th component of 
+{\tt c\_u}, $i = 1, \ldots , m$, contains $\bmc_{i}^{u}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt c\_u} to any value larger than {\tt infinity}. 
+
+\itt{J\_size} is a scalar variable of type default \integer, 
+which holds the number of nonzero entries of the constraints Jacobian matrix.
+
+\itt{J\_type} is a scalar variable of type default \integer, 
+which specifies the format in which the constraints Jacobian is stored.
+Only the value {\sym GALAHAD\_COORDINATE} is allowed as this is the only
+storage scheme provided within \filtrane.
+
+\itt{infinity} is a scalar variable of type default \realdp, which
+holds the value such that real numbers with absolute value less than
+{\tt infinity} are finite, all others being considered infinite.
+\end{description}
+
+\noindent
+In addition, the following components must be allocated:
+\begin{description}
+\itt{x\_status} is a rank-one allocatable array of dimension {\tt n} and type 
+default \integer,
+
+\ittf{c} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp,
+
+\ittf{y} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp,
+
+\ittf{g} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp,
+
+\itt{equation} is a rank-one allocatable array of dimension {\tt n} and type 
+default \logical,
+
+\itt{J\_val} is a rank-one allocatable array of dimension {\tt J\_size + n} and
+type default \realdp,
+
+\itt{J\_row} is a rank-one allocatable array of dimension {\tt J\_size + n} and
+type default \integer,
+
+\itt{J\_col} is a rank-one allocatable array of dimension {\tt J\_size + n} and
+type default \integer.
+\end{description}
+However, they need not be assigned a value.
+
+\noindent
+Additionally, the arrays {\tt x\_l}, {\tt x\_u} and {\tt x\_status} need not
+be allocated if there is no bound on the problem's variables.  Similarly, the
+arrays {\tt c}, {\tt c\_l}, {\tt c\_u}, {\tt y}, {\tt J\_val}, {\tt J\_row}
+and {\tt J\_col} need not be allocated if there are no constraints (i.e.\ {\tt
+m} $=0$), in which case the values of {\tt J\_ne} and {\tt J\_type} are also
+irrelevant. Furthermore, {\tt J\_val}, {\tt J\_row} and {\tt J\_col} need not
+be allocated if {\tt m} $>0$ and external Jacobian products are requested (see
+Section~\ref{typecontrol}), in which case the values of {\tt J\_ne} and {\tt
+J\_type} are again irrelevant.
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control 
+ parameters}\label{typecontrol}
+The derived data type 
+{\tt \packagename\_control\_type} 
+is used to hold controlling data. Default values may be obtained by calling 
+{\tt \packagename\_initialize} (see Section~\ref{subinit}),
+while individual components may also be changed by calling 
+{\tt \packagename\_read\-\_specfile}
+(see Section~\ref{readspec}). 
+The components of 
+{\tt \packagename\_control\_type} 
+are:
+
+\begin{description}
+\itt{c\_accuracy} is a scalar variable of type default \realdp, that
+specifies an accuracy threshold such that the \filtrane\ iteration is
+successfully terminated if each constraint violation is under the threshold.
+The default is {\tt c\_accuracy} = $10^{-4}$ in single precision, and
+{\tt c\_accuracy} = $10^{-6}$ in double precision.
+
+\itt{g\_accuracy} is a scalar variable of type default \realdp, that
+specifies an accuracy threshold such that the \filtrane\ iteration is
+successfully terminated if the (possibly preconditioned) Euclidean norm
+of $\nabla_x \theta$ is under the threshold.
+The default is {\tt g\_accuracy} = $10^{-4}$ in single precision, and
+{\tt c\_accuracy} = $10^{-6}$ in double precision.
+
+\itt{stop\_on\_prec\_g} is a scalar variable of type default \logical, that
+has the value {\tt .TRUE.} iff the preconditioned gradient must be used 
+in the gradient termination test, and has the value {\tt .FALSE.} iff the
+unpreconditioned gradient must be used instead.
+The default is {\tt stop\_on\_prec\_g} = {\tt .TRUE.}.
+
+\itt{stop\_on\_g\_max} is a scalar variable of type default \logical, that
+has the value {\tt .TRUE.} iff the maximum norm of the gradient must be used 
+in the gradient termination test, and has the value {\tt .FALSE.} iff the
+Euclidean norm must be used instead. Requiring the use of the maximum norm
+is only possible for {prec\_used} = {\sym GALAHAD\_NONE} or for
+{prec\_used} = {\sym GALAHAD\_BANDED} with {\tt semi\_bandwdith} $= 0$.  It is
+reset to .FALSE. in all other cases.
+The default is {\tt stop\_on\_g\_max} = {\tt .FALSE.}.
+
+\itt{max\_iterations} is a scalar variable of type default \integer, that
+determines the maximum number of iterations of the filter-trust-region
+algorithm during a call to {\tt \packagename\_solve}. If negative, no upper
+limit is imposed on the number of iterations.
+The default is {\tt max\_iterations} = 1000.
+
+\itt{max\_cg\_iterations} is a scalar variable of type default \integer, such
+that {\tt max\_cg\_iterations} times the number of problem's variables
+is the maximum number of Lanczos-conjugate-gradients iterations of the 
+Generalized Lanczos Trust-Region subproblems solver at each iteration of
+filter-trust-region algorithm during a call to {\tt \packagename\_solve}.
+The default is {\tt max\_cg\_iterations} = 15.
+
+\itt{grouping} is a scalar variable of type default \integer, that holds the
+type of equations/inequalities/bounds groups required for the filter tests in
+the \filtrane\ algorithm. Valid values are:
+\begin{description}
+\item[\sym GALAHAD\_NONE:] 
+each equation is considered individually in the filter,
+\item[\sym GALAHAD\_AUTOMATIC:] the automatic constraints grouping strategy 
+provided by the package is to be used,
+\item[\sym GALAHAD\_USER\_DEFINED:] the constraints groups are defined by 
+the user and specified in {\tt group}.
+\end{description}
+The default is {\tt grouping} = {\sym GALAHAD\_NONE}.
+
+\itt{nbr\_groups} is a scalar variable of type default \integer, that
+specifies the number of constraints groups. 
+If {\tt grouping} is set to {\tt GALAHAD\_AUTOMATIC}, and {\tt
+nbr\_groups} is positive, the smallest between this value and the
+problem's number of variables is used as the number of groups.
+If {\tt grouping} is set to {\sym GALAHAD\_AUTOMATIC}, and {\tt
+nbr\_groups} is negative, the number of constraints groups is set to 
+the number of constraints plus the number of bounded variables
+divided by the absolute value of the {\tt nbr\_groups}.
+If {\tt grouping} is set to {\sym GALAHAD\_USER\_DEFINED}, {\tt
+nbr\_groups} is the number of user-defined constraints groups specified in {\tt
+group}. The parameter {\tt nbr\_groups} is not referenced if {\tt
+grouping} is {\sym GALAHAD\_NONE}.
+
+\itt{group} is a pointer to a vector of type default \integer\ of dimension
+equal to $m$ plus the number of bounded variables. It is only referenced if
+{\tt grouping} is set to {\sym GALAHAD\_USER\_DEFINED}. In this case,
+it must be allocated and {\tt group(i)}, its $i$-th component, for $i$ between
+1 and $m$, specifies the group to which the $i$-th constraint belongs. Its
+$(m+\ell)$-th component specifies the group to which the $\ell$-th bounded
+variable belong (bounded variables are numbered consecutively by increasing
+index, skipping unbounded variables). All its components must be
+lie between 1 and {\tt nbr\_groups}.  It is nullified by \filtrane\ if
+{\tt grouping} is not set to {\sym GALAHAD\_USER\_DEFINED}.
+
+\itt{balance\_group\_values} is a scalar variable of type default \logical, 
+that has the value {\tt .TRUE.} iff the constraints values (at the initial
+point) must be sorted before they are distributed into groups.
+This has the effect of approximately balancing the 
+constraint violations (at the initial point) between the groups. It is
+relevant only if {\tt grouping} is set to {\sym GALAHAD\_AUTOMATIC}.
+The default is {\tt balance\_group\_values} = {\tt .FALSE.}.
+
+\itt{prec\_used} is a scalar variable of type default \integer, that indicates
+which preconditioning strategy must be used. Valid values are:
+\begin{description}
+\item[\sym GALAHAD\_NONE:] no preconditioning,
+\item[\sym GALAHAD\_BANDED:] a band preconditioner must be used, where the
+band has semi-bandwidth {\tt semi\_bandwidth} and is extracted from
+the Hessian of $\theta(x)$ (and possibly modified to ensure
+positive-definiteness),
+\item[\sym USER\_DEFINED:] a user-defined preconditioner for the model's
+Hessian must be used, which is applied outside \filtrane\ via the reverse
+communication interface (see Section~\ref{galreverse}).
+\end{description}
+The default is {\tt prec\_used} = {\sym GALAHAD\_NONE}.
+
+\itt{semi\_bandwidth} is a scalar variable of type default \integer, that 
+specifies the semi-bandwidth of the banded preconditioner, in the case where
+{\tt prec\_used} is set to {\sym GALAHAD\_BANDED}. It must lie between
+0 (diagonal precondtioning) and $n$ (full preconditioning).
+The default is {\tt semi\_bandwidth} = 5.
+
+\itt{external\_J\_products} is a scalar variable of type default \logical, that 
+specifies whether ({\tt external\_J\_products} = {\tt .FALSE.}) the Jacobian
+is passed as a matrix to \filtrane, which then computes the products of this
+matrix or its transpose times any vector internally, or if these products are
+to be computed outside the package via the reverse communication interface ({\tt
+external\_J\_products} = {\tt .TRUE.}, see Section~\ref{galreverse}), in which
+case the Jacobian is not used at all inside \filtrane.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+unit number associated with the device used for normal output.
+The default is {\tt out} = 6.
+
+\itt{errout} is a scalar variable of type default \integer, that holds the
+unit number associated with the device used for error ouput.
+The default is {\tt errout} = 6.
+
+\itt{print\_level} is a scalar variable of type default \integer, that holds the
+level of printout requested by the user. See Section~\ref{galinfo}.
+The default is {\tt print\_level} = {\sym GALAHAD\_SILENT}.
+
+\itt{start\_print} is a scalar variable of type default \integer, that holds
+the index of the first \filtrane\ iteration at which printing must occur.
+The default is {\tt start\_print} = 0 (print from initialization on).
+
+\itt{stop\_print} is a scalar variable of type default \integer, that holds
+the index of the last \filtrane\ iteration at which printing must occur. If
+negative, printing does not stop once started.
+The default is {\tt stop\_print} = -1 (always print once started).
+
+\itt{model\_type} is a scalar variable of type default \integer, that holds
+the type of model to be used by \filtrane\ for the objective function.  Valid
+values are:
+\begin{description}
+\item[\sym GALAHAD\_GAUSS\_NEWTON:] the Gauss-Newton model must be used,
+\item[\sym GALAHAD\_NEWTON:] the full Newton model (including constraints
+curvatures) must be used,
+\item[\sym GALAHAD\_AUTOMATIC:] an adaptive choice is to be made by 
+\filtrane\ between the Gauss-newton and Newton models, based on their
+respective past performance in terms or prediction or decrease.
+\end{description}
+The default is {\tt model\_type} = {\sym GALAHAD\_AUTOMATIC}.
+
+\itt{model\_inertia} is a scalar variable of type default \integer, that holds
+the number of past iterations to consider for determining the actual model
+used. It must be at least 1 and is only relevant if {\tt model\_type}
+is set to {\sym GALAHAD\_AUTOMATIC}.
+The default is {\tt model\_inertia} = 5.
+
+\itt{model\_criterion} is a scalar variable of type default \integer, that
+specifies the criterion to apply for the automatic model selection. Valid
+values are:
+\begin{description}
+\item[\sym GALAHAD\_BEST\_FIT:] the model is preferred whose prediction of the
+objective function value is most accurate,
+\item[\sym GALAHAD\_BEST\_REDUCTION:] the model is preferred whose use leads
+to a larger objective function reduction.
+\end{description}
+The default is {\tt model\_criterion} = {\sym GALAHAD\_BEST\_FIT}.
+
+\itt{inequality\_penalty\_type} is a scalar variable of type default \integer,
+that specifies the type of penalty function used to measure constraint
+violations.  Valid values are:
+\begin{description}
+\item[2:] the $\ell_2$ penalty function is used,
+\item[3:] the $\ell_3$ penalty function is used,
+\item[4:] the $\ell_4$ penalty function is used.
+\end{description}
+The default is {\tt inequality\_penalty\_type} = 2, which corresponds to the
+use of the Euclidean norm in (\ref{thetadef}).
+
+\itt{subproblem\_accuracy} is a scalar variable of type default \integer,
+that specifies the type of accuracy requirement for stopping the trust-region
+subproblem solution. Valid values are
+\begin{description}
+\item[\sym GALAHAD\_ADAPTIVE:] the (possibly preconditioned) norm of the
+residual for the model must be at most 
+\begin{equation}\label{gltr_stop}
+\min\left[\epsilon_1,\| r_0 \|^{\epsilon_2}\right] . \|r_0\|
+\end{equation}
+where $\|r_0\|$ is the (possibly preconditioned) norm of the residual at the
+current iterate; 
+\item[\sym GALAHAD\_FULL:] the (possibly preconditioned) norm of the residual
+for the model must be at most square root of the machine precision times
+the (possibly preconditioned) norm of the residual at the current iterate.
+\end{description}
+The default is {\tt subproblem\_accuracy} = {\sym GALAHAD\_ADAPTIVE}.
+
+\itt{min\_gltr\_accuracy} is a scalar variable of type default \realdp, that
+holds the minimum relative accuracy $\epsilon_1$ in the accuracy
+requirement (\ref{gltr_stop}) for the subproblem solution.
+It is only relevant if {\tt subproblem\_accuracy} is set
+to {\sym GALAHAD\_ADAPTIVE}, in which case it must be strictly between zero
+and one. 
+The default is {\tt min\_gltr\_accuracy} = 0.01.
+
+\itt{gltr\_accuracy\_power} is a scalar variable of type default \realdp, that
+holds the power $\epsilon_2$ at which the current residual norm is raised in
+the accuracy requirement (\ref{gltr_stop}) for the subproblem solution. 
+It is only relevant if {\tt subproblem\_accuracy} is set
+to {\sym GALAHAD\_ADAPTIVE}, in which case it must be positive.
+The default is {\tt gltr\_accuracy\_power} = 1.0.
+
+\itt{use\_filter} is a scalar variable of type default \integer, that
+specifies when the filter criterion must be used to accept new trial points.
+Valid values are:
+\begin{description}
+\item[\sym GALAHAD\_NEVER:] the filter must not be used (resulting in a pure
+trust-region method),
+\item[\sym GALAHAD\_INITIAL:] the filter is used as long as trial points are
+accepted, but is no longer used after a first trial point has been rejected.
+\item[\sym GALAHAD\_ALWAYS:] the filter must be used at every iteration.
+\end{description}
+The default is {\tt use\_filter} = {\sym GALAHAD\_ALWAYS}.
+
+\itt{filter\_sign\_restriction} is a scalar variable of type default \logical,
+whose value is {\tt .TRUE.} iff the filter must be constructed by considering
+the absolute value of the constraints/bounds violations.
+The default is {\tt filter\_sign\_restriction} = {\tt .FALSE.}.
+
+\itt{maximal\_filter\_size} is a scalar variable of type default \logical, that
+holds the maximum number of points that the filter can hold. Once this maximum
+is attained, no further point can be acceptable for the filter and the
+algorithm reduces to a pure trust-region scheme.  If set to a negative value,
+no upper limit is set on the number of filter entries.
+The default is {\tt maximal\_filter\_size} = -1.
+
+\itt{filter\_size\_increment} is a scalar variable of type default \integer,
+that holds the initial filter size (if used), and is also used as an increment
+for the case where the filter capacity (in memory) must be extended.
+The default is {\tt filter\_size\_increment} = 50.
+
+\itt{remove\_dominated} is a scalar variable of type default \logical, whose
+vale is {\tt .TRUE.} iff \filtrane\ is to remove the dominated filter entries.
+Setting this parameter to {\tt .FALSE.} marginally speeds up inclusion of new
+filter points, at the expense of increased memory requirements and a
+(marginally) slower acceptance test. 
+The default is {\tt remove\_dominated} = {\tt .TRUE.}.
+
+\itt{margin\_type} is a scalar variable of type default \integer, that
+specifies the quantity that is used to determine the width of the filter
+margin. Valid values are:
+\begin{description}
+\item[\sym GALAHAD\_CURRENT:] the norm of the violations at the current
+iterate is used,
+\item[\sym GALAHAD\_FIXED:] the norm of the violations at the filter point
+itself is used,
+\item[\sym GALAHAD\_SMALLEST:] the smallest of these two norms is used.
+\end{description}
+The default is {\tt margin\_type} = {\sym GALAHAD\_CURRENT}.
+
+\itt{gamma\_f} is a scalar variable of type default \realdp, that holds the
+value of the constant defining the filter margin.
+The default is {\tt gamma\_f} = 0.001.
+
+\itt{itr\_relax} is a scalar variable of type default \realdp, that holds the
+value of the initial trust-region relaxation factor, that is the factor by
+which the trust-region constraint is relaxed during the initial sequence of
+unrestricted step.
+The default is {\tt itr\_relax} = $10^{20}$.
+
+\itt{str\_relax} is a scalar variable of type default \realdp, that holds the
+value of the secondary trust-region relaxation factor, that is the factor by
+which the trust-region constraint is relaxed after a first restricted step has
+been encountered.
+The default is {\tt str\_relax} = 1000.
+
+\itt{weak\_accept\_power} is a scalar variable of type default \realdp, 
+that holds the power $\alpha_2$ in the ``weak acceptance criterion'' that
+accepts a trial point $x_k^+$ if
+\begin{equation}\label{wa}
+\theta(x_k)-\theta(x_k^+) \geq 
+\alpha_1 \min\left[ 1, \theta(x_k)^{\alpha_2} \right]. 
+\end{equation}
+This test weakens the filter/trust-region criteria 
+by also accepting steps that produces sufficient descent.  If {\tt
+weak\_accept\_power} $<0$, this test is not used.
+The default is {\tt weak\_accept\_power} = 2.0.
+
+\itt{min\_weak\_accept\_factor} is a scalar variable of type default \realdp, 
+that holds the parameter $\alpha_1$ in (\ref{wa}).  It is only relevant
+if {\tt weak\_accept\_power} $\geq 0$, in which case it must be strictly
+positive.
+The default is {\tt min\_weak\_accept\_factor} = 0.1.
+
+\itt{initial\_radius} is a scalar variable of type default \realdp, that
+holds the initial trust-region radius. It si only relevant if
+{\tt use\_filter} is different from {\sym GALAHAD\_NEVER}.
+The default is {\tt initial\_radius} = 1.0.
+
+\itt{eta\_1} is a scalar variable of type default \realdp, that holds the
+minimum ratio of achieved to predicted reduction
+for declaring a \filtrane\ iteration successful.
+The default is {\tt eta\_1} = 0.01.
+
+\itt{eta\_2} is a scalar variable of type default \realdp, that holds the
+minimum ratio of achieved to predicted reduction
+for declaring a \filtrane\ iteration very successful.
+The default is {\tt eta\_2} = 0.9.
+
+\itt{gamma\_0} is a scalar variable of type default \realdp, that holds the
+strongest factor by which the trust-region radius is decreased when the ratio
+of achieved to predicted reduction is negative.
+The default is {\tt gamma\_0} = 0.0625.
+
+\itt{gamma\_1} is a scalar variable of type default \realdp, that holds the
+factor by which the trust-region radius is decreased when the \filtrane\
+iteration is unsuccessful.
+The default is {\tt gamma\_1} = 0.25.
+
+\itt{gamma\_2} is a scalar variable of type default \realdp, that holds the
+factor by which the trust-region radius is increased when the \filtrane\
+iteration is very successful.
+The default is {\tt gamma\_2} = 2.0.
+
+\itt{save\_best\_point} is a scalar variable of type default \logical, 
+whose value is {\tt .TRUE.} iff the best point found so far must be saved to be
+returned as the final iterate.  This is only relevant when
+{\tt use\_filter} is different from {\sym GALAHAD\_NEVER}
+and requires the storage of an additional vector of dimension $n$.
+The default is {\tt save\_best\_point} = {\tt .FALSE.}.
+
+\itt{checkpoint\_freq} is a scalar variable of type default \integer, that
+holds the frequency (expressed in number of iterations) at which
+the current values of the problem's variables and the trust-region radius are
+saved on a checkpointing file for a possible package restart. It must be
+non-negative. 
+The default is {\tt checkpoint\_freq} = 0 (no checkpointing).
+
+\itt{checkpoint\_file} is a scalar variable of type default \character of
+length 30, that holds the name of the file use for storing checkpointing 
+information on disk.
+The default is {\tt checkpoint\_file} = FILTRANE.sav.
+
+\itt{checkpoint\_dev} is a scalar variable of type default \integer, that
+holds the number of the device that must be used for input/output of
+checkpointing operations.
+The default is {\tt checkpoint\_dev} = 55.
+
+\itt{restart\_from\_checkpoint} is a scalar variable of type default \logical,
+whose value is {\tt .TRUE.} iff the initial point and constraints values must
+be read from the checkpointing file checkpoint\_file,
+overriding the input value of {\tt problem\%x}.
+The default is {\tt restart\_from\_checkpoint} = {\tt .FALSE.}.
+
+\end{description}
+
+%%%%%%%%%%% info type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+parameters}\label{typeinform}
+The derived data type 
+{\tt \packagename\_inform\_type} 
+is used to hold parameters that give information about the progress and needs 
+of the algorithm. The components of 
+{\tt \packagename\_inform\_type} 
+are:
+
+\begin{description}
+
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm. See Sections~\ref{galerrors} and \ref{galinfo}
+for details.
+
+\itt{message} is a character array of 3 lines of 80 characters each, 
+containing a description of the exit condition
+on exit, typically including more information
+than contained in {\tt status}.
+It is printed out on device {\tt errout} at the end of execution
+unless {\tt print\_level} is {\sym GALAHAD\_SILENT}.
+
+\itt{nbr\_iterations} is a scalar variable of type default \integer, that
+gives the the final number of \filtrane\ iterations.
+
+\itt{nbr\_cg\_iterations} is a scalar variable of type default \integer, that
+gives the the final number of iterations performed by {\tt GALAHAD\_GLTR} in
+solving the subproblems on all successive \filtrane\ iterations.
+
+\itt{nbr\_c\_evaluations} is a scalar variable of type default \integer, that
+gives the final number of evaluations of the constraints values.
+
+\itt{nbr\_J\_evaluations} is a scalar variable of type default \integer, that
+gives the final number of Jacobian evaluations.
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type 
+{\tt \packagename\_data\_type} 
+is used to hold all the data for a the current problem between calls of 
+{\tt \packagename} procedures. 
+This data should be preserved, untouched, from the initial call to 
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}, except for components that have to be set in
+the reverse communication interface (see Section~\ref{galreverse}).
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are four procedures for user calls
+(see Section~\ref{galfeatures} for further features): 
+
+\begin{enumerate}
+\item The subroutine {\tt \packagename\_initialize} 
+      is used to set default values, and initialize private data. 
+\item The routine {\tt \packagename\_read\_specfile}
+      is used to read the {\tt \packagename} specfile in order to
+      possibly modify the algoritmic default parameters (see
+      Section~\ref{readspec}). 
+\item The subroutine {\tt \packagename\_solve} 
+      is called to solve the problem by applying the \filtrane\ algorithm.
+\item The subroutine {\tt \packagename\_terminate} 
+      is provided to allow the user to automatically deallocate array 
+      components of the private data, allocated by 
+      {\tt \packagename}, at the end of the solution process. 
+      It is important to do this if the data object is re-used for another 
+      problem {\bf with a different structure}
+      since {\tt \packagename\_initialize} cannot test for this situation, 
+      and any existing associated targets will subsequently become unreachable.
+\end{enumerate}
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+
+Default values for the control parameters are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize( control, inform, data )}
+
+\begin{description}
+\itt{control} is a scalar \intentout\ argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). 
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling 
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type 
+{\tt \packagename\_inform\_type} (see Section~\ref{typeinform}).  
+A successful call to the routine {\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Sections~\ref{galreverse} and
+\ref{galerrors}.
+
+\itt{data} is a scalar \intentout\ argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. It should never be altered by the user, except for returning values to
+\packagename\_solve via the reverse communication interface (see
+Section~\ref{galreverse}).
+\end{description}
+
+%%%%%%%%% main solver %%%%%%
+
+\subsubsection{The subroutine that applies the \filtrane\ algorithm to the
+problem}
+The \filtrane\ solver is called as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_solve( problem, control, inform, data )}
+
+\noindent
+Such a call must always be preceded by a call to {\tt \packagename\_initialize}.
+
+\begin{description}
+\itt{problem} is a scalar \intentout\ argument of type 
+{\tt NLPT\_problem\_type} that contains the problem statement. 
+
+\noindent
+On input, its
+{\tt n}, {\tt m}, {\tt x}, {\tt x\_l}, {\tt x\_u}, {\tt x\_status}, {\tt c\_l},
+{\tt c\_u}, {\tt J\_size}, {\tt J\_type} and {\tt infinity} components must be
+set. In addition, its {\tt c}, {\tt y}, {\tt g}, {\tt equation}, {\tt J\_val},
+{\tt J\_row} and {\tt J\_col} components must be allocated (see 
+Section~\ref{problem_type_s}).
+
+\noindent
+On successful output, the following components of the problem data type are of
+interest:
+\begin{description}
+\ittf{x} now contains the values of the variables at the point where
+\filtrane\ was terminated,
+
+
+\ittf{f} contains the value of the objective function $\theta$ at the point
+{\tt x},
+
+\ittf{g} contains the gradient of $\theta$ at the point {\tt x},
+\end{description}
+If {\tt problem\%m} $>0$, then
+\begin{description}
+\ittf{c} contains the values of the constraints at the point {\tt x},
+\end{description}
+If, additionally, {\tt control\%external\_Jacobian\_products} is {\tt
+.FALSE.},
+then
+\begin{description}
+\itt{J\_val} contains the values of the nonzero entries of the constraints
+Jacobian at {\tt x},
+
+\itt{J\_row} contains the row indices of the the nonzero entries of the
+constraints Jacobian at {\tt x},
+
+\itt{J\_col} contains the column indices of the the nonzero entries of the
+constraints Jacobian at {\tt x}.
+\end{description}
+ 
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). Default values may be assigned by calling 
+{\tt \packagename\_initialize} prior to the first call to 
+{\tt \packagename\_solve}.
+
+\itt{info} is a scalar \intentout\ argument of type {\tt
+\packagename\_inform\_type} 
+(see Section~\ref{typeinform}). A successful call to the routine
+{\tt \packagename\_solve}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. It must never be  altered by the user since the last call to 
+any of the {\tt \packagename} routines, except for returning values to
+\packagename\_solve via the reverse communication interface (see
+Section~\ref{galreverse}).
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated workspace arrays for \packagename\ are deallocated as
+follows: 
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_terminate( control, info, data )}
+
+\begin{description}
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_initialize}.
+
+\itt{info} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_initialize}.
+A successful call to {\tt \packagename\_terminate}
+is indicated when the component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type} 
+exactly as for
+{\tt \packagename\_solve},
+which must not have been altered by the user since the last call to 
+{\tt \packagename\_initialize}, except for returning values to
+\packagename\_solve via the reverse communication interface (see
+Section~\ref{galreverse}).
+On exit, array components will have been deallocated.
+\end{description}
+
+\noindent
+Note that a call to this routine is mandatory before {\tt \packagename\_solve}
+is called for a new problem whose structure differs from the current
+one.
+ 
+%%%%%%%%%%%%%%%%%%%%%% Reverse communications %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galreverse
+
+A positive value of {\tt info\%status} on exit from  
+{\tt \packagename\_solve} indicates that the user needs to take appropriate 
+action before re-entering the subroutine. Possible values are: 
+ 
+\begin{description} 
+ 
+\itt{1.} The user must compute, at the point given in the {\tt problem\%x},
+\begin{itemize}
+\item the values of the constraints, \\ 
+      and place the result in {\tt problem\%c(1:problem\%m)},
+\item the values of the nonzero entries of the constraints Jacobian, \\
+      and place the result in {\tt problem\%J\_val(1:problem\%J\_size)},
+\item the row indices of the nonzero entries of the constraints Jacobian, \\
+      and place the result in {\tt problem\%J\_row(1:problem\%J\_size)},
+\item the column indices of the nonzero entries of the constraints Jacobian,\\
+      and place the result in {\tt problem\%J\_col(1:problem\%J\_size)}.
+\end{itemize}
+No other argument of \packagename\_solve may be modified 
+before \packagename\_solve is called again.
+This is only used at the initial (starting) point.
+ 
+\itt{2.} The user must compute, at the point given in the {\tt problem\%x},
+\begin{itemize}
+\item the values of the constraints, \\ 
+      and place the result in {\tt problem\%c(1:problem\%m)},
+\item the values of the nonzero entries of the constraints Jacobian, \\
+      and place the result in {\tt problem\%J\_val(1:problem\%J\_size)}.
+\end{itemize}
+No other argument of \packagename\_solve may be modified 
+before \packagename\_solve is called again.
+This is only possibly used at the exit of \filtrane\ when {\tt
+control\%save\_best\_point} is {\tt .TRUE.}.
+
+
+\itt{3, 4 and 5.} The user must compute the values of the constraints at the
+point given in the {\tt problem\%x}, and place the result
+in {\tt problem\%c(1:problem\%m)}.
+No other argument of \packagename\_solve may be modified 
+before \packagename\_solve is called again.
+ 
+\itt{6.} The user must compute the values of the nonzero entries of the
+constraints Jacobian at the point given in the {\tt problem\%x}, and place 
+the result in {\tt problem\%J\_val(1:problem\%J\_size)}.
+No other argument of \packagename\_solve may be modified 
+before \packagename\_solve is called again.
+
+\itt{7.} The user must compute the product $\bmJ(x) \bmv$, where
+$\bmv$ is given by {\tt data\%RC\_v(1:problem\%n)} and place the result in
+the vector {\tt data\%RC\_Mv(1:problem\%m)}. No other argument of 
+\packagename\_solve may be modified before \packagename\_solve is called
+again. 
+This only occurs if {\tt control\%external\_J\_products} is {\tt .TRUE.} 
+(see Section~\ref{typecontrol}).
+
+\itt{8, 9, 10 and 11.} The user must compute the product $\bmJ(x)^T \bmv$, where
+$\bmv$ is given by {\tt data\%RC\_v(1:problem\%m)} and place the result in
+the vector {\tt data\%RC\_Mv(1:problem\%n)}. No other argument of 
+\packagename\_solve may be modified before \packagename\_solve is called
+again. 
+This only occurs if {\tt control\%external\_J\_products} is {\tt .TRUE.} 
+(see Section~\ref{typecontrol}).
+
+\itt{12, 13 and 14.} The user must apply a
+preconditioner for the model's Hessian to {\tt data\%RC\_Pv(1:problem\%n)} and
+place the result in the same vector.  The model's Hessian is given by
+\[
+\frac{\alpha(\alpha - 1)}{2} \bigg\{
+\bmJ(\bmx) {\rm diag}\left([\theta_c(\bmx)]_i^{\alpha-2}\right) \bmJ(\bmx)^T 
++ {\rm diag}\left( [\theta_x(\bmx)]_i^{\alpha-2} \right)
+\bigg\}
++ \frac{\alpha}{2} \sum_{i=1}^m [\theta_c(\bmx)]_i^{\alpha-1}
+  \nabla_{xx}^2 \bmc_i(\bmx), 
+\]
+where $\theta_c(x)$ contains the first $m$ components of $\theta(x)$ (the
+constraints's violations) and $\theta_x(x)$ the last $n$ (the bounds'
+violations), where $\alpha$ is the exponent of the inequality penalty
+function used (by default: $\alpha = 2$ for the Euclidean norm, see the
+information on {\tt control\%inequality\_penalty\_type} in
+Section~\ref{typecontrol}), and where the last term is only present if the full
+Newton model is used at the current iteration.  This last condition can be
+checked by verifying that the value of {\tt data\%model\_used} is equal to
+{\sym NEWTON}. If {\tt data\%model\_used} is equal to {\sym GAUSS\_NEWTON}
+instead, then the last term does not appear in the expression of the Hessian.
+No other argument of \packagename\_solve than {\tt data\%RC\_Pv} may be
+modified  before \packagename\_solve is called again.
+This only occurs if {\tt control\%prec\_used} is {\sym USER\_DEFINED} 
+(see Section~\ref{typecontrol}).
+
+\itt{15 and 16.} The user must compute the product
+\[
+     \sum_{i=1}^m \bmy_i \nabla_{xx} \bmc_i( \bmx ) \bmv,
+\]
+where 
+\begin{itemize}
+\item $\bmy$ is given by {\tt problem\%y(1:problem\%m)},
+\item $\bmx$ is given by {\tt problem\%x(1:problem\%n)},
+\item $\bmv$ is given by {\tt data\%RC\_v(1:problem\%n)},
+\end{itemize}
+and place the result in the vector {\tt data\%RC\_Mv(1:problem\%n)}. No other
+argument of \packagename\_solve may be modified before \packagename\_solve 
+is called again. The user may use the fact that {\tt data\%RC\_newx} is {\tt
+.TRUE.} iff the current product request is the first that involves the same
+vector {\tt problem\%x}. This only occurs if {\tt control\%model\_type} is
+{\sym NEWTON} or {\sym ADAPTIVE}
+(see Section~\ref{typecontrol}).
+\end{description} 
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt info\%status} on exit from 
+{\tt \packagename\_initialize},
+{\tt \packagename\_read\_specfile},
+{\tt \packagename\_apply},
+{\tt \packagename\_restore},
+or 
+{\tt \packagename\_terminate}
+indicates that an error has occurred. No further calls should be made
+to the four three of these routines until the error has been
+corrected. Possible values are:
+
+\begin{description}
+
+\itt{~-1.} The memory allocation failed.
+
+\itt{~-2.} A file intended for saving checkpointing information could not be
+opened.
+
+\itt{~-3.} An IO error occurred while saving checkpointing information on 
+the relevant disk file.
+
+\itt{~-5.} Further progress of the algorithms appears to be impossible,
+although successful termination is not recognized. This may happen if the
+problem is extremely ill-conditioned, if the current preconditioner is
+inefficient, or if there are errors in the calculation of the constraints
+Jacobian.  In the first case, it may happen that the current iterate gives a
+reasonable approximation of the solution (the components of the problem data
+type can then be interpreted as for successful termination).
+
+\itt{~-6.} The maximum number of iterations has been reached and computation
+terminated.
+
+\itt{~-8.} The number of variables is non-positive.
+
+\itt{~-9.} The number of constraints is negative.
+
+\itt{-21.} The information contained in the checkpointing file could not
+be read or does not correspond to the problem being solved.
+
+\itt{-22.} The step could not be computed by the {\tt GALAHAD\_GLTR} procedure.
+
+\itt{-23.} The dimension of the gradient {\tt problem\%G} is not equal to
+the number of variables in the problem {\tt problem\%n}.
+
+\itt{-24.} One of the vectors {\tt problem\%x}, {\tt problem\%x\_l}, {\tt
+problem\%x\_u}, {\tt problem\%c}, {\tt problem\%c\_l}, {\tt problem\%c\_u}, 
+{\tt problem\%y}, {\tt problem\%g}, {\tt problem\%J\_val}, {\tt
+problem\%J\_col}, {\tt problem\%J\_row}, {\tt
+problem\%equation} or {\tt problem\%x\_status} is not allocated on input,
+although it should be.
+
+\itt{-25.} The user-supplied number of groups is either negative
+or exceeds the number of constraints plus the number of bounded variables.
+
+\itt{-26.} The vector control\%group is not associated although user-defined
+groups are requested.
+
+\itt{-27.} The dimension of the vector {\tt control\%group} is different
+from the sum of the number of constraints and the number of bounded
+variables.
+
+\itt{-28.} The user-supplied group index (for a constraint or a bound) is
+either negative, or exceeds  {\tt control\%nbr\_groups}.
+
+\itt{-29.} \filtrane\ was re-entered (in the reverse communication
+protocol) with an invalid value for {\tt inform\%status}.
+
+\itt{-100.} This should not happen! (If it does anyway, please
+report (with problem data and specfile) to Ph. Toint. Thanks in advance.)
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting 
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}), 
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters 
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of 
+"specification commands". Each command occurs on a separate line, 
+and comprises a "keyword", 
+which is a string (in a close-to-natural language) used to identify a 
+control parameter, and 
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive, 
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and 
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+The portion of the specification file used by {\tt \packagename\_read\_specfile}
+must start with a "{\tt BEGIN \packagename}" command and end with an 
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by FILTRANE_read_specfile .. )
+    BEGIN FILTRANE
+       keyword    value
+       .......    .....
+       keyword    value
+    END 
+  ( .. lines ignored by FILTRANE_read_specfile .. )
+\end{verbatim}
+where {\tt keyword} and {\tt value} are two strings separated by (at least) one
+blank. The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command
+lines  may contain additional (trailing) strings so long as such strings are 
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN FILTRANE SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END FILTRANE SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore, between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored. 
+The content of a line after a {\tt !} or {\tt *} character is also 
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment off" some 
+specification commands, or to comment specific values 
+of certain control parameters.  
+
+The value of a control parameters may be of five different types, namely
+integer, logical, real, string or symbol.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}", 
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}". 
+Empty values are also allowed for logical control parameters, and are
+interpreted as "{\tt TRUE}". String are specified as a sequence of characters.  
+A symbolic value is a special string obtained from one of the predefined
+symbols of the SYMBOLS module by deleting the leading {\tt GALAHAD\_}
+characters in its name. Thus, the specification command
+\begin{verbatim}
+   print-level SILENT
+\end{verbatim}
+implies that the value {\sym GALAHAD\_SILENT} is assigned to {\tt
+control\%print\_level}.  This technique is intended to help expressing an
+(integer) control parameter for an algorithm  in a "language" that is close to
+natural (see Section~\ref{galsymbols}). 
+
+The specification file must be open for input when {\tt
+\packagename\_read\_specfile} is called, and the associated device number
+passed to the routine in device (see below).  Note that the corresponding  
+file is {\tt REWIND}ed, which makes it possible to combine the specifications 
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in 
+\def\baselinestretch{0.8} {\tt \begin{verbatim}
+     CALL FILTRANE_read_specfile( device, control, inform )
+\end{verbatim}}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\itt{control} is a scalar \intentinout argument of type 
+{\tt \packagename\_control\_type} (see Section~\ref{typecontrol}). 
+Default values should have already been set, perhaps by calling 
+{\tt \packagename\_initialize}. On exit, individual components of {\tt
+control} may have been changed according to the commands found in the
+specfile. Specfile commands and  the component (see Section~\ref{typecontrol})
+of {\tt control}  that each affects are given in
+Tables~\ref{specfile_1}--\ref{specfile_2}.
+
+\itt{inform} is a scalar \intentout\ argument of type 
+{\tt \packagename\_inform\_type} (see Section~\ref{typeinform}).
+\end{description}
+
+\bctable{|l|l|l|} 
+\hline
+  command & component of {\tt control} & value type/    \\
+          &                            & symbolic value \\
+\hline
+{\tt printout-device} & {\tt \%out} & integer \\
+{\tt error-printout-device} & {\tt \%errout} & integer \\
+{\tt print-level} & 
+     {\tt \%print\_level} & {\tt SILENT},  \\
+                  &       & {\tt TRACE},   \\
+                  &       & {\tt ACTION},  \\
+                  &       & {\tt DETAILS}, \\
+                  &       & {\tt DEBUG},   \\
+                  &       & {\tt CRAZY}    \\
+{\tt start-printing-at-iteration} &  {\tt \%start\_print} & integer \\
+{\tt stop-printing-at-iteration}  &  {\tt \%stop\_print} & integer \\
+{\tt residual-accuracy} & {\tt \%c\_accuracy} & real \\
+{\tt gradient-accuracy} & {\tt \%g\_accuracy} & real \\
+{\tt stop-on-preconditioned-gradient-norm} & {\tt \%stop\_on\_prec\_g} & logical \\
+{\tt stop-on-maximum-gradient-norm} & {\tt \%stop\_on\_g\_max} & logical \\
+{\tt maximum-number-of-iterations} & {\tt \%max\_iterations} & logical \\
+\hline
+\ectable{\label{specfile_1}Specfile commands and associated 
+components of {\tt control} (part 1).}
+\pctable{|l|l|l|} 
+\hline
+  command & component of {\tt control} & value type/    \\ 
+          &                            & symbolic value \\
+\hline
+{\tt model-type} & {\tt \%model\_type} & 
+                                 {\tt GAUSS\_NEWTON},  \\
+                             & & {\tt NEWTON}, \\
+                             & & {\tt ADAPTIVE}, \\
+{\tt automatic-model-inertia} & {\tt \%model\_inertia} & integer \\
+{\tt automatic-model-criterion} & {\tt \%model\_criterion} &
+                                 {\tt BEST\_FIT} \\
+                             & & {\tt BEST\_REDUCTION} \\
+{\tt maximum-number-of-cg-iterations} & {\tt \%max\_cg\_iterations} & logical \\
+{\tt subproblem-accuracy} & {\tt \%subproblem\_accuracy} &
+                                 {\tt ADAPTIVE} \\
+                             & & {\tt FULL} \\
+{\tt relative-subproblem-accuracy-power} & {\tt \%gltr\_accuracy\_power} &real\\
+{\tt minimum-relative-subproblem-accuracy} & {\tt \%min\_gltr\_accuracy} &real\\
+{\tt preconditioner-used} & {\tt \%prec\_used} &
+                                 {\tt NONE} \\
+                             & & {\tt BANDED} \\
+{\tt semi-bandwidth-for-band-preconditioner} &{\tt \%semi\_bandwidth} &integer\\
+{\tt external\_Jacobian\_products} & {\tt external\_J\_products} & logical \\
+{\tt equations-grouping} & {\tt \%grouping} &
+                                 {\tt NONE} \\
+                             & & {\tt AUTOMATIC}\\
+                             & & {\tt USER\_DEFINED} \\
+{\tt number-of-groups} & {\tt \%nbr\_groups} & integer \\
+{\tt balance-initial-group-values} & {\tt \%balance\_group\_values} & logical \\
+{\tt use-filter} & {\tt \%use\_filter} & 
+                                 {\tt NEVER} \\
+                             & & {\tt INITIAL} \\
+                             & & {\tt ALWAYS} \\
+{\tt maximum-filter-size} & {\tt \%maximal\_filter\_size} & integer \\
+{\tt filter-size-increment} & {\tt \%filter\_size\_increment} & integer \\
+{\tt filter-margin-type}  & {\tt \%filter\_margin\_type} &
+                                 {\tt CURRENT} \\
+                             & & {\tt FIXED} \\
+                             & & {\tt SMALLEST} \\
+{\tt filter-margin-factor} & {\tt \%gamma\_f} & real \\
+{\tt remove-dominated-entries} & {\tt \%remove\_dominated} & logical \\
+{\tt weak-acceptance-power} & {\tt \%weak\_accept\_power} & real \\
+{\tt minimum-weak-acceptance-factor}&{\tt \%min\_weak\_accept\_factor} & real \\
+{\tt initial-radius} & {\tt \%initial\_radius} & real \\
+{\tt initial-TR-relaxation-factor} & {\tt \%itr\_relax} & real \\
+{\tt secondary-TR-relaxation-factor} & {\tt \%str\_relax} & real \\
+{\tt minimum-rho-for-successful-iteration} & {\tt \%eta\_1} & real \\
+{\tt minimum-rho-for-very-successful-iteration} & {\tt \%eta\_2} & real \\
+{\tt radius-increase-factor} & {\tt \%gamma\_2} & real \\
+{\tt radius-reduction-factor} & {\tt \%gamma\_1} & real \\
+{\tt worst-case-radius-reduction-factor} & {\tt \%gamma\_0} & real \\
+{\tt save-best-point} & {\tt \%save\_best\_point} & logical \\
+{\tt checkpointing-frequency} & {\tt \%checkpoint\_freq} & integer \\
+{\tt checkpointing-device} & {\tt \%checkpoint\_dev} & integer \\
+{\tt checkpointing-file} & {\tt \%checkpoint\_file} & character( 30 ) \\
+{\tt restart-from-checkpoint} & {\tt \%restart\_from\_checkpoint} & logical \\
+\hline
+\ectable{\label{specfile_2}Specfile commands and associated 
+components of {\tt control} (part 2).}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+The meaning of the various {\tt control\%print\_level} values is defined as
+follows:
+\begin{description}
+\item[\sym GALAHAD\_SILENT:] no printout is produced,
+\item[\sym GALAHAD\_TRACE:] only reports a one line summary of each iteration.
+     This summary includes the current values of the objective function,
+the (possibly preconditioned) norm of its gradient, the ratio $\rho$ of
+achieved to predicted reduction, the norm of the step and the trust-region
+radius. It also reports the cumulative number of GLT iterations, the iteration
+type and the number of entries currently in the filter.  
+
+\noindent
+The iteration type is a four character string whose interpretation requires
+some detailed knowledge of the algorithm (see Section~\ref{galmethod} and the
+references therein). 
+The first character describes the model type used at the current
+iteration:
+\begin{description}
+\itt{G :} the Gauss-Newton model was used, 
+\itt{N :} the full Newton model was used.
+\end{description}
+The second character describes the type of step that was allowed:
+\begin{description}
+\itt{R :} the current step was restricted to lie in the trust region,
+\itt{U :} the current step was not restricted to lie in the trust region.
+\end{description}
+The third character described the manner in which the {\tt GALAHAD\_GLTR}
+procedure has been terminated for the step computation:
+\begin{description}
+\itt{I :} the stopping criterion was met for a step internal to the
+trust-region,
+\itt{B :} the stopping criterion was met for a step lying on the trust-region
+boundary,
+\itt{E :} the stopping criterion was met for a step exterior to the trust
+region,
+\itt{M :} the maximum number of iterations allowed for {\tt GALAHAD\_GLTR} has
+been reached. 
+\end{description}
+The fourth character describes the result of applying the various acceptance
+tests to the trial point:
+\begin{description}
+\itt{W :} the trial point was acceptable for the weak acceptance test
+(\ref{wa}),
+\itt{F :} the trial point was acceptable for the filter, but its violation
+was not included in the filter,
+\itt{f :} the trial point was acceptable for the filter, and its violation
+was included in the filter,
+\itt{S :} the trial point was accepted as very successful by the trust-region
+tests,
+\itt{s :} the trial point was accepted as successful by the trust-region
+tests,
+\itt{u :} the trial point was rejected as unsuccessful by the trust-region
+tests,
+\itt{U :} the trial point was rejected as very unsuccessful by the
+trust-region tests.
+\end{description}
+\item[\sym GALAHAD\_ACTION:] additionally reports the mains steps of each
+iteration,
+\item[\sym GALAHAD\_DETAILS:] additionally reports the values of variables,
+constraints,  Jacobian entries, gradient and step components at each
+iteration,
+\item[\sym GALAHAD\_DEBUG:] additionally reports LOTS of information,
+including details of subprocesses within each iteration,
+\item[\sym GALAHAD\_CRAZY:] reports a completely silly amount of information.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines {\tt \packagename\_solve} calls the BLAS functions {\tt *NRM2},
+{\tt *DOT} and {\tt *SWAP}, where {\tt *} is {\tt S} for 
+the default real version and {\tt D} for the double precision version.
+\galmodules {\tt \packagename} calls the \galahad\ modules
+{\tt NLPT}, {\tt GLTR}, {\tt BAND}, {\tt SYMBOLS}, {\tt SORT}, {\tt TOOLS} and
+{\tt SPECFILE}. 
+\galio Output is under control of the arguments
+ {\tt control\%errout}, {\tt control\%out} and {\tt control\%print\_level}.
+\galrestrictions {\tt problem\%n} $> 0$, 
+{\tt problem\%m} $\geq  0$.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+
+The method used by \filtrane\ is iterative and combines multidimensional
+filter and trust-region techniques.  Trust-region methods 
+build a local (in the case of \filtrane , quadratic) approximation of
+$\theta(\bmx)$ and then compute a step that decreases the value of that model
+in a ``trust region'', where the model is deemed to approximate the true
+function well enough. The new trial point is then compared to previous
+iterates. If it provides reduction in the violation of at least one of the
+(groups of) constraints, it is accepted as the new iterate, according to the
+multidimensional filter acceptance criterion, or if it provides sufficient
+reduction in the objective function. If the trial point is rejected,
+the trust-region radius is reduced and another step computed in the smaller
+region, until a trial point can be accepted.
+
+The calculation of the step is performed using the Generalized Lanczos Trust
+Region Method of Gould, Lucidi and Toint, as implemented in the \galahad\ {\tt
+GLTR} module.
+
+The package has a full reverse-communication interface. 
+
+The use of \filtrane\ for the solution of a
+problem follows one on the two sequences:
+
+\vspace*{0.2cm}
+
+\noindent
+\fwbox{initialize} 
+$\rightarrow$ \bigg[ \fwbox{solve}
+$\rightarrow$ \fwbox{terminate} \bigg]
+\vspace*{0.2cm}
+
+\noindent or
+
+\vspace*{0.2cm}
+\noindent
+\fwbox{initialize} 
+$\rightarrow$ \bigg[ \fwbox{read specfile} 
+$\rightarrow$ \bigg[ \fwbox{solve}
+$\rightarrow$ \fwbox{terminate} \bigg] \bigg]
+\vspace*{0.2cm}
+
+\noindent
+where the procedure's control parameter may be modified by reading the
+specfile (see Section~\ref{galfeatures}). Each of the ``boxed'' steps in these
+sequences corresponds to calling a specific routine of the package (see
+Section~\ref{galarguments}). In the above diagrams, brackated subsequence of
+steps means that they can be repeated.
+
+\galreferences
+\vspace*{1mm}
+
+\noindent
+The algorithm is described in more detail in
+\vspace*{1mm}
+
+N. Gould, S. Leyffer and Ph. L. Toint (2003),
+A Multidimensional Filter Algorithm for Nonlinear Equations and
+Nonlinear Least-Squares,
+Technical report 03/01, The University of Namur, Belgium.
+
+\noindent
+N. Gould and Ph. L. Toint (2003).
+{\sf FILTRANE}, a Fortran~95 + TR 15581 or Fortran~2003 filter-trust-region package for 
+solving nonlinear feasibility problems,
+Technical report 03/??, The University of Namur, Belgium.
+\vspace*{1mm}
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose that we wish to apply \filtrane\ to solve the nonlinear feasibility
+problem for the constraints
+\[
+3\bmx_1^2 + 2 \bmx_2^3 + \bmx_1 \bmx_2 = 0,
+\]
+\[
+\bmx_1 + \bmx_2 = 0,
+\]
+\[
+-2 \leq \bmx_1 \leq 2 \;\;\mbox{and}\;\; -2 \leq \bmx_2 \leq 2,
+\]
+starting from the initial point $\bmx^T = ( 1 1 )$.
+We thus have that $n=2$, $m=2$.  Computing the constraints Jacobian, we verify
+that it is given by
+\[
+\bmJ(\bmx) =  \left( \begin{array}{cc}
+              6\bmx_1 + \bmx_2   & \bmx_1+ 6\bmx_2^2  \\
+              1                  & 1                  \\ 
+              \end{array} \right).
+\]
+We may then use the following code:
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+
+\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+\noindent
+We could also make use of the {\tt \packagename\_read\_specfile} routine to
+set the printing level, in which case the lines
+{\small
+\begin{verbatim}
+! Nevertheless... ask for some output:
+  FILTRANE_control%print_level = GALAHAD_TRACE
+\end{verbatim}
+}
+\noindent
+are replaced by
+{\small
+\begin{verbatim}
+! open specfile
+   OPEN( 57, FILE = FILTRANE.SPC', STATUS = 'OLD' )
+! read its content (asking for some output)
+   CALL FILTRANE_read_specfile( 57, control, inform )
+! close it
+   CLOSE( 57 )
+\end{verbatim}
+}
+\noindent
+where we assume that the file {\tt FILTRANE.SPC} exists in the current
+directory and contains the lines
+{\small
+\begin{verbatim}
+BEGIN FILTRANE SPECIFICATION
+   print-level           TRACE
+END FILTRANE SPECIFICATION
+\end{verbatim}
+}
+\end{document}
+

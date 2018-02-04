@@ -1,0 +1,251 @@
+#  Main body of the installation makefile for the GALAHAD PSLS package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 19 X 2005
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+LUSEDS = $(GALAHAD)/seds/$(ULINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SPSLS =   basics scu sls lancelot_psls icfs mi28 $(LGS)(psls.o)
+DPSLS =   basics scu sls lancelot_psls icfs mi28 $(LGD)(psls.o)
+
+PSLSDS = $(DPSLS) $(OBJD)/pslss.o
+PSLSDT = $(DPSLS) $(OBJD)/pslst.o
+PSLSSS = $(SPSLS) $(OBJS)/pslss.o
+PSLSST = $(SPSLS) $(OBJS)/pslst.o
+
+RPSLSDS = $(OBJD)/pslss.o -L$(OBJD) $(LIBS)
+RPSLSDT = $(OBJD)/pslst.o -L$(OBJD) $(LIBS)
+RPSLSSS = $(OBJS)/pslss.o -L$(OBJS) $(LIBS)
+RPSLSST = $(OBJS)/pslst.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+
+#  main compilations and runs
+
+all: psls
+test: test_psls
+test_spec: test_spec_psls
+
+# psls
+
+psls_silent: psls_silent_$(PRECIS)
+psls_silent_single: $(SPSLS)
+psls_silent_double: $(DPSLS)
+
+psls: psls_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: PSLS ($(PRECIS) $(SUCC)"
+psls_single: $(SPSLS)
+	$(RANLIB) $(LGS)
+psls_double: $(DPSLS)
+	$(RANLIB) $(LGD)
+
+pslssrunall: pslsss pslsst
+pslsdrunall: pslsds pslsdt
+pslsrunall: pslsdrunall pslssrunall
+
+test_psls: test_psls_$(PRECIS)
+
+test_psls_single: pslsst
+	echo ""
+	echo " Tests for psls complete"
+
+test_psls_double: pslsdt
+	echo ""
+	echo " Tests for psls complete"
+
+test_spec_psls: test_spec_psls_$(PRECIS)
+
+test_spec_psls_single: pslsss
+	echo ""
+	echo " Tests for psls complete"
+
+test_spec_psls_double: pslsds
+	echo ""
+	echo " Tests for psls complete"
+
+#  basic packages
+
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+	( cd ../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            qpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../qp )
+linearsolver:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+scu:
+	( cd ../scu ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            scu.o PRECIS=$(PRECIS) PWD=$(PWD)/../scu )
+sls:
+	( cd ../sls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            sls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../sls )
+lancelot_psls:
+	( cd ../lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lancelotb_psls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../lancelot )
+copyright:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+icfs:
+	( cd ../non-free/icfs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            icfs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/icfs )
+mi28:
+	( cd ../non-free/mi28 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mi28_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mi28 )
+
+# run spec-sheet example tests
+
+pslsds: $(PSLSDS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_psls $(RPSLSDS)
+	- ./run_psls >& pslsds.output
+	cat pslsds.output
+	rm ./run_psls
+
+pslsdt: $(PSLSDT)
+	echo " Exhaustive test of subroutine interface to psls"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_psls $(RPSLSDT)
+	- ./run_psls >& pslsdt.output
+	cat pslsdt.output
+	rm ./run_psls
+
+pslsss: $(PSLSSS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_psls $(RPSLSSS)
+	- ./run_psls >& pslss.output
+	cat pslss.output
+	rm ./run_psls
+
+pslsst: $(PSLSST)
+	echo " Exhaustive test of subroutine interface to psls"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_psls $(RPSLSST)
+	- ./run_psls >& pslst.output
+	cat pslst.output
+	rm ./run_psls
+
+#  Substantial GALAHAD packages
+
+psls.o: $(LG)(psls.o)
+
+$(LG)(psls.o): ../psls/psls.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "psls  "
+	$(SED) -f $(SEDS) ../psls/psls.f90 > $(OBJ)/psls1.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/psls1.f90 > $(OBJ)/psls2.f90
+	$(SED) -f $(LUSEDS) $(OBJ)/psls2.f90 > $(OBJ)/psls3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/psls3.f90 > $(OBJ)/psls.f90
+	cd $(OBJ); $(FORTRAN) -o psls.o $(FFLAGSS) psls.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o psls.o $(FFLAGSN) psls.f90 )
+	cd $(OBJ); $(ARR) psls.o ; $(RM) psls.f90 psls1.f90 \
+                                         psls2.f90 psls3.f90 psls.o
+	$(RMARFILE) arc.o
+	$(RMARFILE) tru.o
+	$(RMARFILE) nls.o
+	$(RMOBFILE) pslss.o
+	$(RMOBFILE) pslst.o
+	$(RMOBFILE) usesqp.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  test decks
+
+pslss.o: $(OBJ)/pslss.o
+
+$(OBJ)/pslss.o: ../psls/pslss.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pslss  "
+	$(SED) -f $(SEDS) ../psls/pslss.f90 > $(OBJ)/pslss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/pslss1.f90 > $(OBJ)/pslss.f90
+	cd $(OBJ) ; $(FORTRAN) -o pslss.o $(FFLAGS) pslss.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+pslst.o: $(OBJ)/pslst.o
+
+$(OBJ)/pslst.o: ../psls/pslst.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pslst  "
+	$(SED) -f $(SEDS) ../psls/pslst.f90 > $(OBJ)/pslst1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/pslst1.f90 > $(OBJ)/pslst.f90
+	cd $(OBJ) ; $(FORTRAN) -o pslst.o $(FFLAGSS) pslst.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  generate HSL codes from GALAHAD ones
+
+hslgen:
+	$(SED) -f ../hsl/gal2hsl ../psls/psls.f90 > ../hsl/hsl_mi25/mi25d.f90
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LGS) $(LGD) $(PSLSDS) $(OBJ)/pslsdt.o $(PSLSSS) $(OBJ)/pslsst.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmpsls:
+	@printf ' %-9s %-15s\t\t' "Removing" "psls from archive "
+	$(RMARFILE) psls.o
+	@printf '[ OK ]\n'
+

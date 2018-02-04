@@ -1,0 +1,360 @@
+#  Main body of the installation makefile for the GALAHAD TRB package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 27 X 2008
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(OPENMP)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+#RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES) -L/usr/lib -llapack
+RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+STRB = basics cutest_functions gltr psls trs cauchy cg $(LGS)(trb.o)
+DTRB = basics cutest_functions gltr psls trs cauchy cg $(LGD)(trb.o)
+
+SRUNTRB = copyright $(LGS)(usetrb.o) $(OBJS)/runtrb_sif.o
+DRUNTRB = copyright $(LGD)(usetrb.o) $(OBJD)/runtrb_sif.o
+
+TRBOBJECTSS = $(STRB)
+TRBOBJECTSD = $(DTRB)
+TRBOBJECTSS_CUTEST = $(STRB) $(SRUNTRB)
+TRBOBJECTSD_CUTEST = $(DTRB) $(DRUNTRB)
+
+OBJECTSS_CUTEST = $(TRBOBJECTSS_CUTEST)
+OBJECTSD_CUTEST = $(TRBOBJECTSD_CUTEST)
+
+TRBDS = $(DTRB) $(OBJD)/trbs.o
+TRBDS2 = $(DTRB) $(OBJD)/trbs2.o
+TRBDS3 = $(DTRB) $(OBJD)/trbs3.o
+TRBDT = $(DTRB) $(OBJD)/trbt.o
+TRBSS = $(STRB) $(OBJS)/trbs.o
+TRBSS2 = $(STRB) $(OBJS)/trbs2.o
+TRBSS3 = $(STRB) $(OBJS)/trbs3.o
+TRBST = $(STRB) $(OBJS)/trbt.o
+
+RTRBDS = $(OBJD)/trbs.o -L$(OBJD) $(LIBS)
+RTRBDS2 = $(OBJD)/trbs2.o -L$(OBJD) $(LIBS)
+RTRBDS3 = $(OBJD)/trbs3.o -L$(OBJD) $(LIBS)
+RTRBDT = $(OBJD)/trbt.o -L$(OBJD) $(LIBS)
+RTRBSS = $(OBJS)/trbs.o -L$(OBJS) $(LIBS)
+RTRBSS2 = $(OBJS)/trbs2.o -L$(OBJS) $(LIBS)
+RTRBSS3 = $(OBJS)/trbs3.o -L$(OBJS) $(LIBS)
+RTRBST = $(OBJS)/trbt.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+all: trb_cutest
+all_trb: trb_cutest
+test: test_trb
+test_nocutest: test_trb_nocutest
+
+# trb
+
+trb_cutest: trb_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: TRB ($(PRECIS) $(SUCC_CUTEST)"
+trb_cutest_single: $(TRBOBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+trb_cutest_double: $(TRBOBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+trb_silent: trb_silent_$(PRECIS)
+trb_silent_single: $(TRBOBJECTSS)
+trb_silent_double: $(TRBOBJECTSD)
+
+trb: trb_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: TRB ($(PRECIS) $(SUCC)"
+trb_single: $(TRBOBJECTSS)
+	$(RANLIB) $(LGS)
+trb_double: $(TRBOBJECTSD)
+	$(RANLIB) $(LGD)
+
+trbsrunall: trbss trbss2 trbss3 trbds trbds2 trbds3
+trbdrunall: trbds trbdt
+trbrunall: trbdrunall trbsrunall
+
+test_trb: test_trb_$(PRECIS)
+
+test_trb_single: trbst $(SRUNTRB)
+	echo ""
+	echo " Testing CUTEst interface to trb"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) trb -s QPBAND
+	echo ""
+	echo " Tests for trb complete"
+
+test_trb_double: trbdt $(DRUNTRB)
+	echo ""
+	echo " Testing CUTEst interface to trb"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) trb QPBAND
+	echo ""
+	echo " Tests for trb complete"
+
+test_trb_nocutest: test_trb_nocutest_$(PRECIS)
+
+test_trb_nocutest_single: trbst
+	echo ""
+	echo " Tests for trb complete"
+
+test_trb_nocutest_double: trbdt
+	echo ""
+	echo " Tests for trb complete"
+
+#  basic packages
+
+basics:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+linearsolver:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+gltr:
+	( cd ../../gltr ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            gltr_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../gltr )
+cauchy:
+	( cd ../../lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cauchy.o PRECIS=$(PRECIS) PWD=$(PWD)/../../lancelot )
+cg:
+	( cd ../../lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cg.o PRECIS=$(PRECIS) PWD=$(PWD)/../../lancelot )
+trs:
+	( cd ../../trs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            trs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../trs )
+psls:
+	( cd ../../psls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            psls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../psls )
+mop:
+	( cd ../../mop ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mop.o PRECIS=$(PRECIS) PWD=$(PWD)/../../mop )
+cutest_functions:
+	( cd ../../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_silent PRECIS=$(PRECIS) \
+            PWD=$(PWD)/../../auxiliary )
+copyright:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+# run spec-sheet example tests
+
+trbss: $(TRBSS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trb $(RTRBSS)
+	- ./run_trb >& trbs.output
+	cat trbs.output
+	rm ./run_trb
+
+trbss2: $(TRBSS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trb $(RTRBSS2)
+	- ./run_trb >& trbs2.output
+	cat trbs2.output
+	rm ./run_trb
+
+trbss3: $(TRBSS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trb $(RTRBSS3)
+	- ./run_trb >& trbs3.output
+	cat trbs3.output
+	rm ./run_trb
+
+trbst: $(TRBST)
+	echo " Exhaustive test of subroutine interface to trb"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trb $(RTRBST)
+	- ./run_trb >& trbt.output
+	cat trbt.output
+	rm ./run_trb
+
+trbds: $(TRBDS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trb $(RTRBDS)
+	- ./run_trb >& trbds.output
+	cat trbds.output
+	rm ./run_trb
+
+trbds2: $(TRBDS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trb $(RTRBDS2)
+	- ./run_trb >& trbds2.output
+	cat trbds2.output
+	rm ./run_trb
+
+trbds3: $(TRBDS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trb $(RTRBDS3)
+	- ./run_trb >& trbds3.output
+	cat trbds3.output
+	rm ./run_trb
+
+trbdt: $(TRBDT)
+	echo " Exhaustive test of subroutine interface to trb"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trb $(RTRBDT)
+	- ./run_trb >& trbdt.output
+	cat trbdt.output
+	rm ./run_trb
+
+#  Substantial GALAHAD packages
+
+trb.o: $(LG)(trb.o)
+
+$(LG)(trb.o): ../trb/trb.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "trb   "
+	$(SED) -f $(SEDS) ../trb/trb.f90 > $(OBJ)/trb1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/trb1.f90 > $(OBJ)/trb2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/trb2.f90 > $(OBJ)/trb3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/trb3.f90 > $(OBJ)/trb.f90
+	cd $(OBJ); $(FORTRAN) -o trb.o $(FFLAGSS) trb.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o trb.o $(FFLAGSN) trb.f90 )
+	cd $(OBJ); $(ARR) trb.o ; $(RM) trb.f90 trb1.f90 trb2.f90 \
+                                          trb3.f90 trb.o
+	$(RMARFILE) ism.o
+	$(RMARFILE) bgo.o
+	$(RMARFILE) usetrb.o
+	$(RMOBFILE) trbs.o
+	$(RMOBFILE) trbt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usetrb.o: $(LG)(usetrb.o)
+
+$(LG)(usetrb.o): ../trb/usetrb.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usetrb   "
+	$(SED) -f $(SEDS) ../trb/usetrb.f90 > $(OBJ)/usetrb1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usetrb1.f90 > $(OBJ)/usetrb2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usetrb2.f90 > $(OBJ)/usetrb.f90
+	cd $(OBJ); $(FORTRAN) -o usetrb.o $(FFLAGSOMP) usetrb.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usetrb.o $(FFLAGSN) usetrb.f90 )
+	cd $(OBJ); $(ARR) usetrb.o ; $(RM) usetrb.f90 usetrb1.f90 \
+                                       usetrb2.f90 usetrb.o
+	$(RMOBFILE) runtrb_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runtrb_sif.o: $(OBJ)/runtrb_sif.o
+
+$(OBJ)/runtrb_sif.o: ../trb/runtrb_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runtrb_sif"
+	$(SED) -f $(SEDS) ../trb/runtrb_sif.f90 > $(OBJ)/runtrb_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runtrb_sif.o $(FFLAGSS) runtrb_sif.f90
+	rm $(OBJ)/runtrb_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+trbs.o: $(OBJ)/trbs.o
+
+$(OBJ)/trbs.o: ../trb/trbs.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "trbs  "
+	$(SED) -f $(SEDS) ../trb/trbs.f90 > $(OBJ)/trbs1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/trbs1.f90 > $(OBJ)/trbs.f90
+	cd $(OBJ) ; $(FORTRAN) -o trbs.o $(FFLAGS) trbs.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+trbs2.o: $(OBJ)/trbs2.o
+
+$(OBJ)/trbs2.o: ../trb/trbs2.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "trbs2  "
+	$(SED) -f $(SEDS) ../trb/trbs2.f90 > $(OBJ)/trbs1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/trbs1.f90 > $(OBJ)/trbs2.f90
+	cd $(OBJ) ; $(FORTRAN) -o trbs2.o $(FFLAGS) trbs2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+trbs3.o: $(OBJ)/trbs3.o
+
+$(OBJ)/trbs3.o: ../trb/trbs3.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "trbs3  "
+	$(SED) -f $(SEDS) ../trb/trbs3.f90 > $(OBJ)/trbs1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/trbs1.f90 > $(OBJ)/trbs3.f90
+	cd $(OBJ) ; $(FORTRAN) -o trbs3.o $(FFLAGS) trbs3.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+trbt.o: $(OBJ)/trbt.o
+
+$(OBJ)/trbt.o: ../trb/trbt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "trbt  "
+	$(SED) -f $(SEDS) ../trb/trbt.f90 > $(OBJ)/trbt1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/trbt1.f90 > $(OBJ)/trbt.f90
+	cd $(OBJ) ; $(FORTRAN) -o trbt.o $(FFLAGSS) trbt.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LG) $(OBJ)/trbt.o $(OBJ)/trbs.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmtrb:
+	@printf ' %-9s %-15s\t\t' "Removing" "trb from archive "
+	$(RMARFILE) trb.o
+	@printf '[ OK ]\n'
+

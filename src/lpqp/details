@@ -1,0 +1,113 @@
+!  ---------------------------------------------------------------------------
+
+!  Details of how constraints are handled
+      
+!  =========================================
+!  For equality constraints: c_i( x) = c^e_i
+!  =========================================
+
+!  1_1 problem - 
+!  -----------
+
+!    Define extra variables c_i and s_i
+
+!          c_i(x) - c_i = c_i^e
+!          s_i - c_i >= 0
+!          s_i + c_i >= 0
+!  (maybe) s_i >= 0    
+
+!    Term rho s_i in objective for each constraint
+
+!  1_infty problem - 
+!  ---------------
+
+!    Define extra variables c_i and s
+
+!          c_i(x) - c_i = c_i^e
+!          s - c_i >= 0
+!          s + c_i >= 0
+!  (maybe) s >= 0    
+
+!    Single term rho s in objective
+
+!  =====================================================
+!  For inequality constraints: c_i^l <= c_i( x) <= c^u_i
+!  =====================================================
+
+!  1_1 problem - 
+!  -----------
+
+!    Define extra variables c_i and s_i
+
+!          c_i(x) - c_i = c_i^l
+!          s_i - c_i >= c_i^l - c_i^u
+!          s_i + c_i >= 0
+!          s_i >= 0    
+
+!    Term rho s_i in objective for each constraint
+
+!  1_infty problem - 
+!  ---------------
+
+!    Define extra variables c_i and s
+
+!          c_i(x) - c_i = c_i^l
+!          s - c_i >= c_i^l - c_i^u
+!          s + c_i >= 0
+!          s >= 0    
+
+!    Single term rho s in objective
+
+!  ============================================
+!  For inequality constraints: c_i^l <= c_i( x)
+!  ============================================
+
+!  1_1 problem - 
+!  -----------
+
+!    Define extra variables c_i and s_i
+
+!          c_i(x) - c_i = c_i^l
+!          s_i + c_i >= 0
+!          s_i >= 0    
+
+!    Term rho s_i in objective for each constraint
+
+!  1_infty problem - 
+!  ---------------
+
+!    Define extra variables c_i and s
+
+!          c_i(x) - c_i = c_i^l
+!          s + c_i >= 0
+!          s >= 0    
+
+!    Single term rho s in objective
+
+!  ============================================
+!  For inequality constraints: c_i( x) <= c^u_i
+!  ============================================
+
+!  1_1 problem - 
+!  -----------
+
+!    Define extra variables c_i and s_i
+
+!          c_i(x) - c_i = c_i^u
+!          s_i - c_i >= 0
+!          s_i >= 0    
+
+!    Term rho s_i in objective for each constraint
+
+!  1_infty problem - 
+!  ---------------
+
+!    Define extra variables c_i and s
+
+!          c_i(x) - c_i = c_i^u
+!          s - c_i >= 0
+!          s >= 0    
+
+!    Single term rho s in objective
+
+!  ---------------------------------------------------------------------------

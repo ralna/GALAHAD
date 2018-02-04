@@ -1,0 +1,13 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            QPB.data
+! problem-data-file-device                          26
+! write-initial-sif                                 yes
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! rho-used                                          1.0D+0
+! input-format                                      SPARSE_BY_ROWS
+! output-format                                     SPARSE_BY_ROWS
+! one-norm-penalty                                  yes
+
+INCLUDE LPQP

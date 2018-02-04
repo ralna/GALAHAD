@@ -1,0 +1,1717 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{qpc}
+\newcommand{\packagename}{QPC}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+This package uses a crossover method, switching
+between interior-point and working-set approaches,
+to solve the {\bf quadratic programming problem}
+\disp{\mbox{minimize}\;\; q(\bmx) = \half \bmx^T \bmH \bmx + \bmg^T \bmx + f}
+subject to the general linear constraints
+\disp{c_{i}^{l}  \leq  \bma_{i}^{T}\bmx  \leq  c_{i}^{u}, \;\;\;
+ i = 1, \ldots , m,}
+and the simple bound constraints
+\disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
+where the $n$ by $n$ symmetric matrix $\bmH$, the 
+vectors $\bmg$, $\bma_{i}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$, 
+$\bmx^{u}$ and the scalar $f$ are given.
+Full advantage is taken of any zero coefficients in the matrix $\bmH$ or the
+vectors $\bma_{i}$. 
+Any of the constraint bounds $c_{i}^{l}$, $c_{i}^{u}$, 
+$x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
+
+If the matrix $\bmH$ is positive semi-definite, a global
+solution is found. However, if $\bmH$ is indefinite,
+the procedure may find  a (weak second-order) critical point 
+that is not the global solution to the given problem.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses {\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS}, 
+{\tt GALAHAD\-\_\-SPACE}, 
+{\tt GALAHAD\_NORMS}, 
+{\tt GALAHAD\_SORT}, 
+{\tt GALAHAD\_QPT},
+{\tt GALAHAD\_QPP}, 
+{\tt GALAHAD\_QPD}, 
+{\tt GALAHAD\_EQP}, 
+{\tt GALAHAD\_LSQP}, 
+{\tt GALAHAD\_CQP}, 
+{\tt GALAHAD\_QPA}, 
+{\tt GALAHAD\_QPB}, 
+{\tt GALAHAD\_SPECFILE},
+{\tt GALAHAD\_FDC}.
+\galdate March 2006.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory, and
+Ph. L. Toint, University of Namur, Belgium.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+\galparallelism Some options may use OpenMP and its runtime library.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types 
+{\tt SMT\_type}, 
+{\tt QPT\_problem\_type}, 
+{\tt \packagename\_time\_type}, 
+{\tt \packagename\_control\_type}, 
+{\tt \packagename\_inform\_type} 
+and
+{\tt \packagename\_data\_type}
+(Section~\ref{galtypes})
+and the subroutines
+{\tt \packagename\_initialize}, 
+{\tt \packagename\_\-solve},
+{\tt \packagename\_terminate},
+(Section~\ref{galarguments})
+and 
+{\tt \packagename\_read\_specfile}
+(Section~\ref{galfeatures})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmatrix
+Both the Hessian matrix $\bmH$ and
+the constraint Jacobian $\bmA$, the matrix 
+whose rows are the vectors $\bma_{i}^{T}$, $i = 1, \ldots , m$, 
+may be stored in a variety of input formats.
+
+\subsubsection{Dense storage format}\label{dense}
+The matrix $\bmA$ is stored as a compact 
+dense matrix by rows, that is, the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+Component $n \ast (i-1) + j$ of the storage array {\tt A\%val} will hold the 
+value $a_{ij}$ for $i = 1, \ldots , m$, $j = 1, \ldots , n$.
+Since $\bmH$ is symmetric, only the lower triangular part (that is the part 
+$h_{ij}$ for $1 \leq j \leq i \leq n$) need be held. In this case
+the lower triangle will be stored by rows, that is 
+component $i \ast (i-1)/2 + j$ of the storage array {\tt H\%val}  
+will hold the value $h_{ij}$ (and, by symmetry, $h_{ji}$)
+for $1 \leq j \leq i \leq n$.
+
+\subsubsection{Sparse co-ordinate storage format}\label{coordinate}
+Only the nonzero entries of the matrices are stored. For the 
+$l$-th entry of $\bmA$, its row index $i$, column index $j$ 
+and value $a_{ij}$
+are stored in the $l$-th components of the integer arrays {\tt A\%row}, 
+{\tt A\%col} and real array {\tt A\%val}, respectively.
+The order is unimportant, but the total
+number of entries {\tt A\%ne} is also required. 
+The same scheme is applicable to
+$\bmH$ (thus requiring integer arrays {\tt H\%row}, {\tt H\%col}, a real array 
+{\tt H\%val} and an integer value {\tt H\%ne}),
+except that only the entries in the lower triangle need be stored.
+
+\subsubsection{Sparse row-wise storage format}\label{rowwise}
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row $i$ appear directly before those
+in row $i+1$. For the $i$-th row of $\bmA$, the $i$-th component of a 
+integer array {\tt A\%ptr} holds the position of the first entry in this row,
+while {\tt A\%ptr} $(m+1)$ holds the total number of entries plus one.
+The column indices $j$ and values $a_{ij}$ of the entries in the $i$-th row 
+are stored in components 
+$l =$ {\tt A\%ptr}$(i)$, \ldots ,{\tt A\%ptr} $(i+1)-1$ of the 
+integer array {\tt A\%col}, and real array {\tt A\%val}, respectively. 
+The same scheme is applicable to
+$\bmH$ (thus requiring integer arrays {\tt H\%ptr}, {\tt H\%col}, and 
+a real array {\tt H\%val}),
+except that only the entries in the lower triangle need be stored.
+
+For sparse matrices, this scheme almost always requires less storage than 
+its predecessor.
+
+\subsubsection{Diagonal storage format}\label{diagonal}
+If $\bmH$ is diagonal (i.e., $h_{ij} = 0$ for all $1 \leq i \neq j \leq n$)
+only the diagonals entries $h_{ii}$, $1 \leq i \leq n$,  need be stored,
+and the first $n$ components of the array {\tt H\%val} may be used for 
+the purpose. There is no sensible equivalent for the non-square $\bmA$.
+
+%%%%%%%%%%%%%%%%%%%%%% long integers %%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Integer kinds}\label{Integer kinds}
+We use the term
+long \integer\ to denote {\tt INTEGER\-(kind=long)}, where 
+{\tt long = selected\_int\_kind(18))}.
+
+%%%%%%%%%%%%%%%%%%%%%% OpenMP usage %%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{OpenMP}
+OpenMP may be used by the {\tt \fullpackagename} package to provide 
+parallelism for some solver options in shared memory environments.  
+See the documentation for the \galahad\ package {\tt SLS} for more details.
+To run in parallel, OpenMP 
+must be enabled at compilation time by using the correct compiler flag 
+(usually some variant of {\tt -openmp}). 
+The number of threads may be controlled at runtime
+by setting the environment variable {\tt OMP\_NUM\_THREADS}.
+
+\noindent
+The code may be compiled and run in serial mode.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Ten derived data types are accessible from the package.
+
+%%%%%%%%%%% matrix data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding matrices}\label{typesmt}
+The derived data type {\tt SMT\_TYPE} is used to hold the matrices $\bmA$
+and $\bmH$. The components of {\tt SMT\_TYPE} used here are:
+
+\begin{description}
+
+\ittf{m} is a scalar component of type default \integer, 
+that holds the number of rows in the matrix. 
+ 
+\ittf{n} is a scalar component of type default \integer, 
+that holds the number of columns in the matrix. 
+ 
+\ittf{ne} is a scalar variable of type default \integer, that
+holds the number of matrix entries.
+
+\ittf{type} is a rank-one allocatable array of type default \character, that
+is used to indicate the matrix storage scheme used. Its precise length and
+content depends on the type of matrix to be stored (see \S\ref{typeprob}).
+
+\ittf{val} is a rank-one allocatable array of type default \realdp\, 
+and dimension at least {\tt ne}, that holds the values of the entries. 
+Each pair of off-diagonal entries $h_{ij} = h_{ji}$ of a {\em symmetric}
+matrix $\bmH$ is represented as a single entry 
+(see \S\ref{dense}--\ref{rowwise}).
+Any duplicated entries that appear in the sparse 
+co-ordinate or row-wise schemes will be summed. 
+
+\ittf{row} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt ne}, that may hold the row indices of the entries. 
+(see \S\ref{coordinate}).
+
+\ittf{col} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt ne}, that may the column indices of the entries
+(see \S\ref{coordinate}--\ref{rowwise}).
+
+\ittf{ptr} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt m + 1}, that may hold the pointers to
+the first entry in each row (see \S\ref{rowwise}).
+
+\end{description}
+
+%%%%%%%%%%% problem type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding the problem}\label{typeprob}
+The derived data type {\tt QPT\_problem\_type} is used to hold 
+the problem. The components of 
+{\tt QPT\_problem\_type} 
+are:
+
+\begin{description}
+
+\itt{new\_problem\_structure} is a scalar variable of type default \logical, 
+ that is \true\ if this is the first (or only) problem in a sequence of 
+ problems with identical "structure" to be attempted, and \false\ if 
+ a previous problem with the same "structure" (but different
+ numerical data) has been solved. Here, the term "structure" refers both to 
+ the sparsity patterns of the Jacobian matrices $\bmA$ involved 
+ (but not their numerical values), to the zero/nonzero/infinity patterns 
+ (a bound is either zero, $\pm$ infinity, or a finite but arbitrary 
+ nonzero) of each of the constraint bounds, and to the variables and constraints
+ that are fixed (both bounds are the same) or free (the lower and upper
+ bounds are $\pm$ infinity, respectively).
+
+\ittf{n} is a scalar variable of type default \integer, 
+ that holds the number of optimization variables, $n$.  
+              
+\ittf{m} is a scalar variable of type default \integer, 
+ that holds the number of general linear constraints, $m$.
+              
+\ittf{H} is scalar variable of type {\tt SMT\_TYPE} 
+that holds the Hessian matrix $\bmH$. The following components
+are used:
+
+\begin{description}
+
+\itt{H\%type} is an allocatable array of rank one and type default \character, that
+is used to indicate the storage scheme used. If the dense storage scheme 
+(see Section~\ref{dense}) is used, 
+the first five components of {\tt H\%type} must contain the
+string {\tt DENSE}.
+For the sparse co-ordinate scheme (see Section~\ref{coordinate}), 
+the first ten components of {\tt H\%type} must contain the
+string {\tt COORDINATE},  
+for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
+the first fourteen components of {\tt H\%type} must contain the
+string {\tt SPARSE\_BY\_ROWS},
+and for the diagonal storage scheme (see Section~\ref{diagonal}),
+the first eight components of {\tt H\%type} must contain the
+string {\tt DIAGONAL}.
+
+For convenience, the procedure {\tt SMT\_put} 
+may be used to allocate sufficient space and insert the required keyword
+into {\tt H\%type}.
+For example, if {\tt prob} is of derived type {\tt \packagename\_problem\_type}
+and involves a Hessian we wish to store using the co-ordinate scheme,
+we may simply
+%\vspace*{-2mm}
+{\tt 
+\begin{verbatim}
+        CALL SMT_put( prob%H%type, 'COORDINATE' )
+\end{verbatim}
+}
+%\vspace*{-4mm}
+\noindent
+See the documentation for the \galahad\ package {\tt SMT} 
+for further details on the use of {\tt SMT\_put}.
+
+\itt{H\%ne} is a scalar variable of type default \integer, that 
+holds the number of entries in the {\bf lower triangular} part of $\bmH$
+in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}). 
+It need not be set for any of the other three schemes.
+
+\itt{H\%val} is a rank-one allocatable array of type default \realdp, that holds
+the values of the entries of the {\bf lower triangular} part
+of the Hessian matrix $\bmH$ in any of the 
+storage schemes discussed in Section~\ref{galmatrix}.
+
+\itt{H\%row} is a rank-one allocatable array of type default \integer,
+that holds the row indices of the {\bf lower triangular} part of $\bmH$ 
+in the sparse co-ordinate storage
+scheme (see Section~\ref{coordinate}). 
+It need not be allocated for any of the other three schemes.
+
+\itt{H\%col} is a rank-one allocatable array variable of type default \integer,
+that holds the column indices of the {\bf lower triangular} part of 
+$\bmH$ in either the sparse co-ordinate 
+(see Section~\ref{coordinate}), or the sparse row-wise 
+(see Section~\ref{rowwise}) storage scheme.
+It need not be allocated when the dense or diagonal storage schemes are used.
+
+\itt{H\%ptr} is a rank-one allocatable array of dimension {\tt n+1} and type 
+default \integer, that holds the starting position of 
+each row of the {\bf lower triangular} part of $\bmH$, as well
+as the total number of entries plus one, in the sparse row-wise storage
+scheme (see Section~\ref{rowwise}). It need not be allocated when the
+other schemes are used.
+
+\end{description}
+
+\ittf{G} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds the gradient $\bmg$ 
+of the linear term of the quadratic objective function.
+The $j$-th component of 
+{\tt G}, $j = 1,  \ldots ,  n$, contains $\bmg_{j}$.
+
+\ittf{f} is a scalar variable of type 
+default \realdp, that holds 
+the constant term, $f$, in the objective function.
+
+\ittf{A} is scalar variable of type {\tt SMT\_TYPE} 
+that holds the Jacobian matrix $\bmA$. The following components are used:
+
+\begin{description}
+
+\itt{A\%type} is an allocatable array of rank one and type default \character, that
+is used to indicate the storage scheme used. If the dense storage scheme 
+(see Section~\ref{dense}) is used, 
+the first five components of {\tt A\%type} must contain the
+string {\tt DENSE}.
+For the sparse co-ordinate scheme (see Section~\ref{coordinate}), 
+the first ten components of {\tt A\%type} must contain the
+string {\tt COORDINATE}, while 
+for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
+the first fourteen components of {\tt A\%type} must contain the
+string {\tt SPARSE\_BY\_ROWS}.
+
+Just as for {\tt H\%type} above, the procedure {\tt SMT\_put} 
+may be used to allocate sufficient space and insert the required keyword
+into {\tt A\%type}.
+Once again, if {\tt prob} is of derived type {\tt \packagename\_problem\_type}
+and involves a Jacobian we wish to store using the sparse row-wise 
+storage scheme, we may simply
+%\vspace*{-2mm}
+{\tt 
+\begin{verbatim}
+        CALL SMT_put( prob%A%type, 'SPARSE_BY_ROWS' )
+\end{verbatim}
+}
+%\vspace*{-4mm}
+\noindent
+
+\itt{A\%ne} is a scalar variable of type default \integer, that 
+holds the number of entries in $\bmA$
+in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}). 
+It need not be set for either of the other two schemes.
+
+\itt{A\%val} is a rank-one allocatable array of type default \realdp, that holds
+the values of the entries of the Jacobian matrix $\bmA$ in any of the 
+storage schemes discussed in Section~\ref{galmatrix}.
+
+\itt{A\%row} is a rank-one allocatable array of type default \integer,
+that holds the row indices of $\bmA$ in the sparse co-ordinate storage
+scheme (see Section~\ref{coordinate}). 
+It need not be allocated for either of the other two schemes.
+
+\itt{A\%col} is a rank-one allocatable array variable of type default \integer,
+that holds the column indices of $\bmA$ in either the sparse co-ordinate 
+(see Section~\ref{coordinate}), or the sparse row-wise 
+(see Section~\ref{rowwise}) storage scheme.
+It need not be allocated when the dense storage scheme is used.
+
+\itt{A\%ptr} is a rank-one allocatable array of dimension {\tt m+1} and type 
+default \integer, that holds the 
+starting position of each row of $\bmA$, as well
+as the total number of entries plus one, in the sparse row-wise storage
+scheme (see Section~\ref{rowwise}). It need not be allocated when the
+other schemes are used.
+
+\end{description}
+
+\ittf{C\_l} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds the vector of lower bounds $\bmc^{l}$ 
+on the general constraints. The $i$-th component of 
+{\tt C\_l}, $i = 1, \ldots , m$, contains $\bmc_{i}^{l}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt C\_l} to any value smaller than {\tt -infinity}, 
+where {\tt infinity} is a component of the control array {\tt control} 
+(see Section~\ref{typecontrol}).
+
+\ittf{C\_u} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds the vector of upper bounds $\bmc^{u}$ 
+on the general constraints. The $i$-th component of 
+{\tt C\_u}, $i = 1,  \ldots ,  m$, contains $\bmc_{i}^{u}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt C\_u} to any value larger than {\tt infinity}, 
+where {\tt infinity} is a component of the control array {\tt control} 
+(see Section~\ref{typecontrol}).
+
+\ittf{X\_l} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds
+the vector of lower bounds $\bmx^{l}$ on the the variables.
+The $j$-th component of {\tt X\_l}, $j = 1, \ldots , n$, 
+contains $\bmx_{j}^{l}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt X\_l} to any value smaller than {\tt -infinity}, 
+where {\tt infinity} is a component of the control array {\tt control} 
+(see Section~\ref{typecontrol}).
+
+\ittf{X\_u} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, that holds
+the vector of upper bounds $\bmx^{u}$ on the variables.
+The $j$-th component of {\tt X\_u}, $j = 1, \ldots , n$, 
+contains $\bmx_{j}^{u}$.
+Infinite bounds are allowed by setting the corresponding 
+components of {\tt X\_u} to any value larger than that {\tt infinity}, 
+where {\tt infinity} is a component of the control array {\tt control} 
+(see Section~\ref{typecontrol}).
+
+\ittf{X} is a rank-one allocatable array of dimension {\tt n} and type 
+default \realdp, 
+that holds the values $\bmx$ of the optimization variables.
+The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.  
+
+\ittf{Z} is a rank-one allocatable array of dimension {\tt n} and type default 
+\realdp, that holds
+the values $\bmz$ of estimates  of the dual variables 
+corresponding to the simple bound constraints (see Section~\ref{galmethod}).
+The $j$-th component of {\tt Z}, $j = 1,  \ldots ,  n$, contains $z_{j}$.  
+
+\ittf{C} is a rank-one allocatable array of dimension {\tt m} and type default 
+\realdp, that holds
+the values $\bmA \bmx$ of the constraints.
+The $i$-th component of {\tt C}, $i = 1,  \ldots ,  m$, contains 
+$\bma_{i}^{T}\bmx \equiv (\bmA \bmx)_{i}$.  
+
+\ittf{Y} is a rank-one allocatable array of dimension {\tt m} and type 
+default \realdp, that holds
+the values $\bmy$ of estimates  of the Lagrange multipliers
+corresponding to the general linear constraints (see Section~\ref{galmethod}).
+The $i$-th component of {\tt Y}, $i = 1,  \ldots ,  m$, contains $y_{i}$.  
+
+\end{description}
+
+%%%%%%%%%%% control type for qpb %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control 
+ parameters specifically for the interior-point phase}\label{typeqpbcontrol}
+The derived data type 
+{\tt QPB\_control\_type} 
+is used to hold controlling data for the interior-point phase of the calculation,
+performed by the \libraryname\ package {\tt \libraryname\_QPB}. 
+Components may be changed by calling 
+{\tt QPB\_read\-\_specfile}
+(see the documentation for {\tt \libraryname\_QPB}
+for details). The components of 
+{\tt QPB\_control\_type} 
+are:
+
+\input{qpb_control}
+
+%%%%%%%%%%% control type for cqp %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control 
+ parameters specifically for the interior-point phase in the convex case}\label{typecqpcontrol}
+The derived data type 
+{\tt CQP\_control\_type} 
+is used to hold controlling data for the interior-point phase of the 
+calculation for convex problems, 
+performed by the \libraryname\ package {\tt \libraryname\_CQP}. 
+Components may be changed by calling 
+{\tt CQP\_read\-\_specfile}
+(see the documentation for {\tt \libraryname\_CQP}
+for details). The components of 
+{\tt CQP\_control\_type} 
+are:
+
+\input{cqp_control}
+
+%%%%%%%%%%% control type for qpa %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control 
+ parameters specifically for the working-set phase}\label{typeqpacontrol}
+The derived data type 
+{\tt QPA\_control\_type} 
+is used to hold controlling data for the working-set phase of the
+calculation performed by the \libraryname\ package {\tt \libraryname\_QPA}. 
+Components may be changed by calling 
+{\tt QPA\_read\-\_specfile}
+(see the documentation for {\tt \libraryname\_QPA}
+for details). The components of 
+{\tt QPA\_control\_type} 
+are:
+
+\input{qpa_control}
+
+%%%%%%%%%%% control type for eqp %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control 
+ parameters specifically for the equality-constrained phase}\label{typeeqpcontrol}
+The derived data type 
+{\tt EQP\_control\_type} 
+is used to hold controlling data for the equality-constrained QP
+phase of the calculation (if any),
+performed by the \libraryname\ package {\tt \libraryname\_EQP}. 
+Components may be changed by calling 
+{\tt EQP\_read\-\_specfile}
+(see the documentation for {\tt \libraryname\_EQP}
+for details). The components of 
+{\tt EQP\_control\_type} 
+are:
+
+\input{eqp_control}
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control 
+ parameters}\label{typecontrol}
+The derived data type 
+{\tt \packagename\_control\_type} 
+is used to hold controlling data. Default values may be obtained by calling 
+{\tt \packagename\_initialize}
+(see Section~\ref{subinit}),
+while components may also be changed by calling 
+{\tt \packagename\_read\-\_specfile}
+(see Section~\ref{readspec}). 
+The components of 
+{\tt \packagename\_control\_type} 
+are:
+
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in 
+{\tt \packagename\_solve} and {\tt \packagename\_terminate} 
+is suppressed if {\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in 
+{\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No 
+informational output will occur if {\tt print\_level} $\leq 0$. If 
+{\tt print\_level} $= 1$, a single line of output will be produced for each
+iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
+increased to provide significant detail of each iteration.
+The default is {\tt print\_level = 0}.
+
+%\itt{indmin} is a scalar variable of type default \integer, that specifies
+%an initial estimate as to the amount of integer workspace required by 
+%the factorization package {\tt SILS}.
+%The default is {\tt indmin = 1000}.
+
+%\itt{valmin} is a scalar variable of type default \integer, that specifies
+%an initial estimate as to the amount of real workspace required by 
+%the factorization package {\tt SILS}.
+%The default is {\tt valmin = 1000}.
+
+\itt{restore\_problem} is a scalar variable of type default \integer, that 
+specifies how much of the input problem is to be retored on output. 
+Possible values are:
+\begin{description}
+\itt{0} nothing is restored. 
+\itt{1} the vector data $\bmg$, 
+   $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$, and $\bmx^{u}$ 
+   will be restored to their input values.
+\itt{2} the entire problem, that is the above vector data along with 
+the Hessian matrix $\bmH$ and the Jacobian matrix $\bmA$, will be restored.
+\end{description}
+The default is {\tt restore\_problem = 2}.
+
+\itt{infinity} is a scalar variable of type default \realdp, that is used to
+specify which constraint bounds are infinite.
+Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
+The default is {\tt infinity =} $10^{19}$.
+
+\itt{identical\_bounds\_tol}
+is a scalar variable of type default \realdp.
+Every pair of constraint bounds 
+$(c_{i}^{l}, c_{i}^{u})$ or $(x_{j}^{l}, x_{j}^{u})$
+that is closer than {\tt identical\_bounds\_tol} 
+will be reset to the average of their values,
+$\half (c_{i}^{l} + c_{i}^{u})$ or $\half (x_{j}^{l} + x_{j}^{u})$
+respectively.
+The default is {\tt identical\_bounds\_tol =} $u$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{rho\_g} is a scalar variable of type default \realdp, that holds 
+the initial values of the parameter, $\rho_g$, 
+used to weight the infeasibility term $v_g(\bmx)$
+for the working-set phase (see Section~\ref{galmethod}).
+
+\itt{rho\_b} is a scalar variable of type default \realdp, that holds 
+the initial values of the parameter, $\rho_b$, 
+used to weight the infeasibility term $v_b(\bmx)$
+for the working-set phase (see Section~\ref{galmethod}).
+
+\itt{on\_bound\_tol}
+is a scalar variable of type default \realdp
+that specifies the furthest a variable or constraint
+may be from one of its bounds to be regarded as active.
+The default is {\tt on\_bound\_tol =} $u$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+%\itt{pivot\_tol\_for\_dependencies} is a scalar variable of type default 
+%\realdp, that holds the
+%threshold pivot  tolerance used by the matrix factorization when 
+%attempting to detect linearly dependent constraints. A value larger
+%than  {\tt pivot\_tol} is appropriate. See 
+%the documentation for the package {\tt SILS} for details.
+%The default is {\tt pivot\_tol\_for\_dependencies = 0.5}.
+
+%\itt{zero\_pivot} is a scalar variable of type default \realdp.
+%Any pivots smaller than  {\tt zero\_pivot} in absolute value will be regarded 
+%to be zero when attempting to detect linearly dependent constraints. 
+%The default is {\tt zero\_pivot =} $u^{3/4}$,
+%where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+%{\tt \fullpackagename\_dou\-ble}).
+
+\itt{cpu\_time\_limit} is a scalar variable of type default \realdp, 
+that is used to specify the maximum permitted CPU time. Any negative
+value indicates no limit will be imposed. The default is 
+{\tt cpu\_time\_limit = - 1.0}.
+
+\itt{clock\_time\_limit} is a scalar variable of type default \realdp, 
+that is used to specify the maximum permitted elapsed system clock time. 
+Any negative value indicates no limit will be imposed. The default is 
+{\tt clock\_time\_limit = - 1.0}.
+
+\itt{convex} is a scalar variable of type default \logical, 
+that must be set \true\ if the problem is convex (i.e., if the matrix
+$\bmH$ is positive semi-definite) and 
+the user wishes to take advantage of the fact,
+and  \false\ otherwise. The package will usually run faster for
+convex problems if {\tt convex} is \true, but {\tt convex} 
+must be set \false\ if the user is uncertain as otherwise the
+package may fail. The default is {\tt convex = .FALSE.}.
+
+\itt{treat\_zero\_bounds\_as\_general} is a scalar variable of type 
+default \logical.
+If it is set to \false, variables which 
+are only bounded on one side, and whose bound is zero,
+will be recognised as non-negativities/non-positivities rather than simply as
+lower- or upper-bounded variables.
+If it is set to \true, any variable bound 
+$x_{j}^{l}$ or $x_{j}^{u}$ which has the value 0.0 will be
+treated as if it had a general value.
+Setting {\tt treat\_zero\_bounds\_as\_general} to \true\ has the advantage
+that if a sequence of problems are reordered, then bounds which are
+``accidentally'' zero will be considered to have the same structure as
+those which are nonzero. However, {\tt \fullpackagename} is
+able to take special advantage of non-negativities/non-positivities, so
+if a single problem, or if a sequence of problems whose 
+bound structure is known not to change, is/are to be solved, 
+it will pay to set the variable to \false.
+The default is {\tt treat\_zero\_bounds\_as\_general = .FALSE.}.
+
+%\itt{array\_syntax\_worse\_than\_do\_loop} is a scalar variable of type 
+%default \logical, that should be set \true\ if the compiler is
+%better able to optimize Fortran 77-style do-loops than to exploit 
+%Fortran 95-style array syntax when performing vector operations,
+%and \false\ otherwise. 
+%The default is {\tt array\_syntax\_worse\_than\_do\_loop = .FALSE.}.
+
+\itt{space\_critical} is a scalar variable of type default \logical, 
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if 
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical, 
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{no\_qpa} is a scalar variable of type default \logical, 
+that must be set \true\ if the user wishes to skip the working-set phase
+of the computation, and \false\ if this phase is required.
+The default is {\tt no\_qpa = .FALSE.}.
+
+\itt{no\_qpb} is a scalar variable of type default \logical, 
+that must be set \true\ if the user wishes to skip the interior-point phase
+of the computation, and \false\ if this phase is required.
+The default is {\tt no\_qpa = .FALSE.}.
+
+\itt{qpb\_or\_qpa} is a scalar variable of type default \logical, 
+that must be set \true\ if the user wishes to use the interior-point phase
+of the computation, but only to follow this with the working-set phase
+if the former is unsuccessful, and to \false\ if both phases are to be used
+(subject to the requests made in {\tt no\_qpa} and {\tt no\_qpb}).
+The default is {\tt qpb\_or\_qpa = .FALSE.}.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected 
+character string to preface every line of printed output. 
+Specifically, each line of output will be prefaced by the string 
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoring the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\itt{QPA\_control} is a scalar variable of type 
+{\tt QPA\_control\_type} (see Section~\ref{typeqpacontrol}
+whose components are used to control the working-set phase of the calculation,
+performed by the package 
+{\tt \libraryname\_QPA}. 
+
+\itt{QPB\_control} is a scalar variable of type 
+{\tt QPB\_control\_type} (see Section~\ref{typeqpbcontrol}
+whose components are used to control the interior-point phase of the 
+calculation,
+performed by the package 
+{\tt \libraryname\_QPB}. 
+
+\itt{CQP\_control} is a scalar variable of type 
+{\tt CQP\_control\_type} (see Section~\ref{typecqpcontrol}
+whose components are used to control the convex primal-dual phase of the 
+calculation,
+performed by the package 
+{\tt \libraryname\_CQP}. 
+
+\itt{EQP\_control} is a scalar variable of type 
+{\tt EQP\_control\_type} (see Section~\ref{typeeqpcontrol}
+whose components are used to control the 
+equality-constrained phase of the calculation (if any),
+performed by the package 
+{\tt \libraryname\_EQP}. 
+
+\itt{FDC\_control} is a scalar variable of type 
+{\tt FDC\_control\_type}
+whose components are used to control any detection of linear dependencies
+performed by the package 
+{\tt \libraryname\_FDC}. 
+See the specification sheet for the package 
+{\tt \libraryname\_FDC} 
+for details, and appropriate default values.
+
+\end{description}
+
+%%%%%%%%%%% time type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding timing 
+ information}\label{typetime}
+The derived data type 
+{\tt \packagename\_time\_type} 
+is used to hold elapsed CPU and system clock times for the various parts of 
+the calculation. The components of 
+{\tt \packagename\_time\_type} 
+are:
+\begin{description}
+\itt{total} is a scalar variable of type default \realdp, that gives
+ the total CPU time spent in the package.
+
+\itt{preprocess} is a scalar variable of type default \realdp, that gives
+ the CPU time spent reordering the problem to standard form prior to solution.
+
+\itt{find\_dependent} is a scalar variable of type default \realdp, that gives
+ the CPU time spent detecting and removing linearly-dependent equality 
+ constraints
+
+\itt{analyse} is a scalar variable of type default \realdp, that gives
+ the CPU time spent analysing the required matrices prior to factorization.
+
+\itt{factorize} is a scalar variable of type default \realdp, that gives
+ the CPU time spent factorizing the required matrices.
+
+\itt{solve} is a scalar variable of type default \realdp, that gives
+ the CPU time spent computing the search direction.
+
+\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+ the total elapsed system clock time spent in the package.
+
+\itt{clock\_preprocess} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent reordering the problem to standard form 
+prior to solution.
+
+\itt{clock\_find\_dependent} is a scalar variable of type default \realdp, that 
+gives  the elapsed system clock time spent detecting and removing 
+linearly-dependent equality 
+ constraints
+
+\itt{clock\_analyse} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent analysing the required matrices prior to 
+factorization.
+
+\itt{clock\_factorize} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent factorizing the required matrices.
+
+\itt{clock\_solve} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent computing the search direction.
+
+\end{description}
+
+%%%%%%%%%%% info type for qpb %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters specifically for the interior-point phase}\label{typeqpbinform}
+
+
+The derived data type 
+{\tt QPB\_inform\_type} 
+is used to hold parameters that give information about the progress 
+of the working-set phase of the algorithm
+performed by the \libraryname\ package {\tt \libraryname\_QPB}.
+The components of 
+{\tt QPB\_inform\_type} 
+are:
+
+\input{qpb_inform}
+
+%%%%%%%%%%% info type for cqp %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters specifically for the interior-point phase in the convex case}\label{typecqpinform}
+
+The derived data type 
+{\tt CQP\_inform\_type} 
+is used to hold parameters that give information about the progress 
+of the working-set phase of the algorithm
+performed by the \libraryname\ package {\tt \libraryname\_CQP}.
+The components of 
+{\tt CQP\_inform\_type} 
+are:
+
+\input{cqp_inform}
+
+%%%%%%%%%%% info type for qpa %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters specifically from the working-set phase}\label{typeqpainform}
+The derived data type 
+{\tt QPA\_inform\_type} 
+is used to hold parameters that give information about the progress 
+of the working-set phase of the algorithm
+performed by the \libraryname\ package {\tt \libraryname\_QPA}.
+The components of 
+{\tt QPA\_inform\_type} 
+are:
+
+\input{qpa_inform}
+
+%%%%%%%%%%% info type for eqp %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters specifically for the equality-constrained phase}\label{typeeqpinform}
+The derived data type 
+{\tt EQP\_inform\_type} 
+is used to hold parameters that give information about the progress 
+of the equality-constrained phase of the algorith (if any)
+performed by the \libraryname\ package {\tt \libraryname\_EQP}.
+The components of 
+{\tt EQP\_inform\_type} 
+are:
+
+\input{eqp_inform}
+
+%%%%%%%%%%% info type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type 
+{\tt \packagename\_inform\_type} 
+is used to hold parameters that give information about the progress and needs 
+of the algorithm. The components of 
+{\tt \packagename\_inform\_type} 
+are:
+
+\begin{description}
+
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm. 
+%See Sections~\ref{galerrors} and \ref{galinfo}
+See Section~\ref{galerrors} 
+for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array 
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}. 
+
+\itt{factorization\_status} is a scalar variable of type default \integer, that 
+gives the return status from the matrix factorization.
+
+\itt{factorization\_integer} is a scalar variable of type long
+\integer, that gives the amount of integer storage used for the matrix 
+factorization.
+
+\itt{factorization\_real} is a scalar variable of type long \integer, 
+that gives the amount of real storage used for the matrix factorization.
+
+\itt{nfacts} is a scalar variable of type default \integer, that gives the
+total number of factorizations performed.
+
+\itt{nmods} is a scalar variable of type default \integer, that gives the
+total number of factorizations which were modified to 
+ensure that the matrix is an appropriate preconditioner. 
+
+\ittf{obj} is a scalar variable of type default \realdp, that holds the
+value of the objective function at the best estimate of the solution found.
+
+\itt{non\_negligible\_pivot} is a scalar variable of type default \realdp, 
+that holds the value of the smallest pivot larger than {\tt control\%zero\_pivot}
+when searching for dependent linear constraints. If 
+{\tt non\_negligible\_pivot} is close to  {\tt control\%zero\_pivot},
+this may indicate that there are further dependent constraints, and
+it may be worth increasing {\tt control\%zero\_pivot} above 
+{\tt non\_negligible\_pivot} and solving again.
+
+\itt{p\_found} is a scalar variable of type default \logical, that has the
+value \true\ if the active-set predictions have been computed,
+and the value \false\ otherwise.
+
+\ittf{time} is a scalar variable of type {\tt \packagename\_time\_type} 
+whose components are used to hold elapsed CPU and system clock 
+times for the various parts of the calculation (see Section~\ref{typetime}).
+
+\itt{QPA\_inform} is a scalar variable of type 
+{\tt QPA\_inform\_type} (see Section~\ref{typeqpainform}
+whose components provide information about the progress and needs
+of the working-set phase of the calculation performed by the package 
+{\tt \libraryname\_QPA}. 
+
+\itt{QPB\_inform} is a scalar variable of type 
+{\tt QPB\_inform\_type} (see Section~\ref{typeqpbinform}
+whose components provide information about the progress and needs
+of the interior-point phase of the calculation performed by the package 
+{\tt \libraryname\_QPB}. 
+
+\itt{CQP\_inform} is a scalar variable of type 
+{\tt CQP\_inform\_type} (see Section~\ref{typecqpinform}
+whose components provide information about the progress and needs
+of the primal-dual phase of the calculation performed by the package 
+{\tt \libraryname\_CQP}. 
+
+\itt{EQP\_inform} is a scalar variable of type 
+{\tt EQP\_inform\_type} (see Section~\ref{typeeqpinform}
+whose components provide information about the progress and needs
+of the equality-constrained phase of the calculation (if any) 
+performed by the package 
+{\tt \libraryname\_EQP}. 
+
+\itt{FDC\_inform} is a scalar variable of type 
+{\tt FDC\_inform\_type}
+whose components are used to provide information about 
+any detection of linear dependencies
+performed by the package 
+{\tt \libraryname\_FDC}. 
+See the specification sheet for the package 
+{\tt \libraryname\_FDC} for details.
+
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type 
+{\tt \packagename\_data\_type} 
+is used to hold all the data for a particular problem,
+or sequences of problems with the same structure, between calls of 
+{\tt \packagename} procedures. 
+This data should be preserved, untouched, from the initial call to 
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}.
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are three procedures for user calls
+(see Section~\ref{galfeatures} for further features): 
+
+\begin{enumerate}
+\item The subroutine 
+      {\tt \packagename\_initialize} 
+      is used to set default values, and initialize private data, 
+      before solving one or more problems with the
+      same sparsity and bound structure.
+\item The subroutine 
+      {\tt \packagename\_solve} 
+      is called to solve the problem.
+\item The subroutine 
+      {\tt \packagename\_terminate} 
+      is provided to allow the user to automatically deallocate array 
+       components of the private data, allocated by 
+       {\tt \packagename\_solve}, 
+       at the end of the solution process. 
+       It is important to do this if the data object is re-used for another 
+       problem {\bf with a different structure}
+       since {\tt \packagename\_initialize} cannot test for this situation, 
+       and any existing associated targets will subsequently become unreachable.
+\end{enumerate}
+We use square brackets {\tt [ ]} to indicate \optional\ arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize( data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. 
+
+\itt{control} is a scalar \intentout\ argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). 
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling 
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% main solution subroutine %%%%%%
+
+\subsubsection{The quadratic programming subroutine}\label{qps}
+The quadratic programming solution algorithm is called as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_solve( p, C\_stat, B\_stat, data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+\ittf{p} is a scalar \intentinout\ argument of type 
+{\tt QPT\_problem\_type}
+(see Section~\ref{typeprob}). 
+It is used to hold data about the problem being solved.
+For a new problem, the user must allocate all the array components,
+and set values for all components except {\tt p\%C}.
+{\tt p\%new\_problem\_structure} must be set \true, but will have been reset
+to \false\ on exit from {\tt \packagename\_solve}.
+Users are free to choose whichever
+of the matrix formats described in Section~\ref{galmatrix} 
+is appropriate for $\bmA$ and $\bmH$ for their application---different 
+formats may be used for the two matrices.
+
+For a problem with the same structure as one that has just been 
+solved, the user may set {\tt p\%new\_problem\-\_str\-u\-cture} to \false,
+so long as {\tt \packagename\_terminate} has not been called in the interim.
+The \integer\ components must be unaltered since the
+previous call to {\tt \packagename\_solve}, but the \realdp\ 
+may be altered to reflect the new problem.
+
+The components {\tt p\%X}, {\tt p\%Y} and {\tt p\%Z}
+must be set to initial estimates, $\bmx^{0}$, of the primal variables, 
+$\bmx$, Lagrange multipliers for the general constraints, $\bmy$, 
+and dual variables for the bound constraints, $\bmz$, respectively.
+Inappropriate initial values will be altered, so the user should
+not be overly concerned if suitable values are not apparent, and may be
+content with merely setting {\tt p\%X=0.0},
+{\tt p\%Y=0.0} and {\tt p\%Z=0.0}.
+The component {\tt p\%C} need not be set on entry.
+
+On exit, the components {\tt p\%X}, {\tt p\%Y}, {\tt p\%Z} and {\tt p\%C}
+will contain the best estimates of the primal variables $\bmx$, 
+Lagrange multipliers for the general
+constraints $\bmy$, dual variables for the bound constraints $\bmz$, 
+and values of the constraints $\bmA \bmx$ respectively.
+What of the remaining problem data has been restored depends upon
+the input value of the control parameter {\tt control\%restore\_problem}.
+The return format for a restored array component will be the same as its
+input format.
+\restrictions {\tt p\%n} $> 0$, {\tt p\%m} $\geq 0$,
+              {\tt p\%A\%ne} $\geq -2$ and {\tt p\%H\%ne} $\geq -2$.
+
+\itt{C\_stat} is a rank-one \intentinout\ array argument of dimension {\tt p\%m}
+and type default \integer, that indicates which of the general linear
+constraints are in the current working set. Possible values for 
+{\tt C\_stat(i)}, {\tt i}$=1, \ldots ,$ {\tt p\%m}, and their meanings are
+\begin{description}
+\itt{<0} the $i$-th general constraint 
+is in the working set, on its lower bound,
+\itt{>0} the $i$-th general constraint 
+is in the working set, on its upper bound, and
+\itt{0}  the $i$-th general constraint is not in the working set.
+\end{description}
+Suitable values must be supplied if 
+{\tt control\%qpa\_control\%cold\_start = 0} on entry,
+but need not be provided for other input values of {\tt control\%cold\_start}.
+Inappropriate values will be ignored.
+On exit, {\tt C\_stat} will contain values appropriate for the ultimate
+working set.
+
+\itt{B\_stat} is a rank-one \intentinout\ array argument of dimension {\tt p\%n}
+and type default \integer, that indicates which of the simple bound 
+constraints are in the current working set. Possible values for 
+{\tt B\_stat(j)}, {\tt j}$=1, \ldots ,$ {\tt p\%n}, and their meanings are
+\begin{description}
+\itt{<0} the $j$-th simple bound constraint 
+is in the working set, on its lower bound,
+\itt{>0} the $j$-th simple bound constraint 
+is in the working set, on its upper bound, and
+\itt{0}  the $j$-th simple bound constraint is not in the working set.
+\end{description}
+Suitable values must be supplied if 
+{\tt control\%qpa\_control\%cold\_start = 0} on entry,
+but need not be provided for other input values of {\tt control\%cold\_start}.
+Inappropriate values will be ignored.
+On exit, {\tt B\_stat} will contain values appropriate for the ultimate
+working set.
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. It must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). Default values may be assigned by calling 
+{\tt \packagename\_initialize} prior to the first call to 
+{\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_solve}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_terminate( data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type} 
+exactly as for
+{\tt \packagename\_solve},
+which must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+On exit, array components will have been deallocated.
+
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_solve}.
+Only the component {\tt status} will be set on exit, and a 
+successful call to 
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt inform\%status} on exit from 
+{\tt \packagename\_solve}
+or 
+{\tt \packagename\_terminate}
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\itt{\galerrallocate.} An allocation error occurred. A message indicating 
+the offending 
+array is written on unit {\tt control\%error}, and the returned allocation 
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrdeallocate.} A deallocation error occurred. 
+A message indicating the offending 
+array is written on unit {\tt control\%error} and the returned allocation 
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrrestrictions.} One of the restrictions 
+ {\tt prob\%n} $> 0$ or {\tt prob\%m} $\geq  0$
+    or requirements that {\tt prob\%A\_type} 
+    and {\tt prob\%H\_type} contain its relevant string
+    {\tt 'DENSE'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}
+    or {\tt 'DIAGONAL'}
+    has been violated.
+
+%\itt{-3.} At least one of the arrays 
+% {\tt p\%A\_val}, {\tt p\%A\_row}, {\tt p\%A\_col},
+% {\tt p\%H\_val}, {\tt p\%H\_row} or {\tt p\%H\_col},
+% is not large enough to hold the original, or reordered, matrices $\bmA$
+% or $\bmH$.
+
+\itt{\galerrbadbounds.} The bound constraints are inconsistent.
+
+\itt{\galerrprimalinfeasible.} The constraints appear to have no feasible point.
+
+\itt{\galerrunbounded.} The objective function appears to be unbounded 
+  from below on the feasible set.
+
+\itt{\galerranalysis.} The analysis phase of the factorization failed; 
+  the return status from the factorization
+    package is given in the component {\tt inform\%fac\-t\-or\_status}.
+
+\itt{\galerrfactorization.} The factorization failed; the return status 
+  from the factorization
+    package is given in the component {\tt inform\%fac\-t\-or\_status}.
+
+\itt{\galerrillconditioned.} The problem is so ill-conditioned that 
+ further progress is impossible.
+
+\itt{\galerrtinystep.} The step is too small to make further impact.
+
+\itt{\galerrmaxiterations.} Too many iterations have been performed. 
+   This may happen if
+    {\tt control\%maxit} is too small, but may also be symptomatic of 
+    a badly scaled problem.
+
+\itt{\galerrcpulimit.} The elapsed CPU or system clock time limit has been 
+    reached. This may happen if either {\tt control\%cpu\_time\_limit} or
+    {\tt control\%clock\_time\_limit} is too small, but may also be symptomatic 
+    of a badly scaled problem.
+
+\itt{\galerrupperentry.} An entry from the strict upper triangle of $\bmH$ 
+ has been specified.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting 
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}), 
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters 
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of 
+"specification commands". Each command occurs on a separate line, 
+and comprises a "keyword", 
+which is a string (in a close-to-natural language) used to identify a 
+control parameter, and 
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive, 
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and 
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+
+
+The portion of the specification file used by 
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an 
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by QPC_read_specfile .. )
+    BEGIN QPC
+       keyword    value
+       .......    .....
+       keyword    value
+    END 
+  ( .. lines ignored by QPC_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines 
+may contain additional (trailing) strings so long as such strings are 
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN QPC SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END QPC SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore, 
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored. 
+The content 
+of a line after a {\tt !} or {\tt *} character is also 
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some 
+specification commands, or to comment specific values 
+of certain control parameters.  
+
+The value of a control parameters may be of three different types, namely
+integer, logical or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}", 
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}". 
+Empty values are also allowed for 
+logical control parameters, and are interpreted as "{\tt TRUE}".  
+
+The specification file must be open for 
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number 
+passed to the routine in device (see below). 
+Note that the corresponding 
+file is {\tt REWIND}ed, which makes it possible to combine the specifications 
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+Control parameters corresponding to the components 
+{\tt CQP\_control}, {\tt QPA\_control}
+and
+{\tt QPB\_control} may be changed by including additional sections enclosed by
+``{\tt BEGIN CQP}'' and 
+``{\tt END CQP}'',
+``{\tt BEGIN QPA}'' and 
+``{\tt END QPA}'', and
+``{\tt BEGIN QPB}'' and 
+``{\tt END QPB}'', respectively. 
+See the specification sheets for the packages 
+{\tt \libraryname\_CQP},
+{\tt \libraryname\_QPA} 
+and
+{\tt \libraryname\_QPB}
+for further details.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in 
+
+\def\baselinestretch{0.8}
+{\tt 
+\begin{verbatim}
+     CALL QPC_read_specfile( control, device )
+\end{verbatim}
+}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). 
+Default values should have already been set, perhaps by calling 
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and 
+the component (see Section~\ref{typecontrol}) of {\tt control} 
+that each affects are given in Table~\ref{specfile}.
+
+\bctable{|l|l|l|} 
+\hline
+  command & component of {\tt control} & value type \\ 
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+%  {\tt initial-integer-workspace} & {\tt \%indmin} & integer \\
+%  {\tt initial-real-workspace} & {\tt \%valmin} & integer \\
+  {\tt restore-problem-on-output} & {\tt \%restore\_problem} & integer \\
+  {\tt infinity-value} & {\tt \%infinity} & real \\
+  {\tt identical-bounds-tolerance} & {\tt \%identical\_bounds\_tol} & real \\
+  {\tt initial-rho-g} & {\tt \%rho\_g} & real \\
+  {\tt initial-rho-b} & {\tt \%rho\_b} & real \\
+  {\tt on-bound-tolerance} & {\tt \%on\_bound\_tol} & real \\
+%  {\tt pivot-tolerance-used-for-dependencies} & {\tt \%pivot\_tol\_for\_dependencies} & real \\
+%  {\tt zero-pivot-tolerance} & {\tt \%zero\_pivot} & real \\
+  {\tt maximum-cpu-time-limit} & {\tt \%cpu\_time\_limit} & real \\
+  {\tt maximum-clock-time-limit} & {\tt \%clock\_time\_limit} & real \\
+  {\tt convex}   & {\tt \%convex} & logical \\
+  {\tt treat-zero-bounds-as-general} & {\tt \%treat\_zero\_bounds\_as\_general} & logical \\
+%  {\tt array-syntax-worse-than-do-loop} & {\tt \%array\_syntax\_worse\_than\_do\_loop} & logical \\
+  {\tt space-critical}   & {\tt \%space\_critical} & logical \\
+  {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
+  {\tt no-qpa-phase}   & {\tt \%no\_qpa} & logical \\
+  {\tt no-qpb-phase}   & {\tt \%no\_qpb} & logical \\
+\hline
+
+\ectable{\label{specfile}Specfile commands and associated 
+components of {\tt control}.}
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+If {\tt control\%print\_level} is positive, information about the progress 
+of the algorithm will be printed on unit {\tt control\-\%out}.
+If {\tt control\%print\_level} $= 1$, a single line of output will be produced 
+for each iteration of the process. 
+For the initial-feasible-point phase,
+this will include values of the current primal and dual infeasibility, and
+violation of complementary slackness, the feasibility-phase objective value,
+the current steplength, the value of the barrier parameter, the
+number of backtracks in the linesearch and the elapsed CPU time in seconds.
+Once a suitable feasible point has been found, the iteration is divided
+into major iterations, at which the barrier parameter is reduced, and
+minor iterations, and which the barrier function is approximately minimized
+for the current value of the barrier parameter. For the major iterations,
+the value of the barrier parameter, the required values of 
+dual feasibility and violation of complementary slackness, and the current
+constraint infeasibility are reported. Each minor iteration of the
+optimality phase results in a line giving 
+the current dual feasibility and violation of complementary slackness, the
+objective function value, the ratio of predicted to achieved reduction 
+of the objective function, the trust-region radius, the 
+number of backtracks in the linesearch, the number of conjugate-gradient 
+iterations taken, and the elapsed CPU time in seconds. 
+
+If {\tt control\%print\_level} $\geq 2$ this 
+output will be increased to provide significant detail of each iteration. 
+This extra output includes residuals of the linear systems solved, and,
+for larger values of {\tt control\%print\_level}, values of the primal and dual
+variables and Lagrange multipliers. 
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines None. 
+\galmodules {\tt \packagename\_solve} calls the \galahad\ packages
+{\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS},
+{\tt GALAHAD\_SPACE}, 
+{\tt GALAHAD\_NORMS}, 
+{\tt GALAHAD\_SORT}, 
+{\tt GALAHAD\_QPT},
+{\tt GALAHAD\_QPP}, 
+{\tt GALAHAD\_QPD}, 
+\sloppy
+{\tt GALAHAD\_EQP}, 
+{\tt GALAHAD\_\-LSQP}, 
+{\tt GALAHAD\_CQP}, 
+{\tt GALAHAD\_QPA}, 
+{\tt GALAHAD\_QPB},
+{\tt GALAHAD\_SPECFILE} and
+{\tt GALAHAD\_FDC}.
+
+\galio Output is under control of the arguments
+ {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
+\galrestrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $\geq  0$, 
+{\tt prob\%A\_type} and {\tt prob\%H\_type} $\in \{${\tt 'DENSE'}, 
+ {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'}, {\tt 'DIAGONAL'} $\}$. 
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+The required solution $\bmx$ necessarily satisfies 
+the primal optimality conditions
+\eqn{4.1a}{\bmA \bmx = \bmc}
+and 
+\eqn{4.1b}{
+ \bmc^{l} \leq \bmc \leq \bmc^{u}, \;\;
+\bmx^{l} \leq\bmx \leq\bmx^{u},}
+the dual optimality conditions
+\eqn{4.2a}{
+ \bmH \bmx + \bmg =
+ \bmA^{T} \bmy + \bmz,\;\;
+ \bmy = \bmy^{l} + \bmy^{u} \tim{and}
+ \bmz = \bmz^{l} + \bmz^{u} ,}
+and 
+\eqn{4.2b}{
+ \bmy^{l} \geq 0 , \;\;
+ \bmy^{u} \leq 0 , \;\;
+ \bmz^{l} \geq 0 \;\; \mbox{and} \;\;
+ \bmz^{u} \leq 0 ,}
+and the complementary slackness conditions 
+\eqn{4.3}{
+( \bmA \bmx - \bmc^{l} )^{T} \bmy^{l} = 0  ,\;\;
+( \bmA \bmx - \bmc^{u} )^{T} \bmy^{u} = 0  ,\;\;
+(\bmx -\bmx^{l} )^{T} \bmz^{l} = 0   \tim{and}
+(\bmx -\bmx^{u} )^{T} \bmz^{u} = 0 ,}
+where the vectors $\bmy$ and $\bmz$ are 
+known as the Lagrange multipliers for
+the general linear constraints, and the dual variables for the bounds,
+respectively, and where the vector inequalities hold component-wise.
+Primal-dual interior point methods iterate towards a point
+that satisfies these conditions by ultimately aiming to satisfy
+\req{4.1a}, \req{4.2a} and \req{4.3}, while ensuring that 
+\req{4.1b} and \req{4.2b} are 
+satisfied as strict inequalities at each stage. 
+Appropriate norms of the amounts by 
+which \req{4.1a}, \req{4.2a} and \req{4.3} fail to be satisfied are known as the
+primal and dual infeasibility, and the violation of complementary slackness,
+respectively. The fact that \req{4.1b} and \req{4.2b} are satisfied as strict 
+inequalities gives such methods their other title, namely 
+interior-point methods.
+
+The problem is solved in three phases. The goal of the first 
+"initial feasible point" phase is
+to find a strictly interior point which is primal feasible, that is that
+\req{4.1a} is satisfied. The \galahad\ package {\tt GALAHAD\_LSQP} 
+is used for this 
+purpose, and offers the options of either accepting the first 
+strictly feasible point found, or preferably of aiming for the
+so-called "analytic center" of the feasible region.
+Having found such a suitable initial feasible point, the second "optimality"
+phase ensures that \req{4.1a} remains satisfied while iterating to satisfy 
+accurately (but not exactly) the dual feasibility \req{4.2a} 
+and complementary slackness \req{4.3}
+using the \galahad\ package {\tt GALAHAD\_QPB}.
+This optimality phase proceeds by approximately minimizing a 
+sequence of barrier functions
+\disp{q(\bmx) -
+ \mu \left[ \sum_{i=1}^{m} \log ( c_{i}  -  c_{i}^{l} )
+ + \sum_{i=1}^{m} \log ( c_{i}^{u}  -  c_{i} )
+ + \sum_{j=1}^{n} \log ( x_{j}  -  x_{j}^{l} ) 
+ + \sum_{j=1}^{n} \log ( x_{j}^{u}  -  x_{j} ) \right] ,}
+for an approriate sequence of positive barrier parameters $\mu$ 
+converging to zero
+while ensuring that \req{4.1a} remain satisfied and that 
+$\bmx$ and $\bmc$ are strictly interior points for \req{4.1b}. 
+Note that terms in the above sumations corresponding to infinite bounds are
+ignored, and that equality constraints are treated specially.
+See the documentation of {\tt GALAHAD\_QPB}.for more details.
+
+Since {\tt GALAHAD\_QPB} may not give a fully accurate solution, the
+last phase uses the \galahad\ package {\tt GALAHAD\_QPA}
+to refine this solution. This package uses a active/working-set method
+to solve the related $\mathbf{\ell_1}$ quadratic programming problem
+\disp{\minin{\bmx \in \smallRe^n} q(\bmx) + \rho_g v_g(\bmx) +
+\rho_b v_b(\bmx),}
+where the he infeasibilities
+\disp{v_g(\bmx) = 
+   \sum_{i=1}^{m} \max ( c_{i}^{l} - \bma_i^T \bmx, 0 )
+ + \sum_{i=1}^{m} \max ( \bma_i^T \bmx - c_{i}^{u}, 0 )}
+and
+\disp{v_b(\bmx) = 
+   \sum_{j=1}^{n} \max ( x_{j}^{l} - x_{j}  , 0 )
+ + \sum_{j=1}^{n} \max ( x_{j}  - x_{j}^{u} , 0 ) ,}
+and $\rho_g$ and $\rho_b$ are appropriately chosen positive weights.
+See the documentation of {\tt GALAHAD\_QPA}.for more details.
+
+In order to make the solution as efficient as possible, the 
+variables and constraints are reordered internally
+by the \galahad\ package {\tt GALAHAD\_QPP} prior to solution. 
+In particular, fixed variables, and 
+free (unbounded on both sides) constraints are temporarily removed.
+
+If at any stage only equality constraints remain, a much simpler
+equality-constrained phase is performed, by
+\galahad\ package {\tt GALAHAD\_EQP}, in place of the 
+three inequality-based phases described above.
+
+\vspace*{1mm}
+
+\galreferences
+\vspace*{1mm}
+
+\noindent
+The interior-point and working-set methods are described in detail in
+\vspace*{1mm}
+
+\noindent
+A. R. Conn, N. I. M. Gould, D. Orban and Ph. L. Toint (1999).
+``A primal-dual trust-region algorithm for minimizing a non-convex 
+function subject to general inequality and linear equality constraints''.
+Mathematical Programming {\bf 87} 215--249.
+
+\noindent
+N. I. M. Gould and Ph. L. Toint (2002).
+``An iterative working-set method 
+for large-scale non-convex quadratic programming''.
+Applied Numerical Mathematics
+{\bf 43 (1--2)} 109--128.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose we wish to minimize
+$\half x_1^2 + x_2^2 + \threehalves x_3^2 + 4 x_1 x_3 + 2 x_2 + 1$
+subject to the the general linear constraints
+$1 \leq  2 x_{1}  +  x_{2}  \leq  2$ and
+$x_{2}  +  x_{3}  =  2$, and simple bounds
+$-1  \leq  x_{1}  \leq  1$ and $x_{3}  \leq  2$.
+Then, on writing the data for this problem as
+\disp{\bmH = \mat{ccc}{1 & & 4 \\ & 2 & \\ 4 &  & 3}, \;\;
+ \bmg = \vect{ 0 \\ 2 \\ 0 }, \;\;
+\bmx^{l} = \vect{ -1 \\ - \infty \\ - \infty } \tim{and}
+\bmx^{u} = \vect{ 1 \\ \infty \\ 2 },}
+and
+\disp{
+ \bmA = \mat{ccc}{ 2 & 1 & \\ & 1 & 1},\;\;
+ \bmc^{l} = \vect{ 1 \\ 2 }, \tim{and}
+ \bmc^{u} = \vect{ 2 \\ 2 }}
+in sparse co-ordinate format,
+we may use the following code:
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+\noindent
+The same problem may be solved holding the data in 
+a sparse row-wise storage format by replacing the lines
+{\tt \small
+\begin{verbatim}
+!  sparse co-ordinate storage format
+...
+! problem data complete   
+\end{verbatim}
+}
+\noindent
+by
+{\tt \small
+\begin{verbatim}
+! sparse row-wise storage format
+   CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', s )  ! Specify sparse-by-row
+   CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )  ! storage for H and A
+   ALLOCATE( p%H%val( h_ne ), p%H%col( h_ne ), p%H%ptr( n + 1 ) )
+   ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( m + 1 ) )
+   p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /) ! Hessian H
+   p%H%col = (/ 1, 2, 3, 1 /)                     ! NB lower triangular
+   p%H%ptr = (/ 1, 2, 3, 5 /)                     ! Set row pointers
+   p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
+   p%A%col = (/ 1, 2, 2, 3 /)
+   p%A%ptr = (/ 1, 3, 5 /)                        ! Set row pointers  
+! problem data complete   
+\end{verbatim}
+}
+\noindent
+or using a dense storage format with the replacement lines
+{\tt \small
+\begin{verbatim}
+! dense storage format
+   CALL SMT_put( p%H%type, 'DENSE', s )  ! Specify dense
+   CALL SMT_put( p%A%type, 'DENSE', s )  ! storage for H and A
+   ALLOCATE( p%H%val( n * ( n + 1 ) / 2 ) )
+   ALLOCATE( p%A%val( n * m ) )
+   p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 4.0_wp, 0.0_wp, 3.0_wp /) ! Hessian
+   p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian
+! problem data complete   
+\end{verbatim}
+}
+\noindent
+respectively.
+
+If instead $\bmH$ had been the diagonal matrix
+\disp{\bmH = \mat{ccc}{1 & &   \\ & 0 & \\  &  & 3}}
+but the other data is as before, the diagonal storage scheme 
+might be used for $\bmH$, and in this case we would instead 
+{\tt \small
+\begin{verbatim}
+   CALL SMT_put( prob%H%type, 'DIAGONAL', s )  ! Specify dense storage for H
+   ALLOCATE( p%H%val( n ) )
+   p%H%val = (/ 1.0_wp, 0.0_wp, 3.0_wp /) ! Hessian values
+\end{verbatim}
+}
+\noindent
+Notice here that zero diagonal entries are stored.
+
+\end{document}
+

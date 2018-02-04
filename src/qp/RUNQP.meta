@@ -1,0 +1,45 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            QP.data
+! problem-data-file-device                          26
+! least-squares-qp                                  no
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                QPSOL.d
+! solution-file-device                              62
+! write-result-summary                              no
+! result-summary-file-name                          QPRES.d
+! result-summary-file-device                        47
+! perturb-bounds-by                                 0.0
+
+INCLUDE QP
+
+INCLUDE QPC
+
+INCLUDE QPA
+
+INCLUDE QPB
+
+INCLUDE LSQP
+
+INCLUDE CQP
+
+INCLUDE DQP
+
+INCLUDE EQP
+
+INCLUDE SBLS
+
+INCLUDE SLS
+
+INCLUDE ULS
+
+INCLUDE GLTR
+
+INCLUDE FDC
+
+INCLUDE FIT
+
+INCLUDE SCALE
+
+INCLUDE PRESOLVE

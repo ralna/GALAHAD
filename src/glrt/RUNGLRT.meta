@@ -1,0 +1,13 @@
+MAIN
+! write-problem-data                                no
+! write-result-summary                              yes
+! glrt-result-summary-file-name                     GLRTRES.d
+! glrt-result-summary-file-device                   47
+! print-full-solution                               no
+! write-solution                                    yes
+! glrt-solution-file-name                           GLRTSOL.d
+! glrt-solution-file-device                         62
+! order                                             3.0
+! weight                                            1.0
+
+INCLUDE GLRT

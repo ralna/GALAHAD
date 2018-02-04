@@ -1,0 +1,32 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            CQP.data
+! problem-data-file-device                          26
+! write-initial-sif                                 no
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! least-squares-qp                                  no
+! scale-problem                                     0
+! pre-solve-problem                                 no
+! presolved-sif-file-name                           PRESOLVE.SIF
+! presolved-sif-file-device                         50
+! solve-problem                                     yes
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                CQPSOL.d
+! solution-file-device                              62
+! write-result-summary                              no
+! result-summary-file-name                          CQPRES.d
+! result-summary-file-device                        47
+! perturb-bounds-by                                 0.0
+
+INCLUDE CQPS
+
+INCLUDE BQP
+
+INCLUDE BQPB
+
+INCLUDE PSLS
+
+INCLUDE SLS
+

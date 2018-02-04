@@ -1,0 +1,17 @@
+MAIN
+! write-problem-data                                no
+! write-result-summary                              yes
+! rqs-result-summary-file-name                      RQSRES.d
+! rqs-result-summary-file-device                    49
+! print-full-solution                               no
+! write-solution                                    yes
+! rqs-solution-file-name                            RQSSOL.d
+! rqs-solution-file-device                          63
+! order                                             3.0
+! weight                                            1.0
+
+INCLUDE RQS
+
+INCLUDE SLS
+
+INCLUDE IR

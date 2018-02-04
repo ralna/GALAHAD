@@ -1,0 +1,334 @@
+s/FULLPACKNAME/FILTRANE/
+s/PACKAGENAME/FILTRANE/
+s/PACKNAME/FILT/
+s/packname/filtrane/g
+#
+# isvar gives specfile string
+# idvar gives variable default
+# ilvar gives label in spec window
+# ivar gives variable name (not essential)
+#
+s/isvar20//
+s/idvar20/0/
+s/ilvar20//
+#s/ivar20//
+#
+s/isvar19//
+s/idvar19/0/
+s/ilvar19//
+#s/ivar19//
+#
+s/isvar18//
+s/idvar18/0/
+s/ilvar18//
+#s/ivar18//
+#
+s/isvar17//
+s/idvar17/0/
+s/ilvar17//
+#s/ivar17//
+#
+s/isvar16//
+s/idvar16/0/
+s/ilvar16//
+#s/ivar16//
+#
+s/isvar15//
+s/idvar15/0/
+s/ilvar15//
+#s/ivar15//
+#
+s/isvar14//
+s/idvar14/0/
+s/ilvar14//
+#s/ivar14//
+#
+s/isvar13//
+s/idvar13/0/
+s/ilvar13//
+#s/ivar13//
+#
+s/isvar12//
+s/idvar12/0/
+s/ilvar12//
+#s/ivar12//
+#
+s/isvar11//
+s/idvar11/0/
+s/ilvar11//
+#s/ivar11//
+#
+s/isvar10//
+s/idvar10/0/
+s/ilvar10//
+#s/ivar10//
+#
+s/isvar9//
+s/idvar9/0/
+s/ilvar9//
+#s/ivar9//
+#
+s/isvar8/restart-from-checkpoint/
+s/idvar8/0/
+s/ilvar8/Restart from checkpoint/
+#s/ivar8//
+#
+s/isvar7/save-best-point/
+s/idvar7/0/
+s/ilvar7/Save best point found/
+#s/ivar7//
+#
+s/isvar6/remove-dominated-filter-entries/
+s/idvar6/1/
+s/ilvar6/Remove dominated filter entries/
+#s/ivar6//
+#
+s/isvar5/filter-sign-restriction/
+s/idvar5/0/
+s/ilvar5/Filter sign restriction/
+#s/ivar5//
+#
+s/isvar4/balance-initial-group-values/
+s/idvar4/0/
+s/ilvar4/Balance initial group values/
+#s/ivar4//
+#
+s/isvar3/stop-on-maximum-gradient-norm/
+s/idvar3/0/
+s/ilvar3/Stop on maximum-gradient norm/
+#s/ivar3//
+#
+s/isvar2/stop-on-preconditioned-gradient-norm/
+s/idvar2/1/
+s/ilvar2/Stop on preconditioned-gradient norm/
+#s/ivar2//
+#
+s/isvar1/print-full-solution/
+s/idvar1/0/
+s/ilvar1/Print full solution/
+#s/ivar1//
+
+#
+s/ssvar34//
+s/sdvar34//
+s/slvar34//
+#s/svar34//
+#
+s/ssvar33//
+s/sdvar33//
+s/slvar33//
+#s/svar33//
+#
+s/ssvar32//
+s/sdvar32//
+s/slvar32//
+#s/svar32//
+#
+s/ssvar31//
+s/sdvar31//
+s/slvar31//
+#s/svar31//
+#
+s/ssvar30//
+s/sdvar30//
+s/slvar30//
+#s/svar30//
+#
+s/ssvar29//
+s/sdvar29//
+s/slvar29//
+#s/svar29//
+#
+s/ssvar28//
+s/sdvar28//
+s/slvar28//
+#s/svar28//
+#
+s/ssvar27//
+s/sdvar27//
+s/slvar27//
+#s/svar27//
+#
+s/ssvar26//
+s/sdvar26//
+s/slvar26//
+#s/svar26//
+#
+s/ssvar25//
+s/sdvar25//
+s/slvar25//
+#s/svar25//
+#
+s/ssvar24//
+s/sdvar24//
+s/slvar24//
+#s/svar24//
+#
+s/ssvar23/secondary-TR-relaxation-factor/
+s/sdvar23/1000.0/
+s/slvar23/Secondary TR relaxation factor/
+#s/svar23//
+#
+s/ssvar22/initial-TR-relaxation-factor/
+s/sdvar22/1.0D+20/
+s/slvar22/Initial TR relaxation factor/
+#s/svar22//
+#
+s/ssvar21/worst-case-radius-reduction-factor/
+s/sdvar21/0.0625/
+s/slvar21/Worst-case radius reduction factor/
+#s/svar21//
+#
+s/ssvar20/radius-increase-factor/
+s/sdvar20/2.0/
+s/slvar20/Radius increase factor/
+#s/svar20//
+#
+s/ssvar19/radius-reduction-factor/
+s/sdvar19/0.25/
+s/slvar19/Radius reduction factor/
+#s/svar19//
+#
+s/ssvar18/minimum-rho-for-very-successful-iteration/
+s/sdvar18/0.9/
+s/slvar18/Min rho for very-successful iteration/
+#s/svar18//
+#
+s/ssvar17/minimum-rho-for-successful-iteration/
+s/sdvar17/0.01/
+s/slvar17/Min rho for successful iteration/
+#s/svar17//
+#
+s/ssvar16/weak-acceptance-power/
+s/sdvar16/2.0/
+s/slvar16/Weak acceptance power/
+#s/svar16//
+#
+s/ssvar15/minimum-weak-acceptance-factor/
+s/sdvar15/0.1/
+s/slvar15/Min weak acceptance factor/
+#s/svar15//
+#
+s/ssvar14/initial-radius/
+s/sdvar14/1.0/
+s/slvar14/Initial radius/
+#s/svar14//
+#
+s/ssvar13/filter-margin-factor/
+s/sdvar13/0.001/
+s/slvar13/Filter margin factor/
+#s/svar13//
+#
+s/ssvar12/filter-size-increment/
+s/sdvar12/50/
+s/slvar12/Filter size increment/
+#s/svar12//
+#
+s/ssvar11/maximum-filter-size/
+s/sdvar11/-1/
+s/slvar11/Max filter size/
+#s/svar11//
+#
+s/ssvar10/relative-subproblem-accuracy-power/
+s/sdvar10/1.0/
+s/slvar10/Relative subproblem accuracy power/
+#s/svar10//
+#
+s/ssvar9/minimum-relative-subproblem-accuracy/
+s/sdvar9/0.01/
+s/slvar9/Min relative subproblem accuracy/
+#s/svar9//
+#
+s/ssvar8/maximum-number-of-cg-iterations/
+s/sdvar8/15/
+s/slvar8/Max number of CG iterations/
+#s/svar8//
+#
+s/ssvar7/automatic-model-inertia/
+s/sdvar7/3/
+s/slvar7/Automatic model inertia/
+#s/svar7//
+#
+s/ssvar6/inequality-penalty-type/
+s/sdvar6/2/
+s/slvar6/Inequality penalty type/
+#s/svar6//
+#
+s/ssvar5/maximum-number-of-iterations/
+s/sdvar5/1000/
+s/slvar5/Maximum number of iterations/
+#s/svar5//
+#
+s/ssvar4/gradient-accuracy/
+s/sdvar4/1.0D-6/
+s/slvar4/Gradient accuracy/
+#s/svar4//
+#
+s/ssvar3/residual-accuracy/
+s/sdvar3/1.0D-6/
+s/slvar3/Residual accuracy/
+#s/svar3//
+#
+s/ssvar2/stop-printing-at-iteration/
+s/sdvar2/-1/
+s/slvar2/Stop printing at iteration/
+#s/svar2//
+#
+s/ssvar1/start-printing-at-iteration/
+s/sdvar1/0/
+s/slvar1/Start printing at iteration/
+#s/svar1//
+#
+s/ssvara//
+s/sdvara/0/
+s/slvara1//
+s/slvara2//
+s/slvara3//
+#s/svara//
+#
+s/ssvarb//
+s/sdvarb/0/
+s/slvarb1//
+s/slvarb2//
+s/slvarb3//
+s/slvarb4//
+s/slvarb5//
+#s/svarb//
+#
+s/ssvarc/preconditioner-used/
+s/sdvarc/0/
+#s/svarc//
+#
+s/ssvarca/semi-bandwidth-for-band-preconditioner/
+s/sdvarca/5/
+#s/svarca//
+#
+s/ssvarcb//
+s/sdvarcb/0/
+#s/svarcb//
+#
+s/ssvarc1/None/
+s/slvarc1/Banded/
+s/ssvarc2//
+s/slvarc2//
+s/ssvarc3//
+s/slvarc3//
+s/ssvarc4//
+s/slvarc4//
+s/ssvarc5//
+s/slvarc5//
+s/ssvarc6//
+s/slvarc6//
+s/ssvarc7//
+s/slvarc7//
+s/ssvarc8//
+s/slvarc8//
+s/ssvarc9//
+s/slvarc9//
+s/ssvarc10//
+s/slvarc10//
+
+
+
+
+

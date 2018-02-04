@@ -1,0 +1,819 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{fdh}
+\newcommand{\packagename}{FDH}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+\newcommand{\solver}{{\tt \fullpackagename\_analyse}}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+This package 
+{\bf computes a finite-difference approximation to the Hessian matrix} 
+$\bmH(\bmx)$, for which  
+$(\bmH(\bmx))_{i,j} = \partial f^2 / \partial x_i \partial x_j$,
+$1 \leq i, j \leq n$,  
+using values of the gradient $\bmg(\bmx) = \nabla_x f(\bmx)$ 
+of the function $f(\bmx)$ of $n$ unknowns $\bmx = (x_1, \ldots, x_n)^T$. 
+The method takes advantage of the entries in the Hessian that are known to
+be zero.  The user must specify the step sizes to be used in the
+finite difference calculation and either supply a routine to evaluate
+the gradient or provide gradient values by reverse communication.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses 
+{\tt GALAHAD\_SY\-M\-BOLS}, 
+{\tt GALAHAD\_SP\-ECFILE},
+{\tt GALAHAD\_SPACE} and
+{\tt GALAHAD\_NLPT}.
+\galdate July 2012.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory,
+and Ph. L. Toint, The University of Namur, Belgium.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+The user is {\bf strongly advised} to use the double
+precision version unless single precision corresponds to 8-byte arithmetic.
+
+If it is required to use both modules at the same time, the derived types 
+{\tt \packagename\_control\_type}, 
+{\tt \packagename\_inform\_type},
+{\tt \packagename\_data\_type}
+and
+{\tt NLPT\_userdata\_type},
+(Section~\ref{galtypes})
+and the subroutines
+{\tt \packagename\_initialize}, 
+{\tt \packagename\_\-analyse},
+{\tt \packagename\_\-estimate},
+{\tt \packagename\_terminate},
+(Section~\ref{galarguments})
+and 
+{\tt \packagename\_read\_specfile}
+(Section~\ref{galfeatures})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Four derived data types are accessible from the package.
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control 
+ parameters}\label{typecontrol}
+The derived data type 
+{\tt \packagename\_control\_type} 
+is used to hold controlling data. Default values may be obtained by calling 
+{\tt \packagename\_initialize}
+(see Section~\ref{subinit}),
+while components may also be changed by calling 
+{\tt \fullpackagename\_read\-\_spec}
+(see Section~\ref{readspec}). 
+The components of 
+{\tt \packagename\_control\_type} 
+are:
+
+
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in 
+{\tt \packagename\_analyse},
+{\tt \packagename\_estimate} 
+and {\tt \packagename\_terminate} 
+is suppressed if {\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in 
+{\tt \packagename\_analyse} and {\tt \packagename\_estimate} 
+is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No 
+informational output will occur if {\tt print\_level} $\leq 0$. If 
+{\tt print\_level} $> 01$, details of any data errors encountered 
+will be reported.
+The default is {\tt print\_level = 0}.
+
+\itt{space\_critical} is a scalar variable of type default \logical, 
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if 
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical, 
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected 
+character string to preface every line of printed output. 
+Specifically, each line of output will be prefaced by the string 
+{\tt prefix(2:LEN(TRIM( prefix ))-1)},
+thus ignoreing the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\end{description}
+
+%%%%%%%%%%% inform type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type 
+{\tt \packagename\_inform\_type} 
+is used to hold parameters that give information about the progress and needs 
+of the algorithm. The components of 
+{\tt \packagename\_inform\_type} 
+are:
+
+\begin{description}
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm. 
+See Sections~\ref{reverse} and \ref{galerrors}
+for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array 
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}. 
+
+\ittf{bad\_row} is a scalar variable of type default \integer, that holds the 
+index of the first row in which inconsistent data occurred (or 0 if the data is 
+consistent).
+
+\itt{products} is a scalar variable of type default \integer, that gives the
+number of gradient evaluations (to be) used to estimate the Hessian.
+
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type 
+{\tt \packagename\_data\_type} 
+is used to hold all the data for a particular problem,
+or sequences of problems with the same structure, between calls of 
+{\tt \packagename} procedures. 
+This data should be preserved, untouched (except as directed on
+return from \solver\ with positive values of {\tt inform\%status}, see
+Section~\ref{reverse}),
+from the initial call to 
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}.
+
+%%%%%%%%%%% userdata type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding user data}\label{typeuserdata}
+The derived data type 
+{\tt NLPT\_userdata\_type} 
+is available to allow the user to pass data to and from user-supplied 
+subroutines for function and derivative calculations (see Section~\ref{gfv}).
+Components of variables of type {\tt NLPT\_userdata\_\-type} may be allocated as
+necessary. The following components are available:
+
+\begin{description}
+\itt{integer} is a rank-one allocatable array of type default \integer.
+\ittf{real} is a rank-one allocatable array of type default  \realdp
+\itt{complex} is a rank-one allocatable array of type default \complexdp.
+\itt{character} is a rank-one allocatable array of type default \character.
+\itt{logical} is a rank-one allocatable array of type default \logical.
+\itt{integer\_pointer} is a rank-one pointer array of type default \integer.
+\itt{real\_pointer} is a rank-one pointer array of type default  \realdp
+\itt{complex\_pointer} is a rank-one pointer array of type default \complexdp.
+\itt{character\_pointer} is a rank-one pointer array of type default \character.
+\itt{logical\_pointer} is a rank-one pointer array of type default \logical.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are four procedures for user calls
+(see Section~\ref{galfeatures} for further features): 
+
+\begin{enumerate}
+\item The subroutine 
+      {\tt \packagename\_initialize} 
+      is used to set default values, and initialize private data, 
+      before solving one or more problems with the
+      same sparsity and bound structure.
+\item The subroutine 
+      {\tt \packagename\_analyse} 
+      is called to analyze the sparsity pattern of the Hessian
+      and to generate information that will be used when estimating 
+      its values.
+\item The subroutine 
+      {\tt \packagename\_estimate} 
+      is called repeatedly to estimate the Hessian by finite differences at 
+      one or more given points.
+\item The subroutine 
+      {\tt \packagename\_terminate} 
+      is provided to allow the user to automatically deallocate array 
+       components of the private data, allocated by 
+       {\tt \packagename\_solve}, 
+       at the end of the solution process. 
+       It is important to do this if the data object is re-used for another 
+       problem {\bf with a different structure}
+       since {\tt \packagename\_initialize} cannot test for this situation, 
+       and any existing associated targets will subsequently become unreachable.
+\end{enumerate}
+We use square brackets {\tt [ ]} to indicate \optional\ arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize( data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. 
+
+\itt{control} is a scalar \intentout\ argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). 
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling 
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% analysis subroutine %%%%%%
+
+\subsubsection{The analysis subroutine}
+The analysis phase, in which the sparsity pattern of the Hessian
+is used to generate information that will be used when estimating 
+its values, is called as follows:
+
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_analyse( n, nz, ROW, DIAG, data, control, inform )}
+
+\vspace*{-2mm}
+\begin{description}
+\ittf{n} 
+is a scalar \intentin\ scalar argument of type default \integer, that must be 
+set to $n$ the dimension of the Hessian matrix, i.e. the number of
+variables in the function $f$. 
+\restrictions {\tt n} $> 0$.
+
+\ittf{nz} 
+is a scalar \intentin\ scalar argument of type default \integer, that must be
+set to the number of nonzero entries on and below the diagonal of the Hessian
+matrix.
+\restrictions {\tt n} $\le$ {\tt nz} $\le$ {\tt n} $\ast$ {\tt (n+1)/2}.
+
+\ittf{ROW} is a scalar \intentinout\ rank-one array argument of type 
+default \integer\ and dimension {\tt nz}, that is used to describe 
+the sparsity structure of the Hessian matrix. It must be set so that
+ {\tt ROW(}$i${\tt)}, $i = 1, \ldots,$ {\tt nz} contain the row 
+numbers of the successive nonzero elements of the {\bf lower triangular part
+(including the diagonal)} of the Hessian matrix when scanned column after
+column in the natural order. The diagonal entry 
+{\bf must preceed the other entries} in each column. The remaining entries 
+may appear in any order. On exit {\tt ROW} will be as input, but will have
+been altered in the interim.
+\restrictions 
+$j \leq$ {\tt ROW(}$j${\tt)} $\leq n$ , $j = 1, \ldots,$ {\tt nz}.
+
+\itt{DIAG} 
+is a scalar \intentin\ rank-one array argument of type 
+default \integer\ and dimension {\tt n}, that is used to describe 
+the sparsity structure of the Hessian matrix. It must be set so that
+ {\tt DIAG(}$i${\tt)} $i$, $i = 1, \ldots,$ {\tt n}
+contain the position of the $i$th diagonal of the matrix in the list held
+in {\tt ROW}.
+\restrictions {\tt ROW(DIAG(}$i${\tt=} $i$, $i = 1, \ldots,$ {\tt n}.
+
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). Default values may be assigned by calling 
+{\tt \packagename\_initialize} prior to the first call to 
+{\tt \packagename\_analyse}. 
+
+\itt{inform} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). 
+A successful call to
+{\tt \packagename\_analyse}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. With the possible exceptions of the components 
+{\tt eval\_status} and {\tt U} (see Section~\ref{reverse}), 
+it must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+
+\end{description}
+
+%%%%%%%%% estimation subroutine %%%%%%
+
+\subsubsection{The estimation subroutine}
+The estimation phase, in which the nonzero entries of the Hessian
+are estimated by finite differences, is called as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_estimate( n, nz, ROW, DIAG, X, G, STEPSIZE, H, \,\,\,\,\,\,   \& }
+\vspace*{-1mm}
+
+\hspace{41mm}
+{\tt data, control, inform, userdata, eval\_G )}
+
+\vspace*{-2mm}
+\begin{description}
+\itt{n,} {\tt nz}, {\tt ROW} and {\tt DIAG} are  \intentin\ arguments 
+exactly as described and input to {\tt \packagename\_analyse},
+and must not have been changed in the interim.
+
+\ittf{X} is a scalar \intentin\ rank-one array argument of type 
+default \realdp, and dimension {\tt n}, that  must be set so that
+{\tt X(}$i${\tt)} contains the component $x_i$, $i = 1, \ldots,$ {\tt n} 
+of the point $\bmx$ at which the user wishes to estimate $\bmH(\bmx)$.
+
+\ittf{G} is a scalar \intentin\ rank-one array argument of type 
+default \realdp, and dimension {\tt n}, that must be set so that
+{\tt G(}$i${\tt)} contains the component $g_i(\bmx)$, $i = 1, \ldots,$ {\tt n} 
+of the gradient $\bmg(\bmx)$ of $f$ at the point $\bmx$ input in {\tt X}.
+
+\itt{STEPSIZE} is a scalar \intentin\ rank-one array argument of type 
+default \realdp, and dimension {\tt n}, that must be set to the stepsizes
+to be used in the finite difference scheme.  One can roughly say that 
+{\tt STEPSIZE(}$i${\tt)} is the step used to evaluate the $i$th column 
+of the Hessian---recommended values are between $10^{-7}$ and $10^{-3}$
+times the corresponding  component of {\tt X}.
+
+\ittf{H} is a scalar \intentinout\ rank-one array argument of type 
+default \realdp, and dimension {\tt nz}, that needs not be set on input,
+but that will be set to the non-zeros of the Hessian $\bmH(\bmx)$ in the
+order defined by the list stored in {\tt ROW}.
+
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). Default values may be assigned by calling 
+{\tt \packagename\_initialize} prior to the first call to 
+{\tt \packagename\_analyse}. 
+
+\itt{inform} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). 
+A successful call to
+{\tt \packagename\_analyse}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Sections~\ref{reverse} and
+\ref{galerrors}.
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being 
+solved. With the possible exceptions of the components 
+{\tt eval\_status} and {\tt U} (see Section~\ref{reverse}), 
+it must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+
+\itt{userdata} is a scalar \intentinout\ argument of type 
+{\tt NLPT\_userdata\_type} whose components may be used
+to communicate user-supplied data to and from the
+\optional\ subroutine {\tt eval\_G},
+(see Section~\ref{typeuserdata}). 
+
+\itt{eval\_G} is an \optional\ 
+user-supplied subroutine whose purpose is to evaluate the value of the 
+gradient of the objective function $\bmg(\bmx) = \nabla_x f(\bmx)$ 
+at a given vector $\bmx$.
+See Section~\ref{gfv} for details.
+If {\tt eval\_G} is present, 
+it must be declared {\tt EXTERNAL} in the calling program.
+If {\tt eval\_G} is absent, \solver\ will use reverse communication to
+obtain gradient values (see Section~\ref{reverse}).
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_terminate( data, control, inform )}
+
+\vspace*{-1mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type} 
+exactly as for
+{\tt \packagename\_solve},
+which must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+On exit, array components will have been deallocated.
+
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_solve}.
+Only the component {\tt status} will be set on exit, and a 
+successful call to 
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Gradient values %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Gradient values via internal evaluation\label{gfv}}
+
+If the argument {\tt eval\_G} is present when calling \solver, the
+user is expected to provide a subroutine of that name to evaluate the
+value of the gradient the objective function $\bmg(\bmx) = \nabla_x f(\bmx)$.
+The routine must be specified as
+
+\def\baselinestretch{0.8}
+{\tt \begin{verbatim}
+       SUBROUTINE eval_G( status, X, userdata, G )
+\end{verbatim} }
+\def\baselinestretch{1.0}
+\noindent whose arguments are as follows:
+
+\begin{description}
+\itt{status} is a scalar \intentout\ argument of type default \integer,
+that should be set to 0 if the routine has been able to evaluate
+the gradient of the objective function
+and to a non-zero value if the evaluation has not been possible.
+
+\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
+whose components contain the vector $\bmx$.
+
+\itt{userdata} is a scalar \intentinout\ argument of type 
+{\tt NLPT\_userdata\_type} whose components may be used
+to communicate user-supplied data to and from the subroutine {\tt eval\_G}
+(see Section~\ref{typeuserdata}). 
+
+\itt{G} is a rank-one \intentout\ argument of type default \realdp,
+whose components should be set to the values of the gradient 
+of the objective function $\bmg(\bmx) = \nabla_x f(\bmx)$
+evaluated at the vector $\bmx$ input in {\tt X}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Reverse communication %%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{\label{reverse}Reverse Communication Information}
+
+A positive value of {\tt inform\%status} on exit from 
+{\tt \packagename\_estimate}
+indicates that
+\solver\ is seeking further information---this will happen 
+if the user has chosen not to evaluate gradient
+values internally (see Section~\ref{gfv}).
+The user should compute the required information and re-enter \solver\
+with {\tt inform\%status} and all other arguments (except those specifically
+mentioned below) unchanged.
+
+Possible values of {\tt inform\%status} and the information required are
+\begin{description}
+\ittf{1.} The user should compute the gradient 
+     of the objective function $\bmg(\bmx) = \nabla_x f(\bmx)$ at the 
+     point $\bmx$ indicated in {\tt data\%X}.
+     The value of the $i$-th component of the gradient should be set 
+     in {\tt data\%G(i)},      for $i = 1, \ldots, n$ and 
+     {\tt data\%eval\_status} should be set to 0. If the user is
+     unable to evaluate a component of $\bmg(\bmx)$---for instance, 
+     if a component of the gradient is
+     undefined at $\bmx$---the user need not set {\tt data\%G}, but
+     should then set {\tt data\%eval\_status} to a non-zero value.
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt inform\%status} on exit from 
+{\tt \packagename\_analyse},
+{\tt \packagename\_estimate}
+or 
+{\tt \packagename\_terminate}
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\itt{\galerrallocate.} An allocation error occurred. 
+A message indicating the offending
+array is written on unit {\tt control\%error}, and the returned allocation 
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc}, respectively.
+
+\itt{\galerrdeallocate.} A deallocation error occurred. 
+A message indicating the offending 
+array is written on unit {\tt control\%error} and the returned allocation 
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc}, respectively.
+
+\itt{\galerrrestrictions.} 
+ One or more of the restriction 
+$0 <$ {\tt n} $\le$ {\tt nz} $\le$ {\tt n} $\ast$ {\tt (n+1)/2}
+  has been violated.
+
+\itt{\galerrupperentry.} One or more of the restrictions
+{\tt ROW(DIAG(} $i$ {)\tt)=} $i$, $i = 1, \ldots,$ {\tt n}, or
+$j \leq$ {\tt ROW(}$j${\tt)} $\leq n$ , $j = 1, \ldots,$ {\tt nz},
+  has been violated. See {\tt inform\%bad\_row} 
+for the index of the row involved.
+
+\itt{\galerrcallorder.}  {\tt \packagename\_estimate} has been called
+before {\tt \packagename\_analyse}. 
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting 
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}), 
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters 
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of 
+"specification commands". Each command occurs on a separate line, 
+and comprises a "keyword", 
+which is a string (in a close-to-natural language) used to identify a 
+control parameter, and 
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive, 
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and 
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+The portion of the specification file used by 
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an 
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by FDH_read_specfile .. )
+    BEGIN FDH
+       keyword    value
+       .......    .....
+       keyword    value
+    END 
+  ( .. lines ignored by FDH_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines 
+may contain additional (trailing) strings so long as such strings are 
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN FDH SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END FDH SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore, 
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored. 
+The content 
+of a line after a {\tt !} or {\tt *} character is also 
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some 
+specification commands, or to comment specific values 
+of certain control parameters.  
+
+The value of a control parameters may be of three different types, namely
+integer, logical or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}", 
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}". 
+Empty values are also allowed for 
+logical control parameters, and are interpreted as "{\tt TRUE}".  
+
+The specification file must be open for 
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number 
+passed to the routine in device (see below). 
+Note that the corresponding 
+file is {\tt REWIND}ed, which makes it possible to combine the specifications 
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in 
+\def\baselinestretch{0.8} {\tt \begin{verbatim}
+     CALL FDH_read_specfile( control, device )
+\end{verbatim}
+}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type 
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). 
+Default values should have already been set, perhaps by calling 
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and 
+the component (see Section~\ref{typecontrol}) of {\tt control} 
+that each affects are given in Table~\ref{specfile}.
+
+\bctable{|l|l|l|} 
+\hline
+  command & component of {\tt control} & value type \\ 
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+  {\tt space-critical}   & {\tt \%space\_critical} & logical \\
+  {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
+  {\tt output-line-prefix} & {\tt \%prefix} & character \\
+\hline
+
+\ectable{\label{specfile}Specfile commands and associated 
+components of {\tt control}.}
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+If {\tt control\%print\_level} is positive, information about 
+errors encountered will be printed on unit {\tt control\-\%out}.
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines None. 
+\galmodules {\tt \packagename\_solve} calls the \galahad\ packages
+{\tt GALAHAD\_SY\-M\-BOLS}, 
+{\tt GALAHAD\_SPECFILE},
+{\tt GALAHAD\_SPACE} and
+{\tt GALAHAD\_NLPT}.
+\galio Output is under control of the arguments
+ {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
+\galrestrictions 
+$0 <$ {\tt n} $\le$ {\tt nz} $\le$ {\tt n} $\ast$ {\tt (n+1)/2},
+{\tt ROW(DIAG(} $i$ {)\tt)=} $i$, $i = 1, \ldots,$ {\tt n}, or
+$j \leq$ {\tt ROW(}$j${\tt)} $\leq n$ , $j = 1, \ldots,$ {\tt nz}.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+The routines  use a ``Lower triangular  substitution
+algorithm''. It assumes  that no  diagonal
+values  are constrained  by the sparsity  requirements.
+The analysis phase uses the  sparsity pattern  of
+the matrix  to decide  how many differences  in
+gradient are needed  for estimation  and along what directions.
+For this purpose,  it defines  a symmetric permutation  of the
+matrix. The evaluation phase  computes  the differences  in
+gradients  that are required  and then  solves  a consequent
+linear  system by a  substitution to obtain  the entries of  the
+approximate  Hessian. 
+
+Once the  pattern analysis  is performed,  one can
+approximate  the Hessian  of $f$ at several different points.
+This is done  by a single call  to {\tt \packagename\_analyse}
+followed  by several calls to {\tt \packagename\_estimate}
+for different values of $x$ with corresponding $g(x)$.
+
+\vspace*{1mm}
+
+\galreference
+\vspace*{1mm}
+
+\noindent
+The method is described in detail in
+\vspace*{1mm}
+
+\noindent
+M.\ J.\ D.\ Powell and  Ph.\ L.\ Toint. ``On the estimation  of
+sparse Hessian matrices''. SIAM J. Numer. Anal. {\bf 16} (1979) 1060-1074.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexamples
+Suppose we wish to estimate the Hessian matrix of the objective function 
+\disp{f(x_1 , \ldots, x_5 ) =  ( x_1 + p )^3 + x_2^3 + x_3^3 + x_4^3 + x_5^3 
+ + x_1^{} x_4^{} + x_2^{} x_3^{} + x_3^{} x_4^{} + x_4^{} x_5^{}, } 
+that depends on the parameter $p$, whose gradient is
+\disp{\bmg(\bmx) = \vect{
+3(x_1^{} + p )^2 + x_4^{} \\ 3x_2^2 + x_3^{} \\ 3x_3^2 + x_2^{} + x_4^{} \\
+3x_4^2 + x_1^{} + x_3^{} + x_5^{} \\ 3x_5^2 + x_4^{}
+}}
+and thus whose Hessian has the sparsity pattern
+\disp{ \mat{ccccc}{ 
+\ast & 0 & 0 & \cdot & 0 \\
+0 & \ast & \cdot & 0 & 0 \\
+0 & \ast & \ast & \cdot & 0 \\
+\ast & 0 & \ast & \ast & \cdot \\
+0 & 0 & 0 & \ast & \ast}}
+(the entries $\ast$ in the lower triangle are the ones that will be estimated).
+
+Choosing uniform  step lengths of size $10^{-6}$, we may estimate the
+Hessian at $x = (1,1,1,1,1)^T$ and $(1,2,3,4,5)^T$ for $p = 4$ using the
+following code - we use an explicit call to evaluate the gradient 
+at the first point and the reverse-communication method at the second:
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+Notice how the parameter $p$ is passed to the function evaluation 
+routines via the {\tt real} component of the derived type {\tt userdata}.
+The code produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+\noindent
+
+\end{document}
+

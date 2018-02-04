@@ -1,0 +1,1858 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{arc}
+\newcommand{\packagename}{ARC}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+\newcommand{\solver}{{\tt \fullpackagename\_solve}}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+This package uses a {\bf cubic regularization method to find a (local)
+unconstrained minimizer of a differentiable objective function $f(\bmx)$
+of many variables $\bmx$.} The method offers the choice of direct
+and iterative solution of the key regularization subproblems, and
+is most suitable for large problems. First derivatives are required,
+and if second derivatives can be calculated, they will be exploited---if
+the product of second derivatives with a vector may be found but
+not the derivatives themselves, that may also be exploited.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses
+{\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS},
+{\tt GALAHAD\_NLPT},
+{\tt GALAHAD\_SPECFILE},
+{\tt GALAHAD\_PSLS},
+{\tt GALAHAD\_GLRT},
+{\tt GALAHAD\_RQS},
+{\tt GALAHAD\_LMS},
+{\tt GALAHAD\_SHA},
+{\tt GALAHAD\_SPACE} and
+{\tt GALAHAD\_NORMS}.
+\galdate May 2015.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory,
+and Ph. L. Toint, The University of Namur, Belgium.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types
+{\tt SMT\_type},
+{\tt NLPT\_userdata\_type},
+{\tt \packagename\_time\_\-type},
+{\tt \packagename\_control\_type},
+{\tt \packagename\_inform\_type},
+{\tt \packagename\_data\_type}
+and
+{\tt NLPT\_problem\_type},
+(Section~\ref{galtypes})
+and the subroutines
+{\tt \packagename\_initialize},
+{\tt \packagename\_\-solve},
+{\tt \packagename\_terminate},
+(Section~\ref{galarguments})
+and
+{\tt \packagename\_read\_specfile}
+(Section~\ref{galfeatures})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmatrix
+If available, the Hessian matrix $\bmH = \nabla_{xx} f(x)$
+may be stored in a variety of input formats.
+
+\subsubsection{Dense storage format}\label{dense}
+The matrix $\bmH$ is stored as a compact
+dense matrix by rows, that is, the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+Since $\bmH$ is symmetric, only the lower triangular part (that is the part
+$h_{ij}$ for $1 \leq j \leq i \leq n$) need be held. In this case
+the lower triangle should be stored by rows, that is
+component $i \ast (i-1)/2 + j$ of the storage array {\tt H\%val}
+will hold the value $h_{ij}$ (and, by symmetry, $h_{ji}$)
+for $1 \leq j \leq i \leq n$.
+
+\subsubsection{Sparse co-ordinate storage format}\label{coordinate}
+Only the nonzero entries of the matrices are stored.
+For the $l$-th entry of $\bmH$, $1 \leq j \leq i \leq n$,
+its row index $i$, column index $j$ and value $h_{ij}$
+are stored in the $l$-th components of the integer arrays {\tt H\%row},
+{\tt H\%col} and real array {\tt H\%val}, respectively.
+Note that only the entries in the lower triangle should be stored.
+
+\subsubsection{Sparse row-wise storage format}\label{rowwise}
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row $i$ appear directly before those
+in row $i+1$. For the $i$-th row of $\bmH$, the $i$-th component of the
+integer array {\tt A\%ptr} holds the position of the first entry in this row,
+while {\tt A\%ptr} $(m+1)$ holds the total number of entries plus one.
+The column indices $j$, $1 \leq j \leq i$, and values $h_{ij}$ of the
+entries in the $i$-th row are stored in components
+$l =$ {\tt H\%ptr}$(i)$, \ldots ,{\tt H\%ptr} $(i+1)-1$ of the
+integer array {\tt H\%col}, and real array {\tt H\%val}, respectively.
+Note that as before only the entries in the lower triangle should be stored.
+For sparse matrices, this scheme almost always requires less storage than
+its predecessor.
+
+\subsubsection{Diagonal storage format}\label{diagonal}
+If $\bmH$ is diagonal (i.e., $h_{ij} = 0$ for all $1 \leq i \neq j \leq n$)
+only the diagonals entries $h_{ii}$, $1 \leq i \leq n$,  need be stored,
+and the first $n$ components of the array {\tt H\%val} may be used for
+the purpose.
+
+%%%%%%%%%%%%%%%%%%%%%% long integers %%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Integer kinds}\label{Integer kinds}
+We use the term
+long \integer\ to denote {\tt INTEGER\-(kind=long)}, where
+{\tt long = selected\_int\_kind(18))}.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Seven derived data types are accessible from the package.
+
+%%%%%%%%%%% matrix data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding matrices}\label{typesmt}
+The derived data type {\tt SMT\_TYPE} is used to hold the Hessian matrix $\bmH$
+if this is available. The components of {\tt SMT\_TYPE} used here are:
+
+\begin{description}
+
+\ittf{n} is a scalar component of type default \integer,
+that holds the dimension of the matrix.
+
+\ittf{ne} is a scalar variable of type default \integer, that
+holds the number of matrix entries.
+
+\ittf{type} is a rank-one allocatable array of type default \character, that
+is used to indicate the matrix storage scheme used. Its precise length and
+content depends on the type of matrix to be stored (see \S\ref{typeprob}).
+
+\ittf{val} is a rank-one allocatable array of type default \realdp\,
+and dimension at least {\tt ne}, that holds the values of the entries.
+Each pair of off-diagonal entries $h_{ij} = h_{ji}$ of the {\em symmetric}
+matrix $\bmH$ is represented as a single entry
+(see \S\ref{dense}--\ref{rowwise}).
+Any duplicated entries that appear in the sparse
+co-ordinate or row-wise schemes will be summed.
+
+\ittf{row} is a rank-one allocatable array of type default \integer,
+and dimension at least {\tt ne}, that may hold the row indices of the entries.
+(see \S\ref{coordinate}).
+
+\ittf{col} is a rank-one allocatable array of type default \integer,
+and dimension at least {\tt ne}, that may hold the column indices of the entries
+(see \S\ref{coordinate}--\ref{rowwise}).
+
+\ittf{ptr} is a rank-one allocatable array of type default \integer,
+and dimension at least {\tt n + 1}, that may hold the pointers to
+the first entry in each row (see \S\ref{rowwise}).
+
+\end{description}
+
+%%%%%%%%%%% problem type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding the problem}\label{typeprob}
+The derived data type {\tt NLPT\_problem\_type} is used to hold
+the problem. The relevant components of
+{\tt NLPT\_problem\_type}
+are:
+
+\begin{description}
+
+\ittf{n} is a scalar variable of type default \integer,
+ that holds the number of optimization variables, $n$.
+
+\ittf{H} is scalar variable of type {\tt SMT\_TYPE}
+that holds the Hessian matrix $\bmH$. The following components
+are used here:
+
+\begin{description}
+
+\itt{H\%type} is an allocatable array of rank one and type default
+\character, that
+is used to indicate the storage scheme used. If the dense storage scheme
+(see Section~\ref{dense}) is used,
+the first five components of {\tt H\%type} must contain the
+string {\tt DENSE}.
+For the sparse co-ordinate scheme (see Section~\ref{coordinate}),
+the first ten components of {\tt H\%type} must contain the
+string {\tt COORDINATE},
+for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
+the first fourteen components of {\tt H\%type} must contain the
+string {\tt SPARSE\_BY\_ROWS},
+and for the diagonal storage scheme (see Section~\ref{diagonal}),
+the first eight components of {\tt H\%type} must contain the
+string {\tt DIAGONAL}.
+
+For convenience, the procedure {\tt SMT\_put}
+may be used to allocate sufficient space and insert the required keyword
+into {\tt H\%type}.
+For example, if {\tt nlp} is of derived type {\tt \packagename\_problem\_type}
+and involves a Hessian we wish to store using the co-ordinate scheme,
+we may simply
+%\vspace*{-2mm}
+{\tt
+\begin{verbatim}
+        CALL SMT_put( nlp%H%type, 'COORDINATE' )
+\end{verbatim}
+}
+%\vspace*{-4mm}
+\noindent
+See the documentation for the \galahad\ package {\tt SMT}
+for further details on the use of {\tt SMT\_put}.
+
+\itt{H\%ne} is a scalar variable of type default \integer, that
+holds the number of entries in the {\bf lower triangular} part of $\bmH$
+in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
+It need not be set for any of the other three schemes.
+
+\itt{H\%val} is a rank-one allocatable array of type default \realdp, that holds
+the values of the entries of the {\bf lower triangular} part
+of the Hessian matrix $\bmH$ in any of the
+storage schemes discussed in Section~\ref{galmatrix}.
+
+\itt{H\%row} is a rank-one allocatable array of type default \integer,
+that holds the row indices of the {\bf lower triangular} part of $\bmH$
+in the sparse co-ordinate storage
+scheme (see Section~\ref{coordinate}).
+It need not be allocated for any of the other three schemes.
+
+\itt{H\%col} is a rank-one allocatable array variable of type default \integer,
+that holds the column indices of the {\bf lower triangular} part of
+$\bmH$ in either the sparse co-ordinate
+(see Section~\ref{coordinate}), or the sparse row-wise
+(see Section~\ref{rowwise}) storage scheme.
+It need not be allocated when the dense or diagonal storage schemes are used.
+
+\itt{H\%ptr} is a rank-one allocatable array of dimension {\tt n+1} and type
+default \integer, that holds the starting position of
+each row of the {\bf lower triangular} part of $\bmH$, as well
+as the total number of entries plus one, in the sparse row-wise storage
+scheme (see Section~\ref{rowwise}). It need not be allocated when the
+other schemes are used.
+
+\end{description}
+
+\ittf{G} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp, that holds the gradient $\bmg$
+of the objective function.
+The $j$-th component of
+{\tt G}, $j = 1,  \ldots ,  n$, contains $\bmg_{j}$.
+
+\ittf{f} is a scalar variable of type
+default \realdp, that holds the value of the objective function.
+
+\ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp,
+that holds the values $\bmx$ of the optimization variables.
+The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.
+
+\itt{pname} is a scalar variable of type
+default \character\ and length 10, which contains the
+``name'' of the problem for printing. The default ``empty'' string is
+provided.
+
+\itt{VNAMES} is a rank-one allocatable array of dimension {\tt n} and type
+default \character\ and length 10, whose $j$-th entry contains the
+``name'' of the $j$-th variable for printing. This is only used
+if ``debug''printing {\tt control\%print\_level > 4}) is requested,
+and will be ignored if the array is not allocated.
+
+\end{description}
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control
+ parameters}\label{typecontrol}
+The derived data type
+{\tt \packagename\_control\_type}
+is used to hold controlling data. Default values may be obtained by calling
+{\tt \packagename\_initialize}
+(see Section~\ref{subinit}),
+while components may also be changed by calling
+{\tt \fullpackagename\_read\-\_spec}
+(see Section~\ref{readspec}).
+The components of
+{\tt \packagename\_control\_type}
+are:
+
+
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in
+{\tt \packagename\_solve} and {\tt \packagename\_terminate}
+is suppressed if {\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in
+{\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No
+informational output will occur if {\tt print\_level} $\leq 0$. If
+{\tt print\_level} $= 1$, a single line of output will be produced for each
+iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
+increased to provide significant detail of each iteration.
+The default is {\tt print\_level = 0}.
+
+\itt{maxit} is a scalar variable of type default \integer, that holds the
+maximum number of iterations which will be allowed in {\tt \packagename\_solve}.
+The default is {\tt maxit = 1000}.
+
+\itt{start\_print} is a scalar variable of type default \integer, that specifies
+the first iteration for which printing will occur in {\tt \packagename\_solve}.
+If {\tt start\_print} is negative, printing will occur from the outset.
+The default is {\tt start\_print = -1}.
+
+\itt{stop\_print} is a scalar variable of type default \integer, that specifies
+the last iteration for which printing will occur in  {\tt \packagename\_solve}.
+If {\tt stop\_print} is negative, printing will occur once it has been
+started by {\tt start\_print}.
+The default is {\tt stop\_print = -1}.
+
+\itt{print\_gap} is a scalar variable of type default \integer.
+Once printing has been started, output will occur once every
+{\tt print\_gap} iterations. If {\tt print\_gap} is no larger than 1,
+printing will be permitted on every iteration.
+The default is {\tt print\_gap = 1}.
+
+\itt{non\_monotone} is a scalar variable of type default \integer, that
+specifies the history-length for non-monotone descent strategy.
+Any non-positive value results in standard monotone descent, for which
+merit function improvement occurs at each iteration. There are often
+definite advantages in using a non-monotone strategy with a modest history,
+since the occasional local increase in the merit function may
+enable the algorithm to move across (gentle) ``ripples'' in
+the merit function surface.
+However, we do not usually recommend large values of {\tt non\_monotone}.
+The default is {\tt non\_monotone = 1}.
+
+\itt{model} is a scalar variable of type default \integer, that specifies
+which model to be used to approximate $f(\bmx)$ when computing the step.
+Possible values are:
+
+\begin{description}
+\itt{0} the model is chosen automatically on the basis of which option looks
+        likely to be the most efficient at any given stage of the solution
+        process. Different models may be used at different stages.
+        {\bf Not yet implemented.}
+\itt{1} a first-order model, not involving the Hessian, will be used.
+\itt{2} a second-order model, using the Hessian, will be used.
+\itt{3} a barely-second-order model, in which the Hessian is approximated
+        by the identity matrix, will be used.
+\itt{4} a secant-based sparse second-order model, in which the Hessian is
+        approximated within its sparsity pattern using secant formulae will
+        be used.
+\itt{5} a secant-based second-order model, in which the Hessian is approximated
+        by a limited-memory BFGS formula, will be used.
+\itt{6} a secant-based second-order model, in which the Hessian is approximated
+        by a limited-memory symmetric rank-one (SR1) formula, will be used.
+\end{description}
+The default is {\tt model = 2}.
+
+\itt{norm} is a scalar variable of type default \integer,
+that specifies which norm is to be used to define the regularization.
+In particular the norm $\|\cdot\|$ will be defined by a symmetric,
+positive-definite matrix $\bmP$ so that for every vector $\bmv$,
+$\|\bmv\|^2 = \bmv^T \bmP \bmv$.
+If {\tt \%subproblem\_direct = .FALSE.}, the same $\bmP$ also defines the
+preconditioner to be used to accelerate the generalized-Lanczos
+inner model minimization.  Possible values are:
+
+\begin{description}
+\itt{-3} the user's own norm will be used.
+\itt{-2} a norm based on a limited-memory BFGS formula will be used.
+\itt{-1} the Euclidean ($\ell_2$-) norm is used.
+\itt{0} the type is chosen automatically on the basis of which option looks
+        likely to be the most efficient at any given stage of the solution
+        process. Different norms may be used at different stages.
+        {\bf Not yet implemented.}
+\itt{1} $\bmP$ is the diagonal of the Hessian matrix, suitably modified to
+        ensure that it is significantly positive definite, is used.
+\itt{2} $\bmP$ is the Hessian matrix whose entries outside a band of
+         given semi-bandwidth are replaced by zeros
+        (see {\tt nsemib} below).
+\itt{3} $\bmP$ is the Hessian matrix whose entries outside a
+        bandwidth-reduced reordered band of given semi-bandwidth are
+        replaced by zeros (see {\tt nsemib} below).
+\itt{4} $\bmP$ is the (possibly perturbed) Hessian,
+         using the Schnabel-Eskow modification
+        method to ensure that the resultant matrix is positive definite.
+\itt{5} $\bmP$ is the (possibly perturbed) Hessian,
+        using the Gill-Murray-Ponc\'{e}leon-Saunders
+        modification method to ensure that the resultant matrix is
+        positive definite.
+        {\bf Not yet implemented.}
+\itt{6} $\bmP$ will be that from the incomplete factorization of the Hessian
+        using the Lin-Mor\'{e} method.
+\itt{7} $\bmP$ will be that from the incomplete factorization of the Hessian
+        using the method implemented by HSL\_MI28.
+\end{description}
+The default is {\tt norm = 1}.
+
+\itt{semi\_bandwidth} is a scalar variable of type default \integer,
+that specifies
+the semi-bandwidth of $\bmP$ when {\tt norm = 2},
+if appropriate.
+The default is {\tt semi\_bandwidth = 5}.
+
+\itt{max\_dxg} is a scalar variable of type default \integer,
+that specifies the maximum number of sparse difference
+vectors used by the model when {\tt model = 4}.
+The default is {\tt max\_dxg = 100}.
+
+\itt{lbfgs\_vectors} is a scalar variable of type default \integer,
+that specifies the number of limited-memory vectors used in the model
+when {\tt model = 5} or {\tt 6},
+and/or by the norm when {\tt norm = -2},
+if appropriate.
+The default is {\tt lbfgs\_vectors = 10}.
+
+\itt{icfs\_vectors} is a scalar variable of type default \integer,
+that specifies the number of multiples of the problem dimension {\tt n}
+that is available to hold fill-in when computing the Lin-Mor\'{e}
+factorization.
+The default is {\tt icfs\_vectors = 10}.
+
+\itt{mi28\_lsize} is a scalar variable of type default \integer,
+that specifies the maximum number of fill entries within each column
+of the incomplete factor $L$ computed by HSL\_MI28. In general,
+increasing {\tt mi28\_lsize} improves the quality of the preconditioner
+but increases the time to compute and then it. Values less than 0 are
+treated as 0.
+The default is {\tt mi28\_lsize = 10}.
+
+\itt{mi28\_rsize} is a scalar variable of type default \integer,
+that specifies the the maximum number of entries within each column of the
+strictly lower triangular matrix $R$ used in the computation of the
+preconditioner by HSL\_MI28.  Rank-1 arrays of size {\tt mi28\_rsize * n }
+are allocated internally to hold $R$. Thus the amount of memory used, as well
+as the amount of work involved in computing the preconditioner, depends on
+{\tt mi28\_rsize}. Setting {\tt mi28\_rsize > 0} generally leads to a
+higher quality preconditioner than using {\tt mi28\_rsize = 0}, and
+choosing {\tt mi28\_rsize} $\geq$ {\tt mi28\_lsize} is generally
+recommended.
+The default is {\tt mi28\_rsize = 10}.
+
+%icfs\_vectors
+
+\itt{alive\_unit} is a scalar variable of type default \integer.
+If {\tt alive\_unit} $>$ 0, a temporary file named {\tt alive\_file} (see below)
+will be created on stream number {\tt alive\_unit} on initial entry to
+\solver, and execution of \solver\ will continue so
+long as this file continues to exist. Thus, a user may terminate execution
+simply by removing the temporary file from this unit.
+If {\tt alive\_unit} $\leq$ 0, no temporary file will be created, and
+execution cannot be terminated in this way.
+The default is {\tt alive\_unit} $=$ 60.
+
+\itt{advanced\_start} is a scalar variable of type default \integer that
+specifies the number of evaluations of the objective function that may
+be performed If the user wishes to try to select a good initial value of the
+regularization weight. If the user is content with the initial value provided,
+{\tt advanced\_start} should be set to 0, and this is the default.
+
+\itt{stop\_g\_absolute} is a scalar variable of type default \realdp,
+that is used to specify the maximum permitted (infinity)
+norm of the gradient of the objective function
+(see Section~\ref{galmethod}) at the estimate of the solution sought.
+The default is {\tt stop\_g\_absolute =} $10^{-5}$.
+
+\itt{stop\_g\_relative} is a scalar variable of type default \realdp,
+that is used to specify the largest relative reduction in the norm of the
+gradient of the objective function that will be permitted
+(see Section~\ref{galmethod}) at the estimate of the solution sought
+compared to that at the initial point.
+The default is {\tt stop\_g\_relative =} $1$.
+
+\itt{stop\_s} is a scalar variable of type default \realdp,
+that is used to specify the minimum acceptable correction step $\bms$
+relative to the current estimate of the solution $\bmx$
+The algorithm will be deemed to have converged if $|s_i| \leq$
+{\tt stop\_s} $\ast \max( 1, |x_i|)$ for all $i = 1, \ldots, n$.
+The default is {\tt stop\_s =} $u$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+\itt{initial\_weight} is a scalar variable of type default \realdp, that holds
+the required initial value of the regularization weight. If
+{\tt initial\_weight} $\leq 0$, the weight will be chosen automatically
+by \solver\
+%The default is {\tt initial\_weight = - 1.0}.
+The default is {\tt initial\_weight = 100.0}.
+
+\itt{minimum\_weight} is a scalar variable of type default \realdp, that holds
+the largest permitted value of the regularization weight as the algorithm
+proceeds.
+%If  {\tt minimum\_weight} $\leq 0$, the weight will be chosen automatically
+%by \solver\
+The default is {\tt minimum\_weight =} $10^{-8}$.
+
+\ittt{weight\_increase},
+{\tt weight\_decrease},
+{\tt weight\_increase\_max}
+and
+{\tt weight\_decrease\_min}
+are scalar variables of type default \realdp, that
+control the maximum amounts by which the regularization weight can
+contract or expand during an iteration. The weight will be decreased by
+powers of {\tt weight\_decrease}, but not in total
+more than  {\tt weight\_decrease\_min}, until it is smaller than the norm of
+the current step.
+It can be increased by at most a factor {\tt weight\_increase}, but not
+in total less than {\tt weight\_increase\_max}.
+The defaults are
+{\tt weight\_increase = 2.0},
+{\tt weight\_decrease = 0.5},
+{\tt weight\_incr\-ease\_max = 100.0} and
+{\tt weight\_decrease\_min = 0.1}.
+
+\ittt{eta\_successful}, {\tt eta\_very\_successful}
+and {\tt eta\_too\_successful}
+are scalar variables of type default
+\realdp, that control the acceptance and rejection of the trial step
+and the updates to the regularization weight.
+At every iteration, the ratio of the actual reduction in the merit function
+following the trial step to that predicted by the model is computed.
+The step is accepted whenever this ratio exceeds {\tt eta\_successful};
+otherwise the regularization weight will be reduced.
+If, in addition, the ratio exceeds {\tt eta\_very\_successful} but not
+{\tt eta\_too\_successful}, the regularization weight may be increased.
+The defaults are
+{\tt eta\_successful =} $10^{-8}$,
+{\tt eta\_very\_successful = 0.9} and
+{\tt eta\_too\_successful = 2.0}.
+
+\itt{obj\_unbounded}  is a scalar variable of type default
+\realdp, that specifies smallest
+value of the objective function that will be tolerated before the problem
+is declared to be unbounded from below.
+The default is {\tt potential\_u\-nbounded =} $-u^{-2}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+\itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
+that is used to specify the maximum permitted CPU time. Any negative
+value indicates no limit will be imposed. The default is
+{\tt cpu\_time\_limit = - 1.0}.
+
+\itt{clock\_time\_limit} is a scalar variable of type default \realdp,
+that is used to specify the maximum permitted elapsed system clock time.
+Any negative value indicates no limit will be imposed. The default is
+{\tt clock\_time\_limit = - 1.0}.
+
+\itt{hessian\_available}
+is a scalar variable of type default \logical,
+that should be set \true\ if the user will provide second derivatives
+(either by providing an appropriate evaluation routine to the solver
+or by reverse communication, see Section~\ref{reverse}), and
+\false\ if the second derivatives are not explicitly available.
+The default is {\tt hessian\_available = .TRUE.}.
+
+\itt{subproblem\_direct}
+is a scalar variable of type default \logical,
+that should be set \true\ if a direct (factorization) method is
+desired when solving for the step, and \false\ if an iterative
+method suffices.
+The default is {\tt subproblem\_direct = .FALSE.}.
+
+\itt{renormalize\_weight}
+is a scalar variable of type default \logical,
+that should be set \true\ if the regularization weight is to be
+re-normaized to account for the shape of the regularization norm
+every iteration, and \false\ if no re-normalization is required.
+The default is {\tt  renormalize\_weight = .FALSE.}.
+
+\itt{space\_critical} is a scalar variable of type default \logical,
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical,
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{alive\_file} is a scalar variable of type default \character\ and length
+30, that gives the name of the temporary file whose removal from stream number
+{\tt alive\_unit} terminates execution of \solver.
+The default is {\tt alive\_unit} $=$ {\tt ALIVE.d}.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected
+character string to preface every line of printed output.
+Specifically, each line of output will be prefaced by the string
+{\tt prefix(2:LEN(TRIM( prefix ))-1)},
+thus ignoreing the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\itt{PSLS\_control} is a scalar variable of type
+{\tt PSLS\_control\_type}
+whose components are used to control the preconditioning
+aspects of the calculation, as performed by the package
+{\tt \libraryname\_PSLS}.
+See the specification sheet for the package
+{\tt \libraryname\_PSLS}
+for details, and appropriate default values (but note that values for
+{\tt PSLS\_control\%prec\-onditioner},
+{\tt PSLS\_control\%semi\_bandwidth} and
+{\tt PSLS\_control\%icfs\_vectors}
+may be overridden by \solver).
+
+\itt{GLRT\_control} is a scalar variable of type
+{\tt GLRT\_control\_type}
+whose components are used to control the
+iterative regularization step calculation (if any),
+performed by the package
+{\tt \libraryname\_GLRT}.
+See the specification sheet for the package
+{\tt \libraryname\_GLRT}
+for details, and appropriate default values
+(but note that value of
+{\tt GLRT\_control\%unitm}
+may be changed by \solver).
+
+\itt{RQS\_control} is a scalar variable of type
+{\tt RQS\_control\_type}
+whose components are used to control the
+direct regularization step calculation (if any),
+performed by the package
+{\tt \libraryname\_RQS}.
+See the specification sheet for the package
+{\tt \libraryname\_RQS}
+for details, and appropriate default values
+(but note that values of
+{\tt RQS\_control\%init\-ial\_multiplier}
+and
+{\tt RQS\_control\%new\_h}
+may be changed by \solver).
+
+\itt{LMS\_control} and \itt{LMS\_control\_prec}
+are scalar variables of type
+{\tt LMS\_control\_type}
+whose components are used to control the limited memory secant
+approximations for the model Hessian and regularization norm as
+performed by the package
+{\tt \libraryname\_LMS}.
+See the specification sheet for the package
+{\tt \libraryname\_LMS}
+for details, and appropriate default values.
+
+\itt{SHA\_control} is a scalar variable of type
+{\tt SHA\_control\_type}
+whose components are used to control the
+calculation of the sparse model Hessian (if required),
+performed by the package
+{\tt \libraryname\_SHA}.
+See the specification sheet for the package
+{\tt \libraryname\_SHA}
+for details, and appropriate default values.
+
+\end{description}
+
+%%%%%%%%%%% time type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding timing
+ information}\label{typetime}
+The derived data type
+{\tt \packagename\_time\_type}
+is used to hold elapsed CPU and system clock times for the various parts
+of the calculation. The components of
+{\tt \packagename\_time\_type}
+are:
+\begin{description}
+\itt{total} is a scalar variable of type default \real, that gives
+ the CPU total time spent in the package.
+
+\itt{preprocess} is a scalar variable of type default \realdp, that gives
+ the CPU time spent reordering the problem to standard form prior to solution.
+
+\itt{analyse} is a scalar variable of type default \realdp, that gives
+ the CPU time spent analysing required matrices prior to factorization.
+
+\itt{factorize} is a scalar variable of type default \realdp, that gives
+ the CPU time spent factorizing the required matrices.
+
+\itt{solve} is a scalar variable of type default \realdp, that gives
+ the CPU time spent using the factors to solve relevant linear equations.
+
+\itt{clock\_total} is a scalar variable of type default \real, that gives
+ the total elapsed system clock time spent in the package.
+
+\itt{clock\_preprocess} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent reordering the problem to standard form
+prior to solution.
+
+\itt{clock\_analyse} is a scalar variable of type default \realdp, that gives
+ the  elapsed system clock time spent analysing required matrices prior to
+factorization.
+
+\itt{clock\_factorize} is a scalar variable of type default \realdp, that gives
+ the  elapsed system clock time spent factorizing the required matrices.
+
+\itt{clock\_solve} is a scalar variable of type default \realdp, that gives
+ the  elapsed system clock time spent using the factors to solve relevant
+linear equations.
+
+\end{description}
+
+%%%%%%%%%%% inform type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type
+{\tt \packagename\_inform\_type}
+is used to hold parameters that give information about the progress and needs
+of the algorithm. The components of
+{\tt \packagename\_inform\_type}
+are:
+
+\begin{description}
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm.
+%See Sections~\ref{galerrors} and \ref{galinfo}
+See Sections~\ref{reverse} and \ref{galerrors}
+for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}.
+
+\ittf{iter} is a scalar variable of type default \integer, that holds the
+number of iterations performed.
+
+\itt{cg\_iter} is a scalar variable of type default \integer, that gives the
+total number of conjugate-gradient iterations required.
+
+\itt{factorization\_status} is a scalar variable of type default \integer, that
+gives the return status from the matrix factorization.
+
+\itt{max\_entries\_factors} is a scalar variable of type long \integer, that
+gives the maximum number of entries in any of the matrix factorizations
+performed during the calculation.
+
+\itt{factorization\_max} is a scalar variable of type default \integer, that
+gives the largest number of factorizations required during a subproblem
+solution.
+
+\itt{factorization\_integer} is a scalar variable of type default
+\integer, that gives the amount of integer storage used for the matrix
+factorization.
+
+\itt{factorization\_real} is a scalar variable of type default \integer,
+that gives the amount of real storage used for the matrix factorization.
+
+\itt{f\_eval} is a scalar variable of type default \integer, that gives the
+total number of objective function evaluations performed.
+
+\itt{g\_eval} is a scalar variable of type default \integer, that gives the
+total number of objective function gradient evaluations performed.
+
+\itt{h\_eval} is a scalar variable of type default \integer, that gives the
+total number of objective function Hessian evaluations performed.
+
+\ittf{obj} is a scalar variable of type default \realdp, that holds the
+value of the objective function at the best estimate of the solution found.
+
+\itt{norm\_g} is a scalar variable of type default \realdp, that holds the
+value of the norm of the objective function gradient at the best estimate
+of the solution found.
+
+\itt{factorization\_average} is a scalar variable of type default \realdp, that
+gives the average number of factorizations per subproblem solved.
+
+\ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
+whose components are used to hold elapsed elapsed CPU and system clock
+times for the various parts of the calculation (see Section~\ref{typetime}).
+
+\itt{PSLS\_inform} is a scalar variable of type
+{\tt PSLS\_inform\_type}
+whose components give information about the progress and needs
+of the preconditioning stages of the algorithm performed by the package
+{\tt \libraryname\_PSLS}.
+See the specification sheet for the package
+{\tt \libraryname\_PSLS}
+for details.
+
+\itt{GLRT\_inform} is a scalar variable of type
+{\tt GLRT\_inform\_type}
+whose components give information about the progress and needs
+of the iterative solution stages of the algorithm performed by the package
+{\tt \libraryname\_GLRT}.
+See the specification sheet for the package
+{\tt \libraryname\_GLRT}
+for details.
+
+\itt{RQS\_inform} is a scalar variable of type
+{\tt RQS\_inform\_type}
+whose components give information about the progress and needs
+of the direct solution stages of the algorithm performed by the package
+{\tt \libraryname\_RQS}.
+See the specification sheet for the package
+{\tt \libraryname\_RQS}
+for details.
+
+\itt{LMS\_inform} is a scalar variable of type
+{\tt LMS\_inform\_type}
+whose components give information about the progress and needs
+of the limited memory secant approximations for the model Hessian
+and regularization norm as performed by the package
+{\tt \libraryname\_LMS}.
+See the specification sheet for the package
+{\tt \libraryname\_LMS}
+for details.
+
+\itt{SHA\_inform} is a scalar variable of type
+{\tt SHA\_inform\_type}
+whose components give information about the progress and needs
+of the sparse model Hessian calculation performed by the package
+{\tt \libraryname\_SHA}.
+See the specification sheet for the package
+{\tt \libraryname\_SHA}
+for details.
+
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type
+{\tt \packagename\_data\_type}
+is used to hold all the data for a particular problem,
+or sequences of problems with the same structure, between calls of
+{\tt \packagename} procedures.
+This data should be preserved, untouched (except as directed on
+return from \solver\ with positive values of {\tt inform\%status}, see
+Section~\ref{reverse}),
+from the initial call to
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}.
+
+%%%%%%%%%%% userdata type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding user data}\label{typeuserdata}
+The derived data type
+{\tt NLPT\_userdata\_type}
+is available to allow the user to pass data to and from user-supplied
+subroutines for function and derivative calculations (see Section~\ref{fdv}).
+Components of variables of type {\tt NLPT\_userdata\_type} may be allocated as
+necessary. The following components are available:
+
+\begin{description}
+\itt{integer} is a rank-one allocatable array of type default \integer.
+\ittf{real} is a rank-one allocatable array of type default  \realdp
+\itt{complex} is a rank-one allocatable array of type default \complexdp.
+\itt{character} is a rank-one allocatable array of type default \character.
+\itt{logical} is a rank-one allocatable array of type default \logical.
+\itt{integer\_pointer} is a rank-one pointer array of type default \integer.
+\itt{real\_pointer} is a rank-one pointer array of type default  \realdp
+\itt{complex\_pointer} is a rank-one pointer array of type default \complexdp.
+\itt{character\_pointer} is a rank-one pointer array of type default \character.
+\itt{logical\_pointer} is a rank-one pointer array of type default \logical.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are three procedures for user calls
+(see Section~\ref{galfeatures} for further features):
+
+\begin{enumerate}
+\item The subroutine
+      {\tt \packagename\_initialize}
+      is used to set default values, and initialize private data,
+      before solving one or more problems with the
+      same sparsity and bound structure.
+\item The subroutine
+      {\tt \packagename\_solve}
+      is called to solve the problem.
+\item The subroutine
+      {\tt \packagename\_terminate}
+      is provided to allow the user to automatically deallocate array
+       components of the private data, allocated by
+       {\tt \packagename\_solve},
+       at the end of the solution process.
+       It is important to do this if the data object is re-used for another
+       problem {\bf with a different structure}
+       since {\tt \packagename\_initialize} cannot test for this situation,
+       and any existing associated targets will subsequently become unreachable.
+\end{enumerate}
+We use square brackets {\tt [ ]} to indicate \optional\ arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize( data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved.
+
+\itt{control} is a scalar \intentout\ argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}).
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% main solution subroutine %%%%%%
+
+\subsubsection{The minimization subroutine}
+The minimization algorithm is called as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_solve( nlp, control, inform, data, userdata[, eval\_F,
+eval\_G, \hspace{8mm}                  \&}
+\vspace*{-1mm}
+
+\hspace{37mm}
+{\tt
+eval\_H,  eval\_HPROD] )}
+
+\vspace*{-2mm}
+\begin{description}
+\ittf{nlp} is a scalar \intentinout\ argument of type
+{\tt NLPT\_problem\_type}
+(see Section~\ref{typeprob}).
+It is used to hold data about the problem being solved.
+For a new problem, the user must allocate all the array components,
+and set values for {\tt nlp\%n}
+and the required integer components of {\tt nlp\%H} if second derivatives
+will be used.
+Users are free to choose whichever
+of the matrix formats described in Section~\ref{galmatrix}
+is appropriate for $\bmH$ for their application.
+
+\noindent
+The component {\tt nlp\%X} must be set to an initial estimate, $\bmx^{0}$,
+of the minimization variables. A good choice will increase the speed
+of the package, but the underlying method is designed to converge (at least
+to a local solution) from an arbitrary initial guess.
+
+\noindent
+On exit, the component {\tt nlp\%X} will contain the best estimates of the
+minimization variables $\bmx$.
+
+\noindent
+\restrictions {\tt nlp\%n} $> 0$ and
+{\tt nlp\%H\%type} $\in \{
+  \mbox{\tt 'DENSE'}, \mbox{\tt 'COORDINATE'}, \mbox{\tt 'SPARSE\_BY\_ROWS'},
+  \mbox{\tt 'DIAGONAL'} \}$.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). Default values may be assigned by calling
+{\tt \packagename\_initialize} prior to the first call to
+{\tt \packagename\_solve}. The arguments
+{\tt control\%PSLS\_control\-\%preconditioner},
+{\tt control\%PSLS\_control\%semi\_bandwidth},
+{\tt control\%PSLS\_control\%lbfgs\_vectors} and
+{\tt control\%PSLS\_control\%icfs\_vectors}
+will be overridden by
+{\tt control\%norm},
+{\tt control\%semi\_bandwidth},
+{\tt control\%lbfgs\_vectors} and
+{\tt control\%icfs\_vectors}, respectively.
+
+\itt{inform} is a scalar \intentinout\ argument of type
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}).
+On initial entry, the  component {\tt status} must be set to the value 1.
+Other entries need note be set.
+A successful call to
+{\tt \packagename\_solve}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Sections~\ref{reverse} and
+\ref{galerrors}.
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved. With the possible exceptions of the components
+{\tt eval\_status} and {\tt U} (see Section~\ref{reverse}),
+it must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_initialize}.
+
+\itt{userdata} is a scalar \intentinout\ argument of type
+{\tt NLPT\_userdata\_type} whose components may be used
+to communicate user-supplied data to and from the
+\optional\ subroutines
+{\tt eval\_F}, {\tt eval\_G},
+{\tt eval\_H} and {\tt eval\_HPROD}
+(see Section~\ref{typeuserdata}).
+
+\itt{eval\_F} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the value of the
+objective function $f(\bmx)$ at a given vector $\bmx$.
+See Section~\ref{ffv} for details.
+If {\tt eval\_F} is present,
+it must be declared {\tt EXTERNAL} in the calling program.
+If {\tt eval\_F} is absent, \solver\ will use reverse communication to
+obtain objective function values (see Section~\ref{reverse}).
+
+\itt{eval\_G} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the value of the
+gradient of the objective function $\nabla_x f(\bmx)$ at a given vector $\bmx$.
+See Section~\ref{gfv} for details.
+If {\tt eval\_G} is present,
+it must be declared {\tt EXTERNAL} in the calling program.
+If {\tt eval\_G} is absent, \solver\ will use reverse communication to
+obtain gradient values (see Section~\ref{reverse}).
+
+\itt{eval\_H} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the value of the
+Hessian of the objective function $\nabla_{xx} f(\bmx)$ at a given vector $\bmx$.
+See Section~\ref{hfv} for details.
+If {\tt eval\_H} is present,
+it must be declared {\tt EXTERNAL} in the calling program.
+If {\tt eval\_H} is absent, \solver\ will use reverse communication to
+obtain Hessian function values (see Section~\ref{reverse}).
+
+\itt{eval\_HPROD} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the value of the
+product $\nabla_{xx} f(\bmx)\bmv$ of the Hessian of the objective function
+$\nabla_{xx} f(\bmx)$  with a given vector $\bmv$.
+See Section~\ref{hvfv} for details.
+If {\tt eval\_HPROD} is present,
+it must be declared {\tt EXTERNAL} in the calling program.
+If {\tt eval\_HPROD} is absent, \solver\ will use reverse communication to
+obtain Hessian-vector products (see Section~\ref{reverse}).
+
+\itt{eval\_PREC} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the value of the
+product $\bmP(\bmx)\bmv$ of the user's preconditioner with a given vector
+$\bmv$. See Section~\ref{pv} for details.
+If {\tt eval\_PREC} is present,
+it must be declared {\tt EXTERNAL} in the calling program.
+If {\tt eval\_PREC} is absent, \solver\ will use reverse communication to
+obtain products with the preconditioner (see Section~\ref{reverse}).
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_terminate( data, control, inform )}
+
+\vspace*{-1mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+exactly as for
+{\tt \packagename\_solve},
+which must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_initialize}.
+On exit, array components will have been deallocated.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_solve}.
+Only the component {\tt status} will be set on exit, and a
+successful call to
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%% Function and derivative values %%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Function and derivative values\label{fdv}}
+
+%%%%%%%%%%%%%%%%%%%%%% Objective function value %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{The objective function value via internal evaluation\label{ffv}}
+
+If the argument {\tt eval\_F} is present when calling \solver, the
+user is expected to provide a subroutine of that name to evaluate the
+value of the objective function $f(\bmx)$.
+The routine must be specified as
+
+\def\baselinestretch{0.8}
+{\tt
+\begin{verbatim}
+      SUBROUTINE eval_F( status, X, userdata, f )
+\end{verbatim}
+}
+\def\baselinestretch{1.0}
+\noindent whose arguments are as follows:
+
+\begin{description}
+\itt{status} is a scalar \intentout\ argument of type default \integer,
+that should be set to 0 if the routine has been able to evaluate
+the objective function
+and to a non-zero value if the evaluation has not been possible.
+
+\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
+whose components contain the vector $\bmx$.
+
+\itt{userdata} is a scalar \intentinout\ argument of type
+{\tt NLPT\_userdata\_type} whose components may be used
+to communicate user-supplied data to and from the
+subroutines {\tt eval\_F}, {\tt eval\_G},
+{\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
+(see Section~\ref{typeuserdata}).
+
+\ittf{f} is a scalar \intentout\ argument of type default \realdp,
+that should be set to the value of the objective function $f(\bmx)$
+evaluated at the vector $\bmx$ input in {\tt X}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Gradient values %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Gradient values via internal evaluation\label{gfv}}
+
+If the argument {\tt eval\_G} is present when calling \solver, the
+user is expected to provide a subroutine of that name to evaluate the
+value of the gradient the objective function $\nabla_x f(\bmx)$.
+The routine must be specified as
+
+\def\baselinestretch{0.8}
+{\tt
+\begin{verbatim}
+       SUBROUTINE eval_G( status, X, userdata, G )
+\end{verbatim} }
+\def\baselinestretch{1.0}
+\noindent whose arguments are as follows:
+
+\begin{description}
+\itt{status} is a scalar \intentout\ argument of type default \integer,
+that should be set to 0 if the routine has been able to evaluate
+the gradient of the objective function
+and to a non-zero value if the evaluation has not been possible.
+
+\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
+whose components contain the vector $\bmx$.
+
+\itt{userdata} is a scalar \intentinout\ argument of type
+{\tt NLPT\_userdata\_type} whose components may be used
+to communicate user-supplied data to and from the
+subroutines {\tt eval\_F}, {\tt eval\_G},
+{\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
+(see Section~\ref{typeuserdata}).
+
+\itt{G} is a rank-one \intentout\ argument of type default \realdp,
+whose components should be set to the values of the gradient
+of the objective function $\nabla_x f(\bmx)$
+evaluated at the vector $\bmx$ input in {\tt X}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Hessian values %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Hessian values via internal evaluation\label{hfv}}
+
+If the argument {\tt eval\_H} is present when calling \solver, the
+user is expected to provide a subroutine of that name to evaluate the
+values of the Hessian of the objective function $\nabla_{xx} f(\bmx)$.
+The routine must be specified as
+
+\def\baselinestretch{0.8}
+{\tt
+\begin{verbatim}
+       SUBROUTINE eval_H( status, X, userdata, Hval )
+\end{verbatim} }
+\def\baselinestretch{1.0}
+\noindent whose arguments are as follows:
+
+\begin{description}
+\itt{status} is a scalar \intentout\ argument of type default \integer,
+that should be set to 0 if the routine has been able to evaluate
+the Hessian of the objective function
+and to a non-zero value if the evaluation has not been possible.
+
+\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
+whose components contain the vector $\bmx$.
+
+\itt{userdata} is a scalar \intentinout\ argument of type
+{\tt NLPT\_userdata\_type} whose components may be used
+to communicate user-supplied data to and from the
+subroutines {\tt eval\_F}, {\tt eval\_G},
+{\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
+(see Section~\ref{typeuserdata}).
+
+\itt{Hval} is a scalar \intentout\ argument of type default \realdp,
+whose components should be set to the values of the Hessian
+of the objective function $\nabla_{xx} f(\bmx)$
+evaluated at the vector $\bmx$ input in {\tt X}. The values should
+be input in the same order as that in which the array indices were
+given in {\tt nlp\%H}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Hessian-vector products %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Hessian-vector products via internal evaluation\label{hvfv}}
+
+If the argument {\tt eval\_HPROD} is present when calling \solver, the
+user is expected to provide a subroutine of that name to evaluate the
+sum $\bmu + \nabla_{xx} f(\bmx) \bmv$ involving the
+product of the Hessian of the objective function $\nabla_{xx} f(\bmx)$
+with a given vector $\bmv$.
+The routine must be specified as
+
+\def\baselinestretch{0.8}
+{\tt
+\begin{verbatim}
+       SUBROUTINE eval_HPROD( status, X, userdata, U, V, got_h )
+\end{verbatim} }
+\def\baselinestretch{1.0}
+\noindent whose arguments are as follows:
+
+\begin{description}
+\itt{status} is a scalar \intentout\ argument of type default \integer,
+that should be set to 0 if the routine has been able to evaluate the
+sum $\bmu + \nabla_{xx} f(\bmx) \bmv$
+and to a non-zero value if the evaluation has not been possible.
+
+\ittf{X} is a \ rank-one \intentin\ array argument of type
+default \realdp\ whose components contain the vector $\bmx$.
+
+\itt{userdata} is a scalar \intentinout\ argument of type
+{\tt NLPT\_userdata\_type} whose components may be used
+to communicate user-supplied data to and from the
+subroutines {\tt eval\_F}, {\tt eval\_G},
+{\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
+(see Section~\ref{typeuserdata}).
+
+\ittf{U} is a rank-one \intentinout\ array argument of type default \realdp\
+whose components on input contain the vector $\bmu$ and on output the
+sum $\bmu + \nabla_{xx} f(\bmx) \bmv$.
+
+\ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
+whose components contain the vector $\bmv$.
+
+\ittf{got\_h} is an \optional\ scalar \intentin\ argument of type default
+\logical. If the Hessian has already been evaluated at the current $\bmx$
+{\tt got\_h} will be \present\ and set \true; if this is the first time
+the Hessian is to be accessed at $\bmx$, either {\tt got\_h} will be absent
+or \present\ and set \false. This gives the user the opportunity
+to reuse ``start-up'' computations required for the first instance of
+$\bmx$ to speed up subsequent products.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% preconditioner-vector products %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Preconditioner-vector products via internal evaluation\label{pv}}
+
+If the argument {\tt eval\_PREC} is present when calling \solver, the
+user is expected to provide a subroutine of that name to evaluate the
+product $\bmu = \bmP(\bmx) \bmv$ involving the user's preconditioner
+$\bmP(\bmx)$ with a given vector $\bmv$. The symmetric matrix $\bmP(\bmx)$
+should ideally be chosen so that the eigenvalues of
+$\bmP(\bmx) (\nabla_{xx} f(\bmx))^{-1}$ are clustered.
+The routine must be specified as
+
+\def\baselinestretch{0.8}
+{\tt
+\begin{verbatim}
+       SUBROUTINE eval_PREC( status, X, userdata, U, V )
+\end{verbatim} }
+\def\baselinestretch{1.0}
+\noindent whose arguments are as follows:
+
+\begin{description}
+\itt{status} is a scalar \intentout\ argument of type default \integer,
+that should be set to 0 if the routine has been able to evaluate the
+product $\bmP(\bmx) \bmv$
+and to a non-zero value if the evaluation has not been possible.
+
+\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
+whose components contain the vector $\bmx$.
+
+\itt{userdata} is a scalar \intentinout\ argument of type
+{\tt NLPT\_userdata\_type} whose components may be used
+to communicate user-supplied data to and from the
+subroutines {\tt eval\_F}, {\tt eval\_G},
+{\tt eval\_H} and {\tt eval\_PREC}
+(see Section~\ref{typeuserdata}).
+
+\ittf{U} is a rank-one \intentout\ array argument of type default \realdp\
+whose components on output should contain the product
+sum $\bmu = \bmP(\bmx) \bmv$.
+
+\ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
+whose components contain the vector $\bmv$.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Reverse communication %%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{\label{reverse}Reverse Communication Information}
+
+A positive value of {\tt inform\%status} on exit from
+{\tt \packagename\_solve}
+indicates that
+\solver\ is seeking further information---this will happen
+if the user has chosen not to evaluate function or
+derivative values internally (see Section~\ref{fdv}).
+The user should compute the required information and re-enter \solver\
+with {\tt inform\%status} and all other arguments (except those specifically
+mentioned below) unchanged.
+
+Possible values of {\tt inform\%status} and the information required are
+\begin{description}
+\ittf{2.} The user should compute the objective function
+     value $f(\bmx)$ at the point $\bmx$ indicated in {\tt nlp\%X}.
+     The required value should be set in {\tt nlp\%f}, and
+     {\tt data\%eval\_status} should be set to 0. If the user is
+     unable to evaluate $f(\bmx)$---for instance, if the function is
+     undefined at $\bmx$---the user need not set {\tt nlp\%f}, but
+     should then set {\tt data\%eval\_status} to a non-zero value.
+
+\ittf{3.} The user should compute the gradient
+     of the objective function $\nabla_x f(\bmx)$ at the point $\bmx$
+     indicated in {\tt nlp\%X}.
+     The value of the $i$-th component of the gradient should be set
+     in {\tt nlp\%G(i)},      for $i = 1, \ldots, n$ and
+     {\tt data\%eval\_status} should be set to 0. If the user is
+     unable to evaluate a component of $\nabla_x f(\bmx)$---for instance,
+     if a component of the gradient is
+     undefined at $\bmx$---the user need not set {\tt nlp\%G}, but
+     should then set {\tt data\%eval\_status} to a non-zero value.
+
+\ittf{4.} The user should compute the Hessian
+     of the objective function $\nabla_{xx} f(\bmx)$ at the point $\bmx$
+     indicated in {\tt nlp\%X}.
+     The value $l$-th component of the Hessian stored according to the
+     scheme input in the remainder of {\tt nlp\%H} (see Section~\ref{typeprob})
+     should be set in {\tt nlp\%H\%val(l)},
+     for $l = 1, \ldots,$ {\tt  nlp\%H\%ne} and
+     {\tt data\%eval\_status} should be set to 0. If the user is
+     unable to evaluate a component of $\nabla_{xx} f(\bmx)$---for instance,
+     if a component of the Hessian is
+     undefined at $\bmx$---the user need not set {\tt nlp\%H\%val}, but
+     should then set {\tt data\%eval\_status} to a non-zero value.
+
+\ittf{5.} The user should compute the product
+     $\nabla_{xx} f(\bmx)\bmv$ of the Hessian
+     of the objective function $\nabla_{xx} f(\bmx)$ at the point $\bmx$
+     indicated in {\tt nlp\%X} with the vector $\bmv$ and add the result to
+     the vector $\bmu$. The vectors $\bmu$ and $\bmv$ are given in
+     {\tt data\%U} and {\tt data\%V} respectively, the resulting
+     vector $\bmu + \nabla_{xx} f(\bmx)\bmv$ should be set in {\tt data\%U}
+     and  {\tt data\%eval\_status} should be set to 0. If the user is
+     unable to evaluate the product---for instance,
+     if a component of the Hessian is
+     undefined at $\bmx$---the user need not set {\tt nlp\%H\%val}, but
+     should then set {\tt data\%eval\_status} to a non-zero value.
+
+\ittf{6.} The user should compute the product $\bmu = \bmP(\bmx)\bmv$
+     of their preconditioner $\bmP(\bmx)$ at the point $\bmx$
+     indicated in {\tt nlp\%X} with the vector $\bmv$.
+     The vectors $\bmv$ is given in {\tt data\%V}, the
+     resulting vector $\bmu = \bmP(\bmx)\bmv$ should be set in {\tt data\%U}
+     and {\tt data\%eval\_status}
+     should be set to 0. If the user is unable to evaluate the product---for
+     instance, if a component of the preconditioner is undefined at
+     $\bmx$---the user need not set {\tt data\%U}, but should then set
+     {\tt data\%eval\_status} to a non-zero value.
+
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt inform\%status} on exit from
+{\tt \packagename\_solve}
+or
+{\tt \packagename\_terminate}
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\itt{\galerrallocate.} An allocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error}, and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc}, respectively.
+
+\itt{\galerrdeallocate.} A deallocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error} and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc}, respectively.
+
+\itt{\galerrrestrictions.}
+  The restriction {\tt nlp\%n} $> 0$
+  or requirement that {\tt nlp\%H\_type} contains its relevant string
+  {\tt 'DENSE'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}
+  or {\tt 'DIAGONAL'}
+  has been violated.
+
+%\itt{-3.} At least one of the arrays
+% {\tt p\%A\_val}, {\tt p\%A\_row}, {\tt p\%A\_col},
+% {\tt p\%H\_val}, {\tt p\%H\_row} or {\tt p\%H\_col},
+% is not large enough to hold the original, or reordered, matrices $\bmA$
+% or $\bmH$.
+
+\itt{\galerrunbounded.}  The objective function appears to be unbounded
+ from below on the feasible set.
+
+\itt{\galerranalysis.} The analysis phase of the factorization failed;
+ the return status from the factorization
+    package is given in the component {\tt inform\%fac\-t\-or\_status}.
+
+\itt{\galerrfactorization.} The factorization failed;
+ the return status from the factorization
+    package is given in the component {\tt inform\%fac\-t\-or\_status}.
+
+\itt{\galerrsolve.} The solution of a set of linear equations
+ using factors from the factorization package failed;
+ the return status from the factorization
+    package is given in the component {\tt inform\%fac\-t\-or\_status}.
+
+\itt{\galerrpreconditioner.} The preconditioner $\bmP(\bmx)$ appears not to
+  be positive definite.
+
+\itt{\galerrillconditioned.} The problem is so ill-conditioned that
+  further progress is impossible.
+
+\itt{\galerrtinystep.} The step is too small to make further impact.
+
+\itt{\galerrmaxiterations.} Too many iterations have been performed.
+  This may happen if
+    {\tt control\%maxit} is too small, but may also be symptomatic of
+    a badly scaled problem.
+
+\itt{\galerrcpulimit.} The elapsed CPU or system clock time limit has been
+    reached. This may happen if either {\tt control\%cpu\_time\_limit} or
+    {\tt control\%clock\_time\_limit} is too small, but may also be symptomatic
+    of a badly scaled problem.
+
+\itt{\galerralive.} The user has forced termination of \solver\
+     by removing the file named {\tt control\%a\-live\_file} from unit
+     unit {\tt control\%alive\_unit}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}),
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of
+"specification commands". Each command occurs on a separate line,
+and comprises a "keyword",
+which is a string (in a close-to-natural language) used to identify a
+control parameter, and
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive,
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+The portion of the specification file used by
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by ARC_read_specfile .. )
+    BEGIN ARC
+       keyword    value
+       .......    .....
+       keyword    value
+    END
+  ( .. lines ignored by ARC_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
+may contain additional (trailing) strings so long as such strings are
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN ARC SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END ARC SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore,
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored.
+The content
+of a line after a {\tt !} or {\tt *} character is also
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some
+specification commands, or to comment specific values
+of certain control parameters.
+
+The value of a control parameters may be of three different types, namely
+integer, logical or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}",
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}".
+Empty values are also allowed for
+logical control parameters, and are interpreted as "{\tt TRUE}".
+
+The specification file must be open for
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number
+passed to the routine in device (see below).
+Note that the corresponding
+file is {\tt REWIND}ed, which makes it possible to combine the specifications
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in
+\def\baselinestretch{0.8} {\tt
+\begin{verbatim}
+     CALL ARC_read_specfile( control, device )
+\end{verbatim}
+}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}).
+Default values should have already been set, perhaps by calling
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and
+the component (see Section~\ref{typecontrol}) of {\tt control}
+that each affects are given in Table~\ref{specfile}.
+
+\bctable{|l|l|l|}
+\hline
+  command & component of {\tt control} & value type \\
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+  {\tt start-print} & {\tt \%start\_print} & integer \\
+  {\tt stop-print} & {\tt \%stop\_print} & integer \\
+  {\tt iterations-between-printing} & {\tt \%print\_gap} & integer \\
+  {\tt maximum-number-of-iterations} & {\tt \%maxit} & integer \\
+  {\tt alive-device} & {\tt \%alive\_unit} & integer \\
+  {\tt history-length-for-non-monotone-descent} & {\tt \%non\_monotone} & integer \\
+  {\tt model-used} & {\tt \%model} & integer \\
+  {\tt norm-used} & {\tt \%norm} & integer \\
+  {\tt semi-bandwidth-for-band-norm} & {\tt \%semi\_bandwidth} & integer \\
+  {\tt number-of-lbfgs-vectors} & {\tt \%lbfgs\_vectors} & integer \\
+  {\tt max-number-of-secant-vectors} & {\tt \%max\_dxg}  & integer \\
+  {\tt number-of-lin-more-vectors} & {\tt \%icfs\_vectors} & integer \\
+  {\tt mi28-l-fill-size} & {\tt \%mi28\_lsize} & integer \\
+  {\tt mi28-r-entry-size} & {\tt \%mi28\_rsize} & integer \\
+  {\tt advanced-start} & {\tt \%advanced\_start} & integer \\
+  {\tt absolute-gradient-accuracy-required} & {\tt \%stop\_g\_absolute} & real \\
+  {\tt relative-gradient-reduction-required} & {\tt \%stop\_g\_relative} & real \\
+  {\tt minimum-relative-step-allowed} & {\tt \%stop\_s} & real \\
+  {\tt initial-regularization-weight} & {\tt \%initial\_weight} & real \\
+  {\tt minimum-regularization-weight} & {\tt \%minimum\_weight} & real \\
+  {\tt successful-iteration-tolerance} & {\tt \%eta\_successful} & real \\
+  {\tt very-successful-iteration-tolerance} & {\tt \%eta\_very\_successful} & real \\
+  {\tt too-successful-iteration-tolerance} & {\tt \%eta\_too\_successful} & real \\
+  {\tt regularization-weight-minimum-decrease-factor} & {\tt \%weight\_decrease\_min} & real \\
+  {\tt regularization-weight-decrease-factor} & {\tt \%weight\_decrease} & real \\
+  {\tt regularization-weight-increase-factor} & {\tt \%weight\_increase} & real \\
+  {\tt regularization-weight-maximum-increase-factor} & {\tt \%weight\_increase\_max} & real \\
+  {\tt minimum-objective-before-unbounded} & {\tt \%obj\_unbounded} & real \\
+  {\tt maximum-cpu-time-limit} & {\tt \%cpu\_time\_limit} & real \\
+  {\tt maximum-clock-time-limit} & {\tt \%clock\_time\_limit} & real \\
+  {\tt hessian-available}  & {\tt \%hessian\_available} & logical \\
+  {\tt sub-problem-direct}  & {\tt \%subproblem\_direct} & logical \\
+  {\tt retrospective-trust-region}  & {\tt \%retrospective\_trust\_region} & logical \\
+  {\tt renormalize-weight}  & {\tt \%renormalize\_weight} & logical \\
+  {\tt space-critical}   & {\tt \%space\_critical} & logical \\
+  {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
+  {\tt alive-filename} & {\tt \%alive\_file} & character \\
+\hline
+
+\ectable{\label{specfile}Specfile commands and associated
+components of {\tt control}.}
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+If {\tt control\%print\_level} is positive, information about the progress
+of the algorithm will be printed on unit {\tt control\-\%out}.
+If {\tt control\%print\_level} $= 1$, a single line of output will be produced
+for each iteration of the process.
+This will include the values of the objective function and the norm of its
+gradient, the ratio of actual to predicted decrease following the step, the
+value of the regularization weight and the time taken so far. In addition, if
+a direct solution of the subproblem has been attempted, the
+Lagrange multiplier from the secular equation and the number of factorizations
+used will be recorded, while if an iterative solution has been used, the
+numbers of phase 1 and 2 iterations will be given.
+
+If {\tt control\%print\_level} $\geq 2$ this
+output will be increased to provide significant detail of each iteration.
+This extra output includes residuals of the linear systems solved, and,
+for larger values of {\tt control\%print\_level}, values of the variables
+and gradients. Further details concerning the attempted solution of the models
+may be obtained by increasing
+{\tt control\%RQS\_control\%print\_level}
+and
+{\tt control\%GLRT\_control\%print\_level},
+while details about factorizations are available
+by increasing
+{\tt control\%PSLS\_control\%print\_level}.
+See the specification sheets for the packages
+{\tt \libraryname\_GLRT},
+{\tt \libraryname\_PSLS} and
+{\tt \libraryname\_RQS}
+for details.
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines None.
+\galmodules {\tt \packagename\_solve} calls the \galahad\ packages
+{\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS}, \sloppy
+{\tt GALAHAD\_NLPT},
+{\tt GALAHAD\_SPECFILE},
+{\tt GALAHAD\_PSLS},
+{\tt GALAHAD\_GLRT},
+{\tt GALAHAD\_RQS},
+{\tt GALAHAD\_LMS},
+{\tt GALAHAD\_SHA},
+{\tt GALAHAD\_SPACE} and
+{\tt GALAHAD\_NORMS}.
+\galio Output is under control of the arguments
+ {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
+\galrestrictions {\tt nlp\%n} $> 0$ and
+{\tt nlp\%H\_type} $\in \{${\tt 'DENSE'},
+ {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}, {\tt 'DIAGONAL'} $\}$.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+An adaptive cubic regularization method is used.
+In this, an improvement to a current
+estimate of the required minimizer, $\bmx_k$ is sought by computing a
+step $\bms_k$. The step is chosen to approximately minimize a model $m_k(\bms)$
+of $f(\bmx_k + \bms)$ that includes a weighted term $\sigma_k \|\bms_k\|^3$
+for some specified positive weight $\sigma_k$. The quality of the
+resulting step $\bms_k$ is assessed by computing the "ratio"
+$(f(\bmx_k) - f(\bmx_k + \bms_k))/ (m_k(\bmzero) - m_k(\bms_k))$.
+The step is deemed to have succeeded if the ratio exceeds a given $\eta_s > 0$,
+and in this case $\bmx_{k+1} = \bmx_k + \bms_k$. Otherwise
+$\bmx_{k+1} = \bmx_k$, and the weight is increased by powers of a given
+increase factor up to a given limit. If the ratio is larger than
+$\eta_v \geq \eta_d$, the weight will be decreased by powers of a given
+decrease factor again up to a given limit. The method will terminate
+as soon as $\|\nabla_x f(\bmx_k)\|$ is smaller than a specified value.
+
+Either linear or quadratic models $m_k(\bms)$ may be used. The former will be
+taken as the first two terms $f(\bmx_k) + \bms^T \nabla_x f(\bmx_k)$
+of a Taylor series about $\bmx_k$, while the latter uses an
+approximation to the first three terms
+$f(\bmx_k) + \bms^T \nabla_x f(\bmx_k) + \half
+\bms^T \bmB_k \bms$,
+for which $\bmB_k$ is a symmetric approximation to the Hessian
+$\nabla_{xx} f(\bmx_k)$; possible approximations include the true Hessian,
+limited-memory secant and sparsity approximations and a scaled identity matrix.
+Normally a two-norm regularization will be used, but this may change
+if preconditioning is employed.
+
+An approximate minimizer of the cubic model
+is found using either a direct approach involving factorization or an
+iterative (conjugate-gradient/Lanczos) approach based on approximations
+to the required solution from a so-called Krlov subspace. The direct
+approach is based on the knowledge that the required solution
+satisfies the linear system of equations $(\bmB_k + \lambda_k \bmI) \bms_k
+= - \nabla_x f(\bmx_k)$ involving a scalar Lagrange multiplier $\lambda_k$.
+This multiplier is found by uni-variate root finding, using a safeguarded
+Newton-like process, by {\tt \libraryname\_RQS}. The iterative approach
+uses {\tt \libraryname\_GLRT}, and is best accelerated by preconditioning
+with good approximations to $\bmB_k$ using {\tt \libraryname\_PSLS}. The
+iterative approach has the advantage that only matrix-vector products
+$\bmB_k \bmv$ are required, and thus $\bmB_k$ is not required explicitly.
+However when factorizations of $\bmB_k$ are possible, the direct approach
+is often more efficient.
+\vspace*{1mm}
+
+\galreferences
+\vspace*{1mm}
+
+\noindent
+The generic adaptive cubic regularization method is described in detail in
+\vspace*{1mm}
+
+\noindent
+C. Cartis,  N. I. M. Gould and Ph. L. Toint,
+``Adaptive cubic regularisation methods for unconstrained optimization.
+Part I: motivation, convergence and numerical results''
+{\em Mathematical Programming} {\bf 127(2)} (2011) 245--295,
+\vspace*{1mm}
+
+\noindent
+and uses ``tricks'' as suggested in
+\vspace*{1mm}
+
+\noindent
+N. I. M. Gould, M. Porcelli and Ph. L. Toint,
+``Updating the regularization parameter in the adaptive cubic regularization
+algorithm''.
+{\em Computational Optimization and Applications}
+{\bf 53(1)} (2012) 1-22.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexamples
+Suppose we wish to minimize the parametric objective function
+$f(\bmx) = ( x_1 + x_3 + p )^2 + ( x_2 + x_3 )^2 + \cos x_1$
+when the parameter $p$ takes the value 4. Starting from the
+initial guess $\bmx = (1,1,1)$,
+we may use the following code:
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+Notice how the parameter $p$ is passed to the function evaluation
+routines via the {\tt real} component of the derived type {\tt userdata}.
+The code produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+\noindent
+If the Hessian is unavailable, but products of the form
+$\bmu + \bmH \bmv$ are, the same problem may be solved as follows:
+
+{\tt \small
+\VerbatimInput{\packageexampleb}
+}
+\noindent
+Notice that storage for the Hessian is now not needed.
+This produces the same output.
+%following output:
+%{\tt \small
+%\VerbatimInput{\packageresultsb}
+%}
+%\noindent
+
+If the user prefers to provide function and gradient information and
+Hessian-vector products
+without calls to specified routines, the following code is appropriate.
+Note the product with the user-provided preconditioner
+\disp{
+\bmP(\bmx) = \mat{ccc}{\half & 0 & 0 \\ 0 & \half & 0 \\ 0 & 0 & \quarter }
+}
+which is a suitable approximation to the inverse of the Hessian:
+
+{\tt \small
+\VerbatimInput{\packageexamplec}
+}
+\noindent
+%This produces the following output:
+%{\tt \small
+%\VerbatimInput{\packageresultsc}
+%}
+\noindent
+
+
+\end{document}
+

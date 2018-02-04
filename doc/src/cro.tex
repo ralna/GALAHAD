@@ -1,0 +1,1049 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{cro}
+\newcommand{\packagename}{CRO}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+\newcommand{\solver}{{\tt \fullpackagename\_crossover}}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+This package provides a {\bf crossover} from a solution
+to the {\bf convex quadratic programming problem}
+\disp{\mbox{minimize}\;\; q(\bmx) = \half \bmx^T \bmH \bmx + \bmg^T \bmx + f}
+subject to the general linear constraints
+\disp{c_{i}^{l}  \leq  \bma_{i}^{T}\bmx  \leq  c_{i}^{u}, \;\;\;
+ i = 1, \ldots , m,}
+and the simple bound constraints
+\disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
+found by an interior-point method to one in which the
+{\bf matrix of defining
+active constraints/variables is of full rank.}
+Here, the $n$ by $n$ symmetric, positive-semi-definite matrix $\bmH$, the
+vectors $\bmg$, $\bma_{i}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$,
+$\bmx^{u}$, the scalar $f$ are given. In addition a solution $\bmx$ along
+with optimal Lagrange multipliers $\bmy$ for the general constraints
+and dual variables $\bmz$ for the simple bounds must be provided
+(see Section~\ref{galmethod}).
+These will be adjusted as necessary.
+Any of the constraint bounds $c_{i}^{l}$, $c_{i}^{u}$,
+$x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
+Full advantage is taken of any zero coefficients in the matrix $\bmH$
+or the matrix $\bmA$ of vectors $\bma_{i}$.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses
+{\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS},
+{\tt GALAHAD\-\_SPACE},
+{\tt GALAHAD\_\-SPECFILE},
+{\tt GALAHAD\_TOOLS}.
+{\tt GALAHAD\_QPT},
+{\tt GALAHAD\_\-SCU},
+{\tt GALAHAD\_\-SLS},
+{\tt GALAHAD\_\-ULS},
+\galdate January 2012.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
+\galparallelism Some options may use OpenMP and its runtime library.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types
+{\tt SMT\_type},
+{\tt QPT\_problem\_type},
+{\tt NLPT\_user\-data\-\_type},
+{\tt \packagename\_time\_type},
+{\tt \packagename\_control\_type},
+{\tt \packagename\_inform\_type}
+and
+{\tt \packagename\_data\_type}
+(Section~\ref{galtypes})
+and the subroutines
+{\tt \packagename\_initialize},
+{\tt \packagename\_\-crossover},
+{\tt \packagename\_terminate},
+(Section~\ref{galarguments})
+and
+{\tt \packagename\_read\_specfile}
+(Section~\ref{galfeatures})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% OpenMP usage %%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{OpenMP}
+OpenMP may be used by the {\tt \fullpackagename} package to provide
+parallelism for some solver options in shared memory environments.
+See the documentation for the \galahad\ package {\tt SLS} for more details.
+To run in parallel, OpenMP
+must be enabled at compilation time by using the correct compiler flag
+(usually some variant of {\tt -openmp}).
+The number of threads may be controlled at runtime
+by setting the environment variable {\tt OMP\_NUM\_THREADS}.
+
+\noindent
+The code may be compiled and run in serial mode.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Four derived data types are accessible from the package.
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control
+ parameters}\label{typecontrol}
+The derived data type
+{\tt \packagename\_control\_type}
+is used to hold controlling data. Default values may be obtained by calling
+{\tt \packagename\_initialize}
+(see Section~\ref{subinit}),
+while components may also be changed by calling
+{\tt \packagename\_read\-\_specfile}
+(see Section~\ref{readspec}).
+The components of
+{\tt \packagename\_control\_type}
+are:
+
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in
+{\tt \packagename\_crossover} and {\tt \packagename\_terminate}
+is suppressed if
+{\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in
+{\tt \packagename\_crossover} is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No
+informational output will occur if {\tt print\_level} $\leq 0$. If
+{\tt print\_level} $= 1$, a single line of output will be produced for each
+iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
+increased to provide significant detail of each iteration.
+The default is {\tt print\_level = 0}.
+
+\itt{max\_schur\_complement} is a scalar variable of type default \integer,
+that specifies
+the maximum number of columns permitted in the Schur complement when
+updating the solution (see Section~\ref{galmethod})
+before a re-factorization is triggered.
+The default is {\tt max\_schur\_complement = 75}.
+
+\itt{infinity} is a scalar variable of type default \realdp, that is used to
+specify which constraint bounds are infinite.
+Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
+The default is {\tt infinity =} $10^{19}$.
+
+\itt{feasibility\_tolerance}
+is a scalar variables of type default \realdp, that specifies the
+maximum violation of the KKT conditions that is permitted.
+The default iw {\tt feasibility\_toler\-ance =} $u$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+\itt{check\_io} is a scalar variable of type default \logical,
+that must be set \true\ if the user wishes to check the input and output
+data and  \false\ otherwise. The package may run faster if
+{\tt space\_critical} is \false\ but at the possible expense of errors
+The default is {\tt check\_io = .TRUE.}.
+
+\itt{space\_critical} is a scalar variable of type default \logical,
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical,
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{symmetric\_linear\_solver} is a scalar variable of type default \character\
+and length 30, that specifies the external package to be used to
+solve any symmetric linear system that might arise. Current possible
+choices are {\tt 'sils'}, {\tt 'ma27'}, {\tt 'ma57'}, {\tt 'ma77'},
+{\tt 'ma86'}, {\tt 'ma97'}, {\tt ssids}, {\tt 'pardiso'}
+and {\tt 'wsmp'},
+although only {\tt 'sils'} and, for OMP 4.0-compliant compilers,
+{\tt 'ssids'} are installed by default.
+See the documentation for the \galahad\ package {\tt SLS} for further details.
+The default is {\tt symmetric\_linear\_solver = 'sils'},
+but we recommend {\tt 'ma97'} if it available.
+
+\itt{unsymmetric\_linear\_solver} is a scalar variable of type default
+\character\
+and length 30, that specifies the external package to be used to
+solve any unsymmetric linear systems that might arise. Possible
+choices are
+{\tt 'gls'},
+{\tt 'ma28'}
+and
+{\tt 'ma48'},
+although only {\tt 'gls'} is installed by default.
+See the documentation for the \galahad\ package {\tt ULS} for further details.
+The default is {\tt unsymmetric\_linear\_solver = 'gls'},
+but we recommend {\tt 'ma48'} if it available.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected
+character string to preface every line of printed output.
+Specifically, each line of output will be prefaced by the string
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoring the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\itt{SLS\_control} is a scalar variable argument of type
+{\tt SLS\_control\_type} that is used to pass control
+options to external packages used to solve any symmetric
+linear systems that might arise.
+See the documentation for the \galahad\ package {\tt SLS} for further details.
+In particular, default values are as for {\tt SLS}.
+
+\itt{ULS\_control} is a scalar variable argument of type
+{\tt ULS\_control\_type} that is used to pass control
+options to external packages used to solve any unsymmetric
+linear systems that might arise.
+See the documentation for the \galahad\ package {\tt ULS} for further details.
+In particular, default values are as for {\tt ULS}.
+
+\end{description}
+
+%%%%%%%%%%% time type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding timing
+ information}\label{typetime}
+The derived data type
+{\tt \packagename\_time\_type}
+is used to hold elapsed CPU and system clock times for the various parts of
+the calculation. The components of
+{\tt \packagename\_time\_type}
+are:
+\begin{description}
+\itt{total} is a scalar variable of type default \realdp, that gives
+ the total CPU time spent in the package.
+
+\itt{analyse} is a scalar variable of type default \realdp, that gives
+ the CPU time spent analysing the required matrices prior to factorization.
+
+\itt{factorize} is a scalar variable of type default \realdp, that gives
+ the CPU time spent factorizing the required matrices.
+
+\itt{solve} is a scalar variable of type default \realdp, that gives
+ the CPU time spent computing corrections to the current solution.
+
+\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+ the total elapsed system clock time spent in the package.
+
+\itt{clock\_analyse} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent analysing the required matrices prior to
+factorization.
+
+\itt{clock\_factorize} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent factorizing the required matrices.
+
+\itt{clock\_solve} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent computing corrections to
+ the current solution.
+
+\end{description}
+
+%%%%%%%%%%% inform type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type
+{\tt \packagename\_inform\_type}
+is used to hold parameters that give information about the progress and needs
+of the algorithm. The components of
+{\tt \packagename\_inform\_type}
+are:
+
+\begin{description}
+
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm.
+%See Sections~\ref{galerrors} and \ref{galinfo}
+See Section~\ref{galerrors}
+for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}.
+
+\itt{dependent} is a scalar variable of type default \integer, that
+gives the number of dependent active constraints.
+
+\ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
+whose components are used to hold elapsed CPU and system clock times for the
+various parts of the calculation (see Section~\ref{typetime}).
+
+\itt{SLS\_control} is a scalar variable argument of type
+{\tt SLS\_control\_type} that is used to pass control
+options to external packages used to solve any symmetric
+linear systems that might arise.
+See the documentation for the \galahad\ package {\tt SLS} for further details.
+In particular, default values are as for {\tt SLS}.
+
+\itt{ULS\_control} is a scalar variable argument of type
+{\tt ULS\_control\_type} that is used to pass control
+options to external packages used to solve any unsymmetric
+linear systems that might arise.
+See the documentation for the \galahad\ package {\tt ULS} for further details.
+In particular, default values are as for {\tt ULS}.
+
+\itt{scu\_status} is a scalar variable of type default \integer, that
+gives the return status from the Schur-complement updating package
+{\tt \libraryname\_SCU}.
+See the specification sheet for {\tt \libraryname\_SCU} for details.
+
+\itt{SCU\_inform} is a scalar variable of type
+{\tt SCU\_info\_type}
+whose components are used to provide information about
+Schur-complement updating applied by the package
+{\tt \libraryname\_SCU}.
+See the specification sheet for {\tt \libraryname\_SCU} for details.
+
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type
+{\tt \packagename\_data\_type}
+is used to hold all the data for a particular problem,
+or sequences of problems with the same structure, between calls of
+{\tt \packagename} procedures.
+This data should be preserved, untouched, from the initial call to
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}.
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are three procedures for user calls
+(see Section~\ref{galfeatures} for further features):
+
+\begin{enumerate}
+\item The subroutine
+      {\tt \packagename\_initialize}
+      is used to set default values, and initialize private data,
+      before solving one or more problems with the
+      same sparsity and bound structure.
+\item The subroutine
+      {\tt \packagename\_crossover}
+      is called to solve the problem.
+\item The subroutine
+      {\tt \packagename\_terminate}
+      is provided to allow the user to automatically deallocate array
+       components of the private data, allocated by
+       {\tt \packagename\_crossover},
+       at the end of the solution process.
+\end{enumerate}
+We use square brackets {\tt [ ]} to indicate \optional\ arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize( data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}).
+It is used to hold private data used by the crossover algorithm.
+
+\itt{control} is a scalar \intentout\ argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}).
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% main solution subroutine %%%%%%
+
+\subsubsection{The crossover subroutine}\label{qps}
+The crossover algorithm is called as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_crossover( n, m, m\_equal, H\_val, H\_col, H\_ptr, A\_val,     \&}
+\vspace*{-1mm}
+
+\hspace{43.5mm}
+{\tt                               A\_col, A\_ptr, G, C\_l, C\_u, X\_l, X\_u, C, X, Y, \&}
+\vspace*{-1mm}
+
+\hspace{43.5mm}
+{\tt                               Z, C\_stat, X\_stat, data, control, inform )}
+
+%\vspace*{-3mm}
+\begin{description}
+\ittf{n} is a scalar \intentin\ argument of type default \integer,
+ that must be set  to the number of optimization variables, $n$.
+\restrictions {\tt n} $> 0$.
+
+\ittf{m} is a scalar \intentin\ argument of type default \integer,
+ that must be set to the number of general linear constraints, $m$.
+\restrictions {\tt m} $\geq 0$.
+
+\ittf{m\_equal} is a scalar \intentin\ argument of type default \integer,
+ that must be set to the number of general linear constraints that
+ are equalities, i.e., whose lower and upper bounds coincide.
+\restrictions {\tt m} $\geq$ {\tt m\_equal} $> 0$.
+
+\itt{H\_val} is an \intentin\  rank-one array argument
+of dimension {\tt H\_ptr(n+1)-1} and type default \realdp, that must be set
+to hold the values of the nonzero entries of the {\bf lower triangular} part
+of the Hessian matrix $\bmH$. The entries must be ordered so that those
+in row $i$ appear directly before those in row $i+1$ with no gaps;
+the order within each row is unimportant.
+
+\itt{H\_col} is an \intentin\ rank-one array argument
+of dimension {\tt H\_ptr(n+1)-1} and type default \integer, that must be set
+to hold the column indices of the {\bf lower triangular} part of
+$\bmH$. These must be ordered so that they correspond to the values stored
+in {\tt H\_val}.
+
+\itt{H\_ptr} is an \intentin\ rank-one array argument
+of dimension {\tt n+1} and type default \integer,
+whose $j$-th component, $j = 1, \ldots , n$, holds the
+starting position of row $j$ of the {\bf lower triangular} part of
+$\bmH$ as stored in {\tt H\_val} and {\tt H\_col}. The $n+1$-st
+component must be set to the total number of entries in the lower
+triangular part of $\bmH$ plus one.
+
+\itt{A\_val} is an \intentin\  rank-one array argument
+of dimension {\tt A\_ptr(m+1)-1} and type default \realdp, that must be set
+to hold the values of the nonzero entries
+of the Jacobian matrix $\bmA$. The entries must be ordered so that those
+in row $i$ appear directly before those in row $i+1$ with no gaps;
+the order within each row is unimportant.
+
+\itt{A\_col} is an \intentin\ rank-one array argument
+of dimension {\tt A\_ptr(m+1)-1} and type default \integer, that must be set
+to hold the column indices of $\bmA$. These must be ordered so that they
+correspond to the values stored in {\tt A\_val}.
+
+\itt{A\_ptr} is an \intentin\ rank-one array argument
+of dimension {\tt m+1} and type default \integer,
+whose $i$-th component, $i = 1, \ldots , m$, holds the  starting position
+of row $i$ of $\bmA$ as stored in {\tt A\_val} and {\tt A\_col}.
+The $+1$-st component must be set to the total number of entries
+in $\bmA$ plus one.
+
+\ittf{G} is an \intentin\ rank-one array argument of dimension {\tt n}
+and type default \realdp, that holds the gradient $\bmg$
+of the linear term of the quadratic objective function.
+The $j$-th component of {\tt G}, $j = 1,  \ldots ,  n$, must be set to
+$\bmg_{j}$.
+
+\ittf{C\_l} is an \intentin\ rank-one array argument of dimension {\tt m}
+and type default \realdp, that holds the vector of lower bounds $\bmc^{l}$
+on the general constraints. The $i$-th component of
+{\tt C\_l}, $i = 1, \ldots , m$, must be set to $\bmc_{i}^{l}$.
+Infinite bounds are allowed by setting the corresponding
+components of {\tt C\_l} to any value smaller than {\tt -infinity},
+where {\tt infinity} is a component of the control array {\tt control}
+(see Section~\ref{typecontrol}).
+
+\ittf{C\_u} is an \intentin\ rank-one array argument of dimension {\tt m}
+and type default \realdp, that holds the vector of upper bounds $\bmc^{u}$
+on the general constraints. The $i$-th component of
+{\tt C\_u}, $i = 1,  \ldots ,  m$, must be set to $\bmc_{i}^{u}$.
+Infinite bounds are allowed by setting the corresponding
+components of {\tt C\_u} to any value larger than {\tt infinity},
+where {\tt infinity} is a component of the control array {\tt control}
+(see Section~\ref{typecontrol}).
+
+\ittf{X\_l} is an \intentin\ rank-one array argument of dimension {\tt n}
+and type default \realdp, that holds
+the vector of lower bounds $\bmx^{l}$ on the the variables.
+The $j$-th component of {\tt X\_l}, $j = 1, \ldots , n$,
+must be set to $\bmx_{j}^{l}$.
+Infinite bounds are allowed by setting the corresponding
+components of {\tt X\_l} to any value smaller than {\tt -infinity},
+where {\tt infinity} is a component of the control array {\tt control}
+(see Section~\ref{typecontrol}).
+
+\ittf{X\_u} is an \intentin\  rank-one array argument of dimension {\tt n}
+and type default \realdp, that holds
+the vector of upper bounds $\bmx^{u}$ on the variables.
+The $j$-th component of {\tt X\_u}, $j = 1, \ldots , n$,
+must be set to $\bmx_{j}^{u}$.
+Infinite bounds are allowed by setting the corresponding
+components of {\tt X\_u} to any value larger than that {\tt infinity},
+where {\tt infinity} is a component of the control array {\tt control}
+(see Section~\ref{typecontrol}).
+
+\ittf{X} is an \intentinout\ rank-one array argument of dimension {\tt n}
+and type default \realdp,
+that holds the values $\bmx$ of the optimization variables.
+The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, must be set to $x_{j}$
+on input, and may have been adjusted to provide another solution on output.
+
+\ittf{C} is an \intentinout\ rank-one array argument of dimension {\tt m}
+and type default \realdp, that holds
+the values $\bmA \bmx$ of the constraints.
+The $i$-th component of {\tt C}, $i = 1,  \ldots ,  m$, must be set to
+$\bma_{i}^{T}\bmx \equiv (\bmA \bmx)_{i}$
+on input, and may have been adjusted to provide another solution on output.
+
+\ittf{Y} is an \intentinout\ rank-one array argument of dimension {\tt m}
+and type default \realdp, that holds
+the values $\bmy$ of estimates  of the Lagrange multipliers
+corresponding to the general linear constraints (see Section~\ref{galmethod}).
+The $i$-th component of {\tt Y}, $i = 1,  \ldots ,  m$, must be set to $y_{i}$
+on input, and may have been adjusted to provide another solution on output.
+
+\ittf{Z} is an \intentinout\ rank-one array argument of dimension {\tt n}
+and type default \realdp, that holds
+the values $\bmz$ of estimates  of the dual variables
+corresponding to the simple bound constraints (see Section~\ref{galmethod}).
+The $j$-th component of {\tt Z}, $j = 1,  \ldots ,  n$, must be set to $z_{j}$
+on input, and may have been adjusted to provide another solution on output.
+
+\itt{C\_stat} is an \intentin\ rank-one \intentinout\ array argument of
+dimension {\tt m}
+and type default \integer, that indicates which of the general linear
+constraints are in the current active set. Possible input values for
+{\tt C\_stat(i)}, {\tt i}$=1, \ldots ,$ {\tt m}, and their meanings are
+\begin{description}
+\itt{<0} the $i$-th general constraint
+is in the active set on its lower bound, i.e., $\bma_i^T \bmx = \bmc_i^{l}$,
+\itt{>0} the $i$-th general constraint
+is in the active set on its upper bound, i.e., $\bma_i^T \bmx = \bmc_i^{u}$,
+and
+\itt{0}  the $i$-th general constraint is not in the active set,
+i.e., $\bmc_i^{l} < \bma_i^T \bmx < \bmc_i^{u}$.
+\end{description}
+On output, the value of {\tt C\_stat(i)} may have changed to mean
+\begin{description}
+\itt{-1} the $i$-th general constraint
+is both independent and active on its lower bound,
+\itt{-2} the $i$-th general constraint
+is on its lower bound but linearly dependent on others,
+\itt{1} the $i$-th general constraint
+is both independent and active on its upper bound,
+\itt{2} the $i$-th general constraint
+is on its upper bound but linearly dependent on others, and
+\itt{0} the $i$-th general constraint is not in the active set.
+\end{description}
+
+
+\itt{X\_stat} is an \intentin\ rank-one \intentinout\ array argument of
+dimension {\tt n}
+and type default \integer, that indicates which of the simple bound
+constraints are in the current active set. Possible input values for
+{\tt X\_stat(j)}, {\tt j}$=1, \ldots ,$ {\tt n}, and their meanings are
+\begin{description}
+\itt{<0} the $j$-th simple bound constraint
+is in the active set on its lower bound, i.e., $\bmx_j^{} = \bmx_j^{l}$,
+\itt{>0} the $j$-th simple bound constraint
+is in the active set on its upper bound, i.e., $\bmx_j^{} = \bmx_j^{u}$,
+and
+\itt{0}  the $j$-th simple bound constraint is not in the active set,
+i.e., $\bmx_j^{l} < \bmx_j^{} < \bmx_j^{u}$.
+\end{description}
+On output, the value of {\tt X\_stat(j)} may have changed to mean
+\begin{description}
+\itt{-1} the $j$-th simple bound constraint
+is both independent and active on its lower bound,
+\itt{-2} the $j$-th simple bound constraint
+is on its lower bound but linearly dependent on others,
+\itt{1} the $j$-th simple bound constraint
+is both independent and active on its upper bound,
+\itt{2} the $j$-th simple bound constraint
+is on its upper bound but linearly dependent on others, and
+\itt{0} the $j$-th simple bound constraint is not in the active set.
+\end{description}
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}).
+It is used to hold private data used by the crossover algorithm
+and must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_initialize}.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). Default values may be assigned by calling
+{\tt \packagename\_initialize} prior to the first call to
+{\tt \packagename\_crossover}.
+
+\itt{inform} is a scalar \intentinout\ argument of type
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}).
+A successful call to
+{\tt \packagename\_crossover}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_terminate( data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+exactly as for
+{\tt \packagename\_crossover},
+that must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_initialize}.
+On exit, array components will have been deallocated.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_crossover}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_crossover}.
+Only the component {\tt status} will be set on exit, and a
+successful call to
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt inform\%status} on exit from
+{\tt \packagename\_crossover}
+or
+{\tt \packagename\_terminate}
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\itt{\galerrallocate.} An allocation error occurred. A message indicating
+the offending
+array is written on unit {\tt control\%error}, and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrdeallocate.} A deallocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error} and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrrestrictions.} One of the restrictions
+ {\tt prob\%n} $> 0$
+    or the requirement that
+    {\tt prob\%H\_type} contain its relevant string
+    {\tt 'DENSE'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}
+    or {\tt 'DIAGONAL'} when $\bmH$ is available,
+    has been violated.
+
+%\itt{-3.} At least one of the arrays
+% {\tt prob\%A\_val}, {\tt prob\%A\_row}, {\tt prob\%A\_col},
+% {\tt prob\%H\_val}, {\tt prob\%H\_row} or {\tt prob\%H\_col},
+% is not large enough to hold the original, or reordered, matrix $\bmH$.
+
+\itt{\galerrbadbounds.} The bound constraints are inconsistent.
+
+\itt{\galerrunbounded.} The objective function appears to be unbounded
+  from below on the feasible set.
+
+\itt{\galerranalysis.} An error was reported by {\tt SLS\_analyse}. The return
+status from {\tt SLS\_\-analyse} is given in
+{\tt inform\%SLS\_inform\%\-status}.
+See the documentation for the \galahad\ package {\tt SLS} for further details.
+
+\itt{\galerrfactorization.} An error was reported by {\tt SLS\_factorize} or
+{\tt SCU\_append}.
+The return status from {\tt SLS\_factorize} is given in
+{\tt inform\%SLS\_inform\%status}
+and that from {\tt SCU\_append} in {\tt inform\%scu\_status}.
+See the documentation for the \galahad\ packages {\tt SLS} and {\tt SCU}
+for further details.
+
+\itt{\galerrsolve.} An error was reported by {\tt SLS\_solve} or
+{\tt SCU\_solve}. The return
+status from {\tt SLS\_solve} is given in {\tt inform\%SLS\_\-inform\%status}
+and that from {\tt SCU\_solve} in {\tt inform\%scu\_status}.
+See the documentation for the \galahad\ packages {\tt SLS} and {\tt SCU}
+for further details.
+
+\itt{\galerrulsfactorization.} An error was reported by {\tt ULS\_factorize}.
+The return status from {\tt ULS\_factorize} is given in
+{\tt inform\%uls\_\-factorize\_\-status}.
+See the documentation for the \galahad\ package {\tt ULS} for further details.
+
+\itt{\galerrulssolve.} An error was reported by {\tt ULS\_solve}. The return
+status from {\tt ULS\_solve} is given in {\tt inform\%uls\_solve\_status}.
+See the documentation for the \galahad\ package {\tt ULS} for further details.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}),
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of
+"specification commands". Each command occurs on a separate line,
+and comprises a "keyword",
+which is a string (in a close-to-natural language) used to identify a
+control parameter, and
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive,
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+
+
+The portion of the specification file used by
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by CRO_read_specfile .. )
+    BEGIN CRO
+       keyword    value
+       .......    .....
+       keyword    value
+    END
+  ( .. lines ignored by CRO_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
+may contain additional (trailing) strings so long as such strings are
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN CRO SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END CRO SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore,
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored.
+The content
+of a line after a {\tt !} or {\tt *} character is also
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some
+specification commands, or to comment specific values
+of certain control parameters.
+
+The value of a control parameters may be of three different types, namely
+integer, logical or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}",
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}".
+Empty values are also allowed for
+logical control parameters, and are interpreted as "{\tt TRUE}".
+
+The specification file must be open for
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number
+passed to the routine in device (see below).
+Note that the corresponding
+file is {\tt REWIND}ed, which makes it possible to combine the specifications
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in
+
+\def\baselinestretch{0.8}
+{\tt
+\begin{verbatim}
+     CALL CRO_read_specfile( control, device )
+\end{verbatim}
+}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}).
+Default values should have already been set, perhaps by calling
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and
+the component (see Section~\ref{typecontrol}) of {\tt control}
+that each affects are given in Table~\ref{specfile}.
+
+\bctable{|l|l|l|}
+\hline
+  command & component of {\tt control} & value type \\
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+  {\tt maximum-dimension-of-schur-complement} & {\tt \%max\_schur\_complement} & integer \\
+  {\tt infinity-value} & {\tt \%infinity} & real \\
+  {\tt feasibility-tolerance} & {\tt \%feasibility\_tol} & real \\
+  {\tt check-input-output}   & {\tt \%check\_io} & logical \\
+  {\tt space-critical}   & {\tt \%space\_critical} & logical \\
+  {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
+  {\tt output-line-prefix} & {\tt \%prefix} & character \\
+  {\tt symmetric-linear-equation-solver} & {\tt \%symmetric\_linear\_solver} & character \\
+  {\tt unsymmetric-linear-equation-solver} & {\tt \%unsymmetric\_linear\_solver} & character \\
+\hline
+
+\ectable{\label{specfile}Specfile commands and associated
+components of {\tt control}.}
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+If {\tt control\%print\_level} is positive, information about the progress
+of the algorithm will be printed on unit {\tt control\-\%out}.
+If {\tt control\%print\_level} $= 1$, a single line indicating how many
+dependent constraints will be removed.
+If {\tt control\%print\_level} $\geq 2$, this
+output will be increased to provide details of the dependent constraints,
+while if {\tt control\%print\_level} $\geq 5$, full debugging details
+(probably only of interest to the code developer) are provided.
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines None.
+\galmodules {\tt \packagename\_crossover} calls the \galahad\ packages
+{\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS},
+{\tt GALAHAD\-\_SPACE},
+{\tt GALAHAD\_\-SPECFILE},
+{\tt GALAHAD\_TOOLS}.
+{\tt GALAHAD\_QPT},
+{\tt GALAHAD\_\-SCU},
+{\tt GALAHAD\_\-SLS}
+and
+{\tt GALAHAD\_\-ULS}.
+\galio Output is under control of the arguments
+ {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
+\galrestrictions {\tt n} $> 0$, {\tt m} $\geq  m\_equal$,
+{\tt m\_equal} $\geq  0$,
+{\tt prob\%A\_type} and {\tt prob\%H\_type} $\in \{${\tt 'DENSE'},
+ {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'}, {\tt 'DIAGONAL'} $\}$.
+(if $\bmH$ and $\bmA$ are explicit).
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+Any required solution $\bmx$ necessarily satisfies
+the primal optimality conditions
+\eqn{4.1a}{\bmA \bmx = \bmc}
+and
+\eqn{4.1b}{
+ \bmc^{l} \leq \bmc \leq \bmc^{u}, \;\;
+\bmx^{l} \leq\bmx \leq\bmx^{u},}
+the dual optimality conditions
+\eqn{4.2a}{
+ \bmH \bmx + \bmg =
+ \bmA^{T} \bmy + \bmz,\;\;
+ \bmy = \bmy^{l} + \bmy^{u} \tim{and}
+ \bmz = \bmz^{l} + \bmz^{u} ,}
+and
+\eqn{4.2b}{
+ \bmy^{l} \geq 0 , \;\;
+ \bmy^{u} \leq 0 , \;\;
+ \bmz^{l} \geq 0 \;\; \mbox{and} \;\;
+ \bmz^{u} \leq 0 ,}
+and the complementary slackness conditions
+\eqn{4.3}{
+( \bmA \bmx - \bmc^{l} )^{T} \bmy^{l} = 0  ,\;\;
+( \bmA \bmx - \bmc^{u} )^{T} \bmy^{u} = 0  ,\;\;
+(\bmx -\bmx^{l} )^{T} \bmz^{l} = 0   \tim{and}
+(\bmx -\bmx^{u} )^{T} \bmz^{u} = 0 ,}
+where the vectors $\bmy$ and $\bmz$ are
+known as the Lagrange multipliers for
+the general linear constraints, and the dual variables for the bounds,
+respectively, and where the vector inequalities hold componentwise.
+
+Denote the active constraints by $\bmA_A \bmx = \bmc_A$ and the
+active bounds by $\bmI_A \bmx = \bmx_A$. Then any optimal solution satisfies
+the linear system
+\disp{
+ \mat{ccc}{\bmH & - \bmA_A^T & - \bmI^T_A \\ \bmA_A & 0 & 0 \\ \bmI_A & 0 & 0 }
+ \vect{\bmx \\ \bmy_A \\ \bmz_A} = \vect{ - \bmg \\ \bmc_A \\ \bmx_A }, }
+where $\bmy_A$ and $\bmz_A$ are the corresponding active Lagrange multipliers
+and dual variables respectively. Consequently the difference between
+any two solutions $(\Delta \bmx, \Delta \bmy, \Delta \bmz)$ must satisfy
+\eqn{difsol}{
+ \mat{ccc}{\bmH & - \bmA_A^T & - \bmI^T_A \\ \bmA_A & 0 & 0 \\ \bmI_A & 0 & 0 }
+ \vect{\Delta \bmx \\ \Delta \bmy_A \\ \Delta \bmz_A} = 0.}
+Thus there can only be multiple solution if the coefficient matrix $\bmK$
+of \req{difsol} is singular. The algorithm used in \fullpackagename\
+exploits this. The matrix $\bmK$ is checked for singularity
+using the \galahad\ package {\tt GALAHAD\_ULS}. If $\bmK$ is
+non singular, the solution is unique and the solution input by the user
+provides a linearly independent active set. Otherwise $\bmK$ is singular,
+and partitions $\bmA_A^T = ( \bmA_{AB}^T \;\; \bmA_{AN}^T)$ and
+$\bmI_A^T = ( \bmI_{AB}^T \;\; \bmI_{AN}^T)$ are found so that
+\disp{
+ \mat{ccc}{\bmH & - \bmA_{AB}^T & - \bmI^T_{AB} \\ \bmA_{AB} & 0 & 0 \\
+ \bmI_{AB} & 0 & 0 }}
+is non-singular and the ``non-basic'' constraints $\bmA_{AN}^T$
+and $\bmI_{AN}^T$ are linearly dependent on the ``basic'' ones
+$( \bmA_{AB}^T \;\; \bmI_{AB}^T)$. In this case \req{difsol} is equivalent to
+\eqn{difsol2}{
+ \mat{ccc}{\bmH & - \bmA_{AB}^T & - \bmI^T_{Ab} \\
+ \bmA_{AB} & 0 & 0 \\ \bmI_{AB} & 0 & 0 }
+ \vect{\Delta \bmx \\ \Delta \bmy_{AB} \\ \Delta \bmz_{AB}} =
+ \vect{\bmA_A^T \\ 0 \\ 0 } \Delta \bmy_{AN} +
+ \vect{\bmI^T_A \\ 0 \\ 0 }\Delta \bmz_{AN} .}
+Thus, starting from the user's $(\bmx, \bmy, \bmz)$
+and with a factorization of the coefficient matrix of \req{difsol2}
+found by the \galahad\ package {\tt GALAHAD\_SLS},
+the alternative solution
+$(\bmx + \alpha \bmx, \bmy + \alpha \bmy, \bmz + \alpha \bmz)$,
+featuring
+$(\Delta \bmx, \Delta \bmy_{AB}, \Delta \bmz_{AB})$
+from \req{difsol2}
+in which successively one of the components of $\Delta \bmy_{AN}$
+and $\Delta \bmz_{AN}$ in turn is non zero, is taken.
+The scalar $\alpha$ at each stage
+is chosen to be the largest possible that guarantees \req{4.2b};
+this may happen when a non-basic multiplier/dual variable reaches zero,
+in which case the corresponding constraint is disregarded, or when this
+happens for a basic multiplier/dual variable, in which case this constraint is
+exchanged with the non-basic one under consideration and disregarded.
+The latter corresponds to changing the basic-non-basic partition
+in \req{difsol2}, and subsequent solutions may be found by updating
+the factorization of the coefficient matrix in \req{difsol2}
+following the basic-non-basic swap using the
+\galahad\ package {\tt GALAHAD\_SCU}.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose we have solved the quadratic program
+\disp{\arr{rl}{
+\minin{\bmx} & \half \bigsum_{i=1}^{11} x_i^2 +
+  \half \bigsum_{i=1}^{10} x_i x_{i+1}
++ \half x_1 - \half x_2 - \bigsum_{i=1}^{10} x_i - \half x_{11} \\
+\mbox{subject to} & \bigsum_{i=1}^{11} x_i = 10, \;\;
+\bigsum_{i=3}^{11} x_i \geq 9, \;\;
+\bigsum_{i=2}^{11} x_i \leq 10 \\
+\tim{and} & x_1 \geq 0, \;\; x_i \geq 1 \tim{for} i = 2, \ldots, 11
+}}
+(using, for example, \galahad's {\tt CQP} package), and have found
+the primal-dual solution $\bmx = (0,1,1, \ldots, 1)$,
+$\bmy = ( -1, \threehalves, -2)$ and
+$\bmz = ( 2, 4, \fivehalves, \fivehalves, \ldots \fivehalves)$
+for which all variables and constraints are active; clearly such
+a solution has dependent active constraints.
+Then we may find a crossover solution in which the defining
+active set is linearly independent using the following code:
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+\noindent
+Notice that active variable 1 and constraints 2 and 3 are found to be active but
+linearly dependent.
+\end{document}
+

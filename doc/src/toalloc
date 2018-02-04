@@ -1,0 +1,8 @@
+#!/bin/csh -f
+# change pointers to allocatables in specs
+foreach psfile(`/bin/ls qpa_inform.tex rand.tex symbols.tex eqp.tex lancelot.tex qpb.tex roots.tex fdc.tex lsqp.tex qpb_control.tex sbls.tex filtrane.tex nlpt.tex qpb_inform.tex scu.tex presolve.tex qpc.tex sils.tex wcp.tex qpa.tex qpp.tex smt.tex gltr.tex qpa_control.tex qpt.tex sort.tex`)
+   sed -f toalloc.sed $psfile > $psfile.28mar07
+   mv $psfile $psfile.v2.0
+   mv $psfile.28mar07 $psfile
+end
+

@@ -1,0 +1,112 @@
+#!/bin/csh -f
+
+########################################################################
+#                                                                      #
+# lanb_simple:                                                         #
+#                                                                      #
+#    runs the test program lancelot_simplet.f90                        #
+#                                                                      # 
+#    Ph. L. Toint, November 2007.                                      #
+#                                                                      #
+########################################################################
+#                                                                      #
+#    Copyright reserved, Gould/Orban/Toint, for GALAHAD productions    #
+#                                                                      #
+########################################################################
+
+unset noclobber
+
+#  directory for the main executable file
+
+set EXEC=$cwd
+
+#  variables for each option
+
+# OUTPUT = 0 (summary output), = 1 (detailed output from decoder)
+
+set OUTPUT=0
+
+# LIMIT = 0 (no cputime limit)
+
+set LIMIT = 99999999
+
+#  minimizer object codes to link
+
+#==============================================================================
+
+#  standard unix commands
+
+set RM   = "rm -f"
+set MV   = "mv"
+
+#  the command that invokes the FORTRAN 95 compiler and linker
+
+set FORTRAN = "lf95"
+
+#  compiler flags for linking
+
+set FFLAGS = ""
+
+#  flags for compiling the FORTRAN 77 problem-dependent routines 
+
+set PROBFLAGS = "-c"
+
+#  directory for double precision GALAHAD modules
+
+set GALMODULES=$GALAHAD/modules/pc.lnx.l95/double
+
+#  directory for double precision GALAHAD libraries 
+
+set GALOBJ=$GALAHAD/objects/pc.lnx.l95/double
+
+#==============================================================================
+
+set BLASLIB="-lgalahad_blas"
+
+set LAPACKLIB="-lgalahad_lapack"
+
+set HSLLIB="-lgalahad_hsl"
+
+set METISLIB="-lgalahad_metis"
+
+# compile the lancelot_1e.f90 program
+
+if ($OUTPUT) then
+  echo ' '
+  echo 'Compiling ... '
+  echo ' '
+endif
+
+$FORTRAN $PROBFLAGS -I$GALMODULES lancelot_simple.f90 lancelot_simplet.f90 
+
+# link all the tools files together.
+
+if ($OUTPUT) then
+  echo ' '
+  echo 'Linking all the object files together ... '
+  echo ' '
+endif
+
+#  create the executable
+
+$FORTRAN $FFLAGS -o lancelot_simplet lancelot_simple.o lancelot_simplet.o\
+   -L$GALOBJ -lgalahad $BLASLIB $HSLLIB $METISLIB $LAPACKLIB 
+
+if( $cwd != $EXEC ) $MV lancelot_simplet $EXEC/lancelot_simplet
+
+#  run lancelot_simplet on the current problem.
+
+if ($OUTPUT) then
+  echo ' '
+  echo "Running lancelot_simplet ... "
+  echo ' '
+endif
+
+limit cputime $LIMIT
+$EXEC/lancelot_simplet
+
+#  tidy up the current directory.
+
+$RM $EXEC/lancelot_simple.o $EXEC/lancelot_simplet.o $EXEC/lancelot_simplet
+
+

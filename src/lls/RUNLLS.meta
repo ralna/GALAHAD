@@ -1,0 +1,22 @@
+MAIN
+! write-problem-data                                yes
+! problem-data-file-name                            LLS.data
+! problem-data-file-device                          26
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                LLSSOL.d
+! solution-file-device                              62
+! write-result-summary                              yes
+! result-summary-file-name                          LLSRES.d
+! result-summary-file-device                        47
+! write-oneline-result-summary                      yes
+! result-oneline-summary-file-name                  LLSRES_1line.d
+! result-oneline-summary-file-device                48
+
+INCLUDE LLS
+
+INCLUDE GLTR
+
+INCLUDE SBLS
+
+INCLUDE SLS

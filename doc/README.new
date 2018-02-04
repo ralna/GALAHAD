@@ -1,0 +1,52 @@
+LANCELOT B is an updated version of LANCELOT A; the latter is 
+documented in
+
+  A. R. Conn, N. I. M. Gould and Ph. L. Toint,
+  "LANCELOT: a Fortran package for large-scale nonlinear optimization",
+  Springer Series in Computational Mathematics, vol. 17,
+  Springer Verlag (Heidelberg, New York), 1992.
+
+and described in 
+
+  A. R. Conn, N. I. M. Gould and Ph. L. Toint,
+  "Numerical experiments with the LANCELOT package
+  (Release A) for large-scale nonlinear optimization",
+  Mathematical Programming, 73(1), 1996, pp 73-110.
+
+LANCELOT B offers the following improvements over its predecessor:
+
+ * coded in Fortran 90
+
+   * automatic allocation of workspace 
+   * simplified calling sequences;
+
+ * a non-monotone descent strategy to be used by default;
+
+ * the optional use of More' & Toraldo -type projections during the 
+   subproblem solution phase;
+
+ * an interface to Lin & More's public domain incomplete Cholesky 
+   factorization package ICFS for use as a preconditioner;
+
+ * the optional use of structured trust regions to better model 
+   structured problems;
+
+ * the provision of optional automatic differentiation to compute 
+   derivatives of problems supplied in SIF format (using John Reid's 
+   HSL package AD01 and/or its threadsafe successor AD02 when available);
+
+ * SIF syntax slighty improved to allow for simpler input of 
+   quadratic programs.
+
+Further minor changes include:
+
+ *  calls to the HSL package MA31 have been replaced to calls to MA61,
+    as MA31 has been superceded;
+
+ *  calls to the scaling routine MC29 have been made unnecessary by
+    the use of a GALAHAD scaling package.
+
+
+Nick Gould (nick.gould@stfc.ac.uk)
+for GALAHAD productions
+4th September 2001

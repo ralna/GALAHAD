@@ -1,0 +1,107 @@
+This is a guide to installing  and running GALAHAD on Windows 2000 and
+Windows XP platforms.
+
+So far, installation  of GALAHAD on Windows platforms  has been rather
+unsuccessful using  commercial tools and  compilers. Environments such
+as  Microsoft Unix  Services for  Windows  and compilers  such as  the
+Digital  Fortran Compiler or  the Intel  Fortran Compiler  for Windows
+lack    flexibility    and   functionality    to    carry   out    the
+installation. Below, the  only tools required are open  source and you
+can download them from their respective website.
+
+For the time being, SifDec and CUTEr (http://cuter.rl.ac.uk/cuter-www)
+have  not been  ported to  the Windows  platform. Users  are therefore
+limited to solving problems written in Fortran or in the AMPL modeling
+language (http://www.ampl.com). If you  wish to use the AMPL interface
+to  the  tools,  you  will  need  to download  and  install  the  AMPL
+Library.  Obtaining  a   copy  of  the  AMPL  engine   is  the  user's
+responsibility---AMPL is  not free software.  However, at the  time of
+this writing,  a size-limited  student version of  the AMPL  engine is
+available for download  from the main AMPL website.  The GALAHAD tools
+that currently have an AMPL interface are  QP,  QPA,  QPB,  QPC,  CQP,
+PRESOLVE and FILTRANE.
+
+----------------------------------------------------------------------
+
+1. Requirements
+
+ o A Windows 2000/XP platform
+
+ o The MinGW/MSYS system
+
+   The MinGW is the Minimalist GNU for Windows and allows one to build
+   native  Windows executables  and  libraries which  do  not rely  on
+   proprietary system libraries. Essentially, it consists in a port of
+   the GCC  to the  Windows platform. The  MSYS is  a POSIX-compatible
+   compilation environment  allowing one to use  configure scripts and
+   GNU Makefiles.
+
+   If  you are  familiar  with  any flavour  of  UNIX, the  MinGW/MSYS
+   combination will feel like home.
+
+   Both may be downloaded from http://www.mingw.org
+
+
+ o The g95 free Fortran 90/95 compiler for Windows
+
+   The g95 is a fork from the GNU project of building a GPL-compatible
+   Fortran 90/95 compiler to be included  in the GCC. Note that g95 is
+   different  from  the  Fortran  90/95  compiler  which  is  actually
+   included in the  GCC, called gfortran. As of  this writing, the g95
+   is  much  more  advanced  and  capable than  gfortran.   We  highly
+   recommend it.
+
+
+2. Installation of the tools
+
+ o Download   MinGW/MSYS.   Navigate   to  the  download   page  from
+   www.mingw.org and read  the instructions there.  More particularly,
+   make sure you read the sections
+
+     - Decompression and  Unarchiving Installing MinGW  (and possibly,
+     - Updating MinGW) Installing MSYS (and possibly, Updating MSYS).
+
+   You  will  need at  least  the  following  packages (although  for
+   further development, you may want to download the full collection):
+
+     + MinGW (MinGW-x.y.z.exe) + MSYS (MSYS-x.y.z.exe)
+
+   You  may  also want  to  check the  Getting  Started  page in  the
+   MinGWiki section of the website.
+
+   The  two  exe  files   are  self-extracting  archives.   Start  by
+   installing MinGW  and then MSYS.   Installation is the matter  of a
+   few clicks.
+
+ o Download the  port of g95 for MinGW  from www.g95.org.  Again, this
+   is  a self-extracting executable  which will  install g95  into the
+   main MinGW tree.   Let it set the environment  variables and finish
+   the installation.
+
+ o [Optional] Download the AMPL Library from
+   ftp://netlib.bell-labs.com/netlib/ampl/solvers.tar
+   Unpack  this  archive  in  the  directory  of  your  choice,  e.g.,
+   somewhere  in  your   $HOME  in  the  MSYS  tree   and  follow  the
+   instructions found in makefile.u  for installation in MinGW. Your C
+   compiler  is  gcc. Set  the  AMPLDIR  environment  variable to  the
+   directory containing the newly compiled amplsolver.a library.
+
+
+3. Installation of GALAHAD
+
+ Unpack  the GALAHAD  archive in  a  fresh directory  and execute  the
+ install_galahad script.  Answer questions  as you are  prompted. Make
+ sure to select MinGW as architecture and g95 as compiler.
+
+ Should you encounter any  problem with the installation, please check
+ the GALAHAD website and discussion forum.
+
+
+Please send all comments/corrections to us. Good luck!
+
+Nick Gould          (nick.gould@stfc.ac.uk)
+Dominique Orban     (dominique.orban@polymtl.ca)
+Philippe Toint      (philippe.toint@fundp.ac.be)
+
+For GALAHAD productions
+This version: 26th July 2005

@@ -1,0 +1,605 @@
+! THIS VERSION: GALAHAD 2.1 - 1/02/2008 AT 09:00 GMT.
+
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*                             *-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*         mop  M O D U L E    *-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*                             *-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!
+!  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+!  Principal author: Daniel Robinson and Nick Gould
+
+!  For full documentation, see 
+!   http://galahad.rl.ac.uk/galahad-www/specs.html
+
+   MODULE GALAHAD_MOP
+
+!  This module is composed of subroutines that perform a variety of
+!  matrix computations.
+!
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+   USE GALAHAD_SMT_double
+
+   IMPLICIT NONE
+     
+   PRIVATE
+   PUBLIC :: 
+
+!  Define the working precision to be double
+
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+
+   
+ CONTAINS
+     
+
+!-*-*-*-*-*-*-*-*  m o p _ A X   S U B R O U T I N E  *-*-*-*-*-*-
+
+   SUBROUTINE mop_Ax( A, R, X, i_dev, e_dev, print_level, symm, trans, op )
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!      ..............................................
+!      .                                            .
+!      .  Perform the operation R := r +/- A * x    .
+!      .                     or R := r +/- A^T * x  .
+!      .                                            .
+!      ..............................................
+
+!  Arguments:
+!  =========
+
+!   A        a scalar variable of type SMT_type.
+!   R        the result r of adding/subtracting A * x or A^T *x to/from r.
+!   X        the vector x.
+!   symm     (optional) an integer.  If symm = 1, then the matrix A is
+!            symmetric.  If symm /= 1 or symm is not present, then the
+!            matrix A is assumed to be nonsymmetric.
+!   trans    (optional) an integer.  Possible values are:
+!               trans  = 1     r <- r +/- A^T * x
+!               trans  = 0     r <- r +/- A * x 
+!            If trans is not present, then  "r <- r +/- A * x" is performed.
+!   op       (optional) character string of length 1: possible values are
+!               '+'   r <- r + A * x   or   r <- r + A^T * x
+!               '-'   r <- r - A * x   or   r <- r - A^T * x
+!            If op is not present, then '+' is assumed.
+!   i_dev    (optional) is a scalar variable of type integer, that holds
+!            the stream number for informational messages.
+!   e_dev    (optional) is a scalar variable of type integer, that holds
+!            the stream number for error messages.
+!   print    (optional) is scalar variable of type integer.  It controls
+!            the amount of information that is printed to unit number
+!            i_dev.  Values and there meanings are given by:
+!               print <= 0    Nothing.
+!               print  = 1    symmetry, operation, transpose
+!               print  = 2    Those from 1 above, plus:
+!                             A%m, A%n, A%type, A%ne
+!               print >= 3    Those from 2 above, plus:
+!                             A%ptr, A%val, A%row, A%col
+ 
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!  Dummy arguments
+
+     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: X
+     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: R
+     TYPE( SMT_type), INTENT( IN  ) :: A
+     INTEGER, INTENT( IN ), OPTIONAL :: e_dev, i_dev, print
+     INTEGER, INTENT( IN ), OPTIONAL :: trans, symm
+     CHARACTER( LEN = 1 ), INTENT( IN ), OPTIONAL :: op
+     
+!  Local variables
+     
+     INTEGER :: i, j, l
+     INTEGER :: tranpose, symmetric
+     INTEGER :: nA
+     INTEGER :: m, n
+     CHARACTER( LEN = 1 ) :: operation
+     REAL ( KIND = wp ) :: Xi, Xj, ri, rj
+
+! Set some convenient variables.
+
+     m = A%m
+     n = A%n
+
+! Check for bad dimensions.
+
+     IF ( ( m <= 0 ) .OR. ( n <= 0 ) ) THEN
+        WRITE( e_dev, 1001 )
+        RETURN
+     END IF
+     
+! Determine values for optional parameters.
+
+     IF ( PRESENT( trans ) ) THEN
+        IF ( trans == 1 ) THEN
+           transpose = 1
+        ELSEIF ( trans == 0 ) THEN
+           transpose = 0
+        ELSE
+           WRITE( e_dev, 1004 )
+           RETURN
+        END IF
+     ELSE
+        transpose = 0
+     END IF
+     
+     IF ( PRESENT( symm ) ) THEN
+        IF ( symm == 1 ) THEN
+           symmetric = 1
+        ELSEIF ( symm == 0 )
+           symmetric = 0
+        ELSE
+           WRITE( e_dev, 1003 )
+           RETURN
+        END IF
+     ELSE
+        symmetric = 0
+     END IF
+     
+     IF ( PRESENT( op ) ) THEN
+        IF ( op == '+' ) THEN
+           operation = '+'
+        ELSEIF ( op == '-' ) THEN
+           operation = '-'
+        ELSE
+           WRITE( e_dev, 1002 )
+           RETURN
+        END IF
+     ELSE
+        operation = '+'
+     END IF
+
+
+! Print information according to variable print.
+
+     IF ( print >= 1 ) THEN
+        WRITE( 1005, i_dev ) ! Header
+        WRITE( 1006, i_dev ) transpose, symmetric, operation
+        IF ( print >= 2 ) THEN
+           WRITE( 1007, i_dev ) A%m, A%n, A%ne, A%type
+           IF ( print >= 3 ) THEN
+              ! WRITE( 1008, i_dev ) A%ptr, A%val, A%row, A%col
+              ! DPR: Not sure how to do this.
+           END IF
+        END IF
+        WRITE( 1009, i_dev ) ! Footer
+     END IF
+     
+
+! Storage type GALAHAD_DENSE (by rows)
+! ************************************
+
+     IF ( (A%type == 'DENSE') .OR.(A%type == 'dense')  ) THEN
+
+        nA = 1
+         
+        IF ( operation == '+' ) THEN
+           
+           IF ( symmetric == 1 ) THEN
+              
+              DO i = 1, n
+                 Xi = X( i )
+                 ri = R( i )
+                 DO j = 1, i-1
+                    ri = ri + A%val( nA ) * X( j )
+                    R( j ) = R( j ) + A%val( nA ) * Xi
+                    nA = nA + 1
+                 END DO
+                 R( i ) = ri + A%val( nA ) * Xi
+                 nA = nA + 1
+              END DO
+              
+           ELSE
+              
+              IF ( transpose == 1 ) THEN
+                 
+                 !            DO j = 1, n
+                 !               Xj = X( j )
+                 !               DO i = 1, m
+                 !                  R( i ) = R( i ) + A%val( nA ) * Xj
+                 !                  nA = nA + 1
+                 !               END DO
+                 !            END DO
+                 DO i = 1, m
+                    ri = R( i )
+                    DO j = 1, n
+                       ri = ri + A%val( i + m*( j - 1 ) )
+                    END DO
+                    R( i ) = ri
+                 END DO
+                 
+              ELSE
+                 
+                 DO i = 1, m
+                    ri = R( i )
+                    DO j = 1, n
+                       ri = ri + A%val( nA ) * X( j )
+                       nA = nA + 1
+                    END DO
+                    R( i ) = ri
+                 END DO
+                 
+              END IF
+              
+           END IF
+           
+        ELSE ! minus
+           
+           IF ( symmetric == 1 ) THEN
+              
+              DO i = 1, n
+                 Xi = X( i )
+                 ri = R( i )
+                 DO j = 1, i-1
+                    ri = ri - A%val( nA ) * X( j )
+                    R( j ) = R( j ) - A%val( nA ) * Xi
+                    nA = nA + 1
+                 END DO
+                 R( i ) = ri - A%val( nA ) * Xi
+                 nA = nA + 1
+              END DO
+              
+              
+           ELSE
+              
+              IF ( transpose == 1 ) THEN
+                 
+                 !           DO j = 1, n
+                 !              Xj = X( j )
+                 !              DO i = 1, m
+                 !                 R( i ) = R( i ) - A%val( nA ) * Xj
+                 !                 nA = nA + 1
+                 !              END DO
+                 !           END DO
+                 DO i = 1, m
+                    ri = R( i )
+                    DO j = 1, n
+                       ri = ri - A%val( i + m*( j - 1 ) )
+                    END DO
+                    R( i ) = ri
+                 END DO
+                 
+                 
+              ELSE
+                 
+                 DO i = 1, m
+                    ri = R( i )
+                    DO j = 1, n
+                       ri = ri - A%val( nA ) * X( j )
+                       nA = nA + 1
+                    END DO
+                    R( i ) = ri
+                 END DO
+                 
+              END IF
+              
+           END IF
+           
+        END IF
+        
+        
+! Storage type GALAHAD_SPARSE_BY_ROWS
+! ***********************************
+
+     ELSEIF ( (A%type == 'SPARSE_BY_ROWS') .OR.(A%type == 'sparse_by_rows')  ) THEN
+        
+        IF ( operation == '+' ) THEN
+           
+           IF ( symmetric == 1 ) THEN
+              
+              DO i = 1, m
+                 ri = R( i )
+                 Xi = X( i )
+                 DO j = A%ptr( i ), A%ptr( i + 1 ) - 1
+                    ri = ri + A%val( j ) * X( A%col( j ) )
+                    IF ( i /= A%col( j ) ) THEN
+                       r( A%col( j ) ) = r( A%col( j ) ) + A%val( j ) * X( i )
+                    END IF
+                 END DO
+                 R( i ) = ri
+              END DO
+                 
+           ELSE
+                 
+              IF ( transpose == 1 ) THEN
+                 
+                 DO j = 1, m
+                    xj = X( j )
+                    DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                       R( A%col( i ) ) = R( A%col( i ) ) + A%val( i ) * xj
+                    END DO
+                 END DO
+                 
+              ELSE
+                 
+                 DO i = 1, m
+                    ri = R( i )
+                    DO j = A%ptr( i ), A%ptr( i + 1 ) - 1
+                       ri = ri + A%val( j ) * X( A%col( j ) )
+                    END DO
+                    R( i ) = ri
+                 END DO
+                 
+              END IF
+              
+           END DO
+           
+        ELSE ! minus
+           
+           IF ( symmetric == 1 ) THEN
+              
+              DO i = 1, m
+                 ri = R( i )
+                 Xi = X( i )
+                 DO j = A%ptr( i ), A%ptr( i + 1 ) - 1
+                    ri = ri - A%val( j ) * X( A%col( j ) )
+                    IF ( i /= A%col( j ) ) THEN
+                       r( A%col( j ) ) = r( A%col( j ) ) - A%val( j ) * X( i )
+                    END IF
+                 END DO
+                 R( i ) = ri
+                 
+              ELSE
+                 
+                 IF ( transpose == 1 ) THEN
+                    
+                    DO j = 1, m
+                       xj = X( j )
+                       DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                          R( A%col( i ) ) = R( A%col( i ) ) - A%val( i ) * xj
+                       END DO
+                    END DO
+                    
+                 ELSE
+                    
+                    DO i = 1, m
+                       ri = R( i )
+                       DO j = A%ptr( i ), A%ptr( i + 1 ) - 1
+                          ri = ri - A%val( j ) * X( A%col( j ) )
+                       END DO
+                       R( i ) = ri
+                    END DO
+                    
+                 END IF
+                 
+              END IF
+              
+           END IF
+           
+        END IF
+        
+              
+! Storage type GALAHAD_SPARSE_BY_COLUMNS
+! **************************************
+
+     ELSEIF ( (A%type == 'SPARSE_BY_COLUMNS') .OR.(A%type == 'SPARSE_BY_COLUMNS') ) THEN
+
+        IF ( operation == '+' ) THEN
+           
+           IF ( symmetric == 1 ) THEN
+              
+              DO j = 1, n
+                 rj = R( j )
+                 Xj = X( j )
+                 DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                    R( A%row( i ) ) = R( A%row( i ) ) + A%val( i ) * Xj
+                    IF ( j /= A%row( i ) ) THEN
+                       rj = rj + A%val( i ) * X( A%row( i ) )
+                    END IF
+                 END DO
+                 R( j ) = rj
+              END DO
+                 
+           ELSE
+              
+              IF ( transpose == 1 ) THEN
+                 
+                 DO j = 1, n
+                    rj = R( j )
+                    DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                       rj = rj + A%val( i ) * X( A%row( i ) )
+                    END DO
+                    R( j ) = rj
+                 END DO
+
+!                 DO j = 1, m
+!                    xj = X( j )
+!                    DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+!                       R( A%col( i ) ) = R( A%col( i ) ) + A%val( i ) * xj
+!                    END DO
+!                 END DO
+                 
+              ELSE
+                 
+                 DO j = 1, n
+                    Xj = X( j )
+                    DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                       R( i ) = R( i ) + A%val( i ) * Xj
+                    END DO
+                 END DO
+                 
+              END IF
+              
+           END IF
+           
+        ELSE ! minus
+           
+           IF ( symmetric == 1 ) THEN
+ 
+              DO j = 1, n
+                 rj = R( j )
+                 Xj = X( j )
+                 DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                    R( A%row( i ) ) = R( A%row( i ) ) - A%val( i ) * Xj
+                    IF ( j /= A%row( i ) ) THEN
+                       rj = rj - A%val( i ) * X( A%row( i ) )
+                    END IF
+                 END DO
+                 R( j ) = rj
+              END DO
+              
+           ELSE
+                 
+              IF ( transpose == 1 ) THEN
+                 
+                 DO j = 1, n
+                    rj = R( j )
+                    DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                       rj = rj - A%val( i ) * X( A%row( i ) )
+                    END DO
+                    R( j ) = rj
+                 END DO
+                 
+                 !                    DO j = 1, m
+                 !                       xj = X( j )
+                 !                       DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                 !                          R( A%col( i ) ) = R( A%col( i ) ) - A%val( i ) * xj
+                 !                       END DO
+                 !                    END DO
+                 
+              ELSE
+                 
+                 DO j = 1, n
+                    Xj = X( j )
+                    DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
+                       R( i ) = R( i ) - A%val( i ) * Xj
+                    END DO
+                 END DO
+                 
+              END IF
+              
+           END IF
+           
+        END IF
+        
+      
+! Storage type GALAHAD_COORDINATE
+! *******************************
+     
+     ELSEIF ( (A%type == 'COORDINATE') .OR.(A%type == 'coordinate') ) THEN
+              
+        IF ( operation == '+' ) THEN
+           
+           IF ( symmetric == 1 ) THEN
+              
+              DO i = 1, A%ne
+                 R( A%row( i ) ) = R( A%row( i ) ) + A%val( i ) * X( A%col( i ) ) 
+                 R( A%col( i ) ) = R( A%col( i ) ) + A%val( i ) * X( A%row( i ) )
+              END DO
+              
+           ELSE
+              
+              IF ( transpose == 1 ) THEN
+                 DO i = 1, A%ne
+                    R( A%col( i ) ) = R( A%col( i ) ) + A%val( i ) * X( A%row( i ) )
+                 END DO
+              ELSE
+                 DO i = 1, A%ne
+                    R( A%row( i ) ) = R( A%row( i ) ) + A%val( i ) * X( A%col( i ) )
+                 END DO
+              END IF
+              
+           END IF
+           
+        ELSE ! minus
+           
+           IF ( symmetric == 1 ) THEN
+              
+              DO i = 1, A%ne
+                 R( A%row( i ) ) = R( A%row( i ) ) - A%val( i ) * X( A%col( i ) ) 
+                 R( A%col( i ) ) = R( A%col( i ) ) - A%val( i ) * X( A%row( i ) )
+              END DO
+              
+           ELSE
+              
+              IF ( transpose == 1 ) THEN
+                 DO i = 1, A%ne
+                    R( A%col( i ) ) = R( A%col( i ) ) - A%val( i ) * X( A%row( i ) )
+                 END DO
+              ELSE
+                 DO i = 1, A%ne
+                    R( A%row( i ) ) = R( A%row( i ) ) - A%val( i ) * X( A%col( i ) )
+                 END DO
+              END IF
+              
+           END IF
+           
+        END IF
+        
+        
+! Storage type GALAHAD_DIAGONAL
+! *****************************
+
+     ELSEIF ( (A%type == 'DIAGONAL') .OR.(A%type == 'diagonal') ) THEN
+              
+        IF ( operation == '+' ) THEN
+           
+           DO i = 1, n
+              R( i ) = R( i ) + A%val( i ) * X( i )
+           END DO
+           
+        ELSE ! minus
+           
+           DO i = 1, n
+              R( i ) = R( i ) - A%val( i ) * X( i )
+           END DO
+           
+        END IF
+
+        
+! Invalid storage type given in A%type
+! ************************************
+        
+     ELSE
+
+        IF( PRESENT( e_dev ) ) THEN
+           WRITE( e_dev, 1000 )
+        END IF
+        
+     END IF
+
+     RETURN
+     
+!  End of subroutine mop_Ax
+
+!  ********************************************
+
+!  Print formats
+
+1000  FORMAT(1X,'WARNING : mop_AX : Unrecognized value in variable A%type.',/)
+1001  FORMAT(1X,'ERROR : mop_AX : A%m <= 0 and/or A%n <= 0 .',/)
+1002  FORMAT(1X,'ERROR : mop_AX : Unrecognized value in variable op .',/)
+1003  FORMAT(1X,'ERROR : mop_AX : Unrecognized value in variable symm .',/)
+1004  FORMAT(1X,'ERROR : mop_AX : Unrecognized value in variable trans .',/)
+1005  FORMAT(/,14X,'**************************************************',/,   &
+               14X,'*                                                *',/,   &
+               14X,'*                   mop_Ax                       *',/,   &
+               14X,'*                                                *',/,   &
+               14X,'*  GALAHAD sparse matrix operation subroutine    *',/,   &
+               14X,'*                                                *',/,   &
+               14X,'**************************************************',/)
+1006  FORMAT(1X, 'symmetric = ', I1, '    transpose = ', I1,                 &
+                 'operation = ', A,/)
+1007  FORMAT(1X,'A%m = ', I6, 'A%n = ', I6, 'A%ne = ', I8, 'A%type = ', A17,/)
+1009  FORMAT(14X,  '**************************************************',/)
+     
+   END SUBROUTINE mop_Ax
+   
+ END MODULE GALAHAD_MOP
+ 
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*                             *-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*     END MOP  M O D U L E    *-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*                             *-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

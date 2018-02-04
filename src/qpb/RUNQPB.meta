@@ -1,0 +1,43 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            QPB.data
+! problem-data-file-device                          26
+! write-initial-sif                                 no
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! compute-orthogonal-projection                     no
+! least-squares-qp                                  F
+! scale-problem                                     0
+! pre-solve-problem                                 no
+! write-presolved-sif                               no
+! presolved-sif-file-name                           PRESOLVE.SIF
+! presolved-sif-file-device                         53
+! write-scaled-sif                                  no
+! scaled-sif-file-name                              SCALED.SIF
+! scaled-sif-file-device                            58
+! solve-problem                                     no
+! print-full-solution                               no
+! write-solution                                    yes
+! solution-file-name                                QPBSOL.d
+! solution-file-device                              62
+! write-result-summary                              yes
+! result-summary-file-name                          QPBRES.d
+! result-summary-file-device                        47
+
+INCLUDE QPB
+
+INCLUDE LSQP
+
+INCLUDE SBLS
+
+INCLUDE SLS
+
+INCLUDE ULS
+
+INCLUDE GLTR
+
+INCLUDE FDC
+
+INCLUDE FIT
+
+INCLUDE PRESOLVE

@@ -1,0 +1,36 @@
+#!/bin/bash
+# Simple helper functions
+
+yesno_default_no() {
+    read -p "$1 (y/N)? " -r -n 1 answer;
+    [[ $answer == [Yy] ]] && retval=1 || retval=0
+    echo
+    return $retval  # retval=1 means user chose against default option.
+}
+
+yesno_default_yes() {
+    read -p "$1 (Y/n)? " -r -n 1 answer;
+    [[ $answer == [Nn] ]] && retval=0 || retval=1
+    echo
+    return $retval  # retval=0 means user chose against default option.
+}
+
+warning() {
+    # The line below is output in light red.
+    echo -e " \0033[0;31;47mWARNING: $1 \0033[00m"
+}
+
+error() {
+    # The line below is output in bright red.
+    echo -e "\0033[1;31;47mERROR: $1 \0033[00m"
+}
+
+success() {
+    # The line below is output in bright green.
+    echo -e " \0033[0;32;47mSuccess: $1 \0033[00m"
+}
+
+message() {
+    # The line below is output in blue.
+    echo -e " \0033[0;34;47mMessage: $1 \0033[00m"
+}

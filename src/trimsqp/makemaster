@@ -1,0 +1,287 @@
+#  Main body of the installation makefile for the GALAHAD TRIMSQP package
+
+#  N. Gould, D. Orban, D. Robinson and Ph. L. Toint.
+#  This version: 7 XII 2007
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SRUNTRIMSQP = copyright $(LGS)(usetrimsqp.o) $(OBJS)/runtrimsqp_sif.o
+DRUNTRIMSQP = copyright $(LGD)(usetrimsqp.o) $(OBJD)/runtrimsqp_sif.o
+
+TRIMSQPS = nlpt mop check qpc eqp cutest_functions $(LGS)(trimsqp.o) $(SRUNTRIMSQP)
+TRIMSQPD = nlpt mop check qpc eqp cutest_functions $(LGD)(trimsqp.o) $(DRUNTRIMSQP)
+#TRIMSQPD = nlpt check qpc $(LGD)(trimsqp.o)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+all: trimsqp_cutest
+test: test_trimsqp
+test_nocutest: test_trimsqp_nocutest
+
+# trimsqp
+
+trimsqp_cutest: trimsqp_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: TRIMSQP ($(PRECIS) $(SUCC_CUTEST)"
+trimsqp_cutest_single: $(TRIMSQPS)
+	$(RANLIB) $(LGS)
+trimsqp_cutest_double: $(TRIMSQPD)
+	$(RANLIB) $(LGD)
+
+trimsqp: trimsqp_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: TRIMSQP ($(PRECIS) $(SUCC)"
+trimsqp_single: $(TRIMSQPS)
+	$(RANLIB) $(LGS)
+trimsqp_double: $(TRIMSQPD)
+	$(RANLIB) $(LGD)
+
+test_trimsqp_single: trimsqpst $(SRUNTRIMSQP)
+	echo ""
+	echo " Testing CUTEst interface to trimsqp"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) trimsqp -s QPBAND
+	echo ""
+	echo " Tests for trimsqp complete"
+
+test_trimsqp_double: trimsqpdt $(DRUNTRIMSQP)
+	echo ""
+	echo " Testing CUTEst interface to trimsqp"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) trimsqp QPBAND
+	echo ""
+	echo " Tests for trimsqp complete"
+
+test_trimsqp_nocutest: test_trimsqp_nocutest_$(PRECIS)
+
+test_trimsqp_nocutest_single: trimsqpst
+	echo ""
+	echo " Tests for trimsqp complete"
+
+test_trimsqp_nocutest_double: trimsqpdt
+	echo ""
+	echo " Tests for trimsqp complete"
+
+#  basic packages
+
+qpc:
+	( cd ../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+             qpc_silent PRECIS=$(PRECIS) PWD=$(PWD)/../qp )
+eqp:
+	( cd ../eqp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+             eqp.o PRECIS=$(PRECIS) PWD=$(PWD)/../eqp )
+nlpt:
+	( cd ../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../filtrane )
+check:
+	( cd ../check ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            check.o PRECIS=$(PRECIS) PWD=$(PWD)/../check )
+cutest_functions:
+	( cd ../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_silent PRECIS=$(PRECIS) PWD=$(PWD)/../auxiliary )
+mop:
+	( cd ../mop ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mop.o PRECIS=$(PRECIS) PWD=$(PWD)/../mop )
+copyright:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+
+
+# run spec-sheet example tests
+
+trimsqpds: $(TRIMSQPDS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_trimsqp $(RTRIMSQPDS)
+	- ./run_trimsqp >& trimsqpds.output
+	cat trimsqpds.output
+	rm ./run_trimsqp
+
+trimsqpdt: $(TRIMSQPDT)
+	echo " Exhaustive test of subroutine interface to trimsqp"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_trimsqp $(RTRIMSQPDT)
+	- ./run_trimsqp >& trimsqpdt.output
+	cat trimsqpdt.output
+	rm ./run_trimsqp
+
+trimsqpss: $(TRIMSQPSS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_trimsqp $(RTRIMSQPSS)
+	- ./run_trimsqp >& trimsqps.output
+	cat trimsqps.output
+	rm ./run_trimsqp
+
+trimsqpst: $(TRIMSQPST)
+	echo " Exhaustive test of subroutine interface to trimsqp"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_trimsqp $(RTRIMSQPST)
+	- ./run_trimsqp >& trimsqpt.output
+	cat trimsqpt.output
+	rm ./run_trimsqp
+
+#  Substantial GALAHAD packages
+
+$(LG)(trimsqp.o): ../trimsqp/trimsqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "trimsqp   "
+	$(SED) -f $(SEDS) ../trimsqp/trimsqp.f90 > $(OBJ)/trimsqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/trimsqp1.f90 > $(OBJ)/trimsqp2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/trimsqp2.f90 > $(OBJ)/trimsqp3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/trimsqp3.f90 > $(OBJ)/trimsqp.f90
+	cd $(OBJ); $(FORTRAN) -o trimsqp.o $(FFLAGSS) trimsqp.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o trimsqp.o $(FFLAGSN) trimsqp.f90 )
+	cd $(OBJ); $(ARR) trimsqp.o ; $(RM) trimsqp.f90 trimsqp1.f90 \
+                          trimsqp2.f90 trimsqp3.f90 trimsqp.o
+	$(RMARFILE) usetrimsqp.o
+	$(RMOBFILE) trimsqps.o
+	$(RMOBFILE) trimsqpt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usetrimsqp.o: $(LG)(usetrimsqp.o)
+
+$(LG)(usetrimsqp.o): ../trimsqp/usetrimsqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usetrimsqp   "
+	$(SED) -f $(SEDS) ../trimsqp/usetrimsqp.f90 > $(OBJ)/useqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/useqp1.f90 > $(OBJ)/useqp2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/useqp2.f90 > $(OBJ)/usetrimsqp.f90
+	cd $(OBJ); $(FORTRAN) -o usetrimsqp.o $(FFLAGSS) usetrimsqp.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usetrimsqp.o $(FFLAGSN) usetrimsqp.f90 )
+	cd $(OBJ); $(ARR) usetrimsqp.o ; $(RM) usetrimsqp.f90 useqp1.f90 \
+                                           useqp2.f90 usetrimsqp.o
+	$(RMOBFILE) runtrimsqp_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runtrimsqp_sif.o: $(OBJ)/runtrimsqp_sif.o
+
+$(OBJ)/runtrimsqp_sif.o: ../trimsqp/runtrimsqp_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runtrimsqp_sif"
+	$(SED) -f $(SEDS) ../trimsqp/runtrimsqp_sif.f90 \
+                > $(OBJ)/runtrimsqp_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runtrimsqp_sif.o $(FFLAGSS) runtrimsqp_sif.f90
+	rm $(OBJ)/runtrimsqp_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+trimsqps.o: $(OBJ)/trimsqps.o
+
+$(OBJ)/trimsqps.o: ../trimsqp/trimsqps.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "trimsqps  "
+	$(SED) -f $(SEDS) ../trimsqp/trimsqps.f90 > $(OBJ)/trimsqps1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/trimsqps1.f90 > $(OBJ)/trimsqps.f90
+	cd $(OBJ) ; $(FORTRAN) -o trimsqps.o $(FFLAGS) trimsqps.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+trimsqpt.o: $(OBJ)/trimsqpt.o
+
+$(OBJ)/trimsqpt.o: ../trimsqp/trimsqpt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "trimsqpt  "
+	$(SED) -f $(SEDS) ../trimsqp/trimsqpt.f90 > $(OBJ)/trimsqpt1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/trimsqpt1.f90 > $(OBJ)/trimsqpt.f90
+	cd $(OBJ) ; $(FORTRAN) -o trimsqpt.o $(FFLAGSS) trimsqpt.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  test problems
+
+ctoy1: $(TRIMSQPD)
+	@printf ' %-9s %-15s\t\t' "Compiling" "toy1  "
+	$(SED) -f $(SEDS) ../trimsqp/toy1.f90 > $(OBJ)/toy1x.f90
+	$(SED) -f $(LSEDS) $(OBJ)/toy1x.f90 > $(OBJ)/toy1.f90
+	cd $(OBJ) ; $(FORTRAN) -o toy1.o $(FFLAGSS) toy1.f90
+	rm $(OBJ)/toy1x.f90
+	@printf '[ OK ]\n'
+
+xtoy1: $(TRIMSQPD)
+	@printf ' %-9s %-15s\t\t' "Creating executable" "toy1  "
+	$(FORTRAN) -o toy1 $(RUNFFLAGS) $(OBJ)/toy1.o -L$(OBJD) $(LIBS)
+	@printf '[ OK ]\n'
+
+cxtoy1: $(TRIMSQPD)
+	@printf ' %-9s %-15s\t\t' "Compiling and forming executable:" "toy1  "
+	$(SED) -f $(SEDS) ../trimsqp/toy1.f90 > $(OBJ)/toy1x.f90
+	$(SED) -f $(LSEDS) $(OBJ)/toy1x.f90 > $(OBJ)/toy1.f90
+	cd $(OBJ) ; $(FORTRAN) -o toy1 $(FFLAGSS) toy1.f90
+	rm $(OBJ)/toy1x.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LG) $(OBJ)/trimsqpt.o $(OBJ)/trimsqpt.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmtrimsqp:
+	@printf ' %-9s %-15s\t\t' "Removing" "trimsqp from archive "
+	$(RMARFILE) trimsqp.o
+	@printf '[ OK ]\n'
+

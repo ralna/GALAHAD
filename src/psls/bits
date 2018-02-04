@@ -1,0 +1,296 @@
+!-*-*-*-   S P L S _ U P D A T E  _ F A C T O R S   S U B R O U T I N E   -*-*-*-
+
+      SUBROUTINE SPLS_update_factors( FIX, data, control, inform )
+
+!  Given a symmetrix positive matrix P, update the factors when a set of
+!  its rows/columns are removed.
+
+!  Dummy arguments
+
+      INTEGER, INTENT( IN ) , DIMENSION ( : ) :: FIX
+      TYPE ( SBLS_data_type ), INTENT( INOUT ) :: data
+      TYPE ( SBLS_control_type ), INTENT( IN ) :: control
+      TYPE ( SBLS_inform_type ), INTENT( INOUT ) :: inform
+
+!  Local variables
+
+!  ---------------------------------------------------------------------
+!  Stage 2 (ALTERNATIVE) - Update the Schur complement of M. This stage
+!  needs only be performed when the integer ifactr is 2
+!  ---------------------------------------------------------------------
+
+      IF ( iprint >= 200 .AND. out > 0 ) WRITE( out, 2260 )
+
+!  Refactorize the remaining coefficient matrix if the last update and solve
+!  took longer than the previous refactorization and subsequent solve
+
+      data%n_update = data%n_update + nadd
+      IF ( data%n_update > data%max_sc ) THEN
+        ifactr = 1
+        IF ( iprint >= 2 .AND. out > 0 ) WRITE( out, 2170 )  data%n_update,    &
+          data%max_sc, data%tupdat + data%tsolve, data%tfactr + data%t1stsl
+        refact = .TRUE.
+        GO TO 100
+      END IF
+      
+      CALL CPU_TIME( t )
+
+!  Compare this with the list of those which were free at the last
+!  factorization.  Fix any variables which was free but no longer appears in
+!  the list
+
+      DO j = 1, data%n_sub
+        i = data%SUB( j )
+        IF ( i > 0 ) THEN
+          IF ( data%INDEX( i ) == 0 ) THEN
+
+!  If more than max_sc variables have been fixed, refactorize the matrix
+
+            IF ( data%n_fixed >= data%max_sc ) THEN
+              ifactr = 1
+              refact = .TRUE.
+              GO TO 100
+            END IF
+
+!  Update the factorization of the Schur complement to allow for the removal
+!  of the J-th row and column of the original Hessian - this removal is
+!  effected by appending the J-th row and column of the identity matrix
+!  to the Hessian
+
+            data%SCU_matrix%BD_val( data%n_fixed + 1 ) = one
+            data%SCU_matrix%BD_row( nfixed + 1 ) = j
+            data%SCU_matrix%BD_col_start( nfixed + 2 ) = nfixed + 2
+            data%scu_status = 1
+ 230        CONTINUE
+
+!  Call SCU_append to update the Schur-complement
+
+            CALL CPU_TIME( tt )
+            CALL SCU_append( data%SCU_matrix, data%SCU_data, data%RHS, data%scu_status, data%SCU_inform )
+
+            IF ( iprint >= 200 .AND. out > 0 ) THEN
+              CALL CPU_TIME( time ) ; WRITE( out, 2270 ) time - tt
+            END IF
+
+            IF ( data%scu_status > 0 ) THEN
+
+!  SCU_append requires additional information. Compute the solution to
+!  the equation H * S = RHS, returning the solution S in RHS
+
+!  For Munskgaard's factorization
+
+              IF ( munks ) THEN
+                CALL MDCHL_iccgb( data%n_sub, matrix%val( data%nz01 : data%iaj ),        &
+                                  matrix%col( data%nz01 : data%iaj ), data%liccgg,     &
+                                  W1( : data%n_sub, : 2 ),                         &
+                                  data%IKEEP( : data%n_sub, : 2 ), data%RHS, data%INFO_iccg,    &
+                                  data%KEEP_iccg )
+
+!  For Lin and More's factorization
+
+              ELSE IF ( icfs ) THEN
+                task = 'N'
+                CALL DSTRSOL( data%n_sub, matrix%val( data%n_sub + 1 : data%nextra ),      &
+                              matrix%val( : data%n_sub ), data%L_col_ptr,               &
+                              matrix%row( data%n_sub + 1 : data%nextra ), data%RHS, task )
+                task = 'T'
+                CALL DSTRSOL( data%n_sub, matrix%val( data%n_sub + 1 : data%nextra ),      &
+                              matrix%val( : data%n_sub ), data%L_col_ptr,               &
+                              matrix%row( data%n_sub + 1 : data%nextra ), data%RHS, task )
+
+!  For the band factorization
+
+              ELSE
+                IF ( use_band ) THEN
+                  CALL BAND_solve( data%n_sub, data%semi_bandwidth_used, data%DIAG, data%OFFDIA, data%semi_bandwidth_used,   &
+                                   data%RHS, band_status )
+                ELSE
+
+!  For the multifrontal factorization
+
+                  CALL CPU_TIME( tt )
+                  CALL P_solve( data%P, data%P_factors, data%RHS, data%P_control,         &
+                                   P_infos )
+                  IF ( iprint >= 200 .AND. out > 0 ) THEN
+                    CALL CPU_TIME( time ) ; WRITE( out, 2280 ) time - tt
+                  END IF
+                END IF
+              END IF
+              GO TO 230
+            END IF
+
+!  If the Schur-complement is numerically indefinite, refactorize
+!  the preconditioning matrix to alleviate the effect of rounding
+
+            IF ( data%scu_status < 0 ) THEN
+              WRITE( out, 2050 ) data%scu_status
+              ifactr = 1 ; refact = .TRUE.
+              GO TO 100
+            END IF
+
+!  Record that the relevant variable is now fixed
+
+            data%SUB( j ) = - i
+            nfixed = nfixed + 1
+          END IF
+        END IF
+      END DO
+      CALL CPU_TIME( time )
+      data%tupdat = time - t ; data%tsolve = 0.0
+
+      RETURN
+
+!  End of subroutine SPLS_update_factors
+
+      END SUBROUTINE SPLS_update_factors
+
+!-*-*-*-*-*-*-*-*-   S P L S _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-*-
+
+      SUBROUTINE SPLS_solve( SOL, data, control, inform )
+
+!  Given a symmetrix positive matrix P, solve the system P x = b.
+!  b is input in SOL, and the solution x overwrites SOL
+
+!  Dummy arguments
+
+      REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION ( : ) :: SOL
+      TYPE ( SBLS_data_type ), INTENT( INOUT ) :: data
+      TYPE ( SBLS_control_type ), INTENT( IN ) :: control
+      TYPE ( SBLS_inform_type ), INTENT( INOUT ) :: inform
+
+!  Local variables
+
+
+!  - - - - - - - - - - - - - - - - - - - - - - - - -
+!  Subsequent solves using the original factorization
+!  and the factorization of the Schur-complement
+!  - - - - - - - - - - - - - - - - - - - - - - - - -
+
+!  Solve for the preconditioned gradient using the Schur complement update.
+!  Put the components of GRAD into RHS_scu
+
+        data%G( SUB( : n ) ) = data%GRAD( : n )
+        DO j = 1, data%n_sub
+          i = data%SUB( j )
+          IF ( i > 0 ) THEN
+            RHS_scu( j ) = data%G( i )
+          ELSE
+            RHS_scu( j ) = zero
+          END IF
+        END DO
+        RHS_scu( data%n_sub + 1 : data%n_sub + nfixed ) = zero
+
+!  Solve the linear system H * data%SOL_scu = RHS_scu
+
+        data%scu_status = 1
+  360   CONTINUE
+
+!  Call SCU_solve to solve the system
+
+        CALL CPU_TIME( tt )
+        CALL SCU_solve( data%SCU_matrix, data%SCU_data, RHS_scu, data%SOL_scu, RHS, data%scu_status )
+        IF ( iprint >= 200 .AND. out > 0 ) THEN
+          CALL CPU_TIME( time ) ; WRITE( out, 2290 ) time - tt
+        END IF
+        IF ( data%scu_status > 0 ) THEN
+
+!  SCU_block_solve requires additional information. Compute the solution to
+!  the equation H * S = RHS, returning the solution S in RHS
+
+!  Using Munskgaard's factorization
+
+          IF ( munks ) THEN
+            CALL MDCHL_iccgb( data%n_sub, matrix%val( data%nz01 : data%iaj ),              &
+                              matrix%col( data%nz01 : data%iaj ), data%liccgg,           &
+                              W1( : data%n_sub, : 2 ), data%IKEEP( : data%n_sub, : 2 ), RHS,   &
+                              data%INFO_iccg, data%KEEP_iccg )
+
+!  For Lin and More's factorization
+
+          ELSE IF ( icfs ) THEN
+            task = 'N'
+            CALL DSTRSOL( data%n_sub, matrix%val( data%n_sub + 1 : data%nextra ),            &
+                          matrix%val( : data%n_sub ), data%L_col_ptr,                     &
+                          matrix%row( data%n_sub + 1 : data%nextra ), RHS, task )
+            task = 'T'
+            CALL DSTRSOL( data%n_sub, matrix%val( data%n_sub + 1 : data%nextra ),            &
+                          matrix%val( : data%n_sub ), data%L_col_ptr,                     &
+                          matrix%row( data%n_sub + 1 : data%nextra ), RHS, task )
+
+!  For the band factorization
+
+          ELSE
+            IF ( use_band ) THEN
+              CALL BAND_solve( data%n_sub, data%semi_bandwidth_used, data%DIAG, data%OFFDIA, data%semi_bandwidth_used, RHS,    &
+                               band_status )
+            ELSE
+
+!  Using the multifrontal factorization
+
+              CALL CPU_TIME( tt )
+              CALL SILS_solve( data%P, data%P_factors, RHS, data%P_control, P_infos )
+              IF ( iprint >= 200 .AND. out > 0 ) THEN
+                CALL CPU_TIME( time ) ; WRITE( out, 2280 ) time - tt
+              END IF
+            END IF
+          END IF
+          GO TO 360
+        END IF
+
+!  Scatter the free components of the solution into Q
+
+        DO j = 1, data%n_sub
+          i = data%SUB( j )
+          IF ( i > 0 ) Q( i ) = data%SOL_scu( j )
+        END DO
+        CALL CPU_TIME( time )
+        data%tsolve = time - t
+        IF ( iprint >= 10 .AND. out > 0 )                                       &
+          WRITE( out, 2110 ) data%tupdat + data%tsolve, data%tfactr + data%t1stsl
+
+      RETURN
+
+!  End of subroutine SPLS_solve
+
+      END SUBROUTINE SPLS_solve
+
+
+
+
+
+!  Using Munskgaard's factorization
+
+        IF ( munks ) THEN
+          CALL MDCHL_iccgb( data%n_sub, matrix%val( data%nz01 : data%iaj ),    &
+                            matrix%col( data%nz01 : data%iaj ), data%liccgg,   &
+                            W1( : data%n_sub, : 2 ),                           &
+                            data%IKEEP( : data%n_sub, : 2 ), RHS_sub,          &
+                            data%INFO_iccg, data%KEEP_iccg )
+
+!  For Lin and More's factorization
+
+        ELSE IF ( icfs ) THEN
+          task = 'N'
+          CALL DSTRSOL( data%n_sub,                                            &
+                        matrix%val( data%n_sub + 1 : data%nextra ),            &
+                        matrix%val( : data%n_sub ), data%L_col_ptr,            &
+                        matrix%row( data%n_sub + 1 : data%nextra ),            &
+                        RHS_sub, task )
+          task = 'T'
+          CALL DSTRSOL( data%n_sub,                                            &
+                        matrix%val( data%n_sub + 1 : data%nextra ),            &
+                        matrix%val( : data%n_sub ), data%L_col_ptr,            &
+                        matrix%row( data%n_sub + 1 : data%nextra ),            &
+                        RHS_sub, task )
+
+!  For the band factorization
+
+        ELSE
+          IF ( use_band ) THEN
+          ELSE
+
+!  Using the multifrontal factorization
+
+          END IF
+        END IF
+

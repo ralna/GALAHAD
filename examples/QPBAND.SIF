@@ -1,0 +1,68 @@
+***************************
+* SET UP THE INITIAL DATA *
+***************************
+ 
+NAME          QPBAND 
+ 
+*   Problem :
+*   *********
+ 
+*   A banded QP
+*   SIF input: Nick Gould, December 1999.
+ 
+*IE N                   2
+ IE N                   10 
+*IE N                   1000
+*IE N                   10000
+ IE N                   5
+
+
+ IE 1                   1
+ IE 2                   2
+ RI RN        N
+ RE ONE                 1.0    
+
+ I/ M         N                        2
+ I- N-1       N                        1
+
+VARIABLES
+ 
+ DO I         1                        N
+ X  X(I )
+ ND
+ 
+GROUPS
+ 
+ DO I         1                        N
+ RI RI        I
+ R/ RI/RN     RI                       RN
+ RM -RI/RN    RI/RN     -1.0
+ ZN OBJ       X(I )                    -RI/RN
+ ND
+
+ DO I         1                        M
+ I+ M+I       M                        I
+ XG C(I)      X(I)      1.0            X(M+I)    1.0
+ ND
+  
+CONSTANTS
+ 
+ DO I         1                        M
+ X  QPBAND    C(I)      1.0
+ ND
+ 
+BOUNDS
+ 
+ LO QPBAND    'DEFAULT' 0.0
+ UP QPBAND    'DEFAULT' 2.0
+ 
+QUADRATIC
+
+ DO I         1                        N-1
+ I+ I+1       I                        1
+ X  X(I )     X(I)      2.0            X(I+1)    -1.0
+ ND
+ X  X(N )     X(N)      2.0
+ 
+ENDATA
+ 

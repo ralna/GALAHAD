@@ -1,0 +1,383 @@
+#  Main body of the installation makefile for the GALAHAD SBLS package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 10 I 2014
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS        = $(BASIC) $(OPTIMIZATION)   $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS       = $(BASIC) $(OPTIMIZATION)   $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN       = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77      = $(BASIC) $(OPTIMIZATION)   $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S     = $(BASIC) $(OPTIMIZATION)   $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP     = $(BASIC) $(OPTIMIZATION)   $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+                $(OPENMP)
+FFLAGSNOMP    = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(OPENMP)
+RUNFFLAGS     =          $(OPTIMIZATION)   $(DEBUG) $(MODULES)
+RUNFFLAGSCUDA =          $(OPTIMIZATION)            $(MODULES)
+RUNFFLAGSOMP  =          $(OPTIMIZATION)   $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+
+#  remove out-of-core direct-access files
+
+RMOOC = $(RM) factor_integer_ooc* factor_real_ooc* \
+              work_indefinite_ooc work_real_ooc
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+LUSEDS = $(GALAHAD)/seds/$(ULINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SSBLS =   basics sls uls lmt $(LGS)(sbls.o)
+DSBLS =   basics sls uls lmt $(LGD)(sbls.o)
+
+SRUNSBLS = copyright $(LGS)(usesbls.o) $(OBJS)/runsbls_sif.o
+DRUNSBLS = copyright $(LGD)(usesbls.o) $(OBJD)/runsbls_sif.o
+
+SBLSOBJECTSS_CUTEST = $(SSBLS) $(SRUNSBLS)
+SBLSOBJECTSD_CUTEST = $(DSBLS) $(DRUNSBLS)
+
+SBLSDS = $(DSBLS) lms $(OBJD)/sblss.o
+SBLSDT = $(DSBLS) lms $(OBJD)/sblst.o
+SBLSSS = $(SSBLS) lms $(OBJS)/sblss.o
+SBLSST = $(SSBLS) lms $(OBJS)/sblst.o
+
+SBLSDSLS = $(DSBLS) $(OBJD)/sblssls.o
+SBLSSSLS = $(SSBLS) $(OBJS)/sblssls.o
+
+RSBLSDS = $(OBJD)/sblss.o -L$(OBJD) $(LIBS)
+RSBLSDT = $(OBJD)/sblst.o -L$(OBJD) $(LIBS)
+RSBLSSS = $(OBJS)/sblss.o -L$(OBJS) $(LIBS)
+RSBLSST = $(OBJS)/sblst.o -L$(OBJS) $(LIBS)
+
+RSBLSDSLS = $(OBJD)/sblssls.o -L$(OBJD) $(LIBS)
+RSBLSSSLS = $(OBJS)/sblssls.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+all: sbls
+test: test_sbls
+test_nocutest: test_sbls
+test_spec: test_sbls_spec
+
+# sbls
+
+sbls_cutest: sbls_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SBLS ($(PRECIS) $(SUCC_CUTEST)"
+sbls_cutest_single: $(SBLSOBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+sbls_cutest_double: $(SBLSOBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+sbls_silent: sbls_silent_$(PRECIS)
+sbls_silent_single: $(SSBLS)
+sbls_silent_double: $(DSBLS)
+
+sbls: sbls_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SBLS ($(PRECIS) $(SUCC)"
+sbls_single: $(SSBLS)
+	$(RANLIB) $(LGS)
+sbls_double: $(DSBLS)
+	$(RANLIB) $(LGD)
+
+sblssrunall: sblsss sblsst
+sblsdrunall: sblsds sblsdt
+sblsrunall: sblsdrunall sblssrunall
+
+test_sbls: test_sbls_$(PRECIS)
+test_sbls_single: sblsst
+	echo " Tests for sbls complete"
+test_sbls_double: sblsdt
+	echo " Tests for sbls complete"
+
+test_sbls_spec: test_sbls_spec_$(PRECIS)
+test_sbls_spec_single: sblsss
+test_sbls_spec_double: sblsds
+
+#  basic packages
+
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+	( cd ../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            qpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../qp )
+qpt:
+	( cd ../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            qpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../qp )
+sls:
+	( cd ../sls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            sls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../sls )
+uls:
+	( cd ../uls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            uls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../uls )
+lms:
+	( cd ../lms ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lms_silent PRECIS=$(PRECIS) PWD=$(PWD)/../lms )
+lmt:
+	( cd ../lmt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lmt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../lmt )
+ulinearsolver:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ulinearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+gltr:
+	( cd ../rq ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            gltr.o PRECIS=$(PRECIS) PWD=$(PWD)/../rq )
+qpd:
+	( cd ../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            qpt.o qpp.o scu qpd.o PRECIS=$(PRECIS) PWD=$(PWD)/../qp )
+copyright:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+nlpt:
+	( cd ../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../filtrane )
+
+# run spec-sheet example tests
+
+sblsds: $(SBLSDS)
+#	echo "$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sbls $(RSBLSDS)"
+	cd ../sbls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+                        -o run_sbls $(RSBLSDS)
+	cd ../sbls ; $(RMOOC)
+	- ./run_sbls >& sblsds.output
+	cat sblsds.output
+	rm ./run_sbls
+
+sblsds_cuda: $(SBLSDS)
+	cd ../sbls ; $(CUDACOMP) $(CUDAOPENMP) -o run_sbls \
+                      $(RSBLSDS) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
+	cd ../sbls ; $(RMOOC)
+	- ../sbls//run_sbls
+#	- ../sbls//run_sbls >& ../sbls/sblsds.output
+#	cat ../sbls/sblsds.output
+	rm ../sbls/run_sbls
+
+sblsdsls: $(SBLSDSLS)
+	cd ../sbls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+                       -o run_sbls $(RSBLSDSLS)
+	cd ../sbls ; $(RMOOC)
+	- ./run_sbls >& sblsdsls.output
+	cat sblsdsls.output
+	rm ./run_sbls
+
+sblsdt: $(SBLSDT)
+	echo " Exhaustive test of subroutine interface to sbls"
+	cd ../sbls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+                       -o run_sbls $(RSBLSDT)
+	cd ../sbls ; $(RMOOC)
+#	- ./run_sbls
+	- ./run_sbls >& sblsdt.output
+	cat sblsdt.output
+	rm ./run_sbls
+
+sblsdt_cuda: $(SBLSDT)
+	cd ../sbls ; $(CUDACOMP) $(CUDAOPENMP) -o run_sbls \
+                      $(RSBLSDT) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
+	cd ../sbls ; $(RMOOC)
+#	- ../sbls//run_sbls
+	- ../sbls//run_sbls >& ../sbls/sblsdt.output
+	cat ../sbls/sblsdt.output
+	rm ../sbls/run_sbls
+
+sblsdt_valgrind: $(SBLSDT)
+	echo " Exhaustive test of subroutine interface to sbls"
+	cd ../sbls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+                       -o run_sbls $(RSBLSDT)
+	cd ../sbls ; $(RMOOC)
+	- valgrind -v --tool=memcheck --leak-check=yes \
+             --show-reachable=yes ../sbls/run_sbls
+	rm ./run_sbls
+
+sblsss: $(SBLSSS)
+	cd ../sbls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+                       -o run_sbls $(RSBLSSS)
+	cd ../sbls ; $(RMOOC)
+	- ./run_sbls >& sblss.output
+	cat sblss.output
+	rm ./run_sbls
+
+sblsssls: $(SBLSSSLS)
+	cd ../sbls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sbls $(RSBLSSSLS)
+	cd ../sbls ; $(RMOOC)
+	- ./run_sbls >& sblssls.output
+	cat sblssls.output
+	rm ./run_sbls
+
+sblsst: $(SBLSST)
+	echo " Exhaustive test of subroutine interface to sbls"
+	cd ../sbls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sbls $(RSBLSST)
+	cd ../sbls ; $(RMOOC)
+	- ./run_sbls >& sblst.output
+	cat sblst.output
+	rm ./run_sbls
+
+#  Substantial GALAHAD packages
+
+sbls.o: $(LG)(sbls.o)
+
+$(LG)(sbls.o): ../sbls/sbls.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "sbls  "
+	$(SED) -f $(SEDS) ../sbls/sbls.f90 > $(OBJ)/sbls1.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/sbls1.f90 > $(OBJ)/sbls2.f90
+	$(SED) -f $(LUSEDS) $(OBJ)/sbls2.f90 > $(OBJ)/sbls3.f90
+	$(SED) "s/^.$(NOT64)/     /" $(OBJ)/sbls3.f90 > $(OBJ)/sbls4.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/sbls4.f90 > $(OBJ)/sbls.f90
+	cd $(OBJ); $(FORTRAN) -o sbls.o $(FFLAGSOMP) sbls.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o sbls.o $(FFLAGSNOMP) sbls.f90 )
+	cd $(OBJ); $(ARR) sbls.o ; $(RM) sbls.f90 sbls1.f90 \
+                                         sbls2.f90 sbls3.f90 sbls4.f90 sbls.o
+	$(RMARFILE) bqp.o
+	$(RMARFILE) eqp.o
+	$(RMARFILE) bqpb.o
+	$(RMARFILE) lcf.o
+	$(RMARFILE) lls.o
+	$(RMARFILE) llst.o
+	$(RMARFILE) qpd.o
+	$(RMARFILE) qpe.o
+	$(RMARFILE) arc.o
+	$(RMARFILE) usesqp.o
+	$(RMARFILE) usesbls.o
+	$(RMOBFILE) sblss.o
+	$(RMOBFILE) sblst.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  test decks
+
+sblss.o: $(OBJ)/sblss.o
+
+$(OBJ)/sblss.o: ../sbls/sblss.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "sblss  "
+	$(SED) -f $(SEDS) ../sbls/sblss.f90 > $(OBJ)/sblss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/sblss1.f90 > $(OBJ)/sblss.f90
+#	$(SED) -f $(SEDS) ../sbls/sblss.f90 > $(OBJ)/sblss.f90
+	cd $(OBJ) ; $(FORTRAN) -o sblss.o $(FFLAGS) sblss.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+sblssls.o: $(OBJ)/sblssls.o
+
+$(OBJ)/sblssls.o: ../sbls/sblssls.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "sblssls  "
+	$(SED) -f $(SEDS) ../sbls/sblssls.f90 > $(OBJ)/sblssls1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/sblssls1.f90 > $(OBJ)/sblssls.f90
+#	$(SED) -f $(SEDS) ../sbls/sblssls.f90 > $(OBJ)/sblssls.f90
+	cd $(OBJ) ; $(FORTRAN) -o sblssls.o $(FFLAGS) sblssls.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+sblst.o: $(OBJ)/sblst.o
+
+$(OBJ)/sblst.o: ../sbls/sblst.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "sblst  "
+	$(SED) -f $(SEDS) ../sbls/sblst.f90 > $(OBJ)/sblst1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/sblst1.f90 > $(OBJ)/sblst.f90
+#	$(SED) -f $(SEDS) ../sbls/sblst.f90 > $(OBJ)/sblst.f90
+	cd $(OBJ) ; $(FORTRAN) -o sblst.o $(FFLAGSS) sblst.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usesbls.o: $(LG)(usesbls.o)
+
+$(LG)(usesbls.o): ../sbls/usesbls.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usesbls   "
+	$(SED) -f $(SEDS) ../sbls/usesbls.f90 > $(OBJ)/usesbls1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usesbls1.f90 > $(OBJ)/usesbls2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usesbls2.f90 > $(OBJ)/usesbls.f90
+	cd $(OBJ); $(FORTRAN) -o usesbls.o $(FFLAGSOMP) usesbls.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usesbls.o $(FFLAGSN) usesbls.f90 )
+	cd $(OBJ); $(ARR) usesbls.o ; $(RM) usesbls.f90 usesbls1.f90 \
+                                           usesbls2.f90 usesbls.o
+	$(RMOBFILE) runsbls_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runsbls_sif.o: $(OBJ)/runsbls_sif.o
+
+$(OBJ)/runsbls_sif.o: ../sbls/runsbls_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runsbls_sif"
+	$(SED) -f $(SEDS) ../sbls/runsbls_sif.f90 > $(OBJ)/runsbls_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runsbls_sif.o $(FFLAGSS) runsbls_sif.f90
+	rm $(OBJ)/runsbls_sif.f90
+	@printf '[ OK ]\n'
+
+
+#  generate HSL codes from GALAHAD ones
+
+hslgen:
+	$(SED) -f ../hsl/gal2hsl ../sbls/sbls.f90 > ../hsl/hsl_mi14/mi14d.f90
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LGS) $(LGD) $(QPBDS) $(OBJ)/qpbdt.o $(QPBSS) $(OBJ)/qpbst.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmsbls:
+	@printf ' %-9s %-15s\t\t' "Removing" "sbls from archive "
+	$(RMARFILE) sbls.o
+	@printf '[ OK ]\n'
+

@@ -1,0 +1,130 @@
+* EXTERNAL PACKAGES *
+
+GALAHAD optionally uses a number of external packages. Default
+vesions are provided, and the user need take no further action
+unless she/he wishes to include fully functioning versions.
+
+Some of this optional software, particularly that from HSL, 
+is available as source code. This may be compiled automatically
+as part of the GALAHAD installation (or update) process. See
+./galahad/doc/README.bashrc for more details.
+
+The use of other external packages, particularly those that 
+are available as object libraries, is controlled by variables
+set in the files generically of the form
+
+   machine.os.compiler 
+
+in the ./galahad/makefiles and ./galahad/bin/sys directories 
+that will have been created during the installation process.
+
+The variables in the former are "Makefile" variables
+and by default are set as
+
+BLAS = 
+LAPACK = 
+HSL = 
+METIS = 
+PARDISO = 
+WSMP = 
+
+These may be overridden as for eaxmple,
+
+WSMP = -L/numerical/wsmp/wsmp-Linux64/lib/Intel -lwsmp64
+
+Note that spaces are not critical here.
+
+The variables in ./galahad/bin/sys are Unix Bourne/bash-shell variables and 
+by default are
+
+BLAS=""
+LAPACK=""
+HSL=""
+METIS=""
+PARDISO=""
+WSMP=""
+
+and are now overridden for example as
+
+WSMP="-L/numerical/wsmp/wsmp-Linux64/lib/Intel -lwsmp64"
+
+Spaces arre critical here, and all declarations must be 
+enclosed in quotes "" as shown.
+
+----
+BLAS
+----
+
+ If there are compiled, library versions of the blas
+ (basic linear algebra subprograms), set BLAS to a list of
+ names of the object library suffix -lx, where the object library
+ libx.a contains relevant blas. For instance if the blas are
+ shared between object libraries libblas1.a and libblas2.a,
+ BLAS should be set to "-lblas1 -lblas2", noting that those in
+ libblas1.a will take precedence over those in libblas2.a.
+ If the user wishes not to link blas separately, set BLAS to 
+ "-galahad_dummy"
+
+------
+LAPACK
+------
+
+ If there are compiled, library versions of the LAPACK library
+ set LAPACK to a list of names of the object library suffix -lx, 
+ where the object library libx.a contains relevant lapack. For instance 
+ if LAPACK is shared between object libraries liblapack1.a and liblapack2.a,
+ LAPACK should be set to "-llapack1 -llapack2", noting that those in
+ liblapack1.a will take precedence over those in liblapack2.a.
+ If the user wishes not to link lapack separately, set LAPACK to 
+ "-galahad_dummy"
+
+---
+HSL
+---
+
+ If you already have a compiled, library version of HSL (formerly, the 
+ Harwell Subroutine Library), set HSL to -lx, where the object library
+ libx.a contains the relevant HSL packages. For instance if the HSL
+ is in the object library libhsl.a, HSL should be set to "-lhsl".
+ N.B. HSL is only optionally required but will improve performance.
+
+-----
+METIS
+-----
+
+ If there is a compiled, library version of the MeTiS graph partitioning 
+ package (http://www-users.cs.umn.edu/~karypis/metis/) , set METIS to -lx, 
+ where the object library libx.a contains Metis.  For instance if MeTiS 
+ is contained in the object library libmetis.a, METIS should be set to 
+ "-lmetis".  If the library is in a "non-standard" place, METIS should
+ also point to the full path to the library. For example, if libmetis.so
+ is in the directory /mylibrary, METIS should be set to "-L/mylibrary -lmetis" 
+ N.B. MeTiS is only optionally required but may improve performance.
+
+-------
+PARDISO
+-------
+
+ If there is a compiled, library version of the PARDISO sparse factorization
+ package (http://www.pardiso-project.org/) , set PARDISO to -lx, 
+ where the object library libx.so contains PARDISO.  For instance if PARDISO
+ is contained in the object library libpardiso.so, PARDISO should be set to 
+ "-lpardiso". If the library is in a "non-standard place", PARDISO should
+ also point to the full path to the library. For example, if libpardiso.so
+ is in the directory /mylibrary, PARDISO should be set to 
+ "-L/mylibrary -lpardiso" 
+ N.B. PARDISO is only optionally required but may improve performance.
+
+----
+WSMP
+----
+
+ If there is a compiled, library version of the WSMP sparse factorization
+ package (http://www.wsmp-project.org/) , set WSMP to -lx, 
+ where the object library libx.so contains WSMP.  For instance if WSMP
+ is contained in the object library libwsmp.so, wsmp should be set to 
+ "-lwsmp". If the library is in a "non-standard place", WSMP should
+ also point to the full path to the library. For example, if libwsmp.so
+ is in the directory /mylibrary, WSMP should be set to 
+ "-L/mylibrary -lwsmp" 
+ N.B. WSMP is only optionally required but may improve performance.

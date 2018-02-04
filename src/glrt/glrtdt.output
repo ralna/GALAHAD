@@ -1,0 +1,27 @@
+
+ ==== normal exits ====== 
+
+ pass   1 GLRT_solve exit status =      0
+ pass   2 GLRT_solve exit status =      0
+ pass   3 GLRT_solve exit status =      0
+ pass   4 GLRT_solve exit status =      0
+ pass   5 GLRT_solve exit status =      0
+ pass   6 GLRT_solve exit status =      0
+ pass   7 GLRT_solve exit status =      0
+ pass   8 GLRT_solve exit status =      0
+ pass   9 GLRT_solve exit status =      0
+ pass  10 GLRT_solve exit status =      0
+ pass  11 GLRT_solve exit status =      0
+ pass  12 GLRT_solve exit status =      0
+ pass  13 GLRT_solve exit status =      0
+ pass  14 GLRT_solve exit status =      0
+
+ ==== error exits ====== 
+
+ pass   2 GLRT_solve exit status =    -18
+ pass   3 GLRT_solve exit status =    -25
+ pass   4 GLRT_solve exit status =     -3
+ pass   5 GLRT_solve exit status =     -3
+ pass   7 GLRT_solve exit status =     -3
+ pass   8 GLRT_solve exit status =     -3
+ pass   9 GLRT_solve exit status =     -7

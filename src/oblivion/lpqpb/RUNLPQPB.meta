@@ -1,0 +1,28 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            QPB.data
+! problem-data-file-device                          26
+! write-initial-sif                                 no
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! rho-used                                          1.0D+0
+! scale-problem                                     0
+! pre-solve-problem                                 no
+! write-presolved-sif                               no
+! presolved-sif-file-name                           PRESOLVE.SIF
+! presolved-sif-file-device                         52
+! solve-problem                                     no
+! print-full-solution                               yes
+! write-solution                                    yes
+! solution-file-name                                QPBSOL.d
+! solution-file-device                              62
+! write-result-summary                              yes
+! result-summary-file-name                          QPBRES.d
+! result-summary-file-device                        47
+! one-norm-penalty                                  yes
+
+INCLUDE LPQPB
+
+INCLUDE LSQP
+
+INCLUDE PRESOLVE

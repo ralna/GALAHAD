@@ -1,0 +1,10 @@
+! String indicating package to be used (one of: lanb filt qpa qpb;
+! none to leave default alone)
+
+DefaultPackage: lanb
+
+! String indicating achitecture to be used. Must be the name of
+! one of the currently installed subdirectories of $GALAHAD/makefiles;
+! none to leave default alone
+
+DefaultArchitecture: none

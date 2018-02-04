@@ -1,0 +1,307 @@
+#  Main body of the installation makefile for the GALAHAD MIQR package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 13 V 2014
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(OPENMP)
+FFLAGSNOMP = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(OPENMP)
+RUNFFLAGS  =         $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SMIQR =  basics cutest_functions $(LGS)(miqr.o)
+DMIQR =  basics cutest_functions $(LGD)(miqr.o)
+SMIQRC =  basics cutest_functions $(LGS)(miqrc.o)
+DMIQRC =  basics cutest_functions $(LGD)(miqrc.o)
+
+SRUNMIQR = copyright $(LGS)(usemiqr.o) $(OBJS)/runmiqr_sif.o
+DRUNMIQR = copyright $(LGD)(usemiqr.o) $(OBJD)/runmiqr_sif.o
+
+MIQROBJECTSS_CUTEST = $(SMIQR) $(SRUNMIQR)
+MIQROBJECTSD_CUTEST = $(DMIQR) $(DRUNMIQR)
+
+MIQRDS = $(DMIQR) $(OBJD)/miqrs.o
+MIQRCDS = $(DMIQRC) $(OBJD)/miqrcs.o
+MIQRDT = $(DMIQR) $(OBJD)/miqrt.o
+MIQRSS = $(SMIQR) $(OBJS)/miqrs.o
+MIQRST = $(SMIQR) $(OBJS)/miqrt.o
+
+RMIQRDS = $(OBJD)/miqrs.o -L$(OBJD) $(LIBS)
+RMIQRCDS = $(OBJD)/miqrcs.o -L$(OBJD) $(LIBS)
+RMIQRDT = $(OBJD)/miqrt.o -L$(OBJD) $(LIBS)
+RMIQRSS = $(OBJS)/miqrs.o -L$(OBJS) $(LIBS)
+RMIQRST = $(OBJS)/miqrt.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+miqr: miqr.o
+all: miqr_cutest
+test: test_miqr
+test_nocutest: test_miqr_nocutest
+
+# miqr
+
+miqr_silent: miqr_$(PRECIS)
+miqr: miqr_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: MIQR ($(PRECIS) $(SUCC)"
+miqr_single: $(SMIQR)
+	$(RANLIB) $(LGS)
+miqr_double: $(DMIQR)
+	$(RANLIB) $(LGD)
+
+miqr_cutest: miqr_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: MIQR ($(PRECIS) $(SUCC_CUTEST)"
+miqr_cutest_single: $(MIQROBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+miqr_cutest_double: $(MIQROBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+miqrsrunall: miqrss miqrst
+miqrdrunall: miqrds miqrdt
+miqrrunall: miqrdrunall miqrsrunall
+
+#  basic packages
+
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+	( cd ../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            qpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../qp )
+cutest_functions:
+	( cd ../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_silent PRECIS=$(PRECIS) PWD=$(PWD)/../auxiliary )
+copyright:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+
+# run spec-sheet example tests
+
+miqrds: $(MIQRDS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_miqr $(RMIQRDS)
+#	- ./run_miqr
+	- ./run_miqr >& miqrds.output
+	cat miqrds.output
+	rm ./run_miqr
+
+miqrcds: $(MIQRCDS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_miqrc $(RMIQRCDS)
+#	- ./run_miqrc
+	- ./run_miqrc >& miqrcds.output
+	cat miqrcds.output
+	rm ./run_miqrc
+
+miqrdt: $(MIQRDT)
+	echo " Exhaustive test of subroutine interface to miqr"
+	echo $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_miqr $(RMIQRDT)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_miqr $(RMIQRDT)
+	- ./run_miqr >& miqrdt.output
+	cat miqrdt.output
+	rm ./run_miqr
+
+miqrss: $(MIQRSS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_miqr $(RMIQRSS)
+	- ./run_miqr >& miqrs.output
+	cat miqrs.output
+	rm ./run_miqr
+
+miqrst: $(MIQRST)
+	echo " Exhaustive test of subroutine interface to miqr"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_miqr $(RMIQRST)
+	- ./run_miqr >& miqrt.output
+	cat miqrt.output
+	rm ./run_miqr
+
+#  Substantial GALAHAD packages
+
+miqr.o: $(LG)(miqr.o)
+
+$(LG)(miqr.o):  ../miqr/miqr.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "miqr  "
+	$(SED) -f $(SEDS)  ../miqr/miqr.f90 > $(OBJ)/miqr1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/miqr1.f90 > $(OBJ)/miqr2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/miqr2.f90 > $(OBJ)/miqr3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/miqr3.f90 > $(OBJ)/miqr.f90
+	cd $(OBJ); $(FORTRAN) -o miqr.o $(FFLAGSS) miqr.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o miqr.o $(FFLAGSN) miqr.f90 )
+	cd $(OBJ); $(ARR) miqr.o ; $(RM) miqr.f90 miqr1.f90 miqr2.f90 \
+                                         miqr3.f90 miqr.o
+	$(RMARFILE) tru.o
+	$(RMARFILE) arc.o
+	$(RMARFILE) usemiqr.o
+	$(RMARFILE) uselstr.o
+	$(RMARFILE) uselsrt.o
+	$(RMARFILE) usel2rt.o
+	$(RMOBFILE) miqrs.o
+	$(RMOBFILE) miqrt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+miqrc.o: $(LG)(miqrc.o)
+
+$(LG)(miqrc.o):  ../miqr/miqrc.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "miqrc  "
+	$(SED) -f $(SEDS)  ../miqr/miqrc.f90 > $(OBJ)/miqrc1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/miqrc1.f90 > $(OBJ)/miqrc2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/miqrc2.f90 > $(OBJ)/miqrc3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/miqrc3.f90 > $(OBJ)/miqrc.f90
+	cd $(OBJ); $(FORTRAN) -o miqrc.o $(FFLAGSS) miqrc.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o miqrc.o $(FFLAGSN) miqrc.f90 )
+	cd $(OBJ); $(ARR) miqrc.o ; $(RM) miqrc.f90 miqrc1.f90 miqrc2.f90 \
+                                         miqrc3.f90 miqrc.o
+	$(RMARFILE) tru.o
+	$(RMARFILE) arc.o
+	$(RMARFILE) usemiqrc.o
+	$(RMOBFILE) miqrcs.o
+	$(RMOBFILE) miqrct.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usemiqr.o: $(LG)(usemiqr.o)
+
+$(LG)(usemiqr.o): ../miqr/usemiqr.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usemiqr   "
+	$(SED) -f $(SEDS) ../miqr/usemiqr.f90 > $(OBJ)/usemiqr1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usemiqr1.f90 > $(OBJ)/usemiqr2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usemiqr2.f90 > $(OBJ)/usemiqr.f90
+	cd $(OBJ); $(FORTRAN) -o usemiqr.o $(FFLAGSS) usemiqr.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usemiqr.o $(FFLAGSN) usemiqr.f90 )
+	cd $(OBJ); $(ARR) usemiqr.o ; $(RM) usemiqr.f90 usemiqr1.f90 \
+                                           usemiqr2.f90 usemiqr.o
+	$(RMOBFILE) runmiqr_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runmiqr_sif.o: $(OBJ)/runmiqr_sif.o
+
+$(OBJ)/runmiqr_sif.o: ../miqr/runmiqr_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runmiqr_sif"
+	$(SED) -f $(SEDS) ../miqr/runmiqr_sif.f90 > $(OBJ)/runmiqr_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runmiqr_sif.o $(FFLAGSS) runmiqr_sif.f90
+	rm $(OBJ)/runmiqr_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+miqrs.o: $(OBJ)/miqrs.o
+
+$(OBJ)/miqrs.o: ../miqr/miqrs.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "miqrs  "
+	$(SED) -f $(SEDS) ../miqr/miqrs.f90 > $(OBJ)/miqrs1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/miqrs1.f90 > $(OBJ)/miqrs.f90
+	cd $(OBJ) ; $(FORTRAN) -o miqrs.o $(FFLAGS) miqrs.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+miqrcs.o: $(OBJ)/miqrcs.o
+
+$(OBJ)/miqrcs.o: ../miqr/miqrcs.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "miqrcs  "
+	$(SED) -f $(SEDS) ../miqr/miqrcs.f90 > $(OBJ)/miqrcs1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/miqrcs1.f90 > $(OBJ)/miqrcs.f90
+	cd $(OBJ) ; $(FORTRAN) -o miqrcs.o $(FFLAGS) miqrcs.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+miqrt.o: $(OBJ)/miqrt.o
+
+$(OBJ)/miqrt.o: ../miqr/miqrt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "miqrt  "
+	$(SED) -f $(SEDS) ../miqr/miqrt.f90 > $(OBJ)/miqrt1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/miqrt1.f90 > $(OBJ)/miqrt.f90
+	cd $(OBJ) ; $(FORTRAN) -o miqrt.o $(FFLAGSS) miqrt.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  generate HSL codes from GALAHAD ones
+
+hslgen:
+	$(SED) -f ../hsl/gal2hsl ../eqp/miqr.f90 > ../hsl/hsl_ve16/ve16d.f90
+	$(SED) -f ../hsl/gal2hsl ../sbls/sbls.f90 > ../hsl/hsl_mi14/mi14d.f90
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LGS) $(LGD) $(LG) $(OBJ)/miqrs.o $(OBJ)/miqrcs.o $(OBJ)/miqrt.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmmiqr:
+	@printf ' %-9s %-15s\t\t' "Removing" "miqr from archive "
+	$(RMARFILE) miqr.o
+	@printf '[ OK ]\n'
+

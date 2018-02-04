@@ -1,0 +1,404 @@
+#  Main body of the installation makefile for the GALAHAD FUNNEL package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 6 VIII 2013
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SFUNNEL_MAIN = $(LGS)(funnel.o) $(LGS)(funnel_equality.o)
+DFUNNEL_MAIN = $(LGD)(funnel.o) $(LGD)(funnel_equality.o)
+
+SFUNNEL = eqp lls llst trs nlpt cutest_functions $(SFUNNEL_MAIN)
+DFUNNEL = eqp lls llst trs nlpt cutest_functions $(DFUNNEL_MAIN)
+
+SRUNFUNNEL = copyright $(LGS)(usefunnel.o) $(OBJS)/runfunnel_sif.o
+DRUNFUNNEL = copyright $(LGD)(usefunnel.o) $(OBJD)/runfunnel_sif.o
+
+FUNNELOBJECTSS_CUTEST = $(SFUNNEL) $(SRUNFUNNEL)
+FUNNELOBJECTSD_CUTEST = $(DFUNNEL) $(DRUNFUNNEL)
+
+FUNNELOBJECTSS_QUICK_CUTEST = $(SFUNNEL_MAIN) $(SRUNFUNNEL)
+FUNNELOBJECTSD_QUICK_CUTEST = $(DFUNNEL_MAIN) $(DRUNFUNNEL)
+
+OBJECTSS_CUTEST = $(FUNNELOBJECTSS_CUTEST)
+OBJECTSD_CUTEST = $(FUNNELOBJECTSD_CUTEST)
+
+FUNNELDS = $(DFUNNEL) $(OBJD)/funnels.o
+FUNNELDT = $(DFUNNEL) $(OBJD)/funnelt.o
+FUNNELSS = $(SFUNNEL) $(OBJS)/funnels.o
+FUNNELST = $(SFUNNEL) $(OBJS)/funnelt.o
+
+RFUNNELDS = $(OBJD)/funnels.o -L$(OBJD) $(LIBS)
+RFUNNELDT = $(OBJD)/funnelt.o -L$(OBJD) $(LIBS)
+RFUNNELSS = $(OBJS)/funnels.o -L$(OBJS) $(LIBS)
+RFUNNELST = $(OBJS)/funnelt.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+all: funnel_cutest
+all_funnel: funnel_cutest
+quick: funnel_quick_cutest
+test: test_funnel
+test_nocutest: test_funnel_nocutest
+
+# funnel
+
+funnel_cutest: funnel_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: FUNNEL ($(PRECIS) $(SUCC_CUTEST)"
+funnel_cutest_single: $(FUNNELOBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+funnel_cutest_double: $(FUNNELOBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+funnel: funnel_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: FUNNEL ($(PRECIS) $(SUCC)"
+funnel_single: $(FUNNELOBJECTSS)
+	$(RANLIB) $(LGS)
+funnel_double: $(FUNNELOBJECTSD)
+	$(RANLIB) $(LGD)
+
+funnel_quick_cutest: funnel_quick_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: FUNNEL ($(PRECIS) $(SUCC_CUTEST)"
+funnel_quick_cutest_single: $(FUNNELOBJECTSS_QUICK_CUTEST)
+	$(RANLIB) $(LGS)
+funnel_quick_cutest_double: $(FUNNELOBJECTSD_QUICK_CUTEST)
+	$(RANLIB) $(LGD)
+
+
+
+funnelsrunall: funnelss funnelst
+funneldrunall: funnelds funneldt
+funnelrunall: funneldrunall funnelsrunall
+
+test_funnel: test_funnel_$(PRECIS)
+
+test_funnel_single: funnelst $(SRUNFUNNEL)
+	echo ""
+	echo " Testing CUTEst interface to funnel"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) funnel -s QPBAND
+	echo ""
+	echo " Tests for funnel complete"
+
+test_funnel_double: funneldt $(DRUNFUNNEL)
+	echo ""
+	echo " Testing CUTEst interface to funnel"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) funnel QPBAND
+	echo ""
+	echo " Tests for funnel complete"
+
+test_funnel_nocutest: test_funnel_nocutest_$(PRECIS)
+
+test_funnel_nocutest_single: funnelst
+	echo ""
+	echo " Tests for funnel complete"
+
+test_funnel_nocutest_double: funneldt
+	echo ""
+	echo " Tests for funnel complete"
+
+#  basic packages
+
+qpa:
+	( cd ../../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            qpa_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../qp )
+qpc:
+	( cd ../../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+             qpc_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../qp )
+lls:
+	( cd ../../lls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../lls )
+llst:
+	( cd ../../llst ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            llst_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../llst )
+lstr:
+	( cd ../../lstr ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lstr_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../lstr )
+lsrt:
+	( cd ../../lsrt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lsrt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../lsrt )
+l2rt:
+	( cd ../../l2rt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            l2rt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../l2rt )
+eqp:
+	( cd ../../eqp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            eqp_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../eqp )
+trs:
+	( cd ../../trs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            trs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../trs )
+nlpt:
+	( cd ../../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../../filtrane )
+cutest_functions:
+	( cd ../../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_silent PRECIS=$(PRECIS) \
+            PWD=$(PWD)/../../auxiliary )
+lanb:
+	( cd ../../lanb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+             lancelotb_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../lanb )
+copyright:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+norms:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            norms.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+# run spec-sheet example tests
+
+funnelds: $(FUNNELDS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_funnel $(RFUNNELDS)
+	- ./run_funnel >& funnelds.output
+	cat funnelds.output
+	rm ./run_funnel
+
+funneldt: $(FUNNELDT)
+	echo " Exhaustive test of subroutine interface to funnel"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_funnel $(RFUNNELDT)
+	- ./run_funnel >& funneldt.output
+	cat funneldt.output
+	rm ./run_funnel
+
+funnelss: $(FUNNELSS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_funnel $(RFUNNELSS)
+	- ./run_funnel >& funnels.output
+	cat funnels.output
+	rm ./run_funnel
+
+funnelst: $(FUNNELST)
+	echo " Exhaustive test of subroutine interface to funnel"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_funnel $(RFUNNELST)
+	- ./run_funnel >& funnelt.output
+	cat funnelt.output
+	rm ./run_funnel
+
+#  Substantial GALAHAD packages
+
+funnel.o: $(LG)(funnel.o)
+
+$(LG)(funnel.o): ../funnel/funnel.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "funnel   "
+	$(SED) -f $(SEDS) ../funnel/funnel.f90 > $(OBJ)/funnel1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/funnel1.f90 > $(OBJ)/funnel2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/funnel2.f90 > $(OBJ)/funnel3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/funnel3.f90 > $(OBJ)/funnel.f90
+	cd $(OBJ); $(FORTRAN) -o funnel.o $(FFLAGSS) funnel.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o funnel.o $(FFLAGSN) funnel.f90 )
+	cd $(OBJ); $(ARR) funnel.o ; $(RM) funnel.f90 funnel1.f90 funnel2.f90 \
+                                          funnel3.f90 funnel.o
+	$(RMARFILE) funnel_equality.o
+	$(RMARFILE) usefunnel.o
+	$(RMOBFILE) funnels.o
+	$(RMOBFILE) funnelt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+funnel_equality.o: $(LG)(funnel_equality.o)
+
+$(LG)(funnel_equality.o): ../funnel/funnel_equality.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "funnel_equality   "
+	$(SED) -f $(SEDS) ../funnel/funnel_equality.f90 > \
+                  $(OBJ)/funnel_equality1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/funnel_equality1.f90 > \
+                  $(OBJ)/funnel_equality2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/funnel_equality2.f90 > \
+                  $(OBJ)/funnel_equality3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/funnel_equality3.f90 > \
+                  $(OBJ)/funnel_equality.f90
+	cd $(OBJ); $(FORTRAN) -o funnel_equality.o $(FFLAGSS) \
+                funnel_equality.f90 \
+                  || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o funnel_equality.o $(FFLAGSN) \
+                     funnel_equality.f90 )
+	cd $(OBJ); $(ARR) funnel_equality.o ; $(RM) funnel_equality.f90 \
+           funnel_equality1.f90 funnel_equality2.f90 \
+           funnel_equality3.f90 funnel_equality.o
+	$(RMARFILE) usefunnel.o
+	$(RMOBFILE) funnels.o
+	$(RMOBFILE) funnelt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usefunnel.o: $(LG)(usefunnel.o)
+
+$(LG)(usefunnel.o): ../funnel/usefunnel.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usefunnel   "
+	$(SED) -f $(SEDS) ../funnel/usefunnel.f90 > $(OBJ)/usefunnel1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usefunnel1.f90 > $(OBJ)/usefunnel2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usefunnel2.f90 > \
+                                     $(OBJ)/usefunnel.f90
+	cd $(OBJ); $(FORTRAN) -o usefunnel.o $(FFLAGSS) usefunnel.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usefunnel.o $(FFLAGSN) usefunnel.f90 )
+	cd $(OBJ); $(ARR) usefunnel.o ; $(RM) usefunnel.f90 usefunnel1.f90 \
+                                       usefunnel2.f90 usefunnel.o
+	$(RMOBFILE) runfunnel_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+usepqp.o: $(LG)(usepqp.o)
+
+$(LG)(usepqp.o): ../pqp/usepqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usepqp   "
+	$(SED) -f $(SEDS) ../pqp/usepqp.f90 > $(OBJ)/useqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/useqp1.f90 > $(OBJ)/useqp2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/useqp2.f90 > $(OBJ)/usepqp.f90
+	cd $(OBJ); $(FORTRAN) -o usepqp.o $(FFLAGSS) usepqp.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usepqp.o $(FFLAGSN) usepqp.f90 )
+	cd $(OBJ); $(ARR) usepqp.o ; $(RM) usepqp.f90 useqp1.f90 \
+                                           useqp2.f90 usepqp.o
+	$(RMOBFILE) runpqp_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+usesqp.o: $(LG)(usesqp.o)
+
+$(LG)(usesqp.o): ../sqp/usesqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usesqp   "
+	$(SED) -f $(SEDS) ../sqp/usesqp.f90 > $(OBJ)/useqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/useqp1.f90 > $(OBJ)/useqp2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/useqp2.f90 > $(OBJ)/usesqp.f90
+	cd $(OBJ); $(FORTRAN) -o usesqp.o $(FFLAGSS) usesqp.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usesqp.o $(FFLAGSN) usesqp.f90 )
+	cd $(OBJ); $(ARR) usesqp.o ; $(RM) usesqp.f90 useqp1.f90 \
+                                           useqp2.f90 usesqp.o
+	$(RMOBFILE) runsqp_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runfunnel_sif.o: $(OBJ)/runfunnel_sif.o
+
+$(OBJ)/runfunnel_sif.o: ../funnel/runfunnel_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runfunnel_sif"
+	$(SED) -f $(SEDS) ../funnel/runfunnel_sif.f90 > $(OBJ)/runfunnel_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runfunnel_sif.o $(FFLAGSS) runfunnel_sif.f90
+	rm $(OBJ)/runfunnel_sif.f90
+	@printf '[ OK ]\n'
+
+runpqp_sif.o: $(OBJ)/runpqp_sif.o
+
+$(OBJ)/runpqp_sif.o: ../pqp/runpqp_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runpqp_sif"
+	$(SED) -f $(SEDS) ../pqp/runpqp_sif.f90 \
+                > $(OBJ)/runpqp_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runpqp_sif.o $(FFLAGSS) runpqp_sif.f90
+	rm $(OBJ)/runpqp_sif.f90
+	@printf '[ OK ]\n'
+
+runsqp_sif.o: $(OBJ)/runsqp_sif.o
+
+$(OBJ)/runsqp_sif.o: ../sqp/runsqp_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runsqp_sif"
+	$(SED) -f $(SEDS) ../sqp/runsqp_sif.f90 \
+                > $(OBJ)/runsqp_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runsqp_sif.o $(FFLAGSS) runsqp_sif.f90
+	rm $(OBJ)/runsqp_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+funnels.o: $(OBJ)/funnels.o
+
+$(OBJ)/funnels.o: ../funnel/funnels.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "funnels  "
+	$(SED) -f $(SEDS) ../funnel/funnels.f90 > $(OBJ)/funnels1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/funnels1.f90 > $(OBJ)/funnels.f90
+	cd $(OBJ) ; $(FORTRAN) -o funnels.o $(FFLAGS) funnels.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+funnelt.o: $(OBJ)/funnelt.o
+
+$(OBJ)/funnelt.o: ../funnel/funnelt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "funnelt  "
+	$(SED) -f $(SEDS) ../funnel/funnelt.f90 > $(OBJ)/funnelt1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/funnelt1.f90 > $(OBJ)/funnelt.f90
+	cd $(OBJ) ; $(FORTRAN) -o funnelt.o $(FFLAGSS) funnelt.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LG) $(OBJ)/funnelt.o $(OBJ)/funnelt.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmfunnel:
+	@printf ' %-9s %-15s\t\t' "Removing" "funnel from archive "
+	$(RMARFILE) funnel.o
+	@printf '[ OK ]\n'
+

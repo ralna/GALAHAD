@@ -1,0 +1,106 @@
+      CONDITIONS OF USE FOR THE GALAHAD OPTIMIZATION SOFTWARE LIBRARY
+      ===============================================================
+
+In order to use the GALAHAD library, or any of its constituent parts, a
+user must agree to abide by a set of conditions of use.
+
+Copyright (c) 2007 Science and Technology Facilities Council and
+Facultes Universitaires Notre-Dame de la Paix de Namur. All Rights Reserved.
+
+                      ---------------------
+                      STFC Software Licence
+                      ---------------------
+
+The purpose of this document is to state the terms and conditions under
+which STFC software and documentation ("the Software") may be used.
+
+NOTICE TO USER: BY USING THE SOFTWARE YOU ACCEPT THE FOLLOWING TERMS AND
+CONDITIONS WHICH APPLY TO ITS USE.
+
+1. In this Licence, the expressions set out below have the following
+   meanings: "Library" means GALAHAD, and its constituent packages and
+   documentation; "Package" means a named collection of Fortran code from
+   the Library together with all other packages called by it.  "Software"
+   means:
+   a) those Library computer files (and associated documentation);
+   b) all computer files which contain copies whether in whole or in
+      part of any code that has originated by any means from any of the
+      Library;
+   c) all documentation which contains copies of any text that has
+      originated by any means from any of the associated documentation and;
+   d) any alteration or addition made to the Library or Package and/or
+      the associated documentation to extend the capabilities or enhance the
+      performance of the Library computer files supplied, whether made by or
+      on behalf of the Licensee or anyone else.
+
+2. The Software is owned by the Science and Technology Facilities
+   Council ("STFC") and Facultes Universitaires Notre-Dame de la Paix de
+   Namur.
+
+3. The Software is made available free of charge for personal use by
+   individuals employed by non-profit educational, academic and research
+   institutions, provided that the user does not use the Software in a
+   manner which is disparaging to the Science and Technology Facilities
+   Council.
+
+4. The provision of any version of the Software under the terms and
+   conditions set out in this licence does not imply that future versions
+   will also be made available under the same terms and conditions.
+
+5. The user may modify the Software only for their own use. The user
+   shall inform STFC and Facultes Universitaires Notre-Dame de la Paix de
+   Namur.of any modifications and make a copy of the modified software
+   available to STFC and Facultes Universitaires Notre-Dame de la Paix de
+   Namur.on request. All modifications made by the user shall be clearly
+   identified to show how the modified software differs from the original
+   Software.
+
+6. The user may not: 
+   a) allow anyone else to use the Software; either in their institution
+      or elsewhere;
+   b) use the Software for commercial purposes;
+   c) incorporate or embed the Software into other software products;
+   d) use the Software where the principal or exclusive use is for
+      research into; or the production of, military weapons is prohibited;
+      or
+   e) distribute any modifications of the Software.
+
+7. In any published work produced by the user and which includes
+   results achieved by using the Software, the user shall acknowledge that
+   the Software was used in producing the information contained in such
+   publication.  A citation to the paper: "
+
+     N. I. M. Gould, D. Orban, and Ph. L. Toint, 
+     "GALAHAD, a library of thread-safe Fortran 90 packages for
+      large-scale nonlinear optimization", 
+     ACM Transactions on Mathematical Software 29 (4) 353-372 (2007)" 
+
+   is suitable.
+
+8. The user shall not cause the Software to be brought into disrepute,
+   either by misuse, or use for inappropriate tasks, or by inappropriate
+   modification.
+
+9. The Software is provided to the user "as is" and STFC makes no
+   warranty as to its use or performance. STFC does not and cannot warrant
+   the performance or results which the user may obtain by using the
+   Software.
+
+10. STFC makes no warranties as to non-infringement of third party
+   rights, or fitness for any particular purpose. In no event will STFC be
+   liable to the user for any consequential, incidental, or special
+   damages, including any lost profits or lost savings, even if a STFC
+   representative has been advised of such damages, or for any claim by any
+   third party.
+
+11. This licence is construed in accordance with and governed by the
+    laws of England.
+
+Address for correspondence
+Commercial Development Team
+Science and Technology Facilities Council
+Rutherford Appleton Laboratory
+Harwell Science and Innovation Campus
+Didcot OX11 0QX UK
+Email: L.Baines@stfc.ac.uk
+

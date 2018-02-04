@@ -1,0 +1,10 @@
+MAIN
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                FILTRANE.sol
+! solution-file-device                              57
+! write-result-summary                              no
+! result-summary-file-name                          FILTRANE.sum
+! result-summary-file-device                        58
+
+INCLUDE FILTRANE

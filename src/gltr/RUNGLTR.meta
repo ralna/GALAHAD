@@ -1,0 +1,12 @@
+MAIN
+! write-problem-data                                no
+! write-result-summary                              yes
+! gltr-result-summary-file-name                     GLTRRES.d
+! gltr-result-summary-file-device                   47
+! print-full-solution                               no
+! write-solution                                    yes
+! gltr-solution-file-name                           GLTRSOL.d
+! gltr-solution-file-device                         62
+! radius                                            1.0
+
+INCLUDE GLTR

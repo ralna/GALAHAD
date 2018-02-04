@@ -1,0 +1,370 @@
+#  Main body of the installation makefile for the GALAHAD LMS package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 12 VI 2014
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(OPENMP)
+FFLAGSNOMP = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(OPENMP)
+RUNFFLAGS  =         $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SLMT =  $(LGS)(lmt.o)
+DLMT =  $(LGD)(lmt.o)
+SLMS =  basics $(SLMT) $(LGS)(lms.o)
+DLMS =  basics $(DLMT) $(LGD)(lms.o)
+SLMSC = basics cutest_functions $(LGS)(lmsc.o)
+DLMSC = basics cutest_functions $(LGD)(lmsc.o)
+
+SRUNLMS = cutest_functions copyright $(LGS)(uselms.o) $(OBJS)/runlms_sif.o
+DRUNLMS = cutest_functions copyright $(LGD)(uselms.o) $(OBJD)/runlms_sif.o
+
+LMSOBJECTSS_CUTEST = $(SLMS) $(SRUNLMS)
+LMSOBJECTSD_CUTEST = $(DLMS) $(DRUNLMS)
+
+LMSDS = $(DLMS) $(OBJD)/lmss.o
+LMSCDS = $(DLMSC) $(OBJD)/lmscs.o
+LMSDS3 = $(DLMS) $(OBJD)/lmss3.o
+LMSDT = $(DLMS) $(OBJD)/lmst.o
+LMSSS = $(SLMS) $(OBJS)/lmss.o
+LMSST = $(SLMS) $(OBJS)/lmst.o
+
+RLMSDS = $(OBJD)/lmss.o -L$(OBJD) $(LIBS)
+RLMSDS3 = $(OBJD)/lmss3.o -L$(OBJD) $(LIBS)
+RLMSCDS = $(OBJD)/lmscs.o -L$(OBJD) $(LIBS)
+RLMSDT = $(OBJD)/lmst.o -L$(OBJD) $(LIBS)
+RLMSSS = $(OBJS)/lmss.o -L$(OBJS) $(LIBS)
+RLMSST = $(OBJS)/lmst.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+lms: lms.o
+all: lms_cutest
+test: test_lms
+test_nocutest: test_lms
+test_spec: test_lms_spec
+
+# lms
+
+lms_silent: lms_silent_$(PRECIS)
+lms_silent_single: $(SLMS)
+lms_silent_double: $(DLMS)
+
+lms: lms_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: LMS ($(PRECIS) $(SUCC)"
+lms_single: $(SLMS)
+	$(RANLIB) $(LGS)
+lms_double: $(DLMS)
+	$(RANLIB) $(LGD)
+
+lms_cutest: lms_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: LMS ($(PRECIS) $(SUCC_CUTEST)"
+lms_cutest_single: $(LMSOBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+lms_cutest_double: $(LMSOBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+lmssrunall: lmsss lmsst
+lmsdrunall: lmsds lmsdt
+lmsrunall: lmsdrunall lmssrunall
+
+test_lms: test_lms_$(PRECIS)
+
+test_lms_single: lmsst
+	echo " Tests for lms complete"
+
+test_lms_double: lmsdt
+	echo " Tests for lms complete"
+
+test_lms_spec: test_lms_spec_$(PRECIS)
+test_lms_spec_single: lmsss
+test_lms_spec_double: lmsds
+
+# lmt
+
+lmt_silent: lmt_silent_$(PRECIS)
+lmt_silent_single: $(SLMT)
+lmt_silent_double: $(DLMT)
+
+lmt: lmt_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: LMT ($(PRECIS) $(SUCC)"
+lmt_single: $(SLMT)
+	$(RANLIB) $(LGS)
+lmt_double: $(DLMT)
+	$(RANLIB) $(LGD)
+
+#  basic packages
+
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+	( cd ../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            qpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../qp )
+cutest_functions:
+	( cd ../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_silent PRECIS=$(PRECIS) PWD=$(PWD)/../auxiliary )
+copyright:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+
+# run spec-sheet example tests
+
+lmsds: $(LMSDS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_lms $(RLMSDS)
+#	- ./run_lms
+	- ./run_lms >& lmsds.output
+	cat lmsds.output
+	rm ./run_lms
+
+lmscds: $(LMSCDS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_lmsc $(RLMSCDS)
+#	- ./run_lmsc
+	- ./run_lmsc >& lmscds.output
+	cat lmscds.output
+	rm ./run_lmsc
+
+lmsds3: $(LMSDS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_lms $(RLMSDS3)
+#	- ./run_lms
+	- ./run_lms >& lmsds3.output
+	cat lmsds3.output
+	rm ./run_lms
+
+lmsdt: $(LMSDT)
+	echo " Exhaustive test of subroutine interface to lms"
+	echo $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_lms $(RLMSDT)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_lms $(RLMSDT)
+	- ./run_lms >& lmsdt.output
+	cat lmsdt.output
+	rm ./run_lms
+
+lmsss: $(LMSSS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_lms $(RLMSSS)
+	- ./run_lms >& lmss.output
+	cat lmss.output
+	rm ./run_lms
+
+lmsst: $(LMSST)
+	echo " Exhaustive test of subroutine interface to lms"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_lms $(RLMSST)
+	- ./run_lms >& lmst.output
+	cat lmst.output
+	rm ./run_lms
+
+#  Substantial GALAHAD packages
+
+lmt.o: $(LG)(lmt.o)
+
+$(LG)(lmt.o):  ../lmt/lmt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "lmt  "
+	$(SED) -f $(SEDS)  ../lmt/lmt.f90 > $(OBJ)/lmt1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/lmt1.f90 > $(OBJ)/lmt2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/lmt2.f90 > $(OBJ)/lmt3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/lmt3.f90 > $(OBJ)/lmt.f90
+	cd $(OBJ); $(FORTRAN) -o lmt.o $(FFLAGSS) lmt.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o lmt.o $(FFLAGSN) lmt.f90 )
+	cd $(OBJ); $(ARR) lmt.o ; $(RM) lmt.f90 lmt1.f90 lmt2.f90 \
+                                         lmt3.f90 lmt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+lms.o: $(LG)(lms.o)
+
+$(LG)(lms.o):  ../lms/lms.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "lms  "
+	$(SED) -f $(SEDS)  ../lms/lms.f90 > $(OBJ)/lms1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/lms1.f90 > $(OBJ)/lms2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/lms2.f90 > $(OBJ)/lms3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/lms3.f90 > $(OBJ)/lms.f90
+	cd $(OBJ); $(FORTRAN) -o lms.o $(FFLAGSS) lms.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o lms.o $(FFLAGSN) lms.f90 )
+	cd $(OBJ); $(ARR) lms.o ; $(RM) lms.f90 lms1.f90 lms2.f90 \
+                                         lms3.f90 lms.o
+	$(RMARFILE) tru.o
+	$(RMARFILE) arc.o
+	$(RMARFILE) uselms.o
+	$(RMOBFILE) lmss.o
+	$(RMOBFILE) lmst.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+lmsc.o: $(LG)(lmsc.o)
+
+$(LG)(lmsc.o):  ../lms/lmsc.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "lmsc  "
+	$(SED) -f $(SEDS)  ../lms/lmsc.f90 > $(OBJ)/lmsc1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/lmsc1.f90 > $(OBJ)/lmsc2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/lmsc2.f90 > $(OBJ)/lmsc3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/lmsc3.f90 > $(OBJ)/lmsc.f90
+	cd $(OBJ); $(FORTRAN) -o lmsc.o $(FFLAGSS) lmsc.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o lmsc.o $(FFLAGSN) lmsc.f90 )
+	cd $(OBJ); $(ARR) lmsc.o ; $(RM) lmsc.f90 lmsc1.f90 lmsc2.f90 \
+                                         lmsc3.f90 lmsc.o
+	$(RMARFILE) tru.o
+	$(RMARFILE) arc.o
+	$(RMARFILE) uselmsc.o
+	$(RMOBFILE) lmscs.o
+	$(RMOBFILE) lmsct.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+uselms.o: $(LG)(uselms.o)
+
+$(LG)(uselms.o): ../lms/uselms.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "uselms   "
+	$(SED) -f $(SEDS) ../lms/uselms.f90 > $(OBJ)/uselms1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/uselms1.f90 > $(OBJ)/uselms2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/uselms2.f90 > $(OBJ)/uselms.f90
+	cd $(OBJ); $(FORTRAN) -o uselms.o $(FFLAGSS) uselms.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o uselms.o $(FFLAGSN) uselms.f90 )
+	cd $(OBJ); $(ARR) uselms.o ; $(RM) uselms.f90 uselms1.f90 \
+                                           uselms2.f90 uselms.o
+	$(RMOBFILE) runlms_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runlms_sif.o: $(OBJ)/runlms_sif.o
+
+$(OBJ)/runlms_sif.o: ../lms/runlms_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runlms_sif"
+	$(SED) -f $(SEDS) ../lms/runlms_sif.f90 > $(OBJ)/runlms_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runlms_sif.o $(FFLAGSS) runlms_sif.f90
+	rm $(OBJ)/runlms_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+lmss.o: $(OBJ)/lmss.o
+
+$(OBJ)/lmss.o: ../lms/lmss.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "lmss  "
+	$(SED) -f $(SEDS) ../lms/lmss.f90 > $(OBJ)/lmss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/lmss1.f90 > $(OBJ)/lmss.f90
+	cd $(OBJ) ; $(FORTRAN) -o lmss.o $(FFLAGS) lmss.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+lmscs.o: $(OBJ)/lmscs.o
+
+$(OBJ)/lmscs.o: ../lms/lmscs.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "lmscs  "
+	$(SED) -f $(SEDS) ../lms/lmscs.f90 > $(OBJ)/lmscs1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/lmscs1.f90 > $(OBJ)/lmscs.f90
+	cd $(OBJ) ; $(FORTRAN) -o lmscs.o $(FFLAGS) lmscs.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+lmss3.o: $(OBJ)/lmss3.o
+
+$(OBJ)/lmss3.o: ../lms/lmss3.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "lmss3  "
+	$(SED) -f $(SEDS) ../lms/lmss3.f90 > $(OBJ)/lmss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/lmss1.f90 > $(OBJ)/lmss3.f90
+	cd $(OBJ) ; $(FORTRAN) -o lmss3.o $(FFLAGS) lmss3.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+lmst.o: $(OBJ)/lmst.o
+
+$(OBJ)/lmst.o: ../lms/lmst.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "lmst  "
+	$(SED) -f $(SEDS) ../lms/lmst.f90 > $(OBJ)/lmst1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/lmst1.f90 > $(OBJ)/lmst.f90
+	cd $(OBJ) ; $(FORTRAN) -o lmst.o $(FFLAGSS) lmst.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  generate HSL codes from GALAHAD ones
+
+hslgen:
+	$(SED) -f ../hsl/gal2hsl ../eqp/lms.f90 > ../hsl/hsl_ve16/ve16d.f90
+	$(SED) -f ../hsl/gal2hsl ../sbls/sbls.f90 > ../hsl/hsl_mi14/mi14d.f90
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LGS) $(LGD) $(LG) $(OBJ)/lmss.o $(OBJ)/lmscs.o $(OBJ)/lmst.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmlms:
+	@printf ' %-9s %-15s\t\t' "Removing" "lms from archive "
+	$(RMARFILE) lms.o
+	@printf '[ OK ]\n'
+

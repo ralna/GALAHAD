@@ -1,0 +1,48 @@
+----------------------
+THE GALAHAD PYTHON GUI
+----------------------
+
+Description:
+-----------
+
+A Python-based GUI to all major GALAHAD packages.
+
+Installation:
+------------
+
+Make sure that you have installed GALAHAD in $GALAHAD .
+
+Set (and export) an environment variable GALAHADPYTHON to 
+point at the $GALAHAD/python directory.
+
+Make sure that $GALAHADPYTHON directory is on your PYTHONPATH.
+
+Use:
+---
+
+Type 
+
+  galahad
+
+from a directory containing test problems (*), and away you go
+
+(*) or use the cd button, when galahad.py starts,
+  to get to one
+
+System-wide colour/font resources stored in file 
+ $GALAHADPYTHON/GalahadStyle,
+user-specific versions may be set in 
+ ~/.GalahadStyle .
+(For those who can't stand the lurid default colours, try replacing
+ $GALAHADPYTHON/GalahadStyle by $GALAHADPYTHON/GalahadStyle.bland !)
+
+System-wide package and architecture defaults stored in file 
+ $GALAHADPYTHON/GalahadDefaults, 
+user-specific versions may be set in 
+ ~/.GalahadDefaults .
+
+Tested under Python 2.2.3 on common Unix/Linux systems
+
+Nick Gould
+February 12th 2004
+for GALAHAD productions, 2002-2004

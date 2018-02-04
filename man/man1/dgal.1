@@ -1,0 +1,164 @@
+.TH dgal 1
+.SH NAME
+\fBdgal\fR \- Read a QPLib2014 problem-data-file and run a GALAHAD package
+on the result
+.SH USAGE
+.B dgal architecture package
+[options]
+.IR file[.qplib]
+,
+
+where
+.B architecture
+is a string of the form machine.os.compiler
+indicating the machine/operating system/compiler combination to be used and
+.B package
+indicates the package required.
+
+The name
+.B architecture
+must match that of one of the files in the directory
+$GALAHAD/bin/sys , while
+.B package
+may be one of
+.LP
+.TP 1i
+.BI qp
+QP for general quadratic programming
+.TP
+.BI qpa
+QPA for general quadratic programming using an active-set method
+.TP
+.BI qpb
+QPB for general quadratic programming using an interior-point method
+.TP
+.BI qpc
+QPC for general quadratic programming using a cross-over method
+.TP
+.BI cqp
+CQP for convex quadratic programming using an interior-point method
+.TP
+.BI dqp
+DQP for convex quadratic programming using an dual projection method
+.TP
+.BI ccqp
+CCQP for convex quadratic programming using a cross-over method
+.TP
+.BI l1qp
+L1QP for convex l_1 quadratic programming using a cross-over method
+.TP
+.BI eqp
+EQP for equality-constrained quadratic programming
+.TP
+.BI bqp
+BQP for bound-constrained quadratic programming using a projection method
+.TP
+.BI bqpb
+BQPB for bound-constrained quadratic programming using an interior-point method
+
+.SH DESCRIPTION
+.LP
+.B dgal
+reads a user-defined QPLib2014 problem-data file, and runs one of the GALAHAD
+large-scale linear/quadratic programming packages on the result.
+.SH OPTIONS
+.LP
+.TP 1i
+.BI \-s
+Run the single precision version of the package. The default is
+to run the double precision version.
+.TP
+.B \-h or \-\-help
+Print a list of these options and stop execution.
+.TP
+.BI \-u
+Update the option specification file to incorporate the latest options.
+The default is to leave the file alone (and create it if it does not exist).
+.TP
+.B \-k
+Keep the executable after use. A second file newfile.qplib may then be
+processed by issuing the command
+.ce 2
+
+.B ./architecture.package < \fR newfile[.qplib] .
+.ce 0
+
+.TP
+.B \-m
+Check for memory leaks (if possible).
+.TP
+.B \-p
+Profile the code (if possible).
+.TP
+.BI \-o " output"
+Specify the
+.IR output
+level, which must be one of
+.B 0
+(no output; the default)
+.B 1
+(a brief description of the steps performed)
+.B -1
+(a full debugging output, for experts only).
+.TP
+.BI \-l " secs"
+Set a limit of
+.IR secs
+seconds on the GALAHAD run. The default is 99999999 seconds.
+.SH FILES
+.TP 20
+.BI achitecture.package
+executable output file created by dgal
+.TP
+.IB RUN package .SPC
+user-supplied option specification file
+.TP
+.IB SOLUTION.d
+file containing solution created by dgal
+.TP
+.IB SUMMARY.d
+file containing summary of solution created by dgal
+.SH DIAGNOSTICS
+The diagnostics produced by dgal itself are intended to be self-explanatory.
+.SH "SEE ALSO"
+
+N. I. M. Gould, D. Orban and Ph. L. Toint,
+"GALAHAD - a library of thread-safe fortran 90 packages for large-scale
+nonlinear optimization",
+.I ACM Transactions on Mathematic Software
+.B 29
+(4)
+(2003) 353-372.
+
+N. I. M. Gould and Ph. L. Toint,
+"Numerical methods for large-scale non-convex quadratic programming",
+in "Trends in Industrial and Applied Mathematics",
+(A. Siddiqi and M. Kocvara, eds.),
+Kluwer Academic Publishers, Dordrecht, The Netherlands
+(2002) 149-179.
+
+N. I. M. Gould and Ph. L. Toint,
+"An iterative working-set method for large-scale non-convex quadratic
+programming",
+.I Applied Numerical Mathematics.
+.B 43 (1-2)
+(2002) 109-128.
+
+A. R. Conn, N. I. M. Gould, D. Orban and Ph. L. Toint,
+``A primal-dual trust-region algorithm for non-convex nonlinear optimization''.
+.I Mathematical Programming
+.B 87
+(2)
+(2000) 215-249.
+
+QPlib2014, see http://www.lamsade.dauphine.fr/QPlib2014/
+
+.SH BUGS
+Please report any bugs found to
+.IB nick.gould@rl.ac.uk ,
+along with any suggestions for improvements.
+.SH AUTHORS
+Nick Gould, Rutherford Appleton Laboratory,
+Dominique Orban, Ecole Polytechnique de Montreal,
+and
+Philippe Toint, University of Namur

@@ -1,0 +1,88 @@
+#!/bin/csh
+
+#foreach pack ( arc bqp bsc check cro ccqp cqp dqp eqp fdc filtrane glrt gls gltr ir lancelot lancelot_simple lsqp l2rt lsrt lstr llst lms miqr mop nls nlpt presolve qp qpa qpb qpc qpp qpt rand roots sbls scale scu sils sls smt sort symbols trs tru uls wcp )
+#foreach pack ( filtrane )
+#foreach pack ( sils )
+#foreach pack ( sort )
+#foreach pack ( ccqp )
+#foreach pack ( cqp )
+#foreach pack ( gltr )
+#foreach pack ( glrt )
+#foreach pack ( lstr )
+#foreach pack ( lsrt )
+#foreach pack ( l2rt )
+#foreach pack ( lsrt )
+#foreach pack ( roots )
+#foreach pack ( glrt gltr )
+#foreach pack ( glrt lsrt gltr lstr l2rt )
+#foreach pack ( lstr lsrt l2rt)
+#foreach pack ( glrt )
+#foreach pack ( galahad )
+foreach pack ( lancelot )
+#foreach pack ( lancelot_simple )
+#foreach pack ( wcp )
+#foreach pack ( eqp )
+#foreach pack ( fdc )
+#foreach pack ( fdh )
+foreach pack ( dqp )
+#foreach pack ( nls )
+#foreach pack ( qpp )
+#foreach pack ( lsqp )
+#foreach pack ( qpa )
+#foreach pack ( qpb lsqp )
+#foreach pack ( qpb qpc )
+#foreach pack ( qpc )
+#foreach pack ( cqp qpc )
+#foreach pack ( cro )
+#foreach pack ( qpc eqp )
+#foreach pack ( lsqp )
+#foreach pack ( lsqp wcp qpa qpb qpc trs rqs sbls )
+#foreach pack ( eqp lsqp qpa qpb qpc qp bqp cqp dqp wcp fdc )
+#foreach pack ( bqp )
+#foreach pack ( qp )
+#foreach pack ( mop )
+#foreach pack ( fdc )
+#foreach pack ( check )
+#foreach pack ( dqp fdh )
+#foreach pack ( bsc )
+#foreach pack ( rand )
+#foreach pack ( lms  )
+#foreach pack ( miqr )
+#foreach pack ( scale )
+#foreach pack ( gls )
+#foreach pack ( uls )
+#foreach pack ( sls )
+#foreach pack ( sbls )
+#foreach pack ( smt )
+#foreach pack ( trs rqs tru )
+#foreach pack ( trs )
+#foreach pack ( llst )
+#foreach pack ( rqs)
+#foreach pack ( tru )
+#foreach pack ( arc tru )
+#foreach pack ( ir )
+#foreach pack ( gltr sbls eqp )
+#foreach pack ( symbols )
+#foreach pack ( lsqp qpb qpa gltr )
+#foreach pack ( gltr lsqp presolve qpa qpb qpp qpt scu smt )
+#foreach pack ( presolve qpa qpb qpp qpt )
+#foreach pack ( presolve )
+#foreach pack ( s2qp )
+#foreach pack ( qpt cqp dqp )
+#foreach pack ( qpa qpb qpc )
+#foreach pack ( qpa qpb qpc qpp lsqp fdc symbols eqp sbls )
+#foreach pack ( cqp eqp fdc lsqp qpa qpb qpc qp rqs sbls sls trs wcp )
+  echo "    " $pack
+  latex $pack
+  latex $pack
+  latex $pack
+  psfromdvi ../$pack
+# lpr ../$pack.ps
+  ps2pdf "-sPAPERSIZE=a4" ../$pack.ps ../$pack.pdf
+  rm ../$pack.ps
+end
+
+
+
+
+

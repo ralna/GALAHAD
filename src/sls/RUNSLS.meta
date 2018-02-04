@@ -1,0 +1,16 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            SLS.data
+! problem-data-file-device                          26
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                SLSSOL.d
+! solution-file-device                              62
+! write-result-summary                              no
+! result-summary-file-name                          SLSRES.d
+! result-summary-file-device                        47
+! symmetric-linear-equation-solver                  sils
+! barrier-perturbation                              1.0D+5
+! kkt-system                                        yes
+
+INCLUDE SLS

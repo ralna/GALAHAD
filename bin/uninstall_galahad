@@ -1,0 +1,113 @@
+#!/bin/bash
+
+# Remove script for GALAHAD
+# version for Bourne/bash shell
+
+# syntax: uninstall_galahad
+
+# N. Gould, D. Orban & Ph. Toint
+# ( Last modified on 22 July 2005 at 15:20 GMT )
+
+#  check input arguments (if any)
+
+if [[ $# != 0 ]]; then
+   echo "Use: uninstall_galahad"
+   exit 1
+fi
+
+export GALAHAD=`dirs -l`
+export GALAHAD=`echo $GALAHAD | \sed 's"/tmp_mnt""'`
+
+finished='false'
+while [[ $finished != 'true' ]]; do
+
+#   VERS=( `\ls $GALAHAD/versions/*` )
+    VERS=( `\ls $GALAHAD/versions/* 2>/dev/null` )
+    NUMBER=${#VERS[@]}
+
+    if [[ $NUMBER == 0 ]]; then
+	echo "No versions of GALAHAD are currently installed."
+	exit 1
+    fi
+
+    LIST=( ${VERS[@]} )
+
+    CORRECT_VERSION="false"
+    while [[ $CORRECT_VERSION == "false" ]]; do 
+
+	echo " The following versions of GALAHAD are currently installed."
+	echo " "
+	count=0
+	for i  in  ${LIST[@]}; do
+	    (( count++ ))
+	    (( cnt = count-1 )) # 0-based indexing
+	    VERSION="`cat ${VERS[$cnt]}`"
+	    echo "        ($count) ${VERSION}"
+	done
+	echo " "
+	echo " Which do you wish to uninstall: (1-$NUMBER)?" 
+
+	read CHOICE
+	(( CHOICE-- ))
+   
+	i=0
+	while [[ $i -lt $NUMBER &&  $CORRECT_VERSION == "false" ]]; do
+	    if [[ $CHOICE == $i ]]; then
+		CORRECT_VERSION="true"
+		CHOICE=$i
+	    fi
+	    (( i++ ))
+	done
+	if [[ $CORRECT_VERSION == "true" ]]; then
+	    VERSION=${VERS[$CHOICE]##*/}
+	    VERNAME=`cat ${VERS[$CHOICE]}`
+	else
+	    echo " Please give an integer between 1 and $NUMBER"
+	fi
+    done
+
+    echo " Are you sure you wish to uninstall the version for"
+    echo "  $VERNAME (Y/n)?"
+
+    YESNO=""
+
+    while [[ $YESNO != 'Y' && $YESNO != 'N' ]]; do
+	read YESNO
+	[[  $YESNO == ""  ]] && YESNO="Y"
+	YESNO=`echo $YESNO | tr a-z A-Z`
+    done
+
+    if [[  $YESNO == 'Y'  ]]; then
+
+	echo " Removing object files and libraries ... "
+	\rm -f -r $GALAHAD/objects/$VERSION
+	echo " Removing module information files ... "
+	\rm -f -r $GALAHAD/modules/$VERSION
+	echo " Removing AMPL executable ... "
+	\rm -f -r $GALAHAD/ampl_bin/$VERSION
+	echo " Removing environment information file ... "
+	\rm -f -r $GALAHAD/bin/sys/$VERSION
+	echo " Removing make information file ... "
+	\rm -f -r $GALAHAD/makefiles/$VERSION
+	echo " Removing version record file ... "
+	\rm -f -r $GALAHAD/versions/$VERSION
+	echo " Version for"
+	echo "  $VERNAME"
+	echo " successfully removed."
+
+    fi
+
+    echo " "
+    echo " Do you wish to uninstall another version (N/y)?"
+	
+    YESNO=""
+
+    while [[ $YESNO != 'Y' && $YESNO != 'N' ]]; do
+	read YESNO
+	[[  $YESNO == ""  ]] && YESNO="N"
+	YESNO=`echo $YESNO | tr a-z A-Z`
+    done
+
+    [[  $YESNO == 'N'  ]] && finished='true'
+done
+

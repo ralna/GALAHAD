@@ -1,0 +1,17 @@
+! error-printout-device                             6
+! printout-device                                   6
+! print-level                                       0
+! maximum-number-of-iterations                      100
+! shift-x                                           1
+! scale-x                                           1
+! shift-c                                           1
+! scale-c                                           1
+! shift-f                                           1
+! scale-f                                           1
+! infinity-value                                    1.0D+19
+! stop-tolerance                                    0.1
+! smallest-x-scaling                                1.0
+! smallest-c-scaling                                1.0
+! space-critical                                    no
+! deallocate-error-fatal                            no
+! output-line-prefix                                ""

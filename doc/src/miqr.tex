@@ -1,0 +1,1037 @@
+\documentclass{galahad}
+
+% set the release and package names
+
+\newcommand{\package}{miqr}
+\newcommand{\packagename}{MIQR}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+Given a real matrix $m$ by $n$ matrix $\bmA$, form a multilevel 
+incomplete QR factorization $\bmQ \bmR$ so that $\bmA \approx \bmQ\bmR$ or
+optionally $\bmA^T \approx \bmQ\bmR$.
+Only the $n$ by $n$ triangular factor $\bmR$ is retained, and facilities
+are provided to allow the solutions of the systems $\bmR \bmu = \bmv$ and 
+$\bmR^T \bmx = \bmz$
+for given vectors $\bmv$ and $\bmz$. The matrix $\bmR$ is particularly helpful
+as a preconditioner when applying an iterative method to solve the
+least-squares problems $\min \|\bmA\bmx-\bmb\|_2$ or 
+$\min \|\bmA^T\bmy-\bmc\|_2$.
+Full advantage is taken of any zero coefficients in the matrices $\bmA$.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses {\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_\-SY\-M\-BOLS}, 
+{\tt GALAHAD\-\_SPACE}, 
+{\tt GALAHAD\_SMT},
+{\tt GALAHAD\_NORMS},
+{\tt GALAHAD\_CONVERT},
+{\tt GALAHAD\_SPECFILE},
+\galdate June 2014.
+\galorigin N. I. M. Gould,
+Rutherford Appleton Laboratory.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+%\galparallelism Some options may use OpenMP and its runtime library.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types 
+{\tt SMT\_type}, 
+{\tt \packagename\_time\_type}, 
+{\tt \packagename\_control\_type}, 
+{\tt \packagename\_inform\_type} 
+and
+{\tt \packagename\_data\_type}
+(\S\ref{galtypes})
+and the subroutines
+{\tt \packagename\_initialize}, 
+{\tt \packagename\_\-form},
+{\tt \packagename\_\-apply},
+{\tt \packagename\_terminate},
+(\S\ref{galarguments})
+and 
+{\tt \packagename\_read\_specfile}
+(\S\ref{galfeatures})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmatrix
+The input matrix $\bmA$ may be stored in a variety of input formats.
+
+\subsubsection{Dense storage format}\label{dense}
+The matrix $\bmA$ is stored as a compact 
+dense matrix by rows, that is, the values of the entries of each row in turn are
+stored in order within an appropriate real one-dimensional array.
+Component $n \ast (i-1) + j$ of the storage array {\tt A\%val} will hold the 
+value $a_{ij}$ for $i = 1, \ldots , m$, $j = 1, \ldots , n$.
+
+\subsubsection{Sparse co-ordinate storage format}\label{coordinate}
+Only the nonzero entries of the matrices are stored. For the 
+$l$-th entry of $\bmA$, its row index $i$, column index $j$ 
+and value $a_{ij}$
+are stored in the $l$-th components of the integer arrays {\tt A\%row}, 
+{\tt A\%col} and real array {\tt A\%val}, respectively.
+The order is unimportant, but the total
+number of entries {\tt A\%ne} is also required. 
+
+\subsubsection{Sparse row-wise storage format}\label{rowwise}
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in row $i$ appear directly before those
+in row $i+1$. For the $i$-th row of $\bmA$, the $i$-th component of a 
+integer array {\tt A\%ptr} holds the position of the first entry in this row,
+while {\tt A\%ptr} $(m+1)$ holds the total number of entries plus one.
+The column indices $j$ and values $a_{ij}$ of the entries in the $i$-th row 
+are stored in components 
+$l =$ {\tt A\%ptr}$(i)$, \ldots , {\tt A\%ptr} $(i+1)-1$ of the 
+integer array {\tt A\%col}, and real array {\tt A\%val}, respectively. 
+
+\subsubsection{Sparse column-wise storage format}\label{colwise}
+Again only the nonzero entries are stored, but this time
+they are ordered so that those in column $j$ appear directly before those
+in column $j+1$. For the $j$-th column of $\bmA$, the $j$-th component of a 
+integer array {\tt A\%ptr} holds the position of the first entry in this column,
+while {\tt A\%ptr} $(n+1)$ holds the total number of entries plus one.
+The row indices $i$ and values $a_{ij}$ of the entries in the $j$-th row 
+are stored in components 
+$l =$ {\tt A\%ptr}$(j)$, \ldots , {\tt A\%ptr} $(j+1)-1$ of the 
+integer array {\tt A\%row}, and real array {\tt A\%val}, respectively. 
+
+For sparse matrices, the row and column schemes almost always requires 
+less storage than the coordinate and dense schemes.
+
+%%%%%%%%%%%%%%%%%%%%%% OpenMP usage %%%%%%%%%%%%%%%%%%%%%%%%
+
+%\subsection{OpenMP}
+%OpenMP may be used by the {\tt \fullpackagename} package to provide 
+%parallelism for some solver options in shared memory environments.  
+%See the documentatiuon for the \galahad\ package {\tt SLS} for more details.
+%To run in parallel, OpenMP 
+%must be enabled at compilation time by using the correct compiler flag 
+%(usually some variant of {\tt -openmp}). 
+%The number of threads may be controlled at runtime
+%by setting the environment variable {\tt OMP\_NUM\_THREADS}.
+
+%\noindent
+%The code may be compiled and run in serial mode.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Five derived data types are accessible from the package.
+
+%%%%%%%%%%% matrix data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding matrices}\label{typesmt}
+The derived data type {\tt SMT\_TYPE} is used to hold the matrix $\bmA$.
+The components of {\tt SMT\_TYPE} used here are:
+
+\begin{description}
+
+\ittf{m} is a scalar component of type default \integer, 
+that holds the number of rows in the matrix. 
+ 
+\ittf{n} is a scalar component of type default \integer, 
+that holds the number of columns in the matrix. 
+ 
+\ittf{type} is a rank-one allocatable array of type default \character, that
+is used to indicate the storage scheme used. If the dense storage scheme 
+(see \S\ref{dense}), is used, 
+the first five components of {\tt type} must contain the
+string {\tt DENSE}.
+For the sparse co-ordinate scheme (see \S\ref{coordinate}), 
+the first ten components of {\tt type} must contain the
+string {\tt COORDINATE}, 
+for the sparse row-wise storage scheme (see \S\ref{rowwise}),
+the first fourteen components of {\tt type} must contain the
+string {\tt SPARSE\_BY\_ROWS}, and
+for the sparse column-wise storage scheme (see \S\ref{colwise}),
+the first seventeen components of {\tt type} must contain the
+string {\tt SPARSE\_BY\_COLUMNS}.
+
+For convenience, the procedure {\tt SMT\_put} 
+may be used to allocate sufficient space and insert the required keyword
+into {\tt type}.
+For example, if {\tt A} is of derived type {\tt SMT\_type}
+and we wish to use the co-ordinate storage scheme, we may simply
+%\vspace*{-2mm}
+{\tt 
+\begin{verbatim}
+        CALL SMT_put( A%type, 'COORDINATE', istat )
+\end{verbatim}
+}
+%\vspace*{-4mm}
+\noindent
+See the documentation for the \galahad\ package {\tt SMT} 
+for further details on the use of {\tt SMT\_put}.
+
+\ittf{ne} is a scalar variable of type default \integer, that
+holds the number of matrix entries.
+
+\ittf{val} is a rank-one allocatable array of type default \realdp\, 
+and dimension at least {\tt ne}, that holds the values of the entries. 
+Any duplicated entries that appear in the sparse 
+co-ordinate or row-wise schemes will be summed. 
+
+\ittf{row} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt ne}, that may hold the row indices of the entries. 
+(see \S\ref{coordinate} and \S\ref{colwise}).
+
+\ittf{col} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt ne}, that may hold the column indices of the entries
+(see \S\ref{coordinate}--\ref{rowwise}).
+
+\ittf{ptr} is a rank-one allocatable array of type default \integer, 
+and dimension at least {\tt m + 1}, that may hold the pointers to
+the first entry in each row (see \S\ref{rowwise}) or of dimension
+at least {\tt n + 1}, that may hold the pointers to
+the first entry in each column (see \S\ref{colwise}).
+
+\end{description}
+
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control 
+ parameters}\label{typecontrol}
+The derived data type 
+{\tt \packagename\_control\_type} 
+is used to hold controlling data. Default values may be obtained by calling 
+{\tt \packagename\_initialize}
+(see \S\ref{subinit}),
+while components may also be changed by calling 
+{\tt \fullpackagename\_read\-\_spec}
+(see \S\ref{readspec}). 
+The components of 
+{\tt \packagename\_control\_type} 
+are:
+
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in 
+{\tt \packagename\_form}, {\tt \packagename\_apply} 
+and {\tt \packagename\_terminate} 
+is suppressed if {\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in 
+{\tt \packagename\_form}, {\tt \packagename\_apply} 
+is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No 
+informational output will occur if {\tt print\_level} $\leq 0$. If 
+{\tt print\_level} $= 1$, a single line of output will be produced for each
+level of the process. If {\tt print\_level} $\geq 2$, this output will be
+increased to provide significant detail of the factorization.
+The default is {\tt print\_level = 0}.
+
+\itt{max\_level} is a scalar variable of type default \integer, that is used
+to specify the maximum level allowed when a multi-level factorization (MIQR)
+is attempted (see {\tt multi\_level} below).
+The default is {\tt max\_level = 4}.
+
+\itt{max\_order} is a scalar variable of type default \integer, that is used
+to specify the maximum number of columns that will be processed per level 
+when a multi-level factorization (MIQR) is attempted 
+(see {\tt multi\_level} below).
+Any non-positive value will be interpreted as {\tt n}.
+The default is {\tt max\_order = -1}.
+
+\itt{max\_fill} is a scalar variable of type default \integer, that is used
+is used to control the incomplete factorization. In particular
+the maximum number of elements allowed in each column of $\bmR$ will not exceed
+{\tt max\_fill}.
+Any negative value will be interpreted as {\tt n}.
+The default is {\tt max\_fill = 100}.
+
+\itt{max\_fill\_q} is a scalar variable of type default \integer, that is used
+is used to control the incomplete factorization. In particular
+the maximum number of elements allowed in each column of $\bmQ$ will not exceed
+{\tt max\_fill\_q}.
+Any negative value will be interpreted as {\tt m}.
+The default is {\tt max\_fill\_q = 100}.
+
+\itt{increase\_size}  is a scalar variable of type default \integer, that is 
+used increase array sizes in chunks of this when needed.
+The default is {\tt increase\_size = 100}.
+
+\itt{buffer} is a scalar variable of type default \integer, that is used
+to specify the unit for any out-of-core writing when expanding arrays
+needed to store $\bmR$ and other intermediary data. 
+The default is {\tt buffer = 70}.
+
+\itt{smallest\_diag} is a scalar variable of type default \realdp, that is used
+to identify those diagonal entries of $\bmR$ that are considered to be zero
+(and thus indicate rank deficiency). Any diagonal entry in the $\bmR$
+factor that is smaller than {\tt smallest\_dia} will be judged to be zero, 
+and modified accordingly.
+The default is {\tt smallest\_diag = }$10^{-10}$.
+
+\itt{tol\_level} is a scalar variable of type default \realdp, that is used
+as a tolerance for stopping multi-level phase. In particular, the
+multi-level phase ends if the dimension of the reduced problem 
+is no smaller that {\tt tol\_level} times that of the previous
+reduced problem.
+The default is {\tt tol\_level = 0.3}.
+
+\itt{tol\_orthogonal} is a scalar variable of type default \realdp, 
+that is used to judge if two vectors are roughly orthogonal; specifically
+vectors $u$ and $v$ are orthogonal if $|u^T v| \leq$ {\tt tol\_orthogonal} 
+$\ast \|u\| \|v\|$.
+The default is {\tt tol\_orthogonal = 0.0}.
+
+\itt{tol\_orthogonal\_increase} is a scalar variable of type default \realdp, 
+that is used to indicate the increase in the orthogonality tolerance 
+that will be applied at each successive level.
+The default is {\tt tol\_orthogonal\_increase = 0.01}.
+
+\itt{average\_max\_fill} is a scalar variable of type default \realdp, that 
+is used to control the incomplete factorization. In particular
+ the maximum number of elements allowed in each column of $\bmR$ will not exceed
+{\tt average\_max\_fill} {\tt * ne / n}.
+The default is {\tt average\_max\_fill = 6.0}.
+
+\itt{average\_max\_fill\_q} is a scalar variable of type default \realdp, that 
+is used to control the incomplete factorization. In particular
+ the maximum number of elements allowed in each column of $\bmQ$ will not exceed
+{\tt average\_max\_fill\_q} {\tt * ne / m}.
+The default is {\tt average\_max\_fill\_q = 24.0}.
+
+\itt{tol\_drop} is a scalar variable of type default \realdp, that is used
+as a dropping tolerance for small generated entries. Any entry smaller
+than  {\tt tol\_drop} will be excluded from the factorization.
+The default is {\tt tol\_drop = 0.01}.
+
+\itt{transpose} is a scalar variable of type default \logical, that is used
+to indicate whether the factorization of $\bmA^T$ should be found rather
+than that of $\bmA$. 
+The default is {\tt transpose = .FALSE.}.
+
+\itt{multi\_level} is a scalar variable of type default \logical, that is used
+to specify whether a multi-level incomplete factorization (MIQR) will be 
+attempted or whether an incomplete QR factorization (IQR) suffices.
+The default is {\tt multi\_level = .TRUE.}.
+
+\itt{sort} is a scalar variable of type default \logical, that is used
+to specify whether the nodes of the graph of $\bmA^T \bmA$ should be sorted
+in order of increasing degree. This often improves the quality of the
+multilevel factorization. 
+The default is {\tt sort = .TRUE.}.
+
+\itt{deallocate\_after\_factorization} is a scalar variable of type default 
+\logical, that is used to specify whether temporary workspace 
+should be deallocated after every factorization. This may save space
+at the expense of multiple allocations if many factorizations are required.
+The default is {\tt deallocate\_after\_factorization = .FALSE.}.
+
+\itt{space\_critical} is a scalar variable of type default \logical, 
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if 
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical, 
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected 
+character string to preface every line of printed output. 
+Specifically, each line of output will be prefaced by the string 
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoring the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\itt{CONVERT\_control} is a scalar variable of type 
+{\tt CONVERT\_control\_type}
+whose components are used to control the conversion of the
+input matrix type into the column-wise scheme used internally
+by  {\tt \fullpackagename}, as performed by the package 
+{\tt \libraryname\_CONVERT}. 
+See the specification sheet for the package 
+{\tt \libraryname\_CONVERT} 
+for details, and appropriate default values.
+
+\end{description}
+
+%%%%%%%%%%% time type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding timing 
+ information}\label{typetime}
+The derived data type 
+{\tt \packagename\_time\_type} 
+is used to hold elapsed CPU and system clock times for the various parts of 
+the calculation. The components of 
+{\tt \packagename\_time\_type} 
+are:
+\begin{description}
+\itt{total} is a scalar variable of type default \realdp, that gives
+ the total CPU time spent in the package.
+
+\itt{form} is a scalar variable of type default \realdp, that gives
+ the CPU time spent computing the multi-level incomplete factorization.
+
+\itt{levels} is a scalar variable of type default \realdp, that gives
+ the CPU time spent in the multi-level phase of the factorization.
+
+\itt{iqr} is a scalar variable of type default \realdp, that gives
+ the CPU time spent in the incomplete QR phase of the factorization.
+
+\itt{apply} is a scalar variable of type default \realdp, that gives
+ the CPU time spent  solving systems involving the computed factor $\bmR$.
+
+\itt{clock\_total} is a scalar variable of type default \realdp, that gives
+ the total elapsed system clock time spent in the package.
+
+\itt{clock\_form} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent computing the multi-level incomplete 
+factorization.
+
+\itt{clock\_levels} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent in the multi-level phase of the 
+factorization.
+
+\itt{clock\_iqr} is a scalar variable of type default \realdp, that gives
+the elapsed system clock time spent in the incomplete QR phase of the 
+factorization.
+
+\itt{clock\_apply} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent solving systems involving the computed 
+factor $\bmR$.
+
+\end{description}
+
+
+%%%%%%%%%%% inform type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type 
+{\tt \packagename\_inform\_type} 
+is used to hold parameters that give information about the progress and needs 
+of the algorithm. The components of 
+{\tt \packagename\_inform\_type} 
+are:
+
+\begin{description}
+
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm. 
+%See Sections~\ref{galerrors} and \ref{galinfo}
+See \S\ref{galerrors} 
+for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array 
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}. 
+
+\itt{entries\_in\_factors} is a scalar variable of type default \integer, that 
+gives the number of nonzeros in the incomplete factor $\bmR$.
+
+\itt{drop} is a scalar variable of type default \integer, that 
+gives the number of entries that were dropped during the incomplete 
+factorization.
+
+\itt{zero\_diagonals} is a scalar variable of type default \integer, that 
+gives the number of diagonal entries of $\bmR$ that were judged to be zero
+during the incomplete factorization.
+
+\ittf{time} is a scalar variable of type {\tt \packagename\_time\_type} 
+whose components are used to hold elapsed CPU and system clock times for 
+the various parts of the calculation (see Section~\ref{typetime}).
+
+\itt{CONVERT\_inform} is a scalar variable of type 
+{\tt CONVERT\_inform\_type}
+whose components are used to provide information concerning
+the conversion of the input matrix type into the column-wise scheme 
+used internally by  {\tt \fullpackagename}, as performed by the package 
+{\tt \libraryname\_CONVERT}. 
+See the specification sheet for the package 
+{\tt \libraryname\_CONVERT} 
+for details, and appropriate default values.
+
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type
+{\tt \packagename\_data\_type} 
+is used to hold all the data for the problem and the workspace arrays 
+used to construct the multi-level incomplete factorization between calls of 
+{\tt \packagename} procedures. 
+This data should be preserved, untouched, from the initial call to 
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}.
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are four procedures for user calls
+(see \S\ref{galfeatures} for further features): 
+
+\begin{enumerate}
+\item The subroutine 
+      {\tt \packagename\_initialize} 
+      is used to set default values, and initialize private data, 
+      before solving one or more problems with the
+      same sparsity and bound structure.
+\item The subroutine 
+      {\tt \packagename\_form} 
+      is called to form the  multi-level incomplete factorization.
+\item The subroutine 
+      {\tt \packagename\_apply} 
+      is called to apply the computed factor $\bmR$ to solve systems 
+      $\bmR \bmx = \bmb$ or $\bmR^T \bmx = \bmb$ 
+      for a given vector $\bmb$.
+\item The subroutine 
+      {\tt \packagename\_terminate} 
+      is provided to allow the user to automatically deallocate array 
+       components of the private data, allocated by 
+       {\tt \packagename\_form} 
+       at the end of the solution process. 
+\end{enumerate}
+%We use square brackets {\tt [ ]} to indicate \optional arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize( data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see \S\ref{typedata}). It is used to hold data about the problem being 
+solved. 
+
+\itt{control} is a scalar \intentout\ argument of type 
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}). 
+On exit, {\tt control} contains default values for the components as
+described in \S\ref{typecontrol}.
+These values should only be changed after calling 
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% factorization subroutine %%%%%%
+
+\subsubsection{The subroutine for forming the multi-level incomplete factorization}
+The multi-level incomplete QR factorization $\bmA \approx \bmQ \bmR$ or
+$\bmA^T \approx \bmQ \bmR$ or is formed as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_form(  A, data, control, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+\itt{A} is a scalar \intentin\ argument of type {\tt SMT\_type} whose
+components must be set to specify the data defining the matrix $\bmA$ 
+(see \S\ref{typesmt}).
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see \S\ref{typedata}). It is used to hold data about the factors obtained.
+It must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}). Default values may be assigned by calling 
+{\tt \packagename\_initialize} prior to the first call to 
+{\tt \packagename\_form}.
+
+\itt{inform} is a scalar \intentout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see \S\ref{typeinform}). A successful call to
+{\tt \packagename\_form}
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see \S\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% application subroutine %%%%%%
+
+\subsubsection{The subroutine for solving systems involving the incomplete
+factors}
+Given the right-hand side $\bmb$, one or other of the systems 
+$\bmR \bmx = \bmb$ or $\bmR^T \bmx = \bmb$ may be solved as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_apply(  SOL, transpose, data, inform )}
+
+\vspace*{-3mm}
+\begin{description}
+\itt{SOL} is a rank-one  \intentinout\ array of type default \real\
+that must be set on entry to hold the components of the vector $\bmy$.
+On successful exit, the components of {\tt SOL} will contain the solution 
+$\bmx$.
+
+\itt{transpose} is a scalar \intentin\ argument of type default \logical,
+that should be set {\tt .TRUE.} if the user wishes to solve
+$\bmR^T \bmx = \bmb$ and {\tt .FALSE.} if the solution to 
+$\bmR \bmx = \bmb$ is required.
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type}
+(see \S\ref{typedata}). It is used to hold data about the factors obtained.
+It must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type 
+{\tt \packagename\_inform\_type}
+(see \S\ref{typeinform}). A successful call to {\tt \packagename\_apply} 
+is indicated when the  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see \S\ref{galerrors}.
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_terminate( data, control, inform )}
+
+%\vspace*{-3mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type 
+{\tt \packagename\_data\_type} 
+exactly as for
+{\tt \packagename\_form},
+which must not have been altered {\bf by the user} since the last call to 
+{\tt \packagename\_initialize}.
+On exit, array components will have been deallocated.
+
+\itt{control} is a scalar \intentin\ argument of type 
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_form}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_form}.
+Only the component {\tt status} will be set on exit, and a 
+successful call to 
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0. 
+For other return values of {\tt status}, see \S\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt inform\%status} on exit from 
+{\tt \packagename\_form}, 
+{\tt \packagename\_apply}
+or 
+{\tt \packagename\_terminate}
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\itt{\galerrallocate.} An allocation error occurred. 
+A message indicating the offending 
+array is written on unit {\tt control\%error}, and the returned allocation 
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrdeallocate.} A deallocation error occurred. 
+A message indicating the offending 
+array is written on unit {\tt control\%error} and the returned allocation 
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc} respectively.
+
+\itt{\galerrrestrictions.} One of the restrictions 
+   {\tt A\%n} $> 0$ or {\tt a\%m} $> 0$
+    or requirements that {\tt prob\%A\_type}
+    contain the string
+    {\tt 'DENSE'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}
+    or {\tt 'SPARSE\_BY\_COLUMNS'}
+    has been violated.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting 
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}), 
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters 
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of 
+"specification commands". Each command occurs on a separate line, 
+and comprises a "keyword", 
+which is a string (in a close-to-natural language) used to identify a 
+control parameter, and 
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive, 
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and 
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+
+
+The portion of the specification file used by 
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an 
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by MIQR_read_specfile .. )
+    BEGIN MIQR
+       keyword    value
+       .......    .....
+       keyword    value
+    END 
+  ( .. lines ignored by MIQR_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines 
+may contain additional (trailing) strings so long as such strings are 
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN MIQR SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END MIQR SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore, 
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored. 
+The content 
+of a line after a {\tt !} or {\tt *} character is also 
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some 
+specification commands, or to comment specific values 
+of certain control parameters.  
+
+The value of a control parameters may be of three different types, namely
+integer, logical or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}", 
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}". 
+Empty values are also allowed for 
+logical control parameters, and are interpreted as "{\tt TRUE}".  
+
+The specification file must be open for 
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number 
+passed to the routine in device (see below). 
+Note that the corresponding 
+file is {\tt REWIND}ed, which makes it possible to combine the specifications 
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in 
+
+\def\baselinestretch{0.8}
+{\tt 
+\begin{verbatim}
+     CALL MIQR_read_specfile( control, device )
+\end{verbatim}
+}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type 
+{\tt \packagename\_control\_type}
+(see \S\ref{typecontrol}). 
+Default values should have already been set, perhaps by calling 
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and 
+the component (see \S\ref{typecontrol}) of {\tt control} 
+that each affects are given in Table~\ref{specfile}.
+\bctable{|l|l|l|} 
+\hline
+  command & component of {\tt control} & value type \\ 
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+  {\tt max-level-allowed} & {\tt \%max\_level} & integer \\
+  {\tt max-order-allowed-per-level} & {\tt \%max\_order} & integer \\
+  {\tt out-of-core-buffer} & {\tt \%buffer} & integer \\
+  {\tt increase-array-size-by} & {\tt \%increase\_size} & real  \\
+  {\tt max-entries-per-column} & {\tt \%max\_fill} & real  \\
+  {\tt max-entries-per-column-of-q} & {\tt \%max\_fill\_q} & real  \\
+  {\tt smallest-diagonal-factor-allowed} & {\tt \%smallest\_diag} & real  \\
+  {\tt level-stop-tolerance} & {\tt \%tol\_level} & real  \\
+  {\tt orthogonality-tolerance} & {\tt \%tol\_orthogonal} & real  \\
+  {\tt orthogonality-tolerance-increase} & {\tt \%tol\_orthogonal\_increase} & real  \\
+  {\tt dropping-tolerance} & {\tt \%tol\_drop} & real  \\
+  {\tt proportion-max-entries-per-column} & {\tt \%average\_max\_fill} & real \\
+  {\tt proportion-max-entries-per-column-of-q} & {\tt \%average\_max\_fill\_q} & real \\
+  {\tt factorize-transpose} & {\tt \%transpose} & logical \\
+  {\tt use-multi-level} & {\tt \%multi\_level} & logical \\
+  {\tt sort-vertices} & {\tt \%sort} & logical \\
+  {\tt deallocate-workspace-after-factorization} & {\tt \%deallocate\_after\_factorization} & logical \\
+  {\tt space-critical}   & {\tt \%space\_critical} & logical \\
+  {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
+  {\tt output-line-prefix} & {\tt \%prefix} & character \\
+\hline
+
+\ectable{\label{specfile}Specfile commands and associated 
+components of {\tt control}.}
+
+%Individual components of the components {\tt control\%SLS\_control} 
+%and {\tt control\%ULS\_control} 
+%may be changed by specifying separate specfiles of the form
+%\begin{verbatim}
+%    BEGIN SLS
+%     .......
+%    END 
+%\end{verbatim}
+%and
+%\begin{verbatim}
+%    BEGIN ULS
+%     .......
+%%    END 
+%\end{verbatim}
+%just as described in the documentation for the \galahad\ packages 
+%{\tt SLS} and {\tt ULS}.
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+If {\tt control\%print\_level} is positive, information about the progress 
+of the algorithm will be printed on unit {\tt control\-\%out}.
+If {\tt control\%print\_level} $\geq 1$, statistics concerning the 
+formation of $\bmR$
+as well as warning and error messages will be reported. 
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines None. 
+\galmodules {\tt \packagename\_form} calls the \galahad\ packages
+{\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS}, \\
+{\tt GALAHAD\-\_SPACE},
+{\tt GALAHAD\_SMT},
+{\tt GALAHAD\_NORMS},
+{\tt GALAHAD\_CONVERT} and
+{\tt GALAHAD\_SPECFILE},
+\galio Output is under control of the arguments
+ {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
+\galrestrictions {\tt A\%n} $> 0$, {\tt a\%m} $>  0$, 
+{\tt A\_type} $\in \{${\tt 'DENSE'},  {\tt 'COORDINATE'}, 
+{\tt 'SPARSE\_BY\_ROWS'}, {\tt 'SPARSE\_BY\_COLUMNS'}$\}$. 
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
+The package is thread-safe.
+
+%\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+
+Given the matrix $\bmA$, a decomposition
+\disp{ \bmA \approx \bmQ_0 \mat{cc}{ \bmR_0 & \bmS_0 \\ & \bmA_1}}
+is found. Here $\bmR_0$ is upper triangular and 
+$\bmQ_0$ is constructed as normalized,
+structurally-orthogonal columns of $\bmA$, or columns that are approximately
+so. The same approach is then applied
+recursively to $\bmA_1$ to obtain $\bmR_1$ and $\bmA_2$, etc. The
+recursion ends either before or at a prescribed level $k$, and thereafter
+an incomplete QR factorization of the remaining block $\bmA_k$ is computed.
+
+\noindent
+The basic algorithm is a slight generalisation of that given by
+\vspace*{1mm}
+
+\noindent
+Na Li and Yousef Saad (2006).
+MIQR: A Multilevel Incomplete QR preconditioner for large sparse 
+least-squares problems.
+SIAM. J. Matrix Anal. \& Appl., {\bf 28}(2) 524--550,
+\vspace*{1mm}
+
+\noindent
+and follows in many aspects the design of the C package
+
+%\noindent
+\url{http://www-users.cs.umn.edu/~saad/software/MIQR.tar.gz}
+
+\noindent
+The principal use of $\bmR$ is as a preconditioner when solving
+linear least-squares problems via an iterative method. In particular,
+the minimizer of $\|\bmA\bmx-\bmb\|_2$ satisfies the normal equations
+$\bmA^T \bmA \bmx = \bmA^T \bmb$, and if $\bmA = \bmQ \bmR$
+with orthogobal $\bmQ$, it follows
+that we may find $\bmx$ by forward and back substitution from
+$\bmR^T \bmR \bmx = \bmA^T \bmb$. Moreover 
+$\bmR^{-T} \bmA^T \bmA \bmR^{-1} = \bmI$, 
+the $n$ by $n$ identity matrix. Since the matrix $\bmR$
+computed by {\tt \packagename} is incomplete, we expect instead that
+$\bmR^{-T} \bmA^T \bmA \bmR^{-1} \approx \bmI$, and this may be used
+to advantage by iterative methods like CGNE and LSQR. See \$2.5 of
+the specification sheets for the packages
+{\tt \libraryname\_LSTR},
+{\tt \libraryname\_LSRT} 
+and 
+{\tt \libraryname\_L2RT} for uses within \galahad.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+Suppose 
+\disp{ \bmA = \mat{ccc}{ 1 & 2 & \\ 3 & & \\ & 4 & \\ & & 5 },}
+that we wish to form a multi-level incomplete factorization of $\bmA$,
+and then to solve the resulting systems 
+\disp{ \bmR^T \bmz = \bmb \tim{and} \bmR \bmx = \bmz, \tim{where}
+\bmb = \vect{14 \\ 42 \\ 75}.}
+Then storing the matrices in sparse row format,
+we may use the following code:
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+\noindent
+The same problem may be solved holding the data in 
+a sparse column-wise storage format by replacing the lines
+{\tt \small
+\begin{verbatim}
+! sparse row-wise storage format
+...
+! problem data complete   
+\end{verbatim}
+}
+\noindent
+by
+{\tt \small
+\begin{verbatim}
+! sparse column-wise storage format
+   CALL SMT_put( A%type, 'SPARSE_BY_COLUMNS', i ) ! storage for A
+   ALLOCATE( A%val( A%ne ), A%row( A%ne ), A%ptr( A%n + 1 ) )
+   A%val = (/ 1.0_wp, 3.0_wp, 2.0_wp, 4.0_wp, 5.0_wp /) ! matrix A
+   A%row = (/ 1, 2, 1, 3, 4 /)
+   A%ptr = (/ 1, 3, 5, 6 /)                      ! set column pointers  
+! problem data complete   
+\end{verbatim}
+}
+\noindent
+or using a sparse co-ordinate storage format with the replacement lines
+{\tt \small
+\begin{verbatim}
+!  sparse co-ordinate storage format
+   CALL SMT_put( A%type, 'COORDINATE', i ) ! storage for A
+   ALLOCATE( A%val( A%ne ), A%row( A%ne ), A%col( A%ne ) )
+   A%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5 /) ! matrix A
+   A%row = (/ 1, 1, 2, 3, 4 /)
+   A%col = (/ 1, 2, 1, 2, 3 /)
+! problem data complete   
+\end{verbatim}
+}
+\noindent
+or using a dense storage format with the replacement lines
+{\tt \small
+\begin{verbatim}
+! dense storage format
+   CALL SMT_put( A%type, 'DENSE', i )  ! storage for A
+   ALLOCATE( A%val( A%n * A%m ) )
+   A%val = (/ 1.0_wp, 2.0_wp, 0.0_wp, 3.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 4.0_wp, &
+              0.0_wp, 0.0_wp, 0.0_wp, 5.0_wp /) ! matrix A, dense by rows
+! problem data complete   
+\end{verbatim}
+}
+\noindent
+respectively.
+
+\end{document}
+

@@ -1,0 +1,441 @@
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in 
+{\tt QPB\_solve} and {\tt QPB\_terminate} 
+is suppressed if {\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in 
+{\tt QPB\_solve} is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No 
+informational output will occur if {\tt print\_level} $\leq 0$. If 
+{\tt print\_level} $= 1$, a single line of output will be produced for each
+iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
+increased to provide significant detail of each iteration.
+The default is {\tt print\_level = 0}.
+
+\itt{start\_print} is a scalar variable of type default \integer, that specifies
+the first iteration for which printing will occur in {\tt QPB\_solve}.
+If {\tt start\_print} is negative, printing will occur from the outset.
+The default is {\tt start\_print = -1}.
+
+\itt{stop\_print} is a scalar variable of type default \integer, that specifies
+the last iteration for which printing will occur in  {\tt QPB\_solve}.
+If {\tt stop\_print} is negative, printing will occur once it has been 
+started by {\tt start\_print}.
+The default is {\tt stop\_print = -1}.
+
+\itt{maxit} is a scalar variable of type default \integer, that holds the
+maximum number of iterations which will be allowed in {\tt QPB\_solve}.
+The default is {\tt maxit = 1000}.
+
+%\itt{factor} is a scalar variable of type default \integer, that indicates
+%the type of factorization of the preconditioner to be used.  
+%Possible values are:
+
+%\begin{description}
+%\itt{0} the type is chosen automatically on the basis of which option looks
+%        likely to be the most efficient.
+%\itt{1} a Schur-complement factorization will be used.
+%\itt{2} an augmented-system factorization will be used.
+%\end{description}
+%The default is {\tt factor = 0}.
+
+%\itt{max\_col} is a scalar variable of type default \integer, that specifies
+%the maximum number of nonzeros in a column of $\bmA$ which is permitted
+%by the Schur-complement factorization.
+%The default is {\tt max\_col = 35}.
+
+%\itt{indmin} is a scalar variable of type default \integer, that specifies
+%an initial estimate as to the amount of integer workspace required by 
+%the factorization package {\tt SILS}.
+%The default is {\tt indmin = 1000}.
+
+%\itt{valmin} is a scalar variable of type default \integer, that specifies
+%an initial estimate as to the amount of real workspace required by 
+%the factorization package {\tt SILS}.
+%The default is {\tt valmin = 1000}.
+
+%\itt{itref\_max} is a scalar variable of type default \integer, that specifies 
+%the maximum number of iterative refinements allowed with each application 
+%of the preconditioner.
+%The default is {\tt itref\_max = 1}.
+
+\itt{infeas\_max} is a scalar variable of type default \integer, that specifies
+the number of iterations for which the overall infeasibility
+of the problem is not reduced by at least a factor {\tt reduce\_infeas
+before} the problem is flagged as infeasible (see {\tt reduce\_infeas}).
+The default is {\tt infeas\_max = 200}.
+%The default is {\tt infeas\_max = 10}.
+
+\itt{cg\_maxit} is a scalar variable of type default \integer, that holds the
+maximum number of conjugate-gradient inner iterations that may be performed
+during the computation of each search direction in {\tt QPB\_solve}.
+If {\tt cg\_maxit} is set to a negative number, it will be reset by 
+{\tt QPB\_solve} to the dimension of the relevant linear system $+ 1$.
+The default is {\tt cg\_maxit = 200}.
+%The default is {\tt cg\_maxit = - 1}.
+
+%\itt{precon} is a scalar variable of type default \integer, that specifies
+%which preconditioner to be used to accelerate the conjugate-gradient 
+%inner iteration.  Possible values are:
+
+%\begin{description}
+%\itt{0} the type is chosen automatically on the basis of which option looks
+%        likely to be the most efficient at any given stage of the solution
+%        process. Different preconditioners may be used at different stages.
+%\itt{1} the Hessian matrix is replaced by the identity matrix.
+%\itt{2} a full factorization using the Hessian, which is equivalent to
+%        replacing the conjugate gradient inner iteration by a direct method.
+%        The Hessian may be perturbed to ensure that the resultant matrix
+%        is a preconditioner.
+%\itt{3} the Hessian matrix is replaced by a band of given semi-bandwidth
+%        (see {\tt nsemib} below).
+%\itt{4} the Hesian matrix is replaced by its barrier terms.
+%\end{description}
+%The default is {\tt precon = 0}.
+
+%\itt{nsemib} is a scalar variable of type default \integer, that specifies
+%the semi-bandwidth of the band preconditioner when {\tt precon = 3}, 
+%if appropriate.
+%The default is {\tt nsemib = 5}.
+
+\itt{indicator\_type} is a scalar variable of type default \integer, 
+that specifies the type of indicator used to assess when a variable or
+constraint is active.
+Possible values are:
+
+\begin{description}
+\itt{1} a variable/constraint is active if and only if the distance 
+to its neaerest bound is no larger than {\tt indicator\_tol\-\_p} (see below).
+\itt{2} a variable/constraint is active if and only if the distance 
+to its neaerest bound is no larger than {\tt indicator\_tol\-\_pd} 
+(see below) times the magnitude of its corresponding dual variable.
+\itt{3} a variable/constraint is active if and only if the distance 
+to its neaerest bound is no larger than {\tt indicator\_tol\-\_tapia} 
+(see below) times the distance to the same bound at the previous iteration.
+\end{description}
+The default is {\tt indicator\_type = 3}.
+
+\itt{restore\_problem} is a scalar variable of type default \integer, that 
+specifies how much of the input problem is to be retored on output. 
+Possible values are:
+\begin{description}
+\itt{0} nothing is restored. 
+\itt{1} the vector data $\bmg$, 
+   $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$, and $\bmx^{u}$ 
+   will be restored to their input values.
+\itt{2} the entire problem, that is the above vector data along with 
+the Hessian matrix $\bmH$ and the Jacobian matrix $\bmA$, will be restored.
+\end{description}
+The default is {\tt restore\_problem = 2}.
+
+\itt{extrapolate} is a scalar variable of type default \integer, that 
+specifies whether extrapolation should be used to track the central path. 
+Possible values are:
+\begin{description}
+\itt{0} no extrapolation should be used.
+\itt{1} extrapolation should be used after the final update of the barrier 
+        parameter.
+\itt{2} extrapolation should be used after each update of the barrier 
+        parameter.
+\end{description}
+The default is {\tt extrapolate = 2}.
+
+\itt{path\_history} is a scalar variable of type default \integer, that 
+specifies the maximum number of previous path points used when extrapolating
+to track the central path.
+The default is {\tt path\_history = 1}.
+
+\itt{path\_derivatives} is a scalar variable of type default \integer, that 
+specifies the maximum order of derivatives to use when extrapolating
+to track the central path.
+The default is {\tt path\_derivatives = 5}.
+
+\itt{fit\_order} is a scalar variable of type default \integer, that 
+specifies the order of (Puiseux or Taylor) series to fit to the available data 
+when building the extrapolant to track the central path. If {\tt fit\_order
+$\leq$ 0}, the order will be such that all available data as specified by
+{\tt path\_history} and {\tt path\_derivatives} will be used.
+The default is {\tt fit\_order = - 1}.
+
+\itt{infinity} is a scalar variable of type default \realdp, that is used to
+specify which constraint bounds are infinite.
+Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
+The default is {\tt infinity =} $10^{19}$.
+
+\itt{stop\_p} is a scalar variable of type default \realdp, that holds the
+required accuracy for the primal infeasibility (see Section~\ref{galmethod}).
+The default is {\tt stop\_p =} $u^{1/3}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{stop\_d} is a scalar variable of type default 
+\realdp, that holds the
+required accuracy for the dual infeasibility (see Section~\ref{galmethod}).
+The default is {\tt stop\_d =} $u^{1/3}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{stop\_c} is a scalar variable of type default 
+\realdp, that holds the
+required accuracy for the violation of complementarity slackness 
+(see Section~\ref{galmethod}).
+The default is {\tt stop\_c =} $u^{1/3}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{prfeas} is a scalar variable of type default \realdp, that aims to specify
+the closest that any initial variable may be to infeasibility. Any variable
+closer to infeasibility than {\tt prfeas} will be moved to {\tt prfeas} from 
+the offending bound. However, if a variable is range bounded, and its bounds 
+are closer than {\tt prfeas} apart, it will be moved to the mid-point of the 
+two bounds.
+The default is {\tt prfeas = 1.0}.
+
+\itt{dufeas} is a scalar variable of type default \realdp, that aims to specify
+the closest that any initial dual variable or Lagrange multiplier may be to 
+infeasibility. Any variable closer to infeasibility than {\tt prfeas} will be
+moved to {\tt dufeas} from the offending bound. However, if a dual variable
+is range bounded, and its bounds are closer than {\tt dufeas} apart, it will
+be moved to the mid-point of the two bounds.
+The default is {\tt dufeas = 1.0}.
+
+\itt{muzero}  is a scalar variable of type default \realdp, that holds the
+initial value of the barrier parameter. If {\tt muzero} is
+not positive, it will be reset automatically to an appropriate value.
+The default is {\tt muzero = -1.0}.
+
+\itt{reduce\_infeas}  is a scalar variable of type default 
+\realdp, that specifies the
+least factor by which the overall infeasibility of the problem must be reduced,
+over {\tt infeas\_max} consecutive iterations, 
+for it not be declared infeasible (see {\tt infeas\_max)}.
+The default is {\tt reduce\_infeas = 0.99}.
+
+\itt{obj\_unbounded}  is a scalar variable of type default 
+\realdp, that specifies smallest
+value of the objective function that will be tolerated before the problem
+is declared to be unbounded from below.
+The default is {\tt obj\_u\-nbounded =} $-u^{-2}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+%\itt{pivot\_tol}  is a scalar variable of type default 
+%\realdp, that holds the
+%threshold pivot tolerance used by the matrix factorization.  See 
+%the documentation for the package {\tt SILS} for details.
+%The default is {\tt pivot\_tol =} $u^{3/4}$,
+%%The default is {\tt pivot\_tol =} $0.1 \sqrt{u}$,
+%where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+%{\tt \fullpackagename\_double}).
+%%The default is {\tt pivot\_tol = 0.01}.
+
+%\itt{pivot\_tol\_for\_dependencies} is a scalar variable of type default 
+%\realdp, that holds the
+%threshold pivot  tolerance used by the matrix factorization when 
+%attempting to detect linearly dependent constraints. A value larger
+%than  {\tt pivot\_tol} is appropriate. See 
+%the documentation for the package {\tt SILS} for details.
+%The default is {\tt pivot\_tol\_for\_dependencies = 0.5}.
+
+%\itt{zero\_pivot} is a scalar variable of type default \realdp.
+%Any pivots smaller than  {\tt zero\_pivot} in absolute value will be regarded 
+%to be zero when attempting to detect linearly dependent constraints. 
+%The default is {\tt zero\_pivot =} $u^{3/4}$,
+%where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+%{\tt \fullpackagename\_dou\-ble}).
+
+\itt{identical\_bounds\_tol}
+is a scalar variable of type default \realdp.
+Every pair of constraint bounds 
+$(c_{i}^{l}, c_{i}^{u})$ or $(x_{j}^{l}, x_{j}^{u})$
+that is closer than {\tt identical\_bounds\_tol} 
+will be reset to the average of their values,
+$\half (c_{i}^{l} + c_{i}^{u})$ or $\half (x_{j}^{l} + x_{j}^{u})$
+respectively.
+The default is {\tt identical\_bounds\_tol =} $u$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{indicator\_tol\_p}
+is a scalar variable of type default \realdp that
+provides the indicator tolerance associated with the test
+{\tt indicator\_type = 1}.
+The default is {\tt indicator\-\_tol\_p =} $u^{1/3}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{indicator\_tol\_pd}
+is a scalar variable of type default \realdp that
+provides the indicator tolerance associated with the test
+{\tt indicator\_type = 2}.
+The default is {\tt indicator\-\_tol\_pd =} 1.0.
+
+\itt{indicator\_tol\_tapia}
+is a scalar variable of type default \realdp that
+provides the indicator tolerance associated with the test
+{\tt indicator\_type = 3}.
+The default is {\tt indicator\-\_tol\_tapia =} 0.9.
+
+\itt{inner\_stop\_relative} and {\tt inner\_stop\_absolute} 
+are scalar variables of type default \realdp, 
+that hold the relative and absolute convergence tolerances for the
+inner iteration (search direction) problem using the package 
+{\tt \libraryname\_GLTR},
+and correspond to the values {\tt control\%stop\_relative} and
+{\tt control\%stop\_absolute} in that package.
+The defaults are 
+%{\tt inner\_stop\_relative = 0.0}
+{\tt inner\_stop\_relative = 0.01}
+and \sloppy {\tt inner\_stop\_absolute =} $\sqrt{u}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt \fullpackagename\_double}).
+
+\itt{initial\_radius} is a scalar variable of type default 
+\realdp, that specifies the initial trust-region radius. 
+If {\tt initial\_radius} is
+not positive, it will be reset automatically to an appropriate value.
+The default is {\tt initial\_radius = - 1.0}.
+
+\itt{inner\_fraction\_opt} is a scalar variable of type default 
+\realdp, that specifies the
+fraction of the optimal value which is acceptable for the solution of the
+inner iteration (search direction) problem using the package 
+{\tt \libraryname\_GLTR}, 
+and corresponds to the value {\tt control\%fraction\_opt} in that package.
+A negative value is considered to be zero, and a value of larger than one
+is considered to be one. Reducing {\tt fraction\_opt} below one will result
+in a reduction of the computation performed at the expense of an inferior
+optimal value.
+The default is {\tt inner\_fraction\_opt = 0.1}.
+
+\itt{cpu\_time\_limit} is a scalar variable of type default \realdp, 
+that is used to specify the maximum permitted CPU time. Any negative
+value indicates no limit will be imposed. The default is 
+{\tt cpu\_time\_limit = - 1.0}.
+
+\itt{clock\_time\_limit} is a scalar variable of type default \realdp, 
+that is used to specify the maximum permitted elapsed system clock time. 
+Any negative value indicates no limit will be imposed. The default is 
+{\tt clock\_time\_limit = - 1.0}.
+
+\itt{remove\_dependencies} is a scalar variable of type 
+default \logical, that must be set \true\ if the algorithm
+is to attempt to remove any linearly dependent constraints before
+solving the problem, and \false\ otherwise. 
+We recommend removing linearly dependencies.
+The default is {\tt remove\_dependencies = .TRUE.}.
+
+\itt{treat\_zero\_bounds\_as\_general} is a scalar variable of type 
+default \logical.
+If it is set to \false, variables which 
+are only bounded on one side, and whose bound is zero,
+will be recognised as non-negativities/non-positivities rather than simply as
+lower- or upper-bounded variables.
+If it is set to \true, any variable bound 
+$x_{j}^{l}$ or $x_{j}^{u}$ which has the value 0.0 will be
+treated as if it had a general value.
+Setting {\tt treat\_zero\_bounds\_as\_general} to \true\ has the advantage
+that if a sequence of problems are reordered, then bounds which are
+``accidentally'' zero will be considered to have the same structure as
+those which are nonzero. However, {\tt \fullpackagename} is
+able to take special advantage of non-negativities/non-positivities, so
+if a single problem, or if a sequence of problems whose 
+bound structure is known not to change, is/are to be solved, 
+it will pay to set the variable to \false.
+The default is {\tt treat\_zero\_bounds\_as\_general = .FALSE.}.
+
+\itt{center} is a scalar variable of type default \logical, that 
+must be set \true\
+if the algorithm will should use the analytic center
+of the feasible set as its initial feasible point, 
+and \false\ otherwise. 
+We recommend using the analytic center.
+The default is {\tt center = .TRUE.}.
+
+\itt{primal} is a scalar variable of type default \logical, that 
+must be set \true\
+if a primal-barrier Hessian will be used
+and \false\ if the primal-dual Hessian is preferred.
+We recommend using the primal-dual Hessian.
+The default is {\tt primal = .FALSE.}.
+
+\itt{puiseux} is a scalar variable of type default \logical, that 
+must be set \true\
+if a Puiseux series will be used when extrapolating along the central path
+and \false\ if a Taylor series is preferred.
+We recommend using the Puiseux series unless the solution is known
+to be non-degenerate.
+The default is {\tt puiseux = .TRUE.}.
+
+\itt{feasol} is a scalar variable of type default \logical, that 
+should be set \true\ 
+if the final solution obtained will be perturbed 
+so that variables close to their bounds are moved onto these bounds,
+and \false\ otherwise. 
+The default is {\tt feasol = .FALSE.}.
+%The default is {\tt feasol = .TRUE.}.
+
+%\itt{array\_syntax\_worse\_than\_do\_loop} is a scalar variable of type 
+%default \logical, that should be set \true\ if the compiler is
+%better able to optimize Fortran 77-style do-loops than to exploit 
+%Fortran 95-style array syntax when performing vector operations,
+%and \false\ otherwise. 
+%The default is {\tt array\_syntax\_worse\_than\_do\_loop = .FALSE.}.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected 
+character string to preface every line of printed output. 
+Specifically, each line of output will be prefaced by the string 
+{\tt prefix(2:LEN(TRIM(prefix))-1)},
+thus ignoring the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\itt{LSQP\_control} is a scalar variable of type 
+{\tt LSQP\_control\_type}
+whose components are used to control the initial feasible point calculation
+performed by the package 
+{\tt \libraryname\_LSQP}. 
+See the specification sheet for the package 
+{\tt \libraryname\_LSQP} 
+for details, and appropriate default values (but note that default value for 
+{\tt LSQP\_control\%feasol} is changed to \false.
+
+\itt{FDC\_control} is a scalar variable of type 
+{\tt FDC\_control\_type}
+whose components are used to control any detection of linear dependencies
+performed by the package 
+{\tt \libraryname\_FDC}. 
+See the specification sheet for the package 
+{\tt \libraryname\_FDC} 
+for details, and appropriate default values.
+
+\itt{SBLS\_control} is a scalar variable of type 
+{\tt SBLS\_control\_type}
+whose components are used to control preconditioning, needed to accelerate
+the step calculation, 
+performed by the package 
+{\tt \libraryname\_SBLS}. 
+See the specification sheet for the package 
+{\tt \libraryname\_SBLS} 
+for details, and appropriate default values (but note that if
+{\tt SBLS\_control\%preconditioner = 5}, the diagonal matrix used is
+corresponds to replacing the Hesian matrix by its barrier terms).
+
+\itt{GLTR\_control} is a scalar variable of type 
+{\tt GLTR\_control\_type}
+whose components are used to control the step calculation
+performed by the package 
+{\tt \libraryname\_GLTR}. 
+See the specification sheet for the package 
+{\tt \libraryname\_GLTR} 
+for details, and appropriate default values.
+
+\end{description}

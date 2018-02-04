@@ -1,0 +1,13 @@
+! error-printout-device                             6
+! printout-device                                   6
+! print-level                                       1
+! verification-level                                2
+! f-availability                                    1
+! c-availability                                    1
+! g-availability                                    1
+! J-availability                                    1
+! H-availability                                    1
+! check-gradient                                    yes
+! check-Jacobian                                    yes
+! check-Hessian                                     yes
+! deallocate-error-fatal                            no

@@ -1,0 +1,25 @@
+s/QPA/VE19/g
+s/QPB/VE12/g
+s/CLS/VE13/g
+s/LSQP/VE16/g
+s/QPP/VE15/g
+s/GLTR/VF05/g
+s/QPT/ZD02/g
+s/SMT/ZD01/g
+s/SCU/MA39/g
+s/SILS/MA57/g
+s/RAND/FA04/g
+s/GALAHAD/HSL/g
+s/Q P A/V E 1 9/g
+s/Q P B/V E 1 2/g
+s/C L S/V E 1 3/g
+s/L S Q P/V E 1 6/g
+s/Q P P/V E 1 5/g
+s/G L T R/V F 0 5/g
+s/Q P T/Z D 0 2/g
+s/S M T/Z D 0 1/g
+s/S C U/M A 3 9/g
+s/S I L S/M A 5 7/g
+s/R A N D/F A 0 4/g
+s/GALAHAD/HSL/g
+s/G A L A H A D/H S L/g

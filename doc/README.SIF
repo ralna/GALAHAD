@@ -1,0 +1,569 @@
+
+=======================================================
+ USING GALAHAD TO SOLVE PROBLEMS WRITTEN AS .SIF FILES
+=======================================================
+
+-----------------
+ 1. Introduction
+-----------------
+
+There are interfaces directly between the packages 
+
+    QPA
+    QPB
+    LSQP
+    PRESOLVE 
+    FILTRANE
+and
+    LANCELOT B
+
+and example problems  written in .SIF (Standard Input)  Format. For QPA,
+QPB,  PRESOLVE and FILTRANE , the  interface uses CUTEr,  while for 
+LANCELOT  B the interface is direct.
+
+--------------------------------------------
+ 2. How to invoke the GALAHAD-SIF interface
+--------------------------------------------
+
+To run any of the above packages on the CUTEr example EXAMPLE.SIF
+issue the command
+
+  sdgal architecture package [options] EXAMPLE[.SIF]
+
+Here 
+
+  architecture is a string of the form 
+
+       machine.os.compiler 
+
+    which is the name of the machine/operating  system/compler-dependent
+    version created during the installation  of GALAHAD.  This name must 
+    match one of the files in directory $GALAHAD/bin/sys .
+
+  package  is  a shorthand  for  the name  of the package to be invoked,
+    and may be one of
+
+    qpa   (for QPA)      
+    qpb   (for QPB or LSQP)
+    pre   (for PRESOLVE)
+    filt  (for FILTRANE)
+    lanb  (for LANCELOT B)
+
+  options may be one or more of the following
+
+       -s        Run  the  single  precision version of the package. The
+                 default is to run the double precision version.
+
+       -h        Print a list of these options and stop execution.
+
+       -k        Keep the load module after use so that the problem  may
+                 be rerun without further compilation. The default is to
+                 delete the load module after use.
+
+       -f        Use forward automatic differentiation to  evaluate  the
+                 derivatives of any functions specified in the SIF file.
+                 The default is not to use forward automatic differenti­
+                 ation.   N.B.   not  available  without  additional HSL
+                 software.
+
+       -b        Use backward automatic differentiation to evaluate  the
+                 derivatives of any functions specified in the SIF file.
+                 The default is not to use backward automatic  differen­
+                 tiation.   N.B.   not  available without additional HSL
+                 software.
+
+       -a pac    If automatic differentiation has  been  requested,  use
+                 the  HSL  (formerly Harwell Subroutine Library) package
+                 pac, which must be one of AD01  (not  threadsafe)  AD02
+                 (threadsafe; the default)
+
+       -p        Profile the code (if possible)
+
+       -o output Specify  the  output  level, which must be one of 0 (no
+                 output; the default) 1  (a  brief  description  of  the
+                 steps  performed)  -1  (a  full  debugging  output, for
+                 experts only)
+
+       -l secs   Set a limit of secs seconds on  the  GALAHAD  run.  The
+                 default is 99999999 seconds.
+
+
+  EXAMPLE[.SIF]  is the name of the  SIF file,  which must occur in  the 
+    current directory.
+
+-----------------------------------------------
+ 3. How to rerun a previously decoded SIF file
+-----------------------------------------------
+
+To rerun any of the above packages  on a previously-decoded  SIF file,
+issue the command
+
+  gal architecture package [options]
+
+Here 
+
+  architecture is a string of the form 
+
+       machine.os.compiler 
+
+    which is the name of the machine/operating  system/compler-dependent
+    version created during the installation  of GALAHAD.  This name must 
+    match one of the files in directory $GALAHAD/bin/sys .
+
+  package  is  a shorthand  for  the name  of the package to be invoked,
+    and may be one of
+
+    qpa   (for QPA)      
+    qpb   (for QPB or LSQP)
+    pre   (for PRESOLVE)
+    filt  (for FILTRANE)
+    lanb  (for LANCELOT B)
+
+  options may be one or more of the following
+
+      -e        Use the load module architecture.package if  it  exits.
+                 The default is to create a new load module.
+
+       -h        Print a list of these options and stop execution.
+
+       -r        Do  not recompile the object files for the problem. The
+                 default is to recompile existing problem source  files.
+
+       -s        Run  the  single  precision version of the package. The
+                 default is to run the double precision version.
+
+       -k        Keep the load module after use so that the problem  may
+                 be rerun without further compilation. The default is to
+                 delete the load module after use.
+
+       -p        Profile the code (if possible)
+
+       -o output Specify the output level, which must be one  of  0  (no
+                 output;  the  default)  1  (a  brief description of the
+                 steps performed)
+
+       -l secs   Set a limit of secs seconds on  the  GALAHAD  run.  The
+                 default is 99999999 seconds.
+
+------------------------------------------------------------------
+ 4. Passing options to GALAHAD packages when solving SIF examples
+------------------------------------------------------------------
+
+It is convenient to be able to control the execution of GALAHAD packages
+without recompilation. We achieve this using a so-called "specification"
+file, a user-modifiable  plain text file in the  current directory.  The
+file is named
+
+   RUNPACKAGE.SPC ,
+
+where PACKAGE is a shorthand for  the name of the package being invoked,
+and may be one of
+
+    QPA  (for QPA)          => file is RUNQPA.SPC
+    QPB  (for QPB or LSQP)  =>    "    RUNQPB.SPC
+    PRE  (for PRESOLVE)     =>    "    RUNPRE.SPC
+    FILT (for FILTRANE)     =>    "    FILT.SPC
+    LANB (for LANCELOT B)   =>    "    RUNLANB.SPC,
+
+and will be created by default if no file of this name currently exists.
+
+A specification file, or specfile, is a data file containing a number of
+"specification commands".  Each command occurs  on a separate  line, and
+comprises  a  "keyword",  which  is  a  string  (in  a  close-to-natural
+language)  used  to identify  a  control  parameter,  and an  (optional)
+"value", which  defines the  value to be  assigned to the  given control
+parameter. All keywords and values are case insensitive, keywords may be
+preceded by one  or more blanks but values must  not contain blanks, and
+each value  must be separated  from its keyword  by at least  one blank.
+Values must  not contain more than  30 characters, and each  line of the
+specfile is  limited to 80  characters, including the  blanks separating
+keyword and value.
+
+The portion of the specification  file used by the GALAHAD-SIF interface
+must start with a "BEGIN  PACKAGE" command (with "PACKAGE" as above) and
+ends with an "END" command.  The  syntax of the specfile is thus defined
+as follows:
+
+ (  .. lines ignored by PACKAGE ..)
+    BEGIN PACKAGE
+       keyword    value
+       .......    .....
+       keyword    value
+    END 
+ (  .. lines ignored by PACKAGE ..)
+
+where  keyword and value  are two  strings separated  by (at  least) one
+blank.  The ``BEGIN  PACKAGE'' and `` END'' delimiter  command lines may
+contain  additional  (trailing) strings  so  long  as  such strings  are
+separated by one or more blanks, so that lines such as
+
+    BEGIN PACKAGE SPECIFICATION
+
+and
+
+    END PACKAGE SPECIFICATION
+
+are acceptable.  Furthermore, between the ``BEGIN  PACKAGE'' and ``END''
+delimiters, specification commands may  occur in any order.  Blank lines
+and lines  whose first non-blank character  is ! or *  are ignored.  The
+content of a line after a ! or  * character is also ignored (as is the !
+or * character  itself).  This provides an easy  manner to "comment off"
+some specification  commands, or to  comment specific values  of certain
+control parameters.
+
+The value of a control parameters may be of five different types, namely
+integer, logical, real, character string, or symbolic.  Integer and real
+values   may  be  expressed   in  any   relevant  Fortran   integer  and
+floating-point  formats  (respectively),  while  character  strings  are
+arbitrary  collections of default  Fortran character  constants (without
+quotation marks).   Permitted values for logical  parameters are  
+
+   yes   y  true    .true.      t     on     
+   no    n  false   .false.     f     off    
+
+Empty values  are also allowed  for logical control parameters,  and are
+interpreted as "yes".
+
+The full set of specification commands are given in Sections 4.1-4.4.
+
+If PACKAGE uses another package, say SUBPACKAGE, specification commands 
+for the subsidiary package can also be included in the  RUNPACKAGE.SPC 
+file, the relevant block for each subpackage forming a cohesive
+block of data, sandwiched between "BEGIN SUBPACKAGE" and "END"
+commands. Possible subpackages and the relevant documentation are:
+
+                         subpackage specification commands
+  PACKAGE   SUBPACKAGE   documented in $GALAHAD/doc directory in file
+  -------   ----------   --------------------------------------------
+
+  RUNQPA    QPA          qpa.ps and qpa.pdf
+            PRESOLVE     presolve.ps and prsolve.pdf
+
+  RUNQPB    QPB          qpb.ps  and qpb.pdf
+            LSQP         lsqp.ps and lsqp.pdf
+            PRESOLVE     presolve.ps and prsolve.pdf
+
+  RUNPRE    PRESOLVE     presolve.ps and prsolve.pdf
+  RUNFILT   FILTRANE     filtrane.ps and filtrane.pdf
+
+  RUNLANB   LANCELOT     lancelot.ps and lancelot.pdf
+
+------------------------------------------------------
+ 4.1 Specification commands for the QPA-SIF interface
+------------------------------------------------------
+
+The following command keywords are interpreted when using the 
+QPA-SIF interface:
+
+  Command and ! interpretation   value type        default
+  ---------------------------    ----------        -------
+                                 
+  write-problem-data             logical           no
+    ! does the user wish to record the raw problem data?
+
+  problem-data-file-name         character string  QPB.data
+    ! the name of the file to which the raw problem data should be written
+
+  problem-data-file-device       integer           26
+    ! the unit number on which the raw problem data should be written
+
+  write-initial-sif              logical           yes
+    !  does the user wish to write a SIF file corresponding to the raw data?
+
+  initial-sif-file-name          character string  INITIAL.SIF
+    ! the name of the file to which the initial SIF file should be written
+
+  initial-sif-file-device        integer           51
+    ! the unit number on which the initial SIF file should be written
+
+  initial-rho-g                  real              2 * number of constraints
+    ! the initial value of the penalty parameter for general constraints
+
+  initial-rho-b                  real              2 * number of variables
+    ! the initial value of the penalty parameter for bound constraints
+
+  scale-problem                  integer           0
+    ! if the user wishes to try pre-scaling the problem, a value larger than
+    ! 0 should be given; different values give different scalings
+
+  pre-solve-problem              logical           yes
+    ! does the user wish to presolve the problem?
+
+  write-presolved-sif            logical           no
+    ! does the user wish to write a SIF file corresponding to the 
+    ! presolved data?
+
+  presolved-sif-file-name        character string  PRESOLVE.SIF
+    ! the name of the file to which the presolved SIF file should be written
+
+  presolved-sif-file-device      integer           52
+    ! the unit number on which the presolved SIF file should be written
+
+  solve-problem                  logical           yes  
+    ! does the user wish to solve the problem?
+
+  print-full-solution            logical           no
+    ! does the user wish to write the entire solution to the default
+    ! output unit (yes), or will a summary suffice (no)?
+
+  write-solution                 logical           yes
+    ! does the user wish to record the solution found?
+
+  solution-file-name             character string  QPBSOL.d
+    ! the name of the file to which the solution should be written
+
+  solution-file-device           integer           62
+    ! the unit number on which the solution should be written
+
+  write-result-summary           logical           yes   
+    ! does the user wish to write a summary of the solution found?
+
+  result-summary-file-name       character string  QPBRES.d
+    ! the name of the file to which the summary should be written
+
+  result-summary-file-device     integer           47
+    ! the unit number on which the summary should be written
+
+A template specification file, in which all options are commented out,
+may be found in $GALAHAD/src/qpa/RUNQPA.SPC . A link to this file
+is made whenever the QPA-SIF interface is invoked in a directory
+in which RUNQPA.SPC is absent.
+
+------------------------------------------------------
+ 4.2 Specification commands for the QPB-SIF interface
+------------------------------------------------------
+
+The following command keywords are interpreted when using the 
+QPB-SIF interface:
+
+  Command and ! interpretation   value type        default
+  ---------------------------    ----------        -------
+                                 
+  write-problem-data             logical           no
+    ! does the user wish to record the raw problem data?
+
+  problem-data-file-name         character string  QPB.data
+    ! the name of the file to which the raw problem data should be written
+
+  problem-data-file-device       integer           26
+    ! the unit number on which the raw problem data should be written
+
+  write-initial-sif              logical           no
+    !  does the user wish to write a SIF file corresponding to the raw data?
+
+  initial-sif-file-name          character string  INITIAL.SIF
+    ! the name of the file to which the initial SIF file should be written
+
+  initial-sif-file-device        integer           51
+    ! the unit number on which the initial SIF file should be written
+
+  least-squares-qp               logical           no
+    ! does the user simply wish to use the LSQP package, and ignore
+    ! any quadratic terms in the SIF file?
+
+  scale-problem                  integer           0
+    ! if the user wishes to try pre-scaling the problem, a value larger than
+    ! 0 should be given; different values give different scalings
+
+  pre-solve-problem              logical           yes
+    ! does the user wish to presolve the problem?
+
+  write-presolved-sif            logical           no
+    ! does the user wish to write a SIF file corresponding to the 
+    ! presolved data?
+
+  presolved-sif-file-name        character string  PRESOLVE.SIF
+    ! the name of the file to which the presolved SIF file should be written
+
+  presolved-sif-file-device      integer           52
+    ! the unit number on which the presolved SIF file should be written
+
+  solve-problem                  logical           no
+    ! does the user wish to solve the problem?
+
+  print-full-solution            logical           no
+    ! does the user wish to write the entire solution to the default
+    ! output unit (yes), or will a summary suffice (no)?
+
+  write-solution                 logical           yes
+    ! does the user wish to record the solution found?
+
+  solution-file-name             character string  QPBSOL.d
+    ! the name of the file to which the solution should be written
+
+  solution-file-device           integer           62
+    ! the unit number on which the solution should be written
+
+  write-result-summary           logical           yes     
+    ! does the user wish to write a summary of the solution found?
+
+  result-summary-file-name       character string  QPBRES.d
+    ! the name of the file to which the summary should be written
+
+  result-summary-file-device     integer           47
+    ! the unit number on which the summary should be written
+
+A template specification file, in which all options are commented out,
+may be found in $GALAHAD/src/qpb/RUNQPB.SPC . A link to this file
+is made whenever the QPB-SIF interface is invoked in a directory
+in which RUNQPB.SPC is absent.
+
+-----------------------------------------------------------
+ 4.3 Specification commands for the PRESOLVE-SIF interface
+-----------------------------------------------------------
+
+The following command keywords are interpreted when using the 
+PRESOLVE-SIF interface:
+
+  Command and ! interpretation   value type        default
+  ---------------------------    ----------        -------
+
+  write-initial-sif              logical           yes 
+    !  does the user wish to write a SIF file corresponding to the raw data?
+
+  initial-sif-file-name          character string  INITIAL.SIF
+    ! the name of the file to which the initial SIF file should be written
+
+  initial-sif-file-device        integer           51
+    ! the unit number on which the initial SIF file should be written
+
+  write-presolved-sif            logical           yes 
+    ! does the user wish to write a SIF file corresponding to the 
+    ! presolved data?
+
+  presolved-sif-file-name        character string  PRESOLVE.SIF
+    ! the name of the file to which the presolved SIF file should be written
+
+  presolved-sif-file-device      integer           52
+    ! the unit number on which the presolved SIF file should be written
+
+A template specification file, in which all options are commented out,
+may be found in $GALAHAD/src/pre/RUNPRE.SPC . A link to this file
+is made whenever the PRESOLVE-SIF interface is invoked in a directory
+in which RUNPRE.SPC is absent.
+
+-------------------------------------------------------------
+ 4.4 Specification commands for the FILTRANE-SIF interface
+-------------------------------------------------------------
+
+The following command keywords are interpreted when using the
+FILTRANE-SIF interface:
+
+  Command and ! interpretation   value type        default
+  ---------------------------    ----------        -------
+                                
+-------------------------------------------------------------
+ 4.5 Specification commands for the LANCELOT B-SIF interface
+-------------------------------------------------------------
+
+The following command keywords are interpreted when using the
+LANCELOT B-SIF interface:
+
+  Command and ! interpretation   value type        default
+  ---------------------------    ----------        -------
+                                
+  write-problem-data             logical           no
+    ! does the user wish to record the raw problem data?
+
+  problem-data-file-name         character string  LANB.data
+    ! the name of the file to which the raw problem data should be written
+
+  problem-data-file-device       integer           26
+    ! the unit number on which the raw problem data should be written
+
+  print-full-solution            logical           no
+    ! does the user wish to write the entire solution to the default
+    ! output unit (yes), or will a summary suffice (no)?
+
+  write-solution                 logical           yes
+    ! does the user wish to record the solution found?
+
+  solution-file-name             character string  LANBSOL.d
+    ! the name of the file to which the solution should be written
+
+  solution-file-device           integer           62
+    ! the unit number on which the solution should be written
+
+  write-result-summary           logical           yes
+    ! does the user wish to write a summary of the solution found?
+
+  result-summary-file-name       character string  LANBRES.d
+    ! the name of the file to which the summary should be written
+
+  result-summary-file-device     integer           47
+    ! the unit number on which the summary should be written
+
+  check-all-derivatives          logical           no
+    ! does the user wish to check all element and group function
+    ! derivatives by comparing them with finite-difference approximations?
+
+  check-derivatives              logical           yes
+    ! does the user wish to check representative element and group function
+    ! derivatives by comparing them with finite-difference approximations?
+
+  check-element-derivatives      logical           yes
+    ! does the user wish to check representative element function
+    ! derivatives by comparing them with finite-difference approximations?
+
+  check-group-derivatives        logical           yes
+    ! does the user wish to check representative group function
+    ! derivatives by comparing them with finite-difference approximations?
+
+  ignore-derivative-bugs         logical           no
+    ! if derivative errors are suspected should the warnings be ignored?
+
+  ignore-element-derivative-bugs logical           no
+    ! if element derivative errors are suspected should the warnings be ignored?
+
+  ignore-group-derivative-bugs   logical           no
+    ! if group derivative errors are suspected should the warnings be ignored?
+
+  get-scaling-factors            logical           no
+    ! should the problem be pre-scaled?
+
+  scaling-print-level            integer           0
+    ! a positive value will result in different levels of scaling information
+
+  use-scaling-factors            logical           no
+    ! should the scaling factors be used?
+
+  use-constraint-scaling-factors logical           no
+    ! should the constraint scaling factors be used?
+
+  use-variable-scaling-factors   logical           no
+    ! should the variable scaling factors be used?
+
+  maximizer-sought               logical           no
+    ! should the objective function be maximized rather than minimized?
+
+  restart-from-previous-point    logical           no
+    ! should the algorithm start for the point at which it stopped
+    ! last time if the problem is resolved or the optimization restarted ?
+
+  restart-data-file-name         character string  LANBSAVE.d
+    ! the name of the file containing the "solution" from the previous
+    ! "solve". The previous solution file (see solution-file-name above)
+    ! is suitable
+
+  restart-data-file-device       integer           59
+    ! the unit number from which the restart solution file should be read
+
+  save-data-for-restart--every   integer           0
+    ! the number of iterations between which the "solution" file will be 
+    ! written. A non-positive value results in the file only being
+    ! written on termination from the package.
+
+A template specification file, in which all options are commented out,
+may be found in $GALAHAD/src/pre/RUNLANB.SPC . A link to this file
+is made whenever the LANCELOT B-SIF interface is invoked in a directory
+in which RUNLANB.SPC is absent.
+
+
+Please send all comments/corrections to us. Good luck!
+
+Nick Gould
+Dominique Orban
+Philippe Toint
+
+For GALAHAD productions
+This version: 9th June 2003

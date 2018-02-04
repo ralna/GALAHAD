@@ -1,0 +1,389 @@
+s/FULLPACKNAME/QPA/
+s/PACKAGENAME/QPA/
+s/PACKNAME/QPA/
+s/packname/qpa/g
+#
+s/isvar20//
+s/idvar20/0/
+s/ilvar20//
+#s/ivar20//
+#
+s/isvar19//
+s/idvar19/0/
+s/ilvar19//
+#s/ivar19//
+#
+s/isvar18//
+s/idvar18/0/
+s/ilvar18//
+#s/ivar18//
+#
+s/isvar17//
+s/idvar17/0/
+s/ilvar17//
+#s/ivar17//
+#
+s/isvar16//
+s/idvar16/0/
+s/ilvar16//
+#s/ivar16//
+#
+s/isvar15//
+s/idvar15/0/
+s/ilvar15//
+#s/ivar15//
+#
+s/isvar14//
+s/idvar14/0/
+s/ilvar14//
+#s/ivar14//
+#
+s/isvar13//
+s/idvar13/0/
+s/ilvar13//
+#s/ivar13//
+#
+s/isvar12//
+s/idvar12/0/
+s/ilvar12//
+#s/ivar12//
+#
+s/isvar11//
+s/idvar11/0/
+s/ilvar11//
+#s/ivar11//
+#
+s/isvar10//
+s/idvar10/0/
+s/ilvar10//
+#s/ivar10//
+#
+s/isvar9/temporarily-perturb-constraint-bounds/
+s/idvar9/1/
+s/ilvar9/temporarily-perturb-constraint-bounds/
+#s/ivar9//
+#
+s/isvar8/solve-within-bounds/
+s/idvar8/0/
+s/ilvar8/solve-within-bounds/
+#s/ivar8//
+#
+s/isvar7/solve-qp/
+s/idvar7/0/
+s/ilvar7/solve-qp/
+#s/ivar7//
+#
+s/isvar6/treat-zero-bounds-as-general/
+s/idvar6/0/
+s/ilvar6/treat-zero-bounds-as-general/
+#s/ivar6//
+#
+s/isvar5/print-full-solution/
+s/idvar5/0/
+s/ilvar5/print-full-solution/
+#s/ivar5//
+#
+s/isvar4/write-presolved-sif/
+s/idvar4/0/
+s/ilvar4/write-presolved-sif/
+#s/ivar4//
+#
+s/isvar3/pre-solve-problem/
+s/idvar3/1/
+s/ilvar3/pre-solve-problem/
+#s/ivar3//
+#
+s/isvar2/write-initial-sif/
+s/idvar2/0/
+s/ilvar2/write-initial-sif/
+#s/ivar2//
+#
+s/isvar1/write-problem-data/
+s/idvar1/0/
+s/ilvar1/write-problem-data/
+#s/ivar1//
+
+#
+s/ssvar34/inner-iteration-absolute-accuracy-required/
+s/sdvar34/1.0E-8/
+s/slvar34/inner-iteration-absolute-accuracy-required/
+#s/svar34//
+#
+s/ssvar33/inner-iteration-relative-accuracy-required/
+s/sdvar33/0.0/
+s/slvar33/inner-iteration-relative-accuracy-required/
+#s/svar33//
+#
+s/ssvar32/multiplier-tolerance/
+s/sdvar32/1.0D-8/
+s/slvar32/multiplier-tolerance/
+#s/svar32//
+#
+s/ssvar31/zero-pivot-tolerance/
+s/sdvar31/1.0D-12/
+s/slvar31/zero-pivot-tolerance/
+#s/svar31//
+#
+s/ssvar30/pivot-tolerance-used-for-dependencies/
+s/sdvar30/0.5/
+s/slvar30/pivot-tolerance-used-for-dependencies/
+#s/svar30//
+#
+s/ssvar29/pivot-tolerance-used/
+s/sdvar29/1.0D-8/
+s/slvar29/pivot-tolerance-used/
+#s/svar29//
+
+
+#
+s/ssvar28/infeasible-b-required-improvement-factor/
+s/sdvar28/0.75/
+s/slvar28/infeasible-b-required-improvement-factor/
+#s/svar28//
+#
+s/ssvar27/increase-rho-g-factor/
+s/sdvar27/2.0/
+s/slvar27/increase-rho-g-factor/
+#s/svar27//
+#
+s/ssvar26/minimum-objective-before-unbounded/
+s/sdvar26/-1.0D+32/
+s/slvar26/minimum-objective-before-unbounded/
+#s/svar26//
+#
+s/ssvar25/feasibility-tolerance/
+s/sdvar25/1.0D-12/
+s/slvar25/feasibility-tolerance/
+#s/svar25/1.0D-12/
+#
+s/ssvar24/infinity-value/
+s/sdvar24/1.0D+19/
+s/slvar24/infinity-value/
+#s/svar24//
+#
+s/ssvar23/cold-start-strategy/
+s/sdvar23/3/
+s/slvar23/cold-start-strategy/
+#s/svar23//
+#
+s/ssvar22/residual-monitor-interval/
+s/sdvar22/1/
+s/slvar22/residual-monitor-interval/
+#s/svar22//
+#
+s/ssvar21/restore-problem-on-output/
+s/sdvar21/0/
+s/slvar21/restore-problem-on-output/
+#s/svar21//
+#
+s/ssvar20/deletion-strategy/
+s/sdvar20/0/
+s/slvar20/deletion-strategy/
+#s/svar20//
+#
+s/ssvar19//
+s/sdvar19//
+s/slvar19//
+#s/svar19//
+#
+s/ssvar18/full-max-fill-ratio/
+s/sdvar18/10/
+s/slvar18/full-max-fill-ratio/
+#s/svar18//
+#
+s/ssvar17/semi-bandwidth-for-band-preconditioner/
+s/sdvar17/5/
+s/slvar17/semi-bandwidth-for-band-preconditioner/
+#s/svar17//
+#
+s/ssvar16/preconditioner-used/
+s/sdvar16/0/
+s/slvar16/preconditioner-used/
+#s/svar16//
+#
+s/ssvar15/maximum-number-of-cg-iterations/
+s/sdvar15/-1/
+s/slvar15/maximum-number-of-cg-iterations/
+#s/svar15//
+#
+s/ssvar14/maximum-infeasible-iterations-before-rho-increase/
+s/sdvar14/100/
+s/slvar14/maximum-infeasible-iterations-before-rho-increase/
+#s/svar14//
+#
+s/ssvar13/maximum-refinements/
+s/sdvar13/1/
+s/slvar13/maximum-refinements/
+#s/svar13//
+#
+s/ssvar12/initial-real-workspace/
+s/sdvar12/1000/
+s/slvar12/initial-real-workspace/
+#s/svar12//
+#
+s/ssvar11/initial-integer-workspace/
+s/sdvar11/1000/
+s/slvar11/initial-integer-workspace/
+#s/svar11//
+#
+s/ssvar10/maximum-dimension-of-schur-complement/
+s/sdvar10/75/
+s/slvar10/maximum-dimension-of-schur-complement/
+#s/svar10//
+#
+s/ssvar9/maximum-column-nonzeros-in-schur-complement/
+s/sdvar9/35/
+s/slvar9/maximum-column-nonzeros-in-schur-complement/
+#s/svar9//
+#
+s/ssvar8/factorization-used/
+s/sdvar8/0/
+s/slvar8/factorization-used/
+#s/svar8//
+#
+s/ssvar7/stop-print/
+s/sdvar7/-1/
+s/slvar7/stop-print/
+#s/svar7//
+#
+s/ssvar6/start-print/
+s/sdvar6/-1/
+s/slvar6/start-print/
+#s/svar6//
+#
+s/ssvar5/maximum-number-of-iterations/
+s/sdvar5/1000/
+s/slvar5/maximum-number-of-iterations/
+#s/svar5//
+#
+s/ssvar4/print-level/
+s/sdvar4/0/
+s/slvar4/print-level/
+#s/svar4//
+#
+s/ssvar3/scale-problem/
+s/sdvar3/0/
+s/slvar3/scale-problem/
+#s/svar3//
+#
+s/ssvar2/initial-rho-b/
+s/sdvar2/-1.0/
+s/slvar2/initial-rho-b/
+#s/svar2//
+#
+s/ssvar1/initial-rho-g/
+s/sdvar1/-1.0/
+s/slvar1/initial-rho-g/
+#s/svar1//
+#
+s/ssvara//
+s/sdvara/0/
+s/slvara1//
+s/slvara2//
+s/slvara3//
+#s/svara//
+#
+s/ssvarb//
+s/sdvarb/0/
+s/slvarb1//
+s/slvarb2//
+s/slvarb3//
+s/slvarb4//
+s/slvarb5//
+#s/svarb//
+#
+s/ssvarc//
+s/sdvarc/0/
+#s/svarc//
+#
+s/ssvarca/0/
+s/sdvarca//
+#s/svarca//
+#
+s/ssvarcb//
+s/sdvarcb//
+#s/svarcb//
+#
+s/ssvarc1//
+s/slvarc1//
+s/ssvarc2//
+s/slvarc2//
+s/ssvarc3//
+s/slvarc3//
+s/ssvarc4//
+s/slvarc4//
+s/ssvarc5//
+s/slvarc5//
+s/ssvarc6//
+s/slvarc6//
+s/ssvarc7//
+s/slvarc7//
+s/ssvarc8//
+s/slvarc8//
+s/ssvarc9//
+s/slvarc9//
+s/ssvarc10//
+s/slvarc10//
+
+
+#write-problem-data                          NO
+#problem-data-file-name                      QPA.data
+#problem-data-file-device                    26
+#write-initial-sif                           NO
+#initial-sif-file-name                       INITIAL.SIF
+#initial-sif-file-device                     51
+#initial-rho-g                               1.0D+6
+#initial-rho-b                               1.0D+6
+#scale-problem                               0
+#pre-solve-problem                           YES
+#write-presolved-sif                         NO
+#presolved-sif-file-name                     PRESOLVE.SIF
+#presolved-sif-file-device                   53
+#solve-problem                               YES
+#print-full-solution                         NO
+#write-solution                              NO
+#solution-file-name                          QPASOL.d
+#solution-file-device                        62
+#write-result-summary                        NO
+#result-summary-file-name                    QPARES.d
+#result-summary-file-device                  47
+
+#error-printout-device                             6
+#printout-device                                   6
+#print-level                                       0
+#maximum-number-of-iterations                      1000
+#start-print                                       -1
+#stop-print                                        -1
+#factorization-used                                0
+#maximum-column-nonzeros-in-schur-complement       35
+#maximum-dimension-of-schur-complement             75
+#initial-integer-workspace                         1000
+#initial-real-workspace                            1000
+#maximum-refinements                               1
+#maximum-infeasible-iterations-before-rho-increase 100
+#maximum-number-of-cg-iterations                   -1
+#preconditioner-used                               0
+#semi-bandwidth-for-band-preconditioner            5
+#full-max-fill-ratio                               10
+#deletion-strategy                                 0
+#restore-problem-on-output                         2
+#residual-monitor-interval                         1
+#cold-start-strategy                               3
+#infinity-value                                    1.0D+19
+#feasibility-tolerance                             1.0D-12
+#minimum-objective-before-unbounded                -1.0D+32
+#increase-rho-g-factor                             2.0
+#increase-rho-b-factor                             2.0
+#infeasible-g-required-improvement-factor          0.75
+#infeasible-b-required-improvement-factor          0.75
+#pivot-tolerance-used                              1.0D-8
+#pivot-tolerance-used-for-dependencies             0.5
+#zero-pivot-tolerance                              1.0D-12
+#multiplier-tolerance                              1.0D-8
+#inner-iteration-relative-accuracy-required        0.0
+#inner-iteration-absolute-accuracy-required        1.0E-8
+#treat-zero-bounds-as-general                      NO
+#solve-qp                                          NO
+#solve-within-bounds                               NO
+#temporarily-perturb-constraint-bounds             YES
+#array-syntax-worse-than-do-loop                   NO

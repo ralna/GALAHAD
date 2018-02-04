@@ -1,0 +1,13 @@
+From Version 2.4, GALAHAD offers limited support for 
+parallel execution for shared-memory multiprocessing systems
+using OPENMP. Primarily paralleism is used by HSL and other
+linear equation solvers and via LAPACK and the BLAS.
+
+If you have a multi-processing system, try setting the
+environment variable OMP_NUM_THREADS to an integer larger
+than 1 to see if you get speed (elapsed, not CPU time) imprvements.  
+Increasing OMP_NUM_THREADS beyond the number of processors is unlikely
+to be beneficial.
+
+
+

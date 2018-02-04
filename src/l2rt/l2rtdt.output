@@ -1,0 +1,32 @@
+
+ ==== normal exits ====== 
+
+ problem 1 pass   1 L2RT_solve exit status =      0
+ problem 1 pass   2 L2RT_solve exit status =      0
+ problem 1 pass   3 L2RT_solve exit status =      0
+ problem 1 pass   4 L2RT_solve exit status =      0
+ problem 1 pass   5 L2RT_solve exit status =      0
+ problem 1 pass   6 L2RT_solve exit status =      0
+ problem 1 pass   7 L2RT_solve exit status =      0
+ problem 1 pass   8 L2RT_solve exit status =      0
+ problem 1 pass   9 L2RT_solve exit status =      0
+ problem 1 pass  10 L2RT_solve exit status =      0
+ problem 2 pass   1 L2RT_solve exit status =      0
+ problem 2 pass   2 L2RT_solve exit status =      0
+ problem 2 pass   3 L2RT_solve exit status =      0
+ problem 2 pass   4 L2RT_solve exit status =      0
+ problem 2 pass   5 L2RT_solve exit status =      0
+ problem 2 pass   6 L2RT_solve exit status =      0
+ problem 2 pass   7 L2RT_solve exit status =      0
+ problem 2 pass   8 L2RT_solve exit status =      0
+ problem 2 pass   9 L2RT_solve exit status =      0
+ problem 2 pass  10 L2RT_solve exit status =      0
+
+ ==== error exits ====== 
+
+  3 L2RT_solve exit status =     -3
+  3 L2RT_solve exit status =     -3
+  3 L2RT_solve exit status =     -3
+  3 L2RT_solve exit status =     -3
+ 18 L2RT_solve exit status =    -18
+ 25 L2RT_solve exit status =    -25

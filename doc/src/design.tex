@@ -1,0 +1,393 @@
+% GALAHAD design
+% Started:      22 July 1999
+% This version: 29 July 1999
+
+\documentclass[twoside]{article}
+\usepackage{latexsym,fancyheadings}
+
+\newcommand{\disp}[1]{\[{#1}\]}
+\newcommand{\arr}[2]{\begin{array}{#1}#2\end{array}}
+
+\newcommand{\alist}[2]{\begin{#1}{#2}\end{#1}}
+\newcommand{\ilist}[1]{\alist{itemize}{#1}}
+\newcommand{\dlist}[1]{\alist{description}{#1}}
+\newcommand{\elist}[1]{\alist{enumerate}{#1}}
+\newcommand{\header}[1]{\vspace{5mm}
+
+\noindent
+\textbf{\large {#1}}}
+\newcommand{\bigheader}[1]{\vspace*{10mm}
+
+\noindent
+\textbf{\Large {#1}}}
+
+\renewcommand{\labelitemi}{${\scriptscriptstyle \Diamond}\;$}
+\renewcommand{\labelitemii}{${\scriptscriptstyle \Box}\;$}
+
+\newcommand{\paperauthor}{Nick Gould \& Philippe Toint}
+\newcommand{\papertitle}{{\sl GALAHAD} design features}
+
+\pagestyle{fancy}
+\lhead[\rm \thepage]{\papertitle: \paperauthor}
+\rhead[Draft version ({\tt design.tex}) - not for circulation]{\rm \thepage}
+\chead{}\cfoot{}\lfoot{}\rfoot{}
+
+\author{\paperauthor}
+\title{\papertitle}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\section{Basic design} 
+
+\header{Interfaces}
+
+\ilist{
+\item SIF
+\item AMPL
+\item fortran
+\item calls with various levels of complexity in argument lists
+}
+
+\header{Algorithmic option specifed by}
+
+\ilist{
+\item SPEC file
+\item Perl/TK script (or TCL/TK)
+}
+
+\header{Problem structure}
+
+\ilist{
+\item dense
+\item sparse
+\item group partial separability
+}
+
+\header{Derivatives}
+
+\ilist{
+\item automatic differentiation
+\item hand coded
+\item finite differences
+\item secant formulae
+}
+
+\header{Other features}
+
+\ilist{
+\item hard inequality constraints
+\item user-defined inner-products
+\item non-monotone methods
+\item user-defined termination tests
+\item derivative checking
+\item preprocessing
+\item scaling
+\item user interuptable
+\item warm starts
+\item max vs min
+\item derivative-free methods ?
+\item nonsmooth methods ?
+}
+
+\header{Problem classes}
+
+\begin{center}
+\begin{tabular}{|ll|c|c|c|c|c|}
+\hline
+           &  {\bf objective} 
+              &  none  &  linear  & quadratic & sum of  & general   \\
+           &  &        &          &           & squares &           \\
+{\bf  constraints}  
+           &  &        &          &           &         &           \\
+\hline              
+none       &  &   t    &   t      &    UQP    & \multicolumn{2}{c|}{UNC}\\
+\hline              
++bounds    &  &   t    &   t      &    BQP    & \multicolumn{2}{c|}{BC}\\
+\hline              
++network   &  &   ?    &   n      &    ?      &    ?    &    ?        \\
+\hline              
++linear    &  &   LFEAS &   LP ?      &    QP      & \multicolumn{2}{c|}{}  \\
+\cline{1-5}         
++nonlinear &  &   NLFEAS    & \multicolumn{2}{c}{} & \multicolumn{2}{c|}{NLP} \\
+\hline
+\end{tabular}
+\end{center}
+
+
+\begin{center}
+   t = trivial (4),
+   e = easy    (1),
+   ? = maybe   (5),
+   n = no      (1)
+\end{center}
+
+\section{Methods}
+
+\header{NLP}
+
+\disp{\arr{rlccccc}{
+   \mbox{standard form}   & \min        &     &      &  f(x) &      &     \\
+                          & \mbox{s.t.} & x_l & \leq &    x  & \leq & x_u \\
+                          &             & c_l & \leq &  
+                        \left\{ \begin{array}{c} Ax \\ c(x) \end{array} \right\}
+                          & \leq & c_u}}
+
+\ilist{
+\item
+   filter SQP and/or S$\ell_1$QP
+
+\item
+   needs QP
+     - active set QP
+     - interior point QP
+
+\item
+   $\ell_{\infty}$ TR
+
+\item
+   needs NLFEAS (filter)
+
+
+\item
+   hard nonlinear constraints?
+
+\item
+   when to cross from IP to active set QP?
+}
+
+ \header{NLFEAS}
+
+
+\ilist{
+\item
+   specify measure of $\ell_{1}$ / $\ell_{\infty}$ norm
+}
+
+\header{QP}
+   
+\disp{\arr{rlccccc}{
+   \mbox{standard form}   & \min        
+                          & \multicolumn{5}{c}{\frac{1}{2} x^T H x + g^T x + f}
+  \\
+                          & \mbox{s.t.} & x_l & \leq &    x & \leq & x_u \\
+                          &             & c_l & \leq & Ax & \leq & c_u }}
+
+
+\noindent
+   two methods:
+
+\ilist{
+   \item  active set
+\ilist{
+      \item no need for feasibility
+      \item no TR
+      \item anti zig-zaging ?
+      \item degeneracy? Wolfe ?
+}
+   \item  interior point
+\ilist{
+      \item need LFEAS
+      \item $\ell_2$ TR
+      \item dependent rows
+}}      
+
+\ilist{
+\item
+   row-wise matrix storage
+
+\item
+   preconditioners
+
+\item
+   fully iterative methods for very large problems
+}
+
+\header{LFEAS}
+
+\ilist{
+\item
+   interior-point method for the analytic centre
+}
+
+\header{BC}
+
+
+\ilist{
+\item
+   need BQP
+
+\item
+   $\ell_{\infty}$ TR
+
+\item
+   LANCELOT like
+}
+
+\header{BQP}
+
+
+\noindent
+   two methods:
+
+\ilist{
+ \item projection
+
+ \item interior point
+ \ilist{
+      \item $\ell_2$ TR
+      \item dependent rows
+}}
+      
+\header{UNC}
+
+
+\ilist{
+\item
+   $\ell_2$ TR
+
+\item
+   GLTR
+}
+\header{UQP}
+
+
+\ilist{
+\item
+   either factorization or CG
+}
+
+\section{Problem format after preprocessing}
+
+\header{Bounds (ranges) on variables}
+
+\dlist{
+\item[{\tt x\_l( x\_l\_start : x\_l\_end ), x\_u( x\_u\_start : x\_u\_end )}] 
+ \mbox{} \\
+     vectors of lower and upper bounds as follows:
+
+\disp{\arr{cccccc}{
+         &      & x &      &     &  \mbox{free}      \\
+     0   & \leq & x &      &     &  \mbox{non-negativity}    \\
+     x_l & \leq & x &      &     &  \mbox{lower}     \\
+     x_l & \leq & x & \leq & x_u &  \mbox{range}     \\
+         &      & x & \leq & x_u &  \mbox{upper}     \\
+         &      & x & \leq & 0   &  \mbox{non-positivity}
+}}
+
+\item[{\tt x\_free}] \mbox{} \\
+     index of last free variable (= number of free variables)
+\item[{\tt x\_l\_start, x\_l\_end}] \mbox{} \\
+     indices of first and last variables which have general lower bounds
+\item[{\tt x\_u\_start, x\_u\_end}] \mbox{} \\
+     indices of first and last variables which have general upper bounds
+}
+
+\header{Problem (primal) and dual variables}
+
+\dlist{
+\item[{\tt n}] \mbox{} \\
+     number of variables (after preprocessing)
+\item[{\tt x( : n )}] \mbox{} \\
+     vector of unknowns
+\item[{\tt f}] \mbox{} \\
+     value of objective
+\item[{\tt g( : n )}] \mbox{} \\
+     gradient of objective
+\item[{\tt z\_l( x\_free + 1 : x\_l\_end ), z\_u( x\_u\_start : n )}] \mbox{} \\
+     vectors of dual variables (Lagrange multipliers) 
+     corresponding to the simple bound constraints
+\item[{\tt x\_map( * )}] \mbox{} \\
+     mapping vector from old to new
+}
+
+\clearpage
+
+\header{Hessian (of the Lagrangian)}
+ 
+\dlist{
+\item[{\tt h\_val( : h\_nnz ), h\_col( : h\_nnz ), h\_row\_start( : n + 1 )}] 
+ \mbox{} \\
+    (NB: {\tt h\_nnz = h\_row\_start( n + 1 ) - 1})
+     lower triangle), stored by rows, sorted in increasing column order
+\item[{\tt h\_diag\_end\_free}] \mbox{} \\
+     of the columns corresponding to free variables, those and only those 
+     from {\tt 1} to {\tt h\_diag\_end\_free} have nonzero diagonals
+\item[{\tt h\_diag\_end\_nonneg}] \mbox{} \\
+     of the columns corresponding to non-negative variables, those and only 
+     those from {\tt x\_free + 1} to {\tt h\_diag\_end\_nonneg} have nonzero 
+     diagonals
+\item[{\tt h\_diag\_end\_lower}] \mbox{} \\
+     of the columns corresponding to variables with lower bounds, those and 
+     only those from 
+     {\tt x\_l\_start} to {\tt h\_diag\_end\_lower} have nonzero diagonals
+\item[{\tt h\_diag\_end\_range}] \mbox{} \\
+     of the columns corresponding to variables with range bounds, those and 
+     only those from 
+     {\tt x\_u\_start} to {\tt h\_diag\_end\_range} have nonzero diagonals
+\item[{\tt h\_diag\_end\_upper}] \mbox{} \\
+     of the columns corresponding to variables with upper bounds, those and 
+     only those from 
+     {\tt x\_l\_end + 1} to {\tt h\_diag\_end\_upper} have nonzero diagonals
+\item[{\tt h\_diag\_end\_nonpos}] \mbox{} \\
+     of the columns corresponding to non-positivity variables, those and only 
+     those from 
+     {\tt x\_u\_end + 1} to {\tt h\_diag\_end\_nonpos} have nonzero diagonals
+\item[{\tt h\_map\_inverse( * )}] \mbox{} \\
+     mapping vector from new to old
+}
+
+\header{Bounds (ranges) on general constraints}
+
+\dlist{
+\item[{\tt c\_l( : c\_l\_end ), c\_u( c\_u\_start : c\_u\_end )}] 
+ \mbox{} \\
+     vectors of lower and upper bounds on constraints as follows:
+
+\disp{\arr{cccccc}{
+%    0   & \leq & c(x) &      &     &  \mbox{non-negativity}    \\
+     c_l & =    & c(x) &      &     &  \mbox{equality}     \\
+     c_l & \leq & c(x) &      &     &  \mbox{lower}     \\
+     c_l & \leq & c(x) & \leq & c_u &  \mbox{range}     \\
+         &      & c(x) & \leq & c_u &  \mbox{upper}     \\
+%        &      & c(x) & \leq & 0   &  \mbox{non-positivity}
+}}
+
+\item[{\tt c\_equality}] \mbox{} \\
+     index of last equality constraint (= number of equality constraints)
+\item[{\tt c\_l\_start, c\_l\_end}] \mbox{} \\
+     indices of first and last inequality constraints which have % general 
+     lower bounds
+\item[{\tt c\_u\_start, c\_u\_end}] \mbox{} \\
+     indices of first and last inequality constraints which have % general 
+     upper bounds
+}
+     
+\header{Constraints and their Lagrange multipliers}
+
+\dlist{
+\item[{\tt m}] \mbox{} \\
+     number of constraints (after preprocessing)
+\item[{\tt c( : m )}] \mbox{} \\
+     values of constraints
+\item[{\tt y\_l( : c\_l\_end ), y\_u( c\_u\_start : m )}] \mbox{} \\
+     vectors of Lagrange multipliers corresponding to these constraints
+\item[{\tt c\_map( * )}] \mbox{} \\
+     mapping vector from old to new
+}
+
+\header{Jacobian of general (linear and nonlinear) constraints}
+
+\dlist{
+\item[{\tt a\_val( : a\_nnz ), a\_col( : a\_nnz ), a\_row\_start( : m + 1 )}] 
+ \mbox{} \\
+    (NB: {\tt a\_nnz = a\_row\_start( m + 1 ) - 1})
+     stored by rows, sorted in increasing column order
+\item[{\tt a\_map\_inverse( * )}] \mbox{} \\
+     mapping vector from new to old
+}
+
+\end{document}
+

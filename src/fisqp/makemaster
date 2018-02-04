@@ -1,0 +1,292 @@
+#  Main body of the installation makefile for the GALAHAD FISQP package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 19 X 2005
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES) $(PLPLOT)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+PLPLOTSEDS = $(GALAHAD)/seds/plplot_$(PLPLOTUSED).sed
+
+#  compilation agenda
+
+SFISQP = basics filter l1qp eqp nlpt cutest_functions $(LGS)(fisqp.o)
+DFISQP = basics filter l1qp eqp nlpt cutest_functions $(LGD)(fisqp.o)
+
+SRUNFISQP = copyright $(LGS)(usefisqp.o) $(OBJS)/runfisqp_sif.o
+DRUNFISQP = copyright $(LGD)(usefisqp.o) $(OBJD)/runfisqp_sif.o
+
+FISQPOBJECTSS_CUTEST = $(SFISQP) $(SRUNFISQP)
+FISQPOBJECTSD_CUTEST = $(DFISQP) $(DRUNFISQP)
+
+OBJECTSS_CUTEST = $(FISQPOBJECTSS_CUTEST)
+OBJECTSD_CUTEST = $(FISQPOBJECTSD_CUTEST)
+
+FISQPDS = $(DFISQP) $(OBJD)/fisqps.o
+FISQPDT = $(DFISQP) $(OBJD)/fisqpt.o
+FISQPSS = $(SFISQP) $(OBJS)/fisqps.o
+FISQPST = $(SFISQP) $(OBJS)/fisqpt.o
+
+RFISQPDS = $(OBJD)/fisqps.o -L$(OBJD) $(LIBS)
+RFISQPDT = $(OBJD)/fisqpt.o -L$(OBJD) $(LIBS)
+RFISQPSS = $(OBJS)/fisqps.o -L$(OBJS) $(LIBS)
+RFISQPST = $(OBJS)/fisqpt.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+all: fisqp_cutest
+all_fisqp: fisqp_cutest
+test: test_fisqp
+test_nocutest: test_fisqp_nocutest
+
+# fisqp
+
+fisqp_cutest: fisqp_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: FISQP ($(PRECIS) $(SUCC_CUTEST)"
+fisqp_cutest_single: $(FISQPOBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+fisqp_cutest_double: $(FISQPOBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+fisqp_silent: fisqp_silent_$(PRECIS)
+fisqp_silent_single: $(FISQPOBJECTSS)
+fisqp_silent_double: $(FISQPOBJECTSD)
+
+fisqp: fisqp_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: FISQP ($(PRECIS) $(SUCC)"
+fisqp_single: $(FISQPOBJECTSS)
+	$(RANLIB) $(LGS)
+fisqp_double: $(FISQPOBJECTSD)
+	$(RANLIB) $(LGD)
+
+fisqpsrunall: fisqpss fisqpst
+fisqpdrunall: fisqpds fisqpdt
+fisqprunall: fisqpdrunall fisqpsrunall
+
+test_fisqp: test_fisqp_$(PRECIS)
+
+test_fisqp_single: fisqpst $(SRUNFISQP)
+	echo ""
+	echo " Testing CUTEst interface to fisqp"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) fisqp -s QPBAND
+	echo ""
+	echo " Tests for fisqp complete"
+
+test_fisqp_double: fisqpdt $(DRUNFISQP)
+	echo ""
+	echo " Testing CUTEst interface to fisqp"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) fisqp QPBAND
+	echo ""
+	echo " Tests for fisqp complete"
+
+test_fisqp_nocutest: test_fisqp_nocutest_$(PRECIS)
+
+test_fisqp_nocutest_single: fisqpst
+	echo ""
+	echo " Tests for fisqp complete"
+
+test_fisqp_nocutest_double: fisqpdt
+	echo ""
+	echo " Tests for fisqp complete"
+
+#  basic packages
+
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+filter:
+	( cd ../filter ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            filter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../filter )
+l1qp:
+	( cd ../l1qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            l1qp_silent PRECIS=$(PRECIS) PWD=$(PWD)/../l1qp )
+eqp:
+	( cd ../eqp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            eqp_silent PRECIS=$(PRECIS) PWD=$(PWD)/../eqp )
+nlpt:
+	( cd ../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../filtrane )
+cutest_functions:
+	( cd ../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_silent PRECIS=$(PRECIS) PWD=$(PWD)/../auxiliary )
+copyright:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+
+# run spec-sheet example tests
+
+fisqpds: $(FISQPDS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_fisqp $(RFISQPDS)
+	- ./run_fisqp >& fisqpds.output
+	cat fisqpds.output
+	rm ./run_fisqp
+
+fisqpdt: $(FISQPDT)
+	echo " Exhaustive test of subroutine interface to fisqp"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_fisqp $(RFISQPDT)
+	- ./run_fisqp >& fisqpdt.output
+	cat fisqpdt.output
+	rm ./run_fisqp
+
+fisqpss: $(FISQPSS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_fisqp $(RFISQPSS)
+	- ./run_fisqp >& fisqps.output
+	cat fisqps.output
+	rm ./run_fisqp
+
+fisqpst: $(FISQPST)
+	echo " Exhaustive test of subroutine interface to fisqp"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_fisqp $(RFISQPST)
+	- ./run_fisqp >& fisqpt.output
+	cat fisqpt.output
+	rm ./run_fisqp
+
+#  Substantial GALAHAD packages
+
+fisqp.o: $(LG)(fisqp.o)
+
+$(LG)(fisqp.o): ../fisqp/fisqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "fisqp   "
+	$(SED) -f $(SEDS) ../fisqp/fisqp.f90 > $(OBJ)/fisqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/fisqp1.f90 > $(OBJ)/fisqp2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/fisqp2.f90 > $(OBJ)/fisqp3.f90
+	$(SED) -f $(PLPLOTSEDS) $(OBJ)/fisqp3.f90 > $(OBJ)/fisqp4.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/fisqp4.f90 > $(OBJ)/fisqp.f90
+	cd $(OBJ); $(FORTRAN) -o fisqp.o $(FFLAGSS) $(PLPLOT) fisqp.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o fisqp.o $(FFLAGSN) fisqp.f90 )
+	cd $(OBJ); $(ARR) fisqp.o ; $(RM) fisqp.f90 fisqp1.f90 fisqp2.f90 \
+                                    fisqp3.f90 fisqp4.f90 fisqp.o
+	$(RMARFILE) usefisqp.o
+	$(RMOBFILE) fisqps.o
+	$(RMOBFILE) fisqpt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usefisqp.o: $(LG)(usefisqp.o)
+
+$(LG)(usefisqp.o): ../fisqp/usefisqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usefisqp   "
+	$(SED) -f $(SEDS) ../fisqp/usefisqp.f90 > $(OBJ)/usefisqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usefisqp1.f90 > $(OBJ)/usefisqp2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usefisqp2.f90 > $(OBJ)/usefisqp.f90
+	cd $(OBJ); $(FORTRAN) -o usefisqp.o $(FFLAGSS) usefisqp.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usefisqp.o $(FFLAGSN) usefisqp.f90 )
+	cd $(OBJ); $(ARR) usefisqp.o ; $(RM) usefisqp.f90 usefisqp1.f90 \
+                                       usefisqp2.f90 usefisqp.o
+	$(RMOBFILE) runfisqp_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runfisqp_sif.o: $(OBJ)/runfisqp_sif.o
+
+$(OBJ)/runfisqp_sif.o: ../fisqp/runfisqp_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runfisqp_sif"
+	$(SED) -f $(SEDS) ../fisqp/runfisqp_sif.f90 > $(OBJ)/runfisqp_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runfisqp_sif.o $(FFLAGSS) runfisqp_sif.f90
+	rm $(OBJ)/runfisqp_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+fisqps.o: $(OBJ)/fisqps.o
+
+$(OBJ)/fisqps.o: ../fisqp/fisqps.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "fisqps  "
+	$(SED) -f $(SEDS) ../fisqp/fisqps.f90 > $(OBJ)/fisqps1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/fisqps1.f90 > $(OBJ)/fisqps.f90
+	cd $(OBJ) ; $(FORTRAN) -o fisqps.o $(FFLAGS) fisqps.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+fisqpt.o: $(OBJ)/fisqpt.o
+
+$(OBJ)/fisqpt.o: ../fisqp/fisqpt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "fisqpt  "
+	$(SED) -f $(SEDS) ../fisqp/fisqpt.f90 > $(OBJ)/fisqpt1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/fisqpt1.f90 > $(OBJ)/fisqpt.f90
+	cd $(OBJ) ; $(FORTRAN) -o fisqpt.o $(FFLAGSS) fisqpt.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LG) $(OBJ)/fisqpt.o $(OBJ)/fisqpt.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmfisqp:
+	@printf ' %-9s %-15s\t\t' "Removing" "fisqp from archive "
+	$(RMARFILE) fisqp.o
+	@printf '[ OK ]\n'
+

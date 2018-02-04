@@ -1,0 +1,3693 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{lanb}
+\newcommand{\packagename}{LANCELOT B}
+\newcommand{\fullpackagename}{LANC\-E\-LOT}
+\newcommand{\solver}{{\tt \fullpackagename\_solve}}
+
+% other local definitions
+
+\newcommand{\calE}{{\cal E}}
+\newcommand{\calG}{{\cal G}}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+
+{\tt \packagename} is a suite of Fortran procedures for minimizing an
+objective function, where the minimization variables are required to
+satisfy a set of auxiliary, possibly nonlinear, constraints.  The
+objective function is represented as a sum of ``group'' functions.  Each
+group function may be a linear or nonlinear functional whose argument is
+the sum of ``finite element'' functions; each finite element function is
+assumed to involve only a few variables or have a second derivative
+matrix with low rank for other reasons. The constraints are also
+represented as group functions.  Bounds on the variables and known
+values may be specified.  The routine is especially effective on
+problems involving a large number of variables.
+
+\galbasics
+
+The objective function has the (so-called {\em group-partial separable}) form
+\eqn{objective}{f(\bmx) = \sum_{i \in \calG_O} w^g_i g_i \left(
+       \sum_{j \in \calE_i} w^e_{ij} e_j(\bmx^e_j, \bmp^e_j)
+  + \bma_i^T \bmx - b_i, \bmp^g_i \right),
+\; \; \; \; \; \bmx = ( x_1, x_2, \ldots, x_n)^T,}
+where
+$\calG_O$ is a subset of $\calG=\{1,  \ldots, n_g \}$,  the list of indices
+of group functions $g_i$, each
+$\calE_i$ is a subset of $\calE=\{1,  \ldots, n_e \}$,  the list of
+indices of nonlinear element functions $e_j$, and
+the $w^g_i$, $\bmp^g_i$, $w^e_{ij}$ and $\bmp^e_{i}$
+are, respectively, group and element weights and vectors of parameters.
+Furthermore, the  vectors $\bmx^e_j$  are either small subsets of the
+minimization variables $\bmx$
+or are such that the rank of the second derivative matrix
+of the nonlinear element $e_j$ is small for some other reason, and the
+vectors $\bma_i$ of the linear elements  are sparse.  The  least value of
+the objective function within the intersection of
+the regions defined by the general constraints
+\eqn{constraints}{c_i(\bmx) = w^g_i g_i \left(
+       \sum_{j \in \calE_i} w^e_{ij} e_j(\bmx^e_j, \bmp^e_j)
+  + \bma_i^T \bmx - b_i, \bmp^g_i \right) = 0, \; \; \; \; \;
+ i \in \calG_C = \calG \; \backslash \; \calG_O \; \backslash \; \calG_I,}
+and the ``box''
+\disp{l_j \leq x_j \leq u_j, \; \; \; \; 1 \leq j \leq n,}
+is sough; here $\calG_I$ is another subset of  $\calG$ that may be used to
+specify a list of groups to be (temporarily) ignored.
+Either bound on each variable may be infinite, and special
+considerations are taken when there are no general constraints.
+
+The method used is iterative. There are two levels of iteration. In
+the outer, a composite function, the (augmented Lagrangian) merit function,
+\eqn{objectiveb}{\phi( \bmx, \bmy, \mu ) = f(\bmx) + \sum_{i \in \calG_C}
+ y_i c_i (\bmx) + \frac{1}{2 \mu} \sum_{i \in \calG_C} (c_i (\bmx))^2,}
+where $\mu$ is known as the penalty parameter and $\bmy$ is a vector of
+Lagrange multiplier estimates,
+is formulated. Each outer iteration requires the approximate
+minimization of this merit function
+within the feasible box, for given values of $\mu$ and $\bmy$.
+
+The required approximate minimization for fixed  $\mu$ and $\bmy$ is
+carried out using a series of inner iterations.  At each inner
+iteration, a quadratic model of the merit function is
+constructed.  An approximation to the minimizer of this model within a
+trust-region is calculated.  The trust region can be either a ``box'' or
+a hypersphere of specified radius, centered at the current best estimate
+of the minimizer.  If there is an accurate agreement between the model
+and the true objective function at the new approximation to the
+minimizer, this approximation becomes the new best estimate.  Otherwise,
+the radius of the trust region is reduced and a new approximate
+minimizer sought.  The algorithm also allows the trust-region radius to
+increase when necessary. The minimization of the model function can be
+carried out by using either a direct-matrix or an iterative approach.
+
+The approximate minimization of the model is performed in two stages.
+In the first, a so-called generalized Cauchy point is determined
+by approximately minimizing the model within the intersection of
+the feasible box and the trust-region along a scaled steepest descent
+direction. Having taken this step, the model is further reduced
+by solving one or more quadratic minimization problems in which
+any constraints activated at the Cauchy point remain so. The latter
+computation is essentially equivalent to the solution of a sequence
+of linear systems, and may be performed using either direct (factorization)
+or iterative (preconditioned conjugate gradient) method.
+
+After an appropriate approximation to the minimizer of the merit
+function is obtained, and if there are general constraints,
+$\mu$ and $\bmy$ are adjusted to ensure
+convergence of the outer iteration to the required solution of the
+constrained minimization problem.
+
+If there is a linear transformation of variables such that one or more
+of the element functions depend on fewer transformed ``internal''
+variables than the original number of variables $\bmx^e_i$, this may be
+specified. This can lead to a substantial reduction in computing time.
+
+There are facilities for the user to provide a preconditioner for the
+conjugate gradient solution of the internal linear systems (a default is
+provided) and to provide (optional) first and second derivatives for (subsets)
+of the element
+functions.  The subroutine optionally returns control to the user to calculate
+function and derivative values of the group functions $g_i$ and nonlinear
+element functions $e_j$. A large number of other options are available,
+such as
+the ability to choose between different generalized Cauchy points, to select
+different trust-region shapes, including a structured trust region especially
+designed for functions with structure like those in
+\req{objective}--\req{constraints}, and to permit non-monotonic descent of
+the merit function. Some of these options require external packages,
+and thus are not available by default (see Section~\ref{galexternal}).
+
+\galexternal
+
+Some of the linear system options make use of the HSL package
+{\tt MA27}. This package is available without charge for academic
+purposes from the HSL archive
+\begin{verbatim}
+    http://hsl.rl.ac.uk/archive/hslarchive.html .
+\end{verbatim}
+Another option, the Lin-Mor\'{e} preconditioner {\tt ICFS}, is available as
+part of the MINPACK 2 library, via
+\begin{verbatim}
+    http://www-unix.mcs.anl.gov/~more/icfs/ .
+\end{verbatim}
+Munksgaard's preconditioner {\tt MA61} is only available commercially
+from HSL. See
+\begin{verbatim}
+    http://www.cse.clrc.ac.uk/Activity/HSL+152
+\end{verbatim}
+for details. In addition, the \galahad\ package {\tt SILS} may
+be replaced by the functionally equivalent but state-of-the-art
+HSL package {\tt HSL\_MA57} from the same source.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double},
+\galuses
+{\tt GALAHAD\_CPU\_time},
+{\tt GALAHAD\_SPECFILE},
+{\tt LANCELOT\_INITW},
+{\tt LANCELOT\_OTHERS},
+{\tt LANCELOT\_HSPRD},
+{\tt LANCELOT\_CAUCHY},
+{\tt LANCELOT\_CG},
+{\tt LANCELOT\_PRECN},
+{\tt LANC\-ELOT\_FRNTL},
+{\tt LANCELOT\_STRUTR},
+{\tt GALAHAD\_SMT},
+{\tt GAL\-AHAD\_SILS},
+{\tt GALAHAD\_SCU},
+{\tt LANCELOT\_ASMBL},
+{\tt LANCELOT\_EXTEND}.
+\galdate February 2002.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory, England, and
+Ph. L. Toint, University of Namur, Belgium.
+Previous Fortran 77 version also by A. R. Conn, IBM T. J.
+Watson Research Center, USA.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
+\galremark This is an enhanced version of the Fortran 77 subroutines
+{\tt SBMIN} and {\tt AUGLG},
+available as part of {\sf LANCELOT A}, and supersedes them.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hskip0.5in {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hskip0.5in {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types
+{\tt \fullpackagename\_problem\_type},
+{\tt \fullpackagename\_\-time\_type},
+{\tt \fullpackagename\_control\_type},
+{\tt \fullpackagename\_inform\_type}
+(Section~\ref{galtypes})
+and the subroutines
+{\tt \fullpackagename\_init\-ialize},
+{\tt \fullpackagename\_\-solve},
+{\tt \fullpackagename\_terminate},
+(Section~\ref{galarguments})
+and
+{\tt \fullpackagename\_read\_specfile}
+(Section~\ref{galfeatures})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Five derived data types are accessible from the package.
+
+%%%%%%%%%%% problem type %%%%%%%%%
+
+\subsubsection{The derived data type for holding the problem}\label{typeprob}
+The derived data type {\tt \fullpackagename\_problem\_type} is used to hold
+the problem data. The components of
+{\tt \fullpackagename\_problem\_type}
+are:
+
+\begin{description}
+
+\ittf{n} is a scalar variable of type default \integer, that holds
+the number of optimization variables, $n$.
+
+\ittf{ng} is a scalar variable of type default \integer, that holds
+the number of group functions, $n_g$.
+
+\ittf{nel} is a scalar variable of type default \integer, that holds
+the number of nonlinear element functions, $n_{e}$.
+
+\itt{IELING} is a rank-one allocatable array of dimension {\tt ISTADG(ng+1)-1}
+and type default \integer, that holds the indices of the nonlinear elements
+$\calE_i$ used by each group.
+The indices for group $i$ must immediately precede those for
+group $i+1$ and each group's indices must appear in a contiguous
+list.  See Section~\ref{galexample} for an example.
+
+\itt{ISTADG} is a rank-one allocatable array of dimension {\tt ng+1} and
+type default \integer, whose $i$-th value gives the position in
+{\tt IELING} of the first nonlinear element in group function $i$.  In
+addition, {\tt ISTADG(ng+1)} should be equal to the position in
+{\tt IELING} of the last nonlinear element in group {\tt ng} plus one. See
+Table~\ref{2.1a} and Section~\ref{galexample} for an example.
+
+\bctable{|c|c|c|c|c}
+\cline{1-4}
+elements & elements & \ldots & elements & {\tt IELING} \\
+in $g_1$ & in $g_2$ &        & in $g_n$ &              \\
+\cline{1-4}
+weights of & weights of &    & weights of &            \\
+elements & elements & \hspace*{4mm} \ldots \hspace*{4mm} & elements & {\tt ESCALE} \\
+in $g_1$ & in $g_2$ &        & in $g_n$ &              \\
+\cline{1-4}
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} \\
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADG(1)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADG(2)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADG(3)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADG($n_g$)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADG($n_g+1$)}
+\ectable{\label{2.1a}Contents of the arrays {\tt IELING}, {\tt ESCALE}
+and {\tt ISTADG}}
+\vspace*{-4mm}
+
+\itt{IELVAR} is a rank-one allocatable array of dimension {\tt ISTAEV(nel+1)-1}
+and type  default \integer, that holds
+the indices of the variables in the first nonlinear element $e_1$,
+followed by those in the second nonlinear element $e_2$,
+\ldots.   See Section~\ref{galexample} for an example.
+
+\itt{ISTAEV} is a rank-one allocatable array of dimension {\tt nel+1} and type
+default \integer, whose $k$-th value is the position of the first variable
+of the $k$-th nonlinear element function,
+in the list {\tt IELVAR}. In addition, {\tt ISTAEV($n_e$+1)}
+must be equal to the position of the last variable of element
+$n_e$ in {\tt IELVAR}
+plus one. See Table~\ref{2.2a} and
+Section~\ref{galexample} for an example.
+
+\bctable{|c|c|c|c|c}
+\cline{1-4}
+variables      & variables & \hspace*{5mm} \ldots \hspace*{5mm} & variables
+   & {\tt IELVAR} \\
+in $\bmx^e_1$ & in $\bmx^e_2$
+&  & in $\bmx^e_n$ &              \\
+\cline{1-4}
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} \\
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTAEV(1)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTAEV(2)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTAEV(3)} &
+\multicolumn{1}{l}{\hspace*{-9mm}\tt ISTAEV($n_e$)} &
+\multicolumn{1}{l}{\hspace*{-7mm}\tt ISTAEV($n_e+1$)}
+\ectable{\label{2.2a}Contents of the arrays {\tt IELVAR} and {\tt ISTAEV}}
+\vspace*{-4mm}
+
+\itt{INTVAR} is a rank-one allocatable array of dimension {\tt nel+1} and
+type default \integer, whose $i$-th value must be set to the number of
+internal variables required for the $i$-th nonlinear element function
+$e_i$ on initial entry.  See Section~\ref{internal_and_ranges} for the
+precise definition of internal variables and Section~\ref{galexample}
+for an example.
+
+\itt{ISTADH} is a rank-one allocatable array of dimension {\tt nel+1} and
+type default \integer, that is set in \solver\ so that its $i$-th value
+$(1 \leq i \leq n_e )$ gives the position in the array {\tt FUVALS} (see
+Sections~\ref{min} and \ref{efv}, and (particularly)
+Tables~\ref{2.4a} and \ref{2.4b}) of
+the first component of the Hessian matrix of the $i$-th nonlinear
+element function $e_i$, {\em with respect to its internal variables}.
+Only the upper triangular part of each Hessian matrix is stored and the
+storage is by columns (see Section~\ref{reverse} for details).  The
+element {\tt ISTADH($n_e +1$)} gives the position in {\tt FUVALS} of the
+first component of the gradient of the objective function.
+
+\itt{ICNA} is a rank-one allocatable array of dimension {\tt ISTADA(ng+1)-1}
+and type default \integer, that holds the indices of the
+nonzero components of $a_1$, the gradient of the first linear element,
+in any order, followed by those in $a_2$, etc.
+See Table~\ref{2.3a} and Section~\ref{galexample} for an example.
+
+\itt{ISTADA} is a rank-one allocatable array of dimension {\tt ng+1} and type
+default \integer, whose $i$-th
+value is the position  of the  first nonzero component of
+the $i$-th linear element gradient, $a_i$,
+in the list {\tt ICNA}. In addition,
+{\tt ISTADA(ng+1)}
+must be equal to the position of the last nonzero component of
+$a_{n_g}$ in {\tt ICNA}
+plus one.
+See Table~\ref{2.3a} and Section~\ref{galexample} for an example.
+
+\bctable{|c|c|c|c|c}
+\cline{1-4}
+nonzeros  & nonzeros &  \hspace*{5mm} \ldots  \hspace*{5mm}   & nonzeros     &   {\tt A}   \\
+in $\bma_1$  & in $\bma_2$ &             & in $\bma_{n_g}$ &             \\
+\cline{1-4}
+variables & variables &  \ldots    & variables    & {\tt ICNA}  \\
+in $\bma_1$  & in $\bma_2$ &             & in $\bma_{n_g}$ &             \\
+\cline{1-4}
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} \\
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADA(1)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADA(2)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADA(3)} &
+\multicolumn{1}{l}{\hspace*{-9mm}\tt ISTADA($n_g$)} &
+\multicolumn{1}{l}{\hspace*{-7mm}\tt ISTADA($n_g+1$)}
+\ectable{\label{2.3a}Contents of the arrays {\tt A}, {\tt ICNA} and
+{\tt ISTADA}}
+\vspace*{-4mm}
+
+\itt{KNDOFG} is a rank-one allocatable array of dimension {\tt ng} and type
+default \integer, that is used to indicate which of the groups are to be
+included in the objective function, which define equality constraints,
+and which are to be ignored. If {\tt KNDOFG} is not
+\associated, all groups will be included in the objective
+function, and it will be assumed that there are no general constraints.
+If {\tt KNDOFG} is \associated,
+each of the first $n_g$ entries of {\tt KNDOFG} must
+be set to $0$, $1$ or $2$ on initial entry.
+If {\tt KNDOFG($i$)} has the value $1$, $i$ lies in
+the set $\calG_O$ and the group
+will be included in the objective function \req{objective}.
+If, {\tt KNDOFG($i$)} has the value $2$, $i$ lies in the
+complement set $\calG_C$, and the $i$-th group defines an equality constraint
+of the form \req{constraints}. Finally, if
+{\tt KNDOFG($i$)} has the value $0$, group $i$ will be ignored; this is
+useful when, for example, many optimizations are required with
+different subsets of constraints, or when a feasible point is sought
+without reference to the objective.
+
+\itt{ITYPEE} is a rank-one allocatable array of dimension {\tt nel} and type
+default \integer, that is used to indicate the types (See Section~\ref{ft})
+of the nonlinear element functions. The $i$-th component of {\tt ITYPEE}
+specifies the type of element $i$.
+
+\itt{ISTEPA} is a rank-one allocatable array of dimension {\tt nel + 1} and type
+default \integer, whose $i$-th component gives the position in
+{\tt EPVALU} (see below) of the first parameter for element function $i$.  In
+addition, {\tt ISTEPA(nel+1)} is the position in
+{\tt EPVALU} of the last  parameter for element function $n_e$ plus one. See
+Table~\ref{3.2a} for an illustration.
+
+\bctable{|c|c|c|c|c}
+\cline{1-4}
+parameters      & parameters & \hspace*{5mm} \ldots \hspace*{5mm} & parameters
+   & {\tt EPVALU} \\
+in $\bmp^e_1$ & in $\bmp^e_2$
+&  & in $\bmp^e_{n_e}$ &              \\
+\cline{1-4}
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} \\
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTEPA(1)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTEPA(2)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTEPA(3)} &
+\multicolumn{1}{l}{\hspace*{-9mm}\tt ISTEPA($n_e$)} &
+\multicolumn{1}{l}{\hspace*{-7mm}\tt ISTEPA($n_e+1$)}
+\ectable{\label{3.2a}Contents of the arrays {\tt EPVALU} and {\tt ISTEPA}}
+\vspace*{-4mm}
+
+\itt{ITYPEG} is a rank-one allocatable array of dimension {\tt ng} and type
+default \integer, that is used to indicate the types (See Section~\ref{ft})
+of the group functions. The $i$-th component of {\tt ITYPEG}
+specifies the type of group $i$.
+
+\itt{ISTGPA} is a rank-one allocatable array of dimension {\tt ng +1} and type
+default \integer, whose $i$-th component gives the position in
+{\tt GPVALU} (see below) of the first parameter for group function $i$.  In
+addition, {\tt ISTGPA(ng+1)} is the position in
+{\tt GPVALU} of the last  parameter for element function $n_g$ plus one. See
+Table~\ref{4.2a} for an illustration.
+
+\bctable{|c|c|c|c|c}
+\cline{1-4}
+parameters      & parameters & \hspace*{5mm} \ldots \hspace*{5mm} & parameters
+   & {\tt GPVALU} \\
+in $\bmp^g_1$ & in $\bmp^g_2$
+&  & in $\bmp^g_{n_g}$ &              \\
+\cline{1-4}
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} \\
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTGPA(1)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTGPA(2)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTGPA(3)} &
+\multicolumn{1}{l}{\hspace*{-9mm}\tt ISTGPA($n_g$)} &
+\multicolumn{1}{l}{\hspace*{-7mm}\tt ISTGPA($n_g+1$)}
+\ectable{\label{4.2a}Contents of the arrays {\tt GPVALU} and {\tt ISTGPA}}
+\vspace*{-4mm}
+
+\itt{A} is a rank-one array of dimension {\tt ISTADA(ng+1)-1} and type
+default \realdp, that holds the values of the nonzero components of the
+gradients of the linear element functions,
+$\bma_i$, $i = 1, \ldots, n_g$.
+The values must appear in the same order as their indices appear in
+{\tt ICNA}, i.e.,
+the nonzero from element $i$, whose index is, say, {\tt ICNA($k$)}
+will have value {\tt A($k$)}.
+See Table~\ref{2.3a} and Section~\ref{galexample} for an example.
+
+\itt{B} is a rank-one array of dimension {\tt ng} and type
+default \realdp, whose $i$-th entry holds the value of the constant
+$b_i$ for each group.
+
+\itt{BL} is a rank-one array of dimension {\tt n} and type
+default \realdp, whose $i$-th entry must be set
+to the value of the lower bound $l_i$ on the $i$-th variable.
+If the $i$-th variable has no lower bound, {\tt BL($i$)} should be set to
+a large negative number.
+
+\itt{BU} is a rank-one array of dimension {\tt n} and type
+default \realdp, whose $i$-th
+entry must be set
+to the value of the upper bound $u_i$ on the $i$-th variable.
+If the $i$-th variable has no upper bound, {\tt BU($i$)} should be set to
+a large positive number.
+
+\itt{X} is a rank-one array of dimension {\tt n} and type
+default \realdp, that holds the current values of the
+minimization variables, $\bmx$.
+
+\itt{C} is a rank-one array of dimension {\tt ng} and type
+default \realdp, that holds the current estimates of the values of the
+equality constraints
+for the problem.
+If {\tt KNDOFG($i$)} $<2$, {\tt C($i$)}
+will not be set, but if {\tt KNDOFG($i$)} $= 2$, {\tt C($i$)} contains
+the constraint value $c_i(\bmx)$
+of the $i$-th constraint \req{constraints}.
+{\tt C} need not be \associated\ if {\tt KNDOFG} is not.
+
+\itt{Y} is a rank-one array of dimension {\tt ng} and type
+default \realdp, that holds the current estimates of the Lagrange multipliers,
+$\bmy$, for the problem. If {\tt KNDOFG($i$)} $<2$, {\tt Y($i$)}
+will not be set, but if {\tt KNDOFG($i$)} $= 2$, {\tt Y($i$)} contains
+the multiplier estimate $y_i$
+for the $i$-th constraint \req{constraints}.
+{\tt Y} need not be \associated\ if {\tt KNDOFG} is not.
+
+\itt{GSCALE} is a rank-one array of dimension {\tt ng} and type
+default \realdp, whose $i$-th entry holds
+the value of $i$-th group weight $w^g_i$.
+
+\itt{ESCALE} is a rank-one array of dimension {\tt ISTADG(ng+1)-1} and type
+default \realdp, whose entries hold the values of element weights
+$w^e_{ij}$. The weights must occur in the same order as the indices of the
+elements assigned to each group
+in {\tt IELING}, with the weights for the elements
+in group $i$ preceding those in group $i+1$, $i=1, \ldots, {\tt ng-1}$.
+See Table~\ref{2.1a} and Section~\ref{galexample} for an example.
+
+\itt{VSCALE} is a rank-one array of dimension {\tt n} and type
+default \realdp, that holds suitable positive scale
+factors for the problem variables $\bmx$.
+The {i}-th variable $x_i$ will implicitly be divided by
+{\tt VSCALE($i$)} within \solver. The scale factors should ideally
+be chosen so that the rescaled variables are of order one at the
+solution to the minimization problem. If the user does not know
+suitable scalings, each component of {\tt VSCALE} should be set to 1.0.
+Good variable scalings can result in considerable savings in
+computing times.
+
+\itt{EPVALU} is a rank-one array of dimension {\tt ISTEPA(nel+1)-1}
+and type default \realdp, that holds
+the values of the element parameters $\bmp^e_i$, $i = 1, \ldots,
+n_e$. The indices for the parameters for element $i$ immediately precede
+those for element $i+1$, and each element's parameters appear in a contiguous
+list. See Table~\ref{3.2a} for an illustration.
+
+\itt{GPVALU} is a rank-one array of dimension {\tt ISTGPA(ng+1)-1}
+and type default \realdp, that holds
+the values of the group parameters $\bmp^g_i$, $i = 1, \ldots,
+n_g$. The indices for the parameters for group $i$ immediately precede
+those for group $i+1$, and each group's parameters appear in a contiguous
+list. See Table~\ref{4.2a} for an illustration.
+
+\itt{GXEQX} is a rank-one array of dimension {\tt ng} and type
+default \logical, whose $i$-th entry must be
+set \true\ if the $i$-th group function is the trivial function
+$g(x)=x$ (see Section~\ref{ft}) and \false\ otherwise.
+
+\itt{INTREP} is a rank-one array of dimension {\tt nel} and type
+default \logical, whose $i$-th entry must be
+set \true\ if the $i$-th nonlinear element function has a useful
+transformation between elemental and internal variables
+and \false\ otherwise (see Section~\ref{internal_and_ranges}).
+
+\itt{VNAMES} is a rank-one array of dimension {\tt n} and type
+default \character\ and length 10, whose $j$-th entry contains the
+``name'' of the $j$-th variable.
+
+\itt{GNAMES} is a rank-one array of dimension {\tt ng} and type
+default \character\ and length 10, whose $i$-th entry contains the
+``name'' of the $i$-th group.
+
+\end{description}
+
+%%%%%%%%%%% control type %%%%%%%%%
+
+\subsubsection{The derived data type for holding control
+ parameters}\label{typecontrol}
+The derived data type
+{\tt \fullpackagename\_control\_type}
+is used to hold controlling data. Default values may be obtained by calling
+{\tt \fullpackagename\_initialize}
+(see Section~\ref{subinit}),
+while components may also be changed by calling
+{\tt \fullpackagename\_read\-\_spec}
+(see Section~\ref{readspec}).
+The components of
+{\tt \fullpackagename\_control\_type}
+are:
+
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in
+\solver\ and {\tt \fullpackagename\_terminate} is suppressed if
+{\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages.
+Printing of informational messages in
+\solver\
+is suppressed if {\tt out} $\leq$ 0.
+The default is {\tt out} $=$ 6.
+
+\itt{alive\_unit} is a scalar variable of type default \integer.
+If {\tt alive\_unit} $>$ 0, a temporary file named {\tt alive\_file} (see below)
+will be created on stream number {\tt alive\_unit} on initial entry to
+\solver, and execution of \solver\ will continue so
+long as this file continues to exist. Thus, a user may terminate execution
+simply by removing the temporary file from this unit.
+If {\tt alive\_unit} $\leq$ 0, no temporary file will be created, and
+execution cannot be terminated in this way.
+The default is {\tt alive\_unit} $=$ 60.
+
+\itt{alive\_file} is a scalar variable of type default \character\ and length
+30, that gives the name of the temporary file whose removal from stream number
+{\tt alive\_unit} terminates execution of \solver.
+The default is {\tt alive\_unit} $=$ {\tt ALIVE.d}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No
+informational output will occur if {tt print\_level} $\leq$ 0. If
+{\tt print\_level} $= 1$, a single line of output will be produced for each
+iteration of the process, while additionally if {\tt print\_level} $= 2$
+a summary of the inner iteration will be given.
+If {\tt print\_level} $\geq 3$, this output will be
+increased to provide significant detail of each iteration.
+The default is {\tt print\_level = 0}.
+
+\itt{maxit} is a scalar variable of type default \integer, that holds the
+maximum number of iterations which will be allowed in \solver.
+The default is {\tt maxit = 1000}.
+
+\itt{start\_print} is a scalar variable of type default \integer, that specifies
+the first iteration for which printing will be permitted in \solver.
+If {\tt start\_print} is negative, printing will be permitted from the outset.
+The default is {\tt start\_print = -1}.
+
+\itt{stop\_print} is a scalar variable of type default \integer, that specifies
+the last iteration for which printing will be permitted in  \solver.
+If {\tt stop\_print} is negative, printing will be permitted once it has been
+started by {\tt start\_print}.
+The default is {\tt stop\_print = -1}.
+
+\itt{print\_gap} is a scalar variable of type default \integer.
+Once printing has been started, output will occur once every
+{\tt print\_gap} iterations. If {\tt print\_gap} is no larger than 1,
+printing will be permitted on every iteration.
+The default is {\tt print\_gap = 1}.
+
+\itt{linear\_solver} is a scalar variable of type default \integer, that
+is used to specify the method used to solve the linear systems of equations
+which arise at each iteration of the minimization algorithm.
+ Possible values are:
+\begin{description}
+\itt{1$.$}
+    The conjugate gradient method will be used without preconditioning.
+\itt{2$.$}
+    A preconditioned conjugate gradient
+    method will be used with a diagonal
+    preconditioner.
+\itt{3$.$}
+    A preconditioned conjugate gradient
+    method will be used with a user supplied
+    preconditioner. Control will be passed back to the user to
+    construct the product of the preconditioner with a given
+    vector prior to a reentry to \solver\
+    (see Section~\ref{reverse}).
+\itt{4$.$}
+    A preconditioned conjugate gradient
+    method will be used with an expanding band
+    incomplete Cholesky preconditioner.
+    This option is only available if the user has provided one of the
+    external packages {\tt MA27} or {\tt HSL\_MA57},
+    (see Section~\ref{galexternal}).
+\itt{5$.$}
+    A preconditioned conjugate gradient
+    method will be used with Munksgaard's
+    preconditioner.
+    This option is only available if the user has provided the
+    external package {\tt MA61}
+    (see Section~\ref{galexternal}).
+\itt{6$.$}
+    A preconditioned conjugate gradient
+    method will be used with a modified Cholesky
+    preconditioner due to Gill, Murray, Poncel\'{e}on and Saunders,
+    in which small or negative diagonals are
+    made sensibly positive during the factorization.
+    This option is only available if the user has provided one of the
+    external packages {\tt MA27} or {\tt HSL\_MA57},
+    (see Section~\ref{galexternal}).
+\itt{7$.$}
+    A preconditioned conjugate gradient
+    method will be used with a modified Cholesky
+    preconditioner due to Schnabel and Eskow, in which an indefinite
+    factorization is altered to give a positive definite one.
+    This option is only available if the user has provided one of the
+    external packages {\tt MA27} or {\tt HSL\_MA57},
+    (see Section~\ref{galexternal}).
+\itt{8$.$}
+    A preconditioned conjugate gradient
+    method will be used with a band
+    preconditioner. The semi-bandwidth
+    is given by the variable {\tt semibandwidth} (see below).
+\itt{9$.$}
+    A preconditioned conjugate gradient
+    method will be used with an incomplete Cholesky factorization
+    preconditioner due to Lin and Mor\'{e}.
+    This option is only
+    available if the user has provided the external package {\tt ICFS},
+    (see Section~\ref{galexternal}).
+\itt{11$.$}
+    A multifrontal factorization method will be used.
+    This option is only available if the user has provided one of the
+    external packages {\tt MA27} or {\tt HSL\_MA57},
+    (see Section~\ref{galexternal}).
+\itt{12$.$}
+    A modified Cholesky factorization method will be used.
+    This option is only available if the user has provided one of the
+    external packages {\tt MA27} or {\tt HSL\_MA57},
+    (see Section~\ref{galexternal}).
+\end{description}
+Any other value of {\tt linear\_solver} will be regarded as {\tt 1}.
+The default is {\tt linear\_solver = 8}.
+
+\itt{icfact} is a scalar variable of type default \integer, that specifies
+the number of extra vectors of length {\tt prob\%n} used by the Lin and
+Mor\'{e} preconditioner ({\tt linear\_solver = 4}) if requested.
+Usually, the larger the number, the
+better the preconditioner, but the more space and effort required to
+use it. Any negative value will be regarded as {\tt 0}.
+The default is {\tt icfact = 5}.
+
+\itt{semibandwidth} is a scalar variable of type default \integer, that holds
+the semi-bandwidth used if the band preconditioner ({\tt linear\_solver = 8})
+is selected. Any negative value will be regarded as {\tt 0}.
+The default is {\tt semibandwidth = 5}.
+
+\itt{max\_sc} is a scalar variable of type default \integer, that specifies
+the maximum number of variables that are allowed to hit their bounds
+during the calculation of the step before a refactorization of the
+preconditioner is triggered. A dense Schur-complement matrix of order
+at most {\tt max\_sc} may be generated in lieu of the refactorization, so
+some compromise between many refactorizations and the storage of a potentially
+large, dense Schur complement must be made.
+Any non-positive value will be regarded as {\tt 1}.
+The default is {\tt max\_sc = 75}.
+
+\itt{io\_buffer} is a scalar variable of type default \integer, that holds
+the unit number of an input/output buffer for writing temporary files
+during array-size re-allocations, if needed.
+The default is {\tt io\_buffer = 75}.
+
+\itt{more\_toraldo} is a scalar variable of type default \integer, that
+specifies the number of Mor\'{e}-Toraldo projected searches
+that are to be used to improve upon the Cauchy point when finding the
+step. Any non-positive value results in a standard add-one-at-a-time
+conjugate-gradient search.
+The default is {\tt more\_toraldo = 0}.
+
+\itt{non\_monotone} is a scalar variable of type default \integer, that
+specifies the history-length for non-monotone descent strategy.
+Any non-positive value results in standard monotone descent, for which
+merit function improvement occurs at each iteration. There are often
+definite advantages in using a non-monotone strategy with a modest history,
+since the occasional local increase in the merit function may
+enable the algorithm to move across (gentle) ``ripples'' in
+the merit function surface.
+However, we do not usually recommend large values of {\tt non\_monotone}.
+The default is {\tt non\_monotone = 1}.
+
+\itt{first\_derivatives} is a scalar variable of type default \integer,
+that specifies what sort of first derivative
+approximation to use. If the user is able to provide
+analytical first derivatives for each nonlinear
+element function, {\tt first\_derivatives} must be set to
+to be non-positive. If analytical first derivatives are unavailable,
+they may be estimated by forward differences by setting
+{\tt first\_derivatives = 1}, or, more accurately but at additional expense,
+by central differences by setting {\tt first\_derivatives} $\geq$ {\tt 2}.
+The default is {\tt first\_derivatives = 0}.
+{\bf N.B.} This value will be ignored whenever the user provides the
+optional argument {\tt ELDERS} to \solver.
+
+\itt{second\_derivatives} is a scalar variable of type default \integer,
+that specifies what sort of second derivative
+approximation to use. If the user is able to
+provide analytical second derivatives for each nonlinear element function,
+{\tt second\_derivatives} must be set to be non-positive. If the
+user is unable to provide second derivatives, these
+derivatives will be approximated using one of four
+secant approximation formulae. If {\tt second\_derivatives} is set to
+1, the BFGS formula is used; if it is set to 2, the DFP
+formula is used; if it is set to 3, the PSB
+formula is used; and if it is set to 4 or larger, the symmetric
+rank-one formula is used. The user is strongly advised to
+use exact second derivatives
+if at all possible as this often
+significantly improves the convergence of the method.
+The default is {\tt second\_derivatives = 0}.
+{\bf N.B.} This value will be ignored whenever the user provides the
+optional argument {\tt ELDERS} to \solver.
+
+\itt{stopg} is a scalar variable of type default \realdp,
+that is used to specify the maximum permitted (infinity)
+norm of the projected gradient of the Lagrangian function
+(see Section~\ref{galmethod}) at the estimate of the solution sought.
+The default is {\tt stopg =} $10^{-5}$.
+
+\itt{stopc} is a scalar variable of type default \realdp, that is used to
+specify the maximum permitted violation (measured in infinity
+norm) of the constraints at the estimate of the solution sought.
+The default is {\tt stopc =} $10^{-5}$.
+
+\itt{min\_aug} is a scalar variable of type default \realdp, that is used
+to specify the smallest permitted value of the merit function
+\req{objectiveb}. Any smaller value will result in the minimization
+being terminated. The default is {\tt min\_aug = - HUGE(1.0)/8.0}.
+
+\itt{acccg} is a scalar variable of type default \realdp, that is used to
+specify the least relative reduction in (two-) norm of the residual
+of the reduced gradient of the model function that is required
+from the conjugate gradient iteration.
+The default is {\tt acccg = 0.01}.
+
+\itt{initial\_radius} is a scalar variable of type default \realdp, that holds
+the required initial value of the trust-region radius. If
+{\tt initial\_radius} $\leq 0$, the radius will be chosen automatically
+by \solver\
+The default is {\tt initial\_radius = - 1.0}.
+
+\itt{maximum\_radius} is a scalar variable of type default \realdp, that holds
+the maximum permitted value of the trust-region radius. Any radius that
+exceeds the larger of {\tt maximum\_radius} and one
+during the calculation will be reset to
+{\tt MAX(maximum\_radius,1.0)}.
+The default is {\tt maximum\_radius =} $10^{20}$.
+
+\itt{eta\_successful\rm ,} {\tt eta\_very\_successful}
+and {\tt eta\_extremely\_successful} are scalar variables of type default
+\realdp, that control the acceptance and rejection of the trial step
+and the updates to the trust-region radius.
+At every iteration, the ratio of the actual reduction in the merit function
+following the trial step to that predicted by the model is computed.
+The step is accepted whenever this ratio exceeds {\tt eta\_successful};
+otherwise the trust-region radius will be reduced.
+If, in addition, the ratio exceeds {\tt eta\_very\_successful}, the trust-region
+radius may be increased. If a structured trust-region is being used
+(see {\tt structured\_tr} below), the radius for an individual element
+will only be increased if additionally the ratio of the actual to
+predicted decrease for this element exceeds {\tt eta\_extremely\_successful}.
+The defaults are
+{\tt eta\_successful = 0.01},
+{\tt eta\_very\_successful = 0.9} and
+{\tt eta\_extremely\_successful = 0.95}.
+
+\itt{gamma\_smallest\rm ,} {\tt gamma\_decrease} and
+{\tt gamma\_increase} are scalar variables of type default \realdp, that
+control the maximum amounts by which the trust-region radius can
+contract or expand during an iteration. The radius will be decreased by
+powers of {\tt gamma\_decrease} until it is smaller than the larger
+of an internally calculated prediction of what should be a good value
+and {\tt gamma\_smallest}. It can be increased by at most a factor
+{\tt gamma\_increase}.
+The defaults are
+{\tt gamma\_smallest = 0.0625},
+{\tt gamma\_decrease = 0.25} and
+{\tt gamma\_increase = 2.0}.
+
+\itt{mu\_meaningful\_model} and
+{\tt mu\_meaningful\_group} are scalar variables of type default \realdp, that
+hold tolerances that determine whether a group (and its model)
+is ``meaningful'' when a structured trust-region is being used
+(see {\tt structured\_tr} below). A model of an individual group
+is meaningful if the change in its value
+that results from the trial step is more than a factor
+{\tt mu\_meaningful\_model} of the overall model decrease. The
+same is true of the group itself if if the change in its value
+that results from the trial step is more than a factor
+{\tt mu\_meaningful\_group} of the overall model decrease.
+The radius update strategies are more liberal for non-meaningful
+groups (see Conn, Gould, Toint, 2000, Section 10.2.2).
+These values are for experts only.
+The defaults are
+{\tt mu\_meaningful\_model = 0.01} and
+{\tt mu\_meaningful\_group = 0.1}.
+
+\itt{initial\_mu} is a scalar variable of type default \realdp, that specifies
+the initial value of the penalty parameter, $\mu$. Any value smaller than
+$u$ will be replaced by $u$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_dou\-ble}).
+The default is {\tt initial\_mu = 0.1}.
+
+\itt{mu\_tol} is a scalar variable of type default \realdp, that holds a
+threshold value of the penalty parameter, above which no attempt will be
+made to update Lagrange multiplier estimates.
+The default is {\tt mu\_tol = 0.1}.
+
+\itt{firstg} is a scalar variable of type default \realdp, that is used to
+specify the maximum permitted (infinity)
+norm of the projected gradient of the Lagrangian function
+(see Section~\ref{galmethod}) at the end of the first major iteration.
+The default is {\tt firstg = 0.1}.
+
+\itt{firstc} is a scalar variable of type default \realdp, that is used to
+specify the maximum hoped-for violation (measured in infinity
+norm) of the constraints at the end of the first major iteration.
+No attempt will be made to update Lagrange multiplier estimates until the
+violation falls below this threshold.
+The default is {\tt firstc = 0.1}.
+
+\itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
+that is used to specify the maximum permitted CPU time. Any negative
+value indicates no limit will be imposed. The default is
+{\tt cpu\_time\_limit = - 1.0}.
+
+\itt{quadratic\_problem} is a scalar variable of type default \logical, that
+should be set \true\ if the objective function is quadratic (or linear)
+and any constraints linear, and \false\ otherwise. {\tt \packagename} can
+take some advantage of quadratic problems, although the \galahad\ packages
+{\tt \libraryname\_QPB} or {\tt \libraryname\_QPA} are to be preferred
+in this case.
+The default is {\tt quadratic\_problem = \false}.
+
+\itt{two\_norm\_tr} is a scalar variable of type default \logical, that should
+be set \true\ if a two-norm (hyperspherical) trust region is
+required, and \false\ if an infinity-norm (box)
+trust region is to be used.
+The default is {\tt two\_norm\_tr = \false}.
+
+\itt{exact\_gcp} is a scalar variable of type default \logical, that should
+be set \true\ if the exact generalized Cauchy point,
+the first estimate of the minimizer of the quadratic model within
+the feasible box, is required, and \false\ if an approximation suffices.
+The default is {\tt exact\_gcp = \true}.
+
+\itt{accurate\_bqp} is a scalar variable of type default \logical, that should
+be set \true\ if an accurate minimizer of the
+quadratic model within the feasible box is required, and
+\false\ if an approximation suffices. The accurate minimizer often
+requires considerably more work, but occasionally this reduces the overall
+number of iterations.
+The default is {\tt accurate\_bqp = \false}.
+
+\itt{structured\_tr} is a scalar variable of type default \logical, that should
+be set \true\ if the shape of the trust region should be adjusted to
+account for the partial separability of the problem,
+and \false\ otherwise.
+The default is {\tt structured\_tr = \false}.
+
+\itt{print\_max} is a scalar variable of type default \logical, that should
+be set \true\ if the {\em printed} values of the objective function and its
+derivatives should be multiplied by minus one (as might be the case if
+we aim to maximize $f(\bmx)$ by minimizing $-f(\bmx)$), and \false\ otherwise.
+The default is {\tt print\_max = \false}.
+
+\itt{full\_solution} is a scalar variable of type default \logical, that should
+be set \true\ if all components of the solution $\bmx$ and constraints
+$\bmc(\bmx)$ should be printed on termination when {\tt print\_level > 0},
+and \false\ if only the first and last (representative) few are required.
+The default is {\tt full\_solution = \true}.
+
+\itt{space\_critical} is a scalar variable of type default \logical,
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical,
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{SILS\_cntl} is a scalar variable of type {\tt SILS\_control}, that holds
+control parameters for the \galahad\ sparse matrix factorization package
+{\tt SILS}. See the documentation for the package {\tt SILS} for details of the
+derived type {\tt SILS\_control}, and of the default values given to
+its components.
+
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type
+{\tt \fullpackagename\_data\_type}
+is used to hold all the data for a particular problem between calls of
+{\tt \fullpackagename} procedures.
+This data should be preserved, untouched, from the initial call to
+{\tt \fullpackagename\_initialize}
+to the final call to
+{\tt \fullpackagename\_terminate}.
+
+%%%%%%%%%%% info type %%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinfo}
+The derived data type
+{\tt \fullpackagename\_info\_type}
+is used to hold parameters that give information about the progress and needs
+of the algorithm. The components of
+{\tt \fullpackagename\_info\_type}
+are:
+
+\begin{description}
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm. See Sections~\ref{reverse} and
+\ref{galerrors} for details. A value {\tt status = 0} indicates
+successful termination.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or de-allocation.
+
+\itt{iter} is a scalar variable of type default \integer, that gives
+the number of iterations that have been performed since the start of the
+minimization. This is one fewer than the number of
+problem function evaluations that have been made.
+
+\itt{itercg} is a scalar variable of type default \integer, that gives
+the number of conjugate-gradient iterations that have
+been performed since the start of the minimization.
+
+\itt{itcgmx} is a scalar variable of type default \integer, that gives
+the maximum number of conjugate-gradient iterations that will be allowed
+at each iteration of the inner minimization.
+
+\itt{ncalcf} is a scalar variable of type default \integer, that gives
+the number of element functions that must be re-evaluated when the
+reverse-communication mode is used to evaluate element values.
+
+\itt{ncalcg} is a scalar variable of type default \integer, that gives
+the number of group functions that must be re-evaluated when the
+reverse-communication mode is used to evaluate group values.
+
+\itt{nvar} is a scalar variable of type default \integer, that gives
+the current number of free variables, that is the number of variables
+which do not lie on either simple bounds.
+
+\itt{ngeval} is a scalar variable of type default \integer, that gives
+the number of problem function gradient evaluations that have
+been made since the start of the minimization.
+
+\itt{iskip} is a scalar variable of type default \integer, that gives
+the number of times that an approximation to the
+second derivatives of an element function has been rejected.
+
+\itt{ifixed} is a scalar variable of type default \integer, that gives
+the index of the variable that most recently
+encountered one of its bounds in the minimization process.
+
+\itt{nsemib} is a scalar variable of type default \integer, that gives
+the bandwidth used if the band
+or expanding band preconditioner is selected.
+({\tt control\%linear\_solver = 4} or {\tt 8}).
+
+\itt{aug} is a scalar variable of type default \realdp, that gives
+the current value of the augmented Lagrangian merit function.
+
+\itt{obj} is a scalar variable of type default \realdp, that gives
+the current value of the objective function.
+
+\itt{pjgnrm} is a scalar variable of type default \realdp, that gives
+the (infinity) norm of the current projected gradient of the Lagrangian
+function (see Section~\ref{galmethod}).
+
+\itt{cnorm} is a scalar variable of type default \realdp, that gives
+the (infinity) norm of the current violation of the constraints.
+
+\itt{ratio} is a scalar variable of type default \realdp, that gives
+the ratio of the actual reduction that has been made in the
+merit function value during the current iteration to that
+predicted by the model function.  A value close to one is to be expected
+as the algorithm converges.
+
+\itt{mu} is a scalar variable of type default \realdp, that gives
+the current value of the penalty parameter.
+
+\itt{radius} is a scalar variable of type default \realdp, that gives
+the current value of the radius of the trust-region.
+
+\itt{ciccg} is a scalar variable of type default \realdp, that gives
+the current value of the pivot tolerance that is
+used when Munksgaard's incomplete Cholesky factorization
+({\tt control\%linear\_sol\-ver = 5}) is chosen for preconditioning.
+
+\itt{newsol} is a scalar variable of type default \logical, that will be
+\true\ if a major iteration has just been completed, and \false\ otherwise.
+
+\itt{bad\_alloc} is a scalar variable of type
+default \character\ and length 80, that gives
+the name of the last array for which an array allocation/de-allocation
+was unsuccessful.
+
+\itt{SCU\_info} is a scalar variable of type {\tt SCU\_info\_type}, that holds
+informational parameters concerning the
+the \galahad\ bordered matrix factorization package {\tt SCU}.
+See the documentation for the package {\tt SCU} for details of the
+derived type {\tt SCU\_info\_type}.
+
+\itt{SILS\_infoa} is a scalar variable of type {\tt SILS\_ainfo}, that holds
+informational parameters concerning the analysis subroutine contained in
+the \galahad\ sparse matrix factorization package {\tt SILS}.
+See the documentation for the package {\tt SILS} for details of the
+derived type {\tt SILS\_ainfo}.
+
+\itt{SILS\_infof} is a scalar variable of type {\tt SILS\_finfo}, that holds
+informational parameters concerning the factorization subroutine contained in
+the \galahad\ sparse matrix factorization package {\tt SILS}.
+See the documentation for the package {\tt SILS} for details of the
+derived type {\tt SILS\_finfo}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are three principal procedures for user calls
+(see Section~\ref{galfeatures} for further features):
+
+\begin{enumerate}
+\item The subroutine
+      {\tt \fullpackagename\_initialize}
+      is used to set default values, and initialize private data,
+      before solving the specified optimization problem.
+\item The subroutine
+      \solver\
+      is called to solve the optimization problem.
+\item The subroutine
+      {\tt \fullpackagename\_terminate}
+      is provided to allow the user to automatically deallocate array
+       components of the private data, allocated by
+       \solver,
+       at the end of the solution process.
+\end{enumerate}
+We use square brackets {\tt [ ]} to indicate \optional\ arguments.
+
+%%%%%% initialization subroutine %%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\hskip0.5in
+\def\baselinestretch{0.8} {\tt \begin{verbatim}
+     CALL LANCELOT_initialize( data, control )
+\end{verbatim}}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{data} is a scalar \intentinout argument of type
+{\tt \fullpackagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved.
+
+\itt{control} is a scalar \intentout argument of type
+{\tt \fullpackagename\_control\_type}
+(see Section~\ref{typecontrol}).
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling
+{\tt \fullpackagename\_initialize}.
+
+\end{description}
+
+%%%%%%%%% main solution subroutine %%%%
+
+\subsubsection{The minimization subroutine\label{min}}
+The minimization algorithm is called as follows:
+\hskip0.5in
+\def\baselinestretch{0.8} {\tt \begin{verbatim}
+     CALL LANCELOT_solve( prob, RANGE, GVALS, FT, XT, FUVALS, lfuval, ICALCF, ICALCG, &
+                          IVAR, Q, DGRAD, control, inform, data[, ELDERS] [, ELFUN]   &
+                          [, ELFUN_flexible] [, GROUP] )
+\end{verbatim}}
+\def\baselinestretch{1.0}
+
+\begin{description}
+
+\ittf{prob} is a scalar \intentinout argument of type
+{\tt \fullpackagename\_problem\_type}
+(see Section~\ref{typeprob}).
+It is used to hold data about the problem being solved.
+Components
+{\tt n},
+{\tt ng},
+{\tt nel},
+{\tt IELING},
+{\tt ISTADG},
+{\tt IELVAR},
+{\tt ISTAEV},
+{\tt ICNA},
+{\tt ISTADA},
+{\tt A},
+{\tt B},
+{\tt BL},
+{\tt BU},
+{\tt GSCALE},
+{\tt ESCALE},
+{\tt VSCALE},
+{\tt GXEQX},
+{\tt INTREP},
+{\tt VNAMES}, and
+{\tt GNAMES}
+must all be set on entry as described in Section~\ref{typeprob}, and
+will thereafter be unaltered.
+
+The component {\tt INTVAR} must also be set as
+described in Section~\ref{typeprob}, but will subsequently be reset by \solver\
+so that its $i$-th value
+gives the position in the array {\tt FUVALS} (see below)
+of the first component of
+the gradient of the $i$-th nonlinear element function, {\em with respect
+to its internal variables} (see {\tt FUVALS}).
+The component {\tt X} must also be set, but will be altered by \solver.
+The component {\tt ISTADH} need not be set on initial entry, but will
+be set by \solver\ as described in Section~\ref{typeprob}.
+
+If the dummy argument {\tt ELFUN} (see below) is present,
+the components {\tt ISTEPA} and {\tt EPVALU} must also be
+set on entry as described in Section~\ref{typeprob}---they will
+not subsequently be altered---but otherwise they need not be
+associated or assigned.
+Likewise if the dummy argument {\tt GROUP} (see below) is present,
+the components {\tt ISTGPA}, {\tt GPVALU} and {\tt ITYPEG} must also be
+set on entry as described in Section~\ref{typeprob}---they will
+not subsequently be altered---but otherwise they need not be
+associated or assigned.
+
+If the problem involves general constraints \req{constraints},
+the components {\tt KNDOFG}, {\tt Y} and {\tt C} must be associated, and
+the first two assigned values---{\tt KNDOFG} will not subsequently be
+altered, while {\tt C} will be set by \solver.
+If the problem does not involve general
+constraints, {\tt KNDOFG}, {\tt Y} and {\tt C}
+need not be associated.
+
+\itt{RANGE} is a user-supplied subroutine whose purpose is to
+define the linear transformation of variables for those nonlinear
+elements which have different elemental and internal variables.
+See Section~\ref{internal_and_ranges} for details.
+{\tt RANGE}  must be declared {\tt EXTERNAL} in the calling program.
+
+\itt{GVALS} is a rank-two \intentout array argument of
+shape {\tt (prob\%ng, 3)} and type default \realdp\,
+that is used to store function and derivative information for the
+group functions. The user may be asked to provide values for these functions
+and/or derivatives, evaluated at
+the argument {\tt FT} (see {\tt FT})
+when control is returned to the calling
+program with a negative value of the variable {\tt inform\%status}.
+This information needs to be stored by the user
+in specified locations within {\tt GVALS}.
+Details of the required information are given in Section~\ref{reverse}.
+
+\itt{FT} is a rank-one \intentinout array argument of
+dimension {\tt prob\%ng} and type default \realdp\, that is set within \solver\
+to a trial value of the argument of the $i$-th group function
+at which the user may be required to evaluate the values and/or derivatives
+of that function. Precisely what group function information
+is required at {\tt FT} is under the control of the
+variable {\tt inform\%status} and details are given in Section~\ref{reverse}.
+
+\itt{XT} is a rank-one \intentinout array argument of
+dimension {\tt prob\%n} and type default \realdp\, that is set within \solver\
+to a trial value of the variables $\bmx$ at which the
+user may be required to evaluate the values and/or derivatives
+of the nonlinear elements functions. Precisely what element function
+information is required at {\tt XT} is under the control of the
+variable {\tt inform\%status} and details are given in Section~\ref{reverse}.
+
+\itt{FUVALS} is a rank-one \intentinout array argument of
+dimension {\tt lfuval} and type default \realdp\, that is used to store
+function and derivative information for the nonlinear element functions.
+The user is asked to provide values for these functions and/or derivatives,
+evaluated at the argument {\tt XT} (see {\tt XT}), at specified
+locations within {\tt FUVALS}, when control is returned to the calling
+program with a negative value of the variable {\tt inform\%status}.
+Alternatively, the user may have provided a suitable subroutine {\tt ELFUN}
+to compute the required function or derivative values (see below). Details
+of the required information are given in Sections~\ref{efv} and \ref{reverse}.
+The layout of {\tt FUVALS} is indicated in Table~\ref{2.4a}.
+
+{\scriptsize
+\bctable{|c|c|c|c|c|l}
+\multicolumn{1}{c}{$\longleftarrow$~~~$n_e$~~~$\longrightarrow$} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{$\longleftarrow$~~~$n$~~~$\longrightarrow$} &
+\multicolumn{1}{c}{$\longleftarrow$~~~$n$~~~$\longrightarrow$} &
+\\
+\cline{1-5}
+element & \hspace*{1mm} element \hspace*{1mm}   &
+\hspace*{1mm} element \hspace*{1mm}  & objective & Hessian  \\
+values  & gradients & Hessians & gradient  & diagonal \\
+\cline{1-5}
+\multicolumn{1}{l}{} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} \\
+\multicolumn{1}{l}{} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt INTVAR(1)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADH(1)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADH($n_e+1$)} &
+\multicolumn{1}{l}{} &
+{\hspace*{-6mm}\tt lfuval}
+\ectable{\label{2.4a}Partitioning of the workspace array {\tt FUVALS}}
+}
+\vspace*{-4mm}
+
+The first segment of {\tt FUVALS} contains the values of the nonlinear
+element functions; the next two segments contain their gradients and
+Hessian matrices, taken with respect to their internal variables, as
+indicated in Section~\ref{reverse}.  The remaining two used segments
+contain the gradient of the objective function and the diagonal elements
+of the second derivative approximation, respectively.  At the solution,
+the components of the gradient of the augmented Lagrangian function
+corresponding to variables which lie on one of their bounds are of
+particular interest in many applications areas.  In particular they are
+often called shadow prices, and are used to assess the sensitivity of
+the solution to variations in the bounds on the variables.
+
+\itt{lfuval} is a scalar \intentin\ argument of type default \integer,
+that must be set to the actual length of {\tt FUVALS} in the calling program.
+The required length may be calculated using the following code segment:
+\begin{verbatim}
+   lfuval = prob%nel + 2 * prob%n
+   DO i = 1, prob%nel
+     lfuval = lfuval + ( prob%INTVAR( i ) * ( prob%INTVAR( i ) + 3 ) ) / 2
+   END DO
+\end{verbatim}
+
+\itt{ICALCF} is a rank-one \intentinout array argument of
+dimension {\tt prob\%nel} and type default \integer.
+If the user has chosen not to perform internal element evaluations,
+and if the value of {\tt inform\%status} on return from \solver\
+indicates that further element functions values or their derivatives
+are required prior to a re-entry,
+the first {\tt inform\%ncalcf} components of {\tt ICALCF} give the
+indices of the group functions which need to be
+recalculated at {\tt XT}.
+Precisely what group function information
+is required is under the control of the
+variable {\tt inform\%status} and details are given in Section~\ref{reverse}.
+
+\itt{ICALCG} is a rank-one \intentinout array argument of
+dimension {\tt prob\%ng} and type default \integer.
+If the user has chosen not to perform internal group evaluations,
+and if the value of {\tt inform\%status} on return from \solver\
+indicates that further group functions values or their derivatives
+are required prior to a re-entry,
+the first {\tt inform\%ncalcg} components of {\tt ICALCG} give the
+indices of the group functions which need to be
+recalculated at {\tt FT}.
+Precisely what group function information
+is required is under the control of the
+variable {\tt inform\%status} and details are given in Section~\ref{reverse}.
+
+\itt{IVAR} is a rank-one \intentinout array argument of
+dimension {\tt prob\%n} and type default \integer\, that is
+required when the user is providing a special preconditioner
+for the conjugate gradient inner iteration (see Section~\ref{reverse}).
+
+\itt{Q} and {\tt DGRAD} are rank-one \intentinout array arguments of
+dimension {\tt prob\%n} and type default \realdp\, that are
+required when the user is providing a special preconditioner
+for the conjugate gradient inner iteration
+(see Section~\ref{reverse}).
+
+\itt{control} is a scalar \intentinout argument of type
+{\tt \fullpackagename\_control\_type}
+(see Section~\ref{typecontrol}). On exit, {\tt control} contains default
+values for the components as described in Section~\ref{typecontrol}.
+These values should only be changed after calling
+{\tt \fullpackagename\_initialize}.
+
+\itt{inform} is a scalar \intentinout argument of type
+{\tt \fullpackagename\_type}
+(see Section~\ref{typeinfo}). The component {\tt status} must be set to
+{\tt 0} on initial entry, and a successful call to
+\solver\ is indicated when the  component {\tt status} has the value {\tt 0}.
+For other return values of {\tt status}, see Sections~\ref{reverse} and
+\ref{galerrors}.
+
+\itt{data} is a scalar \intentinout argument of type
+{\tt \fullpackagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved. It must not have been altered {\bf by the user} since the last call to
+{\tt \fullpackagename\_initialize}.
+
+
+\itt{ELDERS} is an \optional\ rank-two \intentinout array argument of
+shape {\tt (2, prob\%nel)} and type default \integer\,
+that may be used to specify what kind of first- and second-derivative
+approximations will be required for each nonlinear element function.
+If {\tt ELDERS} is not present, the first- and second-derivative
+requirements for every element will be as specified by
+the variables {\tt control\%first\_derivatives} and
+{\tt control\%second\_derivatives} (see Section~\ref{typecontrol})
+respectively. For finer control,
+if {\tt ELDERS} is present, and the user is able to provide
+analytical first derivatives for the $i$-th nonlinear
+element function, {\tt ELDERS(1,i)}
+must be set to to be non-positive.
+If analytical first derivatives are unavailable,
+they may be estimated by forward differences by setting
+{\tt ELDERS(1,i) = 1} or, more accurately but at additional expense,
+by central differences by setting
+{\tt ELDERS(1,i) $\geq$ 2}.
+Similarly, if {\tt ELDERS} is present, and the user is able to provide
+analytical second derivatives for the $i$-th nonlinear
+element function, {\tt ELDERS(2,i)}
+must be set to to be non-positive.
+If the user is unable to provide second derivatives, these
+derivatives will be approximated using one of four
+secant approximation formulae. If {\tt ELDERS(2,i)} is set to
+1, the BFGS formula is used; if it is set to 2, the DFP
+formula is used; if it is set to 3, the PSB
+formula is used; and if it is set to 4 or larger, the symmetric
+rank-one formula is used. The user is strongly advised to
+use analytic first and second derivatives
+if at all possible as this often
+significantly improves the convergence of the method.
+
+\itt{ELFUN} and {\tt ELFUN\_flexible} are \optional\
+user-supplied subroutines whose purpose is to
+evaluate the values and derivatives of the nonlinear element functions.
+See Section~\ref{pfe} for background information and Sections~\ref{efv}
+and \ref{efvf} for details.
+Only one of {\tt ELFUN} and {\tt ELFUN\_flexible} may be present at once,
+and, if present, must be declared {\tt EXTERNAL} in the calling program.
+Which of the two arguments is permitted depends on whether {\tt ELDERS}
+(see above) is present. {\tt ELFUN\_flexible} is only permitted when
+{\tt ELDERS} is present, since {\tt ELFUN\_flexible} allows the user
+to provide element-specific levels of derivative information. In the
+absence of {\tt ELDERS},  {\tt ELFUN} should be used instead of
+{\tt ELFUN\_flexible}.
+If both {\tt ELFUN} and {\tt ELFUN\_flexible}
+are absent, \solver\ will use reverse communication to
+obtain element function values and derivatives.
+
+\itt{GROUP} is an \optional\
+user-supplied subroutine whose purpose is to
+evaluate the values and derivatives of the group functions.
+See Section~\ref{pfe} for background information and Section~\ref{gfv}
+for details.
+If {\tt GROUP} is present,
+it must be declared {\tt EXTERNAL} in the calling program.
+If {\tt GROUP} is absent, \solver\ will use reverse communication to
+obtain group function values and derivatives. {\tt GROUP} need not be
+present if all components of {\tt prob\%GXEQX} are \true.
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+\hskip0.5in
+\def\baselinestretch{0.8} {\tt \begin{verbatim}
+     CALL LANCELOT_terminate( data, control, inform )
+\end{verbatim}}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{data} is a scalar \intentinout argument of type
+{\tt \fullpackagename\_data\_type}
+exactly as for
+\solver\
+that must not have been altered {\bf by the user} since the last call to
+{\tt \fullpackagename\_initialize}.
+
+\itt{control} is a scalar \intentin argument of type
+{\tt \fullpackagename\_control\_type}
+exactly as for
+\solver.
+
+\itt{inform} is a scalar \intentinout argument of type
+{\tt \fullpackagename\_type}
+exactly as for
+\solver.
+Only the components {\tt status}, {\tt alloc\_status} and
+{\tt bad\_alloc} might have been altered on exit, and a
+successful call to
+{\tt \fullpackagename\_terminate}
+is indicated when this  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%% Function and derivative values %%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Function and derivative values\label{fdv}}
+
+%%%%%%%%%%%%%%%%%%%%%% Problem function evaluation %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Evaluating problem functions\label{pfe}}
+
+As we saw in Section~\ref{galbasics},
+both the objective function \req{objective} and constraints \req{constraints}
+are composed from element functions $e_j(\bmx^e_j, \bmp^e_j)$ and
+group functions $g_i( \alpha^{ }_i, \bmp^g_i )$, all other defining data
+being linear (and thus described accurately on initial input
+to \solver\ by components of {\tt prob})---here we refer to the {\em scalar}
+\disp{\alpha_i \eqdef \sum_{j \in \calE_i} w^e_{ij} e_j(\bmx^e_j, \bmp^e_j)
+  + \bma_i^T \bmx - b_i.}
+as the $i$-th {\em group variable}. If we wish to evaluate
+\req{objective}--\req{constraints} and their derivatives,
+it thus remains for the user to supply function and derivatives
+of the element and group functions to \solver\ as required.
+\solver\ allows the user to do this in one of two ways.
+
+The first method simply requires that the user provides
+subroutines, with prescribed argument lists, that accept input
+values $(\bmx^e_j, \bmp^e_j)$ or $(\alpha^{ }_i, \bmp^g_i)$, and provide
+as output
+$e_j(\bmx^e_j, \bmp^e_j)$ or $g_i(\alpha^{ }_i, \bmp^g_i)$
+or their derivatives. If this method is used, control will only return
+to the user once the required minimizer has been obtained (or an error
+condition flagged). The disadvantage of this approach is the inflexibility
+of the argument lists, while the advantage is often its speed of execution.
+
+The second method is to exit from \solver\ whenever function or derivative
+values are required, and simply ask the user to provide
+values/derivatives of
+$e_j(\bmx^e_j, \bmp^e_j)$ or $g_i(\alpha^{ }_i, \bmp^g_i)$
+from given arguments
+$(\bmx^e_j, \bmp^e_j)$ or $(\alpha^{ }_i, \bmp^g_i)$ before re-entering.
+Here, the advantage is
+its flexibility---function/derivative values may be computed by any means,
+possibly even by a completely separate calculation---while the
+disadvantage is there may be severe performance penalties as
+argument values are saved and retrieved on entry/exit from \solver.
+
+The first method is known as {\em internal evaluation}, while the
+second is an example of {\em reverse communication}.
+Note that we allow the possibility that the user may wish to provide
+element values/derivatives using one of the above options,
+and group values/derivatives using the other.
+
+%%%%%%%%%%%%%%%%%%%%%% Function types %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Element and group function types\label{ft}}
+
+The value of the $i$-th element function $e_j$ depends on its {\em elemental}
+variables $\bmx_j$ and its parameters $\bmp^e_j$. It is extremely
+common in practice that although each element has its own list of
+elemental variables and parameters, the functional form of many (if not
+all) is identical. For example, suppose that
+$\bmx_j = ( x_j )$ and $\bmp^e_j = ( p_j )$,
+and that
+\disp{e_j(\bmx_j, \bmp^e_j) = p_j x_j^2.}
+Then each element $e_j(\bmx_j, \bmp^e_)$ can be expressed as
+\disp{e_j(\bmx_j, \bmp^e_j) \equiv e(x_j, p_j)}
+of the single element {\em type}
+\disp{e(x,p) = p x^2.}
+Thus, rather than writing a subroutine to evaluate
+the values and derivatives of {\em each} element separately, we simply need to
+write a subroutine to evaluate the value/derivative of the {\em single}
+element type, and then to evaluate these values/derivatives at each
+pair  $(x_i, p_i)$ in turn.
+
+This very simple idea can significantly simplify the coding of
+function/derivative evaluation subroutines. In practice, it is unlikely
+that each element is of the same type, but usually a few types
+suffice to describe all the elements. Thus we provide the flexibility
+of allowing the user of specifying how many element types are involved,
+and of saying to which type each element belongs. Traditionally,
+if there are $n^t_e$ types, they will be numbered from 1 to $n^t_e$,
+and there will be a mapping $e^t: \calE \rightarrow \{1,  \ldots, n_e^t \}$
+that describes the type for each
+element $i \in \calE$. In practice, the types may be numbered in whatever
+way best suits the user, so long as distinct types have unique
+identifiers---in this case, the set of type identifiers is some $\calE^t$, and
+$e^t: \calE \rightarrow \calE^t$.
+Moreover, there is nothing to prevent the user from assigning each
+element its own type (in which case $n^t_e = n_e$), and setting $e_t(i) = i$.
+
+Precisely the same idea applies to group functions. We will allow the user
+to specify how many group types, $n^t_g$ there are, and to provide a
+mapping $g^t: \calG \rightarrow \calG^t$, the set of group type identifiers.
+It is also convenient to have a special group type,
+the {\em trivial} group, for which $g(\alpha) = \alpha$, since
+this special type is extremely common---the value/derivative of any group
+identified as trivial is indeed so trivial to compute that the user
+is not required to do so!
+
+%%%%%%%%%%%%%%%%%%%%%% Range transformations %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{\label{internal_and_ranges}Internal variables and
+Subroutine {\tt RANGE}}
+
+A nonlinear element function $e_j$ is assumed to be a function of
+the variables $\bmx^e_j$, a subset of the problem variables
+$\bmx$. Suppose that $\bmx^e_j$ has $n_j$ elements. Then
+another way of saying this is that (ignoring any element parameters)
+we have an element function $e_j( v_1, \ldots, v_{n_j})$, where
+in our special case, we choose
+$v_1= (x^e_j)_1, \ldots, v_{n_j}= (x^e_j)_{n_j}$.
+The {\em elemental} variables
+for the element function $e_j$ are the variables
+$\bar{v}$ and, while we need to associate the particular values
+$x^e_j$ with $\bar{v}$ (using the array {\tt IELVAR}),
+it is the elemental variables which
+are important in defining the nonlinear element functions.
+
+As an example, the seventh nonlinear element function for a
+particular problem might be
+\eqn{eg1}{e_7(v_1, v_2, v_3 ) = ( v_1 + v_2 ) e^{v_1 - v_3},}
+where for our example
+$v_1 = x_{29}$, $ v_2 = x_3$ and $v_3 = x_{17}$.
+For this example, there are three elemental variables.
+However, the
+example illustrates an additional point. Although $e_7$ is
+a function of three variables, the function itself is really
+only composed of {\em two} independent parts; the product of
+$(v_1 + v_2)$ with $e^{v_1 - v_3}$, or, if we write
+$u_1 = v_1 + v_2$ and $u_2 = v_1 - v_3$, the product of
+$u_1$ with $e^{u_2}$.
+The variables $u_1$ and $u_2$ are known as {\em internal}
+variables
+for the element function.
+They are obtained as {\em linear combinations} of the elemental variables.
+The
+important feature as far as \solver\ is concerned is that each
+nonlinear function involves as few variables as possible, as
+this allows for compact storage and more efficient derivative
+approximation. By representing the function in terms of its internal
+variables, this goal is achieved.
+\solver\ only stores derivatives of the element
+functions with respect to internal variables, so it pays to
+use an internal representation in this case.
+It frequently happens,
+however, that a function does not have useful internal variables.
+For instance, another element function
+might be
+\eqn{eg2}{e_9(v_1, v_2) = v_1 \sin v_2,}
+where for example $ v_1 = x_6$ and $v_2 = x_{12}$.
+Here, we have broken $e_9$ down into as few pieces as possible.
+Although there are internal variables,
+$u_1 = v_1$ and $u_2 = v_2$,
+they are the same in this
+case as the elemental variables
+and there is no virtue in exploiting them.
+Moreover it can happen that although there are
+special internal variables,
+there are just as many internal as elemental
+variables and it therefore doesn't particularly
+help to exploit them.
+For instance, if
+\disp{e_{14}(v_1,v_2) = (v_1+v_2)\log(v_1-v_2),}
+where for example
+$v_1 = x_{12}$ and $ v_2 = x_2$, the function can be formed as
+$u_1 \log(u_2)$ where $u_1 = v_1 + v_2$ and $u_2 = v_1 - v_2$.
+But as there are just
+as many internal variables as elementals, it will not normally be
+advantageous to use this internal representation.
+
+Finally, although an element function
+may have  useful internal variables,   the user need  not  bother with
+them. \solver\ will still work, but at the expense of extra storage
+and computational effort.   The user decides  on input to \solver\
+which elements have useful transformations
+by setting the appropriate elements of the array {\tt INTREP}  to
+\true\ .
+
+In general, there will be a linear transformation from
+the elemental variables to the internal ones. For example
+(\ref{eg1}), we have
+\disp{\vect{u_1 \\ u_2}
+  = \mat{rrr}{ 1 & 1 & 0 \\ 1 & 0 & -1} \vect{v_1 \\ v_2 \\ v_3},}
+while in (\ref{eg2}), we have
+\disp{\vect{u_1 \\ u_2} = \mat{rr}{ 1 & 1 \\ 1 & 0 } \vect{v_1 \\ v_2}.}
+Most generally, the transformation will be of the form
+\disp{\bmu = \bmW \bmv,}
+and this transformation is {\em useful} if the matrix $\bmW$ has
+fewer rows than columns.
+
+The purpose of the {\tt RANGE}
+routine is to define the transformation
+between internal and elemental variables for
+nonlinear elements
+with useful internal representations.
+The routine has the following argument list:
+
+\def\baselinestretch{0.8}
+{\tt \begin{verbatim}
+     SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp, lw1, lw2 )
+\end{verbatim} }
+\def\baselinestretch{1.0}
+
+\begin{description}
+
+\itt{ielemn} is a scalar \intentin\ argument of type default \integer,
+that gives the index of the nonlinear element whose transformation is
+required by \solver.
+
+\itt{transp} is a scalar \intentin\ argument of type default \logical.
+If {\tt transp} is \false, the subroutine must put the result of the
+transformation $\bmW \bmv$ in the array {\tt W2}, where $\bmv$ is input in the
+array {\tt W1}. Otherwise, the subroutine must supply the result of the
+transposed transformation $\bmW^T \bmu$
+in the array {\tt W2}, where $\bmu$ is input in the array {\tt W1}.
+
+\ittf{W1} is a rank-one \intentin array argument of type default \realdp\,
+whose dimension is the number of elemental variables
+if {\tt transp} is \false\
+and the number of internal variables otherwise.
+
+\ittf{W2} is a rank-one \intentout array argument of type default \realdp\,
+whose dimension is
+the number of internal variables if {\tt transp} is
+\false\ and the number of elemental variables otherwise.
+The result of the transformation of {\tt W1} or its transpose, as
+defined by {\tt transp}, must be set in {\tt W2}.
+
+\itt{nelvar} is a scalar \intentin\ argument of type default \integer,
+that gives the number of elemental variables for the element specified
+by {\tt ielemn}.
+
+\itt{ninvar} is a scalar \intentin\ argument of type default \integer,
+which gives the number of internal variables for the element specified
+by {\tt ielemn}.
+
+\itt{ieltyp} is a scalar \intentin\ argument of type default \integer,
+that defines the type for the element specified
+by {\tt ielemn}.
+
+\ittf{lw1} is a scalar \intentin\ argument of type default \integer,
+that will have been set to the actual length of {\tt W1}.
+
+\restriction
+{\tt lw1 $\geq$ ninvar} if {\tt transp} is \true\ and
+{\tt lw1 $\geq$ nelvar} if {\tt transp} is \false\ .
+
+\ittf{lw2} is a scalar \intentin\ argument of type default \integer,
+that will have been set to the actual length of {\tt W2}.
+
+\restriction
+{\tt lw2 $\geq$ nelvar} if {\tt transp} is \true\ and
+{\tt lw2 $\geq$ ninvar} if {\tt transp} is \false\ .
+
+\end{description}
+
+The user will already have specified which elements have useful
+transformations in the array {\tt INTREP}. {\tt RANGE} will only be called for
+elements for which the corresponding component of {\tt INTREP} is \true\ .
+
+%%%%%%%%%%%%%%%%%%%%%% Element function values %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Element function values and derivatives via internal evaluation\label{efv}}
+
+If the argument {\tt ELFUN} is present when calling \solver, the
+user is expected to provide a subroutine of that name to evaluate
+function or derivative values (with respect to internal variables)
+of (a given subset of) the element functions.
+{\bf N.B.} This routine is only permitted if the argument {\tt ELDERS}
+is absent.
+The routine has the following argument list:
+
+\def\baselinestretch{0.8}
+{\tt \begin{verbatim}
+       SUBROUTINE ELFUN ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, IELVAR, INTVAR, &
+                          ISTADH, ISTEPA, ICALCF, ltypee, lstaev, lelvar, lntvar, lstadh, &
+                          lstepa, lcalcf, lfuval, lxvalu, lepvlu, ifflag, ifstat )
+\end{verbatim} }
+\def\baselinestretch{1.0}
+
+\begin{description}
+
+\itt{FUVALS} is a rank-one \intentinout array argument of
+dimension {\tt lfuval} and type default \realdp\,
+which is used to store
+function and derivative information for the nonlinear element functions.
+The subroutine is asked to provide values for these functions
+and/or derivatives,
+evaluated at
+the argument {\tt XVALUE} (see {\tt XVALUE}),
+at specified locations within {\tt FUVALS}.
+The layout of {\tt FUVALS} is indicated in Table~\ref{2.4b}.
+
+{\scriptsize
+\bctable{|c|c|c|l}
+\multicolumn{1}{c}{$\longleftarrow$~~~$n_e$~~~$\longrightarrow$} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{} &
+\\
+\cline{1-3}
+element & \hspace*{1mm} element \hspace*{1mm}   &
+\hspace*{1mm} element \hspace*{1mm}  \\
+values  & gradients & Hessians \\
+\cline{1-3}
+\multicolumn{1}{l}{} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} \\
+\multicolumn{1}{l}{} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt INTVAR(1)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADH(1)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADH($n_e+1$)}
+\ectable{\label{2.4b}Partitioning of the workspace array {\tt FUVALS}}
+}
+\vspace*{-4mm}
+
+The first segment of {\tt FUVALS} is used to hold the values of the nonlinear
+element functions, component $i$ holding the value of the $i$-th element
+function. The second segment holds the components of the
+gradients of the element functions
+taken with respect to their internal variables, as described by
+{\tt INTVAR} below. The final segment contains the elements'
+Hessian matrices, again taken with respect to their internal variables,
+as described by {\tt ISTADH} below.
+
+\itt{XVALUE} is a rank-one \intentin array argument of
+dimension {\tt lxvalu} and type default \realdp\,
+that contains the values of $\bmx$ at which the
+subroutine is required to evaluate the values or derivatives
+of the nonlinear elements functions.
+
+\itt{EPVALU} is a rank-one \intentin array argument of
+dimension {\tt lepvlu}  and type default \realdp\,
+that contains the values of the element parameters $\bmp^e_i$, $i = 1, \ldots,
+n_e$. The indices for the parameters for element $i$ immediately precede
+those for element $i+1$, and each element's parameters appear in a contiguous
+list. See Table~\ref{3.2a} for an illustration.
+
+\itt{ncalcf} is a scalar \intentin\ argument of type default \integer,
+that specifies how many of the nonlinear element functions or their
+derivatives are to be evaluated.
+
+\itt{ITYPEE} is a rank-one \intentin array argument of
+dimension {\tt ltypee} and type default \integer\,
+whose $i$-th component specifies the type of element $i$.
+
+\itt{ISTAEV} is a rank-one \intentin array argument of
+dimension {\tt lstaev} and type default \integer\,
+exactly as described in Section~\ref{typeprob}.
+
+\itt{IELVAR} is a rank-one \intentin array argument of
+dimension {\tt lelvar} and type default \integer\,
+exactly as described in Section~\ref{typeprob}.
+
+\itt{INTVAR} is a rank-one \intentin array argument of
+dimension {\tt lntvar} and type default \integer\,
+whose $i$-th component $(1 \leq i \leq n_e )$
+gives the position in the array {\tt FUVALS} of the first component of
+the gradient of the $i$-th nonlinear element function, {\em with respect
+to its internal variables}.
+See Table~\ref{3.3a} for an illustration.
+
+\bctable{cc|c|c|c|cc}
+\cline{1-6}
+\multicolumn{1}{c|}{.}
+& gradient of $e_1$  wrt & gradient of $e_2$ wrt
+& \hspace*{5mm} \ldots \hspace*{5mm} &
+gradient of $e_{n_e}$ wrt & . & {\tt FUVALS} \\
+\multicolumn{1}{c|}{} & its internal variables & its internal variables &
+& its internal variables &  \\
+\cline{1-6}
+& \multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} & \\
+&
+\multicolumn{1}{l}{\hspace*{-8mm}\tt INTVAR(1)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt INTVAR(2)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt INTVAR(3)} &
+\multicolumn{1}{l}{\hspace*{-9mm}\tt INTVAR($n_e$)} & &
+\multicolumn{1}{l}{\hspace*{-15mm}\tt INTVAR($n_e+1$)} \\
+& \multicolumn{1}{l}{} & \multicolumn{1}{l}{} & \multicolumn{1}{l}{} &
+\multicolumn{1}{l}{} & \multicolumn{1}{l}{} &
+\multicolumn{1}{l}{\hspace*{-15mm}\tt $\equiv$ ISTADH(1) }
+\ectable{\label{3.3a}Contents of the arrays {\tt INTVAR} and (part of)
+{\tt FUVALS}}
+\vspace*{-4mm}
+
+\itt{ISTADH} is a rank-one \intentin array argument of
+dimension {\tt lstadh} and type default \integer\,
+whose $i$-th component
+$(1 \leq i \leq n_e )$ gives the position in the array {\tt FUVALS} of
+the first component of the Hessian matrix of the $i$-th nonlinear
+element function $e_i$, {\em with respect to its internal variables}.
+Only the upper triangular part of each Hessian matrix is stored and the
+storage is by columns. That is to say that
+the component of the Hessian of the $k$-th nonlinear element
+with respect to internal variables
+$i$ and $j$, $i \leq j$,
+\disp{\frac{\partial^2 e_k}{\partial u_i \partial u_j },}
+must be  placed in {\tt FUVALS(ISTADH($k$)+$(j(j-1)/2)+i-1$)}.
+The element {\tt ISTADH($n_e +1$)} is space required
+to finish storing the  Hessian of the last nonlinear element in {\tt FUVALS}
+plus one.
+See Table~\ref{3.4a} for an illustration.
+
+\bctable{cc|c|c|c|c}
+\cline{1-5}
+\multicolumn{1}{c|}{.}
+& Hessian of $e_1$  wrt & Hessian of $e_2$ wrt
+& \hspace*{5mm} \ldots \hspace*{5mm} &
+Hessian of $e_{n_e}$ wrt & {\tt FUVALS} \\
+\multicolumn{1}{c|}{} & its internal variables & its internal variables &
+& its internal variables &  \\
+\cline{1-5}
+& \multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} &
+\multicolumn{1}{l}{\hspace*{-2mm}$\uparrow$} \\
+& \multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADH(1)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADH(2)} &
+\multicolumn{1}{l}{\hspace*{-8mm}\tt ISTADH(3)} &
+\multicolumn{1}{l}{\hspace*{-9mm}\tt ISTADH($n_e$)} &
+\multicolumn{1}{l}{\hspace*{-15mm}\tt ISTADH($n_e+1$)}
+\ectable{\label{3.4a}Contents of the arrays {\tt ISTADH} and (part of)
+{\tt FUVALS}}
+
+\itt{ISTEPA} is a rank-one \intentin array argument of
+dimension {\tt lstepa} and type default \integer\,
+whose $i$-th component gives the position in
+{\tt EPVALU} of the first parameter for element function $i$.  In
+addition, {\tt ISTEPA($n_e$+1)} is the position in
+{\tt EPVALU} of the last  parameter for element function $n_e$ plus one. See
+Table~\ref{3.2a} for an illustration.
+
+\itt{ICALCF} is a rank-one \intentin array argument of
+dimension {\tt lcalcf} and type default \integer\,
+whose first {\tt ncalcf} components
+gives the indices of the nonlinear element functions whose values or
+derivatives are to be evaluated.
+
+\itt{ltypee$,$} \hspace*{-2mm}
+{\tt lstaev},
+{\tt lelvar},
+{\tt lntvar},
+{\tt lstadh},
+{\tt lstepa},
+{\tt lcalcf},
+{\tt lfuval},
+{\tt lxvalu} and
+{\tt lepvlu}
+are all scalar \intentin\ arguments of type default \integer.
+They will have been set to the actual lengths of
+{\tt ITYPEE},
+{\tt ISTAEV},
+{\tt IELVAR},
+{\tt INTVAR},
+{\tt ISTADH},
+{\tt ISTEPA},
+{\tt ICALCF},
+{\tt FUVALS},
+{\tt XVALUE} and
+{\tt EPVALU} respectively.
+
+\restrictions
+{\tt ltypee $\geq$ prob\%nel},
+{\tt lstaev $\geq$ prob\%nel+1},
+{\tt lelvar $\geq$ ISTAEV(prob\%nel+1)-1}, \\
+{\tt lntvar $\geq$ prob\%nel+1},
+{\tt lstadh $\geq$ prob\%nel+1},
+{\tt lstepa $\geq$ prob\%nel+1},
+{\tt lcalcf $\geq$ ncalcf}, \\
+{\tt lfuval $\geq$ ISTADH(prob\%nel+1)-1},
+{\tt lxvalu $\geq$ prob\%n}, and
+{\tt lepvlu $\geq$ ISTEPA(prob\%nel+1)-1}.
+
+\itt{ifflag} is a scalar \intentin\ argument of type default \integer,
+whose value defines whether it is the values of the element functions
+that are required ({\tt ifflag = 1}) or if it is the derivatives
+({\tt ifflag $>$ 1}). Possible values and their requirements are:
+\begin{description}
+
+\itt{ifflag = 1$\mbox{.}$} The values of nonlinear element functions
+{\tt ICALCF($i$)}, $i = ${\tt 1}$, \ldots ,$ {\tt ncalcf}, are to be computed
+and placed in {\tt FUVALS(ICALCF($i$))}.
+
+\itt{ifflag = 2$\mbox{.}$} The gradients of nonlinear element functions
+{\tt ICALCF($i$)}, $i = ${\tt 1}$, \ldots ,$ {\tt ncalcf}, are to be computed.
+The gradient of the {\tt ICALCF($i$)}-th element is to be placed in
+the segment of {\tt FUVALS} starting at {\tt INTVAR(ICALCF($i$))}
+(see Table~\ref{3.3a}).
+
+\itt{ifflag = 3$\mbox{.}$} The gradients and Hessians
+of nonlinear element functions
+{\tt ICALCF($i$)}, $i = ${\tt 1}$, \ldots ,$ {\tt ncalcf}, are to be computed.
+The gradient of the {\tt ICALCF($i$)}-th element is to be placed in
+the segment of {\tt FUVALS} starting at {\tt INTVAR(ICALCF($i$))}
+(see Table~\ref{3.3a}).
+The Hessian of this element should be placed in
+the segment of {\tt FUVALS} starting at {\tt ISTADH(ICALCF($i$))}
+(see Table~\ref{3.4a}).
+
+\end{description}
+{\bf N.B.} If the user intends to use approximate second derivatives
+({\tt control\%second\_derivatives $>$ 0}, see Section~\ref{typecontrol}),
+\solver\ will never call {\tt ELFUN} with {\tt ifflag = 3}, so the
+user need not provide Hessian values. Furthermore, if the user
+intends to use approximate first derivatives
+({\tt control\%first\_derivatives $>$ 0}, see Section~\ref{typecontrol}),
+\solver\ will never call {\tt ELFUN} with {\tt ifflag = 2} or {\tt 3}, so the
+user need then not provide gradient or Hessian values.
+
+\itt{ifstat} is a scalar \intentout\ argument of type default \integer,
+that should be set to 0 if all of the required values have been found,
+and to any nonzero value if, for any reason, one or more of the required
+values could not be determined. For instance, if the value of a
+nonlinear element (or its derivative) was required outside of its domain of
+definition, a nonzero value of {\tt ifstat} should be returned.
+
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%% Element function values %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Element function values and flexible derivatives via internal evaluation\label{efvf}}
+
+If the argument {\tt ELFUN\_flexible} is present when calling \solver, the
+user is expected to provide a subroutine of that name to evaluate
+function or derivative values (with respect to internal variables)
+of (a given subset of) the element functions.
+{\bf N.B.} This routine is only permitted if the argument {\tt ELDERS}
+is also present.
+The routine has the following argument list:
+
+\def\baselinestretch{0.8}
+{\tt \begin{verbatim}
+       SUBROUTINE ELFUN_flexible ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, IELVAR, &
+                                   INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, lstaev, lelvar, &
+                                   lntvar, lstadh, lstepa, lcalcf, lfuval, lxvalu, lepvlu, &
+                                   llders, ifflag, ELDERS, ifstat )
+\end{verbatim} }
+\def\baselinestretch{1.0}
+
+\begin{description}
+
+\itt{FUVALS\rm ,}
+{\tt FUVALS}, {\tt XVALUE}, {\tt EPVALU}, {\tt ncalcf}, {\tt ITYPEE},
+{\tt ISTAEV}, {\tt IELVAR},
+{\tt INTVAR}, {\tt ISTADH}, {\tt ISTEPA}, {\tt ICALCF}, {\tt ltypee},
+{\tt lstaev}, {\tt lelvar},
+{\tt lntvar}, {\tt lstadh}, {\tt lstepa}, {\tt lcalcf}, {\tt lfuval},
+{\tt lxvalu}, {\tt lepvlu} and
+{\tt ifstat} are all exactly as described for subroutine {\tt ELFUN}
+in Section~\ref{efv}
+
+\itt{llders} is a scalar \intentin\ argument of type default \integer, that
+will have been set to the actual length of {\tt ELDERS}.
+
+\restriction
+{\tt llders $\geq$ prob\%nel}.
+
+\itt{ifflag} is a scalar \intentin\ argument of type default \integer,
+whose value defines whether it is the values of the element functions
+that are required ({\tt ifflag = 1}) or if it is the derivatives
+({\tt ifflag $>$ 1}). If
+{\tt ifflag = 1}, the values of nonlinear element functions
+{\tt ICALCF($i$)}, $i = ${\tt 1}$, \ldots ,$ {\tt ncalcf}, are to be computed
+and placed in {\tt FUVALS(ICALCF($i$))}. If {\tt ifflag $>$ 1}, those
+derivative values specified by {\tt ELDERS} (see below) are required.
+
+
+\itt{ELDERS}
+is an rank-two \intentinout array argument of
+shape {\tt (2, llders)} and type default \integer\,
+that specifies what first- and second-derivative information (if any) is
+required for each nonlinear element function when {\tt ifflag $>$ 1}.
+Specifically, in this case, the gradient of each nonlinear element function
+{\tt ICALCF($i$)}, $i = ${\tt 1}$, \ldots ,$ {\tt ncalcf},
+for which {\tt ELDERS(1,ICALCF($i$)) $\leq$ 0} should be computed.
+The gradient of the {\tt ICALCF($i$)}-th element is to be placed in
+the segment of {\tt FUVALS} starting at {\tt INTVAR(ICALCF($i$))}
+(see Table~\ref{3.3a}). Furthermore, if additionally
+{\tt ELDERS(2,ICALCF($i$)) $\leq$ 0}, the Hessian of the
+nonlinear element function {\tt ICALCF($i$)} should be computed and placed in
+the segment of {\tt FUVALS} starting at {\tt ISTADH(ICALCF($i$))}
+(see Table~\ref{3.4a}).
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Group function values %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Group function values and derivatives via internal
+evaluation\label{gfv}}
+
+If the argument {\tt GROUP} is present when calling \solver, the
+user is expected to provide a subroutine of that name to evaluate
+function or derivative values of (a given subset of) the group functions.
+The routine has the following argument list:
+
+\def\baselinestretch{0.8}
+{\tt \begin{verbatim}
+       SUBROUTINE GROUP ( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg, ITYPEG, ISTGPA, ICALCG, &
+                          ltypeg, lstgpa, lcalcg, lfvalu, lgpvlu, derivs, igstat )
+\end{verbatim} }
+\def\baselinestretch{1.0}
+
+\begin{description}
+
+\itt{GVALUE} is a rank-two \intentout array argument of
+shape {\tt (lgvalu, 3)} and type default \realdp.
+The value and first and second derivative of the $i$-th group
+function are held in
+{\tt GVALUE($i$,1)},
+{\tt GVALUE($i$,2)} and
+{\tt GVALUE($i$,3)}
+respectively.
+
+\itt{lgvalu} is a scalar \intentin\ argument of type default \integer,
+that will have been set to the actual length of the leading dimension
+of {\tt GVALUE}.
+
+\restriction
+{\tt lgvalu $\geq$ prob\%ng}.
+
+\itt{FVALUE} is a rank-one \intentin array argument of
+dimension {\tt lfvalu} and type default \realdp\,
+whose $i$-th component contains the value of group variable at which the
+subroutine is required to evaluate the value or derivatives
+of the $i$-th group function.
+
+\itt{GPVALU} is a rank-one \intentin array argument of
+dimension {\tt lgpvlu}  and type default \realdp\,
+that contains the values of the group parameters $\bmp^g_i$, $i = 1, \ldots,
+n_g$. The indices for the parameters for group $i$ immediately precede
+those for group $i+1$, and each group's parameters appear in a contiguous
+list. See Table~\ref{4.2a} for an illustration.
+
+\itt{ncalcg} is a scalar \intentin\ argument of type default \integer,
+that specifies how many of the group functions or their
+derivatives are to be evaluated.
+
+\itt{ITYPEG} is a rank-one \intentin array argument of
+dimension {\tt ltypeg} and type default \integer\,
+whose $i$-th component specifies the type of group $i$.
+
+\itt{ISTGPA} is a rank-one \intentin array argument of
+dimension {\tt lstgpa} and type default \integer\,
+whose $i$-th component gives the position in
+{\tt GPVALU} of the first parameter for group function $i$.  In
+addition, {\tt ISTGPA($n_g$+1)} is the position in
+{\tt GPVALU} of the last  parameter for element function $n_g$ plus one. See
+Table~\ref{4.2a} for an illustration.
+
+\itt{ICALCG} is a rank-one \intentin array argument of
+dimension {\tt lcalcg} and type default \integer\,
+whose first {\tt ncalcg} components
+gives the indices of the nonlinear group functions whose values or
+derivatives are to be evaluated.
+
+\itt{ltypeg$,$} \hspace*{-2mm}
+{\tt lstgpa},
+{\tt lcalcg},
+{\tt lfvalu} and
+{\tt lgpvlu}
+are all scalar \intentin\ arguments of type default \integer.
+They will have been set to the actual lengths of
+{\tt ITYPEG},
+{\tt ISTGPA},
+{\tt ICALCG},
+{\tt FVALUE} and
+{\tt GPVALU}.
+
+\restrictions
+{\tt ltypeg $\geq$  prob\%n},
+{\tt lstgpa $\geq$ prob\%ng+1},
+{\tt lcalcg $\geq$ ncalcg},
+{\tt lfvalu $\geq$ prob\%ng}, and
+{\tt lgpvlu $\geq$ ISTGPA(prob\%ng+1)-1}.
+
+\itt{derivs} is a scalar \intentin\ argument of type default \logical.
+When {\tt derivs} is \false, the subroutine must return
+the values of group functions
+{\tt ICALCG($i$)}, $i = ${\tt 1}$, \ldots ,$ {\tt ncalcg} in
+{\tt GVALUE(ICALCF($i$),1)}.
+When {\tt derivs} is \true, the subroutine must return
+the first and second derivatives of group functions
+{\tt ICALCG($i$)}, $i = ${\tt 1}$, \ldots ,$ {\tt ncalcg} in
+{\tt GVALUE(ICALCF($i$),2)}
+and
+{\tt GVALUE(ICALCF($i$),3)}
+respectively.
+
+\itt{igstat} is a scalar \intentout\ argument of type default \integer,
+that should be set to 0 if all of the required values have been found,
+and to any nonzero value if, for any reason, one or more of the required
+values could not be determined. For instance, if the value of a
+group function (or its derivative) was required outside of its domain of
+definition, a nonzero value of {\tt igstat} should be returned.
+
+\end{description}
+
+\subsubsection{\label{reverse}Reverse Communication Information}
+
+When a return is made from \solver\
+with {\tt inform\%status} set negative,
+\solver\
+is asking the user for further information---this will happen
+if the user has chosen not to evaluate element or group values
+internally (see Section~\ref{fdv}), or if the user wishes to provide
+his or her own preconditioner. The user
+should normally compute the required information and re-enter \solver\
+with {\tt inform\%status} unchanged
+(but see {\tt inform\%status} $= -11$, below, for an exception).
+
+Possible values of {\tt inform\%status} and the information required are
+\begin{description}
+\itt{inform\%status $= -1.$} The user should compute the function
+     and, if they are available,
+     derivative values of the nonlinear element functions
+     numbered {\tt ICALCF($i$)} for $i=1, \ldots,$ {\tt ncalcf}
+     (see below).
+
+\itt{inform\%status $= -2.$} The user should compute the function
+     and derivative values of all non-trivial nonlinear group functions,
+     numbered {\tt ICALCG($i$)} for $i=1, \ldots,$ {\tt ncalcg}
+     (see below).
+
+\itt{inform\%status $= -3.$} The user should compute the
+     function values
+     of the nonlinear element functions
+     numbered {\tt ICALCF($i$)} for $i=1, \ldots,$ {\tt ncalcf}
+     (see below).
+
+\itt{inform\%status $= -4.$} The user should compute the function
+     values of all non-trivial nonlinear group  functions
+     numbered {\tt ICALCG($i$)} for $i=1, \ldots,$ {\tt ncalcg}
+     (see below).
+
+\itt{inform\%status $= -5.$} If exact derivatives are available,
+     the user should compute the
+     derivative values of all nonlinear element functions
+     numbered {\tt ICALCF($i$)} for $i=1, \ldots,$ {\tt ncalcf}.
+     The user should also compute the derivative
+     values of all non-trivial nonlinear group  functions
+     numbered {\tt ICALCG($i$)} for $i=1, \ldots,$ {\tt ncalcg}
+     (see below).
+
+\itt{inform\%status $= -6.$} The user should compute the
+     derivative values of all nonlinear element functions
+     numbered {\tt ICALCF($i$)} for $i=1, \ldots,$ {\tt ncalcf}
+     (see below).
+
+\itt{inform\%status $= -7.$} The user should compute the
+     function values
+     of the nonlinear element functions
+     numbered {\tt ICALCF($i$)} for $i=1, \ldots,$ {\tt ncalcf}
+     (see below).
+
+\itt{inform\%status $= -8, -9, -10.$} The user should compute the
+     product $\bmq = \bmM\bmd$ of a preconditioning matrix $\bmM$
+     with the vector $\bmd$ and return the value in $\bmq$
+     (see below).
+\end{description}
+
+When {\tt inform\%status} $= -1$, $-3$ or $-7$, the user must return the
+values of all
+of the nonlinear element functions
+$e_k(x^e_k)$,
+$k = ${\tt ICALCF($i$)}, $i= 1, \ldots,$ {\tt ncalcf}.
+The functions are to be evaluated at the point $x$ given
+in the array {\tt XT}.
+The $k$-th function value must be placed in {\tt FUVALS}(k).
+
+When {\tt inform\%status} $= -1, -5$ or $-6$
+and all first derivatives are available
+(that is when {\tt control\%first\_der\-ivat\-ives = 0}),
+the user must return the values
+of the gradients, {\em with respect to their internal variables}, of all
+the nonlinear element functions
+$e_k(\bmx^e_k,\bmp^e_k)$,
+$k = ${\tt  ICALCF($i$)}, $i=1,  \ldots,$ {\tt ncalcf}---if a subset of the
+gradients are available (those for which {\tt ELDERS(1,$k$) $\leq$ 0}),
+only these need be provided.
+The gradients are to be evaluated at the point  $\bmx$ given in
+the array  {\tt XT}.  The  gradient with respect  to internal variable
+$i$ of the $k$-th nonlinear element,
+\disp{\frac{\partial e_k}{\partial u_i},}
+must be placed in {\tt FUVALS(INTVAR($k$)+$i$-1)}.
+If, in addition, exact second derivatives
+are to be provided
+({\tt control\%se\-cond\_derivatives = 0}), the user must return the values
+of the Hessian matrices, {\em with respect to their internal variables},
+of the same nonlinear element functions
+evaluated at $\bmx$---again, if a subset of the
+Hessians are available (those for which {\tt ELDERS(2,$k$) $\leq$ 0}),
+only these need be provided.
+Only the ``upper triangular'' part of the
+required Hessians should be specified.
+The component of the Hessian of the $k$-th nonlinear element
+with respect to internal variables
+$i$ and $j$, $i \leq j$,
+\disp{\frac{\partial^2 e_k}{\partial u_i \partial u_j },}
+must be  placed in {\tt FUVALS(ISTADH($k$)+$(j(j-1)/2)+i-1$)}.
+
+When {\tt inform\%status} $ = -2$ or $- 4$, the user must return the values
+of all the group functions
+$g_k$, $k  = ${\tt ICALCG($i$)},   $i=1,  \ldots,$ {\tt ncalcg}.   The
+$k$-th such  function  should  be  evaluated  with the argument
+{\tt FT($k$)} and the result placed in {\tt GVALS($k$,1)}.
+
+When {\tt inform\%status} $= -2$ or $-5$, the user must return the values
+of the first and second derivatives of each of
+the group functions
+$g_k$, $k =  ${\tt   ICALCG($i$)}, $i=1, \ldots,$ {\tt  ncalcg},  with
+respect to its argument.  The derivatives of the  $k$-th such function
+should be  evaluated with   the   argument  {\tt FT($k$)}.  The  first
+derivative
+of the $k$-th group function should be placed in {\tt GVALS($k$,2)} and the
+corresponding second derivative returned in {\tt GVALS($k$,3)}.
+
+When {\tt inform\%status} $= -8, -9$ or $- 10$, the user must return the
+values of the components {\tt Q(IVAR($i$))}
+$= q_i$, $i = 1, \ldots,$ {\tt inform\%nvar}, such
+that $\bmq=\bmM \bmd$ and where $d_i=${\tt DGRAD($i$)} $i=1, \ldots,$
+{\tt inform\%nvar}. Here $\bmM$ is a symmetric positive definite
+approximation to the inverse of the matrix
+whose $i$-th row and column are the
+{\tt IVAR($i$)}-th row and column
+of the Hessian matrix of augmented Lagrangian function (see
+section~\ref{galmethod}),
+$i = 1, \ldots,$ {\tt inform\%nvar}.
+These values can only occur if {\tt control\%linear\_solver = 3}.
+
+If the user does not wish, or is unable, to compute an element or
+group function
+at a particular argument returned from \solver,
+{\tt inform\%status} may be reset to -11 and \solver\ re-entered. \solver\
+will treat such a re-entry as if the current iteration had been
+unsuccessful and reduce the trust-region radius. This facility is
+useful when, for instance, the user is asked to evaluate a function
+at a point outside its domain of definition.
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%
+
+
+\galerrors
+If {\tt inform\%status} is positive
+on return from \solver, an error has been detected.
+The user should correct the error and restart the minimization.
+Possible values of {\tt inform\%status} and their consequences are:
+\begin{description}
+\itt{inform\%status $= 1.$} More than {\tt control\%maxit} iterations have been
+      performed. This is often a symptom of incorrectly programmed
+      derivatives or of the preconditioner used being
+      insufficiently effective. Recheck the derivatives.
+      Otherwise, increase {\tt control\%maxit} and re-enter \solver\
+      at the best point found so far.
+\itt{inform\%status $= 2.$} The trust-region radius
+      has become too small. This is
+      often a symptom of incorrectly programmed derivatives
+      or of requesting more accuracy in the projected gradient
+      than is reasonable on the user's machine.
+      If the projected gradient
+      is small, the minimization
+      has probably succeeded. Otherwise, recheck the derivatives.
+\itt{inform\%status $= 3.$} The step taken during the current iteration is so
+      small that
+      no difference will be observed in the function values.
+      This sometimes occurs when too much accuracy is required of
+      the final gradient. If the projected gradient
+      is small, the minimization has probably succeeded.
+\itt{inform\%status $= 4.$} One of the {\tt INTEGER} arrays has been
+      initialized with insufficient space. A message indicating which array is
+      at fault and the required space
+      will be printed on unit number {\tt control\%error}.
+\itt{inform\%status $= 5.$} One of the {\tt REAL} ({\tt DOUBLE PRECISION} in
+      the D version) arrays has been initialized with
+      insufficient space. A message indicating which array is
+      at fault and the required space
+      will be printed on unit number {\tt control\%error}.
+\itt{inform\%status $= 6.$} One of the {\tt LOGICAL} arrays has been initialized with
+      insufficient space. A message indicating which array is
+      at fault and the required space
+      will be printed on unit number {\tt control\%error}.
+\itt{inform\%status $= 7.$} One or more of the components of the array
+      {\tt KNDOFG} does not have the value 0, 1 or 2.
+\itt{inform\%status $= 8.$} The problem does not appear to have a feasible
+     solution. Check the constraints and try starting with different
+     initial values for $\bmx$.
+\itt{inform\%status $= 9.$} One of the arrays
+     {\tt prob\%KNDOFG}, {\tt prob\%C} or {\tt prob\%Y}
+     is either not associated or is not large enough.
+     (Re-)allocate the arrays to have dimensions at least prob\%ng.
+\itt{inform\%status $= 10.$} The user has provided {\tt ELFUN} to
+      perform internal element evaluation, but one or both of
+      {\tt prob\%ISTEPA} and {\tt prob\%EPVALU} is not associated
+      or at least one is not large enough. (Re-)allocate (and reset)
+      {\tt prob\%ISTEPA} to have dimension at least {\tt prob\%nel+1}
+      and {\tt prob\%EPVALU} to have dimension at least
+      {\tt prob\%ISTEPA(prob\%nel+1)-1}.
+\itt{inform\%status $= 11.$} The user has provided {\tt GROUP} to
+      perform internal group evaluation, but one or both of
+      {\tt prob\-\%ISTGPA} and {\tt prob\%GPVALU} is not associated
+      or at least one is not large enough. (Re-)allocate (and reset)
+      {\tt prob\%ISTGPA} to have dimension at least {\tt prob\%ng+1}
+      and {\tt prob\%GPVALU} to have dimension at least
+      {\tt prob\%ISTG\-PA(prob\%ng+1)-1}.
+\itt{inform\%status $= 12.$} An internal array allocation or de-allocation
+      has failed. The name of the offending array is given in
+      {\tt inform\%bad\_alloc}, and the allocation status is
+      {\tt inform\%alloc\_status}.
+\itt{inform\%status $= 13.$} One or more of the problem functions
+      cannot be computed at the initial point.
+      Try starting with a different initial value for $\bmx$.
+\itt{inform\%status $= 14.$} The user has forced termination of \solver\
+     by removing the file named {\tt control\%a\-live\_file} from unit
+     unit {\tt control\%alive\_unit}.
+\itt{inform\%status $= 15.$} One or more of the problem dimensions
+     {\tt prob\%n}, {\tt prob\%ng} or {\tt prob\%nel} is too small. Ensure that
+     {\tt prob\%n $>$ 0}, {\tt prob\%ng $>$ 0} or {\tt prob\%nel $\geq$ 0}.
+\itt{inform\%status $= 16.$} Both optional arguments {\tt ELDERS}
+    and {\tt ELFUN} are present at the same time. Either remove {\tt ELDERS}
+     (or {\tt ELFUN}) or replace {\tt ELFUN} by {\tt ELFUN\_flexible}.
+\itt{inform\%status $= 17.$} The optional argument {\tt ELFUN\_flexible}
+    is present, but {\tt ELDERS} is absent.
+    Either include {\tt ELDERS} or remove {\tt ELFUN\_flexible}.
+\itt{inform\%status $= 18.$} The current value of the merit function
+  \req{objectiveb}, {\tt inform\%aug}, is smaller than its smallest
+  permitted value, {\tt control\%min\_aug}. Check the formulation to see
+  if this seems reasonable.
+\itt{inform\%status $= 19.$} The maximum CPU time limit has been exceed.
+\itt{inform\%status $= 26.$} A requested linear solver is unavailable.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}),
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility is useful
+as it allows a user to change  {\tt \packagename} control parameters
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of
+"specification commands". Each command occurs on a separate line,
+and comprises a "keyword",
+which is a string (in a close-to-natural language) used to identify a
+control parameter, and
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive,
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+The portion of the specification file used by
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by LANCELOT_read_specfile .. )
+    BEGIN LANCELOT
+       keyword    value
+       .......    .....
+       keyword    value
+    END
+  ( .. lines ignored by LANCELOT_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
+may contain additional (trailing) strings so long as such strings are
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN LANCELOT SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END LANCELOT SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore,
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored.
+The content
+of a line after a {\tt !} or {\tt *} character is also
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some
+specification commands, or to comment specific values
+of certain control parameters.
+
+The value of a control parameters may be of five different types, namely
+integer, logical, real, character string, or symbolic.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively), while
+character strings are arbitrary collections of default Fortran character
+constants (without quotation marks).
+A symbolic value is a special string (defined in the
+{\tt GALAHAD\_SYMBOLS module}),
+that may help to express a control parameter for {\tt \packagename}
+in a "language" that is close to natural.  Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}",
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}".
+Empty values are also allowed for
+logical control parameters, and are interpreted as "{\tt TRUE}".
+
+The specification file must be open for
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number
+passed to the routine in device (see below).
+Note that the corresponding
+file is {\tt REWIND}ed, which makes it possible to combine the specifications
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in
+\def\baselinestretch{0.8} {\tt \begin{verbatim}
+     CALL LANCELOT_read_specfile( control, device )
+\end{verbatim}}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}).
+Default values should have already have set, perhaps by calling
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and
+the component (see Section~\ref{typecontrol}) of {\tt control}
+that each affects are given in Table~\ref{specfile}; permitted string
+values are described in Table~\ref{string}.
+
+\pctable{|l|l|l|}
+\hline
+  command & component of {\tt control} & value type \\
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt alive-device} & {\tt \%alive\_unit} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+  {\tt maximum-number-of-iterations} & {\tt \%maxit} & integer \\
+  {\tt start-print} & {\tt \%start\_print} & integer \\
+  {\tt stop-print} & {\tt \%stop\_print} & integer \\
+  {\tt iterations-between-printing} & {\tt \%print\_gap} & integer \\
+  {\tt linear-solver-used} & {\tt \%linear\_solver} & string \\
+  {\tt number-of-lin-more-vectors-used} & {\tt \%icfact} & integer \\
+  {\tt semi-bandwidth-for-band-preconditioner} & {\tt \%semibandwidth} & integer\\
+  {\tt maximum-dimension-of-schur-complement} & {\tt \%max\_sc} & integer \\
+  {\tt unit-number-for-temporary-io} & {\tt \%io\_buffer} & integer \\
+  {\tt more-toraldo-search-length} & {\tt \%more\_toraldo} & integer \\
+  {\tt history-length-for-non-monotone-descent} & {\tt \%non\_monotone} & integer \\
+  {\tt first-derivative-approximations} & {\tt \%first\_derivatives} & string \\
+  {\tt second-derivative-approximations} & {\tt \%second\_derivatives} & string \\
+  {\tt primal-accuracy-required} & {\tt \%stopc} & real \\
+  {\tt dual-accuracy-required} & {\tt \%stopg} & real \\
+  {\tt minimum-merit-value} & {\tt \%min\_aug} & real \\
+  {\tt inner-iteration-relative-accuracy-required} & {\tt \%acccg} & real \\
+  {\tt initial-trust-region-radius} & {\tt \%initial\_radius} & real \\
+  {\tt maximum-radius} & {\tt \%maximum\_radius} & real \\
+  {\tt eta-successful} & {\tt \%eta\_successful} & real \\
+  {\tt eta-very-successful} & {\tt \%eta\_very\_successful} & real \\
+  {\tt eta-extremely-successful} & {\tt \%eta\_extremely\_successful} & real \\
+  {\tt gamma-smallest} & {\tt \%gamma\_smallest} & real \\
+  {\tt gamma-decrease} & {\tt \%gamma\_decrease} & real \\
+  {\tt gamma-increase} & {\tt \%gamma\_increase} & real \\
+  {\tt mu-meaningful-model} & {\tt \%mu\_meaningful\_model} & real \\
+  {\tt mu-meaningful-group} & {\tt \%mu\_meaningful\_group} & real \\
+  {\tt initial-penalty-parameter} & {\tt \%initial\_mu} & real \\
+  {\tt no-dual-updates-until-penalty-parameter-below} & {\tt \%mu\_tol} & real \\
+  {\tt initial-primal-accuracy-required} & {\tt \%firstc} & real \\
+  {\tt initial-dual-accuracy-required} & {\tt \%firstg} & real \\
+  {\tt pivot-tolerance-used} & {\tt \%SILS\_cntl\%u} & real \\
+  {\tt maximum-cpu-time-limit} & {\tt cpu\_time\_limit} & real \\
+  {\tt quadratic-problem} & {\tt \%quadratic\_problem} & logical \\
+  {\tt two-norm-trust-region-used} & {\tt \%two\_norm\_tr} & logical \\
+  {\tt exact-GCP-used} & {\tt \%exact\_gcp} & logical \\
+  {\tt magical-steps-allowed} & {\tt \%magical\_steps} & logical \\
+  {\tt subproblem-solved-accurately} & {\tt \%accurate\_bqp} & logical \\
+  {\tt structured-trust-region-used} & {\tt \%structured\_tr} & logical \\
+  {\tt print-for-maximization} & {\tt \%print\_max} & logical \\
+  {\tt print-full-solution} & {\tt \%full\_solution} & logical \\
+  {\tt alive-filename} & {\tt \%alive\_file} & character \\ \hline
+
+\ectable{\label{specfile}Specfile commands and associated
+components of {\tt control}. See Table~\ref{string} for
+permitted string values.}
+
+\bctable{|l|l|l|}
+\hline
+  command & string value & {\tt control} component assignment \\
+\hline
+   & {\tt CG} & {\tt \%linear\_solver = 1} \\
+   & {\tt DIAGONAL\_CG} & {\tt \%linear\_solver = 2} \\
+   & {\tt USERS\_CG} & {\tt \%linear\_solver = 3} \\
+   & {\tt EXPANDING\_BAND\_CG} & {\tt \%linear\_solver = 4} \\
+   & {\tt MUNKSGAARD\_CG} & {\tt \%linear\_solver = 5} \\
+  {\tt linear-solver-used}
+   & {\tt SCHNABEL\_ESKOW\_CG} & {\tt \%linear\_solver = 6} \\
+   & {\tt GMPS\_CG} & {\tt \%linear\_solver = 7} \\
+   & {\tt BAND\_CG} & {\tt \%linear\_solver = 8} \\
+   & {\tt LIN\_MORE\_CG} & {\tt \%linear\_solver = 9} \\
+   & {\tt MULTIFRONTAL} & {\tt \%linear\_solver = 11} \\
+   & {\tt MODIFIED\_MULTIFRONTAL} & {\tt \%linear\_solver = 12} \\
+\hline
+   & {\tt EXACT} & {\tt \%first\_derivatives = 0} \\
+  {\tt first-derivative-approximations}
+   & {\tt FORWARD} & {\tt \%first\_derivatives = 1} \\
+   & {\tt CENTRAL} & {\tt \%first\_derivatives = 2} \\
+\hline
+   & {\tt EXACT} & {\tt \%second\_derivatives = 0} \\
+   & {\tt BFGS} & {\tt \%second\_derivatives = 1} \\
+  {\tt second-derivative-approximations}
+   & {\tt DFP} & {\tt \%second\_derivatives = 2} \\
+   & {\tt PSB} & {\tt \%second\_derivatives = 3} \\
+   & {\tt SR1} & {\tt \%second\_derivatives = 4} \\
+\hline
+\ectable{\label{string}String values and their interpretation.}
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+The user is able to control the amount of intermediate printing
+performed in the course of the minimization. Printing is under
+the control of the parameter {\tt control\%print\_level} and output is sent to
+I/O unit number {\tt control\%error}.
+Possible values of {\tt control\%print\_level} and the levels of output
+produced are as follows.
+\begin{description}
+\itt{control\%print\_level $\leq 0.$} No printing, except warning messages,
+   will be performed.
+\itt{control\%print\_level $\geq 1.$} Details of the minimization function
+                 will be output.
+                  This includes the number of variables,
+                  groups and
+                  nonlinear elements which are used and a list of the
+                  variables which occur in each
+                  of the linear and nonlinear elements in every group.
+
+                 If the current iterate provides an acceptable
+                 estimate of the minimizer of the augmented Lagrangian
+                 function, the two-norm of the general constraints and
+                 the current value of the penalty parameter are given.
+\itt{control\%print\_level $= 1.$} A simple one line description of each
+                 iteration is
+                 given. This includes the iteration number, the
+                 number of derivative evaluations that have been
+                 made, the number of conjugate-gradient iterations
+                 that have been performed,
+                 the current value of the augmented Lagrangian
+                 function, the (two-) norm
+                 of the projected gradient,
+                 the ratio $\rho$ of the actual to predicted decrease
+                 in augmented Lagrangian function value achieved,
+                 the current trust-region radius,
+                 the norm of the step taken,
+                 an indication of how the direct or iterative
+                 method ended, the number of variables which lie
+                 away from their bounds and the total time
+                 spent on the minimization.
+\itt{control\%print\_level $= 2.$} In addition to the information output with
+                 {\tt control\%print\_level = 1},
+                 a short description of the approximate solution
+                 to the inner-iteration linear system is given.
+                 Before a successful ({\tt inform\%status = 0}) exit, details of
+                 the estimate of the minimizer and the
+                 gradient of the augmented Lagrangian
+                 function are given.
+\itt{control\%print\_level $= 3.$} A list of the current iteration number,
+                 the value of the augmented Lagrangian function, the
+                 number of derivative evaluations that have been
+                 made, the (two-) norm
+                 of the projected gradient,
+                 the number of conjugate gradients
+                 iterations that have been performed and the
+                 current trust-region radius
+                 are given, followed by the
+                 current estimate of the minimizer.
+                 The values of the reduction in the model of the
+                 augmented Lagrangian function
+                 and the actual reduction in this
+                 function, together with their ratio, are also given.
+                 Before a successful ({\tt inform\%status = 0}) exit, details of
+                 the estimate of the minimizer and the
+                 gradient of the augmented Lagrangian function are given.
+
+                 If the current iterate also provides an acceptable
+                 estimate of the minimizer of the augmented Lagrangian
+                 function, values of the general constraints and
+                 estimates of the Lagrange multipliers are also given.
+\itt{control\%print\_level $= 4.$} In addition to the information output with
+                 {\tt control\%print\_level= 3},
+                 the gradient of the augmented Lagrangian function at
+                 the current estimate of the minimizer is given.
+                 Full details of the approximate solution
+                 to the inner-iteration linear system are also given.
+                 This level of output is intended as a debugging aid
+                 for the expert only.
+\itt{control\%print\_level $= 5.$} In addition to the information output with
+                 {\tt control\%print\_level = 4},
+                 the diagonal elements of the second derivative
+                 approximation are given.
+\itt{control\%print\_level $\geq 6.$} In addition to the information output with
+                  {\tt control\%print\_level = 5},
+                  the second derivative approximations
+                  (taken with respect to the internal variables)
+                  to each nonlinear element function are given.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines The user must provide an external {\tt RANGE} subroutine
+(see Section~\ref{internal_and_ranges}), and optionally may provide
+external {\tt ELFUN} (see Section~\ref{efv}),
+{\tt ELFUN\_flexible} (see Section~\ref{efvf}) and
+{\tt GROUP} (see Section~\ref{gfv}) subroutines. Since these
+routines are all dummy arguments to \solver\, their names may be
+adapted for the user's purposes.
+\galmodules
+{\tt GALAHAD\_CPU\_time},
+{\tt GALAHAD\_SPECFILE},
+{\tt LANCELOT\_INITW},
+{\tt LANCELOT\_OTHERS},
+{\tt LAN\-CELOT\_HSPRD},
+{\tt LANCELOT\_CAUCHY},
+{\tt LANCELOT\_CG},
+{\tt LANCELOT\_PRECN},
+{\tt LANCELOT\_FRNTL},
+{\tt LANCELOT\_STRUTR},
+{\tt GAL\-AHAD\_SMT},
+{\tt GAL\-AHAD\_SILS},
+{\tt GALAHAD\_SCU},
+{\tt LANCELOT\_ASMBL},
+{\tt LANCELOT\_EXTEND}.
+\galio No input; output on device numbers {\tt control\%out} and
+{\tt control\%error}.
+    Output is provided under the control of {\tt control\%print\_level}.
+     If the user supplies positive unit numbers to {\tt control\%out} and
+{\tt control\%error}, messages
+     are printed to the user supplied units. However if one of unit
+     numbers is non-positive, printing to this unit is suppressed.
+\galrestrictions
+     {\tt prob\%n $>$ 0},
+     {\tt prob\%ng $>$ 0},
+     {\tt prob\%nel $\geq$ 0}.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+The basic method implemented within {\tt \packagename} is described in
+detail by Conn, Gould and Toint (1991).  The method used to solve the
+inner iteration subproblem is described by Conn, Gould and Toint
+(1988b). The concept of partial separability was first suggested by
+Griewank and Toint (1982).  The extension to group partially separable
+functions was given by Conn, Gould and Toint (1990).  Also see Chapter~3
+of the {\sf LANCELOT A} manual.
+
+The Lagrangian function associated with objective function
+\req{objective} and general constraints \req{constraints} is the
+composite function \disp{\ell( \bmx, \bmy ) = f(\bmx) + \sum_{i \in
+\calG_C} y_i c_i (\bmx).}  The scalars $y_i$ are known as Lagrange
+multiplier estimates.  At a solution $\bmx^{\star}$ to the constrained
+minimization problem, there are Lagrange multipliers $\bmy^{\star}$ for
+which the components of the gradient of the Lagrangian function
+$\partial \ell(\bmx^{\star}, \bmy^{\star},) / \partial x_i$ $= 0$ whenever
+the corresponding variable $x_i^{\star}$ lies strictly between its lower
+and upper bounds.  It is useful, but not essential, for the initial
+Lagrange multiplier estimates to be close to $\bmy^{\star}$.
+
+The augmented Lagrangian function is the composite function
+\eqn{objectivec}{\phi( \bmx, \bmy, \mu ) = \ell( \bmx, \bmy) +
+ \frac{1}{2 \mu} \sum_{i \in \calG_C} (c_i (\bmx))^2,}
+where $\mu$ is known as the penalty parameter.  An inner iteration is
+used to find an approximate minimizer of (\ref{objectivec}) within the
+feasible box for fixed values of the penalty parameter and Lagrange
+multiplier estimates. The outer iteration of {\tt \packagename}
+automatically adjusts the penalty parameter and Lagrange multiplier
+estimates to ensure convergence of these approximate minimizers to a
+solution of the constrained optimization problem.
+
+In the inner iteration, a step from the current estimate of the solution
+is determined using a trust-region approach.  That is, a quadratic model
+of the augmented Lagrangian function is approximately minimized within
+the intersection of the constraint ``box'' and another convex region,
+the trust-region.  This minimization is carried out in two stages.
+Firstly, the so-called generalized Cauchy point for the quadratic
+subproblem is found.  (The purpose of this point is to ensure that the
+algorithm converges and that the set of bounds which are satisfied as
+equations at the solution is rapidly identified.)  Thereafter an
+improvement to the quadratic model is sought using either a
+direct-matrix or truncated conjugate-gradient algorithm. The
+trust-region size is increased if the reduction obtained in the
+objective function is reasonable when compared with the reduction
+predicted by the model and reduced otherwise.
+
+A central idea is that a collection of small matrices approximating the
+Hessian matrices of each $e_k$ is used and updated at every iteration
+using one of a number of possible updating formulae.  Augmented
+Lagrangian function values and derivatives are assembled from these
+components as required.
+
+The strategy for treating bound constraints is based on the usual
+projection device and is described in detail in Conn, Gould and Toint (1988a).
+Of the new features in LANCELOT B,
+structured trust regions are described in
+Conn, Gould and Toint (2000), Section 10.2, and
+non-monotone descent, {\em ibid}, Section 10.1,
+while the alternative projection is due to Mor\'{e} and Toraldo (1991),
+and the alternative incomplete Cholesky factorization is
+described by Lin and Mor\'{e} (1998)
+
+\galreferences
+\vspace*{1mm}
+
+\noindent
+The basic method is described in detail in
+\vspace*{1mm}
+
+\noindent
+%\begin{center}
+A. R. Conn, N. I. M. Gould and Ph. L. Toint (1992).
+LANCELOT. A fortran package for large-scale nonlinear optimization
+(release A). Springer Verlag Series in Computational Mathematics 17,
+Berlin,
+%\end{center}
+
+\noindent
+and details of its computational performance may be found in
+
+\noindent
+%\begin{center}
+A. R. Conn, N. I. M. Gould and Ph. L. Toint (1996).
+Numerical experiments with the {\sf LANCELOT} package
+(Release A) for large-scale nonlinear optimization
+Mathematical Programming {\bf 73} 73-110.
+%\end{center}
+
+%\noindent
+Convergence properties of the method are described in
+
+\noindent
+%\begin{center}
+A. R. Conn, N. I. M. Gould and Ph. L. Toint (1991).
+A Globally Convergent Augmented {L}agrangian Algorithm for
+Optimization with General Constraints and Simple Bounds.
+SIAM Journal on Numerical Analysis {\bf 28} 545-572,
+%\end{center}
+
+\noindent
+and
+
+\noindent
+%\begin{center}
+A. R. Conn, N. I. M. Gould and Ph. L. Toint (1988a).
+Global convergence of a class of trust region algorithms
+for optimization with simple bounds.
+SIAM Journal on Numerical Analysis {\bf 25} 433-460,
+%\end{center}
+
+\noindent
+while details of the inner iteration are provided by
+
+\noindent
+%\begin{center}
+A. R. Conn, N. I. M. Gould and Ph. L. Toint (1988b).
+Testing a class of methods for solving minimization
+problems with simple bounds on the variables.
+Mathematics of Computation {\bf 50} 399-430.
+%\end{center}
+
+%\noindent
+Partial separability was introduced by
+
+\noindent
+%\begin{center}
+A. Griewank and Ph. L. Toint (1982).
+Partitioned variable metric updates for large structured
+optimization problems.
+Numerische Mathematik {\bf 39} 119-137,
+%\end{center}
+
+\noindent
+and its generalization to group partial separability was given by
+
+\noindent
+%\begin{center}
+A. R. Conn, N. I. M. Gould and Ph. L. Toint (1990).
+An introduction to the structure of large scale nonlinear
+optimization problems and the {{\sf LANCELOT}} project.
+In ``Computing Methods in Applied Sciences and Engineering''
+(R. Glowinski and A. Lichnewsky, eds), SIAM, Philadelphia, 42-51.
+%\end{center}
+
+%\noindent
+Many of the newer issues are discussed by
+
+\noindent
+%\begin{center}
+A. R. Conn, N. I. M. Gould and Ph. L. Toint (2000).
+Trust Region Methods.
+SIAM, Philadelphia,
+%\end{center}
+
+\noindent
+while the alternative incomplete Cholesky factorization is
+due to
+
+\noindent
+%\begin{center}
+C.-J. Lin and J. J. Mor\'{e} (1999).
+Incomplete Cholesky factorizations with limited memory.
+SIAM Journal on Scientific Computing {\bf 21} 21-45,
+%\end{center}
+
+\noindent
+and the alternative projection originally described in
+
+\noindent
+%\begin{center}
+J. J. Mor\'{e} and G. Toraldo (1991)
+On the solution of large quadratic programming problems
+with bound constraints.
+SIAM Journal on Optimization {\bf 1} 93-113,
+%\end{center}
+
+\noindent
+and given in the context used here by
+
+\noindent
+%\begin{center}
+C.-J. Lin and J. J. Mor\'{e} (1999b).
+Newton's method for large bound-constrained optimization problems,
+SIAM Journal on Optimization {\bf 9} 1100-1127.
+%\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%
+
+\galexample
+We now consider the small example problem,
+\disp{{\rm minimize} \;\; f(x_1^{ },x_2^{ },x_3^{ }) =
+ x_1^2 + x_2^{ } \sin(x_1^{ } + x_3^{ }) + 3 x_2^4 x_3^4 + x_2^{ }
++ 2 x_1^2 x_2^2 }
+subject to the general constraint
+\disp{c(x_1,x_2,x_3) = \cos(x_1 + 2 x_2 - 1 ) = 0}
+and the bounds $- 1 \leq x_2 \leq 1$ and
+$1 \leq x_3 \leq 2$.
+There are a number of ways of casting this problem in the
+framework required by \solver.
+Here, we consider partitioning $f$
+into groups as
+\begin{center}
+\begin{tabular}{ccccccccc}
+$(x_1)^2$  &+& $(x_2 \sin(x_1+x_3))$ &+& $3(x_2 x_3)^4$ &+& $(x_2)$   &+& $2(x_1 x_2)^2$  \\
+$\uparrow$ & &     $\uparrow$        & & $\uparrow$     & & $\uparrow$ & & $\uparrow$\\
+group 1    & &       group 2         & &   group 3      & & group 4    & & group 5
+\end{tabular}
+\end{center}
+
+Similarly, we write $c$ as
+\begin{center}
+\begin{tabular}{cc}
+$\cos(x_1 + 2 x_2 - 1)$. & \\ $\uparrow$ & \\ group 6 &
+\end{tabular}
+\end{center}
+
+Notice the following:
+\begin{enumerate}
+\item
+Group 1 uses the non-trivial
+   group function $g_1(\alpha) = \alpha^2$.
+   The group contains a single {\em linear} element;
+   the element function is $x_1$.
+
+\item
+Group 2 uses the trivial
+   group function $g_2(\alpha) = \alpha$.
+   The group contains a single {\em nonlinear} element;
+   this element function is $e_1(x_1,x_2,x_3) = x_2 \sin( x_1 + x_3 )$.
+   The element function has {\em three} elemental variables,
+   $v_1$, $v_2$ and $v_3$, say, (with $v_1 = x_2$,
+   $v_2 = x_1$ and $v_3 = x_3$), but may
+   be expressed in terms of {\em two} internal variables
+   $u_1$ and $u_2$, say, where
+   $u_1 = v_1$ and $u_2 = v_2 + v_3$.
+
+\item
+Group 3 uses the non-trivial
+   group function $g_3( \alpha ) = \alpha^4$, weighted by the
+   factor 3.
+   Again, the group contains a single {\em nonlinear} element;
+   this element function is $e_2(x_2,x_3) = x_2 x_3$.
+   The element function has {\em two} elemental variables,
+   $v_1$ and $v_2$, say, (with $v_1 = x_2$ and
+   $v_2 = x_3$). This time, however, there is no useful
+   transformation to internal variables.
+
+\item
+Group 4 again uses the trivial
+   group function $g_4(\alpha ) = \alpha$.
+   This time the group contains a single {\em linear} element
+   $x_2$.
+
+\item
+Group 5 uses the
+   group function $g_5(\alpha ) = \alpha^2$, weighted by the factor 2.
+   Notice that this is the same {\em type} as occurred in group 1.
+   The group contains a single nonlinear element, $e_3(x_1,x_2) = x_1x_2$.
+   But notice that this element is of the same {\em type} (i.e., $v_1 v_2$
+   for appropriate $v_1$ and $v_2$) as $e_2$ featured in group 3
+   although it uses different elemental variables (this time
+   $v_1 = x_1$ and $v_2 = x_2$).
+\item
+Finally, group 6 uses the non-trivial
+   group function $g_6(\alpha) = \cos(\alpha)$.
+   The group contains a single {linear} element;
+   the element function is $x_1 + 2 x_2 - 1$.
+\end{enumerate}
+
+Thus we see that we can consider our objective
+and constraint
+functions to be made up of six group functions;
+the first, third, fifth and sixth are non-trivial
+so we need to provide function and derivative values for these when
+prompted by \solver. Of the four non-trivial groups, there are only
+three different types, since groups one and five are structurally the same.
+There are three nonlinear elements, one each from groups two, three and five.
+Again this means that we need to provide function and derivative
+values for these when required by \solver, but there is a slight
+simplification as elements two and three are of the same type.
+Finally, one of these elements, the first,
+has a useful transformation from elemental to internal variables
+so the routine {\tt RANGE} must be set to provide this transformation.
+
+The problem involves three variables, six groups
+and three nonlinear elements so we set
+      {\tt prob\%n} $= 3$,
+      {\tt prob\%ng} $= 6$ and
+      {\tt prob\%nel} $= 3$.
+As the first, third, fifth and sixth group functions
+are non-trivial, we set
+{\tt prob\%GXEQX} as:
+
+\begin{center}
+{\tt \begin{tabular}{ccccccc}
+i        & 1 & 2 & 3 & 4 & 5 & 6\\
+prob\%GXEQX(i) & .FALSE. & .TRUE. & .FALSE. & .TRUE. & .FALSE. & .FALSE.
+\end{tabular}}
+\end{center}
+Non-trivial groups 1 and 5 involve functions of the same type
+(we label this a ``type 1'' group; the actual label is
+unimportant, so long as groups of different types have different labels),
+and these are different from
+those for groups 2 and 6 (which we call ``types 2'' and ``3'')---by
+convention, trivial groups are of ``type 0'' . So we
+set {\tt prob\%ITYPEG} as:
+
+\begin{center}
+{\tt \begin{tabular}{ccccccc}
+i        & 1 & 2 & 3 & 4 & 5 & 6\\
+prob\%ITYPEG(i) & 1 & 0 & 2 & 0 & 1 & 3
+\end{tabular}}
+\end{center}
+The first five groups are associated with the objective function
+while the sixth defines a constraint so we set {\tt prob\%KNDOFG} as:
+
+\begin{center}
+{\tt \begin{tabular}{ccccccc}
+i        & 1 & 2 & 3 & 4 & 5 & 6\\
+prob\%KNDOFG(i) & 1 & 1 & 1 & 1 & 1 & 2
+\end{tabular}}
+\end{center}
+
+The first nonlinear element occurs in group 2, the second
+in group 3 and the last in group 5; each element is unweighted.
+We thus set {\tt prob\%IELING}, {\tt prob\%ESCALE} and {\tt prob\%ISTADG} as:
+
+\begin{center}
+{\tt \begin{tabular}{cccc}
+i         & 1 & 2 & 3\\
+prob\%IELING(i) & 1 & 2 & 3\\
+prob\%ESCALE(i) & 1.0 & 1.0 & 1.0
+\end{tabular}}
+\end{center}
+
+\begin{center}
+{\tt \begin{tabular}{cccccccc}
+i         & 1 & 2 & 3 & 4 & 5 & 6 & 7\\
+prob\%ISTADG(i) & 1 & 1 & 2 & 3 & 3 & 4 & 4
+\end{tabular} }
+\end{center}
+The first nonlinear element function is not a quadratic function
+of its internal variables so we set {\tt control\%quadratic\-\_problem=.FALSE.}.
+The second and third nonlinear element functions are of the
+same type (we number this a ``type 2'' element), while
+the first nonlinear element is different (a ``type 1'' element).
+So we set {\tt prob\%ITYPEE} as:
+
+\begin{center}
+{\tt \begin{tabular}{cccc}
+i        & 1 & 2 & 3 \\
+prob\%ITYPEE(i) & 1 & 2 & 2
+\end{tabular}}
+\end{center}
+Nonlinear element one, $e_1$ assigns variables $x_2$, $x_1$ and
+$x_3$ to its elemental variables, while
+the second and third nonlinear elements $e_2$ and $e_3$
+assign variables $x_2$ and
+$x_3$, and $x_1$ and $x_2$ to their elemental variables, respectively.
+Hence {\tt prob\%IELVAR} contains:
+
+\begin{center}
+{\tt \begin{tabular}{clcrlrlr}
+i         & ~1 & ~~2 & ~~3~ & ~~4 & 5~ & ~~6 & 7~ \\
+prob\%IELVAR(i) & ~2 & ~~1 & ~~3~ & ~~2 & 3~ & ~~1 & 2~ \\
+&
+\multicolumn{3}{c}{$\longleftarrow$ {$e_1$} $\longrightarrow$} &
+\multicolumn{2}{c}{$\leftarrow$ {$e_2$} $\rightarrow$} &
+\multicolumn{2}{c}{$\leftarrow$ {$e_3$} $\rightarrow$}
+\end{tabular} }
+\end{center}
+In this vector, we now locate the position of the first
+variable of each nonlinear element, and build the vector {\tt prob\%ISTAEV} as
+follows:
+
+\begin{center}
+{\tt \begin{tabular}{ccccc}
+i         & 1 & 2 & 3 & 4\\
+prob\%ISTAEV(i) & 1 & 4 & 6 & 8
+\end{tabular} }
+\end{center}
+All three nonlinear elements have two internal variables --- elements
+two and three using their elemental variables as internals --- so we set
+{\tt prob\%INTVAR} as follows:
+
+\begin{center}
+{\tt \begin{tabular}{ccccc}
+i         & 1 & 2 & 3 & 4\\
+prob\%INTVAR(i) & 2 & 2 & 2 & -
+\end{tabular} }
+\end{center}
+As the first nonlinear element has a useful transformation
+between elemental and internal variables, while the other two do not,
+{\tt prob\%INTREP} contains:
+
+\begin{center}
+{\tt \begin{tabular}{cccc}
+i         & 1 & 2 & 3 \\
+prob\%INTREP(i) & .TRUE. & .FALSE. & .FALSE.
+\end{tabular} }
+\end{center}
+
+Turning to the linear elements,
+groups one, four and six each have
+a linear element.
+Those from groups one and four
+involve a single variable --- $x_1$ for
+group one and $x_2$ for group four. That from group six involves
+the variables $x_1$ and $x_3$. All the coefficients, excepting the last,
+are one; the last is two.
+We thus set {\tt prob\%ISTADA} as:
+
+\begin{center}
+{\tt \begin{tabular}{cccccccc}
+i         & 1 & 2 & 3 & 4 & 5 & 6 & 7\\
+prob\%ISTADA(i) & 1 & 2 & 2 & 2 & 3 & 3 & 5
+\end{tabular} }
+\end{center}
+and {\tt prob\%ICNA} and {\tt prob\%A} as
+
+\begin{center}
+{\tt \begin{tabular}{ccccc}
+i         & 1 & 2 & 3 & 4 \\
+prob\%ICNA(i)   & 1 & 2 & 1 & 2 \\
+prob\%A(i)      & 1.0D+0 & 1.0D+0 & 1.0D+0 & 2.0D+0
+\end{tabular} }
+\end{center}
+Only the last group
+has a constant term so {\tt prob\%B} is set to:
+
+\begin{center}
+{\tt \begin{tabular}{ccccccc}
+i         & 1 & 2 & 3 & 4 & 5 & 6 \\
+prob\%B(i)      & 0.0D+0 & 0.0D+0  & 0.0D+0 & 0.0D+0 & 0.0D+0 & 1.0D+0
+\end{tabular} }
+\end{center}
+
+The bounds
+for the problem are set in {\tt prob\%BL} and {\tt prob\%BU}. As the first
+variable is allowed to take any value, we specify lower and
+upper bounds of $\pm 10^{20}$. Thus we set
+
+\begin{center}
+{\tt \begin{tabular}{cccc}
+i         & 1 & 2 & 3 \\
+prob\%BL(i)     & -1.0D+20 & -1.0D+0  & -1.0D+0 \\
+prob\%BU(i)     & ~1.0D+20 & ~1.0D+0  & ~2.0D+0
+\end{tabular} }
+\end{center}
+
+The 3rd group is scaled by 3.0, the fifth by 2.0,  while the others
+are  unscaled. Thus we set {\tt prob\%GSCALE} to:
+
+\begin{center}
+{\tt \begin{tabular}{ccccccc}
+i         & 1 & 2 & 3 & 4 & 5 & 6 \\
+prob\%GSCALE(i) & 1.0D+0 & 1.0D+0  & 3.0D+0 & 1.0D+0 & 2.0D+0 & 1.0D+0
+\end{tabular} }
+\end{center}
+It is unclear that the variables are badly scaled so we
+set {\tt prob\%VSCALE} to:
+
+\begin{center}
+{\tt \begin{tabular}{cccc}
+i         & 1 & 2 & 3 \\
+prob\%VSCALE(i) & 1.0D+0 & 1.0D+0 & 1.0D+0
+\end{tabular} }
+\end{center}
+
+Finally, we choose to allocate the names {\tt Obj 1} to {\tt Obj 5} to
+the four groups
+associated with the objective function
+and call the constraint
+group {\tt Constraint}. The variables are called {\tt x 1}
+to {\tt x 3}. We thus set {\tt prob\%GNAMES} and {\tt prob\%VNAMES} to:
+
+\begin{center}
+{\tt \begin{tabular}{ccccccc}
+i         & 1 & 2 & 3 & 4 & 5 & 6 \\
+prob\%GNAMES(i) & Obj 1 & Obj 2  & Obj 3 & Obj 4 & Obj 5 & Constraint
+\end{tabular} }
+\end{center}
+and
+
+\begin{center}
+{\tt \begin{tabular}{cccc}
+i         & 1 & 2 & 3 \\
+prob\%VNAMES(i) & x 1 & x 2 & x 3
+\end{tabular} }
+\end{center}
+
+Notice that, in our example, neither the group nor nonlinear element functions
+depends upon parameters, so both {\tt prob\%EPVALU} and {\tt prob\%GPVALU} are
+empty, and consequently all components of the parameter starting address arrays
+{\tt prob\%ISTEPA} and {\tt prob\%ISTGPA} should be set to {\tt 0}.
+
+\solver\ leaves the computation of function and derivative values of the
+group and nonlinear element functions to the user---this may either be
+done internally (by providing suitable {\tt GROUP} and {\tt ELFUN}
+subroutines, or externally via reverse communication.  We need only to
+specify the group functions for the non-trivial groups, groups 1, 3 and
+5.  Also note that the function and gradient values are only evaluated
+if the component is specified in {\tt ICALCG}.  A suitable {\tt GROUP}
+subroutine might be the following:
+
+\def\baselinestretch{0.8}
+{%\footnotesize
+{\tt \begin{verbatim}
+   SUBROUTINE GROUP ( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg, &
+                      ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa, &
+                      lcalcg, lfvalu, lgpvlu, derivs, igstat )
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
+   INTEGER, INTENT( IN ) :: lgvalu, ncalcg
+   INTEGER, INTENT( IN ) :: ltypeg, lstgpa, lcalcg, lfvalu, lgpvlu
+   INTEGER, INTENT( OUT ) :: igstat
+   LOGICAL, INTENT( IN ) :: derivs
+   INTEGER, INTENT( IN ), DIMENSION ( ltypeg ) :: ITYPEG
+   INTEGER, INTENT( IN ), DIMENSION ( lstgpa ) :: ISTGPA
+   INTEGER, INTENT( IN ), DIMENSION ( lcalcg ) :: ICALCG
+   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lfvalu ) :: FVALUE
+   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lgpvlu ) :: GPVALU
+   REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( lgvalu, 3 ) :: GVALUE
+   INTEGER :: igrtyp, igroup, ipstrt, jcalcg
+   REAL ( KIND = wp ) :: alpha, alpha2
+   igstat = 0
+   DO jcalcg = 1, ncalcg
+     igroup = ICALCG( jcalcg )
+     igrtyp = ITYPEG( igroup )
+     IF ( igrtyp == 0 ) CYCLE ! skip if the group is trivial
+     ipstrt = ISTGPA( igroup ) - 1
+     SELECT CASE ( igrtyp )
+     CASE ( 1 )
+       alpha = FVALUE( igroup )
+       IF ( .NOT. derivs ) THEN
+         GVALUE( igroup, 1 ) = alpha * alpha
+       ELSE
+         GVALUE( igroup, 2 ) = 2.0_wp * alpha
+         GVALUE( igroup, 3 ) = 2.0_wp
+       END IF
+     CASE ( 2 )
+       alpha  = FVALUE( igroup )
+       alpha2 = alpha * alpha
+       IF ( .NOT. derivs ) THEN
+         GVALUE( igroup, 1 ) = alpha2 * alpha2
+       ELSE
+         GVALUE( igroup, 2 ) = 4.0_wp * alpha2 * alpha
+         GVALUE( igroup, 3 ) = 12.0_wp * alpha2
+       END IF
+     CASE ( 3 )
+       alpha  = FVALUE( igroup )
+       IF ( .NOT. derivs ) THEN
+         GVALUE( igroup, 1 ) = COS( alpha )
+       ELSE
+         GVALUE( igroup, 2 ) = - SIN( alpha )
+         GVALUE( igroup, 3 ) = - COS( alpha )
+       END IF
+     END SELECT
+   END DO
+   RETURN
+   END SUBROUTINE GROUP
+\end{verbatim} } }
+\def\baselinestretch{1.0}
+
+\noindent
+Here, the logical parameter {\tt derivs} set \true\ specifies that the first
+and second derivatives are required; a \false\ value will return the
+function values.
+
+To evaluate the values and derivatives of the nonlinear element
+functions, the following {\tt ELFUN} subroutine would be suitable:
+
+\def\baselinestretch{0.8}
+{%\footnotesize
+{\tt \begin{verbatim}
+   SUBROUTINE ELFUN ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, &
+                      IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, &
+                      lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
+                      lfuval, lxvalu, lepvlu, ifflag, ifstat )
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
+   INTEGER, INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev, lelvar, lntvar
+   INTEGER, INTENT( IN ) :: lstadh, lstepa, lcalcf, lfuval, lxvalu, lepvlu
+   INTEGER, INTENT( OUT ) :: ifstat
+   INTEGER, INTENT( IN ) :: ITYPEE( LTYPEE ), ISTAEV( LSTAEV ), IELVAR( LELVAR )
+   INTEGER, INTENT( IN ) :: INTVAR( LNTVAR ), ISTADH( LSTADH ), ISTEPA( LSTEPA )
+   INTEGER, INTENT( IN ) :: ICALCF( LCALCF )
+   REAL ( KIND = wp ), INTENT( IN ) :: XVALUE( LXVALU )
+   REAL ( KIND = wp ), INTENT( IN ) :: EPVALU( LEPVLU )
+   REAL ( KIND = wp ), INTENT( INOUT ) :: FUVALS( LFUVAL )
+   INTEGER :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt, jcalcf
+   REAL ( KIND = wp ) :: v1, v2, u1, u2, u3, cs, sn
+   ifstat = 0
+   DO jcalcf = 1, ncalcf
+     ielemn = ICALCF( jcalcf )
+     ilstrt = ISTAEV( ielemn ) - 1
+     igstrt = INTVAR( ielemn ) - 1
+     ipstrt = ISTEPA( ielemn ) - 1
+     IF ( ifflag == 3 ) ihstrt = ISTADH( ielemn ) - 1
+     ieltyp = ITYPEE( ielemn )
+     SELECT CASE ( ieltyp )
+     CASE ( 1 )
+       u1 = XVALUE( IELVAR( ilstrt + 1 ) )
+       u2 = XVALUE( IELVAR( ilstrt + 2 ) )
+       u3 = XVALUE( IELVAR( ilstrt + 3 ) )
+       v1 = u1
+       v2 = u2 + u3
+       cs = COS( v2 )
+       sn = SIN( v2 )
+       IF ( ifflag == 1 ) THEN
+         FUVALS( ielemn ) = v1 * sn
+       ELSE
+         FUVALS( igstrt + 1 ) = sn
+         FUVALS( igstrt + 2 ) = v1 * cs
+         IF ( ifflag == 3 ) THEN
+           FUVALS( ihstrt + 1 ) = 0.0_wp
+           FUVALS( ihstrt + 2 ) = cs
+           FUVALS( ihstrt + 3 ) = - v1 * sn
+         END IF
+       END IF
+     CASE ( 2 )
+       u1 = XVALUE( IELVAR( ilstrt + 1 ) )
+       u2 = XVALUE( IELVAR( ilstrt + 2 ) )
+       IF ( ifflag == 1 ) THEN
+         FUVALS( ielemn ) = u1 * u2
+       ELSE
+         FUVALS( igstrt + 1 ) = u2
+         FUVALS( igstrt + 2 ) = u1
+         IF ( ifflag == 3 ) THEN
+           FUVALS( ihstrt + 1 ) = 0.0_wp
+           FUVALS( ihstrt + 2 ) = 1.0_wp
+           FUVALS( ihstrt + 3 ) = 0.0_wp
+         END IF
+       END IF
+     END SELECT
+   END DO
+   RETURN
+   END SUBROUTINE ELFUN
+\end{verbatim} } }
+\def\baselinestretch{1.0}
+
+The integer parameter ifflag specifies whether function values
+({\tt ifflag = 1}) or derivatives ({\tt ifflag > 1}) are required.
+When {\tt ifflag = 2}, just first derivatives are required, while
+{\tt ifflag = 3} also requests second derivatives.
+Notice that the derivatives are taken with respect to
+the internal variables.
+For the first nonlinear element function,
+this means that we must transform from elemental to internal
+variables before evaluating the derivatives. Thus, as
+this function may be written as $f(v_1,v_2)=v_1 \sin v_2$,
+where $v_1 = u_1$ and $v_2 = u_2 + u_3$,
+the gradient and Hessian matrix are
+\disp{\vect{\sin v_2 \\ v_1 \cos v_2} \; \; \; \; {\rm and} \; \; \; \;
+ \mat{cc}{ 0 & \cos v_2 \\ \cos v_2 & -v_1 \sin v_2},}
+respectively. Notice that it is easy to specify the second
+derivatives
+for this example so we do so.
+Also note that the function and gradient values
+are only evaluated if the component is specified in {\tt ICALCF}.
+
+We must also specify the routine {\tt RANGE} for our example.  As we
+have observed, only the first element has a useful transformation.  The
+transformation matrix is
+\disp{\mat{ccc}{1 & 0 & 0 \\ 0 & 1 & 1}}
+(see Section~\ref{internal_and_ranges}).
+As a consequence, the following routine {\tt RANGE} is appropriate:
+
+\def\baselinestretch{0.8}
+{%\footnotesize
+{\tt \begin{verbatim}
+   SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp, lw1, lw2 )
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
+   INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+   LOGICAL, INTENT( IN ) :: transp
+   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
+   REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
+   SELECT CASE ( ieltyp )
+   CASE ( 1 ) ! Element type 1 has a non-trivial transformation
+     IF ( transp ) THEN
+       W2( 1 ) = W1( 1 )
+       W2( 2 ) = W1( 2 )
+       W2( 3 ) = W1( 2 )
+     ELSE
+       W2( 1 ) = W1( 1 )
+       W2( 2 ) = W1( 2 ) + W1( 3 )
+    END IF
+   CASE DEFAULT ! Element 2 has a trivial transformation - no action required
+   END SELECT
+   RETURN
+   END SUBROUTINE RANGE
+\end{verbatim} } }
+\def\baselinestretch{1.0}
+
+This completes the supply of information to \solver.  The problem may
+now be solved using the following program.  We choose to solve the model
+subproblem using a preconditioned conjugate gradient scheme, using
+diagonal preconditioning, a ``box'' shaped trust-region, calculating an
+exact Cauchy point at each iteration but not obtaining an accurate
+minimizer of the model within the box. Furthermore, we start from the
+initial estimate $x_1 = 0.0$, $x_2 = 0.0$ and $x_3 = 1.5$. As we have no
+idea of a good estimate for the Lagrange multiplier associated with the
+constraint (group 6), we set $y_6 = 0$.  We observe that the objective
+function is bounded below by -2.0 within the feasible box and terminate
+when the norms of the reduced gradient of the Lagrangian function and
+constraints are smaller than $10^{-5}$.
+
+\def\baselinestretch{0.8}
+{%\footnotesize
+{\tt \begin{verbatim}
+   PROGRAM LANCELOT_example
+   USE LANCELOT_double                       ! double precision version
+   IMPLICIT NONE
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
+   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
+   TYPE ( LANCELOT_control_type ) :: control
+   TYPE ( LANCELOT_inform_type ) :: info
+   TYPE ( LANCELOT_data_type ) :: data
+   TYPE ( LANCELOT_problem_type ) :: prob
+   INTEGER :: i, lfuval
+   INTEGER, PARAMETER :: n = 3, ng = 6, nel = 3, nnza = 4, nvrels = 7
+   INTEGER, PARAMETER :: ntotel = 3, ngpvlu = 0, nepvlu = 0
+   INTEGER :: IVAR( n ), ICALCF( nel ), ICALCG( ng )
+   REAL ( KIND = wp ) :: Q( n ), XT( n ), DGRAD( n ), FVALUE( ng )
+   REAL ( KIND = wp ) :: GVALUE( ng, 3 )
+   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: FUVALS
+   EXTERNAL RANGE, ELFUN, GROUP
+! make space for problem data
+   prob%n = n ; prob%ng = ng ; prob%nel = nel
+   ALLOCATE( prob%ISTADG( prob%ng + 1 ), prob%ISTGPA( prob%ng + 1 ) )
+   ALLOCATE( prob%ISTADA( prob%ng + 1 ), prob%ISTAEV( prob%nel + 1 ) )
+   ALLOCATE( prob%ISTEPA( prob%nel + 1 ), prob%ITYPEG( prob%ng ) )
+   ALLOCATE( prob%KNDOFG( prob%ng ), prob%ITYPEE( prob%nel ) )
+   ALLOCATE( prob%INTVAR( prob%nel + 1 ) )
+   ALLOCATE( prob%IELING( ntotel ), prob%IELVAR( nvrels ), prob%ICNA( nnza ) )
+   ALLOCATE( prob%ISTADH( prob%nel + 1 ), prob%A( nnza ) )
+   ALLOCATE( prob%B( prob%ng ), prob%BL( prob%n ), prob%BU( prob%n ) )
+   ALLOCATE( prob%X( prob%n ), prob%Y( prob%ng ), prob%C( prob%ng ) )
+   ALLOCATE( prob%GPVALU( ngpvlu ), prob%EPVALU( nepvlu ) )
+   ALLOCATE( prob%ESCALE( ntotel ), prob%GSCALE( prob%ng ) )
+   ALLOCATE( prob%VSCALE( prob%n ) )
+   ALLOCATE( prob%INTREP( prob%nel ), prob%GXEQX( prob%ng ) )
+   ALLOCATE( prob%GNAMES( prob%ng ), prob%VNAMES( prob%n ) )
+! set problem data
+   prob%ISTADG = (/ 1, 1, 2, 3, 3, 4, 4 /)
+   prob%IELVAR = (/ 2, 1, 3, 2, 3, 1, 2 /)
+   prob%ISTAEV = (/ 1, 4, 6, 8 /) ; prob%INTVAR( : nel ) = (/ 2,  2, 2 /)
+   prob%IELING = (/ 1, 2, 3 /) ; prob%ICNA = (/ 1, 2, 1, 2 /)
+   prob%ISTADA = (/ 1, 2, 2, 2, 3, 3, 5 /)
+   prob%KNDOFG = (/ 1, 1, 1, 1, 1, 2 /)
+   prob%ITYPEG = (/ 1, 0, 2, 0, 1, 3 /) ; prob%ITYPEE = (/ 1, 2, 2 /)
+   prob%ISTGPA = (/ 0, 0, 0, 0, 0, 0 /) ; prob%ISTEPA = (/ 0, 0, 0 /)
+   prob%A = (/ 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp /)
+   prob%B = (/ 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp /)
+   prob%BL = (/ - infinity, -1.0_wp, 1.0_wp /)
+   prob%BU = (/ infinity, 1.0_wp, 2.0_wp /)
+   prob%GSCALE = (/ 1.0_wp, 1.0_wp, 3.0_wp, 1.0_wp, 2.0_wp, 1.0_wp /)
+   prob%ESCALE = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+   prob%VSCALE = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+   prob%X = (/ 0.0_wp, 0.0_wp, 1.5_wp /) ;  prob%Y( 6 ) = 0.0_wp
+   prob%INTREP = (/ .TRUE., .FALSE., .FALSE. /)
+   prob%GXEQX = (/ .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE. /)
+   prob%GNAMES = (/ 'Obj 1     ', 'Obj 2     ', 'Obj 3     ', 'Obj 4     ', &
+                    'Obj 5     ', 'Constraint' /)
+   prob%VNAMES = (/ 'x 1', 'x 2', 'x 3' /)
+! allocate space for FUVALS
+   lfuval = prob%nel + 2 * prob%n
+   DO i = 1, prob%nel
+     lfuval = lfuval + ( prob%INTVAR( i ) * ( prob%INTVAR( i ) + 3 ) ) / 2
+   END DO
+   ALLOCATE( FUVALS( lfuval ) )
+! problem data complete
+   CALL LANCELOT_initialize( data, control )     ! Initialize control parameters
+   control%maxit = 100 ; control%out = 6 ! ; control%print_level = 1
+   control%stopg = 0.00001_wp ; control%stopc = 0.00001_wp
+   control%linear_solver = 1
+   control%exact_gcp = .FALSE.
+   info%status = 0
+! solve the problem
+   CALL LANCELOT_solve(                                                 &
+       prob, RANGE, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG, &
+       IVAR, Q, DGRAD, control, info, data, ELFUN  = ELFUN , GROUP = GROUP )
+! act on return status
+   IF ( info%status == 0 ) THEN                  !  Successful return
+     WRITE( 6, "( I6, ' iterations. Optimal objective value =', &
+    &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" ) &
+     info%iter, info%obj, prob%X
+   ELSE                                          !  Error returns
+     WRITE( 6, "( ' LANCELOT_solve exit status = ', I6 ) " ) info%status
+   END IF
+   CALL LANCELOT_terminate( data, control, info ) !  delete internal workspace
+   DEALLOCATE( prob%GNAMES, prob%VNAMES )         !  delete problem space
+   DEALLOCATE( prob%VSCALE, prob%ESCALE, prob%GSCALE, prob%INTREP )
+   DEALLOCATE( prob%GPVALU, prob%EPVALU, prob%ITYPEG, prob%GXEQX )
+   DEALLOCATE( prob%X, prob%Y, prob%C, prob%A, prob%B, prob%BL, prob%BU )
+   DEALLOCATE( prob%ISTADH, prob%IELING, prob%IELVAR, prob%ICNA )
+   DEALLOCATE( prob%INTVAR, prob%KNDOFG, prob%ITYPEE, prob%ISTEPA )
+   DEALLOCATE( prob%ISTADA, prob%ISTAEV, prob%ISTADG, prob%ISTGPA )
+   DEALLOCATE( FUVALS )
+   END PROGRAM LANCELOT_example
+
+\end{verbatim} } }
+\def\baselinestretch{1.0}
+
+\noindent
+This produces the following output.
+
+\def\baselinestretch{0.8}
+{%\scriptsize
+{\tt \begin{verbatim}
+    14 iterations. Optimal objective value = -6.3129E-01
+ Optimal solution =   2.4402E-01 -4.0741E-01  1.0000E+00
+\end{verbatim} } }
+\def\baselinestretch{1.0}
+
+The same effect may be achieved by returning to the user to evaluate
+element and group values/derivatives. Simply replace the above call to
+\solver\ by the following do-loop:
+
+\def\baselinestretch{0.8}
+{%\scriptsize
+{\tt \begin{verbatim}
+   DO
+     CALL LANCELOT_solve(                                                 &
+         prob, RANGE, GVALUE, FVALUE, XT, FUVALS, lfuval, ICALCF, ICALCG, &
+         IVAR, Q, DGRAD , control, info, data )
+     IF ( info%status >= 0 ) EXIT
+     IF ( info%status == - 1 .OR. info%status == - 3 .OR. info%status == - 7 ) &
+       THEN
+       CALL ELFUN ( FUVALS, XT, prob%EPVALU, info%ncalcf, prob%ITYPEE,         &
+           prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH, prob%ISTEPA,    &
+           ICALCF, prob%nel, prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1,    &
+           prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n, &
+           prob%ISTEPA( prob%nel + 1 ) - 1, 1, i )
+       IF ( i /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
+     END IF
+     IF ( info%status == - 1 .OR. info%status == - 5 .OR. info%status == - 6 ) &
+       THEN
+       CALL ELFUN ( FUVALS, XT, prob%EPVALU, info%ncalcf, prob%ITYPEE,         &
+           prob%ISTAEV, prob%IELVAR, prob%INTVAR, prob%ISTADH, prob%ISTEPA,    &
+           ICALCF, prob%nel, prob%nel + 1, prob%ISTAEV( prob%nel + 1 ) - 1,    &
+           prob%nel + 1, prob%nel + 1, prob%nel + 1, prob%nel, lfuval, prob%n, &
+           prob%ISTEPA( prob%nel + 1 ) - 1, 3, i )
+       IF ( i /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
+     END IF
+     IF ( info%status == - 2 .OR. info%status == - 4 ) THEN
+       CALL GROUP ( GVALUE, prob%ng, FVALUE, prob%GPVALU, info%ncalcg,      &
+           prob%ITYPEG, prob%ISTGPA, ICALCG, prob%ng, prob%ng + 1, prob%ng, &
+           prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .FALSE., i )
+       IF ( i /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
+     END IF
+     IF ( info%status == - 2 .OR. info%status == - 5 ) THEN
+       CALL GROUP( GVALUE, prob%ng, FVALUE, prob%GPVALU, info%ncalcg,       &
+           prob%ITYPEG, prob%ISTGPA, ICALCG, prob%ng, prob%ng + 1, prob%ng, &
+           prob%ng, prob%ISTGPA( prob%ng + 1 ) - 1, .TRUE., i )
+       IF ( i /= 0 ) THEN ; info%status = - 11 ; CYCLE ; END IF
+     END IF
+   END DO
+\end{verbatim} } }
+\def\baselinestretch{1.0}
+
+If the user (for whatever reason) wishes to be more flexible with
+the derivatives used, the optional argument {\tt ELDERS} must be
+included and filled appropriately. For example, suppose that we do
+not want to provide second derivatives for any elements of type 2
+(but to use the PSB approximation instead)
+and no derivatives at all for those of type 1 (but finite-difference
+gradients and DFP approximate second derivatives).
+Then (refering back to {\tt ITYPEE}, we shoud set {\tt ELDERS} as
+\begin{center}
+{\tt \begin{tabular}{cccc}
+i        & 1 & 2 & 3 \\
+ELDERS(1,i) & 1 & 0 & 0 \\
+ELDERS(2,i) & 2 & 3 & 3
+\end{tabular}}
+\end{center}
+In this case, {\tt ELFUN} should also be
+replaced by a subroutine {\tt ELFUN\_flexible} of the following form:
+
+\def\baselinestretch{0.8}
+{%\footnotesize
+{\tt \begin{verbatim}
+   SUBROUTINE ELFUN_flexible( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, &
+                              IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, &
+                              lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
+                              lfuval, lxvalu, lepvlu, llders, ifflag, ELDERS, &
+                              ifstat )
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
+   INTEGER, INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev, lelvar, lntvar
+   INTEGER, INTENT( IN ) :: lstadh, lstepa, lcalcf, lfuval, lxvalu, lepvlu
+   INTEGER, INTENT( IN ) :: llders
+   INTEGER, INTENT( OUT ) :: ifstat
+   INTEGER, INTENT( IN ) :: ITYPEE( LTYPEE ), ISTAEV( LSTAEV ), IELVAR( LELVAR )
+   INTEGER, INTENT( IN ) :: INTVAR( LNTVAR ), ISTADH( LSTADH ), ISTEPA( LSTEPA )
+   INTEGER, INTENT( IN ) :: ICALCF( LCALCF ), ELDERS( 2, llders )
+   REAL ( KIND = wp ), INTENT( IN ) :: XVALUE( LXVALU )
+   REAL ( KIND = wp ), INTENT( IN ) :: EPVALU( LEPVLU )
+   REAL ( KIND = wp ), INTENT( INOUT ) :: FUVALS( LFUVAL )
+   INTEGER :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt, jcalcf
+   REAL ( KIND = wp ) :: v1, v2, u1, u2, u3, cs, sn
+   ifstat = 0
+   DO jcalcf = 1, ncalcf
+     ielemn = ICALCF( jcalcf )
+     ilstrt = ISTAEV( ielemn ) - 1
+     igstrt = INTVAR( ielemn ) - 1
+     ipstrt = ISTEPA( ielemn ) - 1
+     IF ( ELDERS( 2, ielemn ) <= 0 ) ihstrt = ISTADH( ielemn ) - 1
+     ieltyp = ITYPEE( ielemn )
+     SELECT CASE ( ieltyp )
+     CASE ( 1 )
+       u1 = XVALUE( IELVAR( ilstrt + 1 ) )
+       u2 = XVALUE( IELVAR( ilstrt + 2 ) )
+       u3 = XVALUE( IELVAR( ilstrt + 3 ) )
+       v1 = u1
+       v2 = u2 + u3
+       cs = COS( v2 )
+       sn = SIN( v2 )
+       IF ( ifflag == 1 ) THEN
+         FUVALS( ielemn ) = v1 * sn
+       ELSE
+! no first or second derivatives for element of type 1
+       END IF
+     CASE ( 2 )
+       u1 = XVALUE( IELVAR( ilstrt + 1 ) )
+       u2 = XVALUE( IELVAR( ilstrt + 2 ) )
+       IF ( ifflag == 1 ) THEN
+         FUVALS( ielemn ) = u1 * u2
+       ELSE
+         IF ( ELDERS( 1, ielemn ) <= 0 ) THEN
+           FUVALS( igstrt + 1 ) = u2
+           FUVALS( igstrt + 2 ) = u1
+! no second derivatives for element of type 2
+         END IF
+       END IF
+     END SELECT
+   END DO
+   RETURN
+   END SUBROUTINE ELFUN_flexible
+\end{verbatim} } }
+\def\baselinestretch{1.0}
+
+\end{document}
+
+
+
+

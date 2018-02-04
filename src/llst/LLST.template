@@ -1,0 +1,17 @@
+! error-printout-device                             6
+! printout-device                                   6
+! print-level                                       0
+! has-a-changed                                     2
+! has-s-changed                                     2
+! factorization-limit                               -1
+! max-degree-taylor-approximant                     3
+! initial-multiplier                                0.0
+! lower-bound-on-multiplier                         0.0
+! upper-bound-on-multiplier                         1.0D+300
+! stop-normal-case                                  1.0D-12
+! equality-problem                                  no
+! use-initial-multiplier                            no
+! space-critical                                    no
+! deallocate-error-fatal                            no
+! definite-linear-equation-solver                   sils
+! output-line-prefix                                ""

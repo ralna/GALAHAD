@@ -1,0 +1,1565 @@
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+#                         PACKAGENAME                       #
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+#   function for PACKAGENAME spec window
+#   -----------------------------------
+
+  def packnamespec( self ):
+
+#  set variables if the first time through
+
+    if self.packnamespec_used == 'no' :
+      
+#  integer (check-button) variables used with encodings
+
+      self.packname_check_ivar1 = IntVar( )
+      self.packname_string_ivar1 = 'isvar1'
+      self.packname_default_ivar1 = idvar1
+
+      self.packname_check_ivar2 = IntVar( )
+      self.packname_string_ivar2 = 'isvar2'
+      self.packname_default_ivar2 = idvar2
+
+      self.packname_check_ivar3 = IntVar( )
+      self.packname_string_ivar3 = 'isvar3'
+      self.packname_default_ivar3 = idvar3
+
+      self.packname_check_ivar4 = IntVar( )
+      self.packname_string_ivar4 = 'isvar4'
+      self.packname_default_ivar4 = idvar4
+
+      self.packname_check_ivar5 = IntVar( )
+      self.packname_string_ivar5 = 'isvar5'
+      self.packname_default_ivar5 = idvar5
+
+      self.packname_check_ivar6 = IntVar( )
+      self.packname_string_ivar6 = 'isvar6'
+      self.packname_default_ivar6 = idvar6
+
+      self.packname_check_ivar7 = IntVar( )
+      self.packname_string_ivar7 = 'isvar7'
+      self.packname_default_ivar7 = idvar7
+
+      self.packname_check_ivar8 = IntVar( )
+      self.packname_string_ivar8 = 'isvar8'
+      self.packname_default_ivar8 = idvar8
+
+      self.packname_check_ivar9 = IntVar( )
+      self.packname_string_ivar9 = 'isvar9'
+      self.packname_default_ivar9 = idvar9
+
+      self.packname_check_ivar10 = IntVar( )
+      self.packname_string_ivar10 = 'isvar10'
+      self.packname_default_ivar10 = idvar10
+
+      self.packname_check_ivar11 = IntVar( )
+      self.packname_string_ivar11 = 'isvar11'
+      self.packname_default_ivar11 = idvar11
+
+      self.packname_check_ivar12 = IntVar( )
+      self.packname_string_ivar12 = 'isvar12'
+      self.packname_default_ivar12 = idvar12
+
+      self.packname_check_ivar13 = IntVar( )
+      self.packname_string_ivar13 = 'isvar13'
+      self.packname_default_ivar13 = idvar13
+
+      self.packname_check_ivar14 = IntVar( )
+      self.packname_string_ivar14 = 'isvar14'
+      self.packname_default_ivar14 = idvar14
+
+      self.packname_check_ivar15 = IntVar( )
+      self.packname_string_ivar15 = 'isvar15'
+      self.packname_default_ivar15 = idvar15
+
+      self.packname_check_ivar16 = IntVar( )
+      self.packname_string_ivar16 = 'isvar16'
+      self.packname_default_ivar16 = idvar16
+
+      self.packname_check_ivar17 = IntVar( )
+      self.packname_string_ivar17 = 'isvar17'
+      self.packname_default_ivar17 = idvar17
+
+      self.packname_check_ivar18 = IntVar( )
+      self.packname_string_ivar18 = 'isvar18'
+      self.packname_default_ivar18 = idvar18
+
+      self.packname_check_ivar19 = IntVar( )
+      self.packname_string_ivar19 = 'isvar19'
+      self.packname_default_ivar19 = idvar19
+
+      self.packname_check_ivar20 = IntVar( )
+      self.packname_string_ivar20 = 'isvar20'
+      self.packname_default_ivar20 = idvar20
+
+      self.packname_check_writeall = IntVar( )
+      self.packname_default_writeall = 0
+
+#  string variables used with encodings and defaults
+
+      self.packname_var_svar1 = StringVar( )
+      self.packname_string_svar1 = 'ssvar1'
+      self.packname_default_svar1 = 'sdvar1'
+
+      self.packname_var_svar2 = StringVar( )
+      self.packname_string_svar2 = 'ssvar2'
+      self.packname_default_svar2 = 'sdvar2'
+
+      self.packname_var_svar3 = StringVar( )
+      self.packname_string_svar3 = 'ssvar3'
+      self.packname_default_svar3 = 'sdvar3'
+
+      self.packname_var_svar4 = StringVar( )
+      self.packname_string_svar4 = 'ssvar4'
+      self.packname_default_svar4 = 'sdvar4'
+
+      self.packname_var_svar5 = StringVar( )
+      self.packname_string_svar5 = 'ssvar5'
+      self.packname_default_svar5 = 'sdvar5'
+
+      self.packname_var_svar6 = StringVar( )
+      self.packname_string_svar6 = 'ssvar6'
+      self.packname_default_svar6 = 'sdvar6'
+
+      self.packname_var_svar7 = StringVar( )
+      self.packname_string_svar7 = 'ssvar7'
+      self.packname_default_svar7 = 'sdvar7'
+
+      self.packname_var_svar8 = StringVar( )
+      self.packname_string_svar8 = 'ssvar8'
+      self.packname_default_svar8 = 'sdvar8'
+
+      self.packname_var_svar9 = StringVar( )
+      self.packname_string_svar9 = 'ssvar9'
+      self.packname_default_svar9 = 'sdvar9'
+
+      self.packname_var_svar10 = StringVar( )
+      self.packname_string_svar10 = 'ssvar10'
+      self.packname_default_svar10 = 'sdvar10'
+
+      self.packname_var_svar11 = StringVar( )
+      self.packname_string_svar11 = 'ssvar11'
+      self.packname_default_svar11 = 'sdvar11'
+
+      self.packname_var_svar12 = StringVar( )
+      self.packname_string_svar12 = 'ssvar12'
+      self.packname_default_svar12 = 'sdvar12'
+
+      self.packname_var_svar13 = StringVar( )
+      self.packname_string_svar13 = 'ssvar13'
+      self.packname_default_svar13 = 'sdvar13'
+
+      self.packname_var_svar14 = StringVar( )
+      self.packname_string_svar14 = 'ssvar14'
+      self.packname_default_svar14 = 'sdvar14'
+
+      self.packname_var_svar15 = StringVar( )
+      self.packname_string_svar15 = 'ssvar15'
+      self.packname_default_svar15 = 'sdvar15'
+
+      self.packname_var_svar16 = StringVar( )
+      self.packname_string_svar16 = 'ssvar16'
+      self.packname_default_svar16 = 'sdvar16'
+
+      self.packname_var_svar17 = StringVar( )
+      self.packname_string_svar17 = 'ssvar17'
+      self.packname_default_svar17  = 'sdvar17'
+
+      self.packname_var_svar18 = StringVar( )
+      self.packname_string_svar18 = 'ssvar18'
+      self.packname_default_svar18 = 'sdvar18'
+
+      self.packname_var_svar19 = StringVar( )
+      self.packname_string_svar19 = 'ssvar19'
+      self.packname_default_svar19 = 'sdvar19'
+
+      self.packname_var_svar20 = StringVar( )
+      self.packname_string_svar20 = 'ssvar20'
+      self.packname_default_svar20 = 'sdvar20'
+
+      self.packname_var_svar21 = StringVar( )
+      self.packname_string_svar21 = 'ssvar21'
+      self.packname_default_svar21 = 'sdvar21'
+
+      self.packname_var_svar22 = StringVar( )
+      self.packname_string_svar22 = 'ssvar22'
+      self.packname_default_svar22 = 'sdvar22'
+
+      self.packname_var_svar23 = StringVar( )
+      self.packname_string_svar23 = 'ssvar23'
+      self.packname_default_svar23 = 'sdvar23'
+
+      self.packname_var_svar24 = StringVar( )
+      self.packname_string_svar24 = 'ssvar24'
+      self.packname_default_svar24 = 'sdvar24'
+
+      self.packname_var_svar25 = StringVar( )
+      self.packname_string_svar25 = 'ssvar25'
+      self.packname_default_svar25 = 'sdvar25'
+
+      self.packname_var_svar26 = StringVar( )
+      self.packname_string_svar26 = 'ssvar26'
+      self.packname_default_svar26 = 'sdvar26'
+
+      self.packname_var_svar27 = StringVar( )
+      self.packname_string_svar27 = 'ssvar27'
+      self.packname_default_svar27 = 'sdvar27'
+
+      self.packname_var_svar28 = StringVar( )
+      self.packname_string_svar28 = 'ssvar28'
+      self.packname_default_svar28 = 'sdvar28'
+
+      self.packname_var_svar29 = StringVar( )
+      self.packname_string_svar29 = 'ssvar29'
+      self.packname_default_svar29 = 'sdvar29'
+
+      self.packname_var_svar30 = StringVar( )
+      self.packname_string_svar30 = 'ssvar30'
+      self.packname_default_svar30 = 'sdvar30'
+
+      self.packname_var_svar31 = StringVar( )
+      self.packname_string_svar31 = 'ssvar31'
+      self.packname_default_svar31 = 'sdvar31'
+
+      self.packname_var_svar32 = StringVar( )
+      self.packname_string_svar32 = 'ssvar32'
+      self.packname_default_svar32 = 'sdvar32'
+
+      self.packname_var_svar33 = StringVar( )
+      self.packname_string_svar33 = 'ssvar33'
+      self.packname_default_svar33 = 'sdvar33'
+
+      self.packname_var_svar34 = StringVar( )
+      self.packname_string_svar34 = 'ssvar34'
+      self.packname_default_svar34 = 'sdvar34'
+
+      self.packname_var_svara = StringVar( )
+      self.packname_var_svara = StringVar( )
+      self.packname_string_svara = 'ssvara'
+      self.packname_default_svara = 'sdvara'
+
+      self.packname_var_svarb = StringVar( )
+      self.packname_string_svarb = 'ssvarb'
+      self.packname_default_svarb = 'sdvarb'
+
+      self.packname_var_svarc = StringVar( )
+      self.packname_string_svarc = 'ssvarc'
+      self.packname_default_svarc = 'sdvarc'
+
+      self.packname_var_svarca = StringVar( )
+      self.packname_string_svarca = 'ssvarca'
+      self.packname_default_svarca = 'sdvarca'
+      self.current_svarca = self.packname_default_svarca
+
+      self.packname_var_svarcb = StringVar( )
+      self.packname_string_svarcb = 'ssvarcb'
+      self.packname_default_svarcb = 'sdvarcb'
+      self.current_svarcb = self.packname_default_svarcb
+
+#  read default values
+
+      self.restorepacknamedefaults( )
+      self.packname_check_writeall.set( self.packname_default_writeall )
+      self.packnamespec_used = 'yes'
+
+#  setup the window frame
+    
+    self.specwindow = Toplevel( self.root )
+    self.specwindow.geometry( '+100+100' )
+    self.specwindow.title( 'PACKAGENAME spec tool' )
+    self.specwindow.menubar = Menu( self.specwindow, tearoff=0  )
+    self.specwindow.menubar.add_command( label = "Quit",
+                                         command=self.specwindowdestroy )
+
+    self.specwindow.helpmenu = Menu( self.specwindow, tearoff=0 )
+    self.specwindow.helpmenu.add_command( label="About",
+                                          command = self.packnamepresshelp )
+    self.specwindow.menubar.add_cascade( label="Help",
+                                         menu=self.specwindow.helpmenu )
+    self.specwindow.config( menu=self.specwindow.menubar )
+
+#  asseemble (check-button) variables
+
+    self.check = [ self.packname_check_ivar1,
+                   self.packname_check_ivar2,
+                   self.packname_check_ivar3,
+                   self.packname_check_ivar4,
+                   self.packname_check_ivar5,
+                   self.packname_check_ivar6,
+                   self.packname_check_ivar7,
+                   self.packname_check_ivar8,
+                   self.packname_check_ivar9, 
+                   self.packname_check_ivar10
+                   ]
+
+    self.checkstring = [ "ilvar1",
+                         "ilvar2",
+                         "ilvar3",
+                         "ilvar4",
+                         "ilvar5",
+                         "ilvar6",
+                         "ilvar7",
+                         "ilvar8",
+                         "ilvar9",
+                         "ilvar10"
+                         ]
+
+    self.specwindow.varlstart = 0
+    self.specwindow.varlstop = len( self.check )
+
+    self.check = self.check+[ self.packname_check_ivar11,
+                              self.packname_check_ivar12,
+                              self.packname_check_ivar13,
+                              self.packname_check_ivar14,
+                              self.packname_check_ivar15,
+                              self.packname_check_ivar16,
+                              self.packname_check_ivar17, 
+                              self.packname_check_ivar18,
+                              self.packname_check_ivar19,
+                              self.packname_check_ivar20
+                              ]
+
+    self.checkstring.extend( [ "ilvar11",
+                               "ilvar12",
+                               "ilvar13",
+                               "ilvar14",
+                               "ilvar15",
+                               "ilvar16",
+                               "ilvar17",
+                               "ilvar18",
+                               "ilvar19",
+                               "ilvar20"
+                               ] )
+    
+    self.specwindow.varrstart = self.specwindow.varlstop
+    self.specwindow.varrstop = len( self.check )
+
+#  assemble string variables
+
+    self.var = [ self.packname_var_svar1,
+                 self.packname_var_svar2,
+                 self.packname_var_svar3,
+                 self.packname_var_svar4
+                 ]
+
+    self.varstring = [ "slvar1",
+                       "slvar2",
+                       "slvar3",
+                       "slvar4"
+                       ]
+
+    self.specwindow.entrytlstart = 0
+    self.specwindow.entrytlstop = len( self.var )
+
+    self.var = self.var+[ self.packname_var_svar5,
+                          self.packname_var_svar6,
+                          self.packname_var_svar7,
+                          self.packname_var_svar8,
+
+                         ]
+
+    self.varstring.extend( [ "slvar5",
+                             "slvar6",
+                             "slvar7",
+                             "slvar8"
+                             ] )
+
+    self.specwindow.entrytrstart = self.specwindow.entrytlstop
+    self.specwindow.entrytrstop = len( self.var )
+
+    self.var = self.var+[ self.packname_var_svar9,
+                          self.packname_var_svar10,
+                          self.packname_var_svar11,
+                          self.packname_var_svar12,
+                          self.packname_var_svar13,
+                          self.packname_var_svar14,
+                          self.packname_var_svar15,
+                          self.packname_var_svar16,
+                          self.packname_var_svar17,
+                          self.packname_var_svar18,
+                          self.packname_var_svar19,
+                          self.packname_var_svar20
+                          ]
+
+    self.varstring.extend( [ "slvar9",
+                             "slvar10",
+                             "slvar11",
+                             "slvar12",
+                             "slvar13",
+                             "slvar14",
+                             "slvar15",
+                             "slvar16",
+                             "slvar17",
+                             "slvar18",
+                             "slvar19",
+                             "slvar20"
+                             ] )
+
+    self.specwindow.entrybrstart = self.specwindow.entrytrstop
+    self.specwindow.entrybrstop = len( self.var )
+
+    self.var = self.var+[ self.packname_var_svar21,
+                          self.packname_var_svar22,
+                          self.packname_var_svar23,
+                          self.packname_var_svar24,
+                          self.packname_var_svar25,
+                          self.packname_var_svar26,
+                          self.packname_var_svar27,                         ]
+
+    self.varstring.extend( [ "slvar21",
+                             "slvar22",
+                             "slvar23",
+                             "slvar24",
+                             "slvar25",
+                             "slvar26",
+                             "slvar27"
+                             ] )
+
+    self.specwindow.entrylblstart = self.specwindow.entrybrstop
+    self.specwindow.entrylblstop = len( self.var )
+
+    self.var = self.var+[ 
+                          self.packname_var_svar28,
+                          self.packname_var_svar29,
+                          self.packname_var_svar30,
+                          self.packname_var_svar31,
+                          self.packname_var_svar32,
+                          self.packname_var_svar33,
+                          self.packname_var_svar34
+                         ]
+
+    self.varstring.extend( [ "slvar28",
+                             "slvar29",
+                             "slvar30",
+                             "slvar31",
+                             "slvar32",
+                             "slvar33",
+                             "slvar34"
+                             ] )
+
+    self.specwindow.entrylbrstart = self.specwindow.entrylblstop
+    self.specwindow.entrylbrstop = len( self.var )
+
+#  Set the name and logo 
+
+    Label( self.specwindow, text="\nPACKAGENAME OPTIONS\n"
+           ).pack( side=TOP, fill=BOTH )
+
+    Label( self.specwindow, image=self.img, relief=SUNKEN
+           ).pack( side=TOP, fill=NONE )
+
+    Label( self.specwindow, text="\n"
+           ).pack( side=TOP, fill=BOTH )
+
+#  --- set frames  ---
+
+#  main frame
+
+    self.specwindow.frame = Frame( self.specwindow )
+
+#  left and right sub-frames
+
+    self.specwindow.frame.lhs = Frame( self.specwindow.frame )
+    self.specwindow.frame.rhs = Frame( self.specwindow.frame )
+
+#  frame to hold check buttons
+
+    self.specwindow.check = Frame( self.specwindow.frame.lhs )
+
+#  sub-frames for check buttons
+
+    self.specwindow.check.left = Frame( self.specwindow.check )
+    self.specwindow.check.right = Frame( self.specwindow.check )
+
+#  frame to hold gradient and Hessian check buttons
+
+    self.specwindow.ghcheck = Frame( self.specwindow.frame.lhs )
+
+#  sub-frames for gradient and Hessian check buttons
+
+    self.specwindow.ghcheck.left = Frame( self.specwindow.ghcheck )
+    self.specwindow.ghcheck.right = Frame( self.specwindow.ghcheck )
+
+# frame and sub-frames for expert data slots
+
+    self.specwindow.frame.lhs.bottom = Frame( self.specwindow.frame.lhs )
+    self.specwindow.frame.lhs.bottom.left \
+      = Frame( self.specwindow.frame.lhs.bottom )
+    self.specwindow.frame.lhs.bottom.right \
+      = Frame( self.specwindow.frame.lhs.bottom )
+
+# frame and sub-frames to hold data entry slots (top, right)
+
+    self.specwindow.frame.rhs.top = Frame( self.specwindow.frame.rhs )
+    self.specwindow.frame.rhs.top.left \
+      = Frame( self.specwindow.frame.rhs.top )
+    self.specwindow.frame.rhs.top.right \
+      = Frame( self.specwindow.frame.rhs.top )
+
+# frame and sub-frames to hold button and data entry slots (bottom, right)
+
+    self.specwindow.frame.rhs.bottom = Frame( self.specwindow.frame.rhs )
+
+# sub-frames to hold selection buttons
+
+    self.specwindow.solver = Frame( self.specwindow.frame.rhs.bottom )
+
+#  frame to hold data entry slots
+
+    self.specwindow.text = Frame( self.specwindow.frame.rhs.bottom )
+
+#   self.specwindow.iprint = Frame( self.specwindow.text )
+
+#  --- set contents of frames ---
+
+#  == Left-hand side of window ==
+
+#  contents of check left frame
+
+    for i in range( self.specwindow.varlstart, self.specwindow.varlstop ) :
+      Checkbutton( self.specwindow.check.left,
+                   highlightthickness=0,
+                   relief=FLAT, anchor=W,
+                   command=self.nofdgandexacthessian,
+                   variable=self.check[i],
+                   text=self.checkstring[i]
+                   ).pack( side=TOP, fill=BOTH )
+    
+    self.specwindow.check.left.pack( side=LEFT, fill=BOTH )
+    Label( self.specwindow.check, width=4,
+           text="" ).pack( side=LEFT, fill=BOTH )
+
+#  contents of check right frame
+
+    for i in range( self.specwindow.varrstart, self.specwindow.varrstop ) :
+      Checkbutton( self.specwindow.check.right,
+                   highlightthickness=0,
+                   relief=FLAT, anchor=W,
+                   command=self.nofdgandexacthessian,
+                   variable=self.check[i],
+                   text=self.checkstring[i]
+                 ).pack( side=TOP, fill=BOTH )
+
+    self.specwindow.check.right.pack( side=LEFT, fill=BOTH )
+
+#  pack check box
+
+    self.specwindow.check.pack( side=TOP, fill=BOTH )
+
+#  contents of gradient frame (label and radio buttons)
+
+    Label( self.specwindow.ghcheck.left,
+           text="\nslvara" ).pack( side=TOP, fill=BOTH )
+
+    self.specwindow.gradient = Frame( self.specwindow.ghcheck.left )
+#    Label( self.specwindow.gradient,
+#           width=12, text="" ).pack( side=LEFT, fill=BOTH )
+
+    for gradient in [ 'slvara1', 'slvara2', 'slvara3' ]:
+      lower = gradient.lower( )
+      Radiobutton( self.specwindow.gradient,
+                   highlightthickness=0, relief=FLAT,
+                   variable=self.packname_var_svara,
+                   value=lower,
+                   command=self.nofdgandexacthessian,
+                   text=gradient
+                   ).pack( side=LEFT, fill=BOTH )
+                                                 
+    self.specwindow.gradient.pack( side=TOP, fill=BOTH )
+    self.specwindow.ghcheck.left.pack( side=LEFT, fill=BOTH )
+
+#  contents of hessian frame (label and radio buttons)
+
+    Label( self.specwindow.ghcheck.right,
+           text="\nslvarb" ).pack( side=TOP, fill=BOTH )
+
+    self.specwindow.hessian = Frame( self.specwindow.ghcheck.right )
+    Label( self.specwindow.hessian,
+           width=4, text="" ).pack( side=LEFT, fill=BOTH )
+
+    for hessian in [ 'slvarb1', 'slvarb2', 'slvarb3', 'slvarb4', 'slvarb5' ]:
+      lower = hessian.lower( )
+      Radiobutton( self.specwindow.hessian,
+                   highlightthickness=0, relief=FLAT,
+                   variable=self.packname_var_svarb,
+                   value=lower,
+                   command=self.nofdgandexacthessian,
+                   text=hessian
+                   ).pack( side=LEFT, fill=BOTH )
+                                                 
+    self.specwindow.hessian.pack( side=TOP, fill=BOTH )
+    self.specwindow.ghcheck.right.pack( side=LEFT, fill=BOTH )
+
+#  pack check box
+
+    self.specwindow.ghcheck.pack( side=TOP, fill=BOTH )
+
+#  Experts' corner
+
+    Label( self.specwindow.frame.lhs.bottom,
+           text="\nExperts' corner\n" ).pack( side=TOP, fill=BOTH )
+
+    for i in range( self.specwindow.entrylblstart,
+                    self.specwindow.entrylblstop ):
+      self.specwindow.i = Frame( self.specwindow.frame.lhs.bottom.left )
+      Label( self.specwindow.i,
+             anchor=W, width=22,
+             text=self.varstring[ i ]             ).pack( side=LEFT, fill=NONE )
+      Entry( self.specwindow.i,
+             textvariable=self.var[i],
+             relief=SUNKEN,
+             width=10
+             ).pack( side=RIGHT, fill=BOTH )
+      self.specwindow.i.pack( side=TOP, fill=BOTH )
+    self.specwindow.frame.lhs.bottom.left.pack( side=LEFT, fill=BOTH )
+
+#  contents of rhs top right data entry frame
+
+    Label( self.specwindow.frame.lhs.bottom, width=4,
+           text="" ).pack( side=LEFT, fill=BOTH )
+
+    for i in range( self.specwindow.entrylbrstart,
+                    self.specwindow.entrylbrstop ):
+      self.specwindow.i = Frame( self.specwindow.frame.lhs.bottom.right )
+      Label( self.specwindow.i,
+             anchor=W, width=22,
+             text=self.varstring[ i ]
+             ).pack( side=LEFT, fill=NONE )
+      Entry( self.specwindow.i,
+             textvariable=self.var[i],
+             relief=SUNKEN,
+             width=10
+             ).pack( side=RIGHT, fill=BOTH )
+      self.specwindow.i.pack( side=TOP, fill=BOTH )
+    self.specwindow.frame.lhs.bottom.right.pack( side=LEFT, fill=BOTH )
+
+    self.specwindow.frame.lhs.bottom.pack( side=TOP, fill=BOTH )
+
+#  == Right-hand side of window ==
+
+#  contents of rhs top left data entry frame
+
+    for i in range( self.specwindow.entrytlstart, self.specwindow.entrytlstop ):
+      self.specwindow.i = Frame( self.specwindow.frame.rhs.top.left )
+      Label( self.specwindow.i,
+             anchor=W, width=23,
+             text=self.varstring[ i ]
+             ).pack( side=LEFT, fill=NONE )
+      Entry( self.specwindow.i,
+             textvariable=self.var[i],
+             relief=SUNKEN,
+             width=10
+             ).pack( side=RIGHT, fill=BOTH )
+      self.specwindow.i.pack( side=TOP, fill=BOTH )
+    self.specwindow.frame.rhs.top.left.pack( side=LEFT, fill=BOTH )
+
+#  contents of rhs top right data entry frame
+
+    Label( self.specwindow.frame.rhs.top, width=1,
+           text="" ).pack( side=LEFT, fill=BOTH )
+
+    for i in range( self.specwindow.entrytrstart, self.specwindow.entrytrstop ):
+      self.specwindow.i = Frame( self.specwindow.frame.rhs.top.right )
+      Label( self.specwindow.i,
+             anchor=W, width=30,
+             text=self.varstring[ i ]
+             ).pack( side=LEFT, fill=NONE )
+      Entry( self.specwindow.i,
+             textvariable=self.var[i],
+             relief=SUNKEN,
+             width=10
+             ).pack( side=RIGHT, fill=BOTH )
+      self.specwindow.i.pack( side=TOP, fill=BOTH )
+    self.specwindow.frame.rhs.top.right.pack( side=LEFT, fill=BOTH )
+
+    self.specwindow.frame.rhs.top.pack( side=TOP, fill=BOTH )
+
+#  contents of rhs solver frame
+
+    Label( self.specwindow.solver, width=30, anchor=W,
+           text="\nslvarc" ).pack( side=TOP, fill=BOTH )
+
+    for solvers in [ 'ssvarc1', 'ssvarc2', 'ssvarc3', 'ssvarc4', \
+                     'ssvarc5', 'ssvarc6', 'ssvarc7', \
+                     'ssvarc8', 'ssvarc9', \
+                     'ssvarc10' ]:
+      if solvers == 'ssvarc1' : label = "slvarc1"
+      elif solvers == 'ssvarc2' : label = "slvarc2"
+      elif solvers == 'ssvarc3' : label = "slvarc3"
+      elif solvers == 'ssvarc4' : label = "slvarc4"
+      elif solvers == 'ssvarc5' : label = "slvarc5"
+      elif solvers == 'ssvarc6' : label = "slvarc6"
+      elif solvers == 'ssvarc7' : label = "slvarc7"
+      elif solvers == 'ssvarc8' : label = "slvarc8"
+      elif solvers == 'ssvarc9' : label = "slvarc9"
+      elif solvers == 'ssvarc10' : label = "slvarc10" 
+      if solvers == 'ssvarc1' :
+        self.specwindow.bandsolver = Frame( self.specwindow.solver )
+        Radiobutton( self.specwindow.bandsolver,
+                     highlightthickness=0,
+                     relief=FLAT, anchor=W,
+                     variable=self.packname_var_svarc,
+                     value=solvers,
+                     command=self.packnamesolversonoff,
+                     text=label
+                     ).pack( side=LEFT, fill=NONE )
+        Entry( self.specwindow.bandsolver,
+               textvariable=self.packname_var_svarca,
+               relief=SUNKEN, width=10
+               ).pack( side=RIGHT, fill=BOTH )
+        self.specwindow.bandsolver.pack( side=TOP, fill=BOTH )
+      elif solvers == 'ssvarc4' :
+        self.specwindow.linmore = Frame( self.specwindow.solver )
+        Radiobutton( self.specwindow.linmore,
+                     highlightthickness=0,
+                     relief=FLAT, anchor=W,
+                     variable=self.packname_var_svarc,
+                     value=solvers,
+                     command=self.packnamesolversonoff,
+                     text=label
+                     ).pack( side=LEFT, fill=NONE )
+        Entry( self.specwindow.linmore,
+               textvariable=self.packname_var_svarcb,
+               relief=SUNKEN, width=10
+               ).pack( side=RIGHT, fill=BOTH )
+        self.specwindow.linmore.pack( side=TOP, fill=BOTH )
+      else :
+        Radiobutton( self.specwindow.solver,
+                     highlightthickness=0, relief=FLAT,
+                     width=31, anchor=W,
+                     variable=self.packname_var_svarc,
+                     value=solvers,
+                     command=self.packnamesolversonoff,
+                     text=label
+                     ).pack( side=TOP, fill=NONE )
+
+#    Label( self.specwindow.solver, width=30, anchor=W,
+#           text="     (+)  requires MA39" ).pack( side=TOP, fill=BOTH )
+#    Label( self.specwindow.solver, width=30, anchor=W,
+#           text="     (*)  requires MA27" ).pack( side=TOP, fill=BOTH )
+#    Label( self.specwindow.solver, width=30, anchor=W,
+#           text="     (\")  requires ICFS" ).pack( side=TOP, fill=BOTH )
+
+    self.specwindow.solver.pack( side=LEFT, fill=BOTH )
+
+#  contents of rhs bottom data entry frame
+
+    Label( self.specwindow.frame.rhs.bottom, width=1,
+           text="" ).pack( side=LEFT, fill=BOTH )
+
+    for i in range( self.specwindow.entrybrstart, self.specwindow.entrybrstop ):
+      self.specwindow.i = Frame( self.specwindow.text )
+      Label( self.specwindow.i,
+             anchor=W, width=30,
+             text=self.varstring[ i ]
+             ).pack( side=LEFT, fill=NONE )
+      Entry( self.specwindow.i,
+             textvariable=self.var[i],
+             relief=SUNKEN,
+             width=10
+             ).pack( side=RIGHT, fill=BOTH )
+      self.specwindow.i.pack( side=TOP, fill=BOTH )
+
+#  Special check button for writeall
+
+    Label( self.specwindow.text, text=" " ).pack( side=TOP, fill=BOTH )
+    Checkbutton( self.specwindow.text,
+                   highlightthickness=0,
+                   relief=FLAT, anchor=W,
+                   variable=self.packname_check_writeall,
+                   text="Even write defaults when saving values"
+                 ).pack( side=TOP, fill=BOTH )
+
+    self.specwindow.text.pack( side=LEFT, fill=BOTH )
+    self.specwindow.frame.rhs.bottom.pack( side=TOP, fill=BOTH )
+
+    Label( self.specwindow.frame.rhs, text="\n" ).pack( side=TOP, fill=BOTH )
+
+#  --- assemble boxes ---
+
+#  Pack it all together
+
+    Label( self.specwindow.frame, width=1,
+           text="" ).pack( side=LEFT, fill=BOTH )
+    self.specwindow.frame.lhs.pack( side=LEFT, fill=BOTH )
+    Label( self.specwindow.frame, width=4,
+           text="" ).pack( side=LEFT, fill=BOTH )
+    self.specwindow.frame.rhs.pack( side=LEFT, fill=BOTH )
+    Label( self.specwindow.frame, width=1,
+           text="" ).pack( side=LEFT, fill=BOTH )
+
+    self.specwindow.frame.pack( side=TOP, fill=BOTH )
+
+#  Pack buttons along the bottom
+
+    self.specwindow.buttons = Frame( self.specwindow )
+    self.spacer( )
+    Button( self.specwindow.buttons,
+            pady=2,
+            text="Dismiss\nwindow", 
+            command=self.specwindowdestroy
+            ).pack( side=LEFT, fill=BOTH  )
+    self.spacer( )
+    Button( self.specwindow.buttons,
+            pady=2,
+            text="Edit RUNPACKNAME.SPC\ndirectly", 
+            command=self.editpacknamespec
+            ).pack( side=LEFT, fill=BOTH  )
+    self.spacer( )
+    Button( self.specwindow.buttons,
+            pady=2,
+            text="Read existing\nvalues", 
+            command=self.readpacknamespec
+            ).pack( side=LEFT, fill=BOTH  )
+    self.spacer( )
+    Button( self.specwindow.buttons,
+            pady=2,
+            text="Restore default\nvalues", 
+            command=self.restorepacknamedefaults
+            ).pack( side=LEFT, fill=BOTH  )
+    self.spacer( )
+    Button( self.specwindow.buttons,
+            pady=2,
+            text="Save current\nvalues", 
+            command=self.writepacknamespec
+            ).pack( side=LEFT, fill=BOTH  )
+    self.spacer( )
+    Button( self.specwindow.buttons,
+            pady=2,
+            text="Run PACKAGENAME\nwith current values",
+            command=self.rungaloncurrent
+            ).pack( side=LEFT, fill=BOTH )
+    self.spacer( )
+
+    self.specwindow.buttons.pack( side=TOP, fill=BOTH )
+
+    Label( self.specwindow, height=1,
+           text="\n" ).pack( side=TOP, fill=BOTH )
+
+#  function to edit RUNPACKNAME.SPC
+#  ----------------------------
+
+  def editpacknamespec( self ):
+    if os.path.exists( 'RUNPACKNAME.SPC' ) == 0 :
+      print ' no file RUNPACKNAME.SPC to read'
+      self.nospcfile( 'RUNPACKNAME.SPC', 'edit' )
+      return
+    try:
+      editor = os.environ["VISUAL"]
+    except KeyError:
+      try:
+        editor = os.environ["EDITOR"]
+      except KeyError:
+        editor = emacs
+    os.popen( editor+' RUNPACKNAME.SPC' )
+
+#  function to restore default spec values
+#  ----------------------------------------
+
+  def restorepacknamedefaults( self ):
+    self.packname_check_ivar1.set( self.packname_default_ivar1 )
+    self.packname_check_ivar2.set( self.packname_default_ivar2 )
+    self.packname_check_ivar3.set( self.packname_default_ivar3 )
+    self.packname_check_ivar4.set( self.packname_default_ivar4 )
+    self.packname_check_ivar5.set( self.packname_default_ivar5 )
+    self.packname_check_ivar6.set( self.packname_default_ivar6 )
+    self.packname_check_ivar7.set( self.packname_default_ivar7 )
+    self.packname_check_ivar8.set( self.packname_default_ivar8 )
+    self.packname_check_ivar9.set( self.packname_default_ivar9 )
+    self.packname_check_ivar10.set( self.packname_default_ivar10 )
+    self.packname_check_ivar11.set( self.packname_default_ivar11 )
+    self.packname_check_ivar12.set( self.packname_default_ivar12 )
+    self.packname_check_ivar13.set( self.packname_default_ivar13 )
+    self.packname_check_ivar14.set( self.packname_default_ivar14 )
+    self.packname_check_ivar15.set( self.packname_default_ivar15 )
+    self.packname_check_ivar16.set( self.packname_default_ivar16 )
+    self.packname_check_ivar17.set( self.packname_default_ivar17 )
+    self.packname_check_ivar18.set( self.packname_default_ivar18 )
+    self.packname_check_ivar19.set( self.packname_default_ivar19 )
+    self.packname_check_ivar20.set( self.packname_default_ivar20 )
+
+    self.packname_var_svar1.set( self.packname_default_svar1 )
+    self.packname_var_svar2.set( self.packname_default_svar2 )
+    self.packname_var_svar3.set( self.packname_default_svar3 )
+    self.packname_var_svar4.set( self.packname_default_svar4 )
+    self.packname_var_svar5.set( self.packname_default_svar5 )
+    self.packname_var_svar6.set( self.packname_default_svar6 )
+    self.packname_var_svar7.set( self.packname_default_svar7 )
+    self.packname_var_svar8.set( self.packname_default_svar8 )
+    self.packname_var_svar9.set( self.packname_default_svar9 )
+    self.packname_var_svar10.set( self.packname_default_svar10 )
+    self.packname_var_svar11.set( self.packname_default_svar11 )
+    self.packname_var_svar12.set( self.packname_default_svar12 )
+    self.packname_var_svar13.set( self.packname_default_svar13 )
+    self.packname_var_svar14.set( self.packname_default_svar14 )
+    self.packname_var_svar15.set( self.packname_default_svar15 )
+    self.packname_var_svar16.set( self.packname_default_svar16 )
+    self.packname_var_svar17.set( self.packname_default_svar17 )
+    self.packname_var_svar18.set( self.packname_default_svar18 )
+    self.packname_var_svar19.set( self.packname_default_svar19 )
+    self.packname_var_svar20.set( self.packname_default_svar20 )
+    self.packname_var_svar21.set( self.packname_default_svar21 )
+    self.packname_var_svar22.set( self.packname_default_svar22 )
+    self.packname_var_svar23.set( self.packname_default_svar23 )
+    self.packname_var_svar24.set( self.packname_default_svar24 )
+    self.packname_var_svar25.set( self.packname_default_svar25 )
+    self.packname_var_svar26.set( self.packname_default_svar26 )
+    self.packname_var_svar27.set( self.packname_default_svar27 )
+    self.packname_var_svar28.set( self.packname_default_svar28 )
+    self.packname_var_svar29.set( self.packname_default_svar29 )
+    self.packname_var_svar30.set( self.packname_default_svar30 )
+    self.packname_var_svar31.set( self.packname_default_svar31 )
+    self.packname_var_svar32.set( self.packname_default_svar32 )
+    self.packname_var_svar33.set( self.packname_default_svar33 )
+    self.packname_var_svar34.set( self.packname_default_svar34 )
+    self.packname_var_svara.set( self.packname_default_svara )
+    self.packname_var_svarb.set( self.packname_default_svarb )
+    self.packname_var_svarc.set( self.packname_default_svarc )
+    self.packname_var_svarca.set( self.packname_default_svarca )
+    self.packname_var_svarcb.set( self.packname_default_svarcb )
+
+    self.current_svarca = self.packname_default_svarca
+    self.current_svarcb = self.packname_default_svarcb
+    self.packnamesolversonoff( )
+  
+#  function to switch on and off semibandwidth/line-more vectors as appropriate
+#  ----------------------------------------------------------------------------
+
+  def packnamesolversonoff( self ): 
+    if self.packname_var_svarc.get( ) == 'ssvarc1' :
+      self.packname_var_svarca.set( self.current_svarca )
+    else:
+      if self.packname_var_svarca.get( ) != '' :
+        self.current_svarca = self.packname_var_svarca.get( )
+      self.packname_var_svarca.set( '' )
+    if self.packname_var_svarc.get( ) == 'ssvarc4' :
+      self.packname_var_svarcb.set( self.current_svarcb )
+    else:
+      if self.packname_var_svarcb.get( ) != '' :
+        self.current_svarcb = self.packname_var_svarcb.get( )
+      self.packname_var_svarcb.set( '' )
+
+#  function to disallow exact second derivatives at the same time
+#  as finite-diffreence gradients
+#  ------------------------------
+
+  def nofdgandexacthessian( self ): 
+    if self.packname_var_svarb.get( ) == 'ssvarb1' and \
+       self.packname_var_svara.get( ) != 'ssvara1' :
+      self.packname_var_svarb.set( 'ssvarb5' )
+
+#  function to read the current values to the spec file
+#  -----------------------------------------------------
+
+  def readpacknamespec( self ): 
+
+#  open file and set header
+
+    if os.path.exists( 'RUNPACKNAME.SPC' ) == 0 :
+      print ' no file RUNPACKNAME.SPC to read'
+      self.nospcfile( 'RUNPACKNAME.SPC', 'read' )
+      return
+    self.runpacknamespc = open( 'RUNPACKNAME.SPC', 'r' )
+
+#  Restore default values
+
+    self.restorepacknamedefaults( )
+
+#  loop over lines of files
+
+    self.readyes = 0
+    for line in self.runpacknamespc:
+
+#  exclude comments
+
+      if line[0] == '!' : continue
+
+#  convert the line to lower case, and remove leading and trailing blanks
+
+      line = line.lower( ) 
+      line = line.strip( )
+      blank_start = line.find( ' ' ) 
+      
+      if blank_start != -1 :
+        stringc = line[0:blank_start]
+      else :
+        stringc = line
+
+#  look for string variables to set
+
+      blank_end = line.rfind( ' ' ) 
+      if blank_start == -1 :
+        stringd = 'YES'
+      else:
+        stringd = line[ blank_end + 1 : ].upper( )
+#     print stringc+' '+stringd
+
+#  only read those segments concerned with  PACKAGENAME
+
+      if stringc == 'begin' and line.find( 'packname' ) >= 0 : self.readyes = 1
+      if stringc == 'end' and line.find( 'packname' ) >= 0 : self.readyes = 0
+      if self.readyes == 0 : continue
+
+#  exclude begin and end lines
+
+      if stringc == 'begin' or stringc == 'end' : continue
+
+#  look for integer (check-button) variables to set
+
+      if stringc == self.packname_string_ivar1 :
+        self.yesno( self.packname_check_ivar1, stringd )
+        continue
+      elif stringc == self.packname_string_ivar2 :
+        self.yesno( self.packname_check_ivar2, stringd )
+        continue
+      elif stringc == self.packname_string_ivar3 :
+        self.yesno( self.packname_check_ivar3, stringd )
+        continue
+      elif stringc == self.packname_string_ivar4 :
+        self.yesno( self.packname_check_ivar4, stringd )
+        continue
+      elif stringc == self.packname_string_ivar5 :
+        self.yesno( self.packname_check_ivar5, stringd )
+        continue
+      elif stringc == self.packname_string_ivar6 :
+        self.yesno( self.packname_check_ivar6, stringd )
+        continue
+      elif stringc == self.packname_string_ivar7 :
+        self.yesno( self.packname_check_ivar7, stringd )
+        continue
+      elif stringc == self.packname_string_ivar8 :
+        self.yesno( self.packname_check_ivar8, stringd )
+        continue
+      elif stringc == self.packname_string_ivar9 :
+        self.yesno( self.packname_check_ivar9, stringd )
+        continue
+      elif stringc == self.packname_string_ivar10 :
+        self.yesno( self.packname_check_ivar10, stringd )
+        continue
+      elif stringc == self.packname_string_ivar11 :
+        self.yesno( self.packname_check_ivar11, stringd )
+        continue
+      elif stringc == self.packname_string_ivar12 :
+        self.yesno( self.packname_check_ivar12, stringd )
+        continue
+      elif stringc == self.packname_string_ivar13 :
+        self.yesno( self.packname_check_ivar13, stringd )
+        continue
+      elif stringc == self.packname_string_ivar14 :
+        self.yesno( self.packname_check_ivar14, stringd )
+        continue
+      elif stringc == self.packname_string_ivar15 :
+        self.yesno( self.packname_check_ivar15, stringd )
+        continue
+      elif stringc == self.packname_string_ivar16 :
+        self.yesno( self.packname_check_ivar16, stringd )
+        continue
+      elif stringc == self.packname_string_ivar17 :
+        self.yesno( self.packname_check_ivar17, stringd )
+        continue
+      elif stringc == self.packname_string_ivar18 :
+        self.yesno( self.packname_check_ivar18, stringd )
+        continue
+      elif stringc == self.packname_string_ivar19 :
+        self.yesno( self.packname_check_ivar19, stringd )
+        continue
+      elif stringc == self.packname_string_ivar20 :
+        self.yesno( self.packname_check_ivar20, stringd )
+        continue
+
+      if stringc == self.packname_string_svara :
+        stringd = stringd.lower( ) 
+        if stringd == 'ssvara1' :
+          self.packname_var_svara.set( 'ssvara1' )
+        elif stringd == 'ssvara2' :
+          self.packname_var_svara.set( 'ssvara2' )
+        elif stringd == 'ssvara3' :
+          self.packname_var_svara.set( 'ssvara3' )
+        continue
+      elif stringc ==  self.packname_string_svarb :
+        stringd = stringd.lower( ) 
+        if stringd == 'ssvarb1':
+          self.packname_var_svarb.set( 'ssvarb1' )
+        elif stringd == 'ssvarb2':
+          self.packname_var_svarb.set( 'ssvarb2' )
+        elif stringd == 'ssvarb3':
+          self.packname_var_svarb.set( 'ssvarb3' )
+        elif stringd == 'ssvarb4':
+          self.packname_var_svarb.set( 'ssvarb4' )
+        elif stringd == 'ssvarb5':
+          self.packname_var_svarb.set( 'ssvarb5' )
+        continue
+      elif stringc == self.packname_string_svarc :
+        stringd = stringd.lower( ) 
+        if stringd == 'ssvarc1':
+          self.packname_var_svarc.set( 'ssvarc1' )
+        elif stringd == 'ssvarc2':
+          self.packname_var_svarc.set( 'ssvarc2' ) 
+        elif stringd == 'ssvarc3':
+          self.packname_var_svarc.set( 'ssvarc3' )
+        elif stringd == 'ssvarc5':
+          self.packname_var_svarc.set( 'ssvarc5' )
+        elif stringd == 'ssvarc4':
+          self.packname_var_svarc.set( 'ssvarc4' )
+        elif stringd == 'ssvarc6':
+          self.packname_var_svarc.set( 'ssvarc6' )
+        elif stringd == 'ssvarc7':
+          self.packname_var_svarc.set( 'ssvarc7' )
+        elif stringd == 'ssvarc8':
+          self.packname_var_svarc.set( 'ssvarc8' )
+        elif stringd == 'ssvarc9':
+          self.packname_var_svarc.set( 'ssvarc9' )
+        elif stringd == 'ssvarc10':
+          self.packname_var_svarc.set( 'ssvarc10' )
+        continue
+      elif stringc == self.packname_string_svarca :
+        self.packname_var_svarca.set( stringd )
+        self.current_svarca = stringd
+        continue
+      elif stringc == self.packname_string_svarcb :
+        self.packname_var_svarcb.set( stringd )
+        self.current_svarcb = stringd
+        continue
+      elif stringc == self.packname_string_svar1 :
+        self.packname_var_svar1.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar2 :
+        self.packname_var_svar2.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar3 :
+        self.packname_var_svar3.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar4 :
+        self.packname_var_svar4.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar5 :
+        self.packname_var_svar5.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar6 :
+        self.packname_var_svar6.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar7 :
+        self.packname_var_svar7.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar8 :
+        self.packname_var_svar8.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar9 :
+        self.packname_var_svar9.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar10 :
+        self.packname_var_svar10.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar11 :
+        self.packname_var_svar11.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar12 :
+        self.packname_var_svar12.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar13 :
+        self.packname_var_svar13.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar14 :
+        self.packname_var_svar14.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar15 :
+        self.packname_var_svar15.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar16 :
+        self.packname_var_svar16.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar17 :
+        self.packname_var_svar17.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar18 :
+        self.packname_var_svar18.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar19 :
+        self.packname_var_svar19.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar20 :
+        self.packname_var_svar20.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar21 :
+        self.packname_var_svar21.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar22 :
+        self.packname_var_svar22.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar23 :
+        self.packname_var_svar23.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar24 :
+        self.packname_var_svar24.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar25 :
+        self.packname_var_svar25.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar26 :
+        self.packname_var_svar26.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar27 :
+        self.packname_var_svar27.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar28 :
+        self.packname_var_svar28.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar29 :
+        self.packname_var_svar29.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar30 :
+        self.packname_var_svar30.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar31 :
+        self.packname_var_svar31.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar32 :
+        self.packname_var_svar32.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar33 :
+        self.packname_var_svar33.set( stringd )
+        continue
+      elif stringc == self.packname_string_svar34 :
+        self.packname_var_svar34.set( stringd )
+        continue
+
+    self.packnamesolversonoff( )
+    self.runpacknamespc.close( )
+    if self.packname_var_svarb.get( ) == 'ssvarb1' and \
+       self.packname_var_svara.get( ) != 'ssvara1' :
+      self.packname_var_svarb.set( 'ssvarb5' )
+
+#  function to write the current values to the spec file
+#  -----------------------------------------------------
+
+  def writepacknamespec( self ): 
+
+#  open file and set header
+
+    self.runpacknamespc = open( 'RUNPACKNAME.SPC', 'w' )
+
+#  record RUNPACKNAME options
+
+    self.runpacknamespc.write( "BEGIN RUNPACKNAME SPECIFICATIONS\n" )
+    self.writepacknamespecdummy( '', '' )
+    self.writepacknamespecline_int( self.packname_check_ivar1,
+                            self.packname_default_ivar1, 
+                            self.packname_string_ivar1 )
+    self.writepacknamespecline_int( self.packname_check_ivar2,
+                            self.packname_default_ivar2, 
+                            self.packname_string_ivar2 )
+    self.writepacknamespecline_int( self.packname_check_ivar3,
+                            self.packname_default_ivar3,
+                            self.packname_string_ivar3 )
+    self.writepacknamespecline_int( self.packname_check_ivar4,
+                            self.packname_default_ivar4, 
+                            self.packname_string_ivar4 )
+    self.writepacknamespecline_int( self.packname_check_ivar5,
+                            self.packname_default_ivar5,
+                            self.packname_string_ivar5 )
+    self.writepacknamespecline_int( self.packname_check_ivar6,
+                            self.packname_default_ivar6,
+                            self.packname_string_ivar6 )
+    self.writepacknamespecline_int( self.packname_check_ivar7,
+                            self.packname_default_ivar7, 
+                            self.packname_string_ivar7 )
+    self.writepacknamespecline_int( self.packname_check_ivar8,
+                            self.packname_default_ivar8, 
+                            self.packname_string_ivar8 )
+    self.writepacknamespecline_int( self.packname_check_ivar9,
+                            self.packname_default_ivar9, 
+                            self.packname_string_ivar9 )
+    self.writepacknamespecline_int( self.packname_check_ivar10,
+                            self.packname_default_ivar10, 
+                            self.packname_string_ivar10 )
+    self.writepacknamespecline_int( self.packname_check_ivar11,
+                            self.packname_default_ivar11, 
+                            self.packname_string_ivar11 )
+    self.writepacknamespecline_int( self.packname_check_ivar12,
+                            self.packname_default_ivar12, 
+                            self.packname_string_ivar12 )
+    self.writepacknamespecline_int( self.packname_check_ivar13,
+                            self.packname_default_ivar13,
+                            self.packname_string_ivar13 )
+    self.writepacknamespecline_int( self.packname_check_ivar14,
+                            self.packname_default_ivar14, 
+                            self.packname_string_ivar14 )
+    self.writepacknamespecline_int( self.packname_check_ivar15,
+                            self.packname_default_ivar15, 
+                            self.packname_string_ivar15 )
+    self.writepacknamespecline_stringval( self.packname_var_svar1,
+                                  self.packname_default_svar1,
+                                  self.packname_string_svar1 )
+    self.writepacknamespecline_stringval( self.packname_var_svar2,
+                                  self.packname_default_svar2,
+                                  self.packname_string_svar2 )
+    self.runpacknamespc.write( "END RUNPACKNAME SPECIFICATIONS\n" )
+
+#  record PACKAGENAME options
+
+    self.runpacknamespc.write( "BEGIN FULLPACKNAME SPECIFICATIONS\n" )
+
+    self.writepacknamespecline_stringval( self.packname_var_svar3,
+                                  self.packname_default_svar3,
+                                  self.packname_string_svar3 )
+    self.writepacknamespecline_stringval( self.packname_var_svar4,
+                                  self.packname_default_svar4,
+                                  self.packname_string_svar4 )
+    self.writepacknamespecline_stringval( self.packname_var_svar5,
+                                  self.packname_default_svar5,
+                                  self.packname_string_svar5 )
+    self.writepacknamespecline_stringval( self.packname_var_svar6,
+                                  self.packname_default_svar6,
+                                  self.packname_string_svar6 )
+    self.writepacknamespecline_stringval( self.packname_var_svar7,
+                                  self.packname_default_svar7,
+                                  self.packname_string_svar7 )
+
+#  record solver chosen
+
+    if self.packname_var_svarc.get( ) == "ssvarc1" :
+      if self.packname_check_writeall.get( ) == 1 :
+        self.runpacknamespc.write( "!  "+self.packname_string_svarc.ljust( 50 ) \
+                               +"ssvarc1\n" )
+    elif self.packname_var_svarc.get( ) == "ssvarc2" :
+      self.writepacknamespecline_string( self.packname_var_svarc,
+                                 "ssvarc2",
+                                 self.packname_string_svarc )
+    elif self.packname_var_svarc.get( ) == "ssvarc3" :
+      self.writepacknamespecline_string( self.packname_var_svarc,
+                                 "ssvarc3",
+                                 self.packname_string_svarc )
+    elif self.packname_var_svarc.get( ) == "ssvarc4" :
+      self.writepacknamespecline_string( self.packname_var_svarc,
+                                 "ssvarc4",
+                                 self.packname_string_svarc )
+    elif self.packname_var_svarc.get( ) == "ssvarc5" :
+      self.writepacknamespecline_string( self.packname_var_svarc,
+                                 "ssvarc5",
+                                 self.packname_string_svarc )
+    elif self.packname_var_svarc.get( ) == "ssvarc6" :
+      self.writepacknamespecline_string( self.packname_var_svarc,
+                                 "ssvarc6",
+                                 self.packname_string_svarc )
+    elif self.packname_var_svarc.get( ) == "ssvarc7" :
+      self.writepacknamespecline_string( self.packname_var_svarc,
+                                 "ssvarc7",
+                                 self.packname_string_svarc )
+    elif self.packname_var_svarc.get( ) == "ssvarc8" :
+      self.writepacknamespecline_string( self.packname_var_svarc,
+                                 "ssvarc8",
+                                 self.packname_string_svarc )
+    elif self.packname_var_svarc.get( ) == "ssvarc9" :
+      self.writepacknamespecline_string( self.packname_var_svarc,
+                                 "ssvarc9",
+                                 self.packname_string_svarc )
+    elif self.packname_var_svarc.get( ) == "ssvarc10" :
+      self.writepacknamespecline_string( self.packname_var_svarc,
+                                 "ssvarc10",
+                                 self.packname_string_svarc )
+
+#  record further options
+
+    self.writepacknamespecline_stringval( self.packname_var_svarca,
+                                  self.packname_default_svarca,
+                                  self.packname_string_svarca )
+    self.writepacknamespecline_stringval( self.packname_var_svarcb, 
+                                  self.packname_default_svarcb,
+                                  self.packname_string_svarcb )
+    self.writepacknamespecline_stringval( self.packname_var_svar8,
+                                  self.packname_default_svar8,
+                                  self.packname_string_svar8 )
+    self.writepacknamespecline_stringval( self.packname_var_svar9,
+                                  self.packname_default_svar9,
+                                  self.packname_string_svar9 )
+    self.writepacknamespecline_stringval( self.packname_var_svar10,
+                                  self.packname_default_svar10,
+                                  self.packname_string_svar10 )
+
+#  record gradient chosen
+
+    if self.packname_var_svara.get( ) == "ssvara1" :
+      if self.packname_check_writeall.get( ) == 1 :
+        self.runpacknamespc.write( "!  "+self.packname_string_svara.ljust( 50 ) \
+                               +"ssvara1\n" )
+    elif self.packname_var_svara.get( ) == "ssvara2" :
+      self.writepacknamespecline_string( self.packname_var_svara, "ssvara2",
+                                 self.packname_string_svara )
+    elif self.packname_var_svara.get( ) == "ssvara3" :
+      self.writepacknamespecline_string( self.packname_var_svara, "ssvara3",
+                                 self.packname_string_svara )
+
+#  record Hessian chosen
+
+    if self.packname_var_svarb.get( ) == "ssvarb1" :
+      if self.packname_check_writeall.get( ) == 1 :
+        self.runpacknamespc.write( "!  "+self.packname_string_svarb.ljust( 50 ) \
+                               +"ssvarb1\n" )
+    elif self.packname_var_svarb.get( ) == "ssvarb2" :
+      self.writepacknamespecline_string( self.packname_var_svarb, "ssvarb2",
+                                 self.packname_string_svarb )
+    elif self.packname_var_svarb.get( ) == "ssvarb3" :
+      self.writepacknamespecline_string( self.packname_var_svarb, "ssvarb3",
+                                 self.packname_string_svarb )
+    elif self.packname_var_svarb.get( ) == "ssvarb4" :
+      self.writepacknamespecline_string( self.packname_var_svarb, "ssvarb4",
+                                 self.packname_string_svarb )
+    elif self.packname_var_svarb.get( ) == "ssvarb5" :
+      self.writepacknamespecline_string( self.packname_var_svarb, "ssvarb5",
+                                 self.packname_string_svarb )
+
+#  record remaining options
+
+    self.writepacknamespecline_stringval( self.packname_var_svar11,
+                                  self.packname_default_svar11,
+                                  self.packname_string_svar11 )
+    self.writepacknamespecline_stringval( self.packname_var_svar12,
+                                  self.packname_default_svar12,
+                                  self.packname_string_svar12 )
+    self.writepacknamespecline_stringval( self.packname_var_svar13,
+                                  self.packname_default_svar13,
+                                  self.packname_string_svar13 )
+    self.writepacknamespecline_stringval( self.packname_var_svar14,
+                                  self.packname_default_svar14,
+                                  self.packname_string_svar14 )
+    self.writepacknamespecline_stringval( self.packname_var_svar15,
+                                  self.packname_default_svar15,
+                                  self.packname_string_svar15 )
+    self.writepacknamespecline_stringval( self.packname_var_svar16,
+                                  self.packname_default_svar16,
+                                  self.packname_string_svar16 )
+    self.writepacknamespecline_stringval( self.packname_var_svar17,
+                                  self.packname_default_svar17,
+                                  self.packname_string_svar17 )
+    self.writepacknamespecline_stringval( self.packname_var_svar18, 
+                                  self.packname_default_svar18,
+                                  self.packname_string_svar18 )
+    self.writepacknamespecline_stringval( self.packname_var_svar19,
+                                  self.packname_default_svar19,
+                                  self.packname_string_svar19 )
+    self.writepacknamespecline_stringval( self.packname_var_svar20,
+                                  self.packname_default_svar20,
+                                  self.packname_string_svar20 )
+    self.writepacknamespecline_stringval( self.packname_var_svar21,
+                                  self.packname_default_svar21,
+                                  self.packname_string_svar21 )
+    self.writepacknamespecline_stringval( self.packname_var_svar22,
+                                  self.packname_default_svar22,
+                                  self.packname_string_svar22 )
+    self.writepacknamespecline_stringval( self.packname_var_svar23,
+                                  self.packname_default_svar23,
+                                  self.packname_string_svar23 )
+    self.writepacknamespecline_stringval( self.packname_var_svar24,
+                                  self.packname_default_svar24,
+                                  self.packname_string_svar24 )
+    self.writepacknamespecline_stringval( self.packname_var_svar25,
+                                  self.packname_default_svar25,
+                                  self.packname_string_svar25 )
+    self.writepacknamespecline_stringval( self.packname_var_svar26,
+                                  self.packname_default_svar26,
+                                  self.packname_string_svar26 )
+    self.writepacknamespecline_stringval( self.packname_var_svar27,
+                                  self.packname_default_svar27,
+                                  self.packname_string_svar27 )
+    self.writepacknamespecline_stringval( self.packname_var_svar28,
+                                  self.packname_default_svar28,
+                                  self.packname_string_svar28 )
+    self.writepacknamespecline_stringval( self.packname_var_svar29,
+                                  self.packname_default_svar29,
+                                  self.packname_string_svar29 )
+    self.writepacknamespecline_stringval( self.packname_var_svar30,
+                                  self.packname_default_svar30,
+                                  self.packname_string_svar30 )
+    self.writepacknamespecline_stringval( self.packname_var_svar31,
+                                  self.packname_default_svar31,
+                                  self.packname_string_svar31 )
+    self.writepacknamespecline_stringval( self.packname_var_svar32,
+                                  self.packname_default_svar32,
+                                  self.packname_string_svar32 )
+    self.writepacknamespecline_stringval( self.packname_var_svar33,
+                                  self.packname_default_svar33,
+                                  self.packname_string_svar33 )
+    self.writepacknamespecline_stringval( self.packname_var_svar34,
+                                  self.packname_default_svar34,
+                                  self.packname_string_svar34 )
+    self.writepacknamespecline_int( self.packname_check_ivar16,
+                            self.packname_default_ivar16, 
+                            self.packname_string_ivar16 )
+    self.writepacknamespecline_int( self.packname_check_ivar17,
+                            self.packname_default_ivar17, 
+                            self.packname_string_ivar17 )
+    self.writepacknamespecline_int( self.packname_check_ivar18,
+                            self.packname_default_ivar18, 
+                            self.packname_string_ivar18 )
+    self.writepacknamespecline_int( self.packname_check_ivar19,
+                            self.packname_default_ivar19, 
+                            self.packname_string_ivar19 )
+    self.writepacknamespecline_int( self.packname_check_ivar20,
+                            self.packname_default_ivar20, 
+                            self.packname_string_ivar20 )
+
+#  set footer and close file
+
+    self.runpacknamespc.write( "END FULLPACKNAME SPECIFICATIONS\n" )
+    self.runpacknamespc.close( )
+
+#  functions to produce various output lines
+
+  def writepacknamespecline_int( self, var, default, line ): 
+    if var.get( ) == default :
+      if self.packname_check_writeall.get( ) == 1 :
+        if default == 0 :
+          self.runpacknamespc.write( "!  "+line.ljust( 50 )+"NO\n" )
+        else :
+          self.runpacknamespc.write( "!  "+line.ljust( 50 )+"YES\n" )
+    else :
+      if default == 0 :
+        self.runpacknamespc.write( "   "+line.ljust( 50 )+"YES\n" )
+      else :
+        self.runpacknamespc.write( "   "+line.ljust( 50 )+"NO\n" )
+    
+  def writepacknamespecline_string( self, var, string, line ): 
+    self.varget = var.get( )
+    stringupper = string.upper( )
+    if self.varget == string :
+      self.runpacknamespc.write( "   "+line.ljust( 50 )+stringupper+"\n" )
+    else :
+      if self.packname_check_writeall.get( ) == 1 :
+        self.runpacknamespc.write( "!  "+line.ljust( 50 )+stringupper+"\n" )
+
+  def writepacknamespecline_stringval( self, var, default, line ): 
+    self.varget = var.get( )
+    if self.varget == default or self.varget == "" :
+      if self.packname_check_writeall.get( ) == 1 :
+        self.runpacknamespc.write( "!  "+line.ljust( 50 )+default+"\n" )
+    else :
+      self.runpacknamespc.write( "   "+line.ljust( 50 )+self.varget+"\n" )
+
+  def writepacknamespecdummy( self, line1, line2 ): 
+    if self.packname_check_writeall.get( ) == 1 :
+      self.runpacknamespc.write( "!  "+line1.ljust( 50 )+line2+"\n" )
+
+#  function to display help
+#  ------------------------
+
+  def packnamepresshelp( self ):
+    if os.system( 'which xpdf > /dev/null' ) == 0 :
+      self.pdfread = 'xpdf'
+    elif os.system( 'which acroread > /dev/null' ) == 0 :
+      self.pdfread = 'acroread'
+    else:
+      print 'error: no known pdf file reader' 
+      return
+    
+    self.threads =[ ]
+    self.t = threading.Thread( target=self.pdfreadpacknamethread )
+    self.threads.append( self.t )
+    print self.threads
+    self.threads[0].start( )
+
+# display package documentation by opening an external PDF viewer
+
+  def pdfreadpacknamethread( self ) :
+    os.system( self.pdfread+' $GALAHAD/doc/lancelot.pdf' )
+

@@ -1,0 +1,1007 @@
+        ----------------------------------------------------------
+
+                        CUTEr tools
+
+        ----------------------------------------------------------
+
+Purpose: To define useful tools for manipulating data once it has
+         been decoded from a SIF file.
+
+   Problems are fully described in a Standard Input Format (SIF)
+   file. This file may subsequently be decoded to provide data
+   and Fortran subroutines for input to a nonlinear programming
+   package.
+
+   Here we describe auxiliary subroutines which are available for
+   users to manipulate the decoded data. The Fortran source of
+   these programs, along with the subroutines obtained when decoding
+   the SIF file, should be compiled with the user's optimization
+   package. See also the CUTEr man pages, $CUTER/common/man .
+
+A. Tools for the bound constrained problem:
+                                                n
+      optimize         f( x )             x in R
+
+      subject to     b <= x <= b
+                      l         u
+
+   where f( x ) is a group partially separable function.
+
+
+A1.  Discover how many variables are involved in the problem
+
+       CALL UDIMEN ( INPUT, N )
+
+     where INPUT  [in] is the unit number for the decoded data, and
+           N      [out] gives the number of variables for the problem.
+
+A2.  Set up the correct data structures for subsequent computations.
+
+       CALL USETUP ( INPUT, IOUT, N, X, BL, BU, NMAX )
+
+     where INPUT  [in] is the unit number for the decoded data,
+           IOUT   [in] is the unit number for any error messages,
+           N      [out] gives the number of variables for the problem,
+           X      [out] is an array which gives the initial estimate of the
+                  solution of the problem,
+           BL     [out] is an array which gives lower bounds on the variables,
+           BU     [out] is an array which gives upper bounds on the variables,
+                  and
+           NMAX   [in] is the actual declared dimension of X, BL and BU.
+
+A3.  Obtain the names of the problem and its variables.
+
+       CALL UNAMES( N, PNAME, VNAMES )
+
+     where N      [in] is the number of variables for the problem,
+           PNAME  [out] is a 10-character name for the problem, and
+           VNAMES [out] is an array of 10-character names of the variables.
+
+A4.  Obtain the names of the problem and its variables.
+
+       CALL UVARTY( N, IVARTY )
+
+     where N      [in] is the number of variables for the problem,
+           IVARTY [out] is an integer array whose i-th component indicates
+                  the type of variable i. Possible values are 0 (a variable
+                  whose value may be any real number), 1 (an integer variable 
+                  that can only take the values zero or one) and 2 (a variable 
+                  that can only take integer values).
+
+A5.  Evaluate the function value of a group partially separable function.
+
+       CALL UFN ( N, X, F )
+
+     where N      [in] is the number of variables for the problem,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem, and
+           F      [out] gives the value of the objective function evaluated
+                  at X.
+
+A6.  Evaluate the gradient of a group partially separable function.
+
+       CALL UGR ( N, X, G )
+
+     where N      [in] is the number of variables for the problem,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem, and
+           G      [out] is an array which gives the value of the gradient of
+                  the objective function evaluated at X.
+
+A7.  Evaluate the objective function and possibly its gradient.
+
+       CALL UOFG ( N, X, F, G, GRAD )
+
+     where N      [in] is the number of variables for the problem,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           F      [out] gives the value of the objective function evaluated
+                  at X,
+           G      [out] is an array which gives the value of the gradient of
+                  the objective function evaluated at X, and
+           GRAD   [in] is a logical variable which should be set .TRUE. if
+                  the gradient of the objective function is required
+                  and .FALSE. otherwise.
+
+A8.  Evaluate the Hessian matrix of a group partially separable function.
+     The matrix is stored as a dense matrix.
+
+       CALL UDH ( N, X, LH1, H )
+
+     where N      [in] is the number of variables for the problem,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           LH1    [in] is the actual declared size of the leading dimension
+                  of H (with LH1 no smaller than N), and
+           H      [out] is a two-dimensional array which gives the value of
+                  the Hessian matrix of the objective function evaluated at X.
+
+A9.  Evaluate both the gradient and Hessian matrix of a group partially
+     separable function. The matrix is stored as a dense matrix. Calling
+     this routine is more efficient than separate calls to UGR and UDH.
+
+       CALL UGRDH ( N, X, G, LH1, H )
+
+     where N      [in] is the number of variables for the problem,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           G      [out] is an array which gives the value of the graient of
+                  the objective function evaluated at X.
+           LH1    [in] is the actual declared size of the leading dimension
+                  of H (with LH1 no smaller than N), and
+           H      [out] is a two-dimensional array which gives the value of
+                  the Hessian matrix of the objective function evaluated at X.
+
+A10. Determine how many nonzeros are required to store the Hessian matrix 
+     of a group partially separable function, when the matrix is stored as 
+     a sparse matrix in "co-ordinate" format.
+
+       CALL UDIMSH ( NNZH )
+
+     where  NNZH   [out] is the number of nonzeros in H.
+
+A11. Evaluate the Hessian matrix of a group partially separable function.
+     The matrix is stored as a sparse matrix in "co-ordinate" format.
+
+       CALL USH ( N, X, NNZH, LH, H, IRNH, ICNH )
+
+     where N      [in] is the number of variables for the problem,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           NNZH   [out] is the number of nonzeros in H,
+           LH     [in] is the actual declared dimensions of H, IRNH and ICNH,
+           H      [out] is an array which gives the value of the Hessian matrix
+                  of the objective function evaluated at X. The i-th
+                  entry of H gives the value of the nonzero in row
+                  IRNH(i) and column ICNH(i). Only the upper triangular
+                  part of the Hessian is stored,
+           IRNH   [out] is an array which gives the row indices of the nonzeros
+                  of the Hessian matrix of the objective function evaluated
+                  at X, and
+           ICNH   [out] is an array which gives the column indices of the
+                  nonzeros of the Hessian matrix of the objective function
+                  evaluated at X.
+
+A12. Determine how many nonzeros are required to store the Hessian matrix 
+     of a group partially separable function, when the matrix is stored
+     in "finite element" format.
+
+       CALL UDIMSE( NE, NZH, NZIRNH )
+
+     where  NE     [out] is the number of "finite-elements" used,
+            NZH    [out] is the dimension of the array needed to store the 
+                   real values of the Hessian, and
+            NZIRNH [out] is the dimension of the array needed to store the 
+                   integer values of the Hessian.
+
+A13. Evaluate the Hessian matrix of a group partially separable function.
+     The matrix is stored as a sparse matrix in "finite element" format,
+
+            ne
+       H = sum H_i, 
+           i=1
+
+      where each element H_i involves a small subset of the rows of H.
+
+
+       CALL UEH ( N, X, NE, IRNHI, LIRNHI, LE, IPRNHI, HI, LHI, 
+      *           IPRHI, BYROWS )
+
+     where N      [in] is the number of variables for the problem,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           NE     [out] is the number of "finite-elements" used,
+           IRNHI  [out] is an array which holds a list of the row indices 
+                  involved which each element. Those for element i directly 
+                  preceed those for element i+1, i = 1, ..., NE-1,
+           LIRNHI [in] is the actual declared dimension of IRNHI,
+           LE     [in] is the actual declared dimensions of IPRNHI and IPRHI,
+	   IPRNHI [out] is an array of pointers to the position in IRNHI of 
+                  the first row index in each element. IPRNHI(NE+1) points
+                  to the first empty location in IRPNHI,
+	   HI     [out] is an array of the nonzeros in the upper triangle of
+                  H_i, evaluated at X and stored by rows, or by columns.
+                  Those for element i directly proceed those for element, 
+                  i+1, i = 1, ..., NE-1,
+           LHI    [in] is the actual declared dimension of HI,
+           IPRHI  [out] pointers to the position in HI of the first 
+                   nonzero in each element. IPRHI(NE+1) points to the first 
+                   empty location in HI, and
+           BYROWS [in] must be set .TRUE. if the upper triangle of each H_i 
+                  is to be stored by rows, and .FALSE. if it is to be stored
+                  by columns.
+
+A14. Evaluate both the gradient and Hessian matrix of a group partially
+     separable function. The matrix is stored as a sparse matrix in 
+     "co-ordinate" format. Calling this routine is more efficient than 
+     separate calls to UGR and USH.
+
+       CALL UGRSH ( N, X, G, NNZH, LH, H, IRNH, ICNH )
+
+     where N      [in] is the number of variables for the problem,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           G      [out] is an array which gives the value of the graient of
+                  the objective function evaluated at X.
+           NNZH   [out] is the number of nonzeros in H,
+           LH     [in] is the actual declared dimensions of H, IRNH and ICNH,
+           H      [out] is an array which gives the value of the Hessian matrix
+                  of the objective function evaluated at X. The i-th
+                  entry of H gives the value of the nonzero in row
+                  IRNH(i) and column ICNH(i). Only the upper triangular
+                  part of the Hessian is stored,
+           IRNH   [out] is an array which gives the row indices of the nonzeros
+                  of the Hessian matrix of the objective function evaluated
+                  at X, and
+           ICNH   [out] is an array which gives the column indices of the
+                  nonzeros of the Hessian matrix of the objective function
+                  evaluated at X.
+
+A15. Evaluate both the gradient and Hessian matrix of a group partially
+     separable function. The matrix is stored as a sparse matrix in 
+     "finite-element" format. Calling this routine is more efficient than 
+     separate calls to UGR and UEH.
+
+       CALL UGREH ( N, X, G, NE, IRNHI, LIRNHI, LE, IPRNHI, 
+      *             HI, LHI, IPRHI, BYROWS )
+
+     where N      [in] is the number of variables for the problem,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           G      [out] is an array which gives the value of the graient of
+                  the objective function evaluated at X.
+           NE     [out] is the number of "finite-elements" used,
+           IRNHI  [out] is an array which holds a list of the row indices 
+                  involved which each element. Those for element i directly 
+                  preceed those for element i+1, i = 1, ..., NE-1,
+           LIRNHI [in] is the actual declared dimension of IRNHI,
+           LE     [in] is the actual declared dimensions of IPRNHI and IPRHI,
+	   IPRNHI [out] is an array of pointers to the position in IRNHI of 
+                  the first row index in each element. IPRNHI(NE+1) points
+                  to the first empty location in IRPNHI,
+	   HI     [out] is an array of the nonzeros in the upper triangle of
+                  H_i, evaluated at X and stored by rows, or by columns.
+                  Those for element i directly proceed those for element, 
+                  i+1, i = 1, ..., NE-1,
+           LHI    [in] is the actual declared dimension of HI,
+           IPRHI  [out] pointers to the position in HI of the first 
+                   nonzero in each element. IPRHI(NE+1) points to the first 
+                   empty location in HI, and
+           BYROWS [in] must be set .TRUE. if the upper triangle of each H_i 
+                  is to be stored by rows, and .FALSE. if it is to be stored
+                  by columns.
+
+A16. Form the matrix-vector product of a vector with the Hessian matrix.
+
+       CALL UPROD ( N, GOTH, X, P, Q )
+
+     where N      [in] is the number of variables for the problem,
+           GOTH   [in] is a logical variable which specifies whether the
+                  second derivatives of the groups and elements have
+                  already been set (GOTH = .TRUE.) or if they should
+                  be computed (GOTH = .FALSE.),
+           X      [in] when GOTH = .FALSE., the derivatives will be evaluated
+                  at X. Otherwise X is not used.
+           P      [in] is an array which gives the vector whose product with the
+                  Hessian is required, and
+           Q      [out] is an array which gives the result of multiplying the
+                  Hessian by P.
+
+     GOTH should be set to .TRUE. whenever (1) a call has been made to
+     UDH, USH, UGRDH or UGRSH at the current point or (2) a previous call
+     to UPROD, with GOTH = .FALSE., at the current point has been made.
+     Otherwise, it should be set .FALSE.
+
+A17. Obtain the elements of the Hessian matrix which lie within a band of
+     given semi-bandwidth
+
+       CALL UBANDH ( N, GOTH, X, NSEMIB, BANDH, LBANDH )
+
+     where N      [in] is the number of variables for the problem,
+           GOTH   [in] is a logical variable which specifies whether the
+                  second derivatives of the groups and elements have
+                  already been set (GOTH = .TRUE.) or if they should
+                  be computed (GOTH = .FALSE.),
+           X      [in] when GOTH = .FALSE., the derivatives will be evaluated
+                  at X. Otherwise X is not used.
+           NSEMIB [in] is the required semi-bandwidth, i.e., the number of bands
+                  directly below the diagonal of the Hessian.
+           BANDH  [out] is a two-dimensional array of dimension (0:LBANDH,N)
+                  which gives the lower triangular part of the band segment
+                  of the Hessian. The diagonal entry in column i is returned
+                  in location BANDH(0,i), while the entry j places below the
+                  diagonal in column i may be found in location BANDH(j,i), and
+           LBANDH [in] is the actual declared size of the leading dimension
+                  of BANDH (with LBANDH no smaller than NSEMIB). N.B. the
+                  leading component of BANDH includes the index 0 so strictly,
+                  the size of the leading dimension is LBANDH + 1.
+
+     GOTH should be set to .TRUE. whenever (1) a call has been made to
+     UDH, USH, UGRDH or UGRSH at the current point or (2) a previous call
+     to UPROD, with GOTH = .FALSE., at the current point has been made.
+     Otherwise, it should be set .FALSE.
+
+B. Tools for the general constrained problem:
+                                                               n
+      optimize                         f( x )            x in R
+
+      subject to general equations    c ( x ) = 0,       i in E,
+                                       i
+
+      inequality constraints  (c ) <= c ( x ) <= (c ),   i in I,
+                                l i    i           u i
+
+      and simple bounds              b <= x <= b ,
+                                      l         u
+
+   where I U E = {1, 2, ...., m }, I and E disjoint, the objective
+   function f( x ) is a group partially separable function and each
+   of the general constraint functions c_i ( x ) is partially separable.
+
+   Associated with the above problem is the so-called Lagrangian
+   function
+
+             l( x, v ) = f( x ) + v(transpose) c( x )
+
+   where c( x ) is the vector whose i-th component is c_i(x) and
+   the components of the vector v are known as Lagrange multipliers.
+
+B1.   Discover how many variables and constraints are involved in the problem
+
+       CALL CDIMEN ( INPUT, N, M )
+
+     where INPUT  [in] is the unit number for the decoded data,
+           N      [out] gives the number of variables for the problem, and
+           M      [out] gives the total number of general constraints.
+
+B2.  Set up the correct data structures for subsequent computations.
+
+       CALL CSETUP ( INPUT, IOUT, N, M, X, BL, BU, NMAX, EQUATN,
+      *              LINEAR, V, CL, CU, MMAX, EFIRST, LFIRST, NVFRST )
+
+     where INPUT  [in] is the unit number for the decoded data,
+           IOUT   [in] is the unit number for any error messages,
+           N      [out] gives the total number of variables for the problem,
+           M      [out] gives the total number of general constraints,
+           X      [out] is an array which gives the initial estimate of the
+                  solution of the problem,
+           BL     [out] is an array which gives lower bounds on the variables,
+           BU     [out] is an array which gives upper bounds on the variables,
+           NMAX   [in] is the actual declared dimension of X, BL and BU.
+           EQUATN [out] is a logical array whose i-th component is .TRUE. if
+                  the i-th constraint is an equation (i in E) and
+                  .FALSE. if the constraint is an inequality (i in I),
+           LINEAR [out] is a logical array whose i-th component is .TRUE.
+                  if the i-th constraint is linear or affine and
+                  .FALSE. otherwise.
+           V      [out] is an array which gives the initial estimate of the
+                  Lagrange multipliers at the solution of the problem,
+           CL     [out] is an array which gives lower bounds on the inequality
+                  constraints,
+           CU     [out] is an array which gives upper bounds on the inequality
+                  constraints,
+           MMAX   [in] is the actual declared dimension of EQUATN, LINEAR,
+                  CL and CU,
+           EFIRST [in] is a logical variable which should be set .TRUE. if
+                  the user wishes the general equations to occur
+                  before the general inequalities in the list of
+                  constraints. If the order is unimportant,
+                  EFIRST should be set .FALSE., 
+           LFIRST [in] is a logical variable which should be set .TRUE. if
+                  the user wishes the general linear (or affine)
+                  constraints to occur before the general nonlinear ones
+                  in the list of constraints. If the order is unimportant,
+                  LFIRST should be set .FALSE.
+                  If both EFIRST and LFIRST are set .TRUE., the linear
+                  constraints will occur before the nonlinear ones.
+                  The linear  constraints will be ordered so that the
+                  linear equations occur before the linear inequalities.
+                  Likewise, the nonlinear equations will appear
+                  before the nonlinear inequalities in the list
+                  of nonlinear constraints, and
+           NVFRST [in] is a logical variable which should be set .TRUE. if
+                  the user wishes that the nonlinear variables come first.
+                  Within the nonlinear variables the smaller set of either
+                  the nonlinear objective or nonlinear Jacobian variables
+                  appears first.
+
+B3.  Obtain the names of the problem, its variables and general constraints.
+
+       CALL CNAMES( N, M, PNAME, VNAMES, GNAMES )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           PNAME  [out] is a 10-character name for the problem,
+           VNAMES [out] is an array of 10-character names of the variables, and
+           GNAMES [out] is an array of 10-character names of the general 
+                  constraints.
+
+
+B4.  Obtain the names of the problem and its variables.
+
+       CALL CVARTY( N, IVARTY )
+
+     where N      [in] is the number of variables for the problem,
+           IVARTY [out] is an integer array whose i-th component indicates
+                  the type of variable i. Possible values are 0 (a variable
+                  whose value may be any real number), 1 (an integer variable 
+                  that can only take the values zero or one) and 2 (a variable 
+                  that can only take integer values).
+
+B5.  Evaluate the objective and general constraint function values.
+
+       CALL CFN ( N, M, X, F, LC, C )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           F      [out]  gives the value of the objective function evaluated
+                  at X,
+           C      [out] is an array which gives the values of the general
+                  constraint functions evaluated at X. The i-th component
+                  of C will contain the value of c_i (x), and
+           LC     [in] is the actual declared dimension of C, with LC no
+                  smaller than M.
+
+B6.  Evaluate the gradients of the general constraint functions.
+     Also obtain the gradient of either the objective function or
+     the Lagrangian function.
+
+       CALL CGR ( N, M, X, GRLAGF, LV, V, G,
+      *           JTRANS, LCJAC1, LCJAC2, CJAC )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           GRLAGF [in] is a logical variable which should be set .TRUE. if
+                  the gradient of the Lagrangian function is required
+                  and .FALSE. if the gradient of the objective function
+                  is sought,
+           LV     [in] is the actual declared dimension of V,
+           V      [in] is an array which should give the Lagrange multipliers
+                  whenever GRLAGF is set .TRUE. but need not otherwise be set,
+           G      [out] is an array which gives the value of the gradient of
+                  the objective function evaluated at X (GRLAGF = .FALSE.)
+                  or of the Lagrangian function evaluated at X and V
+                  (GRLAGF = .TRUE.),
+           JTRANS [in] is a logical variable which should be set .TRUE. if
+                  the transpose of the constraint Jacobian is required
+                  and .FALSE. if the Jacobian itself is wanted. The
+                  Jacobian matrix is the matrix whose i-th row is
+                  the gradient of the i-th constraint function,
+           LCJAC1 [in] is the actual declared size of the leading dimension
+                  of CJAC (with LCJAC1 no smaller than N if JTRANS
+                  is .TRUE. or M if JTRANS is .FALSE.),
+           LCJAC2 [in] is the actual declared size of the second dimension
+                  of CJAC (with LCJAC2 no smaller than M if JTRANS
+                  is .TRUE. or N if JTRANS is .FALSE.), and
+           CJAC   [out] is a two-dimensional array of dimension (LCJAC1, LCJAC2)
+                  which gives the value of the Jacobian matrix of the
+                  constraint functions, or its transpose, evaluated at X.
+                  If JTRANS is .TRUE., the i,j-th component of the array
+                  will contain the i-th derivative of the j-th constraint
+                  function. Otherwise, if JTRANS is .FALSE., the i,j-th
+                  component of the array will contain the j-th derivative
+                  of the i-th constraint function.
+
+B7.  Evaluate the objective function and possibly its gradient.
+
+       CALL COFG  ( N, X, F, G, GRAD )
+
+     where N      [in] is the number of variables for the problem,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           F      [out] gives the value of the objective function evaluated
+                  at X,
+           G      [out] is an array which gives the value of the gradient of
+                  the objective function evaluated at X, and
+           GRAD   [in] is a logical variable which should be set .TRUE. if
+                  the gradient of the objective function is required
+                  and .FALSE. otherwise.
+
+B8.  Determine how many nonzeros are required to store the matrix of 
+     gradients of the objective function and constraints, when the matrix 
+     is stored in sparse format.
+
+       CALL CDIMSJ ( NNZJ )
+
+     where  NNZJ   [out] is the number of nonzeros in the matrix.
+
+B9.  Evaluate the gradients of the general constraint functions.
+     Also obtain the gradient of either the objective function or
+     the Lagrangian function. The gradients are stored in a sparse format.
+
+       CALL CSGR ( N, M, GRLAGF, LV, V, X, NNZJ, LCJAC, CJAC,
+      *            INDVAR, INDFUN )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           GRLAGF [in] is a logical variable which should be set .TRUE. if
+                  the gradient of the Lagrangian function is required
+                  and .FALSE. if the gradient of the objective function
+                  is sought,
+           LV     [in] is the actual declared dimension of V,
+           V      [in] is an array which should give the Lagrange multipliers
+                  whenever GRLAGF is set .TRUE. but need not otherwise be set,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           NNZJ   [out] is the number of nonzeros in CJAC,
+           LCJAC  [in] is the actual declared dimensions of CJAC, INDVAR 
+                  and INDFUN,
+           CJAC   [out] is an array which gives the values of the nonzeros of
+                  the gradients of the objective, or Lagrangian, and general
+                  constraint functions evaluated at X and V. The i-th entry
+                  of CJAC gives the value of the derivative with respect to
+                  variable INDVAR(i) of function INDFUN(i),
+           INDVAR [out] is an array whose i-th component is the index of the 
+                  variable with respect to which CJAC(i) is the derivative, and
+           INDFUN [out] is an array whose i-th component is the index of the
+                  problem function whose value CJAC(i) is the derivative.
+                  INDFUN(i) = 0 indicates the objective function whenever
+                  GRLAGF is .FALSE. or the Lagrangian function when
+                  GRLAGF is .TRUE., while INDFUN(i) = j > 0 indicates
+                  the j-th general constraint function.
+
+B10. Evaluate the constraint functions and possibly their gradients.
+     It is assumed that the gradients are stored in a dense format.
+
+       CALL CCFG  ( N, M, X, LC, C, JTRANS, LCJAC1, LCJAC2, CJAC, GRAD )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           LC     [in] is the actual declared dimension of C, with LC no
+                  smaller than M,
+           C      [out] is an array which gives the values of the general
+                  constraint functions evaluated at X. The i-th component
+                  of C will contain the value of c_i (x),
+           JTRANS [in] is a logical variable which should be set .TRUE. if
+                  the transpose of the constraint Jacobian is required
+                  and .FALSE. if the Jacobian itself is wanted. The
+                  Jacobian matrix is the matrix whose i-th row is
+                  the gradient of the i-th constraint function,
+           LCJAC1 [in] is the actual declared size of the leading dimension
+                  of CJAC (with LCJAC1 no smaller than N if JTRANS
+                  is .TRUE. or M if JTRANS is .FALSE.),
+           LCJAC2 [in] is the actual declared size of the second dimension
+                  of CJAC (with LCJAC2 no smaller than M if JTRANS
+                  is .TRUE. or N if JTRANS is .FALSE.),
+           CJAC   [out] is a two-dimensional array of dimension (LCJAC1, LCJAC2)
+                  which gives the value of the Jacobian matrix of the
+                  constraint functions, or its transpose, evaluated at X.
+                  If JTRANS is .TRUE., the i,j-th component of the array
+                  will contain the i-th derivative of the j-th constraint
+                  function. Otherwise, if JTRANS is .FALSE., the i,j-th
+                  component of the array will contain the j-th derivative
+                  of the i-th constraint function, and
+           GRAD   [in] is a logical variable which should be set .TRUE. if
+                  the gradient of the constraint functions are required
+                  and .FALSE. otherwise.
+
+B11. Evaluate the constraint functions and possibly their 
+     gradients when the gradients are stored in a sparse format.
+
+       CALL CSCFG ( N, M, X, LC, C, NNZJ, LCJAC, CJAC, INDVAR, INDFUN, GRAD )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           LC     [in] is the actual declared dimension of C, with LC no
+                  smaller than M,
+           C      [out] is an array which gives the values of the general
+                  constraint functions evaluated at X. The i-th component
+                  of C will contain the value of c_i (x),
+           NNZJ   [out] is the number of nonzeros in CJAC,
+           LCJAC  [in] is the actual declared dimensions of CJAC, INDVAR 
+                  and INDFUN,
+           CJAC   [out] is an array which gives the values of the nonzeros of
+                  the general constraint functions evaluated at X and V.
+                  The i-th entry of CJAC gives the value of the derivative
+                  with respect to variable INDVAR(i) of constraint function
+                  INDFUN(i),
+           INDVAR [out] is an array whose i-th component is the index of the 
+                  variable with respect to which CJAC(i) is the derivative,
+           INDFUN [out] is an array whose i-th component is the index of the
+                  problem function of which CJAC(i) is the derivative, and
+           GRAD   [in] is a logical variable which should be set .TRUE. if
+                  the gradient of the constraint functions are required
+                  and .FALSE. otherwise.
+
+B12. Evaluate a single constraint function and possibly its gradient.
+     It is assumed that the gradient is stored in a dense format.
+
+       CALL CCIFG  ( N, ICON, X, CI, GCI, GRAD )
+
+     where N      [in] is the number of variables for the problem,
+           ICON   [in] is the index of the constraint function to be
+                  evaluated,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           CI     [out] is the value of constraint function ICON at X,
+           GCI    [out] is an array which gives the gradient of constraint
+                  function ICON evaluated at X, and
+           GRAD   [in] is a logical variable which should be set .TRUE. if
+                  the gradient of the constraint function is required and
+                  .FALSE. otherwise.
+
+B13. Evaluate a single constraint function and possibly its gradient.
+     It is assumed that the gradient is stored in a sparse format.
+
+       CALL CCIFSG( N, ICON, X, CI, NNZSGC, LSGCI, SGCI, IVSGCI, GRAD )
+
+       previously
+
+       CALL CSCIFG ( N, ICON, X, CI, NNZSGC, LSGCI, SGCI, IVSGCI, GRAD )
+
+     where N      [in] is the number of variables for the problem,
+           ICON   [in] is the index of the constraint function to be
+                  evaluated,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           CI     [out] is the value of constraint function ICON at X,
+           NNZSGC [out] is the number of nonzeros in SGCI,
+           LSGCI  [in] is the declared length of SGCI,
+           SGCI   [out] is an array which gives the nonzeros of the gradient 
+                  of constraint function ICON evaluated at X.  The i-th entry
+                  of SGCI gives the value of the derivative with respect to
+                  variable IVSGCI(i) of function ICON.
+           IVSGCI [out] is an array whose i-th component is the index of the
+                  variable with respect to which SGCI(i) is the derivative, and
+           GRAD   [in] is a logical variable which should be set .TRUE. if
+                  the gradient of the constraint function is required and
+                  .FALSE. otherwise.
+
+B14. Evaluate the Hessian matrix of the Lagrangian function for the
+     problem. The matrix is stored as a dense matrix.
+
+       CALL CDH ( N, M, X, LV, V, LH1, H )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           LV     [in] is the actual declared dimension of V,
+           V      [in] is an array which gives the Lagrange multipliers,
+           LH1    [in] is the actual declared size of the leading dimension
+                  of H (with LH1 no smaller than N), and
+           H      [out] is a two-dimensional array which gives the value of
+                  the Hessian matrix of the Lagrangian function evaluated
+                  at X and V.
+
+B15. Evaluate the Hessian matrix of an individual problem function.
+     The Hessian is stored as a dense matrix.
+
+       CALL CIDH ( N, X, IPROB, LH1, H )
+
+     where N      [in] is the number of variables for the problem,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           IPROB  [in] is the number of the problem function to be considered.
+                  If IPROB = 0, the Hessian of the objective function will be 
+                  evaluated, while if IPROB = i > 0, that of the i-th 
+                  constraint will be evaluated,
+           LH1    [in] is the actual declared size of the leading dimension
+                  of H (with LH1 no smaller than N), and
+           H      [out] is a two-dimensional array which gives the value of
+                  the required Hessian matrix evaluated at X.
+
+B16. Evaluate both the gradients of the general constraint functions
+     and the Hessian matrix of the Lagrangian function for the problem.
+     Also obtain the gradient of either the objective function or
+     the Lagrangian function. The matrices are stored as dense matrices.
+     Calling this routine is more efficient than separate calls to
+     CGR and CDH
+
+       CALL CGRDH ( N, M, X, GRLAGF, LV, V, G,
+      *             JTRANS, LCJAC1, LCJAC2, CJAC, LH1, H )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           GRLAGF [in] is a logical variable which should be set .TRUE. if
+                  the gradient of the Lagrangian function is required
+                  and .FALSE. if the gradient of the objective function 
+                  is sought,
+           LV     [in] is the actual declared dimension of V,
+           V      [in] is an array which gives the Lagrange multipliers,
+           G      [out] is an array which gives the value of the gradient of
+                  the objective function evaluated at X (GRLAGF = .FALSE.)
+                  or of the Lagrangian function evaluated at X and V
+                  (GRLAGF = .TRUE.),
+           JTRANS [in] is a logical variable which should be set .TRUE. if
+                  the transpose of the constraint Jacobian is required
+                  and .FALSE. if the Jacobian itself is wanted. The
+                  Jacobian matrix is the matrix whose i-th row is
+                  the gradient of the i-th constraint function,
+           LCJAC1 [in] is the actual declared size of the leading dimension
+                  of CJAC (with LCJAC1 no smaller than N if JTRANS
+                  is .TRUE. or M if JTRANS is .FALSE.),
+           LCJAC2 [in] is the actual declared size of the second dimension
+                  of CJAC (with LCJAC2 no smaller than M if JTRANS
+                  is .TRUE. or N if JTRANS is .FALSE.), and
+           CJAC   [out] is a two-dimensional array of dimension (LCJAC1, LCJAC2)
+                  which gives the value of the Jacobian matrix of the
+                  constraint functions, or its transpose, evaluated at X.
+                  If JTRANS is .TRUE., the i,j-th component of the array
+                  will contain the i-th derivative of the j-th constraint
+                  function. Otherwise, if JTRANS is .FALSE., the i,j-th
+                  component of the array will contain the j-th derivative
+                  of the i-th constraint function.
+           LH1    [in] is the actual declared size of the leading dimension
+                  of H (with LH1 no smaller than N), and
+           H      [out] is a two-dimensional array which gives the value of
+                  the Hessian matrix of the Lagrangian function evaluated
+                  at X and V.
+
+B17.  Determine how many nonzeros are required to store the Hessian matrix 
+     of the Lagrangian, when the matrix is stored as  sparse matrix in 
+     "co-ordinate" format.
+
+       CALL CDIMSH ( NNZH )
+
+     where  NNZH   [out] is the number of nonzeros in H.
+
+B18. Evaluate the Hessian matrix of the Lagrangian function for the
+     problem. The Hessian is stored as a sparse matrix in "co-ordinate" 
+     format. 
+
+       CALL CSH ( N, M, X, LV, V, NNZH, LH, H, IRNH, ICNH )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           LV     [in] is the actual declared dimension of V,
+           V      [in] is an array which gives the Lagrange multipliers,
+           NNZH   [out] is the number of nonzeros in H,
+           LH     [in] is the actual declared dimensions of H, IRNH and ICNH,
+           H      [out] is an array which gives the values of the Hessian matrix
+                  of the Lagrangian function evaluated at X and V. The i-th
+                  entry of H gives the value of the nonzero in row
+                  IRNH(i) and column ICNH(i). Only the upper triangular
+                  part of the Hessian is stored,
+           IRNH   [out] is an array which gives the row indices of the nonzeros
+                  of the Hessian matrix of the objective function evaluated
+                  at X and V, and
+           ICNH   [out] is an array which gives the column indices of the
+                  nonzeros of the Hessian matrix of the objective function
+                  evaluated at X and V.
+
+B19. Evaluate the Hessian matrix of an individual problem function.
+     problem. The Hessian is stored as a sparse matrix in "co-ordinate" 
+     format. 
+
+       CALL CISH ( N, X, IPROB, NNZH, LH, H, IRNH, ICNH )
+
+     where N      [in] is the number of variables for the problem,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           IPROB  [in] is the number of the problem function to be considered.
+                  If IPROB = 0, the Hessian of the objective function will be 
+                  evaluated, while if IPROB = i > 0, that of the i-th 
+                  constraint will be evaluated.
+           NNZH   [out] is the number of nonzeros in H,
+           LH     [in] is the actual declared dimensions of H, IRNH and ICNH,
+           H      [out] is an array which gives the values of the Hessian matrix
+                  of the specified problem function evaluated at X. The i-th
+                  entry of H gives the value of the nonzero in row
+                  IRNH(i) and column ICNH(i). Only the upper triangular
+                  part of the Hessian is stored,
+           IRNH   [out] is an array which gives the row indices of the nonzeros
+                  of the Hessian matrix of the objective function evaluated
+                  at X, and
+           ICNH   [out] is an array which gives the column indices of the
+                  nonzeros of the Hessian matrix of the objective function
+                  evaluated at X.
+
+B20. Determine how many nonzeros are required to store the Hessian matrix 
+     of the Lagrangian function, when the matrix is stored in "finite 
+     element" format.
+
+       CALL CDIMSE( NE, NZH, NZIRNH )
+
+     where  NE     [out] is the number of "finite-elements" used,
+            NZH    [out] is the dimension of the array needed to store the 
+                   real values of the Hessian, and
+            NZIRNH [out] is the dimension of the array needed to store the 
+                   integer values of the Hessian.
+
+B21. Evaluate the Hessian matrix of the Lagrangian function for the
+     problem. The Hessian is stored as a sparse matrix in "finite-element"
+     format, 
+
+            ne
+       H = sum H_i, 
+           i=1
+
+      where each element H_i involves a small subset of the rows of H.
+
+
+       CALL CEH ( N, M, X, LV, V, NE, IRNHI, LIRNHI, LE, IPRNHI, 
+      *           HI, LHI, IPRHI, BYROWS )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           LV     [in] is the actual declared dimension of V,
+           V      [in] is an array which gives the Lagrange multipliers,
+           NE     [out] is the number of "finite-elements" used,
+           IRNHI  [out] is an array which holds a list of the row indices 
+                  involved which each element. Those for element i directly 
+                  preceed those for element i+1, i = 1, ..., NE-1,
+           LIRNHI [in] is the actual declared dimension of IRNHI,
+           LE     [in] is the actual declared dimensions of IPRNHI and IPRHI,
+	   IPRNHI [out] is an array of pointers to the position in IRNHI of 
+                  the first row index in each element. IPRNHI(NE+1) points
+                  to the first empty location in IRPNHI,
+	   HI     [out] is an array of the nonzeros in the upper triangle of
+                  H_i, evaluated at X and V and stored by rows, or by columns.
+                  Those for element i directly proceed those for element, 
+                  i+1, i = 1, ..., NE-1,
+           LHI    [in] is the actual declared dimension of HI,
+           IPRHI  [out] pointers to the position in HI of the first 
+                   nonzero in each element. IPRHI(NE+1) points to the first 
+                   empty location in HI, and
+           BYROWS [in] must be set .TRUE. if the upper triangle of each H_i 
+                  is to be stored by rows, and .FALSE. if it is to be stored
+                  by columns.
+
+B22. Evaluate both the gradients of the general constraint functions
+     and the Hessian matrix of the Lagrangian function for the problem.
+     The Hessian is stored as a sparse matrix in "co-ordinate" format. 
+     Also obtain the gradient of either the objective function or
+     the Lagrangian function. The data is stored in a sparse format.
+     Calling this routine is more efficient than separate calls to
+     CSGR and CSH.
+
+       CALL CSGRSH ( N, M, X, GRLAGF, LV, V, NNZJ, LCJAC, CJAC,
+     *              INDVAR, INDFUN, NNZH, LH, H, IRNH, ICNH )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           GRLAGF [in] is a logical variable which should be set .TRUE. if
+                  the gradient of the Lagrangian function is required
+                  and .FALSE. if the gradient of the objective function
+                  is sought,
+           LV     [in] is the actual declared dimension of V,
+           V      [in] is an array which gives the Lagrange multipliers,
+           NNZJ   [out] is the number of nonzeros in CJAC,
+           LCJAC  [in] is the actual declared dimensions of CJAC, INDVAR 
+                  and INDFUN,
+           CJAC   [out] is an array which gives the values of the nonzeros of
+                  the gradients of the objective, or Lagrangian, and general
+                  constraint functions evaluated at X and V. The i-th entry
+                  of CJAC gives the value of the derivative with respect to
+                  variable INDVAR(i) of function INDFUN(i),
+           INDVAR [out] is an array whose i-th component is the index of the 
+                  variable with respect to which CJAC(i) is the derivative, and
+           INDFUN [out] is an array whose i-th component is the index of the
+                  problem function whose value CJAC(i) is the derivative.
+                  INDFUN(i) = 0 indicates the objective function whenever
+                  GRLAGF is .FALSE. or the Lagrangian function when
+                  GRLAGF is .TRUE., while INDFUN(i) = j > 0 indicates
+                  the j-th general constraint function.
+           NNZH   [out] is the number of nonzeros in H,
+           LH     [in] is the actual declared dimensions of H, IRNH and ICNH,
+           H      [out] is an array which gives the value of the Hessian matrix
+                  of the Lagrangian function evaluated at X and V. The i-th
+                  entry of H gives the value of the nonzero in row
+                  IRNH(i) and column ICNH(i). Only the upper triangular
+                  part of the Hessian is stored,
+           IRNH   [out] is an array which gives the row indices of the nonzeros
+                  of the Hessian matrix of the objective function evaluated
+                  at X and V, and
+           ICNH   [out] is an array which gives the column indices of the
+                  nonzeros of the Hessian matrix of the objective function
+                  evaluated at X and V.
+
+B23. Evaluate both the gradients of the general constraint functions
+     and the Hessian matrix of the Lagrangian function for the problem.
+     The Hessian is stored as a sparse matrix in "finite-element" format. 
+     Also obtain the gradient of either the objective function or
+     the Lagrangian function. The data is stored in a sparse format.
+     Calling this routine is more efficient than separate calls to
+     CSGR and CEH.
+
+       CALL CSGREH ( N, M, X, GRLAGF, LV, V, NNZJ, LCJAC, CJAC,
+     *              INDVAR, INDFUN, NE, IRNHI, LIRNHI, LE, IPRNHI, 
+     *              HI, LHI, IPRHI, BYROWS )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           X      [in] is an array which gives the current estimate of the
+                  solution of the problem,
+           GRLAGF [in] is a logical variable which should be set .TRUE. if
+                  the gradient of the Lagrangian function is required
+                  and .FALSE. if the gradient of the objective function
+                  is sought,
+           LV     [in] is the actual declared dimension of V,
+           V      [in] is an array which gives the Lagrange multipliers,
+           NNZJ   [out] is the number of nonzeros in CJAC,
+           LCJAC  [in] is the actual declared dimensions of CJAC, INDVAR 
+                  and INDFUN,
+           CJAC   [out] is an array which gives the values of the nonzeros of
+                  the gradients of the objective, or Lagrangian, and general
+                  constraint functions evaluated at X and V. The i-th entry
+                  of CJAC gives the value of the derivative with respect to
+                  variable INDVAR(i) of function INDFUN(i),
+           INDVAR [out] is an array whose i-th component is the index of the 
+                  variable with respect to which CJAC(i) is the derivative, and
+           INDFUN [out] is an array whose i-th component is the index of the
+                  problem function whose value CJAC(i) is the derivative.
+                  INDFUN(i) = 0 indicates the objective function whenever
+                  GRLAGF is .FALSE. or the Lagrangian function when
+                  GRLAGF is .TRUE., while INDFUN(i) = j > 0 indicates
+                  the j-th general constraint function.
+           NE     [out] is the number of "finite-elements" used,
+           IRNHI  [out] is an array which holds a list of the row indices 
+                  involved which each element. Those for element i directly 
+                  preceed those for element i+1, i = 1, ..., NE-1,
+           LIRNHI [in] is the actual declared dimension of IRNHI,
+           LE     [in] is the actual declared dimensions of IPRNHI and IPRHI,
+	   IPRNHI [out] is an array of pointers to the position in IRNHI of 
+                  the first row index in each element. IPRNHI(NE+1) points
+                  to the first empty location in IRPNHI,
+	   HI     [out] is an array of the nonzeros in the upper triangle of
+                  H_i, evaluated at X and V and stored by rows, or by columns.
+                  Those for element i directly proceed those for element, 
+                  i+1, i = 1, ..., NE-1,
+           LHI    [in] is the actual declared dimension of HI,
+           IPRHI  [out] pointers to the position in HI of the first 
+                   nonzero in each element. IPRHI(NE+1) points to the first 
+                   empty location in HI, and
+           BYROWS [in] must be set .TRUE. if the upper triangle of each H_i 
+                  is to be stored by rows, and .FALSE. if it is to be stored
+                  by columns.
+
+B24. Form the matrix-vector product of a vector with the Hessian matrix
+     of the Lagrangian function.
+
+       CALL CPROD  ( N, M, GOTH, X, LV, V, P, Q )
+
+     where N      [in] is the number of variables for the problem,
+           M      [in] is the total number of general constraints,
+           GOTH   [in] is a logical variable which specifies whether the
+                  second derivatives of the groups and elements have
+                  already been set (GOTH = .TRUE.) or if they should
+                  be computed (GOTH = .FALSE.),
+           X      [in] when GOTH = .FALSE., the derivatives will be evaluated
+                  at X. Otherwise X is not used.
+           LV     [in] is the actual declared dimension of V,
+           V      [in] when GOTH = .FALSE., the derivatives will be evaluated
+                  with Lagrange multipliers V. Otherwise V is not used.
+           P      [in] is an array which gives the vector whose product with the
+                  Hessian is required, and
+           Q      [out] is an array which gives the result of multiplying the
+                  Hessian by P.
+
+     GOTH should be set to .TRUE. whenever (1) a call has been made to
+     CDH, CSH, CGRDH or CSGRSH at the current point or (2) a previous call
+     to CPROD, with GOTH = .FALSE., at the current point has been made.
+     Otherwise, it should be set .FALSE.
+
+
+Current status 20/12/1999
+-------------------------
+
+Completed routines:
+
+   UDIMEN, USETUP, UNAMES, UVARTY, UFN, UGR, UOFG, UDH, UGRDH
+   UDIMSH, USH, UEH, UGRSH, UDIMSE, UGREH, UPROD, UBANDH
+   CDIMEN, CSETUP, CNAMES, CVARTY, CFN, CGR, COFG, CDIMSJ, CSGR 
+   CCFG, CSCFG, CCIFG , CSCIFG, CDH, CIDH, CGRDH,  CDIMSH, CSH 
+   CISH, CDIMSE, CEH, CSGRSH, CSGREH, CPROD
+
+-----------------------
+
+I. Bongartz, A.R. Conn, Nick Gould, D. Orban and Ph. Toint
+for CGT productions
+20th December 1999

@@ -1,0 +1,31 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            QPA.data
+! problem-data-file-device                          26
+! write-initial-sif                                 yes
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! initial-rho-g                                     1.0D+6
+! initial-rho-b                                     1.0D+6
+! scale-problem                                     0
+! pre-solve-problem                                 no
+! write-presolved-sif                               no
+! presolved-sif-file-name                           PRESOLVE.SIF
+! presolved-sif-file-device                         52
+! write-scaled-sif                                  no
+! scaled-sif-file-name                              SCALED.SIF
+! scaled-sif-file-device                            58
+! solve-problem                                     yes
+! print-full-solution                               no
+! write-solution                                    yes
+! solution-file-name                                QPASOL.d
+! solution-file-device                              62
+! write-result-summary                              yes
+! result-summary-file-name                          QPARES.d
+! result-summary-file-device                        47
+
+INCLUDE QPA
+
+INCLUDE PRESOLVE
+
+INCLUDE SLS

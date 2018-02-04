@@ -1,0 +1,8 @@
+! error-printout-device                             6
+! printout-device                                   6
+! print-level                                       0
+! transpose-matrix                                  no
+! order-entries                                     no
+! space-critical                                    no
+! deallocate-error-fatal                            no
+! output-line-prefix                                ""

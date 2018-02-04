@@ -1,0 +1,53 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            L1QP.data
+! problem-data-file-device                          26
+! write-initial-sif                                 no
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! problem-type                                      -1
+!   where problem-type 0=no obj,1=closest to 1,2=closest to 2,other=QP
+! scale-problem                                     0
+! pre-solve-problem                                 no
+! solve-problem                                     yes
+! presolved-sif-file-name                           PRESOLVE.SIF
+! presolved-sif-file-device                         50
+! write-scaled-sif                                  no
+! scaled-sif-file-name                              SCALED.SIF
+! scaled-sif-file-device                            58
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                L1QPSOL.d
+! solution-file-device                              62
+! write-result-summary                              no
+! result-summary-file-name                          L1QPRES.d
+! result-summary-file-device                        47
+! perturb-bounds-by                                 0.0
+! perturb-hessian-diagonals-by                      0.0
+! convexify                                         no
+
+INCLUDE L1QP
+
+INCLUDE CQP
+
+INCLUDE DQP
+
+INCLUDE DLP
+
+INCLUDE CRO
+
+INCLUDE SBLS
+
+INCLUDE SLS
+
+INCLUDE ULS
+
+INCLUDE GLTR
+REPLACE
+! zero-gradient-tolerance                           1.0D-20
+
+INCLUDE FDC
+
+INCLUDE ROOTS
+
+INCLUDE PRESOLVE
