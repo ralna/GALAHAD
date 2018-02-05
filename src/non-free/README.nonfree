@@ -2,19 +2,18 @@
                    NON-FREE SOFTWARE
                    -----------------
 
-The packages referred to in this directory are not covered by the same
-licence as the rest of GALAHAD. Many are available as part of the
-HSL archive,
+The packages referred to in this directory are not covered by the
+same licence as the rest of GALAHAD. Many are available as part
+of the HSL archive,
 
   http://www.hsl.rl.ac.uk/archive/
 
-and are made available
-here for convenience, by special permission. Some of the packages
-contain source code, while other simply exist as stubs to software
-that may be installed separately for academic use (see
-$GALAHAD/src/makedefs/packages). These packages are not crucial to
-run GALAHAD, but providing them will lead to improved performance.
-They should *not* be altered and then redistributed.
+and are made available here for convenience, by special permission.
+Some of the packages contain source code, while other simply exist
+as stubs to software that may be installed separately for academic
+use (see $GALAHAD/src/makedefs/packages). These packages are not
+crucial to run GALAHAD, but providing them will lead to improved
+performance. They should *not* be altered and then redistributed.
 
 Separate licencing conditions may apply for commercial incorporation
 and redistribution. See
@@ -25,7 +24,8 @@ for conditions attached to the provided HSL archive packages
 
    ad02, ma27, ma33 and ma61,
 
-and stricter ones for the useful-but-not-provided HSL main-library packages
+and stricter ones for the useful-but-not-provided HSL main-library
+packages
 
    ma48,  ma57, ma77,  ma86, ma87, ma97, mc61, mc64, mc68,
    mc77, mi20, mi28 and mi35.
@@ -34,5 +34,5 @@ In addition, both icfs (http://www.mcs.anl.gov/~more/icfs/) and
 minpack (ftp://ftp.mcs.anl.gov/pub/MINPACK-2/gqt) are useful
 but must be downloaded separately.
 
-See $GALAHAD/src/makedefs/packages for more details about
-downloads and installation.
+See $GALAHAD/src/makedefs/packages for more details about downloads
+and installation.
