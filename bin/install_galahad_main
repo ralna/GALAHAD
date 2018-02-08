@@ -234,6 +234,36 @@ galahad_compile () {
   fi
 }
 
+#  create necessary empty directories as required
+
+if [[ ! -e $GALAHAD/versions ]]; then
+  $MKDIR $GALAHAD/versions
+fi
+
+if [[ ! -e $GALAHAD/objects ]]; then
+  $MKDIR $GALAHAD/objects
+fi
+
+if [[ ! -e $GALAHAD/modules ]]; then
+  $MKDIR $GALAHAD/modules
+fi
+
+if [[ ! -e $GALAHAD/makefiles ]]; then
+  $MKDIR $GALAHAD/makefiles
+fi
+
+if [[ ! -e $GALAHAD/bin/sys ]]; then
+  $MKDIR $GALAHAD/bin/sys
+fi
+
+if [[ ! -e $GALAHAD/ampl_bin ]]; then
+  $MKDIR $GALAHAD/ampl_bin
+fi
+
+#if [[ ! -e $GALAHAD/specs ]]; then
+#  $MKDIR $GALAHAD/specs
+#fi
+
 export GALAHAD=`dirs -l`
 export GALAHAD=`echo $GALAHAD | $SED 's"/tmp_mnt""'`
 

@@ -195,14 +195,15 @@ In order to get GALAHAD working, here is what you need to do.
    combination, move into the $GALAHAD directory,
    issue the command
 
-     $ARCHDEFS/install_optsuite
+     $ARCHDEFS/install_optrove
 
    and answer the questions as prompted. This command sets up
    machine/os/compiler-specific files, and (optionally) compiles all
    (or suitable sub-components) of GALAHAD (and SiFDec/CUTEst if required).
 
-   You may issue the $ARCHDEFS/install_optsuite command for as many
-   machine/os/compiler combinations as you wish to support.
+   You may issue the $ARCHDEFS/install_optrove command for as many
+   machine/os/compiler combinations as you wish to support, and you
+   will have access to each independently of the others.
 
 11. To recompile the whole of GALAHAD, move into the directory
 
