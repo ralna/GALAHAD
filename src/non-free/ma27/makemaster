@@ -68,9 +68,9 @@ ma27_double: $(HLGD)(ma27d.o)
 
 ma27s.o: $(HLG)(ma27s.o)
 
-$(HLG)(ma27s.o): ../ma27/ma27s.f
+$(HLG)(ma27s.o): $(HSL_ARCHIVE)/ma27/ma27s.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "ma27s"
-	$(CP) ../ma27/ma27s.f $(OBJ)/ma27s.f90
+	$(CP) $(HSL_ARCHIVE)/ma27/ma27s.f $(OBJ)/ma27s.f90
 	cd $(OBJ) ; $(FORTRAN) -o ma27s.o $(FFLAGS77) ma27s.f90
 	cd $(OBJ) ; $(HARR) ma27s.o ; $(RM) ma27s.f90 ma27s.o
 #	$(RMARFILE) sils.o
@@ -81,9 +81,9 @@ $(HLG)(ma27s.o): ../ma27/ma27s.f
 
 ma27d.o: $(HLG)(ma27d.o)
 
-$(HLG)(ma27d.o): ../ma27/ma27d.f
+$(HLG)(ma27d.o): $(HSL_ARCHIVE)/ma27/ma27d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "ma27d"
-	$(CP) ../ma27/ma27d.f $(OBJ)/ma27d.f90
+	$(CP) $(HSL_ARCHIVE)/ma27/ma27d.f $(OBJ)/ma27d.f90
 	cd $(OBJ) ; $(FORTRAN) -o ma27d.o $(FFLAGS77) ma27d.f90
 	cd $(OBJ) ; $(HARR) ma27d.o ; $(RM) ma27d.f90 ma27d.o
 #	$(RMARFILE) sils.o

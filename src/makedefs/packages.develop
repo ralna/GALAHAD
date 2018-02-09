@@ -1,4 +1,4 @@
-# THIS VERSION: GALAHAD 2.6 - 29/05/2015 AT 14:50 GMT.
+# THIS VERSION: GALAHAD 3.0 - 08/02/2018 AT 13:50 GMT.
 
 # Updates 12/Nov/2004 to allow for MA57, version 2
 #         29/Mar/2005 to allow for MA57, version 3
@@ -21,9 +21,20 @@
 #         21/Nov/2011 to allow for MC61
 #         25/Oct/2013 to allow for MI28
 #         29/May/2015 to allow for MI35
+#         08/Feb/2018 to reintroduce MA61 as this is not in the HSL Archive,
+#                     and to allow for the HSL Archive
 
 # Set directories for optional packages
 # Change these to override provided defaults containing dummy routines
+
+# ---------------- HSL_ARCHIVE environment variable -------------------
+
+# The variable HSL_ARCHIVE should be set to the directory in which the source
+# codes for the HSL Archive packages ad02, ma27 and ma33 obtained from
+
+#   http://www.hsl.rl.ac.uk/download/hslarchive-galahad/latest
+
+HSL_ARCHIVE = $(GALAHAD)/../hslarchive-galahad
 
 # ================ IMPORTANT NEWS FOR POTENTIAL HSL USERS ==============
 
@@ -113,6 +124,16 @@ ULINEARSOLVER = ma48v3
 
 #MA48 = $(GALAHAD)/src/dum
 MA48 = $(GALAHAD)/../hsl-galahad/hsl_ma48
+
+# -------------------- MA61 environment variable ------------------------
+
+#  MA61 is the actual source directory for the HSL package MA61
+#  This directory must contain files with the following names
+#     hsl_ma61 (single precision): ./ma61s.f90
+#     hsl_ma61 (double precision): ./ma61d.f90
+
+#MA61 = $(GALAHAD)/src/dum
+MA61 = $(GALAHAD)/../hsl-galahad/ma61
 
 # -------------------- MA77 environment variable ------------------------
 

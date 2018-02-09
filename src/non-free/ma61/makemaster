@@ -68,9 +68,9 @@ ma61_double: $(HLGD)(ma61d.o)
 
 ma61s.o: $(HLG)(ma61s.o)
 
-$(HLG)(ma61s.o): ../ma61/ma61s.f
+$(HLG)(ma61s.o): $(MA61)/ma61s.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "ma61s"
-	$(CP) ../ma61/ma61s.f $(OBJ)/ma61s.f90
+	$(CP) $(MA61)/ma61s.f $(OBJ)/ma61s.f90
 	cd $(OBJ) ; $(FORTRAN) -o ma61s.o $(FFLAGS77) ma61s.f90
 	cd $(OBJ); $(HARR) ma61s.o; $(RM) ma61s.f90 ma61s.o
 	$(RMARFILE) hslint.o
@@ -79,9 +79,9 @@ $(HLG)(ma61s.o): ../ma61/ma61s.f
 
 ma61d.o: $(HLG)(ma61d.o)
 
-$(HLG)(ma61d.o): ../ma61/ma61d.f
+$(HLG)(ma61d.o): $(MA61)/ma61d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "ma61d"
-	$(CP) ../ma61/ma61d.f $(OBJ)/ma61d.f90
+	$(CP) $(MA61)/ma61d.f $(OBJ)/ma61d.f90
 	cd $(OBJ) ; $(FORTRAN) -o ma61d.o $(FFLAGS77) ma61d.f90
 	cd $(OBJ); $(HARR) ma61d.o; $(RM) ma61d.f90 ma61d.o
 	$(RMARFILE) hslint.o

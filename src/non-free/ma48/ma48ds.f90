@@ -1,8 +1,9 @@
 ! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! Specimen test example for HSL_MA48
    PROGRAM GALAHAD_MA48_example
    USE HSL_MA48_DOUBLE
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER :: i, info, m, n, ne, rank
    TYPE ( ZD01_TYPE ) :: MATRIX
    TYPE ( MA48_CONTROL ) :: CONTROL
@@ -51,7 +52,7 @@
    READ( 5, * ) B
    write(6,*) CONTROL%maxit
    CALL MA48_solve( MATRIX, FACTORS, B, X, CONTROL, SINFO )
-   IF ( SINFO%flag == 0 ) WRITE( 6, '( A, /,( 6ES11.3 ) )' )                    &
+   IF ( SINFO%flag == 0 ) WRITE( 6, '( A, /,( 6ES11.3 ) )' )                   &
      ' Solution of set of equations without refinement is', X
 
 !  Clean up

@@ -8,8 +8,17 @@ of the HSL archive,
 
   http://www.hsl.rl.ac.uk/archive/
 
+and
+
+while others form part of the main HSL
+
+  http://www.hsl.rl.ac.uk/
+
+
 and are made available here for convenience, by special permission.
-Some of the packages contain source code, while other simply exist
+Some of the packages contain source code, while
+
+other simply exist
 as stubs to software that may be installed separately for academic
 use (see $GALAHAD/src/makedefs/packages). These packages are not
 crucial to run GALAHAD, but providing them will lead to improved
