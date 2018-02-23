@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.7 - 10/08/2016 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 3.0 - 19/02/2018 AT 15:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ G L R T  M O D U L E  *-*-*-*-*-*-*-*-*-
 
@@ -1798,14 +1798,13 @@
                             iter, U, W, seed, print_level, out, prefix,        &
                             hard_case, hard_case_step, eps, O, onorm2 )
 
-!  Subroutine GLRT_trts
-!  ====================
+! ---------------------------------------------------------------------
 
 !  Given an n by n symmetric tridiagonal matrix T, n-vectors c and o, and
-!  nonnegative numbers sigma and eps, this subroutine determines a vector x
-!  which approximately minimizes the regularised quadratic function
+!  nonnegative numbers sigma and eps, this subroutine determines a vector
+!  x which approximately minimizes the regularised quadratic function
 
-!     f(x) = (sigma/p) sqrt(||x+o||_2^2+eps)^p + (1/2)*x'*T*x + c'*x
+!     f(x) = sigma/p sqrt(||x + o||_2^2+eps)^p + 1/2 <x, T x> + <c, x>
 
 !  This subroutine computes an approximation x and a positive Lagrange
 !  multiplier lambda such that
@@ -1814,103 +1813,82 @@
 
 !  and
 
-!      abs(sqrt(||x+o||_2^2+eps) - lambda/sigma) <= rtol*||x||.
+!      | sqrt(||x+o||_2^2+eps) - lambda/sigma | <= rtol * ||x||
 
-!  Dummy arguments
-!  ===============
+! ----------------------- dummy arguments -----------------------------
 
-!    n is an integer variable.
-!      On entry n is the order of T.
-!      On exit n is unchanged.
+!    n is an integer (in) variable.
+!      On entry n is the order of T
 
-!    D is a real array of dimension (n).
+!    D is a real (in) array of dimension n.
 !      On entry D must contain the diagonal of T
-!      Unchanged on exit.
 
-!    OFFD is a real array of dimension (n-1).
+!    OFFD is a real (in) array of dimension n-1.
 !      On entry D must contain the subdiagonal of T
-!      Unchanged on exit.
 
-!    D_fact is a real array of dimension (n).
+!    D_fact is a real (inout) array of dimension n.
 !      On entry D_fact need not be specified.
 !      On exit D_fact contains the D part of the LDL(transpose)
 !      factorization of T + lambda I
 
-!    OFFD_fact is a real array of dimension (n-1).
+!    OFFD_fact is a real (inout) array of dimension n-1.
 !      On entry OFFD_fact need not be specified.
 !      On exit OFFD_fact contains the subdiagonal part of the L factor
 !      from the LDL(transpose) factorization of T + lambda I
 
-!    C is an real array of dimension n.
-!      On entry C specifies the linear term in the quadratic.
-!      On exit C is unchanged.
+!    C is an real (in) array of dimension n.
+!      On entry C specifies the linear term in the quadratic
 
-!    p is a real variable.
-!      On entry p is the order of regularisation.
-!      On exit p is unchanged.
+!    p is a real (in) variable.
+!      On entry p is the order of regularisation
 
-!    sigma is a real variable.
+!    sigma is a real (in) variable.
 !      On entry sigma is the regularisation weight.
-!      On exit sigma is unchanged.
 
-!    rtol is a real variable.
+!    rtol is a real (in) variable.
 !      On entry rtol is the relative accuracy desired in the
 !         solution. Convergence occurs if
 
-!      abs(sqrt(||x+o||_2^2+eps) - lambda/sigma) <= rtol*||x+o||.
+!      | sqrt(||x+o||_2^2+eps) - lambda/sigma | <= rtol * ||x + o||.
 
-!      On exit rtol is unchanged.
+!    itmax is an integer (in) variable.
+!      On entry itmax specifies the maximum number of iterations
 
-!    itmax is an integer variable.
-!      On entry itmax specifies the maximum number of iterations.
-!      On exit itmax is unchanged.
-
-!    try_warm is a logical variable.
+!    try_warm is a logical (in) variable.
 !      On entry try_warm is .TRUE. if the input value lambda is to be
-!       tried before any other estimate.
-!      On exit try_warm is unchanged.
+!       tried before any other estimate
 
-!    use_old is a logical variable.
-!      On entry use_old is .TRUE. if the leftmost eigenvalue of the leading
-!       n-1 by n-1 block is given
-!      On exit use_old is unchanged.
+!    use_old is a logical (in) variable.
+!      On entry use_old is .TRUE. if the leftmost eigenvalue of the
+!       leading n-1 by n-1 block is given
 
-!    old_leftmost is a real variable.
-!      On entry old_leftmost gives the leftmost eigenvalue of the leading
-!       n-1 by n-1 block. Only required if use_old is .TRUE.
-!      On exit gives the leftmost eigenvalue of T if T is indefinite.
+!    old_leftmost is a real (inout) variable.
+!      On entry old_leftmost gives the leftmost eigenvalue of the
+!       leading n-1 by n-1 block. Only required if use_old is .TRUE.
+!      On exit gives the leftmost eigenvalue of T if T is indefinite
 
-!    lambda is a real variable.
+!    lambda is a real (in) variable.
 !      On entry lambda is an initial estimate of the Lagrange
-!         multiplier ||x|| sigma.
-!      On exit lambda contains the final estimate of the multiplier.
+!         multiplier ||x|| sigma
 
-!    f is a real variable.
-!      On entry f need not be specified.
-!      On exit f is set to 1/2 x' T x + c' x at the output x.
+!    f is a real (out) variable.
+!      On exit f is set to 1/2 <x, T x> + <c, x> at the output x
 
-!    f_regularized is a real variable.
-!      On entry f_regularized need not be specified.
-!      On exit f is set to f(x) at the output x.
+!    f_regularized is a real (out) variable.
+!      On exit f is set to f(x) at the output x
 
-!    X is a real array of dimension n.
-!      On entry x need not be specified.
+!    X is a real (out) array of dimension n.
 !      On exit x is set to the final estimate of the solution.
 
-!    xponorm is a real variable.
-!      On entry xponorm not be specified.
-!      On exit xponorm is set to ||x+o|| at the output x.
+!    xponorm is a real (out) variable.
+!      On exit xponorm is set to ||x + o|| at the output x
 
-!    inform is an integer variable.
+!    inform is an integer (out) variable.
 !      On entry inform need not be specified.
-!      On exit inform is set as follows:
-
 !         inform = 0  The function value f(x) has the relative
 !                   accuracy specified by rtol.
-
 !         inform = 1  The Newton search direction is too small to make
 !                   further progress
-
 !         inform = 2  Failure to converge after itmax iterations.
 !                   On exit x is the best available approximation.
 
@@ -1918,43 +1896,44 @@
 !      On entry iter need not be specified.
 !      On exit iter gives the total number of iterations required.
 
-!    U is a real work array of dimension n that may hold an eigenvector estimate
+!    iter is an integer (out) variable.
+!      On exit iter gives the total number of iterations required
 
-!    W is a real work array of dimension n.
+!    U is a real work (out) array of dimension n that may hold an
+!      eigenvector estimate
 
-!    print_level is an integer variable.
+!    W is a real work (out) array of dimension n.
+
+!    print_level is an integer (in) variable.
 !      On entry print_level should be positive if debug printing is required
-!      On exit print_level is unchanged.
 
-!    out is an integer variable.
+!    out is an integer (in) variable.
 !      On entry the unit for output if required
-!      On exit out is unchanged.
 
-!    prefix is a character variable.
-!      On entry prefix contains a prefix which will preceed each output line.
-!      On exit prefix is unchanged.
+!    prefix is a character (in) variable of unspecified length.
+!      On entry prefix contains a prefix which will preceed each output line
 
-!    hard_case is a logical variable.
-!      On entry, hard_case need not be set.
+!    hard_case is a logical (out) variable.
 !      On exit, hard_case is .TRUE. if the hard case has arisen
 !      and is .FALSE. otherwise
 
-!    hard_case_step is a real variable.
-!      On entry, hard_case_step need not be set.
+!    hard_case_step is a real (out) variable.
 !      On exit, it will give the scalar alpha for which x + alpha u is the
 !      required solution in the jard case. It may be ignored otherwise.
 
 !    eps is an OPTIONAL real variable.
-!      If PRESENT on entry eps is the regularisation shift.
-!      On exit eps is unchanged.
+!      If PRESENT on entry eps is the regularisation shift, eps.
+!      On exit eps is unchanged
 
 !    O is an OPTIONAL real array of dimension n.
-!      If PRESENT on entry O specifies the regularisation offset.
-!      On exit S is unchanged.
+!      If PRESENT on entry O specifies the regularisation offset, o.
+!      On exit S is unchanged
 !
 !    onorm2 is an OPTIONAL real variable.
-!      If PRESENT on entry onorm2 is the square of the two-norm of O.
-!      On exit onorm2 is unchanged.
+!      If PRESENT on entry onorm2 is the square of the two-norm of O, ||o||.
+!      On exit onorm2 is unchanged
+
+! --------------------------------------------------------------------------
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -1999,6 +1978,7 @@
 !     pert_l = epsmch ** 0.5 ; tol = epsmch ** 0.66
       pert_l = epsmch ** 0.75 ; tol = epsmch ** 0.66
 
+!  =======================
 !  First, try a warm start
 !  =======================
 
@@ -2056,6 +2036,7 @@
         END IF
       END IF
 
+!  ====================================
 !  Compute the leftmost eigenvalue of T
 !  ====================================
 
@@ -2126,6 +2107,7 @@
         WRITE( out, "( A, 3ES24.16 )" ) prefix, lambda_pert, error, xponorm
       END IF
 
+!  =========
 !  Hard case
 !  =========
 
@@ -2172,6 +2154,7 @@
 
 !  It is now simply a matter of applying Newton's method starting from lambda
 
+!  =====================
 !  Main Newton iteration
 !  =====================
 
@@ -2362,6 +2345,25 @@
         SUBROUTINE GLRT_trts_f( p, lambda, rxnorm2, xponorm, f, f_regularized, &
                                 eps, onorm2 )
 
+!----------------------------------------------------------------------
+
+!  input variables
+!   onorm2 = ||o||^2,
+!   xponorm = ||x+o||,
+!   rxnorm2 = (c+lamba o)' ( T + lamba I )^-1  (c+lambda o) and
+!   lambda = sigma sqrt(||x+o||_2^2+eps)^p-2
+!  and output variables
+!   f =  1/2 ||x||^2 + <c, x> and
+!   f_regularized = f + r, where r = (sigma/p) sqrt(||x+o||_2^2+eps)^p
+
+!  note that
+!   f = - 1/2 (c+lamba o)' ( T + lamba I )^-1  (c+lambda o)
+!       - lambda/2 ||x+o||^2 + lambda/2 ||o||^2
+!  and
+!   r = (lambda/p) (||x+o||^2 + eps)
+
+!----------------------------------------------------------------------
+
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
@@ -2369,23 +2371,6 @@
         REAL ( KIND = wp ), INTENT( IN ) :: p, lambda, rxnorm2, xponorm
         REAL ( KIND = wp ), INTENT( OUT ) :: f, f_regularized
         REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: eps, onorm2
-
-!  the input variables
-!   onorm2 = ||o||^2,
-!   xponorm = ||x+o||
-!   rxnorm2 = (c+lamba o)' ( T + lamba I )^-1  (c+lamba o)
-!  and
-!   lambda = sigma sqrt(||x+o||_2^2+eps)^p-2
-!  and the output variables
-!   f =  1/2 x' x + c' x
-!  and
-!   f_regularized = f + r, where r = (sigma/p) sqrt(||x+o||_2^2+eps)^p
-
-!  note that
-!   f = - 1/2 (c+lamba o)' ( T + lamba I )^-1  (c+lamba o)
-!       - lambda/2 ||x+o||^2 + lambda/2 ||o||^2
-!  and
-!   r = (lambda/p) (||x+o||^2 + eps)
 
         IF ( PRESENT( onorm2 ) ) THEN
           f = - half * rxnorm2 - half * lambda * ( xponorm ** 2 - onorm2 )

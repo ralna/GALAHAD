@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.0 - 15/02/2017 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 3.0 - 19/02/2018 AT 15:00 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ G L T R  double  M O D U L E  *-*-*-*-*-*-*-
 
@@ -1600,161 +1600,138 @@
                            seed, debug, out, prefix,                           &
                            hard_case, hard_case_step )
 
-!  Subroutine GLTR_ttrs
-!  ====================
+! ---------------------------------------------------------------------
 
 !  Given an n by n symmetric tridiagonal matrix T, an n-vector c, and a
 !  positive number radius, this subroutine determines a vector
 !  x which approximately minimizes the quadratic function
 
-!     f(x) = (1/2)*x'*T*x + c'*x
+!     f(x) = 1/2 <x, T x> + <c, x>
 
 !  subject to the Euclidean norm constraint
 
-!     norm(x) <= radius
+!     ||x|| <= radius
 
-!  (or if equality = .TRUE.   norm(x) = radius).
+!  (or, if equality = .TRUE., ||x|| = radius).
 
 !  This subroutine computes an approximation x and a Lagrange
 !  multiplier lambda such that either lambda is zero and
 
-!      norm(x) <= (1+rtol)*radius,
+!      ||x|| <= (1+rtol)*radius,
 
 !  or lambda is positive and
 
-!      abs(norm(x) - radius) <= rtol*radius.
+!      | ||(x|| - radius | <= rtol * radius.
 
 !  If xsol is the solution to the problem, the approximation x
 !  satisfies
 
-!      f(x) <= ((1 - rtol)**2)*f(xsol)
+!      f(x) <= f(xsol) * ( 1 - rtol ) ** 2
 
-!  Dummy arguments
-!  ===============
+! ----------------------- dummy arguments -----------------------------
 
-!    n is an integer variable.
-!      On entry n is the order of T.
-!      On exit n is unchanged.
+!    n is an integer (in) variable.
+!      On entry n is the order of T
 
-!    D is a real array of dimension (n).
+!    D is a real (in) array of dimension n.
 !      On entry D must contain the diagonal of T
-!      Unchanged on exit.
 
-!    OFFD is a real array of dimension (n-1).
+!    OFFD is a real (in) array of dimension n-1.
 !      On entry D must contain the subdiagonal of T
-!      Unchanged on exit.
 
-!    D_fact is a real array of dimension (n).
+!    D_fact is a real (inout) array of dimension n.
 !      On entry D_fact need not be specified.
 !      On exit D_fact contains the D part of the LDL(transpose)
 !      factorization of T + lambda I
 
-!    OFFD_fact is a real array of dimension (n-1).
+!    OFFD_fact is a real (inout) array of dimension n-1.
 !      On entry OFFD_fact need not be specified.
 !      On exit OFFD_fact contains the subdiagonal part of the L factor
 !      from the LDL(transpose) factorization of T + lambda I
 
-!    C is an real array of dimension n.
-!      On entry C specifies the linear term in the quadratic.
-!      On exit C is unchanged.
+!    C is an real (in) array of dimension n.
+!      On entry C specifies the linear term in the quadratic
 
-!    radius is a real variable.
-!      On entry radius is a bound on the Euclidean norm of x.
-!      On exit radius is unchanged.
+!    radius is a real (in) variable.
+!      On entry radius is a bound on the Euclidean norm of x
 
-!    rtol is a real variable.
+!    rtol is a real (in) variable.
 !      On entry rtol is the relative accuracy desired in the
 !         solution. Convergence occurs if
+!       | ||x|| - radius | <= rtol * radius
 
-!      abs(norm(x) - radius) <= rtol*radius.
+!    interior is a logical (inout) variable.
+!      On entry, interior should be set to .TRUE. if an interior
+!       solutionis possible, and .FALSE. otherwise.
+!      On exit it will be set to .TRUE. if an interior solution
+!       has been found and to .FALSE. otherwise
 
-!      On exit rtol is unchanged.
+!    equality is a logical (in) variable.
+!      On entry, equality should be set to .TRUE. if a solution on
+!      the trust-region boundary is required, and .FALSE. otherwise
 
-!    interior is a logical variable.
-!      On entry, interior should be set to .TRUE. if an interior solution
-!      is possible, and .FALSE. otherwise.
+!    itmax is an integer (in) variable.
+!      On entry itmax specifies the maximum number of iterations
 
-!      On exit it will be set to .TRUE. if an interior solution has been
-!      found and to .FALSE. otherwise.
-
-!    equality is a logical variable.
-!      On entry, equality should be set to .TRUE. if a solution on the
-!      trust-region boundary is required, and .FALSE. otherwise.
-
-!    itmax is an integer variable.
-!      On entry itmax specifies the maximum number of iterations.
-!      On exit itmax is unchanged.
-
-!    try_warm is a logical variable.
+!    try_warm is a logical (in) variable.
 !      On entry try_warm is .TRUE. if the input value lambda is to be
-!       tried before any other estimate.
-!      On exit use_old is unchanged.
+!       tried before any other estimate
 
-!    use_old is a logical variable.
-!      On entry use_old is .TRUE. if the leftmost eigenvalue of the leading
-!       n-1 by n-1 block is given
-!      On exit use_old is unchanged.
+!    use_old is a logical (in) variable.
+!      On entry use_old is .TRUE. if the leftmost eigenvalue of the
+!       leading n-1 by n-1 block is given
 
-!    old_leftmost is a real variable.
-!      On entry old_leftmost gives the leftmost eigenvalue of the leading
-!       n-1 by n-1 block. Only required if use_old is .TRUE.
-!      On exit gives the leftmost eigenvalue of T if T is indefinite.
+!    old_leftmost is a real (inout) variable.
+!      On entry old_leftmost gives the leftmost eigenvalue of the
+!       leading n-1 by n-1 block. Only required if use_old is .TRUE.
+!      On exit gives the leftmost eigenvalue of T if T is indefinite
 
-!    lambda is a real variable.
+!    lambda is a real (inout) variable.
 !      On entry lambda is an initial estimate of the Lagrange
-!         multiplier for the constraint norm(x) <= radius.
+!        multiplier for the constraint ||x|| <= radius.
 !      On exit lambda contains the final estimate of the multiplier.
 
-!    f is a real variable.
-!      On entry f need not be specified.
-!      On exit f is set to f(x) at the output x.
+!    f is a real (out) variable.
+!      On exit f is set to f(x) at the output x
 
-!    x is a real array of dimension n.
-!      On entry x need not be specified.
+!    X is a real (out) array of dimension n.
 !      On exit x is set to the final estimate of the solution.
 
-!    info is an integer variable.
-!      On entry info need not be specified.
+!    info is an integer (out) variable.
 !      On exit info is set as follows:
-
 !         info = 1  The function value f(x) has the relative
-!                   accuracy specified by rtol.
-
+!                   accuracy specified by rtol,
 !         info = 2  The Newton search direction is too small to make
-!                   further progress
-
+!                   further progress, and
 !         info = 4  Failure to converge after itmax iterations.
-!                   On exit x is the best available approximation.
+!                   On exit x is the best available approximation
 
-!    iter is an integer variable.
-!      On entry iter need not be specified.
-!      On exit iter gives the total number of iterations required.
+!    iter is an integer (out) variable.
+!      On exit iter gives the total number of iterations required
 
-!    U is a real work array of dimension n that may hold an eigenvector estimate
+!    U is a real work (out) array of dimension n that may hold an
+!      eigenvector estimate
 
-!    W is a real work array of dimension n.
+!    W is a real work (out) array of dimension n.
 
-!    debug is a logical variable.
+!    debug is a logical (in) variable.
 !      On entry debug should be .TRUE. if debug printing is required
-!      On exit debug is unchanged.
 
-!    out is an integer variable.
+!    out is an integer (in) variable.
 !      On entry the unit for output if required
-!      On exit out is unchanged.
 
-!    prefix is a character variable.
-!      On entry prefix contains a prefix which will preceed each output line.
-!      On exit prefix is unchanged.
+!    prefix is a character (in) variable of unspecified length.
+!      On entry prefix contains a prefix which will preceed each output line
 
-!    hard_case is a logical variable.
-!      On entry, hard_case need not be set.
+!    hard_case is a logical (out) variable.
 !      On exit, hard_case is .TRUE. if the hard case has arisen
 !      and is .FALSE. otherwise
 
-!    hard_case_step is a real variable.
-!      On entry, hard_case_step need not be set.
+!    hard_case_step is a real (out) variable.
 !      On exit, it will give the scalar alpha for which x + alpha u is the
 !      required solution in the jard case. It may be ignored otherwise.
+
+! --------------------------------------------------------------------------
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -1792,6 +1769,7 @@
 !     pert_l = macheps ** 0.5 ; tol = macheps ** 0.66
       pert_l = macheps ** 0.75 ; tol = macheps ** 0.66
 
+!  =======================
 !  First, try a warm start
 !  =======================
 
@@ -1831,6 +1809,7 @@
         END IF
       END IF
 
+!  ============================================================
 !  If the warm start fails, check for an unconstrained solution
 !  ============================================================
 
@@ -1865,6 +1844,7 @@
             WRITE( out, "( A, 3ES24.16 )" ) prefix, zero, xnorm, radius
           END IF
 
+!  ======================
 !  Interior solution case
 !  ======================
 
@@ -1887,6 +1867,7 @@
         indef = 1
       END IF
 
+!  =============================================================
 !  The solution is not interior. Compute the leftmost eigenvalue
 !  =============================================================
 
@@ -1946,6 +1927,7 @@
             WRITE( out, "( A, 3ES24.16 )" ) prefix, lambda_pert, xnorm, radius
           END IF
 
+!  =========
 !  Hard case
 !  =========
 
@@ -2014,6 +1996,7 @@
 
 !  It is now simply a matter of applying Newton's method starting from lambda
 
+!  =====================
 !  Main Newton iteration
 !  =====================
 
