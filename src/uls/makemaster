@@ -182,8 +182,8 @@ ulsds: $(ULSDS)
 
 ulsdt: $(ULSDT)
 	echo " Exhaustive test of subroutine interface to uls"
-	cd ../uls ; $(RMOOC)
 	cd ../uls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_uls $(RULSDT)
+	cd ../uls ; $(RMOOC)
 #	- ../uls/run_uls
 	- ../uls/run_uls  >& ../uls/ulsdt.output
 	cat ../uls/ulsdt.output
@@ -264,6 +264,3 @@ rmuls:
 	@printf ' %-9s %-15s\t\t' "Removing" "uls from archive "
 	$(RMARFILE) uls.o
 	@printf '[ OK ]\n'
-
-
-

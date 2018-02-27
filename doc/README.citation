@@ -1,0 +1,15 @@
+Use of GALAHAD may be cited as
+
+  N. I. M. Gould, D. Orban, and Ph. L. Toint,
+  "GALAHAD, a library of thread-safe Fortran 90 packages for
+   large-scale nonlinear optimization",
+  ACM Transactions on Mathematical Software 29 (4) 353-372 (2007)"
+
+or, using BiBTeX, as
+
+@article{GoulOrbaToin03:toms,
+ author  = {N. I. M. Gould and D. Orban and {\relax Ph}. L. Toint},
+ title   = {{\sf GALAHAD}---a library of thread-safe {F}ortran 90 packages
+            for large-scale nonlinear optimization},
+ journal = {ACM Transactions on Mathematical Software}
+ volume  = 29, number = 4, pages = {353--372}, year = 2003}

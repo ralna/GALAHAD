@@ -3,26 +3,31 @@
                    -----------------
 
 The packages referred to in this directory are not covered by the
-same licence as the rest of GALAHAD. Many are available as part
+same licence as the rest of GALAHAD. Some are available as part
 of the HSL archive,
 
   http://www.hsl.rl.ac.uk/archive/
-
-and
 
 while others form part of the main HSL
 
   http://www.hsl.rl.ac.uk/
 
+Although software stubs are provided for these packages to allow
+the compilation of GALAHAD, the software itself must be downloaded
+separately. The HSL archive codes may be obtained from
 
-and are made available here for convenience, by special permission.
-Some of the packages contain source code, while
+  http://www.hsl.rl.ac.uk/download/hslarchive-galahad/latest
 
-other simply exist
-as stubs to software that may be installed separately for academic
-use (see $GALAHAD/src/makedefs/packages). These packages are not
-crucial to run GALAHAD, but providing them will lead to improved
-performance. They should *not* be altered and then redistributed.
+by any user, while the main HSL codes are available for academic
+use from
+
+  http://www.hsl.rl.ac.uk/download/hsl-galahad/latest/d/
+
+They should *not* be altered and then redistributed.
+
+We recommend that all users obtain at least the HSL Archive packages.
+The other HSL packages are not crucial to run GALAHAD, but providing
+them will often lead to significantly improved performance.
 
 Separate licencing conditions may apply for commercial incorporation
 and redistribution. See

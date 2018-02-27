@@ -1,106 +1,200 @@
-      CONDITIONS OF USE FOR THE GALAHAD OPTIMIZATION SOFTWARE LIBRARY
-      ===============================================================
+GALAHAD--- a thread-safe library of modern Fortran packages for solving
+nonlinear optimization problems.
 
-In order to use the GALAHAD library, or any of its constituent parts, a
-user must agree to abide by a set of conditions of use.
+Copyright (C) 2000 GALAHAD Productions (Nick Gould, Dominique Orban
+and Philippe Toint).
 
-Copyright (c) 2007 Science and Technology Facilities Council and
-Facultes Universitaires Notre-Dame de la Paix de Namur. All Rights Reserved.
+This library is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation; either version 3 of the License (below),
+or (at your option) any later version. Optional software that can improve
+performance is not included, but may be downloaded subject to additional
+licencing conditions. See the file src/non-free/README.nonfree for
+further details
 
-                      ---------------------
-                      STFC Software Licence
-                      ---------------------
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-The purpose of this document is to state the terms and conditions under
-which STFC software and documentation ("the Software") may be used.
+-------------------------------------------------------------------------
 
-NOTICE TO USER: BY USING THE SOFTWARE YOU ACCEPT THE FOLLOWING TERMS AND
-CONDITIONS WHICH APPLY TO ITS USE.
+                   GNU LESSER GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
 
-1. In this Licence, the expressions set out below have the following
-   meanings: "Library" means GALAHAD, and its constituent packages and
-   documentation; "Package" means a named collection of Fortran code from
-   the Library together with all other packages called by it.  "Software"
-   means:
-   a) those Library computer files (and associated documentation);
-   b) all computer files which contain copies whether in whole or in
-      part of any code that has originated by any means from any of the
-      Library;
-   c) all documentation which contains copies of any text that has
-      originated by any means from any of the associated documentation and;
-   d) any alteration or addition made to the Library or Package and/or
-      the associated documentation to extend the capabilities or enhance the
-      performance of the Library computer files supplied, whether made by or
-      on behalf of the Licensee or anyone else.
+ Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
 
-2. The Software is owned by the Science and Technology Facilities
-   Council ("STFC") and Facultes Universitaires Notre-Dame de la Paix de
-   Namur.
 
-3. The Software is made available free of charge for personal use by
-   individuals employed by non-profit educational, academic and research
-   institutions, provided that the user does not use the Software in a
-   manner which is disparaging to the Science and Technology Facilities
-   Council.
+  This version of the GNU Lesser General Public License incorporates
+the terms and conditions of version 3 of the GNU General Public
+License, supplemented by the additional permissions listed below.
 
-4. The provision of any version of the Software under the terms and
-   conditions set out in this licence does not imply that future versions
-   will also be made available under the same terms and conditions.
+  0. Additional Definitions.
 
-5. The user may modify the Software only for their own use. The user
-   shall inform STFC and Facultes Universitaires Notre-Dame de la Paix de
-   Namur.of any modifications and make a copy of the modified software
-   available to STFC and Facultes Universitaires Notre-Dame de la Paix de
-   Namur.on request. All modifications made by the user shall be clearly
-   identified to show how the modified software differs from the original
-   Software.
+  As used herein, "this License" refers to version 3 of the GNU Lesser
+General Public License, and the "GNU GPL" refers to version 3 of the GNU
+General Public License.
 
-6. The user may not: 
-   a) allow anyone else to use the Software; either in their institution
-      or elsewhere;
-   b) use the Software for commercial purposes;
-   c) incorporate or embed the Software into other software products;
-   d) use the Software where the principal or exclusive use is for
-      research into; or the production of, military weapons is prohibited;
-      or
-   e) distribute any modifications of the Software.
+  "The Library" refers to a covered work governed by this License,
+other than an Application or a Combined Work as defined below.
 
-7. In any published work produced by the user and which includes
-   results achieved by using the Software, the user shall acknowledge that
-   the Software was used in producing the information contained in such
-   publication.  A citation to the paper: "
+  An "Application" is any work that makes use of an interface provided
+by the Library, but which is not otherwise based on the Library.
+Defining a subclass of a class defined by the Library is deemed a mode
+of using an interface provided by the Library.
 
-     N. I. M. Gould, D. Orban, and Ph. L. Toint, 
-     "GALAHAD, a library of thread-safe Fortran 90 packages for
-      large-scale nonlinear optimization", 
-     ACM Transactions on Mathematical Software 29 (4) 353-372 (2007)" 
+  A "Combined Work" is a work produced by combining or linking an
+Application with the Library.  The particular version of the Library
+with which the Combined Work was made is also called the "Linked
+Version".
 
-   is suitable.
+  The "Minimal Corresponding Source" for a Combined Work means the
+Corresponding Source for the Combined Work, excluding any source code
+for portions of the Combined Work that, considered in isolation, are
+based on the Application, and not on the Linked Version.
 
-8. The user shall not cause the Software to be brought into disrepute,
-   either by misuse, or use for inappropriate tasks, or by inappropriate
-   modification.
+  The "Corresponding Application Code" for a Combined Work means the
+object code and/or source code for the Application, including any data
+and utility programs needed for reproducing the Combined Work from the
+Application, but excluding the System Libraries of the Combined Work.
 
-9. The Software is provided to the user "as is" and STFC makes no
-   warranty as to its use or performance. STFC does not and cannot warrant
-   the performance or results which the user may obtain by using the
-   Software.
+  1. Exception to Section 3 of the GNU GPL.
 
-10. STFC makes no warranties as to non-infringement of third party
-   rights, or fitness for any particular purpose. In no event will STFC be
-   liable to the user for any consequential, incidental, or special
-   damages, including any lost profits or lost savings, even if a STFC
-   representative has been advised of such damages, or for any claim by any
-   third party.
+  You may convey a covered work under sections 3 and 4 of this License
+without being bound by section 3 of the GNU GPL.
 
-11. This licence is construed in accordance with and governed by the
-    laws of England.
+  2. Conveying Modified Versions.
 
-Address for correspondence
-Commercial Development Team
-Science and Technology Facilities Council
+  If you modify a copy of the Library, and, in your modifications, a
+facility refers to a function or data to be supplied by an Application
+that uses the facility (other than as an argument passed when the
+facility is invoked), then you may convey a copy of the modified
+version:
+
+   a) under this License, provided that you make a good faith effort to
+   ensure that, in the event an Application does not supply the
+   function or data, the facility still operates, and performs
+   whatever part of its purpose remains meaningful, or
+
+   b) under the GNU GPL, with none of the additional permissions of
+   this License applicable to that copy.
+
+  3. Object Code Incorporating Material from Library Header Files.
+
+  The object code form of an Application may incorporate material from
+a header file that is part of the Library.  You may convey such object
+code under terms of your choice, provided that, if the incorporated
+material is not limited to numerical parameters, data structure
+layouts and accessors, or small macros, inline functions and templates
+(ten or fewer lines in length), you do both of the following:
+
+   a) Give prominent notice with each copy of the object code that the
+   Library is used in it and that the Library and its use are
+   covered by this License.
+
+   b) Accompany the object code with a copy of the GNU GPL and this license
+   document.
+
+  4. Combined Works.
+
+  You may convey a Combined Work under terms of your choice that,
+taken together, effectively do not restrict modification of the
+portions of the Library contained in the Combined Work and reverse
+engineering for debugging such modifications, if you also do each of
+the following:
+
+   a) Give prominent notice with each copy of the Combined Work that
+   the Library is used in it and that the Library and its use are
+   covered by this License.
+
+   b) Accompany the Combined Work with a copy of the GNU GPL and this license
+   document.
+
+   c) For a Combined Work that displays copyright notices during
+   execution, include the copyright notice for the Library among
+   these notices, as well as a reference directing the user to the
+   copies of the GNU GPL and this license document.
+
+   d) Do one of the following:
+
+       0) Convey the Minimal Corresponding Source under the terms of this
+       License, and the Corresponding Application Code in a form
+       suitable for, and under terms that permit, the user to
+       recombine or relink the Application with a modified version of
+       the Linked Version to produce a modified Combined Work, in the
+       manner specified by section 6 of the GNU GPL for conveying
+       Corresponding Source.
+
+       1) Use a suitable shared library mechanism for linking with the
+       Library.  A suitable mechanism is one that (a) uses at run time
+       a copy of the Library already present on the user's computer
+       system, and (b) will operate properly with a modified version
+       of the Library that is interface-compatible with the Linked
+       Version.
+
+   e) Provide Installation Information, but only if you would otherwise
+   be required to provide such information under section 6 of the
+   GNU GPL, and only to the extent that such information is
+   necessary to install and execute a modified version of the
+   Combined Work produced by recombining or relinking the
+   Application with a modified version of the Linked Version. (If
+   you use option 4d0, the Installation Information must accompany
+   the Minimal Corresponding Source and Corresponding Application
+   Code. If you use option 4d1, you must provide the Installation
+   Information in the manner specified by section 6 of the GNU GPL
+   for conveying Corresponding Source.)
+
+  5. Combined Libraries.
+
+  You may place library facilities that are a work based on the
+Library side by side in a single library together with other library
+facilities that are not Applications and are not covered by this
+License, and convey such a combined library under terms of your
+choice, if you do both of the following:
+
+   a) Accompany the combined library with a copy of the same work based
+   on the Library, uncombined with any other library facilities,
+   conveyed under the terms of this License.
+
+   b) Give prominent notice with the combined library that part of it
+   is a work based on the Library, and explaining where to find the
+   accompanying uncombined form of the same work.
+
+  6. Revised Versions of the GNU Lesser General Public License.
+
+  The Free Software Foundation may publish revised and/or new versions
+of the GNU Lesser General Public License from time to time. Such new
+versions will be similar in spirit to the present version, but may
+differ in detail to address new problems or concerns.
+
+  Each version is given a distinguishing version number. If the
+Library as you received it specifies that a certain numbered version
+of the GNU Lesser General Public License "or any later version"
+applies to it, you have the option of following the terms and
+conditions either of that published version or of any later version
+published by the Free Software Foundation. If the Library as you
+received it does not specify a version number of the GNU Lesser
+General Public License, you may choose any version of the GNU Lesser
+General Public License ever published by the Free Software Foundation.
+
+  If the Library as you received it specifies that a proxy can decide
+whether future versions of the GNU Lesser General Public License shall
+apply, that proxy's public statement of acceptance of any version is
+permanent authorization for you to choose that version for the
+Library.
+
+-------------------------------------------------------------------------
+
+Nicholas I. M. Gould <nick.gould@stfc.ac.uk>
+Computational Mathematics Group
 Rutherford Appleton Laboratory
-Harwell Science and Innovation Campus
-Didcot OX11 0QX UK
-Email: L.Baines@stfc.ac.uk
+Chilton, Oxfordshire, UK
 
+Dominique Orban <Dominique.Orban@polymtl.ca>
+Ecole Polytechnique de Montreal
+Department of Mathematics and Industrial Engineering
+Montreal QC, Canada
+
+Philippe L. Toint <Philippe.Toint@unamur.be>
+Department of Mathematics
