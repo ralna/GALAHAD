@@ -290,6 +290,7 @@ $(HLG)(hsl_ma57s.o): $(MA57)/hsl_ma57s.f90
 	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57s.o $(FFLAGS) hsl_ma57s.f90
 	cd $(OBJ) ; $(HARR) hsl_ma57s.o ; $(RM) hsl_ma57s.f90 hsl_ma57s.o
 	$(RMARFILE) mdchl.o
+	$(RMARFILE) lancelot_types.o
 	$(RMARFILE) qpd.o
 	$(RMARFILE) ir.o
 	$(RMARFILE) sls.o
@@ -308,6 +309,7 @@ $(HLG)(hsl_ma57d.o): $(MA57)/hsl_ma57d.f90
 	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57d.o $(FFLAGSS) hsl_ma57d.f90
 	cd $(OBJ) ; $(HARR) hsl_ma57d.o ; $(RM) hsl_ma57d.f90 hsl_ma57d.o
 	$(RMARFILE) mdchl.o
+	$(RMARFILE) lancelot_types.o
 	$(RMARFILE) qpd.o
 	$(RMARFILE) ir.o
 	$(RMARFILE) sls.o
@@ -317,4 +319,3 @@ $(HLG)(hsl_ma57d.o): $(MA57)/hsl_ma57d.f90
 	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
-

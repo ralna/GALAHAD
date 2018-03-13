@@ -1064,6 +1064,7 @@ $(LG)(sils.o): ../sils/sils.f90
 	$(RMARFILE) sbls.o
 	$(RMARFILE) psls.o
 	$(RMARFILE) mdchl.o
+	$(RMARFILE) lancelot_types.o
 	$(RMARFILE) qpd.o
 	$(RMARFILE) fdc.o
 	$(RMARFILE) superb.o
@@ -1542,6 +1543,3 @@ rmgls:
 	@printf ' %-9s %-15s\t\t' "Removing" "gls from archive "
 	$(RMARFILE) gls.o
 	@printf '[ OK ]\n'
-
-
-

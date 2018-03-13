@@ -22,6 +22,7 @@
      USE GALAHAD_STRING_double, ONLY: STRING_real_12
      USE GALAHAD_SYMBOLS
      USE GALAHAD_RAND_double, ONLY: RAND_seed
+     USE GALAHAD_SMT_double, ONLY: SMT_put, SMT_get
      USE GALAHAD_SILS_double, ONLY: SILS_factors, SILS_control,                &
                                     SILS_ainfo, SILS_finfo, SMT_type
      USE GALAHAD_ULS_double, ONLY: ULS_data_type, ULS_control_type

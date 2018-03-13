@@ -8,7 +8,7 @@
 !  History -
 !   extracted from LANCELOT B. March 12th 2014
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE LANCELOT_types_double
@@ -119,7 +119,7 @@
        REAL ( KIND = wp ) :: epsrcg, fnew, radmin, cgstop, diamin, diamax
        REAL ( KIND = wp ) :: ared, prered, rho, fmodel, curv, dxsqr, fcp, f0
        REAL ( KIND = wp ) :: stepmx, smallh, resmin, qgnorm, oldrad, epscns
-       REAL ( KIND = wp ) :: radtol, fill, step, teneps, stpmin, epstln 
+       REAL ( KIND = wp ) :: radtol, fill, step, teneps, stpmin, epstln
        REAL ( KIND = wp ) :: f_min, f_r, f_c, sigma_r, sigma_c, findmx
        REAL ( KIND = wp ) :: f_min_lag, f_r_lag, f_c_lag
        REAL ( KIND = wp ) :: f_min_viol, f_r_viol, f_c_viol
@@ -144,7 +144,7 @@
 !  the old CAUCH saved variables
 
        TYPE( CAUCHY_save_type ) :: CAUCHY
- 
+
 !  the old CG saved variables
 
        TYPE( CG_save_type ) :: CG
@@ -191,7 +191,7 @@
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISLGRP
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IGCOLJ
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IVALJR
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IUSED 
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IUSED
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ITYPER
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISSWTR
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISSITR
@@ -243,7 +243,7 @@
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GRAD
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: W1
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: OFFDIA
-     
+
        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: GROUP_SCALING => NULL( )
        LOGICAL, POINTER, DIMENSION( : ) :: GXEQX_AUG => NULL( )
 
@@ -299,7 +299,7 @@
 !                preconditioned CG, 5=Munksgaard's preconditioned CG,
 !                6=Schnabel-Eskow modified Cholesky preconditioned CG,
 !                7=Gill-Murray-Ponceleon-Saunders modified Cholesky
-!                preconditioned CG, 8=band matrix preconditioned CG, 
+!                preconditioned CG, 8=band matrix preconditioned CG,
 !                9=Lin-More' preconditioned CG, 11=multifrontal direct
 !                method, 12=direct modified multifrontal method
 
@@ -313,7 +313,7 @@
 
        INTEGER :: semibandwidth = 5
 
-!   The maximum dimension of the Schur complement 
+!   The maximum dimension of the Schur complement
 
        INTEGER :: max_sc = 100
 
@@ -321,7 +321,7 @@
 
        INTEGER :: io_buffer = 75
 
-!  more_toraldo >= 1 gives the number of More'-Toraldo projected searches 
+!  more_toraldo >= 1 gives the number of More'-Toraldo projected searches
 !                to be used to improve upon the Cauchy point, anything
 !                else is for the standard add-one-at-a-time CG search
 
@@ -333,7 +333,7 @@
        INTEGER :: non_monotone = 1
 
 !  first_derivatives = 0 if exact first derivatives are given, = 1 if forward
-!             finite difference approximations are to be calculated, and 
+!             finite difference approximations are to be calculated, and
 !             = 2 if central finite difference approximations are to be used
 
        INTEGER :: first_derivatives = 0
@@ -344,7 +344,7 @@
        INTEGER :: second_derivatives = 0
 
 !  Overall convergence tolerances. The iteration will terminate when the norm
-!  of violation of the constraints (the "primal infeasibility") is smaller than 
+!  of violation of the constraints (the "primal infeasibility") is smaller than
 !  control%stopc and the norm of the gradient of the Lagrangian function (the
 !  "dual infeasibility") is smaller than control%stopg
 
@@ -369,7 +369,7 @@
 
        REAL ( KIND = wp ) :: maximum_radius = ten ** 20
 
-!  Parameters that define when to decrease/increase the trust-region 
+!  Parameters that define when to decrease/increase the trust-region
 !  (specialists only!)
 
        REAL ( KIND = wp ) :: eta_successful = 0.01_wp
@@ -420,7 +420,7 @@
 
         REAL ( KIND = wp ) :: cpu_time_limit = - one
 
-!  Is the function quadratic ? 
+!  Is the function quadratic ?
 
        LOGICAL :: quadratic_problem = .FALSE.
 
@@ -428,7 +428,7 @@
 
        LOGICAL :: steering = .FALSE.
 
-!  two_norm_tr is true if a 2-norm trust-region is to be used, and false 
+!  two_norm_tr is true if a 2-norm trust-region is to be used, and false
 !                for the infinity norm
 
        LOGICAL :: two_norm_tr = .FALSE.
@@ -455,7 +455,7 @@
 
 !  accurate_bqp is true if the the minimizer of the quadratic model within
 !                the intersection of the trust-region and feasible box
-!                is to be sought (to a prescribed accuracy), and false 
+!                is to be sought (to a prescribed accuracy), and false
 !                if an approximation suffices
 
        LOGICAL :: accurate_bqp = .FALSE.
@@ -470,8 +470,8 @@
 
        LOGICAL :: print_max = .FALSE.
 
-!  .TRUE. if all components of the solution and constraints are to be printed 
-!  on termination, and .FALSE. if only the first and last (representative) few 
+!  .TRUE. if all components of the solution and constraints are to be printed
+!  on termination, and .FALSE. if only the first and last (representative) few
 !  are required
 
        LOGICAL :: full_solution = .TRUE.
@@ -550,7 +550,7 @@
 
        REAL ( KIND = wp ) :: aug = HUGE( one )
 
-!  the value of the objective function at the best estimate of the solution 
+!  the value of the objective function at the best estimate of the solution
 !   determined by LANCELOT_solve
 
        REAL ( KIND = wp ) :: obj = HUGE( one )
@@ -564,7 +564,7 @@
        REAL ( KIND = wp ) :: cnorm = zero
 
 !  the current ratio of predicted to achieved merit function reduction
- 
+
        REAL ( KIND = wp ) :: ratio = zero
 
 !  the current value of the penalty parameter
