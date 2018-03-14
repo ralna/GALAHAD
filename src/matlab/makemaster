@@ -129,8 +129,8 @@ smt:
 basics:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
-	( cd ../ssids ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ssids_silent PRECIS=$(PRECIS) PWD=$(PWD)/../ssids )
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            $(SSIDS)_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 
 #  arc
 
