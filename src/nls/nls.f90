@@ -756,8 +756,8 @@
 !  control parameters for the main iteration
 
      CALL NLS_subproblem_initialize( data%NLS_subproblem_data_type,            &
-                                 control%NLS_subproblem_control_type,          &
-                                 inform%NLS_subproblem_inform_type )
+                                     control%NLS_subproblem_control_type,      &
+                                     inform%NLS_subproblem_inform_type )
 
 !  control parameters for the tensor subproblem solves
 

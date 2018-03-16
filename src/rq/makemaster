@@ -86,6 +86,8 @@ STRS = $(SIR) mop $(LGS)(trs.o)
 DTRS = $(DIR) mop $(LGD)(trs.o)
 SRQS = $(SIR) mop $(LGS)(rqs.o)
 DRQS = $(DIR) mop $(LGD)(rqs.o)
+SAPS = $(SIR) mop $(LGS)(aps.o)
+DAPS = $(DIR) mop $(LGD)(aps.o)
 SLLST = $(SIR) mop sbls $(LGS)(llst.o)
 DLLST = $(DIR) mop sbls $(LGD)(llst.o)
 SRLLS = $(SIR) mop $(LGS)(rlls.o)
@@ -111,6 +113,8 @@ TRSOBJECTSS = $(STRS)
 TRSOBJECTSD = $(DTRS)
 RQSOBJECTSS = $(SRQS)
 RQSOBJECTSD = $(DRQS)
+APSOBJECTSS = $(SAPS)
+APSOBJECTSD = $(DAPS)
 
 LLSTOBJECTSS = $(SLLST)
 LLSTOBJECTSD = $(DLLST)
@@ -126,6 +130,8 @@ TRSOBJECTSS_CUTEST = $(STRS) $(SRUNTRS)
 TRSOBJECTSD_CUTEST = $(DTRS) $(DRUNTRS)
 RQSOBJECTSS_CUTEST = $(SRQS) $(SRUNRQS)
 RQSOBJECTSD_CUTEST = $(DRQS) $(DRUNRQS)
+APSOBJECTSS_CUTEST = $(SAPS) $(SRUNAPS)
+APSOBJECTSD_CUTEST = $(DAPS) $(DRUNAPS)
 
 LLSTOBJECTSS_CUTEST = $(SLLST) $(SRUNLLST)
 LLSTOBJECTSD_CUTEST = $(DLLST) $(DRUNLLST)
@@ -144,8 +150,10 @@ LSRTOBJECTSD_CUTEST = $(DLSRT) $(DRUNLSRT)
 L2RTOBJECTSS_CUTEST = $(SL2RT) $(SRUNL2RT)
 L2RTOBJECTSD_CUTEST = $(DL2RT) $(DRUNL2RT)
 
-OBJECTSS_CUTEST = $(TRSOBJECTSS_CUTEST) $(RQSOBJECTSS_CUTEST)
-OBJECTSD_CUTEST = $(TRSOBJECTSD_CUTEST) $(RQSOBJECTSD_CUTEST)
+OBJECTSS_CUTEST = $(TRSOBJECTSS_CUTEST) $(RQSOBJECTSS_CUTEST) \
+                  $(APSOBJECTSS_CUTEST)
+OBJECTSD_CUTEST = $(TRSOBJECTSD_CUTEST) $(RQSOBJECTSD_CUTEST) \
+                  $(APSOBJECTSD_CUTEST)
 
 IRDS = $(DIR) $(OBJD)/irs.o
 IRDT = $(DIR) $(OBJD)/irt.o
@@ -165,6 +173,12 @@ RQSDS2 = $(DRQS) $(OBJD)/rqss2.o
 RQSDT = $(DRQS) $(OBJD)/rqst.o
 RQSSS = $(SRQS) $(OBJS)/rqss.o
 RQSST = $(SRQS) $(OBJS)/rqst.o
+
+APSDS = $(DAPS) $(OBJD)/apss.o
+APSDS2 = $(DAPS) $(OBJD)/apss2.o
+APSDT = $(DAPS) $(OBJD)/apst.o
+APSSS = $(SAPS) $(OBJS)/apss.o
+APSST = $(SAPS) $(OBJS)/apst.o
 
 LLSTDS = $(DLLST) $(OBJD)/llsts.o
 LLSTDS2 = $(DLLST) $(OBJD)/llsts2.o
@@ -238,6 +252,12 @@ RRQSDT = $(OBJD)/rqst.o -L$(OBJD) $(LIBS)
 RRQSSS = $(OBJS)/rqss.o -L$(OBJS) $(LIBS)
 RRQSST = $(OBJS)/rqst.o -L$(OBJS) $(LIBS)
 
+RAPSDS = $(OBJD)/apss.o -L$(OBJD) $(LIBS)
+RAPSDS2 = $(OBJD)/apss2.o -L$(OBJD) $(LIBS)
+RAPSDT = $(OBJD)/apst.o -L$(OBJD) $(LIBS)
+RAPSSS = $(OBJS)/apss.o -L$(OBJS) $(LIBS)
+RAPSST = $(OBJS)/apst.o -L$(OBJS) $(LIBS)
+
 RLLSTDS = $(OBJD)/llsts.o -L$(OBJD) $(LIBS)
 RLLSTDS2 = $(OBJD)/llsts2.o -L$(OBJD) $(LIBS)
 RLLSTDS3 = $(OBJD)/llsts3.o -L$(OBJD) $(LIBS)
@@ -295,6 +315,8 @@ SRUNTRS = copyright minpack $(LGS)(usetrs.o) $(OBJS)/runtrs_sif.o
 DRUNTRS = copyright minpack $(LGD)(usetrs.o) $(OBJD)/runtrs_sif.o
 SRUNRQS = copyright $(LGS)(userqs.o) $(OBJS)/runrqs_sif.o
 DRUNRQS = copyright $(LGD)(userqs.o) $(OBJD)/runrqs_sif.o
+SRUNAPS = copyright $(LGS)(useaps.o) $(OBJS)/runaps_sif.o
+DRUNAPS = copyright $(LGD)(useaps.o) $(OBJD)/runaps_sif.o
 
 SRUNLLST = copyright minpack $(LGS)(usellst.o) $(OBJS)/runllst_sif.o
 DRUNLLST = copyright minpack $(LGD)(usellst.o) $(OBJD)/runllst_sif.o
@@ -320,6 +342,8 @@ DRUNL2RT = copyright miqr mi35 $(LGD)(usel2rt.o) $(OBJD)/runl2rt_sif.o
 
 RQSOBJECTSS = $(SRQS)
 RQSOBJECTSD = $(DRQS)
+APSOBJECTSS = $(SAPS)
+APSOBJECTSD = $(DAPS)
 
 SUCC = precision version) compiled successfully
 SUCC_CUTEST = precision version) for CUTEst compiled successfully
@@ -333,23 +357,25 @@ rq_double: all
 	$(RANLIB) $(LGD)
 
 rq_cutest: ir_silent trs_cutest_silent rqs_cutest_silent \
-          gltr_cutest_silent glrt_cutest_silent \
+          aps_cutest_silent gltr_cutest_silent glrt_cutest_silent \
           lstr_cutest_silent lsrt_cutest_silent l2rt_cutest_silent
 #         gmtr_cutest_silent
 rq_cutest_new: rq_cutest llst_cutest_silent rlls_cutest_silent
 
-all: ir_silent trs_silent rqs_silent gltr_silent glrt_silent \
+all: ir_silent trs_silent rqs_silent aps_silent gltr_silent glrt_silent \
         lstr_silent lsrt_silent l2rt_silent
 #       gmtr_silent \
 	@printf ' %-21s\n' "GALAHAD: RQ family ($(PRECIS) $(SUCC)"
 all_new: all llst_silent rlls_silent
 
-test: test_trs test_rqs test_gltr test_glrt test_lstr test_lsrt test_l2rt
-test_spec: test_spec_trs test_spec_rqs test_spec_gltr test_spec_glrt \
+test: test_trs test_rqs test_aps test_gltr test_glrt \
+      test_lstr test_lsrt test_l2rt
+test_spec: test_spec_trs test_spec_rqs test_spec_aps \
+           test_spec_gltr test_spec_glrt \
            test_spec_gmtr test_spec_lstr test_spec_lsrt test_spec_l2rt
-test_nocutest: test_trs_nocutest test_rqs_nocutest test_gltr_nocutest \
-               test_glrt_nocutest test_lstr_nocutest test_lsrt_nocutest \
-               test_l2rt_nocutest
+test_nocutest: test_trs_nocutest test_rqs_nocutest test_aps_nocutest \
+               test_gltr_nocutest test_glrt_nocutest \
+               test_lstr_nocutest test_lsrt_nocutest test_l2rt_nocutest
 
 # ir
 
@@ -469,6 +495,57 @@ test_rqs_nocutest_single: rqsst
 test_rqs_nocutest_double: rqsdt
 	echo ""
 	echo " Tests for rqs complete"
+
+# aps
+
+aps_cutest_silent: aps_cutest_$(PRECIS)
+aps_cutest: aps_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: APS ($(PRECIS) $(SUCC_CUTEST)"
+aps_cutest_single: $(APSOBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+aps_cutest_double: $(APSOBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+aps_silent: aps_silent_$(PRECIS)
+aps_silent_single: $(APSOBJECTSS)
+aps_silent_double: $(APSOBJECTSD)
+
+aps: aps_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: APS ($(PRECIS) $(SUCC)"
+aps_single: $(APSOBJECTSS)
+	$(RANLIB) $(LGS)
+aps_double: $(APSOBJECTSD)
+	$(RANLIB) $(LGD)
+
+apssrunall: apsss apsst
+apsdrunall: apsds apsdt
+apsrunall: apsdrunall apssrunall
+
+test_aps: test_aps_$(PRECIS)
+
+test_aps_single: apsst $(SRUNAPS)
+	echo ""
+	echo " Testing CUTEst interface to aps"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) aps -s BQPBAND
+	echo ""
+	echo " Tests for aps complete"
+
+test_aps_double: apsdt $(DRUNAPS)
+	echo ""
+	echo " Testing CUTEst interface to aps"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) aps BQPBAND
+	echo ""
+	echo " Tests for aps complete"
+
+test_aps_nocutest: test_aps_nocutest_$(PRECIS)
+
+test_aps_nocutest_single: apsst
+	echo ""
+	echo " Tests for aps complete"
+
+test_aps_nocutest_double: apsdt
+	echo ""
+	echo " Tests for aps complete"
 
 # llst
 
@@ -1061,6 +1138,38 @@ rqs_paper_large: $(DRQS)
 	- ./run_rqs
 	rm ./run_rqs $(OBJ)/rqs_paper1.f90 $(OBJ)/rqs_paper_large.f90
 
+apsss: $(APSSS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_aps $(RAPSSS)
+	- ./run_aps >& apss.output
+	cat apss.output
+	rm ./run_aps
+
+apsst: $(APSST)
+	echo " Exhaustive test of subroutine interface to aps"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_aps $(RAPSST)
+	- ./run_aps >& apst.output
+	cat apst.output
+	rm ./run_aps
+
+apsds: $(APSDS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_aps $(RAPSDS)
+	- ./run_aps >& apsds.output
+	cat apsds.output
+	rm ./run_aps
+
+apsds2: $(APSDS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_aps $(RAPSDS2)
+	- ./run_aps >& apsds2.output
+	cat apsds2.output
+	rm ./run_aps
+
+apsdt: $(APSDT)
+	echo " Exhaustive test of subroutine interface to aps"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_aps $(RAPSDT)
+	- ./run_aps >& apsdt.output
+	cat apsdt.output
+	rm ./run_aps
+
 llstss: $(LLSTSS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_llst $(RLLSTSS)
 	- ./run_llst >& llsts.output
@@ -1372,6 +1481,7 @@ $(LG)(ir.o): ../ir/ir.f90
 	cd $(OBJ); $(ARR) ir.o ; $(RM) ir.f90 ir1.f90 ir2.f90 ir3.f90 ir.o
 	$(RMARFILE) trs.o
 	$(RMARFILE) rqs.o
+	$(RMARFILE) aps.o
 	$(RMOBFILE) irs.o
 	$(RMOBFILE) irt.o
 	$(MVMODS)
@@ -1419,6 +1529,30 @@ $(LG)(rqs.o): ../rqs/rqs.f90
 	$(RMOBFILE) rqss.o
 	$(RMOBFILE) rqss2.o
 	$(RMOBFILE) rqst.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+aps.o: $(LG)(aps.o)
+
+$(LG)(aps.o): ../aps/aps.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "aps   "
+	$(SED) -f $(SEDS) ../aps/aps.f90 > $(OBJ)/aps1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/aps1.f90 > $(OBJ)/aps2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/aps2.f90 > $(OBJ)/aps3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/aps3.f90 > $(OBJ)/aps.f90
+	cd $(OBJ); $(FORTRAN) -o aps.o $(FFLAGSS) aps.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o aps.o $(FFLAGSN) aps.f90 )
+	cd $(OBJ); $(ARR) aps.o ; $(RM) aps.f90 aps1.f90 aps2.f90 \
+                                          aps3.f90 aps.o
+	$(RMARFILE) tru.o
+	$(RMARFILE) arc.o
+	$(RMARFILE) trace.o
+	$(RMARFILE) nls.o
+	$(RMARFILE) useaps.o
+	$(RMOBFILE) apss.o
+	$(RMOBFILE) apss2.o
+	$(RMOBFILE) apst.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -1603,6 +1737,22 @@ $(LG)(userqs.o): ../rqs/userqs.f90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
+useaps.o: $(LG)(useaps.o)
+
+$(LG)(useaps.o): ../aps/useaps.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "useaps   "
+	$(SED) -f $(SEDS) ../aps/useaps.f90 > $(OBJ)/useaps1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/useaps1.f90 > $(OBJ)/useaps2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/useaps2.f90 > $(OBJ)/useaps.f90
+	cd $(OBJ); $(FORTRAN) -o useaps.o $(FFLAGSOMP) useaps.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o useaps.o $(FFLAGSN) useaps.f90 )
+	cd $(OBJ); $(ARR) useaps.o ; $(RM) useaps.f90 useaps1.f90 \
+                                       useaps2.f90 useaps.o
+	$(RMOBFILE) runaps_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
 usellst.o: $(LG)(usellst.o)
 
 $(LG)(usellst.o): ../llst/usellst.f90
@@ -1733,6 +1883,15 @@ $(OBJ)/runrqs_sif.o: ../rqs/runrqs_sif.f90
 	$(SED) -f $(SEDS) ../rqs/runrqs_sif.f90 > $(OBJ)/runrqs_sif.f90
 	cd $(OBJ); $(FORTRAN) -o runrqs_sif.o $(FFLAGSS) runrqs_sif.f90
 	rm $(OBJ)/runrqs_sif.f90
+	@printf '[ OK ]\n'
+
+runaps_sif.o: $(OBJ)/runaps_sif.o
+
+$(OBJ)/runaps_sif.o: ../aps/runaps_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runaps_sif"
+	$(SED) -f $(SEDS) ../aps/runaps_sif.f90 > $(OBJ)/runaps_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runaps_sif.o $(FFLAGSS) runaps_sif.f90
+	rm $(OBJ)/runaps_sif.f90
 	@printf '[ OK ]\n'
 
 runllst_sif.o: $(OBJ)/runllst_sif.o
@@ -1897,6 +2056,36 @@ $(OBJ)/rqst.o: ../rqs/rqst.f90
 	$(SED) -f $(SEDS) ../rqs/rqst.f90 > $(OBJ)/rqst1.f90
 	$(SED) -f $(LSEDS) $(OBJ)/rqst1.f90 > $(OBJ)/rqst.f90
 	cd $(OBJ) ; $(FORTRAN) -o rqst.o $(FFLAGSS) rqst.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+apss.o: $(OBJ)/apss.o
+
+$(OBJ)/apss.o: ../aps/apss.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "apss  "
+	$(SED) -f $(SEDS) ../aps/apss.f90 > $(OBJ)/apss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/apss1.f90 > $(OBJ)/apss.f90
+	cd $(OBJ) ; $(FORTRAN) -o apss.o $(FFLAGS) apss.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+apss2.o: $(OBJ)/apss2.o
+
+$(OBJ)/apss2.o: ../aps/apss2.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "apss2  "
+	$(SED) -f $(SEDS) ../aps/apss2.f90 > $(OBJ)/apss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/apss1.f90 > $(OBJ)/apss2.f90
+	cd $(OBJ) ; $(FORTRAN) -o apss2.o $(FFLAGS) apss2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+apst.o: $(OBJ)/apst.o
+
+$(OBJ)/apst.o: ../aps/apst.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "apst  "
+	$(SED) -f $(SEDS) ../aps/apst.f90 > $(OBJ)/apst1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/apst1.f90 > $(OBJ)/apst.f90
+	cd $(OBJ) ; $(FORTRAN) -o apst.o $(FFLAGSS) apst.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
@@ -2193,6 +2382,11 @@ rmtrs:
 rmrqs:
 	@printf ' %-9s %-15s\t\t' "Removing" "rqs from archive "
 	$(RMARFILE) rqs.o
+	@printf '[ OK ]\n'
+
+rmaps:
+	@printf ' %-9s %-15s\t\t' "Removing" "aps from archive "
+	$(RMARFILE) aps.o
 	@printf '[ OK ]\n'
 
 rmllst:
