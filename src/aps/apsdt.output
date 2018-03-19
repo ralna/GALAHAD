@@ -1,20 +1,12 @@
 
- ==== normal exits ====== 
+Program received signal SIGSEGV: Segmentation fault - invalid memory reference.
 
- pass   1 APS_solve   exit status =      0
- pass   2 APS_resolve exit status =      0
- pass   3 APS_solve   exit status =      0
- pass   4 APS_resolve exit status =      0
- pass   5 APS_resolve exit status =      0
- pass   6 APS_solve   exit status =      0
- pass   7 APS_solve   exit status =      0
- pass   8 APS_resolve exit status =      0
- pass   9 APS_resolve exit status =      0
- pass  10 APS_resolve exit status =      0
- pass  11 APS_resolve exit status =      0
-
- ==== error exits ====== 
-
- pass   1 APS_solve   exit status =     -1
- pass   2 APS_solve   exit status =     -2
- pass   4 APS_solve   exit status =     -4
+Backtrace for this error:
+#0  0x2B57C8A20E08
+#1  0x2B57C8A1FF90
+#2  0x2B57C94A64AF
+#3  0x48BCFB in __hsl_zd11_double_MOD_zd11_get at hsl_zd11d.f90:48 (discriminator 8)
+#4  0x42CEB2 in __galahad_sls_double_MOD_sls_analyse at sls.f90:2082
+#5  0x40BE1C in __galahad_aps_double_MOD_aps_build_preconditioner at aps.f90:738
+#6  0x4113E5 in __galahad_aps_double_MOD_aps_solve at aps.f90:358
+#7  0x408177 in MAIN__ at apst.f90:179

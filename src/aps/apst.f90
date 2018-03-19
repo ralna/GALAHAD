@@ -6,7 +6,7 @@ PROGRAM GALAHAD_APS_EXAMPLE
    REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp, eps = 0.0000000001_wp
    INTEGER, PARAMETER :: n = 99                  ! problem dimension
    INTEGER :: i, j, k, nn, pass
-   TYPE ( ZD11_type ) :: H
+   TYPE ( SMT_type ) :: H
    LOGICAL :: new_H = .TRUE.
    REAL ( KIND = wp ), DIMENSION( n ) :: C, X
    REAL ( KIND = wp ) :: f, f1, f2, delta, tol
@@ -28,7 +28,8 @@ PROGRAM GALAHAD_APS_EXAMPLE
 
    OPEN( UNIT = 23, STATUS = 'SCRATCH' )
    DO pass = 1, 11
-      IF ( pass == 1 .OR. pass == 3 ) CALL APS_initialize( data, control )
+      IF ( pass == 1 .OR. pass == 3 )                                          &
+        CALL APS_initialize( data, control, inform )
       control%error = 23 ; control%out = 23 ; control%print_level = 10
       tol = SQRT( EPSILON( one ) )
       delta = one
@@ -205,7 +206,7 @@ PROGRAM GALAHAD_APS_EXAMPLE
 
 ! Initialize control parameters
 
-   CALL APS_initialize( data, control )
+   CALL APS_initialize( data, control, inform )
    DO pass = 1, 4
       delta = one
       control%error = 23 ; control%out = 23 ; control%print_level = 10

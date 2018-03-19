@@ -409,9 +409,9 @@
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-      INTEGER :: i, alloc_status
+      INTEGER :: i
       REAL ( KIND = wp ) :: temp
-      LOGICAL :: reallocate, oneby1, printe, debug
+      LOGICAL :: oneby1, printe, debug
       CHARACTER ( LEN = 8 ) :: bad_alloc
       CHARACTER ( LEN = 80 ) :: array_name
 !     REAL ( KIND = wp ), DIMENSION( n ) :: P
@@ -654,11 +654,6 @@
 
       RETURN
 
-!  Non-executable statement
-
- 2900 FORMAT( /, ' ** Message from -APS_terminate-', /,                        &
-              '    Deallocation error for array data%', A14 )
-
 !  End of subroutine APS_terminate
 
       END SUBROUTINE APS_terminate
@@ -690,7 +685,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: zeig, alloc_stat, rank, out
+      INTEGER :: zeig, rank, out
       REAL :: time_start, time_now, time_record
       REAL ( KIND = wp ) :: clock_start, clock_now, clock_record
       LOGICAL :: printi, printt
