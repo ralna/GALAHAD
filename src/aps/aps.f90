@@ -29,6 +29,9 @@
 !      | in the modified absolute-value norm, M   |
 !      --------------------------------------------
 
+      USE GALAHAD_CLOCK
+      USE GALAHAD_SYMBOLS
+      USE GALAHAD_SPACE_double
       USE GALAHAD_SMT_double
 !     USE GALAHAD_SILS_double
       USE GALAHAD_SLS_double
@@ -37,7 +40,7 @@
 
       PRIVATE
       PUBLIC :: APS_initialize, APS_solve, APS_resolve, APS_terminate,         &
-                SMT_type
+                SMT_type, SMT_put, SMT_get
 
 !--------------------
 !   P r e c i s i o n
@@ -85,11 +88,19 @@
 
         REAL ( KIND = wp ) :: delta_eigen = EPSILON( one )
 
+!  if space is critical, ensure allocated arrays are no bigger than needed
+
+        LOGICAL :: space_critical = .FALSE.
+
+!  exit if any deallocation fails
+
+        LOGICAL :: deallocate_error_fatal  = .FALSE.
+
 !  symmetric (indefinite) linear equation solver
 
         CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
            "sils" // REPEAT( ' ', 26 )
-        
+
 !  all output lines will be prefixed by
 !    prefix(2:LEN(TRIM(%prefix))-1)
 !  where prefix contains the required string enclosed in quotes,
@@ -150,11 +161,11 @@
         REAL ( KIND = wp ) :: clock_solve = 0.0
 
       END TYPE TRS_time_type
-     
+
 !  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
-      
+
       TYPE, PUBLIC :: APS_inform_type
 
 !  return status. See APS_solve for details
@@ -183,6 +194,10 @@
 
         REAL ( KIND = wp ) :: norm_step = - one
 
+!  name of array that provoked an allocate failure
+
+        CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
+
 !  time information
 
         TYPE ( TRS_time_type ) :: time
@@ -196,7 +211,7 @@
 !  - - - - - - - - - -
 !   data derived type
 !  - - - - - - - - - -
-      
+
       TYPE, PUBLIC :: APS_data_type
         PRIVATE
         REAL ( KIND = wp ) :: old_delta, old_multiplier, old_f
@@ -247,7 +262,9 @@
 !  Initalize SILS components
 
 !     CALL SILS_INITIALIZE( data%FACTORS, data%CNTL )
-      CALL SLS_INITIALIZE( data%SLS_data, data%SLS_control, inform%SLS_inform )
+      CALL SLS_initialize( control%symmetric_linear_solver,                    &
+                           data%SLS_data, control%SLS_control,                 &
+                           inform%SLS_inform )
       data%SLS_control%scaling = 0
 
 !  Set initial control parameter values
@@ -315,8 +332,14 @@
       TYPE ( APS_control_type ), INTENT( IN ) :: control
       TYPE ( APS_inform_type ), INTENT( OUT ) :: inform
 
-!  check that input data is correct      
-      
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+           prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  check that input data is correct
+
       IF ( n <= 0 ) THEN
         IF ( control%error > 0 )                                              &
              WRITE( control%error, "( ' n = ', I6, ' is not positive ' )" ) n
@@ -339,7 +362,15 @@
 !  solve the TR problem
 
       CALL APS_resolve( n, delta, X, f, data, control, inform, C = C )
+      RETURN
 
+!  unsuccessful returns
+
+  910 CONTINUE
+      IF ( control%error > 0 .AND. control%print_level >= 1 )                  &
+           WRITE( control%error, "( A, ' Message from APS_resolve', /,         &
+     &            ' Allocation error, for ', A, ', status = ', I0 )" )         &
+        prefix, inform%bad_alloc, inform%SLS_inform%alloc_status
       RETURN
 
 !  End of subroutine APS_solve
@@ -390,7 +421,7 @@
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-      
+
 !  Step 1: Initialize
 !  ======
 
@@ -421,13 +452,6 @@
 !                             alloc_stat )
         CALL SLS_part_solve( 'L', data%CS, data%SLS_data, data%SLS_control,    &
                              inform%SLS_inform )
-
-        IF ( inform%SLS_inform%alloc_status /= 0 ) THEN
-          IF ( printe ) WRITE( control%error, 2010 )                           &
-            inform%SLS_inform%alloc_status
-          inform%status = - flags - inform%SLS_inform%alloc_status
-          RETURN
-        END IF
         IF ( debug ) WRITE( control%out, 2020 ) 'data%CS', data%CS( : n )
 
 !  Step 3: Obtain c_s = Gamma(-1/2) Q^T P^T c_b
@@ -520,13 +544,6 @@
 !     CALL SILS_PART_SOLVE( data%FACTORS, data%CNTL, 'U', X, alloc_status )
       CALL SLS_part_solve( 'U', X, data%SLS_data, data%SLS_control,           &
                            inform%SLS_inform )
-
-      IF ( inform%SLS_inform%alloc_status /= 0 ) THEN
-        IF ( printe ) WRITE( control%error, 2010 )                             &
-          inform%SLS_inform%alloc_status
-        inform%status = - flags - inform%SLS_inform%alloc_status
-        RETURN
-      END IF
       IF ( debug ) WRITE( control%out, 2020 ) 'X', X( : n )
 
 !  successful return
@@ -541,21 +558,19 @@
 !  unsuccessful returns
 
   910 CONTINUE
-      inform%status = - flags - inform%SLS_inform%alloc_status
       IF ( control%error > 0 .AND. control%print_level >= 1 )                  &
-        WRITE( control%error, 2000 ) bad_alloc, inform%SLS_inform%alloc_status
+           WRITE( control%error, "( A, ' Message from APS_resolve', /,         &
+     &            ' Allocation error, for ', A, ', status = ', I0 )" )         &
+        prefix, bad_alloc, inform%SLS_inform%alloc_status
       RETURN
 
 !  Non-executable statements
 
- 2000 FORMAT( ' ** Message from -APS_resolve-', /,                             &
-                 ' Allocation error, for ', A8, ', status = ', I6 )
- 2010 FORMAT( '   **  Error return ', I3, ' from SILS_part_solve ' )
  2020 FORMAT( A10, /, ( 6ES12.4 ) )
  2030 FORMAT( A10, /, ( 10I8 ) )
 
 !  End of subroutine APS_resolve
-      
+
       END SUBROUTINE APS_resolve
 
 !-*-*-*-*-   H S L _ A P S _ T E R M I N A T E   S U B R O U T I N E   -*-*-*
@@ -588,67 +603,53 @@
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-      INTEGER :: alloc_stat
-      LOGICAL :: printe
+      CHARACTER ( LEN = 80 ) :: array_name
 
       inform%status = 0
-      printe = control%error > 0 .AND. control%print_level >= 1
 
 !  deallocate all internal arrays
 
-      IF ( ALLOCATED( data%PERM ) ) THEN
-        DEALLOCATE( data%PERM, STAT = alloc_stat )
-        IF ( alloc_stat /= 0 ) THEN
-          inform%status = - flags - alloc_stat
-          IF ( printe ) WRITE( control%error, 2900 ) 'data%PERM'
-        END IF
-      END IF
+      array_name = 'trs: data%PERM'
+      CALL SPACE_dealloc_array( data%PERM,                                     &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      IF ( ALLOCATED( data%D ) ) THEN
-        DEALLOCATE( data%D, STAT = alloc_stat )
-        IF ( alloc_stat /= 0 ) THEN
-          inform%status = - flags - alloc_stat
-          IF ( printe ) WRITE( control%error, 2900 ) 'data%D'
-        END IF
-      END IF
+      array_name = 'trs: data%D'
+      CALL SPACE_dealloc_array( data%D,                                        &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      IF ( ALLOCATED( data%EVAL ) ) THEN
-        DEALLOCATE( data%EVAL, STAT = alloc_stat )
-        IF ( alloc_stat /= 0 ) THEN
-          inform%status = - flags - alloc_stat
-          IF ( printe ) WRITE( control%error, 2900 ) 'data%EVAL'
-        END IF
-      END IF
+      array_name = 'trs: data%EVAL'
+      CALL SPACE_dealloc_array( data%EVAL,                                     &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      IF ( ALLOCATED( data%MOD_EVAL ) ) THEN
-        DEALLOCATE( data%MOD_EVAL, STAT = alloc_stat )
-        IF ( alloc_stat /= 0 ) THEN
-          inform%status = - flags - alloc_stat
-          IF ( printe ) WRITE( control%error, 2900 )'data%MOD_EVAL'
-        END IF
-      END IF
+      array_name = 'trs: data%MOD_EVAL'
+      CALL SPACE_dealloc_array( data%MOD_EVAL,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      IF ( ALLOCATED( data%EVECT ) ) THEN
-        DEALLOCATE( data%EVECT, STAT = alloc_stat )
-        IF ( alloc_stat /= 0 ) THEN
-          inform%status = - flags - alloc_stat
-          IF ( printe ) WRITE( control%error, 2900 ) 'data%EVECT'
-        END IF
-      END IF
+      array_name = 'trs: data%EVECT'
+      CALL SPACE_dealloc_array( data%EVECT,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      IF ( ALLOCATED( data%CS ) ) THEN
-        DEALLOCATE( data%CS, STAT = alloc_stat )
-        IF ( alloc_stat /= 0 ) THEN
-          inform%status = - flags - alloc_stat
-          IF ( printe ) WRITE( control%error, 2900 ) 'data%CS'
-        END IF
-      END IF
+      array_name = 'trs: data%CS'
+      CALL SPACE_dealloc_array( data%CS,                                       &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
 !     CALL SILS_FINALIZE( data%FACTORS, data%CNTL, alloc_stat )
-      CALL SLS_terminate( data%SLS_data, data%SLS_control, inform )
-      IF ( inform%alloc_status /= 0 ) THEN
-         inform%status = - flags - inform%alloc_status
-         IF ( printe ) WRITE( control%error, 2900 ) 'data%SLS_data'
+      CALL SLS_terminate( data%SLS_data, data%SLS_control, inform%SLS_inform )
+      IF ( inform%SLS_inform%status /= 0 ) THEN
+        inform%status = GALAHAD_error_deallocate
+        inform%bad_alloc = 'trs: data%SLS_data'
       END IF
 
       RETURN
@@ -690,8 +691,10 @@
 !-----------------------------------------------
 
       INTEGER :: zeig, alloc_stat, rank, out
-      LOGICAL :: printe, printt, reallocate
-      CHARACTER ( LEN = 6 ) :: bad_alloc
+      REAL :: time_start, time_now, time_record
+      REAL ( KIND = wp ) :: clock_start, clock_now, clock_record
+      LOGICAL :: printi, printt
+      CHARACTER ( LEN = 80 ) :: array_name
 
 !-----------------------------------------------
 !   M A 2 7    V a r i a b l e s
@@ -700,13 +703,26 @@
 !     TYPE ( SILS_AINFO ) :: AINFO
 !     TYPE ( SILS_FINFO ) :: FINFO
 
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+           prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  set initial values
+
+      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
+
 !  set output levels
 
       out = control%out
-      printe = control%error > 0 .AND. control%print_level >= 1
-      printt = out > 0 .AND. control%print_level >= 2
 
-      inform%status = 0
+!  record desired output level
+
+      printi = out > 0 .AND. control%print_level > 0
+      printt = out > 0 .AND. control%print_level > 1
+
+      inform%status = GALAHAD_ok
 
 ! ::::::::::::::::::::::::::::::::::
 !  Analyse the sparsity pattern of H
@@ -714,26 +730,14 @@
 
       IF ( new_H ) THEN
 
-!  initialize the data structures
-
-        data%SLS_control%lp = control%error
-        data%SLS_control%mp = control%out
-        data%SLS_control%wp = control%out
-        IF ( control%print_level > 2 ) THEN
-          IF ( control%print_level < 10 ) THEN
-            data%SLS_control%ldiag = 1
-          ELSE
-            data%SLS_control%ldiag = 2
-          END IF
-        END IF
+!  set up linear equation solver-dependent data
 
         CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
         CALL SLS_initialize_solver( control%symmetric_linear_solver,           &
                                     data%SLS_data, inform%SLS_inform )
-        
+
 !  perform the analysis
 
-        IF ( printt ) CALL CPU_TIME( time )
 !       CALL SILS_ANALYSE( H, data%FACTORS, data%SLS_CNTL, AINFO )
         CALL SLS_analyse( H, data%SLS_data, data%SLS_control,                  &
                           inform%SLS_inform )
@@ -758,84 +762,64 @@
 
       CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
       !     CALL SILS_FACTORIZE( H, data%FACTORS, data%SLS_CONTROL, FINFO )
-      CALL SLS_FACTORIZE( H, data%SLS_data, data%SLS_control, SLS_inform )
+      CALL SLS_FACTORIZE( H, data%SLS_data, data%SLS_control,                  &
+                          inform%SLS_inform )
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%factorize = inform%time%factorize + time_now - time_record
       inform%time%clock_factorize =                                            &
         inform%time%clock_factorize + clock_now - clock_record
       IF ( printt ) WRITE( out, "( A, ' time( SLS_factorize ) = ', F0.2 )" )   &
         prefix, clock_now - clock_record
-      
+
 !  test that the factorization succeeded
 
       IF ( inform%SLS_inform%status < 0 ) GO TO 920
-      rank = SLS_inform%rank
+      rank = inform%SLS_inform%rank
       IF ( rank /= n .AND. printt ) WRITE( control%out,                        &
         "( I0, ' zero eigenvalues ' )" ) n - rank
       zeig = n - rank
 
 !  allocate further arrays
 
-      reallocate = .TRUE.
-      IF ( ALLOCATED( data%PERM ) ) THEN
-        IF ( SIZE( data%PERM ) < n ) THEN ; DEALLOCATE( data%PERM )
-        ELSE ; reallocate = .FALSE.
-        END IF
-      END IF
-      IF ( reallocate ) THEN
-        ALLOCATE( data%PERM( n ), STAT = alloc_stat )
-        IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'PERM' ; GO TO 910
-        END IF
-      END IF
+      array_name = 'aps: data%PERM'
+      CALL SPACE_resize_array( n, data%PERM,                                   &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= 0 ) GO TO 910
 
-      reallocate = .TRUE.
-      IF ( ALLOCATED( data%EVAL ) ) THEN
-        IF ( SIZE( data%EVAL ) < n ) THEN ; DEALLOCATE( data%EVAL )
-        ELSE ; reallocate = .FALSE.
-        END IF
-      END IF
-      IF ( reallocate ) THEN
-        ALLOCATE( data%EVAL( n ), STAT = alloc_stat )
-        IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'EVAL' ; GO TO 910
-        END IF
-      END IF
+      array_name = 'aps: data%EVAL'
+      CALL SPACE_resize_array( n, data%EVAL,                                   &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= 0 ) GO TO 910
 
-      reallocate = .TRUE.
-      IF ( ALLOCATED( data%MOD_EVAL ) ) THEN
-        IF ( SIZE( data%MOD_EVAL ) < n ) THEN ; DEALLOCATE( data%MOD_EVAL )
-        ELSE ; reallocate = .FALSE.
-        END IF
-      END IF
-      IF ( reallocate ) THEN
-        ALLOCATE( data%MOD_EVAL( n ), STAT = alloc_stat )
-        IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'data%MOD_EVAL' ; GO TO 910
-        END IF
-      END IF
+      array_name = 'aps: data%MOD_EVAL'
+      CALL SPACE_resize_array( n, data%MOD_EVAL,                               &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= 0 ) GO TO 910
 
-      reallocate = .TRUE.
-      IF ( ALLOCATED( data%EVECT ) ) THEN
-        IF ( SIZE( data%EVECT ) < n ) THEN ; DEALLOCATE( data%EVECT )
-        ELSE ; reallocate = .FALSE.
-        END IF
-      END IF
-      IF ( reallocate ) THEN
-        ALLOCATE( data%EVECT( n ), STAT = alloc_stat )
-        IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'data%EVECT' ; GO TO 910
-        END IF
-      END IF
+      array_name = 'aps: data%EVECT'
+      CALL SPACE_resize_array( n, data%EVECT,                                  &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= 0 ) GO TO 910
 
-      reallocate = .TRUE.
-      IF ( ALLOCATED( data%D ) ) THEN
-        IF ( SIZE( data%D, 1 ) /= 2  .OR. SIZE( data%D, 2 ) < n ) THEN
-          DEALLOCATE( data%D )
-        ELSE ; reallocate = .FALSE.
-        END IF
-      END IF
-      IF ( reallocate ) THEN
-        ALLOCATE( data%D( 2, n ), STAT = alloc_stat )
-        IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'D' ; GO TO 910
-        END IF
-      END IF
+      array_name = 'aps: data%D'
+      CALL SPACE_resize_array( 2, n, data%D,                                   &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= 0 ) GO TO 910
 
 !  ::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !  Modify the factorization to produce the preconditioner
@@ -850,10 +834,12 @@
       inform%status = GALAHAD_ok
       RETURN
 
-!  unsuccessful returns
+!  general error
 
   910 CONTINUE
-      IF ( printe ) WRITE( control%error, 2000 ) bad_alloc, alloc_stat
+      IF ( control%out > 0 .AND. control%print_level > 0 )                     &
+        WRITE( control%out, "( A, '   **  Error return ', I0,                  &
+        & ' from TRS ' )" ) control%prefix, inform%status
       RETURN
 
 !  factorization failure
@@ -867,11 +853,6 @@
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
       RETURN
-      
-!  Non-executable statements
-
- 2000 FORMAT( ' ** Message from -APS_build_preconditioner-', /,                &
-                 ' Allocation error, for ', A6, ', status = ', I6 )
 
 !  End of subroutine APS_build_preconditioner
 

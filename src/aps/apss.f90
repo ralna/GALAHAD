@@ -6,12 +6,13 @@
    INTEGER :: i
    REAL ( KIND = wp ) :: f, delta
    LOGICAL :: new_H = .TRUE.
-   TYPE ( ZD11_type ) :: H
+   TYPE ( SMT_type ) :: H
    REAL ( KIND = wp ), DIMENSION( n ) :: C, X
    TYPE ( APS_data_type ) :: data
    TYPE ( APS_control_type ) :: control
    TYPE ( APS_inform_type ) :: inform
-
+   INTEGER :: s
+   CALL SMT_put( H%type, 'COORDINATE', s )       ! Specify co-ordinate for H
    H%ne = 2 * n - 1                              ! set up problem
    ALLOCATE( H%row( H%ne ), H%col( H%ne ), H%val( H%ne ), STAT = i )
    DO i = 1, n - 1
@@ -21,7 +22,7 @@
    H%row( n ) = n ; H%col( n ) = n ; H%val( n ) = -2.0_wp
    delta = 1.0_wp ; C = 1.0_wp
 
-   CALL APS_initialize( data, control )  ! Initialize control parameters
+   CALL APS_initialize( data, control, inform )  ! Initialize control parameters
 
    CALL APS_solve( n, delta, C, H, new_H, f, X, data, control, inform )
    WRITE( 6, "( / A, ES12.4, A, / ( 5ES12.4 ) )" )                             &

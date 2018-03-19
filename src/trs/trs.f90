@@ -390,7 +390,7 @@
 
         LOGICAL :: hard_case = .FALSE.
 
-!  name of array which provoked an allocate failure
+!  name of array that provoked an allocate failure
 
         CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
 
@@ -1122,8 +1122,8 @@
 !  -------------
 
   910 CONTINUE
-      IF ( control%out > 0 .AND. control%print_level > 0 )                    &
-        WRITE( control%out, "( A, '   **  Error return ', I0,                 &
+      IF ( control%out > 0 .AND. control%print_level > 0 )                     &
+        WRITE( control%out, "( A, '   **  Error return ', I0,                  &
        & ' from TRS ' )" ) control%prefix, inform%status
       RETURN
 
@@ -3822,7 +3822,7 @@
                           inform%SLS_inform )
       IF ( inform%SLS_inform%status /= 0 ) THEN
         inform%status = GALAHAD_error_deallocate
-        inform%bad_alloc = 'trs: SLS_data'
+        inform%bad_alloc = 'trs: data%SLS_data'
       END IF
 
       RETURN
@@ -4804,5 +4804,3 @@
 !-*-*-*-*-*-  End of G A L A H A D _ T R S  double  M O D U L E  *-*-*-*-*-*-
 
    END MODULE GALAHAD_TRS_double
-
-

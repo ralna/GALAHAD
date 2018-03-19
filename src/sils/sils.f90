@@ -9,7 +9,7 @@
 !   originally released pre GALAHAD Version 1.0. October 3rd 2000
 !   update released with GALAHAD Version 2.0. March 28th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_SILS_double
@@ -28,17 +28,17 @@
      USE GALAHAD_SMT_double
 
      IMPLICIT NONE
- 
+
      PRIVATE
      PUBLIC :: SILS_initialize, SILS_analyse, SILS_factorize, SILS_solve,      &
                SILS_finalize, SILS_enquire, SILS_alter_d, SILS_part_solve,     &
                SMT_type
-   
+
 !--------------------
 !   P r e c i s i o n
 !--------------------
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  
+     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !  Set other parameters
 
@@ -51,14 +51,14 @@
 !-------------------------------------------------
 
      TYPE, PUBLIC :: SILS_factors
-       PRIVATE 
-!      INTEGER, ALLOCATABLE, DIMENSION( :, : )  :: keep 
-       INTEGER, ALLOCATABLE, DIMENSION( : )  :: keep 
-       INTEGER, ALLOCATABLE, DIMENSION( : )  :: iw 
-       INTEGER, ALLOCATABLE, DIMENSION( : )  :: iw1 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: val 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: w ! len maxfrt 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: r ! length n 
+       PRIVATE
+!      INTEGER, ALLOCATABLE, DIMENSION( :, : )  :: keep
+       INTEGER, ALLOCATABLE, DIMENSION( : )  :: keep
+       INTEGER, ALLOCATABLE, DIMENSION( : )  :: iw
+       INTEGER, ALLOCATABLE, DIMENSION( : )  :: iw1
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: val
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: w ! len maxfrt
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: r ! length n
        INTEGER :: n       ! Matrix order
        INTEGER :: nrltot  ! Size for val without compression
        INTEGER :: nirtot  ! Size for iw without compression
@@ -71,20 +71,20 @@
        INTEGER :: pivoting ! type of pivoting used
        REAL ( KIND = wp ) :: ops
      END TYPE SILS_factors
-     
+
      TYPE, PUBLIC :: SILS_control
        REAL ( KIND = wp ) :: CNTL( 5 ) ! MA27 internal real controls
        REAL ( KIND = wp ) :: multiplier ! Factor by which arrays sizes are to
                          ! be increased if they are too small
-       REAL ( KIND = wp ) :: reduce ! If previously allocated internal 
-                         ! workspace arrays are greater than reduce times 
-                         ! the currently required sizes, they are reset to 
+       REAL ( KIND = wp ) :: reduce ! If previously allocated internal
+                         ! workspace arrays are greater than reduce times
+                         ! the currently required sizes, they are reset to
                          ! current requirments
        REAL ( KIND = wp ) :: u     ! Pivot threshold
-       REAL ( KIND = wp ) :: static_tolerance ! used for setting static 
+       REAL ( KIND = wp ) :: static_tolerance ! used for setting static
                            ! pivot level                                    NEW
        REAL ( KIND = wp ) :: static_level ! used for switch to static       NEW
-       REAL ( KIND = wp ) :: tolerance ! Anything less than this is 
+       REAL ( KIND = wp ) :: tolerance ! Anything less than this is
                          ! considered zero
        REAL ( KIND = wp ) :: convergence = 0.5_wp ! used to monitor convergence
                                                   ! in iterative refinement
@@ -95,23 +95,23 @@
        INTEGER :: sp     ! Unit for statistical output                      NEW
        INTEGER :: ldiag  ! Controls level of diagnostic output
        INTEGER :: la     ! Initial size for real array for the factors.
-                         ! If less than nrlnec, default size used.  
-       INTEGER :: liw    ! Initial size for integer array for the factors.   
-                         ! If less than nirnec, default size used.  
+                         ! If less than nrlnec, default size used.
+       INTEGER :: liw    ! Initial size for integer array for the factors.
+                         ! If less than nirnec, default size used.
        INTEGER :: maxla  ! Max. size for real array for the factors.
        INTEGER :: maxliw ! Max. size for integer array for the factors.
        INTEGER :: pivoting  ! Controls pivoting:
-                  !  1  Numerical pivoting will be performed. 
-                  !  2  No pivoting will be performed and an error exit will   
+                  !  1  Numerical pivoting will be performed.
+                  !  2  No pivoting will be performed and an error exit will
                   !     occur immediately a pivot sign change is detected.
-                  !  3  No pivoting will be performed and an error exit will 
-                  !     occur if a zero pivot is detected. 
+                  !  3  No pivoting will be performed and an error exit will
+                  !     occur if a zero pivot is detected.
                   !  4  No pivoting is performed but pivots are changed to
                   !     all be positive.
        INTEGER :: nemin = 1 ! Minimum number of eliminations in a step    UNUSED
        INTEGER :: factorblocking = 16 ! Level 3 blocking in factorize     UNUSED
        INTEGER :: solveblocking = 16 ! Level 2 and 3 blocking in solve    UNUSED
-       INTEGER :: thresh ! Controls threshold for detecting full rows in 
+       INTEGER :: thresh ! Controls threshold for detecting full rows in
                   !     analyse, registered as percentage of N
                   ! 100 Only fully dense rows detected (default)            NEW
        INTEGER :: ordering  ! Controls ordering:                            NEW
@@ -127,7 +127,7 @@
                  !  0  No scaling
                  ! >0  Scaling using MC64 but may change for > 1
      END TYPE SILS_control
-   
+
      TYPE, PUBLIC :: SILS_ainfo
        REAL ( KIND = wp ) :: opsa = - 1.0_wp! Anticipated # ops. in assembly NEW
        REAL ( KIND = wp ) :: opse = - 1.0_wp ! Anticipated # ops. in elimin. NEW
@@ -147,7 +147,7 @@
        INTEGER :: stat = 0   ! STAT value after allocate failure            NEW
        INTEGER :: faulty = 0 ! OLD
      END TYPE SILS_ainfo
-     
+
      TYPE, PUBLIC :: SILS_finfo
        REAL ( KIND = wp ) :: opsa = - 1.0_wp ! # operations in assembly     NEW
        REAL ( KIND = wp ) :: opse = - 1.0_wp ! # operations in elimination  NEW
@@ -178,7 +178,7 @@
        INTEGER :: faulty = - 1 ! OLD
        INTEGER :: step = - 1   ! OLD
      END TYPE SILS_finfo
-     
+
      TYPE, PUBLIC :: SILS_sinfo
        REAL ( KIND = wp ) :: cond = - 1.0_wp  ! Cond # of matrix (cat 1 eqs)
        REAL ( KIND = wp ) :: cond2 = - 1.0_wp ! Cond # of matrix (cat 2 eqs)
@@ -188,7 +188,7 @@
        INTEGER :: flag = - 1 ! Flags success or failure case
        INTEGER :: stat = - 1 ! STAT value after allocate failure
      END TYPE SILS_sinfo
-   
+
 !--------------------------------
 !   I n t e r f a c e  B l o c k
 !--------------------------------
@@ -196,19 +196,19 @@
      INTERFACE SILS_solve
        MODULE PROCEDURE SILS_solve, SILS_solve_multiple,                       &
                         SILS_solve_refine, SILS_solve_refine_multiple
-     END INTERFACE 
-     
-     INTERFACE 
-     
+     END INTERFACE
+
+     INTERFACE
+
        SUBROUTINE MA27ID( ICNTL, CNTL )
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: ICNTL( 30 )
        REAL( KIND = wp ), INTENT( OUT ) :: CNTL( 5 )
        END SUBROUTINE MA27ID
 
        SUBROUTINE MA27AD( n, nz, IRN, ICN, IW, liw, IKEEP, IW1, nsteps,        &
                           iflag, ICNTL, CNTL, INFO, ops )
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( IN ) :: n, nz, liw
        INTEGER, INTENT( OUT ) :: nsteps
        INTEGER, INTENT( INOUT ) :: iflag
@@ -221,10 +221,10 @@
        REAL( KIND = wp ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
        REAL( KIND = wp ), INTENT( OUT ) :: ops
        END SUBROUTINE MA27AD
-       
+
        SUBROUTINE MA27BD( n, nz, IRN, ICN, A, la, IW, liw, IKEEP, nsteps,      &
                           maxfrt, IW1, ICNTL, CNTL, INFO )
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( IN ) :: n, nz, la, liw, nsteps
        INTEGER, INTENT( OUT ) :: maxfrt
        INTEGER, INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
@@ -236,10 +236,10 @@
        INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
        REAL( KIND = wp ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
        END SUBROUTINE MA27BD
-     
+
        SUBROUTINE MA27CD( n, A, la, IW, liw, W, maxfrt, RHS, IW1, nsteps,      &
                           ICNTL, INFO )
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( IN ) :: n, la, liw, maxfrt, nsteps
        INTEGER, INTENT( IN ), DIMENSION( liw ) :: IW
        INTEGER, INTENT( OUT ), DIMENSION( nsteps ) :: IW1
@@ -249,13 +249,13 @@
        INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
        INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
        END SUBROUTINE MA27CD
-     
+
      END INTERFACE
 
    CONTAINS
 
 !-*-*-*-*-*-   S I L S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
-   
+
      SUBROUTINE SILS_initialize( FACTORS, CONTROL )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -267,11 +267,11 @@
 
      TYPE( SILS_factors ), INTENT( OUT ), OPTIONAL :: FACTORS
      TYPE( SILS_control ), INTENT( OUT ), OPTIONAL :: CONTROL
-     
+
      IF ( PRESENT( FACTORS ) ) THEN
        FACTORS%n = 0
      END IF
-     
+
      IF ( present( CONTROL ) ) THEN
        CALL MA27ID( CONTROL%ICNTL, CONTROL%CNTL )
        CONTROL%multiplier = 2.0_wp
@@ -296,19 +296,19 @@
        CONTROL%ordering = 3
        CONTROL%scaling = 0
      END IF
-     
-     RETURN  
+
+     RETURN
 
 !  End of SILS_initialize
 
      END SUBROUTINE SILS_initialize
-   
+
 !-*-*-*-*-*-*-*-   S I L S _ A N A L Y S E  S U B R O U T I N E   -*-*-*-*-*-*-
 
      SUBROUTINE SILS_analyse( MATRIX, FACTORS, CONTROL, AINFO, PERM )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-!  Analyse the sparsity pattern to obtain a good potential ordering 
+!  Analyse the sparsity pattern to obtain a good potential ordering
 !  for any subsequent factorization
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -329,15 +329,15 @@
 
 !  Transfer CONTROL parameters
 
-     CNTL( 1 ) = CONTROL%u 
+     CNTL( 1 ) = CONTROL%u
      CNTL( 2 ) = CONTROL%thresh / 100.0_wp
      CNTL( 3 ) = CONTROL%tolerance
      CNTL( 4 : 5 ) = CONTROL%CNTL( 4 : 5 )
      ICNTL( 1 ) = CONTROL%lp
-     ICNTL( 2 ) = CONTROL%mp 
+     ICNTL( 2 ) = CONTROL%mp
      ICNTL( 3 ) = CONTROL%ldiag
      ICNTL( 4 : 30 ) = CONTROL%ICNTL( 4 : 30 )
-     
+
      n = MATRIX%n ; ne = MATRIX%ne ; stat = 0
 
 !  Allocate workspace
@@ -353,7 +353,7 @@
        ALLOCATE( FACTORS%keep( 3 * n ), STAT = stat )
        IF ( stat /= 0 ) GO TO 100
      END IF
-     
+
      IF ( ALLOCATED( FACTORS%iw1 ) ) THEN
        IF ( SIZE( FACTORS%iw1 ) /= 2 * n ) THEN
          DEALLOCATE( FACTORS%iw1, STAT = stat )
@@ -365,7 +365,7 @@
        ALLOCATE( FACTORS%iw1( 2 * n ), STAT = stat )
        IF ( stat /= 0 ) GO TO 100
      END IF
-     
+
      IF ( present( PERM ) ) THEN
 
 ! check that the input perm is indeed a permutation
@@ -411,7 +411,7 @@
        liw = INT( 1.2_wp * REAL( 2 * ne + 3 * n + 1, KIND = wp ) )
        AINFO%flag = 0
      END IF
-     
+
      IF ( ALLOCATED( FACTORS%iw ) ) THEN
        IF ( SIZE( FACTORS%iw ) /= liw ) THEN
          DEALLOCATE( FACTORS%iw, STAT = stat )
@@ -429,7 +429,7 @@
      CALL MA27AD( n, ne, MATRIX%row, MATRIX%col, FACTORS%iw, liw,              &
                   FACTORS%keep, FACTORS%iw1, FACTORS%nsteps, AINFO%flag,       &
                   ICNTL, CNTL, INFO, FACTORS%ops )
- 
+
 !  Record return information
 
      FACTORS%nrltot = INFO( 3 )
@@ -437,7 +437,7 @@
      FACTORS%nrlnec = INFO( 5 )
      FACTORS%nirnec = INFO( 6 )
      FACTORS%n = n
-     
+
      AINFO%flag = INFO( 1 )
      AINFO%more = INFO( 2 )
      AINFO%nsteps = FACTORS%nsteps
@@ -459,7 +459,7 @@
      AINFO%maxfrt = - 1
      AINFO%stat = 0
 
-     RETURN     
+     RETURN
 
  100 CONTINUE
      IF ( CONTROL%ldiag > 0 .AND. CONTROL%lp > 0 )                             &
@@ -482,7 +482,7 @@
      AINFO%dup = - 1
      AINFO%maxfrt = - 1
      AINFO%stat = stat
-     
+
      RETURN
 
 !  End of SILS_analyse
@@ -512,7 +512,7 @@
      INTEGER, ALLOCATABLE :: flag( : ) ! Workarray for completing the
                                        ! permutation in the rank-deficient case
      INTEGER :: FACTORS_iw1( MATRIX%n )
-     
+
      IF ( FACTORS%n /= MATRIX%n ) THEN
        IF ( CONTROL%ldiag > 0 .AND. CONTROL%lp > 0 )                           &
          WRITE( CONTROL%lp, '( A, I7, A, I7 )')                                &
@@ -525,19 +525,19 @@
 !  Transfer CONTROL parameters
 
      SELECT CASE ( CONTROL%pivoting )
-       CASE default ; CNTL( 1 ) = CONTROL%u 
-       CASE ( 2 ) ; CNTL( 1 ) = - CONTROL%u 
-       CASE ( 3 ) ; CNTL( 1 ) = 0.0_wp 
+       CASE default ; CNTL( 1 ) = CONTROL%u
+       CASE ( 2 ) ; CNTL( 1 ) = - CONTROL%u
+       CASE ( 3 ) ; CNTL( 1 ) = 0.0_wp
      END SELECT
      CNTL( 2 ) = CONTROL%thresh / 100.0_wp
      CNTL( 3 ) = CONTROL%tolerance
      CNTL( 4 : 5 ) = CONTROL%CNTL( 4 : 5 )
      ICNTL( 1 ) = CONTROL%lp
-     ICNTL( 2 ) = CONTROL%mp 
+     ICNTL( 2 ) = CONTROL%mp
      ICNTL( 3 ) = CONTROL%ldiag
      ICNTL( 4 : 30 ) = CONTROL%ICNTL( 4 : 30 )
      FACTORS%pivoting = CONTROL%pivoting
-     
+
      stat = 0
 
 !  Allocate workspace
@@ -558,15 +558,15 @@
      IF ( ALLOCATED( FACTORS%val ) ) THEN
        IF ( la + la_extra /= SIZE( FACTORS%val ) ) THEN
          DEALLOCATE( FACTORS%val, STAT = stat )
-         IF ( stat /= 0 ) GO TO 100 
+         IF ( stat /= 0 ) GO TO 100
          ALLOCATE( FACTORS%val( la + la_extra ), STAT = stat )
-         IF ( stat /= 0 ) GO TO 100 
+         IF ( stat /= 0 ) GO TO 100
        END IF
      ELSE
        ALLOCATE( FACTORS%val( la + la_extra ), STAT = stat )
-       IF ( stat /= 0 ) GO TO 100 
+       IF ( stat /= 0 ) GO TO 100
      END IF
-     
+
      liw = CONTROL%liw
      IF ( liw < FACTORS%nirnec ) THEN
        liw = INT( CONTROL%reduce * REAL( FACTORS%nirtot, KIND = wp ) )
@@ -578,19 +578,19 @@
      IF ( ALLOCATED( FACTORS%iw ) ) THEN
        IF ( liw /= SIZE( FACTORS%iw ) ) THEN
          DEALLOCATE( FACTORS%iw, STAT = stat )
-         IF ( stat /= 0 ) GO TO 100 
+         IF ( stat /= 0 ) GO TO 100
          ALLOCATE( FACTORS%iw( liw ), STAT = stat )
-         IF ( stat /= 0 ) GO TO 100 
+         IF ( stat /= 0 ) GO TO 100
        END IF
      ELSE
        ALLOCATE( FACTORS%iw( liw ), STAT = stat )
-       IF ( stat /= 0 ) GO TO 100 
+       IF ( stat /= 0 ) GO TO 100
      END IF
 
 !  Factorize the matrix
 
      DO
-       FACTORS%val( 1 : MATRIX%ne ) = MATRIX%val( 1 : MATRIX%ne ) 
+       FACTORS%val( 1 : MATRIX%ne ) = MATRIX%val( 1 : MATRIX%ne )
 
 !  Schnabel-Eskow modified Cholesky factorization
 
@@ -614,13 +614,13 @@
 
        FINFO%flag = INFO( 1 )
 
-!  Check to see if there was sufficient workspace. If not, allocate 
+!  Check to see if there was sufficient workspace. If not, allocate
 !  more and retry
 
        IF ( FINFO%flag == - 3 ) THEN
          IF ( ALLOCATED( FACTORS%iw ) ) THEN
            DEALLOCATE( FACTORS%iw, STAT = stat )
-           IF ( stat /= 0 ) GO TO 100 
+           IF ( stat /= 0 ) GO TO 100
          END IF
          liw = INT( CONTROL%multiplier * REAL( liw, KIND = wp ) )
          IF ( liw > CONTROL%maxliw ) THEN
@@ -630,7 +630,7 @@
            return
          END IF
          ALLOCATE( FACTORS%iw( liw ), STAT = stat )
-         IF ( stat /= 0 ) GO TO 100 
+         IF ( stat /= 0 ) GO TO 100
        ELSE IF ( FINFO%flag == - 4 ) THEN
          IF ( ALLOCATED( FACTORS%iw ) ) THEN
            DEALLOCATE( FACTORS%val, STAT = stat )
@@ -646,7 +646,7 @@
          ALLOCATE( FACTORS%val( la + la_extra ), STAT = stat )
          IF ( stat /= 0 ) GO TO 100
        ELSE
-         EXIT 
+         EXIT
        END IF
      END DO
 
@@ -662,11 +662,11 @@
            ncols = - ncols
          END IF
          kw = kw + ncols + 1
-       END DO 
-     
+       END DO
+
        FACTORS%latop = INFO( 9 )
        FACTORS%maxfrt = FINFO%maxfrt
-     
+
        IF ( FINFO%flag == 3 ) THEN
 
 ! Supplement the arrays in the singular case
@@ -686,7 +686,7 @@
              flag( FACTORS%iw( kw + 1 ) ) = 1
            END IF
            kw = kw + ncols + 1
-         END DO 
+         END DO
          DO i = 1, FACTORS%n
            IF ( flag( i ) == 0 ) THEN
              nblks = nblks + 1
@@ -722,10 +722,10 @@
      FINFO%neig   = INFO( 15 )
      FINFO%static = 0
      FINFO%maxfrt = - 1
-     FINFO%nrltot = FACTORS%nrltot 
-     FINFO%nirtot = FACTORS%nirtot 
-     FINFO%nrlnec = FACTORS%nrlnec 
-     FINFO%nirnec = FACTORS%nirnec  
+     FINFO%nrltot = FACTORS%nrltot
+     FINFO%nirtot = FACTORS%nirtot
+     FINFO%nrlnec = FACTORS%nrlnec
+     FINFO%nirnec = FACTORS%nirnec
      FINFO%delay = 0
      FINFO%signc = 0
      FINFO%modstep = MATRIX%n + 1
@@ -746,7 +746,7 @@
      END IF
      IF ( FINFO%flag == 2 ) FINFO%flag = 5
      FINFO%stat = 0
-     
+
      IF ( ALLOCATED( FACTORS%w ) ) THEN
        IF ( SIZE( FACTORS%w ) < FACTORS%maxfrt ) THEN
          DEALLOCATE( FACTORS%w, STAT = i )
@@ -775,7 +775,7 @@
      END IF
 
      RETURN
-     
+
  100 CONTINUE
      IF ( CONTROL%ldiag > 0 .AND. CONTROL%lp > 0 )                             &
         WRITE( CONTROL%lp, '( A / A, I0 )')                                    &
@@ -792,7 +792,7 @@
      FINFO%neig   = - 1
      FINFO%static = 0
      FINFO%maxfrt = - 1
-     FINFO%nrltot = - 1 
+     FINFO%nrltot = - 1
      FINFO%nirtot = - 1
      FINFO%nrlnec = - 1
      FINFO%nirnec = - 1
@@ -852,7 +852,7 @@
        INTEGER :: k, kz, nz1, iphase, j2, j1, irows
        INTEGER :: len, nrows, ipos, kblk, iapos, ncols, iblk
        REAL ( KIND = wp ) :: addon
-       
+
        INFO( 1 ) = 0
        maxchange = zero
        IF ( ICNTL( 3 ) > 0 .AND. ICNTL( 2 ) > 0 ) THEN
@@ -896,7 +896,7 @@
          CALL SILS_sort_entries( n, nz, nz1, A, la, IRN, ICN, IW, liw, IKEEP,  &
                                  IW1, ICNTL, INFO, DIAG, addon )
          IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) >= 2 )                           &
-           WRITE( ICNTL( 2 ), 2000 ) addon 
+           WRITE( ICNTL( 2 ), 2000 ) addon
          IF ( INFO( 1 ) == - 3 .OR. INFO( 1 ) == - 4 ) GO TO 130
 
 !  Factorize
@@ -928,7 +928,7 @@
          IF ( ICNTL( 1 ) > 0 ) WRITE( ICNTL( 1 ), 2080 ) INFO( 1 )
          IF ( ICNTL( 1 ) > 0 ) WRITE( ICNTL( 1 ), 2090 ) n
        END IF
-       
+
   130  CONTINUE
        IF ( INFO( 1 ) == - 3 ) THEN
          IF ( ICNTL( 1 ) > 0 ) WRITE( ICNTL( 1 ), 2080 ) INFO( 1 )
@@ -942,7 +942,7 @@
 !  Print output parameters
 
          WRITE( ICNTL( 2 ), 2230 ) maxfrt, INFO( 1 ),INFO( 9 ), INFO( 10 ),    &
-           INFO( 12 ), INFO( 13 ),INFO( 14 ), INFO( 2 ) 
+           INFO( 12 ), INFO( 13 ),INFO( 14 ), INFO( 2 )
          IF ( INFO( 1 ) >= 0 ) THEN
 
 !  Print out matrix factors from SILS_schnabel_eskow
@@ -974,7 +974,7 @@
            END IF
          END IF
        END IF
-       
+
        RETURN
 
 !  Non executable statements
@@ -1046,7 +1046,7 @@
        machep = EPSILON( one )
        INFO( 1 ) = 0
 
-!  Initialize work array (IW2) in preparation for counting numbers of 
+!  Initialize work array (IW2) in preparation for counting numbers of
 !  non-zeros in the rows and initialize last n entries in A which will
 !  hold the diagonal entries
 
@@ -1057,10 +1057,10 @@
 !  Scan input copying row indices from IRN to the first nz positions
 !  in IW. The negative of the index is held to flag entries for
 !  the in-place sort. Entries in IW corresponding to diagonals and
-!  entries with out-of-range indices are set to zero. For diagonal entries, 
+!  entries with out-of-range indices are set to zero. For diagonal entries,
 !  reals are accumulated in the last n locations OF A.
 !  The number of entries in each row of the permuted matrix is
-!  accumulated in IW2. Indices out of range are ignored after being counted 
+!  accumulated in IW2. Indices out of range are ignored after being counted
 !  and after appropriate messages have been printed.
 
        INFO( 2 ) = 0
@@ -1138,11 +1138,11 @@
           INFO( 1 ) = - 3 ; INFO( 2 ) = nz1
           RETURN
        END IF
-       
+
        IF ( nz1 + n > la ) THEN
          INFO( 1 ) = - 4 ; INFO( 2 ) = nz1 + n
          RETURN
-       END IF 
+       END IF
 
 !  Now run through non-zeros in order placing them in their new
 !  position and decrementing appropriate IW2 entry. If we are
@@ -1226,7 +1226,7 @@
          ia = ia - 1
          iiw = iiw - 1
        END DO
-       
+
        RETURN
 
 !  Non executable statements
@@ -1245,7 +1245,7 @@
            n, nz, A, la, IW, liw, PERM, NSTK, nsteps, maxfrt, NELIM, IW2,      &
            ICNTL, CNTL, INFO, DIAG, addon, iphase, maxchange, modstep )
 
-!  Perform the multifrontal factorization 
+!  Perform the multifrontal factorization
 !  (modified version of MA27O from LANCELOT A)
 
 !-----------------------------------------------
@@ -1277,7 +1277,7 @@
        INTEGER :: posfac, astk, astk2, apos, apos1, apos2, ainput, pivsiz
        INTEGER :: ntwo, neig, ncmpbi, ncmpbr, nrlbdu, nirbdu
        REAL ( KIND = wp ) :: amax, rmax, swap, amult, w1, onenrm, uu
-       
+
        IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) >= 2 ) THEN
          WRITE( ICNTL( 2 ), 2000 ) DIAG( : MIN( n, 4 ) )
          WRITE( ICNTL( 2 ), 2100 ) iphase
@@ -1361,7 +1361,7 @@
            ltopst = ( ( IW( istk ) + 1 ) * IW( istk ) ) / 2
            DO iell = 1, numstk
 
-!  Assemble element iell placing the indices into a linked list in IW2 
+!  Assemble element iell placing the indices into a linked list in IW2
 !  ordered according to PERM.
 
              jnext = jfirst
@@ -1376,8 +1376,8 @@
                IF ( IW2( j ) > 0 ) CYCLE
                jnew = PERM( j )
 
-!  If variable was previously fully summed but was not pivoted on earlier 
-!  because of numerical test, increment number of fully summed rows/columns 
+!  If variable was previously fully summed but was not pivoted on earlier
+!  because of numerical test, increment number of fully summed rows/columns
 !  in front.
 
                IF ( jnew <= numass ) nass = nass + 1
@@ -1391,13 +1391,13 @@
                  jlast = jnext
                  jnext = IW2( jlast )
                END DO
-         
+
                IF ( jlast == n + 1 ) THEN
                  jfirst = j
                ELSE
                  IW2( jlast ) = j
                END IF
-         
+
                IW2( j ) = jnext
                jlast = j
 
@@ -1445,7 +1445,7 @@
 
                nfront = nfront + 1
              END IF
-         
+
              j1 = j1 + 1
              IF ( j1 > liw ) CYCLE L150
              j = IW( j1 )
@@ -1468,7 +1468,7 @@
              RETURN
            END IF
          END IF
-         
+
          j = jfirst
          DO ifr = 1, nfront
            newel = newel + 1
@@ -1509,7 +1509,7 @@
            INFO( 2 ) = la + MAX( posfac + lnass, apos2 - ltopst + 2 ) - astk
            RETURN
          END IF
-          
+
   190    CONTINUE
          IF ( apos2 > azero ) THEN
            apos = azero + 1
@@ -1580,7 +1580,7 @@
 !      the the following loop.
 
          lnpiv = - 1 ; npiv = 0
-         
+
          DO kdummy = 1, nass
            IF ( npiv == nass ) EXIT
            IF ( npiv == lnpiv ) EXIT
@@ -1591,7 +1591,7 @@
 
            jpiv = 1
 
-!  nass is maximum possible number of pivots. We either take the diagonal 
+!  nass is maximum possible number of pivots. We either take the diagonal
 !  entry or the 2 by 2 pivot with the largest off-diagonal at each stage.
 !  Each pass through this loop tries to choose one pivot.
 
@@ -1600,8 +1600,8 @@
              IF ( jpiv == 1 ) CYCLE
              apos = posfac + SILS_idiag( nfront - npiv, ipiv - npiv )
 
-!  If the user has indicated that the matrix is definite, we do not need to 
-!  test for stability but we do check to see if the pivot is non-zero or has 
+!  If the user has indicated that the matrix is definite, we do not need to
+!  test for stability but we do check to see if the pivot is non-zero or has
 !  changed sign. If it is zero, we exit with an error. If it has changed sign
 !  and u was set negative, then we again exit immediately. If the pivot changes
 !  sign and u was zero, we continue with the factorization but print a warning
@@ -1760,8 +1760,8 @@
                 IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) >= 2 )                    &
                   WRITE( ICNTL( 2 ), 2090 ) j, DIAG( j )
                 iend = ibeg + nfront - ( npiv + jj - j1 + 2 )
-               
-!DIR$ IVDEP    
+
+!DIR$ IVDEP
                 DO irow = ibeg, iend
                   jcol = jj + irow - ibeg
                   A( irow ) = A( irow ) + amult * A( jcol )
@@ -1795,7 +1795,7 @@
         END IF
         liell = nfront - npiv
         IF ( liell /= 0 .AND. iass /= nsteps ) THEN
-        
+
           IF ( iwpos + liell >= istk )                                         &
             CALL SILS_compress( A, IW, istk, istk2, iinput, 2, ncmpbr, ncmpbi )
           istk = istk - liell - 1
@@ -1841,7 +1841,7 @@
        IW( 1 ) = nblk
        IF ( ntwo > 0 ) IW( 1 ) = - nblk
        nrlbdu = posfac - 1 ; nirbdu = iwpos - 1
-       
+
        IF ( ntotpv /= n ) THEN
          INFO( 1 ) = 3
          INFO( 2 ) = ntotpv
@@ -1888,7 +1888,7 @@
 !-----------------------------------------------
 
        INTEGER :: jj, ipos
-       
+
        ipos = itop - 1
        IF ( j2 /= ipos ) THEN
          IF ( ireal /= 2 ) THEN
@@ -1962,12 +1962,12 @@
 
      INTEGER :: FACTORS_iw1( FACTORS%dim_iw1 )
      REAL ( KIND = wp ) :: FACTORS_w( FACTORS%maxfrt )
-     
+
      ICNTL( 1 ) = CONTROL%lp
-     ICNTL( 2 ) = CONTROL%mp 
+     ICNTL( 2 ) = CONTROL%mp
      ICNTL( 3 ) = CONTROL%ldiag
      ICNTL( 4 : 30 ) = CONTROL%ICNTL( 4 : 30 )
-     
+
      IF ( CONTROL%pivoting == 4 ) THEN
        la = SIZE( FACTORS%val ) - MATRIX%n
      ELSE
@@ -1983,7 +1983,7 @@
      SINFO%cond = - 1.0 ; SINFO%cond2 = - 1.0
      SINFO%berr = - 1.0 ; SINFO%berr2 = - 1.0
      SINFO%error = - 1.0
-     
+
      RETURN
 
 !  End of SILS_solve
@@ -2016,12 +2016,12 @@
 
      INTEGER :: FACTORS_iw1( FACTORS%dim_iw1 )
      REAL ( KIND = wp ) :: FACTORS_w( FACTORS%maxfrt )
-     
+
      ICNTL( 1 ) = CONTROL%lp
-     ICNTL( 2 ) = CONTROL%mp 
+     ICNTL( 2 ) = CONTROL%mp
      ICNTL( 3 ) = CONTROL%ldiag
      ICNTL( 4 : 30 ) = CONTROL%ICNTL( 4 : 30 )
-     
+
      IF ( CONTROL%pivoting == 4 ) THEN
        la = SIZE( FACTORS%val ) - MATRIX%n
      ELSE
@@ -2039,7 +2039,7 @@
      SINFO%cond = - 1.0 ; SINFO%cond2 = - 1.0
      SINFO%berr = - 1.0 ; SINFO%berr2 = - 1.0
      SINFO%error = - 1.0
-    
+
      RETURN
 
 !  End of SILS_solve_multiple
@@ -2069,18 +2069,18 @@
      INTEGER :: ICNTL( 30 ), INFO( 20 )
 !    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: FACTORS_w
 !    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: FACTORS_r
-     
+
 !    INTEGER :: FACTORS_iw1( FACTORS%dim_iw1 )
 !    REAL ( KIND = wp ) :: FACTORS_w( FACTORS%maxfrt )
      REAL ( KIND = wp ) :: FACTORS_r( FACTORS%n )
-     
+
 !  Transfer CONTROL parameters
 
      ICNTL( 1 ) = CONTROL%lp
-     ICNTL( 2 ) = CONTROL%mp 
+     ICNTL( 2 ) = CONTROL%mp
      ICNTL( 3 ) = CONTROL%ldiag
      ICNTL( 4 : 30 ) = CONTROL%ICNTL( 4 : 30 )
-     
+
      size_factors_iw = SIZE( FACTORS%iw )
      IF ( CONTROL%pivoting == 4 ) THEN
        la = SIZE( FACTORS%val ) - MATRIX%n
@@ -2103,11 +2103,11 @@
      SINFO%berr = - 1.0 ; SINFO%berr2 = - 1.0
      SINFO%error = - 1.0
      X = X - FACTORS_r
-     
+
      RETURN
-     
+
      CONTAINS
-     
+
        SUBROUTINE SILS_residual( A, IRN, ICN, R, DIAG )
 
 !  ====================
@@ -2122,7 +2122,7 @@
 
 !  Local variables
 
-       INTEGER :: i, j, k 
+       INTEGER :: i, j, k
 
        R( : MATRIX%n ) = - RHS( : MATRIX%n )
        DO k = 1, MATRIX%ne
@@ -2137,7 +2137,7 @@
          R = R + DIAG * X
        END IF
 
-       RETURN 
+       RETURN
 
 !  End of SILS_residual
 
@@ -2177,7 +2177,7 @@
      END SUBROUTINE SILS_solve_refine_multiple
 
 !-*-*-*-*-*-*-*-   S I L S _ F I N A L I Z E  S U B R O U T I N E   -*-*-*-*-*-
- 
+
      SUBROUTINE SILS_finalize( FACTORS, CONTROL, info )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -2190,7 +2190,7 @@
      TYPE( SILS_control ), INTENT( IN ) :: CONTROL
      INTEGER, INTENT( OUT ) :: info
 
-     INTEGER :: dealloc_stat     
+     INTEGER :: dealloc_stat
 
      info = 0
 
@@ -2229,7 +2229,7 @@
          WRITE( CONTROL%lp, '( A, I0 )')                                       &
        ' Error return from SILS_finalize: deallocate failed with STAT=', info
      END IF
-     
+
      RETURN
 
 !  End of SILS_finalize
@@ -2256,11 +2256,11 @@
 !  Local variables
 
      INTEGER :: block, i, ka, kd, kp, kw, ncols, nrows
-     
+
      IF ( present( PERM ) ) THEN
        PERM = FACTORS%keep( 1 : FACTORS%n )
      ENDIF
-     
+
      IF ( present( PERTURBATION ) ) THEN
        IF ( FACTORS%pivoting == 4 ) THEN
          PERTURBATION = FACTORS%val( SIZE( FACTORS%val ) -  FACTORS%n + 1 : )
@@ -2298,8 +2298,8 @@
          END DO
        END IF
        kw = kw + ncols + 1
-     END DO 
-     
+     END DO
+
      RETURN
 
 !  End of SILS_enquire
@@ -2323,7 +2323,7 @@
 !  Local variables
 
      INTEGER :: block, i, ka, kd, kw, ncols, nrows
-     
+
      info = 0
      ka = 1 ; kd = 0 ; kw = 2
      DO block = 1, abs( FACTORS%iw( 1 ) )
@@ -2339,15 +2339,15 @@
          kd = kd + 1
          FACTORS%val( ka ) = D( 1, kd )
          IF ( FACTORS%iw( kw + i ) < 0 ) THEN
-            FACTORS%val( ka + 1 ) = D( 2, kd ) 
+            FACTORS%val( ka + 1 ) = D( 2, kd )
          ELSE
-            IF ( D( 2, kd ) /=  0 ) info = kd
+            IF ( D( 2, kd ) /=  zero ) info = kd
          END IF
          ka = ka + ncols + 1 - i
        END DO
        kw = kw + ncols + 1
-     END DO 
-     
+     END DO
+
      RETURN
 
 !  End of SILS_alter_d
@@ -2378,12 +2378,12 @@
 !  Transfer CONTROL parameters
 
      ICNTL( 1 ) = CONTROL%lp
-     ICNTL( 2 ) = CONTROL%mp 
+     ICNTL( 2 ) = CONTROL%mp
      ICNTL( 3 ) = CONTROL%ldiag
      ICNTL( 4 : 30 ) = CONTROL%ICNTL( 4 : 30 )
 
      info = 0
-     
+
      IF ( ALLOCATED( FACTORS%w ) ) THEN
        IF ( SIZE( FACTORS%w )<FACTORS%maxfrt ) THEN
          DEALLOCATE( FACTORS%w, STAT = info )
@@ -2432,9 +2432,9 @@
                           FACTORS%w, FACTORS%maxfrt, FACTORS%latop,            &
                           ICNTL )
      END IF
-     
+
      RETURN
-     
+
 !  Non-executable statement
 
  2000 FORMAT( ' Error return from SILS_part_solve: ', A, ' failed',           &
@@ -2455,12 +2455,12 @@
        INTEGER :: la, liw
        REAL ( KIND = wp ), INTENT( IN ), DIMENSION( la ) :: A
        INTEGER, INTENT( IN ), DIMENSION( liw ) :: IW
-  
+
 !  Local variables
 
        INTEGER :: block, i, j, j1, ka, kw, ncols, nrows
        REAL ( KIND = wp ) :: xj
-  
+
        ka = 1 ; kw = 2
        DO block = 1, ABS( IW( 1 ) )
          ncols = IW( kw )
@@ -2472,12 +2472,12 @@
            nrows = 1
          END IF
          i = 1
-         DO 
+         DO
            IF ( i > nrows ) EXIT
            j = IW( kw + i )
            IF ( j > 0 ) THEN
               X( j ) = A( ka ) * X( j )
-           ELSE 
+           ELSE
              j = - j
              j1 = IW( kw + i + 1 )
              xj = X( j )
@@ -2490,8 +2490,8 @@
            i = i + 1
          END DO
          kw = kw + ncols + 1
-       END DO 
-       
+       END DO
+
        RETURN
 
 !  End of SILS_solve_d
@@ -2500,7 +2500,7 @@
 
 !-*-*-*-*-*-*-*-   S I L S _ S O L V E _ u   S U B R O U T I N E   -*-*-*-*-*-*-
 
-       SUBROUTINE SILS_solve_u( n, A, la, IW, liw, IW2, W, lw, latop, ICNTL ) 
+       SUBROUTINE SILS_solve_u( n, A, la, IW, liw, IW2, W, lw, latop, ICNTL )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !  Solve a system involving the upper triangular factors
@@ -2520,156 +2520,156 @@
        INTEGER :: apos, apos2, i1x, i2x, iblk, ifr, iipiv, iix, ilvl, ipiv
        INTEGER :: ipos, ix, ist, j, j1, j2, jj, jj1, jj2, jpiv, jpos, k
        INTEGER :: liell, loop, npiv
-       REAL ( KIND = wp ) :: x1, x2 
-       INTRINSIC IABS, MIN0 
+       REAL ( KIND = wp ) :: x1, x2
+       INTRINSIC IABS, MIN0
        INTEGER, PARAMETER :: ifrlvl = 5
-       
-       apos = latop + 1 
-       npiv = 0 
-       iblk = ABS( IW( 1 ) ) + 1 
 
-! Run through block pivot rows in the reverse order                    
+       apos = latop + 1
+       npiv = 0
+       iblk = ABS( IW( 1 ) ) + 1
 
-       DO loop = 1, n 
-         IF ( npiv > 0 ) GO TO 10 
-         iblk = iblk - 1 
+! Run through block pivot rows in the reverse order
+
+       DO loop = 1, n
+         IF ( npiv > 0 ) GO TO 10
+         iblk = iblk - 1
          IF ( iblk < 1 ) EXIT
-         ipos = IW2( iblk ) 
-         liell = - IW( ipos + 1 ) 
-         npiv = 1 
+         ipos = IW2( iblk )
+         liell = - IW( ipos + 1 )
+         npiv = 1
          IF ( liell <= 0 ) THEN
-           liell = - liell 
-           ipos = ipos + 1 
-           npiv = IW( ipos + 1 ) 
+           liell = - liell
+           ipos = ipos + 1
+           npiv = IW( ipos + 1 )
          END IF
-         jpos = ipos + npiv 
-         j2 = ipos + liell 
-         ilvl = MIN0( 10, npiv ) + 10 
-         IF ( liell < ICNTL( ifrlvl + ilvl ) ) GO TO 10 
+         jpos = ipos + npiv
+         j2 = ipos + liell
+         ilvl = MIN0( 10, npiv ) + 10
+         IF ( liell < ICNTL( ifrlvl + ilvl ) ) GO TO 10
 
 ! Perform operations using direct addressing
 
-         j1 = ipos + 1 
+         j1 = ipos + 1
 
 ! Load appropriate components of X into W
 
-         ifr = 0 
-         DO jj = j1, j2 
-           j = IABS( IW( jj + 1 ) + 0 ) 
-           ifr = ifr + 1 
-           W( ifr ) = X( j ) 
+         ifr = 0
+         DO jj = j1, j2
+           j = IABS( IW( jj + 1 ) + 0 )
+           ifr = ifr + 1
+           W( ifr ) = X( j )
          END DO
 
 ! Perform eliminations
 
-         jpiv = 1 
-         DO iipiv = 1, npiv 
-           jpiv = jpiv - 1 
+         jpiv = 1
+         DO iipiv = 1, npiv
+           jpiv = jpiv - 1
            IF ( jpiv == 1 ) CYCLE
-           ipiv = npiv - iipiv + 1 
-       
+           ipiv = npiv - iipiv + 1
+
            IF ( ipiv /= 1 ) THEN
 
-! Perform back-substitution operations with 2 by 2 pivot                
+! Perform back-substitution operations with 2 by 2 pivot
 
              IF ( IW( jpos ) < 0 ) THEN
-               jpiv = 2 
-               apos2 = apos - ( liell + 1 - ipiv ) 
-               apos = apos2 - ( liell + 2 - ipiv ) 
-               ist = ipiv + 1 
-               x1 = W( ipiv - 1 ) 
-               x2 = W( ipiv ) 
-               jj1 = apos + 2 
-               jj2 = apos2 + 1 
-               DO j = ist, liell 
-                 x1 = x1 + W( j ) * A( jj1 ) 
-                 x2 = x2 + W( j ) * A( jj2 ) 
-                 jj1 = jj1 + 1 
-                 jj2 = jj2 + 1 
+               jpiv = 2
+               apos2 = apos - ( liell + 1 - ipiv )
+               apos = apos2 - ( liell + 2 - ipiv )
+               ist = ipiv + 1
+               x1 = W( ipiv - 1 )
+               x2 = W( ipiv )
+               jj1 = apos + 2
+               jj2 = apos2 + 1
+               DO j = ist, liell
+                 x1 = x1 + W( j ) * A( jj1 )
+                 x2 = x2 + W( j ) * A( jj2 )
+                 jj1 = jj1 + 1
+                 jj2 = jj2 + 1
                END DO
-               W( ipiv - 1 ) = x1 
-               W( ipiv ) = x2 
-               jpos = jpos - 2 
+               W( ipiv - 1 ) = x1
+               W( ipiv ) = x2
+               jpos = jpos - 2
                CYCLE
              END IF
            END IF
 
 ! Perform back-substitution using 1 by 1 pivot
 
-           jpiv = 1 
-           apos = apos - ( liell + 1 - ipiv ) 
-           ist = ipiv + 1 
-           x1 = W( ipiv ) 
-           jj1 = apos + 1 
-           DO j = ist, liell 
-             x1 = x1 + A( jj1 ) * W( j ) 
-             jj1 = jj1 + 1 
+           jpiv = 1
+           apos = apos - ( liell + 1 - ipiv )
+           ist = ipiv + 1
+           x1 = W( ipiv )
+           jj1 = apos + 1
+           DO j = ist, liell
+             x1 = x1 + A( jj1 ) * W( j )
+             jj1 = jj1 + 1
            END DO
-           W( ipiv ) = x1 
-           jpos = jpos - 1 
+           W( ipiv ) = x1
+           jpos = jpos - 1
          END DO
 
-! Reload working vector into solution vector                           
+! Reload working vector into solution vector
 
-         ifr = 0 
-         DO jj = j1, j2 
-           j = IABS( IW( jj + 1 ) + 0 ) 
-           ifr = ifr + 1 
-           X( j ) = W( ifr ) 
+         ifr = 0
+         DO jj = j1, j2
+           j = IABS( IW( jj + 1 ) + 0 )
+           ifr = ifr + 1
+           X( j ) = W( ifr )
          END DO
-         npiv = 0 
+         npiv = 0
          CYCLE
 
-! Perform operations using indirect addressing                         
+! Perform operations using indirect addressing
 
-   10    CONTINUE 
+   10    CONTINUE
          IF ( npiv /= 1 ) THEN
 
-! Perform operations with 2 by 2 pivot                                  
+! Perform operations with 2 by 2 pivot
 
            IF ( IW( jpos ) < 0 ) THEN
-             npiv = npiv - 2 
-             apos2 = apos - ( j2 - jpos + 1 ) 
-             apos = apos2 - ( j2 - jpos + 2 ) 
-             i1x = - IW( jpos ) 
-             i2x = IW( jpos + 1 ) 
-             x1 = X( i1x ) 
-             x2 = X( i2x ) 
-             j1 = jpos + 1 
-             jj1 = apos + 2 
-             jj2 = apos2 + 1 
-             DO j = j1, j2 
-               ix = IABS( IW( j + 1 ) + 0 ) 
-               x1 = x1 + X( ix ) * A( jj1 ) 
-               x2 = x2 + X( ix ) * A( jj2 ) 
-               jj1 = jj1 + 1 
-               jj2 = jj2 + 1 
+             npiv = npiv - 2
+             apos2 = apos - ( j2 - jpos + 1 )
+             apos = apos2 - ( j2 - jpos + 2 )
+             i1x = - IW( jpos )
+             i2x = IW( jpos + 1 )
+             x1 = X( i1x )
+             x2 = X( i2x )
+             j1 = jpos + 1
+             jj1 = apos + 2
+             jj2 = apos2 + 1
+             DO j = j1, j2
+               ix = IABS( IW( j + 1 ) + 0 )
+               x1 = x1 + X( ix ) * A( jj1 )
+               x2 = x2 + X( ix ) * A( jj2 )
+               jj1 = jj1 + 1
+               jj2 = jj2 + 1
              END DO
-             X( i1x ) = x1 
-             X( i2x ) = x2 
-             jpos = jpos - 2 
+             X( i1x ) = x1
+             X( i2x ) = x2
+             jpos = jpos - 2
              CYCLE
            END IF
          END IF
 
-! Perform back-substitution using 1 by 1 pivot                         
+! Perform back-substitution using 1 by 1 pivot
 
-         npiv = npiv - 1 
-         apos = apos - ( j2 - jpos + 1 ) 
-         iix = IW( jpos + 1 ) 
-         x1 = X( iix ) 
-         j1 = jpos + 1 
-         k = apos + 1 
-         DO j = j1, j2 
-           ix = IABS( IW( j + 1 ) + 0 ) 
-           x1 = x1 + A( k ) * X( ix ) 
-           k = k + 1 
+         npiv = npiv - 1
+         apos = apos - ( j2 - jpos + 1 )
+         iix = IW( jpos + 1 )
+         x1 = X( iix )
+         j1 = jpos + 1
+         k = apos + 1
+         DO j = j1, j2
+           ix = IABS( IW( j + 1 ) + 0 )
+           x1 = x1 + A( k ) * X( ix )
+           k = k + 1
          END DO
-         X( iix ) = x1 
-         jpos = jpos - 1 
-       END DO 
-       
-       RETURN 
+         X( iix ) = x1
+         jpos = jpos - 1
+       END DO
+
+       RETURN
 
 !  End of SILS_solve_u
 
