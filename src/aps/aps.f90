@@ -63,6 +63,10 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
+!  - - - - - - - - - - - - - - - - - - - - - - -
+!   control derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - - -
+
       TYPE, PUBLIC :: APS_control_type
 
 !  unit for error messages
@@ -77,37 +81,89 @@
 
         INTEGER :: print_level = 0
 
-!  an initial guess as to the integer workspace required by SBLS     (OBSOLETE)
-
-        INTEGER :: indmin = 1000
-
-!  an initial guess as to the real workspace required by SBLS        (OBSOLETE)
-
-        INTEGER :: valmin = 1000
-
-!   the threshold pivot used by the matrix factorization.
-!    See the documentation for SBLS for details                      (OBSOLETE)
-
-        REAL ( KIND = wp ) :: pivot_tol = 0.01_wp
-
 !  smallest allowable value of an eigenvalue of the block diagonal factor of H
 
         REAL ( KIND = wp ) :: delta_eigen = EPSILON( one )
-      END TYPE
 
+!  symmetric (indefinite) linear equation solver
+
+        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
+           "sils" // REPEAT( ' ', 26 )
+        
+!  all output lines will be prefixed by
+!    prefix(2:LEN(TRIM(%prefix))-1)
+!  where prefix contains the required string enclosed in quotes,
+!  e.g. "string" or 'string'
+
+        CHARACTER ( LEN = 30 ) :: prefix  = '""                            '
+
+!  control parameters for the Cholesky factorization and solution
+
+        TYPE ( SLS_control_type ) :: SLS_control
+
+     END TYPE APS_control_type
+
+!  - - - - - - - - - - - - - - - - - - - - - -
+!   time derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: TRS_time_type
+
+!  total CPU time spent in the package
+
+        REAL ( KIND = wp ) :: total = 0.0
+
+!  CPU time spent building H + lambda * M
+
+        REAL ( KIND = wp ) :: assemble = 0.0
+
+!  CPU time spent reordering H + lambda * M prior to factorization
+
+        REAL ( KIND = wp ) :: analyse = 0.0
+
+!  CPU time spent factorizing H + lambda * M
+
+        REAL ( KIND = wp ) :: factorize = 0.0
+
+!  CPU time spent solving linear systems inolving H + lambda * M
+
+        REAL ( KIND = wp ) :: solve = 0.0
+
+!  total clock time spent in the package
+
+        REAL ( KIND = wp ) :: clock_total = 0.0
+
+!  clock time spent building H + lambda * M
+
+        REAL ( KIND = wp ) :: clock_assemble = 0.0
+
+!  clock time spent reordering H + lambda * M prior to factorization
+
+        REAL ( KIND = wp ) :: clock_analyse = 0.0
+
+!  clock time spent factorizing H + lambda * M
+
+        REAL ( KIND = wp ) :: clock_factorize = 0.0
+
+!  clock time spent solving linear systems inolving H + lambda * M
+
+        REAL ( KIND = wp ) :: clock_solve = 0.0
+
+      END TYPE TRS_time_type
+     
+!  - - - - - - - - - - - - - - - - - - - - - - -
+!   inform derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - - -
+      
       TYPE, PUBLIC :: APS_inform_type
 
 !  return status. See APS_solve for details
 
         INTEGER :: status = 0
 
-!  amount of integer storage used for the factorization
+!  STAT value after allocate failure
 
-        INTEGER :: SILSiw = - 1
-
-!  amount of real storage used for the factorization
-
-        INTEGER :: SILSrw = - 1
+        INTEGER :: alloc_status = 0
 
 !  the number of 1 by 1 blocks from the factorization of H that were modified
 !   when constructing M
@@ -119,7 +175,7 @@
 
         INTEGER :: mod_2by2 = 0
 
-!  the Lagrange multiplier associated with the constraint
+!  the Lagrange multiplier associated with the constraint/regularization
 
         REAL ( KIND = wp ) :: multiplier = - one
 
@@ -127,12 +183,20 @@
 
         REAL ( KIND = wp ) :: norm_step = - one
 
+!  time information
+
+        TYPE ( TRS_time_type ) :: time
+
 !  information from SLS
 
         TYPE ( SLS_inform_type ) :: SLS_inform
 
-     END TYPE APS_inform_type
+      END TYPE APS_inform_type
 
+!  - - - - - - - - - -
+!   data derived type
+!  - - - - - - - - - -
+      
       TYPE, PUBLIC :: APS_data_type
         PRIVATE
         REAL ( KIND = wp ) :: old_delta, old_multiplier, old_f
@@ -142,6 +206,7 @@
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: EVAL, MOD_EVAL
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: EVECT, CS
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: D
+        TYPE ( APS_control_type ) :: control
 !       TYPE ( SILS_CONTROL ) :: CNTL
         TYPE ( SLS_control_type ) :: SLS_control
 !       TYPE ( SILS_FACTORS ) :: FACTORS
@@ -170,8 +235,6 @@
 !            error       error message output unit
 !            out         information message output unit
 !            print_level print level. > 0 for output
-!            valmin      minimum real storage allocated for factorization
-!            indmin      minimum integer storage allocated for factorization
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t
@@ -232,13 +295,8 @@
 !   X        the required solution vector. Need not be set on entry.
 !            On exit, the optimal value
 !   data     private internal data
-!   control  a structure containing control information. See APS_initialize.
-!   inform     a structure containing information. Components are
-!             multiplier  the Lagrange multiplier corresponding to the
-!                         trust-region constraint
-!             SILSiw      integer storage required to hold factors
-!             SILSrw      real storage required to hold factors
-!             status      exit status
+!   control  a structure containing control information. See APS_control
+!   inform   a structure containing information. See APS_inform
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -257,34 +315,32 @@
       TYPE ( APS_control_type ), INTENT( IN ) :: control
       TYPE ( APS_inform_type ), INTENT( OUT ) :: inform
 
+!  check that input data is correct      
+      
       IF ( n <= 0 ) THEN
-         IF ( control%error > 0 )                                              &
-              WRITE( control%error, "( ' n = ', I6, ' is not positive ' )" ) n
-         inform%status = - 1
-         RETURN
+        IF ( control%error > 0 )                                              &
+             WRITE( control%error, "( ' n = ', I6, ' is not positive ' )" ) n
+        inform%status = GALAHAD_error_restrictions ; GO TO 910
       END IF
 
       IF ( delta <= zero ) THEN
-         IF ( control%error > 0 ) WRITE( control%error,                        &
-              "( ' The radius ', ES12.4 , ' is not positive ' )" ) delta
-         inform%status = - 2
-         RETURN
+        IF ( control%error > 0 ) WRITE( control%error,                        &
+             "( ' The radius ', ES12.4 , ' is not positive ' )" ) delta
+        inform%status = GALAHAD_error_restrictions ; GO TO 910
       END IF
       H%n = n
 
-!  Obtain the trust-region norm
+!  obtain the trust-region norm
 
       CALL APS_build_preconditioner( n, H, new_H, data, control, inform )
       IF ( inform%status < 0 ) RETURN
       data%old_convex = inform%mod_1by1 == 0 .AND. inform%mod_2by2 == 0
 
-!  Solve the TR problem
+!  solve the TR problem
 
       CALL APS_resolve( n, delta, X, f, data, control, inform, C = C )
 
       RETURN
-
-!  Non-executable statements
 
 !  End of subroutine APS_solve
 
@@ -322,12 +378,19 @@
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-      INTEGER :: i, alloc_stat
+      INTEGER :: i, alloc_status
       REAL ( KIND = wp ) :: temp
       LOGICAL :: reallocate, oneby1, printe, debug
       CHARACTER ( LEN = 8 ) :: bad_alloc
+      CHARACTER ( LEN = 80 ) :: array_name
 !     REAL ( KIND = wp ), DIMENSION( n ) :: P
 
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+      
 !  Step 1: Initialize
 !  ======
 
@@ -335,88 +398,83 @@
       debug = control%out > 0 .AND. control%print_level >= 10
       inform%status = 0
 
-!  Allocate the arrays for the solution phase
+!  allocate the arrays for the solution phase
 
       IF ( PRESENT( C ) ) THEN
 
-         reallocate = .TRUE.
-         IF ( ALLOCATED( data%CS ) ) THEN
-            IF ( SIZE( data%CS ) < n ) THEN ; DEALLOCATE( data%CS )
-            ELSE ; reallocate = .FALSE.
-            END IF
-         END IF
-         IF ( reallocate ) THEN
-            ALLOCATE( data%CS( n ), STAT = alloc_status )
-            IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%CS' ; GO TO 910
-            END IF
-         END IF
+        array_name = 'aps: data$CS'
+        CALL SPACE_resize_array( n, data%CS,                                   &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= 0 ) GO TO 910
 
-         IF ( debug ) WRITE( control%out, 2030 ) 'PERM', data%PERM( : n )
-         data%CS = C
-         IF ( debug ) WRITE( control%out, 2020 ) 'data%CS', data%CS( : n )
+        IF ( debug ) WRITE( control%out, 2030 ) 'PERM', data%PERM( : n )
+        data%CS = C
+        IF ( debug ) WRITE( control%out, 2020 ) 'data%CS', data%CS( : n )
 
 !  Step 2: Solve P L c_b = c
 !  ======
 
-!        CALL SILS_PART_SOLVE( data%FACTORS, data%CNTL, 'L', data%CS,          &
-!                              alloc_stat )
-         CALL SLS_part_solve( 'L', data%CS, data%SLS_data, data%SLS_control,   &
-                              inform%SLS_inform )
+!       CALL SILS_PART_SOLVE( data%FACTORS, data%CNTL, 'L', data%CS,           &
+!                             alloc_stat )
+        CALL SLS_part_solve( 'L', data%CS, data%SLS_data, data%SLS_control,    &
+                             inform%SLS_inform )
 
-         IF ( inform%SLS_inform%alloc_status /= 0 ) THEN
-            IF ( printe ) WRITE( control%error, 2010 )                         &
-              inform%SLS_inform%alloc_status
-            inform%status = - flags - inform%SLS_inform%alloc_status
-            RETURN
-         END IF
-         IF ( debug ) WRITE( control%out, 2020 ) 'data%CS', data%CS( : n )
+        IF ( inform%SLS_inform%alloc_status /= 0 ) THEN
+          IF ( printe ) WRITE( control%error, 2010 )                           &
+            inform%SLS_inform%alloc_status
+          inform%status = - flags - inform%SLS_inform%alloc_status
+          RETURN
+        END IF
+        IF ( debug ) WRITE( control%out, 2020 ) 'data%CS', data%CS( : n )
 
 !  Step 3: Obtain c_s = Gamma(-1/2) Q^T P^T c_b
 !  ======
 
-         data%CS = data%CS( ABS( data%PERM ) )
-         IF ( debug ) WRITE( control%out, 2020 ) 'data%CS', data%CS( : n )
+        data%CS = data%CS( ABS( data%PERM ) )
+        IF ( debug ) WRITE( control%out, 2020 ) 'data%CS', data%CS( : n )
 
-         oneby1 = .TRUE.
-         DO i = 1, n
-            IF ( oneby1 ) THEN
-               IF ( i < n ) THEN
-                  oneby1 = data%PERM( i ) > 0
-               ELSE
-                  oneby1 = .TRUE.
-               END IF
-               IF ( .NOT. oneby1 ) THEN
+        oneby1 = .TRUE.
+        DO i = 1, n
+          IF ( oneby1 ) THEN
+            IF ( i < n ) THEN
+              oneby1 = data%PERM( i ) > 0
+            ELSE
+              oneby1 = .TRUE.
+            END IF
 
 !  2x2 pivot
 
-                  temp = data%EVECT( i + 1 ) * data%CS( i ) -                  &
-                         data%EVECT( i ) * data%CS( i + 1 )
-                  data%CS( i ) = data%EVECT( i ) * data%CS( i ) +              &
-                                 data%EVECT( i + 1 ) * data%CS( i + 1 )
+            IF ( .NOT. oneby1 ) THEN
+              temp = data%EVECT( i + 1 ) * data%CS( i ) -                      &
+                     data%EVECT( i ) * data%CS( i + 1 )
+              data%CS( i ) = data%EVECT( i ) * data%CS( i ) +                  &
+                             data%EVECT( i + 1 ) * data%CS( i + 1 )
 
-                  data%CS( i + 1 ) = temp / SQRT( data%MOD_EVAL( i + 1 ) )
-               END IF
-               data%CS( i ) = data%CS( i ) / SQRT( data%MOD_EVAL( i ) )
-            ELSE
-               oneby1 = .TRUE.
+              data%CS( i + 1 ) = temp / SQRT( data%MOD_EVAL( i + 1 ) )
             END IF
-         END DO
-      ELSE
+            data%CS( i ) = data%CS( i ) / SQRT( data%MOD_EVAL( i ) )
+          ELSE
+            oneby1 = .TRUE.
+          END IF
+        END DO
 
-!  Special case: the previous problem was convex, and the solution lay on
+!  special case: the previous problem was convex, and the solution lay on
 !  the trust region boundary. The new solution is then simply a rescaled
 !  version of the former solution
 
-         IF ( data%old_convex .AND. data%old_on_boundary .AND.                 &
-              delta <= data%old_delta ) THEN
-            temp = delta / data%old_delta
-            f = temp * data%old_f + half * delta * ( delta - data%old_delta )
-            X = temp * X
-            inform%multiplier = ( one + data%old_multiplier ) / temp - one
-            inform%norm_step = delta
-            GO TO 900
-         END IF
-
+      ELSE
+        IF ( data%old_convex .AND. data%old_on_boundary .AND.                  &
+             delta <= data%old_delta ) THEN
+          temp = delta / data%old_delta
+          f = temp * data%old_f + half * delta * ( delta - data%old_delta )
+          X = temp * X
+          inform%multiplier = ( one + data%old_multiplier ) / temp - one
+          inform%norm_step = delta
+          GO TO 900
+        END IF
       END IF
 
 !  Step 4: Find x_s by solving the diagonal TR problem
@@ -433,25 +491,25 @@
 
       oneby1 = .TRUE.
       DO i = 1, n
-         IF ( oneby1 ) THEN
-            IF ( i < n ) THEN
-               oneby1 = data%PERM( i ) > 0
-            ELSE
-               oneby1 = .TRUE.
-            END IF
-            X( i ) = X( i ) / SQRT( data%MOD_EVAL( i ) )
-            IF ( .NOT. oneby1 ) THEN
+        IF ( oneby1 ) THEN
+          IF ( i < n ) THEN
+            oneby1 = data%PERM( i ) > 0
+          ELSE
+            oneby1 = .TRUE.
+          END IF
+          X( i ) = X( i ) / SQRT( data%MOD_EVAL( i ) )
 
 !  2x2 pivot
 
-               temp = X( i + 1 ) / SQRT( data%MOD_EVAL( i + 1 ) )
-               X( i + 1 ) = data%EVECT( i + 1 ) * X( i ) -                     &
-                            data%EVECT( i ) * temp
-               X( i ) = data%EVECT( i ) * X( i ) + data%EVECT( i + 1 ) * temp
-            END IF
-         ELSE
-            oneby1 = .TRUE.
-         END IF
+          IF ( .NOT. oneby1 ) THEN
+            temp = X( i + 1 ) / SQRT( data%MOD_EVAL( i + 1 ) )
+            X( i + 1 ) = data%EVECT( i + 1 ) * X( i ) -                        &
+                         data%EVECT( i ) * temp
+            X( i ) = data%EVECT( i ) * X( i ) + data%EVECT( i + 1 ) * temp
+          END IF
+        ELSE
+          oneby1 = .TRUE.
+        END IF
       END DO
 
       X( ABS( data%PERM ) ) = X
@@ -464,13 +522,14 @@
                            inform%SLS_inform )
 
       IF ( inform%SLS_inform%alloc_status /= 0 ) THEN
-         IF ( printe ) WRITE( control%error, 2010 ) inform%SLS_inform%alloc_status
-         inform%status = - flags - inform%SLS_inform%alloc_status
-         RETURN
+        IF ( printe ) WRITE( control%error, 2010 )                             &
+          inform%SLS_inform%alloc_status
+        inform%status = - flags - inform%SLS_inform%alloc_status
+        RETURN
       END IF
       IF ( debug ) WRITE( control%out, 2020 ) 'X', X( : n )
 
-!  Successful return
+!  successful return
 
   900 CONTINUE
 
@@ -479,12 +538,12 @@
 
       RETURN
 
-!  Unsuccessful returns
+!  unsuccessful returns
 
   910 CONTINUE
       inform%status = - flags - inform%SLS_inform%alloc_status
       IF ( control%error > 0 .AND. control%print_level >= 1 )                  &
-         WRITE( control%error, 2000 ) bad_alloc, inform%SLS_inform%alloc_status
+        WRITE( control%error, 2000 ) bad_alloc, inform%SLS_inform%alloc_status
       RETURN
 
 !  Non-executable statements
@@ -495,6 +554,8 @@
  2020 FORMAT( A10, /, ( 6ES12.4 ) )
  2030 FORMAT( A10, /, ( 10I8 ) )
 
+!  End of subroutine APS_resolve
+      
       END SUBROUTINE APS_resolve
 
 !-*-*-*-*-   H S L _ A P S _ T E R M I N A T E   S U B R O U T I N E   -*-*-*
@@ -533,60 +594,60 @@
       inform%status = 0
       printe = control%error > 0 .AND. control%print_level >= 1
 
-!  Deallocate all internal arrays
+!  deallocate all internal arrays
 
       IF ( ALLOCATED( data%PERM ) ) THEN
-         DEALLOCATE( data%PERM, STAT = alloc_stat )
-         IF ( alloc_stat /= 0 ) THEN
-            inform%status = - flags - alloc_stat
-            IF ( printe ) WRITE( control%error, 2900 ) 'data%PERM'
-         END IF
+        DEALLOCATE( data%PERM, STAT = alloc_stat )
+        IF ( alloc_stat /= 0 ) THEN
+          inform%status = - flags - alloc_stat
+          IF ( printe ) WRITE( control%error, 2900 ) 'data%PERM'
+        END IF
       END IF
 
       IF ( ALLOCATED( data%D ) ) THEN
-         DEALLOCATE( data%D, STAT = alloc_stat )
-         IF ( alloc_stat /= 0 ) THEN
-            inform%status = - flags - alloc_stat
-            IF ( printe ) WRITE( control%error, 2900 ) 'data%D'
-         END IF
+        DEALLOCATE( data%D, STAT = alloc_stat )
+        IF ( alloc_stat /= 0 ) THEN
+          inform%status = - flags - alloc_stat
+          IF ( printe ) WRITE( control%error, 2900 ) 'data%D'
+        END IF
       END IF
 
       IF ( ALLOCATED( data%EVAL ) ) THEN
-         DEALLOCATE( data%EVAL, STAT = alloc_stat )
-         IF ( alloc_stat /= 0 ) THEN
-            inform%status = - flags - alloc_stat
-            IF ( printe ) WRITE( control%error, 2900 ) 'data%EVAL'
-         END IF
+        DEALLOCATE( data%EVAL, STAT = alloc_stat )
+        IF ( alloc_stat /= 0 ) THEN
+          inform%status = - flags - alloc_stat
+          IF ( printe ) WRITE( control%error, 2900 ) 'data%EVAL'
+        END IF
       END IF
 
       IF ( ALLOCATED( data%MOD_EVAL ) ) THEN
-         DEALLOCATE( data%MOD_EVAL, STAT = alloc_stat )
-         IF ( alloc_stat /= 0 ) THEN
-            inform%status = - flags - alloc_stat
-            IF ( printe ) WRITE( control%error, 2900 )'data%MOD_EVAL'
-         END IF
+        DEALLOCATE( data%MOD_EVAL, STAT = alloc_stat )
+        IF ( alloc_stat /= 0 ) THEN
+          inform%status = - flags - alloc_stat
+          IF ( printe ) WRITE( control%error, 2900 )'data%MOD_EVAL'
+        END IF
       END IF
 
       IF ( ALLOCATED( data%EVECT ) ) THEN
-         DEALLOCATE( data%EVECT, STAT = alloc_stat )
-         IF ( alloc_stat /= 0 ) THEN
-            inform%status = - flags - alloc_stat
-            IF ( printe ) WRITE( control%error, 2900 ) 'data%EVECT'
-         END IF
+        DEALLOCATE( data%EVECT, STAT = alloc_stat )
+        IF ( alloc_stat /= 0 ) THEN
+          inform%status = - flags - alloc_stat
+          IF ( printe ) WRITE( control%error, 2900 ) 'data%EVECT'
+        END IF
       END IF
 
       IF ( ALLOCATED( data%CS ) ) THEN
-         DEALLOCATE( data%CS, STAT = alloc_stat )
-         IF ( alloc_stat /= 0 ) THEN
-            inform%status = - flags - alloc_stat
-            IF ( printe ) WRITE( control%error, 2900 ) 'data%CS'
-         END IF
+        DEALLOCATE( data%CS, STAT = alloc_stat )
+        IF ( alloc_stat /= 0 ) THEN
+          inform%status = - flags - alloc_stat
+          IF ( printe ) WRITE( control%error, 2900 ) 'data%CS'
+        END IF
       END IF
 
 !     CALL SILS_FINALIZE( data%FACTORS, data%CNTL, alloc_stat )
       CALL SLS_terminate( data%SLS_data, data%SLS_control, inform )
-      IF ( inform%alloc_stat /= 0 ) THEN
-         inform%status = - flags - inform%alloc_stat
+      IF ( inform%alloc_status /= 0 ) THEN
+         inform%status = - flags - inform%alloc_status
          IF ( printe ) WRITE( control%error, 2900 ) 'data%SLS_data'
       END IF
 
@@ -639,7 +700,7 @@
 !     TYPE ( SILS_AINFO ) :: AINFO
 !     TYPE ( SILS_FINFO ) :: FINFO
 
-!  Set output levels
+!  set output levels
 
       out = control%out
       printe = control%error > 0 .AND. control%print_level >= 1
@@ -653,152 +714,127 @@
 
       IF ( new_H ) THEN
 
-!  Initialize the data structures
+!  initialize the data structures
 
-         data%SLS_control%u = control%pivot_tol
-         data%SLS_control%lp = control%error
-         data%SLS_control%mp = control%out
-         data%SLS_control%wp = control%out
-         IF ( control%print_level > 2 ) THEN
-            IF ( control%print_level < 10 ) THEN
-               data%SLS_control%ldiag = 1
-            ELSE
-               data%SLS_control%ldiag = 2
-            END IF
-         END IF
+        data%SLS_control%lp = control%error
+        data%SLS_control%mp = control%out
+        data%SLS_control%wp = control%out
+        IF ( control%print_level > 2 ) THEN
+          IF ( control%print_level < 10 ) THEN
+            data%SLS_control%ldiag = 1
+          ELSE
+            data%SLS_control%ldiag = 2
+          END IF
+        END IF
 
-!  Perform the analysis
+        CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
+        CALL SLS_initialize_solver( control%symmetric_linear_solver,           &
+                                    data%SLS_data, inform%SLS_inform )
+        
+!  perform the analysis
 
-         IF ( printt ) CALL CPU_TIME( time )
-!        CALL SILS_ANALYSE( H, data%FACTORS, data%SLS_CNTL, AINFO )
-         CALL SLS_analyse( H, data%SLS_data, data%SLS_control,                &
-                           inform%SLS_inform )
-         IF ( printt ) THEN
-            CALL CPU_TIME( timset )
-            WRITE( out, "( ' time(anal) = ', F10.2 )" ) timset - time
-         END IF
+        IF ( printt ) CALL CPU_TIME( time )
+!       CALL SILS_ANALYSE( H, data%FACTORS, data%SLS_CNTL, AINFO )
+        CALL SLS_analyse( H, data%SLS_data, data%SLS_control,                  &
+                          inform%SLS_inform )
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+        inform%time%analyse = inform%time%analyse + time_now - time_record
+        inform%time%clock_analyse =                                            &
+          inform%time%clock_analyse + clock_now - clock_record
+        IF ( printt ) WRITE( out, "( A, ' time( SLS_analyse ) = ', F0.2 )" )   &
+          prefix, clock_now - clock_record
 
-!  Record the storage requested
+!  test that the analysis succeeded
 
-         inform%SILSiw = SLS_inform%nirnec ; inform%SILSrw = SLS_inform%nrlnec
-
-!  Check for error returns
-
-         IF ( SLS_INFORM%flag < 0 ) THEN
-            IF ( printe ) WRITE( control%error, 2020 ) SLS_inform%flag
-            inform%status = - aps_flags + SLS_inform%flag
-            RETURN
-         ELSE IF ( SLS_INFORM%flag > 0 ) THEN
-            IF ( printe ) WRITE( control%error, 2030 ) SLS_inform%flag
-         END IF
-
-!  Assign initial lengths for the FACTOR arrays
-
-         data%val = MAX( 2 * inform%SILSrw, control%valmin )
-         data%ind = MAX( 2 * inform%SILSiw, control%indmin )
-         data%SLS_control%la = data%val ; data%SLS_control%liw = data%ind
-
+        IF ( inform%SLS_inform%status < 0 ) THEN
+          IF ( printi ) WRITE( out, "( A, ' error return from ',               &
+         &  'SLS_analyse: status = ', I0 )" ) prefix, inform%SLS_inform%status
+          inform%status = GALAHAD_error_analysis ;  GO TO 910 ; END IF
       END IF
 
 ! ::::::::::::
 !  Factorize H
 ! ::::::::::::
 
-      IF ( printt ) CALL CPU_TIME( time )
-!     CALL SILS_FACTORIZE( H, data%FACTORS, data%SLS_CONTROL, FINFO )
+      CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
+      !     CALL SILS_FACTORIZE( H, data%FACTORS, data%SLS_CONTROL, FINFO )
       CALL SLS_FACTORIZE( H, data%SLS_data, data%SLS_control, SLS_inform )
-      IF ( printt ) THEN
-        CALL CPU_TIME( timset )
-        WRITE( out, "( ' time(fact) = ', F10.2 )" ) timset - time
-      END IF
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%factorize = inform%time%factorize + time_now - time_record
+      inform%time%clock_factorize =                                            &
+        inform%time%clock_factorize + clock_now - clock_record
+      IF ( printt ) WRITE( out, "( A, ' time( SLS_factorize ) = ', F0.2 )" )   &
+        prefix, clock_now - clock_record
+      
+!  test that the factorization succeeded
 
-!  Record the storage required
-
-      inform%SILSiw = SLS_inform%nirbdu ; inform%SILSrw = SLS_inform%nrlbdu
-
-!  Test that the factorization succeeded
-
-      IF ( SLS_inform%flag < 0 ) THEN
-         IF ( printe ) WRITE( control%error, 2040 ) SLS_inform%flag
-         inform%status = - aps_flags + SLS_inform%flag
-         RETURN
-
-!  Record warning conditions
-
-      ELSE IF ( SLS_INFORM%flag > 0 ) THEN
-         IF ( printt ) WRITE( control%out, 2050 ) SLS_inform%flag
-         IF ( SLS_inform%flag == 4 ) THEN
-            rank = SLS_inform%rank
-            IF ( printt ) WRITE( control%out, 2010 ) n - rank
-         ELSE
-            rank = n
-         END IF
-      ELSE
-         rank = n
-      END IF
+      IF ( inform%SLS_inform%status < 0 ) GO TO 920
+      rank = SLS_inform%rank
+      IF ( rank /= n .AND. printt ) WRITE( control%out,                        &
+        "( I0, ' zero eigenvalues ' )" ) n - rank
       zeig = n - rank
 
-!  Allocate further arrays
+!  allocate further arrays
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%PERM ) ) THEN
-         IF ( SIZE( data%PERM ) < n ) THEN ; DEALLOCATE( data%PERM )
-         ELSE ; reallocate = .FALSE.
-         END IF
+        IF ( SIZE( data%PERM ) < n ) THEN ; DEALLOCATE( data%PERM )
+        ELSE ; reallocate = .FALSE.
+        END IF
       END IF
       IF ( reallocate ) THEN
-         ALLOCATE( data%PERM( n ), STAT = alloc_stat )
-         IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'PERM' ; GO TO 910
-         END IF
+        ALLOCATE( data%PERM( n ), STAT = alloc_stat )
+        IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'PERM' ; GO TO 910
+        END IF
       END IF
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%EVAL ) ) THEN
-         IF ( SIZE( data%EVAL ) < n ) THEN ; DEALLOCATE( data%EVAL )
-         ELSE ; reallocate = .FALSE.
-         END IF
+        IF ( SIZE( data%EVAL ) < n ) THEN ; DEALLOCATE( data%EVAL )
+        ELSE ; reallocate = .FALSE.
+        END IF
       END IF
       IF ( reallocate ) THEN
-         ALLOCATE( data%EVAL( n ), STAT = alloc_stat )
-         IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'EVAL' ; GO TO 910
-         END IF
+        ALLOCATE( data%EVAL( n ), STAT = alloc_stat )
+        IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'EVAL' ; GO TO 910
+        END IF
       END IF
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%MOD_EVAL ) ) THEN
-         IF ( SIZE( data%MOD_EVAL ) < n ) THEN ; DEALLOCATE( data%MOD_EVAL )
-         ELSE ; reallocate = .FALSE.
-         END IF
+        IF ( SIZE( data%MOD_EVAL ) < n ) THEN ; DEALLOCATE( data%MOD_EVAL )
+        ELSE ; reallocate = .FALSE.
+        END IF
       END IF
       IF ( reallocate ) THEN
-         ALLOCATE( data%MOD_EVAL( n ), STAT = alloc_stat )
-         IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'data%MOD_EVAL' ; GO TO 910
-         END IF
+        ALLOCATE( data%MOD_EVAL( n ), STAT = alloc_stat )
+        IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'data%MOD_EVAL' ; GO TO 910
+        END IF
       END IF
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%EVECT ) ) THEN
-         IF ( SIZE( data%EVECT ) < n ) THEN ; DEALLOCATE( data%EVECT )
-         ELSE ; reallocate = .FALSE.
-         END IF
+        IF ( SIZE( data%EVECT ) < n ) THEN ; DEALLOCATE( data%EVECT )
+        ELSE ; reallocate = .FALSE.
+        END IF
       END IF
       IF ( reallocate ) THEN
-         ALLOCATE( data%EVECT( n ), STAT = alloc_stat )
-         IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'data%EVECT' ; GO TO 910
-         END IF
+        ALLOCATE( data%EVECT( n ), STAT = alloc_stat )
+        IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'data%EVECT' ; GO TO 910
+        END IF
       END IF
 
       reallocate = .TRUE.
       IF ( ALLOCATED( data%D ) ) THEN
-         IF ( SIZE( data%D, 1 ) /= 2  .OR. SIZE( data%D, 2 ) < n ) THEN
-            DEALLOCATE( data%D )
-         ELSE ; reallocate = .FALSE.
-         END IF
+        IF ( SIZE( data%D, 1 ) /= 2  .OR. SIZE( data%D, 2 ) < n ) THEN
+          DEALLOCATE( data%D )
+        ELSE ; reallocate = .FALSE.
+        END IF
       END IF
       IF ( reallocate ) THEN
-         ALLOCATE( data%D( 2, n ), STAT = alloc_stat )
-         IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'D' ; GO TO 910
-         END IF
+        ALLOCATE( data%D( 2, n ), STAT = alloc_stat )
+        IF ( alloc_stat /= 0 ) THEN ; bad_alloc = 'D' ; GO TO 910
+        END IF
       END IF
 
 !  ::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -811,24 +847,33 @@
                                data%PERM( : n ),                               &
                                data%EVAL( : n ), data%MOD_EVAL( : n ),         &
                                data%EVECT( : n ), data%D( : 2, : n ) )
+      inform%status = GALAHAD_ok
       RETURN
 
-!  Unsuccessful returns
+!  unsuccessful returns
 
   910 CONTINUE
-      inform%status = - flags - alloc_stat
       IF ( printe ) WRITE( control%error, 2000 ) bad_alloc, alloc_stat
       RETURN
 
+!  factorization failure
+
+  920 CONTINUE
+      IF ( printi ) WRITE( out, "( A, ' error return from ',                   &
+     &   'SLS_factorize: status = ', I0 )" ) prefix, inform%SLS_inform%status
+      inform%status = GALAHAD_error_factorization
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total =                                                &
+        inform%time%clock_total + clock_now - clock_start
+      RETURN
+      
 !  Non-executable statements
 
  2000 FORMAT( ' ** Message from -APS_build_preconditioner-', /,                &
                  ' Allocation error, for ', A6, ', status = ', I6 )
- 2010 FORMAT( I6, ' zero eigenvalues ' )
- 2020 FORMAT( '   **  Error return ', I3, ' from SILS_analyse ' )
- 2030 FORMAT( '   **  Warning ', I3, ' from SILS_analyse ' )
- 2040 FORMAT( '   **  Error return ', I3, ' from SILS_factorize ' )
- 2050 FORMAT( '   **  Warning ', I3, ' from SILS_factorize ' )
+
+!  End of subroutine APS_build_preconditioner
 
       END SUBROUTINE APS_build_preconditioner
 
@@ -872,8 +917,6 @@
       printd = control%out > 0 .AND. control%print_level >= 3
 
       IF ( COUNT( D /= one ) /= 0 ) THEN
-!     IF ( COUNT( ABS( D ) /= one ) /= 0 ) THEN
-
          inform%multiplier = - MINVAL( D )
 
          IF ( inform%multiplier < zero ) THEN
@@ -1036,22 +1079,11 @@
       SUBROUTINE APS_modify_factors( n, deigen, mod1, mod2, rank, data,        &
                                      inform, PERM, EVAL, MOD_EVAL, EVECT, D )
 
-!      .................................................
-!      .                                               .
-!      .  Solve the trust-region problem               .
-!      .                                               .
-!      .  minimize <s,g> + 1/2 <s,Hs>                  .
-!      .  subject to ||s||_M <= delta,                 .
-!      .                                               .
-!      .  where M is the modified absolute value of H  .
-!      .                                               .
-!      .................................................
-
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!   Based on the Gill-Murray-Ponceleon-Saunders code for modifying the negative
+!   based on the Gill-Murray-Ponceleon-Saunders code for modifying the negative
 !   eigen-components obtained when factorizing a symmetric indefinite
-!   matrix using the Harwell code SILS. (See SOL 90-8, P.19-21)
+!   matrix using the GALAHAD package SLS. (See SOL 90-8, P.19-21)
 !
 !   Also extracts eigenvalues and eigenvectors, and the modified eigenvalues
 !
@@ -1090,219 +1122,209 @@
 
       mod1 = 0 ; mod2 = 0
 
-!  Loop over all the block pivots
+!  loop over all the block pivots
 
       oneby1 = .TRUE.
       DO i = 1, n
 
-!  Decide if the current block is a 1x1 or 2x2 pivot block
+!  decide if the current block is a 1x1 or 2x2 pivot block
 
-         IF ( oneby1 ) THEN
-            IF ( i < n ) THEN
-               oneby1 = PERM( i ) > 0
-            ELSE
-               oneby1 = .TRUE.
-            END IF
-
-            alpha = D( 1, i )
+        IF ( oneby1 ) THEN
+          IF ( i < n ) THEN
+            oneby1 = PERM( i ) > 0
+          ELSE
+            oneby1 = .TRUE.
+          END IF
+          alpha = D( 1, i )
 
 !  =========
 !  1x1 block
 !  =========
 
-            IF ( oneby1 ) THEN
+          IF ( oneby1 ) THEN
 
-!  Record the eigenvalue
+!  record the eigenvalue
 
-               IF ( alpha /= zero ) THEN
-                  eigen = one / alpha
-               ELSE
-                  eigen = zero
-               END IF
-               EVAL( i ) = eigen
+             IF ( alpha /= zero ) THEN
+               eigen = one / alpha
+             ELSE
+               eigen = zero
+             END IF
+             EVAL( i ) = eigen
 
-               IF ( eigen < - deigen ) THEN
-
-!  Negative 1x1 block
+!  negative 1x1 block
 !  ------------------
 
-                  mod1 = mod1 + 1
-                  D( 1, i ) = - alpha
+             IF ( eigen < - deigen ) THEN
+               mod1 = mod1 + 1
+               D( 1, i ) = - alpha
 
-!  Record the modification
+!  record the modification
 
-                  MOD_EVAL( i ) = - eigen
+               MOD_EVAL( i ) = - eigen
 
-                ELSE IF ( eigen < deigen ) THEN
-
-!  Small 1x1 block
+!  small 1x1 block
 !  ---------------
 
-                  mod1 = mod1 + 1
-                  D( 1, i ) = one / deigen
+             ELSE IF ( eigen < deigen ) THEN
+               mod1 = mod1 + 1
+               D( 1, i ) = one / deigen
 
-!  Record the modification
+!  record the modification
 
-                  MOD_EVAL( i ) = deigen
+               MOD_EVAL( i ) = deigen
 
-               ELSE
-
-!  Positive 1x1 block
+!  positive 1x1 block
 !  ------------------
-!  Record the modification
 
-                  MOD_EVAL( i ) = eigen
+             ELSE
 
-                END IF
+!  record the modification
 
-!  Record the eigenvector
+               MOD_EVAL( i ) = eigen
+             END IF
 
-               EVECT( i ) = one
+!  record the eigenvector
+
+             EVECT( i ) = one
 
 !  =========
 !  2x2 block
 !  =========
 
-            ELSE
-
-               beta = D( 2, i )
-               gamma = D( 1, i + 1 )
+          ELSE
+            beta = D( 2, i )
+            gamma = D( 1, i + 1 )
 
 !  2x2 block: (  alpha  beta   ) = (  c  s  ) (  e1     ) (  c  s  )
 !             (  beta   gamma  )   (  s -c  ) (     e2  ) (  s -c  )
 
-               IF ( alpha * gamma < beta ** 2 ) THEN
+            IF ( alpha * gamma < beta ** 2 ) THEN
+              tau = ( gamma - alpha ) / ( two * beta )
+              t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) )
+              IF ( tau < zero ) t = - t
+              c = one / SQRT( one + t ** 2 ) ; s = t * c
+              e1 = alpha + beta * t ; e2 = gamma - beta * t
+
+!  record the first eigenvalue
+
+              eigen = one / e1
+              EVAL( i ) = eigen
+
+!  change e1 and e2 to their modified values and then multiply the
+!  three 2 * 2 matrices to get the modified alpha, beta and gamma
+
+              IF ( eigen < - deigen ) THEN
+
+!  negative first eigenvalue
+!  -------------------------
+
+                mod2 = mod2 + 1
+
+!  record the modification
+
+                MOD_EVAL( i ) = - eigen
+                e1 = - e1
+
+!  small first eigenvalue
+!  ----------------------
+
+              ELSE IF ( eigen < deigen ) THEN
+                mod2 = mod2 + 1
+
+!  record the modification
+
+                MOD_EVAL( i ) = deigen
+                e1 = one / deigen
+
+!  positive first eigenvalue
+!  -------------------------
+
+              ELSE
+
+!  record the modification
+
+                MOD_EVAL( i ) = eigen
+              END IF
+
+!  record the second eigenvalue
+
+              eigen = one / e2
+              EVAL( i + 1 ) = eigen
+
+
+!  negative second eigenvalue
+!  --------------------------
+
+              IF ( eigen < - deigen ) THEN
+                mod2 = mod2 + 1
+
+!  record the modification
+
+                MOD_EVAL( i + 1 ) = - eigen
+                e2 = - e2
+
+!  small second eigenvalue
+!  -----------------------
+
+              ELSE IF ( eigen < deigen ) THEN
+                mod2 = mod2 + 1
+
+!  record the modification
+
+                MOD_EVAL( i + 1 ) = deigen
+                e2 = one / deigen
+
+!  positive second eigenvalue
+!  --------------------------
+
+              ELSE
+
+!  record its modification
+
+                MOD_EVAL( i + 1 ) = eigen
+              END IF
+
+!  record the modified block
+
+              D( 1, i ) = c ** 2 * e1 + s ** 2 * e2
+              D( 2, i ) = c * s * ( e1 - e2 )
+              D( 1, i + 1 ) = s ** 2 * e1 + c ** 2 * e2
+
+!  positive 2 by 2 block
+!  ---------------------
+
+              ELSE
+                IF ( beta /= zero ) THEN
                   tau = ( gamma - alpha ) / ( two * beta )
                   t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) )
                   IF ( tau < zero ) t = - t
-                  c = one / SQRT( one + t ** 2 ) ; s = t * c
+                  c = one / SQRT( one + t ** 2 ) ;  s = t * c
                   e1 = alpha + beta * t ; e2 = gamma - beta * t
+                ELSE
+                  c = one ; s = zero
+                  e1 = alpha ; e2 = gamma
+                END IF
 
-!  Record the first eigenvalue
+!  record the eigenvalue and its modification
 
-                  eigen = one / e1
-                  EVAL( i ) = eigen
+                EVAL( i ) = one / e1
+                MOD_EVAL( i ) = EVAL( i )
+                EVAL( i + 1 ) = one / e2
+                MOD_EVAL( i + 1 ) = one / EVAL( i + 1 )
+              END IF
 
-!  Change e1 and e2 to their modified values and then multiply the
-!  three 2 * 2 matrices to get the modified alpha, beta and gamma
+!  record the eigenvector
 
-                  IF ( eigen < - deigen ) THEN
-
-!  Negative first eigenvalue
-!  -------------------------
-
-                     mod2 = mod2 + 1
-
-!  Record the modification
-
-                     MOD_EVAL( i ) = - eigen
-                     e1 = - e1
-
-                  ELSE IF ( eigen < deigen ) THEN
-
-!  Small first eigenvalue
-!  ----------------------
-
-                     mod2 = mod2 + 1
-
-!  Record the modification
-
-                     MOD_EVAL( i ) = deigen
-                     e1 = one / deigen
-
-                  ELSE
-
-!  Positive first eigenvalue
-!  -------------------------
-!  Record the modification
-
-                     MOD_EVAL( i ) = eigen
-
-                   END IF
-
-!  Record the second eigenvalue
-
-                  eigen = one / e2
-                  EVAL( i + 1 ) = eigen
-
-                  IF ( eigen < - deigen ) THEN
-
-!  Negative second eigenvalue
-!  --------------------------
-
-                     mod2 = mod2 + 1
-
-!  Record the modification
-
-                     MOD_EVAL( i + 1 ) = - eigen
-                     e2 = - e2
-
-                  ELSE IF ( eigen < deigen ) THEN
-
-!  Small second eigenvalue
-!  -----------------------
-
-                     mod2 = mod2 + 1
-
-!  Record the modification
-
-                     MOD_EVAL( i + 1 ) = deigen
-                     e2 = one / deigen
-
-                  ELSE
-
-!  Positive second eigenvalue
-!  --------------------------
-!  Record its modification
-
-                     MOD_EVAL( i + 1 ) = eigen
-
-                  END IF
-
-
-!  Record the modified block
-
-                  D( 1, i ) = c ** 2 * e1 + s ** 2 * e2
-                  D( 2, i ) = c * s * ( e1 - e2 )
-                  D( 1, i + 1 ) = s ** 2 * e1 + c ** 2 * e2
-
-               ELSE
-
-!  Positive 2 by 2 block
-!  ---------------------
-
-                  IF ( beta /= zero ) THEN
-                     tau = ( gamma - alpha ) / ( two * beta )
-                     t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) )
-                     IF ( tau < zero ) t = - t
-                     c = one / SQRT( one + t ** 2 ) ;  s = t * c
-                     e1 = alpha + beta * t ; e2 = gamma - beta * t
-                  ELSE
-                     c = one ; s = zero
-                     e1 = alpha ; e2 = gamma
-                  END IF
-
-!  Record the eigenvalue and its modification
-
-                  EVAL( i ) = one / e1
-                  MOD_EVAL( i ) = EVAL( i )
-                  EVAL( i + 1 ) = one / e2
-                  MOD_EVAL( i + 1 ) = one / EVAL( i + 1 )
-
-               END IF
-
-!  Record the eigenvector
-
-               EVECT( i ) = c
-               EVECT( i + 1 ) = s
-
-            END IF
-         ELSE
-            oneby1 = .TRUE.
-         END IF
+            EVECT( i ) = c
+            EVECT( i + 1 ) = s
+          END IF
+        ELSE
+          oneby1 = .TRUE.
+        END IF
       END DO
 
-!  Register the (possibly modified) diagonal blocks
+!  register the (possibly modified) diagonal blocks
 
 !     CALL SILS_ALTER_D( FACTORS, D, i )
       CALL SLS_alter_D( data, D, inform )
