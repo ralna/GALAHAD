@@ -59,17 +59,17 @@
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: val
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: w ! len maxfrt
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: r ! length n
-       INTEGER :: n       ! Matrix order
-       INTEGER :: nrltot  ! Size for val without compression
-       INTEGER :: nirtot  ! Size for iw without compression
-       INTEGER :: nrlnec  ! Size for val with compression
-       INTEGER :: nirnec  ! Size for iw with compression
-       INTEGER :: nsteps  ! Number of elimination steps
-       INTEGER :: maxfrt  ! Largest front size
-       INTEGER :: latop   ! Position of final entry of val
-       INTEGER :: dim_iw1 ! Size of iw1 for solves
-       INTEGER :: pivoting ! type of pivoting used
-       REAL ( KIND = wp ) :: ops
+       INTEGER :: n = - 1      ! Matrix order
+       INTEGER :: nrltot = - 1 ! Size for val without compression
+       INTEGER :: nirtot = - 1 ! Size for iw without compression
+       INTEGER :: nrlnec = - 1 ! Size for val with compression
+       INTEGER :: nirnec = - 1 ! Size for iw with compression
+       INTEGER :: nsteps = - 1 ! Number of elimination steps
+       INTEGER :: maxfrt = - 1 ! Largest front size
+       INTEGER :: latop = - 1  ! Position of final entry of val
+       INTEGER :: dim_iw1 = - 1 ! Size of iw1 for solves
+       INTEGER :: pivoting = - 1 ! type of pivoting used
+       REAL ( KIND = wp ) :: ops = - one
      END TYPE SILS_factors
 
      TYPE, PUBLIC :: SILS_control
@@ -426,6 +426,7 @@
 
 !  Analyse the matrix
 
+     FACTORS%ops = - one
      CALL MA27AD( n, ne, MATRIX%row, MATRIX%col, FACTORS%iw, liw,              &
                   FACTORS%keep, FACTORS%iw1, FACTORS%nsteps, AINFO%flag,       &
                   ICNTL, CNTL, INFO, FACTORS%ops )
@@ -441,8 +442,13 @@
      AINFO%flag = INFO( 1 )
      AINFO%more = INFO( 2 )
      AINFO%nsteps = FACTORS%nsteps
-     AINFO%opsa   = FACTORS%ops / 2.0
-     AINFO%opse   = FACTORS%ops / 2.0
+     IF ( AINFO%flag == - 1 .OR. AINFO%flag == - 2 ) THEN
+       AINFO%opsa = zero
+       AINFO%opse = zero
+     ELSE
+       AINFO%opsa = FACTORS%ops / 2.0
+       AINFO%opse = FACTORS%ops / 2.0
+     END IF
      AINFO%nrltot = INFO( 3 )
      AINFO%nirtot = INFO( 4 )
      AINFO%nrlnec = INFO( 5 )
@@ -2270,8 +2276,8 @@
      ENDIF
 
      ka = 1 ; kd = 0 ; kp = 0 ; kw = 2
-     IF ( PRESENT( D ) ) D = 0
-     DO block = 1, abs( FACTORS%iw( 1 ) )
+     IF ( PRESENT( D ) ) D = zero
+     DO block = 1, ABS( FACTORS%iw( 1 ) )
        IF ( FACTORS%pivoting == 1 ) THEN
          ncols = FACTORS%iw( kw )
          IF ( ncols > 0 ) THEN
@@ -2326,7 +2332,7 @@
 
      info = 0
      ka = 1 ; kd = 0 ; kw = 2
-     DO block = 1, abs( FACTORS%iw( 1 ) )
+     DO block = 1, ABS( FACTORS%iw( 1 ) )
        ncols = FACTORS%iw( kw )
        IF ( ncols > 0 ) THEN
          kw = kw + 1
@@ -2339,15 +2345,14 @@
          kd = kd + 1
          FACTORS%val( ka ) = D( 1, kd )
          IF ( FACTORS%iw( kw + i ) < 0 ) THEN
-            FACTORS%val( ka + 1 ) = D( 2, kd )
+           FACTORS%val( ka + 1 ) = D( 2, kd )
          ELSE
-            IF ( D( 2, kd ) /=  zero ) info = kd
+           IF ( D( 2, kd ) /= zero ) info = kd
          END IF
          ka = ka + ncols + 1 - i
        END DO
        kw = kw + ncols + 1
      END DO
-
      RETURN
 
 !  End of SILS_alter_d

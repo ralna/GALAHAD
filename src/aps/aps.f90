@@ -341,14 +341,14 @@
 !  check that input data is correct
 
       IF ( n <= 0 ) THEN
-        IF ( control%error > 0 )                                              &
-             WRITE( control%error, "( ' n = ', I6, ' is not positive ' )" ) n
+         IF ( control%error > 0 ) WRITE( control%error,                        &
+           "( A, ' n = ', I6, ' is not positive ' )" ) prefix, n
         inform%status = GALAHAD_error_restrictions ; GO TO 910
       END IF
 
       IF ( delta <= zero ) THEN
-        IF ( control%error > 0 ) WRITE( control%error,                        &
-             "( ' The radius ', ES12.4 , ' is not positive ' )" ) delta
+        IF ( control%error > 0 ) WRITE( control%error,                         &
+          "( A, ' The radius ', ES12.4 , ' is not positive ' )" ) prefix, delta
         inform%status = GALAHAD_error_restrictions ; GO TO 910
       END IF
       H%n = n
@@ -400,7 +400,7 @@
       REAL ( KIND = wp ), INTENT( IN ) :: delta
       REAL ( KIND = wp ), INTENT( OUT ) :: f
       REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: C
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: X
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
       TYPE ( APS_data_type ), INTENT( INOUT ) :: data
       TYPE ( APS_control_type ), INTENT( IN ) :: control
       TYPE ( APS_inform_type ), INTENT( OUT ) :: inform
@@ -441,9 +441,11 @@
             bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= 0 ) GO TO 910
 
-        IF ( debug ) WRITE( control%out, 2030 ) 'PERM', data%PERM( : n )
+        IF ( debug ) WRITE( control%out, 2030 )                                &
+          prefix,  'PERM', data%PERM( : n )
         data%CS = C
-        IF ( debug ) WRITE( control%out, 2020 ) 'data%CS', data%CS( : n )
+        IF ( debug ) WRITE( control%out, 2020 )                                &
+          prefix, 'data%CS', data%CS( : n )
 
 !  Step 2: Solve P L c_b = c
 !  ======
@@ -452,13 +454,15 @@
 !                             alloc_stat )
         CALL SLS_part_solve( 'L', data%CS, data%SLS_data, data%SLS_control,    &
                              inform%SLS_inform )
-        IF ( debug ) WRITE( control%out, 2020 ) 'data%CS', data%CS( : n )
+        IF ( debug ) WRITE( control%out, 2020 )                                &
+          prefix, 'data%CS', data%CS( : n )
 
 !  Step 3: Obtain c_s = Gamma(-1/2) Q^T P^T c_b
 !  ======
 
         data%CS = data%CS( ABS( data%PERM ) )
-        IF ( debug ) WRITE( control%out, 2020 ) 'data%CS', data%CS( : n )
+        IF ( debug ) WRITE( control%out, 2020 )                                &
+          prefix, 'data%CS', data%CS( : n )
 
         oneby1 = .TRUE.
         DO i = 1, n
@@ -504,10 +508,10 @@
 !  Step 4: Find x_s by solving the diagonal TR problem
 !  ======
 
-      IF ( debug ) WRITE( control%out, 2020 ) 'data%CS', data%CS( : n )
+      IF ( debug ) WRITE( control%out, 2020 ) prefix, 'data%CS', data%CS( : n )
       CALL APS_solve_diagonal_tr( n, ( data%EVAL / data%MOD_EVAL ), data%CS,   &
                                    delta, X, f, control, inform )
-      IF ( debug ) WRITE( control%out, 2020 ) 'X', X( : n )
+      IF ( debug ) WRITE( control%out, 2020 ) prefix, 'X', X( : n )
 
 
 !  Step 5 (alternative): Recover x_r = P Q Gamma(-1/2) x_s
@@ -544,7 +548,7 @@
 !     CALL SILS_PART_SOLVE( data%FACTORS, data%CNTL, 'U', X, alloc_status )
       CALL SLS_part_solve( 'U', X, data%SLS_data, data%SLS_control,           &
                            inform%SLS_inform )
-      IF ( debug ) WRITE( control%out, 2020 ) 'X', X( : n )
+      IF ( debug ) WRITE( control%out, 2020 ) prefix, 'X', X( : n )
 
 !  successful return
 
@@ -566,8 +570,8 @@
 
 !  Non-executable statements
 
- 2020 FORMAT( A10, /, ( 6ES12.4 ) )
- 2030 FORMAT( A10, /, ( 10I8 ) )
+ 2020 FORMAT( A, 1X, A, /, ( 6ES12.4 ) )
+ 2030 FORMAT( A, 1X, A, /, ( 10I8 ) )
 
 !  End of subroutine APS_resolve
 
@@ -771,7 +775,7 @@
       IF ( inform%SLS_inform%status < 0 ) GO TO 920
       rank = inform%SLS_inform%rank
       IF ( rank /= n .AND. printt ) WRITE( control%out,                        &
-        "( I0, ' zero eigenvalues ' )" ) n - rank
+        "( A, 1X, I0, ' zero eigenvalues ' )" ) prefix, n - rank
       zeig = n - rank
 
 !  allocate further arrays
@@ -834,7 +838,7 @@
   910 CONTINUE
       IF ( control%out > 0 .AND. control%print_level > 0 )                     &
         WRITE( control%out, "( A, '   **  Error return ', I0,                  &
-        & ' from TRS ' )" ) control%prefix, inform%status
+        & ' from TRS ' )" ) prefix, inform%status
       RETURN
 
 !  factorization failure

@@ -16,6 +16,7 @@ PROGRAM GALAHAD_APS_EXAMPLE
 
    H%ne = 132                                 ! set up problem
 
+   CALL SMT_put( H%type, 'COORDINATE', i )
    ALLOCATE( H%row( H%ne ), H%col( H%ne ), H%val( H%ne ), STAT = i )
 
 !  ==============
