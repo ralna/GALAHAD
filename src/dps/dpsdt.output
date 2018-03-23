@@ -1,0 +1,68 @@
+
+ =-=-=-= normal exit tests =-=-=-= 
+
+ <==== modified-absolute value norm =====>
+
+ ===== trust-region subproblem =======
+
+ pass   1 DPS_solve   exit status =      0
+ pass   2 DPS_resolve exit status =      0
+ pass   3 DPS_solve   exit status =      0
+ pass   4 DPS_resolve exit status =      0
+ pass   5 DPS_resolve exit status =      0
+ pass   6 DPS_solve   exit status =      0
+ pass   7 DPS_solve   exit status =      0
+ pass   8 DPS_resolve exit status =      0
+ pass   9 DPS_resolve exit status =      0
+ pass  10 DPS_resolve exit status =      0
+ pass  11 DPS_resolve exit status =      0
+
+ ===== regularization subproblem =====
+
+ pass   1 DPS_solve   exit status =      0
+ pass   2 DPS_resolve exit status =      0
+ pass   3 DPS_solve   exit status =      0
+ pass   4 DPS_resolve exit status =      0
+ pass   5 DPS_resolve exit status =      0
+ pass   6 DPS_solve   exit status =      0
+ pass   7 DPS_solve   exit status =      0
+ pass   8 DPS_resolve exit status =      0
+ pass   9 DPS_resolve exit status =      0
+ pass  10 DPS_resolve exit status =      0
+ pass  11 DPS_resolve exit status =      0
+
+ <============ Goldfarb norm ============>
+
+ ===== trust-region subproblem =======
+
+ pass   1 DPS_solve   exit status =      0
+ pass   2 DPS_resolve exit status =      0
+ pass   3 DPS_solve   exit status =      0
+ pass   4 DPS_resolve exit status =      0
+ pass   5 DPS_resolve exit status =      0
+ pass   6 DPS_solve   exit status =      0
+ pass   7 DPS_solve   exit status =      0
+ pass   8 DPS_resolve exit status =      0
+ pass   9 DPS_resolve exit status =      0
+ pass  10 DPS_resolve exit status =      0
+ pass  11 DPS_resolve exit status =      0
+
+ ===== regularization subproblem =====
+
+ pass   1 DPS_solve   exit status =      0
+ pass   2 DPS_resolve exit status =      0
+ pass   3 DPS_solve   exit status =      0
+ pass   4 DPS_resolve exit status =      0
+ pass   5 DPS_resolve exit status =      0
+ pass   6 DPS_solve   exit status =      0
+ pass   7 DPS_solve   exit status =      0
+ pass   8 DPS_resolve exit status =      0
+ pass   9 DPS_resolve exit status =      0
+ pass  10 DPS_resolve exit status =      0
+ pass  11 DPS_resolve exit status =      0
+
+ =-=-=-=-= error exit tests =-=-=-=-= 
+
+ pass   1 DPS_solve   exit status =     -3
+ pass   2 DPS_solve   exit status =     -3
+ pass   4 DPS_solve   exit status =     -9
