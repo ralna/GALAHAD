@@ -47,7 +47,8 @@
 
       PRIVATE
       PUBLIC :: TRS_initialize, TRS_read_specfile, TRS_solve, TRS_terminate,   &
-                TRS_contract, TRS_orthogonal_solve, SMT_type, SMT_put, SMT_get
+                TRS_contract, TRS_solve_diagonal, TRS_orthogonal_solve,        &
+                SMT_type, SMT_put, SMT_get
 
 !--------------------
 !   P r e c i s i o n

@@ -129,6 +129,7 @@
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_warning_skip_update     = - 85
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_h_not_diagonal    = - 86
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_h_not_permitted   = - 87
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_unsuitable_option       = - 88
 
 !     General integers
 

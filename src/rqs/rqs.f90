@@ -46,7 +46,7 @@
 
       PRIVATE
       PUBLIC :: RQS_initialize, RQS_read_specfile, RQS_solve, RQS_terminate,   &
-                SMT_type, SMT_put, SMT_get
+                RQS_solve_diagonal, SMT_type, SMT_put, SMT_get
 
 !--------------------
 !   P r e c i s i o n
@@ -4523,7 +4523,7 @@
 !  check that the best Taylor improvement is significant
 
         IF ( ABS( delta_lambda ) < epsmch * MAX( one, ABS( lambda ) ) ) THEN
-          inform%status = 0
+          inform%status = GALAHAD_ok
           IF ( printi ) WRITE( out, "( A, ' normal exit with no ',             &
          &                     'significant Taylor improvement' )" ) prefix
           EXIT
@@ -5012,5 +5012,3 @@
 !-*-*-*-*-*-  End of G A L A H A D _ R Q S  double  M O D U L E  *-*-*-*-*-*-
 
    END MODULE GALAHAD_RQS_double
-
-
