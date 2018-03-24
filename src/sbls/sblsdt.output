@@ -581,12 +581,12 @@ SCALED_IDENTITY   -2    2    0        0     tiny
 
     solver   status residual
       sils        0     tiny
-      ma57      -26
-      ma77      -26
-      ma86      -26
+      ma57        0     tiny
+      ma77        0     tiny
+      ma86        0     tiny
       sils        0     tiny
-      ma97      -26
-     ssids      -26
+      ma97        0     tiny
+     ssids        0     tiny
    pardiso       -9
       wsmp       -9
 
@@ -594,7 +594,7 @@ SCALED_IDENTITY   -2    2    0        0     tiny
 
     solver   status residual
        gls        0     tiny
-      ma48      -13
+      ma48        0     tiny
 
  basic tests of options 
 

@@ -59,5 +59,5 @@ C2:    -1    19 iterations. Optimal objective value =    5.4 status =      0
  3:    -1    10 iterations. Optimal objective value =   44.3 status =      0
  4:    -1    -1 iterations. Optimal objective value =   28.1 status =      0
  5:    -1    -1 iterations. Optimal objective value =   28.7 status =      0
- 6:    21     4 iterations. Optimal objective value =    0.5 status =      0
- 7:     5     2 iterations. Optimal objective value =    1.5 status =      0
+ 6:    -1     4 iterations. Optimal objective value =    0.0 status =      0
+ 7:    -1     2 iterations. Optimal objective value =    1.5 status =      0

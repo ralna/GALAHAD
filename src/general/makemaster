@@ -121,7 +121,8 @@ problemd = $(SMTD) nlpt $(PLGD)(problem.o)
 
 BASICZ = $(LG)(cputim.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(symbols.o) $(SLG)(pardiso.o) $(MLG)(metis.o) $(WLG)(wsmp.o) \
-         $(DLG)(dummy.o) $(LG)(blas_interface.o) $(LG)(lapack_interface.o)
+         $(DLG)(dummy.o) $(LG)(blas_interface.o) $(LG)(lapack_interface.o) \
+         buildspec_silent minpack
 #        $(SSIDS)
 
 BASICS = $(BASICZ) $(LGS)(symbols.o) $(LGS)(specfile.o) \
@@ -508,6 +509,10 @@ mi20:
 ma48v3:
 	( cd ../non-free/ma48 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             ma48v3_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma48 )
+
+minpack:
+	( cd ../non-free/minpack ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            minpack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/minpack )
 
 # run spec-sheet example tests
 

@@ -544,6 +544,24 @@ $(MLG)(galahad_cqp_matlab_types.o): galahad_cqp_matlab_types.F90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
+#  dps
+
+galahad_dps_matlab_types.o: $(MLG)(galahad_dps_matlab_types.o)
+
+$(MLG)(galahad_dps_matlab_types.o): galahad_dps_matlab_types.F90
+	( cd ../dps ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     dps_silent PRECIS=double PWD=$(PWD)/../dps )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_dps_matlab_types"
+	$(CP) galahad_dps_matlab_types.F90 $(OBJ)/galahad_dps_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_dps_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_dps_matlab_types.o
+	$(RM) $(OBJ)/galahad_dps_matlab_types.o \
+              $(OBJ)/galahad_dps_matlab_types.F90
+	$(MRMARFILE) galahad_tru_matlab_types.o
+	$(MRMARFILE) galahad_arc_matlab_types.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
 #  dqp
 
 galahad_dqp_matlab_types.o: $(MLG)(galahad_dqp_matlab_types.o)

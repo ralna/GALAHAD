@@ -59,7 +59,7 @@ C2: QP_solve exit status =    -83
  full test of generic problems 
 
  1: QP_solve exit status =    -83
- 2: optimal objective value =   42.2 status =      0
- 3: optimal objective value =   42.2 status =      0
+ 2: optimal objective value =   37.4 status =      0
+ 3: optimal objective value =   37.4 status =      0
  4: optimal objective value =   28.1 status =      0
  5: optimal objective value =   28.7 status =      0

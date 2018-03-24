@@ -1,0 +1,5 @@
+ generator word = 65535
+ random real =  0.03
+ second random real = -0.34
+ random integer in [1,100] = 52
+ second random integer in [1,100] = 33

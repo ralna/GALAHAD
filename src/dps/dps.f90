@@ -43,7 +43,7 @@
       IMPLICIT NONE
 
       PRIVATE
-      PUBLIC :: DPS_initialize, DPS_read_specfile, DPS_solve, DPS_resolve,      &
+      PUBLIC :: DPS_initialize, DPS_read_specfile, DPS_solve, DPS_resolve,     &
                 DPS_terminate, SMT_type, SMT_put, SMT_get
 
 !--------------------
@@ -668,7 +668,7 @@
 !      .    minimize     1/2 <x, H x> + <c, x> + f     .
 !      .                   + (sigma/p) ||x||_M^p       .
 !      .                                               .
-!      .  where M is a diagonilising norm for H         .
+!      .  where M is a diagonilising norm for H        .
 !      .                                               .
 !      .................................................
 

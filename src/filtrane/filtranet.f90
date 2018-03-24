@@ -166,6 +166,7 @@ PROGRAM GALAHAD_FILTRANE_TEST
      IF ( control%print_level > 0 )                                           &
        WRITE( iout, 1000 )
 
+     control%print_level = GALAHAD_TRACE
      SELECT CASE( test )
      CASE ( 1 )
         IF ( control%print_level > 0 )                                         &
@@ -336,6 +337,7 @@ PROGRAM GALAHAD_FILTRANE_TEST
      CASE ( 30 )
         EXIT
      END SELECT
+     control%print_level = GALAHAD_SILENT
 
      IF ( control%print_level > 0 )                                            &
        WRITE( iout, 1000 )
@@ -406,4 +408,3 @@ RETURN
 END SUBROUTINE GFT_prec
 
 END PROGRAM GALAHAD_FILTRANE_TEST
-

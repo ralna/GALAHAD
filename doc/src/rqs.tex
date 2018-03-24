@@ -124,8 +124,8 @@ in the integer arrays {\tt A\%row}, {\tt A\%col} and real array {\tt A\%val}.
 Again only the nonzero entries are stored, but this time
 they are ordered so that those in row $i$ appear directly before those
 in row $i+1$. For the $i$-th row of $\bmH$, the $i$-th component of the
-integer array {\tt A\%ptr} holds the position of the first entry in this row,
-while {\tt A\%ptr} $(m+1)$ holds the total number of entries plus one.
+integer array {\tt H\%ptr} holds the position of the first entry in this row,
+while {\tt H\%ptr} $(m+1)$ holds the total number of entries plus one.
 The column indices $j$, $1 \leq j \leq i$, and values $h_{ij}$ of the
 entries in the $i$-th row are stored in components
 $l =$ {\tt H\%ptr}$(i)$, \ldots ,{\tt H\%ptr} $(i+1)-1$ of the
@@ -788,9 +788,8 @@ prior to the first call to {\tt \packagename\_solve}.
 
 \itt{inform} is a scalar \intentinout argument of type
 {\tt \packagename\_inform\_type}
-(see Section~\ref{typeinform}).
-On initial entry, the component {\tt status} must be set to {\tt 1.}
-The remaining components need not be set.
+(see Section~\ref{typeinform})
+whose components need not be set on entry.
 A successful call to
 {\tt \packagename\_solve}
 is indicated when the  component {\tt status} has the value 0.

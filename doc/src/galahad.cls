@@ -663,9 +663,12 @@
 \plainfootrulewidth 0.5mm
 \newcommand{\topa}{\fancyplain{}{\large \bf \packagename}}
 \newcommand{\topb}{\fancyplain{}{\large \bf \libraryname}}
-\newcommand{\botl}{{\bf \large All use is subject to licence. See
-{\tt http://galahad.rl.ac.uk/galahad-www/cou.html} . \\
- For any commercial application, a separate license must be signed.}}
+%\newcommand{\botl}{{\bf \large All use is subject to licence. See
+%{\tt http://galahad.rl.ac.uk/galahad-www/cou.html} . \\
+% For any commercial application, a separate license must be signed.}}
+\newcommand{\botl}{{\bf \large All use is subject to the conditions of
+the GNU Lesser General Public License version 3. \\
+See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 
 \newcommand{\bottr}{\packagename \, (\today) \,\,\,\, \thepage}
 \newcommand{\bottl}{\thepage \,\,\,\, \packagename \, (\today)}
@@ -1022,6 +1025,3 @@
 
 %%
 %% End of file `galahad.cls'.
-
-
-

@@ -1,30 +1,69 @@
  test =  0 status = 0
+  1)     Impossible n
  test =  1 status = -8
+  2)     Impossible m
  test =  2 status = -9
+  3)     Impossible s%stage
  test =  3 status = -7
+  4)     x unallocated
  test =  4 status = -23
+  5)     x_l unallocated
  test =  5 status = -23
+  6)     x_u unallocated
  test =  6 status = -23
+  7)     x_status unallocated
  test =  7 status = -23
+  8)     c unallocated
  test =  8 status = -23
+  9)     c_l unallocated
  test =  9 status = -23
+ 10)     c_u unallocated
  test = 10 status = -23
+ 11)     equation unallocated
  test = 11 status = -23
+ 12)     y unallocated
  test = 12 status = -23
+ 13)     g unallocated
  test = 13 status = -23
+ 14)     J_val unallocated
  test = 14 status = -23
+ 15)     J_row unallocated
  test = 15 status = -23
+ 16)     J_col unallocated
  test = 16 status = -23
+ 17)     Impossible nbr_groups
  test = 17 status = -25
+ 18)     control%group unallocated
  test = 18 status = -26
+ 19)     Impossible control%group(1)
  test = 19 status = -28
+ 20)     Correct USER_DEFINED groups
  test = 20 status = 0
+ 21)     No checkpoint file
  test = 21 status = -2
+ 22)     Checkpointing after iteration 2 and stop
  test = 22 status = -6
+ 23)     Restart from checkpoint and use 1 automatic group
  test = 23 status = 0
+ 24)     Balance 2 automatic groups for signed filter,
+         user-defined preconditioner
  test = 24 status = 0
+ 25)     Use Newton model,banded preconditioner and large radius
+         and print between iterations 4 and 8
  test = 25 status = 0
+ 26)     Keep best point and stop at iteration 3
  test = 26 status = -6
+ 27)     stop on unpreconditioned gradient, banded preconditioner,
+         filter_increment = 1
  test = 27 status = 0
+ 28)     no weak acceptance, no removal of dominated entries,
+         best-reduction models, external Jacobian products
  test = 28 status = 0
+ 29)     bounds only
  test = 29 status = 0
+
+ FILTRANE workspace cleanup
+
+
+              *********************** Bye **********************
+

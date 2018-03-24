@@ -11,7 +11,7 @@ MAIN
 ! dps-solution-file-device                          62
 ! ms-solution-file-name                             MSSOL.d
 ! ms-solution-file-device                           63
-! trust-region-subproblem                           .TRUE.
+! solve-trust-region-subproblem                     .TRUE.
 ! trust-region-radius                               1.0
 ! regularization-order                              3.0
 ! regularization-weight                             1.0

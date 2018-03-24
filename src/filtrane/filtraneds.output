@@ -35,12 +35,12 @@
  X2 =  -1.000000219305E+00
 
 
- C1 =  -4.386100608038E-07
+ C1 =  -4.386100604936E-07
  C2 =   0.000000000000E+00
 
 
  Exit condition number    =          0
- Objective function value =  9.618939271916E-14
+ Objective function value =  9.618939258311E-14
  Number of iterations     =          8
  Number of CG iterations  =         12
  Number of constraints evaluations =     9
