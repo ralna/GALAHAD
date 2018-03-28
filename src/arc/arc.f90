@@ -32,6 +32,7 @@
      USE GALAHAD_PSLS_double
      USE GALAHAD_GLRT_double
      USE GALAHAD_RQS_double
+     USE GALAHAD_DPS_double
      USE GALAHAD_LMS_double
      USE GALAHAD_SHA_double
      USE GALAHAD_SPACE_double
@@ -118,6 +119,7 @@
      INTEGER, PARAMETER  :: mi28_preconditioner = 7
      INTEGER, PARAMETER  :: munksgaard_preconditioner = 8
      INTEGER, PARAMETER  :: expanding_band_preconditioner = 9
+     INTEGER, PARAMETER  :: diagonalising_preconditioner = 10
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -192,11 +194,12 @@
 !      2  banded, P = band( Hessian ) with semi-bandwidth %semi_bandwidth
 !      3  re-ordered band, P=band(order(A)) with semi-bandwidth %semi_bandwidth
 !      4  full factorization, P = Hessian, Schnabel-Eskow modification
-!      5  full factorization, P = Hessian, GMPS modification (*not yet *)
+!      5  full factorization, P = Hessian, GMPS modification (*not yet impltd*)
 !      6  incomplete factorization of Hessian, Lin-More'
 !      7  incomplete factorization of Hessian, HSL_MI28
-!      8  incomplete factorization of Hessian, Munskgaard (*not yet *)
+!      8  incomplete factorization of Hessian, Munskgaard (*not yet impltd*)
 !      9  expanding band of Hessian (*not yet implemented*)
+!     10  diagonalizing norm from GALAHAD_DPS (*subproblem_direct only*)
 
        INTEGER :: norm = 1
 
@@ -340,6 +343,10 @@
 !  control parameters for RQS
 
        TYPE ( RQS_control_type ) :: RQS_control
+
+!  control parameters for DPS
+
+       TYPE ( DPS_control_type ) :: DPS_control
 
 !  control parameters for GLRT
 
@@ -487,6 +494,10 @@
 
        TYPE ( RQS_inform_type ) :: RQS_inform
 
+!  inform parameters for DPS
+
+       TYPE ( DPS_inform_type ) :: DPS_inform
+
 !  inform parameters for GLRT
 
        TYPE ( GLRT_inform_type ) :: GLRT_inform
@@ -514,7 +525,7 @@
        INTEGER :: eval_status, out, start_print, stop_print, advanced_start_iter
        INTEGER :: print_level, print_level_glrt, print_level_rqs, ref( 1 )
        INTEGER :: len_history, ibound, ipoint, icp, lbfgs_mem, max_hist
-       INTEGER :: nprec, nskip_lbfgs, nskip_prec, non_monotone_history
+       INTEGER :: nprec, nskip_lbfgs, nskip_prec, non_monotone_history, it_succ
        INTEGER :: print_gap, max_diffs, latest_diff, total_diffs, lwork_svd
        REAL :: time_start, time_record, time_now
        REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
@@ -524,10 +535,10 @@
        REAL ( KIND = wp ) :: stop_g, s_new_norm, rho_g, s_norm_successful
        LOGICAL :: printi, printt, printd, printm
        LOGICAL :: print_iteration_header, print_1st_header
-       LOGICAL :: set_printi, set_printt, set_printd, set_printm
+       LOGICAL :: set_printi, set_printt, set_printd, set_printm, use_dps
        LOGICAL :: monotone, new_h, got_h, poor_model, f_is_nan, non_trivial_p
        LOGICAL :: reverse_f, reverse_g, reverse_h, reverse_hprod, reverse_prec
-       CHARACTER ( LEN = 1 ) :: negcur, bndry, perturb, hard, accept
+       CHARACTER ( LEN = 1 ) :: negcur, perturb, hard, accept
        TYPE ( RQS_history_type ), DIMENSION( history_max ) :: history
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: PAST
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_best
@@ -563,6 +574,10 @@
 !  data for RQS
 
        TYPE ( RQS_data_type ) :: RQS_data
+
+!  data for DPS
+
+       TYPE ( DPS_data_type ) :: DPS_data
 
 !  data for GLRT
 
@@ -619,6 +634,12 @@
      CALL RQS_initialize( data%RQS_data, control%RQS_control,                  &
                           inform%RQS_inform )
      control%RQS_control%prefix = '" - RQS:"                     '
+
+!  initalize DPS components
+
+     CALL DPS_initialize( data%DPS_data, control%DPS_control,                  &
+                          inform%DPS_inform )
+     control%DPS_control%prefix = '" - DPS:"                     '
 
 !  initalize GLRT components
 
@@ -990,11 +1011,13 @@
 
      IF ( PRESENT( alt_specname ) ) THEN
        CALL RQS_read_specfile( control%RQS_control, device,                    &
-                                alt_specname = TRIM( alt_specname ) // '-RQS' )
+              alt_specname = TRIM( alt_specname ) // '-RQS' )
+       CALL DPS_read_specfile( control%DPS_control, device,                    &
+              alt_specname = TRIM( alt_specname ) // '-DPS' )
        CALL GLRT_read_specfile( control%GLRT_control, device,                  &
-                                alt_specname = TRIM( alt_specname ) // '-GLRT' )
-       CALL PSLS_read_specfile( control%PSLS_control, device,                  &
-                                alt_specname = TRIM( alt_specname ) // '-PSLS' )
+              alt_specname = TRIM( alt_specname ) // '-GLRT' )
+       CALL  PSLS_read_specfile( control%PSLS_control, device,                 &
+              alt_specname = TRIM( alt_specname ) // '-PSLS' )
        CALL LMS_read_specfile( control%LMS_control, device,                    &
               alt_specname = TRIM( alt_specname ) // '-LMS' )
        CALL LMS_read_specfile( control%LMS_control_prec, device,               &
@@ -1003,6 +1026,7 @@
               alt_specname = TRIM( alt_specname ) // '-SHA' )
      ELSE
        CALL RQS_read_specfile( control%RQS_control, device )
+       CALL DPS_read_specfile( control%DPS_control, device )
        CALL GLRT_read_specfile( control%GLRT_control, device )
        CALL PSLS_read_specfile( control%PSLS_control, device )
        CALL LMS_read_specfile( control%LMS_control, device )
@@ -1544,6 +1568,7 @@
      data%negcur = ' '
      data%s_norm_successful = one
      inform%max_entries_factors = 0
+     data%it_succ = 0
 
 !  decide how much reverse communication is required
 
@@ -1574,6 +1599,18 @@
          data%control%model = identity_hessian_model
      END IF
      data%reverse_prec = .NOT. PRESENT( eval_PREC )
+     IF ( data%control%norm == diagonalising_preconditioner ) THEN
+       IF ( data%control%subproblem_direct ) THEN
+         data%use_dps = .TRUE.
+       ELSE
+         IF ( control%error > 0 ) WRITE(  control%error,                       &
+           "( A, ' diagonalizing norm not avaible with iterative',             &
+          & ' subproblem solution' )" ) prefix
+         inform%status = GALAHAD_not_yet_implemented ; GO TO 990
+       END IF
+     ELSE
+       data%use_dps = .FALSE.
+     END IF
 
      data%nprec = data%control%norm
      data%control%GLRT_control%unitm = data%nprec == identity_preconditioner
@@ -1976,7 +2013,7 @@
              char_facts =                                                      &
                ADJUSTR( STRING_integer_6( inform%RQS_inform%factorizations ) )
              WRITE( data%out, 2120 ) prefix, char_iter, data%accept,           &
-                data%hard, data%negcur, data%bndry, inform%obj, inform%norm_g, &
+                data%hard, data%negcur, inform%obj, inform%norm_g,             &
                 data%ratio, data%weight, inform%RQS_inform%x_norm,             &
                 char_facts, data%clock_now
            ELSE
@@ -1984,13 +2021,13 @@
              char_sit2 =                                                       &
                ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter_pass2 ) )
              WRITE( data%out, 2130 ) prefix, char_iter, data%accept,           &
-                data%negcur, data%bndry, data%perturb, inform%obj,             &
+                data%negcur, data%perturb, inform%obj,                         &
                 inform%norm_g, data%ratio, data%weight,                        &
                 inform%GLRT_inform%xpo_norm,                                   &
                 char_sit, char_sit2, data%clock_now
            END IF
          ELSE
-           WRITE( data%out, 2140 ) prefix,                                   &
+           WRITE( data%out, 2140 ) prefix,                                     &
              char_iter, inform%obj, inform%norm_g, data%weight
          END IF
        END IF
@@ -2138,23 +2175,25 @@
 
        IF ( data%new_h ) THEN
          IF ( data%control%subproblem_direct ) THEN
+           IF ( .NOT. data%use_dps ) THEN
 
 !  build the preconditioner
 
-           IF ( data%nprec > 0 .AND. data%control%hessian_available ) THEN
-             IF ( data%printt ) WRITE( data%out,                               &
-                   "( A, ' Computing preconditioner' )" ) prefix
-             CALL PSLS_build( nlp%H, data%P, data%PSLS_data,                   &
-                              data%control%PSLS_control, inform%PSLS_inform )
+             IF ( data%nprec > 0 .AND. data%control%hessian_available ) THEN
+               IF ( data%printt ) WRITE( data%out,                             &
+                     "( A, ' Computing preconditioner' )" ) prefix
+               CALL PSLS_build( nlp%H, data%P, data%PSLS_data,                 &
+                                data%control%PSLS_control, inform%PSLS_inform )
 
 !  check for error returns
 
-             data%non_trivial_p = inform%PSLS_inform%status == GALAHAD_ok
-             IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
-           ELSE
-             data%non_trivial_p = .FALSE.
+               data%non_trivial_p = inform%PSLS_inform%status == GALAHAD_ok
+               IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
+             ELSE
+               data%non_trivial_p = .FALSE.
+             END IF
+             data%control%PSLS_control%new_structure = .FALSE.
            END IF
-           data%control%PSLS_control%new_structure = .FALSE.
          ELSE
            IF ( data%nskip_prec > nskip_prec_max ) THEN
              IF ( data%nprec > 0 .AND. data%control%hessian_available ) THEN
@@ -2315,6 +2354,7 @@
 !  ==========================================================
 
        IF ( inform%iter > 1 ) THEN
+         data%old_weight = data%weight
 !        IF ( .FALSE. ) THEN
          IF ( data%control%quadratic_ratio_test ) THEN
            IF ( data%ratio < data%control%eta_successful ) THEN
@@ -2326,7 +2366,6 @@
            END IF
          ELSE
 !write(6,*) ' sths ', data%hstbs
-           data%old_weight = data%weight
            CALL ARC_adjust_weight( data%weight, data%model, data%stg,          &
                                    data%hstbs,  data%s_norm, data%ratio,       &
                                    data%control )
@@ -2369,159 +2408,234 @@
 
        IF ( data%control%subproblem_direct ) THEN
 
-!  estimate lambda for the next subproblem
+!  norm constructed by the DPS package
 
-         IF ( inform%iter > 1 ) THEN
-
-!  only the weight for the next problem differs from the current one
-
-           IF ( data%poor_model ) THEN
-
-!  if there is a history of points with smaller norms, record them
-
-             IF ( inform%RQS_inform%len_history > 0 ) THEN
-               data%len_history = inform%RQS_inform%len_history
-               data%history( : data%len_history )                              &
-                 = inform%RQS_inform%history( : data%len_history )
-             ELSE
-               data%len_history = 0
-             END IF
-
-!  set the lower bound and estimate of the next multiplier to the current
-!  values, as Newton will converge rapidly from here
-
-             data%control%RQS_control%lower = inform%RQS_inform%multiplier
-             data%control%RQS_control%initial_multiplier =                     &
-               data%control%RQS_control%lower
-             data%control%RQS_control%use_initial_multiplier = .TRUE.
-
-!  if the hard case was possible, slightly perturb the multiplier
-
-             IF ( inform%RQS_inform%pole > zero )                              &
-               data%control%RQS_control%initial_multiplier =                   &
-                 data%control%RQS_control%initial_multiplier                   &
-                   + MAX( inform%RQS_inform%pole, one ) * epsmch ** half
-
-!  look through the history to see if a better starting value is available
-
-             DO i = data%len_history, 1, - 1
-               IF ( data%history( i )%lambda / data%history( i )%x_norm        &
-                    > data%weight ) THEN
-                 data%control%RQS_control%initial_multiplier =                 &
-                   data%history( i )%lambda
-               ELSE
-                 EXIT
-               END IF
-             END DO
-             data%control%RQS_control%initialize_approx_eigenvector = .FALSE.
-!            data%control%RQS_control%initialize_approx_eigenvector = .TRUE.
-
-!  the next problem is likley different - try to guess a good initial
-!  value for the next multiplier
-
-           ELSE
-             data%control%RQS_control%lower = zero
-             data%control%RQS_control%use_initial_multiplier = .TRUE.
-             IF ( inform%RQS_inform%multiplier == zero ) THEN
-               data%control%RQS_control%initial_multiplier = zero
-             ELSE
-               data%control%RQS_control%initial_multiplier =                   &
-                 inform%RQS_inform%multiplier *                                &
-                   ( data%old_weight / data%weight ) +                         &
-                 inform%RQS_inform%pole *                                      &
-                 ( one - ( data%old_weight / data%weight ) )
-               IF ( inform%RQS_inform%pole > zero )                            &
-                 data%control%RQS_control%initial_multiplier =                 &
-                   data%control%RQS_control%initial_multiplier                 &
-                     + MAX( inform%RQS_inform%pole, one ) * epsmch ** half
-             END IF
-!            data%control%RQS_control%initialize_approx_eigenvector = .TRUE.
-           END IF
-         END IF
+         IF ( data%use_dps ) THEN
 
 !  refactorize the Hessian if it has changed
 
-         IF ( data%new_h ) THEN
-           IF ( data%nskip_prec > nskip_prec_max ) THEN
+           IF ( data%new_h ) THEN
              IF ( inform%iter <= 1 )THEN
-               data%control%RQS_control%new_h = 2
+               data%control%DPS_control%new_h = 2
              ELSE
-               data%control%RQS_control%new_m = 1
-               data%control%RQS_control%new_h = 1
+               data%control%DPS_control%new_h = 1
              END IF
-             data%nskip_prec = 0
            ELSE
-             data%control%RQS_control%new_m = 0
-             data%control%RQS_control%new_h = 0
+             data%control%DPS_control%new_h = 0
            END IF
-         END IF
 
 !  Solve the regularization subproblem
 !  ...................................
 
-         data%model = zero
-         facts_this_solve = inform%RQS_inform%factorizations
+           data%model = zero
+           IF ( data%poor_model ) THEN
+             CALL DPS_resolve( nlp%n, data%S( : nlp%n ), data%DPS_data,        &
+                               data%control%DPS_control, inform%DPS_inform,    &
+                               sigma = data%weight, p = three )
+             facts_this_solve = 0
+           ELSE
+             CALL DPS_solve( nlp%n, nlp%H, nlp%G( : nlp%n ), data%model,       &
+                             data%S( : nlp%n ), data%DPS_data,                 &
+                             data%control%DPS_control, inform%DPS_inform,      &
+                             sigma = data%weight, p = three )
 
-         IF ( data%non_trivial_p ) THEN
-           CALL RQS_solve( nlp%n, three, data%weight, data%model,              &
-                           nlp%G( : nlp%n ),                                   &
-                           nlp%H, data%S( : nlp%n ), data%RQS_data,            &
-                           data%control%RQS_control, inform%RQS_inform,        &
-                           M = data%P )
-         ELSE
-           CALL RQS_solve( nlp%n, three, data%weight, data%model,              &
-                           nlp%G( : nlp%n ),                                   &
-                           nlp%H, data%S( : nlp%n ), data%RQS_data,            &
-                           data%control%RQS_control, inform%RQS_inform )
-         END IF
-
-!write(6,*) data%S( : nlp%n )
+             facts_this_solve = 1
+             data%it_succ = data%it_succ + 1
+           END IF
 
 !  check for successful convergence
 
-!write(6,*) inform%RQS_inform%status, inform%RQS_inform%x_norm
-         IF ( inform%RQS_inform%status < 0 .AND.                               &
-              inform%RQS_inform%status /= GALAHAD_error_ill_conditioned ) THEN
-           IF ( data%printt ) WRITE( data%out, "( /,                           &
-          &    A, ' Error return from RQS, status = ', I0 )" ) prefix,         &
-             inform%RQS_inform%status
-           inform%status = inform%RQS_inform%status
-           GO TO 900
-         END IF
-         data%model = inform%RQS_inform%obj_regularized
-         IF ( inform%RQS_inform%hard_case ) data%hard = 'h'
-         facts_this_solve = inform%RQS_inform%factorizations - facts_this_solve
-!        inform%factorization_average = ( inform%factorization_average *       &
-!         ( inform%iter - 1 ) + inform%RQS_inform%factorizations ) / inform%iter
-!        inform%factorization_max =                                            &
-!          MAX( inform%factorization_max, inform%RQS_inform%factorizations )
-         inform%factorization_average =                                        &
-           inform%RQS_inform%factorizations / inform%iter
-         inform%factorization_max =                                            &
-           MAX( inform%factorization_max, facts_this_solve )
-         inform%max_entries_factors = MAX( inform%max_entries_factors,         &
-                                         inform%RQS_inform%max_entries_factors )
+!  check for successful convergence
 
-         IF ( inform%RQS_inform%pole > zero ) THEN
-           data%negcur = 'n'
+           IF ( inform%DPS_inform%status < 0 .AND.                             &
+                inform%DPS_inform%status /= GALAHAD_error_ill_conditioned ) THEN
+             IF ( data%printt ) WRITE( data%out, "( /,                         &
+            &    A, ' Error return from DPS, status = ', I0 )" ) prefix,       &
+               inform%DPS_inform%status
+             inform%status = inform%DPS_inform%status ; GO TO 900
+           END IF
+
+!  record subproblem solution information
+
+           data%model = inform%DPS_inform%obj_regularized
+           data%s_norm = inform%DPS_inform%x_norm
+           IF ( inform%DPS_inform%hard_case ) data%hard = 'h'
+!          inform%factorization_average = ( inform%factorization_average *     &
+!           ( inform%iter - 1 ) + inform%RQS_inform%factorizations )/inform%iter
+!          inform%factorization_max =                                          &
+!            MAX( inform%factorization_max, inform%RQS_inform%factorizations )
+           inform%factorization_average = data%it_succ / inform%iter
+           inform%factorization_max =                                          &
+             MAX( inform%factorization_max, facts_this_solve )
+           inform%max_entries_factors = MAX( inform%max_entries_factors,       &
+                inform%DPS_inform%SLS_inform%entries_in_factors )
+           IF ( inform%DPS_inform%pole > zero ) THEN
+             data%negcur = 'n'
+           ELSE
+             data%negcur = ' '
+           END IF
+
+           IF ( inform%DPS_inform%hard_case ) THEN
+             data%hard = 'h'
+           ELSE
+             data%hard = ' '
+           END IF
+
+           GO TO 400
+
+!  other norms
+
          ELSE
-           data%negcur = ' '
-         END IF
 
-         data%s_norm = inform%RQS_inform%x_norm
-         IF ( ABS( data%weight - data%s_norm ) <= 1.0D-8 ) THEN
-           data%bndry = 'b'
-         ELSE
-           data%bndry = ' '
-         END IF
+!  estimate lambda for the next subproblem
 
-         IF ( inform%RQS_inform%hard_case ) THEN
-           data%hard = 'h'
-         ELSE
-           data%hard = ' '
-         END IF
+           IF ( inform%iter > 1 ) THEN
 
-         GO TO 400
+!  only the weight for the next problem differs from the current one
+
+             IF ( data%poor_model ) THEN
+
+!  if there is a history of points with smaller norms, record them
+
+               IF ( inform%RQS_inform%len_history > 0 ) THEN
+                 data%len_history = inform%RQS_inform%len_history
+                 data%history( : data%len_history )                            &
+                   = inform%RQS_inform%history( : data%len_history )
+               ELSE
+                 data%len_history = 0
+               END IF
+
+!  set the lower bound and estimate of the next multiplier to the current
+!  values, as Newton will converge rapidly from here
+
+               data%control%RQS_control%lower = inform%RQS_inform%multiplier
+               data%control%RQS_control%initial_multiplier =                   &
+                 data%control%RQS_control%lower
+               data%control%RQS_control%use_initial_multiplier = .TRUE.
+
+!  if the hard case was possible, slightly perturb the multiplier
+
+               IF ( inform%RQS_inform%pole > zero )                            &
+                 data%control%RQS_control%initial_multiplier =                 &
+                   data%control%RQS_control%initial_multiplier                 &
+                     + MAX( inform%RQS_inform%pole, one ) * epsmch ** half
+
+!  look through the history to see if a better starting value is available
+
+               DO i = data%len_history, 1, - 1
+                 IF ( data%history( i )%lambda / data%history( i )%x_norm      &
+                      > data%weight ) THEN
+                   data%control%RQS_control%initial_multiplier =               &
+                     data%history( i )%lambda
+                 ELSE
+                   EXIT
+                 END IF
+               END DO
+               data%control%RQS_control%initialize_approx_eigenvector = .FALSE.
+!              data%control%RQS_control%initialize_approx_eigenvector = .TRUE.
+
+!  the next problem is likley different - try to guess a good initial
+!  value for the next multiplier
+
+             ELSE
+               data%control%RQS_control%lower = zero
+               data%control%RQS_control%use_initial_multiplier = .TRUE.
+               IF ( inform%RQS_inform%multiplier == zero ) THEN
+                 data%control%RQS_control%initial_multiplier = zero
+               ELSE
+                 data%control%RQS_control%initial_multiplier =                 &
+                   inform%RQS_inform%multiplier *                              &
+                     ( data%old_weight / data%weight ) +                       &
+                   inform%RQS_inform%pole *                                    &
+                   ( one - ( data%old_weight / data%weight ) )
+                 IF ( inform%RQS_inform%pole > zero )                          &
+                   data%control%RQS_control%initial_multiplier =               &
+                     data%control%RQS_control%initial_multiplier               &
+                       + MAX( inform%RQS_inform%pole, one ) * epsmch ** half
+               END IF
+!              data%control%RQS_control%initialize_approx_eigenvector = .TRUE.
+             END IF
+           END IF
+
+!  refactorize the Hessian if it has changed
+
+           IF ( data%new_h ) THEN
+             IF ( data%nskip_prec > nskip_prec_max ) THEN
+               IF ( inform%iter <= 1 )THEN
+                 data%control%RQS_control%new_h = 2
+               ELSE
+                 data%control%RQS_control%new_m = 1
+                 data%control%RQS_control%new_h = 1
+               END IF
+               data%nskip_prec = 0
+             ELSE
+               data%control%RQS_control%new_m = 0
+               data%control%RQS_control%new_h = 0
+             END IF
+           END IF
+
+!  Solve the regularization subproblem
+!  ...................................
+
+           data%model = zero
+           facts_this_solve = inform%RQS_inform%factorizations
+
+           IF ( data%non_trivial_p ) THEN
+             CALL RQS_solve( nlp%n, three, data%weight, data%model,            &
+                             nlp%G( : nlp%n ),                                 &
+                             nlp%H, data%S( : nlp%n ), data%RQS_data,          &
+                             data%control%RQS_control, inform%RQS_inform,      &
+                             M = data%P )
+           ELSE
+             CALL RQS_solve( nlp%n, three, data%weight, data%model,            &
+                             nlp%G( : nlp%n ),                                 &
+                             nlp%H, data%S( : nlp%n ), data%RQS_data,          &
+                             data%control%RQS_control, inform%RQS_inform )
+           END IF
+
+!  check for successful convergence
+
+           IF ( inform%RQS_inform%status < 0 .AND.                             &
+                inform%RQS_inform%status /= GALAHAD_error_ill_conditioned ) THEN
+             IF ( data%printt ) WRITE( data%out, "( /,                         &
+            &    A, ' Error return from RQS, status = ', I0 )" ) prefix,       &
+               inform%RQS_inform%status
+             inform%status = inform%RQS_inform%status
+             GO TO 900
+           END IF
+
+!  record subproblem solution information
+
+           data%model = inform%RQS_inform%obj_regularized
+           data%s_norm = inform%RQS_inform%x_norm
+           IF ( inform%RQS_inform%hard_case ) data%hard = 'h'
+           facts_this_solve                                                    &
+             = inform%RQS_inform%factorizations - facts_this_solve
+!          inform%factorization_average = ( inform%factorization_average *     &
+!           ( inform%iter - 1 ) + inform%RQS_inform%factorizations )/inform%iter
+!          inform%factorization_max =                                          &
+!            MAX( inform%factorization_max, inform%RQS_inform%factorizations )
+           inform%factorization_average =                                      &
+             inform%RQS_inform%factorizations / inform%iter
+           inform%factorization_max =                                          &
+             MAX( inform%factorization_max, facts_this_solve )
+           inform%max_entries_factors = MAX( inform%max_entries_factors,       &
+                                        inform%RQS_inform%max_entries_factors )
+
+           IF ( inform%RQS_inform%pole > zero ) THEN
+             data%negcur = 'n'
+           ELSE
+             data%negcur = ' '
+           END IF
+
+           IF ( inform%RQS_inform%hard_case ) THEN
+             data%hard = 'h'
+           ELSE
+             data%hard = ' '
+           END IF
+
+           GO TO 400
+         END IF
        END IF
 
 !  3b. Iterative solution
@@ -2692,7 +2806,6 @@
        END IF
 
        data%s_norm = inform%GLRT_inform%xpo_norm
-       data%bndry = ' '
 
 !  Record the total number of Lanczos iterations
 
@@ -2825,7 +2938,7 @@
                ADJUSTR( STRING_integer_6( inform%RQS_inform%factorizations ) )
              WRITE( data%out,  "( A, A6, 3A1, '     NaN         -  ',          &
             &  '    - Inf ',  2ES8.1, A7, F12.2 )" )                           &
-                prefix, char_iter, data%hard, data%negcur, data%bndry,         &
+                prefix, char_iter, data%hard, data%negcur,                     &
                 data%weight, inform%RQS_inform%x_norm,                         &
                 char_facts, data%clock_now
            ELSE
@@ -2834,7 +2947,7 @@
                 ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter_pass2 ) )
              WRITE( data%out, "( A, A6, 3A1, '     NaN         -  ',           &
             &  '    - Inf ', 2ES8.1, 2A7, F11.2 )" ) prefix,                   &
-                char_iter, data%negcur, data%bndry,  data%perturb,             &
+                char_iter, data%negcur, data%perturb,                          &
                 data%weight, inform%GLRT_inform%xpo_norm,                      &
                 char_sit, char_sit2, data%clock_now
            END IF
@@ -3009,8 +3122,7 @@
                char_facts =                                                    &
                  ADJUSTR( STRING_integer_6( inform%RQS_inform%factorizations ) )
                WRITE( data%out, 2120 ) prefix, char_iter, data%accept,         &
-                  data%hard,                                                   &
-                  data%negcur, data%bndry, data%f_trial, inform%norm_g,        &
+                  data%hard, data%negcur, data%f_trial, inform%norm_g,         &
                   data%ratio,  data%old_weight, inform%RQS_inform%x_norm,      &
                   char_facts, data%clock_now
                 inform%RQS_inform%factorizations = 0
@@ -3019,8 +3131,7 @@
                char_sit2 =                                                     &
                  ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter_pass2 ) )
                WRITE( data%out, 2130 ) prefix, char_iter, data%accept,         &
-                  data%negcur,                                                 &
-                  data%bndry, data%perturb, data%f_trial, inform%norm_g,       &
+                  data%negcur, data%perturb, data%f_trial, inform%norm_g,      &
                   data%ratio, data%old_weight, inform%GLRT_inform%xpo_norm,    &
                   char_sit, char_sit2, data%clock_now
                 inform%GLRT_inform%iter = 0
@@ -3330,6 +3441,14 @@
                 lin_more_preconditioner, mi28_preconditioner )
            WRITE(data%out,"( A, '  Modified full matrix regularization used')")&
              prefix
+         CASE (  diagonalising_preconditioner )
+           IF (  data%control%DPS_control%goldfarb ) THEN
+             WRITE(data%out, "( A,                                             &
+            &  '  Goldfarb diagonalising-norm regularization used')")  prefix
+           ELSE
+             WRITE(data%out, "( A, '  Modified absolute-value ',               &
+            &   'diagonalising-norm regularization used')")  prefix
+           END IF
          END SELECT
          WRITE( data%out, "( A, '  Number of factorization = ', I0,            &
         &     ', factorization time = ', F0.2, ' seconds'  )" ) prefix,        &
@@ -3402,17 +3521,14 @@
      RETURN
 
  990 CONTINUE
-!write(6,*) nlp%n, g_min, moved
-!write(6,*) ' ||x||_inf = ', x_inf
-
      CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
 !    IF ( data%printi ) WRITE( data%out, "( A, ' Inform = ', I0, ' Stopping')")&
 !      prefix, inform%status
-    IF ( data%printi ) THEN
-       CALL SYMBOLS_status( inform%status, data%out, prefix, 'ARC_solve' )
-       WRITE( data%out, "( ' ' )" )
+     IF ( control%error > 0 ) THEN
+       CALL SYMBOLS_status( inform%status, control%error, prefix, 'ARC_solve' )
+       WRITE( control%error, "( ' ' )" )
      END IF
      RETURN
 
@@ -3430,15 +3546,15 @@
  2030 FORMAT(  A, 1X, I10, 2ES12.4 )
  2040 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
  2050 FORMAT( A, ' .          ........... ...........' )
- 2090 FORMAT( A, '        (a=accept r=reject b=boundary',                      &
+ 2090 FORMAT( A, '        (a=accept r=reject',                                 &
                  ' n=-ve curvature h=hard case)' )
  2100 FORMAT( A, '    It           f        grad    ',                         &
              ' ratio   weight  step   # fact        time' )
  2110 FORMAT( A, '    It           f        grad    ',                         &
              ' ratio   weight   step  pass 1 pass 2       time' )
- 2120 FORMAT( A, A6, 1X, 4A1, ES12.4, ES9.2, ES9.1, 2ES8.1, A7, F12.2 )
- 2130 FORMAT( A, A6, 1X, 4A1, ES12.4, ES9.2, ES9.1, 2ES8.1, 2A7, F11.2 )
- 2140 FORMAT( A, A6, 5X, ES12.4, ES9.2, 9X, ES8.1 )
+ 2120 FORMAT( A, A6, 1X, 3A1, ES12.4, ES9.2, ES9.1, 2ES8.1, A7, F12.2 )
+ 2130 FORMAT( A, A6, 1X, 3A1, ES12.4, ES9.2, ES9.1, 2ES8.1, 2A7, F11.2 )
+ 2140 FORMAT( A, A6, 4X, ES12.4, ES9.2, 9X, ES8.1 )
 
  !  End of subroutine ARC_solve
 

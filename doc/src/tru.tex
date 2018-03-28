@@ -35,6 +35,7 @@ not the derivatives themselves, that may also be exploited.
 {\tt GALAHAD\_PSLS},
 {\tt GALAHAD\_GLTR},
 {\tt GALAHAD\_TRS},
+{\tt GALAHAD\_DPS},
 {\tt GALAHAD\_LMS},
 {\tt GALAHAD\_SHA},
 {\tt GALAHAD\_SPACE} and
@@ -421,6 +422,14 @@ inner model minimization.  Possible values are:
         using the Lin-Mor\'{e} method.
 \itt{7} $\bmP$ will be that from the incomplete factorization of the Hessian
         using the method implemented by HSL\_MI28.
+\itt{8} $\bmP$ will be that from the incomplete factorization of the Hessian
+        using Munksgaars's method. {\bf Not yet implemented.}
+\itt{9} $\bmP$ will be that from an expanding band of the Hessian.
+        {\bf Not yet implemented.}
+\itt{10} $\bmP$ will be that which gives a diagonalising norm as implemented in
+         {\tt \packagename\_DPS}.
+          Note that this is currently {\bf only} available
+         when {\tt subproblem\_direct = .TRUE.} (see below).
 \end{description}
 The default is {\tt norm = 1}.
 
@@ -666,6 +675,21 @@ and
 {\tt TRS\_control\%new\_h}
 may be changed by \solver).
 
+\itt{DPS\_control} is a scalar variable of type
+{\tt DPS\_control\_type}
+whose components are used to control the
+direct trust-region step calculation, in a diagonalising norm, (if any),
+performed by the package
+{\tt \libraryname\_DPS}.
+See the specification sheet for the package
+{\tt \libraryname\_DPS}
+for details, and appropriate default values
+(but note that values of
+{\tt DPS\_control\%initial\_multiplier}
+and
+{\tt DPS\_control\%new\_h}
+may be changed by \solver).
+
 \itt{LMS\_control} and \itt{LMS\_control\_prec}
 are scalar variables of type
 {\tt LMS\_control\_type}
@@ -835,6 +859,16 @@ of the direct solution stages of the algorithm performed by the package
 {\tt \libraryname\_TRS}.
 See the specification sheet for the package
 {\tt \libraryname\_TRS}
+for details.
+
+\itt{DPS\_inform} is a scalar variable of type
+{\tt DPS\_inform\_type}
+whose components give information about the progress and needs
+of the direct solution, in a diagonalising norm,
+stages of the algorithm performed by the package
+{\tt \libraryname\_DPS}.
+See the specification sheet for the package
+{\tt \libraryname\_DPS}
 for details.
 
 \itt{LMS\_inform} is a scalar variable of type
@@ -1690,7 +1724,8 @@ This extra output includes residuals of the linear systems solved, and,
 for larger values of {\tt control\%print\_level}, values of the variables
 and gradients. Further details concerning the attempted solution of the models
 may be obtained by increasing
-{\tt control\%TRS\_control\%print\_level}
+{\tt control\%TRS\_control\%print\_level},
+{\tt control\%DPS\_control\%print\_level}
 and
 {\tt control\%GLTR\_control\%print\_level},
 while details about factorizations are available
@@ -1698,8 +1733,9 @@ by increasing
 {\tt control\%PSLS\_control\%print\_level}.
 See the specification sheets for the packages
 {\tt \libraryname\_GLTR},
-{\tt \libraryname\_PSLS} and
-{\tt \libraryname\_TRS}
+{\tt \libraryname\_PSLS},
+{\tt \libraryname\_TRS} and
+{\tt \libraryname\_DPS}
 for details.
 
 %%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
@@ -1717,6 +1753,7 @@ for details.
 {\tt GALAHAD\_PSLS},
 {\tt GALAHAD\_GLTR},
 {\tt GALAHAD\_TRS},
+{\tt GALAHAD\_DPS},
 {\tt GALAHAD\_LMS},
 {\tt GALAHAD\_SHA},
 {\tt GALAHAD\_SPACE} and
@@ -1767,7 +1804,8 @@ approach is based on the knowledge that the required solution
 satisfies the linear system of equations $(\bmB_k + \lambda_k \bmI) \bms_k
 = - \nabla_x f(\bmx_k)$ involving a scalar Lagrange multiplier $\lambda_k$.
 This multiplier is found by uni-variate root finding, using a safeguarded
-Newton-like process, by {\tt \libraryname\_TRS}. The iterative approach
+Newton-like process, by {\tt \libraryname\_TRS} or {\tt \libraryname\_DPS}
+(depending on the norm chosen). The iterative approach
 uses {\tt \libraryname\_GLTR}, and is best accelerated by preconditioning
 with good approximations to $\bmB_k$ using {\tt \libraryname\_PSLS}. The
 iterative approach has the advantage that only matrix-vector products
@@ -1844,4 +1882,3 @@ which is a suitable approximation to the inverse of the Hessian:
 
 
 \end{document}
-

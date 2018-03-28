@@ -28,6 +28,7 @@
      USE GALAHAD_PSLS_double
      USE GALAHAD_GLTR_double
      USE GALAHAD_TRS_double
+     USE GALAHAD_DPS_double
      USE GALAHAD_LMS_double
      USE GALAHAD_SEC_double
      USE GALAHAD_SHA_double
@@ -120,6 +121,7 @@
      INTEGER, PARAMETER  :: mi28_preconditioner = 7
      INTEGER, PARAMETER  :: munksgaard_preconditioner = 8
      INTEGER, PARAMETER  :: expanding_band_preconditioner = 9
+     INTEGER, PARAMETER  :: diagonalising_preconditioner = 10
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -197,11 +199,12 @@
 !      2  banded, P = band( Hessian ) with semi-bandwidth %semi_bandwidth
 !      3  re-ordered band, P=band(order(A)) with semi-bandwidth %semi_bandwidth
 !      4  full factorization, P = Hessian, Schnabel-Eskow modification
-!      5  full factorization, P = Hessian, GMPS modification (*not yet *)
+!      5  full factorization, P = Hessian, GMPS modification (*not yet impltd*)
 !      6  incomplete factorization of Hessian, Lin-More'
 !      7  incomplete factorization of Hessian, HSL_MI28
-!      8  incomplete factorization of Hessian, Munskgaard (*not yet *)
+!      8  incomplete factorization of Hessian, Munskgaard (*not yet impltd*)
 !      9  expanding band of Hessian (*not yet implemented*)
+!     10  diagonalizing norm from GALAHAD_DPS (*subproblem_direct only*)
 
        INTEGER :: norm = 1
 
@@ -331,6 +334,10 @@
 !  control parameters for TRS
 
        TYPE ( TRS_control_type ) :: TRS_control
+
+!  control parameters for DPS
+
+       TYPE ( DPS_control_type ) :: DPS_control
 
 !  control parameters for GLTR
 
@@ -482,6 +489,10 @@
 
        TYPE ( TRS_inform_type ) :: TRS_inform
 
+!  inform parameters for DPS
+
+       TYPE ( DPS_inform_type ) :: DPS_inform
+
 !  inform parameters for GLTR
 
        TYPE ( GLTR_info_type ) :: GLTR_inform
@@ -513,7 +524,7 @@
        INTEGER :: eval_status, out, start_print, stop_print, advanced_start_iter
        INTEGER :: print_level, print_level_gltr, print_level_trs, ref( 1 )
        INTEGER :: len_history, ibound, ipoint, icp, lbfgs_mem, max_hist
-       INTEGER :: nprec, nskip_lbfgs, nskip_prec, non_monotone_history
+       INTEGER :: nprec, nskip_lbfgs, nskip_prec, non_monotone_history, it_succ
        INTEGER :: print_gap, max_diffs, latest_diff, total_diffs, lwork_svd
        REAL :: time_start, time_record, time_now
        REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
@@ -523,7 +534,7 @@
        REAL ( KIND = wp ) :: stop_g, s_new_norm, rho_g
        LOGICAL :: printi, printt, printd, printm
        LOGICAL :: print_iteration_header, print_1st_header
-       LOGICAL :: set_printi, set_printt, set_printd, set_printm
+       LOGICAL :: set_printi, set_printt, set_printd, set_printm, use_dps
        LOGICAL :: monotone, new_h, got_h, poor_model, f_is_nan, non_trivial_p
        LOGICAL :: reverse_f, reverse_g, reverse_h, reverse_hprod, reverse_prec
        CHARACTER ( LEN = 1 ) :: negcur = ' '
@@ -566,6 +577,10 @@
 !  data for TRS
 
        TYPE ( TRS_data_type ) :: TRS_data
+
+!  data for DPS
+
+       TYPE ( DPS_data_type ) :: DPS_data
 
 !  data for GLTR
 
@@ -622,6 +637,12 @@
      CALL TRS_initialize( data%TRS_data, control%TRS_control,                  &
                           inform%TRS_inform )
      control%TRS_control%prefix = '" - TRS:"                     '
+
+!  initalize DPS components
+
+     CALL DPS_initialize( data%DPS_data, control%DPS_control,                  &
+                          inform%DPS_inform )
+     control%DPS_control%prefix = '" - DPS:"                     '
 
 !  initalize GLTR components
 
@@ -982,6 +1003,8 @@
      IF ( PRESENT( alt_specname ) ) THEN
        CALL TRS_read_specfile( control%TRS_control, device,                    &
               alt_specname = TRIM( alt_specname ) // '-TRS' )
+       CALL DPS_read_specfile( control%DPS_control, device,                    &
+              alt_specname = TRIM( alt_specname ) // '-DPS' )
        CALL GLTR_read_specfile( control%GLTR_control, device,                  &
               alt_specname = TRIM( alt_specname ) // '-GLTR' )
        CALL PSLS_read_specfile( control%PSLS_control, device,                  &
@@ -996,6 +1019,7 @@
               alt_specname = TRIM( alt_specname ) // '-SHA' )
      ELSE
        CALL TRS_read_specfile( control%TRS_control, device )
+       CALL DPS_read_specfile( control%DPS_control, device )
        CALL GLTR_read_specfile( control%GLTR_control, device )
        CALL PSLS_read_specfile( control%PSLS_control, device )
        CALL LMS_read_specfile( control%LMS_control, device )
@@ -1395,7 +1419,7 @@
 !-----------------------------------------------
 
      INTEGER :: i, j, ic, ir, l, facts_this_solve, info_svd
-     REAL ( KIND = wp ) :: delta, ared, prered, rounding
+     REAL ( KIND = wp ) :: delta, ared, prered, rounding, multiplier
 !    REAL ( KIND = wp ) :: radmin
      REAL ( KIND = wp ) :: tau, tau_1, tau_2, tau_min, tau_max
      LOGICAL :: alive
@@ -1528,7 +1552,7 @@
      data%monotone = data%non_monotone_history == 1
      data%radius = data%control%initial_radius
      data%etat = half * ( data%control%eta_very_successful +                   &
-                  data%control%eta_successful )
+                          data%control%eta_successful )
      data%ometat = one - data%etat
      data%advanced_start_iter = 0
      data%rho_g = two * rho_quad
@@ -1536,6 +1560,7 @@
      data%negcur = ' '
      inform%max_entries_factors = 0
      inform%factorization_average = zero
+     data%it_succ = 0
 
 !  decide how much reverse communication is required
 
@@ -1571,6 +1596,18 @@
          data%control%GLTR_control%steihaug_toint = .TRUE.
      END IF
      data%reverse_prec = .NOT. PRESENT( eval_PREC )
+     IF ( data%control%norm == diagonalising_preconditioner ) THEN
+       IF ( data%control%subproblem_direct ) THEN
+         data%use_dps = .TRUE.
+       ELSE
+         IF ( control%error > 0 ) WRITE(  control%error,                       &
+           "( A, ' diagonalizing norm not avaible with iterative',             &
+          & ' subproblem solution' )" ) prefix
+         inform%status = GALAHAD_not_yet_implemented ; GO TO 990
+       END IF
+     ELSE
+       data%use_dps = .FALSE.
+     END IF
 
      data%nprec = data%control%norm
      data%control%GLTR_control%unitm = data%nprec == identity_preconditioner
@@ -1980,10 +2017,14 @@
            IF ( data%control%subproblem_direct ) THEN
              char_facts =                                                      &
                ADJUSTR( STRING_integer_6( inform%TRS_inform%factorizations ) )
+             IF ( data%use_dps ) THEN
+               multiplier = inform%DPS_inform%multiplier
+             ELSE
+               multiplier = inform%TRS_inform%multiplier
+             END IF
              WRITE( data%out, 2120 ) prefix, char_iter, data%accept,           &
                 data%bndry, data%negcur, data%hard, inform%obj, inform%norm_g, &
-                data%ratio, data%radius, inform%TRS_inform%multiplier,         &
-                char_facts, data%clock_now
+                data%ratio, data%radius, multiplier, char_facts, data%clock_now
            ELSE
              char_sit = ADJUSTR( STRING_integer_6( inform%GLTR_inform%iter ) )
              char_sit2 =                                                       &
@@ -2150,23 +2191,25 @@
 !  if the Hessian has changed, recompute the preconditioner
 
          IF ( data%control%subproblem_direct ) THEN
+           IF ( .NOT. data%use_dps ) THEN
 
 !  build the preconditioner
 
-           IF ( data%nprec > 0 .AND. data%control%hessian_available ) THEN
-             IF ( data%printt ) WRITE( data%out,                               &
-                   "( A, ' Computing preconditioner' )" ) prefix
-             CALL PSLS_build( nlp%H, data%P, data%PSLS_data,                   &
-                              data%control%PSLS_control, inform%PSLS_inform )
+             IF ( data%nprec > 0 .AND. data%control%hessian_available ) THEN
+               IF ( data%printt ) WRITE( data%out,                             &
+                     "( A, ' Computing preconditioner' )" ) prefix
+               CALL PSLS_build( nlp%H, data%P, data%PSLS_data,                 &
+                                data%control%PSLS_control, inform%PSLS_inform )
 
 !  check for error returns
 
-             data%non_trivial_p = inform%PSLS_inform%status == GALAHAD_ok
-             IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
-           ELSE
-             data%non_trivial_p = .FALSE.
+               data%non_trivial_p = inform%PSLS_inform%status == GALAHAD_ok
+               IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
+             ELSE
+               data%non_trivial_p = .FALSE.
+             END IF
+             data%control%PSLS_control%new_structure = .FALSE.
            END IF
-           data%control%PSLS_control%new_structure = .FALSE.
          ELSE
            IF ( data%nskip_prec > nskip_prec_max ) THEN
              IF ( data%nprec > 0 .AND. data%control%hessian_available ) THEN
@@ -2340,7 +2383,7 @@
                           data%U, data%control%sec_control, inform%sec_inform )
              END IF
            END IF
-        END IF
+         END IF
 !write(6,"( ' H_r ', /, ( 5ES12.4 ) )" ) nlp%H%val(:nlp%H%ne)
        END IF
 
@@ -2559,153 +2602,239 @@
 ! data%control%subproblem_direct, SMT_get( nlp%H%type )
        IF ( data%control%subproblem_direct ) THEN
 
-!  estimate Lagrange multipler for the next trust-region subproblem
+!  norm constructed by the DPS package
 
-         IF ( inform%iter > 1 ) THEN
-
-!  only the radius for the next problem differs from the current one
-
-           IF ( data%poor_model ) THEN
-
-!  if there is a history of points with smaller norms, record them
-
-             IF ( inform%TRS_inform%len_history > 0 ) THEN
-               data%len_history = inform%TRS_inform%len_history
-               data%history( : data%len_history )                              &
-                 = inform%TRS_inform%history( : data%len_history )
-             ELSE
-               data%len_history = 0
-             END IF
-
-!  set the lower bound and estimate of the next multiplier to the current
-!  values, as Newton will converge rapidly from here
-
-             data%control%TRS_control%lower = inform%TRS_inform%multiplier
-             data%control%TRS_control%initial_multiplier =                     &
-               data%control%TRS_control%lower
-             data%control%TRS_control%use_initial_multiplier = .TRUE.
-
-!  if the hard case was possible, slightly perturb the multiplier
-
-             IF ( inform%TRS_inform%pole > zero )                              &
-               data%control%TRS_control%initial_multiplier =                   &
-                 data%control%TRS_control%initial_multiplier                   &
-                   + MAX( inform%TRS_inform%pole, one ) * epsmch ** half
-
-!  look through the history to see if a better starting value is available
-
-             DO i = data%len_history, 1, - 1
-               IF ( data%history( i )%x_norm > data%radius ) THEN
-                 data%control%TRS_control%initial_multiplier =                 &
-                   data%history( i )%lambda
-               ELSE
-                 EXIT
-               END IF
-             END DO
-             data%control%TRS_control%initialize_approx_eigenvector = .FALSE.
-!            data%control%TRS_control%initialize_approx_eigenvector = .TRUE.
-
-!  the next problem is likley different - try to guess a good initial
-!  value for the next multiplier
-
-           ELSE
-             data%control%TRS_control%lower = zero
-             data%control%TRS_control%use_initial_multiplier = .TRUE.
-             IF ( inform%TRS_inform%multiplier == zero ) THEN
-               data%control%TRS_control%initial_multiplier = zero
-             ELSE
-               data%control%TRS_control%initial_multiplier =                   &
-                 inform%TRS_inform%multiplier *                                &
-                   ( data%old_radius / data%radius ) +                         &
-                 inform%TRS_inform%pole *                                      &
-                 ( one - ( data%old_radius / data%radius ) )
-               IF ( inform%TRS_inform%pole > zero )                            &
-                 data%control%TRS_control%initial_multiplier =                 &
-                   data%control%TRS_control%initial_multiplier                 &
-                     + MAX( inform%TRS_inform%pole, one ) * epsmch ** half
-             END IF
-!            data%control%TRS_control%initialize_approx_eigenvector = .TRUE.
-           END IF
-         END IF
+         IF ( data%use_dps ) THEN
 
 !  refactorize the Hessian if it has changed
 
-         IF ( data%new_h ) THEN
-           IF ( data%nskip_prec > nskip_prec_max ) THEN
+           IF ( data%new_h ) THEN
              IF ( inform%iter <= 1 )THEN
-               data%control%TRS_control%new_h = 2
+               data%control%DPS_control%new_h = 2
              ELSE
-               data%control%TRS_control%new_m = 1
-               data%control%TRS_control%new_h = 1
+               data%control%DPS_control%new_h = 1
              END IF
-             data%nskip_prec = 0
            ELSE
-             data%control%TRS_control%new_m = 0
-             data%control%TRS_control%new_h = 0
+             data%control%DPS_control%new_h = 0
            END IF
-         END IF
 
 !  Solve the trust-region subproblem
 !  .................................
 
-         data%model = zero
-         facts_this_solve = inform%TRS_inform%factorizations
-
-         IF ( data%non_trivial_p ) THEN
-           CALL TRS_solve( nlp%n, data%radius, data%model, nlp%G( : nlp%n ),   &
-                           nlp%H, data%S( : nlp%n ), data%TRS_data,            &
-                           data%control%TRS_control, inform%TRS_inform,        &
-                           M = data%P )
-         ELSE
-           CALL TRS_solve( nlp%n, data%radius, data%model, nlp%G( : nlp%n ),   &
-                           nlp%H, data%S( : nlp%n ), data%TRS_data,            &
-                           data%control%TRS_control, inform%TRS_inform )
-         END IF
+           data%model = zero
+           IF ( data%poor_model ) THEN
+             CALL DPS_resolve( nlp%n, data%S( : nlp%n ), data%DPS_data,        &
+                             data%control%DPS_control, inform%DPS_inform,      &
+                             delta = data%radius )
+             facts_this_solve = 0
+           ELSE
+             CALL DPS_solve( nlp%n, nlp%H, nlp%G( : nlp%n ), data%model,       &
+                             data%S( : nlp%n ), data%DPS_data,                 &
+                             data%control%DPS_control, inform%DPS_inform,      &
+                             delta = data%radius )
+             facts_this_solve = 1
+             data%it_succ = data%it_succ + 1
+           END IF
 
 !  check for successful convergence
 
-         IF ( inform%TRS_inform%status < 0 .AND.                               &
-              inform%TRS_inform%status /= GALAHAD_error_ill_conditioned ) THEN
-           IF ( data%printt ) WRITE( data%out, "( /,                           &
-          &    A, ' Error return from GLTR, status = ', I0 )" ) prefix,        &
-             inform%TRS_inform%status
-           inform%status = inform%TRS_inform%status
-           GO TO 900
-         END IF
-         data%model = inform%TRS_inform%obj
-         IF ( inform%TRS_inform%hard_case ) data%hard = 'h'
-         facts_this_solve = inform%TRS_inform%factorizations - facts_this_solve
-!        inform%factorization_average = ( inform%factorization_average *       &
-!         ( inform%iter - 1 ) + inform%TRS_inform%factorizations ) / inform%iter
-!        inform%factorization_max =                                            &
-!          MAX( inform%factorization_max, inform%TRS_inform%factorizations )
-         inform%factorization_average =                                        &
-           inform%TRS_inform%factorizations / inform%iter
-         inform%factorization_max =                                            &
-           MAX( inform%factorization_max, facts_this_solve )
-         inform%max_entries_factors = MAX( inform%max_entries_factors,         &
+           IF ( inform%DPS_inform%status < 0 .AND.                             &
+                inform%DPS_inform%status /= GALAHAD_error_ill_conditioned ) THEN
+             IF ( data%printt ) WRITE( data%out, "( /,                         &
+            &    A, ' Error return from DPS, status = ', I0 )" ) prefix,       &
+               inform%DPS_inform%status
+             inform%status = inform%DPS_inform%status ; GO TO 900
+           END IF
+
+!  record subproblem solution information
+
+           data%model = inform%DPS_inform%obj
+           IF ( inform%DPS_inform%hard_case ) data%hard = 'h'
+!          inform%factorization_average = ( inform%factorization_average *     &
+!           ( inform%iter - 1 ) + inform%DPS_inform%factorizations )/inform%iter
+!          inform%factorization_max =                                          &
+!            MAX( inform%factorization_max, inform%DPS_inform%factorizations )
+           inform%factorization_average = data%it_succ / inform%iter
+           inform%factorization_max =                                          &
+             MAX( inform%factorization_max, facts_this_solve )
+           inform%max_entries_factors = MAX( inform%max_entries_factors,       &
+                inform%DPS_inform%SLS_inform%entries_in_factors )
+           IF ( inform%DPS_inform%pole > zero ) THEN
+             data%negcur = 'n'
+           ELSE
+             data%negcur = ' '
+           END IF
+
+           data%s_norm = inform%DPS_inform%x_norm
+           IF ( ABS( data%radius - data%s_norm ) <= 1.0D-8 * data%radius ) THEN
+             data%bndry = 'b'
+           ELSE
+             data%bndry = ' '
+           END IF
+
+           IF ( inform%DPS_inform%hard_case ) THEN
+             data%hard = 'h'
+           ELSE
+             data%hard = ' '
+           END IF
+
+           GO TO 400
+
+!  other norms
+
+         ELSE
+
+!  estimate Lagrange multipler for the next trust-region subproblem
+
+           IF ( inform%iter > 1 ) THEN
+
+!  only the radius for the next problem differs from the current one
+
+             IF ( data%poor_model ) THEN
+
+!  if there is a history of points with smaller norms, record them
+
+               IF ( inform%TRS_inform%len_history > 0 ) THEN
+                 data%len_history = inform%TRS_inform%len_history
+                 data%history( : data%len_history )                            &
+                   = inform%TRS_inform%history( : data%len_history )
+               ELSE
+                 data%len_history = 0
+               END IF
+
+!  set the lower bound and estimate of the next multiplier to the current
+!  values, as Newton will converge rapidly from here
+
+               data%control%TRS_control%lower = inform%TRS_inform%multiplier
+               data%control%TRS_control%initial_multiplier =                   &
+                 data%control%TRS_control%lower
+               data%control%TRS_control%use_initial_multiplier = .TRUE.
+
+!  if the hard case was possible, slightly perturb the multiplier
+
+               IF ( inform%TRS_inform%pole > zero )                            &
+                 data%control%TRS_control%initial_multiplier =                 &
+                   data%control%TRS_control%initial_multiplier                 &
+                     + MAX( inform%TRS_inform%pole, one ) * epsmch ** half
+
+!  look through the history to see if a better starting value is available
+
+               DO i = data%len_history, 1, - 1
+                 IF ( data%history( i )%x_norm > data%radius ) THEN
+                   data%control%TRS_control%initial_multiplier =               &
+                     data%history( i )%lambda
+                 ELSE
+                   EXIT
+                 END IF
+               END DO
+               data%control%TRS_control%initialize_approx_eigenvector = .FALSE.
+!              data%control%TRS_control%initialize_approx_eigenvector = .TRUE.
+
+!  the next problem is likley different - try to guess a good initial
+!  value for the next multiplier
+
+             ELSE
+               data%control%TRS_control%lower = zero
+               data%control%TRS_control%use_initial_multiplier = .TRUE.
+               IF ( inform%TRS_inform%multiplier == zero ) THEN
+                 data%control%TRS_control%initial_multiplier = zero
+               ELSE
+                 data%control%TRS_control%initial_multiplier =                 &
+                   inform%TRS_inform%multiplier *                              &
+                     ( data%old_radius / data%radius ) +                       &
+                   inform%TRS_inform%pole *                                    &
+                   ( one - ( data%old_radius / data%radius ) )
+                 IF ( inform%TRS_inform%pole > zero )                          &
+                   data%control%TRS_control%initial_multiplier =               &
+                     data%control%TRS_control%initial_multiplier               &
+                       + MAX( inform%TRS_inform%pole, one ) * epsmch ** half
+               END IF
+!              data%control%TRS_control%initialize_approx_eigenvector = .TRUE.
+             END IF
+           END IF
+
+!  refactorize the Hessian if it has changed
+
+           IF ( data%new_h ) THEN
+             IF ( data%nskip_prec > nskip_prec_max ) THEN
+               IF ( inform%iter <= 1 )THEN
+                 data%control%TRS_control%new_h = 2
+               ELSE
+                 data%control%TRS_control%new_m = 1
+                 data%control%TRS_control%new_h = 1
+               END IF
+               data%nskip_prec = 0
+             ELSE
+               data%control%TRS_control%new_m = 0
+               data%control%TRS_control%new_h = 0
+             END IF
+           END IF
+
+!  Solve the trust-region subproblem
+!  .................................
+
+           data%model = zero
+           facts_this_solve = inform%TRS_inform%factorizations
+
+           IF ( data%non_trivial_p ) THEN
+             CALL TRS_solve( nlp%n, data%radius, data%model, nlp%G( : nlp%n ), &
+                             nlp%H, data%S( : nlp%n ), data%TRS_data,          &
+                             data%control%TRS_control, inform%TRS_inform,      &
+                             M = data%P )
+           ELSE
+             CALL TRS_solve( nlp%n, data%radius, data%model, nlp%G( : nlp%n ), &
+                             nlp%H, data%S( : nlp%n ), data%TRS_data,          &
+                             data%control%TRS_control, inform%TRS_inform )
+           END IF
+
+!  check for successful convergence
+
+           IF ( inform%TRS_inform%status < 0 .AND.                             &
+                inform%TRS_inform%status /= GALAHAD_error_ill_conditioned ) THEN
+             IF ( data%printt ) WRITE( data%out, "( /,                         &
+            &    A, ' Error return from TRS, status = ', I0 )" ) prefix,       &
+               inform%TRS_inform%status
+             inform%status = inform%TRS_inform%status ; GO TO 900
+           END IF
+
+!  record subproblem solution information
+
+           data%model = inform%TRS_inform%obj
+           IF ( inform%TRS_inform%hard_case ) data%hard = 'h'
+           facts_this_solve                                                    &
+             = inform%TRS_inform%factorizations - facts_this_solve
+!          inform%factorization_average = ( inform%factorization_average *     &
+!           ( inform%iter - 1 ) + inform%TRS_inform%factorizations )/inform%iter
+!          inform%factorization_max =                                          &
+!            MAX( inform%factorization_max, inform%TRS_inform%factorizations )
+           inform%factorization_average =                                      &
+             inform%TRS_inform%factorizations / inform%iter
+           inform%factorization_max =                                          &
+             MAX( inform%factorization_max, facts_this_solve )
+           inform%max_entries_factors = MAX( inform%max_entries_factors,       &
                                          inform%TRS_inform%max_entries_factors )
 
-         IF ( inform%TRS_inform%pole > zero ) THEN
-           data%negcur = 'n'
-         ELSE
-           data%negcur = ' '
-         END IF
+           IF ( inform%TRS_inform%pole > zero ) THEN
+             data%negcur = 'n'
+           ELSE
+             data%negcur = ' '
+           END IF
 
-         data%s_norm = inform%TRS_inform%x_norm
-         IF ( ABS( data%radius - data%s_norm ) <= 1.0D-8 * data%radius ) THEN
-           data%bndry = 'b'
-         ELSE
-           data%bndry = ' '
-         END IF
+           data%s_norm = inform%TRS_inform%x_norm
+           IF ( ABS( data%radius - data%s_norm ) <= 1.0D-8 * data%radius ) THEN
+             data%bndry = 'b'
+           ELSE
+             data%bndry = ' '
+           END IF
 
-         IF ( inform%TRS_inform%hard_case ) THEN
-           data%hard = 'h'
-         ELSE
-           data%hard = ' '
-         END IF
+           IF ( inform%TRS_inform%hard_case ) THEN
+             data%hard = 'h'
+           ELSE
+             data%hard = ' '
+           END IF
 
-         GO TO 400
+           GO TO 400
+         END IF
        END IF
 
 !  3b. Iterative solution
@@ -3018,11 +3147,15 @@
            IF ( data%control%subproblem_direct ) THEN
              char_facts =                                                      &
                ADJUSTR( STRING_integer_6( inform%TRS_inform%factorizations ) )
+             IF ( data%use_dps ) THEN
+               multiplier = inform%DPS_inform%multiplier
+             ELSE
+               multiplier = inform%TRS_inform%multiplier
+             END IF
              WRITE( data%out,  "( A, A6, 1X, 4A1, '    NaN           -    ',   &
             &  '    - Inf ',  2ES8.1, 1X, A6, F8.2 )" )                        &
                 prefix, char_iter, data%accept, data%bndry, data%negcur,       &
-                data%hard, data%radius, inform%TRS_inform%multiplier,          &
-                char_facts, data%clock_now
+                data%hard, data%radius, multiplier, char_facts, data%clock_now
            ELSE
              char_sit = ADJUSTR( STRING_integer_6( inform%GLTR_inform%iter ) )
              char_sit2 =                                                       &
@@ -3201,10 +3334,15 @@
              IF ( data%control%subproblem_direct ) THEN
                char_facts =                                                    &
                  STRING_integer_6( inform%TRS_inform%factorizations )
+               IF ( data%use_dps ) THEN
+                 multiplier = inform%DPS_inform%multiplier
+               ELSE
+                 multiplier = inform%TRS_inform%multiplier
+               END IF
                WRITE( data%out, 2120 ) prefix, char_iter, data%accept,         &
                   data%bndry, data%negcur, data%hard, data%f_trial,            &
                   inform%norm_g, data%ratio, data%old_radius,                  &
-                  inform%TRS_inform%multiplier, char_facts, data%clock_now
+                  multiplier, char_facts, data%clock_now
                 inform%TRS_inform%factorizations = 0
              ELSE
                char_sit = STRING_integer_6( inform%GLTR_inform%iter )
@@ -3534,6 +3672,14 @@
                 lin_more_preconditioner, mi28_preconditioner )
            WRITE( data%out, "( A, '  Modified full matrix TR-norm used' )")    &
              prefix
+         CASE (  diagonalising_preconditioner )
+           IF (  data%control%DPS_control%goldfarb ) THEN
+             WRITE(data%out, "( A,                                             &
+            &  '  Goldfarb diagonalising TR-norm used')")  prefix
+           ELSE
+             WRITE(data%out, "( A, '  Modified absolute-value ',               &
+            &   'diagonalising TR-norm used')")  prefix
+           END IF
          END SELECT
          WRITE( data%out, "( A, '  Number of factorization = ', I0,            &
         &     ', factorization time = ', F0.2, ' seconds'  )" ) prefix,        &
@@ -3609,9 +3755,9 @@
      CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
-     IF ( data%printi ) THEN
-       CALL SYMBOLS_status( inform%status, data%out, prefix, 'TRU_solve' )
-       WRITE( data%out, "( ' ' )" )
+     IF ( control%error > 0 ) THEN
+       CALL SYMBOLS_status( inform%status, control%error, prefix, 'TRU_solve' )
+       WRITE( control%error, "( ' ' )" )
      END IF
      RETURN
 

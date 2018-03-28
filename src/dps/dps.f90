@@ -103,7 +103,7 @@
 
 !  smallest allowable value of an eigenvalue of the block diagonal factor of H
 
-        REAL ( KIND = wp ) :: eigen_min = EPSILON( one )
+        REAL ( KIND = wp ) :: eigen_min = SQRT( epsmch )
 
 !  lower and upper bounds on the multiplier, if known
 
@@ -113,8 +113,8 @@
 !  stop trust-region solution when | ||x||_M - delta | <=
 !     max( stop_normal * delta, stop_absolute_normal )
 
-        REAL ( KIND = wp ) :: stop_normal = epsmch
-        REAL ( KIND = wp ) :: stop_absolute_normal = epsmch
+        REAL ( KIND = wp ) :: stop_normal = epsmch ** 0.75
+        REAL ( KIND = wp ) :: stop_absolute_normal = epsmch ** 0.75
 
 !  use the Goldfarb variant of the trust-region/regularization norm rather
 !  than the modified absolute-value version
@@ -314,10 +314,6 @@
                            data%SLS_data, control%SLS_control,                 &
                            inform%SLS_inform )
       data%SLS_control%scaling = 0
-
-!  set initial control parameter values
-
-      control%eigen_min = SQRT( EPSILON( one ) )
 
 !  ensure that the initial value of the "old" delta is small
 
@@ -813,7 +809,7 @@
           IF ( data%old_convex .AND. data%old_on_boundary .AND.                &
                data%delta <= data%old_delta ) THEN
             temp = data%delta / data%old_delta
-            inform%obj = data%f - data%old_f + temp * data%old_obj             &
+            inform%obj = data%f + temp * ( data%old_obj - data%old_f )         &
                            + half * data%delta * ( data%delta - data%old_delta )
             X = temp * X
             inform%multiplier = ( one + data%old_multiplier ) / temp - one
@@ -849,12 +845,12 @@
         IF ( COUNT( data%D /= one ) == 0 ) THEN
           inform%x_norm = TWO_NORM( data%CS )
           IF ( inform%x_norm <= data%delta ) THEN
-             X = - data%CS
-             inform%multiplier = zero
+            X = - data%CS
+            inform%multiplier = zero
           ELSE
-             X = - ( data%delta / inform%x_norm ) * data%CS
-             inform%multiplier = inform%x_norm / data%delta - one
-             inform%x_norm = data%delta
+            X = - ( data%delta / inform%x_norm ) * data%CS
+            inform%multiplier = inform%x_norm / data%delta - one
+            inform%x_norm = data%delta
           END IF
           inform%obj = data%f + half * ( DOT_PRODUCT( data%CS, X )             &
                          - inform%multiplier * data%delta * data%delta )

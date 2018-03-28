@@ -69,8 +69,8 @@ LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
 
 #  compilation agenda
 
-STRU = basics gltr psls trs lms sec sha nlpt $(LGS)(tru.o)
-DTRU = basics gltr psls trs lms sec sha nlpt $(LGD)(tru.o)
+STRU = basics gltr psls dps lms sec sha nlpt $(LGS)(tru.o)
+DTRU = basics gltr psls dps lms sec sha nlpt $(LGD)(tru.o)
 
 SRUNTRU = cutest_functions copyright $(LGS)(usetru.o) $(OBJS)/runtru_sif.o
 DRUNTRU = cutest_functions copyright $(LGD)(usetru.o) $(OBJD)/runtru_sif.o
@@ -172,9 +172,9 @@ linearsolver:
 gltr:
 	( cd ../gltr ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             gltr_silent PRECIS=$(PRECIS) PWD=$(PWD)/../gltr )
-trs:
-	( cd ../trs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            trs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../trs )
+dps:
+	( cd ../dps ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dps_silent PRECIS=$(PRECIS) PWD=$(PWD)/../dps )
 psls:
 	( cd ../psls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             psls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../psls )

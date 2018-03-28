@@ -69,8 +69,8 @@ LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
 
 #  compilation agenda
 
-SARC = basics cutest_functions glrt psls rqs nlpt $(LGS)(arc.o)
-DARC = basics cutest_functions glrt psls rqs nlpt $(LGD)(arc.o)
+SARC = basics cutest_functions glrt psls dps nlpt $(LGS)(arc.o)
+DARC = basics cutest_functions glrt psls dps nlpt $(LGD)(arc.o)
 
 SRUNARC = copyright $(LGS)(usearc.o) $(OBJS)/runarc_sif.o
 DRUNARC = copyright $(LGD)(usearc.o) $(OBJD)/runarc_sif.o
@@ -170,9 +170,9 @@ glrt:
 psls:
 	( cd ../psls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             psls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../psls )
-rqs:
-	( cd ../rqs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            rqs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../rqs )
+dps:
+	( cd ../dps ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dps_silent PRECIS=$(PRECIS) PWD=$(PWD)/../dps )
 nlpt:
 	( cd ../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../filtrane )
@@ -253,15 +253,6 @@ $(LG)(usearc.o): ../arc/usearc.f90
 
 #  main programs
 
-runrqs_sif.o: $(OBJ)/runrqs_sif.o
-
-$(OBJ)/runrqs_sif.o: ../rqs/runrqs_sif.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "runrqs_sif"
-	$(SED) -f $(SEDS) ../rqs/runrqs_sif.f90 > $(OBJ)/runrqs_sif.f90
-	cd $(OBJ); $(FORTRAN) -o runrqs_sif.o $(FFLAGSS) runrqs_sif.f90
-	rm $(OBJ)/runrqs_sif.f90
-	@printf '[ OK ]\n'
-
 runarc_sif.o: $(OBJ)/runarc_sif.o
 
 $(OBJ)/runarc_sif.o: ../arc/runarc_sif.f90
@@ -309,4 +300,3 @@ rmarc:
 	@printf ' %-9s %-15s\t\t' "Removing" "arc from archive "
 	$(RMARFILE) rqs.o arc.o
 	@printf '[ OK ]\n'
-
