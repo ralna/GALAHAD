@@ -122,7 +122,7 @@ problemd = $(SMTD) nlpt $(PLGD)(problem.o)
 BASICZ = $(LG)(cputim.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(symbols.o) $(SLG)(pardiso.o) $(MLG)(metis.o) $(WLG)(wsmp.o) \
          $(DLG)(dummy.o) $(LG)(blas_interface.o) $(LG)(lapack_interface.o) \
-         buildspec_silent minpack
+         $(LG)(string.o) buildspec_silent minpack
 #        $(SSIDS)
 
 BASICS = $(BASICZ) $(LGS)(symbols.o) $(LGS)(specfile.o) \

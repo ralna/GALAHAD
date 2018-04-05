@@ -4687,6 +4687,14 @@
         inform%bad_alloc = 'rqs: SLS_data'
       END IF
 
+!  Deallocate all arrays allocated within IR
+
+      CALL IR_terminate( data%IR_data, control%IR_control, inform%IR_inform )
+      IF ( inform%IR_inform%status /= 0 ) THEN
+        inform%status = GALAHAD_error_deallocate
+        inform%bad_alloc = 'rqs: data%IR_data'
+      END IF
+
       RETURN
 
 !  End of subroutine RQS_terminate

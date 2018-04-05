@@ -2061,6 +2061,7 @@ MODULE GALAHAD_CCQP_double
             END DO
           END IF
         END IF
+
         data%CRO_control = control%CRO_control
         data%CRO_control%feasibility_tolerance =                               &
           MAX( inform%primal_infeasibility, inform%dual_infeasibility,         &
@@ -2215,7 +2216,7 @@ H_loop: DO i = 1, prob%n
       DQP_control%stop_abs_p = MAX( DQP_control%stop_abs_p,                    &
         DQP_control%stop_rel_p * inform%CQP_inform%init_primal_infeasibility )
       DQP_control%stop_abs_d = MAX( DQP_control%stop_abs_d,                    &
-         DQP_control%stop_rel_d * inform%CQP_inform%init_dual_infeasibility )
+        DQP_control%stop_rel_d * inform%CQP_inform%init_dual_infeasibility )
       DQP_control%stop_abs_c = MAX( DQP_control%stop_abs_c,                    &
         DQP_control%stop_rel_d * inform%CQP_inform%init_complementary_slackness)
 
@@ -2224,7 +2225,6 @@ H_loop: DO i = 1, prob%n
 !  solve the problem using a dual projected-gradient method
 
       CALL CPU_TIME( time_record )  ; CALL CLOCK_time( clock_record )
-
       IF ( prob%Hessian_kind == 1 ) THEN
         IF ( prob%target_kind == 0 .OR. prob%target_kind == 1 ) THEN
           IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN

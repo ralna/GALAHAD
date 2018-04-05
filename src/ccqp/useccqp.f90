@@ -1363,5 +1363,3 @@
 !  End of module USECCQP_double
 
    END MODULE GALAHAD_USECCQP_double
-
-

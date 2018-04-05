@@ -84,8 +84,8 @@ QPP_single = $(QPT_single) lms $(LGS)(qpp.o)
 QPP_double = $(QPT_double) lms $(LGD)(qpp.o)
 PRESOLVE_single = $(QPT_single) $(LGS)(presolve.o)
 PRESOLVE_double = $(QPT_double) $(LGD)(presolve.o)
-CRO_single = basics scu sls uls lms $(LGS)(cro.o)
-CRO_double = basics scu sls uls lms $(LGD)(cro.o)
+CRO_single = basics scu sls uls lms ir $(LGS)(cro.o)
+CRO_double = basics scu sls uls lms ir $(LGD)(cro.o)
 QPD_single = $(CRO_single) sbls gltr nlpt $(QPP_single) fdc fit lpqp \
              $(PRESOLVE_single) $(LGS)(qpd.o)
 QPD_double = $(CRO_double) sbls gltr nlpt $(QPP_double) fdc fit lpqp \
@@ -1972,6 +1972,9 @@ lmt:
 lms:
 	( cd ../lms ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             lms_silent PRECIS=$(PRECIS) PWD=$(PWD)/../lms )
+ir:
+	( cd ../ir ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ir_silent PRECIS=$(PRECIS) PWD=$(PWD)/../ir )
 gltr:
 	( cd ../gltr ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             gltr_silent PRECIS=$(PRECIS) PWD=$(PWD)/../gltr )
@@ -4854,4 +4857,3 @@ rmqpp:
 	@printf ' %-9s %-15s\t\t' "Removing" "qpp from archive "
 	$(RMARFILE) qpp.o
 	@printf '[ OK ]\n'
-

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 06/01/2015 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 3.0 - 04/04/2018 AT 09:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ C R O   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -8,8 +8,9 @@
 !  History -
 !   development started August 5th 2010
 !   added limited-memory H capability January 6th 2015
+!   added optional refinement April 4th 2018
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
   MODULE GALAHAD_CRO_double
@@ -19,9 +20,9 @@
 !     | Given values x, y and z that satisfy                           |
 !     |                                                                |
 !     |   H x + g - A^T y - z = 0, c_l <= A x <= c_u, x_l <= x <= x_u  |
-!     |     { >= 0 if A x = c_l             { >= 0 if x = x_l          |  
+!     |     { >= 0 if A x = c_l             { >= 0 if x = x_l          |
 !     |   y {  = 0 if c_l < A x < c_u and z {  = 0 if x_l < x < x_u    |
-!     |     { <= 0 if A x = c_u             { <= 0 if x = x_u          | 
+!     |     { <= 0 if A x = c_u             { <= 0 if x = x_u          |
 !     |                                                                |
 !     | adjust x, y and z to maintain these relationships but at the   |
 !     | same time reduce the number of nonzero components of y and z.  |
@@ -36,6 +37,7 @@
       USE GALAHAD_SPACE_double
       USE GALAHAD_SMT_double
       USE GALAHAD_SLS_double
+      USE GALAHAD_IR_double
       USE GALAHAD_ULS_double
       USE GALAHAD_SCU_double
       USE GALAHAD_SPECFILE_double
@@ -76,14 +78,14 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: CRO_control_type
 
-!   error and warning diagnostics occur on stream error 
-   
+!   error and warning diagnostics occur on stream error
+
         INTEGER :: error = 6
 
 !   general output occurs on stream out
@@ -99,17 +101,22 @@
 
         INTEGER :: max_schur_complement = 100
 
-!   any bound larger than infinity in modulus will be regarded as infinite 
+!   any bound larger than infinity in modulus will be regarded as infinite
 
         REAL ( KIND = wp ) :: infinity = ten ** 19
 
 !   feasibility tolerance for KKT violation
 
-        REAL ( KIND = wp ) :: feasibility_tolerance = epsmch
+        REAL ( KIND = wp ) :: feasibility_tolerance = SQRT( epsmch )
 
 !   if %check_io is true, the input (x,y,z) will be fully tested for consistency
 
         LOGICAL :: check_io = .FALSE.
+
+!   if %refine solution is true, attempt to satisfy the KKT conditions as
+!    accurately as possible
+
+        LOGICAL :: refine_solution = .FALSE.
 
 !   if %space_critical is true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
@@ -132,7 +139,7 @@
            "gls" // REPEAT( ' ', 27 )
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
+!   where %prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 
         CHARACTER ( LEN = 30 ) :: prefix = '""                            '
@@ -144,7 +151,12 @@
 !  control parameters for ULS
 
         TYPE ( ULS_control_type ) :: ULS_control
-      END TYPE
+
+!  control parameters for iterative refinement
+
+        TYPE ( IR_control_type ) :: IR_control
+
+      END TYPE CRO_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
 !   time derived type with component defaults
@@ -208,18 +220,23 @@
 
         TYPE ( CRO_time_type ) :: time
 
-!  inform parameters for SLS
+!  information from SLS
 
         TYPE ( SLS_inform_type ) :: SLS_inform
 
-!  inform parameters for ULS
+!  information from ULS
 
         TYPE ( ULS_inform_type ) :: ULS_inform
 
-!  inform parameters for SCU
+!  information from SCU
 
         INTEGER :: scu_status = 0
         TYPE ( SCU_info_type ) :: SCU_inform
+
+!  information from IR
+
+        TYPE ( IR_inform_type ) :: IR_inform
+
       END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - -
@@ -249,6 +266,9 @@
 
         TYPE ( SMT_type ) :: AT
         TYPE ( SMT_type ) :: K_r
+
+!  an editable copy of control
+
         TYPE ( CRO_control_type ) :: control
 
 !  private data for SLS
@@ -263,6 +283,10 @@
 
         TYPE ( SCU_matrix_type ) :: SCU_matrix
         TYPE ( SCU_data_type ) :: SCU_data
+
+!  private type for IR
+
+        TYPE ( IR_data_type ) :: IR_data
       END TYPE
 
    CONTAINS
@@ -275,7 +299,7 @@
 !
 !  Default control data for CRO. This routine should be called before
 !  CRO_solve
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -287,16 +311,17 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
       TYPE ( CRO_data_type ), INTENT( INOUT ) :: data
-      TYPE ( CRO_control_type ), INTENT( OUT ) :: control        
+      TYPE ( CRO_control_type ), INTENT( OUT ) :: control
       TYPE ( CRO_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
-      control%feasibility_tolerance = SQRT( epsmch )
+!     control%feasibility_tolerance = SQRT( epsmch )
 
 !  Initalize SLS components
 
       CALL SLS_initialize( control%symmetric_linear_solver, data%SLS_data,     &
                            control%SLS_control, inform%SLS_inform )
+      control%SLS_control%ordering = 0
       control%SLS_control%prefix = '" - SLS:"                    '
 
 !  Initalize ULS components
@@ -305,7 +330,12 @@
                            control%ULS_control, inform%ULS_inform )
       control%ULS_control%prefix = '" - ULS:"                    '
 
-      RETURN  
+!  Set initial values for solve/refinement controls
+
+      CALL IR_initialize( data%IR_data, control%IR_control, inform%IR_inform )
+      control%IR_control%prefix = '" - IR:"'
+
+      RETURN
 
 !  End of CRO_initialize
 
@@ -315,10 +345,10 @@
 
       SUBROUTINE CRO_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by CRO_initialize could (roughly) 
+!  The defauly values as given by CRO_initialize could (roughly)
 !  have been set as:
 
 !  BEGIN CRO SPECIFICATIONS (DEFAULT)
@@ -327,10 +357,11 @@
 !   print-level                                     0
 !   maximum-dimension-of-schur-complement           100
 !   infinity-value                                  1.0D+19
-!   feasibility-tolerance                           2.2D-16
-!   check-input-output                              T
-!   space-critical                                  F
-!   deallocate-error-fatal                          F
+!   feasibility-tolerance                           1.0D-8
+!   check-input-output                              yes
+!   refine-solution                                 no
+!   space-critical                                  no
+!   deallocate-error-fatal                          no
 !   symmetric-linear-equation-solver                sils
 !   unsymmetric-linear-equation-solver              gls
 !   output-line-prefix                              ""
@@ -338,7 +369,7 @@
 
 !  Dummy arguments
 
-      TYPE ( CRO_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( CRO_control_type ), INTENT( INOUT ) :: control
       INTEGER, INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -353,8 +384,9 @@
       INTEGER, PARAMETER :: infinity = max_schur_complement + 1
       INTEGER, PARAMETER :: feasibility_tolerance = infinity + 1
       INTEGER, PARAMETER :: check_io = feasibility_tolerance + 1
-      INTEGER, PARAMETER :: space_critical = check_io + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical  + 1
+      INTEGER, PARAMETER :: refine_solution = check_io + 1
+      INTEGER, PARAMETER :: space_critical = refine_solution + 1
+      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
       INTEGER, PARAMETER :: symmetric_linear_solver = deallocate_error_fatal + 1
       INTEGER, PARAMETER :: unsymmetric_linear_solver =                        &
                               symmetric_linear_solver + 1
@@ -371,9 +403,9 @@
 
       spec( error )%keyword = 'error-printout-device'
       spec( out )%keyword = 'printout-device'
-      spec( print_level )%keyword = 'print-level' 
+      spec( print_level )%keyword = 'print-level'
       spec( max_schur_complement )%keyword =                                   &
-        'maximum-dimension-of-schur-complement' 
+        'maximum-dimension-of-schur-complement'
 
 !  Real key-words
 
@@ -383,6 +415,7 @@
 !  Logical key-words
 
       spec( check_io )%keyword = 'check-input-output'
+      spec( refine_solution )%keyword = 'refine-solution'
       spec( space_critical )%keyword = 'space-critical'
       spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
 
@@ -433,6 +466,9 @@
       CALL SPECFILE_assign_value( spec( check_io ),                            &
                                   control%check_io,                            &
                                   control%error )
+      CALL SPECFILE_assign_value( spec( refine_solution ),                     &
+                                  control%refine_solution,                     &
+                                  control%error )
       CALL SPECFILE_assign_value( spec( space_critical ),                      &
                                   control%space_critical,                      &
                                   control%error )
@@ -455,13 +491,16 @@
 !  Read the controls for the linear solvers
 
       IF ( PRESENT( alt_specname ) ) THEN
-        CALL SLS_read_specfile( control%SLS_control, device,                  &
+        CALL SLS_read_specfile( control%SLS_control, device,                   &
                                 alt_specname = TRIM( alt_specname ) // '-SLS')
-        CALL ULS_read_specfile( control%ULS_control, device,                  &
+        CALL ULS_read_specfile( control%ULS_control, device,                   &
                                 alt_specname = TRIM( alt_specname ) // '-ULS')
+        CALL IR_read_specfile( control%IR_control, device,                     &
+                               alt_specname = TRIM( alt_specname ) // '-IR' )
       ELSE
         CALL SLS_read_specfile( control%SLS_control, device )
         CALL ULS_read_specfile( control%ULS_control, device )
+        CALL IR_read_specfile( control%IR_control, device )
       END IF
 
       RETURN
@@ -475,7 +514,7 @@
                                                  G, C_l, C_u, X_l, X_u, C, X,  &
                                                  Y, Z, C_stat, X_stat, data,   &
                                                  control, inform )
-                                     
+
 !  interface to CRO_crossover for H stored by rows. For argument details,
 !  see the header for CRO_crossover_main
 
@@ -517,8 +556,8 @@
       SUBROUTINE CRO_crossover_h_lm( n, m, m_equal, H_lm, A_val, A_col, A_ptr, &
                                      G, C_l, C_u, X_l, X_u, C, X, Y, Z,        &
                                      C_stat, X_stat, data, control, inform )
-                                     
-!  interface to CRO_crossover for H stored as a limited-memory matrix. For 
+
+!  interface to CRO_crossover for H stored as a limited-memory matrix. For
 !  argument details, see the header for CRO_crossover_main
 
 !  Dummy arguments
@@ -563,13 +602,13 @@
 !  Given values x, y and z that satisfy the KKT conditions
 !
 !    H x + g - A^T y - z = 0, c_l <= A x <= c_u, x_l <= x <= x_u
-!      { >= 0 if A x = c_l             { >= 0 if x = x_l            
+!      { >= 0 if A x = c_l             { >= 0 if x = x_l
 !    y {  = 0 if c_l < A x < c_u and z {  = 0 if x_l < x < x_u
-!      { <= 0 if A x = c_u             { <= 0 if x = x_u            
+!      { <= 0 if A x = c_u             { <= 0 if x = x_u
 !
 !  adjust x, y and z to maintain these relationships but at the same time
 !  reduce the number of nonzero components of y and z. Ultimately a
-!  ``basic'' solution, i.e., one for which the submatrix of A formed from rows 
+!  ``basic'' solution, i.e., one for which the submatrix of A formed from rows
 !  with nonzero y and columns from nonzero z is of full rank, is obtained
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -577,43 +616,43 @@
 !  Arguments:
 !
 !  n is an INTEGER variable, that must be set by the user to the
-!   number of optimization parameters, n.  
+!   number of optimization parameters, n.
 !   RESTRICTION: n >= 1
-!                
+!
 !  m is an INTEGER variable, that must be set by the user to the
-!   number of general linear constraints, m. 
+!   number of general linear constraints, m.
 !   RESTRICTION: m >= 0
-!                
+!
 !  m_equal is an INTEGER variable, that must be set by the user to the
-!   number of general linear equality constraints (i.e., c_l = c_u). 
+!   number of general linear equality constraints (i.e., c_l = c_u).
 !   RESTRICTION: m_equal >= 0
 !
-!  A_val is an REAL array of length A_ptr(m+1)-1 that holds the values of 
+!  A_val is an REAL array of length A_ptr(m+1)-1 that holds the values of
 !    the nonzero components of A, stored row by row.
 !    RESTRICTION: the first m_equal rows must be equality constraints
 !
-!  A_col is an INTEGER array of length A_ptr(m+1)-1 that holds the column 
+!  A_col is an INTEGER array of length A_ptr(m+1)-1 that holds the column
 !    indices of the components of A corresponding to A_val
 !
-!  A_ptr is an INTEGER array of length m + 1 that holds pointers to the start 
+!  A_ptr is an INTEGER array of length m + 1 that holds pointers to the start
 !    of each row of A, and 1 past the end of the last row
 !
 !  G is a REAL array of length n, that must be set by the user to the vector
 !   of graidients g of the quadratic objective function
-!   
-!  C_l is a REAL array of length n, that must be set by the user to the 
+!
+!  C_l is a REAL array of length n, that must be set by the user to the
 !   vector of lower bounds on the constraints c_l
 !
-!  C_u is a REAL array of length n, that must be set by the user to the 
+!  C_u is a REAL array of length n, that must be set by the user to the
 !   vector of lower bounds on the constraints c_u
 !
-!  X_l is a REAL array of length n, that must be set by the user to the 
+!  X_l is a REAL array of length n, that must be set by the user to the
 !   vector of lower bounds on the variables x_l
 !
-!  X_u is a REAL array of length n, that must be set by the user to the 
+!  X_u is a REAL array of length n, that must be set by the user to the
 !   vector of lower bounds on the variables x_u
 !
-!  X is a REAL array of length n, that must be set by the user to the 
+!  X is a REAL array of length n, that must be set by the user to the
 !   variables x. On successful exit, it will contain the updated varuiables
 !
 !  Y is a REAL array of length m, that must be set by the user
@@ -624,49 +663,49 @@
 !   to the dual variables z. On successful exit, it will contain
 !   the updated dual variables.
 !
-!  C_stat is an INTEGER array of length m, that on entry should give the 
-!  status of the constraints. Possible values are 
-!    C_stat( i ) < 0, the i-th constraint is in the active set, 
-!                     on its lower bound, 
+!  C_stat is an INTEGER array of length m, that on entry should give the
+!  status of the constraints. Possible values are
+!    C_stat( i ) < 0, the i-th constraint is in the active set,
+!                     on its lower bound,
 !                > 0, the i-th constraint is in the active set
 !                     on its upper bound, and
 !                = 0, the i-th constraint is not in the active set
 !
 !   On exit these will be reset so that
 !
-!    C_stat( i ) = - 1, for basic active constraints on their lower bounds, 
-!                  - 2, for non-basic active constraints on their lower bounds, 
+!    C_stat( i ) = - 1, for basic active constraints on their lower bounds,
+!                  - 2, for non-basic active constraints on their lower bounds,
 !                    0, for inactive constraints,
 !                    1, for basic active constraints on their upper bounds, and
-!                    2, for non-basic active constraints on their upper bounds 
+!                    2, for non-basic active constraints on their upper bounds
 !
-!  X_stat is an INTEGER array of length m, that on entry should give the 
-!   status of the simple bounds on the variables. Possible values are 
-!    X_stat( i ) < 0, the i-th variable is in the active set, 
-!                     on its lower bound, 
+!  X_stat is an INTEGER array of length m, that on entry should give the
+!   status of the simple bounds on the variables. Possible values are
+!    X_stat( i ) < 0, the i-th variable is in the active set,
+!                     on its lower bound,
 !                > 0, the i-th variable is in the active set
 !                     on its upper bound, and
 !                = 0, the i-th variable is not in the active set
 !
 !   On exit these will be reset so that
 !
-!    X_stat( i ) = - 1, for basic active variables on their lower bounds, 
-!                  - 2, for non-basic active variables on their lower bounds, 
-!                    0, for inactive constraints,
+!    X_stat( i ) = - 1, for basic active variables on their lower bounds,
+!                  - 2, for non-basic active variables on their lower bounds,
+!                    0, for inactive (i.e., free) variables,
 !                    1, for basic active variables on their upper bounds, and
 !                    2, for non-basic active variables on their upper bounds
 !
 !  data is a structure of type CRO_data_type that holds private internal data
 !
-!  control is a structure of type CRO_control_type that controls the 
+!  control is a structure of type CRO_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to CRO_initialize. See CRO_initialize 
+!   the elements may be set by a call to CRO_initialize. See CRO_initialize
 !   for details
 !
-!  inform is a structure of type CRO_inform_type that provides 
-!    information on exit from CRO_crossover. The component status 
+!  inform is a structure of type CRO_inform_type that provides
+!    information on exit from CRO_crossover. The component status
 !    has possible values:
-!  
+!
 !     0 Normal termination with a locally optimal solution.
 !
 !    -1 An allocation error occured; the status is given in the component
@@ -675,7 +714,7 @@
 !    -2 A deallocation error occured; the status is given in the component
 !       alloc_status.
 !
-!   - 3 one of the restrictions 
+!   - 3 one of the restrictions
 !          n     >=  1
 !          m     >=  0
 !       has been violated.
@@ -694,21 +733,21 @@
 !
 !   -16 the residuals are large; the factorization may be unsatisfactory
 !
-!  On exit from CRO_crossover, other components of inform are given in the 
+!  On exit from CRO_crossover, other components of inform are given in the
 !   preamble
 !
-!  H_val is an optional REAL array of length H_ptr(n+1)-1 that holds the 
-!    values of the nonzero components of the lower triangular part of H, 
+!  H_val is an optional REAL array of length H_ptr(n+1)-1 that holds the
+!    values of the nonzero components of the lower triangular part of H,
 !    stored row by row
 !
-!  H_col is an opional INTEGER array of length H_ptr(n+1)-1 that holds the 
-!    column indices of the components of the lower triangular part of H, 
+!  H_col is an opional INTEGER array of length H_ptr(n+1)-1 that holds the
+!    column indices of the components of the lower triangular part of H,
 !    corresponding to H_val
 !
-!  H_ptr is an optional INTEGER array of length n + 1 that holds pointers to 
+!  H_ptr is an optional INTEGER array of length n + 1 that holds pointers to
 !    the start of each row of H, and 1 past the end of the last row
 !
-!  H_lm is an optional argument of type LMS_data_type used to hold a 
+!  H_lm is an optional argument of type LMS_data_type used to hold a
 !   "limited-memory" representation of H as set up by the module GALAHAD_LMS
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -740,6 +779,7 @@
       INTEGER :: i, ip, j, jp, l, m_fixed, n_free, n_fixed, a_ne, nb, lbd, K_r_n
       INTEGER :: incoming, outgoing, basic, nonbasic, out, row_out, len_sls_sol
       INTEGER :: all_basic, nb_start, all_basic_old, dim_w, dim_w_max, oi, oj
+      INTEGER :: ii, jj
 !     INTEGER :: k, nviol8_xs, nviol8_cs, sofar, basic_old
 !     INTEGER :: nviol8_p, nviol8_d, nviol8_x, nviol8_y, nviol8_z, nviol8_c
       REAL :: time_start, time_record, time_now
@@ -752,6 +792,11 @@
       LOGICAL :: printi, printt, printm, printd, printa
       CHARACTER ( LEN = 80 ) :: array_name
 
+!  temporary!!
+
+      REAL ( KIND = wp ), DIMENSION( m ) :: C_new, Y_new
+      REAL ( KIND = wp ), DIMENSION( n ) :: X_new, Z_new
+
 !  insert into data
 
 !     INTEGER, DIMENSION( m + n + 1 ) :: PTR
@@ -760,7 +805,7 @@
 !     INTEGER, DIMENSION( n ) :: INDEPENDENT
 !     INTEGER :: n_independent
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -792,7 +837,7 @@
           inform%status = GALAHAD_error_optional ; GO TO 900
         END IF
       END IF
-      
+
 !  print out input data if required
 
       IF ( out > 0 .AND. control%print_level >= 101 ) THEN
@@ -850,7 +895,7 @@
 !  if there are no fixed constraints, the current active set suffices
 
       m_fixed = COUNT( C_stat( 1 : m ) /= 0 )
-      IF ( m_fixed == 0 ) GO TO 900
+      IF ( m_fixed == 0 ) GO TO 800
 
 !  allocate space to record the lists of free variables and fixed constraints,
 !  X_free and C_fixed. Variables  X_free( : n_free) are free while constrants
@@ -874,16 +919,16 @@
           bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  allocate space to record which variables are free and which constraints 
-!  fixed, X_inorder and C_inorder. If X_inorder( i ) > 0, variable i is the 
+!  allocate space to record which variables are free and which constraints
+!  fixed, X_inorder and C_inorder. If X_inorder( i ) > 0, variable i is the
 !  X_inorder( i )-th free variable, while if X_inorder( i ) < 0, i the variable
-!  is the - X_inorder(i)-th fixed variable. Similarly, if C_inorder( i ) > 0, 
-!  constraint i is the C_inorder( i )-th fixed constraint, while if 
+!  is the - X_inorder(i)-th fixed variable. Similarly, if C_inorder( i ) > 0,
+!  constraint i is the C_inorder( i )-th fixed constraint, while if
 !  C_inorder( i ) = 0, the constraint is free. Thus, for example,
 
 !   --------------------------------------------------
 !     j        1  2  3  4  5  6 ....       ....   n
-!   X_stat     0  1  0  0 -1  0 ....              0     
+!   X_stat     0  1  0  0 -1  0 ....              0
 !   X_free     1  3  4  6  ....  n_free
 !   X_inorder  1 -1  2  3 -2  4 ....       .... n_free
 !   --------------------------------------------------
@@ -957,7 +1002,7 @@
 !    H = ( H_fx  H_od^T ) and A = ( A_fx ) = ( A_fxx  A_frx ) ;
 !        ( H_od   H_fr  )         ( A_fr )   ( A_fxr  A_frr )
 
-!  we shall discard free constraints A_fr. We are then interested in 
+!  we shall discard free constraints A_fr. We are then interested in
 !  non-trivial solutions to the system
 
 !    ( H_fx  H_od^T   I   A_fxx^T ) ( dx_fx )
@@ -965,26 +1010,26 @@
 !    (  I      0      0      0    ) ( dz_fx )
 !    ( A_fxx  A_frx   0      0    ) ( dy_fx )
 
-!  since for these ( x + t dx, y - t dy, z - t dz ) continues to satisfy the 
-!  KKT equations for all t. [the remaining free variables and inactive 
-!  constraints cannot be active and may be discarded as the initial 
+!  since for these ( x + t dx, y - t dy, z - t dz ) continues to satisfy the
+!  KKT equations for all t. [the remaining free variables and inactive
+!  constraints cannot be active and may be discarded as the initial
 !  maximally ``optimal'' partition from interior-point methods s is unique]
 
 !  We check to see if A_frx is of full (row) rank. If so, dKKT has the
-!  unique solution 0 and the unique solution to QP is basic. If not, we have 
+!  unique solution 0 and the unique solution to QP is basic. If not, we have
 
 !    A_frx = ( A_frxb ) and A_fxx = ( A_fxxb )
 !            ( A_frxn )             ( A_fxxn )
 
 !  where rank( A_frxb ) = rank( A_frx ). In this case, we may rewrite dKKT as
 
-!    ( H_fx    H_od^T  A_fxxb^T  I ) ( dx_fx  )     ( A_fxxn^T ) 
+!    ( H_fx    H_od^T  A_fxxb^T  I ) ( dx_fx  )     ( A_fxxn^T )
 !    ( H_od     H_fr   A_frxb^T  0 ) ( dx_fr  ) = - ( A_frxn^T ) dy_fxn
 !    ( A_fxxb  A_frxb     0      0 ) ( dy_fxb )     (    0     )       (bKKT)
-!    (  I        0        0      0 ) ( dz_fx  )     (    0     ) 
+!    (  I        0        0      0 ) ( dz_fx  )     (    0     )
 
-!  where the left-hand side coeficient matrix K_b is non-singular, and multiple 
-!  solutions to (dKKT) may be found by varying dy_fxn. [the equations 
+!  where the left-hand side coeficient matrix K_b is non-singular, and multiple
+!  solutions to (dKKT) may be found by varying dy_fxn. [the equations
 !  involving  A_frxb may be omited since they are linearly dependent].
 !  We shall refer to the coefficient matrices of bKKT as K_b
 
@@ -1032,7 +1077,7 @@
 
 !  record the sub-matrix A_frx^T
 
-        CALL SMT_put( data%AT%type, 'COORDINATE', i ) 
+        CALL SMT_put( data%AT%type, 'COORDINATE', i )
         data%AT%m = n_free ; data%AT%n = m_fixed
 
         data%AT%ne = 0
@@ -1086,7 +1131,7 @@
 !  check to see if dependent constraints should be removed
 
           inform%dependent = MAX( 0, data%AT%n - inform%ULS_inform%rank )
-          IF ( inform%dependent == 0 ) GO TO 900
+          IF ( inform%dependent == 0 ) GO TO 800
         ELSE
           inform%dependent = m_fixed
         END IF
@@ -1096,29 +1141,29 @@
 
 !  recall that we aim to satisfy
 
-!    ( H_fx    H_od^T  A_fxxb^T   I ) ( dx_fx  )     ( A_fxxn^T ) 
-!    ( H_od     H_fr   A_frxb^T   0 ) ( dx_fr  ) = - ( A_frxn^T ) dy_fxn 
+!    ( H_fx    H_od^T  A_fxxb^T   I ) ( dx_fx  )     ( A_fxxn^T )
+!    ( H_od     H_fr   A_frxb^T   0 ) ( dx_fr  ) = - ( A_frxn^T ) dy_fxn
 !    ( A_fxxb  A_frxb       0     0 ) ( dy_fxb )     (    0     )        (bKKT)
-!    (  I        0          0     0 ) ( dz_fx  )     (    0     ) 
+!    (  I        0          0     0 ) ( dz_fx  )     (    0     )
 
 !  we now need to "activate" nonbasic constraints A_fxn one at a time
-!  by choosing dy_fxn to have a single nonzero (unit) component, and then 
+!  by choosing dy_fxn to have a single nonzero (unit) component, and then
 !  monitoring ( x + t dx, y + t dy, z + t dz ) as t increases from 0.
 !  We call the candidate column of A_fxn^T the ** incoming ** column.
-!  As we do so, the set of optimal multipliers/dual variables will vary 
+!  As we do so, the set of optimal multipliers/dual variables will vary
 !  until one hits its bound. If it is the one corresponding to the activated
 !  non-basic constraint, we can remove this from consideration. If, converesly,
 !  one of the multipliers/dual variables of the basic constraints/variables
 !  hits its bound, we will interchange this basic constraint/variable with the
-!  incoming one and remove the ** outgoing ** constraint/variable from 
+!  incoming one and remove the ** outgoing ** constraint/variable from
 !  consideration
 
 !  Note that the block system bKKT may be solved as
 
 !    (  H_fr   A_frxb^T ) ( dx_fr  ) = - ( A_frxn^T dy_fxn )             (rKKT)
-!    ( A_frxb     0     ) ( dy_fxb )     (        0        ) 
+!    ( A_frxb     0     ) ( dy_fxb )     (        0        )
 
-!  where  dx_fx = 0 and dz_fx = - H_od^T dx_fr - A_fxx^T dy_fx. [Also recall 
+!  where  dx_fx = 0 and dz_fx = - H_od^T dx_fr - A_fxx^T dy_fx. [Also recall
 !  that we refer to the coefficient matrices of bKKT and rKKT as K_b and K_r]
 
       IF ( printi ) WRITE( out,                                                &
@@ -1130,7 +1175,7 @@
 !    K_r = (  H_fr   A_frxb^T )
 !          ( A_frxb     0     )
 
-!  while the remaining dependent matrix of rows/columns A_frxn is known as the 
+!  while the remaining dependent matrix of rows/columns A_frxn is known as the
 !  ``non-basis''. Allocate space to record the basic and non-basic rows and
 !  columns
 
@@ -1162,10 +1207,10 @@
         basic = inform%ULS_inform%rank
         data%C_fixed( data%C_basic( : basic ) ) =                             &
            - data%C_fixed( data%C_basic( : basic ) )
- 
+
 !  now consider all fixed rows. Record and count the non-basic rows (those with
-!  +ve signs of C_fixed) directly after the basic ones in C_basic and flag the 
-!  j-th free constraint as the nonbasic-th non-basic with a -ve sign in 
+!  +ve signs of C_fixed) directly after the basic ones in C_basic and flag the
+!  j-th free constraint as the nonbasic-th non-basic with a -ve sign in
 !  C_inorder. The basic rows have positive signs in C_inorder, and as before,
 !  the free rows have the value 0
 
@@ -1364,7 +1409,7 @@
 
       nb_start = basic + 1
 !write(6,*) ' nonbasic ', data%C_basic( basic + 1 : m_fixed )
- 100  CONTINUE 
+ 100  CONTINUE
       IF ( printi ) WRITE( out, "( A, ' K n = ', I0 )" )                       &
         prefix, data%SCU_matrix%n
 
@@ -1377,7 +1422,7 @@
           bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  record the current list of basic constraints and variables in BASIS. 
+!  record the current list of basic constraints and variables in BASIS.
 !  Positive components are constraints, negative components are variables
 !  and zero components are irrelevent
 
@@ -1392,7 +1437,7 @@
 
       IF ( n_free > 0 ) THEN
 
-!  count the number of nonzeros in the basis matrix 
+!  count the number of nonzeros in the basis matrix
 
 !     K_r = (  H_fr   A_frxb^T )
 !           ( A_frxb     0    )
@@ -1401,8 +1446,8 @@
         DO i = 1, m
           IF ( data%C_inorder( i ) > 0 ) THEN       !  basic constraint
             IF (  A_ptr( i + 1 ) > A_ptr( i ) ) data%K_r%ne = data%K_r%ne +    &
-                COUNT( data%X_inorder( A_col(  A_ptr( i ) :                    &
-                                               A_ptr( i + 1 ) - 1 ) ) > 0 )
+                COUNT( data%X_inorder( A_col( A_ptr( i ) :                     &
+                                              A_ptr( i + 1 ) - 1 ) ) > 0 )
           END IF
         END DO
 
@@ -1412,10 +1457,10 @@
 !     K_r = (  delta I - V_fr W^-1 V_fr^T  A_frxb^T )
 !           (             A_frxb               0    )
 
-!  Since any system K_r v = rhs we may be required to solve can be expanded to 
+!  Since any system K_r v = rhs we may be required to solve can be expanded to
 
 !   ( delta I   A_frxb^T  V_fr ) (  v  )   ( rhs )
-!   (  A_frxb      0       0   ) (     ) = (     ), 
+!   (  A_frxb      0       0   ) (     ) = (     ),
 !   (  V_fr^T      0       W   ) ( - z )   (  0  )
 
 !  we instead factorize this expanded matrix, K_re ; both V and W are dense
@@ -1431,8 +1476,8 @@
           DO i = 1, n
             IF ( data%X_inorder( i ) > 0 ) THEN
               IF (  H_ptr( i + 1 ) > H_ptr( i ) ) data%K_r%ne = data%K_r%ne +  &
-                COUNT( data%X_inorder( H_col(  H_ptr( i ) :                    &
-                                               H_ptr( i + 1 ) - 1 ) ) > 0 )
+                COUNT( data%X_inorder( H_col( H_ptr( i ) :                     &
+                                              H_ptr( i + 1 ) - 1 ) ) > 0 )
             END IF
           END DO
         END IF
@@ -1602,7 +1647,7 @@
           END DO
         END IF
         data%K_r%n = K_r_n ; data%K_r%m = K_r_n
-        CALL SMT_put( data%K_r%type, 'COORDINATE', i ) 
+        CALL SMT_put( data%K_r%type, 'COORDINATE', i )
 
 !       WRITE( 6, "( ' K_sub: n, nnz ', 2I4 )" ) data%K_r%n, data%K_r%ne
 !       WRITE( 6, "( A, /, ( 10I7) )" ) ' rows =', data%K_r%row( : data%K_r%ne )
@@ -1672,17 +1717,17 @@
 
 !  loop over the nonbasic constraints to solve
 
-!    ( H_fx    H_od^T  A_fxxb^T   I ) ( dx_fx  )   
+!    ( H_fx    H_od^T  A_fxxb^T   I ) ( dx_fx  )
 !    ( H_od     H_fr   A_frxb^T   0 ) ( dx_fr  ) = rhs_nb
-!    ( A_fxxb  A_frxb       0     0 ) ( dy_fxb )   
-!    (  I        0          0     0 ) ( dz_fx  )   
+!    ( A_fxxb  A_frxb       0     0 ) ( dy_fxb )
+!    (  I        0          0     0 ) ( dz_fx  )
 
 !  where the nb-th right-hand side (nb = 1, ...,  nonbasic) is
 
 !             ( - A_fxxn^T dy_fxn_nb )
-!    rhs_nb = ( - A_frxn^T dy_fxn_nb ) 
-!             (           0          )        
-!             (           0          ) 
+!    rhs_nb = ( - A_frxn^T dy_fxn_nb )
+!             (           0          )
+!             (           0          )
 
 ! and dy_fxn_nb has one its nonzero in position nb
 
@@ -1704,7 +1749,7 @@
 !       data%DX = zero ; data%DY = zero ; data%DZ = zero
 
 !  record the change in the incoming non-basic constraint dy_fxn. Also
-!  record the step to a convenient bound, and the variable that achieves 
+!  record the step to a convenient bound, and the variable that achieves
 !  this step (-ve for constraints)
 
         tryboth = .FALSE.
@@ -1729,7 +1774,7 @@
 
         data%RHS( : data%SCU_matrix%n + data%SCU_matrix%m ) = zero
 !       b_fx = .FALSE.
-        b_fr = .FALSE. ; c_fr = .FALSE. ; c_fx = .FALSE. 
+        b_fr = .FALSE. ; c_fr = .FALSE. ; c_fx = .FALSE.
         DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
           j = A_col( l )
           data%RHS( j ) = - dy_i * A_val( l )
@@ -1746,7 +1791,7 @@
 
 !  use SCU to solve the linear system
 
-!    ( H_fx    H_od^T  A_fxxb^T  I ) (  dx_fx  )   ( b_fx ) 
+!    ( H_fx    H_od^T  A_fxxb^T  I ) (  dx_fx  )   ( b_fx )
 !    ( H_od     H_fr   A_frxb^T  0 ) (  dx_fr  ) = ( b_fr )
 !    ( A_fxxb  A_frxb       0    0 ) (  dy_fxb )   ( c_fr )
 !    (  I        0          0    0 ) (  dz_fx  )   ( c_fx )
@@ -1768,8 +1813,7 @@
             ELSE IF ( inform%scu_status < 0 ) THEN
               IF ( printi ) WRITE( out, "( A, ' Error: SCU_solve status ',     &
              &  I0 )" ) prefix, inform%scu_status
-              inform%status = GALAHAD_error_solve
-              GO TO 900
+              inform%status = GALAHAD_error_solve ; GO TO 900
             END IF
 
 !  SCU requires a further solve
@@ -1787,7 +1831,7 @@
                                   H_ptr = H_ptr, H_lm = H_lm )
             IF ( inform%status /= GALAHAD_ok ) GO TO 900
 !           b_fx = .TRUE.
-            b_fr = .TRUE. ; c_fr = .TRUE. ; c_fx = .TRUE. 
+            b_fr = .TRUE. ; c_fr = .TRUE. ; c_fx = .TRUE.
           END DO
 
 !  spread into dx, dy and dz
@@ -1870,8 +1914,8 @@
 !  write(6,*) 'dy', data%DY
 !  write(6,*) 'dz', data%DZ
 
-!  record the largest step that still satisfies the primal bounds and 
-!  Lagrange multipliers, and the variable/constraint that achieves this step 
+!  record the largest step that still satisfies the primal bounds and
+!  Lagrange multipliers, and the variable/constraint that achieves this step
 
 !       IF ( n_free > 0 ) THEN
           DO l = 1, m_fixed
@@ -1897,7 +1941,7 @@
 !       END IF
 !write(6,*) 'outgoing y ', outgoing, step
 !  record the largest step that still satisfies the dual bounds and the dual
-!  variable that achieves this step 
+!  variable that achieves this step
 
         DO i = 1, n
           IF ( X_stat( i ) < 0 ) THEN                 ! active at lower bound
@@ -1926,15 +1970,15 @@
             DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
               j = A_col( l )
               IF ( data%X_inorder( j ) > 0 )                                   &
-                data%DC( i ) = data%DC( i ) + A_val( l ) * data%DX( j ) 
+                data%DC( i ) = data%DC( i ) + A_val( l ) * data%DX( j )
             END DO
           END IF
         END DO
 !write(6,*) ' dc(12) ', data%DC( 12 )
 !stop
 
-!  record the largest step that still satisfies the constraint bounds and the 
-!  constraint that achieves this step 
+!  record the largest step that still satisfies the constraint bounds and the
+!  constraint that achieves this step
 
 !write(6,*) ' m_equal ', m_equal
         DO i = m_equal + 1, m                         ! can this happen?
@@ -1964,7 +2008,7 @@
             IF ( b_fr_neq_0 ) THEN
               DO l = 1, n_free
                 i = data%X_free( l )
-                data%DX( i ) = - data%DX( i ) 
+                data%DX( i ) = - data%DX( i )
               END DO
 
               DO l = 1, m_fixed
@@ -1972,8 +2016,8 @@
                 data%DY( i ) = - data%DY( i )
               END DO
 
-!  record the largest step that still satisfies the primal bounds and 
-!  Lagrange multipliers, and the variable/constraint that achieves this step 
+!  record the largest step that still satisfies the primal bounds and
+!  Lagrange multipliers, and the variable/constraint that achieves this step
 
               DO l = 1, m_fixed
                 i = data%C_fixed( l )
@@ -1999,10 +2043,10 @@
 !         END IF
 
 !  record the largest step that still satisfies the dual bounds and the dual
-!  variable that achieves this step 
+!  variable that achieves this step
 
           data%DY( - incoming ) = - dy_i
-          data%DZ = - data%DZ 
+          data%DZ = - data%DZ
           DO i = 1, n
             IF ( X_stat( i ) < 0 ) THEN                 ! active at lower bound
               IF ( data%DZ( i ) > zero ) THEN
@@ -2024,8 +2068,8 @@
 !write(6,"( ' DY ', /, (5ES12.4 ) )" ) data%DY
 !write(6,"( ' DZ ', /, (5ES12.4 ) )" ) data%DZ
 
-!  record the largest step that still satisfies the constraint bounds and the 
-!  constraint that achieves this step 
+!  record the largest step that still satisfies the constraint bounds and the
+!  constraint that achieves this step
 
           data%DC = - data%DC
           DO i = m_equal + 1, m                       ! can this happen?
@@ -2045,7 +2089,7 @@
           END DO
         END IF
 
-!  record which variable/constraint/multiplier has hit it bound 
+!  record which variable/constraint/multiplier has hit it bound
 
         IF ( printm ) THEN
 !         IF ( outgoing > 0 ) THEN
@@ -2136,13 +2180,13 @@
           IF ( inform%status /= GALAHAD_ok ) GO TO 900
         END IF
 
-!  main point: we need to move to another basis in which an incoming 
+!  main point: we need to move to another basis in which an incoming
 !  (non-basic variable) dy_fxn in the current system
 
-!    ( H_fx    H_od^T  A_fxxb^T   I ) ( dx_fx  )     ( A_fxxn^T ) 
+!    ( H_fx    H_od^T  A_fxxb^T   I ) ( dx_fx  )     ( A_fxxn^T )
 !    ( H_od     H_fr   A_frxb^T   0 ) ( dx_fr  ) = - ( A_frxn^T ) dy_fxn
-!    ( A_fxxb  A_frxb       0     0 ) ( dy_fxb )     (    0     ) 
-!    (  I        0          0     0 ) ( dz_fx  )     (    0     ) 
+!    ( A_fxxb  A_frxb       0     0 ) ( dy_fxb )     (    0     )
+!    (  I        0          0     0 ) ( dz_fx  )     (    0     )
 
 !  replaces an outgoing one of the those from dy_fxb or dz_fx; this is
 !  a ** pivot **. Generically, we may view this as wanting to solve a system
@@ -2162,10 +2206,10 @@
 !     (  0   1  0  0 ) ( t )    ( 0 )
 !     ( d^T  0  0  0 ) ( v )    ( 0 )
 
-!  for which K_0 is the leading sub-matrix, and rather than simply 
-!  refactorizing the new matrix, we may exploit this using a Schur-complement 
+!  for which K_0 is the leading sub-matrix, and rather than simply
+!  refactorizing the new matrix, we may exploit this using a Schur-complement
 !  updating method such as GALAHAD_SCU in which factors of K_0 and a small
-!  Schur complement are used instead; the components s and t are subsequently 
+!  Schur complement are used instead; the components s and t are subsequently
 !  discarded
 
 !  update the factoriztion
@@ -2222,7 +2266,7 @@
           DO i = 1, all_basic_old
             j = data%BASIS( i )
             IF ( j /= 0 ) THEN
-              all_basic = all_basic + 1 
+              all_basic = all_basic + 1
               data%BASIS( all_basic ) = j
               IF ( j > 0 ) THEN
                 basic = basic + 1
@@ -2301,7 +2345,7 @@
 !             END IF
 !           END DO
 !         END IF
-          c_fr = .TRUE. ; c_fx = .FALSE. 
+          c_fr = .TRUE. ; c_fx = .FALSE.
           IF ( printt ) WRITE ( out,                                           &
             "( A, '  deleting basic constraint ', I0, ' with SCU_append' )" )  &
             prefix,  - outgoing
@@ -2317,7 +2361,7 @@
             prefix, outgoing
         END IF
 !       b_fx = .FALSE.
-        b_fr = .FALSE. 
+        b_fr = .FALSE.
 
 !  update the factorization of the schur complement of K_0 in
 
@@ -2349,16 +2393,15 @@
           ELSE IF ( inform%scu_status < 0 ) THEN
             IF ( printi ) WRITE( out, "( A, ' Error: SCU_append status ',      &
            &  I0 )" ) prefix, inform%scu_status
-            inform%status = GALAHAD_error_factorization
-            GO TO 900
+            inform%status = GALAHAD_error_factorization ; GO TO 900
           END IF
 
 !  solve the system
 
-!    ( H_fx    H_od^T  A_fxxb^T  I ) ( dx_fx  )   
+!    ( H_fx    H_od^T  A_fxxb^T  I ) ( dx_fx  )
 !    ( H_od     H_fr   A_frxb^T  0 ) ( dx_fr  ) = VECTOR
-!    ( A_fxxb  A_frxb       0    0 ) ( dy_fxb )   
-!    (  I        0          0    0 ) ( dz_fx  )   
+!    ( A_fxxb  A_frxb       0    0 ) ( dy_fxb )
+!    (  I        0          0    0 ) ( dz_fx  )
 
           CALL CRO_block_solve( n, m, n_free, m_fixed, basic,                  &
                                 A_val, A_col, A_ptr,                           &
@@ -2388,7 +2431,7 @@
 
         j = data%SCU_matrix%BD_col_start( data%SCU_matrix%m + 1 )
 !       b_fx = .FALSE.
-        b_fr = .FALSE. ; c_fr = .FALSE. ; c_fx = .FALSE. 
+        b_fr = .FALSE. ; c_fr = .FALSE. ; c_fx = .FALSE.
         DO l = A_ptr( - incoming ), A_ptr( - incoming + 1 ) - 1
           data%SCU_matrix%BD_row( j ) = A_col( l )
           data%SCU_matrix%BD_val( j ) = A_val( l )
@@ -2415,16 +2458,15 @@
           ELSE IF ( inform%scu_status < 0 ) THEN
             IF ( printi ) WRITE( out, "( A, ' Error: SCU_append status ',      &
            &  I0 )" ) prefix, inform%scu_status
-            inform%status = GALAHAD_error_factorization
-            GO TO 900
+            inform%status = GALAHAD_error_factorization ; GO TO 900
           END IF
 
 !  solve the system
 
-!    ( H_fx    H_od^T  A_fxxb^T  I ) ( dx_fx  )   
+!    ( H_fx    H_od^T  A_fxxb^T  I ) ( dx_fx  )
 !    ( H_od     H_fr   A_frxb^T  0 ) ( dx_fr  ) = VECTOR
-!    ( A_fxxb  A_frxb       0    0 ) ( dy_fxb )   
-!    (  I        0          0    0 ) ( dz_fx  )   
+!    ( A_fxxb  A_frxb       0    0 ) ( dy_fxb )
+!    (  I        0          0    0 ) ( dz_fx  )
 
           CALL CRO_block_solve( n, m, n_free, m_fixed, basic,                  &
                                 A_val, A_col, A_ptr,                           &
@@ -2464,11 +2506,535 @@
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
       END IF
 
+ 800  CONTINUE
+
+!  if required, refine the solution so that it satisfies the KKT conditions
+!  more accurately. We do this by solving the reduced optimality system
+
+!     (  H_fr   A_frab^T ) (  x_fr  ) = rhs = ( - g_fr - H_od x_fx ),  (rKKT2)
+!     ( A_frab     0     ) ( - y_ab )         ( c_ab - A_fxab x_fx )
+
+!  where x_fx and c_ab are the values of the bounds for the fixed variables
+!  and basic active constraints, using the factors of the matrix K_r in
+!  (rKKT2), and then recovering
+
+!    z_fx = g_fx + H_fx x_fx + H_od^T x_fr - A_fxab^T y_ab.
+
+!  For the limited memory Hessian case, H = delta I - V W^-1 V^T, where
+!  V = R [ Y : delta S ], and thus
+
+!     K_r = (  delta I - V_fr W^-1 V_fr^T  A_frxb^T ).
+!           (             A_frxb               0    )
+
+!  Since any system K_r v = rhs we may be required to solve can be expanded to
+
+!     ( delta I   A_frab^T  V_fr ) (  v  )   ( rhs )
+!     (  A_frab      0       0   ) (     ) = (     ),
+!     (  V_fr^T      0       W   ) ( - z )   (  0  )
+
+!  we instead factorize this expanded matrix, K_re ; both V and W are dense
+
+      IF ( control%refine_solution ) THEN
+
+!  count the number of free variables and basic active constraints
+
+        n_free = 0
+        DO j = 1, n
+          IF ( X_stat( j ) == 0 ) THEN
+            n_free = n_free + 1
+            data%X_inorder( j ) = n_free
+            data%X_free( n_free ) = j
+          ELSE
+            data%X_inorder( j ) = 0
+          END IF
+        END DO
+
+        m_fixed = 0
+        DO i = 1, m
+          IF ( ABS( C_stat( i ) ) == 1 ) THEN
+            m_fixed = m_fixed + 1
+            data%C_inorder( i ) = m_fixed
+            data%C_fixed( m_fixed ) = i
+          ELSE
+            data%C_inorder( i ) = 0
+          END IF
+        END DO
+
+!  count the number of nonzeros in K_r
+
+        IF ( n_free > 0 ) THEN
+
+!  firstly, find the number of free variables in the active constraints
+
+          data%K_r%ne = 0
+          DO i = 1, m
+            IF ( data%C_inorder( i ) > 0 ) THEN
+              IF (  A_ptr( i + 1 ) > A_ptr( i ) ) data%K_r%ne = data%K_r%ne    &
+                + COUNT( data%X_inorder( A_col( A_ptr( i ) :                   &
+                                                A_ptr( i + 1 ) - 1 ) ) > 0 )
+            END IF
+          END DO
+
+!  now add the free submatrix for the limited memory Hessian case ...
+
+          IF ( lbfgs ) THEN
+            dim_w = 2 * H_lm%length
+            data%K_r%ne = data%K_r%ne + n_free                                 &
+              + dim_w * n_free + ( dim_w * ( dim_w + 1 ) ) / 2
+
+!  ... or for the Hessian stored by rows
+
+          ELSE
+            DO i = 1, n
+              IF ( data%X_inorder( i ) > 0 ) THEN
+                IF (  H_ptr( i + 1 ) > H_ptr( i ) ) data%K_r%ne = data%K_r%ne  &
+                  + COUNT( data%X_inorder( H_col( H_ptr( i ) :                 &
+                                                  H_ptr( i + 1 ) - 1 ) ) > 0 )
+              END IF
+            END DO
+          END IF
+
+!  allocate space for K_r or K_re as appropriate
+
+          array_name = 'cro: data%K_r%row'
+          CALL SPACE_resize_array( data%K_r%ne, data%K_r%row,                  &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          array_name = 'cro: data%K_r%col'
+          CALL SPACE_resize_array( data%K_r%ne, data%K_r%col,                  &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          array_name = 'cro: data%K_r%val'
+          CALL SPACE_resize_array( data%K_r%ne, data%K_r%val,                  &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          data%K_r%ne = 0
+          K_r_n = n_free + m_fixed
+
+!  form K_re
+
+          IF ( lbfgs ) THEN
+
+!  record the components of H_fr in K_re, ...
+
+            IF ( H_lm%restricted == 0 ) THEN
+              DO j = 1, n_free
+                data%K_r%ne = data%K_r%ne + 1
+                data%K_r%row( data%K_r%ne ) = j
+                data%K_r%col( data%K_r%ne ) = j
+                data%K_r%val( data%K_r%ne ) = H_lm%delta
+              END DO
+            ELSE
+              DO j = 1, n
+                l = data%X_inorder( j )
+                IF ( l > 0 .AND. l <= H_lm%n ) THEN
+                  data%K_r%ne = data%K_r%ne + 1
+                  data%K_r%row( data%K_r%ne ) = l
+                  data%K_r%col( data%K_r%ne ) = l
+                  data%K_r%val( data%K_r%ne ) = H_lm%delta
+                END IF
+              END DO
+            END IF
+
+!  ... those of A_frab, ...
+
+            DO i = 1, m
+              IF ( data%C_inorder( i ) > 0 ) THEN
+                DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+                  j = A_col( l )
+                  IF ( data%X_inorder( j ) > 0 ) THEN
+                    data%K_r%ne = data%K_r%ne + 1
+                    data%K_r%row( data%K_r%ne ) = data%C_inorder( i ) + n_free
+                    data%K_r%col( data%K_r%ne ) = data%X_inorder( j )
+                    data%K_r%val( data%K_r%ne ) = A_val( l )
+                  END IF
+                END DO
+              END IF
+            END DO
+
+!  ... those of W ...
+
+            DO j = 1, dim_w
+              oj = K_r_n + j
+              DO i = j, dim_w
+                data%K_r%ne = data%K_r%ne + 1
+                data%K_r%row( data%K_r%ne ) = K_r_n + i
+                data%K_r%col( data%K_r%ne ) = oj
+                data%K_r%val( data%K_r%ne ) = data%W( i, j )
+              END DO
+            END DO
+
+!  ... and those of V_fr^T where V = R [ Y : delta S ]
+
+            DO i = 1, H_lm%length
+              K_r_n = K_r_n + 1
+              oi = H_lm%ORDER( i )
+              DO j = 1, n
+                IF ( data%X_inorder( j ) > 0 ) THEN
+                  data%K_r%ne = data%K_r%ne + 1
+                  data%K_r%row( data%K_r%ne ) = K_r_n
+                  data%K_r%col( data%K_r%ne ) = data%X_inorder( j )
+                  IF ( H_lm%restricted == 0 ) THEN
+                    data%K_r%val( data%K_r%ne ) = H_lm%Y( j, oi )
+                  ELSE
+                    l = H_lm%RESTRICTION( j )
+                    IF ( l <= H_lm%n ) THEN
+                      data%K_r%val( data%K_r%ne ) = H_lm%Y( l, oi )
+                    ELSE
+                      data%K_r%ne = data%K_r%ne - 1
+                    END IF
+                  END IF
+                END IF
+              END DO
+            END DO
+
+            DO i = 1, H_lm%length
+              K_r_n = K_r_n + 1
+              oi = H_lm%ORDER( i )
+              DO j = 1, n
+                IF ( data%X_inorder( j ) > 0 ) THEN
+                  data%K_r%ne = data%K_r%ne + 1
+                  data%K_r%row( data%K_r%ne ) = K_r_n
+                  data%K_r%col( data%K_r%ne ) = data%X_inorder( j )
+                  IF ( H_lm%restricted == 0 ) THEN
+                    data%K_r%val( data%K_r%ne ) = H_lm%delta * H_lm%S( j, oi )
+                  ELSE
+                    l = H_lm%RESTRICTION( j )
+                    IF ( l <= H_lm%n ) THEN
+                      data%K_r%val( data%K_r%ne ) = H_lm%delta * H_lm%S( l, oi )
+                    ELSE
+                      data%K_r%ne = data%K_r%ne - 1
+                    END IF
+                  END IF
+                END IF
+              END DO
+            END DO
+
+!  form K_r
+
+          ELSE
+
+!  record the components of H_fr in K_r ...
+
+            DO i = 1, n
+              IF ( data%X_inorder( i ) > 0 ) THEN
+                DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
+                  j = H_col( l )
+                  IF ( data%X_inorder( j ) > 0 ) THEN
+                    data%K_r%ne = data%K_r%ne + 1
+                    data%K_r%row( data%K_r%ne ) = data%X_inorder( i )
+                    data%K_r%col( data%K_r%ne ) = data%X_inorder( j )
+                    data%K_r%val( data%K_r%ne ) = H_val( l )
+                  END IF
+                END DO
+              END IF
+            END DO
+
+!  ... and those of A_frab
+
+            DO i = 1, m
+              IF ( data%C_inorder( i ) > 0 ) THEN
+                DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+                  j = A_col( l )
+                  IF ( data%X_inorder( j ) > 0 ) THEN
+                    data%K_r%ne = data%K_r%ne + 1
+                    data%K_r%row( data%K_r%ne ) = data%C_inorder( i ) + n_free
+                    data%K_r%col( data%K_r%ne ) = data%X_inorder( j )
+                    data%K_r%val( data%K_r%ne ) = A_val( l )
+                  END IF
+                END DO
+              END IF
+            END DO
+          END IF
+          data%K_r%n = K_r_n ; data%K_r%m = K_r_n
+          CALL SMT_put( data%K_r%type, 'COORDINATE', i )
+
+!       WRITE( 6, "( ' K_sub: n, nnz ', 2I4 )" ) data%K_r%n, data%K_r%ne
+!       WRITE( 6, "( A, /, ( 10I7) )" ) ' rows =', data%K_r%row( : data%K_r%ne )
+!       WRITE( 6, "( A, /, ( 10I7) )" ) ' cols =', data%K_r%col( : data%K_r%ne )
+!       WRITE( 6, "( A, /, ( F7.2) )" ) ' vals =', data%K_r%val( : data%K_r%ne )
+
+!  order the rows/columns of K_r prior to factorization
+
+          CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
+          CALL SLS_initialize_solver( data%control%symmetric_linear_solver,    &
+                                      data%SLS_data, inform%SLS_inform )
+          CALL SLS_analyse( data%K_r, data%SLS_data, data%control%SLS_control, &
+                            inform%SLS_inform )
+          CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+          inform%time%analyse = inform%time%analyse + time_now - time_record
+          inform%time%clock_analyse =                                          &
+            inform%time%clock_analyse + clock_now - clock_record
+
+          IF ( printi ) WRITE( out,                                            &
+               "( A, ' K nnz(matrix,predicted factors) = ', I0, ', ', I0,      &
+            &  /, A, ' SLS: analysis of K complete: status = ', I0 )" )        &
+                 prefix, data%K_r%ne, inform%SLS_inform%real_size_factors,     &
+                 prefix, inform%SLS_inform%status
+          IF ( printi .AND. inform%SLS_inform%out_of_range > 0 ) WRITE( out,   &
+              "( A, ' ** warning: ', I0, ' entr', A, ' of K out of range' )" ) &
+                 prefix, inform%SLS_inform%out_of_range,                       &
+                 STRING_ies( inform%SLS_inform%out_of_range )
+          IF ( inform%SLS_inform%status < 0 ) THEN
+             inform%status = GALAHAD_error_analysis ; GO TO 900
+          END IF
+
+!  factorize the basic sub-block K_r
+
+          CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
+          CALL SLS_factorize( data%K_r, data%SLS_data,                         &
+                              data%control%SLS_control, inform%SLS_inform )
+          CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+          inform%time%factorize = inform%time%factorize + time_now - time_start
+          inform%time%clock_factorize =                                        &
+            inform%time%clock_factorize + clock_now - clock_record
+
+          IF ( printi ) WRITE( out,                                            &
+               "( A, ' K nnz(matrix,factors) = ', I0, ', ', I0,                &
+            &  /, A, ' SLS: factorization of K complete: status = ', I0 )" )   &
+                 prefix, data%K_r%ne, inform%SLS_inform%entries_in_factors,    &
+                 prefix, inform%SLS_inform%status
+          IF ( inform%SLS_inform%status < 0 ) THEN
+             inform%status = GALAHAD_error_factorization ; GO TO 900
+          END IF
+
+          IF ( printm ) WRITE( out, "( A, ' K%n ', I0, ' rank ', I0 )" )       &
+            prefix, data%K_r%n, inform%SLS_inform%rank
+        ELSE
+          data%K_r%n = 0
+        END IF
+
+!   now solve the required optimality system
+
+!     (  H_fr   A_frab^T ) (  x_fr  ) = ( - g_fr - H_od x_fx )
+!     ( A_frab     0     ) ( - y_ab )   ( c_ab - A_fxab x_fx )
+
+!  and find  z_fx = g_fx + H_fx x_fx + H_od^T x_fr - A_fxab^T y_ab,
+
+!  where x_fx and c_ab are the values of the bounds for the fixed variables
+!  and basic active constraints
+
+!  provide space for the right-hand side
+
+        array_name = 'cro: data%SOL'
+        CALL SPACE_resize_array( data%K_r%n, data%SOL,                         &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  set up the right-hand side, starting with ( - g_fr ) ...
+!                                            (  c_ab  )
+
+        DO j = 1, n
+          IF ( X_stat( j ) == 0 ) THEN
+            data%SOL( data%X_inorder( j ) ) = - G( j )
+
+!  ... record the free dual variables ...
+
+            Z_new( j ) = zero
+
+!  ... the fixed primal variables (and initialize z_fx = g_fx) ...
+
+          ELSE IF ( X_stat( j ) < 0 ) THEN
+            X_new( j ) = X_l( j )
+            Z_new( j ) = G( j )
+          ELSE
+            X_new( j ) = X_u( j )
+            Z_new( j ) = G( j )
+          END IF
+        END DO
+
+        DO i = 1, m
+          IF ( C_stat( i ) == - 1 ) THEN
+            data%SOL( n_free + data%C_inorder( i ) ) = C_l( i )
+          ELSE IF ( C_stat( i ) == 1 ) THEN
+            data%SOL( n_free + data%C_inorder( i ) ) = C_u( i )
+
+!  ... and the multipliers for the inactive constraints ...
+
+          ELSE
+            Y_new( i ) = zero
+          END IF
+        END DO
+
+!  ... then include the component - H_od x_fx ...
+
+        IF ( lbfgs ) THEN
+          data%SOL( n_free + m_fixed + 1 : data%K_r%n ) = zero
+          write(6,*) ' *** lbfgs refinement to be written'
+          inform%status = GALAHAD_not_yet_implemented ; GO TO 900
+        ELSE
+          DO i = 1, n
+            ii = data%X_inorder( i )
+            DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
+              j = H_col( l ) ; jj = data%X_inorder( j )
+              IF ( ii > 0 .AND. jj == 0 ) THEN
+                IF ( X_stat( j ) < 0 ) THEN
+                  data%SOL( ii ) = data%SOL( ii ) - H_val( l ) * X_l( j )
+                ELSE
+                  data%SOL( ii ) = data%SOL( ii ) - H_val( l ) * X_u( j )
+                END IF
+              ELSE IF ( jj > 0 .AND. ii == 0 ) THEN
+                IF ( X_stat( i ) < 0 ) THEN
+                  data%SOL( jj ) = data%SOL( jj ) - H_val( l ) * X_l( i )
+                ELSE
+                  data%SOL( jj ) = data%SOL( jj ) - H_val( l ) * X_u( i )
+                END IF
+
+! ... as well as z_fx -> z_fx + H_fx x_fx ...
+
+              ELSE IF ( ii == 0 .AND. jj == 0 ) THEN
+                IF ( X_stat( j ) < 0 ) THEN
+                  Z_new( i ) = Z_new( i ) + H_val( l ) * X_l( j )
+                ELSE
+                  Z_new( i ) = Z_new( i ) + H_val( l ) * X_u( j )
+                END IF
+                IF ( i /= j ) THEN
+                  IF ( X_stat( i ) < 0 ) THEN
+                    Z_new( j ) = Z_new( j ) + H_val( l ) * X_l( i )
+                  ELSE
+                    Z_new( j ) = Z_new( j ) + H_val( l ) * X_u( i )
+                  END IF
+                END IF
+              END IF
+            END DO
+          END DO
+        END IF
+
+!  ... and finally - A_fxab x_fx
+
+        DO ii = 1, m_fixed
+          i = data%C_fixed( ii )
+          DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+            j = A_col( l )
+            IF ( data%X_inorder( j ) == 0 ) THEN
+              IF ( X_stat( j ) < 0 ) THEN
+                data%SOL( ii ) = data%SOL( ii ) - A_val( l ) * X_l( j )
+              ELSE
+                data%SOL( ii ) = data%SOL( ii ) - A_val( l ) * X_u( j )
+              END IF
+            END IF
+          END DO
+        END DO
+
+!  solve the system
+
+        CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
+        CALL IR_solve( data%K_r, data%SOL, data%IR_data, data%SLS_data,        &
+                       data%control%IR_control, data%control%SLS_control,      &
+                       inform%IR_inform, inform%SLS_inform )
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+        inform%time%solve = inform%time%solve + time_now - time_record
+        inform%time%clock_solve =                                              &
+          inform%time%clock_factorize + clock_now - clock_record
+
+!  record x_fr and y_ab
+
+        X_new( data%X_free( 1 : n_free ) ) = data%SOL( 1 : n_free )
+        Y_new( data%C_fixed( 1 : m_fixed ) )                                 &
+          = - data%SOL( n_free + 1 : n_free + m_fixed )
+
+!  recover z_fx -> z_fx + H_od^T x_fr
+
+        IF ( lbfgs ) THEN
+          write(6,*) ' *** lbfgs refinement to be written'
+          inform%status = GALAHAD_not_yet_implemented ; GO TO 900
+        ELSE
+          DO i = 1, n
+            ii = data%X_inorder( i )
+            DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
+              j = H_col( l ) ; jj = data%X_inorder( j )
+              IF ( ii > 0 .AND. jj == 0 ) THEN
+                Z_new( j ) = Z_new( j ) + H_val( l ) * X_new( i )
+              ELSE IF ( jj > 0 .AND. ii == 0 ) THEN
+                Z_new( i ) = Z_new( i ) + H_val( l ) * X_new( j )
+              END IF
+            END DO
+          END DO
+        END IF
+
+!  and then z_fx -> z_fx - A_fxab^T y_ab
+
+        DO ii = 1, m_fixed
+          i = data%C_fixed( ii )
+          DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+            j = A_col( l )
+            IF ( data%X_inorder( j ) == 0 )                                    &
+              Z_new( j ) = Z_new( j ) - A_val( l ) * Y_new( i )
+          END DO
+        END DO
+
+        DO i = 1, m
+          C_new( i ) = DOT_PRODUCT( A_val( A_ptr( i ) : A_ptr( i + 1 ) - 1 ),  &
+                             X_new( A_col( A_ptr( i ) : A_ptr( i + 1 ) - 1 ) ) )
+        END DO
+
+!  debug printing
+
+        IF ( printd ) THEN
+          WRITE( out, "( A, ' X(stat,current,new) ' )" ) prefix
+          DO i = 1, n
+            WRITE( out ,"( A, 2I8, 2ES22.14 )" )                               &
+              prefix, i, X_stat( i ), X( i ), X_new( i )
+          END DO
+
+          WRITE( out, "( A, ' Z(stat,current,new) ' )" ) prefix
+          DO i = 1, n
+            WRITE( out ,"( A, 2I8, 2ES22.14 )" )                               &
+              prefix, i, X_stat( i ), Z( i ), Z_new( i )
+          END DO
+
+          WRITE( out, "( A, ' Y(stat,current,new) ' )" ) prefix
+          DO i = 1, m
+            WRITE( out ,"( A, 2I8, 2ES22.14 )" )                               &
+              prefix, i, C_stat( i ), Y( i ), Y_new( i )
+          END DO
+
+          WRITE( out, "( A, ' C(stat,current,new) ' )" ) prefix
+          DO i = 1, m
+            WRITE( out ,"( A, 2I8, 2ES22.14 )" )                               &
+              prefix, i, C_stat( i ), C( i ), Y_new( i )
+          END DO
+        END IF
+
+        X( : n ) = X_new( : n )
+        Z( : n ) = Z_new( : n )
+        Y( : m ) = Y_new( : m )
+        C( : m ) = C_new( : m )
+
+!  recheck
+
+        IF ( data%control%check_io ) THEN
+          CALL CRO_check_status( n, m, m_equal, A_val, A_col, A_ptr, G, C_l,   &
+                                 C_u, X_l, X_u, C, X, Y, Z, C_stat, X_stat,    &
+                                 control, inform, data%DX, data%DY, prefix,    &
+                                 H_val = H_val, H_col = H_col, H_ptr = H_ptr,  &
+                                 H_lm = H_lm )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        END IF
+      END IF
+
+!  prepare to exit
+
  900  CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start 
+      inform%time%total = inform%time%total + time_now - time_start
       inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start 
+        inform%time%clock_total + clock_now - clock_start
       IF ( printt ) WRITE( out, "( A, ' -- leaving CRO_crossover ' )" ) prefix
 
       RETURN
@@ -2502,7 +3068,7 @@
 !  Dummy arguments
 
       TYPE ( CRO_data_type ), INTENT( INOUT ) :: data
-      TYPE ( CRO_control_type ), INTENT( IN ) :: control        
+      TYPE ( CRO_control_type ), INTENT( IN ) :: control
       TYPE ( CRO_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
@@ -2719,6 +3285,7 @@
            inform%status /= GALAHAD_ok ) RETURN
 
       CALL SCU_terminate( data%SCU_data, inform%scu_status, inform%SCU_inform )
+      CALL IR_terminate( data%IR_data, control%IR_control, inform%IR_inform )
 
 !  End of subroutine CRO_terminate
 
@@ -2738,21 +3305,21 @@
 
 !  solve the linear system
 
-!    ( H_fx    H_od^T  A_fxxb^T  I ) ( x_fx  )   ( b_fx ) 
+!    ( H_fx    H_od^T  A_fxxb^T  I ) ( x_fx  )   ( b_fx )
 !    ( H_od     H_fr   A_frxb^T  0 ) ( x_fr  ) = ( b_fr )
 !    ( A_fxxb  A_frxb       0    0 ) ( y_fxb )   ( c_fr )
 !    (  I        0          0    0 ) ( z_fx  )   ( c_fx )
 
-!  where ( b_fx, b_fr, c_fr, c_fx ) is input compactly in SOL and 
-!  ( x_fx, x_fr, y_fxb, z_fx ) is output in SOL. The logicals b_fx, b_fr, 
-!  c_fr and c_fx should be set TRUE if the corresponding vectors are nonzero 
+!  where ( b_fx, b_fr, c_fr, c_fx ) is input compactly in SOL and
+!  ( x_fx, x_fr, y_fxb, z_fx ) is output in SOL. The logicals b_fx, b_fr,
+!  c_fr and c_fx should be set TRUE if the corresponding vectors are nonzero
 !  and FALSE otherwise
 
 !  Details: solve the system sequentially via
 
 !  (a)  x_fx = c_fx
 !  (b)  (  H_fr   A_frxb^T ) ( x_fr  ) = ( b_fr -  H_od x_fx  )
-!       ( A_frxb     0     ) ( y_fxb )   ( c_fr - A_fxxb x_fx ) 
+!       ( A_frxb     0     ) ( y_fxb )   ( c_fr - A_fxxb x_fx )
 !  (c) z_fx = b_fx - H_fx x_fx - H_od^T x_fr - A_fxxb^T y_fxb
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -2880,7 +3447,7 @@
 !  (b) if A_frxn^T y_fxn is nonzero, solve the block system
 
 !    (  H_fr   A_frxb^T ) ( x_fr  ) = sol <- ( x_fr  )
-!    ( A_frxb     0     ) ( y_fxb )          ( y_fxb ) 
+!    ( A_frxb     0     ) ( y_fxb )          ( y_fxb )
 
 !  to find x_fr and y_fxb
 
@@ -2924,7 +3491,7 @@
 !  ... either compute ( H_fx    H_od^T ) ( x_fx ) = ( H_fx x_fx + H_od^T x_fr )
 !                     ( H_od     H_fr  ) ( x_fr )   (           *             )
 
-!  to obtain H_fx x_fx + H_od^T x_fr, and thus update 
+!  to obtain H_fx x_fx + H_od^T x_fr, and thus update
 !  z_fx <- z_fx - ( H_fx x_fx + H_od^T x_fr ) ...
 
 !  gather x_fx and x_fr into SLS_SOL
@@ -3057,9 +3624,9 @@
          &  ' < 0 ' )" ) prefix, m_equal
           IF ( m_equal > m ) WRITE( error, "( A, ' Error - m = ', I0,          &
          &  ' < m_equal = ', I0 )" ) prefix, m, m_equal
-        END IF 
-        RETURN 
-      END IF 
+        END IF
+        RETURN
+      END IF
 
       IF ( m_equal > 0 ) THEN
         l = COUNT( C_l( : m_equal ) /= C_u( : m_equal ) )
@@ -3074,7 +3641,7 @@
              &   'm_equal = ', I0, ' is an inequality' )" ) prefix, l, m_equal
             END IF
           END IF
-          RETURN 
+          RETURN
         END IF
       END IF
 
@@ -3091,7 +3658,7 @@
              &   'm_equal = ', I0, ' is an equation' )" ) prefix, l, m_equal
             END IF
           END IF
-          RETURN 
+          RETURN
         END IF
       END IF
 
@@ -3174,7 +3741,7 @@
 
         IF ( ABS( RES_d( i ) ) > tol ) THEN
           nviol8_d = nviol8_d + 1
-          viol8_d = MAX( viol8_d, ABS( RES_d( i ) ) ) 
+          viol8_d = MAX( viol8_d, ABS( RES_d( i ) ) )
           IF ( printd ) WRITE( out, "( A, ' dual infeasibility (', I0, ') = ', &
          &  ES12.4, ' is nonzero' )" ) prefix, i, RES_d( i )
         END IF
@@ -3258,7 +3825,7 @@
 
         IF ( ABS( RES_p( i ) ) > tol ) THEN
           nviol8_p = nviol8_p + 1
-          viol8_p = MAX( viol8_p, ABS( RES_p( i ) ) ) 
+          viol8_p = MAX( viol8_p, ABS( RES_p( i ) ) )
           IF ( printd ) WRITE( out, "( A, ' primal infeasibility (', I0,       &
          &  ') = ',  ES12.4, ' is nonzero' )" ) prefix, i, RES_p( i )
         END IF
@@ -3296,7 +3863,7 @@
       END DO
 
 !  record any anomolies
-      
+
       IF ( nviol8_p + nviol8_d + nviol8_x + nviol8_y + nviol8_z + nviol8_c +   &
            nviol8_xs + nviol8_cs > 0 ) THEN
         IF ( nviol8_x + nviol8_c > 0 ) THEN
@@ -3407,6 +3974,3 @@
 !  End of module CRO
 
    END MODULE GALAHAD_CRO_double
-
-
-

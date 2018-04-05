@@ -12,7 +12,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-MODULE GALAHAD_CQP_double
+    MODULE GALAHAD_CQP_double
 
 !     ------------------------------------------------
 !     |                                              |
@@ -3224,7 +3224,7 @@ MODULE GALAHAD_CQP_double
       LOGICAL :: maxpiv, stat_required, guarantee, unbounded, lbfgs
 !     LOGICAL :: root_arc
       LOGICAL :: diagonal_hessian, puiseux, get_stat, use_scale_c = .FALSE.
-      CHARACTER ( LEN = 1 ) :: re, mo, pui
+      CHARACTER ( LEN = 1 ) :: re, pui
       CHARACTER ( LEN = 2 ) :: arc
       CHARACTER ( len = 10 ) :: char_x, char_c, char_y
       CHARACTER ( len = 10 ) :: char_z_l, char_z_u, char_y_l, char_y_u
@@ -4137,7 +4137,7 @@ MODULE GALAHAD_CQP_double
 !  Analyse the sparsity pattern of the required matrix
 !  ===================================================
 
-      re = ' ' ; mo = ' ' ;  nbact = 0
+      re = ' ' ; nbact = 0
       pivot_tol = SBLS_control%SLS_control%relative_pivot_tolerance
       min_pivot_tol = SBLS_control%SLS_control%minimum_pivot_tolerance
       relative_pivot_tol = pivot_tol
@@ -4185,7 +4185,7 @@ MODULE GALAHAD_CQP_double
                inform%iter == start_print ) ) WRITE( out, 2000 ) prefix
             WRITE( out, 2030 ) prefix, inform%iter, re,                        &
              inform%primal_infeasibility, inform%dual_infeasibility,           &
-             inform%complementary_slackness, inform%obj, alpha, mo, mu,        &
+             inform%complementary_slackness, inform%obj, alpha, mu,            &
              iorder, pui, arc, nbact, clock_now
           ELSE
             WRITE( out, 2000 ) prefix
@@ -4557,12 +4557,9 @@ MODULE GALAHAD_CQP_double
 !  -*-*-*-*-*-*-*-*-*-*-*-*-      Factorization      -*-*-*-*-*-*-*-*-*-
 !  =====================================================================
 
-        mo = ' '
-
 !  only refactorize if B has changed
 
         re = 'r'
-
         CALL CPU_TIME( time )
 
 !  include the values of the barrier terms
@@ -6666,7 +6663,7 @@ MODULE GALAHAD_CQP_double
                  inform%iter == start_print ) ) WRITE( out, 2000 ) prefix
               WRITE( out, 2030 ) prefix, inform%iter, re,                      &
                inform%primal_infeasibility, inform%dual_infeasibility,         &
-               slknes, inform%obj, one, mo, mu, order, pui, arc, nbact,        &
+               slknes, inform%obj, one, mu, order, pui, arc, nbact,            &
                clock_now - clock_start
             END IF
 
@@ -7002,7 +6999,7 @@ END DO
                inform%iter == start_print ) ) WRITE( out, 2000 ) prefix
             WRITE( out, 2030 ) prefix, inform%iter, re,                        &
              inform%primal_infeasibility, inform%dual_infeasibility,           &
-             slknes, inform%obj, one, mo, mu, order, pui, arc, nbact,          &
+             slknes, inform%obj, one, mu, order, pui, arc, nbact,              &
              clock_now - clock_start
           END IF
 
@@ -7032,7 +7029,7 @@ END DO
               WRITE( out, 2070 ) prefix
               WRITE( out, 2030 ) prefix, inform%iter, re,                      &
                 inform%primal_infeasibility, inform%dual_infeasibility,        &
-                inform%complementary_slackness, zero, alpha, mo, mu, nbact,    &
+                inform%complementary_slackness, zero, alpha, mu, nbact,        &
                 clock_now - clock_start
               IF ( printt ) WRITE( out, 2000 ) prefix
             END IF
@@ -7436,7 +7433,7 @@ END DO
                 '  step   target   arc bt     time' )
  2020 FORMAT( A, I5, A1, 3ES8.1, ES9.1, '     -   ', ES7.1,                    &
             '    -   -', 0P, F9.2 )
- 2030 FORMAT( A, I5, A1, 3ES8.1, ES9.1, ES8.1, A1, ES7.1, I3, A1, A2, I3,      &
+ 2030 FORMAT( A, I5, A1, 3ES8.1, ES9.1, ES8.1, 1X, ES7.1, I3, A1, A2, I3,      &
               0P, F9.2 )
  2070 FORMAT( /, A, ' ========================= feasible point found',         &
                     ' =========================', / )
@@ -10428,10 +10425,3 @@ END DO
 !    H_sbls%col(H_sbls%ne)
 !
 !  H_sbls%val(H_sbls%ne)
-
-
-
-
-
-
-

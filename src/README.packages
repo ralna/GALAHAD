@@ -15,6 +15,7 @@ cqp         | ok     | convex QP, interior-point
 cqps        | alpha  | convex QP, Spelucci's BC exact penalty reformuation
 cro         | ok     | QP crossover from interior-point to basic solution
 demo        | ok     | template for GALAHAD packages
+dps         | ok     | regularized quadratic subproblem in a diagonalising norm
 dqp         | ok     | strictly-convex QP, dual projection
 dum         | ok     | replacement no-use packages for unsupplied externals
 eqp         | ok     | equality-constrained QP
@@ -68,7 +69,7 @@ rand        | ok     | generate pseudo random numbers
 rlls        | beta   | regularized linear least-squares via sbls
 roots       | ok     | find roots of scalar polynomials
 rpd         | ok     | read QP data from QPLib format (no doc)
-rq          | ok     | makemaster for regularised quadratic subbroblem-solving packages
+rq          | ok     | makemaster for regularised quadratic-subbroblem packages
 rqs         | ok     | minimize a quadratic + regularization term via sbls
 sbls        | ok     | symmetric block linear solver, multiple interfaces
 scale       | ok     | compute scale factors in various ways
@@ -86,7 +87,7 @@ string      | ok     | manipulate strings (no doc)
 sym         | ok     | associate symbols with numerical values
 tools       | ok     | simple tools (like in auxiliary, no doc)
 trans       | ok     | apply scale factors (no doc)
-trimsqp     | old    | predecessor of s2qp
+trimsqp     | old    | successor to s2qp
 trs         | ok     | minimize a quadratic within a trust region via sbls
 tru         | ok     | unconstrained optimization, trust-region method
 uls         | ok     | unsymmetric linear solver, multiple interfaces
@@ -96,16 +97,16 @@ zd11        | ok     | HSL archive sparse-matrix structure
 
 non-free packages lie in non-free/
 
-ad02        | ok     | HSL archive automatic differentiation
+ad02        | stub   | HSL archive automatic differentiation
 icfs        | stub   | Lin-More' incomplete factorization
 ls27        | stub   | HSL incomplete QR factorization
 ls28        | stub   | HSL incomplete QR factorization v2
 ls29        | stub   | HSL incomplete QR factorization v3
-ma27        | ok     | HSL archive symmetric indefinite linear solver
-ma33        | ok     | HSL archive automatic unsymmetric solver
+ma27        | stub   | HSL archive symmetric indefinite linear solver
+ma33        | stub   | HSL archive automatic unsymmetric solver
 ma48        | stub   | HSL unsymmetric solver
 ma57        | stub   | HSL symmetric indefinite linear solver
-ma61        | ok     | HSL archive preconditioned conjugate gradient solver
+ma61        | stub   | HSL archive preconditioned conjugate gradient solver
 ma77        | stub   | HSL symmetric indefinite out-of-core linear solver
 ma86        | stub   | HSL symmetric indefinite linear solver
 ma87        | stub   | HSL symmetric positive definite linear solver
@@ -146,7 +147,3 @@ sqp         | alpha  | SQP without any globalization
 s2qp        | beta   | trust-region SQP for NLP
 superb      | beta   | trust-region interior-point for NLP
 trtn        | alpha  | bound-constrained optimization via transformation
-
-
-
-

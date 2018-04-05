@@ -3657,29 +3657,29 @@
 
 !  record the dual bounds
 
+      IF ( penalty_objective ) THEN
+        V_bnd( ce_start : ce_end, 1 ) = - rho
+        V_bnd( yl_start : yl_end, 1 ) = zero
+        V_bnd( yu_start : yu_end, 1 ) = - rho
+
+        V_bnd( ce_start : ce_end, 2 ) = rho
+        V_bnd( yl_start : yl_end, 2 ) = rho
+        V_bnd( yu_start : yu_end, 2 ) = zero
+      ELSE
+        V_bnd( ce_start : ce_end, 1 ) = - ten * control%infinity
+        V_bnd( yl_start : yl_end, 1 ) = zero
+        V_bnd( yu_start : yu_end, 1 ) = - ten * control%infinity
+
+        V_bnd( ce_start : ce_end, 2 ) = ten * control%infinity
+        V_bnd( yl_start : yl_end, 2 ) = ten * control%infinity
+        V_bnd( yu_start : yu_end, 2 ) = zero
+      END IF
+
       V_bnd( zl_start : zl_end, 1 ) = zero
       V_bnd( zu_start : zu_end, 1 ) = - ten * control%infinity
 
       V_bnd( zl_start : zl_end, 2 ) = ten * control%infinity
       V_bnd( zu_start : zu_end, 2 ) = zero
-
-      IF ( penalty_objective ) THEN
-        V_bnd( : dims%c_equality, 1 ) = - rho
-        V_bnd( dims%c_l_start : yl_end, 1 ) = zero
-        V_bnd( yu_start : yu_end, 1 ) = - rho
-
-        V_bnd( : dims%c_equality, 2 ) = rho
-        V_bnd( dims%c_l_start : yl_end, 2 ) = rho
-        V_bnd( yu_start : yu_end, 2 ) = zero
-      ELSE
-        V_bnd( : dims%c_equality, 1 ) = - ten * control%infinity
-        V_bnd( dims%c_l_start : yl_end, 1 ) = zero
-        V_bnd( yu_start : yu_end, 1 ) = - ten * control%infinity
-
-        V_bnd( : dims%c_equality, 2 ) = ten * control%infinity
-        V_bnd( dims%c_l_start : yl_end, 2 ) = ten * control%infinity
-        V_bnd( yu_start : yu_end, 2 ) = zero
-      END IF
 
 !  --------------------------------
 !  assign the primal starting point
@@ -4032,7 +4032,11 @@
         DO i = dims%x_free + 1, dims%x_l_end
           Z_l( i ) = MAX( Z( i ), zero )
           val = MAX( X( i ) - X_l( i ), zero )
-          IF ( val < Z_l( i ) ) X_status( i ) = 1
+          IF ( val < Z_l( i ) ) THEN
+            X_status( i ) = 1
+          ELSE
+            Z_l( i ) = zero
+          END IF
         END DO
 
 !  variables with upper bounds
@@ -4040,7 +4044,11 @@
         DO i = dims%x_u_start, n
           Z_u( i ) = MIN( Z( i ), zero )
           val = MAX( X_u( i ) - X( i ), zero )
-          IF ( val < - Z_u( i ) ) X_status( i ) = X_status( i ) + 2
+          IF ( val < - Z_u( i ) ) THEN
+            X_status( i ) = X_status( i ) + 2
+          ELSE
+            Z_u( i ) = zero
+          END IF
         END DO
 
         IF ( m > 0 ) THEN
@@ -4052,7 +4060,11 @@
           DO i = dims%c_l_start, dims%c_l_end
             Y_l( i ) = MAX( Y( i ), zero )
             val = MAX( C( i ) - C_l( i ), zero )
-            IF ( val < Y_l( i ) ) C_status( i ) = 1
+            IF ( val < Y_l( i ) ) THEN
+              C_status( i ) = 1
+            ELSE
+              Y_l( i ) = zero
+            END IF
           END DO
 
 !  constraints with upper bounds
@@ -4060,9 +4072,14 @@
           DO i = dims%c_u_start, dims%c_u_end
             Y_u( i ) = MIN( Y( i ), zero )
             val = MAX( C_u( i ) - C( i ), zero )
-            IF ( val < - Y_u( i ) ) C_status( i ) = C_status( i ) + 2
+            IF ( val < - Y_u( i ) ) THEN
+              C_status( i ) = C_status( i ) + 2
+            ELSE
+              Y_u( i ) = zero
+            END IF
           END DO
         END IF
+!write(99,"( ( I6, I6 ) )" ) ( i, X_status( i ), i = dims%x_free + 1, n )
 
 !  ............................
 !  user-supplied starting point
@@ -4103,7 +4120,7 @@
           END DO
         END IF
       END IF
-!write(6,*) COUNT( C_status(: m ) /= 0 ),COUNT( X_status(: n ) /= 0 )
+! write(6,*) m, COUNT( C_status(: m ) /= 0 ), n, COUNT( X_status(: n ) /= 0 )
       C_status_old( : m ) = C_status( : m )
       X_status_old( : n ) = X_status( : n )
 !write(6,*) ' C_status ', C_status( : m )
@@ -4111,6 +4128,7 @@
 
 !  print details of the starting point if required ...
 
+!     IF ( .TRUE. ) THEN
       IF ( printd ) THEN
         WRITE( out, "( /, A, 5X, 'i', 6x, 'x', 10X, 'x_l', 9X, 'x_u', 9X,      &
        &       'z_l', 9X, 'z_u     stat')") prefix
@@ -4352,8 +4370,8 @@
 !  compute stopping tolerances on the first iteration
 
         IF ( first_iteration ) THEN
-          stop_d = MAX( control%stop_abs_d,                                    &
-                        control%stop_rel_d * dual_g_norm )
+          stop_d = MAX( control%stop_abs_p,                                    &
+                        control%stop_rel_p * dual_g_norm )
           IF ( printi ) WRITE( out,                                            &
             "(  /, A, '  Primal convergence tolerance =', ES11.4 )" )          &
               prefix, stop_d
@@ -5990,7 +6008,7 @@
 !  compute the slope and curvature
 
           IF ( printw .AND. GLTR_control%itmax == - 1 ) WRITE( out,            &
-             "( A, 1X, I0, ' gltr iterations' )" )                             &
+             "( /, A, 1X, I0, ' GLTR iterations required' )" )                 &
                prefix, inform%GLTR_inform%iter
           inform%cg_iter = inform%cg_iter + inform%GLTR_inform%iter
           IF ( dolid ) skip = 'D'
@@ -7563,6 +7581,36 @@
       epstl2 = ten * epsmch
       tbreak = zero
 
+!     IF ( printp ) THEN
+      IF ( .FALSE. ) THEN
+        i = COUNT(  V_status( : nv ) == 0 )
+        IF ( i /= 1 ) THEN
+          WRITE( out, "( /, A, 1X, I0, ' variables are free' )" ) prefix, i
+        ELSE
+          WRITE( out, "( /, A, ' 1 variable is free' )" ) prefix
+        END IF
+        i = COUNT(  V_status( : nv ) == 1 )
+        IF ( i /= 1 ) THEN
+          WRITE( out, "( A, 1X, I0, ' variables are on lower bounds' )" )      &
+            prefix, i
+        ELSE
+          WRITE( out, "( A, 1X, ' 1 variable is on its lower bound' )" ) prefix
+        END IF
+        i = COUNT(  V_status( : nv ) == 2 )
+        IF ( i /= 1 ) THEN
+          WRITE( out, "( A, 1X, I0, ' variables are on upper bounds' )" )      &
+            prefix, i
+        ELSE
+          WRITE( out, "( A, 1X, ' 1 variable is on its upper bound' )" ) prefix
+        END IF
+        i = COUNT(  V_status( : nv ) >= 3 )
+        IF ( i /= 1 ) THEN
+          WRITE( out, "( /, A, 1X, I0, ' variables are fixed' )" ) prefix, i
+        ELSE
+          WRITE( out, "( /, A, 1X, ' 1 variable is fixed' )" ) prefix
+        END IF
+      END IF
+
       IF ( print_level >= 100 ) THEN
         DO i = 1, nv
           WRITE( out, "( A, ' Var low V up P ', I6, 4ES12.4 )" )               &
@@ -7605,6 +7653,7 @@
 
             IF ( xlower ) THEN
               IF ( P( i ) > epsmch ) THEN
+!write(6,*) ' variable ', i, ' freed from lower bound'
                 n_freed = n_freed + 1
                 GO TO 110
               END IF
@@ -7614,6 +7663,7 @@
 
             ELSE
               IF ( P( i ) < - epsmch ) THEN
+!write(6,*) ' variable ', i, ' freed from upper bound'
                 n_freed = n_freed + 1
                 GO TO 110
               END IF
@@ -7816,8 +7866,8 @@
 !  print details of the breakpoint
 
         IF ( printw ) THEN
-          WRITE( out, "( /, A, ' Next break point = ', ES12.4, /, A,           &
-         &  ' Maximum step     = ', ES12.4 )" ) prefix, tbreak, prefix,        &
+          WRITE( out, "( /, A, ' Next break point =', ES11.4, /, A,            &
+         &  ' Maximum step     =', ES11.4 )" ) prefix, tbreak, prefix,         &
             t_max
         END IF
 
@@ -7839,7 +7889,7 @@
           IF ( q_t2 > zero ) THEN
             t_star = - q_t1 / q_t2
             IF ( printw ) WRITE( out,                                          &
-              "( A, ' Stationary point = ', ES12.4 )" ) prefix, tk + t_star
+              "( A, ' Stationary point =', ES11.4 )" ) prefix, tk + t_star
 
 !           IF ( t_star > deltat ) THEN
 !             write(6,*) ' t_star > deltat', t_star, deltat, ABS(t_star-deltat)
@@ -8209,8 +8259,8 @@
             php = php + P( i ) * HP( i )
           END DO
 
-          IF ( printw ) WRITE( out, "( /, A, ' Calculated q_t1 and q_t2 = ',   &
-         &  2ES12.4, /, A, ' Recurred   q_t1 and q_t2 = ', 2ES12.4 )" )        &
+          IF ( printw ) WRITE( out, "( /, A, ' Calculated q_t1 and q_t2 =',    &
+         &  2ES22.14, /, A, ' Recurred   q_t1 and q_t2 =', 2ES22.14 )" )       &
               prefix, gp, php, prefix, q_t1, q_t2
           IF ( recomp ) THEN
             q_t1 = gp ; q_t2 = php
@@ -9880,13 +9930,3 @@
 !  End of module DQP
 
     END MODULE GALAHAD_DQP_double
-
-
-
-
-
-
-
-
-
-

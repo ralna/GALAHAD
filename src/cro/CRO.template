@@ -3,8 +3,9 @@
 ! print-level                                       0
 ! maximum-dimension-of-schur-complement             100
 ! infinity-value                                    1.0D+19
-! feasibility-tolerance                             2.2D-16
+! feasibility-tolerance                             1.0D-8
 ! check-input-output                                yes
+! refine-solution                                   no
 ! space-critical                                    no
 ! deallocate-error-fatal                            no
 ! symmetric-linear-equation-solver                  sils
