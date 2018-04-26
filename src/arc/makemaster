@@ -69,11 +69,11 @@ LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
 
 #  compilation agenda
 
-SARC = basics cutest_functions glrt psls dps nlpt $(LGS)(arc.o)
-DARC = basics cutest_functions glrt psls dps nlpt $(LGD)(arc.o)
+SARC = basics glrt psls dps nlpt $(LGS)(arc.o)
+DARC = basics glrt psls dps nlpt $(LGD)(arc.o)
 
-SRUNARC = copyright $(LGS)(usearc.o) $(OBJS)/runarc_sif.o
-DRUNARC = copyright $(LGD)(usearc.o) $(OBJD)/runarc_sif.o
+SRUNARC = cutest_functions copyright $(LGS)(usearc.o) $(OBJS)/runarc_sif.o
+DRUNARC = cutest_functions copyright $(LGD)(usearc.o) $(OBJD)/runarc_sif.o
 
 ARCOBJECTSS = $(SARC)
 ARCOBJECTSD = $(DARC)

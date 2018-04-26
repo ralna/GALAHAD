@@ -27,6 +27,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS all all_matlab $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all all_matlab"
       $MAKE $OPTIONS all all_matlab $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -34,6 +36,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS all_cutest $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all_cutest"
       $MAKE $OPTIONS all_cutest $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -41,6 +45,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS all_matlab $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all_matlab"
       $MAKE $OPTIONS all_matlab $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -48,6 +54,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS all_ampl $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all_ampl"
       $MAKE $OPTIONS all_ampl $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -55,6 +63,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS all_cutest all_matlab $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all_cutest all_matlab"
       $MAKE $OPTIONS all_cutest all_matlab $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -62,6 +72,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS all_cutest all_ampl $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all_cutest all_ampl"
       $MAKE $OPTIONS all_cutest all_matlab $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -69,6 +81,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS all_standalone $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all_standalone"
       $MAKE $OPTIONS all_standalone $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -76,6 +90,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS lancelotb_sif lancelotb_ampl $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS lancelotb_sif lancelotb_ampl"
       $MAKE $OPTIONS lancelotb_sif lancelotb_ampl $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -83,8 +99,11 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
 #      echo " $MAKE $OPTIONS lancelotb_sif lancelotb_ampl $MACROS"
       echo " $MAKE $OPTIONS lancelotb_sif $MACROS"
+#      echo " $MAKE $OPTIONS lancelotb_sif lancelotb_ampl"
     else
 #     $MAKE $OPTIONS lancelotb_sif lancelotb_ampl $MACROS
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS lancelotb_sif"
       $MAKE $OPTIONS lancelotb_sif $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -92,6 +111,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS lancelotb_sif $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS lancelotb_sif"
       $MAKE $OPTIONS lancelotb_sif $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -99,6 +120,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS lancelotb_ampl $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS lancelotb_ampl"
       $MAKE $OPTIONS lancelotb_ampl $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -106,6 +129,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS lancelotb $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS lancelotb"
       $MAKE $OPTIONS lancelotb $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -113,6 +138,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS qp_cutest qp_matlab qp_ampl $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp_cutest qp_matlab qp_ampl"
       $MAKE $OPTIONS qp_cutest qp_matlab qp_ampl $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -120,6 +147,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS qp_cutest $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp_cutest"
       $MAKE $OPTIONS qp_cutest $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -127,6 +156,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS qp_matlab $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp_matlab"
       $MAKE $OPTIONS qp_matlab $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -134,6 +165,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS qp_ampl $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp_ampl"
       $MAKE $OPTIONS qp_ampl $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -141,6 +174,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS qp_cutest qp_matlab $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp_cutest qp_matlab"
       $MAKE $OPTIONS qp_cutest qp_matlab $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -148,6 +183,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS qp_cutest qp_ampl $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp_cutest qp_ampl"
       $MAKE $OPTIONS qp_cutest qp_matlab $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -155,6 +192,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS qp $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp"
       $MAKE $OPTIONS qp $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -162,6 +201,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS rq_cutest rq_matlab $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS rq_cutest rq_matlab"
       $MAKE $OPTIONS rq_cutest rq_matlab $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -169,6 +210,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS rq_cutest $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS rq_cutest"
       $MAKE $OPTIONS rq_cutest $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -176,6 +219,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS rq_matlab $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS rq_matlab"
       $MAKE $OPTIONS rq_matlab $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -183,6 +228,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS rq_cutest rq_matlab $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS rq_cutest rq_matlab"
       $MAKE $OPTIONS rq_cutest rq_matlab $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -190,6 +237,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS rq $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS rq"
       $MAKE $OPTIONS rq $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -197,6 +246,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS filtrane_cutest filtrane_ampl $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS filtrane_cutest filtrane_ampl"
       $MAKE $OPTIONS filtrane_cutest filtrane_ampl $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -204,6 +255,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS filtrane_cutest $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS filtrane_cutest"
       $MAKE $OPTIONS filtrane_cutest $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -211,6 +264,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS filtrane_ampl $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS filtrane_ampl"
       $MAKE $OPTIONS filtrane_ampl $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -218,6 +273,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS filtrane_cutest filtrane_ampl $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS filtrane_cutest filtrane_ampl"
       $MAKE $OPTIONS filtrane_cutest $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -225,6 +282,8 @@ galahad_compile () {
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS filtrane $MACROS"
     else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS filtrane"
       $MAKE $OPTIONS filtrane $MACROS
       [[ $? != 0 ]] && exit 2
     fi
@@ -537,4 +596,3 @@ if [[ $? != 0 ]]; then
 fi
 
 #exit 0
-
