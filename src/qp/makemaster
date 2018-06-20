@@ -84,8 +84,8 @@ QPP_single = $(QPT_single) lms $(LGS)(qpp.o)
 QPP_double = $(QPT_double) lms $(LGD)(qpp.o)
 PRESOLVE_single = $(QPT_single) $(LGS)(presolve.o)
 PRESOLVE_double = $(QPT_double) $(LGD)(presolve.o)
-CRO_single = basics scu sls uls lms ir $(LGS)(cro.o)
-CRO_double = basics scu sls uls lms ir $(LGD)(cro.o)
+CRO_single = basics scu sbls uls lms ir mop $(LGS)(cro.o)
+CRO_double = basics scu sbls uls lms ir mop $(LGD)(cro.o)
 QPD_single = $(CRO_single) sbls gltr nlpt $(QPP_single) fdc fit lpqp \
              $(PRESOLVE_single) $(LGS)(qpd.o)
 QPD_double = $(CRO_double) sbls gltr nlpt $(QPP_double) fdc fit lpqp \
@@ -755,6 +755,10 @@ qpsrunall: qpss qpst
 qpdrunall: qpds qpdt
 qprunall: qpdrunall qpsrunall
 
+inqp: inqp_$(PRECIS)
+inqp_single: $(QP_OBJECTS_single) $(OBJS)/inqp.o
+inqp_double: $(QP_OBJECTS_double) $(OBJD)/inqp.o
+
 test_qp: test_qp_$(PRECIS)
 
 test_qp_single: qpst $(QP_RUN_single)
@@ -826,6 +830,10 @@ qpad: qpa_cutest_double
 qpasrunall: qpass qpast
 qpadrunall: qpads qpadt
 qparunall: qpadrunall qpasrunall
+
+inqpa: inqpa_$(PRECIS)
+inqpa_single: $(QPA_OBJECTS_single) $(OBJS)/inqpa.o
+inqpa_double: $(QPA_OBJECTS_double) $(OBJD)/inqpa.o
 
 test_qpa: test_qpa_$(PRECIS)
 
@@ -899,6 +907,10 @@ qpbsrunall: qpbss qpbst
 qpbdrunall: qpbds qpbdt
 qpbrunall: qpbdrunall qpbsrunall
 
+inqpb: inqpb_$(PRECIS)
+inqpb_single: $(QPB_OBJECTS_single) $(OBJS)/inqpb.o
+inqpb_double: $(QPB_OBJECTS_double) $(OBJD)/inqpb.o
+
 test_qpb: test_qpb_$(PRECIS)
 
 test_qpb_single: qpbst $(QPB_RUN_single)
@@ -970,6 +982,10 @@ qpcd: qpc_cutest_double
 qpcsrunall: qpcss qpcst
 qpcdrunall: qpcds qpcdt
 qpcrunall: qpcdrunall qpcsrunall
+
+inqpc: inqpc_$(PRECIS)
+inqpc_single: $(QPC_OBJECTS_single) $(OBJS)/inqpc.o
+inqpc_double: $(QPC_OBJECTS_double) $(OBJD)/inqpc.o
 
 test_qpc: test_qpc_$(PRECIS)
 
@@ -1106,6 +1122,10 @@ bqpsrunall: bqpss bqpst
 bqpdrunall: bqpds bqpdt
 bqprunall: bqpdrunall bqpsrunall
 
+inbqp: inbqp_$(PRECIS)
+inbqp_single: $(BQP_OBJECTS_single) $(OBJS)/inbqp.o
+inbqp_double: $(BQP_OBJECTS_double) $(OBJD)/inbqp.o
+
 test_bqp: test_bqp_$(PRECIS)
 
 test_bqp_single: bqpst $(BQP_RUN_single)
@@ -1177,6 +1197,10 @@ bqpbd: bqpb_cutest_double
 bqpbsrunall: bqpbss bqpbst
 bqpbdrunall: bqpbds bqpbdt
 bqpbrunall: bqpbdrunall bqpbsrunall
+
+inbqpb: inbqpb_$(PRECIS)
+inbqpb_single: $(BQPB_OBJECTS_single) $(OBJS)/inbqpb.o
+inbqpb_double: $(BQPB_OBJECTS_double) $(OBJD)/inbqpb.o
 
 test_bqpb: test_bqpb_$(PRECIS)
 
@@ -1250,6 +1274,10 @@ cqpsrunall: cqpss cqpst
 cqpdrunall: cqpds cqpdt
 cqprunall: cqpdrunall cqpsrunall
 
+incqp: incqp_$(PRECIS)
+incqp_single: $(CQP_OBJECTS_single) $(OBJS)/incqp.o
+incqp_double: $(CQP_OBJECTS_double) $(OBJD)/incqp.o
+
 test_cqp: test_cqp_$(PRECIS)
 
 test_cqp_single: cqpst $(CQP_RUN_single)
@@ -1312,6 +1340,11 @@ ccqpd: ccqp_cutest_double
 ccqpsrunall: ccqpss ccqpst
 ccqpdrunall: ccqpds ccqpdt
 ccqprunall: ccqpdrunall ccqpsrunall
+
+inccqp: inccqp_$(PRECIS)
+	echo ""
+inccqp_single: $(CCQP_OBJECTS_single) $(OBJS)/inccqp.o
+inccqp_double: $(CCQP_OBJECTS_double) $(OBJD)/inccqp.o
 
 test_ccqp: test_ccqp_$(PRECIS)
 
@@ -1448,6 +1481,10 @@ dqpsrunall: dqpss dqpst
 dqpdrunall: dqpds dqpdt
 dqprunall: dqpdrunall dqpsrunall
 
+indqp: indqp_$(PRECIS)
+indqp_single: $(DQP_OBJECTS_single) $(OBJS)/indqp.o
+indqp_double: $(DQP_OBJECTS_double) $(OBJD)/indqp.o
+
 test_dqp: test_dqp_$(PRECIS)
 
 test_dqp_single: dqpst $(DQP_RUN_single)
@@ -1534,6 +1571,10 @@ dlpsrunall: dlpss dlpst
 dlpdrunall: dlpds dlpdt
 dlprunall: dlpdrunall dlpsrunall
 
+indlp: indlp_$(PRECIS)
+indlp_single: $(DLP_OBJECTS_single) $(OBJS)/indlp.o
+indlp_double: $(DLP_OBJECTS_double) $(OBJD)/indlp.o
+
 test_dlp: test_dlp_$(PRECIS)
 
 test_dlp_single: dlpst $(DLP_RUN_single)
@@ -1596,6 +1637,10 @@ l1qpd: l1qp_cutest_double
 l1qpsrunall: l1qpss l1qpst
 l1qpdrunall: l1qpds l1qpdt
 l1qprunall: l1qpdrunall l1qpsrunall
+
+inl1qp: inl1qp_$(PRECIS)
+inl1qp_single: $(L1QP_OBJECTS_single) $(OBJS)/inl1qp.o
+inl1qp_double: $(L1QP_OBJECTS_double) $(OBJD)/inl1qp.o
 
 test_l1qp: test_l1qp_$(PRECIS)
 

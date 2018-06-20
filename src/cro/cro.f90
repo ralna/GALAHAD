@@ -37,12 +37,15 @@
       USE GALAHAD_SPACE_double
       USE GALAHAD_SMT_double
       USE GALAHAD_SLS_double
+      USE GALAHAD_SBLS_double
       USE GALAHAD_IR_double
       USE GALAHAD_ULS_double
       USE GALAHAD_SCU_double
       USE GALAHAD_SPECFILE_double
       USE GALAHAD_STRING_double, ONLY: STRING_pleural, STRING_ies
       USE GALAHAD_LMS_double, ONLY: LMS_data_type, LMS_apply_lbfgs
+
+      USE GALAHAD_MOP_double
 
       IMPLICIT NONE
 
@@ -148,6 +151,10 @@
 
         TYPE ( SLS_control_type ) :: SLS_control
 
+!  control parameters for SBLS
+
+        TYPE ( SBLS_control_type ) :: SBLS_control
+
 !  control parameters for ULS
 
         TYPE ( ULS_control_type ) :: ULS_control
@@ -224,6 +231,10 @@
 
         TYPE ( SLS_inform_type ) :: SLS_inform
 
+!  information from SBLS
+
+        TYPE ( SBLS_inform_type ) :: SBLS_inform
+
 !  information from ULS
 
         TYPE ( ULS_inform_type ) :: ULS_inform
@@ -266,6 +277,9 @@
 
         TYPE ( SMT_type ) :: AT
         TYPE ( SMT_type ) :: K_r
+        TYPE ( SMT_type ) :: H_r
+        TYPE ( SMT_type ) :: A_r
+        TYPE ( SMT_type ) :: C_r
 
 !  an editable copy of control
 
@@ -274,6 +288,10 @@
 !  private data for SLS
 
         TYPE ( SLS_data_type ) :: SLS_data
+
+!  private data for SBLS
+
+        TYPE ( SBLS_data_type ) :: SBLS_data
 
 !  private data for ULS
 
@@ -323,6 +341,12 @@
                            control%SLS_control, inform%SLS_inform )
       control%SLS_control%ordering = 0
       control%SLS_control%prefix = '" - SLS:"                    '
+
+!  Initalize SBLS components
+
+      CALL SBLS_initialize( data%SBLS_data, control%SBLS_control,              &
+                            inform%SBLS_inform )
+      control%SBLS_control%prefix = '" - SBLS:"                    '
 
 !  Initalize ULS components
 
@@ -493,12 +517,15 @@
       IF ( PRESENT( alt_specname ) ) THEN
         CALL SLS_read_specfile( control%SLS_control, device,                   &
                                 alt_specname = TRIM( alt_specname ) // '-SLS')
+        CALL SBLS_read_specfile( control%SBLS_control, device,                 &
+                                alt_specname = TRIM( alt_specname ) // '-SBLS')
         CALL ULS_read_specfile( control%ULS_control, device,                   &
                                 alt_specname = TRIM( alt_specname ) // '-ULS')
         CALL IR_read_specfile( control%IR_control, device,                     &
                                alt_specname = TRIM( alt_specname ) // '-IR' )
       ELSE
         CALL SLS_read_specfile( control%SLS_control, device )
+        CALL SBLS_read_specfile( control%SBLS_control, device )
         CALL ULS_read_specfile( control%ULS_control, device )
         CALL IR_read_specfile( control%IR_control, device )
       END IF
@@ -796,6 +823,7 @@
 
       REAL ( KIND = wp ), DIMENSION( m ) :: C_new, Y_new
       REAL ( KIND = wp ), DIMENSION( n ) :: X_new, Z_new
+      REAL ( KIND = wp ), DIMENSION( n + m ) :: V_new, R_new
 
 !  insert into data
 
@@ -1078,6 +1106,7 @@
 !  record the sub-matrix A_frx^T
 
         CALL SMT_put( data%AT%type, 'COORDINATE', i )
+!       data%AT%n = n_free ; data%AT%m = m_fixed
         data%AT%m = n_free ; data%AT%n = m_fixed
 
         data%AT%ne = 0
@@ -1087,6 +1116,8 @@
               j = A_col( l )
               IF ( data%X_inorder( j ) > 0 ) THEN   ! free variable
                 data%AT%ne = data%AT%ne + 1
+!               data%AT%row( data%AT%ne ) = data%C_inorder( i )
+!               data%AT%col( data%AT%ne ) = data%X_inorder( j )
                 data%AT%row( data%AT%ne ) = data%X_inorder( j )
                 data%AT%col( data%AT%ne ) = data%C_inorder( i )
                 data%AT%val( data%AT%ne ) = A_val( l )
@@ -1114,6 +1145,8 @@
           CALL ULS_factorize( data%AT, data%ULS_data,                          &
                               data%control%ULS_control, inform%ULS_inform )
 !write(6,*) ' ranks ', inform%ULS_inform%rank, inform%ULS_inform%structural_rank
+!write(6,*) data%control%ULS_control%relative_pivot_tolerance, &
+!           data%control%ULS_control%absolute_pivot_tolerance
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           inform%time%factorize = inform%time%factorize + time_now - time_record
           inform%time%clock_factorize =                                        &
@@ -1127,6 +1160,7 @@
           IF ( inform%ULS_inform%status < 0 ) THEN
              inform%status = GALAHAD_error_uls_factorization ; GO TO 900
           END IF
+!write(6,*) data%AT%m, data%AT%n, inform%ULS_inform%rank
 
 !  check to see if dependent constraints should be removed
 
@@ -1440,7 +1474,7 @@
 !  count the number of nonzeros in the basis matrix
 
 !     K_r = (  H_fr   A_frxb^T )
-!           ( A_frxb     0    )
+!           ( A_frxb     0     )
 
         data%K_r%ne = 0
         DO i = 1, m
@@ -2536,7 +2570,36 @@
 
       IF ( control%refine_solution ) THEN
 
-!  count the number of free variables and basic active constraints
+        IF ( m_fixed > 0 ) THEN
+          m_fixed = 0
+          DO i = 1, m
+            IF ( ABS( C_stat( i ) ) == 1 ) THEN
+              m_fixed = m_fixed + 1
+              data%C_inorder( i ) = m_fixed
+              data%C_fixed( m_fixed ) = i
+            ELSE
+              data%C_inorder( i ) = 0
+            END IF
+          END DO
+        ELSE
+          array_name = 'cro: data%X_inorder'
+          CALL SPACE_resize_array( n, data%X_inorder,                          &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          array_name = 'cro: data%X_free'
+          CALL SPACE_resize_array( n, data%X_free,                             &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        END IF
+
+!  count the number of basic active constraints and free variables
 
         n_free = 0
         DO j = 1, n
@@ -2549,79 +2612,126 @@
           END IF
         END DO
 
-        m_fixed = 0
-        DO i = 1, m
-          IF ( ABS( C_stat( i ) ) == 1 ) THEN
-            m_fixed = m_fixed + 1
-            data%C_inorder( i ) = m_fixed
-            data%C_fixed( m_fixed ) = i
-          ELSE
-            data%C_inorder( i ) = 0
-          END IF
-        END DO
-
-!  count the number of nonzeros in K_r
+!  count the number of nonzeros in the components of K_r or K_re
 
         IF ( n_free > 0 ) THEN
 
-!  firstly, find the number of free variables in the active constraints
+!  firstly, find the number of nonzeros for free columns in the Jacobian of
+!  active constraints
 
-          data%K_r%ne = 0
-          DO i = 1, m
-            IF ( data%C_inorder( i ) > 0 ) THEN
-              IF (  A_ptr( i + 1 ) > A_ptr( i ) ) data%K_r%ne = data%K_r%ne    &
-                + COUNT( data%X_inorder( A_col( A_ptr( i ) :                   &
-                                                A_ptr( i + 1 ) - 1 ) ) > 0 )
-            END IF
-          END DO
+          data%A_r%ne = 0
+          IF ( m_fixed > 0 ) THEN
+            DO i = 1, m
+              IF ( data%C_inorder( i ) > 0 ) THEN
+                IF (  A_ptr( i + 1 ) > A_ptr( i ) ) data%A_r%ne = data%A_r%ne  &
+                  + COUNT( data%X_inorder( A_col( A_ptr( i ) :                 &
+                                                  A_ptr( i + 1 ) - 1 ) ) > 0 )
+              END IF
+            END DO
+          END IF
 
 !  now add the free submatrix for the limited memory Hessian case ...
 
           IF ( lbfgs ) THEN
             dim_w = 2 * H_lm%length
-            data%K_r%ne = data%K_r%ne + n_free                                 &
-              + dim_w * n_free + ( dim_w * ( dim_w + 1 ) ) / 2
+            data%H_r%ne = n_free
+            data%A_r%ne = data%A_r%ne + dim_w * n_free
+            data%C_r%ne = ( dim_w * ( dim_w + 1 ) ) / 2
 
 !  ... or for the Hessian stored by rows
 
           ELSE
+            dim_w = 0 ; data%H_r%ne = 0 ; data%C_r%ne = 0
             DO i = 1, n
               IF ( data%X_inorder( i ) > 0 ) THEN
-                IF (  H_ptr( i + 1 ) > H_ptr( i ) ) data%K_r%ne = data%K_r%ne  &
+                IF (  H_ptr( i + 1 ) > H_ptr( i ) ) data%H_r%ne = data%H_r%ne  &
                   + COUNT( data%X_inorder( H_col( H_ptr( i ) :                 &
                                                   H_ptr( i + 1 ) - 1 ) ) > 0 )
               END IF
             END DO
           END IF
 
-!  allocate space for K_r or K_re as appropriate
+!  allocate space for the components of  K_r or K_re as appropriate
 
-          array_name = 'cro: data%K_r%row'
-          CALL SPACE_resize_array( data%K_r%ne, data%K_r%row,                  &
+          CALL SMT_put( data%H_r%type, 'COORDINATE', i )
+          data%H_r%n = n_free ; data%H_r%m = n_free
+          array_name = 'cro: data%H_r%row'
+          CALL SPACE_resize_array( data%H_r%ne, data%H_r%row,                  &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-          array_name = 'cro: data%K_r%col'
-          CALL SPACE_resize_array( data%K_r%ne, data%K_r%col,                  &
+          array_name = 'cro: data%H_r%col'
+          CALL SPACE_resize_array( data%H_r%ne, data%H_r%col,                  &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-          array_name = 'cro: data%K_r%val'
-          CALL SPACE_resize_array( data%K_r%ne, data%K_r%val,                  &
+          array_name = 'cro: data%H_r%val'
+          CALL SPACE_resize_array( data%H_r%ne, data%H_r%val,                  &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-          data%K_r%ne = 0
-          K_r_n = n_free + m_fixed
+          CALL SMT_put( data%A_r%type, 'COORDINATE', i )
+          data%A_r%n = n_free ; data%A_r%m = m_fixed + dim_w
+          array_name = 'cro: data%A_r%row'
+          CALL SPACE_resize_array( data%A_r%ne, data%A_r%row,                  &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          array_name = 'cro: data%A_r%col'
+          CALL SPACE_resize_array( data%A_r%ne, data%A_r%col,                  &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          array_name = 'cro: data%A_r%val'
+          CALL SPACE_resize_array( data%A_r%ne, data%A_r%val,                  &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          CALL SMT_put( data%C_r%type, 'COORDINATE', i )
+          data%C_r%n = m_fixed  + dim_w ; data%C_r%m = m_fixed + dim_w
+          array_name = 'cro: data%C_r%row'
+          CALL SPACE_resize_array( data%C_r%ne, data%C_r%row,                  &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          array_name = 'cro: data%C_r%col'
+          CALL SPACE_resize_array( data%C_r%ne, data%C_r%col,                  &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          array_name = 'cro: data%C_r%val'
+          CALL SPACE_resize_array( data%C_r%ne, data%C_r%val,                  &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          K_r_n = n_free + m_fixed + dim_w
 
 !  form K_re
 
@@ -2629,36 +2739,38 @@
 
 !  record the components of H_fr in K_re, ...
 
+            data%H_r%ne = 0
             IF ( H_lm%restricted == 0 ) THEN
               DO j = 1, n_free
-                data%K_r%ne = data%K_r%ne + 1
-                data%K_r%row( data%K_r%ne ) = j
-                data%K_r%col( data%K_r%ne ) = j
-                data%K_r%val( data%K_r%ne ) = H_lm%delta
+                data%H_r%ne = data%H_r%ne + 1
+                data%H_r%row( data%H_r%ne ) = j
+                data%H_r%col( data%H_r%ne ) = j
+                data%H_r%val( data%H_r%ne ) = H_lm%delta
               END DO
             ELSE
               DO j = 1, n
                 l = data%X_inorder( j )
                 IF ( l > 0 .AND. l <= H_lm%n ) THEN
-                  data%K_r%ne = data%K_r%ne + 1
-                  data%K_r%row( data%K_r%ne ) = l
-                  data%K_r%col( data%K_r%ne ) = l
-                  data%K_r%val( data%K_r%ne ) = H_lm%delta
+                  data%H_r%ne = data%H_r%ne + 1
+                  data%H_r%row( data%H_r%ne ) = l
+                  data%H_r%col( data%H_r%ne ) = l
+                  data%H_r%val( data%H_r%ne ) = H_lm%delta
                 END IF
               END DO
             END IF
 
 !  ... those of A_frab, ...
 
+            data%A_r%ne = 0
             DO i = 1, m
               IF ( data%C_inorder( i ) > 0 ) THEN
                 DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
                   j = A_col( l )
                   IF ( data%X_inorder( j ) > 0 ) THEN
-                    data%K_r%ne = data%K_r%ne + 1
-                    data%K_r%row( data%K_r%ne ) = data%C_inorder( i ) + n_free
-                    data%K_r%col( data%K_r%ne ) = data%X_inorder( j )
-                    data%K_r%val( data%K_r%ne ) = A_val( l )
+                    data%A_r%ne = data%A_r%ne + 1
+                    data%A_r%row( data%A_r%ne ) = data%C_inorder( i ) + n_free
+                    data%A_r%col( data%A_r%ne ) = data%X_inorder( j )
+                    data%A_r%val( data%A_r%ne ) = A_val( l )
                   END IF
                 END DO
               END IF
@@ -2666,34 +2778,33 @@
 
 !  ... those of W ...
 
+            data%C_r%ne = 0
             DO j = 1, dim_w
-              oj = K_r_n + j
               DO i = j, dim_w
-                data%K_r%ne = data%K_r%ne + 1
-                data%K_r%row( data%K_r%ne ) = K_r_n + i
-                data%K_r%col( data%K_r%ne ) = oj
-                data%K_r%val( data%K_r%ne ) = data%W( i, j )
+                data%C_r%ne = data%C_r%ne + 1
+                data%C_r%row( data%C_r%ne ) = i
+                data%C_r%col( data%C_r%ne ) = j
+                data%C_r%val( data%C_r%ne ) = data%W( i, j )
               END DO
             END DO
 
 !  ... and those of V_fr^T where V = R [ Y : delta S ]
 
             DO i = 1, H_lm%length
-              K_r_n = K_r_n + 1
               oi = H_lm%ORDER( i )
               DO j = 1, n
                 IF ( data%X_inorder( j ) > 0 ) THEN
-                  data%K_r%ne = data%K_r%ne + 1
-                  data%K_r%row( data%K_r%ne ) = K_r_n
-                  data%K_r%col( data%K_r%ne ) = data%X_inorder( j )
+                  data%A_r%ne = data%A_r%ne + 1
+                  data%A_r%row( data%A_r%ne ) = m_fixed + i
+                  data%A_r%col( data%A_r%ne ) = data%X_inorder( j )
                   IF ( H_lm%restricted == 0 ) THEN
-                    data%K_r%val( data%K_r%ne ) = H_lm%Y( j, oi )
+                    data%A_r%val( data%A_r%ne ) = H_lm%Y( j, oi )
                   ELSE
                     l = H_lm%RESTRICTION( j )
                     IF ( l <= H_lm%n ) THEN
-                      data%K_r%val( data%K_r%ne ) = H_lm%Y( l, oi )
+                      data%A_r%val( data%A_r%ne ) = H_lm%Y( l, oi )
                     ELSE
-                      data%K_r%ne = data%K_r%ne - 1
+                      data%A_r%ne = data%A_r%ne - 1
                     END IF
                   END IF
                 END IF
@@ -2701,21 +2812,20 @@
             END DO
 
             DO i = 1, H_lm%length
-              K_r_n = K_r_n + 1
               oi = H_lm%ORDER( i )
               DO j = 1, n
                 IF ( data%X_inorder( j ) > 0 ) THEN
-                  data%K_r%ne = data%K_r%ne + 1
-                  data%K_r%row( data%K_r%ne ) = K_r_n
-                  data%K_r%col( data%K_r%ne ) = data%X_inorder( j )
+                  data%A_r%ne = data%A_r%ne + 1
+                  data%A_r%row( data%A_r%ne ) = m_fixed + i
+                  data%A_r%col( data%A_r%ne ) = data%X_inorder( j )
                   IF ( H_lm%restricted == 0 ) THEN
-                    data%K_r%val( data%K_r%ne ) = H_lm%delta * H_lm%S( j, oi )
+                    data%A_r%val( data%A_r%ne ) = H_lm%delta * H_lm%S( j, oi )
                   ELSE
                     l = H_lm%RESTRICTION( j )
                     IF ( l <= H_lm%n ) THEN
-                      data%K_r%val( data%K_r%ne ) = H_lm%delta * H_lm%S( l, oi )
+                      data%A_r%val( data%A_r%ne ) = H_lm%delta * H_lm%S( l, oi )
                     ELSE
-                      data%K_r%ne = data%K_r%ne - 1
+                      data%A_r%ne = data%A_r%ne - 1
                     END IF
                   END IF
                 END IF
@@ -2728,15 +2838,16 @@
 
 !  record the components of H_fr in K_r ...
 
+            data%H_r%ne = 0
             DO i = 1, n
               IF ( data%X_inorder( i ) > 0 ) THEN
                 DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
                   j = H_col( l )
                   IF ( data%X_inorder( j ) > 0 ) THEN
-                    data%K_r%ne = data%K_r%ne + 1
-                    data%K_r%row( data%K_r%ne ) = data%X_inorder( i )
-                    data%K_r%col( data%K_r%ne ) = data%X_inorder( j )
-                    data%K_r%val( data%K_r%ne ) = H_val( l )
+                    data%H_r%ne = data%H_r%ne + 1
+                    data%H_r%row( data%H_r%ne ) = data%X_inorder( i )
+                    data%H_r%col( data%H_r%ne ) = data%X_inorder( j )
+                    data%H_r%val( data%H_r%ne ) = H_val( l )
                   END IF
                 END DO
               END IF
@@ -2744,22 +2855,23 @@
 
 !  ... and those of A_frab
 
+            data%A_r%ne = 0
             DO i = 1, m
               IF ( data%C_inorder( i ) > 0 ) THEN
                 DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
                   j = A_col( l )
                   IF ( data%X_inorder( j ) > 0 ) THEN
-                    data%K_r%ne = data%K_r%ne + 1
-                    data%K_r%row( data%K_r%ne ) = data%C_inorder( i ) + n_free
-                    data%K_r%col( data%K_r%ne ) = data%X_inorder( j )
-                    data%K_r%val( data%K_r%ne ) = A_val( l )
+                    data%A_r%ne = data%A_r%ne + 1
+                    data%A_r%row( data%A_r%ne ) = data%C_inorder( i )
+                    data%A_r%col( data%A_r%ne ) = data%X_inorder( j )
+                    data%A_r%val( data%A_r%ne ) = A_val( l )
                   END IF
                 END DO
               END IF
             END DO
           END IF
-          data%K_r%n = K_r_n ; data%K_r%m = K_r_n
-          CALL SMT_put( data%K_r%type, 'COORDINATE', i )
+          data%K_r%n = K_r_n
+!         CALL SMT_put( data%K_r%type, 'COORDINATE', i )
 
 !       WRITE( 6, "( ' K_sub: n, nnz ', 2I4 )" ) data%K_r%n, data%K_r%ne
 !       WRITE( 6, "( A, /, ( 10I7) )" ) ' rows =', data%K_r%row( : data%K_r%ne )
@@ -2769,33 +2881,16 @@
 !  order the rows/columns of K_r prior to factorization
 
           CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
-          CALL SLS_initialize_solver( data%control%symmetric_linear_solver,    &
-                                      data%SLS_data, inform%SLS_inform )
-          CALL SLS_analyse( data%K_r, data%SLS_data, data%control%SLS_control, &
-                            inform%SLS_inform )
-          CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-          inform%time%analyse = inform%time%analyse + time_now - time_record
-          inform%time%clock_analyse =                                          &
-            inform%time%clock_analyse + clock_now - clock_record
-
-          IF ( printi ) WRITE( out,                                            &
-               "( A, ' K nnz(matrix,predicted factors) = ', I0, ', ', I0,      &
-            &  /, A, ' SLS: analysis of K complete: status = ', I0 )" )        &
-                 prefix, data%K_r%ne, inform%SLS_inform%real_size_factors,     &
-                 prefix, inform%SLS_inform%status
-          IF ( printi .AND. inform%SLS_inform%out_of_range > 0 ) WRITE( out,   &
-              "( A, ' ** warning: ', I0, ' entr', A, ' of K out of range' )" ) &
-                 prefix, inform%SLS_inform%out_of_range,                       &
-                 STRING_ies( inform%SLS_inform%out_of_range )
-          IF ( inform%SLS_inform%status < 0 ) THEN
-             inform%status = GALAHAD_error_analysis ; GO TO 900
-          END IF
+          CALL SBLS_initialize( data%SBLS_data, data%control%SBLS_control,     &
+                                inform%SBLS_inform )
 
 !  factorize the basic sub-block K_r
 
           CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
-          CALL SLS_factorize( data%K_r, data%SLS_data,                         &
-                              data%control%SLS_control, inform%SLS_inform )
+          CALL SBLS_form_and_factorize( data%A_r%n, data%A_r%m, data%H_r,      &
+                                        data%A_r, data%C_r, data%SBLS_data,    &
+                                        data%control%SBLS_control,             &
+                                        inform%SBLS_inform )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           inform%time%factorize = inform%time%factorize + time_now - time_start
           inform%time%clock_factorize =                                        &
@@ -2803,15 +2898,16 @@
 
           IF ( printi ) WRITE( out,                                            &
                "( A, ' K nnz(matrix,factors) = ', I0, ', ', I0,                &
-            &  /, A, ' SLS: factorization of K complete: status = ', I0 )" )   &
-                 prefix, data%K_r%ne, inform%SLS_inform%entries_in_factors,    &
-                 prefix, inform%SLS_inform%status
-          IF ( inform%SLS_inform%status < 0 ) THEN
+            &  /, A, ' SBLS: factorization of K complete: status = ', I0 )" )  &
+              prefix, data%K_r%ne,                                             &
+              inform%SBLS_inform%SLS_inform%entries_in_factors,                &
+              prefix, inform%SBLS_inform%status
+          IF ( inform%SBLS_inform%status < 0 ) THEN
              inform%status = GALAHAD_error_factorization ; GO TO 900
           END IF
 
           IF ( printm ) WRITE( out, "( A, ' K%n ', I0, ' rank ', I0 )" )       &
-            prefix, data%K_r%n, inform%SLS_inform%rank
+            prefix, K_r_n, inform%SBLS_inform%SLS_inform%rank
         ELSE
           data%K_r%n = 0
         END IF
@@ -2842,6 +2938,7 @@
         DO j = 1, n
           IF ( X_stat( j ) == 0 ) THEN
             data%SOL( data%X_inorder( j ) ) = - G( j )
+            V_new( data%X_inorder( j ) ) = X( j )
 
 !  ... record the free dual variables ...
 
@@ -2861,8 +2958,10 @@
         DO i = 1, m
           IF ( C_stat( i ) == - 1 ) THEN
             data%SOL( n_free + data%C_inorder( i ) ) = C_l( i )
+            V_new(  n_free + data%C_inorder( i ) ) = - Y( i )
           ELSE IF ( C_stat( i ) == 1 ) THEN
             data%SOL( n_free + data%C_inorder( i ) ) = C_u( i )
+            V_new(  n_free + data%C_inorder( i ) ) = - Y( i )
 
 !  ... and the multipliers for the inactive constraints ...
 
@@ -2919,24 +3018,39 @@
 
         DO ii = 1, m_fixed
           i = data%C_fixed( ii )
+          ip =  n_free + ii
           DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
             j = A_col( l )
             IF ( data%X_inorder( j ) == 0 ) THEN
               IF ( X_stat( j ) < 0 ) THEN
-                data%SOL( ii ) = data%SOL( ii ) - A_val( l ) * X_l( j )
+                data%SOL( ip ) = data%SOL( ip ) - A_val( l ) * X_l( j )
               ELSE
-                data%SOL( ii ) = data%SOL( ii ) - A_val( l ) * X_u( j )
+                data%SOL( ip ) = data%SOL( ip ) - A_val( l ) * X_u( j )
               END IF
             END IF
           END DO
         END DO
 
+!       CALL mop_Ax( one, data%K_r, V_new, zero, R_new, out = 6, error = 6,    &
+!                    print_level = 1, symmetric = .TRUE. )
+!       i = 1 ; j = data%K_r%n
+!       write(6, "( /, A, ' largest residual', ES11.4, ' in position ', I0 )" )&
+!         prefix, MAXVAL( ABS( R_new( i : j ) - data%SOL( i : j  ) ) ),        &
+!         i - 1 + MAXLOC( ABS( R_new( i : j ) - data%SOL( i : j ) ) )
+!        DO i = 1, data%K_r%n
+!        write(95,"(I6, 2ES22.14)") i, R_new( i ), data%SOL( i )
+!        END DO
+
 !  solve the system
 
+        data%control%IR_control%print_level = 2
         CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
-        CALL IR_solve( data%K_r, data%SOL, data%IR_data, data%SLS_data,        &
-                       data%control%IR_control, data%control%SLS_control,      &
-                       inform%IR_inform, inform%SLS_inform )
+        CALL SBLS_solve( data%A_r%n, data%A_r%m, data%A_r, data%C_r,           &
+                         data%SBLS_data, data%control%SBLS_control,            &
+                         inform%SBLS_inform, data%SOL )
+!       CALL SLS_fredholm_alternative( data%K_r, data%SOL, data%SLS_data,      &
+!                      data%control%SLS_control, inform%SLS_inform )
+!write(6,*) ' alternative = ', inform%SLS_inform%alternative
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%solve = inform%time%solve + time_now - time_record
         inform%time%clock_solve =                                              &
@@ -2945,8 +3059,8 @@
 !  record x_fr and y_ab
 
         X_new( data%X_free( 1 : n_free ) ) = data%SOL( 1 : n_free )
-        Y_new( data%C_fixed( 1 : m_fixed ) )                                 &
-          = - data%SOL( n_free + 1 : n_free + m_fixed )
+        IF ( m_fixed > 0 ) Y_new( data%C_fixed( 1 : m_fixed ) )                &
+                             = - data%SOL( n_free + 1 : n_free + m_fixed )
 
 !  recover z_fx -> z_fx + H_od^T x_fr
 

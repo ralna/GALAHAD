@@ -8,7 +8,7 @@
 !  History -
 !   originally released GALAHAD Version 2.4. January 1st 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_BQP_double
@@ -72,14 +72,14 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: BQP_control_type
-        
+
 !  unit number for error and warning diagnostics
-      
+
        INTEGER :: error = 6
 
 !  general output unit number
@@ -107,7 +107,7 @@
        INTEGER :: maxit = 1000
 
 !  cold_start should be set to 0 if a warm start is required (with variables
-!   assigned according to B_stat, see below), and to any other value if the 
+!   assigned according to B_stat, see below), and to any other value if the
 !   values given in prob%X suffice
 
        INTEGER :: cold_start = 1
@@ -124,7 +124,7 @@
 
        INTEGER :: sif_file_device = 52
 
-!  any bound larger than infinity in modulus will be regarded as infinite 
+!  any bound larger than infinity in modulus will be regarded as infinite
 
        REAL ( KIND = wp ) :: infinity = ten ** 19
 
@@ -145,8 +145,8 @@
 !
        REAL ( KIND = wp ) :: identical_bounds_tol = epsmch
 
-!  the CG iteration will be stopped as soon as the current norm of the 
-!  preconditioned gradient is smaller than 
+!  the CG iteration will be stopped as soon as the current norm of the
+!  preconditioned gradient is smaller than
 !    max( stop_cg_relative * initial preconditioned gradient, stop_cg_absolute )
 
        REAL ( KIND = wp ) :: stop_cg_relative = ten ** ( - 2 )
@@ -187,7 +187,7 @@
 
 !  all output lines will be prefixed by a string (max 30 characters)
 !    prefix(2:LEN(TRIM(%prefix))-1)
-!   where prefix contains the required string enclosed in 
+!   where prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 !
        CHARACTER ( LEN = 30 ) :: prefix = '""                            '
@@ -219,10 +219,10 @@
 
        REAL :: solve = 0.0
      END TYPE BQP_time_type
-   
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: BQP_inform_type
 
@@ -279,7 +279,7 @@
      TYPE :: BQP_arcsearch_data_type
        INTEGER :: iterca, iter, itmax, n_freed, nbreak, nzero, branch
        INTEGER :: arcsearch_iter
-       REAL ( KIND = wp ) :: tk, gxt, hxt, epstl2, tpttp, tcauch 
+       REAL ( KIND = wp ) :: tk, gxt, hxt, epstl2, tpttp, tcauch
        REAL ( KIND = wp ) :: tbreak, deltat, epsqrt, gxtold, g0tp
        REAL ( KIND = wp ) :: t, tamax , ptp, gtp, flxt, t_new
        LOGICAL :: prnter, pronel, recomp, explicit_h, use_hprod
@@ -309,7 +309,7 @@
        REAL ( KIND = wp ) :: q_t, norm_step, step, stop_cg, old_gnrmsq, pnrmsq
        REAL ( KIND = wp ) :: curvature
        LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
-       LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe 
+       LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe
        LOGICAL :: reverse, explicit_h, use_hprod, header
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: VARIABLE_status, OLD_status
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_prod
@@ -332,7 +332,7 @@
 !
 !  Default control data for BQP. This routine should be called before
 !  BQP_solve
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -344,8 +344,8 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
      TYPE ( BQP_data_type ), INTENT( INOUT ) :: data
-     TYPE ( BQP_control_type ), INTENT( OUT ) :: control        
-     TYPE ( BQP_inform_type ), INTENT( OUT ) :: inform     
+     TYPE ( BQP_control_type ), INTENT( OUT ) :: control
+     TYPE ( BQP_inform_type ), INTENT( OUT ) :: inform
 
      inform%status = GALAHAD_ok
 
@@ -355,7 +355,7 @@
                            inform%SBLS_inform )
      control%SBLS_control%prefix = '" - SBLS:"                    '
 
-!  added here to prevent for compiler bugs 
+!  added here to prevent for compiler bugs
 
      control%stop_p = epsmch ** 0.33_wp
      control%stop_d = epsmch ** 0.33_wp
@@ -372,10 +372,10 @@
 
      SUBROUTINE BQP_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by BQP_initialize could (roughly) 
+!  The defauly values as given by BQP_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN BQP SPECIFICATIONS (DEFAULT)
@@ -409,7 +409,7 @@
 
 !  Dummy arguments
 
-     TYPE ( BQP_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( BQP_control_type ), INTENT( INOUT ) :: control
      INTEGER, INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -618,8 +618,8 @@
 !     subject to   (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
 !
 !  where x is a vector of n components ( x_1, .... , x_n ), const is a
-!  constant, g is an n-vector, H is a symmetric, positive definite matrix, 
-!  and any of the bounds (x_l)_i, (x_u)_i may be infinite, using a 
+!  constant, g is an n-vector, H is a symmetric, positive definite matrix,
+!  and any of the bounds (x_l)_i, (x_u)_i may be infinite, using a
 !  preconditioned projected CG method.
 !
 !  The subroutine is particularly appropriate when H is sparse
@@ -628,17 +628,17 @@
 !
 !  Arguments:
 !
-!  prob is a structure of type QPT_problem_type, whose components hold 
+!  prob is a structure of type QPT_problem_type, whose components hold
 !   information about the problem on input, and its solution on output.
 !   The following components must be set:
 !
 !   %n is an INTEGER variable, which must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
-!                 
+!
 !   %m is an INTEGER variable, which must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
-!                 
-!   %H is a structure of type SMT_type used to hold the LOWER TRIANGULAR part 
+!
+!   %H is a structure of type SMT_type used to hold the LOWER TRIANGULAR part
 !    of H. Four storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -649,7 +649,7 @@
 !       H%val( : )   the values of the components of H
 !       H%row( : )   the row indices of the components of H
 !       H%col( : )   the column indices of the components of H
-!       H%ne         the number of nonzeros used to store 
+!       H%ne         the number of nonzeros used to store
 !                    the LOWER TRIANGULAR part of H
 !
 !    ii) sparse, by rows
@@ -668,7 +668,7 @@
 !
 !       H%type( 1 : 5 ) = TRANSFER( 'DENSE', H%type )
 !       H%val( : )   the values of the components of H, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
 !    iv) diagonal
@@ -685,8 +685,8 @@
 !   %G is a REAL array of length %n, which must be set by
 !    the user to the value of the gradient, g, of the linear term of the
 !    quadratic objective function. The i-th component of G, i = 1, ...., n,
-!    should contain the value of g_i.  
-!   
+!    should contain the value of g_i.
+!
 !   %f is a REAL variable, which must be set by the user to the value of
 !    the constant term f in the objective function. On exit, it may have
 !    been changed to reflect variables which have been fixed.
@@ -697,65 +697,65 @@
 !
 !   %X_l, %X_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays x_l and x_u of lower and upper bounds on x.
-!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %X_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %X_u to a value larger than 
-!    control%infinity. On exit, %X_l and %X_u will most likely have been 
+!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %X_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %X_u to a value larger than
+!    control%infinity. On exit, %X_l and %X_u will most likely have been
 !    reordered.
-!   
+!
 !   %Z is a REAL array of length %n, which must be set by the user to
 !    appropriate estimates of the values of the dual variables,
-!    i.e., Lagrange multipliers corresponding to the simple bound 
+!    i.e., Lagrange multipliers corresponding to the simple bound
 !    constraints x_l <= x <= x_u. On successful exit, it will contain
-!   the required vector of dual variables. 
+!   the required vector of dual variables.
 !
 !  B_stat is a INTEGER array of length n, which may be set by the user
-!   on entry to BQP_solve to indicate which of the simple bound constraints 
+!   on entry to BQP_solve to indicate which of the simple bound constraints
 !   are to be included in the initial working set. If this facility is required,
 !   the component control%cold_start must be set to 0 on entry; B_stat
 !   need not be set if control%cold_start is nonzero. On exit,
 !   B_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are 
-!   B_stat( i ) < 0, the i-th bound constraint is in the working set, 
-!                    on its lower bound, 
+!   Possible entry/exit values are
+!   B_stat( i ) < 0, the i-th bound constraint is in the working set,
+!                    on its lower bound,
 !               > 0, the i-th bound constraint is in the working set
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
 !  data is a structure of type BQP_data_type which holds private internal data
 !
-!  control is a structure of type BQP_control_type that controls the 
+!  control is a structure of type BQP_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to BQP_initialize. See BQP_initialize 
+!   the elements may be set by a call to BQP_initialize. See BQP_initialize
 !   for details
 !
-!  inform is a structure of type BQP_inform_type that provides 
-!    information on exit from BQP_solve. The component %status 
+!  inform is a structure of type BQP_inform_type that provides
+!    information on exit from BQP_solve. The component %status
 !    must be set to 1 on initial entry, and on exit has possible values:
-!  
+!
 !     0 Normal termination with a locally optimal solution.
 !
 !     2 The product H * v of the Hessian H with a given output vector v
 !       is required from the user. The vector v will be stored in reverse%V
-!       and the product H * v must be returned in reverse%PROD, and 
-!       BQP_solve re-entered with all other arguments unchanged. 
+!       and the product H * v must be returned in reverse%PROD, and
+!       BQP_solve re-entered with all other arguments unchanged.
 !
 !     3 The product H * v of the Hessian H with a given output vector v
 !       is required from the user. Only components
-!         reverse%NZ_v( reverse%nz_v_start : reverse%nz_v_end ) 
+!         reverse%NZ_v( reverse%nz_v_start : reverse%nz_v_end )
 !       of the vector v stored in reverse%V are nonzero. The resulting
-!       product H * v must be placed in reverse%PROD, and BQP_solve re-entered 
-!       with all other arguments unchanged. 
+!       product H * v must be placed in reverse%PROD, and BQP_solve re-entered
+!       with all other arguments unchanged.
 !
 !     4 The product H * v of the Hessian H with a given output vector v
 !       is required from the user. Only components
-!         reverse%NZ_v( reverse%nz_v_start : reverse%nz_v_end ) 
+!         reverse%NZ_v( reverse%nz_v_start : reverse%nz_v_end )
 !       of the vector v stored in reverse%V are nonzero. The resulting
 !       NONZEROS in the product H * v must be placed in their appropriate
-!       comnpinents of reverse%PROD, while a list of indices of the nonzeos 
+!       comnpinents of reverse%PROD, while a list of indices of the nonzeos
 !       placed in reverse%NZ_prod( 1 : reverse%nz_prod_end ). BQP_solve should
 !       then be re-entered with all other arguments unchanged. Typically
 !       v will be very sparse (i.e., reverse%nz_p_end-reverse%nz_p_start
@@ -767,10 +767,10 @@
 !    -2 A deallocation error occured; the status is given in the component
 !       alloc_status.
 !
-!   - 3 one of the restrictions 
+!   - 3 one of the restrictions
 !        prob%n     >=  1
 !        prob%m     >=  0
-!        prob%H%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE', 
+!        prob%H%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE',
 !                         'DIAGONAL', 'REVERSE' }
 !       has been violated.
 !
@@ -783,35 +783,35 @@
 !
 !    -9 The factorization failed; the return status from the factorization
 !       package is given in the component factorization_status.
-!      
-!    -13 The problem is so ill-conditoned that further progress is impossible.  
+!
+!    -13 The problem is so ill-conditoned that further progress is impossible.
 !
 !    -16 The step is too small to make further impact.
 !
 !    -17 Too many iterations have been performed. This may happen if
-!       control%maxit is too small, but may also be symptomatic of 
+!       control%maxit is too small, but may also be symptomatic of
 !       a badly scaled problem.
 !
-!    -18 Too much CPU time has passed. This may happen if 
-!        control%cpu_time_limit is too small, but may also be 
+!    -18 Too much CPU time has passed. This may happen if
+!        control%cpu_time_limit is too small, but may also be
 !        symptomatic of a badly scaled problem.
 !
 !    -23 an entry from the strict upper triangle of H has been input.
 !
-!  On exit from BQP_solve, other components of inform give the 
+!  On exit from BQP_solve, other components of inform give the
 !  following:
 !
-!     alloc_status = The status of the last attempted allocation/deallocation 
-!     factorization_integer = The total integer workspace required for the 
+!     alloc_status = The status of the last attempted allocation/deallocation
+!     factorization_integer = The total integer workspace required for the
 !       factorization.
-!     factorization_real = The total real workspace required for the 
+!     factorization_real = The total real workspace required for the
 !       factorization.
 !     nfacts = The total number of factorizations performed.
-!     nmods = The total number of factorizations which were modified to 
-!       ensure that the matrix was an appropriate preconditioner. 
+!     nmods = The total number of factorizations which were modified to
+!       ensure that the matrix was an appropriate preconditioner.
 !     factorization_status = the return status from the matrix factorization
-!       package.   
-!     obj = the value of the objective function at the best estimate of the 
+!       package.
+!     obj = the value of the objective function at the best estimate of the
 !       solution determined by BQP_solve.
 !     non_negligible_pivot = the smallest pivot which was not judged to be
 !       zero when detecting linearly dependent constraints
@@ -823,7 +823,7 @@
 !     time%factorize = the time spent factorizing the required matrices.
 !     time%solve = the time spent computing the search direction.
 !
-!  userdata is a scalar variable of type NLPT_userdata_type which may be used 
+!  userdata is a scalar variable of type NLPT_userdata_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -838,35 +838,35 @@
 !    character_pointer is a rank-one pointer array of type default character.
 !    logical_pointer is a rank-one pointer array of type default logical.
 !
-!  reverse is an OPTIONAL structure of type BQP_reverse_type which is used to 
-!   pass intermediate data to and from BQP_solve. This will only be necessary 
+!  reverse is an OPTIONAL structure of type BQP_reverse_type which is used to
+!   pass intermediate data to and from BQP_solve. This will only be necessary
 !   if reverse-communication is to be used to form matrix-vector products
-!   of the form H * v or preconditioning steps of the form P * v. If 
+!   of the form H * v or preconditioning steps of the form P * v. If
 !   reverse is present (and eval_HPROD is absent), reverse communication
-!   will be used and the user must monitor the value of inform%status 
+!   will be used and the user must monitor the value of inform%status
 !   (see above) to await instructions about required matrix-vector products.
 !
 !  eval_HPROD is an OPTIONAL subroutine which if present must have the arguments
-!   given below (see the interface blocks). The product H * v of the given 
-!   matrix H and vector v stored in V must be returned in PROD; only the 
-!   components NZ_v( nz_v_start : nz_v_end ) of V are nonzero. If either of 
-!   the optional argeuments NZ_prod or nz_prod_end are absent, the WHOLE of H v 
-!   including zeros should be returned in PROD. If NZ_prod and nz_prod_end are 
-!   present, the NONZEROS in the product H * v must be placed in their 
-!   appropriate comnponents of reverse%PROD, while a list of indices of the 
-!   nonzeos placed in NZ_prod( 1 : nz_prod_end ). In both cases, the status 
+!   given below (see the interface blocks). The product H * v of the given
+!   matrix H and vector v stored in V must be returned in PROD; only the
+!   components NZ_v( nz_v_start : nz_v_end ) of V are nonzero. If either of
+!   the optional argeuments NZ_prod or nz_prod_end are absent, the WHOLE of H v
+!   including zeros should be returned in PROD. If NZ_prod and nz_prod_end are
+!   present, the NONZEROS in the product H * v must be placed in their
+!   appropriate comnponents of reverse%PROD, while a list of indices of the
+!   nonzeos placed in NZ_prod( 1 : nz_prod_end ). In both cases, the status
 !   variable should be set to 0 unless the product is impossible in which
 !   case status should be set to a nonzero value. If eval_HPROD is not
-!   present, BQP_solve will either return to the user each time an evaluation 
-!   is required (see reverse above) or form the product directly from 
+!   present, BQP_solve will either return to the user each time an evaluation
+!   is required (see reverse above) or form the product directly from
 !   user-provided %H.
 !
 !  eval_PREC is an OPTIONAL subroutine which if present must have the arguments
-!   given below (see the interface blocks). The product P * v of the given 
+!   given below (see the interface blocks). The product P * v of the given
 !   preconditioner P and vector v stored in V must be returned in PV.
-!   The status variable should be set to 0 unless the product is impossible 
+!   The status variable should be set to 0 unless the product is impossible
 !   in which case status should be set to a nonzero value. If eval_PREC
-!   is not present, BQP_solve will return to the user each time an evaluation 
+!   is not present, BQP_solve will return to the user each time an evaluation
 !   is required.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -900,7 +900,7 @@
        INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_prod
        END SUBROUTINE eval_HPROD
      END INTERFACE
-   
+
 !    INTERFACE
 !      SUBROUTINE eval_PREC( status, userdata, V, PV )
 !      USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
@@ -921,7 +921,7 @@
      LOGICAL :: reset_bnd
      CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -946,7 +946,7 @@
        WRITE( control%out, 2000 ) prefix, ' entering '
 
 ! -------------------------------------------------------------------
-!  If desired, generate a SIF file for problem passed 
+!  If desired, generate a SIF file for problem passed
 
      IF ( control%generate_sif_file ) THEN
        CALL QPD_SIF( prob, control%sif_file_name, control%sif_file_device,     &
@@ -985,7 +985,7 @@
 !  Control the output printing
 !  ===========================
 
-     data%out = control%out ; data%error = control%error 
+     data%out = control%out ; data%error = control%error
      data%print_level = 0
      IF ( control%start_print <= 0 ) THEN
        data%start_print = 0
@@ -1011,15 +1011,15 @@
 
 !  basic single line of output per iteration
 
-     data%set_printi = data%out > 0 .AND. control%print_level >= 1 
+     data%set_printi = data%out > 0 .AND. control%print_level >= 1
 
 !  as per printi, but with additional timings for various operations
 
-     data%set_printt = data%out > 0 .AND. control%print_level >= 2 
+     data%set_printt = data%out > 0 .AND. control%print_level >= 2
 
 !  as per printt, but with checking of residuals, etc
 
-     data%set_printm = data%out > 0 .AND. control%print_level >= 3 
+     data%set_printm = data%out > 0 .AND. control%print_level >= 3
 
 !  as per printm but also with an indication of where in the code we are
 
@@ -1034,8 +1034,8 @@
      IF ( inform%iter >= data%start_print .AND.                                &
           inform%iter < data%stop_print ) THEN
        data%print_level = control%print_level
-       data%printe = data%set_printe ; data%printi = data%set_printi 
-       data%printt = data%set_printt ; data%printm = data%set_printm 
+       data%printe = data%set_printe ; data%printi = data%set_printi
+       data%printt = data%set_printt ; data%printm = data%set_printm
        data%printw = data%set_printw ; data%printd = data%set_printd
      ELSE
        data%print_level = 0
@@ -1052,10 +1052,10 @@
        IF ( .NOT. QPT_keyword_H( prob%H%type ) ) THEN
          inform%status = GALAHAD_error_restrictions
          GO TO 910
-       END IF 
-     END IF 
+       END IF
+     END IF
 
-!  If required, write out problem 
+!  If required, write out problem
 
      IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
        WRITE( control%out, "( ' n, m = ', I0, 1X, I0 )" ) prob%n, prob%m
@@ -1092,7 +1092,7 @@
      DO i = 1, prob%n
        IF ( prob%X_l( i ) - prob%X_u( i ) > control%identical_bounds_tol ) THEN
          inform%status = GALAHAD_error_bad_bounds
-         GO TO 910 
+         GO TO 910
        ELSE IF ( prob%X_u( i ) == prob%X_l( i ) ) THEN
        ELSE IF ( prob%X_u( i ) - prob%X_l( i )                                 &
                  <= control%identical_bounds_tol ) THEN
@@ -1108,7 +1108,7 @@
            reset_bnd = .TRUE.
          END IF
        END IF
-     END DO   
+     END DO
      IF ( reset_bnd .AND. data%printi ) WRITE( control%out,                    &
        "( ' ', /, A, '   **  Warning: one or more variable bounds reset ' )" ) &
          prefix
@@ -1418,17 +1418,17 @@
 !  ------------------------
 
  110 CONTINUE
-       CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start 
+       CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
 
 !  set the print levels for the iteration
 
-       inform%iter = inform%iter + 1 
+       inform%iter = inform%iter + 1
        IF ( ( inform%iter >= data%start_print .AND.                            &
               inform%iter < data%stop_print ) .AND.                            &
             MOD( inform%iter - data%start_print, data%print_gap ) == 0 ) THEN
          data%print_level = control%print_level
-         data%printe = data%set_printe ; data%printi = data%set_printi 
-         data%printt = data%set_printt ; data%printm = data%set_printm 
+         data%printe = data%set_printe ; data%printi = data%set_printi
+         data%printt = data%set_printt ; data%printm = data%set_printm
          data%printw = data%set_printw ; data%printd = data%set_printd
        ELSE
          data%print_level = 0
@@ -1513,16 +1513,16 @@
 
 !  test to see if more than maxit iterations have been performed
 
-       IF ( inform%iter > data%maxit ) THEN 
-         inform%status = GALAHAD_error_max_iterations ; GO TO 900 
-       END IF 
+       IF ( inform%iter > data%maxit ) THEN
+         inform%status = GALAHAD_error_max_iterations ; GO TO 900
+       END IF
 
 !  check that the CPU time limit has not been reached
 
        IF ( control%cpu_time_limit >= zero .AND.                               &
             inform%time%total > control%cpu_time_limit ) THEN
          inform%status = GALAHAD_error_cpu_limit ; GO TO 900
-       END IF 
+       END IF
 
 !  ----------------------------------------------------------------------------
 !                  compute the search direction
@@ -1556,7 +1556,7 @@
 
 !      ELSE
 
-!  perform CG from x in the space of free variables: variables 
+!  perform CG from x in the space of free variables: variables
 !  reverse%nz_v(:data%n_free) or data%nz_v(:data%n_free) are free
 
 !  compute g_free, the gradient in the free variables
@@ -1567,7 +1567,7 @@
            data%G_free( : data%n_free ) = data%G( data%nz_v( : data%n_free ) )
          END IF
 
-!  start from s_free = 0 
+!  start from s_free = 0
 
          data%S_free( : data%n_free ) = zero
          data%pnrmsq = zero
@@ -1581,7 +1581,7 @@
 
 !  obtain the preconditioned gradient pg_free = P(inverse) g_free
 
-           data%PG_free( : data%n_free ) = data%G_free( : data%n_free ) 
+           data%PG_free( : data%n_free ) = data%G_free( : data%n_free )
  300       CONTINUE
            gnrmsq =  DOT_PRODUCT( data%PG_free( : data%n_free ),               &
                                   data%G_free( : data%n_free ) )
@@ -1611,16 +1611,16 @@
                WRITE( control%out,                                             &
                  "( A, 1X, I7, 2ES12.4, '      -            -     ' )" )       &
                  prefix, data%cg_iter, data%q_t, SQRT( ABS( gnrmsq ) )
-             ELSE          
+             ELSE
                WRITE( control%out, "( A, 1X, I7, 4ES12.4 )" )                  &
                 prefix, data%cg_iter, data%q_t, SQRT( ABS( gnrmsq ) ),         &
                 data%curvature, data%step
              END IF
            END IF
-       
-!  if the gradient of the model is sufficiently small or if the CG iteration 
+
+!  if the gradient of the model is sufficiently small or if the CG iteration
 !  limit is exceeded, exit; record the CG direction
- 
+
            IF ( SQRT( ABS( gnrmsq ) ) <= data%stop_cg .OR.                     &
                 data%cg_iter + 1 > data%cg_maxit ) THEN
              IF ( data% reverse ) THEN
@@ -1739,12 +1739,12 @@ end do
 !  update the estimate of the solution
 
            data%S_free( : data%n_free ) = data%S_free( : data%n_free )         &
-             + data%step * data%P_free( : data%n_free ) 
+             + data%step * data%P_free( : data%n_free )
 
 !  update the gradient at the estimate of the solution
 
            data%G_free( : data%n_free ) = data%G_free( : data%n_free )         &
-             + data%step * data%HP_free( : data%n_free ) 
+             + data%step * data%HP_free( : data%n_free )
            GO TO 210
 
 !  - - - - - - - - -
@@ -1768,7 +1768,7 @@ end do
  490     CONTINUE
        data%arcsearch_status = 1
        IF ( data%explicit_h ) THEN
-         data%arcsearch_data%arcsearch_iter = 0 ; data%arcsearch_data%USED = 0 
+         data%arcsearch_data%arcsearch_iter = 0 ; data%arcsearch_data%USED = 0
        END IF
  500   CONTINUE
 
@@ -1892,7 +1892,7 @@ end do
 
 !  successful exit with the new point
 
-         CASE ( 0 ) 
+         CASE ( 0 )
            IF ( data% reverse ) THEN
              data%norm_step = MAXVAL( ABS( reverse%V ) )
            ELSE
@@ -1902,7 +1902,7 @@ end do
 
 !  error exit without the new point
 
-         CASE ( : - 1 ) 
+         CASE ( : - 1 )
            IF ( data%printe ) WRITE( control%error, 2010 )                     &
              prefix, data%arcsearch_status, 'BQP_(in)exact_arcsearch'
            GO TO 900
@@ -1943,15 +1943,15 @@ end do
 
 !  Successful return
 
- 900 CONTINUE 
-     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start 
+ 900 CONTINUE
+     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
      IF ( data%printd ) WRITE( control%out, 2000 ) prefix, ' leaving '
      RETURN
 
 !  Error returns
 
- 910 CONTINUE 
-     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start 
+ 910 CONTINUE
+     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
      IF ( data%printi ) THEN
        SELECT CASE ( inform%status )
        CASE ( GALAHAD_ok )
@@ -1982,12 +1982,12 @@ end do
        WRITE( control%error, 2010 ) prefix, inform%status, 'BQP_solve'
      END IF
      IF ( data%printd ) WRITE( control%out, 2000 ) prefix, ' leaving '
-     RETURN  
+     RETURN
 
 !  Non-executable statements
 
-2000 FORMAT( /, A, ' --', A, ' BQP_solve' ) 
-2010 FORMAT( A, '   **  Error return ', I0, ' from ', A ) 
+2000 FORMAT( /, A, ' --', A, ' BQP_solve' )
+2010 FORMAT( A, '   **  Error return ', I0, ' from ', A )
 2020 FORMAT( /, A, ' BQP error exit: ', A )
 2030 FORMAT( /, A, ' allocation error status ', I0, ' for ', A )
 
@@ -2021,7 +2021,7 @@ end do
 !  Dummy arguments
 
      TYPE ( BQP_data_type ), INTENT( INOUT ) :: data
-     TYPE ( BQP_control_type ), INTENT( IN ) :: control        
+     TYPE ( BQP_control_type ), INTENT( IN ) :: control
      TYPE ( BQP_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( BQP_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
 
@@ -2221,12 +2221,12 @@ end do
                                         data, userdata, H, eval_HPROD )
 
 !  If we define the 'search arc' x(t) = projection of x_0 + t * p into the box
-!  region x_l(*) <= x(*) <= x_u(*), find the global minimizer of the quadratic 
+!  region x_l(*) <= x(*) <= x_u(*), find the global minimizer of the quadratic
 !  function
 
 !     1/2 (x-x_0)^T H (x-x_0) + g^T (x-x_0) + f
 
-!  for points lying on x(t), with 0 <= t <= t_max. 
+!  for points lying on x(t), with 0 <= t <= t_max.
 
 !  Control is passed from the routine whenever a product of the vector P with
 !  H is required, and the user is responsible for forming the product in the
@@ -2269,7 +2269,7 @@ end do
 !  X_l    (REAL array of length at least n) the lower bounds on the variables
 !  X_u    (REAL array of length at least n) the upper bounds on the variables
 !  t_max  (REAL) the largest allowable value of t
-!  X_t    (REAL array of length at least n) the current estimate of the 
+!  X_t    (REAL array of length at least n) the current estimate of the
 !          minimizer
 !  q_t    (REAL) the value of the piecewise quadratic function at the current
 !          estimate of the minimizer
@@ -2288,10 +2288,10 @@ end do
 !          exit, (status=2,3), P is the vector for which the product H * P
 !          is required before the next re-entry. On a terminal exit (status=0),
 !          P contains the step X_t - X_0. The components NZ_p(i) = nz_p_start,
-!           ... , nz_p_end of P contain the values of the nonzero components 
+!           ... , nz_p_end of P contain the values of the nonzero components
 !          of P (see, NZ_p, nz_p_start, nz_p_end)
 !  NZ_p   (INTEGER array of length at least n) on all normal exits
-!         (status=0,2,3), NZ_p(i), i = nz_p_start, ..., nz_p_end, gives the 
+!         (status=0,2,3), NZ_p(i), i = nz_p_start, ..., nz_p_end, gives the
 !          indices of the nonzero components of P
 !  nz_p_start  (INTEGER) see NZ_p, above
 !  nz_p_end  (INTEGER) see NZ_p, above
@@ -2300,12 +2300,12 @@ end do
 !          components NZ_p(i), i=1,...,n_free, of HP need be set (the other
 !          components are not used)
 !  NZ_hp (INTEGER array of length at least nz_hp_end) on status = 3 entries,
-!          NZ_hp(i), i = 1,....,nz_hp_end, must give the indices of the 
+!          NZ_hp(i), i = 1,....,nz_hp_end, must give the indices of the
 !          nonzero components of HP. On other entries, NZ_hp need not be set
-!  nz_hp_end (INTEGER) the number of nonzero components of HP on a status=3 
+!  nz_hp_end (INTEGER) the number of nonzero components of HP on a status=3
 !          entry. nz_hp_end need not be set on other entries
 !  out   (INTEGER) the fortran output channel number to be used
-!  print_level (INTEGER) allows detailed printing. If print_level is larger 
+!  print_level (INTEGER) allows detailed printing. If print_level is larger
 !          than 4, detailed output from the routine will be given. Otherwise,
 !          no output occurs
 !  status (INTEGER) controls flow through the subroutine.
@@ -2316,7 +2316,7 @@ end do
 !  data   (BQP_arcsearch_data_type) private data that must be preserved between
 !          calls
 !  userdata (NLPT_userdata_type) user provided data for use in eval_HPROD
-!  H      (SMT_type) optionaly, the whole of H stored by rows 
+!  H      (SMT_type) optionaly, the whole of H stored by rows
 !  H_PROD subroutine, optionally, compute H * vector products
 
 !  ------------------ end of dummy arguments --------------------------
@@ -2359,7 +2359,7 @@ end do
        INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_prod
        END SUBROUTINE eval_HPROD
      END INTERFACE
-   
+
 !  INITIALIZATION:
 
 !  On the initial call to the subroutine the following variables MUST BE SET
@@ -2805,7 +2805,7 @@ end do
 
          nz_p_start = 1
          IF ( data%explicit_h ) THEN
-           HP = zero ; 
+           HP = zero ;
            DO l = nz_p_start, nz_p_end
              i = NZ_p( l ) ; p_i = P( i )
              DO k = H%ptr( i ), H%ptr( i + 1 ) - 1
@@ -2867,7 +2867,7 @@ end do
      IF ( data%prnter ) WRITE( out,                                            &
        "( /, A, ' Function value at the arc minimizer ', ES12.4 )" ) prefix, q_t
 
-!  The arc minimizer has been found. Set the array P to the step from the 
+!  The arc minimizer has been found. Set the array P to the step from the
 !  initial point to the minimizer
 
  600 CONTINUE
@@ -2913,10 +2913,10 @@ end do
 
 !     1/2 (x-x_0)^T H (x-x_0) + g^T (x-x_0) + f
 
-!  for points lying on x(t), with 0 <= t <= t_max. A suitable inexact 
+!  for points lying on x(t), with 0 <= t <= t_max. A suitable inexact
 !  arc search is defined as follows:
 
-!  1) If the minimizer of q(x) along x_0 + t * p lies on the search arc, 
+!  1) If the minimizer of q(x) along x_0 + t * p lies on the search arc,
 !     this is the required point. Otherwise,
 
 !  2) Starting from some specified t_0, construct a decreasing sequence
@@ -2964,7 +2964,7 @@ end do
 !  X_l    (REAL array of length at least n) the lower bounds on the variables
 !  X_u    (REAL array of length at least n) the upper bounds on the variables
 !  t_max  (REAL) the largest allowable value of t
-!  X_t    (REAL array of length at least n) the current estimate of the 
+!  X_t    (REAL array of length at least n) the current estimate of the
 !          minimizer
 !  q_t    (REAL) the value of the piecewise quadratic function at the current
 !          estimate of the minimizer
@@ -2983,20 +2983,20 @@ end do
 !          contain the initial direction of the 'search arc'. On a non optimal
 !          exit, (status=2,3,4), P is the vector for which the product H * P
 !          is required before the next re-entry. On a terminal exit (status=0),
-!          P contains the step X_t - X_0. The components NZ_p(i) = nz_p_start, 
-!          ... , nz_p_end of P contain the values of the nonzero components of 
+!          P contains the step X_t - X_0. The components NZ_p(i) = nz_p_start,
+!          ... , nz_p_end of P contain the values of the nonzero components of
 !          P (see, NZ_p, nz_p_start, nz_p_end)
 !  NZ_p   (INTEGER array of length at least n) on all normal exits
-!         (status=0,2), NZ_p(i), i = nz_p_start, ..., nz_p_end, gives 
+!         (status=0,2), NZ_p(i), i = nz_p_start, ..., nz_p_end, gives
 !          the indices of the nonzero components of P
 !  nz_p_start  (INTEGER) see NZ_p, above
 !  nz_p_end  (INTEGER) see NZ_p, above
-!  HP     (REAL array of length at least n) on a non initial entry (status=2), 
-!          HP must contain the vector H * P. Only the components NZ_p(i), 
+!  HP     (REAL array of length at least n) on a non initial entry (status=2),
+!          HP must contain the vector H * P. Only the components NZ_p(i),
 !          i=1,...,n_free, of HP need be set (the other components are not used)
 !  out    (INTEGER) the fortran output channel number to be used
-!  print_level (INTEGER) allows detailed printing. If print_level is larger 
-!          than 4, detailed output from the routine will be given. Otherwise, 
+!  print_level (INTEGER) allows detailed printing. If print_level is larger
+!          than 4, detailed output from the routine will be given. Otherwise,
 !          no output occurs
 !  status (INTEGER) controls flow through the subroutine.
 !          If status = 0, the minimizer has been found
@@ -3006,7 +3006,7 @@ end do
 !  data   (BQP_arcsearch_data_type) private data that must be preserved between
 !          calls
 !  userdata (NLPT_userdata_type) user provided data for use in eval_HPROD
-!  H      (SMT_type) optionaly, the whole of H stored by rows 
+!  H      (SMT_type) optionaly, the whole of H stored by rows
 !  H_PROD subroutine, optionally, compute H * vector products
 
 !  ------------------ end of dummy arguments --------------------------
@@ -3049,7 +3049,7 @@ end do
        INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_prod
        END SUBROUTINE eval_HPROD
      END INTERFACE
-   
+
 !  INITIALIZATION:
 
 !  On the initial call to the subroutine the following variables MUST BE SET
@@ -3164,14 +3164,14 @@ end do
      IF ( data%pronel .OR. data%prnter )                                       &
         WRITE( out, "( /, A, 3X, ' ** arcsearch entered  iter     step     ',  &
        &  '  HP( step )   L( step,mu )', /, A, 21X, I6, 2ES12.4 )" )           &
-     prefix, prefix, data%iterca, zero, f 
+     prefix, prefix, data%iterca, zero, f
      data%iterca = data%iterca + 1
      n_free = nbreak
      IF ( nbreak == 0 ) GO TO 600
 
 !  Calculate HP = H * P ...
 
-     nz_p_start = 1 ; nz_p_end = nbreak 
+     nz_p_start = 1 ; nz_p_end = nbreak
      IF ( data%explicit_h ) THEN
        HP = zero
        DO l = nz_p_start, nz_p_end
@@ -3264,7 +3264,7 @@ end do
      DO j = 1, n_free
        i = NZ_p( j )
        P( i ) = MAX( MIN( X_0( i ) + data%t * P( i ), X_u( i ) ), X_l( i ) )   &
-                - X_0( i ) 
+                - X_0( i )
      END DO
 
 !  Calculate HP = H * P ...
@@ -3392,7 +3392,7 @@ end do
 
        q_t = q_t + data%gtp + half * ptbp
        data%flxt = data%flxt + mu * data%g0tp
- 
+
        data%t = data%t_new
      GO TO 350
 

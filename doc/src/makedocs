@@ -1,6 +1,6 @@
 #!/bin/csh
 
-foreach pack ( arc bqp bsc check cro ccqp cqp dps dqp eqp fdc fdh filtrane glrt gls gltr ir lancelot lancelot_simple lsqp l2rt lsrt lstr llst lms miqr mop nls nlpt presolve qp qpa qpb qpc qpp qpt rand roots sbls scale scu sils sls smt sort symbols trs tru uls wcp )
+#foreach pack ( arc bqp bsc check cro ccqp cqp dps dqp eqp fdc fdh filtrane glrt gls gltr ir lancelot lancelot_simple lsqp l2rt lsrt lstr llst lms miqr mop nls nlpt presolve qp qpa qpb qpc qpp qpt rand roots sbls scale scu sils sls smt sort symbols trs tru uls wcp )
 #foreach pack ( filtrane )
 #foreach pack ( sils )
 #foreach pack ( sort )
@@ -50,7 +50,7 @@ foreach pack ( arc bqp bsc check cro ccqp cqp dps dqp eqp fdc fdh filtrane glrt 
 #foreach pack ( miqr )
 #foreach pack ( scale )
 #foreach pack ( gls )
-#foreach pack ( uls )
+foreach pack ( uls )
 #foreach pack ( sls )
 #foreach pack ( sbls )
 #foreach pack ( smt )

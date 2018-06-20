@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.0 - 15/02/2017 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 3.1 - 16/06/2018 AT 13:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ R P D   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -87,6 +87,9 @@
       INTEGER, PARAMETER :: bqp = 3
       INTEGER, PARAMETER :: lp = 4
       INTEGER, PARAMETER :: qcp = 5
+      INTEGER, PARAMETER :: out_debug = 6
+      LOGICAL, PARAMETER :: debug = .FALSE.
+!     LOGICAL, PARAMETER :: debug = .TRUE.
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -98,6 +101,7 @@
         INTEGER :: alloc_status  ! status from last allocation attempt
         INTEGER :: io_status     ! status from last read attempt
         INTEGER :: line          ! number of last line read
+        CHARACTER ( LEN = 3 ) :: p_type ! problem type
         CHARACTER ( LEN = 10 ) :: bad_alloc = REPEAT( ' ', 10 ) ! last array
                                                         ! allocation attempt
       END TYPE
@@ -275,12 +279,15 @@
      INTEGER :: problem_type
      REAL ( KIND = wp ) :: rv, default
      LOGICAL :: objmax
+     CHARACTER ( LEN = 2 ) :: oc
      CHARACTER ( LEN = 10 ) :: pname, cv
      CHARACTER ( LEN = 24 ) :: p_type
      CHARACTER ( LEN = input_line_length ) :: input_line, blank_line
 
+     IF ( debug ) WRITE( out_debug, * ) 'in rpd'
      inform%line = 0
      inform%alloc_status = 0
+     inform%p_type = '   '
 
 !    DO i = 1, input_line_length
 !      blank_line( i : i ) = ' '
@@ -289,6 +296,7 @@
 
 !  Determine the problem name
 
+     IF ( debug ) WRITE( out_debug, * ) 'pname'
 !    pname = '          '
      pname = REPEAT( ' ', 10 )
      DO
@@ -304,6 +312,7 @@
 
 !  Determine the problem type
 
+     IF ( debug ) WRITE( out_debug, * ) 'p_type'
      p_type = REPEAT( ' ', 24 )
      DO
        inform%line = inform%line + 1
@@ -313,7 +322,7 @@
      END DO
      READ( input_line, *, IOSTAT = inform%io_status,                           &
            END = 930, ERR = 940 ) p_type
-     p_type = ADJUSTL( p_type )
+     p_type = ADJUSTL( p_type ) ; inform%p_type = p_type( 1 : 3 )
      IF ( p_type( 2 : 2 ) == 'M' .OR. p_type( 2 : 2 ) == 'G' ) THEN
        ip = 3
      ELSE IF ( p_type( 2 : 2 ) == 'B' ) THEN
@@ -323,22 +332,18 @@
      ELSE
        ip = 0
      END IF
-     IF ( p_type( 1 : 3 ) == 'QCQ' .OR. p_type( 1 : 3 ) == 'QCC' .OR.          &
-          p_type( 1 : 3 ) == 'QCD' .OR. p_type( 1 : 3 ) == 'CCQ' .OR.          &
-          p_type( 1 : 3 ) == 'CCC' .OR. p_type( 1 : 3 ) == 'CCD' .OR.          &
-          p_type( 1 : 3 ) == 'DCQ' .OR. p_type( 1 : 3 ) == 'DCC' .OR.          &
-          p_type( 1 : 3 ) == 'DCD' ) THEN
+     oc( 1 : 1 ) = p_type( 1 : 1 ) ; oc( 2 : 2 ) = p_type( 3 : 3 )
+     IF ( oc == 'QQ' .OR. oc == 'QC' .OR. oc == 'QD' .OR. oc == 'CQ' .OR.      &
+          oc == 'CC' .OR. oc == 'CD' .OR. oc == 'DQ' .OR. oc == 'DC' .OR.      &
+          oc == 'DD' ) THEN
        problem_type = qcqp
-     ELSE IF ( p_type( 1 : 3 ) == 'LCQ' .OR. p_type( 1 : 3 ) == 'LCC' .OR.     &
-               p_type( 1 : 3 ) == 'LCD' ) THEN
+     ELSE IF ( oc == 'LQ' .OR. oc == 'LC' .OR. oc == 'LD' ) THEN
        problem_type = qcp
-     ELSE IF ( p_type( 1 : 3 ) == 'QCB' .OR. p_type( 1 : 3 ) == 'CCB' .OR.     &
-               p_type( 1 : 3 ) == 'DCB' ) THEN
+     ELSE IF ( oc == 'QB' .OR. oc == 'CB' .OR. oc == 'DB' ) THEN
        problem_type = bqp
-     ELSE IF ( p_type( 1 : 3 ) == 'QCL' .OR. p_type( 1 : 3 ) == 'CCL' .OR.     &
-               p_type( 1 : 3 ) == 'DCL' ) THEN
+     ELSE IF ( oc == 'QL' .OR. oc == 'CL' .OR. oc == 'DL' ) THEN
        problem_type = qp
-     ELSE IF ( p_type( 1 : 3 ) == 'LCL' ) THEN
+     ELSE IF ( oc == 'LL' ) THEN
        problem_type = lp
      ELSE
        GO TO 950
@@ -346,6 +351,7 @@
 
 !  Determine if the problem is a minimization or maximization one
 
+     IF ( debug ) WRITE( out_debug, * ) 'minmax'
      DO
        inform%line = inform%line + 1
        input_line = blank_line
@@ -362,6 +368,7 @@
 
 !  Determine the number of variables and constraints
 
+     IF ( debug ) WRITE( out_debug, * ) 'nm'
      DO
        inform%line = inform%line + 1
        input_line = blank_line
@@ -370,7 +377,7 @@
      END DO
      READ( input_line, *, IOSTAT = inform%io_status,                           &
            END = 930, ERR = 940 ) prob%n
-      IF ( problem_type /= bqp ) THEN
+     IF ( problem_type /= bqp ) THEN
        DO
          inform%line = inform%line + 1
          input_line = blank_line
@@ -401,6 +408,7 @@
 
      IF ( problem_type == qp .OR. problem_type == bqp .OR.                     &
            problem_type == qcqp ) THEN
+       IF ( debug ) WRITE( out_debug, * ) 'H_ne'
        DO
          inform%line = inform%line + 1
          input_line = blank_line
@@ -417,6 +425,7 @@
          inform%status = - 2 ; inform%bad_alloc = 'H' ; RETURN
        END IF
 
+       IF ( debug ) WRITE( out_debug, * ) 'H'
        H_ne = 0
        DO k = 1, prob%H%ne
          DO
@@ -447,6 +456,7 @@
 
 !  Fill component g
 
+     IF ( debug ) WRITE( out_debug, * ) 'g_default'
      DO
        inform%line = inform%line + 1
        input_line = blank_line
@@ -457,6 +467,7 @@
            END = 930, ERR = 940 ) default
      IF ( objmax ) default = - default
      prob%G = default
+     IF ( debug ) WRITE( out_debug, * ) 'g'
      DO
        inform%line = inform%line + 1
        input_line = blank_line
@@ -480,6 +491,7 @@
 
 !  Fill component f
 
+     IF ( debug ) WRITE( out_debug, * ) 'f'
      DO
        inform%line = inform%line + 1
        input_line = blank_line
@@ -493,6 +505,7 @@
 !  Fill component H_c
 
      IF ( problem_type == qcqp .OR. problem_type == qcp ) THEN
+       IF ( debug ) WRITE( out_debug, * ) 'H_cne'
        DO
          inform%line = inform%line + 1
          input_line = blank_line
@@ -509,6 +522,7 @@
          inform%status = - 2 ; inform%bad_alloc = 'H_c' ; RETURN
        END IF
 
+       IF ( debug ) WRITE( out_debug, * ) 'H_c'
        H_c_ne = 0
        DO k = 1, prob%H_c%ne
          DO
@@ -540,6 +554,7 @@
 !  Fill component A
 
      IF ( problem_type /= bqp ) THEN
+       IF ( debug ) WRITE( out_debug, * ) 'A_ne'
        DO
          inform%line = inform%line + 1
          input_line = blank_line
@@ -554,6 +569,7 @@
          inform%status = - 2 ; inform%bad_alloc = 'A' ; RETURN
        END IF
 
+       IF ( debug ) WRITE( out_debug, * ) 'A'
        A_ne = 0
        DO k = 1, prob%A%ne
          DO
@@ -582,6 +598,7 @@
 
 !  Fill component infinity
 
+     IF ( debug ) WRITE( out_debug, * ) 'infinity'
      DO
        inform%line = inform%line + 1
        input_line = blank_line
@@ -594,6 +611,7 @@
 !  Fill component c_l
 
      IF ( problem_type /= bqp ) THEN
+       IF ( debug ) WRITE( out_debug, * ) 'default_c_l'
        DO
          inform%line = inform%line + 1
          input_line = blank_line
@@ -611,6 +629,7 @@
        END DO
        READ( input_line, *, IOSTAT = inform%io_status,                         &
              END = 930, ERR = 940 ) nnzc_l
+       IF ( debug ) WRITE( out_debug, * ) 'c_l'
        DO k = 1, nnzc_l
          DO
            inform%line = inform%line + 1
@@ -625,6 +644,7 @@
 
 !  Fill component c_u
 
+       IF ( debug ) WRITE( out_debug, * ) 'default_c_u'
        DO
          inform%line = inform%line + 1
          input_line = blank_line
@@ -642,6 +662,7 @@
        END DO
        READ( input_line, *, IOSTAT = inform%io_status,                         &
              END = 930, ERR = 940 ) nnzc_u
+       IF ( debug ) WRITE( out_debug, * ) 'c_u'
        DO k = 1, nnzc_u
          DO
            inform%line = inform%line + 1
@@ -661,6 +682,7 @@
 
 !  Fill component x_l
 
+       IF ( debug ) WRITE( out_debug, * ) 'default_x_l'
        DO
          inform%line = inform%line + 1
          input_line = blank_line
@@ -678,6 +700,7 @@
        END DO
        READ( input_line, *, IOSTAT = inform%io_status,                         &
              END = 930, ERR = 940 ) nnzx_l
+       IF ( debug ) WRITE( out_debug, * ) 'x_l'
        DO k = 1, nnzx_l
          DO
            inform%line = inform%line + 1
@@ -692,6 +715,7 @@
 
 !  Fill component x_u
 
+       IF ( debug ) WRITE( out_debug, * ) 'default_x_u'
        DO
          inform%line = inform%line + 1
          input_line = blank_line
@@ -709,6 +733,7 @@
        END DO
        READ( input_line, *, IOSTAT = inform%io_status,                         &
              END = 930, ERR = 940 ) nnzx_u
+       IF ( debug ) WRITE( out_debug, * ) 'x_u'
        DO k = 1, nnzx_u
          DO
            inform%line = inform%line + 1
@@ -729,6 +754,7 @@
        inform%status = - 2 ; inform%bad_alloc = 'X_type' ; RETURN
      END IF
      IF ( ip == 3 ) THEN
+       IF ( debug ) WRITE( out_debug, * ) 'i_default'
        DO
          inform%line = inform%line + 1
          input_line = blank_line
@@ -738,6 +764,7 @@
        READ( input_line, *, IOSTAT = inform%io_status,                         &
              END = 930, ERR = 940 ) i_default
        prob%X_type = i_default
+       IF ( debug ) WRITE( out_debug, * ) 'nnzx_0'
        DO
          inform%line = inform%line + 1
          input_line = blank_line
@@ -746,6 +773,7 @@
        END DO
        READ( input_line, *, IOSTAT = inform%io_status,                         &
              END = 930, ERR = 940 ) nnzx_0
+       IF ( debug ) WRITE( out_debug, * ) 'x_type'
        DO k = 1, nnzx_0
          DO
            inform%line = inform%line + 1
@@ -771,6 +799,7 @@
 
 !  Fill component x
 
+     IF ( debug ) WRITE( out_debug, * ) 'x0_default'
      DO
        inform%line = inform%line + 1
        input_line = blank_line
@@ -780,6 +809,7 @@
      READ( input_line, *, IOSTAT = inform%io_status,                           &
            END = 930, ERR = 940 ) default
      prob%X = default
+     IF ( debug ) WRITE( out_debug, * ) 'nnzx_0'
      DO
        inform%line = inform%line + 1
        input_line = blank_line
@@ -788,6 +818,7 @@
      END DO
      READ( input_line, *, IOSTAT = inform%io_status,                           &
            END = 930, ERR = 940 ) nnzx_0
+     IF ( debug ) WRITE( out_debug, * ) 'x0'
      DO k = 1, nnzx_0
        DO
          inform%line = inform%line + 1
@@ -803,6 +834,7 @@
 !  Fill component y
 
      IF ( problem_type /= bqp ) THEN
+       IF ( debug ) WRITE( out_debug, * ) 'y0_default'
        DO
          inform%line = inform%line + 1
          input_line = blank_line
@@ -812,6 +844,7 @@
        READ( input_line, *, IOSTAT = inform%io_status,                         &
              END = 930, ERR = 940 ) default
        prob%Y = default
+       IF ( debug ) WRITE( out_debug, * ) 'nnzy_0'
        DO
          inform%line = inform%line + 1
          input_line = blank_line
@@ -820,6 +853,7 @@
        END DO
        READ( input_line, *, IOSTAT = inform%io_status,                         &
              END = 930, ERR = 940 ) nnzy_0
+       IF ( debug ) WRITE( out_debug, * ) 'y0'
        DO k = 1, nnzy_0
          DO
            inform%line = inform%line + 1
@@ -835,6 +869,7 @@
 
 !  Fill component z
 
+     IF ( debug ) WRITE( out_debug, * ) 'z0_default'
      DO
        inform%line = inform%line + 1
        input_line = blank_line
@@ -844,6 +879,7 @@
      READ( input_line, *, IOSTAT = inform%io_status,                           &
            END = 930, ERR = 940 ) default
      prob%Z = default
+     IF ( debug ) WRITE( out_debug, * ) 'nnzz_0'
      DO
        inform%line = inform%line + 1
        input_line = blank_line
@@ -852,6 +888,7 @@
      END DO
      READ( input_line, *, IOSTAT = inform%io_status,                           &
            END = 930, ERR = 940 ) nnzz_0
+     IF ( debug ) WRITE( out_debug, * ) 'z0'
      DO k = 1, nnzz_0
        DO
          inform%line = inform%line + 1
@@ -866,8 +903,8 @@
 
 !  Fill component x_names
 
-     ALLOCATE( prob%X_names( prob%n ), prob%C_names( prob%m ),                 &
-               STAT = inform%alloc_status )
+     IF ( debug ) WRITE( out_debug, * ) 'x_names_default'
+     ALLOCATE( prob%X_names( prob%n ), STAT = inform%alloc_status )
      IF ( inform%alloc_status /= 0 ) THEN
        inform%status = - 2 ; inform%bad_alloc = 'X_names' ; RETURN
      END IF
@@ -876,6 +913,7 @@
        prob%X_names( i ) = 'x' // REPEAT( ' ', 9 )
        WRITE( prob%X_names( i )( 2 : 10 ), "( I0 )" ) i
      END DO
+     IF ( debug ) WRITE( out_debug, * ) 'x_names'
      DO
        inform%line = inform%line + 1
        input_line = blank_line
@@ -899,6 +937,12 @@
 !  Fill component c_names
 
      IF ( problem_type /= bqp ) THEN
+       IF ( debug ) WRITE( out_debug, * ) 'c_names_default'
+       ALLOCATE( prob%C_names( prob%m ), STAT = inform%alloc_status )
+       IF ( inform%alloc_status /= 0 ) THEN
+         inform%status = - 2 ; inform%bad_alloc = 'C_names' ; RETURN
+       END IF
+
        DO i = 1, prob%m
          prob%C_names( i ) = 'c' // REPEAT( ' ', 9 )
          WRITE( prob%C_names( i )( 2 : 10 ), "( I0 )" ) i
@@ -911,6 +955,7 @@
        END DO
        READ( input_line, *, IOSTAT = inform%io_status,                         &
              END = 930, ERR = 940 ) nnzy_0
+       IF ( debug ) WRITE( out_debug, * ) 'c_names'
        DO k = 1, nnzy_0
          DO
            inform%line = inform%line + 1
@@ -927,6 +972,7 @@
 !  - successful execution
 
      inform%status = GALAHAD_ok
+     IF ( debug ) WRITE( out_debug, * ) 'out ok'
      RETURN
 
 !  Error returns
@@ -935,17 +981,20 @@
 
  930 CONTINUE
      inform%status = GALAHAD_error_input_status
+     IF ( debug ) WRITE( out_debug, * ) 'out end of file'
      RETURN
 
 !  - other error encountered
 
  940 CONTINUE
      inform%status = GALAHAD_error_io
+     IF ( debug ) WRITE( out_debug, * ) 'out io error'
      RETURN
 
 !  - problem type unrecognised
 
  950 CONTINUE
+     IF ( debug ) WRITE( out_debug, * ) 'out unrecognised'
      inform%status = GALAHAD_unavailable_option
      RETURN
 

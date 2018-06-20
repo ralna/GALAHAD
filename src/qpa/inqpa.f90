@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 3.1 - 16/06/2018 AT 13:00 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N Q P A _ D A T A  *-*-*-*-*-*-*-*-*-*-
 
@@ -27,7 +27,7 @@
    USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
    USE GALAHAD_RAND_double
    USE GALAHAD_PRESOLVE_double
-   USE GALAHAD_SPECFILE_double 
+   USE GALAHAD_SPECFILE_double
    USE GALAHAD_COPYRIGHT
    USE SCALING
    USE GALAHAD_SYMBOLS,                                                        &
@@ -44,8 +44,8 @@
 
 !  --------------------------------------------
 !
-!  Solve the  l_1 quadratic program          
-!                                                    
+!  Solve the  l_1 quadratic program
+!
 !     minimize     1/2 x(T) H x + g(T) x + f
 !                    + rho_g min( A x - c_l , 0 )
 !                    + rho_g max( A x - c_u , 0 )
@@ -59,7 +59,7 @@
 !  ****************************************************************************
 
 !  The data should be input in a file on unit 5. The data is in
-!  free format (blanks separate values),but must occur in the order 
+!  free format (blanks separate values),but must occur in the order
 !  given here. Any blank lines, or lines starting with any of the
 !  characters "!", "%" or "#" are ignored. Each term in "quotes"
 !  denotes a required value. Any strings beyond those required on a
@@ -101,12 +101,12 @@
 !  "number of non-default starting entries in z"
 !  "index" "value" for each non-default term in z (if any), one pair per line
 !  "number of non-default names of variables" -default for variable i is "i"
-!  "index" "name" for each non-default name for variable x_i with index i 
+!  "index" "name" for each non-default name for variable x_i with index i
 !     (if any)
 !  "number of non-default names of constraints" -default for constraint i is "i"
-!  "index" "name" for each non-default name for constraint with index i 
+!  "index" "name" for each non-default name for constraint with index i
 !     (if any)
- 
+
 !  For full details, see README.data-file
 
 !  *****************************************************************************
@@ -138,7 +138,7 @@
      REAL ( KIND = wp ) :: qfval
      LOGICAL :: filexx, printo, printe
      CHARACTER ( LEN =  1 ) :: p_degen, d_degen
-      
+
 !  Specfile characteristics
 
      INTEGER, PARAMETER :: input_specfile = 34
@@ -196,7 +196,7 @@
      CHARACTER ( LEN = 30 ) :: sfilename = 'QPASOL.d'
      LOGICAL :: do_presolve = .TRUE.
      LOGICAL :: do_solve = .TRUE.
-     LOGICAL :: fulsol = .FALSE. 
+     LOGICAL :: fulsol = .FALSE.
 
 !  Output file characteristics
 
@@ -209,7 +209,7 @@
 
      TYPE ( RPD_inform_type ) :: RPD_inform
      TYPE ( QPA_data_type ) :: QPA_data
-     TYPE ( QPA_control_type ) :: QPA_control        
+     TYPE ( QPA_control_type ) :: QPA_control
      TYPE ( QPA_inform_type ) :: QPA_inform
      TYPE ( QPT_problem_type ) :: prob
      TYPE ( SCALING_control_type ) :: control
@@ -248,15 +248,38 @@
           WRITE( out, "( ' ** read error of problem-input file occured',       &
          &  ' on line ', I0, ' io_status = ', I0 )" )                          &
             RPD_inform%line, RPD_inform%io_status
+        CASE DEFAULT
+          WRITE( out, "( ' ** error reported when reading qplib file by',      &
+            &     ' RPD, status = ', I0 )" )  RPD_inform%status
         END SELECT
         STOP
       END IF
+      pname = TRANSFER( prob%name, pname )
+
+!  check that the problem variables are continuous
+
+      SELECT CASE ( RPD_inform%p_type( 2 : 2 ) )
+      CASE ( 'C' )
+      CASE DEFAULT
+        WRITE( out, "( /, ' ** Problem ', A, ', some variables are not',       &
+       & ' continuous. Stopping' )" ) TRIM( pname )
+        STOP
+      END SELECT
+
+!  check that the problem is a QP
+
+      SELECT CASE ( RPD_inform%p_type( 3 : 3 ) )
+      CASE ( 'N', 'B', 'L' )
+      CASE DEFAULT
+        WRITE( out, "( /, ' ** Problem ', A, ', constraints are not',          &
+       &  ' linear. Stopping' )" ) TRIM( pname )
+        STOP
+      END SELECT
 
       n = prob%n
       m = prob%m
       H_ne = prob%H%ne
       A_ne = prob%A%ne
-      pname = TRANSFER( prob%name, pname )
 
 !  Allocate derived types
 
@@ -328,7 +351,7 @@
       CALL SMT_put( prob%H%type, 'SPARSE_BY_ROWS', smt_stat )
       IF ( ALLOCATED( prob%A%type ) ) DEALLOCATE( prob%A%type )
       CALL SMT_put( prob%A%type, 'SPARSE_BY_ROWS', smt_stat )
-        
+
 !     WRITE( out, "( ' maximum element of A = ', ES12.4,                       &
 !    &                ' maximum element of H = ', ES12.4 )" )                  &
 !      MAXVAL( ABS( prob%A%val( : A_ne ) ) ),                                  &
@@ -401,7 +424,7 @@
      CALL SPECFILE_assign_string ( spec( 23 ), qfilename, errout )
      CALL SPECFILE_assign_integer( spec( 24 ), qfiledevice, errout )
 
-     IF ( prob%rho_g <= zero ) prob%rho_g = 2 * m 
+     IF ( prob%rho_g <= zero ) prob%rho_g = 2 * m
      IF ( prob%rho_b <= zero ) prob%rho_b = 2 * n
 
 !  If required, print out the (raw) problem data
@@ -415,7 +438,7 @@
           OPEN( dfiledevice, FILE = dfilename, FORM = 'FORMATTED',            &
                  STATUS = 'NEW', IOSTAT = iores )
        END IF
-       IF ( iores /= 0 ) THEN 
+       IF ( iores /= 0 ) THEN
          write( out, 2160 ) iores, dfilename
          STOP
        END IF
@@ -450,7 +473,7 @@
           OPEN( rfiledevice, FILE = rfilename, FORM = 'FORMATTED',            &
                 STATUS = 'NEW', IOSTAT = iores )
        END IF
-       IF ( iores /= 0 ) THEN 
+       IF ( iores /= 0 ) THEN
          write( out, 2160 ) iores, rfilename
          STOP
        END IF
@@ -462,7 +485,7 @@
      CALL SCALING_initialize( control )
      CALL QPA_initialize( QPA_data, QPA_control, QPA_inform )
      CALL QPA_read_specfile( QPA_control, input_specfile )
-     
+
      control%print_level = QPA_control%print_level
      control%out         = QPA_control%out
      control%out_error   = QPA_control%error
@@ -472,7 +495,7 @@
 
      IF ( printo ) CALL COPYRIGHT( out, '2006' )
 
-     WRITE( out, 2020 ) pname 
+     WRITE( out, 2020 ) pname
      IF ( printo ) WRITE( out, 2220 ) n, m, A_ne, H_ne
 
 !  Initalize random number seed
@@ -480,7 +503,7 @@
      CALL RAND_initialize( seed )
 
 !  Set all default values, and override defaults if requested
- 
+
      IF ( QPA_control%cold_start == 0 ) THEN
        IF ( m > 0 ) THEN
          mpn = MIN( m + n,                                                    &
@@ -554,20 +577,20 @@
          STOP
        END IF
        prob%X_status = ACTIVE
-       
+
        ALLOCATE( prob%C_status( m ), STAT = alloc_stat )
        IF ( alloc_stat /= 0 ) THEN
          IF ( printe ) WRITE( out, 2150 ) 'X_status', alloc_stat ; STOP
        END IF
        prob%C_status =  ACTIVE
-       
+
        ALLOCATE( prob%Z_l( n ), prob%Z_u( n ), STAT = alloc_stat )
        IF ( alloc_stat /= 0 ) THEN
          IF ( printe ) WRITE( out, 2150 ) 'Z_lu', alloc_stat ; STOP
        END IF
        prob%Z_l( : n ) = - infinity
        prob%Z_u( : n ) =   infinity
-       
+
        ALLOCATE( prob%Y_l( m ), prob%Y_u( m ), STAT = alloc_stat )
        IF ( alloc_stat /= 0 ) THEN
          IF ( printe ) WRITE( out, 2150 ) 'C_lu', alloc_stat ; STOP
@@ -590,20 +613,20 @@
      IF ( do_presolve ) THEN
 
 !      write( out, * ) ' >>> ===== starting presolve ===='
-       
+
 !      Allocate and initialize status variables.
-       
+
        h_ne_o      = H_ne
        a_ne_o      = A_ne
        n_o         = prob%n
        m_o         = prob%m
-       
+
 !      prob%fgh_status = ACTIVE
-       
+
        CALL CPU_TIME( timep1 )
-       
+
 !      set control variables
-       
+
        CALL PRESOLVE_initialize( PRE_control, PRE_inform, PRE_data )
        CALL PRESOLVE_read_specfile( input_specfile, PRE_control, PRE_inform )
        CLOSE( input_specfile )
@@ -622,9 +645,9 @@
            PRE_inform%status
          STOP
        END IF
-       
+
        CALL CPU_TIME( timep2 )
-       
+
        A_ne = prob%A%ptr( prob%m + 1 ) - 1
        H_ne = prob%H%ptr( prob%n + 1 ) - 1
        IF ( printo ) WRITE( out, 2200 ) n_o, m_o, a_ne_o, h_ne_o,prob%n,      &
@@ -673,7 +696,7 @@
 
        status = QPA_inform%status ; iter = QPA_inform%iter
        nfacts = QPA_inform%nfacts
-       factorization_integer = QPA_inform%factorization_integer 
+       factorization_integer = QPA_inform%factorization_integer
        factorization_real = QPA_inform%factorization_real
        CALL QPA_terminate( QPA_data, QPA_control, QPA_inform )
        qfval = QPA_inform%obj
@@ -706,7 +729,7 @@
      IF ( do_presolve ) THEN
        IF ( PRE_control%print_level >= DEBUG )                                &
          CALL QPT_write_problem( out, prob )
-       
+
        CALL CPU_TIME( timep3 )
        CALL PRESOLVE_restore( prob, PRE_control, PRE_inform, PRE_data )
        IF ( PRE_inform%status /= 0 .AND. printo )                             &
@@ -742,22 +765,22 @@
 !  Print details of the solution obtained
 
      WRITE( out, 2010 ) status
-     ndegen = 0  ; mdegen = 0 
+     ndegen = 0  ; mdegen = 0
      IF ( status == 0 .OR. status == - 8 ) THEN
-       l = 4 ; IF ( fulsol ) l = n 
+       l = 4 ; IF ( fulsol ) l = n
 
 !  Print details of the primal and dual variables
 
-       WRITE( out, 2090 ) 
-       DO j = 1, 2 
-         IF ( j == 1 ) THEN 
-           ir = 1 ; ic = MIN( l, n ) 
-         ELSE 
-           IF ( ic < n - l ) WRITE( out, 2000 ) 
-           ir = MAX( ic + 1, n - ic + 1 ) ; ic = n 
-         END IF 
-         DO i = ir, ic 
-           state = ' FREE' 
+       WRITE( out, 2090 )
+       DO j = 1, 2
+         IF ( j == 1 ) THEN
+           ir = 1 ; ic = MIN( l, n )
+         ELSE
+           IF ( ic < n - l ) WRITE( out, 2000 )
+           ir = MAX( ic + 1, n - ic + 1 ) ; ic = n
+         END IF
+         DO i = ir, ic
+           state = ' FREE'
            IF ( ABS( prob%X  ( i ) - prob%X_l( i ) ) < ten * stopr )          &
              state = 'LOWER'
            IF ( ABS( prob%X  ( i ) - prob%X_u( i ) ) < ten * stopr )          &
@@ -767,70 +790,70 @@
            WRITE( out, 2050 ) i, state, prob%X( i ),                          &
                               prob%X_l( i ), prob%X_u( i ), prob%Z( i )
 !                             prob%X_l( i ), prob%X_u( i ), zero
-         END DO 
-       END DO 
+         END DO
+       END DO
 
 !  Compute the number of fixed and degenerate variables.
 
-       nfixed = 0 
-       DO i = 1, n 
+       nfixed = 0
+       DO i = 1, n
          IF ( ABS( prob%X( i ) - prob%X_l( i ) ) < stopr ) THEN
-           nfixed = nfixed + 1 
-!          IF ( ABS( prob%Z( i ) ) < ten * stopr ) ndegen = ndegen + 1 
+           nfixed = nfixed + 1
+!          IF ( ABS( prob%Z( i ) ) < ten * stopr ) ndegen = ndegen + 1
          ELSE IF ( ABS( prob%X( i ) - prob%X_u( i ) ) < ten * stopr ) THEN
-           nfixed = nfixed + 1 
-!          IF ( ABS( prob%Z( i ) ) < ten * stopr ) ndegen = ndegen + 1 
-         END IF 
-       END DO 
+           nfixed = nfixed + 1
+!          IF ( ABS( prob%Z( i ) ) < ten * stopr ) ndegen = ndegen + 1
+         END IF
+       END DO
 
 !  Print details of the constraints.
 
-       IF ( m > 0 ) THEN 
+       IF ( m > 0 ) THEN
 
-         WRITE( out, 2040 ) 
-         l = 2  ; IF ( fulsol ) l = m 
-         DO j = 1, 2 
-           IF ( j == 1 ) THEN 
-             ir = 1 ; ic = MIN( l, m ) 
-           ELSE 
-             IF ( ic < m - l ) WRITE( out, 2000 ) 
-             ir = MAX( ic + 1, m - ic + 1 ) ; ic = m 
-           END IF 
-           DO i = ir, ic 
-             state = ' FREE' 
+         WRITE( out, 2040 )
+         l = 2  ; IF ( fulsol ) l = m
+         DO j = 1, 2
+           IF ( j == 1 ) THEN
+             ir = 1 ; ic = MIN( l, m )
+           ELSE
+             IF ( ic < m - l ) WRITE( out, 2000 )
+             ir = MAX( ic + 1, m - ic + 1 ) ; ic = m
+           END IF
+           DO i = ir, ic
+             state = ' FREE'
              IF ( ABS( prob%C( I )   - prob%C_l( i ) ) < ten * stopr )        &
-               state = 'LOWER' 
+               state = 'LOWER'
              IF ( ABS( prob%C( I )   - prob%C_u( i ) ) < ten * stopr )        &
-               state = 'UPPER' 
+               state = 'UPPER'
              IF ( ABS( prob%C_l( i ) - prob%C_u( i ) ) <       stopr )        &
-               state = 'EQUAL' 
+               state = 'EQUAL'
              WRITE( out, 2130 ) i, STATE, prob%C( i ),                        &
-                                prob%C_l( i ), prob%C_u( i ), prob%Y( i ) 
-           END DO 
-         END DO 
+                                prob%C_l( i ), prob%C_u( i ), prob%Y( i )
+           END DO
+         END DO
 
 !  Compute the number of equality, fixed inequality and degenerate constraints
 
          mequal = 0 ; mfixed = 0
-         DO i = 1, m 
+         DO i = 1, m
            IF ( ABS( prob%C( i ) - prob%C_l( i ) ) < ten * stopr .OR.         &
                 ABS( prob%C( i ) - prob%C_u( i ) ) < ten * stopr ) THEN
-             IF ( ABS( prob%C_l( i ) - prob%C_u( i ) ) < ten * stopr ) THEN 
-                mequal = mequal + 1 
-             ELSE 
-                mfixed = mfixed + 1 
-             END IF 
-             IF ( ABS( prob%Y( i ) ) < stopr ) mdegen = mdegen + 1 
-           END IF 
-         END DO 
-       END IF 
-       WRITE( out, 2100 ) n, nfixed, ndegen 
-       IF ( m > 0 ) THEN 
-          WRITE( out, 2110 ) m, mequal, mdegen 
-          IF ( m /= mequal ) WRITE( out, 2120 ) mfixed 
-       END IF 
+             IF ( ABS( prob%C_l( i ) - prob%C_u( i ) ) < ten * stopr ) THEN
+                mequal = mequal + 1
+             ELSE
+                mfixed = mfixed + 1
+             END IF
+             IF ( ABS( prob%Y( i ) ) < stopr ) mdegen = mdegen + 1
+           END IF
+         END DO
+       END IF
+       WRITE( out, 2100 ) n, nfixed, ndegen
+       IF ( m > 0 ) THEN
+          WRITE( out, 2110 ) m, mequal, mdegen
+          IF ( m /= mequal ) WRITE( out, 2120 ) mfixed
+       END IF
        WRITE( out, 2030 ) qfval, iter, nfacts,                                &
-              factorization_integer, factorization_real 
+              factorization_integer, factorization_real
 
 !  If required, write the solution to a file
 
@@ -843,55 +866,55 @@
             OPEN( sfiledevice, FILE = sfilename, FORM = 'FORMATTED',          &
                  STATUS = 'NEW', IOSTAT = iores )
          END IF
-         IF ( iores /= 0 ) THEN 
+         IF ( iores /= 0 ) THEN
            write( out, 2160 ) iores, sfilename
            STOP
          END IF
 
          WRITE( sfiledevice, 2250 ) pname, solv, qfval
-         WRITE( sfiledevice, 2090 ) 
+         WRITE( sfiledevice, 2090 )
 
-         DO i = 1, n 
-           state = ' FREE' 
+         DO i = 1, n
+           state = ' FREE'
            IF ( ABS( prob%X( i )   - prob%X_l( i ) ) < ten * stopr )          &
-             state = 'LOWER' 
+             state = 'LOWER'
            IF ( ABS( prob%X( i )   - prob%X_u( i ) ) < ten * stopr )          &
-             state = 'UPPER' 
+             state = 'UPPER'
            IF ( ABS( prob%X_l( I ) - prob%X_u( I ) ) < stopr )                &
-             state = 'FIXED' 
+             state = 'FIXED'
            WRITE( sfiledevice, 2050 ) i, STATE, prob%X( i ),                  &
              prob%X_l( i ), prob%X_u( i ), prob%Z( i )
-         END DO 
-  
-         IF ( m > 0 ) THEN 
-           WRITE( sfiledevice, 2040 ) 
-           DO i = 1, m 
-             state = ' FREE' 
+         END DO
+
+         IF ( m > 0 ) THEN
+           WRITE( sfiledevice, 2040 )
+           DO i = 1, m
+             state = ' FREE'
              IF ( ABS( prob%C( I ) - prob%C_l( i ) ) < ten * stopr )          &
                state = 'LOWER'
              IF ( ABS( prob%C( I ) - prob%C_u( i ) ) < ten * stopr )          &
                state = 'UPPER'
              IF ( ABS( prob%C_l( i ) - prob%C_u( i ) ) < stopr )              &
-               state = 'EQUAL' 
+               state = 'EQUAL'
              WRITE( sfiledevice, 2130 ) i, STATE, prob%C( i ),                &
-               prob%C_l( i ), prob%C_u( i ), prob%Y( i )   
-           END DO 
-         END IF 
-  
+               prob%C_l( i ), prob%C_u( i ), prob%Y( i )
+           END DO
+         END IF
+
          WRITE( sfiledevice, 2030 ) qfval, iter, nfacts,                      &
-                factorization_integer, factorization_real 
-         CLOSE( sfiledevice ) 
-       END IF 
-     END IF 
+                factorization_integer, factorization_real
+         CLOSE( sfiledevice )
+       END IF
+     END IF
 
      times = times - time ; timet = timet - timeo
-     WRITE( out, 2060 ) times + timet 
-     WRITE( out, 2070 ) pname 
+     WRITE( out, 2060 ) times + timet
+     WRITE( out, 2070 ) pname
 
 !  Compare the variants used so far
 
      WRITE( out, 2080 ) solv, iter, nfacts, qfval, status, times,             &
-                        timet, times + timet 
+                        timet, times + timet
 
      IF ( write_result_summary ) THEN
        IF ( mdegen == 0 ) THEN ; p_degen = ' ' ; ELSE ; p_degen = 'P' ; END IF
@@ -901,7 +924,7 @@
          status, timet, p_degen, d_degen
      END IF
 
-!  Close the data input file 
+!  Close the data input file
 
      CLOSE( input  )
      STOP
@@ -909,41 +932,41 @@
 !  Non-executable statements
 
  2000 FORMAT( '      . .          .....  ..........',                          &
-              '  ..........  ..........  .......... ' ) 
- 2010 FORMAT( /,' Stopping with inform%status = ', I3 ) 
+              '  ..........  ..........  .......... ' )
+ 2010 FORMAT( /,' Stopping with inform%status = ', I3 )
  2020 FORMAT( /, ' Problem: ', A10 )
  2030 FORMAT( /,' Final objective function value ', ES22.14, /,                &
           ' Total number of iterations = ',I6,' Number of factorizations = ',  &
           I6, //, I10, ' integer and ', I10, ' real words required',           &
-          ' for the factorization' ) 
+          ' for the factorization' )
  2040 FORMAT( /,' Constraints : ', /, '                    ',                  &
                 '        <------ Bounds ------> ', /                           &
                 '      #  state    value   ',                                  &
-                '    Lower       Upper     Multiplier ' ) 
- 2050 FORMAT( I7, 1X, A6, 4ES12.4 ) 
- 2060 FORMAT( /, ' Total time = ', 0P, F12.2 ) 
+                '    Lower       Upper     Multiplier ' )
+ 2050 FORMAT( I7, 1X, A6, 4ES12.4 )
+ 2060 FORMAT( /, ' Total time = ', 0P, F12.2 )
  2070 FORMAT( /, ' Problem: ', A10, //,                                        &
               '                                 objective',                    &
               '          < ------ time ----- > ', /,                           &
               ' Method  iterations   factors      value  ',                    &
               '   status setup   solve   total', /,                            &
               ' ------  ----------   -------    ---------',                    &
-              '   ------ -----   -----   -----  ' ) 
- 2080 FORMAT( A5, 2I10, 6X, ES12.4, I6, 0P, 3F8.2 ) 
+              '   ------ -----   -----   -----  ' )
+ 2080 FORMAT( A5, 2I10, 6X, ES12.4, I6, 0P, 3F8.2 )
  2090 FORMAT( /,' Solution : ', /, '                    ',                     &
                 '        <------ Bounds ------> ', /                           &
                 '      #  state    value   ',                                  &
-                '    Lower       Upper       Dual ' ) 
+                '    Lower       Upper       Dual ' )
  2100 FORMAT( /, ' Of the ', I7, ' variables, ', 2X, I7,                       &
-              ' are on bounds, &', I7, ' are dual degenerate' ) 
+              ' are on bounds, &', I7, ' are dual degenerate' )
  2110 FORMAT( ' Of the ', I7, ' constraints, ', I7,' are equations, &', I7,    &
-              ' are degenerate' ) 
- 2120 FORMAT( ' Of the inequality constraints ', I6, ' are on bounds' ) 
- 2130 FORMAT( I7, 1X, A6, 4ES12.4 ) 
+              ' are degenerate' )
+ 2120 FORMAT( ' Of the inequality constraints ', I6, ' are on bounds' )
+ 2130 FORMAT( I7, 1X, A6, 4ES12.4 )
  2150 FORMAT( ' Allocation error, variable ', A8, ' status = ', I6 )
  2160 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
  2180 FORMAT( A10 )
- 2190 FORMAT( A10, 2I7, I8, I6, ES13.4, I6, 0P, F8.1, 1X, A1, A1 ) 
+ 2190 FORMAT( A10, 2I7, I8, I6, ES13.4, I6, 0P, F8.1, 1X, A1, A1 )
  2200 FORMAT( ' =%= old dimensions:  n = ', I7, ' m = ', I7,                   &
               ' a_ne = ', I9, ' h_ne = ', I9, /,                               &
               ' =%= new dimensions:  n = ', I7, ' m = ', I7,                   &
@@ -960,4 +983,3 @@
 !  End of RUNQPA_DATA
 
    END PROGRAM RUNQPA_DATA
-

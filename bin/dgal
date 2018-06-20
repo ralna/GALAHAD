@@ -521,6 +521,7 @@ EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN \
          -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad \
          $HSLLIB $SPRALLIB $PARDISOLIB $WSMP $METISLIB $LAPACKLIB \
          $BLASLIB $PLPLOT $CUDALIBS"
+echo $EXECUTABLE
 
 if [[ $OUTPUT == "1" ]]; then
   echo " $EXECUTABLE"
@@ -574,6 +575,6 @@ fi
 
 #  tidy up the current directory, deleting all junk if required
 
-if [[ $KEEP == "0" ]]; then
-  $RM $EXEC/$galmin
-fi
+#if [[ $KEEP == "0" ]]; then
+#  $RM $EXEC/$galmin
+#fi

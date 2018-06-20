@@ -724,6 +724,12 @@
 
         CLOSE( dfiledevice )
       END IF
+      wnorm = 1.0_wp
+      DO i = 1, n
+        IF ( ABS( prob%G( i ) ) > 0.0_wp ) wnorm = MIN( wnorm, ABS( prob%G( i ) ) )
+      END DO
+      write(6,*) ' gmin, gmax ', wnorm, MAXVAL( ABS( prob%G( : n ) ) )
+      write(6,*) ' hmin, hmax ', MINVAL( ABS( prob%H%val( : H_ne ) ) ), MAXVAL( ABS( prob%H%val( : H_ne ) ) )
 
 !  If required, append results to a file
 

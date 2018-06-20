@@ -1,0 +1,44 @@
+! ---------------
+! example problem
+! ---------------
+
+BQPBAND   problem name (example from BQPBAND.SIF with n = 5)
+QCB       # problem is a quadratic program
+Minimize  # minimize the objective function
+5         # variables
+
+9         # nonzeros in lower trangle H
+1 1 2.0   9 lines of row & column index & value of nonzeros in lower triangle H
+2 1 -1.0  |
+2 2 2.0   |
+3 2 -1.0  |
+3 3 2.0   |
+4 3 -1.0  |
+4 4 2.0   |
+5 4 -1.0  |
+5 5 2.0   |
+
+-0.2       default value for entries in g
+4         # non default entries in g
+2 -0.4    4 lines of index & value of non-default values in g
+3 -0.6    |
+4 -0.8    |
+5 -1.0    |
+
+0.0       value of f
+
+1.0E+20   infinity
+
+0.0       default value for entries in x_l
+0         # non default entries in x_l
+
+2.0       default value for entries in x_u
+0         # non default entries in x_u
+
+0.0       default value for initial values for x
+0         # non default entries in x
+
+0.0       default value for initial values for z
+0         # non default entries in z
+
+0         # non default names for variables

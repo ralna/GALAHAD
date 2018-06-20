@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 30/01/2015 AT 15:05 GMT.
+! THIS VERSION: GALAHAD 3.1 - 16/06/2018 AT 13:00 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N D L P _ D A T A  *-*-*-*-*-*-*-*-*-*-
 
@@ -129,7 +129,7 @@
 !     INTEGER :: np1, npm
       INTEGER :: i, j, l
       INTEGER :: status, mfixed, mdegen, nfixed, ndegen, mequal, mredun
-      INTEGER :: alloc_stat, newton, A_ne, H_ne, iter
+      INTEGER :: alloc_stat, newton, A_ne, iter
       REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4
       REAL ( KIND = wp ) :: clock, clocko, clocks, clockt
       REAL ( KIND = wp ) :: qfval, stopr, dummy
@@ -251,15 +251,45 @@
           WRITE( out, "( ' ** read error of problem-input file occured',       &
          &  ' on line ', I0, ' io_status = ', I0 )" )                          &
             RPD_inform%line, RPD_inform%io_status
+        CASE DEFAULT
+          WRITE( out, "( ' ** error reported when reading qplib file by',      &
+         &     ' RPD, status = ', I0 )" )  RPD_inform%status
         END SELECT
         STOP
       END IF
+      pname = TRANSFER( prob%name, pname )
+
+!  check that the problem variables are continuous
+
+      SELECT CASE ( RPD_inform%p_type( 2 : 2 ) )
+      CASE ( 'C' )
+      CASE DEFAULT
+        WRITE( out, "( /, ' ** Problem ', A, ', some variables are not',       &
+       & ' continuous. Stopping' )" ) TRIM( pname )
+        STOP
+      END SELECT
+
+!  check that the problem is an LP
+
+      SELECT CASE ( RPD_inform%p_type( 1 : 1 ) )
+      CASE ( 'L' )
+      CASE DEFAULT
+        WRITE( out, "( /, ' ** Problem ', A, ', objective function',           &
+       &  ' is not linear. Stopping' )" ) TRIM( pname )
+        STOP
+      END SELECT
+
+      SELECT CASE ( RPD_inform%p_type( 3 : 3 ) )
+      CASE ( 'N', 'B', 'L' )
+      CASE DEFAULT
+        WRITE( out, "( /, ' ** Problem ', A, ', constraints are not',          &
+       &  ' linear. Stopping' )" ) TRIM( pname )
+        STOP
+      END SELECT
 
       n = prob%n
       m = prob%m
-      H_ne = prob%H%ne
       A_ne = prob%A%ne
-      pname = TRANSFER( prob%name, pname )
 
 !  Allocate derived types
 
@@ -285,14 +315,8 @@
 !  Allocate and initialize dual variables.
 
       liw = MAX( m, n ) + 1
-      ALLOCATE( prob%A%ptr( m + 1 ), prob%H%ptr( n + 1 ) )
+      ALLOCATE( prob%A%ptr( m + 1 ) )
       ALLOCATE( IW( liw ) )
-
-!     WRITE( 27, "( ( 3( 2I6, ES12.4 ) ) )" )                                  &
-!        ( prob%H%row( i ), prob%H%col( i ), prob%H%val( i ), i = 1, H_ne )
-!     WRITE( 26, "( ' H_row ', /, ( 10I6 ) )" ) prob%H%row( : H_ne )
-!     WRITE( 26, "( ' H_col ', /, ( 10I6 ) )" ) prob%H%col( : H_ne )
-!     WRITE( 26, "( ' H_val ', /, ( 5ES12.4 ) )" ) prob%H%val( : H_ne )
 
 !  Transform A to row storage format
 
@@ -304,21 +328,11 @@
         prob%A%ptr = 0
       END IF
 
-!  Same for H
-
-      IF ( H_ne /= 0 ) THEN
-        CALL SORT_reorder_by_rows( n, n, H_ne, prob%H%row, prob%H%col, H_ne,   &
-                                   prob%H%val, prob%H%ptr, n + 1, IW, liw,     &
-                                   out, out, i )
-      ELSE
-        prob%H%ptr = 0
-      END IF
-
 !  Deallocate arrays holding matrix row indices
 
-      DEALLOCATE( prob%A%row, prob%H%row )
+      DEALLOCATE( prob%A%row )
       DEALLOCATE( IW )
-      ALLOCATE( prob%A%row( 0 ), prob%H%row( 0 ), STAT = alloc_stat )
+      ALLOCATE( prob%A%row( 0 ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
         WRITE( out, "( ' whoa there - allocate error ', i6 )" ) alloc_stat; STOP
       END IF
@@ -327,15 +341,11 @@
 
 !  Store the problem dimensions
 
-      IF ( ALLOCATED( prob%H%type ) ) DEALLOCATE( prob%H%type )
-      CALL SMT_put( prob%H%type, 'SPARSE_BY_ROWS', smt_stat )
       IF ( ALLOCATED( prob%A%type ) ) DEALLOCATE( prob%A%type )
       CALL SMT_put( prob%A%type, 'SPARSE_BY_ROWS', smt_stat )
 
-!     WRITE( out, "( ' maximum element of A = ', ES12.4,                       &
-!    &                ' maximum element of H = ', ES12.4 )" )                  &
-!      MAXVAL( ABS( prob%A%val( : A_ne ) ) ),                                  &
-!      MAXVAL( ABS( prob%H%val( : H_ne ) ) )
+!     WRITE( out, "( ' maximum element of A = ', ES12.4 )" )                   &
+!      MAXVAL( ABS( prob%A%val( : A_ne ) ) )
 
 !  ------------------- problem set-up complete ----------------------
 
@@ -491,7 +501,7 @@
       printe = out > 0 .AND. control%print_level >= 0
 
       WRITE( out, 2020 ) pname
-      WRITE( out, 2200 ) n, m, A_ne, H_ne
+      WRITE( out, 2200 ) n, m, A_ne
 
       IF ( printo ) CALL COPYRIGHT( out, '2010' )
 
@@ -595,8 +605,7 @@
         CALL CPU_TIME( timep2 )
 
         A_ne = MAX( 0, prob%A%ptr( prob%m + 1 ) - 1 )
-        H_ne = MAX( 0, prob%H%ptr( prob%n + 1 ) - 1 )
-        IF ( printo ) WRITE( out, 2300 ) prob%n, prob%m, A_ne, H_ne,           &
+        IF ( printo ) WRITE( out, 2300 ) prob%n, prob%m, A_ne,                 &
            timep2 - timep1, PRE_inform%nbr_transforms
 
 !  If required, write a SIF file containing the presolved problem
@@ -780,23 +789,6 @@
           AY( j ) = AY( j ) - prob%A%val( l ) * prob%Y( i )
         END DO
       END DO
-      DO i = 1, n
-        DO l = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
-          j = prob%H%col( l )
-!         prob%G( i ) = prob%G( i ) + prob%H%val( l ) * prob%X( j )
-!         IF ( j /= i )                                                        &
-!           prob%G( j ) = prob%G( j ) + prob%H%val( l ) * prob%X( i )
-          HX( i ) = HX( i ) + prob%H%val( l ) * prob%X( j )
-          IF ( j /= i )                                                        &
-            HX( j ) = HX( j ) + prob%H%val( l ) * prob%X( i )
-        END DO
-      END DO
-!     DO i = 1, n
-!       WRITE(6,"( i6, 4ES12.4 )" ) i, HX( i ), prob%Z( i ), AY( i ),          &
-!                                   HX( i ) - prob%Z( i ) + AY( i )
-!     END DO
-!     WRITE(6,"( ( 5ES12.4 ) ) " ) MAXVAL( ABS( prob%Z ) )
-!     WRITE(6,"( ' G ', /, ( 5ES12.4 ) )" ) prob%G( : n )
       res_k = MAXVAL( ABS( HX( : n ) - prob%Z( : n ) + AY( : n ) ) )
 
 !  Print details of the solution obtained
@@ -1059,10 +1051,9 @@
  2180 FORMAT( A10 )
  2190 FORMAT( A10, I7, 3I6, ES13.4, I6, 0P, F8.2 )
  2200 FORMAT( /, ' problem dimensions:  n = ', I0, ', m = ', I0,               &
-              ', a_ne = ', I0, ', h_ne = ', I0 )
+              ', a_ne = ', I0 )
  2300 FORMAT( ' updated dimensions:  n = ', I0, ', m = ', I0,                  &
-              ', a_ne = ', I0, ', h_ne = ', I0, /,                             &
-              ' preprocessing time = ', F9.2,                                  &
+              ', a_ne = ', I0, /,  ' preprocessing time = ', F9.2,             &
               '        number of transformations = ', I10 )
  2210 FORMAT( ' postprocessing time = ', F9.2,                                 &
               '        processing time = ', F9.2 )
@@ -1072,4 +1063,3 @@
 !  End of RUNDLP_DATA
 
    END PROGRAM RUNDLP_DATA
-

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.7 - 17/07/2015 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 3.1 - 16/06/2018 AT 13:00 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N C C Q P _ D A T A  *-*-*-*-*-*-*-*-*-
 
@@ -260,9 +260,44 @@
           WRITE( out, "( ' ** read error of problem-input file occured',       &
          &  ' on line ', I0, ' io_status = ', I0 )" )                          &
             RPD_inform%line, RPD_inform%io_status
+        CASE DEFAULT
+          WRITE( out, "( ' ** error reported when reading qplib file by',      &
+         &     ' RPD, status = ', I0 )" )  RPD_inform%status
         END SELECT
         STOP
       END IF
+      pname = TRANSFER( prob%name, pname )
+
+!  check that the problem variables are continuous
+
+      SELECT CASE ( RPD_inform%p_type( 2 : 2 ) )
+      CASE ( 'C' )
+      CASE DEFAULT
+        WRITE( out, "( /, ' ** Problem ', A, ', some variables are not',       &
+       & ' continuous. Stopping' )" ) TRIM( pname )
+        STOP
+      END SELECT
+
+!  check that the problem is a convex QP
+
+      SELECT CASE ( RPD_inform%p_type( 1 : 1 ) )
+      CASE ( 'L', 'D', 'C' )
+      CASE ( 'Q' )
+        WRITE( out, "( /, ' ** Problem ', A, ', warning - objective function', &
+       &  ' might not be convex' )" ) TRIM( pname )
+      CASE DEFAULT
+        WRITE( out, "( /, ' ** Problem ', A, ', objective function',           &
+       &  ' is not convex. Stopping' )" ) TRIM( pname )
+        STOP
+      END SELECT
+
+      SELECT CASE ( RPD_inform%p_type( 3 : 3 ) )
+      CASE ( 'N', 'B', 'L' )
+      CASE DEFAULT
+        WRITE( out, "( /, ' ** Problem ', A, ', constraints are not',          &
+       &  ' linear. Stopping' )" ) TRIM( pname )
+        STOP
+      END SELECT
 
       n = prob%n
       m = prob%m
@@ -1210,4 +1245,3 @@
 !  End of RUNCCQP_DATA
 
    END PROGRAM RUNCCQP_DATA
-
