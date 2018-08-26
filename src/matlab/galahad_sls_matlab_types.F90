@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 10th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_SLS_MATLAB_TYPES
@@ -63,7 +63,7 @@
         mwPointer :: minimum_scaling_factor, maximum_scaling_factor
         mwPointer :: condition_number_1, condition_number_2
         mwPointer :: backward_error_1, backward_error_2, forward_error
-      END TYPE 
+      END TYPE
 
     CONTAINS
 
@@ -632,4 +632,3 @@
 !-*-*-*-  E N D  o f  G A L A H A D _ S L S _ T Y P E S   M O D U L E  -*-*-*-
 
     END MODULE GALAHAD_SLS_MATLAB_TYPES
-

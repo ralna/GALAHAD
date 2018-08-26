@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 09/03/2010 AT 08:25 GMT.
+!  THIS VERSION: GALAHAD 3.1 - 20/08/2018 AT 16:50 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
@@ -8,22 +8,22 @@
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!  Given an m by n matrix A, an m-vector b, and scalars p, sigma and mu, find 
+!  Given an m by n matrix A, an m-vector b, and scalars p, sigma and mu, find
 !  an approximate solution of the REGULARISED LEAST-L_2-NORM subproblem
-!    minimize sqrt{|| A x - b ||_2^2 + mu ||x||_2^2} + 1/p sigma ||x||^p_2 
+!    minimize sqrt{|| A x - b ||_2^2 + mu ||x||_2^2} + 1/p sigma ||x||^p_2
 !  using an iterative method. Here ||.||_2 is the Euclidean (l_2-)norm.
-!  Advantage is taken of sparse A. 
+!  Advantage is taken of sparse A.
 !
 !  Simple usage -
 !
 !  to solve the regularised least-l_2-norm subproblem
-!   [ x, obj, inform ] 
+!   [ x, obj, inform ]
 !     = galahad_l2rt( A, b, p, sigma, mu, control )
 !
 !  Sophisticated usage -
 !
 !  to initialize data and control structures prior to solution
-!   [ control ] 
+!   [ control ]
 !     = galahad_l2rt( 'initial' )
 !
 !  to solve the problem using existing data structures
@@ -44,7 +44,7 @@
 !    control: a structure containing control parameters.
 !            The components are of the form control.value, where
 !            value is the name of the corresponding component of
-!            the derived type L2RT_CONTROL as described in the 
+!            the derived type L2RT_CONTROL as described in the
 !            manual for the fortran 90 package GALAHAD_L2RT.
 !            See: http://galahad.rl.ac.uk/galahad-www/doc/l2rt.pdf
 !
@@ -57,8 +57,8 @@
 !     inform: a structure containing information parameters
 !            The components are of the form inform.value, where
 !            value is the name of the corresponding component of the
-!            derived type L2RT_INFORM as described in the manual for 
-!            the fortran 90 package GALAHAD_L2RT. 
+!            derived type L2RT_INFORM as described in the manual for
+!            the fortran 90 package GALAHAD_L2RT.
 !            See: http://galahad.rl.ac.uk/galahad-www/doc/l2rt.pdf
 !            Note that as the objective value is already available
 !            the component obj from L2RT_inform is omitted.
@@ -71,7 +71,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.3.1. March 5th 2009
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
@@ -104,7 +104,8 @@
 
 !  local variables
 
-      INTEGER :: i, m, n, info
+      INTEGER :: i, info
+      INTEGER * 4 :: i4, m, n
       mwSize :: a_arg, b_arg, p_arg, sigma_arg, mu_arg, con_arg
       mwSize :: x_arg, obj_arg, i_arg, s_len
 
@@ -113,6 +114,7 @@
 
       CHARACTER ( len = 80 ) :: output_unit, filename
       LOGICAL :: filexx, opened, initial_set = .FALSE.
+      LOGICAL * 4 :: true = .TRUE.
       INTEGER :: iores
 
       CHARACTER ( len = 8 ) :: mode
@@ -124,7 +126,7 @@
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B, X, U, V
       TYPE ( SMT_type ) :: A
       TYPE ( L2RT_data_type ), SAVE :: data
-      TYPE ( L2RT_control_type ), SAVE :: control        
+      TYPE ( L2RT_control_type ), SAVE :: control
       TYPE ( L2RT_inform_type ) :: inform
 
       mwPointer, ALLOCATABLE :: col_ptr( : )
@@ -150,7 +152,7 @@
         mode = 'all'
         IF ( nrhs < 2 )                                                        &
           CALL mexErrMsgTxt( ' Too few input arguments to galahad_l2rt' )
-        a_arg = 1 ; b_arg = 2 ; p_arg = 3 ; sigma_arg = 4 ; mu_arg = 5 
+        a_arg = 1 ; b_arg = 2 ; p_arg = 3 ; sigma_arg = 4 ; mu_arg = 5
         con_arg = 6
         x_arg = 1 ; obj_arg = 2 ; i_arg = 3
         IF ( nrhs > con_arg )                                                  &
@@ -180,7 +182,7 @@
 
       IF ( .NOT. TRIM( mode ) == 'final' ) THEN
 
-!  Check that L2RT_initialize has been called 
+!  Check that L2RT_initialize has been called
 
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
@@ -199,30 +201,18 @@
 
         IF ( control%error > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_l2rt." // TRIM( output_unit ) 
-          INQUIRE( FILE = filename, EXIST = filexx )
-          IF ( filexx ) THEN
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                    STATUS = 'OLD', IOSTAT = iores )
-          ELSE
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                     STATUS = 'NEW', IOSTAT = iores )
-          END IF
+          filename = "output_l2rt." // TRIM( output_unit )
+          OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
+                STATUS = 'REPLACE', IOSTAT = iores )
         END IF
 
         IF ( control%out > 0 ) THEN
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_l2rt." // TRIM( output_unit ) 
-            INQUIRE( FILE = filename, EXIST = filexx )
-            IF ( filexx ) THEN
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                      STATUS = 'OLD', IOSTAT = iores )
-            ELSE
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                       STATUS = 'NEW', IOSTAT = iores )
-            END IF
+            filename = "output_l2rt." // TRIM( output_unit )
+            OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
+                  STATUS = 'REPLACE', IOSTAT = iores )
           END IF
         END IF
 
@@ -291,10 +281,12 @@
           CALL L2RT_solve( m, n, p, sigma, mu, X, U, V, data, control, inform )
           SELECT CASE( inform%status )  !  Branch as a result of inform%status
           CASE( 2 )                     !  Form u <- u + A * v
-            CALL MOP_Ax( 1.0_wp, A, V, 1.0_wp, U, 0, 0, 0 )
+            i4 = 0
+            CALL MOP_Ax( 1.0_wp, A, V, 1.0_wp, U, i4, i4, i4 )
           CASE( 3 )                     !  Form v <- v + A^T * u
-            CALL MOP_Ax( 1.0_wp, A, U, 1.0_wp, V, 0, 0, 0,                     &
-                        transpose = .TRUE. )
+            i4 = 0
+            CALL MOP_Ax( 1.0_wp, A, U, 1.0_wp, V, i4, i4, i4,                  &
+                         transpose = true )
           CASE ( 4 )                    !  Restart
              U = B                      !  re-initialize u to b
           CASE DEFAULT                  !  Successful and error returns
@@ -315,14 +307,14 @@
 
 !  Output solution
 
-        i = 1
-        plhs( x_arg ) = MATLAB_create_real( n, i )
+        i4 = 1
+        plhs( x_arg ) = MATLAB_create_real( n, i4 )
         x_pr = mxGetPr( plhs( x_arg ) )
         CALL MATLAB_copy_to_ptr( X, x_pr, n )
 
 !  Output optimal objective
 
-        plhs( obj_arg ) = MATLAB_create_real( i )
+        plhs( obj_arg ) = MATLAB_create_real( i4 )
         obj_pr = mxGetPr( plhs( obj_arg ) )
         CALL MATLAB_copy_to_ptr( inform%obj, obj_pr )
 
@@ -363,4 +355,3 @@
       RETURN
 
       END SUBROUTINE mexFunction
-

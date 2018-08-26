@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 09/03/2010 AT 08:20 GMT.
+!  THIS VERSION: GALAHAD 3.1 - 20/08/2018 AT 16:50 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
@@ -8,22 +8,22 @@
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!  Given an m by n matrix A, an m-vector b, and scalars p and sigma, find 
+!  Given an m by n matrix A, an m-vector b, and scalars p and sigma, find
 !  an approximate solution of the REGULARISED LEAST-SQUARES subproblem
-!    minimize 1/2 || A x - b ||^2_2 + 1/p sigma ||x||^p_2 
+!    minimize 1/2 || A x - b ||^2_2 + 1/p sigma ||x||^p_2
 !  using an iterative method. Here ||.||_2 is the Euclidean (l_2-)norm.
-!  Advantage is taken of sparse A. 
+!  Advantage is taken of sparse A.
 !
 !  Simple usage -
 !
 !  to solve the regularised least-squares subproblem
-!   [ x, obj, inform ] 
+!   [ x, obj, inform ]
 !     = galahad_lsrt( A, b, p, sigma, control )
 !
 !  Sophisticated usage -
 !
 !  to initialize data and control structures prior to solution
-!   [ control ] 
+!   [ control ]
 !     = galahad_lsrt( 'initial' )
 !
 !  to solve the problem using existing data structures
@@ -43,7 +43,7 @@
 !    control: a structure containing control parameters.
 !            The components are of the form control.value, where
 !            value is the name of the corresponding component of
-!            the derived type LSRT_CONTROL as described in the 
+!            the derived type LSRT_CONTROL as described in the
 !            manual for the fortran 90 package GALAHAD_LSRT.
 !            See: http://galahad.rl.ac.uk/galahad-www/doc/lsrt.pdf
 !
@@ -56,8 +56,8 @@
 !     inform: a structure containing information parameters
 !            The components are of the form inform.value, where
 !            value is the name of the corresponding component of the
-!            derived type LSRT_INFORM as described in the manual for 
-!            the fortran 90 package GALAHAD_LSRT. 
+!            derived type LSRT_INFORM as described in the manual for
+!            the fortran 90 package GALAHAD_LSRT.
 !            See: http://galahad.rl.ac.uk/galahad-www/doc/lsrt.pdf
 !            Note that as the objective value is already available
 !            the component obj from LSRT_inform is omitted.
@@ -70,7 +70,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.3.1. March 5th 2009
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
@@ -103,7 +103,8 @@
 
 !  local variables
 
-      INTEGER :: i, m, n, info
+      INTEGER :: i, info
+      INTEGER * 4 :: i4, m, n
       mwSize :: a_arg, b_arg, p_arg, sigma_arg, con_arg
       mwSize :: x_arg, obj_arg, i_arg, s_len
 
@@ -112,6 +113,7 @@
 
       CHARACTER ( len = 80 ) :: output_unit, filename
       LOGICAL :: filexx, opened, initial_set = .FALSE.
+      LOGICAL * 4 :: true = .TRUE.
       INTEGER :: iores
 
       CHARACTER ( len = 8 ) :: mode
@@ -123,7 +125,7 @@
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B, X, U, V
       TYPE ( SMT_type ) :: A
       TYPE ( LSRT_data_type ), SAVE :: data
-      TYPE ( LSRT_control_type ), SAVE :: control        
+      TYPE ( LSRT_control_type ), SAVE :: control
       TYPE ( LSRT_inform_type ) :: inform
 
       mwPointer, ALLOCATABLE :: col_ptr( : )
@@ -177,7 +179,7 @@
 
       IF ( .NOT. TRIM( mode ) == 'final' ) THEN
 
-!  Check that LSRT_initialize has been called 
+!  Check that LSRT_initialize has been called
 
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
@@ -196,30 +198,18 @@
 
         IF ( control%error > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_lsrt." // TRIM( output_unit ) 
-          INQUIRE( FILE = filename, EXIST = filexx )
-          IF ( filexx ) THEN
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                    STATUS = 'OLD', IOSTAT = iores )
-          ELSE
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                     STATUS = 'NEW', IOSTAT = iores )
-          END IF
+          filename = "output_lsrt." // TRIM( output_unit )
+          OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
+                STATUS = 'REPLACE', IOSTAT = iores )
         END IF
 
         IF ( control%out > 0 ) THEN
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_lsrt." // TRIM( output_unit ) 
-            INQUIRE( FILE = filename, EXIST = filexx )
-            IF ( filexx ) THEN
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                      STATUS = 'OLD', IOSTAT = iores )
-            ELSE
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                       STATUS = 'NEW', IOSTAT = iores )
-            END IF
+            filename = "output_lsrt." // TRIM( output_unit )
+            OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
+                  STATUS = 'REPLACE', IOSTAT = iores )
           END IF
         END IF
 
@@ -280,10 +270,12 @@
           CALL LSRT_solve( m, n, p, sigma, X, U, V, data, control, inform )
           SELECT CASE( inform%status )  !  Branch as a result of inform%status
           CASE( 2 )                     !  Form u <- u + A * v
-            CALL MOP_Ax( 1.0_wp, A, V, 1.0_wp, U, 0, 0, 0 )
+            i4 = 0
+            CALL MOP_Ax( 1.0_wp, A, V, 1.0_wp, U, i4, i4, i4 )
           CASE( 3 )                     !  Form v <- v + A^T * u
-            CALL MOP_Ax( 1.0_wp, A, U, 1.0_wp, V, 0, 0, 0,                     &
-                        transpose = .TRUE. )
+            i4 = 0
+            CALL MOP_Ax( 1.0_wp, A, U, 1.0_wp, V, i4, i4, i4,                  &
+                        transpose = true )
           CASE ( 4 )                    !  Restart
              U = B                      !  re-initialize u to b
           CASE DEFAULT                  !  Successful and error returns
@@ -304,14 +296,14 @@
 
 !  Output solution
 
-        i = 1
-        plhs( x_arg ) = MATLAB_create_real( n, i )
+        i4 = 1
+        plhs( x_arg ) = MATLAB_create_real( n, i4 )
         x_pr = mxGetPr( plhs( x_arg ) )
         CALL MATLAB_copy_to_ptr( X, x_pr, n )
 
 !  Output optimal objective
 
-        plhs( obj_arg ) = MATLAB_create_real( i )
+        plhs( obj_arg ) = MATLAB_create_real( i4 )
         obj_pr = mxGetPr( plhs( obj_arg ) )
         CALL MATLAB_copy_to_ptr( inform%obj, obj_pr )
 
@@ -352,4 +344,3 @@
       RETURN
 
       END SUBROUTINE mexFunction
-

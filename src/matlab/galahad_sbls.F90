@@ -1,7 +1,7 @@
 
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 26/02/2010 AT 14:00 GMT.
+!  THIS VERSION: GALAHAD 3.1 - 20/08/2018 AT 16:50 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
@@ -19,41 +19,41 @@
 !     K = ( G  A^T ).
 !         ( A  - C )
 !
-!  Here, the leading-block matrix G is a suitably-chosen approximation 
-!  to H; it may either be prescribed EXPLICITLY, in which case a symmetric 
-!  indefinite factorization of K will be formed using the GALAHAD package 
-!  SLS, or IMPLICITLY by requiring certain sub-blocks of G be zero. In the 
-!  latter case, a factorization of K will be obtained implicitly (and more 
+!  Here, the leading-block matrix G is a suitably-chosen approximation
+!  to H; it may either be prescribed EXPLICITLY, in which case a symmetric
+!  indefinite factorization of K will be formed using the GALAHAD package
+!  SLS, or IMPLICITLY by requiring certain sub-blocks of G be zero. In the
+!  latter case, a factorization of K will be obtained implicitly (and more
 !  efficiently) without recourse to SLS.
 !
-!  Once the preconditioner has been constructed, solutions to the 
+!  Once the preconditioner has been constructed, solutions to the
 !  preconditioning system
 !
 !       ( G  A^T ) ( x ) = ( b )
 !       ( A  - C ) ( y )   ( d )
 !
-!  may be obtained by the package. Full advantage is taken of any zero 
+!  may be obtained by the package. Full advantage is taken of any zero
 !  coefficients in the matrices H, A and C.
 !
 !  Simple usage -
 !
 !  to form and factorize the matrix K
-!   [ inform ] 
+!   [ inform ]
 !     = galahad_sbls( 'form_and_factorize', H, A, C, control )
 !
 !  to solve the preconditioning system after factorizing K
 !
-!   [ x, y, inform ] 
+!   [ x, y, inform ]
 !     = galahad_sbls( 'solve', b, d, control )
-
+!
 !  Sophisticated usage -
 !
 !  to initialize data and control structures prior to solution
-!   [ control ] 
+!   [ control ]
 !     = galahad_sbls( 'initial' )
 !
 !  to remove data structures after solution
-!  [ inform ] 
+!  [ inform ]
 !    = galahad_sbls( 'final' )
 !
 !  Usual Input (form-and-factorize) -
@@ -79,8 +79,8 @@
 !      value is the name of the corresponding component of the
 !      derived type SBLS_inform_type as described in the manual
 !      for the fortran 90 package GALAHAD_SBLS. The components
-!      of inform.SLS_inform and inform.ULS_inform are themselves 
-!      structures, holding the components of the derived types 
+!      of inform.SLS_inform and inform.ULS_inform are themselves
+!      structures, holding the components of the derived types
 !      SLS_inform_type and ULS_inform_type, respectively.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/sbls.pdf
 !
@@ -92,7 +92,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4 February 12th 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
@@ -123,7 +123,8 @@
 
 !  local variables
 
-      INTEGER :: i, m, n, info
+      INTEGER :: i, info
+      INTEGER * 4 :: m, n, i4
       mwSize :: s_len
       mwSize :: h_arg, a_arg, c_arg, b_arg, d_arg, con_arg
       mwSize :: x_arg, y_arg, i_arg
@@ -139,14 +140,14 @@
       TYPE ( SBLS_pointer_type ) :: SBLS_pointer
       mwPointer, ALLOCATABLE :: col_ptr( : )
 !     CHARACTER ( len = 80 ) :: message
-      
+
 !  arguments for SBLS
 
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
       TYPE ( SMT_type ) :: H
       TYPE ( SMT_type ), SAVE :: A, C
       TYPE ( SBLS_data_type ), SAVE :: data
-      TYPE ( SBLS_control_type ), SAVE :: control        
+      TYPE ( SBLS_control_type ), SAVE :: control
       TYPE ( SBLS_inform_type ), SAVE :: inform
 
 !  Test input/output arguments
@@ -208,30 +209,18 @@
 
         IF ( control%error > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_sbls." // TRIM( output_unit ) 
-          INQUIRE( FILE = filename, EXIST = filexx )
-          IF ( filexx ) THEN
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                    STATUS = 'OLD', IOSTAT = iores )
-          ELSE
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                     STATUS = 'NEW', IOSTAT = iores )
-          END IF
+          filename = "output_sbls." // TRIM( output_unit )
+          OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
+                STATUS = 'REPLACE', IOSTAT = iores )
         END IF
 
         IF ( control%out > 0 ) THEN
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_sbls." // TRIM( output_unit ) 
-            INQUIRE( FILE = filename, EXIST = filexx )
-            IF ( filexx ) THEN
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                      STATUS = 'OLD', IOSTAT = iores )
-            ELSE
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                       STATUS = 'NEW', IOSTAT = iores )
-            END IF
+            filename = "output_sbls." // TRIM( output_unit )
+            OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
+                  STATUS = 'REPLACE', IOSTAT = iores )
           END IF
         END IF
 
@@ -243,6 +232,8 @@
 
 !  input H
 
+!       WRITE( message, "( ' input H' )" )
+!       i4 = mexPrintf( TRIM( message ) // achar( 10 ) )
         h_in = prhs( h_arg )
         IF ( mxIsNumeric( h_in ) == 0 )                                        &
           CALL mexErrMsgTxt( ' There must be a matrix H ' )
@@ -251,6 +242,9 @@
         n = H%n
 
 !  input A
+
+!       WRITE( message, "( ' input A' )" )
+!       i4 = mexPrintf( TRIM( message ) // achar( 10 ) )
 
         a_in = prhs( a_arg )
         IF ( mxIsNumeric( a_in ) == 0 )                                        &
@@ -261,6 +255,9 @@
         m = A%m
 
 !  input C
+
+!       WRITE( message, "( ' input C' )" )
+!       i4 = mexPrintf( TRIM( message ) // achar( 10 ) )
 
         c_in = prhs( c_arg )
         IF ( mxIsNumeric( c_in ) == 0 )                                        &
@@ -278,6 +275,8 @@
 !  solve entry
 
       ELSE IF ( TRIM( mode ) == 'solve' ) THEN
+        IF ( control%error > 0 ) REWIND( control%error )
+        IF ( control%out > 0 ) REWIND( control%out )
          b_arg = 2 ; d_arg = 3 ; con_arg = 4
          IF ( nrhs > con_arg )                                                 &
            CALL mexErrMsgTxt( ' Too many input arguments to galahad_sbls' )
@@ -285,7 +284,7 @@
          IF ( nlhs > i_arg )                                                   &
            CALL mexErrMsgTxt( ' too many output arguments required' )
 
-!  Check that SBLS_initialize has been called 
+!  Check that SBLS_initialize has been called
 
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "form_and_factorize" must be called first' )
@@ -306,7 +305,7 @@
 
 !  Allocate space for input vector (b,d) in SOL
 
-        m = A%m ; n = A%n 
+        m = A%m ; n = A%n
         ALLOCATE( SOL( n + m ), STAT = info )
 
 !  Input b
@@ -332,11 +331,11 @@
 
 !  Output solution
 
-         i = 1
-         plhs( x_arg ) = MATLAB_create_real( n, i )
+         i4 = 1
+         plhs( x_arg ) = MATLAB_create_real( n, i4 )
          x_pr = mxGetPr( plhs( x_arg ) )
          CALL MATLAB_copy_to_ptr( SOL( : n ), x_pr, n )
-         plhs( y_arg ) = MATLAB_create_real( m, i )
+         plhs( y_arg ) = MATLAB_create_real( m, i4 )
          y_pr = mxGetPr( plhs( y_arg ) )
          CALL MATLAB_copy_to_ptr( SOL( n + 1 : n + m ), y_pr, m )
 

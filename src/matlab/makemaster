@@ -18,7 +18,9 @@ FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(MATLABINC)
 MFFLAGS   = $(MBASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES)
 MFLAGS    = CC='$(CC)' FC='$(FORTRAN)' FFLAGS='$(MFFLAGS) $(OPENMP)' \
             LD='$(FORTRAN) $(MFFLAGS) $(OPENMP)' \
-            -g -largeArrayDims -compatibleArrayDims $(MATLABINC) -lgomp
+            -g -largeArrayDims $(MATLABINC) -lgomp
+#            -g -largeArrayDims -compatibleArrayDims $(MATLABINC) -lgomp
+#            -g $(MATLABINC) -lgomp
 
 #  names of random libraries
 
@@ -57,6 +59,7 @@ MAT_SCALE = $(MAT_BASIC) $(MLG)(galahad_scale_matlab_types.o)
 MAT_PRESOLVE = $(MAT_BASIC) $(MLG)(galahad_presolve_matlab_types.o)
 MAT_PSLS = $(MAT_SLS) $(MLG)(galahad_psls_matlab_types.o)
 MAT_SBLS = $(MAT_SLS) $(MAT_ULS) $(MLG)(galahad_sbls_matlab_types.o)
+MAT_S = basics $(MLG)(galahad_matlab.o) $(MLG)(galahad_transfer_m.o)
 MAT_FDC = $(MAT_SLS) $(MAT_ULS) $(MLG)(galahad_fdc_matlab_types.o)
 MAT_IR = $(MAT_SLS) $(MLG)(galahad_ir_matlab_types.o)
 MAT_BQP = $(MAT_SBLS) $(MLG)(galahad_bqp_matlab_types.o)
@@ -72,6 +75,7 @@ MAT_GLRT = $(MAT_BASIC) $(MLG)(galahad_glrt_matlab_types.o)
 MAT_GLTR = $(MAT_BASIC) $(MLG)(galahad_gltr_matlab_types.o)
 MAT_QPA = $(MAT_BASIC) $(MLG)(galahad_qpa_matlab_types.o)
 MAT_LSQP = $(MAT_SBLS) $(MAT_FDC) $(MLG)(galahad_lsqp_matlab_types.o)
+MAT_LPB = $(MAT_SBLS)  $(MAT_FDC) $(MLG)(galahad_lpb_matlab_types.o)
 MAT_QPB = $(MAT_GLTR) $(MAT_LSQP) $(MLG)(galahad_qpb_matlab_types.o)
 MAT_EQP = $(MAT_GLTR) $(MAT_SBLS) $(MLG)(galahad_eqp_matlab_types.o)
 MAT_CQP = $(MAT_SBLS)  $(MAT_FDC) $(MLG)(galahad_cqp_matlab_types.o)
@@ -90,11 +94,11 @@ SUCC_MATLAB = precision version) for Matlab compiled successfully
 
 all: all_$(PRECIS)
 
-all_single: basics sils cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt qpa qpb \
-            qpc qp rqs sbls trs wcp tru arc
+all_single: basics sils lpb cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt \
+            qpa qpb qpc qp rqs sbls trs wcp tru arc
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
-all_double: basics sils cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt qpa qpb \
-            qpc qp rqs sbls trs wcp tru arc
+all_double: basics sils lpb cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt \
+            qpa qpb qpc qp rqs sbls trs wcp tru arc
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 
 #  everything including current developments
@@ -109,8 +113,8 @@ all_current_double: all_double bqp bqpb
 
 allqp: allqp_$(PRECIS)
 
-allqp_single: basics cqp dqp eqp lsqp qpa qpb qpc qp wcp
-allqp_double: basics cqp dqp eqp lsqp qpa qpb qpc qp wcp
+allqp_single: basics lpb cqp dqp eqp lsqp qpa qpb qpc qp wcp
+allqp_double: basics lpb cqp dqp eqp lsqp qpa qpb qpc qp wcp
 
 #  everything for regularization from the distribution
 
@@ -166,6 +170,18 @@ bqpb: $(MAT_BQPB) galahad_bqpb.F90
 	$(MEX) galahad_bqpb1.F90 -output galahad_bqpb \
           -L$(OBJD) $(LIBS)  $(MFLAGS)
 	$(RM) galahad_bqpb1.F90
+	@printf '[ OK ]\n'
+
+#  lpb
+
+lpb: $(MAT_LPB) galahad_lpb.F90
+	( cd ../lpb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     lpb_silent PRECIS=double PWD=$(PWD)/../lpb )
+	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_lpb"
+	$(SED) -f $(LSEDS) galahad_lpb.F90 > galahad_lpb1.F90
+	$(MEX) galahad_lpb1.F90 -output galahad_lpb \
+          -L$(OBJD) $(LIBS)  $(MFLAGS)
+	$(RM) galahad_lpb1.F90
 	@printf '[ OK ]\n'
 
 #  cqp
@@ -524,6 +540,23 @@ $(MLG)(galahad_bqpb_matlab_types.o): galahad_bqpb_matlab_types.F90
 	cd $(OBJ) ; $(MARR) galahad_bqpb_matlab_types.o
 	$(RM) $(OBJ)/galahad_bqpb_matlab_types.o \
               $(OBJ)/galahad_bqpb_matlab_types.F90
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  lpb
+
+galahad_lpb_matlab_types.o: $(MLG)(galahad_lpb_matlab_types.o)
+
+$(MLG)(galahad_lpb_matlab_types.o): galahad_lpb_matlab_types.F90
+	( cd ../lpb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     lpb_silent PRECIS=double PWD=$(PWD)/../lpb )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_lpb_matlab_types"
+	$(CP) galahad_lpb_matlab_types.F90 $(OBJ)/galahad_lpb_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_lpb_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_lpb_matlab_types.o
+	$(RM) $(OBJ)/galahad_lpb_matlab_types.o \
+              $(OBJ)/galahad_lpb_matlab_types.F90
+	$(MRMARFILE) galahad_qpc_matlab_types.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -907,6 +940,7 @@ $(MLG)(galahad_sbls_matlab_types.o): galahad_sbls_matlab_types.F90
 	$(MRMARFILE) galahad_lsqp_matlab_types.o
 	$(MRMARFILE) galahad_eqp_matlab_types.o
 	$(MRMARFILE) galahad_bqp_matlab_types.o
+	$(MRMARFILE) galahad_lpb_matlab_types.o
 	$(MRMARFILE) galahad_cqp_matlab_types.o
 	$(MRMARFILE) galahad_dqp_matlab_types.o
 	$(MRMARFILE) galahad_bqpb_matlab_types.o
@@ -978,8 +1012,8 @@ $(MLG)(galahad_psls_matlab_types.o): galahad_psls_matlab_types.F90
 	cd $(OBJ) ; $(MARR) galahad_psls_matlab_types.o
 	$(RM) $(OBJ)/galahad_psls_matlab_types.o \
               $(OBJ)/galahad_psls_matlab_types.F90
-	$(MRMARFILE) galahad_cqp_matlab_types.o
-	$(MRMARFILE) galahad_dqp_matlab_types.o
+	$(MRMARFILE) galahad_tru_matlab_types.o
+	$(MRMARFILE) galahad_arc_matlab_types.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

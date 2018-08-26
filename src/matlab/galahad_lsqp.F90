@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 09/03/2010 AT 08:25 GMT.
+!  THIS VERSION: GALAHAD 3.1 - 20/08/2018 AT 16:50 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
@@ -9,7 +9,7 @@
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
 !  Given a symmetric n by n matrix H, an m by n matrix A, an n-vector g, a
-!  constant f, n-vectors x_l <= x_u, w & x0 and m-vectors c_l <= c_u, 
+!  constant f, n-vectors x_l <= x_u, w & x0 and m-vectors c_l <= c_u,
 !  solve the SEPERABLE QUADRATIC PROGRAMMING problem
 !    minimize 0.5 * sum w_i^2 ( x_i - x0_i )^2 + g' * x + f
 !    subject to c_l <= A * x <= c_u and x_l <= x <= x_u
@@ -21,22 +21,22 @@
 !  Simple usage -
 !
 !  to solve the separable quadratic program
-!   [ x, inform, aux ] 
+!   [ x, inform, aux ]
 !     = galahad_lsqp( g, f, A, c_l, c_u, x_l, x_u, w, x0, control )
 !
 !  to solve the linear program
-!   [ x, inform, aux ] 
+!   [ x, inform, aux ]
 !     = galahad_lsqp( g, f, A, c_l, c_u, x_l, x_u, control )
 !
 !  Sophisticated usage -
 !
 !  to initialize data and control structures prior to solution
-!   [ control ] 
+!   [ control ]
 !     = galahad_lsqp( 'initial' )
 !
 !  to solve the separable quadratic program using existing data structures
 !   [ x, inform, aux ]
-!     = galahad_lsqp( 'existing', g, f, A, c_l, c_u, x_l, x_u, w, x0, 
+!     = galahad_lsqp( 'existing', g, f, A, c_l, c_u, x_l, x_u, w, x0,
 !                     control )
 !
 !  to solve the linear program using existing data structures
@@ -56,12 +56,12 @@
 !    x_u: the n-vector x_u. The value inf should be used for infinite bounds
 !
 !  Optional Input -
-!    w: the n-vector of weights w. If one of w and x0 is given, they must both 
+!    w: the n-vector of weights w. If one of w and x0 is given, they must both
 !    x0: the n-vector of shifts x0                                        be
 !    control, a structure containing control parameters.
 !      The components are of the form control.value, where
 !      value is the name of the corresponding component of
-!      the derived type LSQP_CONTROL as described in the 
+!      the derived type LSQP_CONTROL as described in the
 !      manual for the fortran 90 package GALAHAD_LSQP.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/lsqp.pdf
 !
@@ -73,22 +73,22 @@
 !   inform: a structure containing information parameters
 !      The components are of the form inform.value, where
 !      value is the name of the corresponding component of
-!      the derived type LSQP_INFORM as described in the manual for 
+!      the derived type LSQP_INFORM as described in the manual for
 !      the fortran 90 package GALAHAD_LSQP.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/lsqp.pdf
 !  aux: a structure containing Lagrange multipliers and constraint status
 !   aux.c: values of the constraints A * x
-!   aux.y: Lagrange multipliers corresponding to the general constraints 
-!        c_l <= A * x <= c_u 
+!   aux.y: Lagrange multipliers corresponding to the general constraints
+!        c_l <= A * x <= c_u
 !   aux.z: dual variables corresponding to the bound constraints
 !        x_l <= x <= x_u
 !   aux.c_stat: vector indicating the status of the general constraints
 !           c_stat(i) < 0 if (c_l)_i = (A * x)_i
-!           c_stat(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i 
+!           c_stat(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i
 !           c_stat(i) > 0 if (c_u)_i = (A * x)_i
 !   aux.b_stat: vector indicating the status of the bound constraints
 !           b_stat(i) < 0 if (x_l)_i = (x)_i
-!           b_stat(i) = 0 if (x_i)_i < (x)_i < (x_u)_i 
+!           b_stat(i) = 0 if (x_i)_i < (x)_i < (x_u)_i
 !           b_stat(i) > 0 if (x_u)_i = (x)_i
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
@@ -99,7 +99,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 18th 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
@@ -131,6 +131,7 @@
 !  local variables
 
       INTEGER :: i, info
+      INTEGER * 4 :: i4
       mwSize :: g_arg, f_arg, a_arg, cl_arg, cu_arg, xl_arg, xu_arg
       mwSize :: w_arg, x0_arg, c_arg, x_arg, i_arg, aux_arg
       mwSize :: s_len
@@ -145,7 +146,7 @@
 
       CHARACTER ( len = 8 ) :: mode
       TYPE ( LSQP_pointer_type ) :: LSQP_pointer
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
+      INTEGER * 4, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
 
       INTEGER * 4, PARAMETER :: naux = 5
       CHARACTER ( LEN = 6 ), PARAMETER :: faux( naux ) = (/                    &
@@ -193,7 +194,7 @@
         mode = 'all'
         IF ( nrhs < 2 )                                                        &
           CALL mexErrMsgTxt( ' Too few input arguments to galahad_lsqp' )
-        g_arg = 1 ; f_arg = 2 ; a_arg = 3 ; 
+        g_arg = 1 ; f_arg = 2 ; a_arg = 3 ;
         cl_arg = 4 ; cu_arg = 5 ; xl_arg = 6 ; xu_arg = 7
         IF ( nrhs > xu_arg ) THEN
           IF ( mxIsNumeric( prhs( xu_arg + 1 ) ) == 1 ) THEN
@@ -235,7 +236,7 @@
 
       IF ( .NOT. TRIM( mode ) == 'final' ) THEN
 
-!  Check that LSQP_initialize has been called 
+!  Check that LSQP_initialize has been called
 
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
@@ -254,30 +255,18 @@
 
         IF ( control%error > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_lsqp." // TRIM( output_unit ) 
-          INQUIRE( FILE = filename, EXIST = filexx )
-          IF ( filexx ) THEN
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                    STATUS = 'OLD', IOSTAT = iores )
-          ELSE
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                     STATUS = 'NEW', IOSTAT = iores )
-          END IF
+          filename = "output_lsqp." // TRIM( output_unit )
+          OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
+                STATUS = 'REPLACE', IOSTAT = iores )
         END IF
 
         IF ( control%out > 0 ) THEN
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_lsqp." // TRIM( output_unit ) 
-            INQUIRE( FILE = filename, EXIST = filexx )
-            IF ( filexx ) THEN
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                      STATUS = 'OLD', IOSTAT = iores )
-            ELSE
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                       STATUS = 'NEW', IOSTAT = iores )
-            END IF
+            filename = "output_lsqp." // TRIM( output_unit )
+            OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
+                  STATUS = 'REPLACE', IOSTAT = iores )
           END IF
         END IF
 
@@ -410,8 +399,8 @@
 
 !  Output solution
 
-        i = 1
-        plhs( x_arg ) = MATLAB_create_real( p%n, i )
+        i4 = 1
+        plhs( x_arg ) = MATLAB_create_real( p%n, i4 )
         x_pr = mxGetPr( plhs( x_arg ) )
         CALL MATLAB_copy_to_ptr( p%X, x_pr, p%n )
 
@@ -493,4 +482,3 @@
 
       RETURN
       END SUBROUTINE mexFunction
-

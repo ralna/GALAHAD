@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 18/02/2010 AT 10:00 GMT.
+!  THIS VERSION: GALAHAD 3.1 - 20/08/2018 AT 16:50 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
@@ -8,24 +8,24 @@
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!  Given a symmetric n by n matrix H, an m by n matrix A, an n-vector 
-!  g, a constant f and an m-vector c, find the minimizer of the 
+!  Given a symmetric n by n matrix H, an m by n matrix A, an n-vector
+!  g, a constant f and an m-vector c, find the minimizer of the
 !  EQUALITY-CONSTRAINED QUADRATIC PROGRAMMING problem
 !    minimize 0.5 * x' * H * x + g' * x + f
 !    subject to  A * x + c = 0.
 !  An additional trust-region constraint may be imposed to prevent unbounded
-!  solutions. H need not be definite. Advantage is taken of sparse A and H. 
+!  solutions. H need not be definite. Advantage is taken of sparse A and H.
 !
 !  Simple usage -
 !
 !  to solve the quadratic program
-!   [ x, inform, aux ] 
+!   [ x, inform, aux ]
 !     = galahad_eqp( H, g, f, A, c, control )
 !
 !  Sophisticated usage -
 !
 !  to initialize data and control structures prior to solution
-!   [ control ] 
+!   [ control ]
 !     = galahad_eqp( 'initial' )
 !
 !  to solve the quadratic program using existing data structures
@@ -46,7 +46,7 @@
 !    control, a structure containing control parameters.
 !      The components are of the form control.value, where
 !      value is the name of the corresponding component of
-!      the derived type EQP_CONTROL as described in the 
+!      the derived type EQP_CONTROL as described in the
 !      manual for the fortran 90 package GALAHAD_EQP.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/eqp.pdf
 !
@@ -58,7 +58,7 @@
 !   inform: a structure containing information parameters
 !      The components are of the form inform.value, where
 !      value is the name of the corresponding component of
-!      the derived type EQP_INFORM as described in the manual for 
+!      the derived type EQP_INFORM as described in the manual for
 !      the fortran 90 package GALAHAD_EQP.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/eqp.pdf
 !  aux: a structure containing Lagrange multipliers and constraint status
@@ -72,7 +72,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 18th 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
@@ -105,6 +105,7 @@
 !  local variables
 
       INTEGER :: i, info
+      INTEGER * 4 :: i4
       mwSize :: h_arg, g_arg, f_arg, a_arg, c_arg
       mwSize :: con_arg, x_arg, i_arg, aux_arg
       mwSize :: s_len
@@ -183,7 +184,7 @@
 
       IF ( .NOT. TRIM( mode ) == 'final' ) THEN
 
-!  Check that EQP_initialize has been called 
+!  Check that EQP_initialize has been called
 
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
@@ -202,30 +203,18 @@
 
         IF ( control%error > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_eqp." // TRIM( output_unit ) 
-          INQUIRE( FILE = filename, EXIST = filexx )
-          IF ( filexx ) THEN
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                    STATUS = 'OLD', IOSTAT = iores )
-          ELSE
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                     STATUS = 'NEW', IOSTAT = iores )
-          END IF
+          filename = "output_eqp." // TRIM( output_unit )
+          OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
+                STATUS = 'REPLACE', IOSTAT = iores )
         END IF
 
         IF ( control%out > 0 ) THEN
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_eqp." // TRIM( output_unit ) 
-            INQUIRE( FILE = filename, EXIST = filexx )
-            IF ( filexx ) THEN
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                      STATUS = 'OLD', IOSTAT = iores )
-            ELSE
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                       STATUS = 'NEW', IOSTAT = iores )
-            END IF
+            filename = "output_eqp." // TRIM( output_unit )
+            OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
+                  STATUS = 'REPLACE', IOSTAT = iores )
           END IF
         END IF
 
@@ -309,8 +298,8 @@
 
 !  Output solution
 
-        i = 1
-        plhs( x_arg ) = MATLAB_create_real( p%n, i )
+        i4 = 1
+        plhs( x_arg ) = MATLAB_create_real( p%n, i4 )
         x_pr = mxGetPr( plhs( x_arg ) )
         CALL MATLAB_copy_to_ptr( p%X, x_pr, p%n )
 
@@ -382,4 +371,3 @@
 
       RETURN
       END SUBROUTINE mexFunction
-

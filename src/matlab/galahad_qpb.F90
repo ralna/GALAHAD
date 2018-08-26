@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 09/03/2010 AT 08:15 GMT.
+!  THIS VERSION: GALAHAD 3.1 - 20/08/2018 AT 16:50 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
@@ -8,24 +8,24 @@
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!  Given a symmetric n by n matrix H, an m by n matrix A, an n-vector 
-!  g, a constant f, n-vectors x_l <= x_u and m-vectors c_l <= c_u, 
+!  Given a symmetric n by n matrix H, an m by n matrix A, an n-vector
+!  g, a constant f, n-vectors x_l <= x_u and m-vectors c_l <= c_u,
 !  find a local minimizer of the QUADRATIC PROGRAMMING problem
 !    minimize 0.5 * x' * H * x + g' * x + f
 !    subject to c_l <= A * x <= c_u and x_l <= x <= x_u
 !  using an interior-point method.
-!  H need not be definite. Advantage is taken of sparse A and H. 
+!  H need not be definite. Advantage is taken of sparse A and H.
 !
 !  Simple usage -
 !
 !  to solve the quadratic program
-!   [ x, inform, aux ] 
+!   [ x, inform, aux ]
 !     = galahad_qpb( H, g, f, A, c_l, c_u, x_l, x_u, control )
 !
 !  Sophisticated usage -
 !
 !  to initialize data and control structures prior to solution
-!   [ control ] 
+!   [ control ]
 !     = galahad_qpb( 'initial' )
 !
 !  to solve the quadratic program using existing data structures
@@ -49,7 +49,7 @@
 !    control, a structure containing control parameters.
 !      The components are of the form control.value, where
 !      value is the name of the corresponding component of
-!      the derived type QPB_CONTROL as described in the 
+!      the derived type QPB_CONTROL as described in the
 !      manual for the fortran 90 package GALAHAD_QPB.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/qpb.pdf
 !
@@ -61,22 +61,22 @@
 !   inform: a structure containing information parameters
 !      The components are of the form inform.value, where
 !      value is the name of the corresponding component of
-!      the derived type QPB_INFORM as described in the manual for 
+!      the derived type QPB_INFORM as described in the manual for
 !      the fortran 90 package GALAHAD_QPB.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/qpb.pdf
 !  aux: a structure containing Lagrange multipliers and constraint status
 !   aux.c: values of the constraints A * x
-!   aux.y: Lagrange multipliers corresponding to the general constraints 
-!        c_l <= A * x <= c_u 
+!   aux.y: Lagrange multipliers corresponding to the general constraints
+!        c_l <= A * x <= c_u
 !   aux.z: dual variables corresponding to the bound constraints
 !        x_l <= x <= x_u
 !   aux.c_stat: vector indicating the status of the general constraints
 !           c_stat(i) < 0 if (c_l)_i = (A * x)_i
-!           c_stat(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i 
+!           c_stat(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i
 !           c_stat(i) > 0 if (c_u)_i = (A * x)_i
 !   aux.b_stat: vector indicating the status of the bound constraints
 !           b_stat(i) < 0 if (x_l)_i = (x)_i
-!           b_stat(i) = 0 if (x_i)_i < (x)_i < (x_u)_i 
+!           b_stat(i) = 0 if (x_i)_i < (x)_i < (x_u)_i
 !           b_stat(i) > 0 if (x_u)_i = (x)_i
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
@@ -87,7 +87,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 17th 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
@@ -120,6 +120,7 @@
 !  local variables
 
       INTEGER :: i, info
+      INTEGER * 4 :: i4
       mwSize :: h_arg, g_arg, f_arg, a_arg, cl_arg, cu_arg
       mwSize :: xl_arg, xu_arg, c_arg, x_arg, i_arg, aux_arg
       mwSize :: s_len
@@ -136,7 +137,7 @@
 
       CHARACTER ( len = 8 ) :: mode
       TYPE ( QPB_pointer_type ) :: QPB_pointer
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
+      INTEGER * 4, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
 
       INTEGER * 4, PARAMETER :: naux = 5
       CHARACTER ( LEN = 6 ), PARAMETER :: faux( naux ) = (/                    &
@@ -172,7 +173,7 @@
         mode = 'all'
         IF ( nrhs < 2 )                                                        &
           CALL mexErrMsgTxt( ' Too few input arguments to galahad_qpb' )
-        h_arg = 1 ; g_arg = 2 ; f_arg = 3 ; a_arg = 4 ; 
+        h_arg = 1 ; g_arg = 2 ; f_arg = 3 ; a_arg = 4 ;
         cl_arg = 5 ; cu_arg = 6 ; xl_arg = 7 ; xu_arg = 8 ; c_arg = 9
         x_arg = 1 ; i_arg = 2 ; aux_arg = 3
         IF ( nrhs > c_arg )                                                    &
@@ -202,7 +203,7 @@
 
       IF ( .NOT. TRIM( mode ) == 'final' ) THEN
 
-!  Check that QPB_initialize has been called 
+!  Check that QPB_initialize has been called
 
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
@@ -221,30 +222,18 @@
 
         IF ( control%error > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_qpb." // TRIM( output_unit ) 
-          INQUIRE( FILE = filename, EXIST = filexx )
-          IF ( filexx ) THEN
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                    STATUS = 'OLD', IOSTAT = iores )
-          ELSE
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                     STATUS = 'NEW', IOSTAT = iores )
-          END IF
+          filename = "output_qpb." // TRIM( output_unit )
+          OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
+                STATUS = 'REPLACE', IOSTAT = iores )
         END IF
 
         IF ( control%out > 0 ) THEN
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_qpb." // TRIM( output_unit ) 
-            INQUIRE( FILE = filename, EXIST = filexx )
-            IF ( filexx ) THEN
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                      STATUS = 'OLD', IOSTAT = iores )
-            ELSE
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                       STATUS = 'NEW', IOSTAT = iores )
-            END IF
+            filename = "output_qpb." // TRIM( output_unit )
+            OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
+                  STATUS = 'REPLACE', IOSTAT = iores )
           END IF
         END IF
 
@@ -361,8 +350,8 @@
 
 !  Output solution
 
-        i = 1
-        plhs( x_arg ) = MATLAB_create_real( p%n, i )
+        i4 = 1
+        plhs( x_arg ) = MATLAB_create_real( p%n, i4 )
         x_pr = mxGetPr( plhs( x_arg ) )
         CALL MATLAB_copy_to_ptr( p%X, x_pr, p%n )
 
@@ -442,4 +431,3 @@
 
       RETURN
       END SUBROUTINE mexFunction
-

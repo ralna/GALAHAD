@@ -495,12 +495,18 @@
       TYPE ( SBLS_inform_type ) :: SBLS_inform
       TYPE ( SBLS_pointer_type ) :: SBLS_pointer
 
+!     INTEGER ::  mexPrintf
+!     integer*4 out
+!     CHARACTER ( LEN = 200 ) :: str
+
 !  local variables
 
       mwPointer :: mxGetPr
 
       CALL MATLAB_copy_to_ptr( SBLS_inform%status,                             &
                                mxGetPr( SBLS_pointer%status ) )
+! WRITE( str, "( ' alloc_status'  )" )
+! out = mexPrintf( TRIM( str ) // achar(10) )
       CALL MATLAB_copy_to_ptr( SBLS_inform%alloc_status,                       &
                                mxGetPr( SBLS_pointer%alloc_status ) )
       CALL MATLAB_copy_to_ptr( SBLS_pointer%pointer,                           &
@@ -566,6 +572,3 @@
 !-*-*-*-  E N D  o f  G A L A H A D _ S B L S _ T Y P E S   M O D U L E  -*-*-*-
 
     END MODULE GALAHAD_SBLS_MATLAB_TYPES
-
-
-

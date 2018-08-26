@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 09/03/2010 AT 07:45 GMT.
+!  THIS VERSION: GALAHAD 3.1 - 20/08/2018 AT 16:50 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
@@ -8,24 +8,24 @@
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!  Given an m by n matrix A, n-vectors g, x_l <= x_u and m-vectors c_l <= c_u, 
+!  Given an m by n matrix A, n-vectors g, x_l <= x_u and m-vectors c_l <= c_u,
 !  find a well-centered interior point within the polytope
 !          c_l <= A x <= c_u and x_l <=  x <= x_u,
 !  for which the dual feasibility conditions
 !           g = A' y + z
-!  for Lagrange multipliers y and z are satisfied, using an infeasible-point 
+!  for Lagrange multipliers y and z are satisfied, using an infeasible-point
 !  primal-dual method. Advantage is taken of sparse A.
 !
 !  Simple usage -
 !
 !  to find a well-centered feasible point
-!   [ x, inform, aux ] 
+!   [ x, inform, aux ]
 !     = galahad_wcp( A, c_l, c_u, x_l, x_u, g )
 !
 !  Sophisticated usage -
 !
 !  to initialize data and control structures prior to solution
-!   [ control ] 
+!   [ control ]
 !     = galahad_wcp( 'initial' )
 !
 !  to find a well-centered feasible point using existing structures
@@ -47,7 +47,7 @@
 !    control, a structure containing control parameters.
 !      The components are of the form control.value, where
 !      value is the name of the corresponding component of
-!      the derived type WCP_CONTROL as described in the 
+!      the derived type WCP_CONTROL as described in the
 !      manual for the fortran 90 package GALAHAD_WCP.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/wcp.pdf
 !
@@ -59,22 +59,22 @@
 !   inform: a structure containing information parameters
 !      The components are of the form inform.value, where
 !      value is the name of the corresponding component of
-!      the derived type WCP_INFORM as described in the manual for 
+!      the derived type WCP_INFORM as described in the manual for
 !      the fortran 90 package GALAHAD_WCP.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/wcp.pdf
 !  aux: a structure containing Lagrange multipliers and constraint status
 !   aux.c: values of the constraints A * x
-!   aux.y: Lagrange multipliers corresponding to the general constraints 
-!        c_l <= A * x <= c_u 
+!   aux.y: Lagrange multipliers corresponding to the general constraints
+!        c_l <= A * x <= c_u
 !   aux.z: dual variables corresponding to the bound constraints
 !        x_l <= x <= x_u
 !   aux.c_status: vector indicating the status of the general constraints
 !           c_status(i) < 0 if (c_l)_i = (A * x)_i
-!           c_status(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i 
+!           c_status(i) = 0 if (c_i)_i < (A * x)_i < (c_u)_i
 !           c_status(i) > 0 if (c_u)_i = (A * x)_i
 !   aux.x_status: vector indicating the status of the bound constraints
 !           x_status(i) < 0 if (x_l)_i = (x)_i
-!           x_status(i) = 0 if (x_i)_i < (x)_i < (x_u)_i 
+!           x_status(i) = 0 if (x_i)_i < (x)_i < (x_u)_i
 !           x_status(i) > 0 if (x_u)_i = (x)_i
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
@@ -85,7 +85,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.3. November 6th 2008
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
@@ -117,6 +117,7 @@
 !  local variables
 
       INTEGER :: i, info
+      INTEGER * 4 :: i4
       mwSize :: s_len
       mwSize :: a_arg, cl_arg, cu_arg
       mwSize :: xl_arg, xu_arg, c_arg, g_arg, x_arg, i_arg, aux_arg
@@ -161,7 +162,7 @@
                      TRIM( mode ) == 'final' ) ) THEN
           IF ( nrhs < 2 )                                                      &
             CALL mexErrMsgTxt( ' Too few input arguments to galahad_wcp' )
-          a_arg = 2 ; cl_arg = 3 ; cu_arg = 4 
+          a_arg = 2 ; cl_arg = 3 ; cu_arg = 4
           xl_arg = 5 ; xu_arg = 6 ; g_arg = 7 ; c_arg = 8
           x_arg = 1 ; i_arg = 2 ; aux_arg = 3
           IF ( nrhs > c_arg )                                                  &
@@ -171,7 +172,7 @@
         mode = 'all'
         IF ( nrhs < 2 )                                                        &
           CALL mexErrMsgTxt( ' Too few input arguments to galahad_wcp' )
-        a_arg = 1 ; cl_arg = 2 ; cu_arg = 3 
+        a_arg = 1 ; cl_arg = 2 ; cu_arg = 3
         xl_arg = 4 ; xu_arg = 5 ; g_arg = 6 ; c_arg = 7
         x_arg = 1 ; i_arg = 2 ; aux_arg = 3
         IF ( nrhs > c_arg )                                                    &
@@ -201,7 +202,7 @@
 
       IF ( .NOT. TRIM( mode ) == 'final' ) THEN
 
-!  Check that WCP_initialize has been called 
+!  Check that WCP_initialize has been called
 
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
@@ -220,30 +221,18 @@
 
         IF ( control%error > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_wcp." // TRIM( output_unit ) 
-          INQUIRE( FILE = filename, EXIST = filexx )
-          IF ( filexx ) THEN
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                    STATUS = 'OLD', IOSTAT = iores )
-          ELSE
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                     STATUS = 'NEW', IOSTAT = iores )
-          END IF
+          filename = "output_wcp." // TRIM( output_unit )
+          OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
+                STATUS = 'REPLACE', IOSTAT = iores )
         END IF
 
         IF ( control%out > 0 ) THEN
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_wcp." // TRIM( output_unit ) 
-            INQUIRE( FILE = filename, EXIST = filexx )
-            IF ( filexx ) THEN
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                      STATUS = 'OLD', IOSTAT = iores )
-            ELSE
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                       STATUS = 'NEW', IOSTAT = iores )
-            END IF
+            filename = "output_wcp." // TRIM( output_unit )
+            OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
+                  STATUS = 'REPLACE', IOSTAT = iores )
           END IF
         END IF
 
@@ -352,8 +341,8 @@
 
 !  Output solution
 
-        i = 1
-        plhs( x_arg ) = MATLAB_create_real( p%n, i )
+        i4 = 1
+        plhs( x_arg ) = MATLAB_create_real( p%n, i4 )
         x_pr = mxGetPr( plhs( x_arg ) )
         CALL MATLAB_copy_to_ptr( p%X, x_pr, p%n )
 
@@ -438,4 +427,3 @@
 
       RETURN
       END SUBROUTINE mexFunction
-

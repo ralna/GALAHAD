@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.6 - 01/03/2014 AT 16:00 GMT.
+!  THIS VERSION: GALAHAD 3.1 - 20/08/2018 AT 16:50 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
@@ -14,19 +14,19 @@
 !    minimize || A x - b ||_2
 !    subject to ||x||_S <= radius
 !  Here ||x||_S^2 = x' * S * x; if S is not given, S=I and ||x||_S is
-!  thus taken to be the Euclidean (l_2-)norm sqrt(x' * x). 
+!  thus taken to be the Euclidean (l_2-)norm sqrt(x' * x).
 !  Advantage is taken of sparse A and S.
 !
 !  Simple usage -
 !
 !  to solve the least-squares trust-region subproblem in the Euclidean norm
-!   [ x, obj, inform ] 
+!   [ x, obj, inform ]
 !     = galahad_llst( A, b, radius, control, S )
 !
 !  Sophisticated usage -
 !
 !  to initialize data and control structures prior to solution
-!   [ control ] 
+!   [ control ]
 !     = galahad_llst( 'initial' )
 !
 !  to solve the problem using existing data structures
@@ -45,7 +45,7 @@
 !    control: a structure containing control parameters.
 !            The components are of the form control.value, where
 !            value is the name of the corresponding component of
-!            the derived type LLST_CONTROL as described in the 
+!            the derived type LLST_CONTROL as described in the
 !            manual for the fortran 90 package GALAHAD_LLST.
 !            See: http://galahad.rl.ac.uk/galahad-www/doc/llst.pdf
 !          S: the n by n symmetric, diagonally-dominant matrix S
@@ -59,8 +59,8 @@
 !   inform: a structure containing information parameters
 !           The components are of the form inform.value, where
 !           value is the name of the corresponding component of the
-!           derived type LLST_INFORM as described in the manual for 
-!           the fortran 90 package GALAHAD_LLST. 
+!           derived type LLST_INFORM as described in the manual for
+!           the fortran 90 package GALAHAD_LLST.
 !           See: http://galahad.rl.ac.uk/galahad-www/doc/llst.pdf
 !           Note that as the objective value is already available
 !           the component r_norm from LLST_inform is omitted.
@@ -73,7 +73,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.6. March 1st 2014
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
@@ -106,7 +106,8 @@
 
 !  local variables
 
-      INTEGER :: i, m, n, info
+      INTEGER :: i, info
+      INTEGER * 4 :: i4, m, n
       mwSize :: a_arg, b_arg, radius_arg, con_arg, s_arg
       mwSize :: x_arg, obj_arg, i_arg, s_len
 
@@ -126,7 +127,7 @@
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B, X
       TYPE ( SMT_type ) :: A, S
       TYPE ( LLST_data_type ), SAVE :: data
-      TYPE ( LLST_control_type ), SAVE :: control        
+      TYPE ( LLST_control_type ), SAVE :: control
       TYPE ( LLST_inform_type ) :: inform
 
       mwPointer, ALLOCATABLE :: col_ptr( : )
@@ -180,7 +181,7 @@
 
       IF ( .NOT. TRIM( mode ) == 'final' ) THEN
 
-!  Check that LLST_initialize has been called 
+!  Check that LLST_initialize has been called
 
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
@@ -199,30 +200,18 @@
 
         IF ( control%error > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_llst." // TRIM( output_unit ) 
-          INQUIRE( FILE = filename, EXIST = filexx )
-          IF ( filexx ) THEN
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                    STATUS = 'OLD', IOSTAT = iores )
-          ELSE
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                     STATUS = 'NEW', IOSTAT = iores )
-          END IF
+          filename = "output_llst." // TRIM( output_unit )
+          OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
+                STATUS = 'REPLACE', IOSTAT = iores )
         END IF
 
         IF ( control%out > 0 ) THEN
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_llst." // TRIM( output_unit ) 
-            INQUIRE( FILE = filename, EXIST = filexx )
-            IF ( filexx ) THEN
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                      STATUS = 'OLD', IOSTAT = iores )
-            ELSE
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                       STATUS = 'NEW', IOSTAT = iores )
-            END IF
+            filename = "output_llst." // TRIM( output_unit )
+            OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
+                  STATUS = 'REPLACE', IOSTAT = iores )
           END IF
         END IF
 
@@ -262,7 +251,7 @@
         radius_pr = mxGetPr( radius_in )
         CALL MATLAB_copy_from_ptr( radius_pr, radius )
 
-!  input M
+!  input S
 
         IF ( nrhs >= s_arg ) THEN
           s_in = prhs( s_arg )
@@ -281,7 +270,7 @@
 
         IF ( nrhs >= s_arg ) THEN
           CALL LLST_solve( m, n, radius, A, B, X, data, control, inform, S = S )
-        ELSE 
+        ELSE
           CALL LLST_solve( m, n, radius, A, B, X, data, control, inform )
         END IF
 
@@ -298,14 +287,14 @@
 
 !  Output solution
 
-        i = 1
-        plhs( x_arg ) = MATLAB_create_real( n, i )
+        i4 = 1
+        plhs( x_arg ) = MATLAB_create_real( n, i4 )
         x_pr = mxGetPr( plhs( x_arg ) )
         CALL MATLAB_copy_to_ptr( X, x_pr, n )
 
 !  Output optimal objective
 
-        plhs( obj_arg ) = MATLAB_create_real( i )
+        plhs( obj_arg ) = MATLAB_create_real( i4 )
         obj_pr = mxGetPr( plhs( obj_arg ) )
         CALL MATLAB_copy_to_ptr( inform%r_norm, obj_pr )
 
@@ -347,4 +336,3 @@
       RETURN
 
       END SUBROUTINE mexFunction
-

@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.5 - 13/04/2010 AT 16:00 GMT.
+!  THIS VERSION: GALAHAD 3.1 - 20/08/2018 AT 16:50 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ M A T L A B   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -48,6 +48,8 @@
                 galmxCopyLongArrayToPtr,                                       &
 !               galmxCopyRealArrayToPtr,                                       &
 !               galmxCopyIntegerArrayToPtr,                                    &
+                galmxCopyPtrToInteger44,                                       &
+                galmxCopyPtrToInteger84,                                       &
                 MATLAB_get_value
 
 !----------------------------
@@ -74,7 +76,8 @@
       INTEGER, PARAMETER, PUBLIC :: int2_ = KIND( dummy_int2__ )
       INTEGER, PARAMETER, PUBLIC :: int4_ = KIND( dummy_int4__ )
       INTEGER, PARAMETER, PUBLIC :: int8_ = KIND( dummy_int8__ )
-      INTEGER, PARAMETER, PUBLIC :: di_ = KIND( dummy_default_integer__ )
+!     INTEGER, PARAMETER, PUBLIC :: di_ = KIND( dummy_default_integer__ )
+      INTEGER, PARAMETER, PUBLIC :: di_ = 4
       INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
 
 !  real kinds
@@ -796,7 +799,7 @@
       SUBROUTINE galmxGetInteger( ps, name, pc, value )
       mwPointer :: ps, pc
       CHARACTER ( LEN = * ) :: name
-      INTEGER :: value
+      INTEGER * 4 :: value
 
 !  ---------------------------------------------------------
 
@@ -886,7 +889,7 @@
       SUBROUTINE galmxGetLogical( ps, name, pc, value )
       mwPointer :: ps, pc
       CHARACTER ( LEN = * ) :: name
-      LOGICAL :: value
+      LOGICAL * 4 :: value
 
 !  ---------------------------------------------------------
 
@@ -1474,6 +1477,12 @@
 
 !  ---------------------------------------------------------
 
+!   INTEGER ::  mexPrintf
+!   integer*4 out
+!   CHARACTER ( LEN = 200 ) :: str
+!   WRITE( str, "( ' Y = ', I0, ' di = ', I0  )" ) Y, di_
+!   out = mexPrintf( TRIM( str ) // achar(10) )
+
       SELECT CASE ( di_ )
       CASE ( int8_ )
         CALL mxCopyInteger8ToPtr( Y, px, 1_mws_ )
@@ -1507,6 +1516,12 @@
 
 !  ---------------------------------------------------------
 
+!   INTEGER ::  mexPrintf
+!   integer*4 out
+!   CHARACTER ( LEN = 200 ) :: str
+!   WRITE( str, "( ' Y = ', I0, ' di = ', I0  )" ) Y, di_
+!   out = mexPrintf( TRIM( str ) // achar(10) )
+
       SELECT CASE ( di_ )
       CASE ( int8_ )
         CALL mxCopyInteger8ToPtr( Y, px, 1_mws_ )
@@ -1515,7 +1530,8 @@
       CASE ( int1_ )
         CALL mxCopyInteger1ToPtr( Y, px, 1_mws_ )
       CASE default
-        CALL mxCopyInteger4ToPtr( Y, px, 1_mws_ )
+!       CALL mxCopyInteger4ToPtr( Y, px, 1_mws_ )
+        CALL mxCopyInteger8ToPtr( Y, px, 1_mws_ )
       END SELECT
 
       RETURN
@@ -1589,7 +1605,8 @@
       CASE ( int1_ )
         CALL mxCopyInteger1ToPtr( Y, px, nn )
       CASE default
-        CALL mxCopyInteger4ToPtr( Y, px, nn )
+!       CALL mxCopyInteger4ToPtr( Y, px, nn )
+        CALL mxCopyInteger8ToPtr( Y, px, nn )
       END SELECT
 
       RETURN
@@ -1663,7 +1680,8 @@
       CASE ( int1_ )
         CALL mxCopyInteger1ToPtr( Y, px, nn )
       CASE default
-        CALL mxCopyInteger4ToPtr( Y, px, nn )
+!       CALL mxCopyInteger4ToPtr( Y, px, nn )
+        CALL mxCopyInteger8ToPtr( Y, px, nn )
       END SELECT
 
       RETURN
@@ -1915,7 +1933,7 @@
 
       SUBROUTINE galmxCopyLogicalToPtr( Y, px )
       mwPointer :: px
-      LOGICAL :: Y
+      LOGICAL * 4 :: Y
 
 !  --------------------------------------------------------
 
@@ -2627,7 +2645,7 @@
       SUBROUTINE MATLAB_fill_logical_component( struct, name, Y )
       mwPointer :: struct
       CHARACTER ( len = * ) :: name
-      LOGICAL :: Y
+      LOGICAL * 4 :: Y
 
 !  -----------------------------------------------------
 
@@ -2692,5 +2710,3 @@
 !-*-*-*-*-*-*- E N D  o f  G A L A H A D _ M A T L A B   M O D U L E -*-*-*-*-*-
 
     END MODULE GALAHAD_MATLAB
-
-

@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 09/03/2010 AT 08:10 GMT.
+!  THIS VERSION: GALAHAD 3.1 - 20/08/2018 AT 16:50 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
@@ -108,7 +108,8 @@
 
 !  local variables
 
-      INTEGER :: i, n, info
+      INTEGER :: i, info
+      INTEGER * 4 :: i4, n
       mwSize :: h_arg, c_arg, f_arg, p_arg, sigma_arg, con_arg, a_arg, m_arg
       mwSize :: x_arg, i_arg, s_len
 
@@ -203,14 +204,8 @@
         IF ( control%error > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) control%error
           filename = "output_rqs." // TRIM( output_unit )
-          INQUIRE( FILE = filename, EXIST = filexx )
-          IF ( filexx ) THEN
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                    STATUS = 'OLD', IOSTAT = iores )
-          ELSE
-             OPEN( control%error, FILE = filename, FORM = 'FORMATTED',         &
-                     STATUS = 'NEW', IOSTAT = iores )
-          END IF
+          OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
+                STATUS = 'REPLACE', IOSTAT = iores )
         END IF
 
         IF ( control%out > 0 ) THEN
@@ -218,14 +213,8 @@
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) control%out
             filename = "output_rqs." // TRIM( output_unit )
-            INQUIRE( FILE = filename, EXIST = filexx )
-            IF ( filexx ) THEN
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                      STATUS = 'OLD', IOSTAT = iores )
-            ELSE
-               OPEN( control%out, FILE = filename, FORM = 'FORMATTED',         &
-                       STATUS = 'NEW', IOSTAT = iores )
-            END IF
+            OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
+                  STATUS = 'REPLACE', IOSTAT = iores )
           END IF
         END IF
 
@@ -331,8 +320,8 @@
 
 !  Output solution
 
-         i = 1
-         plhs( x_arg ) = MATLAB_create_real( n, i )
+         i4 = 1
+         plhs( x_arg ) = MATLAB_create_real( n, i4 )
          x_pr = mxGetPr( plhs( x_arg ) )
          CALL MATLAB_copy_to_ptr( X, x_pr, n )
 
@@ -377,4 +366,3 @@
       RETURN
 
       END SUBROUTINE mexFunction
-

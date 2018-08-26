@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 10th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_ULS_MATLAB_TYPES
@@ -50,7 +50,7 @@
         mwPointer :: entries_dropped, workspace_factors, compresses
         mwPointer :: entries_in_factors, rank, structural_rank
         mwPointer :: pivot_control, iterative_refinements
-      END TYPE 
+      END TYPE
 
     CONTAINS
 
@@ -127,6 +127,8 @@
         CASE( 'stop_if_singular' )
           CALL MATLAB_get_value( ps, 'stop_if_singular',                       &
                                  pc, ULS_control%stop_if_singular )
+!         CALL galmxGetLogical( ps, 'stop_if_singular',                       &
+!                                pc, ULS_control%stop_if_singular )
         CASE( 'array_increase_factor' )
           CALL MATLAB_get_value( ps, 'array_increase_factor',                  &
                                  pc, ULS_control%array_increase_factor )
@@ -324,11 +326,11 @@
         'bad_alloc', ULS_pointer%bad_alloc )
       CALL MATLAB_create_integer_component( ULS_pointer%pointer,               &
         'more_info', ULS_pointer%more_info )
-      CALL MATLAB_create_integer_component( ULS_pointer%pointer,               &
+      CALL MATLAB_create_long_component( ULS_pointer%pointer,                  &
         'out_of_range', ULS_pointer%out_of_range )
-      CALL MATLAB_create_integer_component( ULS_pointer%pointer,               &
+      CALL MATLAB_create_long_component( ULS_pointer%pointer,                  &
         'duplicates', ULS_pointer%duplicates )
-      CALL MATLAB_create_integer_component( ULS_pointer%pointer,               &
+      CALL MATLAB_create_long_component( ULS_pointer%pointer,                  &
         'entries_dropped', ULS_pointer%entries_dropped )
       CALL MATLAB_create_long_component( ULS_pointer%pointer,                  &
         'workspace_factors ', ULS_pointer%workspace_factors  )
@@ -369,6 +371,10 @@
       TYPE ( ULS_inform_type ) :: ULS_inform
       TYPE ( ULS_pointer_type ) :: ULS_pointer
 
+     INTEGER ::  mexPrintf
+     integer*4 out
+     CHARACTER ( LEN = 200 ) :: str
+
 !  local variables
 
       mwPointer :: mxGetPr
@@ -381,11 +387,11 @@
             'bad_alloc', ULS_inform%bad_alloc )
       CALL MATLAB_copy_to_ptr( ULS_inform%more_info,                           &
             mxGetPr( ULS_pointer%more_info ) )
-      CALL MATLAB_copy_to_ptr( ULS_inform%out_of_range,                        &
+      CALL galmxCopyLongToPtr( ULS_inform%out_of_range,                        &
             mxGetPr( ULS_pointer%out_of_range ) )
-      CALL MATLAB_copy_to_ptr( ULS_inform%duplicates,                          &
+      CALL galmxCopyLongToPtr( ULS_inform%duplicates,                          &
             mxGetPr( ULS_pointer%duplicates ) )
-      CALL MATLAB_copy_to_ptr( ULS_inform%entries_dropped,                     &
+      CALL galmxCopyLongToPtr( ULS_inform%entries_dropped,                     &
             mxGetPr( ULS_pointer%entries_dropped ) )
       CALL galmxCopyLongToPtr( ULS_inform% workspace_factors,                  &
             mxGetPr( ULS_pointer% workspace_factors  ) )

@@ -4,39 +4,37 @@
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!                 MEX INTERFACE TO GALAHAD_QP
+!                 MEX INTERFACE TO GALAHAD_LPB
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!  Given a symmetric n by n matrix H, an m by n matrix A, an n-vector
-!  g, a constant f, n-vectors x_l <= x_u and m-vectors c_l <= c_u,
-!  find a local minimizer of the QUADRATIC PROGRAMMING problem
-!    minimize 0.5 * x' * H * x + g' * x + f
+!  Given an m by n matrix A, an n-vector g, a constant f, n-vectors
+!  x_l <= x_u and m-vectors c_l <= c_u, find a local minimizer of the
+!  LINEAR PROGRAMMING problem
+!    minimize g' * x + f
 !    subject to c_l <= A * x <= c_u and x_l <= x <= x_u
-!  selecting from any of the GALAHAD quadratic programming solvers.
-!  H need not be definite. Advantage is taken of sparse A and H.
+!  Advantage is taken of sparse A.
 !
 !  Simple usage -
 !
-!  to solve the quadratic program
+!  to solve the linear program
 !   [ x, inform, aux ]
-!     = galahad_qp( H, g, f, A, c_l, c_u, x_l, x_u, control )
+!     = galahad_lpb( g, f, A, c_l, c_u, x_l, x_u, control )
 !
 !  Sophisticated usage -
 !
 !  to initialize data and control structures prior to solution
 !   [ control ]
-!     = galahad_qp( 'initial' )
+!     = galahad_lpb( 'initial' )
 !
-!  to solve the quadratic program using existing data structures
+!  to solve the linear program using existing data structures
 !   [ x, inform, aux ]
-!     = galahad_qp( 'existing', H, g, f, A, c_l, c_u, x_l, x_u, control )
+!     = galahad_lpb( 'existing', g, f, A, c_l, c_u, x_l, x_u, control )
 !
 !  to remove data structures after solution
-!   galahad_qp( 'final' )
+!   galahad_lpb( 'final' )
 !
 !  Usual Input -
-!    H: the symmetric n by n matrix H
 !    g: the n-vector g
 !    f: the scalar f
 !    A: the m by n matrix A
@@ -49,9 +47,9 @@
 !    control, a structure containing control parameters.
 !      The components are of the form control.value, where
 !      value is the name of the corresponding component of
-!      the derived type QP_CONTROL as described in the
-!      manual for the fortran 90 package GALAHAD_QP.
-!      See: http://galahad.rl.ac.uk/galahad-www/doc/qp.pdf
+!      the derived type LPB_CONTROL as described in the
+!      manual for the fortran 90 package GALAHAD_LPB.
+!      See: http://galahad.rl.ac.uk/galahad-www/doc/lpb.pdf
 !
 !  Usual Output -
 !   x: a local minimizer
@@ -61,9 +59,9 @@
 !   inform: a structure containing information parameters
 !      The components are of the form inform.value, where
 !      value is the name of the corresponding component of
-!      the derived type QP_INFORM as described in the manual for
-!      the fortran 90 package GALAHAD_QP.
-!      See: http://galahad.rl.ac.uk/galahad-www/doc/qp.pdf
+!      the derived type LPB_INFORM as described in the manual for
+!      the fortran 90 package GALAHAD_LPB.
+!      See: http://galahad.rl.ac.uk/galahad-www/doc/lpb.pdf
 !  aux: a structure containing Lagrange multipliers and constraint status
 !   aux.c: values of the constraints A * x
 !   aux.y: Lagrange multipliers corresponding to the general constraints
@@ -85,7 +83,7 @@
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released with GALAHAD Version 2.4. January 31st 2011
+!   originally released with GALAHAD Version 2.4. January 1st 2010
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -93,8 +91,8 @@
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
       USE GALAHAD_MATLAB
       USE GALAHAD_TRANSFER_MATLAB
-      USE GALAHAD_QP_MATLAB_TYPES
-      USE GALAHAD_QP_double
+      USE GALAHAD_LPB_MATLAB_TYPES
+      USE GALAHAD_LPB_double
       IMPLICIT NONE
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
@@ -121,11 +119,11 @@
 
       INTEGER :: i, info
       INTEGER * 4 :: i4
-      mwSize :: h_arg, g_arg, f_arg, a_arg, cl_arg, cu_arg
+      mwSize :: g_arg, f_arg, a_arg, cl_arg, cu_arg
       mwSize :: xl_arg, xu_arg, c_arg, x_arg, i_arg, aux_arg
       mwSize :: s_len
       mwPointer :: g_pr, f_pr, cl_pr, cu_pr, xl_pr, xu_pr
-      mwPointer :: h_in, g_in, f_in, a_in, cl_in, cu_in, xl_in, xu_in
+      mwPointer :: g_in, f_in, a_in, cl_in, cu_in, xl_in, xu_in
       mwPointer :: c_in
       mwPointer :: x_pr, y_pr, z_pr, b_stat_pr
       mwPointer :: c_stat_pr, c_pr
@@ -136,62 +134,58 @@
       INTEGER :: iores
 
       CHARACTER ( len = 8 ) :: mode
-      TYPE ( QP_pointer_type ) :: QP_pointer
+      TYPE ( LPB_pointer_type ) :: LPB_pointer
       INTEGER * 4, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
 
-      INTEGER, PARAMETER :: naux = 5
+      mwSize, PARAMETER :: naux = 5
       CHARACTER ( LEN = 6 ), PARAMETER :: faux( naux ) = (/                    &
            'c     ', 'y     ', 'z     ', 'c_stat', 'b_stat' /)
 
-!  arguments for QP
+!  arguments for LPB
 
       TYPE ( QPT_problem_type ), SAVE :: p
-      TYPE ( QP_control_type ), SAVE :: control
-      TYPE ( QP_inform_type ), SAVE :: inform
-      TYPE ( QP_data_type ), SAVE :: data
+      TYPE ( LPB_control_type ), SAVE :: control
+      TYPE ( LPB_inform_type ), SAVE :: inform
+      TYPE ( LPB_data_type ), SAVE :: data
 
       mwPointer, ALLOCATABLE :: col_ptr( : )
-
-!     CHARACTER ( len = 80 ) :: message
-!     WRITE( message, * ) 'going in'
-!     i = mexPrintf( TRIM( message ) // char( 13 ) )
 
 !  Test input/output arguments
 
       IF ( nrhs < 1 )                                                          &
-        CALL mexErrMsgTxt( ' galahad_qp requires at least 1 input argument' )
+        CALL mexErrMsgTxt( ' galahad_lpb requires at least 1 input argument' )
 
       IF ( mxIsChar( prhs( 1 ) ) ) THEN
         i = mxGetString( prhs( 1 ), mode, 8 )
         IF ( .NOT. ( TRIM( mode ) == 'initial' .OR.                            &
                      TRIM( mode ) == 'final' ) ) THEN
           IF ( nrhs < 2 )                                                      &
-            CALL mexErrMsgTxt( ' Too few input arguments to galahad_qp' )
-          h_arg = 2 ; g_arg = 3 ; f_arg = 4 ; a_arg = 5
-          cl_arg = 6 ; cu_arg = 7 ; xl_arg = 8 ; xu_arg = 9 ; c_arg = 10
+            CALL mexErrMsgTxt( ' Too few input arguments to galahad_lpb' )
+          g_arg = 2 ; f_arg = 3 ; a_arg = 4
+          cl_arg = 5 ; cu_arg = 6 ; xl_arg = 7 ; xu_arg = 8 ; c_arg = 9
           x_arg = 1 ; i_arg = 2 ; aux_arg = 3
           IF ( nrhs > c_arg )                                                  &
-            CALL mexErrMsgTxt( ' Too many input arguments to galahad_qp' )
+            CALL mexErrMsgTxt( ' Too many input arguments to galahad_lpb' )
         END IF
       ELSE
         mode = 'all'
         IF ( nrhs < 2 )                                                        &
-          CALL mexErrMsgTxt( ' Too few input arguments to galahad_qp' )
-        h_arg = 1 ; g_arg = 2 ; f_arg = 3 ; a_arg = 4 ;
-        cl_arg = 5 ; cu_arg = 6 ; xl_arg = 7 ; xu_arg = 8 ; c_arg = 9
+          CALL mexErrMsgTxt( ' Too few input arguments to galahad_lpb' )
+        g_arg = 1 ; f_arg = 2 ; a_arg = 3 ;
+        cl_arg = 4 ; cu_arg = 5 ; xl_arg = 6 ; xu_arg = 7 ; c_arg = 8
         x_arg = 1 ; i_arg = 2 ; aux_arg = 3
         IF ( nrhs > c_arg )                                                    &
-          CALL mexErrMsgTxt( ' Too many input arguments to galahad_qp' )
+          CALL mexErrMsgTxt( ' Too many input arguments to galahad_lpb' )
       END IF
 
       IF ( nlhs > 3 )                                                          &
-        CALL mexErrMsgTxt( ' galahad_qp provides at most 3 output arguments' )
+        CALL mexErrMsgTxt( ' galahad_lpb provides at most 3 output arguments' )
 
-!  Initialize the internal structures for qp
+!  Initialize the internal structures for lpb
 
       IF ( TRIM( mode ) == 'initial' .OR. TRIM( mode ) == 'all' ) THEN
         initial_set = .TRUE.
-        CALL QP_initialize( data, control, inform )
+        CALL LPB_initialize( data, control, inform )
         IF ( TRIM( mode ) == 'initial' ) THEN
           c_arg = 1
           IF ( nlhs > c_arg )                                                  &
@@ -200,14 +194,14 @@
 !  If required, return the default control parameters
 
           IF ( nlhs > 0 )                                                      &
-            CALL QP_matlab_control_get( plhs( c_arg ), control )
+            CALL LPB_matlab_control_get( plhs( c_arg ), control )
           RETURN
         END IF
       END IF
 
       IF ( .NOT. TRIM( mode ) == 'final' ) THEN
 
-!  Check that QP_initialize has been called
+!  Check that LPB_initialize has been called
 
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
@@ -219,14 +213,14 @@
           c_in = prhs( c_arg )
           IF ( .NOT. mxIsStruct( c_in ) )                                      &
             CALL mexErrMsgTxt( ' last input argument must be a structure' )
-          CALL QP_matlab_control_set( c_in, control, s_len )
+          CALL LPB_matlab_control_set( c_in, control, s_len )
         END IF
 
 !  Open i/o units
 
         IF ( control%error > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_qp." // TRIM( output_unit )
+          filename = "output_lpb." // TRIM( output_unit )
           OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
                 STATUS = 'REPLACE', IOSTAT = iores )
         END IF
@@ -235,7 +229,7 @@
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_qp." // TRIM( output_unit )
+            filename = "output_lpb." // TRIM( output_unit )
             OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
                   STATUS = 'REPLACE', IOSTAT = iores )
           END IF
@@ -243,19 +237,11 @@
 
 !  Create inform output structure
 
-        CALL QP_matlab_inform_create( plhs( i_arg ), QP_pointer )
+        CALL LPB_matlab_inform_create( plhs( i_arg ), LPB_pointer )
 
 !  Import the problem data
 
          p%new_problem_structure = .TRUE.
-
-!  Check to ensure the input for H is a number
-
-        h_in = prhs( h_arg )
-        IF ( mxIsNumeric( h_in ) == 0 )                                        &
-          CALL mexErrMsgTxt( ' There must be a matrix H ' )
-        CALL MATLAB_transfer_matrix( h_in, p%H, col_ptr, .TRUE. )
-        p%n = p%H%n
 
 !  Check to ensure the input for A is a number
 
@@ -263,9 +249,8 @@
         IF ( mxIsNumeric( a_in ) == 0 )                                        &
           CALL mexErrMsgTxt( ' There must be a matrix A ' )
         CALL MATLAB_transfer_matrix( a_in, p%A, col_ptr, .FALSE. )
-        IF ( p%A%n /= p%n )                                                    &
-          CALL mexErrMsgTxt( ' Column dimensions of H and A must agree' )
         p%m = p%A%m
+        p%n = p%A%n
 
         IF ( ALLOCATED( col_ptr ) ) DEALLOCATE( col_ptr, STAT = info )
 
@@ -338,31 +323,7 @@
 
 !  Solve the QP
 
-!         control%print_level = 100
-!         control%QPA_control%print_level = 100
-!         control%QPB_control%out = 6
-!         control%QPB_control%print_level = 100
-!         control%QPB_control%LSQP_control%out = 6
-!         control%QPB_control%LSQP_control%print_level = 100
-
-!         write(6,*) 'H%val', p%H%val( : p%H%ne )
-!         write(6,*) 'H%row', p%H%row( : p%H%ne )
-!         write(6,*) 'H%col', p%H%col( : p%H%ne )
-
-!         write(6,*) 'g', p%g
-!         write(6,*) 'f', p%f
-
-!         write(6,*) 'A%val', p%A%val( : p%A%ne )
-!         write(6,*) 'A%row', p%A%row( : p%A%ne )
-!         write(6,*) 'A%col', p%A%col( : p%A%ne )
-
-!         write(6,*) 'c_l', p%C_l
-!         write(6,*) 'c_u', p%C_u
-
-!         write(6,*) 'x_l', p%X_l
-!         write(6,*) 'x_u', p%X_u
-
-        CALL QP_solve( p, data, control, inform, C_stat, B_stat )
+        CALL LPB_solve( p, data, control, inform, C_stat, B_stat )
 
 !  Print details to Matlab window
 
@@ -384,7 +345,7 @@
 
 !  Record output information
 
-        CALL QP_matlab_inform_get( inform, QP_pointer )
+        CALL LPB_matlab_inform_get( inform, LPB_pointer )
 
 !  if required, set auxiliary output containing Lagrange multipliesr and
 !  constraint bound status
@@ -424,7 +385,7 @@
 !  Check for errors
 
         IF ( inform%status < 0 )                                              &
-          CALL mexWarnMsgTxt( ' Call to QP_solve failed - check inform.status' )
+          CALL mexWarnMsgTxt( ' Call to LPB_solve failed ' )
       END IF
 
 !      WRITE( message, * ) inform%status
@@ -433,9 +394,6 @@
 !  all components now set
 
       IF ( TRIM( mode ) == 'final' .OR. TRIM( mode ) == 'all' ) THEN
-        IF ( ALLOCATED( p%H%row ) ) DEALLOCATE( p%H%row, STAT = info )
-        IF ( ALLOCATED( p%H%col ) ) DEALLOCATE( p%H%col, STAT = info )
-        IF ( ALLOCATED( p%H%val ) ) DEALLOCATE( p%H%val, STAT = info )
         IF ( ALLOCATED( p%G ) ) DEALLOCATE( p%G, STAT = info )
         IF ( ALLOCATED( p%A%row ) ) DEALLOCATE( p%A%row, STAT = info )
         IF ( ALLOCATED( p%A%col ) ) DEALLOCATE( p%A%col, STAT = info )
@@ -450,7 +408,7 @@
         IF ( ALLOCATED( p%C ) ) DEALLOCATE( p%C, STAT = info )
         IF ( ALLOCATED( C_stat ) ) DEALLOCATE( C_stat, STAT = info )
         IF ( ALLOCATED( B_stat ) ) DEALLOCATE( B_stat, STAT = info )
-        CALL QP_terminate( data, control, inform )
+        CALL LPB_terminate( data, control, inform )
       END IF
 
 !  close any opened io units

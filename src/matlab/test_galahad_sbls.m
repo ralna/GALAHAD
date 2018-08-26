@@ -1,13 +1,15 @@
 % test galahad_sbls
 % Nick Gould for GALAHAD productions 15/February/2010
 
-clear A H C SA SH SC
+clear A H C SA SH SC control inform
 
 m = 4 ;
 n = 10 ;
 
-%[ control ] = galahad_sbls( 'initial' )
-control.out = 0 ;
+fprintf('solve dense example \n')
+
+[ control ] = galahad_sbls( 'initial' ) ;
+control.out = 6 ;
 control.IR_control.acceptable_residual_relative = 0.9 ;
 control.IR_control.acceptable_residual_absolute = 0.9 ;
 control.preconditioner = 2 ;
@@ -29,10 +31,10 @@ end
 
 %  form and factorize the preconditioner
 
- [ inform ] = galahad_sbls( 'form_and_factorize', H, A, C, control )
-%inform.time.clock_apply
+% [ inform ] = galahad_sbls( 'form_and_factorize', H, A, C, control ) ;
+ galahad_sbls( 'form_and_factorize', H, A, C, control ) ;
 
-d(1:m) = 0.0 ;
+d(1:m,1) = 0.0 ;
 for j = 1:n
  b(j) = j ;
  for i = 1:m
@@ -42,11 +44,13 @@ end
 
 %  solve the system
 
- [ x, y, inform ] = galahad_sbls( 'solve', b, d, control )
+ [ x, y, inform ] = galahad_sbls( 'solve', b, d, control ) ;
+disp( sprintf( '%s %13.6e %s %2.0f', ...
+  ' - |||Kx-r|| =', norm([ H * x + A' * y - b' ;  A * x + C * y - d ]), ...
+  '- status =', inform.status ) )
+[ inform ] = galahad_sbls( 'final' ) ;
 
-% destroy data 
-
-[ inform ] = galahad_sbls( 'final' )
+fprintf('solve sparse example \n')
 
 %  solve the sparse system
 
@@ -54,14 +58,17 @@ SA = sparse(A) ;
 SH = sparse(H) ;
 SC = sparse(C) ;
 
-[ control ] = galahad_sbls( 'initial' )
-control.out = 0 ;
+[ control ] = galahad_sbls( 'initial' ) ;
+control.out = 6 ;
 control.IR_control.acceptable_residual_relative = 0.9 ;
 control.IR_control.acceptable_residual_absolute = 0.9 ;
 control.preconditioner = 2 ;
 control.get_norm_residual = 1 ;
 
-[ inform ] = galahad_sbls( 'form_and_factorize', SH, SA, SC, control )
-[ x, y, inform ] = galahad_sbls( 'solve', b, d, control )
-[ inform ] = galahad_sbls( 'final' )
-
+[ inform ] = galahad_sbls( 'form_and_factorize', SH, SA, SC, control ...
+                           ) ;
+[ x, y, inform ] = galahad_sbls( 'solve', b, d, control ) ;
+disp( sprintf( '%s %13.6e %s %2.0f', ...
+  ' - |||Kx-r|| =', norm([ H * x + A' * y - b' ;  A * x + C * y - d ]), ...
+  '- status =', inform.status ) )
+[ inform ] = galahad_sbls( 'final' ) ;

@@ -1,6 +1,6 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 2.4 - 12/02/2010 AT 10:00 GMT.
+!  THIS VERSION: GALAHAD 3.1 - 26/08/2018 AT 14:20 GMT.
 
 !-*-*-*- G A L A H A D _ T R A N S F E R  _ M A T L A B  M O D U L E -*-*-*-
 
@@ -56,10 +56,13 @@
 
 !  local variables
 
-      INTEGER :: i, j, k, l, info, stat
+      INTEGER :: i, j, k, l, info
+      INTEGER * 4 :: stat, np1
       mwPointer :: a_cpr_pr, a_row_pr, val_pr
       mwPointer :: mxGetPr
-      mwSize :: mxGetM, mxGetN, mxGetIr, mxGetJc, mxGetNzmax
+      mwSize :: mxGetM, mxGetN, mxGetNzmax
+!     mwSize :: mxGetIr, mxGetJc
+      mwPointer :: mxGetIr, mxGetJc
       LOGICAL :: mxIsSparse
 
 !    INTEGER :: iores
@@ -98,15 +101,16 @@
 
 !  allocate temporary workspace
 
+        np1 = A%n + 1
         IF ( ALLOCATED( col_ptr ) ) THEN
-          IF ( SIZE( col_ptr ) < A%n + 1 ) THEN
+          IF ( SIZE( col_ptr ) < np1 ) THEN
             DEALLOCATE( col_ptr, STAT = info )
             IF ( info /= 0 ) CALL mexErrMsgTxt( ' deallocate error col_ptr' )
-            ALLOCATE( col_ptr( A%n + 1 ), STAT = info )
+            ALLOCATE( col_ptr( np1 ), STAT = info )
             IF ( info /= 0 ) CALL mexErrMsgTxt( ' allocate error col_ptr' )
           END IF
         ELSE
-          ALLOCATE( col_ptr( A%n + 1 ), STAT = info )
+          ALLOCATE( col_ptr( np1 ), STAT = info )
           IF ( info /= 0 ) CALL mexErrMsgTxt( ' allocate error col_ptr' )
         END IF
 
@@ -128,8 +132,10 @@
 !END IF
 !--------------open print---------------------
 
-       CALL MATLAB_copy_from_ptr( a_row_pr, A%row, A%ne, sparse = .TRUE. )
-       CALL MATLAB_copy_from_ptr( a_cpr_pr, col_ptr, A%n + 1, sparse = .TRUE. )
+!       CALL MATLAB_copy_from_ptr( a_row_pr, A%row, A%ne, sparse = .TRUE. )
+        CALL galmxCopyPtrToInteger44( a_row_pr, A%row, A%ne, .TRUE. )
+!       CALL MATLAB_copy_from_ptr( a_cpr_pr, col_ptr, A%n + 1, sparse = .TRUE. )
+        CALL galmxCopyPtrToInteger84( a_cpr_pr, col_ptr, np1, .TRUE. )
 
         col_ptr = col_ptr + 1
         A%row = A%row + 1
@@ -165,6 +171,7 @@
             A%col( l ) = j
           END DO
         END DO
+        A%ne = l
       END IF
 
 !  copy the real components of A
@@ -188,6 +195,19 @@
         END DO
         A%ne = l
       END IF
+
+!  remove zeros
+
+      l = 0
+      DO k = 1, A%ne
+        IF ( A%val( k ) /= 0.0_wp ) THEN
+          l = l + 1
+          A%row( l ) = A%row( k )
+          A%col( l ) = A%col( k )
+          A%val( l ) = A%val( k )
+        END IF
+      END DO
+      A%ne = l
 
 !-------------- more print---------------
 !BACKSPACE(88)

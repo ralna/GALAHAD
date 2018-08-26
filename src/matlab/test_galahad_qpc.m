@@ -1,7 +1,7 @@
 % test galahad_qpc
 % Nick Gould for GALAHAD productions 06/November/2008
 
-clear A H
+clear H A SH SA control inform
 
 %m = 800 ;
 m = 5 ;
@@ -25,4 +25,21 @@ for i = 1:n
  x_l(i) = 0 ;
  x_u(i) =  inf;
 end
-[ x, inform, aux ] = galahad_qpc( H, g, f, A, c_l, c_u, x_l, x_u )
+[ control ] = galahad_qpc( 'initial' );
+fprintf('solve dense example \n')
+[ x, inform, aux ] = galahad_qpc( H, g, f, A, c_l, c_u, x_l, x_u, ...
+                                  control ) ;
+disp( sprintf( '%s %13.6e %s %2.0f', ...
+  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+galahad_qpc( 'final' )
+
+fprintf('solve sparse example \n')
+SH = sparse(H) ;
+SA = sparse(A) ;
+control.print_level = 0;
+control.QPB_control.print_level = 0;
+[ x, inform, aux ] = galahad_qpc( SH, g, f, SA, c_l, c_u, x_l, x_u, ...
+                                  control ) ;
+disp( sprintf( '%s %13.6e %s %2.0f', ...
+  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+galahad_qpc( 'final' )
