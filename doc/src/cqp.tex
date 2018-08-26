@@ -26,7 +26,7 @@ subject to the general linear constraints
 and the simple bound constraints
 \disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
 where the $n$ by $n$ symmetric, positive-semi-definite matrix $\bmH$, the
-vectors $\bmg$, $\bmw$, $\bmx^{0}$
+vectors $\bmg$, $\bmw$, $\bmx^{0}$,
 $\bma_{i}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$,
 $\bmx^{u}$ and the scalar $f$ are given.
 Any of the constraint bounds $c_{i}^{l}$, $c_{i}^{u}$,
@@ -48,7 +48,9 @@ or the matrix $\bmA$ of vectors $\bma_{i}$.
 {\tt GALAHAD\_QPT},
 {\tt GALAHAD\_QPP},
 {\tt GALAHAD\_\-QPD},
+{\tt GALAHAD\_\-FITS},
 {\tt GALAHAD\_\-ROOTS},
+{\tt GALAHAD\_\-NORMS},
 {\tt GALAHAD\_\-SBLS},
 {\tt GALAHAD\_\-CRO},
 {\tt GALAHAD\_FDC}.
@@ -1131,7 +1133,9 @@ variables and Lagrange multipliers.
 {\tt GALAHAD\_QPT},
 {\tt GALAHAD\_QPP},
 {\tt GALAHAD\_QPD},
+{\tt GALAHAD\_FIT},
 {\tt GALAHAD\_ROOTS},
+{\tt GALAHAD\_NORMS},
 {\tt GALAHAD\_SBLS},
 {\tt GALAHAD\_CRO}
 and
@@ -1238,7 +1242,7 @@ The basic algorithm is a generalisation of those of
 \vspace*{1mm}
 
 \noindent
-Y. Zhang (1994).
+Y.\ Zhang (1994).
 On the convergence of a class of infeasible interior-point methods for the
 horizontal linear complementarity problem.
 SIAM J. Optimization {\bf 4} (1) 208-227,
@@ -1248,7 +1252,7 @@ SIAM J. Optimization {\bf 4} (1) 208-227,
 and
 
 \noindent
-Zhao, G., and Sun, J. (1999).
+G.\ Zhao and J.\ Sun (1999).
 On the rate of local convergence of high-order
 infeasible path-following algorithms for $P_*$ linear complementarity
 problems.
@@ -1260,10 +1264,10 @@ with many enhancements described by
 \vspace*{1mm}
 
 \noindent
-N. I. M. Gould, D. Orban and D. P. Robinson (2011).
+N.\ I.\ M.\ Gould, D.\ Orban and D.\ P.\ Robinson (2013).
 Trajectory-following methods for
 large-scale  degenerate convex quadratic programming,
-RAL Technical Report RAL-TR-2011-017.
+{\em Mathematical Programming Computation} {\bf 5(2)} 113-142.
 
 %%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1346,4 +1350,3 @@ might be used for $\bmH$, and in this case we would instead
 %Notice here that zero diagonal entries are stored.
 
 \end{document}
-
