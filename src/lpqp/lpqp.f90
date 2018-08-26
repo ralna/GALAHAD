@@ -737,7 +737,8 @@
      IF ( ALLOCATED( data%A_type ) ) DEALLOCATE( data%A_type )
      CALL SMT_put( data%A_type, SMT_get( prob%A%type ), alloc_status )
      IF ( ALLOCATED( data%H_type ) ) DEALLOCATE( data%H_type )
-     CALL SMT_put( data%H_type, SMT_get( prob%H%type ), alloc_status )
+     IF ( prob%Hessian_kind < 0 )                                              &
+       CALL SMT_put( data%H_type, SMT_get( prob%H%type ), alloc_status )
 
      IF ( SMT_get( prob%A%type ) == 'DENSE' ) THEN
        a_ne = n * m

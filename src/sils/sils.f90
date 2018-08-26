@@ -616,6 +616,7 @@
                       FACTORS%nsteps, FINFO%maxfrt, FACTORS_iw1,               &
                       ICNTL, CNTL, INFO )
          FINFO%maxchange = zero
+         FINFO%modstep = MATRIX%n + 1
        END IF
 
        FINFO%flag = INFO( 1 )
@@ -734,13 +735,11 @@
      FINFO%nirnec = FACTORS%nirnec
      FINFO%delay = 0
      FINFO%signc = 0
-     FINFO%modstep = MATRIX%n + 1
      FINFO%opsa = FACTORS%ops / 2.0
      FINFO%opse = FACTORS%ops / 2.0
      FINFO%opsb = 0.0
      FINFO%smin = 1.0
      FINFO%smax = 1.0
-     FINFO%maxchange= 0.0
 
 !  Reset FINFO%flag to MA57-style return values
 

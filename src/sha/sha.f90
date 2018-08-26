@@ -123,15 +123,15 @@
 
 !  the maximum degree in the adgacency graph
 
-       INTEGER :: max_degree
+       INTEGER :: max_degree = - 1
 
 !  the number of differences that will be needed
 
-       INTEGER :: differences_needed
+       INTEGER :: differences_needed = - 1
 
 !  the maximum reduced degree in the adgacency graph
 
-       INTEGER :: max_reduced_degree
+       INTEGER :: max_reduced_degree = - 1
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -1732,5 +1732,3 @@
 !  End of module GALAHAD_SHA
 
    END MODULE GALAHAD_SHA_double
-
-

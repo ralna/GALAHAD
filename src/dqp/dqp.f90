@@ -67,6 +67,8 @@
       USE GALAHAD_GLTR_double
       USE GALAHAD_NORMS_double, ONLY: TWO_norm
       USE GALAHAD_CHECKPOINT_double
+      USE GALAHAD_RPD_double, ONLY: RPD_inform_type, RPD_write_qp_problem_data
+
       IMPLICIT NONE
 
       PRIVATE
@@ -198,6 +200,11 @@
 
         INTEGER :: sif_file_device = 52
 
+!    specifies the unit number to write generated QPLIB file describing the
+!     current problem
+
+        INTEGER :: qplib_file_device = 53
+
 !    the penalty weight, rho. The general constraints are not enforced
 !     explicitly, but instead included in the objective as a penalty term
 !     weighted by rho when rho > 0. If rho <= 0, the general constraints are
@@ -321,6 +328,11 @@
 
         LOGICAL :: generate_sif_file = .FALSE.
 
+!   if %generate_qplib_file is .true. if a QPLIB file describing the current
+!    problem is to be generated
+
+        LOGICAL :: generate_qplib_file = .FALSE.
+
 !  indefinite linear equation solver set in symmetric_linear_solver
 
         CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
@@ -340,6 +352,11 @@
 
         CHARACTER ( LEN = 30 ) :: sif_file_name =                              &
          "DQPPROB.SIF"  // REPEAT( ' ', 18 )
+
+!  name of generated QPLIB file containing input problem
+
+        CHARACTER ( LEN = 30 ) :: qplib_file_name =                            &
+         "DQPPROB.qplib"  // REPEAT( ' ', 16 )
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
 !   where %prefix contains the required string enclosed in
@@ -531,6 +548,10 @@
 
         INTEGER :: scu_status = 0
         TYPE ( SCU_info_type ) :: SCU_inform
+
+!  inform parameters for RPD
+
+        TYPE ( RPD_inform_type ) :: RPD_inform
       END TYPE DQP_inform_type
 
     CONTAINS
@@ -633,6 +654,7 @@
 !  restore-problem-on-output                         2
 !  dual-starting-point                               0
 !  sif-file-device                                   52
+!  qplib-file-device                                 53
 !  penalty-weight                                    0.0D+0
 !  infinity-value                                    1.0D+19
 !  absolute-primal-accuracy                          1.0D-5
@@ -660,7 +682,9 @@
 !  definite-linear-equation-solver                   sils
 !  unsymmetric-linear-equation-solver                gls
 !  generate-sif-file                                 F
+!  generate-qplib-file                               F
 !  sif-file-name                                     DQPPROB.SIF
+!  qplib-file-name                                   DQPPROB.qplib
 !  output-line-prefix                                ""
 ! END DQP SPECIFICATIONS (DEFAULT)
 
@@ -690,7 +714,8 @@
       INTEGER, PARAMETER :: dual_starting_point = explore_optimal_subspace + 1
       INTEGER, PARAMETER :: restore_problem = dual_starting_point + 1
       INTEGER, PARAMETER :: sif_file_device = restore_problem + 1
-      INTEGER, PARAMETER :: rho = sif_file_device + 1
+      INTEGER, PARAMETER :: qplib_file_device = sif_file_device + 1
+      INTEGER, PARAMETER :: rho = qplib_file_device + 1
       INTEGER, PARAMETER :: infinity = rho + 1
       INTEGER, PARAMETER :: stop_abs_p = infinity + 1
       INTEGER, PARAMETER :: stop_rel_p = stop_abs_p + 1
@@ -718,12 +743,14 @@
       INTEGER, PARAMETER :: space_critical = subspace_arc_search + 1
       INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
       INTEGER, PARAMETER :: generate_sif_file = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: symmetric_linear_solver = generate_sif_file + 1
+      INTEGER, PARAMETER :: generate_qplib_file = generate_sif_file + 1
+      INTEGER, PARAMETER :: symmetric_linear_solver = generate_qplib_file + 1
       INTEGER, PARAMETER :: definite_linear_solver = symmetric_linear_solver + 1
       INTEGER, PARAMETER :: unsymmetric_linear_solver                          &
                               = definite_linear_solver + 1
       INTEGER, PARAMETER :: sif_file_name = unsymmetric_linear_solver + 1
-      INTEGER, PARAMETER :: prefix = sif_file_name + 1
+      INTEGER, PARAMETER :: qplib_file_name = sif_file_name + 1
+      INTEGER, PARAMETER :: prefix = qplib_file_name + 1
       INTEGER, PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'DQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
@@ -748,6 +775,7 @@
       spec( dual_starting_point )%keyword = 'dual-starting-point'
       spec( restore_problem )%keyword = 'restore-problem-on-output'
       spec( sif_file_device )%keyword = 'sif-file-device'
+      spec( qplib_file_device )%keyword = 'qplib-file-device'
 
 !  Real key-words
 
@@ -783,6 +811,7 @@
       spec( space_critical )%keyword = 'space-critical'
       spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
       spec( generate_sif_file )%keyword = 'generate-sif-file'
+      spec( generate_qplib_file )%keyword = 'generate-qplib-file'
 
 !  Character key-words
 
@@ -792,6 +821,7 @@
       spec( unsymmetric_linear_solver )%keyword                                &
         = 'unsymmetric-linear-equation-solver'
       spec( sif_file_name )%keyword = 'sif-file-name'
+      spec( qplib_file_name )%keyword = 'qplib-file-name'
       spec( prefix )%keyword = 'output-line-prefix'
 
 !  Read the specfile
@@ -852,6 +882,9 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( sif_file_device ),                      &
                                  control%sif_file_device,                      &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( qplib_file_device ),                    &
+                                 control%qplib_file_device,                    &
                                  control%error )
 
 !  Set real values
@@ -940,6 +973,9 @@
      CALL SPECFILE_assign_value( spec( generate_sif_file ),                    &
                                  control%generate_sif_file,                    &
                                  control%error )
+     CALL SPECFILE_assign_value( spec( generate_qplib_file ),                  &
+                                 control%generate_qplib_file,                  &
+                                 control%error )
 
 !  Set character values
 
@@ -963,6 +999,9 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( sif_file_name ),                        &
                                  control%sif_file_name,                        &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( qplib_file_name ),                      &
+                                 control%qplib_file_name,                      &
                                  control%error )
      CALL SPECFILE_assign_value( spec( prefix ),                               &
                                  control%prefix,                               &
@@ -1391,6 +1430,14 @@
 
 !  SIF file generated
 ! -------------------------------------------------------------------
+
+! -------------------------------------------------------------------
+!  If desired, generate a QPLIB file for problem passed
+
+      IF ( control%generate_qplib_file ) THEN
+        CALL RPD_write_qp_problem_data( prob, control%qplib_file_name,         &
+                    control%qplib_file_device, inform%rpd_inform )
+      END IF
 
 !  initialize time
 

@@ -74,7 +74,8 @@
 !----------------------
 
      INTERFACE CRO_crossover
-       MODULE PROCEDURE CRO_crossover_h_sparse_by_rows, CRO_crossover_h_lm
+       MODULE PROCEDURE CRO_crossover_h_sparse_by_rows, CRO_crossover_h_lm,    &
+                        CRO_crossover_no_h
      END INTERFACE CRO_crossover
 
 !-------------------------------------------------
@@ -578,7 +579,7 @@
 
       END SUBROUTINE CRO_crossover_h_sparse_by_rows
 
-!-  C R O _ C R O S S O V E R _ H _ S P A R S E _ B Y _ R O W S   SUBROUTINE  -
+!-  C R O _ C R O S S O V E R _ H _ L M   S U B R O U T I N E  -
 
       SUBROUTINE CRO_crossover_h_lm( n, m, m_equal, H_lm, A_val, A_col, A_ptr, &
                                      G, C_l, C_u, X_l, X_u, C, X, Y, Z,        &
@@ -616,6 +617,43 @@
 !  end of subroutine CRO_crossover_h_lm
 
       END SUBROUTINE CRO_crossover_h_lm
+
+!-  C R O _ C R O S S O V E R _ N O _ H    S U B R O U T I N E  -
+
+      SUBROUTINE CRO_crossover_no_h( n, m, m_equal, A_val, A_col, A_ptr,       &
+                                     G, C_l, C_u, X_l, X_u, C, X, Y, Z,        &
+                                     C_stat, X_stat, data, control, inform )
+
+!  interface to CRO_crossover for problems with no H. For
+!  argument details, see the header for CRO_crossover_main
+
+!  Dummy arguments
+
+      INTEGER, INTENT( IN ) :: n, m, m_equal
+      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
+      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X_stat
+      TYPE ( CRO_data_type ), INTENT( INOUT ) :: data
+      TYPE ( CRO_control_type ), INTENT( IN ) :: control
+      TYPE ( CRO_inform_type ), INTENT( INOUT ) :: inform
+
+      CALL CRO_crossover_main( n, m, m_equal, A_val, A_col, A_ptr,             &
+                               G, C_l, C_u, X_l, X_u, C, X, Y, Z,              &
+                               C_stat, X_stat, data, control, inform )
+
+      RETURN
+
+!  end of subroutine CRO_crossover_no_h
+
+      END SUBROUTINE CRO_crossover_no_h
 
 !-*-*-*-   C R O _ C R O S S O V E R _ M A I N   S U B R O U T I N E   -*-*-*-
 
@@ -815,7 +853,7 @@
 !     REAL ( KIND = wp ) :: tol
 !     REAL ( KIND = wp ) :: viol8_p, viol8_d, viol8_x, viol8_y, viol8_z, viol8_c
 !     LOGICAL :: b_fx
-      LOGICAL :: b_fr, c_fr, c_fx, b_fr_neq_0, tryboth, lbfgs
+      LOGICAL :: b_fr, c_fr, c_fx, b_fr_neq_0, tryboth, lbfgs, is_h
       LOGICAL :: printi, printt, printm, printd, printa
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -859,10 +897,13 @@
         MAX( data%control%max_schur_complement, 2 )
 
       lbfgs = PRESENT( H_lm )
-      IF ( .NOT. lbfgs ) THEN
-        IF ( .NOT. ( PRESENT( H_val ) .AND. PRESENT( H_col ) .AND.             &
-                     PRESENT( H_ptr ) ) ) THEN
-          inform%status = GALAHAD_error_optional ; GO TO 900
+      IF ( lbfgs ) THEN
+        is_h = .FALSE.
+      ELSE
+        is_h = PRESENT( H_val ) .AND. PRESENT( H_col ) .AND.                   &
+               PRESENT( H_ptr )
+        IF ( .NOT. is_h ) THEN
+!         inform%status = GALAHAD_error_optional ; GO TO 900
         END IF
       END IF
 
@@ -872,7 +913,7 @@
         WRITE( out, * ) ' n ', n
         WRITE( out, * ) ' m ', m
         WRITE( out, * ) ' m_equal ', m_equal
-        IF ( .NOT. lbfgs ) THEN
+        IF ( is_h ) THEN
           WRITE( out, * ) ' H_val ', H_val( : H_ptr( n + 1 ) - 1 )
           WRITE( out, * ) ' H_col ', H_col( : H_ptr( n + 1 ) - 1 )
           WRITE( out, * ) ' H_ptr ', H_ptr
@@ -1506,7 +1547,7 @@
 
 !  for Hessians stored by rows
 
-        ELSE
+        ELSE IF ( is_h ) THEN
           DO i = 1, n
             IF ( data%X_inorder( i ) > 0 ) THEN
               IF (  H_ptr( i + 1 ) > H_ptr( i ) ) data%K_r%ne = data%K_r%ne +  &
@@ -1514,6 +1555,10 @@
                                               H_ptr( i + 1 ) - 1 ) ) > 0 )
             END IF
           END DO
+
+!  for problems without Hessians
+
+        ELSE
         END IF
 
 !  allocate space for K_r
@@ -1646,10 +1691,9 @@
 
 !  form K_r
 
-        ELSE
+!  for problems with Hessians, record the components of H_fr in K_r ...
 
-!  record the components of H_fr in K_r ...
-
+        ELSE IF ( is_h ) THEN
           DO i = 1, n
             IF ( data%X_inorder( i ) > 0 ) THEN
               DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
@@ -1666,6 +1710,23 @@
 
 !  ... and those of A_frxb
 
+          DO i = 1, m
+            IF ( data%C_inorder( i ) > 0 ) THEN
+              DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+                j = A_col( l )
+                IF ( data%X_inorder( j ) > 0 ) THEN
+                  data%K_r%ne = data%K_r%ne + 1
+                  data%K_r%row( data%K_r%ne ) = data%C_inorder( i ) + n_free
+                  data%K_r%col( data%K_r%ne ) = data%X_inorder( j )
+                  data%K_r%val( data%K_r%ne ) = A_val( l )
+                END IF
+              END DO
+            END IF
+          END DO
+
+!  for those without Hessians, just record the components of A_frxb in K_r
+
+        ELSE
           DO i = 1, m
             IF ( data%C_inorder( i ) > 0 ) THEN
               DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
@@ -2638,17 +2699,21 @@
             data%A_r%ne = data%A_r%ne + dim_w * n_free
             data%C_r%ne = ( dim_w * ( dim_w + 1 ) ) / 2
 
-!  ... or for the Hessian stored by rows
-
           ELSE
             dim_w = 0 ; data%H_r%ne = 0 ; data%C_r%ne = 0
-            DO i = 1, n
-              IF ( data%X_inorder( i ) > 0 ) THEN
-                IF (  H_ptr( i + 1 ) > H_ptr( i ) ) data%H_r%ne = data%H_r%ne  &
-                  + COUNT( data%X_inorder( H_col( H_ptr( i ) :                 &
-                                                  H_ptr( i + 1 ) - 1 ) ) > 0 )
-              END IF
-            END DO
+
+!  ... or for the Hessian stored by rows
+
+            IF ( is_h ) THEN
+              DO i = 1, n
+                IF ( data%X_inorder( i ) > 0 ) THEN
+                  IF (  H_ptr( i + 1 ) > H_ptr( i ) )                          &
+                    data%H_r%ne = data%H_r%ne  +                               &
+                      COUNT( data%X_inorder( H_col( H_ptr( i ) :               &
+                                                    H_ptr( i + 1 ) - 1 ) ) > 0 )
+                END IF
+              END DO
+            END IF
           END IF
 
 !  allocate space for the components of  K_r or K_re as appropriate
@@ -2834,41 +2899,44 @@
 
 !  form K_r
 
-          ELSE
-
 !  record the components of H_fr in K_r ...
 
+          ELSE
             data%H_r%ne = 0
-            DO i = 1, n
-              IF ( data%X_inorder( i ) > 0 ) THEN
-                DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
-                  j = H_col( l )
-                  IF ( data%X_inorder( j ) > 0 ) THEN
-                    data%H_r%ne = data%H_r%ne + 1
-                    data%H_r%row( data%H_r%ne ) = data%X_inorder( i )
-                    data%H_r%col( data%H_r%ne ) = data%X_inorder( j )
-                    data%H_r%val( data%H_r%ne ) = H_val( l )
-                  END IF
-                END DO
-              END IF
-            END DO
+            IF ( is_h ) THEN
+              DO i = 1, n
+                IF ( data%X_inorder( i ) > 0 ) THEN
+                  DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
+                    j = H_col( l )
+                    IF ( data%X_inorder( j ) > 0 ) THEN
+                      data%H_r%ne = data%H_r%ne + 1
+                      data%H_r%row( data%H_r%ne ) = data%X_inorder( i )
+                      data%H_r%col( data%H_r%ne ) = data%X_inorder( j )
+                      data%H_r%val( data%H_r%ne ) = H_val( l )
+                    END IF
+                  END DO
+                END IF
+              END DO
+            END IF
 
 !  ... and those of A_frab
 
             data%A_r%ne = 0
-            DO i = 1, m
-              IF ( data%C_inorder( i ) > 0 ) THEN
-                DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
-                  j = A_col( l )
-                  IF ( data%X_inorder( j ) > 0 ) THEN
-                    data%A_r%ne = data%A_r%ne + 1
-                    data%A_r%row( data%A_r%ne ) = data%C_inorder( i )
-                    data%A_r%col( data%A_r%ne ) = data%X_inorder( j )
-                    data%A_r%val( data%A_r%ne ) = A_val( l )
-                  END IF
-                END DO
-              END IF
-            END DO
+            IF ( m_fixed > 0 ) THEN
+              DO i = 1, m
+                IF ( data%C_inorder( i ) > 0 ) THEN
+                  DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+                    j = A_col( l )
+                    IF ( data%X_inorder( j ) > 0 ) THEN
+                      data%A_r%ne = data%A_r%ne + 1
+                      data%A_r%row( data%A_r%ne ) = data%C_inorder( i )
+                      data%A_r%col( data%A_r%ne ) = data%X_inorder( j )
+                      data%A_r%val( data%A_r%ne ) = A_val( l )
+                    END IF
+                  END DO
+                END IF
+              END DO
+            END IF
           END IF
           data%K_r%n = K_r_n
 !         CALL SMT_put( data%K_r%type, 'COORDINATE', i )
@@ -2976,7 +3044,7 @@
           data%SOL( n_free + m_fixed + 1 : data%K_r%n ) = zero
           write(6,*) ' *** lbfgs refinement to be written'
           inform%status = GALAHAD_not_yet_implemented ; GO TO 900
-        ELSE
+        ELSE IF ( is_h ) THEN
           DO i = 1, n
             ii = data%X_inorder( i )
             DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
@@ -3067,7 +3135,7 @@
         IF ( lbfgs ) THEN
           write(6,*) ' *** lbfgs refinement to be written'
           inform%status = GALAHAD_not_yet_implemented ; GO TO 900
-        ELSE
+        ELSE IF ( is_h ) THEN
           DO i = 1, n
             ii = data%X_inorder( i )
             DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
@@ -3468,9 +3536,15 @@
 
       INTEGER :: i, j, l, ll, y, z
       REAL ( KIND = wp ) :: val
-      LOGICAL :: lbfgs
+      LOGICAL :: lbfgs, is_h
 
       lbfgs = PRESENT( H_lm )
+      IF ( lbfgs ) THEN
+        is_h = .FALSE.
+      ELSE
+        is_h = PRESENT( H_val ) .AND. PRESENT( H_col ) .AND.                   &
+               PRESENT( H_ptr )
+      END IF
       status = GALAHAD_ok
 
 !  starting addresses for y_fxb and z_fx
@@ -3522,7 +3596,7 @@
 !  ... or directly reset x_fr <- x_fr - H_od x_fx ...
 
 
-        ELSE
+        ELSE IF ( is_h ) THEN
           DO i = 1, n
             DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
               j = H_col( l )
@@ -3628,7 +3702,7 @@
 
 !  ... or directly reset z_fx <- z_fx - H_fx x_fx - H_od^T x_fr ...
 
-      ELSE
+      ELSE IF ( is_h ) THEN
         DO i = 1, n
           DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
             j = H_col( l )
@@ -4068,7 +4142,8 @@
         RES_d = RES_d - Z
         CALL LMS_apply_lbfgs( X, H_lm, status, ADD_TO_RESULT = RES_d )
         IF ( status /= 0 ) status = GALAHAD_error_factorization
-      ELSE
+      ELSE IF ( PRESENT( H_val ) .AND. PRESENT( H_col ) .AND.                  &
+                PRESENT( H_ptr ) ) THEN
         DO i = 1, n
           RES_d( i ) = RES_d( i ) - Z( i )
           DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
@@ -4077,6 +4152,8 @@
             IF ( i /= j ) RES_d( j ) = RES_d( j ) + H_val( l ) * X( i )
           END DO
         END DO
+      ELSE
+        RES_d = RES_d - Z
       END IF
 
       RETURN

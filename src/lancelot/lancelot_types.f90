@@ -101,8 +101,8 @@
        INTEGER :: nobjgr, m, icrit, ncrit, p_type
        REAL ( KIND = wp ) :: ocnorm, cnorm_major, etak, eta0, omegak, omega0
        REAL ( KIND = wp ) :: tau, tau_steering, gamma1, alphae, betae, alphak
-       REAL ( KIND = wp ) :: alphao, betao, omega_min, eta_min, epstol
-       REAL ( KIND = wp ) :: epsgrd
+       REAL ( KIND = wp ) :: alphao, betao, omega_min, eta_min, epstol, epsgrd
+       REAL ( KIND = wp ) :: cnorm
        CHARACTER ( LEN = 5 ), DIMENSION( 5 ) :: STATE
        LOGICAL :: itzero, reeval
 

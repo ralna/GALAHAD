@@ -724,11 +724,9 @@
      CALL L1QP_initialize( data%QP_steer_data, control%QP_steer_control,       &
                            inform%QP_steer_inform )
      control%QP_steer_control%prefix =  '" - StQP:"                   '
-!    control%QP_steer_control%quadratic_programming_solver = 'cqp'
      CALL L1QP_initialize( data%QP_pred_data, control%QP_pred_control,         &
                            inform%QP_pred_inform )
      control%QP_pred_control%prefix =  '" - PrQP:"                    '
-!    control%QP_pred_control%quadratic_programming_solver = 'ccqp'
 
 !  Intialize EQP data
 
@@ -2690,6 +2688,10 @@
          data%QP_pred%H%col( data%QP_pred%H%ne + i ) = i
        END DO
        CALL SMT_put( data%QP_pred%H%type, 'COORDINATE', inform%alloc_status )
+!write(6,*) data%QP_pred%H%ne + nlp%n
+!do i = 1,  data%QP_pred%H%ne + nlp%n
+!  write(6,*) data%QP_pred%H%row(i), data%QP_pred%H%col(i)
+!end do
 
 !  set the data structures to accommodate the factors of the modfified H
 
@@ -3143,6 +3145,7 @@
 !write(6,*) nlp%H%col( : data%H_ne )
 !write(6,*) nlp%H%val( : data%H_ne )
 
+!write(6,*) ' accepted ', data%accepted, data%control%predictor_hessian
        IF ( data%accepted ) THEN
 
          SELECT CASE( data%control%predictor_hessian )
@@ -3157,6 +3160,7 @@
            data%QP_pred%H%val( : data%H_ne ) = nlp%H%val( : data%H_ne )
 !write(6,*)  'h ', data%QP_pred%H%val( : data%H_ne )
 !write(6,*)  'det ', data%QP_pred%H%val( 1 ) * data%QP_pred%H%val( 3 ) - data%QP_pred%H%val( 2 ) ** 2
+!write(6,*)' pivot_control ',   data%control%SLS_control%pivot_control
            CALL SLS_factorize( data%QP_pred%H, data%SLS_data,                  &
                                data%control%SLS_control, inform%SLS_inform )
            IF ( inform%SLS_inform%status < 0 ) THEN
@@ -3182,7 +3186,9 @@
              inform%status = GALAHAD_error_factorization ; GO TO 900
            END IF
            data%QP_pred%H%ne = data%H_ne + nlp%n
-
+!do i = 1, data%QP_pred%H%ne
+!  write(6,*) data%QP_pred%H%row(i), data%QP_pred%H%col(i), data%QP_pred%H%val(i)
+!end do
 !  if required, update the limited-memory predictor Hessian, B_k
 
          CASE( l_bfgs_predictor_hessian )
@@ -3378,6 +3384,8 @@
        IF ( data%printd ) WRITE( data%out, "( A, ' (A1:8-9)' )" ) prefix
 
 !write(6,*) del_ellv_steer, data%control%tol_steer
+!write(6,*) data%primal_viol, data%control%tol_infeas
+
        IF ( del_ellv_steer <= data%control%tol_steer .AND.                     &
             data%primal_viol > data%control%tol_infeas ) THEN
          inform%status = GALAHAD_error_primal_infeasible
@@ -3441,6 +3449,7 @@
 
 !  convert the predictor QP problem into an l_1 QP if required
 
+!write(6,*) ' lin_feas', lin_feas
        IF ( lin_feas ) THEN
          data%control%QP_pred_control%rho = zero
        ELSE
@@ -3449,9 +3458,11 @@
 
 !  solve the problem
 
+!write(6,*) ' before l1qp pred'
        CALL L1QP_solve( data%QP_pred, data%QP_pred_data,                       &
                         data%control%QP_pred_control, inform%QP_pred_inform,   &
                         C_stat = nlp%C_status, X_stat = nlp%X_status )
+!write(6,*) ' after l1qp pred'
        IF ( inform%QP_pred_inform%status /= GALAHAD_ok .AND.                   &
             inform%QP_pred_inform%status /= GALAHAD_error_max_iterations .AND. &
             inform%QP_pred_inform%status /= GALAHAD_error_ill_conditioned .AND.&
@@ -3463,6 +3474,7 @@
        END IF
 
        data%S_pred( : nlp%n ) = data%QP_pred%X( : nlp%n )
+!write(6,*) 'S_pred', data%S_pred(:nlp%n)
 
 !write(6,*) 'x_s', nlp%X_status( : nlp%n )
 !write(6,*) 'c_s', nlp%C_status( : nlp%m  )
@@ -3508,6 +3520,7 @@
  ! check if the predictor is linearly feasible
 
        lin_feas = ellv_pred <= data%control%tol_primal / five
+!write(6,*) ' lin_feas', lin_feas
 
 !  -----------------------------------------------------------------------------
 !                      COMPUTE THE SEARCH DIRECTION (A1:13)
@@ -3532,8 +3545,8 @@
              data%S                                                            &
                = data%tau * data%S_pred + ( one - data%tau ) * data%S_steer
 
- write(6,*) 'S_pred', data%S_pred(:nlp%n)
- write(6,*) 'S_steer', data%S_steer(:nlp%n)
+! write(6,*) 'S_pred', data%S_pred(:nlp%n)
+! write(6,*) 'S_steer', data%S_steer(:nlp%n)
 
 
              CALL mop_AX( one, nlp%J, data%S, zero, data%WORK_m,               &
@@ -3560,7 +3573,7 @@
 !  data%primal_viol < data%control%tol_primal / ten (see conditions on s_steer)
 
          ELSE
- write(6,*) 'S_steer', data%S_steer(:nlp%n)
+! write(6,*) 'S_steer', data%S_steer(:nlp%n)
            data%S = data%S_steer
 !          data%ellv = ellv_steer
            data%del_ellv = del_ellv_steer
@@ -3589,7 +3602,7 @@
 ! write(6,*) 'H', ( data%QP_pred%H%row(i), data%QP_pred%H%col(i), &
 !  data%QP_pred%H%val(i), i = 1,  data%QP_pred%H%ne )
 !write(6,*) 'S', data%S(:nlp%n)
-!write(6,*) 'S', data%S(:data%QP_pred%H%n)
+! write(6,*) 'S', data%S(:data%QP_pred%H%n)
          CALL mop_AX( one, data%QP_pred%H, data%S, zero, data%WORK_n,          &
                       symmetric = .TRUE.,                                      &
 !                     out = data%out, error = data%error,                      &
@@ -4751,11 +4764,6 @@
 !      ELSE IF ( inform%status == - 4 .OR. inform%status == - 3 ) THEN
 !        WRITE( data%out, "( '   |', 77X, ES8.2 )" ) data%alpha
 
-!        WRITE( data%out, "( A, /, ' Steering with ', A, ', predicting with ', &
-!       &  A, ', predictor Hessian = ', I0 )" ) prefix,                        &
-!        TRIM( data%control%QP_steer_control%quadratic_programming_solver ),   &
-!        TRIM( data%control%QP_pred_control%quadratic_programming_solver ),    &
-!        data%control%predictor_hessian
          WRITE( data%out, "( A, /, ' predictor Hessian = ', I0 )" ) prefix,    &
            data%control%predictor_hessian
 
@@ -4845,10 +4853,41 @@
         inform%time%clock_total, prefix, inform%f_eval
      END IF
 
-     IF ( data%control%error > 0 .AND. data%control%print_level > 0 )          &
-       CALL SYMBOLS_status( inform%status, data%control%error, prefix,         &
-                            'FiSQP_solve' )
-
+     IF ( data%control%error > 0 .AND. data%control%print_level > 0 ) THEN
+       SELECT CASE ( inform%status )
+       CASE( - 103 )
+         WRITE( data%control%error, "( /, A, ' Error return from ', A, ' -',   &
+        & /, A, '   A step could not be found in backtracking (pmode)' )" )    &
+          prefix, 'FiSQP_solve', prefix
+       CASE( - 104 )
+         WRITE( data%control%error, "( /, A, ' Error return from ', A, ' -',   &
+        & /, A, '   A step could not be found in backtracking (fmode)' )" )    &
+          prefix, 'FiSQP_solve', prefix
+       CASE( - 105 )
+         WRITE( data%control%error, "( /, A, ' Error return from ', A, ' -',   &
+        & /, A, '   A step could not be found in the steering subproblem')" )  &
+          prefix, 'FiSQP_solve', prefix
+       CASE( - 106 )
+         WRITE( data%control%error, "( /, A, ' Error return from ', A, ' -',   &
+        & /, A, '   A step could not be found in the predictor subproblem')" ) &
+          prefix, 'FiSQP_solve', prefix
+       CASE( - 108 )
+         WRITE( data%control%error, "( /, A, ' Error return from ', A, ' -',   &
+        & /, A, '   The steering step did not reduce the linearized ',         &
+        &    'infeasibility' )" ) prefix, 'FiSQP_solve', prefix
+       CASE( - 109 )
+         WRITE( data%control%error, "( /, A, ' Error return from ', A, ' -',   &
+        & /, A, '   tau linesearch computation failed' )" )                    &
+          prefix, 'FiSQP_solve', prefix
+       CASE( - 111 )
+         WRITE( data%control%error, "( /, A, ' Error return from ', A, ' -',   &
+        & /, A, '  There are no general constraints' )" )                      &
+          prefix, 'FiSQP_solve', prefix
+       CASE DEFAULT
+         CALL SYMBOLS_status( inform%status, data%control%error, prefix,       &
+                              'FiSQP_solve' )
+       END SELECT
+     END IF
      RETURN
 
 !  -------------

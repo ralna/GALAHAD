@@ -866,6 +866,8 @@
       spec( qplib_file_name )%keyword = 'qplib-file-name'
       spec( prefix )%keyword = 'output-line-prefix'
 
+      IF ( PRESENT( alt_specname ) ) WRITE(6,*) ' cqp: ', alt_specname
+
 !  Read the specfile
 
       IF ( PRESENT( alt_specname ) ) THEN
@@ -3258,8 +3260,12 @@
       IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
         WRITE( control%out, "( ' n, m = ', I0, 1X, I0 )" ) n, m
         WRITE( control%out, "( ' f = ', ES12.4 )" ) f
-        IF ( PRESENT( G ) )                                                    &
-          WRITE( control%out, "( ' G = ', /, ( 5ES12.4 ) )" ) G( : n )
+        IF ( gradient_kind == 1 ) THEN
+          WRITE( control%out, "( ' G = 1.0' )" )
+        ELSE
+          IF ( PRESENT( G ) )                                                  &
+            WRITE( control%out, "( ' G = ', /, ( 5ES12.4 ) )" ) G( : n )
+        END IF
         IF ( hessian_kind == 1 ) THEN
           WRITE( control%out, "( ' H  = 1.0' )" )
         ELSE IF ( hessian_kind == 2 ) THEN

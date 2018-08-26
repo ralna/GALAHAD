@@ -128,6 +128,16 @@
 
         INTEGER :: qplib_file_device = 53
 
+!    specifies the unit number to write generated SIF file describing the
+!     converted problem
+
+        INTEGER :: converted_sif_file_device = 54
+
+!    specifies the unit number to write generated QPLIB file describing the
+!     converted problem
+
+        INTEGER :: converted_qplib_file_device = 55
+
 !   any bound larger than infinity in modulus will be regarded as infinite
 
         REAL ( KIND = wp ) :: infinity = ten ** 19
@@ -177,6 +187,11 @@
 !
         LOGICAL :: crossover = .TRUE.
 
+!  if %refine is true, apply the dual projected-gradient method to refine
+!   the solution
+!
+        LOGICAL :: refine = .TRUE.
+
 !   if %space_critical true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
 
@@ -197,6 +212,16 @@
 
         LOGICAL :: generate_qplib_file = .FALSE.
 
+!   if %generate_converted_sif_file is .true. if a SIF file describing the
+!    converted problem is to be generated
+
+        LOGICAL :: generate_converted_sif_file = .FALSE.
+
+!   if %generate_converted_qplib_file is .true. if a QPLIB file describing the
+!    converted problem is to be generated
+
+        LOGICAL :: generate_converted_qplib_file = .FALSE.
+
 !  name of generated SIF file containing input problem
 
         CHARACTER ( LEN = 30 ) :: sif_file_name =                              &
@@ -206,6 +231,16 @@
 
         CHARACTER ( LEN = 30 ) :: qplib_file_name =                            &
          "L1QPPROB.qplib"  // REPEAT( ' ', 16 )
+
+!  name of generated SIF file containing converted problem
+
+        CHARACTER ( LEN = 30 ) :: converted_sif_file_name =                    &
+         "L1QPCPROB.SIF"  // REPEAT( ' ', 17 )
+
+!  name of generated QPLIB file containing converted problem
+
+        CHARACTER ( LEN = 30 ) :: converted_qplib_file_name =                  &
+         "L1QPCPROB.qplib"  // REPEAT( ' ', 15 )
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
 !   where %prefix contains the required string enclosed in
@@ -457,6 +492,8 @@
 !  restore-problem-on-output                         2
 !  sif-file-device                                   52
 !  qplib-file-device                                 53
+!  converted-sif-file-device                         54
+!  converted-qplib-file-device                       55
 !  infinity-value                                    1.0D+19
 !  identical-bounds-tolerance                        1.0D-15
 !  absolute-primal-accuracy                          1.0D-5
@@ -474,8 +511,12 @@
 !  deallocate-error-fatal                            F
 !  generate-sif-file                                 F
 !  generate-qplib-file                               F
+!  generate-converted-sif-file                       F
+!  generate-converted-qplib-file                     F
 !  sif-file-name                                     L1QPPROB.SIF
 !  qplib-file-name                                   L1QPPROB.qplib
+!  converted-sif-file-name                           L1QPCPROB.SIF
+!  converted-qplib-file-name                         L1QPCPROB.qplib
 !  output-line-prefix                                ""
 ! END QP SPECIFICATIONS (DEFAULT)
 
@@ -496,7 +537,10 @@
       INTEGER, PARAMETER :: restore_problem = print_level + 1
       INTEGER, PARAMETER :: sif_file_device = restore_problem + 1
       INTEGER, PARAMETER :: qplib_file_device = sif_file_device + 1
-      INTEGER, PARAMETER :: infinity = qplib_file_device + 1
+      INTEGER, PARAMETER :: converted_sif_file_device = qplib_file_device + 1
+      INTEGER, PARAMETER :: converted_qplib_file_device                        &
+                              = converted_sif_file_device + 1
+      INTEGER, PARAMETER :: infinity = converted_qplib_file_device + 1
       INTEGER, PARAMETER :: stop_abs_p = infinity + 1
       INTEGER, PARAMETER :: stop_rel_p = stop_abs_p + 1
       INTEGER, PARAMETER :: stop_abs_d = stop_rel_p + 1
@@ -508,14 +552,22 @@
       INTEGER, PARAMETER :: cpu_time_limit = identical_bounds_tol + 1
       INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
       INTEGER, PARAMETER :: crossover = clock_time_limit + 1
-      INTEGER, PARAMETER :: treat_zero_bounds_as_general = crossover + 1
-      INTEGER, PARAMETER :: space_critical = crossover + 1
+      INTEGER, PARAMETER :: refine = crossover + 1
+      INTEGER, PARAMETER :: treat_zero_bounds_as_general = refine + 1
+      INTEGER, PARAMETER :: space_critical = treat_zero_bounds_as_general + 1
       INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
       INTEGER, PARAMETER :: generate_sif_file = deallocate_error_fatal + 1
       INTEGER, PARAMETER :: generate_qplib_file = generate_sif_file + 1
-      INTEGER, PARAMETER :: sif_file_name = generate_qplib_file + 1
+      INTEGER, PARAMETER :: generate_converted_sif_file                        &
+                              = generate_qplib_file + 1
+      INTEGER, PARAMETER :: generate_converted_qplib_file                      &
+                              = generate_converted_sif_file + 1
+      INTEGER, PARAMETER :: sif_file_name = generate_converted_qplib_file + 1
       INTEGER, PARAMETER :: qplib_file_name = sif_file_name + 1
-      INTEGER, PARAMETER :: prefix = qplib_file_name + 1
+      INTEGER, PARAMETER :: converted_sif_file_name = qplib_file_name + 1
+      INTEGER, PARAMETER :: converted_qplib_file_name                          &
+                              = converted_sif_file_name + 1
+      INTEGER, PARAMETER :: prefix = converted_qplib_file_name + 1
       INTEGER, PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'L1QP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
@@ -530,6 +582,9 @@
       spec( restore_problem )%keyword = 'restore-problem-on-output'
       spec( sif_file_device )%keyword = 'sif-file-device'
       spec( qplib_file_device )%keyword = 'qplib-file-device'
+      spec( converted_sif_file_device )%keyword = 'converted-sif-file-device'
+      spec( converted_qplib_file_device )%keyword                              &
+        = 'converted-qplib-file-device'
 
 !  Real key-words
 
@@ -548,18 +603,27 @@
 !  Logical key-words
 
       spec( crossover )%keyword = 'cross-over-solution'
+      spec( refine )%keyword = 'refine-solution'
       spec( treat_zero_bounds_as_general )%keyword =                           &
         'treat-zero-bounds-as-general'
       spec( space_critical )%keyword = 'space-critical'
       spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
       spec( generate_sif_file )%keyword = 'generate-sif-file'
       spec( generate_qplib_file )%keyword = 'generate-qplib-file'
+      spec( generate_converted_sif_file )%keyword =                            &
+        'generate-converted-sif-file'
+      spec( generate_converted_qplib_file )%keyword =                          &
+        'generate-converted-qplib-file'
 
 !  Character key-words
 
       spec( sif_file_name )%keyword = 'sif-file-name'
       spec( qplib_file_name )%keyword = 'qplib-file-name'
+      spec( converted_sif_file_name )%keyword = 'converted_sif-file-name'
+      spec( converted_qplib_file_name )%keyword = 'converted_qplib-file-name'
       spec( prefix )%keyword = 'output-line-prefix'
+
+      IF ( PRESENT( alt_specname ) ) WRITE(6,*) ' liqp: ', alt_specname
 
 !  Read the specfile
 
@@ -590,6 +654,12 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( qplib_file_device ),                    &
                                  control%qplib_file_device,                    &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( converted_sif_file_device ),            &
+                                 control%converted_sif_file_device,            &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( converted_qplib_file_device ),          &
+                                 control%converted_qplib_file_device,          &
                                  control%error )
 
 !  Set real values
@@ -633,6 +703,9 @@
      CALL SPECFILE_assign_value( spec( crossover ),                            &
                                  control%crossover,                            &
                                  control%error )
+     CALL SPECFILE_assign_value( spec( refine ),                               &
+                                 control%refine,                               &
+                                 control%error )
      CALL SPECFILE_assign_value( spec( treat_zero_bounds_as_general ),         &
                                  control%treat_zero_bounds_as_general,         &
                                  control%error )
@@ -648,6 +721,12 @@
      CALL SPECFILE_assign_value( spec( generate_qplib_file ),                  &
                                  control%generate_qplib_file,                  &
                                  control%error )
+     CALL SPECFILE_assign_value( spec( generate_converted_sif_file ),          &
+                                 control%generate_converted_sif_file,          &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( generate_converted_qplib_file ),        &
+                                 control%generate_converted_qplib_file,        &
+                                 control%error )
 
 !  Set character values
 
@@ -656,6 +735,12 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( qplib_file_name ),                      &
                                  control%qplib_file_name,                      &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( converted_sif_file_name ),              &
+                                 control%converted_sif_file_name,              &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( converted_qplib_file_name ),            &
+                                 control%converted_qplib_file_name,            &
                                  control%error )
      CALL SPECFILE_assign_value( spec( prefix ),                               &
                                  control%prefix,                               &
@@ -1048,7 +1133,7 @@
       REAL ( KIND = wp ) :: H_val( 1 )
       LOGICAL :: printi, printa, printe, reset_bnd, stat_required
       LOGICAL :: composite_g, diagonal_h, identity_h, scaled_identity_h
-      LOGICAL :: separable_bqp, lbfgs, extrapolation_ok, initial
+      LOGICAL :: separable_bqp, lbfgs, extrapolation_ok, initial, refine
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( CQP_control_type ) :: CQP_control
       TYPE ( DQP_control_type ) :: DQP_control
@@ -1066,12 +1151,26 @@
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( A, ' entering L1QP_solve ' )" ) prefix
 
+!  see if the problem is an LP
+
+      data%is_lp = .FALSE.
+      IF ( prob%Hessian_kind < 0 ) THEN
+        SELECT CASE ( SMT_get( prob%H%type ) )
+        CASE ( 'NONE', 'ZERO' )
+          data%is_lp = .TRUE.
+        CASE ( 'SPARSE_BY_ROWS' )
+          IF ( prob%H%ptr( prob%n + 1 ) <= 1 ) data%is_lp = .TRUE.
+        END SELECT
+      ELSE IF ( prob%Hessian_kind == 0 ) THEN
+        data%is_lp = .TRUE.
+      END IF
+
 ! -------------------------------------------------------------------
 !  If desired, generate a SIF file for problem passed
 
       IF ( control%generate_sif_file ) THEN
         CALL QPD_SIF( prob, control%sif_file_name, control%sif_file_device,    &
-                      control%infinity, .TRUE. )
+                      control%infinity, .NOT. data%is_lp )
       END IF
 
 !  SIF file generated
@@ -1183,6 +1282,7 @@
 
 !  store the problem dimensions
 
+!write(6,*) '  Hessian_kind ',  prob%Hessian_kind
       IF ( prob%new_problem_structure ) THEN
         SELECT CASE ( SMT_get( prob%A%type ) )
         CASE ( 'DENSE' )
@@ -1193,12 +1293,13 @@
           data%a_ne = prob%A%ne
         END SELECT
 
-        data%is_lp = .FALSE.
         IF ( prob%Hessian_kind < 0 ) THEN
+!write(6,*) ' new structure h_type ', SMT_get( prob%H%type )
           SELECT CASE ( SMT_get( prob%H%type ) )
-          CASE ( 'NONE', 'ZERO', 'IDENTITY' )
+          CASE ( 'NONE', 'ZERO' )
             data%h_ne = 0
-            data%is_lp = .TRUE.
+          CASE ( 'IDENTITY' )
+            data%h_ne = 0
           CASE ( 'SCALED_IDENTITY' )
             data%h_ne = 1
           CASE ( 'DIAGONAL' )
@@ -1212,16 +1313,13 @@
           CASE ( 'LBFGS' )
             data%h_ne = 0
           END SELECT
-          IF (  data%h_ne <= 0 ) data%is_lp = .TRUE.
-        ELSE IF ( prob%Hessian_kind == 0 ) THEN
-          data%is_lp = .TRUE.
         END IF
       END IF
 
-      IF ( data%is_lp ) THEN
+      IF ( data%is_lp .AND. control%refine ) THEN
         prob%Hessian_kind = - 1
         CALL SMT_put( prob%H%type, 'SCALED_IDENTITY', i )
-
+!write(6,*) ' refine lp structure h_type ', SMT_get( prob%H%type )
         array_name = 'l1qp: prob%H%val'
         CALL SPACE_resize_array( 1, prob%H%val,                                &
              inform%status, inform%alloc_status, array_name = array_name,      &
@@ -1229,7 +1327,6 @@
              exact_size = control%space_critical,                              &
              bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
-
         prob%H%val( 1 ) = control%DLP_control%initial_perturbation
       END IF
 
@@ -1327,10 +1424,35 @@
            prefix, control%rho
 
         data%LPQP_control = control%LPQP_control
+        data%LPQP_control%h_output_format = 'COORDINATE'
         IF ( data%is_lp ) data%LPQP_control%h_output_format = 'DIAGONAL'
         CALL LPQP_formulate( prob, control%rho, .TRUE.,                        &
                              data%LPQP_data, data%LPQP_control,                &
                              inform%LPQP_inform )
+
+! -------------------------------------------------------------------
+!  If desired, generate a SIF file for the converted problem
+
+        IF ( control%generate_converted_sif_file ) THEN
+          CALL QPD_SIF( prob, control%converted_sif_file_name,                 &
+                        control%converted_sif_file_device,                     &
+                        control%infinity, .NOT. data%is_lp .OR. control%refine )
+        END IF
+
+!  SIF file generated
+! -------------------------------------------------------------------
+
+! -------------------------------------------------------------------
+!  If desired, generate a QPLIB file for the converted problem
+
+        IF ( control%generate_converted_qplib_file ) THEN
+          CALL RPD_write_qp_problem_data( prob,                                &
+                     control%converted_qplib_file_name,                        &
+                     control%converted_qplib_file_device, inform%rpd_inform )
+        END IF
+
+!  QPLIB file generated
+! -------------------------------------------------------------------
 
         IF ( inform%LPQP_inform%status /= 0 ) THEN
           IF ( printe )                                                        &
@@ -1365,6 +1487,7 @@
           CASE ( 'LBFGS' )
             data%h_ne = 0
           END SELECT
+!write(6,*) ' l1qp structure h_type ', SMT_get( prob%H%type ),  data%h_ne
         END IF
       END IF
 
@@ -1432,7 +1555,7 @@
             data%h_ne = 0
           END SELECT
         END IF
-
+!write(6,*) ' h_ne = ',  data%h_ne
         IF ( printi ) WRITE( control%out,                                      &
                "(  A, ' problem dimensions after preprocessing: ', /,  A,      &
      &         ' n = ', I8, ' m = ', I8, ' a_ne = ', I8, ' h_ne = ', I8 )" )   &
@@ -1604,63 +1727,124 @@
       CALL CPU_TIME( time_record )  ; CALL CLOCK_time( clock_record )
 !     IF ( prob%Hessian_kind == 0 ) THEN
       IF ( data%is_lp ) THEN
-        IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
-          CALL CQP_solve_main( data%dims, prob%n, prob%m,                      &
-                               prob%A%val, prob%A%col, prob%A%ptr,             &
-                               prob%C_l, prob%C_u, prob%X_l, prob%X_u,         &
-                               prob%C, prob%X, prob%Y, prob%Z,                 &
-                               data%GRAD_L, data%DIST_X_l, data%DIST_X_u,      &
-                               data%Z_l, data%Z_u, data%BARRIER_X,             &
-                               data%Y_l, data%DIST_C_l, data%Y_u,              &
-                               data%DIST_C_u, data%C, data%BARRIER_C,          &
-                               data%SCALE_C, data%RHS, prob%f,                 &
-                               data%H_sbls, data%A_sbls, data%C_sbls,          &
-                               data%order, data%X_coef, data%C_coef,           &
-                               data%Y_coef, data%Y_l_coef, data%Y_u_coef,      &
-                               data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,    &
-                               data%CS_coef, data%COEF,                        &
-                               data%ROOTS, data%ROOTS_data,                    &
-                               data%DX_zh, data%DC_zh,                         &
-                               data%DY_zh, data%DY_l_zh,                       &
-                               data%DY_u_zh, data%DZ_l_zh,                     &
-                               data%DZ_u_zh,                                   &
-                               data%OPT_alpha, data%OPT_merit,                 &
-                               data%SBLS_data, prefix,                         &
-                               CQP_control, inform%CQP_inform,                 &
-!                              prob%Hessian_kind, prob%gradient_kind,          &
-                               - 1, prob%gradient_kind, H_val = prob%H%val,    &
-                               C_last = data%A_s, X_last = data%H_s,           &
-                               Y_last = data%Y_last, Z_last = data%Z_last,     &
-                               C_stat = data%C_stat, B_Stat = data%X_stat )
+        IF ( control%refine ) THEN
+          IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
+            CALL CQP_solve_main( data%dims, prob%n, prob%m,                    &
+                                 prob%A%val, prob%A%col, prob%A%ptr,           &
+                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
+                                 prob%C, prob%X, prob%Y, prob%Z,               &
+                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
+                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
+                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
+                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
+                                 data%SCALE_C, data%RHS, prob%f,               &
+                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
+                                 data%order, data%X_coef, data%C_coef,         &
+                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
+                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
+                                 data%CS_coef, data%COEF,                      &
+                                 data%ROOTS, data%ROOTS_data,                  &
+                                 data%DX_zh, data%DC_zh,                       &
+                                 data%DY_zh, data%DY_l_zh,                     &
+                                 data%DY_u_zh, data%DZ_l_zh,                   &
+                                 data%DZ_u_zh,                                 &
+                                 data%OPT_alpha, data%OPT_merit,               &
+                                 data%SBLS_data, prefix,                       &
+                                 CQP_control, inform%CQP_inform,               &
+  !                              prob%Hessian_kind, prob%gradient_kind,        &
+                                 - 1, prob%gradient_kind, H_val = prob%H%val,  &
+                                 C_last = data%A_s, X_last = data%H_s,         &
+                                 Y_last = data%Y_last, Z_last = data%Z_last,   &
+                                 C_stat = data%C_stat, B_Stat = data%X_stat )
+          ELSE
+            CALL CQP_solve_main( data%dims, prob%n, prob%m,                    &
+                                 prob%A%val, prob%A%col, prob%A%ptr,           &
+                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
+                                 prob%C, prob%X, prob%Y, prob%Z,               &
+                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
+                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
+                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
+                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
+                                 data%SCALE_C, data%RHS, prob%f,               &
+                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
+                                 data%order, data%X_coef, data%C_coef,         &
+                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
+                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
+                                 data%CS_coef, data%COEF,                      &
+                                 data%ROOTS, data%ROOTS_data,                  &
+                                 data%DX_zh, data%DC_zh,                       &
+                                 data%DY_zh, data%DY_l_zh,                     &
+                                 data%DY_u_zh, data%DZ_l_zh,                   &
+                                 data%DZ_u_zh,                                 &
+                                 data%OPT_alpha, data%OPT_merit,               &
+                                 data%SBLS_data, prefix,                       &
+                                 CQP_control, inform%CQP_inform,               &
+  !                              prob%Hessian_kind, prob%gradient_kind,        &
+                                 - 1, prob%gradient_kind, H_val = prob%H%val,  &
+                                 G = prob%G,                                   &
+                                 C_last = data%A_s, X_last = data%H_s,         &
+                                 Y_last = data%Y_last, Z_last = data%Z_last,   &
+                                 C_stat = data%C_stat, B_Stat = data%X_stat )
+          END IF
         ELSE
-          CALL CQP_solve_main( data%dims, prob%n, prob%m,                      &
-                               prob%A%val, prob%A%col, prob%A%ptr,             &
-                               prob%C_l, prob%C_u, prob%X_l, prob%X_u,         &
-                               prob%C, prob%X, prob%Y, prob%Z,                 &
-                               data%GRAD_L, data%DIST_X_l, data%DIST_X_u,      &
-                               data%Z_l, data%Z_u, data%BARRIER_X,             &
-                               data%Y_l, data%DIST_C_l, data%Y_u,              &
-                               data%DIST_C_u, data%C, data%BARRIER_C,          &
-                               data%SCALE_C, data%RHS, prob%f,                 &
-                               data%H_sbls, data%A_sbls, data%C_sbls,          &
-                               data%order, data%X_coef, data%C_coef,           &
-                               data%Y_coef, data%Y_l_coef, data%Y_u_coef,      &
-                               data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,    &
-                               data%CS_coef, data%COEF,                        &
-                               data%ROOTS, data%ROOTS_data,                    &
-                               data%DX_zh, data%DC_zh,                         &
-                               data%DY_zh, data%DY_l_zh,                       &
-                               data%DY_u_zh, data%DZ_l_zh,                     &
-                               data%DZ_u_zh,                                   &
-                               data%OPT_alpha, data%OPT_merit,                 &
-                               data%SBLS_data, prefix,                         &
-                               CQP_control, inform%CQP_inform,                 &
-!                              prob%Hessian_kind, prob%gradient_kind,          &
-                               - 1, prob%gradient_kind, H_val = prob%H%val,    &
-                               G = prob%G,                                     &
-                               C_last = data%A_s, X_last = data%H_s,           &
-                               Y_last = data%Y_last, Z_last = data%Z_last,     &
-                               C_stat = data%C_stat, B_Stat = data%X_stat )
+          IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
+            CALL CQP_solve_main( data%dims, prob%n, prob%m,                    &
+                                 prob%A%val, prob%A%col, prob%A%ptr,           &
+                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
+                                 prob%C, prob%X, prob%Y, prob%Z,               &
+                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
+                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
+                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
+                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
+                                 data%SCALE_C, data%RHS, prob%f,               &
+                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
+                                 data%order, data%X_coef, data%C_coef,         &
+                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
+                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
+                                 data%CS_coef, data%COEF,                      &
+                                 data%ROOTS, data%ROOTS_data,                  &
+                                 data%DX_zh, data%DC_zh,                       &
+                                 data%DY_zh, data%DY_l_zh,                     &
+                                 data%DY_u_zh, data%DZ_l_zh,                   &
+                                 data%DZ_u_zh,                                 &
+                                 data%OPT_alpha, data%OPT_merit,               &
+                                 data%SBLS_data, prefix,                       &
+                                 CQP_control, inform%CQP_inform,               &
+  !                              prob%Hessian_kind, prob%gradient_kind,        &
+                                 0, prob%gradient_kind,                        &
+                                 C_last = data%A_s, X_last = data%H_s,         &
+                                 Y_last = data%Y_last, Z_last = data%Z_last,   &
+                                 C_stat = data%C_stat, B_Stat = data%X_stat )
+          ELSE
+            CALL CQP_solve_main( data%dims, prob%n, prob%m,                    &
+                                 prob%A%val, prob%A%col, prob%A%ptr,           &
+                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
+                                 prob%C, prob%X, prob%Y, prob%Z,               &
+                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
+                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
+                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
+                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
+                                 data%SCALE_C, data%RHS, prob%f,               &
+                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
+                                 data%order, data%X_coef, data%C_coef,         &
+                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
+                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
+                                 data%CS_coef, data%COEF,                      &
+                                 data%ROOTS, data%ROOTS_data,                  &
+                                 data%DX_zh, data%DC_zh,                       &
+                                 data%DY_zh, data%DY_l_zh,                     &
+                                 data%DY_u_zh, data%DZ_l_zh,                   &
+                                 data%DZ_u_zh,                                 &
+                                 data%OPT_alpha, data%OPT_merit,               &
+                                 data%SBLS_data, prefix,                       &
+                                 CQP_control, inform%CQP_inform,               &
+  !                              prob%Hessian_kind, prob%gradient_kind,        &
+                                 0, prob%gradient_kind,                        &
+                                 G = prob%G,                                   &
+                                 C_last = data%A_s, X_last = data%H_s,         &
+                                 Y_last = data%Y_last, Z_last = data%Z_last,   &
+                                 C_stat = data%C_stat, B_Stat = data%X_stat )
+          END IF
         END IF
       ELSE IF ( prob%Hessian_kind == 1 ) THEN
         IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
@@ -2007,6 +2191,8 @@
         ELSE
           data%CRO_control%feasibility_tolerance = infinity
         END IF
+        IF ( printi ) WRITE( control%out,                                      &
+          "( /, A, ' compute crossover solution' )" ) prefix
         time_analyse = inform%CRO_inform%time%analyse
         clock_analyse = inform%CRO_inform%time%clock_analyse
         time_factorize = inform%CRO_inform%time%factorize
@@ -2091,6 +2277,9 @@
 !  ==============================================================
 !  refine solution by applying a dual gradient projection method
 !  ==============================================================
+
+      IF ( .NOT. control%refine ) GO TO 600
+      IF ( printi ) WRITE( control%out, "( /, A, ' refine solution' )" ) prefix
 
 !  preprocess the problem data
 
@@ -3568,22 +3757,3 @@ H_loop: DO i = 1, prob%n
 !  End of module L1QP
 
    END MODULE GALAHAD_L1QP_double
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

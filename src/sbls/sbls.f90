@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 24/02/2014 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 3.1 - 26/08/2018 AT 14:20 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ S B L S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -366,7 +366,7 @@
 
         INTEGER :: factorization = 0
 
-!  how many of the diagonals int the factorization are positive
+!  how many of the diagonals in the factorization are positive
 
         INTEGER :: d_plus = - 1
 
@@ -1561,7 +1561,7 @@
 
 !  Local variables
 
-      INTEGER :: c_ne
+      INTEGER :: c_ne, i
       REAL :: time_start, time_now
       REAL ( KIND = wp ) :: clock_start, clock_now
 
@@ -1570,6 +1570,24 @@
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!     WRITE(6,"( ' H type = ', A )" ) SMT_get( H%type )
+!     WRITE(6,"( ' H, m = ', I0, ', n = ', I0 )" ) H%m, H%n
+!     DO i = 1, H%ne
+!       WRITE( 6, "( 3I7, ES12.4 )" ) i, H%row( i ), H%col( i ), H%val( i )
+!     END DO
+
+!     WRITE(6,"( ' A type = ', A )" ) SMT_get( A%type )
+!     WRITE(6,"( ' A, m = ', I0, ', n = ', I0 )" ) A%m, A%n
+!     DO i = 1, A%ne
+!       WRITE( 6, "( 3I7, ES12.4 )" ) i, A%row( i ), A%col( i ), A%val( i )
+!     END DO
+
+!     WRITE(6,"( ' C type = ', A )" ) SMT_get( C%type )
+!     WRITE(6,"( ' C, m = ', I0, ', n = ', I0 )" ) C%m, C%n
+!     DO i = 1, C%ne
+!       WRITE( 6, "( 3I7, ES12.4 )" ) i, C%row( i ), C%col( i ), C%val( i )
+!     END DO
 
 !  start timimg
 
@@ -2435,6 +2453,8 @@
 !  The matrix D
 
         CASE( 5 )
+          IF ( printi ) WRITE( out, "( A, ' preconditioner: G = D ' )" )       &
+            prefix
           efactors%G_diag( : n ) = D
 
 !  The scaled diagonal from the limited-memory formula
@@ -2646,10 +2666,9 @@
             END DO
           END SELECT
 
-        ELSE
-
 !  Now insert the (val) entries of A diag(G)(inverse) A(transpose) into K
 
+        ELSE
           SELECT CASE ( SMT_get( A%type ) )
           CASE ( 'DENSE' )
             nnz_aat = 0
@@ -2772,7 +2791,6 @@
               nnz_aat_old  = nnz_aat
             END DO
           END SELECT
-
         END IF
 
 !  Now insert the (val) entries of C into K ...
@@ -2816,8 +2834,10 @@
                 END DO
               END DO
             CASE ( 'COORDINATE' )
-              efactors%K%row( nnz_aat + 1 : ) = C%row
-              efactors%K%col( nnz_aat + 1 : ) = C%col
+              DO l = 1, c_ne
+                efactors%K%row( nnz_aat + l ) = C%row( l )
+                efactors%K%col( nnz_aat + l ) = C%col( l )
+              END DO
             END SELECT
 
             SELECT CASE ( SMT_get( C%type ) )
@@ -2826,7 +2846,9 @@
             CASE ( 'IDENTITY' )
               efactors%K%val( nnz_aat + 1 : ) = one
             CASE DEFAULT
-              efactors%K%val( nnz_aat + 1 : ) = C%val
+              DO l = 1, c_ne
+                efactors%K%val( nnz_aat + l ) = C%val( l )
+              END DO
             END SELECT
           END IF
         END IF
@@ -2838,7 +2860,6 @@
 !       WRITE( out, "( A, /, ( 10F7.2) )" ) ' vals =', ( efactors%K%val )
 
         GO TO 200
-
       END IF
 
 !   ======================
@@ -3970,7 +3991,6 @@
             inform%rank = inform%SLS_inform%rank
           END IF
         END IF
-
         IF ( printi ) WRITE( out,                                              &
              "( A, ' K nnz(prec,factors) = ', I0, ', ', I0 )" )                &
           prefix, efactors%K%ne, inform%SLS_inform%entries_in_factors
@@ -4010,6 +4030,7 @@
           END IF
         ELSE
 !         IF ( kzero + kminus > m ) THEN
+!         write(6,*) ' k_0, k_- ', kzero,  kminus
           IF ( kminus > m ) THEN
             IF ( control%out > 0 .AND. control%print_level > 0 )               &
               WRITE( control%out, "( A, 1X, I0, ' -ve and ' , I0,              &
@@ -4120,11 +4141,6 @@
             efactors%S( jp, ip ) = efactors%S( ip, jp )
           END DO
         END DO
-
-!write(6,*) ' initial'
-!DO i = 1, 4
-!write(6,"(I2, 4ES12.4)") i, efactors%S( i, 1: 4 )
-!END DO
 
 !  for each column y_j of Y,
 
@@ -4242,11 +4258,6 @@
             efactors%S( jp, ip ) = efactors%S( ip, jp )
           END DO
         END DO
-
-!write(6,*) ' final'
-!DO i = 1, 4
-!write(6,"(I2, 4ES12.4)") i, efactors%S( i, 1: 4 )
-!END DO
 
 !  compute the Bunch-Kaufman factors of S
 

@@ -4,6 +4,8 @@
 ! restore-problem-on-output                         2
 ! sif-file-device                                   52
 ! qplib-file-device                                 53
+! converted-sif-file-device                         54
+! converted-qplib-file-device                       55
 ! infinity-value                                    1.0D+19
 ! identical-bounds-tolerance                        1.0D-15
 ! absolute-primal-accuracy                          1.0D-5
@@ -16,11 +18,16 @@
 ! maximum-cpu-time-limit                            -1.0
 ! maximum-clock-time-limit                          -1.0
 ! cross-over-solution                               yes
+! refine-solution                                   yes
 ! treat-zero-bounds-as-general                      no
 ! space-critical                                    no
 ! deallocate-error-fatal                            no
 ! generate-sif-file                                 no
 ! generate-qplib-file                               no
+! generate-converted-sif-file                       no
+! generate-converted-qplib-file                     no
 ! sif-file-name                                     L1QPPROB.SIF
 ! qplib-file-name                                   L1QPPROB.qplib
+! converted-sif-file-name                           L1QPCPROB.SIF
+! converted-qplib-file-name                         L1QPCPROB.qplib
 ! output-line-prefix                                ""

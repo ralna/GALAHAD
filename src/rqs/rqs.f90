@@ -1400,6 +1400,7 @@
 !  compute the space required to hold the matrix H ...
 
       IF ( data%control%new_h >= 2 ) THEN
+!       write(6,*) ' H ', SMT_get( H%type )
         SELECT CASE ( SMT_get( H%type ) )
         CASE ( 'DIAGONAL' )
           data%h_ne = n
@@ -1409,6 +1410,10 @@
           data%h_ne = H%ptr( n + 1 ) - 1
         CASE ( 'COORDINATE' )
           data%h_ne = H%ne
+!         do i = 1,  H%ne
+!           WRITE( 6, "( ' H(', I0, ',', I0, ') = ', ES12.4 )" ) &
+!             H%row( i ), H%col( i ), H%val( i )
+!         end do
         END SELECT
       END IF
 
@@ -1417,6 +1422,7 @@
       IF ( .NOT. unit_m ) THEN
         M%n = n ; M%m = n
         IF ( data%control%new_m >= 2 ) THEN
+!         write(6,*) ' M ', SMT_get( M%type )
           SELECT CASE ( SMT_get( M%type ) )
           CASE ( 'DIAGONAL' )
             data%m_ne = n
@@ -1426,6 +1432,10 @@
             data%m_ne = M%ptr( n + 1 ) - 1
           CASE ( 'COORDINATE' )
             data%m_ne = M%ne
+!           do i = 1,  M%ne
+!             WRITE( 6, "( ' M(', I0, ',', I0, ') = ', ES12.4 )" ) &
+!               M%row( i ), M%col( i ), M%val( i )
+!           end do
           END SELECT
         END IF
       ELSE
@@ -1437,6 +1447,7 @@
       IF ( constrained ) THEN
         IF ( data%control%new_a >= 2 ) THEN
           data%m = A%m ; data%npm = n + data%m
+!         write(6,*) ' A ', SMT_get( A%type )
           SELECT CASE ( SMT_get( A%type ) )
           CASE ( 'DENSE' )
             data%a_ne = data%m * n
@@ -1444,6 +1455,10 @@
             data%a_ne = A%ptr( data%m + 1 ) - 1
           CASE ( 'COORDINATE' )
             data%a_ne = A%ne
+!           do i = 1,  A%ne
+!             WRITE( 6, "( ' A(', I0, ',', I0, ') = ', ES12.4 )" ) &
+!               A%row( i ), A%col( i ), A%val( i )
+!           end do
           END SELECT
         END IF
       ELSE

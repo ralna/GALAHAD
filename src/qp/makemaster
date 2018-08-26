@@ -112,16 +112,16 @@ CQPS_single = $(BQP_single) $(BQPB_single) psls $(LGS)(cqps.o)
 CQPS_double = $(BQP_double) $(BQPB_double) psls $(LGD)(cqps.o)
 CQP_single = $(QPD_single) $(LGS)(rpd.o) $(LGS)(cqp.o)
 CQP_double = $(QPD_double) $(LGD)(rpd.o) $(LGD)(cqp.o)
-DQP_single = $(QPD_single) uls $(LGS)(dqp.o)
-DQP_double = $(QPD_double) uls $(LGD)(dqp.o)
+DQP_single = $(QPD_single) uls $(LGS)(rpd.o) $(LGS)(dqp.o)
+DQP_double = $(QPD_double) uls $(LGD)(rpd.o) $(LGD)(dqp.o)
 CCQP_single = $(CQP_single) $(DQP_single) $(LGS)(ccqp.o)
 CCQP_double = $(CQP_double) $(DQP_double) $(LGD)(ccqp.o)
 QP_single = $(QPC_single) $(DQP_single) $(CCQP_single) mop $(LGS)(qp.o)
 QP_double = $(QPC_double) $(DQP_double) $(CCQP_double) mop $(LGD)(qp.o)
 DLP_single = $(DQP_single) $(LGS)(dlp.o)
 DLP_double = $(DQP_double) $(LGD)(dlp.o)
-LPB_single = $(LSQP_single) $(LGS)(lpb.o)
-LPB_double = $(LSQP_double) $(LGD)(lpb.o)
+LPB_single = $(LSQP_single) $(LGS)(rpd.o) $(LGS)(lpb.o)
+LPB_double = $(LSQP_double) $(LGD)(rpd.o) $(LGD)(lpb.o)
 LLS_single = sbls $(LGS)(lls.o)
 LLS_double = sbls $(LGD)(lls.o)
 RPD_single = basics lms $(LGS)(rpd.o)
@@ -3387,9 +3387,9 @@ $(LG)(dlp.o): ../dlp/dlp.f90
 
 lpb.o: $(LG)(lpb.o)
 
-$(LG)(lpb.o): ../forthcoming/lpb/lpb.f90
+$(LG)(lpb.o): ../lpb/lpb.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lpb   "
-	$(SED) -f $(SEDS) ../forthcoming/lpb/lpb.f90 > $(OBJ)/lpb1.f90
+	$(SED) -f $(SEDS) ../lpb/lpb.f90 > $(OBJ)/lpb1.f90
 	$(SED) -f $(LSEDS) $(OBJ)/lpb1.f90 > $(OBJ)/lpb2.f90
 	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/lpb2.f90 > $(OBJ)/lpb.f90
 	cd $(OBJ); $(FORTRAN) -o lpb.o $(FFLAGSS) lpb.f90 \
@@ -3696,9 +3696,9 @@ $(LG)(usedlp.o): ../dlp/usedlp.f90
 
 uselpb.o: $(LG)(uselpb.o)
 
-$(LG)(uselpb.o): ../forthcoming/lpb/uselpb.f90
+$(LG)(uselpb.o): ../lpb/uselpb.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "uselpb   "
-	$(SED) -f $(SEDS) ../forthcoming/lpb/uselpb.f90 > $(OBJ)/uselpb1.f90
+	$(SED) -f $(SEDS) ../lpb/uselpb.f90 > $(OBJ)/uselpb1.f90
 	$(SED) -f $(LSEDS) $(OBJ)/uselpb1.f90 > $(OBJ)/uselpb2.f90
 	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/uselpb2.f90 > $(OBJ)/uselpb.f90
 	cd $(OBJ); $(FORTRAN) -o uselpb.o $(FFLAGSS) uselpb.f90 \
@@ -3897,9 +3897,9 @@ $(OBJ)/rundlp_sif.o: ../dlp/rundlp_sif.f90
 
 runlpb_sif.o: $(OBJ)/runlpb_sif.o
 
-$(OBJ)/runlpb_sif.o: ../forthcoming/lpb/runlpb_sif.f90
+$(OBJ)/runlpb_sif.o: ../lpb/runlpb_sif.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "runlpb_sif"
-	$(SED) -f $(SEDS) ../forthcoming/lpb/runlpb_sif.f90 \
+	$(SED) -f $(SEDS) ../lpb/runlpb_sif.f90 \
            > $(OBJ)/runlpb_sif.f90
 	cd $(OBJ); $(FORTRAN) -o runlpb_sif.o $(FFLAGSS) runlpb_sif.f90
 	rm $(OBJ)/runlpb_sif.f90

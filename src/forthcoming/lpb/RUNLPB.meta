@@ -5,25 +5,36 @@ MAIN
 ! write-initial-sif                                 no
 ! initial-sif-file-name                             INITIAL.SIF
 ! initial-sif-file-device                           51
-! compute-orthogonal-projection                     no
-! least-squares-qp                                  no
 ! scale-problem                                     0
 ! pre-solve-problem                                 no
-! write-presolved-sif                               no
 ! presolved-sif-file-name                           PRESOLVE.SIF
-! presolved-sif-file-device                         53
+! presolved-sif-file-device                         50
 ! write-scaled-sif                                  no
 ! scaled-sif-file-name                              SCALED.SIF
 ! scaled-sif-file-device                            58
-! solve-problem                                     no
+! solve-problem                                     yes
 ! print-full-solution                               no
-! write-solution                                    yes
+! write-solution                                    no
 ! solution-file-name                                LPBSOL.d
 ! solution-file-device                              62
-! write-result-summary                              yes
+! write-result-summary                              no
 ! result-summary-file-name                          LPBRES.d
 ! result-summary-file-device                        47
+! perturb-bounds-by                                 0.0
+! perturb-hessian-diagonals-by                      0.0
 
 INCLUDE LPB
+
+INCLUDE SBLS
+
+INCLUDE SLS
+
+INCLUDE ULS
+
+INCLUDE FDC
+
+INCLUDE ROOTS
+
+INCLUDE CRO
 
 INCLUDE PRESOLVE

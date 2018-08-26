@@ -3191,18 +3191,18 @@
                IF ( S%print_header ) THEN
                  WRITE( S%out, "( 2A5, 7X, ES10.2, 2ES8.1, '     -       -  ', &
                 &  '     -   ', A5, A6 )" ) citer, cngevl,                     &
-                     inform%aug * S%findmx, inform%cnorm, inform%pjgnrm,       &
+                     inform%aug * S%findmx, S%cnorm, inform%pjgnrm,            &
                      cfree, atime
                ELSE IF ( inform%status == - 11 ) THEN
                  WRITE( S%out, "( 2A5, F6.1, A1, ES10.2, 2ES8.1, '     -   ',  &
                 &  2ES8.1, A5, A6 )" ) citer, cngevl, S%fill, S%lisend1,       &
-                     inform%aug * S%findmx, inform%cnorm, inform%pjgnrm,       &
+                     inform%aug * S%findmx, S%cnorm, inform%pjgnrm,            &
                      S%oldrad, S%step, cfree, atime
                ELSE
                  WRITE( S%out,                                                 &
                    "( 2A5, F6.1, A1, ES10.2, 2ES8.1, ES9.1, 2ES8.1, A5, A6 )" )&
                      citer, cngevl, S%fill, S%lisend1,                         &
-                     inform%aug * S%findmx, inform%cnorm, inform%pjgnrm,       &
+                     inform%aug * S%findmx, S%cnorm, inform%pjgnrm,            &
                      S%rho, S%oldrad, S%step, cfree, atime
                END IF
              ELSE
@@ -3210,18 +3210,18 @@
                IF ( S%print_header ) THEN
                  WRITE( S%out, "( 3A5, 1X,  ES10.2, 2ES8.1, '     -       - ', &
                 &  '      -   ', A5, A6 )" ) citer, cngevl, citcg,             &
-                    inform%aug * S%findmx, inform%cnorm, inform%pjgnrm,        &
+                    inform%aug * S%findmx, S%cnorm, inform%pjgnrm,             &
                     cfree, atime
                ELSE IF ( inform%status == - 11 ) THEN
                  WRITE( S%out, "( 3A5, A1, ES10.2, 2ES8.1, '     -   ',        &
                 &  2ES8.1, A5, A6 )" ) citer, cngevl, citcg, S%cgend1,         &
-                     inform%aug * S%findmx, inform%cnorm, inform%pjgnrm,       &
+                     inform%aug * S%findmx, S%cnorm, inform%pjgnrm,            &
                      S%oldrad, S%step, cfree, atime
                ELSE
                  WRITE( S%out,                                                 &
                    "( 3A5, A1, ES10.2, 2ES8.1, ES9.1, 2ES8.1, A5, A6 )" )      &
                       citer, cngevl, citcg, S%cgend1, inform%aug * S%findmx,   &
-                      inform%cnorm, inform%pjgnrm, S%rho, S%oldrad, S%step,    &
+                      S%cnorm, inform%pjgnrm, S%rho, S%oldrad, S%step,         &
                       cfree, atime
                END IF
              END IF
@@ -5428,6 +5428,12 @@
              ELSEWHERE
                C = GVALS( : , 1 )
              END WHERE
+
+             S%cnorm = zero
+             DO ig = 1, ng
+               IF ( KNDOFG( ig ) > 1 )                                         &
+                 S%cnorm = MAX( S%cnorm, ABS( GSCALE( ig ) * C( ig ) ) )
+             END DO
 
 !  Print the constraint values on the first iteration
 

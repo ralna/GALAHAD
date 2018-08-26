@@ -1,54 +1,65 @@
-! THIS VERSION: GALAHAD 2.6 - 15/10/2014 AT 13:20 GMT.
+! THIS VERSION: GALAHAD 3.1 - 07/08/2018 AT 10:25 GMT.
 
-!-*-*-*-*-*-*-*-*-*- G A L A H A D _ L P B   M O D U L E -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L P B    M O D U L E  -*-*-*-*-*-*-*-*-
 
-!  Copyright reserved, Cartis/Gould/Orban/Toint, for GALAHAD productions
-!  Principal author: Coralia Cartis and Nick Gould
+!  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+!  Principal author: Nick Gould
 
 !  History -
-!   planned for release in GALAHAD Version 2.2
+!   based originally on GALAHAD_CQP
+!   originally released in GALAHAD Version 3.1. August 7th 2018
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-! ***** NB. Just a simplified shell for QPB at present ******
+    MODULE GALAHAD_LPB_double
 
-   MODULE GALAHAD_LPB_double
+!     ------------------------------------------------
+!     |                                              |
+!     | Minimize the linear objective function       |
+!     |                                              |
+!     |              g^T x + f                       |
+!     |                                              |
+!     | subject to the linear constraints and bounds |
+!     |                                              |
+!     |           c_l <= A x <= c_u                  |
+!     |           x_l <=  x <= x_u                   |
+!     |                                              |
+!     | using an infeasible-point primal-dual method |
+!     |                                              |
+!     ------------------------------------------------
 
-!     ------------------------------------------
-!     |                                        |
-!     | Solve the linear program               |
-!     |                                        |
-!     |    minimize       g(T) x + f           |
-!     |    subject to     c_l <= A x <= c_u    |
-!     |                   x_l <=  x  <= x_u    |
-!     |                                        |
-!     | using an interior-point  approach      |
-!     |                                        |
-!     ------------------------------------------
-
+!$    USE omp_lib
 !NOT95USE GALAHAD_CPU_time
-      USE GALAHAD_NORMS_double
-      USE GALAHAD_SILS_double
+      USE GALAHAD_CLOCK
+      USE GALAHAD_SYMBOLS
+      USE GALAHAD_STRING_double, ONLY: STRING_pleural, STRING_verb_pleural,    &
+                                       STRING_ies, STRING_are, STRING_ordinal
+      USE GALAHAD_SPACE_double
+      USE GALAHAD_SMT_double
       USE GALAHAD_QPT_double
-      USE GALAHAD_QPP_double
-      USE GALAHAD_ROOTS_double, ONLY : ROOTS_quadratic
-      USE GALAHAD_QPD_double, LPB_data_type => QPD_data_type, LPB_AX => QPD_AX
-
-      USE GALAHAD_LSQP_double
       USE GALAHAD_SPECFILE_double
+      USE GALAHAD_QPP_double, LPB_dims_type => QPP_dims_type
+      USE GALAHAD_QPD_double, LPB_data_type => QPD_data_type,                  &
+                              LPB_AX => QPD_AX, LPB_abs_AX => QPD_abs_AX
+      USE GALAHAD_ROOTS_double
+      USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build,                      &
+                               SORT_heapsort_smallest, SORT_inverse_permute
       USE GALAHAD_FDC_double
-      USE GALAHAD_GLTR_double
+      USE GALAHAD_SBLS_double
+      USE GALAHAD_CRO_double
+      USE GALAHAD_FIT_double
+      USE GALAHAD_NORMS_double, ONLY: TWO_norm
+      USE GALAHAD_CHECKPOINT_double
+      USE GALAHAD_RPD_double, ONLY: RPD_inform_type, RPD_write_qp_problem_data
 
       IMPLICIT NONE
 
       PRIVATE
-      PUBLIC :: LPB_initialize, LPB_read_specfile, LPB_solve, LPB_terminate,   &
-                LPB_solve_main, LPB_barrier_value, LPB_iterative_refinement,   &
-                LPB_block_solve, LPB_block_iterative_refinement,               &
-                LPB_analyse, LPB_cond, LPB_data_type,                          &
-                LPB_optimal_for_SBLP, QPT_problem_type,                        &
-                SMT_type, SMT_put, SMT_get
+      PUBLIC :: LPB_initialize, LPB_read_specfile, LPB_solve, LPB_solve_main,  &
+                LPB_terminate, QPT_problem_type, SMT_type, SMT_put, SMT_get,   &
+                LPB_Ax, LPB_data_type, LPB_dims_type, LPB_indicators,          &
+                LPB_workspace
 
 !--------------------
 !   P r e c i s i o n
@@ -57,413 +68,652 @@
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
       INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
 
-!-------------------------------------------------
-!  D e r i v e d   t y p e   d e f i n i t i o n s
-!-------------------------------------------------
-
-      TYPE, PUBLIC :: LPB_time_type
-        REAL :: total, preprocess, find_dependent, analyse, factorize, solve
-        REAL :: phase1_total, phase1_analyse, phase1_factorize, phase1_solve
-      END TYPE
-
-      TYPE, PUBLIC :: LPB_control_type
-        INTEGER :: error, out, print_level, start_print, stop_print, maxit 
-        INTEGER :: factor, max_col, indmin, valmin, itref_max, infeas_max 
-        INTEGER :: cg_maxit, precon, indicator_type, restore_problem
-        REAL ( KIND = wp ) :: infinity, stop_p, stop_d, stop_c, prfeas, dufeas
-        REAL ( KIND = wp ) :: muzero, reduce_infeas, obj_unbounded
-        REAL ( KIND = wp ) :: pivot_tol, pivot_tol_for_dependencies, zero_pivot
-        REAL ( KIND = wp ) :: identical_bounds_tol, indicator_tol_tapia
-        REAL ( KIND = wp ) :: indicator_tol_p, indicator_tol_pd
-        REAL ( KIND = wp ) :: inner_stop_relative, inner_stop_absolute
-        REAL ( KIND = wp ) :: initial_radius, inner_fraction_opt, cpu_time_limit
-        LOGICAL :: remove_dependencies, treat_zero_bounds_as_general
-        LOGICAL :: center, primal, feasol, array_syntax_worse_than_do_loop
-        CHARACTER ( LEN = 30 ) :: prefix
-        TYPE ( LSQP_control_type ) :: LSQP_control
-      END TYPE
-
-      TYPE, PUBLIC :: LPB_inform_type
-        INTEGER :: status, alloc_status, iter, cg_iter, factorization_status
-        INTEGER ( KIND = long ) :: factorization_integer, factorization_real
-        INTEGER :: nfacts, nbacts, nmods
-        REAL ( KIND = wp ) :: obj, non_negligible_pivot
-        LOGICAL :: feasible
-        CHARACTER ( LEN = 80 ) :: bad_alloc
-        TYPE ( LPB_time_type ) :: time
-      END TYPE
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
       INTEGER, PARAMETER :: max_sc = 200
-      INTEGER, PARAMETER :: max_real_store_ratio = 100
-      INTEGER, PARAMETER :: max_integer_store_ratio = 100
+      INTEGER, PARAMETER :: no_last = - 1000
       REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
       REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
-      REAL ( KIND = wp ), PARAMETER :: point99 = 0.99_wp
+      REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
       REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
       REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
       REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
+      REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
       REAL ( KIND = wp ), PARAMETER :: four = 4.0_wp
+      REAL ( KIND = wp ), PARAMETER :: eight = 8.0_wp
+      REAL ( KIND = wp ), PARAMETER :: sixteen = 16.0_wp
       REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
       REAL ( KIND = wp ), PARAMETER :: hundred = 100.0_wp
       REAL ( KIND = wp ), PARAMETER :: thousand = 1000.0_wp
-      REAL ( KIND = wp ), PARAMETER :: tenm2 = ten ** ( - 2 )
       REAL ( KIND = wp ), PARAMETER :: tenm4 = ten ** ( - 4 )
-      REAL ( KIND = wp ), PARAMETER :: k_diag = one
+      REAL ( KIND = wp ), PARAMETER :: tenm5 = ten ** ( - 5 )
+      REAL ( KIND = wp ), PARAMETER :: tenm7 = ten ** ( - 7 )
+      REAL ( KIND = wp ), PARAMETER :: tenm10 = ten ** ( - 10 )
+      REAL ( KIND = wp ), PARAMETER :: ten4 = ten ** 4
+      REAL ( KIND = wp ), PARAMETER :: ten5 = ten ** 5
       REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
       REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: res_large = one
-      REAL ( KIND = wp ), PARAMETER :: remote = ten ** 10
-      REAL ( KIND = wp ), PARAMETER :: bar_min = zero
-      REAL ( KIND = wp ), PARAMETER :: z_min = ten ** ( - 12 )
+      REAL ( KIND = wp ), PARAMETER :: onemeps = one - epsmch
+      REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
+      REAL ( KIND = wp ), PARAMETER :: rminvr_zero = epsmch
+      REAL ( KIND = wp ), PARAMETER :: twentyeps = two * teneps
+      REAL ( KIND = wp ), PARAMETER :: stop_alpha = ten ** ( -15 )
+      REAL ( KIND = wp ), PARAMETER :: relative_pivot_default = 0.01_wp
 
-!-------------------------------
-!   I n t e r f a c e  B l o c k
-!-------------------------------
+!-------------------------------------------------
+!  D e r i v e d   t y p e   d e f i n i t i o n s
+!-------------------------------------------------
 
-!      INTERFACE TWO_NORM
+!  - - - - - - - - - - - - - - - - - - - - - - -
+!   control derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: LPB_control_type
+
+!   error and warning diagnostics occur on stream error
+
+        INTEGER :: error = 6
+
+!   general output occurs on stream out
+
+        INTEGER :: out = 6
+
+!   the level of output required is specified by print_level
+
+        INTEGER :: print_level = 0
+
+!   any printing will start on this iteration
+
+        INTEGER :: start_print = - 1
+
+!   any printing will stop on this iteration
+
+        INTEGER :: stop_print = - 1
+
+!   at most maxit inner iterations are allowed
+
+        INTEGER :: maxit = 1000
+
+!   the number of iterations for which the overall infeasibility
+!     of the problem is not reduced by at least a factor %reduce_infeas
+!     before the problem is flagged as infeasible (see reduce_infeas)
+
+        INTEGER :: infeas_max = 10
+
+!   the initial value of the barrier parameter will not be changed for the
+!     first muzero_fixed iterations
 !
-!        FUNCTION SNRM2( n, X, incx )
-!        REAL :: SNRM2
-!        INTEGER, INTENT( IN ) :: n, incx
-!        REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
-!!       REAL, INTENT( IN ), DIMENSION( : ) :: X
-!        END FUNCTION SNRM2
+        INTEGER :: muzero_fixed = 0
+
+!   indicate whether and how much of the input problem
+!    should be restored on output. Possible values are
+
+!      0 nothing restored
+!      1 scalar and vector parameters
+!      2 all parameters
+
+        INTEGER :: restore_problem = 2
+
+!   specifies the type of indicator function used. Pssible values are
+
+!     1 primal indicator: constraint active <=> distance to nearest bound
+!         <= %indicator_p_tol
+!     2 primal-dual indicator: constraint active <=> distance to nearest bound
+!        <= %indicator_tol_pd * size of corresponding multiplier
+!     3 primal-dual indicator: constraint active <=> distance to nearest bound
+!        <= %indicator_tol_tapia * distance to same bound at previous iteration
+
+        INTEGER :: indicator_type = 2
+
+!   which residual trajectory should be used to aim from the current iterate
+!   to the solution
+
+!     1 the Zhang linear residual trajectory
+!     2 the Zhao-Sun quadratic residual trajectory
+!     3 the Zhang arc ultimately switching to the Zhao-Sun residual trajectory
+!     4 the mixed linear-quadratic residual trajectory
+
+        INTEGER :: arc = 1
+
+!    the order of (Taylor/Puiseux) series to fit to the path data
+
+        INTEGER :: series_order = 2
+
+!    specifies the unit number to write generated SIF file describing the
+!     current problem
+
+        INTEGER :: sif_file_device = 52
+
+!    specifies the unit number to write generated QPLIB file describing the
+!     current problem
+
+        INTEGER :: qplib_file_device = 53
+
+!   any bound larger than infinity in modulus will be regarded as infinite
+
+        REAL ( KIND = wp ) :: infinity = ten ** 19
+
+!   the required absolute and relative accuracies for the primal infeasibility
+
+        REAL ( KIND = wp ) :: stop_abs_p = epsmch
+        REAL ( KIND = wp ) :: stop_rel_p = zero
+
+!   the required absolute and relative accuracies for the dual infeasibility
+
+        REAL ( KIND = wp ) :: stop_abs_d = epsmch
+        REAL ( KIND = wp ) :: stop_rel_d = zero
+
+!   the required absolute and relative accuracies for the complementarity
+
+        REAL ( KIND = wp ) :: stop_abs_c = epsmch
+        REAL ( KIND = wp ) :: stop_rel_c = zero
+
+!   initial primal variables will not be closer than prfeas from their bounds
+
+        REAL ( KIND = wp ) :: prfeas = ten4
+
+!   initial dual variables will not be closer than dufeas from their bounds
 !
-!        FUNCTION DNRM2( n, X, incx )
-!        DOUBLE PRECISION :: DNRM2
-!        INTEGER, INTENT( IN ) :: n, incx
-!        DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
-!!       DOUBLE PRECISION, INTENT( IN ), DIMENSION( : ) :: X
-!        END FUNCTION DNRM2
-!        
-!      END INTERFACE
+        REAL ( KIND = wp ) :: dufeas = ten4
+
+!   the initial value of the barrier parameter. If muzero is not positive,
+!    it will be reset to an appropriate value
+
+        REAL ( KIND = wp ) :: muzero = - one
+
+!   the weight attached to primal-dual infeasibility compared to complementarity
+!    when assessing step acceptance
+
+        REAL ( KIND = wp ) :: tau = one
+
+!   individual complementarities will not be allowed to be smaller than
+!    gamma_c times the average value
+
+        REAL ( KIND = wp ) :: gamma_c = tenm5
+
+!   the average complementarity will not be allowed to be smaller than
+!    gamma_f times the primal/dual infeasibility
+
+        REAL ( KIND = wp ) :: gamma_f = tenm5
+
+!   if the overall infeasibility of the problem is not reduced by at least a
+!    factor reduce_infeas over %infeas_max iterations, the problem is flagged
+!    as infeasible (see infeas_max)
+
+        REAL ( KIND = wp ) :: reduce_infeas = one - point01
+
+!   if the objective function value is smaller than obj_unbounded, it will be
+!    flagged as unbounded from below.
+
+        REAL ( KIND = wp ) :: obj_unbounded = - one / epsmch
+
+!   if W=0 and the potential function value is smaller than
+!         potential_unbounded * number of one-sided bounds,
+!     the analytic center will be flagged as unbounded
+
+        REAL ( KIND = wp ) :: potential_unbounded = - 10.0_wp
+
+!   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than
+!    identical_bounds_tol will be reset to the average of their values
+
+        REAL ( KIND = wp ) :: identical_bounds_tol = epsmch
+
+!  start terminal extrapolation when mu reaches mu_lunge
+
+        REAL ( KIND = wp ) :: mu_lunge = ten ** ( - 5 )
+
+!   if %indicator_type = 1, a constraint/bound will be
+!    deemed to be active <=> distance to nearest bound <= %indicator_p_tol
+
+        REAL ( KIND = wp ) :: indicator_tol_p = epsmch
+
+!   if %indicator_type = 2, a constraint/bound will be deemed to be active
+!     <=> distance to nearest bound
+!        <= %indicator_tol_pd * size of corresponding multiplier
+
+        REAL ( KIND = wp ) :: indicator_tol_pd = 1.0_wp
+
+!   if %indicator_type = 3, a constraint/bound will be deemed to be active
+!     <=> distance to nearest bound
+!        <= %indicator_tol_tapia * distance to same bound at previous iteration
+
+        REAL ( KIND = wp ) :: indicator_tol_tapia = 0.9_wp
+
+!   the maximum CPU time allowed (-ve means infinite)
+
+        REAL ( KIND = wp ) :: cpu_time_limit = - one
+
+!   the maximum elapsed clock time allowed (-ve means infinite)
+
+        REAL ( KIND = wp ) :: clock_time_limit = - one
+
+!   the equality constraints will be preprocessed to remove any linear
+!    dependencies if true
+
+        LOGICAL :: remove_dependencies = .TRUE.
+
+!    any problem bound with the value zero will be treated as if it were a
+!     general value if true
+
+        LOGICAL :: treat_zero_bounds_as_general = .FALSE.
+
+!   if %just_feasible is true, the algorithm will stop as soon as a feasible
+!     point is found. Otherwise, the optimal solution to the problem will be
+!     found
+
+        LOGICAL :: just_feasible  = .FALSE.
+
+!   if %getdua, is true, advanced initial values are obtained for the
+!    dual variables
+
+        LOGICAL :: getdua = .FALSE.
+
+!  decide between Puiseux and Taylor series approximations to the arc
+
+        LOGICAL :: puiseux = .FALSE.
+
+!    try every order of series up to series_order?
+
+        LOGICAL :: every_order = .TRUE.
+
+!   if %feasol is true, the final solution obtained will be perturbed so that
+!    variables close to their bounds are moved onto these bounds
+
+        LOGICAL :: feasol = .FALSE.
+
+!   if %balance_initial_complentarity is true, the initial complemetarity
+!    is required to be balanced
+!
+        LOGICAL :: balance_initial_complentarity = .FALSE.
+!
+!  if %crossover is true, cross over the solution to one defined by
+!   linearly-independent constraints if possible
+!
+        LOGICAL :: crossover = .TRUE.
+
+!   if %space_critical true, every effort will be made to use as little
+!     space as possible. This may result in longer computation time
+
+        LOGICAL :: space_critical = .FALSE.
+
+!   if %deallocate_error_fatal is true, any array/pointer deallocation error
+!     will terminate execution. Otherwise, computation will continue
+
+        LOGICAL :: deallocate_error_fatal = .FALSE.
+
+!   if %generate_sif_file is .true. if a SIF file describing the current
+!    problem is to be generated
+
+        LOGICAL :: generate_sif_file = .FALSE.
+
+!   if %generate_qplib_file is .true. if a QPLIB file describing the current
+!    problem is to be generated
+
+        LOGICAL :: generate_qplib_file = .FALSE.
+
+!  name of generated SIF file containing input problem
+
+        CHARACTER ( LEN = 30 ) :: sif_file_name =                              &
+         "LPBPROB.SIF"  // REPEAT( ' ', 18 )
+
+!  name of generated QPLIB file containing input problem
+
+        CHARACTER ( LEN = 30 ) :: qplib_file_name =                            &
+         "LPBPROB.qplib"  // REPEAT( ' ', 16 )
+
+!  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
+!   where %prefix contains the required string enclosed in
+!   quotes, e.g. "string" or 'string'
+
+        CHARACTER ( LEN = 30 ) :: prefix = '""                            '
+
+!  control parameters for FDC
+
+        TYPE ( FDC_control_type ) :: FDC_control
+
+!  control parameters for SBLS
+
+        TYPE ( SBLS_control_type ) :: SBLS_control
+
+!  control parameters for FIT
+
+        TYPE ( FIT_control_type ) :: FIT_control
+
+!  control parameters for ROOTS
+
+        TYPE ( ROOTS_control_type ) :: ROOTS_control
+
+!  control parameters for CRO
+
+        TYPE ( CRO_control_type ) :: CRO_control
+      END TYPE
+
+!  - - - - - - - - - - - - - - - - - - - - - -
+!   time derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: LPB_time_type
+
+!  the total CPU time spent in the package
+
+        REAL ( KIND = wp ) :: total = 0.0
+
+!  the CPU time spent preprocessing the problem
+
+        REAL ( KIND = wp ) :: preprocess = 0.0
+
+!  the CPU time spent detecting linear dependencies
+
+        REAL ( KIND = wp ) :: find_dependent = 0.0
+
+!  the CPU time spent analysing the required matrices prior to factorization
+
+        REAL ( KIND = wp ) :: analyse = 0.0
+
+!  the CPU time spent factorizing the required matrices
+
+        REAL ( KIND = wp ):: factorize = 0.0
+
+!  the CPU time spent computing the search direction
+
+        REAL ( KIND = wp ) :: solve = 0.0
+
+!  the total clock time spent in the package
+
+        REAL ( KIND = wp ) :: clock_total = 0.0
+
+!  the clock time spent preprocessing the problem
+
+        REAL ( KIND = wp ) :: clock_preprocess = 0.0
+
+!  the clock time spent detecting linear dependencies
+
+        REAL ( KIND = wp ) :: clock_find_dependent = 0.0
+
+!  the clock time spent analysing the required matrices prior to factorization
+
+        REAL ( KIND = wp ) :: clock_analyse = 0.0
+
+!  the clock time spent factorizing the required matrices
+
+        REAL ( KIND = wp ) :: clock_factorize = 0.0
+
+!  the clock time spent computing the search direction
+
+        REAL ( KIND = wp ) :: clock_solve = 0.0
+      END TYPE
+
+!  - - - - - - - - - - - - - - - - - - - - - - -
+!   inform derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: LPB_inform_type
+
+!  return status. See LPB_solve for details
+
+        INTEGER :: status = 0
+
+!  the status of the last attempted allocation/deallocation
+
+        INTEGER :: alloc_status = 0
+
+!  the name of the array for which an allocation/deallocation error ocurred
+
+        CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
+
+!  the total number of iterations required
+
+        INTEGER :: iter = - 1
+
+!  the return status from the factorization
+
+        INTEGER :: factorization_status = 0
+
+!  the total integer workspace required for the factorization
+
+        INTEGER  ( KIND = long ) :: factorization_integer = - 1
+
+!  the total real workspace required for the factorization
+
+        INTEGER  ( KIND = long ) :: factorization_real = - 1
+
+!  the total number of factorizations performed
+
+        INTEGER :: nfacts = - 1
+
+!  the total number of "wasted" function evaluations during the linesearch
+
+        INTEGER :: nbacts = - 1
+
+!  the number of threads used
+
+        INTEGER :: threads = 1
+
+!  the value of the objective function at the best estimate of the solution
+!   determined by LPB_solve
+
+        REAL ( KIND = wp ) :: obj = HUGE( one )
+
+!  the value of the primal infeasibility
+
+        REAL ( KIND = wp ) :: primal_infeasibility = HUGE( one )
+
+!  the value of the dual infeasibility
+
+        REAL ( KIND = wp ) :: dual_infeasibility = HUGE( one )
+
+!  the value of the complementary slackness
+
+        REAL ( KIND = wp ) :: complementary_slackness = HUGE( one )
+
+!  these values at the initial point (needed bg GALAHAD_CLPB)
+
+        REAL ( KIND = wp ) :: init_primal_infeasibility = HUGE( one )
+        REAL ( KIND = wp ) :: init_dual_infeasibility = HUGE( one )
+        REAL ( KIND = wp ) :: init_complementary_slackness = HUGE( one )
+
+!  the value of the logarithmic potential function
+!      sum -log(distance to constraint boundary)
+
+        REAL ( KIND = wp ) :: potential
+
+!  the smallest pivot which was not judged to be zero when detecting linearly
+!   dependent constraints
+
+        REAL ( KIND = wp ) :: non_negligible_pivot = - one
+
+!  is the returned "solution" feasible?
+
+        LOGICAL :: feasible = .FALSE.
+
+!  checkpoints(i) records the iteration at which the criticality measures
+!   first fall below 10**-i, i = 1, ..., 16 (-1 means not achieved)
+
+        INTEGER, DIMENSION( 16 ) :: checkpointsIter = - 1
+        REAL ( KIND = wp ), DIMENSION( 16 ) :: checkpointsTime = - one
+
+!  timings (see above)
+
+        TYPE ( LPB_time_type ) :: time
+
+!  inform parameters for FDC
+
+        TYPE ( FDC_inform_type ) :: FDC_inform
+
+!  inform parameters for SBLS
+
+        TYPE ( SBLS_inform_type ) :: SBLS_inform
+
+!  return information from FIT
+
+        TYPE ( FIT_inform_type ) :: FIT_inform
+
+!  return information from ROOTS
+
+        TYPE ( ROOTS_inform_type ) :: ROOTS_inform
+
+!  inform parameters for CRO
+
+        TYPE ( CRO_inform_type ) :: CRO_inform
+
+!  inform parameters for RPD
+
+        TYPE ( RPD_inform_type ) :: RPD_inform
+      END TYPE
 
    CONTAINS
 
 !-*-*-*-*-*-   L P B _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
 
-      SUBROUTINE LPB_initialize( data, control )
+      SUBROUTINE LPB_initialize( data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Default control data for LPB. This routine should be called before
-!  LPB_solve
-! 
-!  --------------------------------------------------------------------
+!  LPB_primal_dual
+!
+!  ---------------------------------------------------------------------------
 !
 !  Arguments:
 !
 !  data     private internal data
-!  control  a structure containing control information. Components are -
-!
-!  INTEGER control parameters:
-!
-!   error. Error and warning diagnostics occur on stream error 
-!   
-!   out. General output occurs on stream out
-!   
-!   print_level. The level of output required is specified by print_level
-!   
-!   maxit. At most maxit inner iterations are allowed 
-!   
-!   start_print. Any printing will start on this iteration
-!
-!   stop_print. Any printing will stop on this iteration
-!
-!   factor. The factorization to be used.
-!    Possible values are
-!
-!      0  automatic 
-!      1  Schur-complement factorization
-!      2  augmented-system factorization
-!
-!   max_col. The maximum number of nonzeros in a column of A which is permitted
-!    with the Schur-complement factorization
-!
-!   indmin. An initial guess as to the integer workspace required by SILS
-!
-!   valmin. An initial guess as to the real workspace required by SILS
-! 
-!   itref_max. The maximum number of iterative refinements allowed
-!
-!   infeas_max. The number of iterations for which the overall infeasibility
-!     of the problem is not reduced by at least a factor control%reduce_infeas
-!     before the problem is flagged as infeasible (see reduce_infeas)
-!
-!   cg_maxit. The maximum number of CG iterations allowed. If cg_maxit < 0,
-!     this number will be reset to the dimension of the system + 1
-!
-!   precon. The preconditioner to be used for the CG is defined by precon. 
-!    Possible values are
-!
-!      0  automatic 
-!      1  no preconditioner, i.e, the identity within full factorization
-!      2  diagonal using the barrier terms within full factorization
-!
-!   restore_problem. Indicates whether and how much of the input problem
-!    should be restored on output. Possible values are
-!
-!      0 nothing restored
-!      1 scalar and vector parameters
-!      2 all parameters
-!
-!   indicator_type. Specifies the type of indicator function used.
-!    Pssible values are
-!
-!     1 primal indicator: constraint active <=> distance to nearest bound 
-!         <= %indicator_p_tol
-!     2 primal-dual indicator: constraint active <=> distance to nearest bound 
-!        <= %indicator_tol_pd * size of corresponding multiplier
-!     3 primal-dual indicator: constraint active <=> distance to nearest bound 
-!        <= %indicator_tol_tapia * distance to same bound at previous iteration
-!
-!  REAL control parameters:
-!
-!   infinity. Any bound larger than infinity in modulus will be regarded as 
-!    infinite 
-!   
-!   stop_p. The required accuracy for the primal infeasibility
-!   
-!   stop_d. The required accuracy for the dual infeasibility
-!   
-!   stop_c. The required accuracy for the complementarity
-!   
-!   prfeas. The initial primal variables will not be closer than prfeas 
-!    from their bounds 
-!   
-!   dufeas. The initial dual variables will not be closer than dufeas from 
-!    their bounds 
-!   
-!   muzero. The initial value of the barrier parameter. If muzero is
-!    not positive, it will be reset to an appropriate value
-!           
-!   reduce_infeas. If the overall infeasibility of the problem is not reduced 
-!    by at least a factor reduce_infeas over control%infeas_max iterations,
-!    the problem is flagged as infeasible (see infeas_max)
-!
-!   obj_unbounded. If the objective function value is smaller than
-!    obj_unbounded, it will be flagged as unbounded from below.
-!
-!   pivot_tol. The threshold pivot used by the matrix factorization.
-!    See the documentation for SILS for details
-!
-!   pivot_tol_for_dependencies. The threshold pivot used by the matrix 
-!    factorization when attempting to detect linearly dependent constraints.
-!    See the documentation for SILS for details
-!
-!   zero_pivot. Any pivots smaller than zero_pivot in absolute value will 
-!    be regarded to be zero when attempting to detect linearly dependent 
-!    constraints
-!
-!   identical_bounds_tol. Any pair of constraint bounds (c_l,c_u) or (x_l,x_u)
-!    that are closer than identical_bounds_tol will be reset to the average
-!    of their values
-!
-!   initial_radius. The initial trust-region radius
-!
-!   inner_fraction_opt. a search direction which gives at least 
-!    inner_fraction_opt times the optimal model decrease will be found
-!
-!   inner_stop_relative and inner_stop_absolute. The search direction is
-!    considered as an acceptable approximation to the minimizer of the
-!    model if the gradient of the model in the preconditioning(inverse) 
-!    norm is less than 
-!     max( inner_stop_relative * initial preconditioning(inverse)
-!                                 gradient norm, inner_stop_absolute )
-!
-!   indicator_tol_p. If %indicator_type = 1, a constraint/bound will be 
-!    deemed to be active <=> distance to nearest bound <= %indicator_p_tol
-!
-!   indicator_tol_pd. If %indicator_type = 2, a constraint/bound will be 
-!    deemed to be active <=> distance to nearest bound 
-!        <= %indicator_tol_pd * size of corresponding multiplier
-!
-!   indicator_tol_tapia. If %indicator_type = 3, a constraint/bound will be 
-!    deemed to be active <=> distance to nearest bound 
-!        <= %indicator_tol_tapia * distance to same bound at previous iteration
-! 
-!   cpu_time_limit. The maximum CPU time allowed
-! 
-!  LOGICAL control parameters:
-!
-!   remove_dependencies. If true, the equality constraints will be preprocessed
-!    to remove any linear dependencies
-!
-!   treat_zero_bounds_as_general. If true, any problem bound with the value
-!    zero will be treated as if it were a general value
-!
-!   center. If center is .TRUE., the algorithm will use the analytic center
-!    of the feasible set as its initial feasible point. Otherwise, a feasible
-!    point as close as possible to the initial point will be used. We recommend
-!    using the analytic center
-!
-!   primal. If primal, is .TRUE., a primal barrier method will be used in
-!    place of the primal-dual method
-!   
-!   feasol. If feasol is true, the final solution obtained will be perturbed 
-!    so that variables close to their bounds are moved onto these bounds
-!
-!   array_syntax_worse_than_do_loop. If array_syntax_worse_than_do_loop is
-!    true, f77-style do loops will be used rather than 
-!    f90-style array syntax for vector operations
-!
-!  CHARACTER control parameters:
-!
-!  prefix (len=30). All output lines will be prefixed by 
-!    %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
-!   quotes, e.g. "string" or 'string'
+!  control  a structure containing control information. See preamble
+!  inform   a structure containing output information. See preamble
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
       TYPE ( LPB_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LPB_control_type ), INTENT( OUT ) :: control        
+      TYPE ( LPB_control_type ), INTENT( OUT ) :: control
+      TYPE ( LPB_inform_type ), INTENT( OUT ) :: inform
 
-!  Set control parameters
+      inform%status = GALAHAD_ok
 
-      CALL LSQP_initialize( data, control%LSQP_control )
+!  Set real control parameters
 
-!  Integer parameters
-
-      control%error  = 6
-      control%out  = 6
-      control%print_level = 0
-      control%maxit  = 1000
-      control%start_print = - 1
-      control%stop_print = - 1
-      control%factor = 0
-      control%max_col = 35
-      control%indmin = 1000
-      control%valmin = 1000
-      control%itref_max = 1
-      control%infeas_max = 200
-!     control%cg_maxit = - 1
-      control%cg_maxit = 200
-      control%precon = 0
-      control%restore_problem = 2
-      control%indicator_type = 3
-
-!  Real parameters
-
-      control%infinity = ten ** 19
-      control%stop_p  = epsmch ** 0.33
-      control%stop_c  = epsmch ** 0.33
-      control%stop_d  = epsmch ** 0.33
-      control%prfeas = one
-      control%dufeas = one
-      control%muzero = - one
-      control%reduce_infeas = one - point01
+      control%stop_abs_p = epsmch ** 0.5
+      control%stop_abs_c = epsmch ** 0.5
+      control%stop_abs_d = epsmch ** 0.5
       control%obj_unbounded = - epsmch ** ( - 2 )
-!     control%pivot_tol = data%CNTL%u
-      control%pivot_tol = epsmch ** 0.75
-      control%pivot_tol_for_dependencies = half
-      control%zero_pivot = epsmch ** 0.75
-      control%identical_bounds_tol = epsmch
-      control%initial_radius = - one
-      control%inner_fraction_opt = point1
-!     control%inner_stop_relative = zero
-      control%inner_stop_relative = point01
-      control%inner_stop_absolute = SQRT( epsmch )
-      control%indicator_tol_p = control%stop_p
-      control%indicator_tol_pd = 1.0_wp
-      control%indicator_tol_tapia = 0.9_wp
-      control%cpu_time_limit = - one
+      control%indicator_tol_p = control%stop_abs_p
 
-!  Logical parameters
+!  Initalize FDC components
 
-      control%remove_dependencies = .TRUE.
-      control%treat_zero_bounds_as_general = .FALSE.
-      control%center = .TRUE.
-      control%primal = .FALSE.
-!     control%feasol = .TRUE.
-      control%feasol = .FALSE.
-      control%array_syntax_worse_than_do_loop = .FALSE.
+      CALL FDC_initialize( data%FDC_data, control%FDC_control,                 &
+                           inform%FDC_inform  )
+      control%FDC_control%max_infeas = control%stop_abs_p
+      control%FDC_control%prefix = '" - FDC:"                     '
 
-!  Character parameters
+!  Initalize SBLS components
 
-      control%prefix = '""                            '
+      CALL SBLS_initialize( data%SBLS_data, control%SBLS_control,              &
+                            inform%SBLS_inform )
+!     control%SBLS_control%perturb_to_make_definite = .FALSE.
+!     control%SBLS_control%preconditioner = 2
+      control%SBLS_control%prefix = '" - SBLS:"                    '
 
-!  Reset relevant LSQP control parameters
+!  Set FIT control parameters
 
-      control%LSQP_control%indicator_type = control%indicator_type
-      control%LSQP_control%indicator_tol_p = control%indicator_tol_p
-      control%LSQP_control%indicator_tol_pd = control%indicator_tol_pd
-      control%LSQP_control%indicator_tol_tapia = control%indicator_tol_tapia
-      control%LSQP_control%feasol = .FALSE.
-      control%LSQP_control%prefix = '" - LSQP:"                    '
+      CALL FIT_initialize( data%FIT_data, control%FIT_control,                 &
+                           inform%FIT_inform )
+      control%FIT_control%prefix = '" - FIT:"                     '
 
-      RETURN  
+!  Set ROOTS control parameters
+
+      CALL ROOTS_initialize( data%ROOTS_data, control%ROOTS_control,           &
+                             inform%ROOTS_inform )
+      control%ROOTS_control%tol = epsmch ** 0.75
+      control%ROOTS_control%prefix = '" - ROOTS:"                   '
+
+!  Set CRO control parameters
+
+      CALL CRO_initialize( data%CRO_data, control%CRO_control,                 &
+                           inform%CRO_inform )
+      control%CRO_control%prefix = '" - CRO:"                     '
+
+!  initialise private data
+
+      data%trans = 0 ; data%tried_to_remove_deps = .FALSE.
+      data%save_structure = .TRUE.
+
+      RETURN
 
 !  End of LPB_initialize
 
       END SUBROUTINE LPB_initialize
 
-!-*-*-*-*-   L P B _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
+!-*-*-*-*-   L P B _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
       SUBROUTINE LPB_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by LPB_initialize could (roughly) 
+!  The defauly values as given by LPB_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN LPB SPECIFICATIONS (DEFAULT)
 !  error-printout-device                             6
 !  printout-device                                   6
 !  print-level                                       0
-!  maximum-number-of-iterations                      1000
 !  start-print                                       -1
 !  stop-print                                        -1
-!  factorization-used                                0
-!  maximum-column-nonzeros-in-schur-complement       35
-!  initial-integer-workspace                         1000
-!  initial-real-workspace                            1000
-!  maximum-refinements                               1
+!  maximum-number-of-iterations                      1000
+!  maximum-number-of-pcg-iterations                  1000
 !  maximum-poor-iterations-before-infeasible         200
-!  maximum-number-of-cg-iterations                   200
-!  preconditioner-used                               0
-!  semi-bandwidth-for-band-preconditioner            5
+!  barrier-fixed-until-iteration                     1
 !  indicator-type-used                               3
-!  restore-problem-on-output                         0
+!  arc-used                                          1
+!  series-order                                      5
+!  restore-problem-on-output                         2
+!  sif-file-device                                   52
+!  qplib-file-device                                 53
 !  infinity-value                                    1.0D+19
-!  primal-accuracy-required                          1.0D-5
-!  dual-accuracy-required                            1.0D-5
-!  complementary-slackness-accuracy-required         1.0D-5
-!  mininum-initial-primal-feasibility                1.0
-!  mininum-initial-dual-feasibility                  1.0
+!  absolute-primal-accuracy                          1.0D-5
+!  relative-primal-accuracy                          1.0D-5
+!  absolute-dual-accuracy                            1.0D-5
+!  relative-dual-accuracy                            1.0D-5
+!  absolute-complementary-slackness-accuracy         1.0D-5
+!  relative-complementary-slackness-accuracy         1.0D-5
+!  mininum-initial-primal-feasibility                1000.0
+!  mininum-initial-dual-feasibility                  1000.0
 !  initial-barrier-parameter                         -1.0
+!  feasibility-vs-complementarity-weight             1.0
+!  balance-complentarity-factor                      1.0D-5
+!  balance-feasibility-factor                        1.0D-5
 !  poor-iteration-tolerance                          0.98
 !  minimum-objective-before-unbounded                -1.0D+32
-!  pivot-tolerance-used                              1.0D-12
-!  pivot-tolerance-used-for-dependencies             0.5
-!  zero-pivot-tolerance                              1.0D-12
+!  minimum-potential-before-unbounded                -10.0
 !  identical-bounds-tolerance                        1.0D-15
-!  initial-trust-region-radius                       -1.0
-!  inner-iteration-fraction-optimality-required      0.1
-!  inner-iteration-relative-accuracy-required        0.01
-!  inner-iteration-absolute-accuracy-required        1.0E-8
+!  barrier-rqeuired-before-final-lunge               1.0D-5
 !  primal-indicator-tolerance                        1.0D-5
 !  primal-dual-indicator-tolerance                   1.0
 !  tapia-indicator-tolerance                         0.9
 !  maximum-cpu-time-limit                            -1.0
+!  maximum-clock-time-limit                          -1.0
 !  remove-linear-dependencies                        T
 !  treat-zero-bounds-as-general                      F
-!  start-at-analytic-center                          T
-!  primal-barrier-used                               F
+!  just-find-feasible-point                          F
+!  balance-initial-complentarity                     F
+!  get-advanced-dual-variables                       F
+!  puiseux-series                                    T
+!  try-every-order-of-series                         T
 !  move-final-solution-onto-bound                    F
+!  cross-over-solution                               T
 !  array-syntax-worse-than-do-loop                   F
-! END LPB SPECIFICATIONS
+!  space-critical                                    F
+!  deallocate-error-fatal                            F
+!  generate-sif-file                                 F
+!  generate-qplib-file                               F
+!  sif-file-name                                     LPBPROB.SIF
+!  qplib-file-name                                   LPBPROB.qplib
+!  output-line-prefix                                ""
+! END LPB SPECIFICATIONS (DEFAULT)
 
 !  Dummy arguments
 
-      TYPE ( LPB_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( LPB_control_type ), INTENT( INOUT ) :: control
       INTEGER, INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -471,7 +721,61 @@
 
 !  Local variables
 
-      INTEGER, PARAMETER :: lspec = 44
+      INTEGER, PARAMETER :: error = 1
+      INTEGER, PARAMETER :: out = error + 1
+      INTEGER, PARAMETER :: print_level = out + 1
+      INTEGER, PARAMETER :: start_print = print_level + 1
+      INTEGER, PARAMETER :: stop_print = start_print + 1
+      INTEGER, PARAMETER :: maxit = stop_print + 1
+      INTEGER, PARAMETER :: infeas_max = maxit + 1
+      INTEGER, PARAMETER :: muzero_fixed = infeas_max + 1
+      INTEGER, PARAMETER :: restore_problem = muzero_fixed + 1
+      INTEGER, PARAMETER :: indicator_type = restore_problem + 1
+      INTEGER, PARAMETER :: arc = indicator_type + 1
+      INTEGER, PARAMETER :: series_order = arc + 1
+      INTEGER, PARAMETER :: sif_file_device = series_order + 1
+      INTEGER, PARAMETER :: qplib_file_device = sif_file_device + 1
+      INTEGER, PARAMETER :: infinity = qplib_file_device + 1
+      INTEGER, PARAMETER :: stop_abs_p = infinity + 1
+      INTEGER, PARAMETER :: stop_rel_p = stop_abs_p + 1
+      INTEGER, PARAMETER :: stop_abs_d = stop_rel_p + 1
+      INTEGER, PARAMETER :: stop_rel_d = stop_abs_d + 1
+      INTEGER, PARAMETER :: stop_abs_c = stop_rel_d + 1
+      INTEGER, PARAMETER :: stop_rel_c = stop_abs_c + 1
+      INTEGER, PARAMETER :: prfeas = stop_rel_c + 1
+      INTEGER, PARAMETER :: dufeas = prfeas + 1
+      INTEGER, PARAMETER :: muzero = dufeas + 1
+      INTEGER, PARAMETER :: tau = muzero + 1
+      INTEGER, PARAMETER :: gamma_c = tau + 1
+      INTEGER, PARAMETER :: gamma_f = gamma_c + 1
+      INTEGER, PARAMETER :: reduce_infeas = gamma_f + 1
+      INTEGER, PARAMETER :: obj_unbounded = reduce_infeas + 1
+      INTEGER, PARAMETER :: potential_unbounded =obj_unbounded + 1
+      INTEGER, PARAMETER :: identical_bounds_tol = potential_unbounded + 1
+      INTEGER, PARAMETER :: mu_lunge = identical_bounds_tol + 1
+      INTEGER, PARAMETER :: indicator_tol_p = mu_lunge + 1
+      INTEGER, PARAMETER :: indicator_tol_pd = indicator_tol_p + 1
+      INTEGER, PARAMETER :: indicator_tol_tapia = indicator_tol_pd + 1
+      INTEGER, PARAMETER :: cpu_time_limit = indicator_tol_tapia + 1
+      INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
+      INTEGER, PARAMETER :: remove_dependencies = clock_time_limit + 1
+      INTEGER, PARAMETER :: treat_zero_bounds_as_general =                     &
+                              remove_dependencies + 1
+      INTEGER, PARAMETER :: just_feasible = treat_zero_bounds_as_general + 1
+      INTEGER, PARAMETER :: getdua = just_feasible + 1
+      INTEGER, PARAMETER :: puiseux = getdua + 1
+      INTEGER, PARAMETER :: every_order = puiseux + 1
+      INTEGER, PARAMETER :: feasol = every_order + 1
+      INTEGER, PARAMETER :: balance_initial_complentarity = feasol + 1
+      INTEGER, PARAMETER :: crossover = balance_initial_complentarity + 1
+      INTEGER, PARAMETER :: space_critical = crossover + 1
+      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
+      INTEGER, PARAMETER :: generate_sif_file = deallocate_error_fatal + 1
+      INTEGER, PARAMETER :: generate_qplib_file = generate_sif_file + 1
+      INTEGER, PARAMETER :: sif_file_name = generate_qplib_file + 1
+      INTEGER, PARAMETER :: qplib_file_name = sif_file_name + 1
+      INTEGER, PARAMETER :: prefix = qplib_file_name + 1
+      INTEGER, PARAMETER :: lspec = prefix
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'LPB'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -479,56 +783,72 @@
 
 !  Integer key-words
 
-      spec(  1 )%keyword = 'error-printout-device'
-      spec(  2 )%keyword = 'printout-device'
-      spec(  3 )%keyword = 'print-level' 
-      spec(  4 )%keyword = 'maximum-number-of-iterations'
-      spec(  5 )%keyword = 'start-print'
-      spec(  6 )%keyword = 'stop-print'
-      spec(  7 )%keyword = 'factorization-used'
-      spec(  8 )%keyword = 'maximum-column-nonzeros-in-schur-complement'
-      spec(  9 )%keyword = 'initial-integer-workspace'
-      spec( 10 )%keyword = 'initial-real-workspace'
-      spec( 11 )%keyword = 'maximum-refinements'
-      spec( 12 )%keyword = 'maximum-poor-iterations-before-infeasible'
-      spec( 13 )%keyword = 'maximum-number-of-cg-iterations'
-      spec( 14 )%keyword = 'preconditioner-used'
-      spec( 15 )%keyword = ''
-      spec( 16 )%keyword = 'restore-problem-on-output'
-      spec( 40 )%keyword = 'indicator-type-used'
+      spec( error )%keyword = 'error-printout-device'
+      spec( out )%keyword = 'printout-device'
+      spec( print_level )%keyword = 'print-level'
+      spec( start_print )%keyword = 'start-print'
+      spec( stop_print )%keyword = 'stop-print'
+      spec( maxit )%keyword = 'maximum-number-of-iterations'
+      spec( infeas_max )%keyword = 'maximum-poor-iterations-before-infeasible'
+      spec( muzero_fixed )%keyword = 'barrier-fixed-until-iteration'
+      spec( restore_problem )%keyword = 'restore-problem-on-output'
+      spec( indicator_type )%keyword = 'indicator-type-used'
+      spec( arc )%keyword = 'arc-used'
+      spec( series_order )%keyword = 'series-order'
+      spec( sif_file_device )%keyword = 'sif-file-device'
+      spec( qplib_file_device )%keyword = 'qplib-file-device'
 
 !  Real key-words
 
-      spec( 17 )%keyword = 'infinity-value'
-      spec( 18 )%keyword = 'primal-accuracy-required'
-      spec( 19 )%keyword = 'dual-accuracy-required'
-      spec( 20 )%keyword = 'complementary-slackness-accuracy-required'
-      spec( 21 )%keyword = 'mininum-initial-primal-feasibility'
-      spec( 22 )%keyword = 'mininum-initial-dual-feasibility'
-      spec( 23 )%keyword = 'initial-barrier-parameter'
-      spec( 24 )%keyword = 'poor-iteration-tolerance'
-      spec( 25 )%keyword = 'minimum-objective-before-unbounded'
-      spec( 26 )%keyword = 'pivot-tolerance-used'
-      spec( 27 )%keyword = 'pivot-tolerance-used-for-dependencies'
-      spec( 28 )%keyword = 'zero-pivot-tolerance'
-      spec( 29 )%keyword = 'initial-trust-region-radius'
-      spec( 30 )%keyword = 'inner-iteration-fraction-optimality-required'
-      spec( 31 )%keyword = 'inner-iteration-relative-accuracy-required'
-      spec( 32 )%keyword = 'inner-iteration-absolute-accuracy-required'
-      spec( 33 )%keyword = 'identical-bounds-tolerance'
-      spec( 41 )%keyword = 'primal-indicator-tolerance'
-      spec( 42 )%keyword = 'primal-dual-indicator-tolerance'
-      spec( 43 )%keyword = 'tapia-indicator-tolerance'
-      spec( 44 )%keyword = 'maximum-cpu-time-limit'
+      spec( infinity )%keyword = 'infinity-value'
+      spec( stop_abs_p )%keyword = 'absolute-primal-accuracy'
+      spec( stop_rel_p )%keyword = 'relative-primal-accuracy'
+      spec( stop_abs_d )%keyword = 'absolute-dual-accuracy'
+      spec( stop_rel_d )%keyword = 'relative-dual-accuracy'
+      spec( stop_abs_c )%keyword = 'absolute-complementary-slackness-accuracy'
+      spec( stop_rel_c )%keyword = 'relative-complementary-slackness-accuracy'
+      spec( prfeas )%keyword = 'mininum-initial-primal-feasibility'
+      spec( dufeas )%keyword = 'mininum-initial-dual-feasibility'
+      spec( muzero )%keyword = 'initial-barrier-parameter'
+      spec( tau )%keyword = 'feasibility-vs-complementarity-weight'
+      spec( gamma_c )%keyword = 'balance-complentarity-factor'
+      spec( gamma_f )%keyword = 'balance-feasibility-factor'
+      spec( reduce_infeas )%keyword = 'poor-iteration-tolerance'
+      spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
+      spec( potential_unbounded )%keyword = 'minimum-potential-before-unbounded'
+      spec( identical_bounds_tol )%keyword = 'identical-bounds-tolerance'
+      spec( mu_lunge )%keyword = 'minimum-barrier-before-final-extrapolation'
+      spec( indicator_tol_p )%keyword = 'primal-indicator-tolerance'
+      spec( indicator_tol_pd )%keyword = 'primal-dual-indicator-tolerance'
+      spec( indicator_tol_tapia )%keyword = 'tapia-indicator-tolerance'
+      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
+      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
 
 !  Logical key-words
 
-      spec( 34 )%keyword = 'remove-linear-dependencies'
-      spec( 35 )%keyword = 'treat-zero-bounds-as-general'
-      spec( 36 )%keyword = 'start-at-analytic-center'
-      spec( 37 )%keyword = 'primal-barrier-used'
-      spec( 38 )%keyword = 'move-final-solution-onto-bound'
-      spec( 39 )%keyword = 'array-syntax-worse-than-do-loop'
+      spec( remove_dependencies )%keyword = 'remove-linear-dependencies'
+      spec( treat_zero_bounds_as_general )%keyword =                           &
+        'treat-zero-bounds-as-general'
+      spec( just_feasible )%keyword = 'just-find-feasible-point'
+      spec( getdua )%keyword = 'get-advanced-dual-variables'
+      spec( puiseux )%keyword = 'puiseux-series'
+      spec( every_order )%keyword = 'try-every-order-of-series'
+      spec( feasol )%keyword = 'move-final-solution-onto-bound'
+      spec( balance_initial_complentarity )%keyword =                          &
+        'balance-initial-complentarity'
+      spec( crossover )%keyword = 'cross-over-solution'
+      spec( space_critical )%keyword = 'space-critical'
+      spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
+      spec( generate_sif_file )%keyword = 'generate-sif-file'
+      spec( generate_qplib_file )%keyword = 'generate-qplib-file'
+
+!  Character key-words
+
+      spec( sif_file_name )%keyword = 'sif-file-name'
+      spec( qplib_file_name )%keyword = 'qplib-file-name'
+      spec( prefix )%keyword = 'output-line-prefix'
+
+      IF ( PRESENT( alt_specname ) ) WRITE(6,*) ' lpb: ', alt_specname
 
 !  Read the specfile
 
@@ -542,151 +862,255 @@
 
 !  Set integer values
 
-      CALL SPECFILE_assign_integer( spec( 1 ), control%error,                  &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 2 ), control%out,                    &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 3 ), control%print_level,            &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 4 ), control%maxit,                  &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 5 ), control%start_print,            &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 6 ), control%stop_print,             &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 7 ), control%factor,                 &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 8 ), control%max_col,                &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 9 ), control%indmin,                 &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 10 ), control%valmin,                &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 11 ), control%itref_max,             &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 12 ), control%infeas_max,            &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 13 ), control%cg_maxit,              &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 14 ), control%precon,                &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 16 ), control%restore_problem,       &
-                                    control%error )
-      CALL SPECFILE_assign_integer( spec( 40 ), control%indicator_type,        &
-                                    control%error )
+     CALL SPECFILE_assign_value( spec( error ),                                &
+                                 control%error,                                &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( out ),                                  &
+                                 control%out,                                  &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( print_level ),                          &
+                                 control%print_level,                          &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( start_print ),                          &
+                                 control%start_print,                          &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( stop_print ),                           &
+                                 control%stop_print,                           &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( maxit ),                                &
+                                 control%maxit,                                &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( infeas_max ),                           &
+                                 control%infeas_max,                           &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( muzero_fixed ),                         &
+                                 control%muzero_fixed,                         &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( restore_problem ),                      &
+                                 control%restore_problem,                      &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( indicator_type ),                       &
+                                 control%indicator_type,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( arc ),                                  &
+                                 control%arc,                                  &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( series_order ),                         &
+                                 control%series_order,                         &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( sif_file_device ),                      &
+                                 control%sif_file_device,                      &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( qplib_file_device ),                    &
+                                 control%qplib_file_device,                    &
+                                 control%error )
 
 !  Set real values
 
-      CALL SPECFILE_assign_real( spec( 17 ), control%infinity,                 &
+     CALL SPECFILE_assign_value( spec( infinity ),                             &
+                                 control%infinity,                             &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 18 ), control%stop_p,                   &
-                                 control%error )     
-      CALL SPECFILE_assign_real( spec( 19 ), control%stop_d,                   &
-                                 control%error )     
-      CALL SPECFILE_assign_real( spec( 20 ), control%stop_c,                   &
-                                 control%error )     
-      CALL SPECFILE_assign_real( spec( 21 ), control%prfeas,                   &
-                                 control%error )     
-      CALL SPECFILE_assign_real( spec( 22 ), control%dufeas,                   &
+     CALL SPECFILE_assign_value( spec( stop_abs_p ),                           &
+                                 control%stop_abs_p,                           &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 23 ), control%muzero,                   &
+     CALL SPECFILE_assign_value( spec( stop_rel_p ),                           &
+                                 control%stop_rel_p,                           &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 24 ), control%reduce_infeas,            &
+     CALL SPECFILE_assign_value( spec( stop_abs_d ),                           &
+                                 control%stop_abs_d,                           &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 25 ), control%obj_unbounded,            &
+     CALL SPECFILE_assign_value( spec( stop_rel_d ),                           &
+                                 control%stop_rel_d,                           &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 26 ), control%pivot_tol,                &
+     CALL SPECFILE_assign_value( spec( stop_abs_c ),                           &
+                                 control%stop_abs_c,                           &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 27 ),                                   &
-                                 control%pivot_tol_for_dependencies,           &
+     CALL SPECFILE_assign_value( spec( stop_rel_c ),                           &
+                                 control%stop_rel_c,                           &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 28 ), control%zero_pivot,               &
+     CALL SPECFILE_assign_value( spec( prfeas ),                               &
+                                 control%prfeas,                               &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 29 ), control%initial_radius,           &
+     CALL SPECFILE_assign_value( spec( dufeas ),                               &
+                                 control%dufeas,                               &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 30 ), control%inner_fraction_opt,       &
+     CALL SPECFILE_assign_value( spec( muzero ),                               &
+                                 control%muzero,                               &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 31 ), control%inner_stop_relative,      &
+     CALL SPECFILE_assign_value( spec( tau ),                                  &
+                                 control%tau,                                  &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 32 ), control%inner_stop_absolute,      &
+     CALL SPECFILE_assign_value( spec( gamma_c ),                              &
+                                 control%gamma_c,                              &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 33 ), control%identical_bounds_tol,     &
+     CALL SPECFILE_assign_value( spec( gamma_f ),                              &
+                                 control%gamma_f,                              &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 41 ), control%indicator_tol_p,          &
+     CALL SPECFILE_assign_value( spec( reduce_infeas ),                        &
+                                 control%reduce_infeas,                        &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 41 ), control%indicator_tol_pd,         &
+     CALL SPECFILE_assign_value( spec( obj_unbounded ),                        &
+                                 control%obj_unbounded,                        &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 43 ), control%indicator_tol_tapia,      &
+     CALL SPECFILE_assign_value( spec( potential_unbounded ),                  &
+                                 control%potential_unbounded,                  &
                                  control%error )
-      CALL SPECFILE_assign_real( spec( 44 ), control%cpu_time_limit,           &
+     CALL SPECFILE_assign_value( spec( identical_bounds_tol ),                 &
+                                 control%identical_bounds_tol,                 &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( mu_lunge ),                             &
+                                 control%mu_lunge,                             &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( indicator_tol_p ),                      &
+                                 control%indicator_tol_p,                      &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( indicator_tol_pd ),                     &
+                                 control%indicator_tol_pd,                     &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( indicator_tol_tapia ),                  &
+                                 control%indicator_tol_tapia,                  &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( cpu_time_limit ),                       &
+                                 control%cpu_time_limit,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( clock_time_limit ),                     &
+                                 control%clock_time_limit,                     &
                                  control%error )
 
 !  Set logical values
 
-      CALL SPECFILE_assign_logical( spec( 34 ), control%remove_dependencies,   &
-                                    control%error )
-      CALL SPECFILE_assign_logical( spec( 35 ),                                &
-                                    control%treat_zero_bounds_as_general,      &
-                                    control%error )
-      CALL SPECFILE_assign_logical( spec( 36 ), control%center,                &
-                                    control%error )
-      CALL SPECFILE_assign_logical( spec( 37 ), control%primal,                &
-                                    control%error )
-      CALL SPECFILE_assign_logical( spec( 38 ), control%feasol,                &
-                                    control%error )
-      CALL SPECFILE_assign_logical( spec( 39 ),                                &
-                                    control%array_syntax_worse_than_do_loop,   &
-                                    control%error )
+     CALL SPECFILE_assign_value( spec( remove_dependencies ),                  &
+                                 control%remove_dependencies,                  &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( treat_zero_bounds_as_general ),         &
+                                 control%treat_zero_bounds_as_general,         &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( just_feasible ),                        &
+                                 control%just_feasible,                        &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( getdua ),                               &
+                                 control%getdua,                               &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( puiseux ),                              &
+                                 control%puiseux,                              &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( every_order ),                          &
+                                 control%every_order,                          &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( feasol ),                               &
+                                 control%feasol,                               &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( balance_initial_complentarity ),        &
+                                 control%balance_initial_complentarity,        &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( crossover ),                            &
+                                 control%crossover,                            &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( space_critical ),                       &
+                                 control%space_critical,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( deallocate_error_fatal ),               &
+                                 control%deallocate_error_fatal,               &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( generate_sif_file ),                    &
+                                 control%generate_sif_file,                    &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( generate_qplib_file ),                  &
+                                 control%generate_qplib_file,                  &
+                                 control%error )
 
-!  Read the specfile for LSQP
+!  Set character values
+
+     CALL SPECFILE_assign_value( spec( sif_file_name ),                        &
+                                 control%sif_file_name,                        &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( qplib_file_name ),                      &
+                                 control%qplib_file_name,                      &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( prefix ),                               &
+                                 control%prefix,                               &
+                                 control%error )
+
+!  Read the specfile for FDC
 
       IF ( PRESENT( alt_specname ) ) THEN
-        CALL LSQP_read_specfile( control%LSQP_control, device,                 &
-                                 alt_specname = TRIM( alt_specname ) // '-LSQP')
+        CALL FDC_read_specfile( control%FDC_control, device,                   &
+                                alt_specname = TRIM( alt_specname ) // '-FDC' )
       ELSE
-        CALL LSQP_read_specfile( control%LSQP_control, device )
+        CALL FDC_read_specfile( control%FDC_control, device )
+      END IF
+      control%FDC_control%max_infeas = control%stop_abs_p
+
+!  Read the specfile for SBLS
+
+      IF ( PRESENT( alt_specname ) ) THEN
+        CALL SBLS_read_specfile( control%SBLS_control, device,                 &
+                                 alt_specname = TRIM( alt_specname ) // '-SBLS')
+      ELSE
+        CALL SBLS_read_specfile( control%SBLS_control, device )
       END IF
 
-!  Reset relevant LSQP control parameters
+!  Read the specfile for FIT
 
-      control%LSQP_control%indicator_type = control%indicator_type
-      control%LSQP_control%indicator_tol_p = control%indicator_tol_p
-      control%LSQP_control%indicator_tol_pd = control%indicator_tol_pd
-      control%LSQP_control%indicator_tol_tapia = control%indicator_tol_tapia
-      control%LSQP_control%feasol = .FALSE.
-    
+      IF ( PRESENT( alt_specname ) ) THEN
+        CALL FIT_read_specfile( control%FIT_control, device,                   &
+                                alt_specname = TRIM( alt_specname ) // '-FIT' )
+      ELSE
+        CALL FIT_read_specfile( control%FIT_control, device )
+      END IF
+
+!  Read the specfile for CRO
+
+      IF ( PRESENT( alt_specname ) ) THEN
+        CALL CRO_read_specfile( control%CRO_control, device,                   &
+                                alt_specname = TRIM( alt_specname ) // '-CRO' )
+      ELSE
+        CALL CRO_read_specfile( control%CRO_control, device )
+      END IF
+
+!  Read the specfile for ROOTS
+
+      IF ( PRESENT( alt_specname ) ) THEN
+        CALL ROOTS_read_specfile( control%ROOTS_control, device,               &
+                              alt_specname = TRIM( alt_specname ) // '-ROOTS' )
+      ELSE
+        CALL ROOTS_read_specfile( control%ROOTS_control, device )
+      END IF
+
       RETURN
 
       END SUBROUTINE LPB_read_specfile
 
-!-*-*-*-*-*-*-*-*-   L P B _ S O L V E  S U B R O U T I N E   -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-   L P B _ S O L V E  S U B R O U T I N E   -*-*-*-*-*-*-*
 
-      SUBROUTINE LPB_solve( prob, data, control, inform, C_stat, B_stat )
+      SUBROUTINE LPB_solve( prob, data, control, inform, C_stat, X_stat )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Solve the quadratic program
+!  Minimize the linear objective
 !
-!     minimize     q(x) = g(T) x + f
+!                   g^T x + f
 !
-!     subject to    (c_l)_i <= (Ax)_i <= (c_u)_i , i = 1, .... , m,
+!  where
 !
-!        and        (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
+!        (c_l)_i <= (Ax)_i <= (c_u)_i , i = 1, .... , m,
 !
-!  where x is a vector of n components ( x_1, .... , x_n ), const is a
-!  constant, g is an n-vector, A is an m by n matrix, and any of the bounds 
-!  (c_l)_i, (c_u)_i, (x_l)_i, (x_u)_i may be infinite, using a primal-dual method.
-!  The subroutine is particularly appropriate when A is sparse
+!  and   (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
+!
+!  where x is a vector of n components ( x_1, .... , x_n ),
+!  A is an m by n matrix, and any of the bounds (c_l)_i, (c_u)_i
+!  (x_l)_i, (x_u)_i may be infinite, using a primal-dual method.
+!  The subroutine is particularly appropriate when A is sparse.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Arguments:
 !
-!  prob is a structure of type QPT_problem_type, whose components hold 
+!  prob is a structure of type QPT_problem_type, whose components hold
 !   information about the problem on input, and its solution on output.
 !   The following components must be set:
 !
-!   %new_problem_structure is a LOGICAL variable, which must be set to 
+!   %new_problem_structure is a LOGICAL variable, which must be set to
 !    .TRUE. by the user if this is the first problem with this "structure"
 !    to be solved since the last call to LPB_initialize, and .FALSE. if
 !    a previous call to a problem with the same "structure" (but different
@@ -694,21 +1118,30 @@
 !
 !   %n is an INTEGER variable, which must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
-!                 
+!
 !   %m is an INTEGER variable, which must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
-!                 
-!   %G is a REAL array of length %n, which must be set by
-!    the user to the value of the gradient, g, of the linear term of the
-!    quadratic objective function. The i-th component of G, i = 1, ....,
-!    n, should contain the value of g_i.  
-!    On exit, G will most likely have been reordered.
-!   
+!
+!   %gradient_kind is an INTEGER variable which defines the type of linear
+!    term of the objective function to be used. Possible values are
+!
+!     0  the linear term g will be zero, and the analytic centre of the
+!        feasible region will be found. %G (see below) need not be set
+!
+!     1  each component of the linear terms g will be one.
+!        %G (see below) need not be set
+!
+!     any other value - the gradients will be those given by %G (see below)
+!
+!   %G is a REAL array, which need only be set if %gradient_kind is not 0
+!    or 1. If this is so, it must be of length at least %n, and contain the
+!    linear terms g for the objective function.
+!
 !   %f is a REAL variable, which must be set by the user to the value of
 !    the constant term f in the objective function. On exit, it may have
 !    been changed to reflect variables which have been fixed.
 !
-!   %A is a structure of type SMT_type used to hold the matrix A. 
+!   %A is a structure of type SMT_type used to hold the matrix A.
 !    Three storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -737,158 +1170,128 @@
 !
 !       A%type( 1 : 5 ) = TRANSFER( 'DENSE', A%type )
 !       A%val( : )   the values of the components of A, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
 !    On exit, the components will most likely have been reordered.
 !    The output  matrix will be stored by rows, according to scheme (ii) above.
 !    However, if scheme (i) is used for input, the output A%row will contain
 !    the row numbers corresponding to the values in A%val, and thus in this
-!    case the output matrix will be available in both formats (i) and (ii).   
-! 
-!   %C is a REAL array of length %m, which is used to store the values of 
-!    A x. It need not be set on entry. On exit, it will have been filled 
+!    case the output matrix will be available in both formats (i) and (ii).
+!
+!   %C is a REAL array of length %m, which is used to store the values of
+!    A x. It need not be set on entry. On exit, it will have been filled
 !    with appropriate values.
 !
 !   %X is a REAL array of length %n, which must be set by the user
-!    to an estimate of the solution x. On successful exit, it will contain
-!    the required solution.
+!    to estimaes of the solution, x. On successful exit, it will contain
+!    the required solution, x.
 !
 !   %C_l, %C_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays c_l and c_u of lower and upper bounds on A x.
-!    Any bound c_l_i or c_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %C_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %C_u to a value larger than 
-!    control%infinity. On exit, %C_l and %C_u will most likely have been 
+!    Any bound c_l_i or c_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %C_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %C_u to a value larger than
+!    control%infinity. On exit, %C_l and %C_u will most likely have been
 !    reordered.
-!   
+!
 !   %Y is a REAL array of length %m, which must be set by the user to
-!    appropriate estimates of the values of the Lagrange multipliers 
-!    corresponding to the general constraints c_l <= A x <= c_u. 
-!    On successful exit, it will contain the required vector of Lagrange 
+!    appropriate estimates of the values of the Lagrange multipliers
+!    corresponding to the general constraints c_l <= A x <= c_u.
+!    On successful exit, it will contain the required vector of Lagrange
 !    multipliers.
 !
 !   %X_l, %X_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays x_l and x_u of lower and upper bounds on x.
-!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %X_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %X_u to a value larger than 
-!    control%infinity. On exit, %X_l and %X_u will most likely have been 
+!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %X_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %X_u to a value larger than
+!    control%infinity. On exit, %X_l and %X_u will most likely have been
 !    reordered.
-!   
+!
 !   %Z is a REAL array of length %n, which must be set by the user to
-!    appropriate estimates of the values of the dual variables 
-!    (Lagrange multipliers corresponding to the simple bound constraints 
+!    appropriate estimates of the values of the dual variables
+!    (Lagrange multipliers corresponding to the simple bound constraints
 !    x_l <= x <= x_u). On successful exit, it will contain
-!   the required vector of dual variables. 
+!   the required vector of dual variables.
 !
 !  data is a structure of type LPB_data_type which holds private internal data
 !
-!  control is a structure of type LPB_control_type that controls the 
+!  control is a structure of type LPB_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to LPB_initialize. See LPB_initialize 
+!   the elements may be set by a call to LPB_initialize. See the preamble
 !   for details
 !
-!  inform is a structure of type LPB_inform_type that provides 
-!    information on exit from LPB_solve. The component status 
+!  inform is a structure of type LPB_inform_type that provides
+!    information on exit from LPB_solve. The component status
 !    has possible values:
-!  
+!
 !     0 Normal termination with a locally optimal solution.
 !
-!   - 1 one of the restrictions 
+!    -1 An allocation error occured; the status is given in the component
+!       alloc_status.
+!
+!    -2 A deallocation error occured; the status is given in the component
+!       alloc_status.
+!
+!   - 3 one of the restrictions
 !        prob%n     >=  1
 !        prob%m     >=  0
 !        prob%A%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' }
 !       has been violated.
 !
-!    -2 An allocation error occured; the status is given in the component
-!       alloc_status.
+!    -4 The constraints are inconsistent.
 !
-!    -3 One of more of the components A_val,  A_row,  A_col is not
-!       large enough to hold the given matrices.
+!    -5 The constraints appear to have no feasible point.
 !
-!    -4 an entry from the strict upper triangle of H has been input.
-!
-!    -5 The constraints are inconsistent.
-!
-!    -6 The constraints appear to have no feasible point.
-!
-!    -7 The factorization failed; the return status from the factorization
-!       package is given in the component factor_status.
-!      
-!    -8 The problem is so ill-conditoned that further progress is impossible.  
-!
-!    -9 The step is too small to make further impact.
-!
-!   -10 Too many iterations have been performed. This may happen if
-!       control%maxit is too small, but may also be symptomatic of 
-!       a badly scaled problem.
-!
-!    -11 The objective function appears to be unbounded from below on the
+!    -7 The objective function appears to be unbounded from below on the
 !       feasible set.
 !
-!    -12 Too much CPU time has passed. This may happen if control%cpu_time_limit 
-!        is too small, but may also be symptomatic of a badly scaled problem.
+!    -8 The analytic center appears to be unbounded.
 !
-!  On exit from LPB_solve, other components of inform give the 
-!  following:
+!    -9 The analysis phase of the factorization failed; the return status
+!       from the factorization package is given in the component factor_status.
 !
-!     alloc_status = The status of the last attempted allocation/deallocation 
-!     iter   = The total number of iterations required.
-!     cg_iter = The total number of conjugate gradient iterations required.
-!     factorization_integer = The total integer workspace required for the 
-!       factorization.
-!     factorization_real = The total real workspace required for the 
-!       factorization.
-!     nfacts = The total number of factorizations performed.
-!     nbacts = The total number of "wasted" function evaluations during the 
-!       linesearch.
-!     nmods  = The total number of factorizations which were modified to 
-!       ensure that the matrix was an appropriate preconditioner. 
-!     factorization_status = the return status from the matrix factorization
-!       package.   
-!     obj = the value of the objective function at the best estimate of the 
-!       solution determined by LPB_solve.
-!     non_negligible_pivot = the smallest pivot which was not judged to be
-!       zero when detecting linearly dependent constraints
-!     bad_alloc = the name of the array for which an allocation/deallocation
-!       error ocurred
-!     time%total = the total time spent in the package.
-!     time%preprocess = the time spent preprocessing the problem.
-!     time%find_dependent = the time spent detecting linear dependencies
-!     time%analyse = the time spent analysing the required matrices prior to
-!       factorization.
-!     time%factorize = the time spent factorizing the required matrices.
-!     time%solve = the time spent computing the search direction.
-!     time%phase1_total = the total time spent in the initial-point phase of the
-!      package.
-!     time%phase1_analyse = the time spent analysing the required matrices 
-!       prior to factorization in the inital-point phase.
-!     time%phase1_factorize = the time spent factorizing the required matrices
-!       in the inital-point phase.
-!     time%phase1_solve = the time spent computing the search direction
-!       in the inital-point phase.
+!   -10 The factorization failed; the return status from the factorization
+!       package is given in the component factor_status.
 !
-!  C_stat is an optional INTEGER array of length m, which if present will be 
-!   set on exit to indicate the likely ultimate status of the constraints. 
-!   Possible values are 
-!   C_stat( i ) < 0, the i-th constraint is likely in the active set, 
-!                    on its lower bound, 
+!   -11 The solve of a required linear system failed; the return status from
+!       the factorization package is given in the component factor_status.
+!
+!   -16 The problem is so ill-conditoned that further progress is impossible.
+!
+!   -17 The step is too small to make further impact.
+!
+!   -18 Too many iterations have been performed. This may happen if
+!       control%maxit is too small, but may also be symptomatic of
+!       a badly scaled problem.
+!
+!   -19 Too much time has passed. This may happen if control%cpu_time_limit or
+!       control%clock_time_limit is too small, but may also be symptomatic of
+!       a badly scaled problem.
+!
+!  On exit from LPB_solve, other components of inform are given in the preamble
+!
+!  C_stat is an optional INTEGER array of length m, which if present will be
+!   set on exit to indicate the likely ultimate status of the constraints.
+!   Possible values are
+!   C_stat( i ) < 0, the i-th constraint is likely in the active set,
+!                    on its lower bound,
 !               > 0, the i-th constraint is likely in the active set
 !                    on its upper bound, and
 !               = 0, the i-th constraint is likely not in the active set
 !
-!  B_stat is an optional  INTEGER array of length m, which if present will be 
-!   set on exit to indicate the likely ultimate status of the simple bound 
-!   constraints. Possible values are 
-!   B_stat( i ) < 0, the i-th bound constraint is likely in the active set, 
-!                    on its lower bound, 
+!  X_stat is an optional  INTEGER array of length n, which if present will be
+!   set on exit to indicate the likely ultimate status of the simple bound
+!   constraints. Possible values are
+!   X_stat( i ) < 0, the i-th bound constraint is likely in the active set,
+!                    on its lower bound,
 !               > 0, the i-th bound constraint is likely in the active set
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is likely not in the active set
@@ -902,93 +1305,95 @@
       TYPE ( LPB_control_type ), INTENT( IN ) :: control
       TYPE ( LPB_inform_type ), INTENT( OUT ) :: inform
       INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: C_stat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: B_stat
+      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: X_stat
 
 !  Local variables
 
-      INTEGER :: a_ne, i, j, tiny_x, tiny_c, n_depen, n_more_depen, nzc
-      REAL :: dum, time, time_start
-      REAL ( KIND = wp ) :: tol, f, av_bnd
-      LOGICAL :: reallocate, printi, first_pass, center, reset_bnd
-      LOGICAL :: remap_fixed, remap_freed, remap_more_freed, stat_required
-      TYPE ( FDC_data_type ) :: FDC_data
-      TYPE ( FDC_control_type ) :: FDC_control        
-      TYPE ( FDC_inform_type ) :: FDC_inform
-      TYPE ( LSQP_control_type ) :: LSQP_control
-      TYPE ( LSQP_inform_type ) :: LSQP_inform
+      INTEGER :: i, j, l, n_depen, nzc
+      REAL ( KIND = wp ) :: time_start, time_record, time_now
+      REAL ( KIND = wp ) :: time_analyse, time_factorize
+      REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
+      REAL ( KIND = wp ) :: clock_analyse, clock_factorize, cro_clock_matrix
+      REAL ( KIND = wp ) :: av_bnd, x_l, x_u, g
+!     REAL ( KIND = wp ) :: fixed_sum, xi
+      LOGICAL :: printi, printa, remap_freed, reset_bnd, stat_required
+      LOGICAL :: separable_bqp
+      CHARACTER ( LEN = 80 ) :: array_name
+
+!  functions
+
+!$    INTEGER :: OMP_GET_MAX_THREADS
+
+!  prefix for all output
+
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
-        WRITE( control%out, "( ' entering LPB_solve ' )" )
+        WRITE( control%out, "( A, ' entering LPB_solve ' )" ) prefix
 
-!  Initialize time
+! -------------------------------------------------------------------
+!  If desired, generate a SIF file for problem passed
 
-      CALL CPU_TIME( time_start )
+      IF ( control%generate_sif_file ) THEN
+        CALL QPD_SIF( prob, control%sif_file_name, control%sif_file_device,    &
+                      control%infinity, .TRUE. )
+      END IF
 
-!  Set initial timing breakdowns
+!  SIF file generated
+! -------------------------------------------------------------------
 
-      inform%time%total = 0.0     ; inform%time%phase1_total = 0.0    
-      inform%time%analyse = 0.0   ; inform%time%phase1_analyse = 0.0  
-      inform%time%factorize = 0.0 ; inform%time%phase1_factorize = 0.0
-      inform%time%solve = 0.0     ; inform%time%phase1_solve = 0.0    
-      inform%time%preprocess = 0.0 ; inform%time%find_dependent = 0.0
+! -------------------------------------------------------------------
+!  If desired, generate a QPLIB file for problem passed
 
-!  Initialize counts
+      IF ( control%generate_qplib_file ) THEN
+        CALL RPD_write_qp_problem_data( prob, control%qplib_file_name,         &
+                    control%qplib_file_device, inform%rpd_inform )
+      END IF
 
-      inform%status = 0 ; inform%alloc_status = 0 ; inform%bad_alloc = ''
-      inform%iter = - 1 ; inform%nfacts = - 1 ; inform%cg_iter = - 1
-      inform%nbacts = 0 ; inform%nmods = 0
-      inform%factorization_integer = 0 ; inform%factorization_real = 0
-      inform%obj = prob%f ; inform%non_negligible_pivot = zero
+!  QPLIB file generated
+! -------------------------------------------------------------------
+
+!  initialize time
+
+      CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
+
+!  initialize counts
+
+      inform%status = GALAHAD_ok
+      inform%alloc_status = 0 ; inform%bad_alloc = ''
+      inform%factorization_status = 0
+      inform%iter = - 1 ; inform%nfacts = - 1 ; inform%nbacts = 0
+      inform%factorization_integer = - 1 ; inform%factorization_real = - 1
+      inform%obj = - one ; inform%potential = infinity
+      inform%non_negligible_pivot = zero
       inform%feasible = .FALSE.
-      stat_required = PRESENT( C_stat ) .AND. PRESENT( B_stat )
+!$    inform%threads = OMP_GET_MAX_THREADS( )
+      stat_required = PRESENT( C_stat ) .AND. PRESENT( X_stat )
+      cro_clock_matrix = 0.0_wp
 
-!  Basic single line of output per iteration
+!  basic single line of output per iteration
 
-      printi = control%out > 0 .AND. control%print_level >= 1 
+      printi = control%out > 0 .AND. control%print_level >= 1
+      printa = control%out > 0 .AND. control%print_level >= 101
 
-!  Ensure that input parameters are within allowed ranges
+!  ensure that input parameters are within allowed ranges
 
-      IF ( prob%n <= 0 .OR. prob%m < 0 .OR.                                    &
+      IF ( prob%n < 1 .OR. prob%m < 0 .OR.                                     &
            .NOT. QPT_keyword_A( prob%A%type ) ) THEN
         inform%status = GALAHAD_error_restrictions
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, 2010 ) inform%status 
-        CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
+          WRITE( control%error, 2010 ) prefix, inform%status
         GO TO 800
-      END IF 
-
-!  If required, write out problem 
-
-      IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
-        WRITE( control%out, "( ' n, m = ', 2I8 )" ) prob%n, prob%m
-        WRITE( control%out, "( ' f = ', ES12.4 )" ) prob%f
-        WRITE( control%out, "( ' G = ', /, ( 5ES12.4 ) )" ) prob%G( : prob%n )
-        WRITE( control%out, "( ' X_l = ', /, ( 5ES12.4 ) )" )                  &
-          prob%X_l( : prob%n )
-        WRITE( control%out, "( ' X_u = ', /, ( 5ES12.4 ) )" )                  &
-          prob%X_u( : prob%n )
-        IF ( SMT_get( prob%A%type ) == 'DENSE' ) THEN
-          WRITE( control%out, "( ' A (dense) = ', /, ( 5ES12.4 ) )" )          &
-            prob%A%val( : prob%n * prob%m )
-        ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
-          WRITE( control%out, "( ' A (row-wise) = ' )" )
-          DO i = 1, prob%m
-            WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                   &
-              ( i, prob%A%col( j ), prob%A%val( j ),                           &
-                j = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1 )
-          END DO
-        ELSE
-          WRITE( control%out, "( ' A (co-ordinate) = ' )" )
-          WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                     &
-          ( prob%A%row( i ), prob%A%col( i ), prob%A%val( i ), i = 1, prob%A%ne )
-        END IF
-        WRITE( control%out, "( ' C_l = ', /, ( 5ES12.4 ) )" )                  &
-          prob%C_l( : prob%m )
-        WRITE( control%out, "( ' C_u = ', /, ( 5ES12.4 ) )" )                  &
-          prob%C_u( : prob%m )
       END IF
 
-!  Check that problem bounds are consistent; reassign any pair of bounds
+!  if required, write out problem
+
+      IF ( control%out > 0 .AND. control%print_level >= 20 )                   &
+        CALL QPT_summarize_problem( control%out, prob )
+
+!  check that problem bounds are consistent; reassign any pair of bounds
 !  that are "essentially" the same
 
       reset_bnd = .FALSE.
@@ -996,28 +1401,27 @@
         IF ( prob%X_l( i ) - prob%X_u( i ) > control%identical_bounds_tol ) THEN
           inform%status = GALAHAD_error_bad_bounds
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) inform%status 
-          CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
-          GO TO 800 
-        ELSE IF ( prob%X_u( i ) == prob%X_l( i ) ) THEN
+            WRITE( control%error, 2010 ) prefix, inform%status
+          GO TO 800
+        ELSE IF ( prob%X_u( i ) == prob%X_l( i )  ) THEN
         ELSE IF ( prob%X_u( i ) - prob%X_l( i )                                &
                   <= control%identical_bounds_tol ) THEN
           av_bnd = half * ( prob%X_l( i ) + prob%X_u( i ) )
           prob%X_l( i ) = av_bnd ; prob%X_u( i ) = av_bnd
           reset_bnd = .TRUE.
         END IF
-      END DO   
+      END DO
       IF ( reset_bnd .AND. printi ) WRITE( control%out,                        &
-        "( ' ', /, '   **  Warning: one or more variable bounds reset ' )" )
+        "( /, A, '   **  Warning: one or more variable bounds reset ' )" )     &
+         prefix
 
       reset_bnd = .FALSE.
       DO i = 1, prob%m
         IF ( prob%C_l( i ) - prob%C_u( i ) > control%identical_bounds_tol ) THEN
           inform%status = GALAHAD_error_bad_bounds
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) inform%status 
-          CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
-          GO TO 800 
+            WRITE( control%error, 2010 ) prefix, inform%status
+          GO TO 800
         ELSE IF ( prob%C_u( i ) == prob%C_l( i ) ) THEN
         ELSE IF ( prob%C_u( i ) - prob%C_l( i )                                &
                   <= control%identical_bounds_tol ) THEN
@@ -1025,14 +1429,10 @@
           prob%C_l( i ) = av_bnd ; prob%C_u( i ) = av_bnd
           reset_bnd = .TRUE.
         END IF
-      END DO   
+      END DO
       IF ( reset_bnd .AND. printi ) WRITE( control%out,                        &
-        "( ' ', /, '   **  Warning: one or more constraint bounds reset ' )" )
-
-!  Set gradient type to generic - this may change in future
-
-      prob%gradient_kind = - 1
-      prob%Hessian_kind = 0
+        "( A, /, '   **  Warning: one or more constraint bounds reset ' )" )   &
+          prefix
 
 !  ===========================
 !  Preprocess the problem data
@@ -1042,253 +1442,330 @@
         data%new_problem_structure = prob%new_problem_structure
         data%save_structure = .FALSE.
       END IF
+
+!  store the problem dimensions
+
       IF ( prob%new_problem_structure ) THEN
+        SELECT CASE ( SMT_get( prob%A%type ) )
+        CASE ( 'DENSE' )
+          data%a_ne = prob%m * prob%n
+        CASE ( 'SPARSE_BY_ROWS' )
+          data%a_ne = prob%A%ptr( prob%m + 1 ) - 1
+        CASE ( 'COORDINATE' )
+          data%a_ne = prob%A%ne
+        END SELECT
+      END IF
+
+!  if the problem has no general constraints, solve it explicitly
+!  --------------------------------------------------------------
+
+      IF ( data%a_ne <= 0 ) THEN
+        IF ( printi ) WRITE( control%out,                                      &
+          "( /, A, ' Solving explicit bound-constrained LP -' )" ) prefix
+        inform%obj = prob%f
+        inform%feasible = .TRUE.
+
+!  loop over the components of x
+
+        DO i = 1, prob%n
+          x_l = prob%X_l( i ) ; x_u = prob%X_u( i )
+          IF ( x_l > x_u ) THEN
+            inform%feasible = .FALSE.
+            inform%status = GALAHAD_error_primal_infeasible
+          END IF
+
+!  record the component of the gradient
+
+          IF ( prob%gradient_kind == 0 ) THEN
+            g = zero
+          ELSE IF ( prob%gradient_kind == 1 ) THEN
+            g = one
+          ELSE
+            g = prob%G( i )
+          END IF
+
+!  the objective increases along this component
+
+          IF ( g > zero ) THEN
+            prob%X( i ) = x_l
+
+!  the objective is unbounded
+
+            IF ( x_l < - control%infinity ) THEN
+              inform%status = GALAHAD_error_unbounded
+              prob%Z( i ) = zero
+              IF ( PRESENT( X_stat ) ) X_stat( i ) = 0
+
+!  The minimizer occurs at the lower bound
+
+            ELSE
+              prob%Z( i ) = g
+              IF ( PRESENT( X_stat ) ) X_stat( i ) = - 1
+            END IF
+
+!  the objective decreases along this component
+
+          ELSE IF ( g < zero ) THEN
+            prob%X( i ) = x_u
+
+!  the objective is unbounded
+
+            IF ( x_u > control%infinity ) THEN
+              inform%status = GALAHAD_error_unbounded
+              prob%Z( i ) = zero
+              IF ( PRESENT( X_stat ) ) X_stat( i ) = 0
+
+!  the minimizer occurs at the upper bound
+
+            ELSE
+              prob%Z( i ) = g
+              IF ( PRESENT( X_stat ) ) X_stat( i ) = 1
+            END IF
+
+!  the objective is constant along this component direction
+
+          ELSE
+            prob%Z( i ) = zero
+
+!  pick an arbitrary minimizer between the bounds
+
+            IF ( PRESENT( X_stat ) ) X_stat( i ) = 0
+            IF ( x_l >= - control%infinity .AND. x_u <= control%infinity ) THEN
+              prob%X( i ) = half * ( x_l + x_u )
+            ELSE IF ( x_l >= - control%infinity ) THEN
+              prob%X( i ) = x_l
+            ELSE IF ( x_u <= control%infinity ) THEN
+              prob%X( i ) = x_u
+            ELSE
+              prob%X( i ) = zero
+            END IF
+          END IF
+          inform%obj = inform%obj + prob%X( i ) * g
+        END DO
+        IF ( inform%obj < control%obj_unbounded )                              &
+          inform%status = GALAHAD_error_unbounded
+
+        IF ( printi ) THEN
+          CALL CLOCK_time( clock_now )
+          WRITE( control%out,                                                  &
+             "( A, ' explicit bound-constrained LP: status = ',                &
+          &   I0, ', time = ', F0.2, /, A, ' objective value =', ES12.4 )",    &
+            advance = 'no' ) prefix, inform%status, inform%time%clock_total    &
+              + clock_now - clock_start, prefix, inform%obj
+          IF ( PRESENT( X_stat ) ) THEN
+            WRITE( control%out, "( ', active bounds: ', I0, ' from ', I0 )" )  &
+              COUNT( X_stat( : prob%n ) /= 0 ), prob%n
+          ELSE
+            WRITE( control%out, "( '' )" )
+          END IF
+        END IF
+
+        inform%iter = 0 ; inform%non_negligible_pivot = zero
+        inform%factorization_integer = 0 ; inform%factorization_real = 0
+
+        IF ( printi ) then
+          SELECT CASE( inform%status )
+            CASE( GALAHAD_error_primal_infeasible ) ; WRITE( control%out,      &
+              "( /, A, '  Warning - the constraints appear to be',             &
+             &   ' inconsistent' )" ) prefix
+            CASE( GALAHAD_error_unbounded ) ; WRITE( control%out,              &
+              "( /, A, '  Warning - problem appears to be unbounded from',     &
+             & ' below' )") prefix
+          END SELECT
+        END IF
+        IF ( inform%status /= GALAHAD_ok ) RETURN
+        GO TO 800
+      END IF
+
+!  perform the preprocessing
+
+      IF ( prob%new_problem_structure ) THEN
+        IF ( printi ) WRITE( control%out,                                      &
+               "( /, A, ' problem dimensions before preprocessing: ', /,  A,   &
+     &         ' n = ', I8, ' m = ', I8, ' a_ne = ', I8 )" )                   &
+               prefix, prefix, prob%n, prob%m, data%a_ne
+
         CALL QPP_initialize( data%QPP_map, data%QPP_control )
         data%QPP_control%infinity = control%infinity
-        data%QPP_control%treat_zero_bounds_as_general =                       &
+        data%QPP_control%treat_zero_bounds_as_general =                        &
           control%treat_zero_bounds_as_general
 
-!  Store the problem dimensions
-
-        IF ( SMT_get( prob%A%type ) == 'DENSE' ) THEN
-          a_ne = prob%m * prob%n
-        ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
-          a_ne = prob%A%ptr( prob%m + 1 ) - 1
-        ELSE
-          a_ne = prob%A%ne 
-        END IF
-
-        IF ( printi ) WRITE( control%out,                                      &
-               "( /, ' problem dimensions before preprocessing: ', /,          &
-     &         ' n = ', I8, ' m = ', I8, ' a_ne = ', I8 )" )                   &
-               prob%n, prob%m, a_ne
-
-!  Perform the preprocessing
-
-        CALL CPU_TIME( time ) 
-        CALL QPP_reorder( data%QPP_map, data%QPP_control,                     &
-                          data%QPP_inform, data%dims, prob,                   &
+        prob%Hessian_kind = 0
+        CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
+        CALL QPP_reorder( data%QPP_map, data%QPP_control,                      &
+                          data%QPP_inform, data%dims, prob,                    &
                           .FALSE., .FALSE., .FALSE. )
-        CALL CPU_TIME( dum ) ; dum = dum - time
-        inform%time%preprocess = inform%time%preprocess + dum
-  
-!  Test for satisfactory termination
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%clock_preprocess =                                         &
+          inform%time%clock_preprocess + clock_now - clock_record
 
-        IF ( data%QPP_inform%status /= 0 ) THEN
+!  test for satisfactory termination
+
+        IF ( data%QPP_inform%status /= GALAHAD_ok ) THEN
           inform%status = data%QPP_inform%status
-          IF ( control%out > 0 .AND. control%print_level >= 5 )               &
-            WRITE( control%out, "( ' status ', I3, ' after QPP_reorder ')" )  &
-             data%QPP_inform%status
+          IF ( control%out > 0 .AND. control%print_level >= 5 )                &
+            WRITE( control%out, "( A, ' status ', I0, ' after QPP_reorder')" ) &
+             prefix, data%QPP_inform%status
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) inform%status 
-          IF ( control%out > 0 .AND. control%print_level > 0 .AND.             &
-               inform%status == - 4 ) WRITE( control%error, 2240 ) 
+            WRITE( control%error, 2010 ) prefix, inform%status
           CALL QPP_terminate( data%QPP_map, data%QPP_control, data%QPP_inform )
-          CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
-          GO TO 800 
-        END IF 
-
-!  Record array lengths
-
-        IF ( SMT_get( prob%A%type ) == 'DENSE' ) THEN
-          a_ne = prob%m * prob%n
-        ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
-          a_ne = prob%A%ptr( prob%m + 1 ) - 1
-        ELSE
-          a_ne = prob%A%ne 
+          GO TO 800
         END IF
 
+!  record array lengths
+
+        SELECT CASE ( SMT_get( prob%A%type ) )
+        CASE ( 'DENSE' )
+          data%a_ne = prob%m * prob%n
+        CASE ( 'SPARSE_BY_ROWS' )
+          data%a_ne = prob%A%ptr( prob%m + 1 ) - 1
+        CASE ( 'COORDINATE' )
+          data%a_ne = prob%A%ne
+        END SELECT
+
         IF ( printi ) WRITE( control%out,                                      &
-               "( /, ' problem dimensions after preprocessing: ', /,           &
+               "(  A, ' problem dimensions after preprocessing: ', /,  A,      &
      &         ' n = ', I8, ' m = ', I8, ' a_ne = ', I8 )" )                   &
-               prob%n, prob%m, a_ne
+               prefix, prefix, prob%n, prob%m, data%a_ne
 
         prob%new_problem_structure = .FALSE.
         data%trans = 1
 
-!  Recover the problem dimensions after preprocessing
+!  recover the problem dimensions after preprocessing
 
       ELSE
         IF ( data%trans == 0 ) THEN
-          CALL CPU_TIME( time ) 
-          CALL QPP_apply( data%QPP_map, data%QPP_inform, prob,                 &
-                          get_all = .TRUE. )
-          CALL CPU_TIME( dum ) ; dum = dum - time
-          inform%time%preprocess = inform%time%preprocess + dum
- 
-!  Test for satisfactory termination
+          CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
+          CALL QPP_apply( data%QPP_map, data%QPP_inform,                       &
+                          prob, get_all = .TRUE. )
+          CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+          inform%time%preprocess =                                             &
+            inform%time%preprocess + time_now - time_record
+          inform%time%clock_preprocess =                                       &
+            inform%time%clock_preprocess + clock_now - clock_record
 
-          IF ( data%QPP_inform%status /= 0 ) THEN
+!  test for satisfactory termination
+
+          IF ( data%QPP_inform%status /= GALAHAD_ok ) THEN
             inform%status = data%QPP_inform%status
             IF ( control%out > 0 .AND. control%print_level >= 5 )              &
-              WRITE( control%out, "( ' status ', I3, ' after QPP_apply ')" )   &
-               data%QPP_inform%status
+              WRITE( control%out, "( A, ' status ', I0, ' after QPP_apply')" ) &
+               prefix, data%QPP_inform%status
             IF ( control%error > 0 .AND. control%print_level > 0 )             &
-              WRITE( control%error, 2010 ) inform%status 
+              WRITE( control%error, 2010 ) prefix, inform%status
             CALL QPP_terminate( data%QPP_map, data%QPP_control, data%QPP_inform)
-            CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
-            GO TO 800 
-          END IF 
-        END IF 
+            GO TO 800
+          END IF
+        END IF
         data%trans = data%trans + 1
-
-!  Record array lengths
-
-        IF ( SMT_get( prob%A%type ) == 'DENSE' ) THEN
-          a_ne = prob%m * prob%n
-        ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
-          a_ne = prob%A%ptr( prob%m + 1 ) - 1
-        ELSE
-          a_ne = prob%A%ne 
-        END IF
-
-      END IF
-
-!  Special case: no free variables
-
-      IF ( prob%n == 0 ) THEN
-        IF ( control%array_syntax_worse_than_do_loop ) THEN
-          DO i = 1, prob%m ; prob%Y( i ) = zero ; END DO
-        ELSE
-          prob%Y( : prob%m ) = zero
-        END IF
-        remap_more_freed = .FALSE. ; remap_fixed = .FALSE.
-        inform%obj = prob%f
-        i = COUNT( ABS( prob%C_l( : data%dims%c_equality ) ) >                 &
-              control%stop_p ) +                                               &
-            COUNT( prob%C_l( data%dims%c_l_start : data%dims%c_l_end ) >       &
-              control%stop_p ) +                                               &
-            COUNT( prob%C_u( data%dims%c_u_start : data%dims%c_u_end ) <       &
-              - control%stop_p )
-        IF ( i == 0 ) THEN
-          inform%status = GALAHAD_ok
-        ELSE
-          inform%status = GALAHAD_error_primal_infeasible
-        END IF
-        GO TO 700
       END IF
 
 !  =================================================================
 !  Check to see if the equality constraints are linearly independent
 !  =================================================================
 
+      time_analyse = inform%FDC_inform%time%analyse
+      clock_analyse = inform%FDC_inform%time%clock_analyse
+      time_factorize = inform%FDC_inform%time%factorize
+      clock_factorize = inform%FDC_inform%time%clock_factorize
+
       IF ( prob%m > 0 .AND.                                                    &
            ( .NOT. data%tried_to_remove_deps .AND.                             &
               control%remove_dependencies ) ) THEN
-
-        CALL CPU_TIME( time ) 
         IF ( control%out > 0 .AND. control%print_level >= 1 )                  &
           WRITE( control%out,                                                  &
-            "( /, 1X, I0, ' equalities from ', I0, ' constraints ' )" )        &
-            data%dims%c_equality, prob%m
+           "( /, A, 1X, I0, ' equalit', A, ' from ', I0, ' constraint', A )" ) &
+              prefix, data%dims%c_equality,                                    &
+              TRIM( STRING_ies( data%dims%c_equality ) ),                      &
+              prob%m, TRIM( STRING_pleural( prob%m ) )
 
-!  Set control parameters
+!  set control parameters
 
-        CALL FDC_initialize( FDC_data, FDC_control, FDC_inform )
-        FDC_control%error = control%error
-        FDC_control%out = control%out
-        FDC_control%print_level = control%print_level
-        FDC_control%indmin = control%indmin
-        FDC_control%valmin = control%valmin
-        FDC_control%zero_pivot = control%zero_pivot
-        FDC_control%pivot_tol = control%pivot_tol_for_dependencies
-        FDC_control%max_infeas = control%stop_p
-        FDC_control%prefix = '" - FDC:"                     '
+        data%FDC_control = control%FDC_control
+        data%FDC_control%max_infeas = control%stop_abs_p
 
-!  Find any dependent rows
+!  find any dependent rows
 
-        nzc = prob%A%ptr( data%dims%c_equality + 1 ) - 1 
+        nzc = prob%A%ptr( data%dims%c_equality + 1 ) - 1
+        CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
         CALL FDC_find_dependent( prob%n, data%dims%c_equality,                 &
                                  prob%A%val( : nzc ),                          &
                                  prob%A%col( : nzc ),                          &
                                  prob%A%ptr( : data%dims%c_equality + 1 ),     &
                                  prob%C_l, n_depen, data%Index_C_freed,        &
-                                 FDC_data, FDC_control, FDC_inform )
-        inform%status = FDC_inform%status
-        inform%non_negligible_pivot = FDC_inform%non_negligible_pivot
+                                 data%FDC_data, data%FDC_control,              &
+                                 inform%FDC_inform )
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+        inform%time%find_dependent =                                           &
+          inform%time%find_dependent + time_now - time_record
+        inform%time%clock_find_dependent =                                     &
+          inform%time%clock_find_dependent + clock_now - clock_record
 
-!  Record output parameters
+!  record output parameters
 
-        inform%alloc_status = FDC_inform%alloc_status
-        inform%factorization_status = FDC_inform%factorization_status
-        inform%factorization_integer = FDC_inform%factorization_integer
-        inform%factorization_real = FDC_inform%factorization_real
-        inform%bad_alloc = FDC_inform%bad_alloc
-        inform%time%find_dependent = FDC_inform%time%total
-        inform%time%analyse = inform%time%analyse + FDC_inform%time%analyse
-        inform%time%factorize = inform%time%factorize + FDC_inform%time%factorize
+        inform%status = inform%FDC_inform%status
+        inform%non_negligible_pivot = inform%FDC_inform%non_negligible_pivot
+        inform%alloc_status = inform%FDC_inform%alloc_status
+        inform%factorization_status = inform%FDC_inform%factorization_status
+        inform%factorization_integer = inform%FDC_inform%factorization_integer
+        inform%factorization_real = inform%FDC_inform%factorization_real
+        inform%bad_alloc = inform%FDC_inform%bad_alloc
         inform%nfacts = 1
 
-        CALL CPU_TIME( dum )
-        IF ( control%cpu_time_limit >= zero .AND.                              &
-             dum - time_start > control%cpu_time_limit ) THEN
+        IF ( ( control%cpu_time_limit >= zero .AND.                            &
+               time_now - time_start > control%cpu_time_limit ) .OR.           &
+             ( control%clock_time_limit >= zero .AND.                          &
+               clock_now - clock_start > control%clock_time_limit ) ) THEN
           inform%status = GALAHAD_error_cpu_limit
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) inform%status 
-          inform%time%total = dum - time_start ; GO TO 800 
-        END IF 
-        inform%time%preprocess = inform%time%preprocess + dum - time
-        IF ( printi .AND. inform%non_negligible_pivot <                        &
-             thousand * control%zero_pivot ) WRITE( control%out, "(            &
-       &  /, 1X, 26 ( '*' ), ' WARNING ', 26 ( '*' ), /,                       & 
-       &  ' ***  smallest allowed pivot =', ES11.4,' may be too small ***',    &
-       &  /, ' ***  perhaps increase control%zero_pivot from', ES11.4,'  ***', &
-       &  /, 1X, 26 ( '*' ), ' WARNING ', 26 ( '*' ) )" )                      &
-           inform%non_negligible_pivot, control%zero_pivot
+            WRITE( control%error, 2010 ) prefix, inform%status
+          GO TO 800
+        END IF
 
-!  Check for error exits
+        IF ( printi .AND. inform%non_negligible_pivot < thousand *             &
+          control%FDC_control%SLS_control%absolute_pivot_tolerance )           &
+            WRITE( control%out, "(                                             &
+       &  /, A, 1X, 26 ( '*' ), ' WARNING ', 26 ( '*' ), /, A,                 &
+       &  ' ***  smallest allowed pivot =', ES11.4,' may be too small ***',    &
+       &  /, A, ' ***  perhaps increase',                                      &
+       &     ' FDC_control%SLS_control%absolute_pivot_tolerance from',         &
+       &    ES11.4,'  ***', /, A, 1X, 26 ( '*' ), ' WARNING ', 26 ('*') )" )   &
+           prefix, prefix, inform%non_negligible_pivot, prefix,                &
+           control%FDC_control%SLS_control%absolute_pivot_tolerance, prefix
+
+!  check for error exits
 
         IF ( inform%status /= 0 ) THEN
 
-!  Allocate arrays to hold the matrix vector product
-
-          reallocate = .TRUE.
-          IF ( ALLOCATED(  data%HX ) ) THEN
-            IF ( SIZE(  data%HX ) < prob%n ) THEN
-              DEALLOCATE(  data%HX ) ; ELSE ; reallocate = .FALSE.
-            END IF
-          END IF
-          IF ( reallocate ) THEN 
-            ALLOCATE(  data%HX( prob%n ), STAT = inform%alloc_status )
-            IF ( inform%alloc_status /= 0 ) THEN 
-              inform%bad_alloc = 'lpb: data%HX' ; GO TO 900
-            END IF
-          END IF
-
-          inform%obj = DOT_PRODUCT( prob%X( : prob%n ),                        &
-                                    prob%G( : prob%n ) ) + prob%f
-
-!  Print details of the error exit
+!  print details of the error exit
 
           IF ( control%error > 0 .AND. control%print_level >= 1 ) THEN
             WRITE( control%out, "( ' ' )" )
-            IF ( inform%status /= 0 )                                          &
-              WRITE( control%error, 2040 ) inform%status, 'LSQP_dependent'
+            IF ( inform%status /= GALAHAD_ok ) WRITE( control%error,           &
+                 "( A, '    ** Error return ', I0, ' from ', A )" )            &
+               prefix, inform%status, 'FDC_dependent'
           END IF
-          GO TO 750
+          GO TO 700
         END IF
 
         IF ( control%out > 0 .AND. control%print_level >= 2 .AND. n_depen > 0 )&
-          WRITE( control%out, "(/, ' The following ',I0,' constraints appear', &
-       &         ' to be dependent', /, ( 8I8 ) )" ) n_depen, data%Index_C_freed
+          WRITE( control%out, "(/, A, ' The following ', I0, ' constraint',    &
+         &  A, ' appear', A, ' to be dependent', /, ( 4X, 8I8 ) )" )           &
+              prefix, n_depen, TRIM(STRING_pleural( n_depen ) ),               &
+              TRIM( STRING_verb_pleural( n_depen ) ), data%Index_C_freed
 
         remap_freed = n_depen > 0 .AND. prob%n > 0
 
-!  Special case: no free variables
+!  special case: no free variables
 
         IF ( prob%n == 0 ) THEN
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = 1, prob%m ; prob%Y( i ) = zero ; END DO
-            DO i = 1, prob%n ; prob%Z( i ) = prob%G( i ) ; END DO
-          ELSE
-            prob%Y( : prob%m ) = zero
-            prob%Z( : prob%n ) = prob%G( : prob%n )
-          END IF
+          prob%Y( : prob%m ) = zero
+          prob%Z( : prob%n ) = zero
           prob%C( : prob%m ) = zero
           CALL LPB_AX( prob%m, prob%C( : prob%m ), prob%m,                     &
-                        prob%A%ptr( prob%m + 1 ) - 1, prob%A%val,              &
-                        prob%A%col, prob%A%ptr, prob%n, prob%X, '+ ')
-          remap_more_freed = .FALSE. ; remap_fixed = .FALSE.
+                       prob%A%ptr( prob%m + 1 ) - 1, prob%A%val,               &
+                       prob%A%col, prob%A%ptr, prob%n, prob%X, '+ ')
           GO TO 700
         END IF
         data%tried_to_remove_deps = .TRUE.
@@ -1298,31 +1775,27 @@
 
       IF ( remap_freed ) THEN
 
-!  Some of the current constraints will be removed by freeing them
+!  some of the current constraints will be removed by freeing them
 
         IF ( control%error > 0 .AND. control%print_level >= 1 )                &
-          WRITE( control%out, "( /, ' -> ', i6, ' constraints are',            &
-         & ' dependent and will be temporarily removed' )" ) n_depen
+          WRITE( control%out, "( /, A, ' -> ', I0, ' constraint', A, ' ', A,   &
+         & ' dependent and will be temporarily removed' )" ) prefix, n_depen,  &
+           TRIM( STRING_pleural( n_depen ) ), TRIM( STRING_are( n_depen ) )
 
-!  Allocate arrays to indicate which constraints have been freed
+!  allocate arrays to indicate which constraints have been freed
 
-        reallocate = .TRUE.
-        IF ( ALLOCATED( data%C_freed ) ) THEN
-          IF ( SIZE( data%C_freed ) < n_depen ) THEN
-            DEALLOCATE( data%C_freed ) ; ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( data%C_freed( n_depen ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb:data%C_freed' ; GO TO 900
-          END IF
-        END IF
-        
-!  Free the constraint bounds as required
+          array_name = 'lpb: data%C_freed'
+          CALL SPACE_resize_array( n_depen, data%C_freed,                      &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  free the constraint bounds as required
 
         DO i = 1, n_depen
-          j = data%Index_C_freed( i )
+          j = data%Index_c_freed( i )
           data%C_freed( i ) = prob%C_l( j )
           prob%C_l( j ) = - control%infinity
           prob%C_u( j ) = control%infinity
@@ -1331,1038 +1804,364 @@
 
         CALL QPP_initialize( data%QPP_map_freed, data%QPP_control )
         data%QPP_control%infinity = control%infinity
-        data%QPP_control%treat_zero_bounds_as_general =                       &
+        data%QPP_control%treat_zero_bounds_as_general =                        &
           control%treat_zero_bounds_as_general
 
-!  Store the problem dimensions
+!  store the problem dimensions
 
         data%dims_save_freed = data%dims
-        a_ne = prob%A%ne 
+        data%a_ne = prob%A%ne
 
         IF ( printi ) WRITE( control%out,                                      &
-               "( /, ' problem dimensions before removal of dependencies:', /, &
-     &         ' n = ', I8, ' m = ', I8, ' a_ne = ', I8 )" )                   &
-               prob%n, prob%m, a_ne
+               "( /, A, ' problem dimensions before removal of dependecies: ', &
+              &   /, A, ' n = ', I8, ' m = ', I8, ' a_ne = ', I8 )" )          &
+               prefix, prefix, prob%n, prob%m, data%a_ne
 
-!  Perform the preprocessing
+!  perform the preprocessing
 
-        CALL CPU_TIME( time ) 
+        CALL CPU_TIME( time_record )  ; CALL CLOCK_time( clock_record )
         CALL QPP_reorder( data%QPP_map_freed, data%QPP_control,                &
                           data%QPP_inform, data%dims, prob,                    &
                           .FALSE., .FALSE., .FALSE. )
-        CALL CPU_TIME( dum ) ; dum = dum - time
-        inform%time%preprocess = inform%time%preprocess + dum
-  
-        data%dims%nc = data%dims%c_u_end - data%dims%c_l_start + 1 
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%clock_preprocess =                                         &
+          inform%time%clock_preprocess + clock_now - clock_record
+
+        data%dims%nc = data%dims%c_u_end - data%dims%c_l_start + 1
         data%dims%x_s = 1 ; data%dims%x_e = prob%n
-        data%dims%c_s = data%dims%x_e + 1 
-        data%dims%c_e = data%dims%x_e + data%dims%nc  
+        data%dims%c_s = data%dims%x_e + 1
+        data%dims%c_e = data%dims%x_e + data%dims%nc
         data%dims%c_b = data%dims%c_e - prob%m
-        data%dims%y_s = data%dims%c_e + 1 
+        data%dims%y_s = data%dims%c_e + 1
         data%dims%y_e = data%dims%c_e + prob%m
-        data%dims%y_i = data%dims%c_s + prob%m 
+        data%dims%y_i = data%dims%c_s + prob%m
         data%dims%v_e = data%dims%y_e
 
-!  Test for satisfactory termination
+!  test for satisfactory termination
 
-        IF ( data%QPP_inform%status /= 0 ) THEN
+        IF ( data%QPP_inform%status /= GALAHAD_ok ) THEN
           inform%status = data%QPP_inform%status
           IF ( control%out > 0 .AND. control%print_level >= 5 )                &
-            WRITE( control%out, "( ' status ', I3, ' after QPP_reorder ')" )   &
-             data%QPP_inform%status
+            WRITE( control%out, "( A, ' status ', I0, ' after QPP_reorder')" ) &
+             prefix, data%QPP_inform%status
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) inform%status 
-          IF ( control%out > 0 .AND. control%print_level > 0 .AND.             &
-               inform%status == - 4 ) WRITE( control%error, 2240 ) 
+            WRITE( control%error, 2010 ) prefix, inform%status
           CALL QPP_terminate( data%QPP_map_freed, data%QPP_control,            &
                               data%QPP_inform )
           CALL QPP_terminate( data%QPP_map, data%QPP_control, data%QPP_inform )
-          CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
-          GO TO 800 
-        END IF 
+          GO TO 800
+        END IF
 
-!  Record revised array lengths
+!  record revised array lengths
 
         IF ( SMT_get( prob%A%type ) == 'DENSE' ) THEN
-          a_ne = prob%m * prob%n
+          data%a_ne = prob%m * prob%n
         ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
-          a_ne = prob%A%ptr( prob%m + 1 ) - 1
+          data%a_ne = prob%A%ptr( prob%m + 1 ) - 1
         ELSE
-          a_ne = prob%A%ne 
+          data%a_ne = prob%A%ne
         END IF
 
         IF ( printi ) WRITE( control%out,                                      &
-               "( /, ' problem dimensions after removal of dependencies: ', /, &
-     &         ' n = ', I8, ' m = ', I8, ' a_ne = ', I8 )" )                   &
-               prob%n, prob%m, a_ne
-
+               "( /, A, ' problem dimensions after removal of dependencies: ', &
+             &    /, A, ' n = ', I8, ' m = ', I8, ' a_ne = ', I8 )" )          &
+               prefix, prefix, prob%n, prob%m, data%a_ne
       END IF
 
-!  Special case: Bound-constrained LP
+!  compute the dimension of the KKT system
+
+      data%dims%nc = data%dims%c_u_end - data%dims%c_l_start + 1
+
+!  arrays containing data relating to the composite vector ( x  c  y )
+!  are partitioned as follows:
+
+!   <---------- n --------->  <---- nc ------>  <-------- m --------->
+!                             <-------- m --------->
+!                        <-------- m --------->
+!   -------------------------------------------------------------------
+!   |                   |    |                 |    |                 |
+!   |         x              |       c         |          y           |
+!   |                   |    |                 |    |                 |
+!   -------------------------------------------------------------------
+!    ^                 ^    ^ ^               ^ ^    ^               ^
+!    |                 |    | |               | |    |               |
+!   x_s                |    |c_s              |y_s  y_i             y_e = v_e
+!                      |    |                 |
+!                     c_b  x_e               c_e
+
+      data%dims%x_s = 1 ; data%dims%x_e = prob%n
+      data%dims%c_s = data%dims%x_e + 1
+      data%dims%c_e = data%dims%x_e + data%dims%nc
+      data%dims%c_b = data%dims%c_e - prob%m
+      data%dims%y_s = data%dims%c_e + 1
+      data%dims%y_e = data%dims%c_e + prob%m
+      data%dims%y_i = data%dims%c_s + prob%m
+      data%dims%v_e = data%dims%y_e
+
+!  ----------------
+!  set up workspace
+!  ----------------
+
+      CALL LPB_workspace( prob%m, prob%n, data%dims, data%a_ne,                &
+                          stat_required, data%order,                           &
+                          data%GRAD_L, data%DIST_X_l, data%DIST_X_u, data%Z_l, &
+                          data%Z_u, data%BARRIER_X, data%Y_l, data%DIST_C_l,   &
+                          data%Y_u, data%DIST_C_u, data%C, data%BARRIER_C,     &
+                          data%SCALE_C, data%RHS, data%OPT_alpha,              &
+                          data%OPT_merit, data%BINOMIAL, data%CS_coef,         &
+                          data%COEF, data%ROOTS, data%DX_zh, data%DY_zh,       &
+                          data%DC_zh, data%DY_l_zh, data%DY_u_zh,              &
+                          data%DZ_l_zh, data%DZ_u_zh, data%X_coef,             &
+                          data%C_coef, data%Y_coef, data%Y_l_coef,             &
+                          data%Y_u_coef, data%Z_l_coef, data%Z_u_coef,         &
+                          data%H_s, data%A_s, data%Y_last, data%Z_last,        &
+                          data%A_sbls, data%H_sbls, control, inform )
 
-      IF ( a_ne == 0 ) THEN
-
-        IF ( printi ) WRITE( control%out,                                    &
-          "( /, ' Solving separable bound-constrained QP ' )" )
-        IF ( PRESENT( B_stat ) ) THEN
-          CALL LPB_optimal_for_SBLP( prob, control, inform,                  &
-                                     B_stat = B_stat( : prob%n ) )
-          IF ( printi ) WRITE( control%out,                                  &
-              "( ' on exit from LPB_optimal_for_SBLP: status = ', I0,        &
-           &   ', time = ', F0.2, /, ' objective value =', ES12.4,           &
-           &   /, ' active bounds: ', I0, ' from ', I0 )" )                  &
-              inform%status, inform%time%total, inform%obj,                  &
-              COUNT( B_stat( : prob%n ) /= 0 ), prob%n
-        ELSE
-          CALL LPB_optimal_for_SBLP( prob, control, inform )
-          IF ( printi ) WRITE( control%out,                                  &
-              "( ' on exit from LPB_optimal_for_SBLP: status = ', I0,        &
-           &   ', time = ', F0.2, /, ' objective value =', ES12.4 )" )       &
-              inform%status, inform%time%total, inform%obj
-        END IF
-        GO TO 700
-
-!  General case: LP
-
-      ELSE
-        first_pass = .TRUE.
-        center = control%center
-        f = prob%f
-    
-        prob%gradient_kind = 0
-
- 10     CONTINUE
-
-!  ==============================
-!  Find an initial feasible point
-!  ==============================
-
-        LSQP_control = control%LSQP_control
-        LSQP_control%factor = control%factor
-        LSQP_control%max_col = control%max_col
-        LSQP_control%itref_max = control%itref_max
-        LSQP_control%infeas_max = control%infeas_max
-        LSQP_control%restore_problem = control%restore_problem 
-        LSQP_control%infinity = control%infinity
-        LSQP_control%stop_p = control%stop_p
-        LSQP_control%stop_c = control%stop_c
-        LSQP_control%stop_d = control%stop_d
-        LSQP_control%muzero = control%muzero
-        LSQP_control%reduce_infeas = control%reduce_infeas
-        LSQP_control%pivot_tol = control%pivot_tol
-        LSQP_control%pivot_tol_for_dependencies =                              &
-          control%pivot_tol_for_dependencies
-        LSQP_control%zero_pivot = control%zero_pivot
-        LSQP_control%identical_bounds_tol = control%identical_bounds_tol
-        LSQP_control%remove_dependencies = control%remove_dependencies
-        LSQP_control%treat_zero_bounds_as_general =                            &
-          control%treat_zero_bounds_as_general
-        LSQP_control%feasol = .FALSE.
-        LSQP_control%array_syntax_worse_than_do_loop =                         &
-          control%array_syntax_worse_than_do_loop
-        LSQP_control%identical_bounds_tol =                                    &
-          control%LSQP_control%identical_bounds_tol
-        LSQP_control%prefix = '" - LSQP:"                    '
-        IF ( printi ) THEN
-          LSQP_control%print_level = control%print_level
-          LSQP_control%start_print = control%start_print
-          LSQP_control%stop_print = control%stop_print
-          LSQP_control%out = control%out
-          LSQP_control%error = control%error
-        END IF
-
-!  Either find the solution to the LP ...
-
-        IF ( center ) THEN
-          LSQP_control%just_feasible = .FALSE.
-          LSQP_control%prfeas = control%prfeas
-          LSQP_control%dufeas = control%dufeas
-          prob%Hessian_kind = 0
-          prob%f = zero
-
-!  .. or minimize the distance to the nearest feasible point
-
-        ELSE
-          LSQP_control%just_feasible = .TRUE.
-          LSQP_control%prfeas = control%prfeas
-          LSQP_control%dufeas = control%dufeas
-          prob%Hessian_kind = 1
-
-          reallocate = .TRUE.
-          IF ( ALLOCATED( data%X0 ) ) THEN
-            IF ( SIZE( data%X0 ) < prob%n ) THEN
-              DEALLOCATE( data%X0 ) ; ELSE ; reallocate = .FALSE.
-            END IF
-          END IF
-          IF ( reallocate ) THEN 
-            ALLOCATE( data%X0( prob%n ), STAT = inform%alloc_status )
-            IF ( inform%alloc_status /= 0 ) THEN 
-              inform%bad_alloc = 'lpb: data%X0' ; GO TO 900
-            END IF
-          END IF
-          data%X0 = prob%X( : prob%n )
-          prob%X0 = data%X0
-          prob%f = zero
-        END IF
-
-        CALL LSQP_solve( prob, data, LSQP_control, LSQP_inform )
-     
-        inform%status = LSQP_inform%status 
-        IF ( inform%status == - 2 .OR. inform%status == - 3 ) THEN
-             inform%alloc_status = LSQP_inform%alloc_status
-             inform%bad_alloc = LSQP_inform%bad_alloc
-          GO TO 920
-        END IF
-
-        inform%feasible = LSQP_inform%feasible
-        IF ( inform%status == - 4                                              &
-             .OR. ( inform%status <= - 7 .AND. inform%status >= - 10 ) ) THEN
-          IF ( inform%feasible ) THEN
-            inform%status = GALAHAD_ok
-          ELSE
-            IF ( first_pass ) THEN
-              center = .NOT. center
-              first_pass = .FALSE.
-              IF ( printi ) WRITE( control%out,                                &
-              "( /, ' .... have a second attempt at getting feasible .... ' )" )
-              GO TO 10
-            END IF
-          END IF
-        END IF
-        prob%f = f
-        prob%Hessian_kind = 0 ; prob%gradient_kind = - 1
-  
-        inform%alloc_status = LSQP_inform%alloc_status 
-        inform%factorization_status = LSQP_inform%factorization_status 
-
-!  Record times for phase1
-
-        CALL CPU_TIME( dum )
-        inform%time%phase1_total = dum - time_start - inform%time%preprocess
-  
-        inform%time%phase1_analyse = LSQP_inform%time%analyse
-        inform%time%phase1_factorize = LSQP_inform%time%factorize
-        inform%time%phase1_solve = LSQP_inform%time%solve
-   
-        inform%time%analyse = inform%time%phase1_analyse
-        inform%time%factorize = inform%time%phase1_factorize
-        inform%time%solve = inform%time%phase1_solve
-        inform%time%find_dependent =                                           &
-          LSQP_inform%time%find_dependent + inform%time%find_dependent
-   
-        IF ( printi ) THEN
-          WRITE( control%out, "( /, I10, ' integer and ', I10,                 &
-        &  ' real words required for the factorization' )" )                   &
-           LSQP_inform%factorization_integer, LSQP_inform%factorization_real
-          WRITE( control%out, 2050 )
-        END IF
-
-!  Check for error exits
-
-        IF ( inform%status /= 0 ) THEN
-
-!  On error exit, compute the current objective function value
-
-          IF ( inform%status /= - 1 .AND. inform%status /= - 2 ) THEN
-            inform%obj = DOT_PRODUCT( prob%X( : prob%n ),                      &
-                                      prob%G( : prob%n ) ) + prob%f
-          END IF
-
-!  Print details of the error exit
-
-          IF ( control%error > 0 .AND. control%print_level >= 1 ) THEN
-            WRITE( control%out, "( ' ' )" )
-            IF ( inform%status /= 0 )                                          &
-              WRITE( control%error, 2040 ) inform%status, 'LSQP_solve'
-          END IF
-          remap_more_freed = .FALSE. ; remap_fixed = .FALSE.
-          GO TO 700
-        END IF
-
-!  ============================
-!  Initial feasible point found
-!  ============================
-
-!  Check to see if any variables/constraints are flagged as being fixed
-
-        tol = MIN( control%stop_p / ten, SQRT( epsmch ) )
-        tiny_x = COUNT( prob%X( data%dims%x_free + 1 : data%dims%x_l_start - 1)&
-                        < tol ) +                                              &
-                 COUNT( prob%X( data%dims%x_l_start: data%dims%x_l_end ) -     &
-                        prob%X_l( data%dims%x_l_start : data%dims%x_l_end )    &
-                        < tol ) +                                              &
-                 COUNT( prob%X( data%dims%x_u_start: data%dims%x_u_end ) -     &
-                        prob%X_u( data%dims%x_u_start : data%dims%x_u_end )    &
-                        > - tol ) +                                            &
-                 COUNT( prob%X( data%dims%x_u_end + 1 : prob%n )          &
-                        > - tol )
-  
-        tiny_c = COUNT( prob%C( data%dims%c_l_start: data%dims%c_l_end ) -     &
-                        prob%C_l( data%dims%c_l_start : data%dims%c_l_end )    &
-                        < tol ) +                                              &
-                 COUNT( prob%C( data%dims%c_u_start: data%dims%c_u_end ) -     &
-                        prob%C_u( data%dims%c_u_start : data%dims%c_u_end )    &
-                        > - tol )
-  
-        remap_fixed = tiny_x > 0 .OR. tiny_c > 0
-        IF ( remap_fixed ) THEN
-
-!  Some of the current variables/constraints will be fixed
-
-          IF ( control%error > 0 .AND. control%print_level >= 1 )              &
-            WRITE( control%out, "( /, ' -> ', i6, ' further variables and ',   &
-           &       i6, ' further constraints will be fixed' )" ) tiny_x, tiny_c
-
-!  Allocate arrays to record the bounds which will be altered
-
-          IF ( tiny_x > 0 ) THEN
-            reallocate = .TRUE.
-            IF ( ALLOCATED( data%X_fixed ) ) THEN
-              IF ( SIZE( data%X_fixed ) < tiny_x ) THEN
-                DEALLOCATE( data%X_fixed ) ; ELSE ; reallocate = .FALSE.
-              END IF
-            END IF
-            IF ( reallocate ) THEN 
-              ALLOCATE( data%X_fixed( tiny_x ), STAT = inform%alloc_status )
-              IF ( inform%alloc_status /= 0 ) THEN 
-                inform%bad_alloc = 'lpb:data%X_fixed' ; GO TO 900
-              END IF
-            END IF
-  
-            reallocate = .TRUE.
-            IF ( ALLOCATED( data%Index_X_fixed ) ) THEN
-              IF ( SIZE( data%Index_X_fixed ) < tiny_x ) THEN
-                DEALLOCATE( data%Index_X_fixed ) ; ELSE ; reallocate = .FALSE.
-              END IF
-            END IF
-            IF ( reallocate ) THEN 
-              ALLOCATE( data%Index_X_fixed( tiny_x ),                          &
-                        STAT = inform%alloc_status )
-              IF ( inform%alloc_status /= 0 ) THEN 
-                inform%bad_alloc = 'lpb:data%Index_X_fixed' ; GO TO 900
-              END IF
-            END IF
-          END IF
-  
-          IF ( tiny_c > 0 ) THEN
-            reallocate = .TRUE.
-            IF ( ALLOCATED( data%C_fixed ) ) THEN
-              IF ( SIZE( data%C_fixed ) < tiny_c ) THEN
-                DEALLOCATE( data%C_fixed ) ; ELSE ; reallocate = .FALSE.
-              END IF
-            END IF
-            IF ( reallocate ) THEN 
-              ALLOCATE( data%C_fixed( tiny_c ), STAT = inform%alloc_status )
-              IF ( inform%alloc_status /= 0 ) THEN 
-                inform%bad_alloc = 'lpb:data%C_fixed' ; GO TO 900
-              END IF
-            END IF
-  
-            reallocate = .TRUE.
-            IF ( ALLOCATED( data%Index_C_fixed ) ) THEN
-              IF ( SIZE( data%Index_C_fixed ) < tiny_c ) THEN
-                DEALLOCATE( data%Index_C_fixed ) ; ELSE ; reallocate = .FALSE.
-              END IF
-            END IF
-            IF ( reallocate ) THEN 
-              ALLOCATE( data%Index_C_fixed( tiny_c ),                          &
-                        STAT = inform%alloc_status )
-              IF ( inform%alloc_status /= 0 ) THEN 
-                inform%bad_alloc = 'lpb:data%Index_C_fixed' ; GO TO 900
-              END IF
-            END IF
-          END IF
-
-!  Fix the problem bounds as required
-
-          IF ( tiny_x > 0 ) THEN
-            tiny_x = 0
-    
-            DO i = data%dims%x_free + 1, data%dims%x_l_start - 1
-!             write(6,"( I6, A1, ES12.4 )" ) i, 'l', prob%X( i )
-              IF ( prob%X( i ) < tol ) THEN
-                tiny_x = tiny_x + 1
-                data%X_fixed( tiny_x ) = prob%X_u( i )
-                data%Index_X_fixed( tiny_x ) = i
-                prob%X_u( i ) = zero
-              END IF
-            END DO
-    
-            DO i = data%dims%x_l_start, data%dims%x_u_start - 1
-!             write(6,"( I6, A1, ES12.4 )" ) i, 'l', prob%X( i ) - prob%X_l( i )
-              IF ( prob%X( i ) - prob%X_l( i ) < tol ) THEN
-                tiny_x = tiny_x + 1
-                data%X_fixed( tiny_x ) = prob%X_u( i )
-                data%Index_X_fixed( tiny_x ) = i
-                prob%X_u( i ) =  prob%X_l( i )
-              END IF
-            END DO
-    
-            DO i = data%dims%x_u_start, data%dims%x_l_end
-!             write(6,"( I6, A1, ES12.4 )" ) i, 'l', prob%X( i ) - prob%X_l( i )
-!             write(6,"( I6, A1, ES12.4 )" ) i, 'u', prob%X_u( i ) - prob%X( i )
-              IF ( prob%X( i ) - prob%X_l( i ) < tol ) THEN
-                tiny_x = tiny_x + 1
-                data%X_fixed( tiny_x ) = prob%X_u( i )
-                data%Index_X_fixed( tiny_x ) = i
-                prob%X_u( i ) =  prob%X_l( i )
-              ELSE IF ( prob%X( i ) - prob%X_u( i ) > - tol ) THEN
-                tiny_x = tiny_x + 1
-                data%X_fixed( tiny_x ) = prob%X_l( i )
-                data%Index_X_fixed( tiny_x ) = - i
-                prob%X_l( i ) =  prob%X_u( i )
-              END IF
-            END DO
-  
-            DO i = data%dims%x_l_end + 1, data%dims%x_u_end
-!             write(6,"( I6, A1, ES12.4 )" ) i, 'u', prob%X_u( i ) - prob%X( i )
-              IF ( prob%X( i ) - prob%X_u( i ) > - tol ) THEN
-                tiny_x = tiny_x + 1
-                data%X_fixed( tiny_x ) = prob%X_l( i )
-                data%Index_X_fixed( tiny_x ) = - i
-                prob%X_l( i ) =  prob%X_u( i )
-              END IF
-            END DO
-    
-            DO i = data%dims%x_u_end + 1, prob%n
-!             write(6,"( I6, A1, ES12.4 )" ) i, 'u', - prob%X( i )
-              IF ( prob%X( i ) > - tol ) THEN
-                tiny_x = tiny_x + 1
-                data%X_fixed( tiny_x ) = prob%X_l( i )
-                data%Index_X_fixed( tiny_x ) = - i
-                prob%X_l( i ) = zero
-              END IF
-            END DO
-          END IF
-       
-!  Do the same for the constraint bounds
-
-          IF ( tiny_c > 0 ) THEN
-            tiny_c = 0
-    
-            DO i = data%dims%c_l_start, data%dims%c_u_start - 1
-              IF ( prob%C( i ) - prob%C_l( i ) < tol ) THEN
-                tiny_c = tiny_c + 1
-                data%C_fixed( tiny_c ) = prob%C_u( i )
-                data%Index_C_fixed( tiny_c ) = i
-                prob%C_u( i ) =  prob%C_l( i )
-              END IF
-            END DO
-    
-            DO i = data%dims%c_u_start, data%dims%c_l_end
-              IF ( prob%C( i ) - prob%C_l( i ) < tol ) THEN
-                tiny_c = tiny_c + 1
-                data%C_fixed( tiny_c ) = prob%C_u( i )
-                data%Index_C_fixed( tiny_c ) = i
-                prob%C_u( i ) =  prob%C_l( i )
-              ELSE IF ( prob%C( i ) - prob%C_u( i ) > - tol ) THEN
-                tiny_c = tiny_c + 1
-                data%C_fixed( tiny_c ) = prob%C_l( i )
-                data%Index_C_fixed( tiny_c ) = - i
-                prob%C_l( i ) =  prob%C_u( i )
-              END IF
-            END DO
-    
-            DO i = data%dims%c_l_end + 1, data%dims%c_u_end
-              IF ( prob%C( i ) - prob%C_u( i ) > - tol ) THEN
-                tiny_c = tiny_c + 1
-                data%C_fixed( tiny_c ) = prob%C_l( i )
-                data%Index_C_fixed( tiny_c ) = - i
-                prob%C_l( i ) =  prob%C_u( i )
-              END IF
-            END DO
-          END IF
-  
-          CALL QPP_initialize( data%QPP_map_fixed, data%QPP_control )
-          data%QPP_control%infinity = control%infinity
-          data%QPP_control%treat_zero_bounds_as_general =                     &
-            control%treat_zero_bounds_as_general
-
-!  Store the problem dimensions
-
-          data%dims_save_fixed = data%dims
-          a_ne = prob%A%ne 
-  
-          IF ( printi ) WRITE( control%out,                                    &
-                 "( /, ' problem dimensions before preprocessing: ', /,        &
-     &           ' n = ', I8, ' m = ', I8, ' a_ne = ', I8 )" )                 &
-                 prob%n, prob%m, a_ne
-  
-!  Perform the preprocessing
-
-          CALL CPU_TIME( time ) 
-          CALL QPP_reorder( data%QPP_map_fixed, data%QPP_control,              &
-                             data%QPP_inform, data%dims, prob,                 &
-                             .FALSE., .FALSE., .FALSE. )
-          CALL CPU_TIME( dum ) ; dum = dum - time
-          inform%time%preprocess = inform%time%preprocess + dum
-    
-          data%dims%nc = data%dims%c_u_end - data%dims%c_l_start + 1 
-          data%dims%x_s = 1 ; data%dims%x_e = prob%n
-          data%dims%c_s = data%dims%x_e + 1 
-          data%dims%c_e = data%dims%x_e + data%dims%nc  
-          data%dims%c_b = data%dims%c_e - prob%m
-          data%dims%y_s = data%dims%c_e + 1 
-          data%dims%y_e = data%dims%c_e + prob%m
-          data%dims%y_i = data%dims%c_s + prob%m 
-          data%dims%v_e = data%dims%y_e
-
-!  Test for satisfactory termination
-
-          IF ( data%QPP_inform%status /= 0 ) THEN
-            inform%status = data%QPP_inform%status
-            IF ( control%out > 0 .AND. control%print_level >= 5 )              &
-              WRITE( control%out, "( ' status ', I3, ' after QPP_reorder ')" ) &
-               data%QPP_inform%status
-            IF ( control%error > 0 .AND. control%print_level > 0 )             &
-              WRITE( control%error, 2010 ) inform%status 
-            IF ( control%out > 0 .AND. control%print_level > 0 .AND.           &
-                 inform%status == - 4 ) WRITE( control%error, 2240 ) 
-            CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
-            CALL QPP_terminate( data%QPP_map_fixed, data%QPP_control,          &
-                                data%QPP_inform )
-            CALL QPP_terminate( data%QPP_map_freed, data%QPP_control,          &
-                                data%QPP_inform )
-            CALL QPP_terminate( data%QPP_map, data%QPP_control, data%QPP_inform)
-            GO TO 800 
-          END IF 
-
-!  Record revised array lengths
-
-          IF ( SMT_get( prob%A%type ) == 'DENSE' ) THEN
-            a_ne = prob%m * prob%n
-          ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
-            a_ne = prob%A%ptr( prob%m + 1 ) - 1
-          ELSE
-            a_ne = prob%A%ne 
-          END IF
-
-          IF ( printi ) WRITE( control%out,                                    &
-                 "( /, ' problem dimensions after preprocessing: ', /,         &
-     &           ' n = ', I8, ' m = ', I8, ' a_ne = ', I8 )" )                 &
-                 prob%n, prob%m, a_ne
-
-!  ====================================================================
-!  Check to see if the equality constraints remain linearly independent
-!  ====================================================================
-
-          IF ( prob%m > 0 .AND. control%remove_dependencies ) THEN
-    
-            CALL CPU_TIME( time ) 
-            IF ( control%out > 0 .AND. control%print_level >= 1 )              &
-              WRITE( control%out,                                              &
-                "( /, 1X, I0, ' equalities from ', I0, ' constraints ' )" )    &
-                data%dims%c_equality, prob%m
-
-!  Find any dependent rows
-
-            nzc = prob%A%ptr( data%dims%c_equality + 1 ) - 1 
-            CALL FDC_find_dependent( prob%n, data%dims%c_equality,             &
-                                     prob%A%val( : nzc ),                      &
-                                     prob%A%col( : nzc ),                      &
-                                     prob%A%ptr( : data%dims%c_equality + 1 ), &
-                                     prob%C_l,                                 &
-                                     n_more_depen, data%Index_C_more_freed,    &
-                                     FDC_data, FDC_control, FDC_inform )
-            inform%status = FDC_inform%status
-            inform%non_negligible_pivot =                                      &
-              MIN( FDC_inform%non_negligible_pivot, inform%non_negligible_pivot )
-
-!  Record output parameters
-
-            inform%alloc_status = FDC_inform%alloc_status
-            inform%factorization_status = FDC_inform%factorization_status
-            inform%factorization_integer = FDC_inform%factorization_integer
-            inform%factorization_real = FDC_inform%factorization_real
-            inform%bad_alloc = FDC_inform%bad_alloc
-            inform%time%find_dependent =                                       &
-              inform%time%find_dependent + FDC_inform%time%total
-            inform%time%analyse = inform%time%analyse + FDC_inform%time%analyse
-            inform%time%factorize =                                           &
-              inform%time%factorize + FDC_inform%time%factorize
-            inform%nfacts = 1
-
-            CALL CPU_TIME( dum )
-            IF ( control%cpu_time_limit >= zero .AND.                          &
-                 dum - time_start > control%cpu_time_limit ) THEN
-              inform%status = - 12
-              IF ( control%error > 0 .AND. control%print_level > 0 )           &
-                WRITE( control%error, 2010 ) inform%status 
-              inform%time%total = dum - time_start ; GO TO 800 
-            END IF 
-            inform%time%preprocess = inform%time%preprocess + dum - time
-            IF ( printi .AND. inform%non_negligible_pivot <                    &
-                 thousand * control%zero_pivot ) WRITE( control%out, "(        &
-           &  /, 1X, 26 ( '*' ), ' WARNING ', 26 ( '*' ), /,                   & 
-           &  ' ***  smallest allowed pivot =', ES11.4,' may be too small ***',&
-           &  /, ' ***  perhaps increase control%zero_pivot from', ES11.4,     &
-           &  '  ***', /, 1X, 26 ( '*' ), ' WARNING ', 26 ( '*' ) )" )         &
-               inform%non_negligible_pivot, control%zero_pivot
-
-            IF ( inform%status /= 0 ) THEN
-
-!  On error exit, compute the current objective function value
-
-              inform%obj = DOT_PRODUCT( prob%X( : prob%n ),                    &
-                                        prob%G( : prob%n ) ) + prob%f
-
-!  Print details of the error exit
-
-              IF ( control%error > 0 .AND. control%print_level >= 1 ) THEN
-                WRITE( control%out, "( ' ' )" )
-                IF ( inform%status /= 0 )                                      &
-                  WRITE( control%error, 2040 ) inform%status, 'LSQP_dependent'
-              END IF
-              GO TO 750
-            END IF
-    
-            IF ( control%out > 0 .AND. control%print_level >= 2                &
-                 .AND. n_more_depen > 0 )                                      &
-              WRITE( control%out, "(/, ' The following ', I7,                  &
-           &         ' constraints appear to be dependent', /, ( 8I8 ) )" )    &
-                n_more_depen, data%Index_C_more_freed
-    
-            remap_more_freed = n_more_depen > 0
-          ELSE
-            remap_more_freed = .FALSE.
-          END IF
-    
-          IF ( remap_more_freed ) THEN
-
-!  Some of the current constraints will be removed by freeing them
-
-            IF ( control%error > 0 .AND. control%print_level >= 1 )            &
-              WRITE( control%out, "( /, ' -> ', i6, ' constraints are',        &
-             & ' dependent and will be temporarily removed' )" ) n_more_depen
-
-!  Allocate arrays to indicate which constraints have been freed
-
-            reallocate = .TRUE.
-            IF ( ALLOCATED( data%C_more_freed ) ) THEN
-              IF ( SIZE( data%C_more_freed ) < n_more_depen ) THEN
-                DEALLOCATE( data%C_more_freed ) ; ELSE ; reallocate = .FALSE.
-              END IF
-            END IF
-            IF ( reallocate ) THEN 
-              ALLOCATE( data%C_more_freed( n_more_depen ),                     &
-                        STAT = inform%alloc_status )
-              IF ( inform%alloc_status /= 0 ) THEN 
-                inform%bad_alloc = 'lpb:data%C_more_freed' ; GO TO 900
-              END IF
-            END IF
-        
-!  Free the constraint bounds as required
-
-            DO i = 1, n_more_depen
-              j = data%Index_C_more_freed( i )
-              data%C_more_freed( i ) = prob%C_l( j )
-              prob%C_l( j ) = - control%infinity
-              prob%C_u( j ) = control%infinity
-              prob%Y( j ) = zero
-            END DO
-    
-            CALL QPP_initialize( data%QPP_map_more_freed, data%QPP_control )
-            data%QPP_control%infinity = control%infinity
-            data%QPP_control%treat_zero_bounds_as_general =                    &
-              control%treat_zero_bounds_as_general
-
-!  Store the problem dimensions
-
-            data%dims_save_more_freed = data%dims
-            a_ne = prob%A%ne 
-    
-            IF ( printi ) WRITE( control%out,                                  &
-              "( /, ' problem dimensions before removal of dependecies: ',     &
-             &   /, ' n = ', I8, ' m = ', I8, ' a_ne = ',                      &
-             &        I8 )" ) prob%n, prob%m, a_ne
-    
-!  Perform the preprocessing
-
-            CALL CPU_TIME( time ) 
-            CALL QPP_reorder( data%QPP_map_more_freed, data%QPP_control,       &
-                              data%QPP_inform, data%dims, prob,                &
-                              .FALSE., .FALSE., .FALSE. )
-            CALL CPU_TIME( dum ) ; dum = dum - time
-            inform%time%preprocess = inform%time%preprocess + dum
-      
-            data%dims%nc = data%dims%c_u_end - data%dims%c_l_start + 1 
-            data%dims%x_s = 1 ; data%dims%x_e = prob%n
-            data%dims%c_s = data%dims%x_e + 1 
-            data%dims%c_e = data%dims%x_e + data%dims%nc  
-            data%dims%c_b = data%dims%c_e - prob%m
-            data%dims%y_s = data%dims%c_e + 1 
-            data%dims%y_e = data%dims%c_e + prob%m
-            data%dims%y_i = data%dims%c_s + prob%m 
-            data%dims%v_e = data%dims%y_e
-
-!  Test for satisfactory termination
-
-            IF ( data%QPP_inform%status /= 0 ) THEN
-              inform%status = data%QPP_inform%status
-              IF ( control%out > 0 .AND. control%print_level >= 5 )            &
-                WRITE( control%out, "( ' status ', I3, ' after QPP_reorder ')")&
-                 data%QPP_inform%status
-              IF ( control%error > 0 .AND. control%print_level > 0 )           &
-                WRITE( control%error, 2010 ) inform%status 
-              IF ( control%out > 0 .AND. control%print_level > 0 .AND.         &
-                   inform%status == - 4 ) WRITE( control%error, 2240 ) 
-              CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
-              CALL QPP_terminate( data%QPP_map_more_freed, data%QPP_control,   &
-                                  data%QPP_inform )
-              CALL QPP_terminate( data%QPP_map_fixed, data%QPP_control,        &
-                                  data%QPP_inform )
-              CALL QPP_terminate( data%QPP_map_freed, data%QPP_control,        &
-                                  data%QPP_inform )
-              CALL QPP_terminate( data%QPP_map, data%QPP_control,              &
-                                  data%QPP_inform )
-              GO TO 800 
-            END IF 
-
-!  Record revised array lengths
-
-            IF ( SMT_get( prob%A%type ) == 'DENSE' ) THEN
-              a_ne = prob%m * prob%n
-            ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
-              a_ne = prob%A%ptr( prob%m + 1 ) - 1
-            ELSE
-              a_ne = prob%A%ne 
-            END IF
-
-            IF ( printi ) WRITE( control%out,                                  &
-              "( /, ' problem dimensions after removal of dependencies: ', /,  &
-      &             ' n = ', I8, ' m = ', I8, ' a_ne = ', I8 )" )              &
-                   prob%n, prob%m, a_ne
-  
-          END IF
-
-!  Experiment!!
-
-!         GO TO 10
-        ELSE
-          remap_more_freed = .FALSE.
-        END IF
-      END IF
-
-!  Allocate additional real workspace
-
-      reallocate = .TRUE.
-      IF ( ALLOCATED( data%DZ_l ) ) THEN
-        IF ( LBOUND( data%DZ_l, 1 ) /= data%dims%x_l_start .OR.               &
-             UBOUND( data%DZ_l, 1 ) /= data%dims%x_l_end ) THEN 
-          DEALLOCATE( data%DZ_l )
-        ELSE ; reallocate = .FALSE. ; END IF
-      END IF
-      IF ( reallocate ) THEN 
-        ALLOCATE( data%DZ_l( data%dims%x_l_start : data%dims%x_l_end ),       &
-                  STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
-          inform%bad_alloc = 'lpb:data%DZ_l' ; GO TO 900
-        END IF
-      END IF
-
-      reallocate = .TRUE.
-      IF ( ALLOCATED( data%DZ_u ) ) THEN
-        IF ( LBOUND( data%DZ_u, 1 ) /= data%dims%x_u_start .OR.               &
-             UBOUND( data%DZ_u, 1 ) /= data%dims%x_u_end ) THEN 
-          DEALLOCATE( data%DZ_u )
-        ELSE ; reallocate = .FALSE. ; END IF
-      END IF
-      IF ( reallocate ) THEN 
-        ALLOCATE( data%DZ_u( data%dims%x_u_start : data%dims%x_u_end ),       &
-                  STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
-          inform%bad_alloc = 'lpb:data%DZ_u' ; GO TO 900
-        END IF
-      END IF
-
-      reallocate = .TRUE.
-      IF ( ALLOCATED( data%GRAD ) ) THEN
-        IF ( SIZE( data%GRAD ) < prob%n ) THEN ; DEALLOCATE( data%GRAD )
-        ELSE ; reallocate = .FALSE.
-        END IF
-      END IF
-      IF ( reallocate ) THEN 
-        ALLOCATE( data%GRAD( prob%n ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
-          inform%bad_alloc = 'lpb:data%GRAD' ; GO TO 900
-        END IF
-      END IF
-
-      reallocate = .TRUE.
-      IF ( ALLOCATED( data%X_trial ) ) THEN
-        IF ( SIZE( data%X_trial ) < prob%n ) THEN ; DEALLOCATE( data%X_trial )
-        ELSE ; reallocate = .FALSE.
-        END IF
-      END IF
-      IF ( reallocate ) THEN 
-        ALLOCATE( data%X_trial( prob%n ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
-          inform%bad_alloc = 'lpb:data%X_trial' ; GO TO 900
-        END IF
-      END IF
-
-      reallocate = .TRUE.
-      IF ( ALLOCATED( data%GRAD_X_phi ) ) THEN
-        IF ( SIZE( data%GRAD_X_phi ) < prob%n ) THEN 
-          DEALLOCATE( data%GRAD_X_phi )
-        ELSE ; reallocate = .FALSE.
-        END IF
-      END IF
-      IF ( reallocate ) THEN 
-        ALLOCATE( data%GRAD_X_phi( prob%n ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
-          inform%bad_alloc = 'lpb:data%GRAD_X_phi' ; GO TO 900
-        END IF
-      END IF
-
-      reallocate = .TRUE.
-      IF ( ALLOCATED( data%GRAD_C_phi ) ) THEN
-        IF ( LBOUND( data%GRAD_C_phi, 1 ) /= data%dims%c_l_start .OR.          &
-             UBOUND( data%GRAD_C_phi, 1 ) /= data%dims%c_u_end ) THEN 
-          DEALLOCATE( data%GRAD_C_phi )
-        ELSE ; reallocate = .FALSE.
-        END IF
-      END IF
-      IF ( reallocate ) THEN 
-        ALLOCATE( data%GRAD_C_phi( data%dims%c_l_start : data%dims%c_u_end ),  &
-                  STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN 
-          inform%bad_alloc = 'lpb:data%GRAD_C_phi' ; GO TO 900
-        END IF
-      END IF
-
-      reallocate = .TRUE.
-      IF ( ALLOCATED( data%S ) ) THEN
-        IF ( SIZE( data%S ) < data%dims%c_e ) THEN ; DEALLOCATE( data%S )
-        ELSE ; reallocate = .FALSE.
-        END IF
-      END IF
-      IF ( reallocate ) THEN 
-        ALLOCATE( data%S( data%dims%c_e ), STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN ; inform%bad_alloc = 'lpb:data%S' ; GO TO 900
-        END IF
-      END IF
-
-      IF ( stat_required ) THEN
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( data%A_s ) ) THEN
-          IF ( SIZE( data%A_s ) < prob%m ) THEN ; DEALLOCATE( data%A_s )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( data%A_s( prob%m ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb:data%A_s' ; GO TO 900
-          END IF
-        END IF
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( data%X_last ) ) THEN
-          IF ( SIZE( data%X_last ) < prob%m ) THEN ; DEALLOCATE( data%X_last )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( data%X_last( prob%m ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb:data%X_last' ; GO TO 900
-          END IF
-        END IF
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( data%Y_last ) ) THEN
-          IF ( SIZE( data%Y_last ) < prob%m ) THEN ; DEALLOCATE( data%Y_last )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( data%Y_last( prob%m ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb:data%Y_last' ; GO TO 900
-          END IF
-        END IF
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( data%Z_last ) ) THEN
-          IF ( SIZE( data%Z_last ) < prob%n ) THEN ; DEALLOCATE( data%Z_last )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( data%Z_last( prob%n ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb:data%Z_last' ; GO TO 900
-          END IF
-        END IF
-      END IF
 
 !  =================
 !  Solve the problem
 !  =================
 
-!  overlaps: DY_l => DIST_C_l_trial 
-!            DY_u => DIST_C_u_trial
-!            DELTA => VECTOR
-!            RHS( : c_e ) => R 
-!            DZ_l( x_l_start : x_l_end ) => DIST_X_l_trial
-!            DZ_u( x_u_start : x_u_end ) => DIST_X_u_trial
+!  constraint/variable exit ststus required
 
       IF ( stat_required ) THEN
-        CALL LPB_solve_main( data%dims, prob%n, prob%m,                       &
-                             prob%G, prob%f, prob%A%val, prob%A%col,          &
-                             prob%A%ptr, prob%C_l, prob%C_u, prob%X_l,        &
-                             prob%X_u, prob%C, prob%X, prob%Y, prob%Z,        &
-                             data%RES_x, data%X_trial, data%Y_trial,          &
-                             data%RES_y, data%BEST_y, data%SOL, data%RES,     &
-                             data%BEST, data%HX, data%GRAD_L, data%DIST_X_l,  &
-                             data%DIST_X_u, data%Z_l, data%Z_u,               &
-                             data%BARRIER_X, data%Y_l, data%DY_l,             &
-                             data%DIST_C_l, data%Y_u, data%DY_u,              &
-                             data%DIST_C_u, data%C, data%BARRIER_C,           &
-                             data%SCALE_C, data%DELTA,                        &
-                             data%RHS( : data%dims%c_e ),                     &
-                             data%GRAD, data%GRAD_X_phi, data%GRAD_C_phi,     &
-                             data%DZ_l( data%dims%x_l_start :                 &
-                                        data%dims%x_l_end ),                  &
-                             data%DZ_u( data%dims%x_u_start :                 &
-                                        data%dims%x_u_end ), data%S,          &
-                             data%Abycol_val, data%DIAG_X, data%DIAG_C,       &
-                             data%IW, data%K_colptr, data%Abycol_ptr,         &
-                             data%Abycol_row, data%K,        &
-                             data%FACTORS, data%CNTL, control, inform,        &
-                             C_last = data%A_s, X_last = data%X_last,         &
-                             Y_last = data%Y_last, Z_last = data%Z_last,      &
-                             C_stat = C_stat, B_Stat = B_Stat )
+        IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
+          CALL LPB_solve_main( data%dims, prob%n, prob%m,                      &
+                               prob%A%val, prob%A%col, prob%A%ptr,             &
+                               prob%C_l, prob%C_u, prob%X_l, prob%X_u,         &
+                               prob%C, prob%X, prob%Y, prob%Z,                 &
+                               data%GRAD_L, data%DIST_X_l, data%DIST_X_u,      &
+                               data%Z_l, data%Z_u, data%BARRIER_X,             &
+                               data%Y_l, data%DIST_C_l, data%Y_u,              &
+                               data%DIST_C_u, data%C, data%BARRIER_C,          &
+                               data%SCALE_C, data%RHS, prob%f,                 &
+                               data%H_sbls, data%A_sbls, data%C_sbls,          &
+                               data%order, data%X_coef, data%C_coef,           &
+                               data%Y_coef, data%Y_l_coef, data%Y_u_coef,      &
+                               data%Z_l_coef, data%Z_u_coef,                   &
+                               data%BINOMIAL, data%CS_coef, data%COEF,         &
+                               data%ROOTS, data%ROOTS_data,                    &
+                               data%DX_zh, data%DC_zh, data%DY_zh,             &
+                               data%DY_l_zh, data%DY_u_zh, data%DZ_l_zh,       &
+                               data%DZ_u_zh, data%OPT_alpha, data%OPT_merit,   &
+                               data%SBLS_data, prefix, control, inform,        &
+                               prob%gradient_kind,                             &
+                               C_last = data%A_s, X_last = data%H_s,           &
+                               Y_last = data%Y_last, Z_last = data%Z_last,     &
+                               C_stat = C_stat, X_Stat = X_Stat )
+        ELSE
+          CALL LPB_solve_main( data%dims, prob%n, prob%m,                      &
+                               prob%A%val, prob%A%col, prob%A%ptr,             &
+                               prob%C_l, prob%C_u, prob%X_l, prob%X_u,         &
+                               prob%C, prob%X, prob%Y, prob%Z,                 &
+                               data%GRAD_L, data%DIST_X_l, data%DIST_X_u,      &
+                               data%Z_l, data%Z_u, data%BARRIER_X,             &
+                               data%Y_l, data%DIST_C_l, data%Y_u,              &
+                               data%DIST_C_u, data%C, data%BARRIER_C,          &
+                               data%SCALE_C, data%RHS, prob%f,                 &
+                               data%H_sbls, data%A_sbls, data%C_sbls,          &
+                               data%order, data%X_coef, data%C_coef,           &
+                               data%Y_coef, data%Y_l_coef, data%Y_u_coef,      &
+                               data%Z_l_coef, data%Z_u_coef,                   &
+                               data%BINOMIAL, data%CS_coef, data%COEF,         &
+                               data%ROOTS, data%ROOTS_data,                    &
+                               data%DX_zh, data%DC_zh, data%DY_zh,             &
+                               data%DY_l_zh, data%DY_u_zh, data%DZ_l_zh,       &
+                               data%DZ_u_zh, data%OPT_alpha, data%OPT_merit,   &
+                               data%SBLS_data, prefix, control, inform,        &
+                               prob%gradient_kind, G = prob%G,                 &
+                               C_last = data%A_s, X_last = data%H_s,           &
+                               Y_last = data%Y_last, Z_last = data%Z_last,     &
+                               C_stat = C_stat, X_Stat = X_Stat )
+        END IF
+
+!  constraint/variable exit status not required
+
       ELSE
-        CALL LPB_solve_main( data%dims, prob%n, prob%m,                       &
-                             prob%G, prob%f, prob%A%val, prob%A%col,          &
-                             prob%A%ptr, prob%C_l, prob%C_u, prob%X_l,        &
-                             prob%X_u, prob%C, prob%X, prob%Y, prob%Z,        &
-                             data%RES_x, data%X_trial, data%Y_trial,          &
-                             data%RES_y, data%BEST_y, data%SOL, data%RES,     &
-                             data%BEST, data%HX, data%GRAD_L, data%DIST_X_l,  &
-                             data%DIST_X_u, data%Z_l, data%Z_u,               &
-                             data%BARRIER_X, data%Y_l, data%DY_l,             &
-                             data%DIST_C_l, data%Y_u, data%DY_u,              &
-                             data%DIST_C_u, data%C, data%BARRIER_C,           &
-                             data%SCALE_C, data%DELTA,                        &
-                             data%RHS( : data%dims%c_e ),                     &
-                             data%GRAD, data%GRAD_X_phi, data%GRAD_C_phi,     &
-                             data%DZ_l( data%dims%x_l_start :                 &
-                                        data%dims%x_l_end ),                  &
-                             data%DZ_u( data%dims%x_u_start :                 &
-                                        data%dims%x_u_end ), data%S,          &
-                             data%Abycol_val, data%DIAG_X, data%DIAG_C,       &
-                             data%IW, data%K_colptr, data%Abycol_ptr,         &
-                             data%Abycol_row, data%K,                  &
-                             data%FACTORS, data%CNTL, control, inform )
+        IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
+          CALL LPB_solve_main( data%dims, prob%n, prob%m,                      &
+                               prob%A%val, prob%A%col, prob%A%ptr,             &
+                               prob%C_l, prob%C_u, prob%X_l, prob%X_u,         &
+                               prob%C, prob%X, prob%Y, prob%Z,                 &
+                               data%GRAD_L, data%DIST_X_l, data%DIST_X_u,      &
+                               data%Z_l, data%Z_u, data%BARRIER_X,             &
+                               data%Y_l, data%DIST_C_l, data%Y_u,              &
+                               data%DIST_C_u, data%C, data%BARRIER_C,          &
+                               data%SCALE_C, data%RHS, prob%f,                 &
+                               data%H_sbls, data%A_sbls, data%C_sbls,          &
+                               data%order, data%X_coef, data%C_coef,           &
+                               data%Y_coef, data%Y_l_coef, data%Y_u_coef,      &
+                               data%Z_l_coef, data%Z_u_coef,                   &
+                               data%BINOMIAL, data%CS_coef, data%COEF,         &
+                               data%ROOTS, data%ROOTS_data,                    &
+                               data%DX_zh, data%DC_zh, data%DY_zh,             &
+                               data%DY_l_zh, data%DY_u_zh, data%DZ_l_zh,       &
+                               data%DZ_u_zh, data%OPT_alpha, data%OPT_merit,   &
+                               data%SBLS_data, prefix, control, inform,        &
+                               prob%gradient_kind,                             &
+                               C_last = data%A_s, X_last = data%H_s,           &
+                               Y_last = data%Y_last, Z_last = data%Z_last )
+        ELSE
+          CALL LPB_solve_main( data%dims, prob%n, prob%m,                      &
+                               prob%A%val, prob%A%col, prob%A%ptr,             &
+                               prob%C_l, prob%C_u, prob%X_l, prob%X_u,         &
+                               prob%C, prob%X, prob%Y, prob%Z,                 &
+                               data%GRAD_L, data%DIST_X_l, data%DIST_X_u,      &
+                               data%Z_l, data%Z_u, data%BARRIER_X,             &
+                               data%Y_l, data%DIST_C_l, data%Y_u,              &
+                               data%DIST_C_u, data%C, data%BARRIER_C,          &
+                               data%SCALE_C, data%RHS, prob%f,                 &
+                               data%H_sbls, data%A_sbls, data%C_sbls,          &
+                               data%order, data%X_coef, data%C_coef,           &
+                               data%Y_coef, data%Y_l_coef, data%Y_u_coef,      &
+                               data%Z_l_coef, data%Z_u_coef,                   &
+                               data%BINOMIAL, data%CS_coef, data%COEF,         &
+                               data%ROOTS, data%ROOTS_data,                    &
+                               data%DX_zh, data%DC_zh, data%DY_zh,             &
+                               data%DY_l_zh, data%DY_u_zh, data%DZ_l_zh,       &
+                               data%DZ_u_zh, data%OPT_alpha, data%OPT_merit,   &
+                               data%SBLS_data, prefix, control, inform,        &
+                               prob%gradient_kind, G = prob%G,                 &
+                               C_last = data%A_s, X_last = data%H_s,           &
+                               Y_last = data%Y_last, Z_last = data%Z_last )
+        END IF
       END IF
 
-  700 CONTINUE 
+      inform%time%analyse = inform%time%analyse +                              &
+        inform%FDC_inform%time%analyse - time_analyse
+      inform%time%clock_analyse = inform%time%clock_analyse +                  &
+        inform%FDC_inform%time%clock_analyse - clock_analyse
+      inform%time%factorize = inform%time%factorize +                          &
+        inform%FDC_inform%time%factorize - time_factorize
+      inform%time%clock_factorize = inform%time%clock_factorize +              &
+        inform%FDC_inform%time%clock_factorize - clock_factorize
 
-!  If some of the constraints were freed having first been fixed during 
-!  the computation, refix them now
+!  crossover solution if required
 
-      IF ( remap_more_freed ) THEN
+      IF ( stat_required .AND. control%crossover .AND.                         &
+           inform%status == GALAHAD_ok ) THEN
+         IF ( printa ) THEN
+          WRITE( control%out, "( A, ' Before crossover:`' )" ) prefix
+          WRITE( control%out, "( /, A, '      i       X_l             X   ',   &
+         &   '          X_u            Z        st' )" ) prefix
+          DO i = 1, prob%n
+            WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
+            prob%X_l( i ), prob%X( i ), prob%X_u( i ), prob%Z( i ), X_stat( i )
+          END DO
 
-        CALL CPU_TIME( time )
-        CALL QPP_restore( data%QPP_map_more_freed, data%QPP_inform,            &
-                          prob, get_all = .TRUE. )
-!       CALL QPP_terminate( data%QPP_map_more_freed, data%QPP_control,         &
-!                           data%QPP_inform )
-        CALL CPU_TIME( dum ) ; dum = dum - time
-        inform%time%preprocess = inform%time%preprocess + dum
-        data%dims = data%dims_save_more_freed
+          WRITE( control%out, "( /, A, '      i       C_l             C   ',   &
+         &   '          C_u            Y        st' )" ) prefix
+          DO i = 1, prob%m
+            WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
+            prob%C_l( i ), prob%C( i ), prob%C_u( i ), prob%Y( i ), C_stat( i )
+          END DO
+        END IF
+        data%CRO_control = control%CRO_control
+        data%CRO_control%feasibility_tolerance =                               &
+          MAX( inform%primal_infeasibility, inform%dual_infeasibility,         &
+               inform%complementary_slackness,                                 &
+               control%CRO_control%feasibility_tolerance )
+        IF ( data%CRO_control%feasibility_tolerance < infinity / two ) THEN
+          data%CRO_control%feasibility_tolerance =                             &
+            two * data%CRO_control%feasibility_tolerance
+        ELSE
+          data%CRO_control%feasibility_tolerance = infinity
+        END IF
+        time_analyse = inform%CRO_inform%time%analyse
+        clock_analyse = inform%CRO_inform%time%clock_analyse
+        time_factorize = inform%CRO_inform%time%factorize
+        clock_factorize = inform%CRO_inform%time%clock_factorize
+        CALL CRO_crossover( prob%n, prob%m, data%dims%c_equality,              &
+                            prob%A%val, prob%A%col, prob%A%ptr, prob%G,        &
+                            prob%C_l, prob%C_u, prob%X_l, prob%X_u, prob%C,    &
+                            prob%X, prob%Y, prob%Z, C_stat, X_stat,            &
+                            data%CRO_data, data%CRO_control, inform%CRO_inform )
+        inform%time%analyse = inform%time%analyse +                            &
+          inform%CRO_inform%time%analyse - time_analyse
+        inform%time%clock_analyse = inform%time%clock_analyse +                &
+          inform%CRO_inform%time%clock_analyse - clock_analyse
+        inform%time%factorize = inform%time%factorize +                        &
+          inform%CRO_inform%time%factorize - time_factorize
+        inform%time%clock_factorize = inform%time%clock_factorize +            &
+          inform%CRO_inform%time%clock_factorize - clock_factorize
+        cro_clock_matrix =                                                     &
+          inform%CRO_inform%time%clock_analyse - clock_analyse +               &
+          inform%CRO_inform%time%clock_factorize - clock_factorize
 
-!  Fix the temporarily freed constraint bounds
+        IF ( printa ) THEN
+          WRITE( control%out, "( A, ' After crossover:' )" ) prefix
+          WRITE( control%out, "( /, A, '      i       X_l             X   ',   &
+         &   '          X_u            Z        st' )" ) prefix
+          DO i = 1, prob%n
+            WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
+            prob%X_l( i ), prob%X( i ), prob%X_u( i ), prob%Z( i ), X_stat( i )
+          END DO
 
-        DO i = 1, n_more_depen
-          j = data%Index_c_more_freed( i )
-          prob%C_l( j ) = data%C_more_freed( i )
-          prob%C_u( j ) = data%C_more_freed( i )
-        END DO
+          WRITE( control%out, "( /, A, '      i       C_l             C   ',   &
+         &   '          C_u            Y        st' )" ) prefix
+          DO i = 1, prob%m
+            WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
+            prob%C_l( i ), prob%C( i ), prob%C_u( i ), prob%Y( i ), C_stat( i )
+          END DO
+        END IF
       END IF
 
-!  If some of the variables/constraints were fixed during the computation,
-!  free them now
-
-      IF ( remap_fixed ) THEN
-
-        CALL CPU_TIME( time )
-        CALL QPP_restore( data%QPP_map_fixed, data%QPP_inform,                 &
-                          prob, get_all = .TRUE. )
-!       CALL QPP_terminate( data%QPP_map_fixed, data%QPP_control,              &
-!                           data%QPP_inform )
-        CALL CPU_TIME( dum ) ; dum = dum - time
-        inform%time%preprocess = inform%time%preprocess + dum
-        data%dims = data%dims_save_fixed
-
-!  Release the temporarily fixed problem bounds
-
-        DO i = 1, tiny_x
-          j = data%Index_X_fixed( i )
-          IF ( j > 0 ) THEN
-            prob%X_u( j ) = data%X_fixed( i )
-          ELSE
-            prob%X_l( - j ) = data%X_fixed( i )
-          END IF
-        END DO
-       
-!  Do the same for the constraint bounds
-
-        DO i = 1, tiny_c
-          j = data%Index_C_fixed( i )
-          IF ( j > 0 ) THEN
-            prob%C_u( j ) = data%C_fixed( i )
-          ELSE
-            prob%C_l( - j ) = data%C_fixed( i )
-          END IF
-        END DO
-
-      END IF
-
-!  If some of the constraints were freed during the computation, refix them now
+!  if some of the constraints were freed during the computation, refix them now
 
       IF ( remap_freed ) THEN
-
-        CALL CPU_TIME( time )
-        CALL QPP_restore( data%QPP_map_freed, data%QPP_inform,                 &
-                          prob, get_all = .TRUE. )
-!       CALL QPP_terminate( data%QPP_map_freed, data%QPP_control,              &
-!                           data%QPP_inform )
-        CALL CPU_TIME( dum ) ; dum = dum - time
-        inform%time%preprocess = inform%time%preprocess + dum
+        CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
+        IF ( stat_required ) THEN
+          C_stat( prob%m + 1 : data%QPP_map_freed%m ) = 0
+          CALL SORT_inverse_permute( data%QPP_map_freed%m,                     &
+                                     data%QPP_map_freed%c_map,                 &
+                                     IX = C_stat( : data%QPP_map_freed%m ) )
+          X_stat( prob%n + 1 : data%QPP_map_freed%n ) = - 1
+          CALL SORT_inverse_permute( data%QPP_map_freed%n,                     &
+                                     data%QPP_map_freed%x_map,                 &
+                                     IX = X_stat( : data%QPP_map_freed%n ) )
+        END IF
+        CALL QPP_restore( data%QPP_map_freed, data%QPP_inform, prob,           &
+                          get_all = .TRUE.)
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%clock_preprocess =                                         &
+          inform%time%clock_preprocess + clock_now - clock_record
         data%dims = data%dims_save_freed
 
-!  Fix the temporarily freed constraint bounds
+!  fix the temporarily freed constraint bounds
 
         DO i = 1, n_depen
           j = data%Index_c_freed( i )
           prob%C_l( j ) = data%C_freed( i )
           prob%C_u( j ) = data%C_freed( i )
         END DO
-
-        CALL FDC_terminate( FDC_data, FDC_control, FDC_inform )
-
       END IF
       data%tried_to_remove_deps = .FALSE.
 
-!  Retore the problem to its original form
+!  retore the problem to its original form
 
-  750 CONTINUE 
+  700 CONTINUE
       data%trans = data%trans - 1
       IF ( data%trans == 0 ) THEN
-        CALL CPU_TIME( time )
+!       data%IW( : prob%n + 1 ) = 0
+        CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
+        IF ( stat_required ) THEN
+          C_stat( prob%m + 1 : data%QPP_map%m ) = 0
+          CALL SORT_inverse_permute( data%QPP_map%m, data%QPP_map%c_map,       &
+                                     IX = C_stat( : data%QPP_map%m ) )
+          X_stat( prob%n + 1 : data%QPP_map%n ) = - 1
+          CALL SORT_inverse_permute( data%QPP_map%n, data%QPP_map%x_map,       &
+                                     IX = X_stat( : data%QPP_map%n ) )
+        END IF
 
-!  Full restore
+!  full restore
 
-        IF ( control%restore_problem >= 2 ) THEN
+        IF ( control%restore_problem >= 2 .OR. stat_required ) THEN
           CALL QPP_restore( data%QPP_map, data%QPP_inform, prob,               &
                             get_all = .TRUE. )
 
-!  Restore vectors and scalars
+!  restore vectors and scalars
 
         ELSE IF ( control%restore_problem == 1 ) THEN
           CALL QPP_restore( data%QPP_map, data%QPP_inform, prob,               &
@@ -2371,111 +2170,113 @@
                             get_y = .TRUE., get_z = .TRUE.,                    &
                             get_c = .TRUE., get_c_bounds = .TRUE. )
 
-!  Solution recovery
+!  recover solution
 
         ELSE
           CALL QPP_restore( data%QPP_map, data%QPP_inform, prob,               &
-                             get_x = .TRUE., get_y = .TRUE., get_z = .TRUE.,   &
-                             get_c = .TRUE. )
+                            get_x = .TRUE., get_y = .TRUE.,                    &
+                            get_z = .TRUE., get_c = .TRUE. )
         END IF
-!       CALL QPP_terminate( data%QPP_map, data%QPP_control, data%QPP_inform )
-        CALL CPU_TIME( dum ) ; dum = dum - time
-        inform%time%preprocess = inform%time%preprocess + dum
+
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%clock_preprocess =                                         &
+          inform%time%clock_preprocess + clock_now - clock_record
         prob%new_problem_structure = data%new_problem_structure
         data%save_structure = .TRUE.
       END IF
 
-!  Compute total time
+!  compute total time
 
-      CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
-      IF ( printi ) WRITE( control%out, 2000 )                                 &
-        inform%time%total, inform%time%preprocess, inform%time%phase1_total,   &
-        inform%time%analyse, inform%time%factorize, inform%time%solve,         &
-        inform%time%phase1_analyse, inform%time%phase1_factorize,              &
-        inform%time%phase1_solve
+  800 CONTINUE
+      CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total =                                                &
+        inform%time%clock_total + clock_now - clock_start
 
-  800 CONTINUE 
+      IF ( printi ) WRITE( control%out,                                        &
+     "( /, A, 3X, ' =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=',    &
+    &             '-=-=-=-=-=-=-=',                                            &
+    &   /, A, 3X, ' =                          LPB total time            ',    &
+    &             '             =',                                            &
+    &   /, A, 3X, ' =', 24X, 0P, F12.2, 29x, '='                               &
+    &   /, A, 3X, ' =    preprocess    analyse    factorize     solve    ',    &
+    &             ' crossover   =',                                            &
+    &   /, A, 3X, ' =', 5F12.2, 5x, '=',                                       &
+    &   /, A, 3X, ' =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=',    &
+    &             '-=-=-=-=-=-=-=') ")                                         &
+        prefix, prefix, prefix, inform%time%clock_total, prefix, prefix,       &
+        inform%time%clock_preprocess, inform%time%clock_analyse,               &
+        inform%time%clock_factorize, inform%time%clock_solve,                  &
+        inform%CRO_inform%time%clock_total - cro_clock_matrix, prefix
+
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
-        WRITE( control%out, "( ' leaving LPB_solve ' )" )
+        WRITE( control%out, "( A, ' leaving LPB_solve ' )" ) prefix
+      RETURN
 
-      RETURN  
+!  allocation error
 
-  900 CONTINUE 
-      inform%status = - 2
-      IF ( printi ) WRITE( control%out, 2900 )                                 &
-        inform%bad_alloc, inform%alloc_status
+  900 CONTINUE
+      inform%status = GALAHAD_error_allocate
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%clock_total =                                                &
+        inform%time%clock_total + clock_now - clock_start
+      IF ( printi ) WRITE( control%out,                                        &
+        "( A, ' ** Message from -LPB_solve-', /,  A,                           &
+       &      ' Allocation error, for ', A, /, A, ' status = ', I0 ) " )       &
+        prefix, prefix, inform%bad_alloc, inform%alloc_status
 
-!  Compute total time
-
-  920 CONTINUE 
-      CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
-        WRITE( control%out, "( ' leaving LPB_solve ' )" )
+        WRITE( control%out, "( A, ' leaving LPB_solve ' )" ) prefix
+      RETURN
 
-      RETURN  
+!  non-executable statements
 
-!  Non-executable statements
-
- 2000 FORMAT( /, ' =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=',               &
-              '-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=',                           &
-              /, ' =', 28X,  'LPB timing statistics', 27X, '=',                &
-              /, ' =                   total           preprocess ',           &
-                 '        phase 1               =',                            &
-              /, ' =', 12X, 0P, F12.2, 6X, F12.2, 6X, F12.2, 16X, '='          &
-              /, ' =      analyse    factorize     solve',                     &
-                 '      analyse    factorize     solve    =',                  &
-              /, ' =', 6F12.2, 4x, '=',                                        &
-              /, ' =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=',               &
-                 '-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=' )
- 2010 FORMAT( ' ', /, '   **  Error return ',I3,' from LPB ' ) 
- 2040 FORMAT( '   **  Error return ', I6, ' from ', A15 ) 
- 2050 FORMAT( /, ' ===================== end of feasible point phase ',        &
-                 ' ==================== ' )
- 2240 FORMAT( /, '  Warning - an entry from strict upper triangle of H given ' )
- 2900 FORMAT( ' ** Message from -LPB_solve-', /,                               &
-              ' Allocation error, for ', A, /, ' status = ', I6 ) 
+ 2010 FORMAT( ' ', /, A, '    ** Error return ', I0, ' from LPB ' )
 
 !  End of LPB_solve
 
       END SUBROUTINE LPB_solve
 
-!-*-*-*-*-   L P B _ S O L V E _ M A I N   S U B R O U T I N E   -*-*-*-*-*
+!-*-*-*-*-*-   L P B _ S O L V E _ M A I N   S U B R O U T I N E   -*-*-*-*-*
 
-      SUBROUTINE LPB_solve_main( dims, n, m, G, f, A_val, A_col,               &
-                                 A_ptr, C_l, C_u, X_l, X_u, C_RES, X, Y, Z,    &
-                                 RES_x, X_trial, Y_trial, RES_y, BEST_y,       &
-                                 SOL, RES, BEST, HX, GRAD_L,                   &
-                                 DIST_X_l, DIST_X_u, Z_l, Z_u, BARRIER_X,      &
-                                 Y_l, DIST_C_l_trial, DIST_C_l, Y_u,           &
-                                 DIST_C_u_trial, DIST_C_u, C, BARRIER_C,       &
-                                 SCALE_C, VECTOR, R,                           &
-                                 GRAD, GRAD_X_phi, GRAD_C_phi,                 &
-                                 DIST_X_l_trial, DIST_X_u_trial, S,            &
-                                 Abycol_val, DIAG_X, DIAG_C, IW, K_colptr,     &
-                                 Abycol_ptr, Abycol_row,                       &
-                                 K, FACTORS, CNTL, control, inform,            &
-                                 C_last, X_last, Y_last, Z_last,               &
-                                 C_stat, B_Stat )
+      SUBROUTINE LPB_solve_main( dims, n, m, A_val, A_col, A_ptr,              &
+                                  C_l, C_u, X_l, X_u, C_RES, X, Y, Z, GRAD_L,  &
+                                  DIST_X_l, DIST_X_u, Z_l, Z_u, BARRIER_X,     &
+                                  Y_l, DIST_C_l, Y_u, DIST_C_u, C, BARRIER_C,  &
+                                  SCALE_C, RHS, f, H_sbls, A_sbls, C_sbls,     &
+                                  order, X_coef, C_coef, Y_coef, Y_l_coef,     &
+                                  Y_u_coef, Z_l_coef, Z_u_coef, BINOMIAL,      &
+                                  CS_coef, COEF, ROOTS, ROOTS_data,            &
+                                  DX_zh, DC_zh, DY_zh, DY_l_zh,                &
+                                  DY_u_zh, DZ_l_zh, DZ_u_zh,                   &
+                                  OPT_alpha, OPT_merit,                        &
+                                  SBLS_data, prefix, control, inform,          &
+                                  gradient_kind, G,                            &
+                                  C_last, X_last, Y_last, Z_last,              &
+                                  C_stat, X_Stat )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Solve the quadratic program
+!  Minimize the linear objective function
 !
-!     minimize     q(x) = 1/2 x(T) H x + g(T) x + f
+!        g^T x + f
 !
-!     subject to    (c_l)_i <= (Ax)_i <= (c_u)_i , i = 1, .... , m,
+!  subject to the constraints
 !
-!        and        (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
+!               (c_l)_i <= (Ax)_i <= (c_u)_i , i = 1, .... , m,
 !
-!  where x is a vector of n components ( x_1, .... , x_n ), const is a
-!  constant, g is an n-vector, H is a symmetric matrix, 
+!    and        (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
+!
+!  where x is a vector of n components ( x_1, .... , x_n ),
 !  A is an m by n matrix, and any of the bounds (c_l)_i, (c_u)_i
 !  (x_l)_i, (x_u)_i may be infinite, using a primal-dual method.
-!  The subroutine is particularly appropriate when A and H are sparse
+!  The subroutine is particularly appropriate when A is sparse.
 !
 !  In order that many of the internal computations may be performed
-!  efficiently, it is required that   
-!  
+!  efficiently, it is required that
+!
 !  * the variables are ordered so that their bounds appear in the order
 !
 !    free                      x
@@ -2485,7 +2286,7 @@
 !    upper                     x <= x_u
 !    non-positivity            x <=  0
 !
-!    Fixed variables are not permitted (ie, x_l < x_u for range variables). 
+!    Fixed variables are not permitted (ie, x_l < x_u for range variables).
 !
 !  * the constraints are ordered so that their bounds appear in the order
 !
@@ -2508,50 +2309,44 @@
 !   information about the problem on input. The components will be unaltered
 !   on exit. The following components must be set:
 !
-!   %n is an INTEGER variable, which must be set by the user to the
-!    number of optimization parameters, n.  RESTRICTION: %n >= 1
-!                 
-!   %m is an INTEGER variable, which must be set by the user to the
-!    number of general linear constraints, m. RESTRICTION: %m >= 0
-!                 
 !   %x_free is an INTEGER variable, which must be set by the user to the
 !    number of free variables. RESTRICTION: %x_free >= 0
-!                 
+!
 !   %x_l_start is an INTEGER variable, which must be set by the user to the
 !    index of the first variable with a nonzero lower (or lower range) bound.
 !    RESTRICTION: %x_l_start >= %x_free + 1
-!                 
+!
 !   %x_l_end is an INTEGER variable, which must be set by the user to the
 !    index of the last variable with a nonzero lower (or lower range) bound.
 !    RESTRICTION: %x_l_end >= %x_l_start
-!                 
+!
 !   %x_u_start is an INTEGER variable, which must be set by the user to the
-!    index of the first variable with a nonzero upper (or upper range) bound. 
+!    index of the first variable with a nonzero upper (or upper range) bound.
 !    RESTRICTION: %x_u_start >= %x_l_start
-!                 
+!
 !   %x_u_end is an INTEGER variable, which must be set by the user to the
-!    index of the last variable with a nonzero upper (or upper range) bound. 
+!    index of the last variable with a nonzero upper (or upper range) bound.
 !    RESTRICTION: %x_u_end >= %x_u_start
-!                 
+!
 !   %c_equality is an INTEGER variable, which must be set by the user to the
 !    number of equality constraints, m. RESTRICTION: %c_equality >= 0
-!                 
+!
 !   %c_l_start is an INTEGER variable, which must be set by the user to the
-!    index of the first inequality constraint with a lower (or lower range) 
-!    bound. RESTRICTION: %c_l_start = %c_equality + 1 
+!    index of the first inequality constraint with a lower (or lower range)
+!    bound. RESTRICTION: %c_l_start = %c_equality + 1
 !    (strictly, this information is redundant!)
-!                 
+!
 !   %c_l_end is an INTEGER variable, which must be set by the user to the
-!    index of the last inequality constraint with a lower (or lower range) 
+!    index of the last inequality constraint with a lower (or lower range)
 !    bound. RESTRICTION: %c_l_end >= %c_l_start
-!                 
+!
 !   %c_u_start is an INTEGER variable, which must be set by the user to the
-!    index of the first inequality constraint with an upper (or upper range) 
+!    index of the first inequality constraint with an upper (or upper range)
 !    bound. RESTRICTION: %c_u_start >= %c_l_start
 !    (strictly, this information is redundant!)
-!                 
+!
 !   %c_u_end is an INTEGER variable, which must be set by the user to the
-!    index of the last inequality constraint with an upper (or upper range) 
+!    index of the last inequality constraint with an upper (or upper range)
 !    bound. RESTRICTION: %c_u_end = %m
 !    (strictly, this information is redundant!)
 !
@@ -2565,7 +2360,7 @@
 !    value n
 !
 !   %c_s is an INTEGER variable, which must be set by the user to the
-!    value dims%x_e + 1 
+!    value dims%x_e + 1
 !
 !   %c_e is an INTEGER variable, which must be set by the user to the
 !    value dims%x_e + dims%nc
@@ -2585,103 +2380,105 @@
 !   %v_e is an INTEGER variable, which must be set by the user to the
 !    value dims%y_e
 !
-!   %f is a REAL variable, which must be set by the user to the value of
-!    the constant term f in the objective function. 
-!
-!  G is a REAL array of length n, which must be set by
-!   the user to the value of the gradient, g, of the linear term of the
-!   quadratic objective function. The i-th component of G, i = 1, ....,
-!   n, should contain the value of g_i.  
-!  
-!  A_* is used to hold the matrix A by rows. In particular:
+!  A_col/ptr/val is used to hold the matrix A by rows. In particular:
 !      A_col( : )   the column indices of the components of A
 !      A_ptr( : )   pointers to the start of each row, and past the end of
-!                   the last row. 
+!                   the last row.
 !      A_val( : )   the values of the components of A
 !
-!  C_l, C_u are REAL arrays of length m, which must be set by the user to 
+!  C_l, C_u are REAL arrays of length m, which must be set by the user to
 !   the values of the arrays x_l and x_u of lower and upper bounds on x, ordered
 !   as described above (strictly only C_l( dims%c_l_start : dims%c_l_end )
 !   and C_u( dims%c_u_start : dims%c_u_end ) need be set, as the other
 !   components are ignored!).
-!  
-!  X_l, X_u are REAL arrays of length n, which must be set by the user to 
+!
+!  X_l, X_u are REAL arrays of length n, which must be set by the user to
 !   the values of the arrays x_l and x_u of lower and upper bounds on x, ordered
 !   as described above (strictly only X_l( dims%x_l_start : dims%x_l_end )
 !   and X_u( dims%x_u_start : dims%x_u_end ) need be set, as the other
 !   components are ignored!).
-!  
+!
 !  C_RES is a REAL array of length m, which need not be set on entry. On exit,
-!   the i-th component of C_RES will contain (A*x)_i, for i = 1, .... , m. 
+!   the i-th component of C_RES will contain (A * x)_i, for i = 1, .... , m.
 !
 !  X is a REAL array of length n, which must be set by
-!   the user on entry to LPB_solve to give an initial estimate of the 
-!   optimization parameters, x. The i-th component of X should contain 
-!   the initial estimate of x_i, for i = 1, .... , n.  The estimate need 
-!   not satisfy the simple bound constraints and may be perturbed by 
-!   LPB_solve prior to the start of the minimization.  Any estimate which is 
+!   the user on entry to LPB_solve to give an initial estimate of the
+!   optimization parameters, x. The i-th component of X should contain
+!   the initial estimate of x_i, for i = 1, .... , n.  The estimate need
+!   not satisfy the simple bound constraints and may be perturbed by
+!   LPB_solve prior to the start of the minimization.  Any estimate which is
 !   closer to one of its bounds than control%prfeas may be reset to try to
-!   ensure that it is at least control%prfeas from its bounds. On exit from 
-!   LPB_solve, X will contain the best estimate of the optimization 
+!   ensure that it is at least control%prfeas from its bounds. On exit from
+!   LPB_solve, X will contain the best estimate of the optimization
 !   parameters found
-!  
+!
 !  Y is a REAL array of length m, which must be set by the user
 !   on entry to LPB_solve to give an initial estimates of the
-!   optimal Lagrange multipiers, y. The i-th component of Y 
-!   should contain the initial estimate of y_i, for i = 1, .... , m.  
-!   Any estimate which is smaller than control%dufeas may be 
+!   optimal Lagrange multipiers, y. The i-th component of Y
+!   should contain the initial estimate of y_i, for i = 1, .... , m.
+!   Any estimate which is smaller than control%dufeas may be
 !   reset to control%dufeas. The dual variable for any variable with both
 !   On exit from LPB_solve, Y will contain the best estimate of
 !   the Lagrange multipliers found
-!  
+!
 !  Z, is a REAL array of length n, which must be set by
-!   on entry to LPB_solve to hold the values of the the dual variables 
-!   associated with the simple bound constraints. 
-!   Any estimate which is smaller than control%dufeas may be 
+!   on entry to LPB_solve to hold the values of the the dual variables
+!   associated with the simple bound constraints.
+!   Any estimate which is smaller than control%dufeas may be
 !   reset to control%dufeas. The dual variable for any variable with both
 !   infinite lower and upper bounds need not be set. On exit from
 !   LPB_solve, Z will contain the best estimates obtained
-!  
+!
 !  control and inform are exactly as for LPB_solve
 !
-!  The remaining arguments are used as internal workspace, and need not be 
+!  gradient_kind is an INTEGER variable which defines the type of linear
+!   term of the objective function to be used. Possible values are
+!
+!     0  the linear term will be zero, and the analytic centre of the
+!        feasible region will be found. G (see below) need not be set
+!
+!     1  each component of the linear terms g will be one.
+!        G (see below) need not be set
+!
+!     any other value - the gradients will be those given by G (see below)
+!
+!  G is an optional REAL array, which need only be included if
+!   gradient_kind is not 0 or 1. If this is so, it must be of length at least
+!   n, and contain the gradient term g for the objective function.
+!
+!  The remaining arguments are used as internal workspace, and need not be
 !  set on entry
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
 
-      TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m
+      TYPE ( LPB_dims_type ), INTENT( IN ) :: dims
+      INTEGER, INTENT( IN ) :: n, m, gradient_kind, order
+      REAL ( KIND = wp ), INTENT( IN ) :: f
       INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
       INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
       INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: B_stat
-      REAL ( KIND = wp ), INTENT( IN ):: f
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
+      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: X_stat
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, X_l, X_u, Z
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Y
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: Z
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: G
       REAL ( KIND = wp ), INTENT( IN ),                                        &
                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-             DIMENSION( n ) :: RES_x, X_trial, GRAD, GRAD_X_phi
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( m ) :: C_RES, Y_trial, BEST_y, RES_y
+      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: C_RES
       REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: X_last
       REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: C_last
       REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: Y_last
       REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: Z_last
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-             DIMENSION( dims%v_e ) :: SOL, RES, BEST
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-             DIMENSION( dims%v_e ) :: HX
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( dims%c_e ) :: S
+      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( dims%v_e ) :: RHS
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( dims%c_e ) :: GRAD_L
       REAL ( KIND = wp ), INTENT( OUT ),                                       &
-        DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l, DIST_X_l_trial
+                          DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
       REAL ( KIND = wp ), INTENT( OUT ),                                       &
-        DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u, DIST_X_u_trial
+                          DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
       REAL ( KIND = wp ), INTENT( OUT ),                                       &
              DIMENSION( dims%x_free + 1 : dims%x_l_end ) ::  Z_l
       REAL ( KIND = wp ), INTENT( OUT ),                                       &
@@ -2689,99 +2486,135 @@
       REAL ( KIND = wp ), INTENT( OUT ),                                       &
                           DIMENSION( dims%x_free + 1 : n ) :: BARRIER_X
       REAL ( KIND = wp ), INTENT( OUT ),                                       &
-             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l, DIST_C_l,      &
-                                                           DIST_C_l_trial 
+             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l, DIST_C_l
       REAL ( KIND = wp ), INTENT( OUT ),                                       &
-             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u, DIST_C_u,      &
-                                                           DIST_C_u_trial
+             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u, DIST_C_u
       REAL ( KIND = wp ), INTENT( OUT ),                                       &
-             DIMENSION( dims%c_l_start : dims%c_u_end ) :: C, BARRIER_C,       &
-                                                           SCALE_C, GRAD_C_phi
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( dims%v_e ) :: VECTOR
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( dims%c_e ) :: R
+             DIMENSION( dims%c_l_start : dims%c_u_end ) :: C, BARRIER_C, SCALE_C
 
-      INTEGER, ALLOCATABLE, DIMENSION( : ) ::                                  &
-        IW, K_colptr, Abycol_ptr, Abycol_row
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) ::                       &
-        DIAG_X, DIAG_C, Abycol_val
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( n, 0 : order ) :: X_coef
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( dims%c_l_start : dims%c_u_end, 0 : order ) :: C_coef
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( m, 0 : order ) :: Y_coef
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( dims%c_l_start : dims%c_l_end, 0 : order ) ::  Y_l_coef
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( dims%c_u_start : dims%c_u_end, 0 : order ) ::  Y_u_coef
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION(   dims%x_free + 1 : dims%x_l_end, 0 : order ) :: Z_l_coef
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( dims%x_u_start : n, 0 : order ) :: Z_u_coef
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( 0 : order - 1 , order ) :: BINOMIAL
+      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 0 : 2 * order ) :: CS_coef
+      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 0 : 2 * order ) :: COEF
+      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2 * order ) :: ROOTS
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( n ) :: DX_zh
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( dims%c_l_start : dims%c_u_end ) :: DC_zh
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( m ) :: DY_zh
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( dims%c_l_start : dims%c_l_end ) ::  DY_l_zh
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( dims%c_u_start : dims%c_u_end ) ::  DY_u_zh
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION(   dims%x_free + 1 : dims%x_l_end ) :: DZ_l_zh
+      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+        DIMENSION( dims%x_u_start : n ) :: DZ_u_zh
+      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( order ) :: OPT_alpha
+      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( order ) :: OPT_merit
 
-      TYPE ( SMT_type ), INTENT( INOUT ) :: K
-      TYPE ( SILS_factors ), INTENT( INOUT ) :: FACTORS
-      TYPE ( SILS_control ), INTENT( INOUT ) :: CNTL
+      TYPE ( SMT_type ), INTENT( INOUT ) :: H_sbls, A_sbls, C_sbls
+
+      CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       TYPE ( LPB_control_type ), INTENT( IN ) :: control
       TYPE ( LPB_inform_type ), INTENT( INOUT ) :: inform
-
-!  GLTR derived types
-
-      TYPE ( GLTR_data_type ) :: gltr_data
-      TYPE ( GLTR_control_type ) :: gltr_control        
-      TYPE ( GLTR_info_type ) :: gltr_info
+      TYPE ( SBLS_data_type ), INTENT( INOUT ) :: SBLS_data
+      TYPE ( ROOTS_data_type ), INTENT( INOUT ) :: ROOTS_data
 
 !  Parameters
 
-      INTEGER, PARAMETER :: hist = 5
-      REAL, PARAMETER :: max_ratio = 2.0
-      REAL ( KIND = wp ), PARAMETER :: eta_1 = tenm2
-      REAL ( KIND = wp ), PARAMETER :: eta_2 = point9
-      REAL ( KIND = wp ), PARAMETER :: sigma = point1
-!     REAL ( KIND = wp ), PARAMETER :: sigma = 0.8_wp
-!     REAL ( KIND = wp ), PARAMETER :: theta_df = ten
-      REAL ( KIND = wp ), PARAMETER :: theta_df = one
-!     REAL ( KIND = wp ), PARAMETER :: theta_df = 0.0001_wp
-!     REAL ( KIND = wp ), PARAMETER :: theta_cs = ten
-      REAL ( KIND = wp ), PARAMETER :: theta_cs = one
-!     REAL ( KIND = wp ), PARAMETER :: theta_cs = 0.0001_wp
-      REAL ( KIND = wp ), PARAMETER :: theta_min = ten ** 20
-      REAL ( KIND = wp ), PARAMETER :: nu_1 = point01
-      REAL ( KIND = wp ), PARAMETER :: eta = ten ** ( - 4 )
-      REAL ( KIND = wp ), PARAMETER :: hmin = one
-      REAL ( KIND = wp ), PARAMETER :: beta = 1.01_wp
-      REAL ( KIND = wp ), PARAMETER :: radius_max = ten ** 20
+      REAL ( KIND = wp ), PARAMETER :: eta = tenm4
+      REAL ( KIND = wp ), PARAMETER :: sigma_max = point01
+      REAL ( KIND = wp ), PARAMETER :: degen_tol = tenm5
 
 !  Local variables
 
-      INTEGER :: A_ne, i, j, l, lk, nnzk, nnzks, ldiag_c_l, ldiag_c_u
-      INTEGER :: kplus, dplus, dzero, nbacts, factor, seq, liw, print_level
-      INTEGER :: start_print, stop_print, cg_maxit, itref_max, ierr, ldiag_x
-      INTEGER :: nbnds, out, error, zeig, precon, cg_iter, fact_hist
-      INTEGER :: prev_factorization_integer, prev_factorization_real
-      REAL :: dum, time, time_start, time_iter, time_last, time_mean, time_ratio
-      REAL :: time_kkt, time_itsol, time_hist( 0 : hist - 1 ) = 0.0
-      REAL ( KIND = wp ) :: mu, amax, teneps, ared, prered, old_mu
-      REAL ( KIND = wp ) :: alpha, hmax, delta, zeta, c_feasmin
-      REAL ( KIND = wp ) :: model, obj_trial, H_perturb, radius, old_radius
-      REAL ( KIND = wp ) :: dufeas, ratio, norm_c, norm_d, norm_d_alt, sn
-      REAL ( KIND = wp ) :: obj, phi, phi_trial, theta_c, theta_d
-      REAL ( KIND = wp ) :: phi_model, phi_slope, obj_slope, obj_curv
-      REAL ( KIND = wp ) :: p_min, p_max, d_min, d_max, step_max, pivot_tol
-      REAL ( KIND = wp ) :: initial_radius, res_norm, small_x, perturb_min
+      INTEGER :: a_ne, i, j, k, l, start_print, stop_print, print_level
+      INTEGER :: nbnds, nbnds_x, nbnds_c, muzero_fixed, nbact, iorder, sorder
+      INTEGER :: out, error, it_best, infeas_max, n_sbls
+      INTEGER :: primal_nonopt, dual_nonopt, cs_nonopt
+      INTEGER, DIMENSION( 1 ) :: iorder_array
+      REAL :: time, time_record, time_start, time_now, time_solve
+      REAL ( KIND = wp ) :: time_analyse, time_factorize
+      REAL ( KIND = wp ) :: clock_record, clock_start, clock_now, clock_solve
+      REAL ( KIND = wp ) :: clock_analyse, clock_factorize
+      REAL ( KIND = wp ) :: pjgnrm, mu, amax, hmax, gamma_f, bik, slope, comp
+      REAL ( KIND = wp ) :: cs, slknes, slkmin, reduce_infeas, tau
+      REAL ( KIND = wp ) :: slknes_x, slknes_c, slkmax_x, slkmax_c, res_cs
+      REAL ( KIND = wp ) :: slkmin_x, slkmin_c, res_primal, res_primal_dual
+      REAL ( KIND = wp ) :: merit, merit_trial, merit_best, merit_model
+      REAL ( KIND = wp ) :: prfeas, dufeas, p_min, p_max, d_min, d_max
+      REAL ( KIND = wp ) :: pivot_tol, relative_pivot_tol, min_pivot_tol
+      REAL ( KIND = wp ) :: alpha, alpha_l, alpha_u, alpha_max, one_minus_alpha
+      REAL ( KIND = wp ) :: sigma, gamma_c, gi, co, sigma_mu, sigma_mu2, curv
+      REAL ( KIND = wp ) :: one_plus_sigma_mu, two_plus_sigma_mu, balance, xi
+      REAL ( KIND = wp ) :: one_plus_2_sigma_mu, two_sigma_mu2, two_sigma_mu
+      REAL ( KIND = wp ) :: opt_alpha_guarantee, opt_merit_guarantee
+      REAL ( KIND = wp ) :: stop_p, stop_d, stop_c, two_mu
+
       LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
-      LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe 
-      LOGICAL :: one_fact, primal_hessian, got_time_kkt, alter_H
-      LOGICAL :: first_iteration, got_ratio, start_major, new_prec, big_res
-      LOGICAL :: auto, full_iteration, scaled_c, set_z, get_factors
-      LOGICAL :: new_fact, refact, primal, stat_required, get_stat
-      LOGICAL :: use_scale_c = .FALSE.
+      LOGICAL :: printt, printi, printe, printd, printw, set_printp, printp
+      LOGICAL :: maxpiv, stat_required, guarantee, unbounded
+!     LOGICAL :: root_arc
+      LOGICAL :: puiseux, get_stat, use_scale_c = .FALSE.
+      CHARACTER ( LEN = 1 ) :: re, pui
+      CHARACTER ( LEN = 2 ) :: arc
+      CHARACTER ( len = 10 ) :: char_x, char_c, char_y
+      CHARACTER ( len = 10 ) :: char_z_l, char_z_u, char_y_l, char_y_u
+!     REAL ( KIND = wp ), DIMENSION( n ) :: DX, WORK_n
 
-      CHARACTER ( LEN = 1 ) :: re, mo, bdry
+      TYPE ( SBLS_control_type ) :: SBLS_control
 
-!-----------------------------------------------
-!   M A 2 7    V a r i a b l e s
-!-----------------------------------------------
-
-      TYPE ( SILS_finfo ) :: FINFO
-      INTEGER :: sif = 52
+      INTEGER :: sif = 50
 !     LOGICAL :: generate_sif = .TRUE.
       LOGICAL :: generate_sif = .FALSE.
 
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
-        WRITE( control%out, "( ' entering LPB_solve_main ' )" )
+        WRITE( control%out, "( A, ' entering LPB_solve_main ' )" ) prefix
+
+!  move to argument list
+
+      IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
+        WRITE( control%out, "( ' n, m = ', I0, 1X, I0 )" ) n, m
+        WRITE( control%out, "( ' f = ', ES12.4 )" ) f
+        IF ( gradient_kind == 1 ) THEN
+          WRITE( control%out, "( ' G = 1.0' )" )
+        ELSE
+          IF ( PRESENT( G ) )                                                  &
+            WRITE( control%out, "( ' G = ', /, ( 5ES12.4 ) )" ) G( : n )
+        END IF
+        WRITE( control%out, "( ' X_l = ', /, ( 5ES12.4 ) )" ) X_l( : n )
+        WRITE( control%out, "( ' X_u = ', /, ( 5ES12.4 ) )" ) X_u( : n )
+          WRITE( control%out, "( ' A (row-wise) = ' )" )
+          DO i = 1, m
+            WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                   &
+              ( i, A_col( j ), A_val( j ),                                     &
+                j = A_ptr( i ), A_ptr( i + 1 ) - 1 )
+          END DO
+        WRITE( control%out, "( ' C_l = ', /, ( 5ES12.4 ) )" ) C_l( : m )
+        WRITE( control%out, "( ' C_u = ', /, ( 5ES12.4 ) )" ) C_u( : m )
+      END IF
 
 ! -------------------------------------------------------------------
-!  If desired, generate a SIF file for problem passed 
+!  If desired, generate a SIF file for problem passed
 
-      IF ( generate_sif ) THEN
-        WRITE( sif, "( 'NAME          LPBD_OUT', //, 'VARIABLES', / )" )
+      IF ( generate_sif .AND. PRESENT( G ) ) THEN
+        WRITE( sif, "( 'NAME          LPB_OUT', //, 'VARIABLES', / )" )
         DO i = 1, n
           WRITE( sif, "( '    X', I8 )" ) i
         END DO
@@ -2792,21 +2625,21 @@
             WRITE( sif, "( ' N  OBJ      ', ' X', I8, ' ', ES12.5 )" ) i, G( i )
         END DO
         DO i = 1, dims%c_l_start - 1
-          DO j = A_ptr( i ), A_ptr( i + 1 ) - 1
+          DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
             WRITE( sif, "( ' E  C', I8, ' X', I8, ' ', ES12.5 )" )             &
-              i, A_col( j ), A_val( j )
+              i, A_col( l ), A_val( l )
           END DO
         END DO
         DO i = dims%c_l_start, dims%c_l_end
-          DO j = A_ptr( i ), A_ptr( i + 1 ) - 1
+          DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
             WRITE( sif, "( ' G  C', I8, ' X', I8, ' ', ES12.5 )" )             &
-              i, A_col( j ), A_val( j )
+              i, A_col( l ), A_val( l )
           END DO
         END DO
         DO i = dims%c_l_end + 1, dims%c_u_end
-          DO j = A_ptr( i ), A_ptr( i + 1 ) - 1
+          DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
             WRITE( sif, "( ' L  C', I8, ' X', I8, ' ', ES12.5 )" )             &
-              i, A_col( j ), A_val( j )
+              i, A_col( l ), A_val( l )
           END DO
         END DO
 
@@ -2856,7 +2689,9 @@
 !  SIF file generated
 ! -------------------------------------------------------------------
 
-      CALL CPU_TIME( time_start ) ; time_last = time_start
+!  initialize time
+
+      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
 
 !  ===========================
 !  Control the output printing
@@ -2870,2243 +2705,3483 @@
       END IF
 
       IF ( control%stop_print < 0 ) THEN
-        stop_print = control%maxit
+        stop_print = control%maxit + 1
       ELSE
         stop_print = control%stop_print
       END IF
 
-      out = control%out ; error = control%error 
+      error = control%error ; out = control%out
+
       set_printe = error > 0 .AND. control%print_level >= 1
 
-!  Basic single line of output per iteration
+!  basic single line of output per iteration
 
-      set_printi = out > 0 .AND. control%print_level >= 1 
+      set_printi = out > 0 .AND. control%print_level >= 1
 
-!  As per printi, but with additional timings for various operations
+!  as per printi, but with additional timings for various operations
 
-      set_printt = out > 0 .AND. control%print_level >= 2 
+      set_printt = out > 0 .AND. control%print_level >= 2
 
-!  As per printm, but with checking of residuals, etc
+!  as per printt but also with an indication of where in the code we are
 
-      set_printm = out > 0 .AND. control%print_level >= 3 
+      set_printp = out > 0 .AND. control%print_level >= 3
 
-!  As per printm but also with an indication of where in the code we are
+!  as per printp but also with details of innner iterations
 
       set_printw = out > 0 .AND. control%print_level >= 4
 
-!  Full debugging printing with significant arrays printed
+!  full debugging printing with significant arrays printed
 
       set_printd = out > 0 .AND. control%print_level >= 5
 
-!  Start setting control parameters
+!  start setting control parameters
 
       IF ( inform%iter >= start_print .AND. inform%iter < stop_print ) THEN
         printe = set_printe ; printi = set_printi ; printt = set_printt
-        printm = set_printm ; printw = set_printw ; printd = set_printd
+        printp = set_printp ;
+        printw = set_printw ; printd = set_printd
         print_level = control%print_level
       ELSE
         printe = .FALSE. ; printi = .FALSE. ; printt = .FALSE.
-        printm = .FALSE. ; printw = .FALSE. ; printd = .FALSE.
+        printp = .FALSE. ;
+        printw = .FALSE. ; printd = .FALSE.
         print_level = 0
       END IF
 
-      factor = control%factor
-      IF ( factor < 0 .OR. factor > 2 ) THEN
+      SBLS_control = control%SBLS_control
+      IF ( SBLS_control%factorization < 0 .OR.                                 &
+           SBLS_control%factorization > 3 ) THEN
         IF ( printi ) WRITE( out,                                              &
-          "( ' factor = ', I6, ' out of range [0,2]. Reset to 0') ") factor
-        factor = 0
+          "( A,' factor = ', I0, ' out of range [0,3]. Reset to 0' )" )        &
+          prefix, SBLS_control%factorization
+        SBLS_control%factorization = 0
       END IF
 
-      precon = control%precon 
-      auto = precon <= 0
-      IF ( .NOT. auto ) THEN
-        IF ( precon >= 3 ) THEN
-          IF ( printi ) WRITE( out,                                            &
-            "( ' precon = ', I6, ' out of range [0,2]. Reset to 2') ") precon
-          precon = 2
-        END IF
-      END IF
+!  if there are no variables, exit
 
-!  If there are no variables, exit
-
-      IF ( n == 0 ) THEN 
-        i = COUNT( ABS( C_l( : dims%c_equality ) ) > control%stop_p ) +        &
-            COUNT( C_l( dims%c_l_start : dims%c_l_end ) > control%stop_p ) +   &
-            COUNT( C_u( dims%c_u_start : dims%c_u_end ) < - control%stop_p )
+      IF ( n == 0 ) THEN
+        i = COUNT( ABS( C_l( : dims%c_equality ) ) > control%stop_abs_p ) +    &
+            COUNT( C_l( dims%c_l_start : dims%c_l_end ) > control%stop_abs_p)+ &
+            COUNT( C_u( dims%c_u_start : dims%c_u_end ) < - control%stop_abs_p )
+        inform%dual_infeasibility = zero
+        inform%complementary_slackness = zero
         IF ( i == 0 ) THEN
-          inform%status = 0
+          inform%primal_infeasibility = zero
+          inform%status = GALAHAD_ok
         ELSE
-          inform%status = - 6
+          inform%primal_infeasibility = MAX(                                   &
+            MAXVAL( ABS( C_l( : dims%c_equality ) ) ),                         &
+            MAXVAL( MAX( C_l( dims%c_l_start : dims%c_l_end ), zero ) ),       &
+            MAXVAL( MAX( - C_u( dims%c_u_start : dims%c_u_end ), zero ) ) )
+          inform%status = GALAHAD_error_primal_infeasible
         END IF
-        IF ( control%array_syntax_worse_than_do_loop ) THEN
-          DO i = 1, m ; C_RES( i ) = zero ; Y( i ) = zero ; END DO
-        ELSE
-          C_RES = zero ; Y = zero
-        END IF
-        inform%obj = f
+        C_RES = zero ; Y = zero
+        inform%obj = zero
         GO TO 810
-      END IF 
+      END IF
 
-!  Record array sizes
+!  store the Jacobian and Hessian accounting for slack variables
 
-      A_ne = A_ptr( m + 1 ) - 1
+      n_sbls = n + dims%nc
 
-!  Set control parameters
+!  A will be in coordinate form
 
-      itref_max = control%itref_max
-      cg_maxit = control%cg_maxit
-      IF ( cg_maxit < 0 ) cg_maxit = dims%c_b + 2
-      seq = 0
+      CALL SMT_put( A_sbls%type, 'COORDINATE', inform%alloc_status )
+      a_ne = A_ptr( m + 1 ) - 1
+      A_sbls%n = n_sbls ; A_sbls%m = m ; A_sbls%ne = a_ne + dims%nc
 
-      dufeas = control%dufeas 
-      pivot_tol = control%pivot_tol
-      initial_radius = control%initial_radius
-      scaled_c = .TRUE.
+!  set the components of A in coordinate form ...
 
-      primal = control%primal ; primal_hessian = primal
-      start_major = .TRUE.
-      small_x = epsmch
-      teneps = 10.0 * epsmch
-      perturb_min = epsmch ** 0.25
-      c_feasmin = SQRT( epsmch )
-      stat_required = PRESENT( C_stat ) .AND. PRESENT( B_stat )
+      DO i = 1, m
+        A_sbls%row( A_ptr( i ) : A_ptr( i + 1 ) - 1 ) = i
+      END DO
+      A_sbls%col( : a_ne ) = A_col( : a_ne )
+      A_sbls%val( : a_ne ) = A_val( : a_ne )
+
+!  ... and include the coodinates corresponding to the slack variables
+
+      DO i = 1, dims%nc
+        A_sbls%row( a_ne + i ) = dims%c_equality + i
+        A_sbls%col( a_ne + i ) = n + i
+      END DO
+
+!  H will be in diagonal form
+
+      CALL SMT_put( H_sbls%type, 'DIAGONAL', inform%alloc_status )
+      H_sbls%n = n_sbls ; H_sbls%ne = n_sbls
+
+!  the zero matrix C will be in zero form
+
+      CALL SMT_put( C_sbls%type, 'ZERO', inform%alloc_status )
+
+!  set control parameters
+
+      muzero_fixed = control%muzero_fixed
+      prfeas = MAX( control%prfeas, epsmch )
+      dufeas = MAX( control%dufeas, epsmch )
+      reduce_infeas = MAX( epsmch,                                             &
+                           MIN( control%reduce_infeas ** 2, one - epsmch ) )
+      infeas_max = MAX( 0, control%infeas_max )
+      stat_required = PRESENT( C_stat ) .AND. PRESENT( X_stat )
       IF ( stat_required ) THEN
-        B_stat  = 0
+        X_stat  = 0
         C_stat( : dims%c_equality ) = - 1
         C_stat( dims%c_equality + 1 : ) = 0
       END IF
       get_stat = .FALSE.
+      iorder = 0
 
-!  Initialize counts
+!  if required, write out the problem
 
-      nbacts = 0
+      IF ( printd ) WRITE( out, "( A, A6, /, ( 4( 2I5, ES10.2 ) ) )" ) prefix, &
+     &  ' a ', ( ( i, A_col( l ), A_val( l ), l = A_ptr( i ),                  &
+          A_ptr( i + 1 ) - 1 ), i = 1, m )
 
-      CNTL%u = pivot_tol ; CNTL%pivoting = 1
-      CNTL%lp = - 1 ; CNTL%mp = - 1 ; CNTL%wp = - 1
-      
-      IF ( print_level > 4 ) THEN
-        IF ( print_level < 10 ) THEN
-          CNTL%ldiag = 1
+      IF ( control%balance_initial_complentarity ) THEN
+        IF ( control%muzero <= zero ) THEN
+          balance = one
         ELSE
-          CNTL%ldiag = 2
+          balance = control%muzero
         END IF
       END IF
-          
-!  If required, write out the problem
 
-      IF ( printd ) THEN
-        WRITE( out, 2180 ) ' g ', ( G( i ), i = 1, n )
-        WRITE( out, 2190 ) ' A ', ( ( i, A_col( l ), A_val( l ),               &
-                           l = A_ptr( i ), A_ptr( i + 1 ) - 1 ), i = 1, m )
-      END IF 
-
-!  Record the initial point, move the starting point away from any bounds, 
+!  record the initial point, move the starting point away from any bounds,
 !  and move that for dual variables away from zero
 
-      nbnds = 0
-      set_z = .FALSE.
+      nbnds_x = 0
 
-!  The variable is free
+!  the variable is free
 
       IF ( printd ) THEN
-        WRITE( out,                                                            &
-        "( /, 5X, 'i', 6x, 'x', 10X, 'x_l', 9X, 'x_u', 9X, 'z_l', 9X, 'z_u')" )
+        WRITE( out, "( /, A, 5X, 'i', 6x, 'x', 10X, 'x_l', 9X, 'x_u', 9X,      &
+       &       'z_l', 9X, 'z_u')") prefix
         DO i = 1, dims%x_free
-          WRITE( out, "( I6, ES12.4, 4( '      -     ') )" ) i, X( i )
+          WRITE( out, "( A, I6, ES12.4, 4( '      -     '))" ) prefix, i, X( i )
         END DO
       END IF
 
-!  The variable is a non-negativity
+!  the variable is a non-negativity
 
       DO i = dims%x_free + 1, dims%x_l_start - 1
-        IF ( X( i ) <= small_x ) THEN 
-!         write(6,"('i,X, small',I5, 2ES12.4)") i, X(i), small_x
-          inform%status = - 6
-          GO TO 700
+        nbnds_x = nbnds_x + 1
+        X( i ) = MAX( X( i ), prfeas )
+        IF ( control%balance_initial_complentarity ) THEN
+          Z_l( i ) = balance / X( i )
+        ELSE
+          Z_l( i ) = MAX( ABS( Z( i ) ), dufeas )
         END IF
-        nbnds = nbnds + 1
-        Z_l( i ) = MAX( Z( i ), dufeas )
-        IF ( printd ) WRITE( out, "( I6, 2ES12.4, '      -     ', ES12.4,      &
-       &  '      -     ' )" ) i, X( i ), zero, Z_l( i )
+        IF ( printd ) WRITE( out, "( A, I6, 2ES12.4, '      -     ', ES12.4,   &
+       &  '      -     ' )" ) prefix, i, X( i ), zero, Z_l( i )
       END DO
 
-!  The variable has just a lower bound
+!  the variable has just a lower bound
 
       DO i = dims%x_l_start, dims%x_u_start - 1
-        IF ( X( i ) - X_l( i ) <= small_x ) THEN 
-          inform%status = - 6
-          GO TO 700
-        END IF
-        nbnds = nbnds + 1
-        Z_l( i ) = MAX( Z( i ), dufeas )
+        nbnds_x = nbnds_x + 1
+        X( i ) = MAX( X( i ), X_l( i ) + prfeas )
         DIST_X_l( i ) = X( i ) - X_l( i )
-        IF ( printd ) WRITE( out, "( I6, 2ES12.4, '      -     ', ES12.4,      &
-       &  '      -     ' )" ) i, X( i ), X_l( i ), Z_l( i )
+        IF ( control%balance_initial_complentarity ) THEN
+          Z_l( i ) = balance / DIST_X_l( i )
+        ELSE
+          Z_l( i ) = MAX( ABS( Z( i ) ), dufeas )
+        END IF
+        IF ( printd ) WRITE( out, "( A, I6, 2ES12.4, '      -     ', ES12.4,   &
+       &  '      -     ' )" ) prefix, i, X( i ), X_l( i ), Z_l( i )
       END DO
 
-!  The variable has both lower and upper bounds
+!  the variable has both lower and upper bounds
 
       DO i = dims%x_u_start, dims%x_l_end
 
-!  Check that range constraints are not simply fixed variables,
+!  check that range constraints are not simply fixed variables,
 !  and that the upper bounds are larger than the corresponing lower bounds
 
-        IF ( X_u( i ) - X_l( i ) <= epsmch ) THEN 
-          inform%status = - 6
+        IF ( X_u( i ) - X_l( i ) <= epsmch ) THEN
+          inform%status = GALAHAD_error_bad_bounds
           GO TO 700
         END IF
-        nbnds = nbnds + 2
-        IF ( X( i ) - X_l( i ) <= small_x .OR.                                 &
-             X_u( i ) - X( i ) <= small_x ) THEN 
-          inform%status = - 6
-          GO TO 700
+        nbnds_x = nbnds_x + 2
+        IF ( X_l( i ) + prfeas >= X_u( i ) - prfeas ) THEN
+          X( i ) = half * ( X_l( i ) + X_u( i ) )
+        ELSE
+          X( i ) = MIN( MAX( X( i ), X_l( i ) + prfeas ), X_u( i ) - prfeas )
         END IF
-        Z_l( i ) = MAX(   ABS( Z( i ) ),   dufeas )  
-        Z_u( i ) = MIN( - ABS( Z( i ) ), - dufeas )
         DIST_X_l( i ) = X( i ) - X_l( i ) ; DIST_X_u( i ) = X_u( i ) - X( i )
-        IF ( printd ) WRITE( out, "( I6, 5ES12.4 )" )                          &
-             i, X( i ), X_l( i ), X_u( i ), Z_l( i ), Z_u( i )
+        IF ( control%balance_initial_complentarity ) THEN
+          Z_l( i ) = balance / DIST_X_l( i )
+          Z_u( i ) = - balance / DIST_X_u( i )
+        ELSE
+          Z_l( i ) = MAX(   ABS( Z( i ) ),   dufeas )
+          Z_u( i ) = MIN( - ABS( Z( i ) ), - dufeas )
+        END IF
+        IF ( printd ) WRITE( out, "( A, I6, 5ES12.4 )" )                       &
+             prefix, i, X( i ), X_l( i ), X_u( i ), Z_l( i ), Z_u( i )
       END DO
 
-!  The variable has just an upper bound
+!  the variable has just an upper bound
 
       DO i = dims%x_l_end + 1, dims%x_u_end
-        nbnds = nbnds + 1
-        IF ( X_u( i ) - X( i ) <= small_x ) THEN 
-          inform%status = - 6
-          GO TO 700
-        END IF
-        Z_u( i ) = MIN( Z( i ), - dufeas ) 
+        nbnds_x = nbnds_x + 1
+        X( i ) = MIN( X( i ), X_u( i ) - prfeas )
         DIST_X_u( i ) = X_u( i ) - X( i )
-        IF ( printd ) WRITE( out, "( I6, ES12.4, '      -     ', ES12.4,       &
-       &  '      -     ', ES12.4 )" ) i, X( i ), X_u( i ), Z_u( i )
+        IF ( control%balance_initial_complentarity ) THEN
+          Z_u( i ) = - balance / DIST_X_u( i )
+        ELSE
+          Z_u( i ) = MIN( - ABS( Z( i ) ), - dufeas )
+        END IF
+        IF ( printd ) WRITE( out, "( A, I6, ES12.4, '      -     ', ES12.4,    &
+       &  '      -     ', ES12.4 )" ) prefix, i, X( i ), X_u( i ), Z_u( i )
       END DO
 
-!  The variable is a non-positivity
+!  the variable is a non-positivity
 
       DO i = dims%x_u_end + 1, n
-        nbnds = nbnds + 1
-        IF ( - X( i ) <= small_x ) THEN 
-          inform%status = - 6
-          GO TO 700
+        nbnds_x = nbnds_x + 1
+        X( i ) = MIN( X( i ), - prfeas )
+        IF ( control%balance_initial_complentarity ) THEN
+          Z_u( i ) = balance / X( i )
+        ELSE
+          Z_u( i ) = MIN( - ABS( Z( i ) ), - dufeas )
         END IF
-        Z_u( i ) = MIN( Z( i ), - dufeas ) 
-        IF ( printd ) WRITE( out, "( I6, ES12.4, '      -     ', ES12.4,       &
-       &  '      -     ',  ES12.4 )" ) i, X( i ), zero, Z_u( i )
+        IF ( printd ) WRITE( out, "( A, I6, ES12.4, '      -     ', ES12.4,    &
+       &  '      -     ',  ES12.4 )" ) prefix, i, X( i ), zero, Z_u( i )
       END DO
 
-      DIST_X_l_trial = DIST_X_l ; DIST_X_u_trial = DIST_X_u
-      set_z = .TRUE.
+!  compute the value of the constraint, and their residuals
 
-!  Compute the value of the constraint, and their residuals
-
+      nbnds_c = 0
       IF ( m > 0 ) THEN
-        IF ( control%array_syntax_worse_than_do_loop ) THEN
-          DO i =  1, m ; R( i ) = zero ; END DO
-        ELSE
-          R( : m ) = zero
-        END IF
-        CALL LPB_AX( m, R( : m), m, A_ne, A_val, A_col, A_ptr, n, X, '+ ' )
-
+        C_RES( : dims%c_equality ) = - C_l( : dims%c_equality )
+        C_RES( dims%c_l_start : dims%c_u_end ) = zero
+        CALL LPB_AX( m, C_RES, m, a_ne, A_val, A_col, A_ptr,                   &
+                      n, X, '+ ' )
         IF ( printd ) THEN
-          WRITE( out,                                                          &
-          "( /, 5X,'i', 6x, 'c', 10X, 'c_l', 9X, 'c_u', 9X, 'y_l', 9X, 'y_u' )")
+          WRITE( out, "( /, A, 5X,'i', 6x, 'c', 10X, 'c_l', 9X, 'c_u', 9X,     &
+         &     'y_l', 9X, 'y_u' )") prefix
           DO i = 1, dims%c_l_start - 1
-            WRITE( out, "( I6, 3ES12.4 )" ) i, R( i ), C_l( i ), C_u( i )
+            WRITE( out, "( A, I6, 3ES12.4 )" )                                 &
+              prefix, i, C_RES( i ), C_l( i ), C_u( i )
           END DO
         END IF
 
-!  The constraint has just a lower bound
+!  the constraint has just a lower bound
 
         DO i = dims%c_l_start, dims%c_u_start - 1
-          nbnds = nbnds + 1
+          nbnds_c = nbnds_c + 1
 
-!  Compute an appropriate scale factor
+!  compute an appropriate scale factor
 
           IF ( use_scale_c ) THEN
-            SCALE_C( i ) = MAX( one, ABS( R( i ) ) )
+            SCALE_C( i ) = MAX( one, ABS( C_RES( i ) ) )
           ELSE
             SCALE_C( i ) = one
           END IF
 
-!  Scale the bounds
+!  scale the bounds
 
           C_l( i ) = C_l( i ) / SCALE_C( i )
 
-!  Compute an appropriate initial value for the slack variable
+!  compute an appropriate initial value for the slack variable
 
-          C( i ) = MAX( R( i ) / SCALE_C( i ),                                 &
-                        C_l( i ) + c_feasmin * MAX( one, ABS( C_l( i ) ) ) )
+          C( i ) = MAX( C_RES( i ) / SCALE_C( i ), C_l( i ) + prfeas )
           DIST_C_l( i ) = C( i ) - C_l( i )
-          Y_l( i ) = MAX( Y( i ), dufeas )
-          IF ( printd ) WRITE( out,  "( I6, 2ES12.4, '      -     ', ES12.4,   &
-         &  '      -     ' )" ) i, C( i ), C_l( i ), Y_l( i )
+          C_RES( i ) = C_RES( i ) - SCALE_C( i ) * C( i )
+          IF ( control%balance_initial_complentarity ) THEN
+            Y_l( i ) = balance / DIST_C_l( i )
+          ELSE
+            Y_l( i ) = MAX( ABS( SCALE_C( i ) * Y( i ) ),  dufeas )
+          END IF
+          IF ( printd ) WRITE( out,  "( A, I6, 2ES12.4, '      -     ',       &
+         &  ES12.4, '      -    ' )" ) prefix, i, C_RES( i ), C_l( i ), Y_l( i )
         END DO
 
-!  The constraint has both lower and upper bounds
+!  the constraint has both lower and upper bounds
 
         DO i = dims%c_u_start, dims%c_l_end
-          nbnds = nbnds + 2
 
-!  Compute an appropriate scale factor
+!  check that range constraints are not simply fixed variables,
+!  and that the upper bounds are larger than the corresponing lower bounds
+
+          IF ( C_u( i ) - C_l( i ) <= epsmch ) THEN
+            inform%status = GALAHAD_error_bad_bounds
+            GO TO 700
+          END IF
+          nbnds_c = nbnds_c + 2
+
+!  compute an appropriate scale factor
 
           IF ( use_scale_c ) THEN
-            SCALE_C( i ) = MAX( one, ABS( R( i ) ) )
+            SCALE_C( i ) = MAX( one, ABS( C_RES( i ) ) )
           ELSE
             SCALE_C( i ) = one
           END IF
 
-!  Scale the bounds
+!  scale the bounds
 
-          C_l( i ) = C_l( i ) / SCALE_C( i ) 
+          C_l( i ) = C_l( i ) / SCALE_C( i )
           C_u( i ) = C_u( i ) / SCALE_C( i )
 
-!  Compute an appropriate initial value for the slack variable
+!  compute an appropriate initial value for the slack variable
 
-          C( i ) = MIN( C_u( i ) - c_feasmin * MAX( one, ABS( C_u( i ) ) ),    &
-                        MAX( R( i ) / SCALE_C( i ),                            &
-                          C_l( i ) + c_feasmin * MAX( one, ABS( C_l( i ) ) ) ) )
-          DIST_C_l( i ) = C( i ) - C_l( i ) 
+          IF ( C_l( i ) + prfeas >= C_u( i ) - prfeas ) THEN
+            C( i ) = half * ( C_l( i ) + C_u( i ) )
+          ELSE
+            C( i ) = MIN( MAX( C_RES( i ) / SCALE_C( i ), C_l( i ) + prfeas ), &
+                               C_u( i ) - prfeas )
+          END IF
+          DIST_C_l( i ) = C( i ) - C_l( i )
           DIST_C_u( i ) = C_u( i ) - C( i )
-          Y_l( i ) = MAX( Y( i ),   dufeas )
-          Y_u( i ) = MIN( Y( i ), - dufeas )
-          IF ( printd ) WRITE( out, "( I6, 5ES12.4 )" )                        &
-            i, C( i ), C_l( i ), C_u( i ), Y_l( i ), Y_u( i )
+          C_RES( i ) = C_RES( i ) - SCALE_C( i ) * C( i )
+          IF ( control%balance_initial_complentarity ) THEN
+            Y_l( i ) = balance / DIST_C_l( i )
+            Y_u( i ) = - balance / DIST_C_u( i )
+          ELSE
+            Y_l( i ) = MAX(   ABS( SCALE_C( i ) * Y( i ) ),   dufeas )
+            Y_u( i ) = MIN( - ABS( SCALE_C( i ) * Y( i ) ), - dufeas )
+          END IF
+          IF ( printd ) WRITE( out, "( A, I6, 5ES12.4 )" )                     &
+            prefix, i, C_RES( i ), C_l( i ), C_u( i ), Y_l( i ), Y_u( i )
         END DO
 
-!  The constraint has just an upper bound
+!  the constraint has just an upper bound
 
         DO i = dims%c_l_end + 1, dims%c_u_end
-          nbnds = nbnds + 1
+          nbnds_c = nbnds_c + 1
 
-!  Compute an appropriate scale factor
+!  compute an appropriate scale factor
 
           IF ( use_scale_c ) THEN
-            SCALE_C( i ) = MAX( one, ABS( R( i ) ) )
+            SCALE_C( i ) = MAX( one, ABS( C_RES( i ) ) )
           ELSE
             SCALE_C( i ) = one
           END IF
 
-!  Scale the bounds
+!  scale the bounds
 
           C_u( i ) = C_u( i ) / SCALE_C( i )
 
-!  Compute an appropriate initial value for the slack variable
+!  compute an appropriate initial value for the slack variable
 
-          C( i ) = MIN( R( i ) / SCALE_C( i ),                                 &
-                        C_u( i ) - c_feasmin * MAX( one, ABS( C_u( i ) ) ) )
+          C( i ) = MIN( C_RES( i ) / SCALE_C( i ), C_u( i ) - prfeas )
           DIST_C_u( i ) = C_u( i ) - C( i )
-          Y_u( i ) = MIN( Y( i ), - dufeas ) 
-          IF ( printd ) WRITE( out, "( I6, ES12.4, '      -     ', ES12.4,     &
-         &  '      -     ', ES12.4 )" ) i, C( i ), C_u( i ), Y_u( i )
+          C_RES( i ) = C_RES( i ) - SCALE_C( i ) * C( i )
+          IF ( control%balance_initial_complentarity ) THEN
+            Y_u( i ) = - balance / DIST_C_u( i )
+          ELSE
+            Y_u( i ) = MIN( - ABS( SCALE_C( i ) * Y( i ) ), - dufeas )
+          END IF
+          IF ( printd ) WRITE( out, "( A, I6, ES12.4, '      -     ', ES12.4,  &
+         &  '      -     ', ES12.4 )") prefix, i, C_RES( i ), C_u( i ), Y_u( i )
+        END DO
+        inform%primal_infeasibility = MAXVAL( ABS( C_RES( : dims%c_u_end ) ) )
+      ELSE
+        inform%primal_infeasibility = zero
+      END IF
+
+!  record the starting vector
+
+      IF ( stat_required ) THEN
+        C_last( dims%c_l_start : dims%c_u_end )                                &
+          = C( dims%c_l_start : dims%c_u_end )
+        X_last = X
+
+        DO i = dims%c_l_start, dims%c_u_start - 1
+          Y_last( i ) = Y_l( i )
+        END DO
+        DO i = dims%c_u_start, dims%c_l_end
+          IF ( DIST_C_l( i ) <= DIST_C_u( i ) ) THEN
+            Y_last( i ) = Y_l( i )
+          ELSE
+            Y_last( i ) = Y_u( i )
+          END IF
+        END DO
+        DO i = dims%c_l_end + 1, dims%c_u_end
+          Y_last( i ) = Y_u( i )
+        END DO
+
+        Z_last( : dims%x_free ) = zero
+        DO i = dims%x_free + 1, dims%x_u_start - 1
+          Z_last( i ) = Z_l( i )
+        END DO
+        DO i = dims%x_u_start, dims%x_l_end
+          IF ( DIST_X_l( i ) <= DIST_X_u( i ) ) THEN
+            Z_last( i ) = Z_l( i )
+          ELSE
+            Z_last( i ) = Z_u( i )
+          END IF
+        END DO
+        DO i = dims%x_l_end + 1, n
+          Z_last( i ) = Z_u( i )
         END DO
       END IF
 
-      scaled_c = .TRUE.
-      IF ( printi )                                                            &
-        WRITE( out, "( /, ' >>>>> factorization package SILS used <<<<<', / )" )
-      IF ( printi .AND. m > 0 .AND. dims%c_l_start <= dims%c_u_end )           &
-        WRITE( out, "( ' largest/smallest scale factor ', 2ES12.4 )" )         &
-          MAXVAL( SCALE_C ), MINVAL( SCALE_C )
+!  compute the initial objective value
 
-!  Find the largest components of A and H
+      IF ( gradient_kind == 1 ) THEN
+        inform%obj = f + SUM( X )
+      ELSE IF ( gradient_kind /= 0 ) THEN
+        inform%obj = f + DOT_PRODUCT( G, X )
+      ELSE
+        inform%obj = f
+      END IF
 
-      IF ( A_ne > 0 ) THEN
-        amax = MAXVAL( ABS( A_val( : A_ne ) ) )
+!  find the largest components of A and H
+
+      IF ( a_ne > 0 ) THEN
+        amax = MAXVAL( ABS( A_val( : a_ne ) ) )
       ELSE
         amax = zero
       END IF
 
-      hmax = hmin
+      IF ( printi ) WRITE( out, "( /, A, ' maximum element of A =', ES11.4 )" )&
+        prefix, amax
 
-      IF ( printi ) WRITE( out, 2090 ) amax, hmax 
+!  test to see if we are feasible
 
-!  Now, calculate the value .... 
+      inform%feasible = inform%primal_infeasibility <= control%stop_abs_p
+      pjgnrm = infinity
 
-      obj = DOT_PRODUCT( X, G )
-      inform%obj = obj + f
-
-!  ... and gradient of the objective function
-
-      IF ( control%array_syntax_worse_than_do_loop ) THEN
-        DO i = 1, n ; GRAD( i ) = G( i ) ; END DO
-      ELSE
-        GRAD = G
+      IF ( inform%feasible ) THEN
+        IF ( printi ) WRITE( out, 2070 ) prefix
+        IF ( control%just_feasible ) THEN
+          inform%status = GALAHAD_ok
+          GO TO 500
+        END IF
+        IF ( gradient_kind == 0 )                                              &
+          inform%potential = LPB_potential_value( dims, n, X,                  &
+                               DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u )
       END IF
 
-!  ===============
-!  Outer iteration
-!  ===============
+!  compute the gradient of the Lagrangian function.
 
-!  Initialize penalty parameter, mu
+      CALL LPB_Lagrangian_gradient( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,      &
+                                     a_ne, A_val, A_col, A_ptr,                &
+                                     DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,   &
+                                     GRAD_L( dims%x_s : dims%x_e ),            &
+                                     control%getdua, dufeas,                   &
+                                     gradient_kind, G )
 
-      norm_c = DOT_PRODUCT( X( dims%x_free + 1 : dims%x_l_start - 1 ),         &
-                            Z_l( dims%x_free + 1 : dims%x_l_start - 1 ) ) +    &
-               DOT_PRODUCT( DIST_X_l( dims%x_l_start : dims%x_l_end ),         &
-                            Z_l( dims%x_l_start : dims%x_l_end ) ) -           &
-               DOT_PRODUCT( DIST_X_u( dims%x_u_start : dims%x_u_end ),         &
-                            Z_u( dims%x_u_start : dims%x_u_end ) ) +           &
-               DOT_PRODUCT( X( dims%x_u_end + 1 : n ),                         &
-                            Z_u( dims%x_u_end + 1 : n ) ) +                    &
-               DOT_PRODUCT( DIST_C_l( dims%c_l_start : dims%c_l_end ),         &
-                            Y_l( dims%c_l_start : dims%c_l_end ) ) -           &
-               DOT_PRODUCT( DIST_C_u( dims%c_u_start : dims%c_u_end ),         &
-                            Y_u( dims%c_u_start : dims%c_u_end ) )
+!  evaluate the merit function
+
+      tau = MAX( control%tau, zero )
+      merit = LPB_merit_value( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,           &
+                               DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,         &
+                               GRAD_L( dims%x_s : dims%x_e ), C_RES,           &
+                               tau, res_primal, inform%dual_infeasibility,     &
+                               res_primal_dual, res_cs )
+
+!  find the max-norm of the residual
+
+      nbnds = nbnds_x + nbnds_c
+      IF ( printi .AND. use_scale_c .AND. m > 0 .AND.                          &
+           dims%c_l_start <= dims%c_u_end )                                    &
+        WRITE( out, "( A, '  largest/smallest scale factor', 2ES11.4 )" )      &
+          prefix, MAXVAL( SCALE_C ), MINVAL( SCALE_C )
+
+!  compute the complementary slackness
+
+      slknes_x = DOT_PRODUCT( X( dims%x_free + 1 : dims%x_l_start - 1 ),       &
+                              Z_l( dims%x_free + 1 : dims%x_l_start - 1 ) ) +  &
+                 DOT_PRODUCT( DIST_X_l( dims%x_l_start : dims%x_l_end ),       &
+                              Z_l( dims%x_l_start : dims%x_l_end ) ) -         &
+                 DOT_PRODUCT( DIST_X_u( dims%x_u_start : dims%x_u_end ),       &
+                              Z_u( dims%x_u_start : dims%x_u_end ) ) +         &
+                 DOT_PRODUCT( X( dims%x_u_end + 1 : n ),                       &
+                              Z_u( dims%x_u_end + 1 : n ) )
+      slknes_c = DOT_PRODUCT( DIST_C_l( dims%c_l_start : dims%c_l_end ),       &
+                              Y_l( dims%c_l_start : dims%c_l_end ) ) -         &
+                 DOT_PRODUCT( DIST_C_u( dims%c_u_start : dims%c_u_end ),       &
+                              Y_u( dims%c_u_start : dims%c_u_end ) )
+      slknes = slknes_x + slknes_c
+
+      slkmin_x = MIN( MINVAL( X( dims%x_free + 1 : dims%x_l_start - 1 ) *      &
+                              Z_l( dims%x_free + 1 : dims%x_l_start - 1 ) ),   &
+                      MINVAL( DIST_X_l( dims%x_l_start : dims%x_l_end ) *      &
+                              Z_l( dims%x_l_start : dims%x_l_end ) ),          &
+                      MINVAL( - DIST_X_u( dims%x_u_start : dims%x_u_end ) *    &
+                              Z_u( dims%x_u_start : dims%x_u_end ) ),          &
+                      MINVAL( X( dims%x_u_end + 1 : n ) *                      &
+                              Z_u( dims%x_u_end + 1 : n ) ) )
+      slkmin_c = MIN( MINVAL( DIST_C_l( dims%c_l_start : dims%c_l_end ) *      &
+                              Y_l( dims%c_l_start : dims%c_l_end ) ),          &
+                      MINVAL( - DIST_C_u( dims%c_u_start : dims%c_u_end ) *    &
+                              Y_u( dims%c_u_start : dims%c_u_end ) ) )
+      slkmin = MIN( slkmin_x, slkmin_c )
+
+      slkmax_x = MAX( MAXVAL( X( dims%x_free + 1 : dims%x_l_start - 1 ) *      &
+                              Z_l( dims%x_free + 1 : dims%x_l_start - 1 ) ),   &
+                      MAXVAL( DIST_X_l( dims%x_l_start : dims%x_l_end ) *      &
+                              Z_l( dims%x_l_start : dims%x_l_end ) ),          &
+                      MAXVAL( - DIST_X_u( dims%x_u_start : dims%x_u_end ) *    &
+                              Z_u( dims%x_u_start : dims%x_u_end ) ),          &
+                      MAXVAL( X( dims%x_u_end + 1 : n ) *                      &
+                              Z_u( dims%x_u_end + 1 : n ) ) )
+      slkmax_c = MAX( MAXVAL( DIST_C_l( dims%c_l_start : dims%c_l_end ) *      &
+                              Y_l( dims%c_l_start : dims%c_l_end ) ),          &
+                      MAXVAL( - DIST_C_u( dims%c_u_start : dims%c_u_end ) *    &
+                              Y_u( dims%c_u_start : dims%c_u_end ) ) )
+
+      p_min = MIN( MINVAL( X( dims%x_free + 1 : dims%x_l_start - 1 ) ),        &
+                   MINVAL( DIST_X_l( dims%x_l_start : dims%x_l_end ) ),        &
+                   MINVAL( DIST_X_u( dims%x_u_start : dims%x_u_end ) ),        &
+                   MINVAL( - X( dims%x_u_end + 1 : n ) ),                      &
+                   MINVAL( DIST_C_l( dims%c_l_start : dims%c_l_end ) ),        &
+                   MINVAL( DIST_C_u( dims%c_u_start : dims%c_u_end ) ) )
+
+      p_max = MAX( MAXVAL( X( dims%x_free + 1 : dims%x_l_start - 1 ) ),        &
+                   MAXVAL( DIST_X_l( dims%x_l_start : dims%x_l_end ) ),        &
+                   MAXVAL( DIST_X_u( dims%x_u_start : dims%x_u_end ) ),        &
+                   MAXVAL( - X( dims%x_u_end + 1 : n ) ),                      &
+                   MAXVAL( DIST_C_l( dims%c_l_start : dims%c_l_end ) ),        &
+                   MAXVAL( DIST_C_u( dims%c_u_start : dims%c_u_end ) ) )
+
+      d_min = MIN( MINVAL(   Z_l( dims%x_free + 1 : dims%x_l_end ) ),          &
+                   MINVAL( - Z_u( dims%x_u_start : n ) ),                      &
+                   MINVAL(   Y_l( dims%c_l_start : dims%c_l_end ) ),           &
+                   MINVAL( - Y_u( dims%c_u_start : dims%c_u_end ) ) )
+
+      d_max = MAX( MAXVAL(   Z_l( dims%x_free + 1 : dims%x_l_end ) ),          &
+                   MAXVAL( - Z_u( dims%x_u_start : n ) ),                      &
+                   MAXVAL(   Y_l( dims%c_l_start : dims%c_l_end ) ),           &
+                   MAXVAL( - Y_u( dims%c_u_start : dims%c_u_end ) ) )
+
+!  record the slackness and the deviation from the central path
+
+      IF ( nbnds_x > 0 ) THEN
+        slknes_x = slknes_x / nbnds_x
+      ELSE
+        slknes_x = zero
+      END IF
+
+      IF ( nbnds_c > 0 ) THEN
+        slknes_c = slknes_c / nbnds_c
+      ELSE
+        slknes_c = zero
+      END IF
 
       IF ( nbnds > 0 ) THEN
-        norm_c = ten ** ( 2 * ( NINT( LOG10( norm_c / nbnds ) ) / 2  ) )
+        IF (  res_primal_dual > zero ) THEN
+          gamma_f = control%gamma_f * slknes / res_primal_dual
+        ELSE
+          gamma_f = one
+        END IF
+        slknes = slknes / nbnds
+        gamma_c = control%gamma_c * slkmin / slknes
       ELSE
-        norm_c = zero
+        gamma_f = zero ; slknes = zero ; gamma_c = zero
       END IF
 
+      IF ( printw .AND. nbnds > 0 ) THEN
+        WRITE( out, 2130 )                         &
+          prefix, slknes, prefix, slknes_x, prefix, slknes_c, prefix, slkmin_x,&
+          slkmax_x, prefix, slkmin_c, slkmax_c, prefix, p_min, p_max, prefix,  &
+          d_min, d_max
+        WRITE( out, "( A, 31X, ' min x gap = ', ES12.4, /,                     &
+       &               A, 31X, ' min c gap = ', ES12.4 )" )                    &
+          prefix, MINVAL( X_u( dims%x_u_start : dims%x_l_end ) -               &
+                          X_l( dims%x_u_start : dims%x_l_end ) ),              &
+          prefix, MINVAL( C_u( dims%c_u_start : dims%c_l_end ) -               &
+                          C_l( dims%c_u_start : dims%c_l_end ) )
+        WRITE( out, "( A, 31X, ' gamma_c,f = ', 2ES12.4 )" )                   &
+          prefix, gamma_c, gamma_f
+      END IF
+
+!  set the initial barrier parameter
+
+      sigma = sigma_max
       IF ( control%muzero < zero ) THEN
-        mu = norm_c
+        IF ( control%arc == 2 ) THEN
+          mu = slknes
+          sigma = one
+        ELSE
+          mu = sigma * slknes
+        END IF
       ELSE
         mu = control%muzero
       END IF
+      inform%complementary_slackness = slknes
 
-!  If the starting point is very close to one of its bounds, 
-!  the feasible region likely has no interior. Be cautious
+      inform%init_primal_infeasibility = inform%primal_infeasibility
+      inform%init_dual_infeasibility = inform%dual_infeasibility
+      inform%init_complementary_slackness = inform%complementary_slackness
 
-      old_mu = mu ; zeta = point01 * point01
+!  compute the binomial coefficients b_i^k = b_i^{k-1} + b_{i-1}^{k-1}
 
-!  Initialize convergence tolerances, theta_c, theta_d and theta_e
-
-      theta_c = MIN( theta_min, theta_cs * mu )
-      theta_d = MIN( theta_min, theta_df * mu )
-
-!  Prepare for the major iteration
-
-      inform%iter = 0 ; inform%nfacts = 0 ; ratio = - one
-      got_time_kkt = .FALSE. ; time_kkt = 0.0
-
-!  Intialize GLTR data
-
-      CALL GLTR_initialize( gltr_data, gltr_control )
-      gltr_control%stop_relative = control%inner_stop_relative
-      gltr_control%stop_absolute = control%inner_stop_absolute
-      gltr_control%fraction_opt = control%inner_fraction_opt
-      gltr_control%unitm = .FALSE.
-      gltr_control%steihaug_toint = .FALSE.
-      gltr_control%error = control%error
-      gltr_control%out = control%out
-      gltr_control%print_level = print_level - 1
-      gltr_control%itmax = control%cg_maxit
-      gltr_control%Lanczos_itmax = 5
-
-!  If the preconditioner is to be picked automatically, start with the identity.
-!  Otherwise, use the Hessian of the barrier function
-
-      one_fact = .FALSE.
-      new_fact = .TRUE.
-      IF ( printi ) WRITE( out, "( ' ' )" )
-      IF ( auto ) THEN
-        IF ( printi ) WRITE( out, 2400 )
-        precon = 2
-
-!  fact_hist indicates which factors are currently being used. Possible values:
-!   1 barrier factors used
-!   2 identity used
-!   3 barrier factors used for the final time
-!   4 identity used for the final time
-!   5 barrier factors as a last resort
-
-        fact_hist = 4
+      IF ( order > 1 ) THEN
+        BINOMIAL( 0, 1 ) = one
+        DO j = 2, order
+          BINOMIAL( j - 1, j - 1 ) = one
+          BINOMIAL( 0, j ) = one
+          DO i = 1, j - 1
+            BINOMIAL( i, j ) = BINOMIAL( i, j - 1 ) + BINOMIAL( i - 1, j - 1 )
+          END DO
+        END DO
       END IF
 
-!  Assign space for the preconditioner - the analyis phase
-!  -------------------------------------------------------
+!  prepare for the major iteration
 
-!  The preconditioner will be of the form
-!     ( M  A(trans) )
-!     ( A      0    )
-!  where M is a suitable, second-order sufficient symmetric matric
+      inform%iter = 0 ; inform%nfacts = 0
+      IF ( printw ) WRITE( out, "( /, A, ' merit function value = ',           &
+     &     ES12.4 )" ) prefix, merit
 
-!  ==================================================
-!  Analyse the sparsity pattern of the preconditioner
-!  ==================================================
+      IF ( n == 0 ) THEN
+        inform%status = GALAHAD_ok ; GO TO 600
+      END IF
+      merit_best = merit ; it_best = 0
 
-      CALL CPU_TIME( time ) 
-      CALL LPB_analyse( dims, n, m, A_ne, A_val, A_col, A_ptr, SCALE_C,        &
-                         factor, precon, nnzks, lk,                            &
-                         liw, ldiag_x, ldiag_c_l, ldiag_c_u, IW, Abycol_val,   &
-                         Abycol_row, Abycol_ptr, K_colptr, DIAG_X, DIAG_C,     &
-                         K, FACTORS, CNTL, print_level, control, inform )
-      CALL CPU_TIME( dum ) ; dum = dum - time
+!  compute stopping tolerances
 
-      IF ( printt ) WRITE( out, "( ' analysis time = ', F10.2 ) " ) dum
-      inform%time%analyse = inform%time%analyse + dum
+      stop_p = MAX( control%stop_abs_p,                                        &
+                    control%stop_rel_p * inform%primal_infeasibility )
+      stop_d = MAX( control%stop_abs_d,                                        &
+                    control%stop_rel_d * inform%dual_infeasibility )
+      stop_c = MAX( control%stop_abs_c,                                        &
+                    control%stop_rel_c * inform%complementary_slackness )
 
-      refact = .TRUE. ; re = ' ' ; mo = ' '
-      new_prec = .FALSE. ; full_iteration = .FALSE. ; got_ratio = .FALSE.
+!  test for convergence
 
-      cg_iter = 0 ; inform%cg_iter = cg_iter
+      CALL CPU_TIME( time_record )
+      CALL CHECKPOINT( inform%iter, time_record - time_start,                  &
+         MAX( inform%primal_infeasibility,                                     &
+         inform%dual_infeasibility, inform%complementary_slackness ),          &
+         inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+      IF ( inform%primal_infeasibility <= stop_p .AND.                         &
+           inform%dual_infeasibility <= stop_d .AND.                           &
+           inform%complementary_slackness <= stop_c ) THEN
+        inform%status = GALAHAD_ok ; GO TO 600
+      END IF
 
-!  Compute the value of the barrier function, phi
+!  ===================================================
+!  Analyse the sparsity pattern of the required matrix
+!  ===================================================
 
-      phi = LPB_barrier_value( dims, n, obj, X, DIST_X_l, DIST_X_u,            &
-                                DIST_C_l, DIST_C_u, mu )
+      re = ' ' ; nbact = 0
+      pivot_tol = SBLS_control%SLS_control%relative_pivot_tolerance
+      min_pivot_tol = SBLS_control%SLS_control%minimum_pivot_tolerance
+      relative_pivot_tol = pivot_tol
+      maxpiv = pivot_tol >= half
 
-      gltr_control%boundary = .FALSE.
-      gltr_info%status = 1 ; gltr_info%negative_curvature = .TRUE.
+      IF ( printi ) WRITE( out,                                                &
+          "(  /, A, '  Primal    convergence tolerance =', ES11.4,             &
+         &    /, A, '  Dual      convergence tolerance =', ES11.4,             &
+         &    /, A, '  Slackness convergence tolerance =', ES11.4 )" )         &
+              prefix, stop_p, prefix, stop_d, prefix, stop_c
 
-      DO  ! outer iteration loop
+!  complete A
 
-!  The vectors x, z_l and z_u satisfy
-!  a) A x = b
-!  b) X_l < x < X_u, z_l > 0, z_u < 0
+      DO i = 1, dims%nc
+        A_sbls%val( a_ne + i ) = - SCALE_C( dims%c_equality + i )
+      END DO
 
-!  Set the initial trust-region radius radius
-   
-        IF ( initial_radius <= zero ) THEN
-          radius = ( ten ** 3 ) * MAX( one, mu )
-        ELSE
-          radius = MIN( initial_radius, radius_max )
-        END IF
-        old_radius = radius
+!  ---------------------------------------------------------------------
+!  ---------------------- Start of Major Iteration ---------------------
+!  ---------------------------------------------------------------------
 
-!  ===============
-!  Inner iteration
-!  ===============
+      puiseux = control%puiseux
+      IF ( puiseux ) THEN
+        pui = 'P'
+      ELSE
+        pui = 'T'
+      END IF
 
- inner: DO  ! inner iteration loop
+      DO
 
-          CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
-          time_iter = time - time_last ; time_last = time
+!  =======
+!  STEP 1:
+!  =======
 
-!         WRITE( out, "( ' time_iter ', F10.2 )" ) time_iter
+!  =====================================================================
+!  -*-*-*-*-*-*-*-*-*-*-*-   Test for Optimality   -*-*-*-*-*-*-*-*-*-*-
+!  =====================================================================
 
-!  Estimate the time for an iteration with the full factorization
+!  print a summary of the iteration
 
-          IF ( auto ) THEN
-            IF( fact_hist == 2 .AND.                                           &
-               ( .NOT. got_time_kkt .AND. full_iteration ) ) THEN
-              got_time_kkt = .TRUE.
-              time_kkt = time_iter
-            END IF
-
-!  Check the effectiveness of the preconditioner over the previous iteration
-
-            IF ( .NOT. start_major ) THEN 
-              IF ( seq > 0 ) THEN
-                 time_mean = SUM( time_hist( 0 : MIN( seq - 1, hist - 1 ) ) ) &
-                             / MIN( seq, hist )
-                 IF ( time_mean > 0.0 ) THEN
-                   time_ratio = time_iter / time_mean
-                 ELSE
-                   time_ratio = 0.0
-                 END IF
-              ELSE
-                 time_mean = 0.0 ; time_ratio = 0.0
-              END IF
-   
-              time_hist( MOD( seq, hist ) ) = time_iter
-              seq = seq + 1
-
-!  The previous preconditioner appears to be ineffective. Try another
-
-              SELECT CASE( fact_hist ) 
-
-!  The time/iteration has significantly increased. See if a full factorization
-!  is better
-
-              CASE ( 1 )
-                IF ( seq >= hist .AND. time_ratio > max_ratio ) THEN
-                  IF ( printi )                                                &
-                     WRITE( out, 2370 ) time_iter, time_mean, max_ratio
-                  new_prec = .TRUE.
-                  time_itsol = time_iter
-                  precon = 1 ; fact_hist = 2 ; factor = control%factor
-                END IF
-
-!  The full factorization is more expensive than the barrier factorization.
-!  Revert to the latter
-
-              CASE ( 2 )
-               IF ( got_time_kkt .AND. time_kkt > time_itsol ) THEN
-                 IF ( printi ) WRITE( out, 2380 ) time_kkt, time_itsol
-                 new_prec = .TRUE.
-                 precon = 2 ; fact_hist = 3 ; factor = control%factor
-               END IF
-
-!  The barrier factorization is more expensive than the full factorization.
-!  Revert to the latter
-
-              CASE ( 3 )
-                IF ( time_iter > time_kkt ) THEN
-                  IF ( printi ) WRITE( out, 2390 ) time_iter, time_kkt
-                  new_prec = .TRUE.
-                  precon = 1 ; fact_hist = 4 ; factor = control%factor
-                END IF
-              END SELECT
-            END IF
-          END IF
-
-!  Compute the derivatives of the barrier function, and the norm of the
-!  complentarity, || (X-L) z_l - \mu e, (X-U) z_u - \mu e \|
-
-!  Problem variables:
-
-          p_min = infinity ; p_max = zero ; d_min = infinity ; d_max = zero 
-          norm_c = zero
-
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = 1, dims%x_free ; GRAD_X_phi( i ) = GRAD( i ) ; END DO
+        CALL CLOCK_TIME( clock_now ) ; clock_now = clock_now - clock_start
+        IF ( printi ) THEN
+          IF ( inform%iter > 0 ) THEN
+            IF ( printt .OR. ( printi .AND.                                    &
+               inform%iter == start_print ) ) WRITE( out, 2000 ) prefix
+            WRITE( out, 2030 ) prefix, inform%iter, re,                        &
+             inform%primal_infeasibility, inform%dual_infeasibility,           &
+             inform%complementary_slackness, inform%obj, alpha, mu,            &
+             iorder, pui, arc, nbact, clock_now
           ELSE
-            GRAD_X_phi( : dims%x_free ) = GRAD( : dims%x_free )
+            WRITE( out, 2000 ) prefix
+            WRITE( out, 2020 ) prefix, inform%iter, re,                        &
+              inform%primal_infeasibility, inform%dual_infeasibility,          &
+              inform%complementary_slackness, inform%obj, mu, clock_now
           END IF
-          DO i = dims%x_free + 1, dims%x_l_start - 1
-            GRAD_X_phi( i ) = GRAD( i ) - mu / X( i )
-            p_min = MIN( p_min, X( i ) )
-            p_max = MAX( p_max, X( i ) )
-            d_min = MIN( d_min, Z_l( i ) )
-            d_max = MAX( d_max, Z_l( i ) )
-            IF ( ABS( X( i ) ) < remote )                                      &
-              norm_c = MAX( norm_c, ABS( X( i ) * Z_l( i ) - mu ) )
-!           IF ( inform%iter == 41 ) WRITE( 6, "( 'X', i6, ES12.4 )" ) &
-!             i, ABS( X( i ) * Z_l( i ) - mu )
-          END DO
 
-          DO i = dims%x_l_start, dims%x_u_start - 1
-            GRAD_X_phi( i ) = GRAD( i ) - mu / DIST_X_l( i )
-            p_min = MIN( p_min, DIST_X_l( i ) )
-            p_max = MAX( p_max, DIST_X_l( i ) )
-            d_min = MIN( d_min, Z_l( i ) )
-            d_max = MAX( d_max, Z_l( i ) )
-            IF ( ABS( DIST_X_l( i ) ) < remote )                               &
-              norm_c = MAX( norm_c, ABS(   DIST_X_l( i ) * Z_l( i ) - mu ) )
-!           IF ( inform%iter == 41 ) WRITE( 6, "( 'X', i6, ES12.4 )" ) &
-!             i, ABS(   DIST_X_l( i ) * Z_l( i ) - mu )
-          END DO
+          IF ( printd ) THEN
+            WRITE( out, 2100 ) prefix, ' X ', X
+            IF ( dims%c_l_start <= dims%c_l_end ) WRITE( out, 2100 ) prefix,   &
+                ' C_l ', DIST_C_l( dims%c_l_start : dims%c_l_end )
+            IF ( dims%c_u_start <= dims%c_u_end ) WRITE( out, 2100 ) prefix,   &
+                ' C_u ', DIST_C_u( dims%c_u_start : dims%c_u_end )
+            IF ( dims%x_free + 1 <= dims%x_l_end ) WRITE( out, 2100 )          &
+              prefix,  ' Z_l ', Z_l( dims%x_free + 1 : dims%x_l_end )
+            IF (  dims%x_u_start <= n ) WRITE( out, 2100 )                     &
+              prefix, ' Z_u ', Z_u( dims%x_u_start :  n )
+          END IF
+        END IF
 
-          DO i = dims%x_u_start, dims%x_l_end
-            GRAD_X_phi( i ) = GRAD( i ) - mu / DIST_X_l( i )                   &
-                                        + mu / DIST_X_u( i )
-            p_min = MIN( p_min, DIST_X_l( i ), DIST_X_u( i ) )
-            p_max = MAX( p_max, DIST_X_l( i ), DIST_X_u( i ) )
-            d_min = MIN( d_min, Z_l( i ), - Z_u( i ) )
-            d_max = MAX( d_max, Z_l( i ), - Z_u( i ) )
-            IF ( MIN( ABS( DIST_X_l( i ) ), ABS( DIST_X_u( i ) ) ) < remote )  &
-              norm_c = MAX( norm_c, ABS(   DIST_X_l( i ) * Z_l( i ) - mu ),    &
-                                    ABS( - DIST_X_u( i ) * Z_u( i ) - mu ) )
-!           IF ( inform%iter == 41 ) WRITE( 6, "( 'X', i6, ES12.4 )" ) &
-!             i, MAX( ABS(   DIST_X_l( i ) * Z_l( i ) - mu ),      &
-!                     ABS( - DIST_X_u( i ) * Z_u( i ) - mu ) )
-          END DO
+        IF ( control%arc == 2 .OR.                                             &
+             ( control%arc == 3 .AND. mu <= tenm4 ) ) THEN
+          arc = 'ZS'
+        ELSE IF ( control%arc == 4 ) THEN
+          arc = 'ZP'
+          puiseux = .TRUE.
+        ELSE
+          arc = 'Zh'
+        END IF
 
-          DO i = dims%x_l_end + 1, dims%x_u_end
-            GRAD_X_phi( i ) = GRAD( i ) + mu / DIST_X_u( i )
-            p_min = MIN( p_min, DIST_X_u( i ) )
-            p_max = MAX( p_max, DIST_X_u( i ) )
-            d_min = MIN( d_min, - Z_u( i ) )
-            d_max = MAX( d_max, - Z_u( i ) )
-            IF ( ABS( DIST_X_u( i ) ) < remote )                               &
-              norm_c = MAX( norm_c, ABS( - DIST_X_u( i ) * Z_u( i ) - mu ) )
-!           IF ( inform%iter == 41 ) WRITE( 6, "( 'X', i6, ES12.4 )" ) &
-!             i, ABS( - DIST_X_u( i ) * Z_u( i ) - mu )
-          END DO
+!  test for optimality
 
-          DO i = dims%x_u_end + 1, n
-            GRAD_X_phi( i ) = GRAD( i ) - mu / X( i )
-            p_min = MIN( p_min, - X( i ) )
-            p_max = MAX( p_max, - X( i ) )
-            d_min = MIN( d_min, - Z_u( i ) )
-            d_max = MAX( d_max, - Z_u( i ) )
-            IF ( ABS( X( i ) ) < remote )                                      &
-              norm_c = MAX( norm_c, ABS( X( i ) * Z_u( i ) - mu ) )
-!           IF ( inform%iter == 41 ) WRITE( 6, "( 'X', i6, ES12.4 )" ) &
-!             i, ABS( X( i ) * Z_l( i ) - mu )
-          END DO
+!  find how many primal optimality conditions are violated in the
+!  sense that we require (componentwise)
+!   | primal optimality | <= MAX( stop_rel * | typical value |, stop_abs )
 
-!  Slack variables:
+        IF ( m > 0 ) THEN
+          RHS( dims%y_s : dims%c_e + dims%c_equality ) =                       &
+            ABS( C_l( : dims%c_equality ) )
+          RHS( dims%c_e + dims%c_l_start : dims%c_e +  dims%c_u_end ) =        &
+            ABS( SCALE_C * C )
+          CALL LPB_abs_AX( m, RHS( dims%y_s : dims%y_e ), m, a_ne,             &
+                           A_val, A_col, A_ptr, n, X, ' ' )
+          IF ( printw ) WRITE( out, "( A, '  abs(primal) ', ES12.4 )" )        &
+            prefix, MAXVAL( RHS( dims%y_s : dims%y_e ) )
+          primal_nonopt = COUNT( ABS( C_RES ) > MAX( control%stop_abs_p,       &
+            RHS( dims%y_s : dims%y_e ) * control%stop_rel_p ) )
+        ELSE
+          primal_nonopt = 0
+        END IF
 
-          DO i = dims%c_l_start, dims%c_u_start - 1
-            GRAD_C_phi( i ) = - mu / DIST_C_l( i )
-            p_min = MIN( p_min, DIST_C_l( i ) )
-            p_max = MAX( p_max, DIST_C_l( i ) )
-            d_min = MIN( d_min, Y_l( i ) )
-            d_max = MAX( d_max, Y_l( i ) )
-            IF ( ABS( DIST_C_l( i ) ) < remote )                               &
-              norm_c = MAX( norm_c, ABS( DIST_C_l( i ) * Y_l( i ) - mu ) )
-!           IF ( inform%iter == 41 ) WRITE( 6, "( 'C', i6, ES12.4 )" ) &
-!             i, ABS( DIST_C_l( i ) * Y_l( i ) - mu )
-          END DO
+!  now find how many dual optimality conditions are violated in the
+!  sense that we require (componentwise)
+!   | dual optimality | <= MAX( stop_rel * | typical value |, stop_abs )
 
-          DO i = dims%c_u_start, dims%c_l_end
-            GRAD_C_phi( i ) = - mu / DIST_C_l( i ) + mu / DIST_C_u( i )
-            p_min = MIN( p_min, DIST_C_l( i ), DIST_C_u( i ) )
-            p_max = MAX( p_max, DIST_C_l( i ), DIST_C_u( i ) )
-            d_min = MIN( d_min, Y_l( i ), - Y_u( i ) )
-            d_max = MAX( d_max, Y_l( i ), - Y_u( i ) )
-            IF ( MIN( ABS( DIST_C_l( i ) ), ABS( DIST_C_u( i ) ) ) < remote )  &
-              norm_c = MAX( norm_c, ABS(   DIST_C_l( i ) * Y_l( i ) - mu ),    &
-                                    ABS( - DIST_C_u( i ) * Y_u( i ) - mu ) )
-!           IF ( inform%iter == 41 ) WRITE( 6, "( 'C', i6, ES12.4 )" ) &
-!             i, MAX( ABS(   DIST_C_l( i ) * Y_l( i ) - mu ),      &
-!                     ABS( - DIST_C_u( i ) * Y_u( i ) - mu ) )
-          END DO
+!  evaluate abs(dual)
 
-          DO i = dims%c_l_end + 1, dims%c_u_end
-            GRAD_C_phi( i ) = mu / DIST_C_u( i )
-            p_min = MIN( p_min, DIST_C_u( i ) )
-            p_max = MAX( p_max, DIST_C_u( i ) )
-            d_min = MIN( d_min, - Y_u( i ) )
-            d_max = MAX( d_max, - Y_u( i ) )
-            IF ( ABS( DIST_C_u( i ) ) < remote )                               &
-              norm_c = MAX( norm_c, ABS( - DIST_C_u( i ) * Y_u( i ) - mu ) )
-!           IF ( inform%iter == 41 ) WRITE( 6, "( 'C', i6, ES12.4 )" ) &
-!             i, ABS( - DIST_C_u( i ) * Y_u( i ) - mu ) 
-          END DO
+        IF ( gradient_kind == 0 ) THEN
+          RHS( : n ) = zero
+        ELSE IF ( gradient_kind == 1 ) THEN
+          RHS( : n ) = one
+        ELSE
+          RHS( : n ) = ABS( G )
+        END IF
+        CALL LPB_abs_AX( n, RHS( : n ), m, a_ne, A_val, A_col, A_ptr, m, Y,    &
+                         'T' )
+        dual_nonopt = 0
+        DO i = 1, dims%x_free
+          IF ( ABS( GRAD_L( i ) ) >                                            &
+            MAX( control%stop_abs_d, RHS( i ) * control%stop_rel_d ) )         &
+              dual_nonopt = dual_nonopt + 1
+        END DO
+        DO i = dims%x_free + 1, dims%x_u_start - 1
+          RHS( i ) = RHS( i ) + ABS( Z_l( i ) )
+          IF ( ABS( GRAD_L( i ) - Z_l( i ) ) >                                 &
+            MAX( control%stop_abs_d, RHS( i ) * control%stop_rel_d ) )         &
+              dual_nonopt = dual_nonopt + 1
+        END DO
+        DO i = dims%x_u_start, dims%x_l_end
+          RHS( i ) = RHS( i ) + ABS( Z_l( i ) ) + ABS( Z_u( i ) )
+          IF ( ABS( GRAD_L( i ) - Z_l( i ) - Z_u( i ) ) >                      &
+            MAX( control%stop_abs_d, RHS( i ) * control%stop_rel_d ) )         &
+              dual_nonopt = dual_nonopt + 1
+        END DO
+        DO i = dims%x_l_end + 1, n
+          RHS( i ) = RHS( i ) + ABS( Z_u( i ) )
+          IF ( ABS( GRAD_L( i ) - Z_u( i ) ) >                                 &
+            MAX( control%stop_abs_d, RHS( i ) * control%stop_rel_d ) )         &
+              dual_nonopt = dual_nonopt + 1
+        END DO
 
-          IF ( printt ) WRITE( out, 2160 ) p_min, p_max, d_min, d_max
+        DO i = dims%c_l_start, dims%c_u_start - 1
+          RHS( dims%c_b + i ) = ABS( Y( i ) ) + ABS( Y_l( i ) )
+          IF ( ABS( Y( i ) - Y_l( i ) ) >  MAX( control%stop_abs_d,            &
+            RHS( dims%c_b + i ) * control%stop_rel_d ) )                       &
+              dual_nonopt = dual_nonopt + 1
+        END DO
+        DO i = dims%c_u_start, dims%c_l_end
+          RHS( dims%c_b + i ) = ABS( Y( i ) ) + ABS( Y_l( i ) ) + ABS( Y_u( i ))
+          IF ( ABS( Y( i ) - Y_l( i ) - Y_u( i ) ) > MAX( control%stop_abs_d,  &
+            RHS( dims%c_b + i ) * control%stop_rel_d ) )                       &
+              dual_nonopt = dual_nonopt + 1
+        END DO
+        DO i = dims%c_l_end + 1, dims%c_u_end
+          RHS( dims%c_b + i ) = ABS( Y( i ) ) + ABS( Y_u( i ) )
+          IF ( ABS( Y( i ) - Y_u( i ) ) >  MAX( control%stop_abs_d,            &
+            RHS( dims%c_b + i ) * control%stop_rel_d ) )                       &
+              dual_nonopt = dual_nonopt + 1
+        END DO
 
-!  Build the model of the barrier function
-!  ---------------------------------------
+        IF ( printw ) WRITE( out, "( A, '  abs(dual) ', ES12.4 )" )            &
+            prefix, MAXVAL( RHS( dims%x_s : dims%c_e ) )
 
-!  Construct the quadratic model
-!  m(s) = phi + <s,grad phi> + 1/2 <s,(Hess f + (X-L)(-2) + (U-X)(-2))s>
+!  finally find how many complementarity conditions are violated in the
+!  sense that we require (componentwise)
+!   | complementarity | <= MAX( stop_rel * | typical value |, stop_abs )
 
-!  Compute the Hessian matrix of the barrier terms
+        cs_nonopt = 0
+        cs = zero
+        DO i = dims%x_free + 1, dims%x_l_start - 1
+          cs = MAX( cs, ABS( Z_l( i ) ), ABS( X( i ) ) )
+          IF ( ABS( Z_l( i ) * X( i ) ) > MAX( control%stop_abs_c,             &
+                 MAX( ABS( Z_l( i ) ), ABS( X( i ) ) ) * control%stop_rel_c ) )&
+                   cs_nonopt = cs_nonopt + 1
+        END DO
+        DO i = dims%x_l_start, dims%x_l_end
+          cs = MAX( cs, ABS( Z_l( i ) ), ABS( DIST_X_l( i ) ) )
+          IF ( ABS( Z_l( i ) * DIST_X_l( i ) ) > MAX( control%stop_abs_c,      &
+                 MAX( ABS( Z_l( i ) ), ABS( DIST_X_l( i ) ) ) *                &
+                   control%stop_rel_c ) ) cs_nonopt = cs_nonopt + 1
+        END DO
+        DO i = dims%x_u_start, dims%x_u_end
+          cs =  MAX( cs, ABS( Z_u( i ) ), ABS( DIST_X_u( i ) ) )
+          IF ( ABS( Z_u( i ) * DIST_X_u( i ) ) > MAX( control%stop_abs_c,      &
+                 MAX( ABS( Z_u( i ) ), ABS( DIST_X_u( i ) ) ) *                &
+                   control%stop_rel_c ) ) cs_nonopt = cs_nonopt + 1
+        END DO
+        DO i = dims%x_u_end + 1, n
+          cs =  MAX( cs,  ABS( Z_u( i ) ), ABS( X( i ) ) )
+          IF ( ABS( Z_u( i ) * X( i ) ) > MAX( control%stop_abs_c,             &
+                 MAX( ABS( Z_u( i ) ), ABS( X( i ) ) ) * control%stop_rel_c ) )&
+                   cs_nonopt = cs_nonopt + 1
+        END DO
+
+        DO i = dims%c_l_start, dims%c_l_end
+          cs =  MAX( cs,  ABS( Y_l( i ) ), ABS( DIST_C_l( i ) ) )
+          IF ( ABS( Y_l( i ) * DIST_C_l( i ) ) > MAX( control%stop_abs_c,      &
+                 MAX( ABS( Y_l( i ) ), ABS( DIST_C_l( i ) ) ) *                &
+                   control%stop_rel_c ) ) cs_nonopt = cs_nonopt + 1
+        END DO
+        DO i = dims%c_u_start, dims%c_u_end
+          cs =  MAX( cs, ABS( Y_u( i ) ), ABS( DIST_C_u( i ) ) )
+          IF ( ABS( Y_u( i ) * DIST_C_u( i ) ) > MAX( control%stop_abs_c,      &
+                 MAX( ABS( Y_u( i ) ), ABS( DIST_C_u( i ) ) ) *                &
+                   control%stop_rel_c ) ) cs_nonopt = cs_nonopt + 1
+          IF ( ABS( Y_u( i ) * DIST_C_u( i ) ) > MAX( control%stop_abs_c,      &
+                 MAX( ABS( Y_u( i ) ), ABS( DIST_C_u( i ) ) ) *                &
+                   control%stop_rel_c ) ) THEN
+          END IF
+        END DO
+
+        IF ( printw ) WRITE( out, "( A, '  abs(comp) ', ES12.4 )" )            &
+            prefix, cs
+
+        IF ( printw ) WRITE( out, "( A, '  # primal, dual, complementarity',   &
+       &                     ' violations ' , I0, 1X, I0, 1X, I0 )" )          &
+                                 prefix, primal_nonopt, dual_nonopt, cs_nonopt
+
+!  test for optimality
+
+        CALL CPU_TIME( time_record )
+        CALL CHECKPOINT( inform%iter, time_record - time_start,                &
+           MAX( inform%primal_infeasibility,                                   &
+           inform%dual_infeasibility, inform%complementary_slackness ),        &
+           inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+        IF ( primal_nonopt + dual_nonopt + cs_nonopt == 0 ) THEN
+          inform%status = GALAHAD_ok ; GO TO 600
+        END IF
+
+!  test to see if more than maxit iterations have been performed
+
+        inform%iter = inform%iter + 1
+        IF ( inform%iter > control%maxit ) THEN
+          inform%status = GALAHAD_error_max_iterations ; GO TO 600
+        END IF
+
+!  check that the CPU time limit has not been reached
+
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+        IF ( ( control%cpu_time_limit >= zero .AND.                            &
+               time_now - time_start > control%cpu_time_limit ) .OR.           &
+             ( control%clock_time_limit >= zero .AND.                          &
+               clock_now - clock_start > control%clock_time_limit ) ) THEN
+          inform%status = GALAHAD_error_cpu_limit ; GO TO 600
+        END IF
+
+        IF ( inform%iter == start_print ) THEN
+          printe = set_printe ; printi = set_printi ; printt = set_printt
+          printw = set_printw ; printd = set_printd
+          print_level = control%print_level
+        END IF
+
+        IF ( inform%iter == stop_print + 1 ) THEN
+          printe = .FALSE. ; printi = .FALSE. ; printt = .FALSE.
+          printw = .FALSE. ; printd = .FALSE.
+          print_level = 0
+        END IF
+
+!  Test to see whether the method has stalled
+
+        IF ( merit <= reduce_infeas * merit_best ) THEN
+          merit_best = merit
+          it_best = 0
+        ELSE
+          it_best = it_best + 1
+          IF ( it_best > infeas_max ) THEN
+            IF ( inform%feasible ) THEN
+              inform%status = GALAHAD_error_unbounded ; GO TO 600
+            ELSE
+              IF ( printi ) WRITE( out, "( /, A, ' ================= the ',    &
+             &  'problem appears to be infeasible ================= ', / )" )  &
+               prefix
+              inform%status = GALAHAD_error_primal_infeasible ; GO TO 600
+            END IF
+          END IF
+        END IF
+
+!  test to see if the potential function appears to be unbounded from below
+
+        IF ( inform%feasible .AND. gradient_kind == 0 ) THEN
+          IF ( inform%potential < control%potential_unbounded *                &
+               ( ( dims%x_l_end - dims%x_free ) +                              &
+               ( n -  dims%x_u_start + 1 ) +                                   &
+               ( dims%c_l_end - dims%c_l_start + 1 ) +                         &
+               ( dims%c_u_end - dims%c_u_start + 1 ) ) ) THEN
+            inform%status = GALAHAD_error_no_center ; GO TO 600
+          END IF
+
+!  compute the Hessian matrix of the barrier terms
+
+!  Special case for the analytic center
 
 !  problem variables:
 
-          IF ( primal_hessian ) THEN
-            DO i = dims%x_free + 1, dims%x_l_start - 1
-              BARRIER_X( i ) = MAX( bar_min, old_mu / X( i ) ** 2 )
-            END DO
-            DO i = dims%x_l_start, dims%x_u_start - 1
-              BARRIER_X( i ) = MAX( bar_min,old_mu / DIST_X_l( i ) ** 2 )
-            END DO
-            DO i = dims%x_u_start, dims%x_l_end
-              BARRIER_X( i ) = MAX( bar_min, old_mu / DIST_X_l( i ) ** 2 +     &
-                                             old_mu / DIST_X_u( i ) ** 2 )
-            END DO
-            DO i = dims%x_l_end + 1, dims%x_u_end
-              BARRIER_X( i ) = MAX( bar_min, old_mu / DIST_X_u( i ) ** 2 )
-            END DO
-            DO i = dims%x_u_end + 1, n
-              BARRIER_X( i ) = MAX( bar_min, old_mu / X( i ) ** 2 )
-            END DO
-          ELSE
-            DO i = dims%x_free + 1, dims%x_l_start - 1
-              BARRIER_X( i ) = MAX( bar_min, Z_l( i ) / X( i ) )
-            END DO
-            DO i = dims%x_l_start, dims%x_u_start - 1
-              BARRIER_X( i ) = MAX( bar_min, Z_l( i ) / DIST_X_l( i ) )
-            END DO
-            DO i = dims%x_u_start, dims%x_l_end
-              BARRIER_X( i ) = MAX( bar_min, Z_l( i ) / DIST_X_l( i ) -        &
-                                             Z_u( i ) / DIST_X_u( i ) )
-            END DO
-            DO i = dims%x_l_end + 1, dims%x_u_end
-              BARRIER_X( i ) = MAX( bar_min, - Z_u( i ) / DIST_X_u( i ) )
-            END DO
-            DO i = dims%x_u_end + 1, n
-              BARRIER_X( i ) = MAX( bar_min, Z_u( i ) / X( i ) )
-            END DO
-          END IF
+          DO i = dims%x_free + 1, dims%x_l_start - 1
+            BARRIER_X( i ) =  mu / X( i ) ** 2
+          END DO
+          DO i = dims%x_l_start, dims%x_u_start - 1
+            BARRIER_X( i ) = mu / DIST_X_l( i ) ** 2
+          END DO
+          DO i = dims%x_u_start, dims%x_l_end
+            BARRIER_X( i ) = mu / DIST_X_l( i ) ** 2                           &
+                             + mu / DIST_X_u( i ) ** 2
+          END DO
+          DO i = dims%x_l_end + 1, dims%x_u_end
+            BARRIER_X( i ) = mu / DIST_X_u( i ) ** 2
+          END DO
+          DO i = dims%x_u_end + 1, n
+            BARRIER_X( i ) = mu / X( i ) ** 2
+          END DO
 
 !  slack variables:
 
-!         IF ( control%array_syntax_worse_than_do_loop ) THEN
-!           DO i = dims%c_l_start, dims%c_u_end ; BARRIER_C( i ) = zero ; END DO
-!         ELSE
-!           BARRIER_C( dims%c_l_start : dims%c_u_end ) = zero
-!         END IF
+          BARRIER_C( dims%c_l_start : dims%c_u_end ) = zero
+          DO i = dims%c_l_start, dims%c_u_start - 1
+            BARRIER_C( i ) = mu / DIST_C_l( i ) ** 2
+          END DO
+          DO i = dims%c_u_start, dims%c_l_end
+            BARRIER_C( i ) = mu / DIST_C_l( i ) ** 2                           &
+                             + mu / DIST_C_u( i ) ** 2
+          END DO
+          DO i = dims%c_l_end + 1, dims%c_u_end
+            BARRIER_C( i ) = mu / DIST_C_u( i ) ** 2
+          END DO
 
-          IF ( primal_hessian ) THEN
-            DO i = dims%c_l_start, dims%c_u_start - 1
-              BARRIER_C( i ) = MAX( bar_min, old_mu / DIST_C_l( i ) ** 2 )
-            END DO
-            DO i = dims%c_u_start, dims%c_l_end
-              BARRIER_C( i ) = MAX( bar_min, old_mu / DIST_C_l( i ) ** 2 +     &
-                                             old_mu / DIST_C_u( i ) ** 2 )
-            END DO
-            DO i = dims%c_l_end + 1, dims%c_u_end
-              BARRIER_C( i ) = MAX( bar_min, old_mu / DIST_C_u( i ) ** 2 )
-            END DO
+!  General case
+
+        ELSE
+
+!  problem variables:
+
+          DO i = dims%x_free + 1, dims%x_l_start - 1
+            IF ( ABS( X( i ) ) <= degen_tol .AND. printd )                     &
+              WRITE( out, "( A, ' i = ', i6, ' DIST X, Z ', 2ES12.4 )" )       &
+                prefix, i, X( i ), Z_l( i )
+            BARRIER_X( i ) = Z_l( i ) / X( i )
+          END DO
+          DO i = dims%x_l_start, dims%x_u_start - 1
+            IF ( ABS( DIST_X_l( i ) ) <= degen_tol .AND. printd )              &
+              WRITE( out, "( A, ' i = ', i6, ' DIST X, Z ', 2ES12.4 )" )       &
+                prefix, i, DIST_X_l( i ), Z_l( i )
+            BARRIER_X( i ) = Z_l( i ) / DIST_X_l( i )
+          END DO
+          DO i = dims%x_u_start, dims%x_l_end
+            IF ( ABS( DIST_X_l( i ) ) <= degen_tol .AND. printd )              &
+              WRITE( out, "( A, ' i = ', i6, ' DIST X, Z ', 2ES12.4 )" )       &
+                prefix, i, DIST_X_l( i ), Z_l( i )
+            IF ( ABS( DIST_X_u( i ) ) <= degen_tol .AND. printd )              &
+              WRITE( out, "( A, ' i = ', i6, ' DIST X, Z ', 2ES12.4 )" )       &
+                prefix, i, DIST_X_u( i ), Z_u( i )
+            BARRIER_X( i ) = Z_l( i ) / DIST_X_l( i ) - Z_u( i ) / DIST_X_u( i )
+          END DO
+          DO i = dims%x_l_end + 1, dims%x_u_end
+            IF ( ABS( DIST_X_u( i ) ) <= degen_tol .AND. printd )              &
+              WRITE( out, "( A, ' i = ', i6, ' DIST X, Z ', 2ES12.4 )" )       &
+                prefix, i, DIST_X_u( i ), Z_u( i )
+            BARRIER_X( i ) = - Z_u( i ) / DIST_X_u( i )
+          END DO
+          DO i = dims%x_u_end + 1, n
+            IF ( ABS( X( i ) ) <= degen_tol .AND. printd )                     &
+              WRITE( out, "( A, ' i = ', i6, ' DIST X, Z ', 2ES12.4 )" )       &
+                prefix, i, X( i ), Z_u( i )
+            BARRIER_X( i ) = Z_u( i ) / X( i )
+          END DO
+
+!  slack variables:
+
+          BARRIER_C( dims%c_l_start : dims%c_u_end ) = zero
+          DO i = dims%c_l_start, dims%c_u_start - 1
+            IF ( ABS( DIST_C_l( i ) ) <= degen_tol .AND. printd )              &
+              WRITE( out, "( A, ' i = ', i6, ' DIST C, Y ', 2ES12.4 )" )       &
+                prefix, i, DIST_C_l( i ), Y_l( i )
+            BARRIER_C( i ) = Y_l( i ) / DIST_C_l( i )
+          END DO
+          DO i = dims%c_u_start, dims%c_l_end
+            IF ( ABS( DIST_C_l( i ) ) <= degen_tol .AND. printd )              &
+              WRITE( out, "( A, ' i = ', i6, ' DIST C, Y ', 2ES12.4 )" )       &
+                prefix, i, DIST_C_l( i ), Y_l( i )
+            IF ( ABS( DIST_C_u( i ) ) <= degen_tol .AND. printd )              &
+              WRITE( out, "( A, ' i = ', i6, ' DIST C, Y ', 2ES12.4 )" )       &
+                prefix, i, DIST_C_u( i ), Y_u( i )
+            BARRIER_C( i ) = Y_l( i ) / DIST_C_l( i ) - Y_u( i ) / DIST_C_u( i )
+          END DO
+          DO i = dims%c_l_end + 1, dims%c_u_end
+            IF ( ABS( DIST_C_u( i ) ) <= degen_tol .AND. printd )              &
+              WRITE( out, "( A, ' i = ', i6, ' DIST C, Y ', 2ES12.4 )" )       &
+                prefix, i, DIST_C_u( i ), Y_u( i )
+            BARRIER_C( i ) = - Y_u( i ) / DIST_C_u( i )
+          END DO
+        END IF
+
+!  =======
+!  STEP 2:
+!  =======
+
+!  =====================================================================
+!  -*-*-*-*-*-*-*-*-*-*-*-*-      Factorization      -*-*-*-*-*-*-*-*-*-
+!  =====================================================================
+
+!  only refactorize if B has changed
+
+        re = 'r'
+        CALL CPU_TIME( time )
+
+!  include the values of the barrier terms
+
+        H_sbls%val( 1 : dims%x_free ) = zero
+        H_sbls%val(dims%x_free + 1 : n ) = BARRIER_X
+        H_sbls%val( dims%c_s : dims%c_e ) = BARRIER_C
+
+!  ensure that the preconditioner is consistent with the Hessian type
+
+        IF ( SBLS_control%preconditioner == 6 .OR.                             &
+             SBLS_control%preconditioner == 7 .OR.                             &
+             SBLS_control%preconditioner == 8 )                                &
+          SBLS_control%preconditioner = 2
+
+! ::::::::::::::::::::::::::::::
+!  Factorize the required matrix
+! ::::::::::::::::::::::::::::::
+
+  200   CONTINUE
+
+!  factorize
+
+!   (     (X-X_l)^-1 Z_l               A^T )
+!   (   - (X_u-X)^-1 Z_u                   )
+!   (                    (C-C_l)^-1 Y_l -I )
+!   (                   -(C_u-C)^-1 Y_u    )
+!   (       A               -I             )
+
+!  either explicitly or implicitly (via its Schur complement)
+
+        time_analyse = inform%SBLS_inform%SLS_inform%time%analyse
+        clock_analyse = inform%SBLS_inform%SLS_inform%time%clock_analyse
+        time_factorize = inform%SBLS_inform%SLS_inform%time%factorize
+        clock_factorize = inform%SBLS_inform%SLS_inform%time%clock_factorize
+
+        IF ( printw ) WRITE( out, "( A,                                        &
+       &  ' ......... factorization of KKT matrix ............... ' )" ) prefix
+        CALL SBLS_form_and_factorize( A_sbls%n, A_sbls%m, H_sbls, A_sbls,      &
+          C_sbls, SBLS_data, SBLS_control, inform%SBLS_inform )
+!write(6,*) ' perturbed? ', inform%SBLS_inform%perturbed
+        inform%nfacts = inform%nfacts + 1
+
+        inform%time%analyse = inform%time%analyse +                            &
+          inform%SBLS_inform%SLS_inform%time%analyse - time_analyse
+        inform%time%clock_analyse = inform%time%clock_analyse +                &
+          inform%SBLS_inform%SLS_inform%time%clock_analyse - clock_analyse
+        inform%time%factorize = inform%time%factorize +                        &
+          inform%SBLS_inform%SLS_inform%time%factorize - time_factorize
+        inform%time%clock_factorize = inform%time%clock_factorize +            &
+          inform%SBLS_inform%SLS_inform%time%clock_factorize - clock_factorize
+        time_solve = 0.0 ; clock_solve = 0.0
+
+        IF ( printw ) WRITE( out, "( A,                                        &
+       &  ' ............... end of factorization ............... ' )" ) prefix
+
+!  test that the factorization succeeded
+
+        inform%factorization_status = inform%SBLS_inform%status
+        IF ( inform%factorization_status == GALAHAD_error_preconditioner ) THEN
+        ELSE IF ( inform%factorization_status < 0 ) THEN
+          IF ( printe ) WRITE( error, "( A, '    ** Error return ', I0,        &
+         &  ' from ', A )" ) prefix, inform%factorization_status,              &
+            'SBLS_form_and_factorize'
+
+!  It didn't. We might have run out of options
+
+          IF ( SBLS_control%factorization == 2 .AND. maxpiv ) THEN
+            inform%status = GALAHAD_error_factorization ; GO TO 700
+
+!  ... or we may change the method
+
+          ELSE IF ( SBLS_control%factorization < 2 .AND. maxpiv ) THEN
+            pivot_tol = relative_pivot_tol
+            maxpiv = pivot_tol >= half
+            SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
+            SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
+            SBLS_control%factorization = 2
+            IF ( printi )  WRITE( out,                                         &
+              "( A, '    ** Switching to augmented system method' )" ) prefix
+
+!  ... or we can increase the pivot tolerance
+
+          ELSE IF ( SBLS_control%SLS_control%relative_pivot_tolerance          &
+                    < relative_pivot_default ) THEN
+            pivot_tol = relative_pivot_default
+            min_pivot_tol = relative_pivot_default
+            maxpiv = .FALSE.
+            SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
+            SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
+!           SBLS_control%factorization = 2
+            IF ( printi ) WRITE( out,                                          &
+              "( A, '    ** Pivot tolerance increased to', ES11.4 )" )         &
+              prefix, pivot_tol
           ELSE
-            DO i = dims%c_l_start, dims%c_u_start - 1
-              BARRIER_C( i ) = MAX( bar_min, Y_l( i ) / DIST_C_l( i ) )
-            END DO
-            DO i = dims%c_u_start, dims%c_l_end
-              BARRIER_C( i ) = MAX( bar_min, Y_l( i ) / DIST_C_l( i ) -        &
-                                             Y_u( i ) / DIST_C_u( i ) )
-            END DO
-            DO i = dims%c_l_end + 1, dims%c_u_end
-              BARRIER_C( i ) = MAX( bar_min, - Y_u( i ) / DIST_C_u( i ) )
-            END DO
+            pivot_tol = half
+            min_pivot_tol = half
+            maxpiv = .TRUE.
+            SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
+            SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
+!           SBLS_control%factorization = 2
+            IF ( printi ) WRITE( out,                                          &
+              "( A, '    ** Pivot tolerance increased to', ES11.4 )" )         &
+              prefix, pivot_tol
           END IF
+          alpha = zero ; nbact = 0
+          inform%factorization_integer = - 1
+          inform%factorization_real = - 1
+          CYCLE
 
-!  If required, form and factorize the preconditioner
-!  --------------------------------------------------
+!  record warning conditions
 
-          mo = ' '
-          IF ( refact ) THEN 
-
-!  Only refactorize if M has changed
-
-            IF ( one_fact .AND. .NOT. new_fact ) THEN
-              re = ' ' 
-            ELSE
-              re = 'r'
-              new_fact = .FALSE.
-
-!  The previous preconditioner appears to be ineffective. Try another
-
-              IF ( new_prec ) THEN
-                seq = 0
-                IF ( printi ) THEN
-                  WRITE( out, 2200 )
-                  WRITE( out, 2400 )
-                END IF
-
-                prev_factorization_integer = inform%factorization_integer
-                prev_factorization_real = inform%factorization_real
-                IF ( printt )                                                  &
-                  WRITE( out, "( ' previous int, real space used ', 2I12 )" )  &
-                    inform%factorization_integer, inform%factorization_real
-
-                CALL CPU_TIME( time ) 
-                CALL LPB_analyse(                                              &
-                          dims, n, m, A_ne, A_val, A_col, A_ptr,               &
-                          SCALE_C, factor, precon, nnzks, lk,   &
-                          liw, ldiag_x, ldiag_c_l, ldiag_c_u,                  &
-                          IW, Abycol_val, Abycol_row,                          &
-                          Abycol_ptr, K_colptr, DIAG_X, DIAG_C,                &
-                          K, FACTORS, CNTL, print_level, control, inform )
-                CALL CPU_TIME( dum ) ; dum = dum - time
-
-                IF ( printt )                                                  &
-                  WRITE( out, "( ' int, real space requested ', 2I12, /,       &
-                 &  ' analysis time = ', F10.2 ) " )                           &
-                    inform%factorization_integer, inform%factorization_real, dum
-                inform%time%analyse = inform%time%analyse + dum
-
-                IF ( auto .AND. precon /= 2 ) THEN
-                  IF ( inform%factorization_real >                             &
-                       max_real_store_ratio * prev_factorization_real          &
-                       .OR. inform%factorization_integer >                     &
-                       max_integer_store_ratio * prev_factorization_integer )  &
-                     THEN
-                    IF ( printi .AND. inform%factorization_real >              &
-                         max_real_store_ratio * prev_factorization_real )      &
-                      WRITE( out, 2360 ) inform%factorization_real,            &
-                         prev_factorization_real, max_real_store_ratio
-                    IF (  printi .AND. inform%factorization_integer >          &
-                       max_integer_store_ratio * prev_factorization_integer )  &
-                      WRITE( out, 2350 ) inform%factorization_integer,         &
-                         prev_factorization_integer, max_integer_store_ratio
-                    refact = .TRUE. ; new_prec = .TRUE.
-                    precon = 2 ; fact_hist = 5 ; factor = control%factor
-!                   WRITE( out, "( ' change precon to ', I2 )" ) precon
-                    CYCLE inner
-                  END IF
-                END IF
-
-                new_prec = .FALSE.
-              END IF
-
-              CNTL%liw = MAX( 2 * inform%factorization_integer, control%indmin )
-              CNTL%la = MAX( 2 * inform%factorization_real, control%valmin )
-
-              H_perturb = zero ; alter_H = .FALSE.
-
-              CALL CPU_TIME( time ) 
-              IF ( printw ) WRITE( out,                                        &
-                   "( ' ............... factorization ............... ' )" )
-
-   50         CONTINUE
-
-!  For the Schur complement matrix
-!  ===============================
-
-              get_factors = .TRUE.
-              IF ( factor == 0 .OR. factor == 1 ) THEN
-
-!  Set the diagonal values of M in DIAG_X
-
-                 SELECT CASE( precon )
-
-!  * M is a diagonal matrix
-
-                 CASE DEFAULT
-                   IF ( control%array_syntax_worse_than_do_loop ) THEN
-                     DO i = 1, ldiag_x ; DIAG_X( i ) = k_diag ; END DO
-                     DO i = ldiag_c_l, ldiag_c_u ; DIAG_C( i ) = k_diag ; END DO
-                   ELSE
-                     DIAG_X = k_diag
-                     DIAG_C = k_diag
-                   END IF
-
-                 CASE ( 2 )
-             
-                   IF ( control%array_syntax_worse_than_do_loop ) THEN
-                     DO i = 1, dims%x_free 
-                       DIAG_X( i ) = k_diag + H_perturb ; END DO
-                     DO i = dims%x_free + 1, ldiag_x
-                       DIAG_X( i ) =  BARRIER_X( i ) + H_perturb ; END DO
-                     DO i = dims%c_l_start, dims%c_u_end
-                       DIAG_C( i ) =  BARRIER_C( i ) + H_perturb ; END DO
-                   ELSE
-                     DIAG_X( : dims%x_free ) = k_diag + H_perturb
-                     DIAG_X( dims%x_free + 1 : ldiag_x ) = BARRIER_X + H_perturb
-                     DIAG_C = BARRIER_C + H_perturb
-                   END IF
-
-!  If required, ensure the diagonals are significantly positive
-
-                   IF ( alter_H ) THEN
-                     IF ( control%array_syntax_worse_than_do_loop ) THEN
-                       DO i = 1, ldiag_x
-                         DIAG_X( i ) = MAX( DIAG_X( i ), perturb_min ) ; END DO
-                       DO i = ldiag_c_l, ldiag_c_u 
-                         DIAG_C( i ) = MAX( DIAG_C( i ), perturb_min ) ; END DO
-                     ELSE
-                       DIAG_X = MAX( DIAG_X, perturb_min )
-                       DIAG_C = MAX( DIAG_C, perturb_min )
-                     END IF
-                   END IF
-
-                 END SELECT
-
-!  Compute the number of positive eigenvalues of D
-
-                 dplus = COUNT( DIAG_X > zero )
-                 dzero = COUNT( DIAG_X == zero )
-
-!  Form the Schur complement matrix
-
-                 IF ( m > 0 ) THEN
-
-                    CALL LPB_form_Schur_complement(                            &
-                      dims, n, m, A_ne, Abycol_val, Abycol_row, Abycol_ptr,    &
-                      DIAG_X, SCALE_C, DIAG_C, lk, K%val, K%row,               &
-                      K_colptr, nnzk, ierr, IW( : n ), IW( n + 1 :  ),         &
-                      .TRUE., control%error, print_level )
-!                   inform%nfacts = inform%nfacts + 1 
-                  ELSE
-                    get_factors = .FALSE.
-                    nnzk = 0
-                  END IF
-
-!  For the KKT matrix
-!  ==================
-
-              ELSE
-
-!  Set the remaining values of M in K
-
-                 IF ( precon == 2 ) THEN
-
-!  * M is just the barrier terms
-
-                   IF ( control%array_syntax_worse_than_do_loop ) THEN
-                     DO i = 1, dims%x_free
-                       K%val( nnzks + i ) = k_diag + H_perturb ; END DO
-                     DO i = dims%x_free + 1, dims%x_e
-                       K%val( nnzks + i ) =  BARRIER_X( i ) + H_perturb ; END DO
-                     DO i = 0, dims%nc - 1
-                       K%val( nnzks + dims%c_s + i ) =                         &
-                         BARRIER_C( dims%c_l_start + i ) + H_perturb ; END DO
-                   ELSE
-                     K%val( nnzks + 1 : nnzks + dims%x_free ) =                &
-                       k_diag + H_perturb
-                     K%val( nnzks + dims%x_free + 1 : nnzks + dims%x_e )       &
-                       = BARRIER_X + H_perturb
-                     K%val( nnzks + dims%c_s : nnzks + dims%c_e )              &
-                       = BARRIER_C + H_perturb
-                   END IF
-
-!  If required, ensure the diagonals are significantly positive
-
-                   IF ( control%array_syntax_worse_than_do_loop ) THEN
-                     IF ( alter_H ) THEN
-                       DO i = nnzks + dims%c_s, nnzks + dims%c_e
-                         K%val( i ) = MAX( K%val( i ), perturb_min ) ; END DO
-                     END IF
-                   ELSE
-                     IF ( alter_H ) K%val( nnzks + 1 : nnzks + dims%c_e ) =    &
-                       MAX( K%val( nnzks + 1 : nnzks + dims%c_e ), perturb_min )
-                   END IF
-                 END IF
-              END IF
-
-! :::::::::::::::::::::::::::::
-!  Factorize the preconditioner
-! :::::::::::::::::::::::::::::
-
-              IF ( printd ) WRITE( out, "( (2I6, ES12.4 ) )" ) ( K%row( l ),   &
-                              K%col( l ), K%val( l ), l = 1, K%ne )
-
-              IF ( K%n > 0 .AND. get_factors ) THEN
-
-!               IF ( inform%iter == 25 ) THEN
-!                 WRITE( 6, " ( ' ----------- dumping -------- ' )" )
-!                 WRITE( 22, "( 2I6 )" ) K%n, K%ne
-!                 WRITE( 22, "( ( 10I6 ) )" ) K%row( : K%ne )
-!                 WRITE( 22, "( ( 10I6 ) )" ) K%col( : K%ne ) 
-!                 WRITE( 22, "( ( 3ES24.16 ) )" ) K%val( : K%ne ) 
-!                 WRITE( 22, "( ( 3ES24.16 ) )" ) SOL( : K%n )
-!               END IF
-
-                CALL SILS_factorize( K, FACTORS, CNTL, FINFO )
+        ELSE
+          IF (inform%factorization_status > 0 ) THEN
+            IF ( printt ) THEN
+              WRITE( out, "( A, '   **  Warning ', I0, ' from ', A )" )        &
+              prefix, inform%SBLS_inform%status, 'SBLS_form_andfactorize'
+            END IF
+          END IF
 
 !  Record the storage required
 
-                inform%nfacts = inform%nfacts + 1 
-                inform%factorization_integer = FINFO%nirbdu 
-                inform%factorization_real = FINFO%nrlbdu
+          inform%factorization_integer =                                       &
+            inform%SBLS_inform%SLS_inform%integer_size_necessary
+          inform%factorization_real =                                          &
+            inform%SBLS_inform%SLS_inform%real_size_necessary
 
-!  Test that the factorization succeeded
+        END IF
 
-                zeig = 0
-                inform%factorization_status = FINFO%flag
-                IF ( FINFO%flag < 0 ) THEN
-                  IF ( printe ) WRITE( control%error, 2040 ) FINFO%flag,       &
-                                                             'SILS_factorize'
-                  IF ( FINFO%flag == - 5 .OR. FINFO%flag == - 6 ) THEN
-!                   IF ( CNTL%u < half ) THEN
-                    IF ( CNTL%u < half .AND. factor == 2 ) THEN
-                      IF ( CNTL%u < point01 ) THEN
-                        CNTL%u = point01
-                      ELSE
-                        IF ( CNTL%u < point1 ) THEN
-                          CNTL%u = point1
-                        ELSE
-                          CNTL%u = half
-                        END IF
-                      END IF
-                      refact = .TRUE. ; new_fact = .TRUE.
-                      IF ( printi ) WRITE( out, "( ' increasing pivot',        &
-                     &  ' tolerance to ', ES12.4, / )" ) CNTL%u
-                      CYCLE inner
-                    ELSE IF ( factor /= 2 ) THEN
-                      CNTL%u = pivot_tol
-                      factor = 2
-                      refact = .TRUE. ; new_fact = .TRUE. ; new_prec = .TRUE.
-                      IF ( printi ) WRITE( out,                                &
-                        "( ' changing to augmented system ', / )" )
-                      CYCLE inner
-                    END IF
-                  ELSE IF ( FINFO%flag == - 3 ) THEN
-                    IF ( auto .AND. precon /= 2 ) THEN
-                      refact = .TRUE. ; new_prec = .TRUE.
-                      precon = 2 ; fact_hist = 5 ; factor = control%factor
-!                     WRITE( out, "( ' change precon to ', I2 )" ) precon
-                      CYCLE inner
-                    END IF
-                  END IF
-                  inform%status = - 7
-                  GO TO 700
+!  If the matrix is singular, there is a chance that the
+!  problem is unbounded from below
 
-!  Record warning conditions
+        IF ( inform%feasible .AND. inform%SBLS_inform%rank_def ) THEN
+          RHS( : n ) = - GRAD_L( : n )
+          RHS( dims%c_s : dims%c_e ) = zero
+          RHS( dims%y_s : dims%y_e ) = zero
 
-                ELSE IF ( FINFO%flag > 0 ) THEN
-                  IF ( printt ) WRITE( control%out, 2050 )                     &
-                                       FINFO%flag, 'SILS_factorize'
-                  IF ( FINFO%flag == 4 ) THEN 
-                     zeig = K%n - FINFO%rank
-                     IF ( printt ) WRITE( control%out, 2070 ) zeig
-                  END IF 
-                END IF 
+          SBLS_control%get_norm_residual = .TRUE.
+          CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
+          IF ( inform%SBLS_inform%preconditioner == 2 ) THEN
+            CALL SBLS_solve( A_sbls%n, A_sbls%m, A_sbls, C_sbls,               &
+                             SBLS_data, SBLS_control, inform%SBLS_inform, RHS )
+          ELSE
+            CALL SBLS_solve_iterative( A_sbls%n, A_sbls%m, H_sbls, A_sbls,     &
+                                       RHS, SBLS_data, control%SBLS_control,   &
+                                       inform%SBLS_inform )
+          END IF
+          CALL CPU_TIME( time_now ) ; CALL CLOCK_TIME( clock_now )
+          time_solve = time_solve + time_now - time_record
+          clock_solve = clock_solve + clock_now - clock_record
+          inform%status = inform%SBLS_inform%status
+          IF ( inform%status /= GALAHAD_ok ) GO TO 700
 
-!  Test that the problem is convex in the null-space of the constraints
+!  a potentially unbounded direction has been found. Check if bounds stop it
 
-                IF ( factor == 2 ) THEN
-                  kplus = n + m - zeig - FINFO%neig
-                ELSE
-                  kplus = dplus + FINFO%neig
+          IF ( inform%SBLS_inform%norm_residual > control%stop_abs_d ) THEN
+            unbounded = .TRUE.
+            DO i = dims%x_free + 1, n
+              IF ( RHS( i ) > ten * epsmch ) THEN
+                IF ( X_u( i ) < control%infinity ) THEN
+                  unbounded = .FALSE. ; EXIT
                 END IF
-                
-                IF ( kplus < n ) THEN 
-                  IF ( mo == ' ' ) inform%nmods = inform%nmods + 1
-                  mo = 'm'
-                  IF ( precon == 4 ) THEN
-                    alter_H = .TRUE.
-                    IF ( printt ) WRITE( out, 2080 ) n + m - kplus - zeig,     &
-                                                     zeig
-                  ELSE
-                    H_perturb = H_perturb + hmax
-                    IF ( printt ) WRITE( out, 2080 ) n + m - kplus - zeig,     &
-                                                     zeig, H_perturb
-                  END IF
-                  GO TO 50
-                END IF 
-              ELSE
-                IF ( dplus == n ) THEN
-                  inform%factorization_integer = 0 
-                  inform%factorization_real = 0
-                ELSE
-                  IF ( mo == ' ' ) inform%nmods = inform%nmods + 1
-                  mo = 'm'
-                  IF ( precon == 4 ) THEN
-                    alter_H = .TRUE.
-                    IF ( printt ) WRITE( out, 2080 ) n - dplus - dzero, dzero
-                  ELSE
-                    H_perturb = H_perturb + hmax
-                    IF ( printt ) WRITE( out, 2080 ) n - dplus - dzero,        &
-                                                     dzero, H_perturb
-                  END IF
-                  GO TO 50
+              ELSE IF ( RHS( i ) < - ten * epsmch ) THEN
+                IF ( X_l( i ) > - control%infinity ) THEN
+                  unbounded = .FALSE. ; EXIT
                 END IF
               END IF
+            END DO
+            IF ( unbounded ) THEN
+              inform%status = GALAHAD_error_unbounded ; GO TO 700
+            END IF
+          END IF
+        END IF
 
-              old_mu = mu
+        IF ( inform%SBLS_inform%perturbed ) THEN
+          SBLS_control%new_h = 2
+        ELSE
+          SBLS_control%new_h = 1
+        END IF
+        SBLS_control%new_a = 0
+        SBLS_control%new_c = 0
 
-              CALL CPU_TIME( dum ) ; dum = dum - time
-              inform%time%factorize = inform%time%factorize + dum
-   
-              IF ( printt ) WRITE( out, 2060 ) inform%factorization_integer,   &
-                                               inform%factorization_real
-              IF ( K%n > 0 .AND. printt ) &
-                 WRITE( out, "( ' factorize time = ', F10.2, /, &
-                         & ' real/integer space used for factors ', 2I10 )" )  &
-                             dum, FINFO%nrlbdu, FINFO%nirbdu
+        IF ( printt ) THEN
+          WRITE( out, "( A, ' factorization time = ', F0.2 )" ) prefix,        &
+            inform%SBLS_inform%SLS_inform%time%factorize - time_factorize +    &
+            inform%SBLS_inform%SLS_inform%time%clock_factorize - clock_factorize
+          WRITE( out, "( A, 1X, I0, ' integer and ', I0, ' real words needed', &
+         &    ' for factorization' )" ) prefix, inform%factorization_integer,  &
+                                        inform%factorization_real
+        END IF
+
+!       IF ( printw ) WRITE( out, "( A,                                        &
+!      &  ' ............... end of factorization ............... ' )" ) prefix
+
+!  =======
+!  STEP 3:
+!  =======
+
+        IF ( arc == 'ZS' .OR. arc == 'ZP' ) THEN
+          two_mu = two * mu
+          sigma_mu = sigma * mu
+          sigma_mu2 = sigma_mu * mu
+          IF ( puiseux ) THEN
+            two_sigma_mu = two * sigma_mu
+            two_sigma_mu2 = two * sigma_mu2
+            two_plus_sigma_mu = two + sigma_mu
+            one_plus_2_sigma_mu = one + two_sigma_mu
+          ELSE
+            one_plus_sigma_mu = one + sigma_mu
+          END IF
+        END IF
+
+!  =======================================================================
+!  -*-*-*-*-*-*-*-*-   Obtain the Primal-Dual Search Arc -*-*-*-*-*-*-*-*-
+!  =======================================================================
+
+!  we consider the search arc
+
+!     v_l(alpha) = v + sum_k=1^l [ (-1)^k v^k / k! ] alpha^k
+
+!  as alpha inceases from 0 to 1 and where v_l(alpha) is the l-th-order Taylor
+!  series approximation of the arc v(1-alpha)) about alpha = 0 (equiv theta
+!  = 1 - alpha about theta = 1) and for which v(theta) satisfies the conditions
+
+!  - A^T y(theta) - z_l(theta) - z_u(theta) + g = dual(theta)
+!                 A x(theta) - b                = prim(theta)
+!                X(theta) z(theta)              = comp(theta)
+
+!  for suitable
+!      prim(theta) = theta ( A x - b )
+!      dual(theta) = theta ( - A^T y - z + g )
+!  (Taylor or Taylor-Puisuex) or
+!      prim(theta) = theta^2 ( A x - b )
+!      dual(theta) = theta^2 ( - A^T y - z + g )
+!  (Puiseux) and various possible comp(theta)
+
+!  To find the coefficients v^k = ( x^k, c^k, y^k, z_l^k, z_u^k, y_l^k, y_u^k ),
+!  solve the equations
+
+!   (          A^T   -I    -I               ) (  x^k  )   (  h^k  )
+!   (          -I                 -I   -I   ) (  c^k  )   (  d^k  )
+!   (  A   -I                               ) ( -y^k  )   (  a^k  )
+!   (  Z_l         X-X_l                    ) ( z_l^k ) = ( r_l^k )
+!   ( -Z_u               X_u-X              ) ( z_u^k )   ( r_u^k )
+!   (      Y_l                  C-C_l       ) ( y_l^k )   ( s_l^k )
+!   (     -Y_u                        C_u-C ) ( y_u^k )   ( s_u^k )
+
+!  for k > 0 for which
+
+!  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+!  arc 1: for the Zhang arc,
+!    comp(theta) =   theta Xz + (1-theta) sigma mu e      (lower)
+!            or    - theta Xz - (1-theta) sigma mu e      (upper)
+!  (Taylor) or
+!    comp(theta) =   theta^2 Xz + (1-theta^2) sigma mu e  (lower)
+!            or    - theta^2 Xz - (1-theta^2) sigma mu e  (upper)
+!  (Taylor-Puisuex or Puiseux)
+!  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+!     h^1 = g + Hx - A^Ty - z_l - z_u
+!     d^i = y - y_l - y_u
+!     a^1 =  A x - b
+!     r_l^1 = - mu e + (X-X_l)z_l                    (store in z_l^1)
+!     r_u^1 =   mu e + (X_u-X)z_u                    (store in z_u^1)
+!     s_l^1 = - mu e + (C-C_l)y_l                    (store in y_l^1)
+!   & s_u^1 =   mu e + (C_u-C)y_u                    (store in y_u^1)
+
+!  (k=1) and
+
+!     h^k = 0
+!     d^k = 0
+!     a^k = 0
+!     r_l^k = - sum_i=1^k-1 b_i^k X^i z_l^{k-i}      (store in z_l^k)
+!     r_u^k =   sum_i=1^k-1 b_i^k X^i z_u^{k-i}      (store in z_u^k)
+!     s_l^k = - sum_i=1^k-1 b_i^k C^i y_l^{k-i}      (store in y_l^k)
+!   & s_u^k =   sum_i=1^k-1 b_i^k C^i y_u^{k-i}      (store in y_u^k)
+
+!  (k>1) for the Taylor arc,
+
+!     h^1 = g + Hx - A^Ty - z_l - z_u
+!     d^i = y - y_l - y_u
+!     a^1 = A x - b
+!     r_l^1 = 2 ( - mu e + (X-X_l)z_l )              (store in z_l^1)
+!     r_u^1 = 2 (   mu e + (X_u-X)z_u )              (store in z_u^1)
+!     s_l^1 = 2 ( - mu e + (C-C_l)y_l )              (store in y_l^1)
+!   & s_u^1 = 2 (   mu e + (C_u-C)y_u )              (store in y_u^1)
+
+!  (k=1),
+
+!     h^2 = 0
+!     d^2 = 0
+!     a^2 = 0
+!     r_l^2 = 2 ( - mu e + (X-X_l)z_l - X^1 z_l^1 )  (store in z_l^2)
+!     r_u^2 = 2 (   mu e + (X_u-X)z_u + X^1 z_u^1 )  (store in z_u^2)
+!     s_l^2 = 2 ( - mu e + (C-C_l)y_l - C^1 y_l^1 )  (store in y_l^2)
+!   & s_u^2 = 2 (   mu e + (C_u-C)y_u + C^1 y_u^1 )  (store in y_u^2)
+
+!  (k=2) and
+
+!     h^k = 0
+!     d^k = 0
+!     a^k = 0
+!     r_l^k = - sum_i=1^k-1 b_i^k X^i z_l^{k-i}      (store in z_l^k)
+!     r_u^k =   sum_i=1^k-1 b_i^k X^i z_u^{k-i}      (store in z_u^k)
+!     s_l^k = - sum_i=1^k-1 b_i^k C^i y_l^{k-i}      (store in y_l^k)
+!   & s_u^k =   sum_i=1^k-1 b_i^k C^i y_u^{k-i}      (store in y_u^k)
+
+!  (k>2) for the Zhang-Puiseux Taylor arc, or
+
+!     h^1 = 2 ( g + Hx - A^Ty - z_l - z_u )
+!     d^i = 2 ( y - y_l - y_u )
+!     a^1 = 2 ( A x - b )
+!     r_l^1 = 2 ( - mu e + (X-X_l)z_l )              (store in z_l^1)
+!     r_u^1 = 2 (   mu e + (X_u-X)z_u )              (store in z_u^1)
+!     s_l^1 = 2 ( - mu e + (C-C_l)y_l )              (store in y_l^1)
+!   & s_u^1 = 2 (   mu e + (C_u-C)y_u )              (store in y_u^1)
+
+!  (k=1),
+
+!     h^2 = 2 ( g + Hx - A^Ty - z_l - z_u )
+!     d^2 = 2 ( y - y_l - y_u )
+!     a^2 = 2 ( A x - b )
+!     r_l^2 = 2 ( - mu e + (X-X_l)z_l - X^1 z_l^1 )  (store in z_l^2)
+!     r_u^2 = 2 (   mu e + (X_u-X)z_u + X^1 z_u^1 )  (store in z_u^2)
+!     s_l^2 = 2 ( - mu e + (C-C_l)y_l - C^1 y_l^1 )  (store in y_l^2)
+!   & s_u^2 = 2 (   mu e + (C_u-C)y_u + C^1 y_u^1 )  (store in y_u^2)
+
+!  (k=2) and
+
+!     h^k = 0
+!     d^k = 0
+!     a^k = 0
+!     r_l^k = - sum_i=1^k-1 b_i^k X^i z_l^{k-i}      (store in z_l^k)
+!     r_u^k =   sum_i=1^k-1 b_i^k X^i z_u^{k-i}      (store in z_u^k)
+!     s_l^k = - sum_i=1^k-1 b_i^k C^i y_l^{k-i}      (store in y_l^k)
+!   & s_u^k =   sum_i=1^k-1 b_i^k C^i y_u^{k-i}      (store in y_u^k)
+
+!  (k>2) for the Puiseux arc, where b_i^k is the binomial coefficient
+!     "k choose i"
+
+!  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+!  arc 2: for the Zhao-Sun arc, comp(theta) =
+!       theta Xz + sigma mu theta ( 1 - theta ) ( mu e - X z ) (lower) or
+!     - theta Xz - sigma mu theta ( 1 - theta ) ( mu e - X z ) (upper)
+!   or, in the Puiseux case,
+!       theta^2 Xz + sigma mu theta^2 ( 1 - theta ) ( mu e - X z ) (lower) or
+!     - theta^2 Xz - sigma mu theta^2 ( 1 - theta ) ( mu e - X z ) (upper)
+!  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+!     h^1 = g + Hx - A^Ty - z_l - z_u
+!     d^i = y - y_l - y_u
+!     a^1 =  A x - b
+!     r_l^1 = - sigma mu [ mu e - (X-X_l)z_l ] + (X-X_l)z_l  (store in z_l^1)
+!     r_u^1 =   sigma mu [ mu e + (X_u-X)z_u ] + (X_u-X)z_u  (store in z_u^1)
+!     s_l^1 = - sigma mu [ mu e - (C-C_l)y_l ] + (C-C_l)y_l  (store in y_l^1)
+!   & s_u^1 =   sigma mu [ mu e + (C_u-C)y_u ] + (C_u-C)y_u  (store in y_u^1)
+
+!  (k=1),
+
+!     h^2 = 0
+!     d^2 = 0
+!     a^2 = 0
+!     r_l^2 = 2 ( - sigma mu [mu e - (X-X_l)z_l] - X^1 z_l^1 ) (store in z_l^2)
+!     r_u^2 = 2 (   sigma mu [mu e + (X_u-X)z_u] + X^1 z_u^1 ) (store in z_u^2)
+!     s_l^2 = 2 ( - sigma mu [mu e - (C-C_l)y_l] - C^1 y_l^1 ) (store in y_l^2)
+!   & s_u^2 = 2 (   sigma mu [mu e + (C_u-C)y_u] + C^1 y_u^1 ) (store in y_u^2)
+
+!  (k=2) and
+
+!     h^k = 0
+!     d^k = 0
+!     a^k = 0
+!     r_l^k = - sum_i=1^k-1 b_i^k X^i z_l^{k-i}      (store in z_l^k)
+!     r_u^k =   sum_i=1^k-1 b_i^k X^i z_u^{k-i}      (store in z_u^k)
+!     s_l^k = - sum_i=1^k-1 b_i^k C^i y_l^{k-i}      (store in y_l^k)
+!   & s_u^k =   sum_i=1^k-1 b_i^k C^i y_u^{k-i}      (store in y_u^k)
+
+!  (k>2) for the Taylor arc, or
+
+!     h^1 = 2 ( g + Hx - A^Ty - z_l - z_u )
+!     d^i = 2 ( y - y_l - y_u )
+!     a^1 = 2 ( A x - b )
+!     r_l^1 = - sigma mu [ mu e - (X-X_l)z_l ] + 2(X-X_l)z_l  (store in z_l^1)
+!     r_u^1 =   sigma mu [ mu e + (X_u-X)z_u ] + 2(X_u-X)z_u  (store in z_u^1)
+!     s_l^1 = - sigma mu [ mu e - (C-C_l)y_l ] + 2(C-C_l)y_l  (store in y_l^1)
+!   & s_u^1 =   sigma mu [ mu e + (C_u-C)y_u ] + 2(C_u-C)y_u  (store in y_u^1)
+
+!  (k=1),
+
+!     h^2 = 2 ( g + Hx - A^Ty - z_l - z_u )
+!     d^2 = 2 ( y - y_l - y_u )
+!     a^2 = 2 ( A x - b )
+!     r_l^2 = - 4 sigma mu [ mu e - (X-X_l)z_l ] + 2(X-X_l)z_l - 2 X^1 z_l^1
+!                                                              (store in z_l^2)
+!     r_u^2 =   4 sigma mu [ mu e + (X_u-X)z_u ] + 2(X_u-X)z_u + 2 X^1 z_u^1
+!                                                              (store in z_u^2)
+!     s_l^2 = - 4 sigma mu [ mu e - (C-C_l)y_l ] + 2(C-C_l)y_l - 2 C^1 y_l^1
+!                                                              (store in y_l^2)
+!   & s_u^2 =   4 sigma mu [ mu e + (C_u-C)y_u ] + 2(C_u-C)y_u + 2 C^1 y_u^1
+!                                                              (store in y_u^2)
+
+!  (k=2) and
+
+!     h^3 = 0
+!     d^3 = 0
+!     a^3 = 0
+!     r_l^3 = - 6 sigma mu [ mu e - (X-X_l)z_l ] - 3 [ X^1 z_l^2 + X^2 z_l^1 ]
+!                                                              (store in z_l^3)
+!     r_u^3 =   6 sigma mu [ mu e + (X_u-X)z_u ] + 3 [ X^1 z_u^2 + X^2 z_u^1 ]
+!                                                              (store in z_u^3)
+!     s_l^3 = - 6 sigma mu [ mu e - (C-C_l)y_l ] - 3 [ C^1 c_l^2 + C^2 c_l^1 ]
+!                                                              (store in y_l^3)
+!   & s_u^3 =   6 sigma mu [ mu e + (C_u-C)y_u ] + 3 [ C^1 c_u^2 + C^2 c_u^1 ]
+!                                                              (store in y_u^3)
+
+!  (k=3) and
+
+!     h^k = 0
+!     d^k = 0
+!     a^k = 0
+!     r_l^k = - sum_i=1^k-1 b_i^k X^i z_l^{k-i}      (store in z_l^k)
+!     r_u^k =   sum_i=1^k-1 b_i^k X^i z_u^{k-i}      (store in z_u^k)
+!     s_l^k = - sum_i=1^k-1 b_i^k C^i y_l^{k-i}      (store in y_l^k)
+!   & s_u^k =   sum_i=1^k-1 b_i^k C^i y_u^{k-i}      (store in y_u^k)
+
+!  (k>3) for the Puiseux arc
+
+!  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+!  On writing
+!        z_l^k = (X-X_l)^-1 [ r_l^k - Z_l x^k ]
+!        z_u^k = (X_u-X)^-1 [ r_u^k + Z_u x^k ]
+!        y_l^k = (C-C_l)^-1 [ s_l^k - Y_l c^k ]
+!      & y_u^k = (C_u-C)^-1 [ s_u^k + Y_u c^k ], we find
+
+!  (   (X-X_l)^-1 Z_l               A^T ) ( x^k )   ( h^k + (X-X_l)^-1 r_l^k )
+!  ( - (X_u-X)^-1 Z_u                   ) (     )   (     + (X_u-X)^-1 r_u^k )
+!  (                  (C-C_l)^-1 Y_l -I ) ( c^k ) = ( d^k + (C-C_l)^-1 s_l^k )
+!  (                 -(C_u-C)^-1 Y_u    ) (     )   (     + (C_u-C)^-1 s_u^k )
+!  (     A               -I             ) (-y^k )   (           a^k          )
+
+!  record the 0-th order coefficients
+
+        X_coef( : , 0 ) = X
+        C_coef( : , 0 ) = C
+        Y_coef( : , 0 ) = Y
+        Z_l_coef( : , 0 ) = Z_l
+        Z_u_coef( : , 0 ) = Z_u
+        Y_l_coef( : , 0 ) = Y_l
+        Y_u_coef( : , 0 ) = Y_u
+
+!  compute the k-th order coefficients
+
+        DO k = 1, order
+
+!  :::::::::::::::::::::::::::::::::::::
+!  3a. Set up the right-hand-side vector
+!  :::::::::::::::::::::::::::::::::::::
+
+!  record rhs = ( h^k + (X-X_l)^-1 r_l^k + (X_u-X)^-1 r_u^k )
+!               ( d^k + (C-C_l)^-1 s_l^k + (C_u-C)^-1 s_u^k )
+!               (                   a^k                     )
+
+          IF ( printd ) WRITE( out, 2100 )                                     &
+            prefix, ' GRAD_L', GRAD_L( dims%x_s : dims%x_e )
+
+!  for the 1st order Taylor and 1st and 2nd order Puiseux coefficients
+!  and the Zhang arc or the 1st and 2nd order Zhang-Puiseux arc
+
+          IF ( ( arc == 'Zh' .AND. ( k == 1 .OR. ( k == 2 .AND. puiseux ) ) )  &
+                 .OR. ( arc == 'ZP' .AND. k <= 2 ) ) THEN
+
+!  compute and store ( r_l^1, r_u^1, s_l^1, s_u^1 )
+
+!  for the 1st order coefficients
+
+            IF ( k == 1 ) THEN
+              DO i = dims%x_free + 1, dims%x_l_end
+                Z_l_coef( i, 1 ) = - mu + ( X( i ) - X_l( i ) ) * Z_l( i )
+              END DO
+              DO i = dims%x_u_start, n
+                Z_u_coef( i, 1 ) =   mu + ( X_u( i ) - X( i ) ) * Z_u( i )
+              END DO
+              DO i = dims%c_l_start, dims%c_l_end
+                Y_l_coef( i, 1 ) = - mu + ( C( i ) - C_l( i ) ) * Y_l( i )
+              END DO
+              DO i = dims%c_u_start, dims%c_u_end
+                Y_u_coef( i, 1 ) =   mu + ( C_u( i ) - C( i ) ) * Y_u( i )
+              END DO
+
+!  for the 2nd order Puiseux coefficients
+
+            ELSE
+              DO i = dims%x_free + 1, dims%x_l_end
+                Z_l_coef( i, 2 ) = - mu + ( X( i ) - X_l( i ) ) * Z_l( i ) -   &
+                  X_coef( i, 1 ) * Z_l_coef( i, 1 )
+              END DO
+              DO i = dims%x_u_start, n
+                Z_u_coef( i, 2 ) =   mu + ( X_u( i ) - X( i ) ) * Z_u( i ) +   &
+                  X_coef( i, 1 ) * Z_u_coef( i, 1 )
+              END DO
+              DO i = dims%c_l_start, dims%c_l_end
+                Y_l_coef( i, 2 ) = - mu + ( C( i ) - C_l( i ) ) * Y_l( i ) -   &
+                  C_coef( i, 1 ) * Y_l_coef( i, 1 )
+              END DO
+              DO i = dims%c_u_start, dims%c_u_end
+                Y_u_coef( i, 2 ) =   mu + ( C_u( i ) - C( i ) ) * Y_u( i ) +   &
+                  C_coef( i, 1 ) * Y_u_coef( i, 1 )
+              END DO
             END IF
 
-!  Ensure that the projection is only computed once
+!  double the Puiseux coefficients
 
-            IF ( precon == 1 ) one_fact = .TRUE.
-            full_iteration = .TRUE.
-          ELSE 
-            re = ' ' 
-            full_iteration = .FALSE.
-          END IF 
+            IF ( puiseux ) THEN
+              Z_l_coef( dims%x_free + 1 : dims%x_l_end, k ) =                  &
+                two * Z_l_coef( dims%x_free + 1 : dims%x_l_end, k )
+              Z_u_coef( dims%x_u_start : n, k ) =                              &
+                two * Z_u_coef( dims%x_u_start : n, k )
+              Y_l_coef( dims%c_l_start : dims%c_l_end, k ) =                   &
+                two * Y_l_coef( dims%c_l_start : dims%c_l_end, k )
+              Y_u_coef( dims%c_u_start : dims%c_u_end, k ) =                   &
+                two * Y_u_coef( dims%c_u_start : dims%c_u_end, k )
+            END IF
 
-!  Check for convergence of the inner iteration
-!  --------------------------------------------
+!  for the Zhang arc
 
-!  Check if x, z_l, z_u satisfy the convergence tests
+            IF ( arc == 'Zh' ) THEN
 
-!  a) A x = b
-!  b) X_l < x < X_u, z_l > 0, z_u < 0
-!  c) || (X-L) z_l - \mu e, (X-U) z_u - \mu e \|_2 <= theta_c
-!  d) || GRAD - z_l - z_u ||_M <= theta_d
-!  e) leftmost eigenvalue of
-!         N(trans)( H + (X-L)(inv)Z_l + (X-U)(inv)Z_u)N >= - theta_e
+!  for the 1-st order rhs
 
-!  where GRAD = grad phi + mu ( (X-L)(inv) - (U-X)(inv) ) e = grad f
-!  and N is an orthononormal basis for the null-space of A
+              IF ( k == 1 ) THEN
 
-!  Compute GRAD - z_l - z_u
+!  rhs for problem variables: g + Hx - A^Ty - mu (X-X_l)^-1 e + mu (X_u-X)^-1 e
 
-!  Problem variables
+                RHS( : dims%x_free ) = GRAD_L( : dims%x_free )
+                DO i = dims%x_free + 1, dims%x_l_start - 1
+                  RHS( i ) = GRAD_L( i ) - mu / X( i )
+                END DO
+                DO i = dims%x_l_start, dims%x_u_start - 1
+                  RHS( i ) = GRAD_L( i ) - mu / DIST_X_l( i )
+                END DO
+                DO i = dims%x_u_start, dims%x_l_end
+                  RHS( i ) = GRAD_L( i ) - mu / DIST_X_l( i )                  &
+                                         + mu / DIST_X_u( i )
+                END DO
+                DO i = dims%x_l_end + 1, dims%x_u_end
+                  RHS( i ) = GRAD_L( i ) + mu / DIST_X_u( i )
+                END DO
+                DO i = dims%x_u_end + 1, n
+                  RHS( i ) = GRAD_L( i ) - mu / X( i )
+                END DO
 
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = 1, dims%x_free ; VECTOR( i ) = GRAD( i ) ; END DO
+!  rhs for slack variables: y - mu (C-C_l)^-1 e + mu (C_u-C)^-1 e
+
+                DO i = dims%c_l_start, dims%c_u_start - 1
+                  RHS( dims%c_b + i ) = Y( i ) - mu / DIST_C_l( i )
+                END DO
+                DO i = dims%c_u_start, dims%c_l_end
+                  RHS( dims%c_b + i ) = Y( i ) - mu / DIST_C_l( i )            &
+                                               + mu / DIST_C_u( i )
+                END DO
+                DO i = dims%c_l_end + 1, dims%c_u_end
+                  RHS( dims%c_b + i ) = Y( i ) + mu / DIST_C_u( i )
+                END DO
+
+!  for the 2nd order rhs
+
+              ELSE
+
+!  rhs for problem variables: g + Hx - A^Ty - (X-X_l)^-1 ( mu e + X^1 z_l^1 )
+!    + (X_u-X)^-1 ( mu e + X^1 z_u^1 )
+
+                RHS( : dims%x_free ) = GRAD_L( : dims%x_free )
+                DO i = dims%x_free + 1, dims%x_l_start - 1
+                  RHS( i ) = GRAD_L( i )                                       &
+                    - ( mu + X_coef( i, 1 ) * Z_l_coef( i, 1 ) ) / X( i )
+                END DO
+                DO i = dims%x_l_start, dims%x_u_start - 1
+                  RHS( i ) = GRAD_L( i )                                       &
+                    - ( mu + X_coef( i, 1 ) * Z_l_coef( i, 1 ) ) / DIST_X_l( i )
+                END DO
+                DO i = dims%x_u_start, dims%x_l_end
+                  RHS( i ) = GRAD_L( i )                                       &
+                   - ( mu + X_coef( i, 1 ) * Z_l_coef( i, 1 ) ) / DIST_X_l( i )&
+                   + ( mu + X_coef( i, 1 ) * Z_u_coef( i, 1 ) ) / DIST_X_u( i )
+                END DO
+                DO i = dims%x_l_end + 1, dims%x_u_end
+                  RHS( i ) = GRAD_L( i )                                       &
+                    + ( mu + X_coef( i, 1 ) * Z_u_coef( i, 1 ) ) / DIST_X_u( i )
+                END DO
+                DO i = dims%x_u_end + 1, n
+                  RHS( i ) = GRAD_L( i )                                       &
+                    - ( mu + X_coef( i, 1 ) * Z_u_coef( i, 1 ) ) / X( i )
+                END DO
+
+!  rhs for slack variables: y - (C-C_l)^-1 ( mu e + C^1 y_l^1 )
+!    + (C_u-C)^-1 ( mu e + C^1 y_u^1 )
+
+                DO i = dims%c_l_start, dims%c_u_start - 1
+                  RHS( dims%c_b + i ) = Y( i )                                 &
+                    - ( mu + C_coef( i, 1 ) * Y_l_coef( i, 1 ) ) / DIST_C_l( i )
+                END DO
+                DO i = dims%c_u_start, dims%c_l_end
+                  RHS( dims%c_b + i ) = Y( i )                                 &
+                   - ( mu + C_coef( i, 1 ) * Y_l_coef( i, 1 ) ) / DIST_C_l( i )&
+                  + ( mu + C_coef( i, 1 ) * Y_u_coef( i, 1 ) ) / DIST_C_u( i )
+                END DO
+                DO i = dims%c_l_end + 1, dims%c_u_end
+                  RHS( dims%c_b + i ) = Y( i )                                 &
+                    + ( mu + C_coef( i, 1 ) * Y_u_coef( i, 1 ) ) / DIST_C_u( i )
+                END DO
+              END IF
+
+!  rhs for constraint infeasibilities: A x - b
+
+              RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
+
+!  double the Puiseux rhs
+
+              IF ( puiseux ) RHS( : dims%y_e ) = two * RHS( : dims%y_e )
+
+!  for the Zhang-Puiseux arc
+
+            ELSE
+
+!  for the 1-st order rhs
+
+              IF ( k == 1 ) THEN
+
+!  rhs for problem variables: g + Hx - A^Ty + z_l + z_u -
+!                             2 mu (X-X_l)^-1 e + 2 mu (X_u-X)^-1 e )
+
+                RHS( : dims%x_free ) = GRAD_L( : dims%x_free )
+                DO i = dims%x_free + 1, dims%x_l_start - 1
+                  RHS( i ) = GRAD_L( i ) + Z_l( i ) - two_mu / X( i )
+                END DO
+                DO i = dims%x_l_start, dims%x_u_start - 1
+                  RHS( i ) = GRAD_L( i ) + Z_l( i ) - two_mu / DIST_X_l( i )
+                END DO
+                DO i = dims%x_u_start, dims%x_l_end
+                  RHS( i ) = GRAD_L( i ) + Z_l( i ) + Z_u( i )                 &
+                                         - two_mu / DIST_X_l( i )              &
+                                         + two_mu / DIST_X_u( i )
+                END DO
+                DO i = dims%x_l_end + 1, dims%x_u_end
+                  RHS( i ) = GRAD_L( i ) + Z_u( i ) + two_mu / DIST_X_u( i )
+                END DO
+                DO i = dims%x_u_end + 1, n
+                  RHS( i ) = GRAD_L( i ) + Z_u( i ) - two_mu / X( i )
+                END DO
+
+!  rhs for slack variables:
+!       y + y_l + y_u - 2 mu (C-C_l)^-1 e + 2 mu (C_u-C)^-1 e
+
+                DO i = dims%c_l_start, dims%c_u_start - 1
+                  RHS( dims%c_b + i ) = Y( i ) + Y_l( i )                      &
+                                               - two_mu / DIST_C_l( i )
+                END DO
+                DO i = dims%c_u_start, dims%c_l_end
+                  RHS( dims%c_b + i ) = Y( i ) + Y_l( i ) + Y_u( i )           &
+                                               - two_mu / DIST_C_l( i )        &
+                                               + two_mu / DIST_C_u( i )
+                END DO
+                DO i = dims%c_l_end + 1, dims%c_u_end
+                  RHS( dims%c_b + i ) = Y( i ) + Y_u( i )                      &
+                                               + two_mu / DIST_C_u( i )
+                END DO
+
+!  rhs for constraint infeasibilities: A x - b
+
+                RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
+
+!  for the 2nd order rhs
+
+              ELSE
+
+!  rhs for problem variables: 2 z_l + 2 z_u
+!                  - 2 (X-X_l)^-1 ( mu e + X^1 z_l^1 )
+!                  + 2 (X_u-X)^-1 ( mu e + X^1 z_u^1 )
+
+                RHS( : dims%x_free ) = zero
+                DO i = dims%x_free + 1, dims%x_l_start - 1
+                  RHS( i ) = two * ( Z_l( i ) -                                &
+                    ( mu + X_coef( i, 1 ) * Z_l_coef( i, 1 ) ) / X( i ) )
+                END DO
+                DO i = dims%x_l_start, dims%x_u_start - 1
+                  RHS( i ) = two * ( Z_l( i ) -                                &
+                    ( mu + X_coef( i, 1 ) * Z_l_coef( i, 1 ) ) / DIST_X_l( i ) )
+                END DO
+                DO i = dims%x_u_start, dims%x_l_end
+                  RHS( i ) = two * ( Z_l( i ) + Z_u( i ) -                     &
+                   ( mu + X_coef( i, 1 ) * Z_l_coef( i, 1 ) ) / DIST_X_l( i ) +&
+                   ( mu + X_coef( i, 1 ) * Z_u_coef( i, 1 ) ) / DIST_X_u( i ) )
+                END DO
+                DO i = dims%x_l_end + 1, dims%x_u_end
+                  RHS( i ) = two * ( Z_u( i ) +                                &
+                    ( mu + X_coef( i, 1 ) * Z_u_coef( i, 1 ) ) / DIST_X_u( i ) )
+                END DO
+                DO i = dims%x_u_end + 1, n
+                  RHS( i ) = two * ( Z_u( i ) -                                &
+                    ( mu + X_coef( i, 1 ) * Z_u_coef( i, 1 ) ) / X( i ) )
+                END DO
+
+!  rhs for slack variables: 2 y_l + 2 y_u
+!             - 2 (C-C_l)^-1 ( mu e + C^1 y_l^1 )
+!             + 2 (C_u-C)^-1 ( mu e + C^1 y_u^1 )
+
+                DO i = dims%c_l_start, dims%c_u_start - 1
+                  RHS( dims%c_b + i ) = two * ( Y_l( i ) -                     &
+                    ( mu + C_coef( i, 1 ) * Y_l_coef( i, 1 ) ) / DIST_C_l( i ) )
+                END DO
+                DO i = dims%c_u_start, dims%c_l_end
+                  RHS( dims%c_b + i ) = two * ( Y_l( i ) + Y_u( i ) -          &
+                   ( mu + C_coef( i, 1 ) * Y_l_coef( i, 1 ) ) / DIST_C_l( i ) +&
+                  ( mu + C_coef( i, 1 ) * Y_u_coef( i, 1 ) ) / DIST_C_u( i ) )
+                END DO
+                DO i = dims%c_l_end + 1, dims%c_u_end
+                  RHS( dims%c_b + i ) = two * ( Y_u( i ) +                     &
+                    ( mu + C_coef( i, 1 ) * Y_u_coef( i, 1 ) ) / DIST_C_u( i ) )
+                END DO
+
+!  rhs for constraint infeasibilities: 0
+
+                RHS( dims%y_s : dims%y_e ) = zero
+              END IF
+            END IF
+
+!  for the 1st and 2nd order Taylor and 1st to 3rd order Puiseux coefficients
+!  and the Zhao-Sun arc
+
+          ELSE IF ( arc == 'ZS' .AND.                                          &
+            ( k <= 2 .OR. ( k <= 3 .AND. puiseux ) ) ) THEN
+
+!  compute and store ( r_l^1, r_u^1, s_l^1, s_u^1 )
+
+!  for the 1-st order coefficients
+
+            IF ( k == 1 ) THEN
+
+!  Puiseux case
+
+              IF ( puiseux ) THEN
+                DO i = dims%x_free + 1, dims%x_l_end
+                  Z_l_coef( i, 1 ) = - sigma_mu2                               &
+                    + two_plus_sigma_mu * ( X( i ) - X_l( i ) ) * Z_l( i )
+                END DO
+                DO i = dims%x_u_start, n
+                  Z_u_coef( i, 1 ) =   sigma_mu2                               &
+                    + two_plus_sigma_mu * ( X_u( i ) - X( i ) ) * Z_u( i )
+                END DO
+                DO i = dims%c_l_start, dims%c_l_end
+                  Y_l_coef( i, 1 ) = - sigma_mu2                               &
+                    + two_plus_sigma_mu * ( C( i ) - C_l( i ) ) * Y_l( i )
+                END DO
+                DO i = dims%c_u_start, dims%c_u_end
+                  Y_u_coef( i, 1 ) =   sigma_mu2                               &
+                    + two_plus_sigma_mu * ( C_u( i ) - C( i ) ) * Y_u( i )
+                END DO
+
+!  Taylor case
+
+              ELSE
+                DO i = dims%x_free + 1, dims%x_l_end
+                  Z_l_coef( i, 1 ) = - sigma_mu2                               &
+                    + one_plus_sigma_mu * ( X( i ) - X_l( i ) ) * Z_l( i )
+                END DO
+                DO i = dims%x_u_start, n
+                  Z_u_coef( i, 1 ) =   sigma_mu2                               &
+                    + one_plus_sigma_mu * ( X_u( i ) - X( i ) ) * Z_u( i )
+                END DO
+                DO i = dims%c_l_start, dims%c_l_end
+                  Y_l_coef( i, 1 ) = - sigma_mu2                               &
+                    + one_plus_sigma_mu * ( C( i ) - C_l( i ) ) * Y_l( i )
+                END DO
+                DO i = dims%c_u_start, dims%c_u_end
+                  Y_u_coef( i, 1 ) =   sigma_mu2                               &
+                    + one_plus_sigma_mu * ( C_u( i ) - C( i ) ) * Y_u( i )
+                END DO
+              END IF
+
+!  for the 2nd order coefficients
+
+            ELSE IF ( k == 2 ) THEN
+
+!  Puiseux case
+
+              IF ( puiseux ) THEN
+                DO i = dims%x_free + 1, dims%x_l_end
+                  Z_l_coef( i, 2 ) = two * ( - two * sigma_mu2                 &
+                    + one_plus_2_sigma_mu * ( X( i ) - X_l( i ) ) * Z_l( i )   &
+                      - X_coef( i, 1 ) * Z_l_coef( i, 1 ) )
+                END DO
+                DO i = dims%x_u_start, n
+                  Z_u_coef( i, 2 ) = two * (   two * sigma_mu2                 &
+                    + one_plus_2_sigma_mu * ( X_u( i ) - X( i ) ) * Z_u( i )   &
+                      + X_coef( i, 1 ) * Z_u_coef( i, 1 ) )
+                END DO
+                DO i = dims%c_l_start, dims%c_l_end
+                  Y_l_coef( i, 2 ) = two * ( - two * sigma_mu2                 &
+                    + one_plus_2_sigma_mu * ( C( i ) - C_l( i ) ) * Y_l( i )   &
+                      - C_coef( i, 1 ) * Y_l_coef( i, 1 ) )
+                END DO
+                DO i = dims%c_u_start, dims%c_u_end
+                  Y_u_coef( i, 2 ) = two * (   two * sigma_mu2                 &
+                    + one_plus_2_sigma_mu * ( C_u( i ) - C( i ) ) * Y_u( i )   &
+                      + C_coef( i, 1 ) * Y_u_coef( i, 1 ) )
+                END DO
+
+!  Taylor case
+
+              ELSE
+                DO i = dims%x_free + 1, dims%x_l_end
+                  Z_l_coef( i, 2 ) = two * (                                   &
+                    - sigma_mu * ( mu - ( X( i ) - X_l( i ) ) * Z_l( i ) )     &
+                      - X_coef( i, 1 ) * Z_l_coef( i, 1 ) )
+                END DO
+                DO i = dims%x_u_start, n
+                  Z_u_coef( i, 2 ) = two * (                                   &
+                      sigma_mu * ( mu + ( X_u( i ) - X( i ) ) * Z_u( i ) )     &
+                      + X_coef( i, 1 ) * Z_u_coef( i, 1 ) )
+                END DO
+                DO i = dims%c_l_start, dims%c_l_end
+                  Y_l_coef( i, 2 ) = two * (                                   &
+                    - sigma_mu * ( mu - ( C( i ) - C_l( i ) ) * Y_l( i ) )     &
+                      - C_coef( i, 1 ) * Y_l_coef( i, 1 ) )
+                END DO
+                DO i = dims%c_u_start, dims%c_u_end
+                  Y_u_coef( i, 2 ) = two * (                                   &
+                      sigma_mu * ( mu + ( C_u( i ) - C( i ) ) * Y_u( i ) )     &
+                      + C_coef( i, 1 ) * Y_u_coef( i, 1 ) )
+                END DO
+              END IF
+
+!  for the 3rd order Puiseux coefficients
+
+            ELSE
+              DO i = dims%x_free + 1, dims%x_l_end
+                Z_l_coef( i, 3 ) = three * ( - two_sigma_mu2                   &
+                  + two_sigma_mu * ( X( i ) - X_l( i ) ) * Z_l( i )            &
+                    - X_coef( i, 1 ) * Z_l_coef( i, 2 )                        &
+                    - X_coef( i, 2 ) * Z_l_coef( i, 1 ) )
+              END DO
+              DO i = dims%x_u_start, n
+                Z_u_coef( i, 3 ) = three * (   two_sigma_mu2                   &
+                  + two_sigma_mu * ( X_u( i ) - X( i ) ) * Z_u( i )            &
+                    + X_coef( i, 1 ) * Z_u_coef( i, 2 )                        &
+                    + X_coef( i, 2 ) * Z_u_coef( i, 1 ) )
+              END DO
+              DO i = dims%c_l_start, dims%c_l_end
+                Y_l_coef( i, 3 ) = three * ( - two_sigma_mu2                   &
+                  + two_sigma_mu * ( C( i ) - C_l( i ) ) * Y_l( i )            &
+                    - C_coef( i, 1 ) * Y_l_coef( i, 2 )                        &
+                    - C_coef( i, 2 ) * Y_l_coef( i, 1 ) )
+              END DO
+              DO i = dims%c_u_start, dims%c_u_end
+                Y_u_coef( i, 3 ) = three * (   two_sigma_mu2                   &
+                  + two_sigma_mu * ( C_u( i ) - C( i ) ) * Y_u( i )            &
+                    + C_coef( i, 1 ) * Y_u_coef( i, 2 )                        &
+                    + C_coef( i, 2 ) * Y_u_coef( i, 1 ) )
+              END DO
+            END IF
+
+!  record rhs = h^k + (X-X_l)^-1 r_l^k + (X_u-X)^-1 r_u^k
+
+!  for the 1st order rhs
+
+            IF ( k == 1 ) THEN
+
+!  Puiseux case
+
+              IF ( puiseux ) THEN
+
+!  rhs for problem variables:
+!   2 ( g + Hx - A^Ty - z_l - z_u ) + (X-X_l)^-1 r_l^1 + (X_u-X)^-1 r_u^1 )
+
+                RHS( : dims%x_free ) = two * GRAD_L( : dims%x_free )
+                DO i = dims%x_free + 1, dims%x_l_start - 1
+                  RHS( i ) = two * ( GRAD_L( i ) - Z_l( i ) ) +                &
+                    Z_l_coef( i, 1 ) / X( i )
+                END DO
+                DO i = dims%x_l_start, dims%x_u_start - 1
+                  RHS( i ) = two * ( GRAD_L( i ) - Z_l( i ) ) +                &
+                    Z_l_coef( i, 1 ) / DIST_X_l( i )
+                END DO
+                DO i = dims%x_u_start, dims%x_l_end
+                  RHS( i ) = two * ( GRAD_L( i ) - Z_l( i ) - Z_u( i ) ) +     &
+                    Z_l_coef( i, 1 ) / DIST_X_l( i ) +                         &
+                    Z_u_coef( i, 1 ) / DIST_X_u( i )
+                END DO
+                DO i = dims%x_l_end + 1, dims%x_u_end
+                  RHS( i ) = two * ( GRAD_L( i ) - Z_u( i ) ) +                &
+                    Z_u_coef( i, 1 ) / DIST_X_u( i )
+                END DO
+                DO i = dims%x_u_end + 1, n
+                  RHS( i ) = two * ( GRAD_L( i ) - Z_u( i ) ) -                &
+                    Z_u_coef( i, 1 ) / X( i )
+                END DO
+
+!  rhs for slack variables:
+!    2 ( y - y_l - y_u ) + (C-C_l)^-1 s_l^k + (C_u-C)^-1 s_u^k )
+
+                DO i = dims%c_l_start, dims%c_u_start - 1
+                  RHS( dims%c_b + i ) = two * ( Y( i ) - Y_l( i ) ) +          &
+                    Y_l_coef( i, 1 ) / DIST_C_l( i )
+                END DO
+                DO i = dims%c_u_start, dims%c_l_end
+                  RHS( dims%c_b + i ) = two * ( Y( i ) - Y_l( i ) - Y_u( i )) +&
+                    Y_l_coef( i, 1 ) / DIST_C_l( i ) +                         &
+                    Y_u_coef( i, 1 ) / DIST_C_u( i )
+                END DO
+                DO i = dims%c_l_end + 1, dims%c_u_end
+                  RHS( dims%c_b + i ) = two * ( Y( i ) - Y_u( i ) ) +          &
+                    Y_u_coef( i, 1 ) / DIST_C_u( i )
+                END DO
+
+!  rhs for constraint infeasibilities: 2 ( A x - b )
+
+                RHS( dims%y_s : dims%y_e ) = two * C_RES( : dims%c_u_end )
+
+!  Taylor case
+
+              ELSE
+
+!  rhs for problem variables:
+!   g + Hx - A^Ty - z_l - z_u + (X-X_l)^-1 r_l^1 + (X_u-X)^-1 r_u^1
+
+                RHS( : dims%x_free ) = GRAD_L( : dims%x_free )
+                DO i = dims%x_free + 1, dims%x_l_start - 1
+                  RHS( i ) = GRAD_L( i ) - Z_l( i ) +                          &
+                    Z_l_coef( i, 1 ) / X( i )
+                END DO
+                DO i = dims%x_l_start, dims%x_u_start - 1
+                  RHS( i ) = GRAD_L( i ) - Z_l( i ) +                          &
+                    Z_l_coef( i, 1 ) / DIST_X_l( i )
+                END DO
+                DO i = dims%x_u_start, dims%x_l_end
+                  RHS( i ) = GRAD_L( i ) - Z_l( i ) - Z_u( i ) +               &
+                    Z_l_coef( i, 1 ) / DIST_X_l( i ) +                         &
+                    Z_u_coef( i, 1 ) / DIST_X_u( i )
+                END DO
+                DO i = dims%x_l_end + 1, dims%x_u_end
+                  RHS( i ) = GRAD_L( i ) - Z_u( i ) +                          &
+                    Z_u_coef( i, 1 ) / DIST_X_u( i )
+                END DO
+                DO i = dims%x_u_end + 1, n
+                  RHS( i ) = GRAD_L( i ) - Z_u( i ) -                          &
+                    Z_u_coef( i, 1 ) / X( i )
+                END DO
+
+!  rhs for slack variables:
+!    y - y_l - y_u + (C-C_l)^-1 s_l^k + (C_u-C)^-1 s_u^k
+
+                DO i = dims%c_l_start, dims%c_u_start - 1
+                  RHS( dims%c_b + i ) = Y( i ) - Y_l( i ) +                    &
+                    Y_l_coef( i, 1 ) / DIST_C_l( i )
+                END DO
+                DO i = dims%c_u_start, dims%c_l_end
+                  RHS( dims%c_b + i ) = Y( i ) - Y_l( i ) - Y_u( i ) +         &
+                    Y_l_coef( i, 1 ) / DIST_C_l( i ) +                         &
+                    Y_u_coef( i, 1 ) / DIST_C_u( i )
+                END DO
+                DO i = dims%c_l_end + 1, dims%c_u_end
+                  RHS( dims%c_b + i ) = Y( i ) - Y_u( i ) +                    &
+                    Y_u_coef( i, 1 ) / DIST_C_u( i )
+                END DO
+
+!  rhs for constraint infeasibilities: A x - b
+
+                RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
+              END IF
+
+!  for the 2nd order rhs
+
+            ELSE IF ( k == 2 ) THEN
+
+!  Puiseux case
+
+              IF ( puiseux ) THEN
+
+!  rhs for problem variables:
+!   2 ( g + Hx - A^Ty - z_l - z_u ) + (X-X_l)^-1 r_l^2 + (X_u-X)^-1 r_u^2
+
+                RHS( : dims%x_free ) = two * GRAD_L( : dims%x_free )
+                DO i = dims%x_free + 1, dims%x_l_start - 1
+                  RHS( i ) = two * ( GRAD_L( i ) - Z_l( i ) ) +                &
+                    Z_l_coef( i, 2 ) / X( i )
+                END DO
+                DO i = dims%x_l_start, dims%x_u_start - 1
+                  RHS( i ) = two * ( GRAD_L( i ) - Z_l( i ) ) +                &
+                    Z_l_coef( i, 2 ) / DIST_X_l( i )
+                END DO
+                DO i = dims%x_u_start, dims%x_l_end
+                  RHS( i ) = two * ( GRAD_L( i ) - Z_l( i ) - Z_u( i ) ) +     &
+                    Z_l_coef( i, 2 ) / DIST_X_l( i ) +                         &
+                    Z_u_coef( i, 2 ) / DIST_X_u( i )
+                END DO
+                DO i = dims%x_l_end + 1, dims%x_u_end
+                  RHS( i ) = two * ( GRAD_L( i ) - Z_u( i ) ) +                &
+                    Z_u_coef( i, 2 ) / DIST_X_u( i )
+                END DO
+                DO i = dims%x_u_end + 1, n
+                  RHS( i ) = two * ( GRAD_L( i ) - Z_u( i ) ) -                &
+                    Z_u_coef( i, 2 ) / X( i )
+                END DO
+
+!  rhs for slack variables:
+!    2 ( y - y_l - y_u ) + (C-C_l)^-1 s_l^2 + (C_u-C)^-1 s_u^2
+
+                DO i = dims%c_l_start, dims%c_u_start - 1
+                  RHS( dims%c_b + i ) = two * ( Y( i ) - Y_l( i ) ) +          &
+                    Y_l_coef( i, 2 ) / DIST_C_l( i )
+                END DO
+                DO i = dims%c_u_start, dims%c_l_end
+                  RHS( dims%c_b + i ) = two * ( Y( i ) - Y_l( i ) - Y_u( i )) +&
+                    Y_l_coef( i, 2 ) / DIST_C_l( i ) +                         &
+                    Y_u_coef( i, 2 ) / DIST_C_u( i )
+                END DO
+                DO i = dims%c_l_end + 1, dims%c_u_end
+                  RHS( dims%c_b + i ) = two * ( Y( i ) - Y_u( i ) ) +          &
+                    Y_u_coef( i, 2 ) / DIST_C_u( i )
+                END DO
+
+!  rhs for constraint infeasibilities: 2 ( A x - b )
+
+                RHS( dims%y_s : dims%y_e ) = two * C_RES( : dims%c_u_end )
+
+!  Taylor case
+
+              ELSE
+
+!  rhs for problem variables: (X-X_l)^-1 r_l^2 + (X_u-X)^-1 r_u^2 )
+
+                RHS( : dims%x_free ) = zero
+                DO i = dims%x_free + 1, dims%x_l_start - 1
+                  RHS( i ) = Z_l_coef( i, 2 ) / X( i )
+                END DO
+                DO i = dims%x_l_start, dims%x_u_start - 1
+                  RHS( i ) = Z_l_coef( i, 2 ) / DIST_X_l( i )
+                END DO
+                DO i = dims%x_u_start, dims%x_l_end
+                  RHS( i ) = Z_l_coef( i, 2 ) / DIST_X_l( i ) +                &
+                             Z_u_coef( i, 2 ) / DIST_X_u( i )
+                END DO
+                DO i = dims%x_l_end + 1, dims%x_u_end
+                  RHS( i ) = Z_u_coef( i, 2 ) / DIST_X_u( i )
+                END DO
+                DO i = dims%x_u_end + 1, n
+                  RHS( i ) = - Z_u_coef( i, 2 ) / X( i )
+                END DO
+
+!  rhs for slack variables: (C-C_l)^-1 s_l^2 + (C_u-C)^-1 s_u^2 )
+
+                DO i = dims%c_l_start, dims%c_u_start - 1
+                  RHS( dims%c_b + i ) = Y_l_coef( i, 2 ) / DIST_C_l( i )
+                END DO
+                DO i = dims%c_u_start, dims%c_l_end
+                  RHS( dims%c_b + i ) = Y_l_coef( i, 2 ) / DIST_C_l( i ) +     &
+                                        Y_u_coef( i, 2 ) / DIST_C_u( i )
+                END DO
+                DO i = dims%c_l_end + 1, dims%c_u_end
+                  RHS( dims%c_b + i ) = Y_u_coef( i, 2 ) / DIST_C_u( i )
+                END DO
+
+!  rhs for constraint infeasibilities: A x - b
+
+                RHS( dims%y_s : dims%y_e ) = zero
+              END IF
+
+!  for the 3rd order rhs
+
+            ELSE
+
+!  rhs for problem variables: (X-X_l)^-1 r_l^3 + (X_u-X)^-1 r_u^3
+
+              RHS( : dims%x_free ) = zero
+              DO i = dims%x_free + 1, dims%x_l_start - 1
+                RHS( i ) = Z_l_coef( i, 3 ) / X( i )
+              END DO
+              DO i = dims%x_l_start, dims%x_u_start - 1
+                RHS( i ) = Z_l_coef( i, 3 ) / DIST_X_l( i )
+              END DO
+              DO i = dims%x_u_start, dims%x_l_end
+                RHS( i ) = Z_l_coef( i, 3 ) / DIST_X_l( i ) +                  &
+                           Z_u_coef( i, 3 ) / DIST_X_u( i )
+              END DO
+              DO i = dims%x_l_end + 1, dims%x_u_end
+                RHS( i ) = Z_u_coef( i, 3 ) / DIST_X_u( i )
+              END DO
+              DO i = dims%x_u_end + 1, n
+                RHS( i ) = - Z_u_coef( i, 3 ) / X( i )
+              END DO
+
+!  rhs for slack variables: (C-C_l)^-1 s_l^3 + (C_u-C)^-1 s_u^3
+
+                DO i = dims%c_l_start, dims%c_u_start - 1
+                RHS( dims%c_b + i ) = Y_l_coef( i, 3 ) / DIST_C_l( i )
+              END DO
+              DO i = dims%c_u_start, dims%c_l_end
+                RHS( dims%c_b + i ) = Y_l_coef( i, 3 ) / DIST_C_l( i ) +       &
+                                      Y_u_coef( i, 3 ) / DIST_C_u( i )
+              END DO
+              DO i = dims%c_l_end + 1, dims%c_u_end
+                RHS( dims%c_b + i ) = Y_u_coef( i, 3 ) / DIST_C_u( i )
+              END DO
+
+!  rhs for constraint infeasibilities: 0
+
+              RHS( dims%y_s : dims%y_e ) = zero
+            END IF
+
+
+!  for the kth order coefficients
+
           ELSE
-            VECTOR( : dims%x_free ) = GRAD( : dims%x_free )
+
+!  compute and store ( r_l^k, r_u^k, s_l^k, s_u^k )
+
+            bik = BINOMIAL( 1, k )
+            Z_l_coef( dims%x_free + 1 : dims%x_l_end, k ) =                    &
+              - bik * X_coef( dims%x_free + 1 : dims%x_l_end, 1 )              &
+                    * Z_l_coef( dims%x_free + 1 : dims%x_l_end, k - 1 )
+            Z_u_coef( dims%x_u_start : n, k ) =                                &
+                bik * X_coef( dims%x_u_start : n, 1 )                          &
+                    * Z_u_coef( dims%x_u_start : n, k - 1 )
+            Y_l_coef( dims%c_l_start : dims%c_l_end, k ) =                     &
+              - bik * C_coef( dims%c_l_start : dims%c_l_end, 1 )               &
+                    * Y_l_coef( dims%c_l_start : dims%c_l_end, k - 1 )
+            Y_u_coef( dims%c_u_start : dims%c_u_end, k ) =                     &
+                bik * C_coef( dims%c_u_start : dims%c_u_end, 1 )               &
+                    * Y_u_coef( dims%c_u_start : dims%c_u_end, k - 1 )
+
+            DO i = 2, k - 1
+              bik = BINOMIAL( i, k )
+              Z_l_coef( dims%x_free + 1 : dims%x_l_end, k ) =                  &
+                Z_l_coef( dims%x_free + 1 : dims%x_l_end, k )                  &
+                  - bik * X_coef( dims%x_free + 1 : dims%x_l_end, i )          &
+                        * Z_l_coef( dims%x_free + 1 : dims%x_l_end, k - i )
+              Z_u_coef( dims%x_u_start : n, k ) =                              &
+                Z_u_coef( dims%x_u_start : n, k )                              &
+                  + bik * X_coef( dims%x_u_start : n, i )                      &
+                        * Z_u_coef( dims%x_u_start : n, k - i )
+              Y_l_coef( dims%c_l_start : dims%c_l_end, k ) =                   &
+                Y_l_coef( dims%c_l_start : dims%c_l_end, k )                   &
+                  - bik * C_coef( dims%c_l_start : dims%c_l_end, i )           &
+                        * Y_l_coef( dims%c_l_start : dims%c_l_end, k - i )
+              Y_u_coef( dims%c_u_start : dims%c_u_end, k ) =                   &
+                Y_u_coef( dims%c_u_start : dims%c_u_end, k )                   &
+                  + bik * C_coef( dims%c_u_start : dims%c_u_end, i )           &
+                        * Y_u_coef( dims%c_u_start : dims%c_u_end, k - i )
+            END DO
+
+!  rhs for problem variables:  (X-X_l)^-1 r_l^k ) + (X_u-X)^-1 r_u^k )
+
+            RHS( : dims%x_free ) = zero
+            DO i = dims%x_free + 1, dims%x_l_start - 1
+              RHS( i ) = Z_l_coef( i, k ) / X( i )
+            END DO
+            DO i = dims%x_l_start, dims%x_u_start - 1
+              RHS( i ) = Z_l_coef( i, k ) / DIST_X_l( i )
+            END DO
+            DO i = dims%x_u_start, dims%x_l_end
+              RHS( i ) = Z_l_coef( i, k ) / DIST_X_l( i )                      &
+                       + Z_u_coef( i, k ) / DIST_X_u( i )
+            END DO
+            DO i = dims%x_l_end + 1, dims%x_u_end
+              RHS( i ) = Z_u_coef( i, k ) / DIST_X_u( i )
+            END DO
+            DO i = dims%x_u_end + 1, n
+              RHS( i ) = - Z_u_coef( i, k ) / X( i )
+            END DO
+
+!  rhs for slack variables:  (C-C_l)^-1 s_l^k ) + (C_u-C)^-1 s_u^k )
+
+            DO i = dims%c_l_start, dims%c_u_start - 1
+              RHS( dims%c_b + i ) = Y_l_coef( i, k ) / DIST_C_l( i )
+            END DO
+            DO i = dims%c_u_start, dims%c_l_end
+              RHS( dims%c_b + i ) = Y_l_coef( i, k ) / DIST_C_l( i )           &
+                                  + Y_u_coef( i, k ) / DIST_C_u( i )
+            END DO
+            DO i = dims%c_l_end + 1, dims%c_u_end
+              RHS( dims%c_b + i ) = Y_u_coef( i, k ) / DIST_C_u( i )
+            END DO
+
+!  rhs for constraint infeasibilities: 0
+
+            RHS( dims%y_s : dims%y_e ) = zero
           END IF
 
-          DO i = dims%x_free + 1, dims%x_u_start - 1
-            VECTOR( i ) = GRAD( i ) - Z_l( i )
+          IF ( printd ) THEN
+            WRITE( out, 2100 ) prefix, ' RHS_x ', RHS( dims%x_s : dims%x_e )
+            IF ( m > 0 )                                                     &
+              WRITE( out, 2100 ) prefix, ' RHS_y ', RHS( dims%y_s : dims%y_e )
+          END IF
+
+! :::::::::::::::::::::::::::::::::::
+! 3b. Compute the series coefficients
+! :::::::::::::::::::::::::::::::::::
+
+!  solve (   (X-X_l)^-1 Z_l               A^T ) (  x^k )
+!        ( - (X_u-X)^-1 Z_u                   ) (      )
+!        (                  (C-C_l)^-1 Y_l -I ) (  c^k ) = rhs
+!        (                 -(C_u-C)^-1 Y_u    ) (      )
+!        (     A               -I             ) ( -y^k )
+
+          IF ( printw ) THEN
+            IF ( puiseux ) THEN
+              WRITE( out, "( A, ' ........... compute ', I0, A2,               &
+             &           ' order Puiseux coefficients  ........... ' )" )      &
+                prefix, k, STRING_ordinal( k )
+            ELSE
+              WRITE( out, "( A, ' ............ compute ', I0, A2,              &
+             &           ' order Taylor coefficients  ............ ' )" )      &
+                prefix, k, STRING_ordinal( k )
+            END IF
+          END IF
+
+!  use a direct method
+
+          CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
+          IF ( inform%SBLS_inform%preconditioner == 2 ) THEN
+            CALL SBLS_solve( A_sbls%n, A_sbls%m, A_sbls, C_sbls,               &
+                             SBLS_data, SBLS_control, inform%SBLS_inform, RHS )
+          ELSE
+            CALL SBLS_solve_iterative( A_sbls%n, A_sbls%m, H_sbls, A_sbls,     &
+                                       RHS, SBLS_data, control%SBLS_control,   &
+                                       inform%SBLS_inform )
+          END IF
+          CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+          time_solve = time_solve + time_now - time_record
+          clock_solve = clock_solve + clock_now - clock_record
+
+          inform%status = inform%SBLS_inform%status
+          IF ( inform%status /= GALAHAD_ok ) GO TO 700
+
+          IF ( printd ) THEN
+            WRITE( out, 2100 ) prefix, ' SOL_x ', RHS( dims%x_s : dims%x_e )
+            IF ( m > 0 )                                                       &
+              WRITE( out, 2100 ) prefix, ' SOL_y ', RHS( dims%y_s : dims%y_e )
+          END IF
+
+!  if the residual of the linear system is larger than the current
+!  optimality residual, no further progress is likely
+
+          IF ( inform%SBLS_inform%norm_residual > merit ) THEN
+
+!  it didn't. We might have run out of options ...
+
+            IF ( SBLS_control%factorization == 2 .AND. maxpiv ) THEN
+              inform%status = GALAHAD_error_ill_conditioned ; GO TO 600
+
+!  ... or we may change the method ...
+
+            ELSE IF ( SBLS_control%factorization < 2 .AND. maxpiv ) THEN
+              pivot_tol = relative_pivot_tol
+              maxpiv = pivot_tol >= half
+              SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
+              SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
+              SBLS_control%factorization = 2
+              IF ( printi ) WRITE( out,                                        &
+                "( A, '    ** Switching to augmented system method' )" ) prefix
+
+!  ... or we can increase the pivot tolerance
+
+            ELSE IF ( SBLS_control%SLS_control%relative_pivot_tolerance        &
+                      < relative_pivot_default ) THEN
+              pivot_tol = relative_pivot_default
+              min_pivot_tol = relative_pivot_default
+              maxpiv = .FALSE.
+              SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
+              SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
+!             SBLS_control%factorization = 2
+              IF ( printi ) WRITE( out,                                        &
+                "( A, '    ** Pivot tolerance increased to', ES11.4 )" )       &
+                prefix, pivot_tol
+            ELSE
+              pivot_tol = half
+              min_pivot_tol = half
+              maxpiv = .TRUE.
+              SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
+              SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
+!             SBLS_control%factorization = 2
+              IF ( printi ) WRITE( out,                                        &
+                "( A, '    ** Pivot tolerance increased to', ES11.4 )" )       &
+                prefix, pivot_tol
+            END IF
+            alpha = zero ; nbact = 0
+
+!  refactorize
+
+            GO TO 200
+          END IF
+
+!  record ( x^k, c^k, y^k )
+
+          X_coef( : n, k ) = RHS( dims%x_s : dims%x_e )
+          C_coef( dims%c_l_start : dims%c_u_end, k ) =                         &
+            RHS( dims%c_s : dims%c_e )
+          Y_coef( : m, k ) = - RHS( dims%y_s : dims%y_e )
+
+!  compute ( z_l^k, z_u^k, y_l^k, y_u^k ) via
+
+!     z_l^k = (X-X_l)^-1 [ r_l^k - Z_l x^k ]
+!     z_u^k = (X_u-X)^-1 [ r_u^k + Z_u x^k ]
+!     y_l^k = (C-C_l)^-1 [ s_l^k - Y_l c^k ]
+!   & y_u^k = (C_u-C)^-1 [ s_u^k + Y_u c^k ]
+
+
+          DO i = dims%x_free + 1, dims%x_l_start - 1
+            Z_l_coef( i, k ) =                                                 &
+             ( Z_l_coef( i, k ) - Z_l( i ) * X_coef( i, k ) ) / X( i )
           END DO
 
+          DO i = dims%x_l_start, dims%x_l_end
+            Z_l_coef( i, k ) =                                                 &
+             ( Z_l_coef( i, k ) - Z_l( i ) * X_coef( i, k ) ) / DIST_X_l( i )
+          END DO
+
+          DO i = dims%x_u_start, dims%x_u_end
+            Z_u_coef( i, k ) =                                                 &
+              ( Z_u_coef( i, k ) + Z_u( i ) * X_coef( i, k ) ) / DIST_X_u( i )
+          END DO
+
+          DO i = dims%x_u_end + 1, n
+            Z_u_coef( i, k ) =                                                 &
+              - ( Z_u_coef( i, k ) + Z_u( i ) * X_coef( i, k ) ) / X( i )
+          END DO
+
+          DO i = dims%c_l_start, dims%c_l_end
+            Y_l_coef( i, k ) =                                                 &
+              ( Y_l_coef( i, k ) - Y_l( i ) * C_coef( i, k ) ) / DIST_C_l( i )
+          END DO
+
+          DO i = dims%c_u_start, dims%c_u_end
+            Y_u_coef( i, k ) =                                                 &
+              ( Y_u_coef( i, k ) + Y_u( i ) * C_coef( i, k ) ) / DIST_C_u( i )
+          END DO
+        END DO
+
+!  finally, scale the coefficients v^k <- (-1)^k v^k / k!
+
+        co = one
+        DO k = 1, order
+          co = - co / REAL( k, KIND = wp )
+          X_coef( : , k ) = co * X_coef( : , k )
+          C_coef( : , k ) = co * C_coef( : , k )
+          Y_coef( : , k ) = co * Y_coef( : , k )
+          Z_l_coef( : , k ) = co * Z_l_coef( : , k )
+          Z_u_coef( : , k ) = co * Z_u_coef( : , k )
+          Y_l_coef( : , k ) = co * Y_l_coef( : , k )
+          Y_u_coef( : , k ) = co * Y_u_coef( : , k )
+        END DO
+
+        IF ( printw ) THEN
+          WRITE( out, "( A, '   k   ||X^k||   ||C^k||   ||Y^k||',              &
+        &               ' ||Z_l^k|| ||Z_u^k|| ||Y_l^k|| ||Y_u^k||' )" ) prefix
+          DO k = 0, order
+            char_x = MAXVAL_ABS( X_coef( : , k ) )
+            char_c = MAXVAL_ABS( C_coef( : , k ) )
+            char_y = MAXVAL_ABS( Y_coef( : , k ) )
+            char_z_l = MAXVAL_ABS( Z_l_coef( : , k ) )
+            char_z_u = MAXVAL_ABS( Z_u_coef( : , k ) )
+            char_y_l = MAXVAL_ABS( Y_l_coef( : , k ) )
+            char_y_u = MAXVAL_ABS( Y_u_coef( : , k ) )
+            WRITE( out, "( A, 1X, A, I1, 7A10 )" ) prefix, arc, k,             &
+              char_x, char_c, char_y, char_z_l, char_z_u, char_y_l, char_y_u
+          END DO
+        END IF
+
+!  Additionally, if the Taylor Zhang arc is not being used, we need to include
+!  this as a precaution to guarantee convergence
+
+        guarantee = arc /= 'Zh' .OR. puiseux .OR.                              &
+                    ( order > 1 .AND. .NOT. control%every_order )
+
+        IF ( guarantee ) THEN
+
+!  Set up the right-hand-side vector
+
+!  record rhs = ( h^k + (X-X_l)^-1 r_l^k + (X_u-X)^-1 r_u^k )
+!               ( d^k + (C-C_l)^-1 s_l^k + (C_u-C)^-1 s_u^k )
+!               (                   a^k                     )
+
+          IF ( printd ) WRITE( out, 2100 )                                     &
+            prefix, ' GRAD_L', GRAD_L( dims%x_s : dims%x_e )
+
+!  compute and store ( r_l^1, r_u^1, s_l^1, s_u^1 )
+
+          DO i = dims%x_free + 1, dims%x_l_end
+            DZ_l_zh( i ) = - mu + ( X( i ) - X_l( i ) ) * Z_l( i )
+          END DO
+          DO i = dims%x_u_start, n
+            DZ_u_zh( i ) =   mu + ( X_u( i ) - X( i ) ) * Z_u( i )
+          END DO
+          DO i = dims%c_l_start, dims%c_l_end
+            DY_l_zh( i ) = - mu + ( C( i ) - C_l( i ) ) * Y_l( i )
+          END DO
+          DO i = dims%c_u_start, dims%c_u_end
+            DY_u_zh( i ) =   mu + ( C_u( i ) - C( i ) ) * Y_u( i )
+          END DO
+
+!  rhs for problem variables: g + Hx - A^Ty - mu (X-X_l)^-1 e + mu (X_u-X)^-1 e
+
+          RHS( : dims%x_free ) = GRAD_L( : dims%x_free )
+          DO i = dims%x_free + 1, dims%x_l_start - 1
+            RHS( i ) = GRAD_L( i ) - mu / X( i )
+          END DO
+          DO i = dims%x_l_start, dims%x_u_start - 1
+            RHS( i ) = GRAD_L( i ) - mu / DIST_X_l( i )
+          END DO
           DO i = dims%x_u_start, dims%x_l_end
-            VECTOR( i ) = GRAD( i ) - Z_l( i ) - Z_u( i )
+            RHS( i ) = GRAD_L( i ) - mu / DIST_X_l( i ) + mu / DIST_X_u( i )
+          END DO
+          DO i = dims%x_l_end + 1, dims%x_u_end
+            RHS( i ) = GRAD_L( i ) + mu / DIST_X_u( i )
+          END DO
+          DO i = dims%x_u_end + 1, n
+            RHS( i ) = GRAD_L( i ) - mu / X( i )
           END DO
 
-          DO i = dims%x_l_end + 1, n
-            VECTOR( i ) = GRAD( i ) - Z_u( i )
-          END DO
-
-!  Slack variables
+!  rhs for slack variables: y - mu (C-C_l)^-1 e + mu (C_u-C)^-1 e
 
           DO i = dims%c_l_start, dims%c_u_start - 1
-            VECTOR( dims%c_b + i ) = - Y_l( i )
+            RHS( dims%c_b + i ) = Y( i ) - mu / DIST_C_l( i )
           END DO
-
           DO i = dims%c_u_start, dims%c_l_end
-            VECTOR( dims%c_b + i ) = - Y_l( i ) - Y_u( i )
+            RHS( dims%c_b + i ) = Y( i ) - mu / DIST_C_l( i )                  &
+                                         + mu / DIST_C_u( i )
           END DO
-
           DO i = dims%c_l_end + 1, dims%c_u_end
-            VECTOR( dims%c_b + i ) = - Y_u( i )
+            RHS( dims%c_b + i ) = Y( i ) + mu / DIST_C_u( i )
           END DO
 
-          CALL LPB_AX( n, VECTOR( : n ), m, A_ne, A_val,                        &
-                        A_col, A_ptr, m, Y, '-T' )
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = 0, dims%nc - 1
-              VECTOR( dims%c_s + i ) = VECTOR( dims%c_s + i ) +                &
-                SCALE_C( dims%c_l_start + i ) * Y( dims%c_l_start + i ) ; END DO
-            DO i = dims%y_s, dims%y_e ; VECTOR( i ) = zero ; END DO
-          ELSE
-            VECTOR( dims%c_s : dims%c_e ) = VECTOR( dims%c_s : dims%c_e ) +    &
-                                  SCALE_C * Y( dims%c_l_start : dims%c_u_end )
-            VECTOR( dims%y_s : dims%y_e ) = zero
-          END IF
-
-!  Calculate || GRAD - A^T y - z_l - z_u ||_2
-
-          norm_d_alt = SQRT( ABS( SUM( VECTOR( : dims%c_e ) ** 2 ) ) )
-
-!  Calculate || GRAD - z_l - z_u ||_M
-
-          IF ( printw ) WRITE( out,                                            &
-               "( ' .............. get multipliers .............. ' )" )
+!  rhs for constraint infeasibilities: A x - b
 
           IF ( m > 0 ) THEN
-            CALL LPB_iterative_refinement(                                     &
-                          dims, n, m, A_ne, A_val, A_col, A_ptr,               &
-                          VECTOR, dims%v_e, factor, DIAG_X, ldiag_x, SCALE_C,  &
-                          DIAG_C, ldiag_c_l, ldiag_c_u,                        &
-                          SOL, RES, BEST, Y_trial, BEST_y, RES_y, RES_x,       &
-                          precon, nnzks, itref_max,                            &
-                          norm_d, res_norm, big_res, K, FACTORS, CNTL,         &
-                          print_level, control, inform )
+            RHS( dims%y_s : dims%y_e ) = C_RES( : dims%c_u_end )
 
-!  Take appropriate action if the residual is too large
+            C_RES( : dims%c_equality ) = - C_l( : dims%c_equality )
+            C_RES( dims%c_l_start : dims%c_u_end ) = - SCALE_C * C
+            CALL LPB_AX( m, C_RES, m, a_ne, A_val, A_col, A_ptr,               &
+                          n, X, '+ ' )
+            inform%primal_infeasibility = MAXVAL( ABS( C_RES ) )
+          END IF
 
-            IF ( big_res ) THEN
-              IF ( printi ) CALL LPB_cond( K%n, FINFO%rank, FACTORS, out )
-              IF ( printi ) WRITE( out, 2340 ) res_norm, res_large
-!             IF ( CNTL%u < half ) THEN
-              IF ( CNTL%u < half .AND. factor == 2 ) THEN
-                IF ( CNTL%u < point01 ) THEN
-                  CNTL%u = point01
-                ELSE
-                  IF ( CNTL%u < point1 ) THEN
-                    CNTL%u = point1
-                  ELSE
-                    CNTL%u = half
-                  END IF
-                END IF
-                refact = .TRUE. ; new_fact = .TRUE.
-                IF ( printi ) WRITE( out,                                      &
-                  "( ' increasing pivot tolerance to ', ES12.4, / )" ) CNTL%u
-                CYCLE inner
-              ELSE IF ( factor /= 2 ) THEN
-                CNTL%u = pivot_tol
-                factor = 2
-                refact = .TRUE. ; new_fact = .TRUE. ; new_prec = .TRUE.
+          IF ( printd ) THEN
+            WRITE( out, 2100 ) prefix, ' RHS_x ', RHS( dims%x_s : dims%x_e )
+            IF ( m > 0 )                                                       &
+              WRITE( out, 2100 ) prefix, ' RHS_y ', RHS( dims%y_s : dims%y_e )
+          END IF
 
-                IF ( printi ) WRITE( out,                                      &
-                  "( ' changing to augmented system method ', / )" )
-                CYCLE inner
-              ELSE
-                inform%status = - 8
-                GO TO 700
-              END IF
-            END IF
+! Compute the coefficients
 
-            IF ( inform%status /= 0 ) GO TO 700   
+!  solve (   (X-X_l)^-1 Z_l               A^T ) (  x^k )
+!        ( - (X_u-X)^-1 Z_u                   ) (      )
+!        (                  (C-C_l)^-1 Y_l -I ) (  c^k ) = rhs
+!        (                 -(C_u-C)^-1 Y_u    ) (      )
+!        (     A               -I             ) ( -y^k )
 
-            IF ( auto .AND. res_norm > control%stop_d ) THEN
-              IF ( ( fact_hist == 1 .OR. fact_hist == 3 ) .AND.                &
-                   ( factor == 0 .OR. factor == 1 ) ) THEN
-                 factor = 2
-                 refact = .TRUE. ; new_prec = .TRUE.
-                 IF ( printi ) WRITE( out, 2340 ) res_norm, control%stop_d
-                 CYCLE
-              END IF
-            END IF
-            norm_d = MIN( norm_d, norm_d_alt )
+          IF ( printw ) WRITE( out, "( A, ' ............... compute',          &
+         &        ' Zhang-Taylor coefficients  ............... ' )" )  prefix
+
+!  use a direct method
+
+          CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
+          IF ( inform%SBLS_inform%preconditioner == 2 ) THEN
+            CALL SBLS_solve( A_sbls%n, A_sbls%m, A_sbls, C_sbls,               &
+                             SBLS_data, SBLS_control, inform%SBLS_inform, RHS )
           ELSE
-            norm_d = norm_d_alt
+            CALL SBLS_solve_iterative( A_sbls%n, A_sbls%m, H_sbls, A_sbls,     &
+                                       RHS, SBLS_data, control%SBLS_control,   &
+                                       inform%SBLS_inform )
+          END IF
+          CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+          time_solve = time_solve + time_now - time_record
+          clock_solve = clock_solve + clock_now - clock_record
+
+          IF ( printd ) THEN
+            WRITE( out, 2100 ) prefix, ' SOL_x ', RHS( dims%x_s : dims%x_e )
+            IF ( m > 0 )                                                       &
+              WRITE( out, 2100 ) prefix, ' SOL_y ', RHS( dims%y_s : dims%y_e )
           END IF
 
-!  Print a summary of the iteration
+          inform%status = inform%SBLS_inform%status
+          IF ( inform%status /= GALAHAD_ok ) GO TO 700
 
-          IF ( printi ) THEN
-            bdry = ' '
-            IF ( .NOT. start_major ) THEN 
-              IF ( ABS( gltr_info%mnormx - old_radius ) < teneps) bdry = 'b'
-              IF ( printt .OR. gltr_control%print_level > 0 .OR.               &
-                ( printi .AND. inform%iter == start_print ) ) WRITE( out, 2000 )
-              IF ( got_ratio ) THEN
-                 WRITE( out, 2020 ) inform%iter, re, norm_d, norm_c,           &
-                                    inform%obj, mo, ratio, old_radius, bdry,   &
-                                    nbacts, cg_iter, inform%time%total
-              ELSE
-                 WRITE( out, 2030 ) inform%iter, re, norm_d, norm_c,           &
-                                    inform%obj, mo, old_radius, bdry,          &
-                                    nbacts, cg_iter, inform%time%total
-              END IF
+!  if the residual of the linear system is larger than the current
+!  optimality residual, no further progress is likely
+
+          IF ( inform%SBLS_inform%norm_residual > merit ) THEN
+
+!  it didn't. We might have run out of options ...
+
+            IF ( SBLS_control%factorization == 2 .AND. maxpiv ) THEN
+              inform%status = GALAHAD_error_ill_conditioned ; GO TO 600
+
+!  ... or we may change the method ...
+
+            ELSE IF ( SBLS_control%factorization < 2 .AND. maxpiv ) THEN
+              pivot_tol = relative_pivot_tol
+              maxpiv = pivot_tol >= half
+              SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
+              SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
+              SBLS_control%factorization = 2
+              IF ( printi ) WRITE( out,                                        &
+                "( A, '    ** Switching to augmented system method' )" ) prefix
+
+!  ... or we can increase the pivot tolerance
+
+            ELSE IF ( SBLS_control%SLS_control%relative_pivot_tolerance        &
+                      < relative_pivot_default ) THEN
+              pivot_tol = relative_pivot_default
+              min_pivot_tol = relative_pivot_default
+              maxpiv = .FALSE.
+              SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
+              SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
+!             SBLS_control%factorization = 2
+              IF ( printi ) WRITE( out,                                        &
+                "( A, '    ** Pivot tolerance increased to', ES11.4 )" )       &
+                prefix, pivot_tol
             ELSE
-              IF ( printi ) WRITE( out, 2130 ) mu, theta_c, theta_d
-              WRITE( out, 2000 ) 
-              WRITE( out, 2010 ) inform%iter, re, norm_d, norm_c, inform%obj,  &
-                                 mo, old_radius, inform%time%total
-            END IF 
-            IF ( printd ) THEN 
-              WRITE( out, 2100 ) ' X ', X
-              WRITE( out, 2100 ) ' Z_l ', Z_l
-              WRITE( out, 2100 ) ' Z_u ', Z_u
-            END IF 
-          END IF 
-          start_major = .FALSE.
+              pivot_tol = half
+              min_pivot_tol = half
+              maxpiv = .TRUE.
+              SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
+              SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
+!             SBLS_control%factorization = 2
+              IF ( printi ) WRITE( out,                                        &
+                "( A, '    ** Pivot tolerance increased to', ES11.4 )" )       &
+                prefix, pivot_tol
+            END IF
+            alpha = zero ; nbact = 0
 
-!  Record the Lagrange multipliers
+!  refactorize
 
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = 1, m ; Y( i ) = Y( i ) + VECTOR( dims%c_e + i ) ; END DO
-          ELSE
-            Y = Y + VECTOR( dims%y_s : dims%y_e )
-          END IF
-!         WRITE( 6, "( ' norm Y = ', ES22.14 )") MAXVAL( ABS( Y ) )
-
-!  Test for convergence
-
-          IF ( norm_c <= theta_c .AND. norm_d <= theta_d .AND. .NOT.           &
-               gltr_info%negative_curvature ) THEN
-            inform%status = 0
-            gltr_info%status = 1
-            start_major = .TRUE.
-            got_ratio = .FALSE.
-            full_iteration = .FALSE.
-            EXIT
+            GO TO 200
           END IF
 
-!  Test to see if more than maxit iterations have been performed
+!  record ( x^k, c^k, y^k )
 
-          inform%iter = inform%iter + 1 
-          IF ( inform%iter > control%maxit ) THEN 
-            inform%status = - 10 ; GO TO 600 
-          END IF 
+          DX_zh( : n ) = - RHS( dims%x_s : dims%x_e )
+          DC_zh( dims%c_l_start : dims%c_u_end ) =                             &
+            - RHS( dims%c_s : dims%c_e )
+          DY_zh( : m ) = RHS( dims%y_s : dims%y_e )
 
-!  Check that the CPU time limit has not been reached
+!  compute ( z_l^k, z_u^k, y_l^k, y_u^k ) via
 
-          IF ( control%cpu_time_limit >= zero .AND.                            &
-               time > control%cpu_time_limit ) THEN
-            inform%status = - 12 ; GO TO 600
-          END IF 
+!     z_l^k = (X-X_l)^-1 [ r_l^k - Z_l x^k ]
+!     z_u^k = (X_u-X)^-1 [ r_u^k + Z_u x^k ]
+!     y_l^k = (C-C_l)^-1 [ s_l^k - Y_l c^k ]
+!   & y_u^k = (C_u-C)^-1 [ s_u^k + Y_u c^k ]
 
-          IF ( inform%iter == start_print ) THEN
-            printe = set_printe ; printi = set_printi ; printt = set_printt
-            printm = set_printm ; printw = set_printw ; printd = set_printd
-            print_level = control%print_level
-            gltr_control%print_level = print_level - 1
-          END IF
- 
-          IF ( inform%iter == stop_print + 1 ) THEN
-            printe = .FALSE. ; printi = .FALSE. ; printt = .FALSE.
-            printm = .FALSE. ; printw = .FALSE. ; printd = .FALSE.
-            print_level = 0 ; gltr_control%print_level = 0
-          END IF
-
-!       WRITE( 6, "( ' start, stop print, iter ', 3I8 )" )                     &
-!         start_print, stop_print, inform%iter
-
-!  Test to see if the objective appears to be unbounded from below
-
-          IF ( inform%obj < control%obj_unbounded ) THEN 
-            inform%status = - 11 ; GO TO 600 
-          END IF 
-
-!  Compute the trial step
-!  ----------------------
-
-          IF ( printw ) WRITE( out,                                            &
-               "( ' ............... compute step  ............... ' )" )
-
-!  Compute a trial step, s, to ``sufficiently'' reduce the model within 
-!  the region defined by the intersection of the affine constraints A s = 0
-!  and the trust region || s ||_M <= radius
-
-!  Compute the derivatives of the Lagrangian function
-
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i =  dims%x_s, dims%x_e ; GRAD_L( i ) = GRAD_X_phi( i ) ; END DO
-          ELSE
-            GRAD_L( dims%x_s : dims%x_e ) = GRAD_X_phi
-          END IF
-          CALL LPB_AX( n, GRAD_L( dims%x_s : dims%x_e ), m, A_ne,                                 &
-                        A_val, A_col, A_ptr, m, Y, '-T' )
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = 0, dims%nc - 1
-              GRAD_L( dims%c_s + i ) = GRAD_C_phi( dims%c_l_start + i ) +      &
-                SCALE_C( dims%c_l_start + i ) * Y( dims%c_l_start + i ) ; END DO
-          ELSE
-            GRAD_L( dims%c_s : dims%c_e ) = GRAD_C_phi +                       &
-                                  SCALE_C * Y( dims%c_l_start : dims%c_u_end )
-          END IF
-
-          IF ( printm ) WRITE( out, "( ' norm GRAD_L ', ES12.4 ) " )           &
-                               MAXVAL( ABS( GRAD_L ) )
-!  Set initial data
-
-!         R( : dims%c_e ) = GRAD_L
-          DO i =  1, dims%c_e ; R( i ) = GRAD_L( i ) ; END DO
-          first_iteration = .TRUE.
-
-          IF ( printm ) WRITE( out,                                            &
-           "(/, '   |------------------------------------------------------|', &
-         &   /, '   |        start to solve trust-region subproblem        |', &
-         &   / )" )
-
-          CALL CPU_TIME( time )
-  100     CONTINUE
-          CALL GLTR_solve( dims%c_e, radius, model, S, R, VECTOR( : dims%c_e ),        &
-                           gltr_data, gltr_control, gltr_info )
-
-!  Check for error returns
-
-          SELECT CASE( gltr_info%status )
-
-!  Successful return
-
-          CASE ( 0 )
-
-!  Warnings
-
-          CASE ( - 2, - 1 )
-            IF ( printt ) WRITE( out, "( /,                                    &
-           &  ' Warning return from GLTR, status = ', I6 )" ) gltr_info%status
-          
-!  Allocation errors
-
-           CASE ( - 6 )
-             inform%status = - 2
-             inform%alloc_status = gltr_info%alloc_status
-             inform%bad_alloc = gltr_info%bad_alloc
-             GO TO 920
-
-!  Deallocation errors
-
-           CASE ( - 7 )
-             inform%status = - 3
-             inform%alloc_status = gltr_info%alloc_status
-             inform%bad_alloc = gltr_info%bad_alloc
-             GO TO 920
-
-!  Error return
-
-          CASE DEFAULT
-            IF ( printt ) WRITE( out, "( /,                                    &
-           &  ' Error return from GLTR, status = ', I6 )" ) gltr_info%status
-
-!  Find the preconditioned gradient
-
-          CASE ( 2, 6 )
-            IF ( printw ) WRITE( out,                                          &
-               "( ' ............... precondition  ............... ' )" )
-
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              VECTOR( dims%y_s : dims%y_e ) = zero
-            ELSE
-              DO i = dims%y_s, dims%y_e ; VECTOR( i ) = zero ; END DO
-            END IF
-
-            CALL LPB_iterative_refinement(                                     &
-                          dims, n, m, A_ne, A_val, A_col, A_ptr,               &
-                          VECTOR, dims%v_e, factor,                            &
-                          DIAG_X, ldiag_x, SCALE_C, DIAG_C, ldiag_c_l,         &
-                          ldiag_c_u, SOL, RES, BEST, Y_trial, BEST_y, RES_y,   &
-                          RES_x, precon, nnzks,                                &
-                          itref_max, sn, res_norm, big_res,                    &
-                          K, FACTORS, CNTL, print_level, control, inform )   
-
-!  Take appropriate action if the residual is too large
-
-            IF ( big_res ) THEN
-              IF ( printi ) CALL LPB_cond( K%n, FINFO%rank, FACTORS, out )
-              IF ( printi ) WRITE( out, 2340 ) res_norm, res_large
-!             IF ( CNTL%u < half ) THEN
-              IF ( CNTL%u < half .AND. factor == 2 ) THEN
-                IF ( CNTL%u < point01 ) THEN
-                  CNTL%u = point01
-                ELSE
-                  IF ( CNTL%u < point1 ) THEN
-                    CNTL%u = point1
-                  ELSE
-                    CNTL%u = half
-                  END IF
-                END IF
-                refact = .TRUE. ; new_fact = .TRUE.
-                IF ( printi ) WRITE( out,                                      &
-                  "( ' increasing pivot tolerance to ', ES12.4, / )" ) CNTL%u
-                CYCLE inner
-              ELSE IF ( factor /= 2 ) THEN
-                CNTL%u = pivot_tol
-                factor = 2
-                refact = .TRUE. ; new_fact = .TRUE. ; new_prec = .TRUE.
-                IF ( printi ) WRITE( out,                                      &
-                  "( ' changing to augmented system ', / )" )
-                CYCLE inner
-              ELSE
-                inform%status = - 8
-                GO TO 700
-              END IF
-            END IF
-
-            IF ( inform%status /= 0 ) GO TO 700   
-            
-            IF ( auto .AND. res_norm > control%stop_d ) THEN
-              IF ( ( fact_hist == 1 .OR. fact_hist == 3 ) .AND.                &
-                   ( factor == 0 .OR. factor == 1 ) ) THEN
-                factor = 2
-                refact = .TRUE. ; new_prec = .TRUE.
-                IF ( printi ) WRITE( out, 2340 ) res_norm, control%stop_d
-                CYCLE
-              END IF
-              IF ( first_iteration ) norm_d = sn
-            END IF
-            GO TO 100
-
-!  Form the product of VECTOR with H
-
-          CASE ( 3, 7 )
-
-            IF ( printw ) WRITE( out,                                          &
-                 "( ' ............ matrix-vector product .......... ' )" )
-
-!  Compute the largest error in the residuals
-
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 1, dims%x_free ; HX( i ) = zero ; END DO
-              DO i = dims%x_free + 1, n 
-                HX( i ) = BARRIER_X( i ) * VECTOR( i ) ; END DO
-            ELSE
-              HX( : dims%x_free ) = zero
-              HX( dims%x_free + 1 : n ) =                                      &
-                BARRIER_X * VECTOR( dims%x_free + 1 : n )
-            END IF
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 0, dims%nc - 1
-                HX( dims%c_s + i ) =                                           &
-                  BARRIER_C( dims%c_l_start + i ) * VECTOR( dims%c_s + i )
-              END DO
-            ELSE
-              HX( dims%c_s : dims%c_e ) =                                      &
-                BARRIER_C * VECTOR( dims%c_s : dims%c_e )
-            END IF
-
-!  Print the residuals if required 
-
-            IF ( printm .AND. m > 0 ) THEN
-              IF ( control%array_syntax_worse_than_do_loop ) THEN
-                DO i = dims%y_s, dims%y_i - 1 ; HX( i ) = zero ; END DO
-                DO i = 0, dims%nc - 1
-                  HX( dims%y_i + i ) =                                         &
-                   - SCALE_C( dims%c_l_start + i ) * VECTOR( dims%c_s + i )
-                END DO
-              ELSE
-                HX( dims%y_s : dims%y_i - 1 ) = zero
-                HX( dims%y_i : dims%y_e ) =                                    &
-                   - SCALE_C * VECTOR( dims%c_s : dims%c_e )
-              END IF
-              CALL LPB_AX( m, HX( dims%y_s : dims%y_e ), m, A_ne, A_val, A_col,                 &
-                            A_ptr, n, VECTOR( : n ), '+ ' )
-              WRITE( out, "(' constraint residual ', ES12.4 )")                &
-                MAXVAL( ABS( HX( dims%y_s : dims%y_e ) ) )
-            END IF
-          
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 1, dims%c_e ; VECTOR( i ) = HX( i ) ; END DO
-            ELSE
-              VECTOR( : dims%c_e ) = HX( : dims%c_e )
-            END IF
-          
-            GO TO 100
-
-!  Reform the initial residual
-
-          CASE ( 5 )
-          
-            IF ( printw ) WRITE( out,                                          &
-                 "( ' ................. restarting ................ ' )" )
-
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i =  1, dims%c_e ; R( i ) = GRAD_L( i ) ; END DO
-            ELSE
-              R( : dims%c_e ) = GRAD_L
-            END IF
-            GO TO 100
-
-          END SELECT
-
-          CALL CPU_TIME( dum ) ; dum = dum - time
-
-          IF ( printm ) WRITE( out,                                            &
-           "(/, '   |           trust-region subproblem solved             |', &
-         &   /, '   |------------------------------------------------------|', &
-         &     / )" )
-
-          IF ( printw ) WRITE( out,                                            &
-               "( ' ............... step computed ............... ' )" )
-
-          IF ( printt ) WRITE( out, "( ' solve time = ', F10.2 ) " ) dum
-          inform%time%solve = inform%time%solve + dum
-
-          cg_iter = gltr_info%iter
-          inform%cg_iter = inform%cg_iter + cg_iter
-
-!  If the overall search direction is unlikely to make a significant
-!  impact on the residual, exit
-
-          IF ( gltr_info%mnormx <= teneps ) THEN
-            inform%status = - 9
-            gltr_info%status = 1
-            got_ratio = .FALSE.
-            full_iteration = .FALSE.
-
-!  Update the Lagrange multipliers
-
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 1, m
-                Y( i ) = Y( i ) + VECTOR( dims%c_e + i ) ; END DO
-            ELSE
-              Y = Y + VECTOR( dims%y_s : dims%y_e )
-            END IF
-
-!  Update the dual variables so that z_l > 0 and z_u > 0
-
-!  Problem variables
-
-            DO i = dims%x_free + 1, dims%x_l_start - 1
-              Z_l( i ) = mu / X( i )
-            END DO
-            DO i = dims%x_l_start, dims%x_l_end
-              Z_l( i ) = mu / DIST_X_l( i )
-            END DO
-            DO i = dims%x_u_start, dims%x_u_end
-              Z_u( i ) = - mu / DIST_X_u( i )
-            END DO       
-            DO i = dims%x_u_end + 1, n
-              Z_u( i ) = mu / X( i )
-            END DO       
-
-!  Slack variables
-
-            DO i = dims%c_l_start, dims%c_l_end
-              Y_l( i ) = mu / DIST_C_l( i )
-            END DO
-            DO i = dims%c_u_start, dims%c_u_end
-              Y_u( i ) = - mu / DIST_C_u( i )
-            END DO       
-
-            EXIT
-          END IF
-
-! ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-!  Find the largest feasible step for the primal variables
-! ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-          IF ( printw ) WRITE( out,                                            &
-               "( ' .............. get steplength  .............. ' )" )
-
-          step_max = infinity
-
-!  Problem variables:
 
           DO i = dims%x_free + 1, dims%x_l_start - 1
-            IF ( S( i ) < zero ) step_max = MIN( step_max, - X( i ) / S( i ) ) 
+            DZ_l_zh( i ) =                                                     &
+             - ( DZ_l_zh( i ) + Z_l( i ) * DX_zh( i ) ) / X( i )
           END DO
 
           DO i = dims%x_l_start, dims%x_l_end
-            IF ( S( i ) < zero )                                               &
-              step_max = MIN( step_max, - DIST_X_l( i ) / S( i ) ) 
+            DZ_l_zh( i ) =                                                     &
+             - ( DZ_l_zh( i ) + Z_l( i ) * DX_zh( i ) ) / DIST_X_l( i )
           END DO
 
           DO i = dims%x_u_start, dims%x_u_end
-            IF ( S( i ) > zero )                                               &
-              step_max = MIN( step_max, DIST_X_u( i ) / S( i ) ) 
-          END DO 
+            DZ_u_zh( i ) =                                                     &
+              - ( DZ_u_zh( i ) - Z_u( i ) * DX_zh( i ) ) / DIST_X_u( i )
+          END DO
 
           DO i = dims%x_u_end + 1, n
-            IF ( S( i ) > zero ) step_max = MIN( step_max, - X( i ) / S( i ) ) 
-          END DO 
-
-!  Slack variables:
+            DZ_u_zh( i ) =                                                     &
+                ( DZ_u_zh( i ) - Z_u( i ) * DX_zh( i ) ) / X( i )
+          END DO
 
           DO i = dims%c_l_start, dims%c_l_end
-            IF ( S( dims%c_b + i ) < zero )                                    &
-              step_max = MIN( step_max, - DIST_C_l( i ) / S( dims%c_b + i ) ) 
+            DY_l_zh( i ) =                                                     &
+              - ( DY_l_zh( i ) + Y_l( i ) * DC_zh( i ) ) / DIST_C_l( i )
           END DO
 
           DO i = dims%c_u_start, dims%c_u_end
-            IF ( S( dims%c_b + i ) > zero )                                    &
-              step_max = MIN( step_max, DIST_C_u( i ) / S( dims%c_b + i ) ) 
-          END DO 
-
-!  Test whether the new point is acceptable
-!  ----------------------------------------   
-
-!  If x + s - X_l >= zeta(x - l) and X_u - x - s >= zeta(u - x),
-!  compute phi at x+s and define the ratio
-!       (phi(x+s) - phi(x))/m(x+s) - m(x))
-
-          got_ratio = .TRUE.
-
-          DO i = dims%x_free + 1, dims%x_l_start - 1
-
-!  Check that x + s >= zeta(x)
-
-            IF ( X( i ) + S( i ) < zeta * X( i ) ) THEN
-               got_ratio = .FALSE.
-               EXIT
-            END IF
+            DY_u_zh( i ) =                                                     &
+              - ( DY_u_zh( i ) - Y_u( i ) * DC_zh( i ) ) / DIST_C_u( i )
           END DO
 
-          IF ( got_ratio ) THEN
-            DO i = dims%x_l_start, dims%x_l_end
-
-!  Calculate x + s - x_l
-
-              DIST_X_l_trial( i ) = DIST_X_l( i ) + S( i ) 
-
-!  Check that x + s - x_l >= zeta(x - x_l)
-
-              IF ( DIST_X_l_trial( i ) < zeta * DIST_X_l( i ) ) THEN
-                 got_ratio = .FALSE.
-                 EXIT
-              END IF
-            END DO
+          IF ( printw ) THEN
+            char_x = MAXVAL_ABS( DX_zh( : ) )
+            char_c = MAXVAL_ABS( DC_zh( : ) )
+            char_y = MAXVAL_ABS( DY_zh( : ) )
+            char_z_l = MAXVAL_ABS( DZ_l_zh( : ) )
+            char_z_u = MAXVAL_ABS( DZ_u_zh( : ) )
+            char_y_l = MAXVAL_ABS( DY_l_zh( : ) )
+            char_y_u = MAXVAL_ABS( DY_u_zh( : ) )
+            WRITE( out, "( A, ' ZT', I1, 7A10 )" ) prefix, 1,                  &
+              char_x, char_c, char_y, char_z_l, char_z_u, char_y_l, char_y_u
           END IF
-
-          IF ( got_ratio ) THEN
-            DO i = dims%x_u_start, dims%x_u_end
-
-!  Calculate x_u - x - s
-
-              DIST_X_u_trial( i ) = DIST_X_u( i ) - S( i ) 
-
-!  Check that x_u - x - s >= zeta(x_u - x)
-
-              IF ( DIST_X_u_trial( i ) < zeta * DIST_X_u( i ) ) THEN
-                 got_ratio = .FALSE.
-                 EXIT
-              END IF
-            END DO 
-          END IF
-
-          IF ( got_ratio ) THEN
-            DO i = dims%x_u_end + 1, n
-
-!  Check that x + s <= zeta(x)
-
-              IF ( X( i ) + S( i ) > zeta * X( i ) ) THEN
-                 got_ratio = .FALSE.
-                 EXIT
-              END IF
-            END DO 
-          END IF
-
-!  Do the same for the slack variables
-
-!  Calculate x + s - l
-
-          IF ( got_ratio ) THEN
-            DO i = dims%c_l_start, dims%c_l_end
-              DIST_C_l_trial( i ) = DIST_C_l( i ) + S( dims%c_b + i ) 
-
-
-!  Check that x + s - X_l >= zeta(x - l)
-
-              IF ( DIST_C_l_trial( i ) < zeta * DIST_C_l( i ) ) THEN
-                 got_ratio = .FALSE.
-                 EXIT
-              END IF
-            END DO
-          END IF
-
-          IF ( got_ratio ) THEN
-            DO i = dims%c_u_start, dims%c_u_end
-
-!  Calculate X_u - x - s
-
-              DIST_C_u_trial( i ) = DIST_C_u( i ) - S( dims%c_b + i ) 
-
-!  Check that X_u - x - s >= zeta(u - x)
-
-              IF ( DIST_C_u_trial( i ) < zeta * DIST_C_u( i ) ) THEN
-                 got_ratio = .FALSE.
-                 EXIT
-              END IF
-            END DO 
-          END IF
-
-!  The new point is feasible. Calculate the new value of the objective function
-
-          IF ( got_ratio ) THEN
-      
-!  Calculate x + s
-
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = dims%x_s, dims%x_e ; X_trial( i ) = X( i ) + S( i ); END DO
-            ELSE
-              X_trial = X + S( dims%x_s : dims%x_e )
-            END IF
-            nbacts = 0
-            gltr_control%boundary = .FALSE.
-            gltr_info%status = 1
-
-!  Now evaluate the objective function ...
-
-            obj_trial = DOT_PRODUCT( X_trial, G )
-
-!  ... and the barrier function
-
-            phi_trial = LPB_barrier_value( dims, n, obj_trial, X_trial,        &
-                                            DIST_X_l_trial, DIST_X_u_trial,    &
-                                            DIST_C_l_trial, DIST_C_u_trial,    &
-                                            mu )
-
-!  Compute the ratio of actual to predicted reduction over the current iteration
-
-            ared   = ( phi - phi_trial ) + MAX( one, ABS( phi ) ) * teneps
-            prered = - model + MAX( one, ABS( phi ) ) * teneps
-            IF ( ABS( ared ) < teneps .AND. ABS( phi ) > teneps )              &
-               ared = prered
-            ratio = ared / prered
-
-            IF ( printt )                                                      &
-                WRITE( out, " ( ' ared, pred ', 2ES12.4 ) " ) ared, prered
-
-          ELSE
-            nbacts = 1 ; gltr_control%boundary = .TRUE.
-          END IF
-
-!  If ratio >= eta_1, the iteration was successful
-
-          IF ( got_ratio .AND. ratio >= eta_1 ) THEN
-
-            IF ( printw ) WRITE( out,                                          &
-                 "( ' ............... successful step ............... ' )" )
-
-!  Compute new dual variables so that z_l > 0 and z_u > 0
-!  ------------------------------------------------------
-
-!  Problem variables:
-
-!  For the lower bounds ...
- 
-            DO i = dims%x_free + 1, dims%x_l_start - 1
-              Z_l( i ) = MAX( z_min, ( mu - Z_l( i ) * S( i ) ) / X( i ),      &
-                                nu_1 * MIN( one, Z_l( i ), mu / X_trial( i ) ) )
-            END DO
-
-            DO i = dims%x_l_start, dims%x_l_end
-              Z_l( i ) = MAX( z_min,                                           &
-                              ( mu - Z_l( i ) * S( i ) ) / DIST_X_l( i ),      &
-                           nu_1 * MIN( one,                                    &
-                                       Z_l( i ), mu / DIST_X_l_trial( i ) ) )
-            END DO
-     
-!  .... and now the upper bounds
-
-            DO i = dims%x_u_start, dims%x_u_end
-              Z_u( i ) = MIN( - z_min,                                         &
-                              ( - mu + Z_u( i ) * S( i ) ) / DIST_X_u( i ),    &
-                           nu_1 * MAX( - one,                                  &
-                                       Z_u( i ), - mu / DIST_X_u_trial( i ) ) )
-            END DO       
-
-            DO i = dims%x_u_end + 1, n
-              Z_u( i ) = MIN( - z_min, ( mu - Z_u( i ) * S( i ) ) / X( i ),    &
-                           nu_1 * MAX( - one, Z_u( i ), mu / X_trial( i ) ) )
-            END DO       
-
-!  Now replace x by x + s
-
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 1, n 
-                X( i ) = X_trial( i ) ; END DO
-              DO i = dims%x_l_start, dims%x_l_end
-                DIST_X_l( i ) = DIST_X_l_trial( i ) ; END DO
-              DO i = dims%x_u_start, dims%x_u_end
-                DIST_X_u( i ) = DIST_X_u_trial( i ) ; END DO
-            ELSE
-              X = X_trial
-              DIST_X_l = DIST_X_l_trial
-              DIST_X_u = DIST_X_u_trial
-            END IF
-
-!  Slack variables:
-
-!  For the lower bounds ...
- 
-            DO i = dims%c_l_start, dims%c_l_end
-              Y_l( i ) = MAX( ( mu - Y_l( i ) * S( dims%c_b + i ) ) /          &
-                                DIST_C_l( i ), nu_1 * MIN( one,                &
-                                       Y_l( i ), mu / DIST_C_l_trial( i ) ) )
-            END DO
-     
-!  .... and now the upper bounds
-
-            DO i = dims%c_u_start, dims%c_u_end
-              Y_u( i ) = MIN( ( - mu + Y_u( i ) * S( dims%c_b + i ) ) /        &
-                                DIST_C_u( i ), nu_1 * MAX( - one,              &
-                                       Y_u( i ), - mu / DIST_C_u_trial( i ) ) )
-            END DO       
-
-!  Now replace c by c + s
-
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = dims%c_l_start, dims%c_u_end
-                C( i ) = C( i ) + S( dims%c_b + i ) ; END DO
-              DO i = dims%c_l_start, dims%c_l_end
-                DIST_C_l( i ) = DIST_C_l_trial( i ) ; END DO
-              DO i = dims%c_u_start, dims%c_u_end
-                DIST_C_u( i ) = DIST_C_u_trial( i ) ; END DO
-            ELSE
-              C = C + S( dims%c_s : dims%c_e )
-              DIST_C_l = DIST_C_l_trial
-              DIST_C_u = DIST_C_u_trial
-            END IF
-
-!  Update the objective and barrier function values
-
-            phi  = phi_trial
-            obj  = obj_trial
-            inform%obj = obj + f
-
-!  Compute the derivatives of the objective function
-
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 1, n ; GRAD( i ) = G( i ) ; END DO
-            ELSE
-              GRAD = G
-            END IF
-            refact = .TRUE.
-          ELSE
-
-            IF ( printw ) WRITE( out,                                          &
-                 "( ' .............. unsuccessful step .............. ' )" )
-
-!  As we have not achieved a sufficient reduction, use the Nocedal-Yuan 
-!  technique to achieve one. To do this, perform a line-search to find
-!  a point x + alpha s which sufficiently reduces the barrier function
-
-!  Find the largest feasible step for x
-
-            alpha = one
-   
-!  Problem variables:
-
-            DO i = dims%x_free + 1, dims%x_l_start - 1
-              IF( S( i ) < zero ) alpha = MIN( alpha, - X( i ) / S( i ) )
-            END DO
-            DO i = dims%x_l_start, dims%x_l_end
-              IF( S( i ) < zero ) alpha = MIN( alpha, - DIST_X_l( i ) / S( i ) )
-            END DO
-
-            DO i = dims%x_u_start, dims%x_u_end
-              IF( S( i ) > zero ) alpha = MIN( alpha, DIST_X_u( i ) / S( i ) ) 
-            END DO 
-            DO i = dims%x_u_end + 1, n
-              IF( S( i ) > zero ) alpha = MIN( alpha, - X( i ) / S( i ) ) 
-            END DO 
-
-!  Slack variables:
-
-            DO i = dims%c_l_start, dims%c_l_end
-              IF ( S( dims%c_b + i ) < zero )                                  &
-                alpha = MIN( alpha, - DIST_C_l( i ) / S( dims%c_b + i ) )
-            END DO
-
-            DO i = dims%c_u_start, dims%c_u_end
-              IF ( S( dims%c_b + i ) > zero )                                  &
-                alpha = MIN( alpha, DIST_C_u( i ) / S( dims%c_b + i ) ) 
-            END DO 
-
-!  A step of no larger than zeta of the distance to the nearest 
-!  bound will be attempted
-
-            alpha = ( one - zeta ) * alpha
-!           alpha = half * alpha
-
-! ::::::::::::::::::::::::::::::::::::::::::::
-!  Record the slope along the search direction
-! ::::::::::::::::::::::::::::::::::::::::::::
-
-!  Compute the slope and curvature of the objective function
-
-            obj_slope = DOT_PRODUCT( GRAD( : n ), S( : n ) ) 
-            obj_curv  = zero
-
-!  Compute the slope of the barrier function
-
-            phi_slope = DOT_PRODUCT( GRAD_L, S ) 
-
-! ::::::::::::::::::::::::::::::::::::::::::::::::::::::
-!  Use a backtracking line-search, starting from alpha_v
-! ::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-            IF ( printt ) WRITE( out, "( /, ' value = ', ES12.4, ' slope = ',  &
-           &     ES12.4 )" ) phi, phi_slope
-            IF ( printw ) WRITE( out,                                          &
-                 "( ' ................ linesearch ................ ' )" )
-            IF ( printt ) WRITE( out, 2140 ) 
-            DO
-
-!  The barrier value should  be smaller than a linear model
-
-              phi_model = phi + alpha * eta * phi_slope
-
-!  Calculate the distances of x + alpha s from the bounds
-
-              IF ( control%array_syntax_worse_than_do_loop ) THEN
-                DO i = 1, n
-                  X_trial( i ) = X( i ) + alpha * S( i ) ; END DO
-              ELSE
-                X_trial = X + alpha * S( : n )
-              END IF
-
-!  Problem variables:
-
-              DO i = dims%x_l_start, dims%x_l_end
-                DIST_X_l_trial( i ) = DIST_X_l( i ) + alpha * S( i ) 
-              END DO 
-              DO i = dims%x_u_start, dims%x_u_end
-                DIST_X_u_trial( i ) = DIST_X_u( i ) - alpha * S( i ) 
-              END DO 
-        
-!  Slack variables:
-
-              DO i = dims%c_l_start, dims%c_l_end
-                DIST_C_l_trial( i ) = DIST_C_l( i ) + alpha * S( dims%c_b + i )
-              END DO 
-              DO i = dims%c_u_start, dims%c_u_end
-                DIST_C_u_trial( i ) = DIST_C_u( i ) - alpha * S( dims%c_b + i )
-              END DO 
-        
-              obj_trial = obj + alpha * ( obj_slope + alpha * obj_curv )
-              phi_trial = LPB_barrier_value( dims, n, obj_trial, X_trial,      &
-                                              DIST_X_l_trial, DIST_X_u_trial,  &
-                                              DIST_C_l_trial, DIST_C_u_trial,  &
-                                              mu )
-
-              IF ( printt ) WRITE( out, 2150 ) alpha, phi_trial, phi_model 
-
-!  Check to see if the Armijo criterion is satisfied. If not, halve the 
-!  steplength
-
-              IF ( phi_trial <= phi_model ) EXIT
-              alpha = half * alpha ;  nbacts = nbacts + 1 
-              IF ( alpha < epsmch ) THEN
-                 inform%status = - 9
-                 GO TO 500
-              END IF
-            END DO
-            inform%nbacts = inform%nbacts + nbacts
-            refact = .TRUE.
-
-!  Update the objective and barrier function values
-
-            phi  = phi_trial ; obj  = obj_trial ; inform%obj = obj + f
-
-!  Update the primal variables and derivatives of the objective function
-
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 1, n
-                X( i ) = X( i ) + alpha * S( i )
-                END DO
-              DO i = dims%c_l_start, dims%c_u_end
-                C( i ) = C( i ) + alpha * S( dims%c_b + i ) ; END DO
-            ELSE
-              X = X + alpha * S( dims%x_s : dims%x_e )
-              C = C + alpha * S( dims%c_s : dims%c_e )
-            END IF
-
-!  Update the distances to the bounds
-
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = dims%x_l_start, dims%x_l_end
-                DIST_X_l( i ) = DIST_X_l_trial( i ) ; END DO 
-              DO i = dims%x_u_start, dims%x_u_end
-                DIST_X_u( i ) = DIST_X_u_trial( i ) ; END DO 
-              DO i = dims%c_l_start, dims%c_l_end
-                DIST_C_l( i ) = DIST_C_l_trial( i ) ; END DO 
-              DO i = dims%c_u_start, dims%c_u_end
-                DIST_C_u( i ) = DIST_C_u_trial( i ) ; END DO 
-            ELSE
-              DIST_X_l = DIST_X_l_trial ; DIST_X_u = DIST_X_u_trial
-              DIST_C_l = DIST_C_l_trial ; DIST_C_u = DIST_C_u_trial
-            END IF
-
-          END IF
-!         write(6,"( ' X, C ', 2ES12.4 )" ) X(2), C(79)
-
-!  Update the trust-region radius
-!  ------------------------------   
-
-          old_radius = radius
-
-!  If ratio >= eta_2, possibly increase radius
-
-          IF ( got_ratio .AND. ratio >= eta_2 ) THEN
-            radius = MIN( radius_max,                                          &
-                          radius * MIN( two, half * ( step_max + one ) ),      &
-                          MAX( radius, two * gltr_info%mnormx ) )
-
-!  If eta_2 > ratio >= eta_1, replace radius by something 
-!  in [gamma_2 radius, radius] 
-
-          ELSE IF ( got_ratio .AND. ratio >= eta_1 ) THEN
-            
-!  If eta_1 > ratio, replace radius by something
-!  in [gamma_1 radius, gamma_2 radius] 
-
-          ELSE
-            delta = one
-  410       CONTINUE
-            gltr_info%status = 1
-            delta = half * delta
-            IF ( alpha <= delta ) GO TO 410
-            radius = delta * radius
-          END IF
-
-        END DO inner  ! end of inner iteration loop
-
-!  ======================
-!  End of Inner iteration
-!  ======================
-
-!  Compare the primal and primal-dual dual variables
-
-        IF ( printd ) THEN
-          DO i = dims%x_free + 1, dims%x_l_start - 1
-            WRITE( out," ( ' z_l, dz_l = ', 2ES12.4 )" )                       &
-              Z_l( i ),    mu / X( i ) - Z_l( i )
-          END DO
-          DO i = dims%x_l_start, dims%x_l_end
-            WRITE( out," ( ' z_l, dz_l = ', 2ES12.4 )" )                       &
-              Z_l( i ),    mu / DIST_X_l( i ) - Z_l( i )
-          END DO
-          DO i = dims%x_u_start, dims%x_u_end
-            WRITE( out," ( ' z_u, dz_u = ', 2ES12.4 )" )                       &
-              Z_u( i ),  - mu / DIST_X_u( i ) - Z_u( i ) 
-          END DO
-          DO i = dims%x_u_end + 1, n
-            WRITE( out," ( ' z_u, dz_u = ', 2ES12.4 )" )                       &
-              Z_u( i ),  mu / X( i ) - Z_u( i ) 
-          END DO
-          DO i = dims%c_l_start, dims%c_l_end
-            WRITE( out," ( ' y_l, dy_l, y = ', 3ES12.4 )" )                    &
-              Y_l( i ),    mu / DIST_C_l( i ) - Y_l( i ), Y( i )
-          END DO
-          DO i = dims%c_u_start, dims%c_u_end
-            WRITE( out," ( ' y_u, dy_u, y = ', 3ES12.4 )" )                    &
-              Y_u( i ),  - mu / DIST_C_u( i ) - Y_u( i ), Y( i )
-          END DO
         END IF
+
+        IF ( printt ) WRITE( out,                                              &
+           "( A, ' time for solves = ', F0.2 ) " ) prefix, clock_solve
+        inform%time%solve = inform%time%solve + time_solve
+        inform%time%clock_solve = inform%time%clock_solve + clock_solve
+
+        IF ( printw ) WRITE( out,                                              &
+             "( A, ' ............... arc computed ............... ' )" ) prefix
+
+!  =======
+!  STEP 4:
+!  =======
+
+!  =====================================================================
+!  -*-*-*-*-*-*-*-*-*-*-*-   Line search   -*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+!  =====================================================================
+
+        IF ( printw ) WRITE( out,                                              &
+             "( A, ' .............. get steplength  .............. ' )" ) prefix
+
+!  if a convergence guarantee is required, try the Taylor Zhang arc
+
+        IF ( guarantee ) THEN
+
+!  find the largest alpha in [0,1] for which
+
+!     v_1(alpha) = v + alpha v^1
+
+!  lies in a given wide neighbourhood of the central path
+
+          CALL LPB_compute_lmaxstep( dims, n, m, nbnds, X, X_l, X_u, DX_zh,    &
+                                    C, C_l, C_u, DC_zh, Y_l, Y_u, DY_l_zh,     &
+                                    DY_u_zh, Z_l, Z_u, DZ_l_zh, DZ_u_zh,       &
+                                    gamma_c, gamma_f, res_primal_dual,         &
+                                    alpha_max, inform )
+
+!  check that resulting alpha is not too small
+
+          IF ( inform%status == GALAHAD_error_tiny_step ) GO TO 500
+
+! :::::::::::::::::::::::::::::::::::::::::::::::::::::::
+!  Use a safeguarded arc-search, starting from alpha_max
+! :::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+!  record the initial slope along the search arc
+
+          slope = - ( merit - mu * nbnds )
+
+!  define an interval [alhpa_l,alpha_u] containing the required stepsize
+
+          alpha_max = MIN( alpha_max, one )
+          alpha_l = zero ; alpha_u = alpha_max ; alpha = alpha_u
+
+          IF ( printw ) WRITE( out, "( /, A, ' ***  Linesearch       ',        &
+         &  ' step       trial value     model value ', /, A, 16X, 3ES16.8 )" )&
+              prefix, prefix, zero, merit, merit
+
+!  backtracking loop
+
+          nbact = 0
+          DO
+
+!  once the interval is small enough, accept the lower bound as the required
+!  step so long as this step is not zero
+
+            IF ( alpha_u - alpha_l <= stop_alpha .AND. alpha_l > zero ) THEN
+              alpha = alpha_l
+              EXIT
+            END IF
+            IF ( alpha_u <= epsmch ) THEN
+              IF ( inform%iter - 1 > muzero_fixed ) THEN
+                inform%status = GALAHAD_error_tiny_step
+                GO TO 500
+              ELSE
+                muzero_fixed = inform%iter - 2
+                EXIT
+              END IF
+            END IF
+
+!  the merit value of an acceptable point must be smaller than a linear model
+
+            merit_model = merit + alpha * eta * slope
+
+!  compute the complementarity at the new point on the arc
+
+            comp = zero
+            DO i = dims%x_free + 1, dims%x_l_end
+              comp = comp + ( Z_l( i ) + alpha * DZ_l_zh( i ) ) *              &
+                            ( X( i ) + alpha * DX_zh( i ) - X_l( i ) )
+            END DO
+            DO i = dims%x_u_start, n
+              comp = comp - ( Z_u( i ) + alpha * DZ_u_zh( i ) ) *              &
+                            ( X_u( i ) - X( i ) - alpha * DX_zh( i ) )
+            END DO
+
+            DO i = dims%c_l_start, dims%c_l_end
+              comp = comp + ( Y_l( i ) + alpha * DY_l_zh( i ) ) *              &
+                            ( C( i ) + alpha * DC_zh( i ) - C_l( i ) )
+            END DO
+            DO i = dims%c_u_start, dims%c_u_end
+              comp = comp - ( Y_u( i ) + alpha * DY_u_zh( i ) ) *              &
+                            ( C_u( i ) - C( i ) - alpha * DC_zh( i ) )
+            END DO
+
+!  evaluate the merit function at the new point
+
+            one_minus_alpha = one - alpha
+            merit_trial = comp + one_minus_alpha * tau * res_primal_dual
+            IF ( printw ) WRITE( out, "( A, 16X, 3ES16.8 )" )                  &
+              prefix, alpha, merit_trial, merit_model
+
+!  check to see if the Amijo criterion is satisfied.
+
+            IF ( merit_trial <= merit_model ) THEN
+
+!  if the current arc length is alpha_max, accept this as the required step
+
+              IF ( alpha == alpha_max ) EXIT
+
+!  increase the lower bound
+
+              alpha_l = alpha
+              alpha = half * ( alpha + alpha_u )
+
+!  the current alpha is unacceptable ; reduce the upper bound
+
+            ELSE
+              alpha_u = alpha
+              alpha = half * ( alpha + alpha_l )
+            END IF
+            nbact = nbact + 1
+          END DO
+          opt_alpha_guarantee = alpha
+          opt_merit_guarantee = merit_trial
+          IF ( printp ) WRITE( out, "( A, '      Zhang step, merit =',         &
+         &            2ES24.16 )" ) prefix, alpha, merit_trial
+        END IF
+
+!  record the initial slope along the search arc
+
+        IF ( arc == 'ZP' ) THEN
+          slope = - two * ( merit - mu * nbnds ) + tau * res_primal_dual
+        ELSE IF ( puiseux ) THEN
+          slope = - two * ( merit - mu * nbnds )
+        ELSE
+          slope = - ( merit - mu * nbnds )
+        END IF
+        IF ( printw ) WRITE( out, "( A, '  value and slope = ', 1P, 2D12.4)")  &
+          prefix, merit, slope
+
+!  loop over arcs of increasing order
+
+        IF ( control%every_order .OR. order <= 0 ) THEN
+          sorder = 1
+        ELSE
+          sorder = order
+        END IF
+
+  step: DO iorder = sorder, order
+
+          CALL LPB_compute_v_alpha( dims, n, m, iorder, X_coef, C_coef,        &
+                           Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,     &
+                           X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,              &
+                           C_l, C_u, one, comp )
+
+!  find the largest alpha in [0,1] for which
+
+!     v_l(alpha) = v + sum_k=1^l [ (-1)^k v^k / k! ] alpha^k
+
+!  lies in a given wide neighbourhood of the central path
+
+!         IF ( .TRUE. ) THEN
+          IF ( .FALSE. ) THEN    ! serial step
+          CALL LPB_compute_stepsize( dims, n, m, nbnds, iorder,                &
+                                     puiseux .AND. arc /= 'ZP',                &
+                                     X_coef, C_coef, Y_coef, Y_l_coef,         &
+                                     Y_u_coef, Z_l_coef, Z_u_coef,             &
+                                     X, X_l, X_u, Z_l, Z_u,                    &
+                                     Y, Y_l, Y_u, C, C_l, C_u,                 &
+                                     gamma_c, gamma_f, res_primal_dual,        &
+                                     alpha_max, slknes, print_level,           &
+                                     control, inform )
+          ELSE
+          CALL LPB_compute_pmaxstep( dims, n, m, nbnds, iorder,                &
+                                     puiseux .AND. arc /= 'ZP',                &
+                                     X_coef, C_coef, Y_l_coef, Y_u_coef,       &
+                                     Z_l_coef, Z_u_coef, X_l, X_u, C_l, C_u,   &
+                                     CS_coef, COEF, ROOTS, gamma_c, gamma_f,   &
+                                     res_primal_dual, alpha_max,               &
+                                     control, inform, ROOTS_data )
+
+!  compute the best point on the arc and its complementarity
+
+          CALL LPB_compute_v_alpha( dims, n, m, iorder, X_coef, C_coef, Y_coef,&
+                                    Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,    &
+                                    X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,     &
+                                    C_l, C_u, alpha_max, slknes )
+          END IF
+
+!  check that resulting alpha is not too small
+
+          IF ( inform%status == GALAHAD_error_tiny_step ) THEN
+            OPT_alpha( iorder ) = zero
+            OPT_merit( iorder ) = merit
+            IF ( printp ) WRITE( out, "( A, '  order ', I3, ' step, merit =',  &
+           &                 2ES24.16 )" ) prefix, iorder, zero, merit
+            CYCLE
+          END IF
+
+! :::::::::::::::::::::::::::::::::::::::::::::::::::::::
+!  Use a safeguarded arc-search, starting from alpha_max
+! :::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+!  define an interval [alhpa_l,alpha_u] containing the required stepsize
+
+          alpha_l = zero ; alpha_u = alpha_max ; alpha = alpha_max
+
+          IF ( printw ) WRITE( out, "( /, A, ' ***  Linesearch       ',        &
+         &  ' step       trial value     model value ', /, A, 16X, 3ES16.8 )" )&
+              prefix, prefix, zero, merit, merit
+
+!  backtracking loop
+
+          nbact = 0
+          DO
+
+!  once the interval is small enough, accept the lower bound as the required
+!  step so long as this step is not zero
+
+            IF ( alpha_u - alpha_l <= stop_alpha .AND. alpha_l > zero ) THEN
+              alpha = alpha_l
+              EXIT
+            END IF
+            IF ( alpha_u <= epsmch ) THEN
+              IF ( inform%iter - 1 > muzero_fixed ) THEN
+                inform%status = GALAHAD_error_tiny_step
+                OPT_alpha( iorder ) = zero
+                OPT_merit( iorder ) = merit
+                CYCLE step
+              ELSE
+                muzero_fixed = inform%iter - 2
+                EXIT
+              END IF
+            END IF
+
+!  the merit value of an acceptable point must be smaller than a linear model
+
+            merit_model = merit + alpha * eta * slope
+
+!  compute the complementarity at the new point on the arc
+
+            CALL LPB_compute_v_alpha( dims, n, m, iorder, X_coef, C_coef,      &
+                             Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,   &
+                             X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,            &
+                             C_l, C_u, alpha, comp )
+
+!  evaluate the merit function at the new point
+
+            one_minus_alpha = one - alpha
+            one_minus_alpha = one - alpha
+            IF ( puiseux .AND. arc /= 'ZP' ) THEN
+              merit_trial = comp + one_minus_alpha ** 2 * tau * res_primal_dual
+            ELSE
+              merit_trial = comp + one_minus_alpha * tau * res_primal_dual
+            END IF
+            IF ( printw ) WRITE( out, "( A, 16X, 3ES16.8 )" )                  &
+              prefix, alpha, merit_trial, merit_model
+
+!  check to see if the Amijo criterion is satisfied.
+
+            IF ( merit_trial <= merit_model ) THEN
+
+!  if the current arc length is alpha_max, accept this as the required step
+
+              IF ( alpha == alpha_max ) EXIT
+
+!  increase the lower bound
+
+              alpha_l = alpha
+              alpha = half * ( alpha + alpha_u )
+
+!  the current alpha is unacceptable ; reduce the upper bound
+
+            ELSE
+              alpha_u = alpha
+              alpha = half * ( alpha + alpha_l )
+            END IF
+            nbact = nbact + 1
+          END DO
+          OPT_alpha( iorder ) = alpha
+          OPT_merit( iorder ) = merit_trial
+          IF ( printp ) WRITE( out, "( A, '  order ', I3, ' step, merit =',    &
+         &                     2ES24.16 )" ) prefix, iorder, alpha, merit_trial
+        END DO step
+
+
+!  if the complementarity is small enough, try a lunge at the solution
+
+        IF ( mu <= control%mu_lunge .AND. alpha < one ) THEN
+
+!  evaluate the lunge
+
+          CALL LPB_compute_v_alpha( dims, n, m, order, X_coef, C_coef,         &
+                           Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,     &
+                           X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,              &
+                           C_l, C_u, one, comp )
+
+!  project the lunge into the feasible region
+
+          DO i = dims%x_free + 1, dims%x_l_end
+            X( i ) = MAX( X( i ), X_l( i ) )
+            Z_l( i ) = MAX( Z_l( i ), zero )
+          END DO
+
+          DO i = dims%x_u_start, n
+            X( i ) = MIN( X( i ), X_u( i ) )
+            Z_u( i ) = MIN( Z_u( i ), zero )
+          END DO
+
+          DO i = dims%c_l_start, dims%c_l_end
+            C( i ) = MAX( C( i ), C_l( i ) )
+            Y_l( i ) = MAX( Y_l( i ), zero )
+          END DO
+
+          DO i = dims%c_u_start, dims%c_u_end
+            C( i ) = MIN( C( i ), C_u( i ) )
+            Y_u( i ) = MIN( Y_u( i ), zero )
+          END DO
+
+!  update the distances to the bounds
+
+          DO i = dims%x_l_start, dims%x_l_end
+            DIST_X_l( i ) = X( i ) - X_l( i )
+          END DO
+
+          DO i = dims%x_u_start, dims%x_u_end
+            DIST_X_u( i ) = X_u( i ) - X( i )
+          END DO
+
+          DO i = dims%c_l_start, dims%c_l_end
+            DIST_C_l( i ) = C( i ) - C_l( i )
+          END DO
+
+          DO i = dims%c_u_start, dims%c_u_end
+            DIST_C_u( i ) = C_u( i ) - C( i )
+          END DO
+
+!  compute the constraint residuals
+
+          IF ( m > 0 ) THEN
+            C_RES( : dims%c_equality ) = - C_l( : dims%c_equality )
+            C_RES( dims%c_l_start : dims%c_u_end ) = - SCALE_C * C
+            CALL LPB_AX( m, C_RES, m, a_ne, A_val, A_col, A_ptr,      &
+                          n, X, '+ ' )
+            inform%primal_infeasibility = MAXVAL( ABS( C_RES ) )
+            IF ( printw ) WRITE( out, "( A, '  constraint residual ', ES12.4)")&
+              prefix, inform%primal_infeasibility
+          END IF
+
+!  compute the gradient of the Lagrangian function
+
+          CALL LPB_Lagrangian_gradient( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,  &
+                                         a_ne, A_val, A_col, A_ptr,            &
+                                         DIST_X_l, DIST_X_u,                   &
+                                         DIST_C_l, DIST_C_u,                   &
+                                         GRAD_L( dims%x_s : dims%x_e ),        &
+                                         control%getdua, dufeas,               &
+                                         gradient_kind, G )
+
+!  evaluate the primal and dual infeasibility and merit function
+
+          merit = LPB_merit_value( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,       &
+                                 DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,       &
+                                 GRAD_L( dims%x_s : dims%x_e ), C_RES,         &
+                                 tau, res_primal, inform%dual_infeasibility,   &
+                                 res_primal_dual, res_cs )
+
+!  compute the complementary slackness, and the min/max components
+!  of the primal/dual infeasibilities
+
+          slknes = DOT_PRODUCT( X( dims%x_free + 1 : dims%x_l_start - 1 ),     &
+                                Z_l( dims%x_free + 1 : dims%x_l_start - 1 ) ) +&
+                   DOT_PRODUCT( DIST_X_l( dims%x_l_start : dims%x_l_end ),     &
+                                Z_l( dims%x_l_start : dims%x_l_end ) ) -       &
+                   DOT_PRODUCT( DIST_X_u( dims%x_u_start : dims%x_u_end ),     &
+                                Z_u( dims%x_u_start : dims%x_u_end ) ) +       &
+                   DOT_PRODUCT( X( dims%x_u_end + 1 : n ),                     &
+                              Z_u( dims%x_u_end + 1 : n ) ) +                  &
+                   DOT_PRODUCT( DIST_C_l( dims%c_l_start : dims%c_l_end ),     &
+                                Y_l( dims%c_l_start : dims%c_l_end ) ) -       &
+                   DOT_PRODUCT( DIST_C_u( dims%c_u_start : dims%c_u_end ),     &
+                                Y_u( dims%c_u_start : dims%c_u_end ) )
+
+          IF ( nbnds > 0 ) THEN
+            slknes = slknes / nbnds
+          ELSE
+            slknes = zero
+          END IF
+
+!  test for optimality
+
+!write(6,*) inform%primal_infeasibility, stop_p
+!write(6,*) inform%dual_infeasibility, stop_d
+!write(6,*) slknes, stop_c
+
+          IF ( inform%primal_infeasibility <= stop_p .AND.                     &
+               inform%dual_infeasibility <= stop_d .AND.                       &
+               slknes <= stop_c ) THEN
+
+!  checkpoint
+
+            CALL CPU_TIME( time_record )
+            CALL CHECKPOINT( inform%iter, time_record - time_start,            &
+               MAX( inform%primal_infeasibility,                               &
+               inform%dual_infeasibility, slknes ),                            &
+               inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+
+!  if optimal, compute the objective function value
+
+            IF ( gradient_kind == 1 ) THEN
+              inform%obj = f + SUM( X )
+            ELSE IF ( gradient_kind /= 0 ) THEN
+              inform%obj = f + DOT_PRODUCT( G, X )
+            ELSE
+              inform%obj = f
+            END IF
+
+            IF ( .NOT. inform%feasible ) THEN
+              IF ( printi ) WRITE( out, 2070 ) prefix
+              inform%feasible = .TRUE.
+            END IF
+
+!  print a summary of the final iteration
+
+            CALL CLOCK_TIME( clock_now )
+            IF ( printi ) THEN
+              IF ( printt .OR. ( printi .AND.                                  &
+                 inform%iter == start_print ) ) WRITE( out, 2000 ) prefix
+              WRITE( out, 2030 ) prefix, inform%iter, re,                      &
+               inform%primal_infeasibility, inform%dual_infeasibility,         &
+               slknes, inform%obj, one, mu, order, pui, arc, nbact,            &
+               clock_now - clock_start
+            END IF
+
+            IF ( printd ) THEN
+              WRITE( out, 2100 ) prefix, ' X ', X
+              IF ( dims%x_free + 1 <= dims%x_l_end ) WRITE( out, 2100 )        &
+                prefix,  ' Z_l ', Z_l( dims%x_free + 1 : dims%x_l_end )
+              IF (  dims%x_u_start <= n ) WRITE( out, 2100 )                   &
+                prefix, ' Z_u ', Z_u( dims%x_u_start :  n )
+            END IF
+            inform%status = GALAHAD_ok ; GO TO 600
+          END IF
+
+!  if the lunge failed, revert to the best point found in the linesearch
+
+        END IF
+
+!  accept the point that gives the largest merit function decrease
+
+        IF ( control%every_order .AND. order > 0 ) THEN
+          iorder_array = MINLOC( OPT_merit( : order ) )
+          iorder = iorder_array( 1 )
+          alpha = OPT_alpha( iorder )
+          merit_trial = OPT_merit( order )
+        ELSE IF ( .NOT. control%every_order .AND. order > 0 ) THEN
+          iorder = order
+          alpha = OPT_alpha( iorder )
+          merit_trial = OPT_merit( order )
+        ELSE
+          iorder = 1
+        END IF
+
+!  ensure that if guaranteed convergence is required, the merit function
+!  decrease is at least as good as that provided by the Zhang-Taylor step
+
+        IF ( puiseux ) THEN
+          pui = 'P'
+        ELSE
+          pui = 'T'
+        END IF
+
+        IF ( guarantee ) THEN
+          IF ( order <= 0 .OR. opt_merit_guarantee < merit_trial ) THEN
+            iorder = 0
+            pui = 'T'
+            arc = 'Zh'
+            alpha = opt_alpha_guarantee
+            merit_trial = opt_merit_guarantee
+          END IF
+        END IF
+
+!  recover the point that gives the largest merit function decrease
+
+        IF ( iorder > 0 ) THEN
+          CALL LPB_compute_v_alpha( dims, n, m, iorder, X_coef, C_coef,        &
+                           Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,     &
+                           X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,              &
+                           C_l, C_u, alpha, comp )
+
+        ELSE
+          DO i = 1, n
+            X( i ) = X_coef( i, 0 ) + alpha * DX_zh( i )
+          END DO
+          DO i = dims%x_free + 1, dims%x_l_end
+            Z_l( i ) = Z_l_coef( i, 0 ) + alpha * DZ_l_zh( i )
+          END DO
+          DO i = dims%x_u_start, n
+            Z_u( i ) = Z_u_coef( i, 0 ) + alpha * DZ_u_zh( i )
+          END DO
+          DO i = 1, m
+            Y( i ) = Y_coef( i, 0 ) + alpha * DY_zh( i )
+          END DO
+          DO i = dims%c_l_start, dims%c_u_end
+            C( i ) = C_coef( i, 0 ) + alpha * DC_zh( i )
+          END DO
+          DO i = dims%c_l_start, dims%c_l_end
+            Y_l( i ) = Y_l_coef( i, 0 ) + alpha * DY_l_zh( i )
+          END DO
+          DO i = dims%c_u_start, dims%c_u_end
+            Y_u( i ) = Y_u_coef( i, 0 ) + alpha * DY_u_zh( i )
+          END DO
+
+comp = zero
+DO i = dims%x_free + 1, dims%x_l_end
+  comp = comp + ( X( i ) - X_l( i ) ) * Z_l( i )
+END DO
+DO i = dims%x_u_start, n
+  comp = comp + ( X( i ) - X_u( i ) ) * Z_u( i )
+END DO
+DO i = dims%c_l_start, dims%c_l_end
+  comp = comp + ( C( i ) - C_l( i ) ) * Y_l( i )
+END DO
+DO i = dims%c_u_start, dims%c_u_end
+  comp = comp + ( C( i ) - C_u( i ) ) * Y_u( i )
+END DO
+
+        END IF
+
+        inform%nbacts = inform%nbacts + nbact
+
+!  update the distances to the bounds with some precaution against exterme
+!  roundoff
+
+        DO i = dims%x_l_start, dims%x_l_end
+          IF ( X( i ) <= X_l( i ) ) X( i ) = X( i ) + ABS( X( i ) ) * epsmch
+          DIST_X_l( i ) = X( i ) - X_l( i )
+        END DO
+
+        DO i = dims%x_u_start, dims%x_u_end
+          IF ( X( i ) >= X_u( i ) ) X( i ) = X( i ) - ABS( X( i ) ) * epsmch
+          DIST_X_u( i ) = X_u( i ) - X( i )
+        END DO
+
+        DO i = dims%c_l_start, dims%c_l_end
+          IF ( C( i ) <= C_l( i ) ) C( i ) = C( i ) + ABS( C( i ) ) * epsmch
+          DIST_C_l( i ) = C( i ) - C_l( i )
+        END DO
+
+        DO i = dims%c_u_start, dims%c_u_end
+          IF ( C( i ) >= C_u( i ) ) C( i ) = C( i ) - ABS( C( i ) ) * epsmch
+          DIST_C_u( i ) = C_u( i ) - C( i )
+        END DO
+
+!  =======
+!  STEP 5:
+!  =======
+
+!  =====================================================================
+!  -*-*-*-*-*-*-*-*-*-*-*-   Book keeping  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+!  =====================================================================
+
+!  compute the constraint residuals
+
+        IF ( m > 0 ) THEN
+          C_RES( : dims%c_equality ) = - C_l( : dims%c_equality )
+          C_RES( dims%c_l_start : dims%c_u_end ) = - SCALE_C * C
+          CALL LPB_AX( m, C_RES, m, a_ne, A_val, A_col, A_ptr,      &
+                        n, X, '+ ' )
+          inform%primal_infeasibility = MAXVAL( ABS( C_RES ) )
+          IF ( printw ) WRITE( out, "( A, '  constraint residual ', ES12.4 )" )&
+            prefix, inform%primal_infeasibility
+!         WRITE( 6, "( ' rec, cal cres = ', 2ES12.4 )" )                       &
+!           inform%primal_infeasibility, MAXVAL( ABS( C_RES ) )
+        END IF
+
+!  compute the gradient of the Lagrangian function
+
+        CALL LPB_Lagrangian_gradient( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,    &
+                                       a_ne, A_val, A_col, A_ptr,              &
+                                       DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u, &
+                                       GRAD_L( dims%x_s : dims%x_e ),          &
+                                       control%getdua, dufeas,                 &
+                                       gradient_kind, G )
+
+!  update the values of the merit function, the gradient of the Lagrangian,
+!  and the constraint residuals
+
+!       GRAD_L( dims%x_s : dims%x_e ) = GRAD_L( dims%x_s : dims%x_e ) +        &
+!         alpha * HX( dims%x_s : dims%x_e )
+
+!       C_RES = one_minus_alpha * C_RES
+
+!  update the norm of the constraint residual
+
+!       inform%primal_infeasibility =one_minus_alpha*inform%primal_infeasibility
+
+!  compute the objective function value
+
+        IF ( gradient_kind == 1 ) THEN
+          inform%obj = f + SUM( X )
+        ELSE IF ( gradient_kind /= 0 ) THEN
+          inform%obj = f + DOT_PRODUCT( G, X )
+        ELSE
+          inform%obj = f
+        END IF
+
+!  evaluate the merit function
+
+        merit = LPB_merit_value( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,         &
+                                 DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,       &
+                                 GRAD_L( dims%x_s : dims%x_e ), C_RES,         &
+                                 tau, res_primal, inform%dual_infeasibility,   &
+                                 res_primal_dual, res_cs )
+
+!  compute the complementary slackness, and the min/max components
+!  of the primal/dual infeasibilities
+
+        slknes_x = DOT_PRODUCT( X( dims%x_free + 1 : dims%x_l_start - 1 ),     &
+                                Z_l( dims%x_free + 1 : dims%x_l_start - 1 ) ) +&
+                   DOT_PRODUCT( DIST_X_l( dims%x_l_start : dims%x_l_end ),     &
+                                Z_l( dims%x_l_start : dims%x_l_end ) ) -       &
+                   DOT_PRODUCT( DIST_X_u( dims%x_u_start : dims%x_u_end ),     &
+                                Z_u( dims%x_u_start : dims%x_u_end ) ) +       &
+                   DOT_PRODUCT( X( dims%x_u_end + 1 : n ),                     &
+                              Z_u( dims%x_u_end + 1 : n ) )
+        slknes_c = DOT_PRODUCT( DIST_C_l( dims%c_l_start : dims%c_l_end ),     &
+                                Y_l( dims%c_l_start : dims%c_l_end ) ) -       &
+                   DOT_PRODUCT( DIST_C_u( dims%c_u_start : dims%c_u_end ),     &
+                                Y_u( dims%c_u_start : dims%c_u_end ) )
+        slknes = slknes_x + slknes_c
+
+        slkmin_x = MIN( MINVAL( X( dims%x_free + 1 : dims%x_l_start - 1 ) *    &
+                                Z_l( dims%x_free + 1 : dims%x_l_start - 1 ) ), &
+                        MINVAL( DIST_X_l( dims%x_l_start : dims%x_l_end ) *    &
+                                Z_l( dims%x_l_start : dims%x_l_end ) ),        &
+                        MINVAL( - DIST_X_u( dims%x_u_start : dims%x_u_end ) *  &
+                                Z_u( dims%x_u_start : dims%x_u_end ) ),        &
+                        MINVAL( X( dims%x_u_end + 1 : n ) *                    &
+                                Z_u( dims%x_u_end + 1 : n ) ) )
+        slkmin_c = MIN( MINVAL( DIST_C_l( dims%c_l_start : dims%c_l_end ) *    &
+                                Y_l( dims%c_l_start : dims%c_l_end ) ),        &
+                        MINVAL( - DIST_C_u( dims%c_u_start : dims%c_u_end ) *  &
+                                Y_u( dims%c_u_start : dims%c_u_end ) ) )
+        slkmin = MIN( slkmin_x, slkmin_c )
+
+        slkmax_x = MAX( MAXVAL( X( dims%x_free + 1 : dims%x_l_start - 1 ) *    &
+                                Z_l( dims%x_free + 1 : dims%x_l_start - 1 ) ), &
+                        MAXVAL( DIST_X_l( dims%x_l_start : dims%x_l_end ) *    &
+                                Z_l( dims%x_l_start : dims%x_l_end ) ),        &
+                        MAXVAL( - DIST_X_u( dims%x_u_start : dims%x_u_end ) *  &
+                                Z_u( dims%x_u_start : dims%x_u_end ) ),        &
+                        MAXVAL( X( dims%x_u_end + 1 : n ) *                    &
+                                Z_u( dims%x_u_end + 1 : n ) ) )
+        slkmax_c = MAX( MAXVAL( DIST_C_l( dims%c_l_start : dims%c_l_end ) *    &
+                                Y_l( dims%c_l_start : dims%c_l_end ) ),        &
+                        MAXVAL( - DIST_C_u( dims%c_u_start : dims%c_u_end ) *  &
+                                Y_u( dims%c_u_start : dims%c_u_end ) ) )
+
+        p_min = MIN( MINVAL( X( dims%x_free + 1 : dims%x_l_start - 1 ) ),      &
+                     MINVAL( DIST_X_l( dims%x_l_start : dims%x_l_end ) ),      &
+                     MINVAL( DIST_X_u( dims%x_u_start : dims%x_u_end ) ),      &
+                     MINVAL( - X( dims%x_u_end + 1 : n ) ),                    &
+                     MINVAL( DIST_C_l( dims%c_l_start : dims%c_l_end ) ),      &
+                     MINVAL( DIST_C_u( dims%c_u_start : dims%c_u_end ) ) )
+
+        p_max = MAX( MAXVAL( X( dims%x_free + 1 : dims%x_l_start - 1 ) ),      &
+                     MAXVAL( DIST_X_l( dims%x_l_start : dims%x_l_end ) ),      &
+                     MAXVAL( DIST_X_u( dims%x_u_start : dims%x_u_end ) ),      &
+                     MAXVAL( - X( dims%x_u_end + 1 : n ) ),                    &
+                     MAXVAL( DIST_C_l( dims%c_l_start : dims%c_l_end ) ),      &
+                     MAXVAL( DIST_C_u( dims%c_u_start : dims%c_u_end ) ) )
+
+        d_min = MIN( MINVAL(   Z_l( dims%x_free + 1 : dims%x_l_end ) ),        &
+                     MINVAL( - Z_u( dims%x_u_start : n ) ),                    &
+                     MINVAL(   Y_l( dims%c_l_start : dims%c_l_end ) ),         &
+                     MINVAL( - Y_u( dims%c_u_start : dims%c_u_end ) ) )
+
+        d_max = MAX( MAXVAL(   Z_l( dims%x_free + 1 : dims%x_l_end ) ),        &
+                     MAXVAL( - Z_u( dims%x_u_start : n ) ),                    &
+                     MAXVAL(   Y_l( dims%c_l_start : dims%c_l_end ) ),         &
+                     MAXVAL( - Y_u( dims%c_u_start : dims%c_u_end ) ) )
+
+        IF ( nbnds_x > 0 ) THEN
+          slknes_x = slknes_x / nbnds_x
+        ELSE
+          slknes_x = zero
+        END IF
+
+        IF ( nbnds_c > 0 ) THEN
+          slknes_c = slknes_c / nbnds_c
+        ELSE
+          slknes_c = zero
+        END IF
+        IF ( nbnds > 0 ) THEN
+          slknes = slknes / nbnds
+          inform%complementary_slackness = slknes
+        ELSE
+          slknes = zero
+        END IF
+
+!  checkpoint
+
+        CALL CPU_TIME( time_record )
+        CALL CHECKPOINT( inform%iter, time_record - time_start,                &
+           MAX( inform%primal_infeasibility,                                   &
+           inform%dual_infeasibility, slknes ),                                &
+           inform%checkpointsIter, inform%checkpointsTime, 1, 16 )
+
+!  test for optimality
+
+        IF ( inform%primal_infeasibility <= stop_p .AND.                       &
+             inform%dual_infeasibility <= stop_d .AND.                         &
+             slknes <= stop_c ) THEN
+
+!write(6,*) inform%primal_infeasibility, stop_p
+!write(6,*) inform%dual_infeasibility, stop_d
+!write(6,*) slknes, stop_c
+
+          IF ( .NOT. inform%feasible ) THEN
+            IF ( printi ) WRITE( out, 2070 ) prefix
+            inform%feasible = .TRUE.
+          END IF
+
+!  print a summary of the final iteration
+
+          CALL CLOCK_TIME( clock_now )
+          IF ( printi ) THEN
+            IF ( printt .OR. ( printi .AND.                                    &
+               inform%iter == start_print ) ) WRITE( out, 2000 ) prefix
+            WRITE( out, 2030 ) prefix, inform%iter, re,                        &
+             inform%primal_infeasibility, inform%dual_infeasibility,           &
+             slknes, inform%obj, one, mu, order, pui, arc, nbact,              &
+             clock_now - clock_start
+          END IF
+
+          IF ( printd ) THEN
+            WRITE( out, 2100 ) prefix, ' X ', X
+            IF ( dims%x_free + 1 <= dims%x_l_end ) WRITE( out, 2100 )          &
+              prefix,  ' Z_l ', Z_l( dims%x_free + 1 : dims%x_l_end )
+            IF (  dims%x_u_start <= n ) WRITE( out, 2100 )                     &
+              prefix, ' Z_u ', Z_u( dims%x_u_start :  n )
+          END IF
+          inform%status = GALAHAD_ok ; GO TO 600
+        END IF
+
+        IF ( printw .AND. nbnds > 0 ) WRITE( out, 2130 )                       &
+          prefix, slknes, prefix, slknes_x, prefix, slknes_c, prefix, slkmin_x,&
+          slkmax_x, prefix, slkmin_c, slkmax_c, prefix, p_min, p_max, prefix,  &
+          d_min, d_max
+
+!  test to see if we are feasible
+
+        IF ( inform%primal_infeasibility <= stop_p ) THEN
+          IF ( control%just_feasible ) THEN
+            inform%status = GALAHAD_ok
+            inform%feasible = .TRUE.
+            IF ( printi ) THEN
+              CALL CLOCK_TIME( clock_now )
+              WRITE( out, 2070 ) prefix
+              WRITE( out, 2030 ) prefix, inform%iter, re,                      &
+                inform%primal_infeasibility, inform%dual_infeasibility,        &
+                inform%complementary_slackness, zero, alpha, mu, nbact,        &
+                clock_now - clock_start
+              IF ( printt ) WRITE( out, 2000 ) prefix
+            END IF
+            GO TO 500
+          END IF
+
+          IF ( .NOT. inform%feasible ) THEN
+            IF ( printi ) WRITE( out, 2070 ) prefix
+            inform%feasible = .TRUE.
+            IF ( gradient_kind == 0 ) THEN
+              IF ( slkmin_x >= epsmch .AND. slkmin_c >= epsmch ) THEN
+                inform%potential = LPB_potential_value( dims, n, X, DIST_X_l,  &
+                                                DIST_X_u, DIST_C_l, DIST_C_u )
+              ELSE
+                inform%potential = infinity
+              END IF
+            END IF
+          END IF
+        END IF
+
+!  =======
+!  STEP 6:
+!  =======
+
+!  =====================================================================
+!  -*-*-*-*-*-*-*-*- Penalty and Indicator Updates -*-*-*-*-*-*-*-*-*-*-
+!  =====================================================================
+
+!  compute the new penalty parameter
+
+        sigma = sigma_max
+        IF ( arc == 'ZS' ) THEN
+          mu = slknes
+        ELSE
+          IF ( inform%iter > muzero_fixed )                                    &
+            mu = MIN( SQRT( ABS( slknes ) ), sigma ) * ABS( slknes )
+        END IF
+
+!  estimate the variable and constraint exit status
 
         IF ( get_stat ) THEN
+          CALL LPB_indicators( dims, n, m, C_l, C_u, C_last, C,                &
+                               DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,        &
+                               DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,         &
+                               Y_last, Z_last,                                 &
+                               control, C_stat = C_stat, X_stat = X_stat )
 
-!  Estimate the variable and constraint exit status
+!  count the number of active constraints/bounds
 
-          CALL LSQP_indicators( dims, n, m, C_l, C_u, C_last, C,               &
-                                DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,       &
-                                DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,        &
-                                Y_last, Z_last,                                &
-                                control%LSQP_control, C_stat = C_stat,         &
-                                B_stat = B_stat )
-
-!  Count the number of active constraints/bounds
-
-          IF ( printt )                                                        &
-            WRITE( out, "( ' indicators: n_active/n, m_active/m ', 4I7 )" )    &
-               COUNT( B_stat /= 0 ), n, COUNT( C_stat /= 0 ), m
+          IF ( printw )                                                        &
+            WRITE( out, "( A, ' indicators: n_active/n, m_active/m ', 4I7 )" ) &
+               prefix, COUNT( X_stat /= 0 ), n, COUNT( C_stat /= 0 ), m
         END IF
-
-!  Check for termination of the outer iteration
-
-        IF ( norm_c <= control%stop_c .AND.                                    &
-             norm_d <= control%stop_d ) THEN
-
-          norm_c = zero
-
-          DO i = dims%x_free + 1, dims%x_l_start - 1
-            IF ( ABS( X( i ) ) < remote )                                      &
-              norm_c = MAX( norm_c, ABS( X( i ) * Z_l( i ) ) )
-          END DO
-
-          DO i = dims%x_l_start, dims%x_u_start - 1
-            IF ( ABS( DIST_X_l( i ) ) < remote )                               &
-              norm_c = MAX( norm_c, ABS(   DIST_X_l( i ) * Z_l( i ) ) )
-          END DO
-
-          DO i = dims%x_u_start, dims%x_l_end
-            IF ( MIN( ABS( DIST_X_l( i ) ), ABS( DIST_X_u( i ) ) ) < remote )  &
-              norm_c = MAX( norm_c, ABS(   DIST_X_l( i ) * Z_l( i ) ),         &
-                                    ABS( - DIST_X_u( i ) * Z_u( i ) ) )
-          END DO
-
-          DO i = dims%x_l_end + 1, dims%x_u_end
-            IF ( ABS( DIST_X_u( i ) ) < remote )                               &
-              norm_c = MAX( norm_c, ABS( - DIST_X_u( i ) * Z_u( i ) ) )
-          END DO
-
-          DO i = dims%x_u_end + 1, n
-            IF ( ABS( X( i ) ) < remote )                                      &
-              norm_c = MAX( norm_c, ABS( X( i ) * Z_u( i ) ) )
-          END DO
-
-!  Slack variables:
-
-          DO i = dims%c_l_start, dims%c_u_start - 1
-            IF ( ABS( DIST_C_l( i ) ) < remote )                               &
-              norm_c = MAX( norm_c, ABS( DIST_C_l( i ) * Y_l( i ) ) )
-          END DO
-
-          DO i = dims%c_u_start, dims%c_l_end
-            IF ( MIN( ABS( DIST_C_l( i ) ), ABS( DIST_C_u( i ) ) ) < remote )  &
-              norm_c = MAX( norm_c, ABS(   DIST_C_l( i ) * Y_l( i ) ),         &
-                                    ABS( - DIST_C_u( i ) * Y_u( i ) ) )
-          END DO
-
-          DO i = dims%c_l_end + 1, dims%c_u_end
-            IF ( ABS( DIST_C_u( i ) ) < remote )                               &
-              norm_c = MAX( norm_c, ABS( - DIST_C_u( i ) * Y_u( i ) ) )
-          END DO
-
-          IF ( printt ) WRITE( out, 2160 ) p_min, p_max, d_min, d_max
-
-!         write(6,*) ' --------- normc, stop_c ', norm_c, control%stop_c
-
-!         write(6,*)    MAXVAL( X( dims%x_free + 1 : dims%x_l_start - 1 ) *    &
-!                               Z_l( dims%x_free + 1 : dims%x_l_start - 1 ) ), &
-!                       MAXVAL( DIST_X_l( dims%x_l_start : dims%x_l_end ) *    &
-!                               Z_l( dims%x_l_start : dims%x_l_end ) ), -      &
-!                       MAXVAL( DIST_X_u( dims%x_u_start : dims%x_u_end ) *    &
-!                               Z_u( dims%x_u_start : dims%x_u_end ) ),        &
-!                       MAXVAL( X( dims%x_u_end + 1 : n ) *               &
-!                               Z_u( dims%x_u_end + 1 : n ) ),            &
-!                       MAXVAL( DIST_C_l( dims%c_l_start : dims%c_l_end ) *    &
-!                               Y_l( dims%c_l_start : dims%c_l_end ) ),  -     &
-!                       MAXVAL( DIST_C_u( dims%c_u_start : dims%c_u_end ) *    &
-!                               Y_u( dims%c_u_start : dims%c_u_end ) )
-
-          IF ( norm_c <= control%stop_c ) THEN
-            inform%status = 0
-            EXIT
-          END IF
-        END IF
-
-  500   CONTINUE
-
-        IF ( printi .AND. m > 0 ) THEN 
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i =  1, dims%c_equality ; R( i ) = - C_l( i ) ; END DO
-            DO i =  dims%c_l_start, dims%c_u_end  
-              R( i ) = - SCALE_C( i ) * C( i ) ; END DO
-          ELSE
-            R( : dims%c_equality ) = - C_l( : dims%c_equality )
-            R( dims%c_l_start : dims%c_u_end ) = - SCALE_C * C
-          END IF
-          CALL LPB_AX( m, R( : m), m, A_ne, A_val, A_col, A_ptr, n, X, '+ ' )
-          WRITE( out, "( /, '  Constraint residual ', ES14.6,                  &
-         &                  '  objective value ', ES14.6  )" )                 &
-                 MAXVAL( ABS( R( : m) ) ), inform%obj
-        END IF
-
-!  Update penalty parameter, mu
-
-        old_mu = mu ; mu = sigma * mu
-        IF (  old_mu > zero ) THEN
-          zeta = sigma * mu / old_mu 
-        ELSE
-          zeta = zero
-        END IF
-
-!  Record X and C
 
         IF ( mu < one .AND. stat_required ) THEN
-          get_stat = .TRUE. 
-          C_last( dims%c_l_start : dims%c_u_end )                            &
+          get_stat = .TRUE.
+          C_last( dims%c_l_start : dims%c_u_end )                              &
             = C( dims%c_l_start : dims%c_u_end )
           X_last = X
 
@@ -5140,276 +6215,321 @@
           END DO
         END IF
 
-!  Update convergence tolerances, theta_c, theta_d and theta_e
+!  compute the projected gradient of the Lagrangian function
 
-        theta_c = MIN( theta_min,                                              &
-                       MAX( theta_cs * mu ** beta, point99 * control%stop_c ) )
-        theta_d = MIN( theta_min,                                              &
-                       MAX( theta_df * mu ** beta, point99 * control%stop_d ) )
+        pjgnrm = zero
+        DO i = 1, n
+          gi = GRAD_L( i )
+          gi = GRAD_L( i )
+          IF ( gi < zero ) THEN
+            gi = - MIN( ABS( X_u( i ) - X( i ) ), - gi )
+          ELSE
+            gi = MIN( ABS( X_l( i ) - X( i ) ), gi )
+          END IF
+          pjgnrm = MAX( pjgnrm, ABS( gi ) )
+        END DO
 
-!  Recompute the value of the barrier function, phi
-
-        phi = LPB_barrier_value( dims, n, obj, X, DIST_X_l, DIST_X_u,          &
-                                  DIST_C_l, DIST_C_u, mu )
-
-        IF ( .NOT. primal_hessian ) refact = .FALSE.
-        full_iteration = .FALSE.
-
-        IF ( ( inform%status == - 8 .OR. inform%status == - 9 ) .AND.          &
-               old_mu > point1 * control%stop_c ) THEN
-          inform%status = 0
-          start_major = .TRUE.
-          got_ratio = .FALSE.
+        IF ( printd ) THEN
+          WRITE( out, 2100 ) prefix, ' DIST_X_l ',                             &
+            X( dims%x_free + 1 : dims%x_l_start - 1 ), DIST_X_l
+          WRITE( out, 2100 ) prefix, ' DIST_X_u ',                             &
+            DIST_X_u, - X( dims%x_u_end + 1 : n )
+          WRITE( out, "( ' ' )" )
         END IF
-        IF ( inform%status /= 0 ) EXIT
 
-!  ======================
-!  End of outer iteration
-!  ======================
+        IF ( printd ) WRITE( out, 2110 ) prefix, pjgnrm, prefix,               &
+          inform%primal_infeasibility
+      END DO
 
-      END DO   ! end of outer iteration loop
+!  ---------------------------------------------------------------------
+!  ---------------------- End of Major Iteration -----------------------
+!  ---------------------------------------------------------------------
 
-  600 CONTINUE 
+  500 CONTINUE
 
-!  Deallocate GLTR internal arrays
+!  print details of the solution obtained
 
-      CALL GLTR_terminate( gltr_data, gltr_control, gltr_info )
+  600 CONTINUE
 
-!  Print details of the solution obtained
+!  Compute the final objective function value
 
-      IF ( printi ) WRITE( out, 2120 ) inform%obj, inform%iter, inform%cg_iter
+      IF ( gradient_kind == 1 ) THEN
+        inform%obj = f + SUM( X )
+      ELSE IF ( gradient_kind /= 0 ) THEN
+        inform%obj = f + DOT_PRODUCT( G, X )
+      ELSE
+        inform%obj = f
+      END IF
+
+      IF ( printi ) THEN
+        WRITE( out, "( /, A, '  Final objective function value is', ES22.14,   &
+      &       /, A, '  Total number of iterations = ', I0,                     &
+      &       /, A, '  Total number of backtracks = ', I0 )" )                 &
+          prefix, inform%obj, prefix, inform%iter, prefix, inform%nbacts
+        WRITE( out, 2110 ) prefix, pjgnrm, prefix, inform%primal_infeasibility
+        IF ( control%getdua ) WRITE( out,                                      &
+         "( /, A, ' Advanced starting point is used for dual variables' )" )   &
+           prefix
+        WRITE( out, "( A, '  gamma_c,f are', 2ES11.4 )" )                      &
+          prefix, gamma_c, gamma_f
+        IF ( puiseux ) THEN
+          IF ( control%every_order ) THEN
+            IF ( control%arc == 1 ) THEN
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
+           &   ' fit to the Zhang arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 2 ) THEN
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
+           &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 4 ) THEN
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
+           &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
+            ELSE
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
+           &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
+            END IF
+          ELSE
+            IF ( control%arc == 1 ) THEN
+              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
+           &   ' fit to the Zhang arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 2 ) THEN
+              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
+           &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 4 ) THEN
+              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
+           &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
+            ELSE
+              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
+           &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
+            END IF
+          END IF
+        ELSE
+          IF ( control%every_order ) THEN
+            IF ( control%arc == 1 ) THEN
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Taylor',     &
+           &   ' fit to the Zhang arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 2 ) THEN
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Taylor',     &
+           &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
+!           ELSE IF ( control%arc == 4 ) THEN
+!             WRITE( control%out, "( A, '  Maximum order ', I0, ' Taylor',     &
+!          &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
+            ELSE
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Taylor',     &
+           &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
+            END IF
+          ELSE
+            IF ( control%arc == 1 ) THEN
+              WRITE( control%out, "( A, '  Order ', I0, ' Taylor',             &
+           &   ' fit to the Zhang arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 2 ) THEN
+              WRITE( control%out, "( A, '  Order ', I0, ' Taylor',             &
+           &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
+!           ELSE IF ( control%arc == 4 ) THEN
+!             WRITE( control%out, "( A, '  Order ', I0, ' Taylor',             &
+!          &   ' fit to the Zhang Puiseux arc is used' )" ) prefix, order
+            ELSE
+              WRITE( control%out, "( A, '  Order ', I0, ' Taylor',             &
+           &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
+            END IF
+          END IF
+        END IF
+      END IF
 
 !  If required, make the solution exactly complementary
 
-!  Problem variables
-
-      IF ( control%feasol ) THEN 
+      IF ( control%feasol ) THEN
         DO i = dims%x_free + 1, dims%x_l_start - 1
-          IF ( ABS( Z_l( i ) ) < ABS( X( i ) ) ) THEN 
-            Z_l( i ) = zero 
-          ELSE 
-            X( i ) = X_l( i ) 
-          END IF 
+          IF ( ABS( Z_l( i ) ) < ABS( X( i ) ) ) THEN
+            Z_l( i ) = zero
+          ELSE
+            X( i ) = X_l( i )
+          END IF
         END DO
+
         DO i = dims%x_l_start, dims%x_l_end
-          IF ( ABS( Z_l( i ) ) < ABS( DIST_X_l( i ) ) ) THEN 
-            Z_l( i ) = zero 
-          ELSE 
-            X( i ) = X_l( i ) 
-          END IF 
+          IF ( ABS( Z_l( i ) ) < ABS( DIST_X_l( i ) ) ) THEN
+            Z_l( i ) = zero
+          ELSE
+            X( i ) = X_l( i )
+          END IF
         END DO
+
         DO i = dims%x_u_start, dims%x_u_end
-          IF ( ABS( Z_u( i ) ) < ABS( DIST_X_u( i ) ) ) THEN 
-            Z_u( i ) = zero 
-          ELSE 
-            X( i ) = X_u( i ) 
-          END IF 
+          IF ( ABS( Z_u( i ) ) < ABS( DIST_X_u( i ) ) ) THEN
+            Z_u( i ) = zero
+          ELSE
+            X( i ) = X_u( i )
+          END IF
         END DO
+
         DO i = dims%x_u_end + 1, n
-          IF ( ABS( Z_u( i ) ) < ABS( X( i ) ) ) THEN 
-            Z_u( i ) = zero 
-          ELSE 
-            X( i ) = X_u( i ) 
-          END IF 
+          IF ( ABS( Z_u( i ) ) < ABS( X( i ) ) ) THEN
+            Z_u( i ) = zero
+          ELSE
+            X( i ) = X_u( i )
+          END IF
         END DO
+      END IF
 
-!  slack variables
+!  Exit
 
-        DO i = dims%c_l_start, dims%c_l_end
-          IF ( ABS( Y_l( i ) ) < ABS( DIST_C_l( i ) ) ) THEN 
-            Y_l( i ) = zero 
-          ELSE 
-            C( i ) = C_l( i ) 
-          END IF 
-        END DO
-        DO i = dims%c_u_start, dims%c_u_end
-          IF ( ABS( Y_u( i ) ) < ABS( DIST_C_u( i ) ) ) THEN 
-            Y_u( i ) = zero 
-          ELSE 
-            C( i ) = C_u( i ) 
-          END IF 
-        END DO
-      END IF 
-
-  700 CONTINUE
+ 700  CONTINUE
 
 !  Set the dual variables
 
-      IF ( set_z ) THEN
-        IF ( control%array_syntax_worse_than_do_loop ) THEN
-          DO i = 1,dims%x_free ; Z( i ) = zero ; END DO
-        ELSE
-          Z( : dims%x_free ) = zero
-        END IF
-  
-        DO i = dims%x_free + 1, dims%x_u_start - 1
-          Z( i ) = Z_l( i )
-        END DO
+      Z( : dims%x_free ) = zero
+      DO i = dims%x_free + 1, dims%x_u_start - 1
+        Z( i ) = Z_l( i )
+      END DO
 
-        DO i = dims%x_u_start, dims%x_l_end
-          IF ( ABS( Z_l( i ) ) <= ABS( Z_u( i ) ) ) THEN
-            Z( i ) = Z_u( i )
-          ELSE
-            Z( i ) = Z_l( i )
-          END IF
-        END DO
-  
-        DO i = dims%x_l_end + 1, n
+      DO i = dims%x_u_start, dims%x_l_end
+        IF ( ABS( Z_l( i ) ) <= ABS( Z_u( i ) ) ) THEN
           Z( i ) = Z_u( i )
-        END DO
-      END IF
+        ELSE
+          Z( i ) = Z_l( i )
+        END IF
+      END DO
+
+      DO i = dims%x_l_end + 1, n
+        Z( i ) = Z_u( i )
+      END DO
 
 !  Unscale the constraint bounds
 
-      IF ( scaled_c ) THEN
-        DO i = dims%c_l_start, dims%c_l_end
-          C_l( i ) = C_l( i ) * SCALE_C( i )
-        END DO
-  
-        DO i = dims%c_u_start, dims%c_u_end
-          C_u( i ) = C_u( i ) * SCALE_C( i )
-        END DO
-      END IF
+      DO i = dims%c_l_start, dims%c_l_end
+        C_l( i ) = C_l( i ) * SCALE_C( i )
+      END DO
 
-      IF ( control%array_syntax_worse_than_do_loop ) THEN
-        DO i = 1, m ; C_RES( i ) = zero ; END DO
-      ELSE
-        C_RES = zero
-      END IF
-      CALL LPB_AX( m, C_RES, m, A_ne, A_val, A_col, A_ptr, n, X, '+ ')
-      IF ( printi .AND. m > 0 ) THEN 
-        WRITE( out, "( '  Constraint residual ', ES12.4 )" )                   &
-             MAX( zero, MAXVAL( ABS( C_l( : dims%c_equality) -                 &
+      DO i = dims%c_u_start, dims%c_u_end
+        C_u( i ) = C_u( i ) * SCALE_C( i )
+      END DO
+
+!  Compute the values of the constraints
+
+      C_RES( : m ) = zero
+      CALL LPB_AX( m, C_RES( : m ), m, a_ne, A_val, A_col,                     &
+                    A_ptr, n, X, '+ ')
+      IF ( printi .AND. m > 0 ) THEN
+        WRITE( out, "( A, '  Computed constraint residual is', ES11.4 )" )     &
+             prefix,                                                           &
+             MAX( zero, MAXVAL( ABS( C_l( : dims%c_equality ) -                &
                                      C_RES(: dims%c_equality ) ) ),            &
                         MAXVAL( C_l(  dims%c_l_start : dims%c_l_end ) -        &
                                 C_RES(  dims%c_l_start : dims%c_l_end ) ),     &
                         MAXVAL( C_RES( dims%c_u_start : dims%c_u_end ) -       &
-                                C_u( dims%c_u_start : dims%c_u_end ) ) )     
+                                C_u( dims%c_u_start : dims%c_u_end ) ) )
       END IF
+
+!  estimate the variable and constraint exit status
+
+      IF ( stat_required ) THEN
+        CALL LPB_indicators( dims, n, m, C_l, C_u, C_last, C,                  &
+                             DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,          &
+                             DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,           &
+                             Y_last, Z_last,                                   &
+                             control, C_stat = C_stat, X_stat = X_stat )
+
+!  count the number of active constraints/bounds
+
+        IF ( printi ) WRITE( out, "( A, '  Indicators: n_active/n,',           &
+       &   ' m_active/m = ', 2( I0, '/', I0, : ', ' ) )" )                     &
+             prefix, COUNT( X_stat /= 0 ), n, COUNT( C_stat /= 0 ), m
+       END IF
 
 !  If necessary, print warning messages
 
   810 CONTINUE
+
+      SBLS_data%last_preconditioner = no_last
+      SBLS_data%last_factorization = no_last
+
       IF ( printi ) then
 
         SELECT CASE( inform%status )
-          CASE( - 1  ) ; WRITE( out, 2210 ) 
-          CASE( - 3  ) ; WRITE( out, 2230 ) 
-          CASE( - 5  ) ; WRITE( out, 2250 ) 
-          CASE( - 6  ) ; WRITE( out, 2260 ) 
-          CASE( - 7  ) ; WRITE( out, 2270 ) 
-          CASE( - 8  ) ; WRITE( out, 2280 ) 
-          CASE( - 9  ) ; WRITE( out, 2290 ) 
-          CASE( - 10 ) ; WRITE( out, 2300 ) 
-          CASE( - 11 ) ; WRITE( out, 2310 ) 
+          CASE( GALAHAD_error_restrictions  ) ; WRITE( out, "( /, A,           &
+         & '  Warning - input paramters incorrect' )" ) prefix
+          CASE( GALAHAD_error_no_center ) ; WRITE( out, "( /, A,               &
+         & '  Warning - the analytic center appears to be unbounded' )" ) prefix
+          CASE( GALAHAD_error_bad_bounds ) ; WRITE( out, "( /, A,              &
+         &  '  Warning - the constraints are inconsistent' )" ) prefix
+          CASE( GALAHAD_error_primal_infeasible ) ; WRITE( out, "( /, A,       &
+         &  '  Warning - the constraints appear to be inconsistent' )" ) prefix
+          CASE( GALAHAD_error_factorization ) ; WRITE( out, "( /, A,           &
+         &   '  Warning - factorization failure' )" ) prefix
+          CASE( GALAHAD_error_ill_conditioned ) ; WRITE( out, "( /, A,         &
+         &   '  Warning - no further progress possible' )"  ) prefix
+          CASE( GALAHAD_error_tiny_step ) ; WRITE( out, "( /, A,               &
+         &   '  Warning - step too small to make progress,',                   &
+         &   ' problem maybe infeasible' )" ) prefix
+          CASE( GALAHAD_error_max_iterations ) ; WRITE( out, "( /, A,          &
+         &   '  Warning - iteration bound exceeded' )" ) prefix
+          CASE( GALAHAD_error_unbounded ) ; WRITE( out, "( /, A,               &
+         &   '  Warning - problem appears to be unbounded from below' )") prefix
         END SELECT
 
-        IF ( auto ) WRITE( out, 2400 )
-        SELECT CASE( precon )
-          CASE( 1 ) ; WRITE( out, 2410 )
-          CASE( 2 ) ; WRITE( out, 2420 ) 
-        END SELECT
-
-        IF ( factor == 0 .OR. factor == 1 ) THEN
-          WRITE( out, "( /, '  Schur-complement method used ' )" )
+        IF ( inform%SBLS_inform%factorization == 0 .OR.                        &
+             inform%SBLS_inform%factorization == 1 ) THEN
+          WRITE( control%out, "( A, '  Schur-complement factorization is',     &
+         &       ' used (pivot tol =', ES9.2, ')' )" ) prefix,                 &
+            SBLS_control%SLS_control%relative_pivot_tolerance
         ELSE
-          WRITE( out, "( /, '  Augmented system method used ' )" )
+          WRITE( control%out, "( A, '  Augmented system factorization is',     &
+         &       ' used (pivot tol =', ES9.2, ')' )" ) prefix,                 &
+            SBLS_control%SLS_control%relative_pivot_tolerance
         END IF
-
+        WRITE( out, "( A, '  Linear system solver ', A,                        &
+       &               ' (preconditioner = ', I0, ') is used' )" )             &
+            prefix, TRIM( SBLS_control%symmetric_linear_solver ),              &
+            inform%SBLS_inform%preconditioner
+        IF ( inform%SBLS_inform%preconditioner /= 2 .AND.                      &
+             inform%SBLS_inform%preconditioner /= 7 )                          &
+          WRITE( out, "( A, 2X, I0, ' projected CG iterations taken ' )" )     &
+            prefix, inform%SBLS_inform%iter_pcg
       END IF
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
-        WRITE( control%out, "( ' leaving LPB_solve_main ' )" )
+        WRITE( control%out, "( A, ' leaving LPB_solve_main ' )" ) prefix
 
-      RETURN  
-
-!  Compute total time
-
-  920 CONTINUE 
-      CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
-
-      RETURN  
+      RETURN
 
 !  Non-executable statements
 
- 2000 FORMAT( /,' Iter   d-feas com-slk    obj     ratio   radius',            &
-             ' nbacts cgits      time' ) 
- 2010 FORMAT( I5, A1, 2ES8.1, ES9.1, A1, '    -   ', ES8.1, 1X,                &
-            '     -     -', 0P, F10.2 ) 
- 2020 FORMAT( I5, A1, 2ES8.1, ES9.1, A1, 2ES8.1, A1, 2I6, 0P, F10.2 ) 
- 2030 FORMAT( I5, A1, 2ES8.1, ES9.1, A1, '    -   ', ES8.1, A1, 2I6, 0P, F10.2 )
- 2040 FORMAT( '   **  Error return ', I6, ' from ', A15 ) 
- 2050 FORMAT( '   **  Warning ', I6, ' from ', A15 ) 
- 2060 FORMAT( I8, ' integer and ', I8, ' real words needed for factorization' )
- 2070 FORMAT( ' ** Matrix has ', I7, ' zero eigenvalues ' )
- 2080 FORMAT( /, ' Preconditioner is inappropriate as it has ', /, I6,         &
-                 ' negative and ', I6, ' zero eigenvalues ', /                 &
-                 ' Perturbing H', :, ' by ', ES12.4, ' and restarting ' )
- 2090 FORMAT( '  maximum element of A = ', ES12.4,' maximum element of H = ',  &
-              ES12.4 ) 
- 2100 FORMAT( A10, 7ES10.2, /, ( 10X, 7ES10.2 ) ) 
- 2120 FORMAT( ' ', /, '  Final objective function value ', ES22.14,            &
-              /, '  Total number of iterations = ', I6,                        &
-              /, '  Total number of c.g. its   = ', I6 )
- 2130 FORMAT( /, ' ', 33( '=-' ), '=',                                         &
-              /, '  mu = ', ES12.4, '  theta_c = ', ES12.4,                    &
-                 '  theta_d = ', ES12.4,                                       &
-              /, ' ', 33( '=-' ), '=' )
- 2140 FORMAT( ' ',/,'       ***  Linesearch     step',                         &
-              '      trial value           model value ' ) 
- 2150 FORMAT( '                   ', ES12.4, 2ES22.14 ) 
- 2160 FORMAT( /, ' min/max primal = ', 2ES12.4,                                &
-              /, ' min/max dual   = ', 2ES12.4 )
- 2180 FORMAT( A6, /, ( 8ES10.2 ) )
- 2190 FORMAT( A6, /, ( 4( 2I5, ES10.2 ) ) )
- 2200 FORMAT( /, ' *** changing preconditioner ... ', / )
- 2210 FORMAT( /, '  Warning - input paramters incorrect ' ) 
- 2230 FORMAT( /, '  Warning - input arrays not large enough ' ) 
- 2250 FORMAT( /, '  Warning - the constraints are inconsistent ' ) 
- 2260 FORMAT( /, '  Warning - the constraints appear to be inconsistent ' ) 
- 2270 FORMAT( /, '  Warning - factorization failure ' ) 
- 2280 FORMAT( /, '  Warning - no further progress possible ' ) 
- 2290 FORMAT( /, '  Warning - step too small to make further progress ' ) 
- 2300 FORMAT( /, '  Warning - iteration bound exceeded ' ) 
- 2310 FORMAT( /, '  Warning - objective unbounded below ' ) 
- 2350 FORMAT( /, '  Required integer storage for factors ', I12, ' exceeds', /,&
-               '  existing storage',     I12, ' by more than a factor of', I6 )
- 2360 FORMAT( /, '  Required real    storage for factors ', I12, ' exceeds', /,&
-               '  existing storage',     I12, ' by more than a factor of', I6 )
- 2370 FORMAT( /, '  Iteration time (', 0P, F9.2, ') exceeds', /,               &
-            '    average time (',     F9.2, ') by more than a factor of', F9.2 )
- 2380 FORMAT( /, '  Time (', 0P, F9.2, ') for full factorization exceeds ',    &
-              /, '  time (',     F9.2, ') for barrier factorization' )
- 2390 FORMAT( /, '  Time (', 0P, F9.2, ') for barrier factorization exceeds ', &
-              /, '  time (',     F9.2, ') for full factorization' )
- 2340 FORMAT( /, '  norm of residual', ES12.4, ' for barrier factorization',   &
-            ' exceeds ', ES12.4 )
- 2400 FORMAT( '  Automatic preconditioner ' )
- 2410 FORMAT( '  Identity Hessian ' )
- 2420 FORMAT( '  Barrier Hessian ' )
+ 2000 FORMAT( /, A, ' Iter   p-feas  d-feas com-slk    obj   ',                &
+                '  step   target   arc bt     time' )
+ 2020 FORMAT( A, I5, A1, 3ES8.1, ES9.1, '     -   ', ES7.1,                    &
+            '    -   -', 0P, F9.2 )
+ 2030 FORMAT( A, I5, A1, 3ES8.1, ES9.1, ES8.1, 1X, ES7.1, I3, A1, A2, I3,      &
+              0P, F9.2 )
+ 2070 FORMAT( /, A, ' ========================= feasible point found',         &
+                    ' =========================', / )
+ 2100 FORMAT( A, A, /, ( 10X, 7ES10.2 ) )
+ 2110 FORMAT( /, A, '  Norm of projected gradient is', ES11.4,                 &
+              /, A, '  Norm of infeasibility is', ES11.4 )
+ 2130 FORMAT( A, 21X, ' == >  mu estimated   = ', ES10.2, /,                   &
+              A, 21X, '       mu_x estimated = ', ES10.2, /,                   &
+              A, 21X, '       mu_c estimated = ', ES10.2, /,                   &
+              A, 21X, ' min/max slackness_x = ', 2ES12.4, /,                   &
+              A, 21X, ' min/max slackness_c = ', 2ES12.4, /,                   &
+              A, 14X, ' min/max primal feasibility = ', 2ES12.4, /,            &
+              A, 14X, ' min/max dual   feasibility = ', 2ES12.4 )
 
-!     CONTAINS
+      CONTAINS
 
-!  Internal function that returns the largest element of X, unless
-!  X has no elements, in which case zero is returned
-
-!       FUNCTION LPB_max_vect( X )
-!       REAL ( KIND = wp ) LPB_max_vect
-!       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: X
-
-!       IF ( SIZE( X ) > 0 ) THEN
-!          LPB_max_vect = MAXVAL( X )
-!       ELSE
-!          LPB_max_vect = zero
-!       END IF
-
-!       RETURN
-!       END FUNCTION LPB_max_vect
+        FUNCTION MAXVAL_ABS( VECT )
+        CHARACTER ( len = 10 ) :: MAXVAL_ABS
+        REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: VECT
+        IF ( SIZE( VECT ) > 0 ) THEN
+          WRITE( MAXVAL_ABS, "( ES10.2 )" ) MAXVAL( ABS( VECT ) )
+        ELSE
+          MAXVAL_ABS = '     -    '
+        END IF
+        RETURN
+        END FUNCTION MAXVAL_ABS
 
 !  End of LPB_solve_main
 
       END SUBROUTINE LPB_solve_main
 
-!-*-*-*-*-*-*-   L P B _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-*-*
+!-*-*-*-*-*-*-   L P B _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-*
 
       SUBROUTINE LPB_terminate( data, control, inform )
 
@@ -5423,7 +6543,6 @@
 !      ..............................................
 
 !  Arguments:
-!  =========
 !
 !   data    see Subroutine LPB_initialize
 !   control see Subroutine LPB_initialize
@@ -5434,18 +6553,59 @@
 !  Dummy arguments
 
       TYPE ( LPB_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LPB_control_type ), INTENT( IN ) :: control        
+      TYPE ( LPB_control_type ), INTENT( IN ) :: control
       TYPE ( LPB_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      TYPE ( LSQP_inform_type ) :: LSQP_inform
+      CHARACTER ( LEN = 80 ) :: array_name
 
-!  Deallocate all arrays allocated by LSQP
+!  Deallocate all arrays allocated by FDC
 
-      CALL LSQP_terminate( data, control%LSQP_control, LSQP_inform )
-      IF ( LSQP_inform%status /= 0 )                                           &
-        inform%status = LSQP_inform%status 
+      CALL FDC_terminate( data%FDC_data, data%FDC_control,                     &
+                          inform%FDC_inform )
+      IF ( inform%FDC_inform%status /= GALAHAD_ok )                            &
+        inform%status = inform%FDC_inform%status
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+!  Deallocate all arrays allocated by CRO
+
+      CALL CRO_terminate( data%CRO_data, control%CRO_control,                  &
+                          inform%CRO_inform )
+      IF ( inform%CRO_inform%status /= GALAHAD_ok )                            &
+        inform%status = inform%CRO_inform%status
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+!  Deallocate all arrays allocated within SBLS
+
+      CALL SBLS_terminate( data%SBLS_data, control%SBLS_control,               &
+                           inform%SBLS_inform )
+      inform%status = inform%SBLS_inform%status
+      IF ( inform%SBLS_inform%status /= 0 ) THEN
+        inform%status = GALAHAD_error_deallocate
+        inform%bad_alloc = 'lpb: data%SBLS'
+        IF ( control%deallocate_error_fatal ) RETURN
+      END IF
+
+!  Deallocate FIT internal arrays
+
+      CALL FIT_terminate( data%FIT_data, control%FIT_control,                  &
+                           inform%FIT_inform )
+      IF ( inform%FIT_inform%status /= GALAHAD_ok )                            &
+        inform%status = inform%FIT_inform%status
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+!  Deallocate ROOTS internal arrays
+
+      CALL ROOTS_terminate( data%ROOTS_data, control%ROOTS_control,            &
+                           inform%ROOTS_inform )
+      IF ( inform%ROOTS_inform%status /= GALAHAD_ok )                          &
+        inform%status = inform%ROOTS_inform%status
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
 
 !  Deallocate QPP internal arrays
 
@@ -5467,155 +6627,447 @@
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-      CALL QPP_terminate( data%QPP_map_fixed, data%QPP_control,                &
-                          data%QPP_inform)
-      IF ( data%QPP_inform%status /= GALAHAD_ok ) THEN
+!  Deallocate all arrays allocated for the preprocessing stage
+
+      CALL QPP_terminate( data%QPP_map, data%QPP_control, data%QPP_inform )
+      IF ( data%QPP_inform%status /= 0 ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%alloc_status = data%QPP_inform%alloc_status
-        inform%bad_alloc = data%QPP_inform%bad_alloc
+        inform%bad_alloc = 'lpb: data%QPP'
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-      CALL QPP_terminate( data%QPP_map_more_freed, data%QPP_control,           &
-                          data%QPP_inform )
-      IF ( data%QPP_inform%status /= GALAHAD_ok ) THEN
-        inform%status = GALAHAD_error_deallocate
-        inform%alloc_status = data%QPP_inform%alloc_status
-        inform%bad_alloc = data%QPP_inform%bad_alloc
-        IF ( control%deallocate_error_fatal ) RETURN
-      END IF
+!  Deallocate all remaing allocated arrays
 
-!  Deallocate all remaining allocated arrays
+      array_name = 'lpb: data%INDEX_C_freed'
+      CALL SPACE_dealloc_array( data%INDEX_C_freed,                            &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
 
-      IF ( ALLOCATED( data%X_fixed ) ) THEN
-        DEALLOCATE( data%X_fixed, STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN
-          inform%status = - 3
-          inform%bad_alloc = 'lpb: data%X_fixed'
-          IF ( control%error > 0 )                                             &
-              WRITE( control%error, 2900 ) inform%bad_alloc, inform%alloc_status
-        END IF
-      END IF
+      array_name = 'lpb: data%GRAD_L'
+      CALL SPACE_dealloc_array( data%GRAD_L,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
 
-     IF ( ALLOCATED( data%C_fixed ) ) THEN
-        DEALLOCATE( data%C_fixed, STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN
-          inform%status = - 3
-          inform%bad_alloc = 'lpb: data%C_fixed'
-          IF ( control%error > 0 )                                             &
-              WRITE( control%error, 2900 ) inform%bad_alloc, inform%alloc_status
-        END IF
-      END IF
+      array_name = 'lpb: data%DIST_X_l'
+      CALL SPACE_dealloc_array( data%DIST_X_l,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
 
-     IF ( ALLOCATED( data%Index_X_fixed ) ) THEN
-        DEALLOCATE( data%Index_X_fixed, STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN
-          inform%status = - 3
-          inform%bad_alloc = 'lpb: data%Index_X_fixed'
-          IF ( control%error > 0 ) WRITE( control%error, 2900 )                &
-               inform%bad_alloc, inform%alloc_status
-        END IF
-      END IF
+      array_name = 'lpb: data%DIST_X_u'
+      CALL SPACE_dealloc_array( data%DIST_X_u,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
 
-     IF ( ALLOCATED( data%Index_C_fixed ) ) THEN
-        DEALLOCATE( data%Index_C_fixed, STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN
-          inform%status = - 3
-          inform%bad_alloc = 'lpb: data%Index_C_fixed'
-          IF ( control%error > 0 ) WRITE( control%error, 2900 )                &
-             inform%bad_alloc, inform%alloc_status
-        END IF
-      END IF
+      array_name = 'lpb: data%Z_l'
+      CALL SPACE_dealloc_array( data%Z_l,                                      &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
 
-      IF ( ALLOCATED( data%GRAD ) ) THEN
-        DEALLOCATE( data%GRAD, STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN
-          inform%status = - 3
-          inform%bad_alloc = 'lpb: data%GRAD'
-          IF ( control%error > 0 )                                             &
-              WRITE( control%error, 2900 ) inform%bad_alloc, inform%alloc_status
-        END IF
-      END IF
+      array_name = 'lpb: data%Z_u'
+      CALL SPACE_dealloc_array( data%Z_u,                                      &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
 
-      IF ( ALLOCATED( data%X_trial ) ) THEN
-        DEALLOCATE( data%X_trial, STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN
-          inform%status = - 3
-          inform%bad_alloc = 'lpb: data%X_trial'
-          IF ( control%error > 0 )                                             &
-              WRITE( control%error, 2900 ) inform%bad_alloc, inform%alloc_status
-        END IF
-      END IF
+      array_name = 'lpb: data%BARRIER_X'
+      CALL SPACE_dealloc_array( data%BARRIER_X,                                &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
 
-     IF ( ALLOCATED( data%X0 ) ) THEN
-        DEALLOCATE( data%X0, STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN
-          inform%status = - 3
-          inform%bad_alloc = 'lpb: data%X0'
-          IF ( control%error > 0 ) WRITE( control%error, 2900 )                &
-               inform%bad_alloc, inform%alloc_status
-        END IF
-      END IF
+      array_name = 'lpb: data%Y_l'
+      CALL SPACE_dealloc_array( data%Y_l,                                      &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
 
-      IF ( ALLOCATED( data%GRAD_X_phi ) ) THEN
-        DEALLOCATE( data%GRAD_X_phi, STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN
-          inform%status = - 3
-          inform%bad_alloc = 'lpb: data%GRAD_X_phi'
-          IF ( control%error > 0 )                                             &
-             WRITE( control%error, 2900 ) inform%bad_alloc, inform%alloc_status
-        END IF
-      END IF
+      array_name = 'lpb: data%DY_l'
+      CALL SPACE_dealloc_array( data%DY_l,                                     &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
 
-      IF ( ALLOCATED( data%GRAD_C_phi ) ) THEN
-        DEALLOCATE( data%GRAD_C_phi, STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN
-          inform%status = - 3
-          inform%bad_alloc = 'lpb: data%GRAD_C_phi'
-          IF ( control%error > 0 )                                             &
-             WRITE( control%error, 2900 ) inform%bad_alloc, inform%alloc_status
-        END IF
-      END IF
+      array_name = 'lpb: data%DIST_C_l'
+      CALL SPACE_dealloc_array( data%DIST_C_l,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
 
-      IF ( ALLOCATED( data%S ) ) THEN
-        DEALLOCATE( data%S, STAT = inform%alloc_status )
-        IF ( inform%alloc_status /= 0 ) THEN
-          inform%status = - 3
-          inform%bad_alloc = 'lpb: data%S'
-          IF ( control%error > 0 )                                             &
-              WRITE( control%error, 2900 ) inform%bad_alloc, inform%alloc_status
-        END IF
-      END IF
+      array_name = 'lpb: data%Y_u'
+      CALL SPACE_dealloc_array( data%Y_u,                                      &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%DY_u'
+      CALL SPACE_dealloc_array( data%DY_u,                                     &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%DIST_C_u'
+      CALL SPACE_dealloc_array( data%DIST_C_u,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%C'
+      CALL SPACE_dealloc_array( data%C,                                        &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%BARRIER_C'
+      CALL SPACE_dealloc_array( data%BARRIER_C,                                &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%SCALE_C'
+      CALL SPACE_dealloc_array( data%SCALE_C,                                  &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%RHS'
+      CALL SPACE_dealloc_array( data%RHS,                                      &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%H_s'
+      CALL SPACE_dealloc_array( data%H_s,                                      &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%A_s'
+      CALL SPACE_dealloc_array( data%A_s,                                      &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%X_last'
+      CALL SPACE_dealloc_array( data%X_last,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%Y_last'
+      CALL SPACE_dealloc_array( data%Y_last,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%Z_last'
+      CALL SPACE_dealloc_array( data%Z_last,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%OPT_alpha'
+      CALL SPACE_dealloc_array( data%OPT_alpha,                                &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%OPT_merit'
+      CALL SPACE_dealloc_array( data%OPT_merit,                                &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%X_coef'
+      CALL SPACE_dealloc_array( data%X_coef,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%C_coef'
+      CALL SPACE_dealloc_array( data%C_coef,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%Y_coef'
+      CALL SPACE_dealloc_array( data%Y_coef,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%Y_l_coef'
+      CALL SPACE_dealloc_array( data%Y_l_coef,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%Y_u_coef'
+      CALL SPACE_dealloc_array( data%Y_u_coef,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%Z_l_coef'
+      CALL SPACE_dealloc_array( data%Z_l_coef,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%Z_u_coef'
+      CALL SPACE_dealloc_array( data%Z_u_coef,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%BINOMIAL'
+      CALL SPACE_dealloc_array( data%BINOMIAL,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%DX_zh'
+      CALL SPACE_dealloc_array( data%DX_zh,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%DC_zh'
+      CALL SPACE_dealloc_array( data%DC_zh,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%DY_zh'
+      CALL SPACE_dealloc_array( data%DY_zh,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%DY_l_zh'
+      CALL SPACE_dealloc_array( data%DY_l_zh,                                  &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%DY_u_zh'
+      CALL SPACE_dealloc_array( data%DY_u_zh,                                  &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%DZ_l_zh'
+      CALL SPACE_dealloc_array( data%DZ_l_zh,                                  &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%DZ_u_zh'
+      CALL SPACE_dealloc_array( data%DZ_u_zh,                                  &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%A_sbls%row'
+      CALL SPACE_dealloc_array( data%A_sbls%row,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%A_sbls%col'
+      CALL SPACE_dealloc_array( data%A_sbls%col,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%A_sbls%val'
+      CALL SPACE_dealloc_array( data%A_sbls%val,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: data%H_sbls%val'
+      CALL SPACE_dealloc_array( data%H_sbls%val,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
 
       RETURN
-
-!  Non-executable statement
-
- 2900 FORMAT( ' ** Message from -LPB_terminate-', /,                          &
-              ' Deallocation error, for ', A, /, ' status = ', I6 ) 
 
 !  End of subroutine LPB_terminate
 
       END SUBROUTINE LPB_terminate
 
-!-*-*-*-*-  L P B _ B A R R I E R _ V A L U E   S U B R O U T I N E   -*-*-*-*
+!-*-*-*-*-*-   L P B _ M E R I T _ V A L U E   F U N C T I O N   -*-*-*-*-*-*-
 
-      FUNCTION LPB_barrier_value( dims, n, objf, X, DIST_X_l, DIST_X_u,       &
-                                   DIST_C_l, DIST_C_u, mu )
-      REAL ( KIND = wp ) LPB_barrier_value
+      FUNCTION LPB_merit_value( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,          &
+                                DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,        &
+                                GRAD_L, C_RES, tau,                            &
+                                res_primal, res_dual, res_primal_dual, res_cs )
+
+      REAL ( KIND = wp ) LPB_merit_value
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Compute the value of the barrier function
+!  Compute the value of the merit function
+!
+!     | < z_l . ( x - x_l ) > +  < z_u . ( x_u - x ) > +
+!       < y_l . ( c - c_l ) > +  < y_u . ( c_u - c ) > | +
+!            || ( GRAD_L - z_l - z_u ) ||
+!      tau * || (   y - y_l - y_u    ) ||
+!            || (  A x - SCALE_c * c ) ||_2
+!
+!  where GRAD_L = W*W*( x - x0 ) - A(transpose) y or g -  A(transpose) y
+!  is the gradient of the Lagrangian
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
 
-      TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
+      TYPE ( LPB_dims_type ), INTENT( IN ) :: dims
+      INTEGER, INTENT( IN ) :: n, m
+      REAL ( KIND = wp ), INTENT( IN ) :: tau
+      REAL ( KIND = wp ), INTENT( OUT ) :: res_primal, res_dual
+      REAL ( KIND = wp ), INTENT( OUT ) :: res_primal_dual, res_cs
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, GRAD_L
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_x_l
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%x_u_start : n ) :: Z_u
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: Y, C_RES
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l, DIST_C_l
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u, DIST_C_u
+
+!  Local variables
+
+      INTEGER :: i
+
+!  Compute in the l_2-norm
+
+      res_dual = SUM( GRAD_L( : dims%x_free ) ** 2 ) ; res_cs = zero
+
+!  Problem variables:
+
+      DO i = dims%x_free + 1, dims%x_l_start - 1
+        res_dual = res_dual + ( GRAD_L( i ) - Z_l( i ) ) ** 2
+        res_cs = res_cs + Z_l( i ) * X( i )
+      END DO
+      DO i = dims%x_l_start, dims%x_u_start - 1
+        res_dual = res_dual + ( GRAD_L( i ) - Z_l( i ) ) ** 2
+        res_cs = res_cs + Z_l( i ) * DIST_X_l( i )
+      END DO
+      DO i = dims%x_u_start, dims%x_l_end
+        res_dual = res_dual + ( GRAD_L( i ) - Z_l( i ) - Z_u( i ) ) ** 2
+        res_cs = res_cs + Z_l( i ) * DIST_X_l( i ) - Z_u( i ) * DIST_X_u( i )
+      END DO
+      DO i = dims%x_l_end + 1, dims%x_u_end
+        res_dual = res_dual + ( GRAD_L( i ) - Z_u( i ) ) ** 2
+        res_cs = res_cs - Z_u( i ) * DIST_X_u( i )
+      END DO
+      DO i = dims%x_u_end + 1, n
+        res_dual = res_dual + ( GRAD_L( i ) - Z_u( i ) ) ** 2
+        res_cs = res_cs + Z_u( i ) * X( i )
+      END DO
+
+!  Slack variables:
+
+      DO i = dims%c_l_start, dims%c_u_start - 1
+        res_dual = res_dual + ( Y( i ) - Y_l( i ) ) ** 2
+        res_cs = res_cs + Y_l( i ) * DIST_C_l( i )
+      END DO
+      DO i = dims%c_u_start, dims%c_l_end
+        res_dual = res_dual + ( Y( i ) - Y_l( i ) - Y_u( i ) ) ** 2
+        res_cs = res_cs + Y_l( i ) * DIST_C_l( i ) - Y_u( i ) * DIST_C_u( i )
+      END DO
+      DO i = dims%c_l_end + 1, dims%c_u_end
+        res_dual = res_dual + ( Y( i ) - Y_u( i ) ) ** 2
+        res_cs = res_cs - Y_u( i ) * DIST_C_u( i )
+      END DO
+
+      res_primal = SUM( C_RES ** 2 )
+      res_primal_dual = SQRT( res_primal + res_dual )
+
+      res_primal = SQRT( res_primal )
+      res_dual = SQRT( res_dual )
+
+      LPB_merit_value = ABS( res_cs ) + tau * res_primal_dual
+
+      RETURN
+
+!  End of function LPB_merit_value
+
+      END FUNCTION LPB_merit_value
+
+!-*-*-*-  L P B _ P O T E N T I A L _ V A L U E   S U B R O U T I N E  -*-*-*-
+
+      FUNCTION LPB_potential_value( dims, n, X, DIST_X_l, DIST_X_u,            &
+                                    DIST_C_l, DIST_C_u )
+      REAL ( KIND = wp ) LPB_potential_value
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Compute the value of the potential function
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!  Dummy arguments
+
+      TYPE ( LPB_dims_type ), INTENT( IN ) :: dims
       INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( IN ) :: mu 
-      REAL ( KIND = wp ), INTENT( IN ) :: objf
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
       REAL ( KIND = wp ), INTENT( IN ),                                        &
              DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
@@ -5626,1912 +7078,2291 @@
       REAL ( KIND = wp ), INTENT( IN ),                                        &
              DIMENSION( dims%c_u_start : dims%c_u_end ) :: DIST_C_u
 
-!  Local variables
+! Compute the potential terms
 
-      INTEGER :: i
+      LPB_potential_value =                                                    &
+        - SUM( LOG( X( dims%x_free + 1 : dims%x_l_start - 1 ) ) )              &
+        - SUM( LOG( DIST_X_l ) ) - SUM( LOG( DIST_X_u ) )                      &
+        - SUM( LOG( - X( dims%x_u_end + 1 : n ) ) )                            &
+        - SUM( LOG( DIST_C_l ) ) - SUM( LOG( DIST_C_u ) )
 
-! Compute the barrier terms
+      RETURN
 
-      LPB_barrier_value = zero
+!  End of LPB_potential_value
 
-!  Problem variables: 
+      END FUNCTION LPB_potential_value
 
-      DO i = dims%x_free + 1, dims%x_l_start - 1
-        LPB_barrier_value = LPB_barrier_value + LOG( X( i ) ) 
-      END DO 
-      DO i = dims%x_l_start, dims%x_l_end
-        LPB_barrier_value = LPB_barrier_value + LOG( DIST_X_l( i ) ) 
-      END DO 
-      DO i = dims%x_u_start, dims%x_u_end
-        LPB_barrier_value = LPB_barrier_value + LOG( DIST_X_u( i ) ) 
-      END DO 
-      DO i = dims%x_u_end + 1, n
-        LPB_barrier_value = LPB_barrier_value + LOG( - X( i ) ) 
-      END DO 
+!-*-  L P B _ L A G R A N G I A N _ G R A D I E N T   S U B R O U T I N E  -*-
 
-!  Slack variables: 
-
-      DO i = dims%c_l_start, dims%c_l_end
-        LPB_barrier_value = LPB_barrier_value + LOG( DIST_C_l( i ) ) 
-      END DO 
-      DO i = dims%c_u_start, dims%c_u_end
-        LPB_barrier_value = LPB_barrier_value + LOG( DIST_C_u( i ) ) 
-      END DO 
-
-!  Form the barrier function
-
-      LPB_barrier_value = objf - mu * LPB_barrier_value
-
-      RETURN  
-
-!  End of LPB_barrier_value
-
-      END FUNCTION LPB_barrier_value
- 
-!-*-  L P B _ I T E R A T I V E _ R E F I N E M E N T  S U B R O U T I N E -*-
-
-      SUBROUTINE LPB_iterative_refinement(                                     &
-                       dims, n, m, A_ne, A_val, A_col, A_ptr,                  &
-                       RHS, l_rhs, factor, DIAG_X, ldiag_x, SCALE_C, DIAG_C,   &
-                       ldiag_c_l, ldiag_c_u, SOL, RES, BEST, Y_trial, BEST_y,  &
-                       RES_y, RES_x, precon, nnzks, itref_max,                 &
-                       semi_norm, res_norm, big_res, K, FACTORS, CNTL,         &
-                       print_level, control, inform ) 
+      SUBROUTINE LPB_Lagrangian_gradient( dims, n, m, X, Y, Y_l, Y_u,          &
+                                          Z_l, Z_u, a_ne, A_val, A_col, A_ptr, &
+                                          DIST_X_l, DIST_X_u, DIST_C_l,        &
+                                          DIST_C_u, GRAD_L, getdua, dufeas,    &
+                                          gradient_kind, G )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  Solve the block linear system
-
-!     (  M_X             A(trans)  )
-!     (           M_C   - SCALE_C  ) ( sol ) = ( rhs )
-!     (   A   - SCALE_C            )
-
-!  using iterative refinement, and returning sol in rhs
-
+!
+!  Compute the gradient of the Lagrangian function
+!
+!  GRAD_L = g -  A(transpose) y
+!
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
 
-      TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m
-      INTEGER, INTENT( IN ) :: A_ne, print_level
-      INTEGER, INTENT( IN ) :: itref_max, factor, precon, nnzks
-      INTEGER, INTENT( IN ) :: l_rhs, ldiag_x, ldiag_c_l, ldiag_c_u
-      REAL ( KIND = wp ), INTENT( OUT ) :: semi_norm, res_norm
-      LOGICAL, INTENT( OUT ) :: big_res
+      TYPE ( LPB_dims_type ), INTENT( IN ) :: dims
+      INTEGER, INTENT( IN ) :: n, m, gradient_kind
+      REAL ( KIND = wp ), INTENT( IN ) :: dufeas
+      LOGICAL, INTENT( IN ) :: getdua
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: Y
+      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: GRAD_L
       REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%c_l_start : dims%c_u_end ) :: SCALE_C
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ldiag_x ) :: DIAG_X
+             DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
       REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( ldiag_c_l : ldiag_c_u ) :: DIAG_C
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( l_rhs ) :: RHS 
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( dims%v_e ) :: SOL, RES
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( dims%v_e ) :: BEST
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( m ) :: Y_trial, BEST_y, RES_y
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: RES_x
-      INTEGER, INTENT( IN ), DIMENSION( A_ne ) :: A_col
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
-      TYPE ( SMT_type ), INTENT( INOUT ) :: K
-      TYPE ( SILS_factors ), INTENT( INOUT ) :: FACTORS
-      TYPE ( SILS_control ), INTENT( INOUT ) :: CNTL
-      TYPE ( LPB_control_type ), INTENT( IN ) :: control        
-      TYPE ( LPB_inform_type ), INTENT( INOUT ) :: inform
-
-!  Local variables
-
-      INTEGER :: i, it, itref_max_block
-      REAL ( KIND = wp ) :: old_res
-      TYPE ( SILS_sinfo ) :: SINFO
-
-      big_res = .FALSE.
-      IF ( control%out > 0 .AND. print_level >= 3 ) THEN
-        IF ( dims%nc > 0 ) THEN
-          WRITE( control%out, 2000 )                                           &
-            MAXVAL( ABS( RHS( dims%x_s : dims%x_e ) ) ),                       &
-            MAXVAL( ABS( RHS( dims%c_s : dims%c_e ) ) ),                       &
-            MAXVAL( ABS( RHS( dims%y_s : dims%y_e ) ) )
-        ELSE IF ( m > 0 ) THEN
-          WRITE( control%out, 2010 )                                           &
-            MAXVAL( ABS( RHS( dims%x_s : dims%x_e ) ) ),                       &
-            MAXVAL( ABS( RHS( dims%y_s : dims%y_e ) ) )
-        ELSE
-          WRITE( control%out, 2020 ) MAXVAL( ABS( RHS( dims%x_s : dims%x_e ) ) )
-        END IF
-      END IF
-
-!     write(6,*) ' l_rhs ', l_rhs, dims%v_e, lbound( RHS ), &
-!        ubound( RHS ), size( RHS )
-      old_res = NRM2( dims%v_e, RHS( : dims%v_e ), 1 )
-!     old_res = MAXVAL( ABS( RHS ) )
-      IF ( control%array_syntax_worse_than_do_loop ) THEN
-        DO i = 1, dims%v_e ; SOL( i ) = RHS( i ) ; END DO
-      ELSE
-        SOL = RHS
-      END IF
-
-      IF ( factor == 0 .OR. factor == 1 ) THEN
-        itref_max_block = itref_max - 1
-        CALL LPB_block_solve( dims, n, m, SOL( dims%x_s : dims%x_e ),          &
-                               SOL( dims%c_s : dims%c_e ),                     &
-                               SOL( dims%y_s : dims%y_e ),                     &
-                               A_ne, A_val, A_col, A_ptr, DIAG_X, ldiag_x,     &
-                               SCALE_C, DIAG_C, ldiag_c_l, ldiag_c_u,          &
-                               Y_trial, BEST_y, RES_y, RES_x, itref_max_block, &
-                               big_res, K, FACTORS, CNTL, print_level,         &
-                               control, inform )
-                               
-      ELSE
-        CALL SILS_solve( K, FACTORS, SOL, CNTL, SINFO )
-        inform%factorization_status = SINFO%flag
-        IF ( SINFO%flag /= 0 ) THEN
-          IF ( control%error > 0 .AND. print_level >= 1 )                      &
-              WRITE( control%error, 2100 ) SINFO%flag
-          inform%status = - 7 ; RETURN
-        END IF
-      END IF
-
-      IF ( control%out > 0 .AND. print_level >= 3 ) THEN
-        IF ( dims%nc > 0 ) THEN
-          WRITE( control%out, 2030 )                                           &
-            MAXVAL( ABS( SOL( dims%x_s : dims%x_e ) ) ),                       &
-            MAXVAL( ABS( SOL( dims%c_s : dims%c_e ) ) ),                       &
-            MAXVAL( ABS( SOL( dims%y_s : dims%y_e ) ) )
-        ELSE IF ( m > 0 ) THEN
-          WRITE( control%out, 2040 )                                           &
-            MAXVAL( ABS( SOL( dims%x_s : dims%x_e ) ) ),                       &
-            MAXVAL( ABS( SOL( dims%y_s : dims%y_e ) ) )
-        ELSE
-          WRITE( control%out, 2050 ) MAXVAL( ABS( SOL( dims%x_s : dims%x_e ) ) )
-        END IF
-      END IF
-
-!  Perform the iterative refinement
-
-      DO it = 1, itref_max
-
-!  Compute the residual
-
-        IF ( factor == 0 .OR. factor == 1 ) THEN
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = dims%x_s, dims%x_e
-              RES( i ) = RHS( i ) - DIAG_X( i ) * SOL( i ) ; END DO
-            DO i = 0, dims%nc - 1
-              RES( dims%c_s + i ) = RHS( dims%c_s + i ) -                      &
-                DIAG_C( dims%c_l_start + i ) * SOL( dims%c_s + i ) ; END DO
-          ELSE
-            RES( dims%x_s : dims%x_e ) = RHS( dims%x_s : dims%x_e ) -          &
-                                          DIAG_X * SOL( dims%x_s : dims%x_e )
-            RES( dims%c_s : dims%c_e ) = RHS( dims%c_s : dims%c_e ) -          &
-                                           DIAG_C * SOL( dims%c_s : dims%c_e )
-          END IF
-        ELSE
-          IF ( precon > 1 ) THEN
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = dims%x_s, dims%c_e
-                RES( i ) = RHS( i ) - K%val( nnzks + i ) * SOL( i ) ; END DO
-            ELSE
-              RES( dims%x_s : dims%c_e ) = RHS( dims%x_s : dims%c_e ) -        &
-                K%val( nnzks + dims%x_s : nnzks + dims%c_e ) *                 &
-                  SOL( dims%x_s : dims%c_e )
-            END IF
-          ELSE
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = dims%x_s, dims%c_e
-                RES( i ) = RHS( i ) - k_diag * SOL( i ) ; END DO
-            ELSE
-              RES( dims%x_s : dims%c_e ) = RHS( dims%x_s : dims%c_e ) -        &
-                k_diag * SOL( dims%x_s : dims%c_e )
-            END IF
-          END IF
- 
-        END IF
-
-!  Include the contribution from the slack variables
-
-        IF ( control%array_syntax_worse_than_do_loop ) THEN
-          DO i = 0, dims%nc - 1
-            RES( dims%c_s + i ) = RES( dims%c_s + i ) +                        &
-                SCALE_C( dims%c_l_start + i ) * SOL( dims%y_i + i )
-            RES( dims%y_i + i ) = RHS( dims%y_i + i ) +                        &
-                SCALE_C( dims%c_l_start + i ) * SOL( dims%c_s + i )  
-          END DO
-          DO i = dims%y_s, dims%y_i - 1 ; RES( i ) = RHS( i ) ; END DO
-        ELSE
-          RES( dims%c_s : dims%c_e ) =                                         &
-            RES( dims%c_s : dims%c_e ) + SCALE_C * SOL( dims%y_i : dims%y_e )
-          RES( dims%y_s : dims%y_i - 1 ) = RHS( dims%y_s : dims%y_i - 1 )
-          RES( dims%y_i : dims%y_e ) =                                         &
-            RHS( dims%y_i : dims%y_e ) + SCALE_C * SOL( dims%c_s : dims%c_e )
-        END IF
-
-!  Include the contribution from A
-
-        CALL LPB_AX( n, RES( dims%x_s : dims%x_e ), m, A_ne, A_val, A_col,     &
-                      A_ptr, m, SOL( dims%y_s : dims%y_e ), '-T' )
-        CALL LPB_AX( m, RES( dims%y_s : dims%y_e ), m, A_ne, A_val, A_col,     &
-                      A_ptr, n, SOL( dims%x_s : dims%x_e ), '- ' )
-
-        IF ( control%out > 0 .AND. print_level >= 3 ) THEN
-          IF ( dims%nc > 0 ) THEN
-            WRITE( control%out, 2000 )                                         &
-              MAXVAL( ABS( RES( dims%x_s : dims%x_e ) ) ),                     &
-              MAXVAL( ABS( RES( dims%c_s : dims%c_e ) ) ),                     &
-              MAXVAL( ABS( RES( dims%y_s : dims%y_e ) ) )
-          ELSE IF ( m > 0 ) THEN
-            WRITE( control%out, 2010 )                                         &
-              MAXVAL( ABS( RES( dims%x_s : dims%x_e ) ) ),                     &
-              MAXVAL( ABS( RES( dims%y_s : dims%y_e ) ) )
-          ELSE
-            WRITE( control%out, 2020 )                                         &
-              MAXVAL( ABS( RES( dims%x_s : dims%x_e ) ) )
-          END IF
-        END IF
-
-!  Compute the norm of the residual
-
-        res_norm = NRM2( dims%v_e, RES, 1 )
-!       res_norm = MAXVAL( ABS( RES ) )
-        IF ( res_norm > res_large ) THEN
-          big_res = .TRUE.
-          RETURN
-        END IF
-
-!  If the norm has increased, quit
-
-        IF ( it > 1 ) THEN
-          IF ( res_norm < old_res ) THEN
-            old_res = res_norm
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 1, dims%v_e ; BEST( i ) = SOL( i ) ; END DO
-            ELSE
-              BEST = SOL
-            END IF
-          ELSE
-            res_norm = old_res
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 1, dims%v_e ; SOL( i ) = BEST( i ) ; END DO
-            ELSE
-              SOL = BEST
-            END IF
-            GO TO 100
-          END IF
-        ELSE
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = 1, dims%v_e ; BEST( i ) = SOL( i ) ; END DO
-          ELSE
-            BEST = SOL
-          END IF
-        END IF
-   
-!  Obtain a new correction
-
-        IF ( factor == 0 .OR. factor == 1 ) THEN
-          CALL LPB_block_solve( dims, n, m, RES( dims%x_s : dims%x_e ),        &
-                                RES( dims%c_s : dims%c_e ),                    &
-                                RES( dims%y_s : dims%y_e ),                    &
-                                A_ne, A_val, A_col, A_ptr,                     &
-                                DIAG_X, ldiag_x, SCALE_C, DIAG_C, ldiag_c_l,   &
-                                ldiag_c_u, Y_trial, BEST_y, RES_y, RES_x,      &
-                                itref_max_block, big_res, K, FACTORS, CNTL,    &
-                                print_level, control, inform )
-        ELSE
-          CALL SILS_solve( K, FACTORS, RES, CNTL, SINFO )
-          inform%factorization_status = SINFO%flag
-          IF ( SINFO%flag /= 0 ) THEN
-            IF ( control%error > 0 .AND. print_level >= 1 )                    &
-              WRITE( control%error, 2100 ) SINFO%flag
-            inform%status = - 7 ; RETURN
-          END IF
-        END IF
-
-        IF ( control%out > 0 .AND. print_level >= 3 ) THEN
-          IF ( dims%nc > 0 ) THEN
-            WRITE( control%out, 2060 )                                         &
-              MAXVAL( ABS( RES( dims%x_s : dims%x_e ) ) ),                     &
-              MAXVAL( ABS( RES( dims%c_s : dims%c_e ) ) ),                     &
-              MAXVAL( ABS( RES( dims%y_s : dims%y_e ) ) )
-          ELSE IF ( m > 0 ) THEN
-            WRITE( control%out, 2070 )                                         &
-              MAXVAL( ABS( RES( dims%x_s : dims%x_e ) ) ),                     &
-              MAXVAL( ABS( RES( dims%y_s : dims%y_e ) ) )
-          ELSE
-            WRITE( control%out, 2080 )                                         &
-              MAXVAL( ABS( RES( dims%x_s : dims%x_e ) ) )
-          END IF
-        END IF
-        IF ( control%array_syntax_worse_than_do_loop ) THEN
-          DO i = 1, dims%v_e ; SOL( i ) = SOL( i ) + RES( i ) ; END DO
-        ELSE
-          SOL = SOL + RES
-        END IF
-
-      END DO
-
-!  Obtain final residuals if required
-
-      IF ( it >= itref_max .OR. itref_max == 0 ) THEN
-      
-!  Compute the residual
-
-        IF ( factor == 0 .OR. factor == 1 ) THEN
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = dims%x_s, dims%x_e
-              RES( i ) = RHS( i ) - DIAG_X( i ) * SOL( i ) ; END DO
-            DO i = 0, dims%nc - 1
-              RES( dims%c_s + i ) = RHS( dims%c_s + i ) -                      &
-                DIAG_C( dims%c_l_start + i ) * SOL( dims%c_s + i ) ; END DO
-          ELSE
-            RES( dims%x_s : dims%x_e ) = RHS( dims%x_s : dims%x_e ) -          &
-                                           DIAG_X * SOL( dims%x_s : dims%x_e )
-            RES( dims%c_s : dims%c_e ) = RHS( dims%c_s : dims%c_e ) -          &
-                                          DIAG_C * SOL( dims%c_s : dims%c_e )
-          END IF
-        ELSE
-          IF ( precon > 1 ) THEN
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = dims%x_s, dims%c_e
-                RES( i ) = RHS( i ) - K%val( nnzks + i ) * SOL( i ) ; END DO
-            ELSE
-              RES( dims%x_s : dims%c_e ) = RHS( dims%x_s : dims%c_e ) -        &
-                K%val( nnzks + dims%x_s : nnzks + dims%c_e ) *                 &
-                  SOL( dims%x_s : dims%c_e )
-            END IF
-          ELSE
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-               DO i = dims%x_s, dims%c_e
-                RES( i ) = RHS( i ) - k_diag * SOL( i ) ; END DO
-            ELSE
-              RES( dims%x_s : dims%c_e ) = RHS( dims%x_s : dims%c_e ) -        &
-                k_diag * SOL( dims%x_s : dims%c_e )
-            END IF
-          END IF
-        END IF
- 
-!  Include the contribution from the slack variables
-
-        IF ( control%array_syntax_worse_than_do_loop ) THEN
-          DO i = 0, dims%nc - 1
-            RES( dims%c_s + i ) = RES( dims%c_s + i )                          &
-              + SCALE_C( dims%c_l_start + i ) * SOL( dims%y_i + i )
-            RES( dims%y_i + i ) = RHS( dims%y_i + i )                          &
-              + SCALE_C( dims%c_l_start + i ) * SOL( dims%c_s + i )
-          END DO
-          DO i = dims%y_s, dims%y_i - 1 ; RES( i ) = RHS( i ) ; END DO
-        ELSE
-          RES( dims%c_s : dims%c_e ) =                                         &
-            RES( dims%c_s : dims%c_e ) + SCALE_C * SOL( dims%y_i : dims%y_e )
-          RES( dims%y_s : dims%y_i - 1 ) = RHS( dims%y_s : dims%y_i - 1 )
-          RES( dims%y_i : dims%y_e ) =                                         &
-            RHS( dims%y_i : dims%y_e ) + SCALE_C * SOL( dims%c_s : dims%c_e )
-        END IF
-
-!  Include the contribution from A
-
-        CALL LPB_AX( n, RES( dims%x_s : dims%x_e ), m, A_ne, A_val, A_col,     &
-                      A_ptr, m, SOL( dims%y_s : dims%y_e ), '-T' )
-        CALL LPB_AX( m, RES( dims%y_s : dims%y_e ), m, A_ne, A_val, A_col,     &
-                      A_ptr, n, SOL( dims%x_s : dims%x_e ), '- ' )
-
-        IF ( control%out > 0 .AND. print_level >= 3 ) THEN
-          IF ( dims%nc > 0 ) THEN
-            WRITE( control%out, 2000 )                                         &
-              MAXVAL( ABS( RES( dims%x_s : dims%x_e ) ) ),                     &
-              MAXVAL( ABS( RES( dims%c_s : dims%c_e ) ) ),                     &
-              MAXVAL( ABS( RES( dims%y_s : dims%y_e ) ) )
-          ELSE IF ( m > 0 ) THEN
-            WRITE( control%out, 2010 )                                         &
-              MAXVAL( ABS( RES( dims%x_s : dims%x_e ) ) ),                     &
-              MAXVAL( ABS( RES( dims%y_s : dims%y_e ) ) )
-          ELSE
-            WRITE( control%out, 2020 )                                         &
-              MAXVAL( ABS( RES( dims%x_s : dims%x_e ) ) )
-          END IF
-        END IF
-        res_norm = NRM2( dims%v_e, RES, 1 )
-!       res_norm = MAXVAL( ABS( RES ) )
-        IF ( res_norm > res_large ) THEN
-          big_res = .TRUE.
-          RETURN
-        END IF
-      END IF
-
- 100  CONTINUE
-      IF ( control%out > 0 .AND. print_level >= 3 ) THEN
-        IF ( dims%nc > 0 ) THEN
-          WRITE( control%out, 2030 )                                           &
-            MAXVAL( ABS( SOL( dims%x_s : dims%x_e ) ) ),                       &
-            MAXVAL( ABS( SOL( dims%c_s : dims%c_e ) ) ),                       &
-            MAXVAL( ABS( SOL( dims%y_s : dims%y_e ) ) )
-        ELSE IF ( m > 0 ) THEN
-          WRITE( control%out, 2040 )                                           &
-            MAXVAL( ABS( SOL( dims%x_s : dims%x_e ) ) ),                       &
-            MAXVAL( ABS( SOL( dims%y_s : dims%y_e ) ) )
-        ELSE
-          WRITE( control%out, 2050 ) MAXVAL( ABS( SOL( dims%x_s : dims%x_e ) ) )
-        END IF
-      END IF
-
-      semi_norm = zero
-      DO i = 1, dims%c_e 
-        semi_norm = semi_norm + RHS( i ) * SOL( i )
-        RHS( i ) = SOL( i )
-      END DO
-      semi_norm = SQRT( ABS( semi_norm ) )
-      DO i = dims%c_e + 1, dims%v_e
-        RHS( i ) = SOL( i )
-      END DO
-
-      inform%status = 0
-      RETURN
-
-!  Non-executable statements
-
- 2000 FORMAT( '  res(dual) ', ES12.4, '  res(slack ) ', ES12.4,                &
-              '  res(primal) ', ES12.4 )
- 2010 FORMAT( '  res(dual) ', ES12.4, '  res(primal) ', ES12.4 )
- 2020 FORMAT( '  res(dual) ', ES12.4 )
- 2030 FORMAT( '  sol(x   ) ', ES12.4, '  sol(slack ) ', ES12.4,                &
-              '  sol(y     ) ', ES12.4 )
- 2040 FORMAT( '  sol(x   ) ', ES12.4, '  sol(y     ) ', ES12.4 )
- 2050 FORMAT( '  sol(x   ) ', ES12.4 )
- 2060 FORMAT( ' dsol(x   ) ', ES12.4, ' dsol(slack ) ', ES12.4,                &
-              ' dsol(y     ) ', ES12.4 )
- 2070 FORMAT( ' dsol(x   ) ', ES12.4, ' dsol(y     ) ', ES12.4 )
- 2080 FORMAT( ' dsol(x   ) ', ES12.4 )
- 2100 FORMAT( '   **  Error return ', I3, ' from SILS_solve ' ) 
-
-!  End of LPB_iterative_refinement
-
-      END SUBROUTINE LPB_iterative_refinement
-
-!-*-*-*-*-*-   L P B _ B L O C K _ S O L V E   S U B R O U T I N E   -*-*-*-*-
-
-      SUBROUTINE LPB_block_solve( dims, n, m, RHS_x, RHS_c, RHS_y, A_ne,       &
-                                  A_val, A_col, A_ptr, DIAG_X, ldiag_x,        &
-                                  SCALE_C, DIAG_C, ldiag_c_l, ldiag_c_u,       &
-                                  Y_trial, BEST_y, RES_y, RES_x, itref_max,    &
-                                  big_res, K, FACTORS, CNTL, print_level,      &
-                                  control, inform )
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  Solve the block system 
-
-!     ( DIAG_X           A(trans)  ) (sol_x) = (rhs_x)
-!     (         DIAG_C  - SCALE_C  ) (sol_c)   (rhs_c)
-!     (   A   - SCALE_C            ) (sol_y)   (rhs_y)
-
-!  returning ( sol_x , sol_c, sol_y ) in ( rhs_x , rhs_c, rhs_y )
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!   Dummy arguments
-
-      TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m
-      INTEGER, INTENT( IN ) :: A_ne, ldiag_x, ldiag_c_l, ldiag_c_u
-      INTEGER, INTENT( IN ) :: itref_max, print_level
-      LOGICAL, INTENT( INOUT ) :: big_res
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_l_start : dims%c_u_end ) :: SCALE_C
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ldiag_x ) :: DIAG_X
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( ldiag_c_l : ldiag_c_u ) :: DIAG_C
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: RHS_x
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: RHS_y
+             DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
       REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-                          DIMENSION( dims%c_l_start : m ) :: RHS_c
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( m ) :: Y_trial, BEST_y, RES_y
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: RES_x
-      INTEGER, INTENT( IN ), DIMENSION( A_ne ) :: A_col
+             DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+             DIMENSION( dims%x_u_start : n ) :: Z_u
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%c_l_start : dims%c_l_end ) :: DIST_C_l
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%c_u_start : dims%c_u_end ) :: DIST_C_u
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u
+      INTEGER, INTENT( IN ) :: a_ne
+      INTEGER, INTENT( IN ), DIMENSION( a_ne ) :: A_col
       INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
-      TYPE ( SMT_type ), INTENT( INOUT ) :: K
-      TYPE ( SILS_factors ), INTENT( INOUT ) :: FACTORS
-      TYPE ( SILS_control ), INTENT( INOUT ) :: CNTL
-      TYPE ( LPB_control_type ), INTENT( IN ) :: control        
-      TYPE ( LPB_inform_type ), INTENT( INOUT ) :: inform
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( a_ne ) :: A_val
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: G
+
+!  Local variables
 
       INTEGER :: i
+      REAL ( KIND = wp ) :: gi
 
-!  Obtain DIAG_X(inv) * rhs_x ...
+!  Add the product A( transpose ) y to the gradient of the quadratic
 
-      IF ( control%array_syntax_worse_than_do_loop ) THEN
-        DO i = 1, n ; RHS_x( i ) = RHS_x( i ) / DIAG_X( i ) ; END DO
-      ELSE
-        RHS_x = RHS_x / DIAG_X
+      IF ( gradient_kind == 1 ) THEN
+        GRAD_L = one
+      ELSE IF ( gradient_kind /= 0 ) THEN
+        GRAD_L = G
       END IF
 
-      IF (  m == 0 ) RETURN
+      CALL LPB_AX( n, GRAD_L, m, a_ne, A_val, A_col, A_ptr, m, Y, '-T' )
 
-!  ... and DIAG_C(inv) * rhs_c
+!  If required, obtain suitable "good" starting values for the dual
+!  variables ( see paper )
 
-      IF ( control%array_syntax_worse_than_do_loop ) THEN
-        DO i = dims%c_l_start, m
-          RHS_c( i ) = RHS_c( i ) / DIAG_C( i ) ; END DO
-      ELSE
-        RHS_c = RHS_c / DIAG_C
-      END IF
+      IF ( getdua ) THEN
 
-!  Now find A * DIAG_X(inv) * rhs_x - rhs_y - SCALE_C * DIAG_C(inv) * rhs_c
+!  Problem variables:
 
-      IF ( control%array_syntax_worse_than_do_loop ) THEN
-        DO i = 1, dims%c_equality ; RHS_y( i ) = - RHS_y( i ) ; END DO
-        DO i = dims%c_l_start,  dims%c_u_end
-          RHS_y( i ) = - RHS_y( i ) - SCALE_C( i ) * RHS_c( i ) ; END DO
-      ELSE
-        RHS_y( : dims%c_equality ) = - RHS_y( : dims%c_equality )
-        RHS_y( dims%c_l_start : ) = - RHS_y( dims%c_l_start : ) - SCALE_C *RHS_c
-      END IF
-      CALL LPB_AX( m, RHS_y, m, A_ne, A_val, A_col, A_ptr, n, RHS_x, '+ ' )
+!  The variable is a non-negativity
 
-!  Next solve K sol_y = A * DIAG_X(inv) * rhs_x - rhs_y - DIAG_X(inv) * rhs_c, 
-!  where K = A * DIAG_X(inv) * A(trans) + SCALE_C * DIAG_C(inv) * SCALE_C
-
-      CALL LPB_block_iterative_refinement(                                     &
-                dims, n, m, K, FACTORS, CNTL, RHS_y, A_ne, A_val, A_col,       &
-                A_ptr, DIAG_X, ldiag_x, SCALE_C, DIAG_C, ldiag_c_l, ldiag_c_u, &
-                Y_trial, BEST_y, RES_y, RES_x, itref_max, big_res,             &
-                print_level, control, inform )
-
-!  Finally, recover rhs_x = DIAG_X(inv) ( rhs_x - A(trans) sol_y ) ...
-
-      IF ( control%array_syntax_worse_than_do_loop ) THEN
-        DO i = 1, n ; RHS_x( i ) = RHS_x( i ) * DIAG_X( i ) ; END DO
-      ELSE
-        RHS_x = RHS_x * DIAG_X
-      END IF
-
-      CALL LPB_AX( n, RHS_x, m, A_ne, A_val, A_col, A_ptr, m, RHS_y, '-T' )
-
-      IF ( control%array_syntax_worse_than_do_loop ) THEN
-        DO i = 1, n ; RHS_x( i ) = RHS_x( i ) / DIAG_X( i ) ; END DO
-      ELSE
-        RHS_x = RHS_x / DIAG_X
-      END IF
-
-!  ... and rhs_c = DIAG_C(inv) ( rhs_c + SCALE_C * sol_y )
-
-      IF ( control%array_syntax_worse_than_do_loop ) THEN
-        DO i = dims%c_l_start,  dims%c_u_end
-          RHS_c( i ) = RHS_c( i ) + ( SCALE_C( i ) / DIAG_C( i ) ) * RHS_y( i )
+        DO i = dims%x_free + 1, dims%x_l_start - 1
+          Z_l( i ) = MAX( dufeas, GRAD_L( i ) / ( one + X( i ) ** 2 ) )
         END DO
-      ELSE
-        RHS_c = RHS_c + ( SCALE_C / DIAG_C ) * RHS_y( dims%c_l_start : )
+
+!  The variable has just a lower bound
+
+        DO i = dims%x_l_start, dims%x_u_start - 1
+          Z_l( i ) = MAX( dufeas, GRAD_L( i ) / ( one + DIST_X_l( i ) ** 2 ) )
+        END DO
+
+!  The variable has both lower and upper bounds
+
+        DO i = dims%x_u_start, dims%x_l_end
+          gi = GRAD_L( i )
+          IF ( ABS( gi ) <= dufeas ) THEN
+            Z_l( i ) = dufeas ; Z_u( i ) = - dufeas
+          ELSE IF ( gi > dufeas ) THEN
+            Z_l( i ) = ( gi + dufeas ) / ( one + DIST_X_l( i ) ** 2 )
+            Z_u( i ) = - dufeas
+          ELSE
+            Z_l( i ) = dufeas
+            Z_u( i ) = ( gi - dufeas ) / ( one + DIST_X_u( i ) ** 2 )
+          END IF
+        END DO
+
+!  The variable has just an upper bound
+
+        DO i = dims%x_l_end + 1, dims%x_u_end
+          Z_u( i ) = MIN( - dufeas, GRAD_L( i ) / ( one + DIST_X_u( i ) ** 2 ) )
+        END DO
+
+!  The variable is a non-positivity
+
+        DO i = dims%x_u_end + 1, n
+          Z_u( i ) = MIN( - dufeas, GRAD_L( i ) / ( one + X( i ) ** 2 ) )
+        END DO
+
+!  Slack variables:
+
+!  The variable has just a lower bound
+
+        DO i = dims%c_l_start, dims%c_u_start - 1
+          Y_l( i ) = MAX( dufeas, - Y( i ) / ( one + DIST_C_l( i ) ** 2 ) )
+        END DO
+
+!  The variable has both lower and upper bounds
+
+        DO i = dims%c_u_start, dims%c_l_end
+          gi = - Y( i )
+          IF ( ABS( gi ) <= dufeas ) THEN
+            Y_l( i ) = dufeas ; Y_u( i ) = - dufeas
+          ELSE IF ( gi > dufeas ) THEN
+            Y_l( i ) = ( gi + dufeas ) / ( one + DIST_C_l( i ) ** 2 )
+            Y_u( i ) = - dufeas
+          ELSE
+            Y_l( i ) = dufeas
+            Y_u( i ) = ( gi - dufeas ) / ( one + DIST_C_u( i ) ** 2 )
+          END IF
+        END DO
+
+!  The variable has just an upper bound
+
+        DO i = dims%c_l_end + 1, dims%c_u_end
+          Y_u( i ) = MIN( - dufeas, - Y( i ) / ( one + DIST_C_u( i ) ** 2 ) )
+        END DO
       END IF
 
       RETURN
 
-!  End of subroutine LPB_block_solve
+!  End of LPB_Lagrangian_gradient
 
-      END SUBROUTINE LPB_block_solve
+      END SUBROUTINE LPB_Lagrangian_gradient
 
-!-*-*-*-*-*-   L P B _ B L O C K _ I-R   S U B R O U T I N E   -*-*-*-*-*-*-
+!-*-*-*-  L P B _ C O M P U T E _ S T E P S I Z E   S U B R O U T I N E  -*-*-*-
 
-      SUBROUTINE LPB_block_iterative_refinement( dims, n, m, K, FACTORS,       &
-                            CNTL, RHS_y, A_ne, A_val, A_col, A_ptr, DIAG_X,    &
-                            ldiag_x, SCALE_C, DIAG_C, ldiag_c_l, ldiag_c_u,    &
-                            Y_trial, BEST_y, RES_y, RES_x,                     &
-                            itref_max, big_res, print_level, control, inform )
+      SUBROUTINE LPB_compute_stepsize( dims, n, m, nbnds, order, puiseux,      &
+                                       X_coef, C_coef, Y_coef, Y_l_coef,       &
+                                       Y_u_coef, Z_l_coef, Z_u_coef,           &
+                                       X, X_l, X_u, Z_l, Z_u,                  &
+                                       Y, Y_l, Y_u, C, C_l, C_u,               &
+                                       gamma_c, gamma_f, infeas, alpha_max,    &
+                                       comp, print_level, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  Solve the system 
-
-!   (  A * DIAG_X(inv) * A(trans) + SCALE_C * DIAG_C(inv) * SCALE_C ) *
-!     sol_y = rhs_y
-
-!  using iterative refinement, and returning sol_y in rhs_y
-
+!
+!  Find an approximation to the maximum allowable stepsizes alpha_max
+!  which balances the complementarity ie, such that
+!
+!      min (x-l)_i(z_l)_i - (gamma_c / nbds)( <x-l,z_l> + <x-u,z_u> ) >= 0
+!       i
+!  and
+!      min (x-u)_i(z_u)_i - (gamma_c / nbds)( <x-l,z_l> + <x-u,z_u> ) >= 0 ,
+!       i
+!
+!  and which favours feasibility over complementarity, ie, such that
+!
+!      <x-l,z_l> + <x-u,z_u> >= infeas * gamma_f
+!
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
 
-      TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m
-      INTEGER, INTENT( IN ) :: A_ne, ldiag_x, ldiag_c_l, ldiag_c_u
-      INTEGER, INTENT( IN ) :: itref_max, print_level
-      LOGICAL, INTENT( INOUT ) :: big_res
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ldiag_x ) :: DIAG_X
+      TYPE ( LPB_dims_type ), INTENT( IN ) :: dims
+      INTEGER, INTENT( IN ) :: n, m, nbnds, order, print_level
+      LOGICAL, INTENT( IN ) :: puiseux
+      REAL ( KIND = wp ), INTENT( IN ) :: gamma_c, gamma_f, infeas
+      REAL ( KIND = wp ), INTENT( OUT ) :: alpha_max, comp
+
       REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_l_start : dims%c_u_end ) :: SCALE_C
+        DIMENSION( n, 0 : order ) :: X_coef
       REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( ldiag_c_l : ldiag_c_u ) :: DIAG_C
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: RHS_y
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( m ) :: Y_trial, BEST_y, RES_y
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: RES_x
-      INTEGER, INTENT( IN ), DIMENSION( A_ne ) :: A_col
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
-      TYPE ( SMT_type ), INTENT( IN ) :: K
-      TYPE ( SILS_factors ), INTENT( INOUT ) :: FACTORS
-      TYPE ( SILS_control ), INTENT( IN ) :: CNTL
-      TYPE ( LPB_control_type ), INTENT( IN ) :: control        
+        DIMENSION( dims%c_l_start : dims%c_u_end, 0 : order ) :: C_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( m, 0 : order ) :: Y_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%c_l_start : dims%c_l_end, 0 : order ) ::  Y_l_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%c_u_start : dims%c_u_end, 0 : order ) ::  Y_u_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION(   dims%x_free + 1 : dims%x_l_end, 0 : order ) :: Z_l_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%x_u_start : n, 0 : order ) :: Z_u_coef
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Y
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+             DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+             DIMENSION( dims%x_u_start : n ) :: Z_u
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+                          DIMENSION( dims%c_l_start : m ) :: C
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
+      TYPE ( LPB_control_type ), INTENT( IN ) :: control
       TYPE ( LPB_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: i, it
-      REAL ( KIND = wp ) :: res_norm, old_res
-      TYPE ( SILS_sinfo ) :: SINFO
+      INTEGER :: i
+      REAL ( KIND = wp ) :: x_p, z_l_p, z_u_p, c_p, y_l_p, y_u_p
+      REAL ( KIND = wp ) :: alpha_l, alpha_u, scomp, infeas_gamma_f
+      CHARACTER ( LEN = 1 ) :: fail
+      LOGICAL :: ok, printd
 
-      old_res = NRM2( m, RHS_y, 1 )
-!     old_res = MAXVAL( ABS( RHS_y ) )
-      IF ( control%out > 0 .AND. print_level >= 3 )                            &
-        WRITE( control%out, 2000 ) old_res
+!  prefix for all output
 
-      IF ( control%array_syntax_worse_than_do_loop ) THEN
-        DO i = 1, m ; Y_trial( i ) = RHS_y( i ) ; END DO
-      ELSE
-        Y_trial = RHS_y
-      END IF
+      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
+        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
-      CALL SILS_solve( K, FACTORS, Y_trial, CNTL, SINFO )
-      inform%factorization_status = SINFO%flag
-      IF ( SINFO%flag /= 0 ) THEN
-        IF ( control%error > 0 .AND. print_level >= 1 )                        &
-          WRITE( control%error, 2040 ) SINFO%flag
-        inform%status = - 7 ; RETURN
-      END IF
+      alpha_max = one
+      inform%status = GALAHAD_ok
+      IF ( nbnds == 0 ) GO TO 200
+      printd = control%out > 0 .AND. print_level >= 6
 
-      IF ( control%out > 0 .AND. print_level >= 3 )                            &
-        WRITE( control%out, 2010 ) MAXVAL( ABS( Y_trial ) )
+      infeas_gamma_f = infeas * gamma_f
 
-      IF ( itref_max > 0 ) THEN
-        DO it = 1, itref_max
+!  define an interval [alhpa_l,alpha_u] containing the required stepsize
 
-!  Form res_x = DIAG_X(inv) * A(trans) sol_y
+      alpha_l = zero ; alpha_u = one
 
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = 1, n ; RES_x( i ) = zero ; END DO
-          ELSE
-            RES_x = zero
-          END IF
-          CALL LPB_AX( n, RES_x, m, A_ne, A_val, A_col,  A_ptr, m, Y_trial,'+T')
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = 1, n ; RES_x( i ) = RES_x( i ) / DIAG_X( i ) ; END DO
-          ELSE
-            RES_x = RES_x / DIAG_X
-          END IF
+!  main loop to determine an approximation to the largest possible stepsize
 
-!  Form res_y = rhs_y - A * res_x - SCALE_C * DIAG_C(inv) * SCALE_C * sol_y
+      IF ( printd ) WRITE(  control%out, "( A, '  step' )" ) prefix
+      DO
 
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = 1, dims%c_equality ; RES_y( i ) = RHS_y( i ) ; END DO
-            DO i = dims%c_l_start,  dims%c_u_end
-              RES_y( i ) = RHS_y( i ) - ( SCALE_C( i ) / DIAG_C( i ) ) *       &
-                             SCALE_C( i ) * Y_trial( i )
-            END DO
-          ELSE
-            RES_y( : dims%c_equality ) = RHS_y( : dims%c_equality )
-            RES_y( dims%c_l_start : ) = RHS_y( dims%c_l_start : )              &
-                   - ( SCALE_C / DIAG_C ) * SCALE_C * Y_trial( dims%c_l_start :)
-          END IF
-          CALL LPB_AX( m, RES_y, m, A_ne, A_val, A_col, A_ptr, n, RES_x, '- ' )
-  
-!  Print residuals if required
+!  once the interval is small enough, accept the lower bound as the required
+!  step so long as this step is not zero
 
-          res_norm = NRM2( m, RES_y, 1 )
-!         res_norm = MAXVAL( ABS( RES_y ) )
-
-          IF ( control%out > 0 .AND. print_level >= 3 )                        &
-            WRITE( control%out, 2000 ) res_norm
-  
-!  Check that the residuals are not too large
-
-          IF ( res_norm > res_large ) THEN
-            big_res = .TRUE.
-            RETURN
-          END IF
-
-          IF ( it > 1 ) THEN
-            IF ( res_norm < old_res ) THEN
-              old_res = res_norm
-              IF ( control%array_syntax_worse_than_do_loop ) THEN
-                DO i = 1, m ; BEST_y( i ) = Y_trial( i ) ; END DO
-              ELSE
-                BEST_y = Y_trial
-              END IF
-            ELSE
-              IF ( control%array_syntax_worse_than_do_loop ) THEN
-                DO i = 1, m ; Y_trial( i ) = BEST_y( i ) ; END DO
-              ELSE
-                Y_trial = BEST_y
-              END IF
-              EXIT
-            END IF
-          ELSE
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 1, m ; BEST_y( i ) = Y_trial( i ) ; END DO
-            ELSE
-              BEST_y = Y_trial
-            END IF
-          END IF
-     
-          CALL SILS_solve( K, FACTORS, RES_y, CNTL, SINFO )
-          inform%factorization_status = SINFO%flag
-          IF ( SINFO%flag /= 0 ) THEN
-            IF ( control%error > 0 .AND. print_level >= 1 )                    &
-              WRITE( control%error, 2040 ) SINFO%flag
-            inform%status = - 7 ; RETURN
-          END IF
-          IF ( control%out > 0 .AND. print_level >= 3 )                        &
-            WRITE( control%out, 2020 ) MAXVAL( ABS( RES_y ) )
-          IF ( control%array_syntax_worse_than_do_loop ) THEN
-            DO i = 1, m ; Y_trial( i ) = Y_trial( i ) + RES_y( i ) ; END DO
-          ELSE
-            Y_trial = Y_trial + RES_y
-          END IF
-
-!  Print final residuals if required
-
-          IF ( it == itref_max ) THEN
-   
-!  Form res_x = DIAG_X(inv) * A(trans) sol_y
-
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 1, n ; RES_x( i ) = zero ; END DO
-            ELSE
-              RES_x = zero
-            END IF
-            CALL LPB_AX( n, RES_x, m, A_ne, A_val, A_col, A_ptr, m,Y_trial,'+T')
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 1, n ; RES_x( i ) = RES_x( i ) / DIAG_X( i ) ; END DO
-            ELSE
-              RES_x = RES_x / DIAG_X
-            END IF
-
-!  Form res_y = rhs_y - A * res_x - SCALE_C * DIAG_C(inv) * SCALE_C * sol_y
-
-            IF ( control%array_syntax_worse_than_do_loop ) THEN
-              DO i = 1, dims%c_equality ; RES_y( i ) = RHS_y( i ) ; END DO
-              DO i = dims%c_l_start,  dims%c_u_end
-                RES_y( i ) = RHS_y( i ) - ( SCALE_C( i ) / DIAG_C( i ) ) *     &
-                               SCALE_C( i ) * Y_trial( i )
-              END DO
-            ELSE
-              RES_y( : dims%c_equality ) = RHS_y( : dims%c_equality )
-              RES_y( dims%c_l_start : ) = RHS_y( dims%c_l_start : )            &
-                    - ( SCALE_C / DIAG_C ) * SCALE_C * Y_trial( dims%c_l_start:)
-            END IF
-            CALL LPB_AX( m, RES_y, m, A_ne, A_val, A_col, A_ptr, n, RES_x, '- ')
-     
-!  Print residuals if required
-
-            res_norm = NRM2( m, RES_y, 1 )
-!           res_norm = MAXVAL( ABS( RES_y ) )
-
-            IF ( control%out > 0 .AND. print_level >= 3 )                      &
-              WRITE( control%out, 2000 ) res_norm
-
-!  Check that the residuals are not too large
-
-            IF ( res_norm > res_large ) THEN
-              big_res = .TRUE.
-              RETURN
-            END IF
-
-          END IF
-        END DO
-      ELSE
-
-!  Form res_x = DIAG_X(inv) * A(trans) sol_y
-
-        IF ( control%array_syntax_worse_than_do_loop ) THEN
-          DO i = 1, n ; RES_x( i ) = zero ; END DO
-        ELSE
-          RES_x = zero
+        IF ( alpha_u - alpha_l <= stop_alpha .AND. alpha_l > zero ) THEN
+          alpha_max = alpha_l
+          EXIT
         END IF
-        CALL LPB_AX( n, RES_x, m, A_ne, A_val, A_col, A_ptr, m, Y_trial, '+T' )
-        IF ( control%array_syntax_worse_than_do_loop ) THEN
-          DO i = 1, n ; RES_x( i ) = RES_x( i ) / DIAG_X( i ) ; END DO
-        ELSE
-          RES_x = RES_x / DIAG_X
-        END IF
-
-!  Form res_y = rhs_y - A * res_x - DIAG_C(inv) sol_y
-
-        IF ( control%array_syntax_worse_than_do_loop ) THEN
-          DO i = 1, dims%c_equality ; RES_y( i ) = RHS_y( i ) ; END DO
-          DO i = dims%c_l_start,  dims%c_u_end
-            RES_y( i ) = RHS_y( i ) - ( SCALE_C( i ) / DIAG_C( i ) ) *         &
-                           SCALE_C( i ) * Y_trial( i )
-          END DO
-        ELSE
-          RES_y( : dims%c_equality ) = RHS_y( : dims%c_equality )
-          RES_y( dims%c_l_start : ) = RHS_y( dims%c_l_start : )                &
-                - ( SCALE_C / DIAG_C ) * SCALE_C * Y_trial( dims%c_l_start : )
-        END IF
-        CALL LPB_AX( m, RES_y, m, A_ne, A_val, A_col, A_ptr, n, RES_x, '- ' )
-      
-!  Print residuals if required
-   
-        res_norm = NRM2( m, RES_y, 1 )
-!       res_norm = MAXVAL( ABS( RES_y ) )
-
-        IF ( control%out > 0 .AND. print_level >= 3 )                          &
-          WRITE( control%out, 2000 ) res_norm
-
-!  Check that the residuals are not too large
-
-        IF ( res_norm > res_large ) THEN
-          big_res = .TRUE.
+        IF ( alpha_u <= epsmch ) THEN
+          inform%status = GALAHAD_error_tiny_step
           RETURN
         END IF
 
-      END IF
+!  Test the current alpha for acceptibility
 
-      IF ( control%out > 0 .AND. print_level >= 3 )                            &
-        WRITE( control%out, 2010 ) MAXVAL( ABS( Y_trial ) )
+        ok = .TRUE.
 
-      IF ( control%array_syntax_worse_than_do_loop ) THEN
-        DO i = 1, m ; RHS_y( i ) = Y_trial( i ) ; END DO
-      ELSE
-        RHS_y = Y_trial
-      END IF
-      inform%status = 0
+!  Evaluate the point on the path for the current alpha and the complementarity
+!    comp = <x-x_l,z_l> + <x-x_u,z_u> +<c-c_l,z_l> + <c-c_u,y_u>
+
+        comp = zero ; fail = ' '
+
+!  primal and dual variables
+
+        DO i = dims%x_free + 1, dims%x_u_start - 1
+          x_p = FIT_evaluate_polynomial( order + 1,                            &
+                      X_coef( i, 0 : order ), alpha_max )
+          z_l_p = FIT_evaluate_polynomial( order + 1,                          &
+                      Z_l_coef( i, 0 : order ), alpha_max )
+          IF ( x_p > X_l( i ) .AND. z_l_p > zero ) THEN
+            X( i ) = x_p
+            Z_l( i ) = z_l_p
+            comp = comp + ( X( i ) - X_l( i ) ) * Z_l( i )
+          ELSE
+            ok = .FALSE. ; fail = 'x' ; GO TO 100
+          END IF
+        END DO
+        DO i = dims%x_u_start, dims%x_l_end
+          x_p = FIT_evaluate_polynomial( order + 1,                            &
+                      X_coef( i, 0 : order ), alpha_max )
+          z_l_p = FIT_evaluate_polynomial( order + 1,                          &
+                      Z_l_coef( i, 0 : order ), alpha_max )
+          z_u_p = FIT_evaluate_polynomial( order + 1,                          &
+                      Z_u_coef( i, 0 : order ), alpha_max )
+          IF ( x_p > X_l( i ) .AND. z_l_p > zero .AND.                         &
+               x_p < X_u( i ) .AND. z_u_p < zero ) THEN
+            X( i ) = x_p
+            Z_l( i ) = z_l_p
+            Z_u( i ) = z_u_p
+            comp = comp + ( X( i ) - X_l( i ) ) * Z_l( i )                     &
+                        + ( X( i ) - X_u( i ) ) * Z_u( i )
+          ELSE
+            ok = .FALSE. ; fail = 'x' ; GO TO 100
+          END IF
+        END DO
+        DO i = dims%x_l_end + 1, n
+          x_p = FIT_evaluate_polynomial( order + 1,                            &
+                      X_coef( i, 0 : order ), alpha_max )
+          z_u_p = FIT_evaluate_polynomial( order + 1,                          &
+                      Z_u_coef( i, 0 : order ), alpha_max )
+          IF ( x_p < X_u( i ) .AND. z_u_p < zero ) THEN
+            X( i ) = x_p
+            Z_u( i ) = z_u_p
+            comp = comp + ( X( i ) - X_u( i ) ) * Z_u( i )
+          ELSE
+            ok = .FALSE. ; fail = 'x' ; GO TO 100
+          END IF
+        END DO
+
+!  slack variables and Lagrange multipliers
+
+        DO i = dims%c_l_start, dims%c_u_start - 1
+          c_p = FIT_evaluate_polynomial( order + 1,                            &
+                      C_coef( i, 0 : order ), alpha_max )
+          y_l_p = FIT_evaluate_polynomial( order + 1,                          &
+                      Y_l_coef( i, 0 : order ), alpha_max )
+          IF ( c_p > C_l( i ) .AND. y_l_p > zero ) THEN
+            C( i ) = c_p
+            Y_l( i ) = y_l_p
+            comp = comp + ( C( i ) - C_l( i ) ) * Y_l( i )
+          ELSE
+            ok = .FALSE. ; fail = 'c' ; GO TO 100
+          END IF
+        END DO
+        DO i = dims%c_u_start, dims%c_l_end
+          c_p = FIT_evaluate_polynomial( order + 1,                            &
+                      C_coef( i, 0 : order ), alpha_max )
+          y_l_p = FIT_evaluate_polynomial( order + 1,                          &
+                      Y_l_coef( i, 0 : order ), alpha_max )
+          y_u_p = FIT_evaluate_polynomial( order + 1,                          &
+                      Y_u_coef( i, 0 : order ), alpha_max )
+          IF ( c_p > C_l( i ) .AND. y_l_p > zero .AND.                         &
+               c_p < C_u( i ) .AND. y_u_p < zero ) THEN
+            C( i ) = c_p
+            Y_l( i ) = y_l_p
+            Y_u( i ) = y_u_p
+            comp = comp + ( C( i ) - C_l( i ) ) * Y_l( i )                     &
+                        + ( C( i ) - C_u( i ) ) * Y_u( i )
+          ELSE
+            ok = .FALSE. ; fail = 'c' ; GO TO 100
+          END IF
+        END DO
+        DO i = dims%c_l_end + 1, dims%c_u_end
+          c_p = FIT_evaluate_polynomial( order + 1,                            &
+                      C_coef( i, 0 : order ), alpha_max )
+          y_u_p = FIT_evaluate_polynomial( order + 1,                          &
+                      Y_u_coef( i, 0 : order ), alpha_max )
+          IF ( c_p < C_u( i ) .AND. y_u_p < zero ) THEN
+            C( i ) = c_p
+            Y_u( i ) = y_u_p
+            comp = comp + ( C( i ) - C_u( i ) ) * Y_u( i )
+          ELSE
+            ok = .FALSE. ; fail = 'c' ; GO TO 100
+          END IF
+        END DO
+
+!  Now test that comp >= infeas * gamma_f ...
+
+        IF ( puiseux ) THEN
+          IF ( comp < infeas_gamma_f * ( one - alpha_max ) ** 2 ) THEN
+            ok = .FALSE. ; fail = 'f' ; GO TO 100
+          END IF
+        ELSE
+          IF ( comp < infeas_gamma_f * ( one - alpha_max ) ) THEN
+            ok = .FALSE. ; fail = 'f' ; GO TO 100
+          END IF
+        END IF
+
+!  ... and both (x-x_l)_i(z_l)_i - (gamma_c / nbds) * comp >= 0 and
+!               (x-x_u)_i(z_u)_i - (gamma_c / nbds) * comp >= 0
+
+        scomp = comp * gamma_c / nbnds
+
+        DO i = dims%x_free + 1, dims%x_u_start - 1
+          IF ( ( X( i ) - X_l( i ) ) * Z_l( i ) < scomp ) THEN
+            ok = .FALSE. ; fail = 'b' ; GO TO 100
+          END IF
+        END DO
+        DO i = dims%x_u_start, dims%x_l_end
+          IF( ( X( i ) - X_l( i ) ) * Z_l( i ) < scomp .OR.                    &
+              ( X( i ) - X_u( i ) ) * Z_u( i ) < scomp ) THEN
+            ok = .FALSE. ; fail = 'b' ; GO TO 100
+          END IF
+        END DO
+        DO i = dims%x_l_end + 1, n
+          IF ( ( X( i ) - X_u( i ) ) * Z_u( i ) < scomp ) THEN
+            ok = .FALSE. ; fail = 'b' ; GO TO 100
+          END IF
+        END DO
+
+!  ... and both (c-c_l)_i(y_l)_i - (gamma_c / nbds) * comp >= 0 and
+!               (c-c_u)_i(y_u)_i - (gamma_c / nbds) * comp >= 0
+
+        DO i = dims%c_l_start, dims%c_u_start - 1
+          IF ( ( C( i ) - C_l( i ) ) * Y_l( i ) < scomp ) THEN
+            ok = .FALSE. ; fail = 'b' ; GO TO 100
+          END IF
+        END DO
+        DO i = dims%c_u_start, dims%c_l_end
+          IF ( ( C( i ) - C_l( i ) ) * Y_l( i ) < scomp .OR.                   &
+               ( C( i ) - C_u( i ) ) * Y_u( i ) < scomp ) THEN
+            ok = .FALSE. ; fail = 'b' ; GO TO 100
+          END IF
+        END DO
+        DO i = dims%c_l_end + 1, dims%c_u_end
+          IF (( C( i ) - C_u( i ) ) * Y_u( i ) < scomp ) THEN
+            ok = .FALSE. ; fail = 'b' ; GO TO 100
+          END IF
+        END DO
+
+!  the current alpha is acceptable
+
+ 100    CONTINUE
+        IF ( ok ) THEN
+          IF ( printd ) WRITE(  control%out, "( A, 1X, A1, ES12.4 )" ) prefix, &
+            fail, alpha_max
+
+!  if the current step is one, accept this as the required step
+
+          IF ( alpha_max == one ) EXIT
+
+!  increase the lower bound
+
+          alpha_l = alpha_max
+          alpha_max = half * ( alpha_max + alpha_u )
+
+!  the current alpha is unacceptable ; reduce the upper bound
+
+        ELSE
+          IF ( printd ) WRITE(  control%out, "( A, 2X, ES12.4 )" ) prefix,     &
+            alpha_max
+          alpha_u = alpha_max
+          alpha_max = half * ( alpha_max + alpha_l )
+        END IF
+      END DO
+
+ 200  CONTINUE
+      inform%status = GALAHAD_ok
+
+!  finally, compute the best point on the arc and its complementarity
+
+      CALL LPB_compute_v_alpha( dims, n, m, order, X_coef, C_coef, Y_coef,     &
+                                Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,        &
+                                X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,         &
+                                C_l, C_u, alpha_max, comp )
       RETURN
 
-!  Non-executable statements
+!  End of subroutine LPB_compute_stepsize
 
- 2000 FORMAT( '  res(y) ', ES12.4 )
- 2010 FORMAT( '  sol(y) ', ES12.4 )
- 2020 FORMAT( ' dsol(y) ', ES12.4 )
- 2040 FORMAT( '   **  Error return ', I3, ' from SILS_solve ' ) 
+      END SUBROUTINE LPB_compute_stepsize
 
-!  End of LPB_block_iterative_refinement
+!-*-*-*-  L P B _ C O M P U T E _ V _ A L P H A   S U B R O U T I N E  -*-*-*-
 
-      END SUBROUTINE LPB_block_iterative_refinement
-
-!-*-*-*-*-*-*-*-   L P B _ A N A L Y S E   S U B R O U T I N E  -*-*-*-*-*-*-
-
-      SUBROUTINE LPB_analyse( dims, n, m, A_ne, A_val, A_col,                  &
-                              A_ptr, SCALE_C, factor, precon,      &
-                              nnzks, lk, liw, ldiag_x, ldiag_c_l,      &
-                              ldiag_c_u, IW, Abycol_val, Abycol_row,           &
-                              Abycol_ptr, K_colptr, DIAG_X, DIAG_C,            &
-                              K, FACTORS, CNTL, print_level, control, inform )
+      SUBROUTINE LPB_compute_v_alpha( dims, n, m, order, X_coef, C_coef,       &
+                                      Y_coef, Y_l_coef, Y_u_coef,              &
+                                      Z_l_coef, Z_u_coef,                      &
+                                      X, X_l, X_u, Z_l, Z_u,                   &
+                                      Y, Y_l, Y_u, C, C_l, C_u,                &
+                                      alpha, comp )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-!  Analyse the sparsity pattern of the preconditioner
+!  compute the point v(alpha) on the arc and its complementarity
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
 
-      TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, A_ne, print_level
-      INTEGER, INTENT( IN ) :: precon
-      INTEGER, INTENT( INOUT ) :: factor
-      INTEGER, INTENT( OUT ) :: nnzks, lk, liw, ldiag_x, ldiag_c_l, ldiag_c_u
-      INTEGER, INTENT( IN ), DIMENSION( A_ne ) :: A_col
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
+      TYPE ( LPB_dims_type ), INTENT( IN ) :: dims
+      INTEGER, INTENT( IN ) :: n, m, order
+      REAL ( KIND = wp ), INTENT( IN ) :: alpha
+      REAL ( KIND = wp ), INTENT( OUT ) :: comp
       REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%c_l_start : dims%c_u_end ) :: SCALE_C
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, K_colptr, Abycol_ptr, Abycol_row
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIAG_X, DIAG_C, Abycol_val
-      TYPE ( SMT_type ), INTENT( INOUT ) :: K
-      TYPE ( SILS_factors ), INTENT( INOUT ) :: FACTORS
-      TYPE ( SILS_control ), INTENT( INOUT ) :: CNTL
-      TYPE ( LPB_control_type ), INTENT( IN ) :: control        
-      TYPE ( LPB_inform_type ), INTENT( INOUT ) :: inform
+        DIMENSION( n, 0 : order ) :: X_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%c_l_start : dims%c_u_end, 0 : order ) :: C_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( m, 0 : order ) :: Y_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%c_l_start : dims%c_l_end, 0 : order ) ::  Y_l_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%c_u_start : dims%c_u_end, 0 : order ) ::  Y_u_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION(   dims%x_free + 1 : dims%x_l_end, 0 : order ) :: Z_l_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%x_u_start : n, 0 : order ) :: Z_u_coef
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Y
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+             DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+             DIMENSION( dims%x_u_start : n ) :: Z_u
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+                          DIMENSION( dims%c_l_start : m ) :: C
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
 
 !  Local variables
 
-      INTEGER :: i, ierr, l, max_col, max_len, nnzk, y_ii
-      LOGICAL :: printi, printt, printe, reallocate, get_factors
-      TYPE ( SILS_ainfo ) :: AINFO
-
-!  Set useful values
-
-      printe = control%error > 0 .AND. print_level >= 1
-      printt = control%out > 0 .AND. print_level >= 2 
-      printi = control%out > 0 .AND. print_level >= 1 
-      max_col = control%max_col
-      IF ( max_col < 0 ) max_col = n
-      inform%alloc_status = 0
-
-      IF ( factor < 0 .OR. factor > 2 ) factor = 0
-
-!  Print a header indicating the method selected
-
-   10 CONTINUE
-
-      IF ( printi ) THEN
-        SELECT CASE( precon )
-          CASE( 1 ) ; WRITE( control%out, 2710 )
-          CASE( 2 ) ; WRITE( control%out, 2720 ) 
-        END SELECT
-
-        IF ( factor == 0 .OR. factor == 1 ) THEN
-          WRITE( control%out, "( '  Schur-complement method used ', / )" )
-        ELSE
-          WRITE( control%out, "( '  Augmented system method used ', / )" )
-        END IF
-      END IF
-
-      get_factors = .TRUE.
-
-!  For the Schur complement matrix
-!  ===============================
-
-      IF ( factor == 0 .OR. factor == 1 ) THEN
-
-!  Allocate the arrays for the analysis phase
-
-        liw = MAX( n + 1, n + m )
-        reallocate = .TRUE.
-        IF ( ALLOCATED( IW ) ) THEN
-          IF ( SIZE( IW ) < liw ) THEN ; DEALLOCATE( IW )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( IW( liw ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%IW' ; GO TO 900 ; END IF
-        END IF
-
-!  Continue allocating the arrays for the analysis phase
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( Abycol_val ) ) THEN
-          IF ( SIZE( Abycol_val ) /= A_ne ) THEN 
-            DEALLOCATE( Abycol_val )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( Abycol_val( A_ne ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%Abycol_val' ; GO TO 900
-          END IF
-        END IF
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( Abycol_row ) ) THEN
-          IF ( SIZE( Abycol_row ) /= A_ne ) THEN 
-            DEALLOCATE( Abycol_row )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( Abycol_row( A_ne ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%Abycol_row' ; GO TO 900
-          END IF
-        END IF
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( Abycol_ptr ) ) THEN
-          IF ( SIZE( Abycol_ptr ) /= n + 1 ) THEN 
-            DEALLOCATE( Abycol_ptr )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( Abycol_ptr( n + 1 ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%Abycol_ptr' ; GO TO 900
-          END IF
-        END IF
-
-        IF ( m > 0 ) THEN
-
-!  Reorder A so that its entries are ordered by columns
-
-          CALL LSQP_A_by_cols( n, m, A_ne, A_val, A_col, A_ptr,                &
-                               Abycol_val, Abycol_row, Abycol_ptr )
-
-!  Compute the length of the largest column as well as the average length
-
-          max_len = MAXVAL( Abycol_ptr( 2 : ) - Abycol_ptr( : n ) )
-          IF ( printi ) WRITE( control%out, 2000 ) max_len,                    &
-            float( ( Abycol_ptr( n + 1 ) - 1 ) ) / float( n ),                 &
-            max_col, COUNT( Abycol_ptr( 2 : ) - Abycol_ptr( : n )              &
-             > max_col )
-        ELSE
-          max_len = 0
-        END IF
-
-!  Check that the largest column is not too long
-
-        IF ( factor == 0 .AND. max_len > max_col .AND. m > max_sc ) THEN
-          IF ( printi ) WRITE( control%out, 2030 ) max_col
-          factor = 2
-          DEALLOCATE( Abycol_val, Abycol_row, Abycol_ptr )
-          GO TO 10
-        END IF
-
-!  Continue allocating the arrays for the analysis phase
-
-        lk = max( A_ne + m, 2 * A_ne, control%valmin )
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( K%row ) ) THEN
-          IF ( SIZE( K%row ) < lk ) THEN ; DEALLOCATE( K%row )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( K%row( lk ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%K%row' ; GO TO 900 ; END IF
-        END IF
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( K%col ) ) THEN
-          IF ( SIZE( K%col ) < lk ) THEN ; DEALLOCATE( K%col )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( K%col( lk ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%K%col' ; GO TO 900 ; END IF
-        END IF
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( K%val ) ) THEN
-          IF ( SIZE( K%val ) < lk ) THEN ; DEALLOCATE( K%val )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( K%val( lk ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%K%val' ; GO TO 900 ; END IF
-        END IF
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( K_colptr ) ) THEN
-          IF ( SIZE( K_colptr ) /= m + 1 ) THEN ; DEALLOCATE( K_colptr )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( K_colptr( m + 1 ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%K_colptr' ; GO TO 900
-          END IF
-        END IF
-
-        ldiag_x = n
-        reallocate = .TRUE.
-        IF ( ALLOCATED( DIAG_X ) ) THEN
-          IF ( SIZE( DIAG_X ) /= ldiag_x ) THEN ; DEALLOCATE( DIAG_X )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( DIAG_X( ldiag_x ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%DIAG' ; GO TO 900 ; END IF
-        END IF
-
-        ldiag_c_l = dims%c_l_start
-        ldiag_c_u = dims%c_u_end
-        reallocate = .TRUE.
-        IF ( ALLOCATED( DIAG_C ) ) THEN
-          IF ( LBOUND( DIAG_C, 1 ) /= ldiag_c_l .OR.                           &
-               UBOUND( DIAG_C, 1 ) /= ldiag_c_u ) THEN ; DEALLOCATE( DIAG_C )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( DIAG_C( ldiag_c_l : ldiag_c_u ),                           &
-                    STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%DIAG_C' ; GO TO 900
-          END IF
-        END IF
-
-!  Permute A so that its entries appear by columns, with the entries in
-!  each column sorted by increasing row number. Also form the data
-!  structure required to hold K = A DIAG_X(inv) A(transpose) + DIAG_C(inv)
-
-   20   CONTINUE
-
-        IF ( m > 0 ) THEN
-
-          CALL LPB_form_Schur_complement(                                      &
-                  dims, n, m, A_ne, Abycol_val, Abycol_row, Abycol_ptr,        &
-                  DIAG_X, SCALE_C, DIAG_C, lk, K%val, K%row,                   &
-                  K_colptr, nnzk, ierr, IW( : n ), IW( n + 1 :  ), .FALSE.,    &
-                  control%error, print_level )
-!         inform%nfacts = inform%nfacts + 1 
-
-!  Check for error returns
-
-          IF ( ierr == 3 ) THEN
-
-!  Insufficient space. Allocate more and retry
-
-            DEALLOCATE( K%row, K%col, K%val )
-            lk = 2 * lk
-            ALLOCATE( K%row( lk ), K%col( lk ), K%val( lk ),    &
-                      STAT = inform%alloc_status )
-            IF ( inform%alloc_status /= 0 ) THEN 
-              inform%bad_alloc = 'lpb: data%K' ; GO TO 900 ; END IF
-  
-            GO TO 20
-          END IF
-  
-          IF ( ierr == 4 ) THEN
-
-!  Insufficient space. Allocate more and retry
-
-            DEALLOCATE( K%row, K%col, K%val )
-            lk = nnzk
-            ALLOCATE( K%row( lk ), K%col( lk ), K%val( lk ),    &
-                      STAT = inform%alloc_status )
-            IF ( inform%alloc_status /= 0 ) THEN 
-              inform%bad_alloc = 'lpb: data%K' ; GO TO 900 ; END IF
-            GO TO 20
-          END IF
-
-!  Record the column numbers of each entry in A A^T
-
-          DO i = 1, m
-            K%col( K_colptr( i ) : K_colptr( i + 1 ) - 1 ) = i
-          END DO
-        ELSE
-          get_factors = .FALSE.
-          nnzk = 0
-        END IF
-
-!  Now find a good ordering of the rows and columns of A A^T for
-!  the sparse factorization. Set the dimensions of K
-
-        K%n = m ; K%ne = nnzk
-
-!  For the KKT matrix
-!  ==================
-
-      ELSE
-      
-!  Compute the space required
-
-        lk = A_ne + n + 2 * dims%nc
-
-!  Allocate the arrays for the analysis phase
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( K%row ) ) THEN
-          IF ( SIZE( K%row ) < lk ) THEN ; DEALLOCATE( K%row )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( K%row( lk ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%K%row' ; GO TO 900 ; END IF
-        END IF
-   
-        reallocate = .TRUE.
-        IF ( ALLOCATED( K%col ) ) THEN
-          IF ( SIZE( K%col ) < lk ) THEN ; DEALLOCATE( K%col )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( K%col( lk ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%K%col' ; GO TO 900 ; END IF
-        END IF
-
-        reallocate = .TRUE.
-        IF ( ALLOCATED( K%val ) ) THEN
-          IF ( SIZE( K%val ) < lk ) THEN ; DEALLOCATE( K%val )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( K%val( lk ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%K%val' ; GO TO 900 ; END IF
-        END IF
-        
-        ldiag_x = 0
-        reallocate = .TRUE.
-        IF ( ALLOCATED( DIAG_X ) ) THEN
-          IF ( SIZE( DIAG_X ) /= ldiag_x ) THEN ; DEALLOCATE( DIAG_X )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( DIAG_X( ldiag_x ), STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%DIAG' ; GO TO 900 ; END IF
-        END IF
-
-        ldiag_c_l = 0
-        ldiag_c_u = 0
-        reallocate = .TRUE.
-        IF ( ALLOCATED( DIAG_C ) ) THEN
-          IF ( LBOUND( DIAG_C, 1 ) /= ldiag_c_l .OR.                           &
-               UBOUND( DIAG_C, 1 ) /= ldiag_c_u ) THEN ; DEALLOCATE( DIAG_C )
-          ELSE ; reallocate = .FALSE.
-          END IF
-        END IF
-        IF ( reallocate ) THEN 
-          ALLOCATE( DIAG_C( ldiag_c_l : ldiag_c_u ),                           &
-                    STAT = inform%alloc_status )
-          IF ( inform%alloc_status /= 0 ) THEN 
-            inform%bad_alloc = 'lpb: data%DIAG_C' ; GO TO 900
-          END IF
-        END IF
-
-!  Set the coordinates and value of A in K
-
-        DO i = 1, m
-          y_ii = dims%y_s + i - 1
-          DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
-            K%row( l ) = y_ii
-          END DO
-        END DO
-        K%col( : A_ne ) = A_col( : A_ne ) 
-        K%val( : A_ne ) = A_val( : A_ne )
-
-!  Set the coodinates corresponding to the slack variables
-
-        DO i = 1, dims%nc
-          K%row( A_ne + i ) = dims%y_i + i - 1
-          K%col( A_ne + i ) = n + i
-          K%val( A_ne + i ) = - SCALE_C( dims%c_equality + i )
-        END DO
-
-!  Set the coordinates and values of M in K
-
-        nnzk = A_ne + dims%nc
-        SELECT CASE( precon )
-
-!  * M is a diagonal matrix
-
-        CASE DEFAULT
-          DO i = dims%x_s, dims%c_e
-            nnzk = nnzk + 1 ; K%row( nnzk ) = i ; K%col( nnzk ) = i
-            K%val( nnzk ) = k_diag
-          END DO
-          nnzks = nnzk
-          K%n = nnzks
-
-!  * M is just the barrier terms
-
-        CASE ( 2 )
-          nnzks = nnzk
-        END SELECT
-
-!  Finally, include the co-ordinates of the barrier terms
-
-        IF ( precon == 2 ) THEN
-          DO i = dims%x_s, dims%c_e
-            K%row( nnzks + i ) = i ; K%col( nnzks + i ) = i
-          END DO
-          K%ne = nnzks + dims%c_e
-        ELSE
-          K%ne = nnzks
-        END IF
-
-        K%n = dims%v_e
-
-      END IF
-
-      IF ( K%n > 0 .AND. get_factors ) THEN
-
-!  Analyse the sparsity pattern of the preconditioner
-
-        CALL SILS_analyse( K, FACTORS, CNTL, AINFO )
-
-!  Record the storage requested
-
-        inform%factorization_integer = AINFO%nirnec 
-        inform%factorization_real = AINFO%nrlnec
-
-!  Check for error returns
-
-        inform%factorization_status = AINFO%flag
-        IF ( AINFO%flag < 0 ) THEN
-          IF ( printe ) WRITE( control%error, 2040 ) AINFO%flag 
-          inform%status = - 7 ; RETURN
-        ELSE IF ( AINFO%flag > 0 ) THEN 
-          IF ( printt ) WRITE( control%out, 2050 ) AINFO%flag, 'SILS_analyse'
-        END IF
-   
-        IF ( printt ) WRITE( control%out,                                      &
-          "( ' real/integer space required for factors ', 2I10 )" )            &
-            AINFO%nrladu, AINFO%niradu
-      ELSE
-        inform%factorization_integer = 0 ; inform%factorization_real = 0
-      END IF
+      INTEGER :: i
+
+!  initialize the complemntarity
+
+      comp = zero
+
+!  primal and dual variables
+
+      DO i = 1, n
+        X( i ) = FIT_evaluate_polynomial( order + 1,                           &
+                       X_coef( i, 0 : order ), alpha )
+      END DO
+      DO i = dims%x_free + 1, dims%x_l_end
+        Z_l( i ) = FIT_evaluate_polynomial( order + 1,                         &
+                    Z_l_coef( i, 0 : order ), alpha )
+        comp = comp + ( X( i ) - X_l( i ) ) * Z_l( i )
+      END DO
+      DO i = dims%x_u_start, n
+        Z_u( i ) = FIT_evaluate_polynomial( order + 1,                         &
+                    Z_u_coef( i, 0 : order ), alpha )
+        comp = comp + ( X( i ) - X_u( i ) ) * Z_u( i )
+      END DO
+
+!  slack variables and Lagrange multipliers
+
+      DO i = 1, m
+        Y( i ) = FIT_evaluate_polynomial( order + 1,                           &
+                       Y_coef( i, 0 : order ), alpha )
+      END DO
+      DO i = dims%c_l_start, m
+        C( i ) = FIT_evaluate_polynomial( order + 1,                           &
+                    C_coef( i, 0 : order ), alpha )
+      END DO
+      DO i = dims%c_l_start, dims%c_l_end
+        Y_l( i ) = FIT_evaluate_polynomial( order + 1,                         &
+                    Y_l_coef( i, 0 : order ), alpha )
+        comp = comp + ( C( i ) - C_l( i ) ) * Y_l( i )
+      END DO
+      DO i = dims%c_u_start, dims%c_u_end
+        Y_u( i ) = FIT_evaluate_polynomial( order + 1,                         &
+                    Y_u_coef( i, 0 : order ), alpha )
+        comp = comp + ( C( i ) - C_u( i ) ) * Y_u( i )
+      END DO
 
       RETURN
 
-!  Unsuccessful returns
+!  End of subroutine LPB_compute_v_alpha
 
-  900 CONTINUE
-      inform%status = - 2
-      WRITE( control%out, 2900 ) inform%bad_alloc, inform%alloc_status
-      RETURN
+      END SUBROUTINE LPB_compute_v_alpha
 
-!  Non-executable statements
+!-*-*-*-  L P B _ C O M P U T E _ L M A X S T E P   S U B R O U T I N E  -*-*-*-
 
- 2000 FORMAT( '  maximum, average column lengths ', I7, 0P, F10.1, /,          &
-              '  number of columns longer than   ', I7, ' is', I7 )
- 2030 FORMAT( ' ** The maximum column length in A is larger than', /,          &
-              '    max_col =', I7, ' - abandon the Schur-complement', /,       &
-              '    factorization in favour of one of the augmented matrix', / )
- 2040 FORMAT( '   **  Error return ', I6, ' from ', A15 ) 
- 2050 FORMAT( '   **  Warning ', I6, ' from ', A15 ) 
- 2710 FORMAT( '  Identity Hessian ' )
- 2720 FORMAT( '  Barrier Hessian ' )
- 2900 FORMAT( ' ** Message from -LPB_analyse-', /,                            &
-              ' Allocation error, for ', A, /, ' status = ', I6 )
-
-      END SUBROUTINE LPB_analyse
-
-!-*-*-*-*-*-*-*-*-*-   L P B _ c o n d  S U B R O U T I N E  -*-*-*-*-*-*-*-
-
-      SUBROUTINE LPB_cond( K_n, rank, FACTORS, out )
+      SUBROUTINE LPB_compute_lmaxstep( dims, n, m, nbnds, X, X_l, X_u, DX,     &
+                                      C, C_l, C_u, DC, Y_l, Y_u, DY_l, DY_u,   &
+                                      Z_l, Z_u, DZ_l, DZ_u,                    &
+                                      gamma_c, gamma_f, infeas, alpha_max,     &
+                                      inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Compute the smallest and largest eigenvalues of the block diagonal
-!  part of the factors
+!  For a linear arc (x,z), find the maximum allowable stepsizes alpha_max_b,
+!  which balances the complementarity ie, such that
+!
+!      min (x-l)_i(z_l)_i - (gamma_c / nbds)( <x-l,z_l> + <x-u,z_u> ) >= 0
+!       i
+!  and
+!      min (x-u)_i(z_u)_i - (gamma_c / nbds)( <x-l,z_l> + <x-u,z_u> ) >= 0 ,
+!       i
+!
+!  and alpha_max_f, which favours feasibility over complementarity,
+!  ie, such that
+!
+!      <x-l,z_l> + <x-u,z_u> >= infeas * gamma_f
+!
+!  and the smaller of the two, alpha_max = min( alpha_max_f, alpha_max_b )
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: K_n, rank, out
-      TYPE ( SILS_factors ), INTENT( IN ) :: FACTORS
+      TYPE ( LPB_dims_type ), INTENT( IN ) :: dims
+      INTEGER, INTENT( IN ) :: n, m, nbnds
+      REAL ( KIND = wp ), INTENT( IN ) :: gamma_c, gamma_f, infeas
+      REAL ( KIND = wp ), INTENT( OUT ) :: alpha_max
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, DX
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l, DZ_l
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%x_u_start : n ) :: Z_u, DZ_u
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l, DY_l
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u, DY_u
+      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+                          DIMENSION( dims%c_l_start : m ) :: C
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+                          DIMENSION( dims%c_l_start : m ) :: DC
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
+      TYPE ( LPB_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
       INTEGER :: i, nroots
-      REAL ( KIND = wp ) :: root1, root2, dmax, dmin
-      LOGICAL ::  twobytwo
-      INTEGER :: P( K_n )
-      REAL ( KIND = wp ) :: D( 2, K_n )
 
-      IF ( k_n <= 0 ) RETURN
-      CALL  SILS_enquire( FACTORS, PIVOTS = P, D = D )
+!  Local variables
 
-      twobytwo = .FALSE.
-      dmax = zero
-      dmin = HUGE( one )
-      DO i = 1, rank
-        IF ( twobytwo ) THEN
-          twobytwo = .FALSE.
-          CYCLE
-        END IF
-        IF ( i <  rank ) THEN
-          IF ( D( 2, i ) /= zero ) THEN
-            twobytwo = .TRUE.
-            CALL ROOTS_quadratic( D( 1, i ) * D( 1, i + 1 ) - D( 2, i ) ** 2,  &
-              - D( 1, i ) - D( 1, i + 1 ), one, epsmch, nroots, root1, root2 ) 
-            dmax = MAX( ABS( root1 ), ABS( root2 ), dmax )
-            dmin = MIN( ABS( root1 ), ABS( root2 ), dmin )
-          ELSE
-            dmax = MAX( ABS( D( 1, i ) ), dmax )
-            dmin = MIN( ABS( D( 1, i ) ), dmin )
-          END IF
-        ELSE
-          dmax = MAX( ABS( D( 1, i ) ), dmax )
-          dmin = MIN( ABS( D( 1, i ) ), dmin )
-        END IF
+      REAL ( KIND = wp ) :: compc, compl, compq, coef0, coef1, coef2
+      REAL ( KIND = wp ) :: coef0_f, coef1_f, coef2_f, root1, root2, tol
+      REAL ( KIND = wp ) :: alpha_max_b, alpha_max_f, alpha, infeas_gamma_f
+
+      alpha_max_b = infinity ; alpha_max_f = infinity
+      inform%status = GALAHAD_ok
+      IF ( nbnds == 0 ) THEN
+        alpha_max = one
+        RETURN
+      END IF
+      tol = epsmch ** 0.75
+
+!  ================================================
+!             part to compute alpha_max_b
+!  ================================================
+
+!  Compute the coefficients for the quadratic expression
+!  for the overall complementarity
+
+      coef0_f = zero ; coef1_f = zero ; coef2_f = zero
+      DO i = dims%x_free + 1, dims%x_l_end
+        coef0_f = coef0_f + ( X( i ) - X_l( i ) ) * Z_l( i )
+        coef1_f = coef1_f + ( X( i ) - X_l( i ) ) * DZ_l( i )                  &
+                          + DX( i ) * Z_l( i )
+        coef2_f = coef2_f + DX( i ) * DZ_l( i )
+      END DO
+      DO i = dims%x_u_start, n
+        coef0_f = coef0_f - ( X_u( i ) - X( i ) ) * Z_u( i )
+        coef1_f = coef1_f - ( X_u( i ) - X( i ) ) * DZ_u( i )                  &
+                          + DX( i ) * Z_u( i )
+        coef2_f = coef2_f + DX( i ) * DZ_u( i )
+      END DO
+      DO i = dims%c_l_start, dims%c_l_end
+        coef0_f = coef0_f + ( C( i ) - C_l( i ) ) * Y_l( i )
+        coef1_f = coef1_f + ( C( i ) - C_l( i ) ) * DY_l( i )                  &
+                            + DC( i ) * Y_l( i )
+        coef2_f = coef2_f + DC( i ) * DY_l( i )
+      END DO
+      DO i = dims%c_u_start, dims%c_u_end
+        coef0_f = coef0_f - ( C_u( i ) - C( i ) ) * Y_u( i )
+        coef1_f = coef1_f - ( C_u( i ) - C( i ) ) * DY_u( i )                  &
+                          + DC( i ) * Y_u( i )
+        coef2_f = coef2_f + DC( i ) * DY_u( i )
       END DO
 
-      IF ( K_n > rank ) dmax = HUGE( one )
+!  Scale these coefficients
 
-      IF ( dmin == zero .OR. dmax == zero ) THEN
-        WRITE( out, "( ' 1/ smallest,largest eigenvalues =',  2ES12.4 )" )     &
-          dmin, dmax
+      compc = - gamma_c * coef0_f / nbnds ; compl = - gamma_c * coef1_f / nbnds
+      compq = - gamma_c * coef2_f / nbnds
+
+!  Compute the coefficients for the quadratic expression
+!  for the individual complementarity
+
+      DO i = dims%x_free + 1, dims%x_l_end
+        coef0 = compc + ( X( i ) - X_l( i ) ) * Z_l( i )
+        coef1 = compl + ( X( i ) - X_l( i ) ) * DZ_l( i ) + DX( i ) * Z_l( i )
+        coef2 = compq + DX( i ) * DZ_l( i )
+        coef0 = MAX( coef0, zero )
+        CALL ROOTS_quadratic( coef0, coef1, coef2, tol, nroots, root1, root2, &
+                              .FALSE. )
+        IF ( nroots == 2 ) THEN
+          IF ( coef2 > zero ) THEN
+            IF ( root2 > zero ) THEN
+               alpha = root1
+            ELSE
+               alpha = infinity
+            END IF
+          ELSE
+            alpha = root2
+          END IF
+        ELSE IF ( nroots == 1 ) THEN
+          IF ( root1 > zero ) THEN
+            alpha = root1
+          ELSE
+            alpha = infinity
+          END IF
+        ELSE
+          alpha = infinity
+        END IF
+        IF ( alpha < alpha_max_b ) alpha_max_b = alpha
+      END DO
+
+      DO i = dims%x_u_start, n
+        coef0 = compc - ( X_u( i ) - X( i ) ) * Z_u( i )
+        coef1 = compl - ( X_u( i ) - X( i ) ) * DZ_u( i ) + DX( i ) * Z_u( i )
+        coef2 = compq + DX( i ) * DZ_u( i )
+        coef0 = MAX( coef0, zero )
+        CALL ROOTS_quadratic( coef0, coef1, coef2, tol, nroots, root1, root2,  &
+                              .FALSE. )
+        IF ( nroots == 2 ) THEN
+          IF ( coef2 > zero ) THEN
+            IF ( root2 > zero ) THEN
+               alpha = root1
+            ELSE
+               alpha = infinity
+            END IF
+          ELSE
+            alpha = root2
+          END IF
+        ELSE IF ( nroots == 1 ) THEN
+          IF ( root1 > zero ) THEN
+            alpha = root1
+          ELSE
+            alpha = infinity
+          END IF
+        ELSE
+          alpha = infinity
+        END IF
+        IF ( alpha < alpha_max_b ) alpha_max_b = alpha
+      END DO
+
+      DO i = dims%c_l_start, dims%c_l_end
+        coef0 = compc + ( C( i ) - C_l( i ) ) * Y_l( i )
+        coef1 = compl + ( C( i ) - C_l( i ) ) * DY_l( i ) + DC( i ) * Y_l( i )
+        coef2 = compq + DC( i ) * DY_l( i )
+        coef0 = MAX( coef0, zero )
+        CALL ROOTS_quadratic( coef0, coef1, coef2, tol, nroots, root1, root2,  &
+                              .FALSE. )
+        IF ( nroots == 2 ) THEN
+          IF ( coef2 > zero ) THEN
+            IF ( root2 > zero ) THEN
+               alpha = root1
+            ELSE
+               alpha = infinity
+            END IF
+          ELSE
+            alpha = root2
+          END IF
+        ELSE IF ( nroots == 1 ) THEN
+          IF ( root1 > zero ) THEN
+            alpha = root1
+          ELSE
+            alpha = infinity
+          END IF
+        ELSE
+          alpha = infinity
+        END IF
+        IF ( alpha < alpha_max_b ) alpha_max_b = alpha
+      END DO
+
+      DO i = dims%c_u_start, dims%c_u_end
+        coef0 = compc - ( C_u( i ) - C( i ) ) * Y_u( i )
+        coef1 = compl - ( C_u( i ) - C( i ) ) * DY_u( i ) + DC( i ) * Y_u( i )
+        coef2 = compq + DC( i ) * DY_u( i )
+        coef0 = MAX( coef0, zero )
+        CALL ROOTS_quadratic( coef0, coef1, coef2, tol, nroots, root1, root2,  &
+                              .FALSE. )
+!       write( 6, "( 3ES10.2, 2ES22.14 )" )  coef2, coef1, coef0, root1, root2
+        IF ( nroots == 2 ) THEN
+          IF ( coef2 > zero ) THEN
+            IF ( root2 > zero ) THEN
+               alpha = root1
+            ELSE
+               alpha = infinity
+            END IF
+          ELSE
+            alpha = root2
+          END IF
+        ELSE IF ( nroots == 1 ) THEN
+          IF ( root1 > zero ) THEN
+            alpha = root1
+          ELSE
+            alpha = infinity
+          END IF
+        ELSE
+          alpha = infinity
+        END IF
+        IF ( alpha < alpha_max_b ) alpha_max_b = alpha
+      END DO
+
+      IF ( - compc <= epsmch ** 0.75 ) alpha_max_b = 0.99_wp * alpha_max_b
+
+!  ================================================
+!             part to compute alpha_max_f
+!  ================================================
+
+      infeas_gamma_f = infeas * gamma_f
+
+!  Compute the coefficients for the quadratic expression
+!  for the overall complementarity, remembering to first
+!  subtract the term for the feasibility
+
+      coef0_f = MAX( coef0_f - infeas_gamma_f, zero )
+      coef1_f = coef1_f + infeas_gamma_f
+
+!  Compute the coefficients for the quadratic expression
+!  for the individual complementarity
+!
+      CALL ROOTS_quadratic( coef0_f, coef1_f, coef2_f, tol,                    &
+                            nroots, root1, root2, .FALSE. )
+      IF ( nroots == 2 ) THEN
+        IF ( coef2_f > zero ) THEN
+          IF ( root2 > zero ) THEN
+            alpha = root1
+          ELSE
+            alpha = infinity
+          END IF
+        ELSE
+          alpha = root2
+        END IF
+      ELSE IF ( nroots == 1 ) THEN
+        IF ( root1 > zero ) THEN
+          alpha = root1
+        ELSE
+          alpha = infinity
+        END IF
       ELSE
-        WRITE( out, "( ' smallest,largest eigenvalues =',  2ES12.4 )" )        &
-          one / dmax, one / dmin
+        alpha = infinity
       END IF
+      IF ( alpha < alpha_max_f ) alpha_max_f = alpha
+      IF ( - compc <= epsmch ** 0.75 ) alpha_max_f = 0.99_wp * alpha_max_f
+
+!  compute the smaller of alpha_max_b and alpha_max_f
+
+      alpha_max = ( one - two * epsmch ) * MIN( alpha_max_b, alpha_max_f )
+
       RETURN
 
-!  End of subroutine LPB_cond
+!  End of subroutine LPB_compute_lmaxstep
 
-      END SUBROUTINE LPB_cond
+      END SUBROUTINE LPB_compute_lmaxstep
 
-!-*-*-*-   L P B _ o p t i m a l _ f o r _ S B Q P   S U B R O U T I N E  -*-*-*-
+!-*-*-*-  L P B _ C O M P U T E _ P M A X S T E P   S U B R O U T I N E  -*-*-*-
 
-      SUBROUTINE LPB_optimal_for_SBLP( prob, control, inform, B_stat )
+      SUBROUTINE LPB_compute_pmaxstep( dims, n, m, nbnds, order, puiseux,      &
+                                       X_coef, C_coef, Y_l_coef,               &
+                                       Y_u_coef, Z_l_coef, Z_u_coef,           &
+                                       X_l, X_u, C_l, C_u,                     &
+                                       CS_coef, COEF, ROOTS,                   &
+                                       gamma_c, gamma_f, infeas, alpha_max,    &
+                                       control, inform, ROOTS_data )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Compute a global minimizer of a separable bound-constrained 
-!  quadratic program
+!  For a polynomial arc (x,z), find the maximum allowable stepsizes
+!  alpha_max_b, which balances the complementarity ie, such that
+!
+!      min (x-l)_i(z_l)_i - (gamma_c / nbds)( <x-l,z_l> + <x-u,z_u> ) >= 0
+!       i
+!  and
+!      min (x-u)_i(z_u)_i - (gamma_c / nbds)( <x-l,z_l> + <x-u,z_u> ) >= 0 ,
+!       i
+!
+!  and alpha_max_f, which favours feasibility over complementarity,
+!  ie, such that
+!
+!      <x-l,z_l> + <x-u,z_u> >= infeas * gamma_f
+!
+!  and the smaller of the two, alpha_max = min( alpha_max_f, alpha_max_b )
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
 
-      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
+      TYPE ( LPB_dims_type ), INTENT( IN ) :: dims
+      INTEGER, INTENT( IN ) :: n, m, nbnds, order
+      LOGICAL, INTENT( IN ) :: puiseux
+      REAL ( KIND = wp ), INTENT( IN ) :: gamma_c, gamma_f, infeas
+      REAL ( KIND = wp ), INTENT( OUT ) :: alpha_max
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( n, 0 : order ) :: X_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%c_l_start : dims%c_u_end, 0 : order ) :: C_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%c_l_start : dims%c_l_end, 0 : order ) ::  Y_l_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%c_u_start : dims%c_u_end, 0 : order ) ::  Y_u_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION(   dims%x_free + 1 : dims%x_l_end, 0 : order ) :: Z_l_coef
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%x_u_start : n, 0 : order ) :: Z_u_coef
+      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 0 : 2 * order ) :: CS_coef
+      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 0 : 2 * order ) :: COEF
+      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2 * order ) :: ROOTS
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
       TYPE ( LPB_control_type ), INTENT( IN ) :: control
       TYPE ( LPB_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: B_stat
+      TYPE ( ROOTS_data_type ), INTENT( INOUT ) :: ROOTS_data
+
+!  Local variables
+
+      INTEGER :: i, j, k, nroots, opj
+      INTEGER :: thread
+      REAL ( KIND = wp ) :: c, s, x0, c0, scale, lower, upper
+      REAL ( KIND = wp ) :: alpha_max_b, alpha_max_f, alpha, infeas_gamma_f
+!     LOGICAL :: old = .TRUE.
+      LOGICAL :: old = .FALSE.
+!     LOGICAL :: parallel = .FALSE.
+      LOGICAL :: parallel = .TRUE.
+      REAL ( KIND = wp ), DIMENSION( MAX( m, n ) ) :: ALPHA_m
+
+      TYPE ( ROOTS_control_type ) :: local_ROOTS_control
+      TYPE ( ROOTS_data_type ),                                                &
+        DIMENSION( 0 : inform%threads - 1 ) :: local_ROOTS_data
+      TYPE ( ROOTS_inform_type ),                                              &
+        DIMENSION( 0 : inform%threads - 1 ) :: local_ROOTS_inform
+
+!  Functions
+
+!$    INTEGER :: OMP_GET_THREAD_NUM
+
+      IF ( inform%threads == 1 ) parallel = .FALSE.
+      inform%status = GALAHAD_ok
+
+      thread = 1
+      IF ( puiseux .AND. order == 1 ) THEN
+        alpha_max = half
+      ELSE
+        alpha_max = one
+      END IF
+      IF ( nbnds == 0 ) RETURN
+      alpha_max_b = infinity ; alpha_max_f = infinity
+      scale = gamma_c / REAL( nbnds )
+      infeas_gamma_f = infeas * gamma_f
+
+!  ================================================
+!             part to compute alpha_max_b
+!  ================================================
+
+!  Compute the coefficients for the polynomial expression
+!  for the overall complementarity
+
+!  parallel case ... skip as this does not seem to be efficient!
+
+      IF ( .FALSE. ) THEN
+!     IF ( parallel ) THEN
+        c = zero
+        DO i = dims%x_free + 1, dims%x_l_end
+          c = c + ( X_coef( i, 0 ) - X_l( i ) ) * Z_l_coef( i, 0 )
+        END DO
+        DO i = dims%x_u_start, n
+          c = c + ( X_coef( i, 0 ) - X_u( i ) ) * Z_u_coef( i, 0 )
+        END DO
+        DO i = dims%c_l_start, dims%c_l_end
+          c = c + ( C_coef( i, 0 ) - C_l( i ) ) * Y_l_coef( i, 0 )
+        END DO
+        DO i = dims%c_u_start, dims%c_u_end
+          c = c + ( C_coef( i, 0 ) - C_u( i ) ) * Y_u_coef( i, 0 )
+        END DO
+        CS_coef( 0 ) = c
+
+!$OMP   PARALLEL                                                               &
+!$OMP     DEFAULT( NONE )                                                      &
+!$OMP     PRIVATE( i, x0, c0, j, c, s, k, opj )                                &
+!$OMP     SHARED( order, dims, n, X_coef, X_l, X_u, Z_l_coef, Z_u_coef,        &
+!$OMP             C_coef, C_l, C_u, Y_l_coef, Y_u_coef, CS_coef )
+!$OMP   DO
+        DO j = 1, order
+          opj = order + j
+          c = zero ; s = zero
+          DO i = dims%x_free + 1, dims%x_l_end
+            c = ( X_coef( i, 0 ) - X_l( i ) ) * Z_l_coef( i, j )
+            DO k = 1, j
+              c = c + X_coef( i, k ) * Z_l_coef( i, j - k )
+            END DO
+            s = X_coef( i, j ) * Z_l_coef( i, order )
+            DO k = j + 1, order
+              s = s + X_coef( i, k ) * Z_l_coef( i, opj - k )
+            END DO
+          END DO
+
+          DO i = dims%x_u_start, n
+            c = ( X_coef( i, 0 ) - X_u( i ) ) * Z_u_coef( i, j )
+            DO k = 1, j
+              c = c + X_coef( i, k ) * Z_u_coef( i, j - k )
+            END DO
+            s = X_coef( i, j ) * Z_u_coef( i, order )
+            DO k = j + 1, order
+              s = s + X_coef( i, k ) * Z_u_coef( i, opj - k )
+            END DO
+          END DO
+
+          DO i = dims%c_l_start, dims%c_l_end
+            c = ( C_coef( i, 0 ) - C_l( i ) ) * Y_l_coef( i, j )
+            DO k = 1, j
+              c = c + C_coef( i, k ) * Y_l_coef( i, j - k )
+            END DO
+            c = C_coef( i, j ) * Y_l_coef( i, order )
+            DO k = j + 1, order
+              c = c + C_coef( i, k ) * Y_l_coef( i, opj - k )
+            END DO
+          END DO
+
+          DO i = dims%c_u_start, dims%c_u_end
+            c = ( C_coef( i, 0 ) - C_u( i ) ) * Y_u_coef( i, j )
+            DO k = 1, j
+              c = c + C_coef( i, k ) * Y_u_coef( i, j - k )
+            END DO
+            s = C_coef( i, j ) * Y_u_coef( i, order )
+            DO k = j + 1, order
+              s = s + C_coef( i, k ) * Y_u_coef( i, opj - k )
+            END DO
+          END DO
+          CS_coef( j ) = c
+          CS_coef( opj ) = s
+        END DO
+!$OMP   END DO
+!$OMP   END PARALLEL
+
+!  sequential case
+
+      ELSE
+        CS_coef( 0 : 2 * order ) = zero
+        DO i = dims%x_free + 1, dims%x_l_end
+          x0 = X_coef( i, 0 ) - X_l( i )
+          CS_coef( 0 ) = CS_coef( 0 ) + x0 * Z_l_coef( i, 0 )
+          DO j = 1, order
+            c = x0 * Z_l_coef( i, j )
+            DO k = 1, j
+              c = c + X_coef( i, k ) * Z_l_coef( i, j - k )
+            END DO
+            CS_coef( j ) = CS_coef( j ) + c
+            opj = order + j
+            c = X_coef( i, j ) * Z_l_coef( i, order )
+            DO k = j + 1, order
+              c = c + X_coef( i, k ) * Z_l_coef( i, opj - k )
+            END DO
+            CS_coef( opj ) = CS_coef( opj ) + c
+          END DO
+        END DO
+
+        DO i = dims%x_u_start, n
+          x0 = X_coef( i, 0 ) - X_u( i )
+          CS_coef( 0 ) = CS_coef( 0 ) + x0 * Z_u_coef( i, 0 )
+          DO j = 1, order
+            c = x0 * Z_u_coef( i, j )
+            DO k = 1, j
+              c = c + X_coef( i, k ) * Z_u_coef( i, j - k )
+            END DO
+            CS_coef( j ) =  CS_coef( j ) + c
+            opj = order + j
+            c = X_coef( i, j ) * Z_u_coef( i, order )
+            DO k = j + 1, order
+              c = c + X_coef( i, k ) * Z_u_coef( i, opj - k )
+            END DO
+            CS_coef( opj ) = CS_coef( opj ) + c
+          END DO
+        END DO
+
+        DO i = dims%c_l_start, dims%c_l_end
+          c0 = C_coef( i, 0 ) - C_l( i )
+          CS_coef( 0 ) = CS_coef( 0 ) + c0 * Y_l_coef( i, 0 )
+          DO j = 1, order
+            c = c0 * Y_l_coef( i, j )
+            DO k = 1, j
+              c = c + C_coef( i, k ) * Y_l_coef( i, j - k )
+            END DO
+            CS_coef( j ) = CS_coef( j ) + c
+            opj = order + j
+            c = C_coef( i, j ) * Y_l_coef( i, order )
+            DO k = j + 1, order
+              c = c + C_coef( i, k ) * Y_l_coef( i, opj - k )
+            END DO
+            CS_coef( opj ) = CS_coef( opj ) + c
+          END DO
+        END DO
+
+        DO i = dims%c_u_start, dims%c_u_end
+          c0 = C_coef( i, 0 ) - C_u( i )
+          CS_coef( 0 ) = CS_coef( 0 ) + c0 * Y_u_coef( i, 0 )
+          DO j = 1, order
+            c = c0 * Y_u_coef( i, j )
+            DO k = 1, j
+              c = c + C_coef( i, k ) * Y_u_coef( i, j - k )
+            END DO
+            CS_coef( j ) = CS_coef( j ) + c
+            opj = order + j
+            c = C_coef( i, j ) * Y_u_coef( i, order )
+            DO k = j + 1, order
+              c = c + C_coef( i, k ) * Y_u_coef( i, opj - k )
+            END DO
+            CS_coef( opj ) =  CS_coef( opj ) + c
+          END DO
+        END DO
+      END IF
+
+!  Compute the coefficients for the polynomial expression
+!  for the individual complementarity
+
+!  parallel case
+
+      IF ( parallel ) THEN
+        lower = zero
+        upper = alpha_max
+        local_ROOTS_control = control%ROOTS_control
+
+!$OMP   PARALLEL                                                               &
+!$OMP     DEFAULT( NONE )                                                      &
+!$OMP     PRIVATE( i, x0, c0, j, c, k, opj, thread, COEF )                     &
+!$OMP     SHARED( X_coef, X_l, X_u, Z_l_coef, Z_u_coef,                        &
+!$OMP             C_coef, C_l, C_u, Y_l_coef, Y_u_coef,                        &
+!$OMP             CS_coef, ALPHA_m,                                            &
+!$OMP             dims, n, lower, upper, alpha_max,                            &
+!$OMP             order, scale, local_ROOTS_data,                              &
+!$OMP             local_ROOTS_control, local_ROOTS_inform )
+        IF ( dims%x_free + 1 <= dims%x_l_end ) THEN
+!$OMP     DO
+          DO i = dims%x_free + 1, dims%x_l_end
+            x0 = X_coef( i, 0 ) - X_l( i )
+            DO j = 0, order
+              c = x0 * Z_l_coef( i, j )
+              DO k = 1, j
+                c = c + X_coef( i, k ) * Z_l_coef( i, j - k )
+              END DO
+              COEF( j ) = c - scale * CS_coef( j )
+            END DO
+            DO j = 1, order
+              opj = order + j
+              c = X_coef( i, j ) * Z_l_coef( i, order )
+              DO k = j + 1, order
+                c = c + X_coef( i, k ) * Z_l_coef( i, opj - k )
+              END DO
+              COEF( opj ) = c - scale * CS_coef( opj )
+            END DO
+            COEF( 0 ) = MAX( COEF( 0 ), zero )
+!$          thread = OMP_get_thread_num( )
+            ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                    &
+                        COEF( 0 : 2 * order ), lower, upper,                   &
+                        local_ROOTS_data( thread ), local_ROOTS_control,       &
+                        local_ROOTS_inform( thread ) )
+          END DO
+!$OMP     END DO
+          alpha_max = MIN( alpha_max,                                          &
+                           MINVAL( ALPHA_m( dims%x_free + 1 : dims%x_l_end ) ) )
+          upper = alpha_max
+        END IF
+
+        IF ( dims%x_u_start <= n ) THEN
+!$OMP     DO
+          DO i = dims%x_u_start, n
+            x0 = X_coef( i, 0 ) - X_u( i )
+            DO j = 0, order
+              c = x0 * Z_u_coef( i, j )
+              DO k = 1, j
+                c = c + X_coef( i, k ) * Z_u_coef( i, j - k )
+              END DO
+              COEF( j ) = c - scale * CS_coef( j )
+            END DO
+            DO j = 1, order
+              opj = order + j
+              c = X_coef( i, j ) * Z_u_coef( i, order )
+              DO k = j + 1, order
+                c = c + X_coef( i, k ) * Z_u_coef( i, opj - k )
+              END DO
+              COEF( opj ) = c - scale * CS_coef( opj )
+            END DO
+            COEF( 0 ) = MAX( COEF( 0 ), zero )
+!$          thread = OMP_get_thread_num( )
+            ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                    &
+                        COEF( 0 : 2 * order ), lower, upper,                   &
+                        local_ROOTS_data( thread ), local_ROOTS_control,       &
+                        local_ROOTS_inform( thread ) )
+          END DO
+!$OMP     END DO
+          alpha_max = MIN( alpha_max,                                          &
+                           MINVAL( ALPHA_m( dims%x_u_start : n ) ) )
+          upper = alpha_max
+        END IF
+
+        IF ( dims%c_l_start <= dims%c_l_end ) THEN
+!$OMP     DO
+          DO i = dims%c_l_start, dims%c_l_end
+            c0 = C_coef( i, 0 ) - C_l( i )
+            DO j = 0, order
+              c = c0 * Y_l_coef( i, j )
+              DO k = 1, j
+                c = c + C_coef( i, k ) * Y_l_coef( i, j - k )
+              END DO
+              COEF( j ) = c - scale * CS_coef( j )
+            END DO
+            DO j = 1, order
+              opj = order + j
+              c = C_coef( i, j ) * Y_l_coef( i, order )
+              DO k = j + 1, order
+                c = c + C_coef( i, k ) * Y_l_coef( i, opj - k )
+              END DO
+              COEF( opj ) = c - scale * CS_coef( opj )
+            END DO
+            COEF( 0 ) = MAX( COEF( 0 ), zero )
+!$          thread = OMP_get_thread_num( )
+            ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                    &
+                        COEF( 0 : 2 * order ), lower, upper,                   &
+                        local_ROOTS_data( thread ), local_ROOTS_control,       &
+                        local_ROOTS_inform( thread ) )
+          END DO
+!$OMP     END DO
+          alpha_max = MIN( alpha_max,                                          &
+                           MINVAL( ALPHA_m( dims%c_l_start : dims%c_l_end ) ) )
+          upper = alpha_max
+        END IF
+
+        IF ( dims%c_u_start <= dims%c_u_end ) THEN
+!$OMP     DO
+          DO i = dims%c_u_start, dims%c_u_end
+            c0 = C_coef( i, 0 ) - C_u( i )
+            DO j = 0, order
+              c = c0 * Y_u_coef( i, j )
+              DO k = 1, j
+                c = c + C_coef( i, k ) * Y_u_coef( i, j - k )
+              END DO
+              COEF( j ) = c - scale * CS_coef( j )
+            END DO
+            DO j = 1, order
+              opj = order + j
+              c = C_coef( i, j ) * Y_u_coef( i, order )
+              DO k = j + 1, order
+                c = c + C_coef( i, k ) * Y_u_coef( i, opj - k )
+              END DO
+              COEF( opj ) = c - scale * CS_coef( opj )
+            END DO
+            COEF( 0 ) = MAX( COEF( 0 ), zero )
+!$          thread = OMP_get_thread_num( )
+            ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                    &
+                        COEF( 0 : 2 * order ), lower, upper,                   &
+                        local_ROOTS_data( thread ), local_ROOTS_control,       &
+                        local_ROOTS_inform( thread ) )
+          END DO
+!$OMP     END DO
+          alpha_max = MIN( alpha_max,                                          &
+                            MINVAL( ALPHA_m( dims%c_u_start : dims%c_u_end ) ) )
+        END IF
+!$OMP   END PARALLEL
+
+!  sequential case
+
+      ELSE
+        DO i = dims%x_free + 1, dims%x_l_end
+          x0 = X_coef( i, 0 ) - X_l( i )
+          DO j = 0, order
+            c = x0 * Z_l_coef( i, j )
+            DO k = 1, j
+              c = c + X_coef( i, k ) * Z_l_coef( i, j - k )
+            END DO
+            COEF( j ) = c - scale * CS_coef( j )
+          END DO
+          DO j = 1, order
+            opj = order + j
+            c = X_coef( i, j ) * Z_l_coef( i, order )
+            DO k = j + 1, order
+              c = c + X_coef( i, k ) * Z_l_coef( i, opj - k )
+            END DO
+            COEF( opj ) = c - scale * CS_coef( opj )
+          END DO
+          COEF( 0 ) = MAX( COEF( 0 ), zero )
+          IF ( old ) THEN
+            CALL ROOTS_solve( COEF, nroots, ROOTS, control%ROOTS_control,      &
+                              inform%ROOTS_inform, ROOTS_data )
+            alpha = infinity
+            DO j = 1, nroots
+              IF ( ROOTS( j ) > zero ) THEN
+                alpha = ROOTS( j )
+                EXIT
+              END IF
+            END DO
+            IF ( alpha < alpha_max_b ) alpha_max_b = alpha
+          ELSE
+            lower = zero
+            upper = alpha_max
+            alpha = ROOTS_smallest_root_in_interval(                           &
+                        COEF( 0 : 2 * order ), lower, upper,                   &
+                        ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
+            alpha_max = alpha
+          END IF
+        END DO
+
+        DO i = dims%x_u_start, n
+          x0 = X_coef( i, 0 ) - X_u( i )
+          DO j = 0, order
+            c = x0 * Z_u_coef( i, j )
+            DO k = 1, j
+              c = c + X_coef( i, k ) * Z_u_coef( i, j - k )
+            END DO
+            COEF( j ) = c - scale * CS_coef( j )
+          END DO
+          DO j = 1, order
+            opj = order + j
+            c = X_coef( i, j ) * Z_u_coef( i, order )
+            DO k = j + 1, order
+              c = c + X_coef( i, k ) * Z_u_coef( i, opj - k )
+            END DO
+            COEF( opj ) = c - scale * CS_coef( opj )
+          END DO
+          COEF( 0 ) = MAX( COEF( 0 ), zero )
+          IF ( old ) THEN
+            CALL ROOTS_solve( COEF, nroots, ROOTS, control%ROOTS_control,      &
+                              inform%ROOTS_inform, ROOTS_data )
+            alpha = infinity
+            DO j = 1, nroots
+              IF ( ROOTS( j ) > zero ) THEN
+                alpha = ROOTS( j )
+                EXIT
+              END IF
+            END DO
+            IF ( alpha < alpha_max_b ) alpha_max_b = alpha
+          ELSE
+            lower = zero
+            upper = alpha_max
+            alpha = ROOTS_smallest_root_in_interval(                           &
+                        COEF( 0 : 2 * order ), lower, upper,                   &
+                        ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
+            alpha_max = alpha
+          END IF
+        END DO
+
+        DO i = dims%c_l_start, dims%c_l_end
+          c0 = C_coef( i, 0 ) - C_l( i )
+          DO j = 0, order
+            c = c0 * Y_l_coef( i, j )
+            DO k = 1, j
+              c = c + C_coef( i, k ) * Y_l_coef( i, j - k )
+            END DO
+            COEF( j ) = c - scale * CS_coef( j )
+          END DO
+          DO j = 1, order
+            opj = order + j
+            c = C_coef( i, j ) * Y_l_coef( i, order )
+            DO k = j + 1, order
+              c = c + C_coef( i, k ) * Y_l_coef( i, opj - k )
+            END DO
+            COEF( opj ) = c - scale * CS_coef( opj )
+          END DO
+          COEF( 0 ) = MAX( COEF( 0 ), zero )
+          IF ( old ) THEN
+            CALL ROOTS_solve( COEF, nroots, ROOTS, control%ROOTS_control,      &
+                              inform%ROOTS_inform, ROOTS_data )
+            alpha = infinity
+            DO j = 1, nroots
+              IF ( ROOTS( j ) > zero ) THEN
+                alpha = ROOTS( j )
+                EXIT
+              END IF
+            END DO
+            IF ( alpha < alpha_max_b ) alpha_max_b = alpha
+          ELSE
+            lower = zero
+            upper = alpha_max
+            alpha = ROOTS_smallest_root_in_interval(                           &
+                        COEF( 0 : 2 * order ), lower, upper,                   &
+                        ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
+            alpha_max = alpha
+          END IF
+        END DO
+
+        DO i = dims%c_u_start, dims%c_u_end
+          c0 = C_coef( i, 0 ) - C_u( i )
+          DO j = 0, order
+            c = c0 * Y_u_coef( i, j )
+            DO k = 1, j
+              c = c + C_coef( i, k ) * Y_u_coef( i, j - k )
+            END DO
+            COEF( j ) = c - scale * CS_coef( j )
+          END DO
+          DO j = 1, order
+            opj = order + j
+            c = C_coef( i, j ) * Y_u_coef( i, order )
+            DO k = j + 1, order
+              c = c + C_coef( i, k ) * Y_u_coef( i, opj - k )
+            END DO
+            COEF( opj ) = c - scale * CS_coef( opj )
+          END DO
+          COEF( 0 ) = MAX( COEF( 0 ), zero )
+          IF ( old ) THEN
+            CALL ROOTS_solve( COEF, nroots, ROOTS, control%ROOTS_control,      &
+                              inform%ROOTS_inform, ROOTS_data )
+            alpha = infinity
+            DO j = 1, nroots
+              IF ( ROOTS( j ) > zero ) THEN
+                alpha = ROOTS( j )
+                EXIT
+              END IF
+            END DO
+            IF ( alpha < alpha_max_b ) alpha_max_b = alpha
+          ELSE
+            lower = zero
+            upper = alpha_max
+            alpha = ROOTS_smallest_root_in_interval(                           &
+                        COEF( 0 : 2 * order ), lower, upper,                   &
+                        ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
+            alpha_max = alpha
+          END IF
+        END DO
+      END IF
+
+!  ================================================
+!             part to compute alpha_max_f
+!  ================================================
+
+!  Compute the coefficients for the quadratic expression
+!  for the overall complementarity, remembering to first
+!  subtract the term for the feasibility
+
+      IF ( puiseux ) THEN
+        CS_COEF( 0 ) = MAX( CS_COEF( 0 ) - infeas_gamma_f, zero )
+        CS_COEF( 1 ) = CS_COEF( 1 ) + two * infeas_gamma_f
+        IF ( order > 1 ) CS_COEF( 2 ) = CS_COEF( 2 ) - infeas_gamma_f
+      ELSE
+        CS_COEF( 0 ) = MAX( CS_COEF( 0 ) - infeas_gamma_f, zero )
+        CS_COEF( 1 ) = CS_COEF( 1 ) + infeas_gamma_f
+      END IF
+
+      IF ( old ) THEN
+        CALL ROOTS_solve( CS_COEF, nroots, ROOTS, control%ROOTS_control,       &
+                          inform%ROOTS_inform, ROOTS_data )
+        alpha = infinity
+        DO j = 1, nroots
+          IF ( ROOTS( j ) > zero ) THEN
+            alpha = ROOTS( j )
+            EXIT
+          END IF
+        END DO
+        IF ( alpha < alpha_max_f ) alpha_max_f = alpha
+
+!  compute the smaller of alpha_max_b and alpha_max_f
+
+        alpha_max = MIN( alpha_max_b, alpha_max_f, one )
+      ELSE
+        lower = zero
+        upper = alpha_max
+        alpha = ROOTS_smallest_root_in_interval(                               &
+                      CS_COEF( 0 : 2 * order ), lower, upper,                  &
+                      ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
+        alpha_max = alpha
+        alpha_max = ( one - two * epsmch ) * alpha_max
+      END IF
+
+      RETURN
+
+!  End of subroutine LPB_compute_pmaxstep
+
+      END SUBROUTINE LPB_compute_pmaxstep
+
+!-*-*-*-*-*-   L P B _ I N D I C A T O R S   S U B R O U T I N E   -*-*-*-*-*-
+
+     SUBROUTINE LPB_indicators( dims, n, m, C_l, C_u, C_last, C,               &
+                                 DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,      &
+                                 DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,       &
+                                 Y_last, Z_last, control, C_stat, X_stat )
+
+!  ---------------------------------------------------------------------------
+
+!  Compute indicatirs for active simnple bounds and general constraints
+
+!  C_stat is an INTEGER array of length m, which if present will be
+!   set on exit to indicate the likely ultimate status of the constraints.
+!   Possible values are
+!   C_stat( i ) < 0, the i-th constraint is likely in the active set,
+!                    on its lower bound,
+!               > 0, the i-th constraint is likely in the active set
+!                    on its upper bound, and
+!               = 0, the i-th constraint is likely not in the active set
+
+!  X_stat is an INTEGER array of length n, which if present will be
+!   set on exit to indicate the likely ultimate status of the simple bound
+!   constraints. Possible values are
+!   X_stat( i ) < 0, the i-th bound constraint is likely in the active set,
+!                    on its lower bound,
+!               > 0, the i-th bound constraint is likely in the active set
+!                    on its upper bound, and
+!               = 0, the i-th bound constraint is likely not in the active set
+
+!  ---------------------------------------------------------------------------
+
+!  Dummy arguments
+
+      INTEGER, INTENT( IN ) :: n, m
+      TYPE ( LPB_dims_type ), INTENT( IN ) :: dims
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_last, Z_last
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_last, Y_last
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%c_l_start : dims%c_l_end ) :: DIST_C_l, Y_l
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%c_u_start : dims%c_u_end ) :: DIST_C_u, Y_u
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+        DIMENSION( dims%c_l_start : dims%c_u_end ) :: C
+      REAL ( KIND = wp ), INTENT(IN ),                                         &
+             DIMENSION( dims%x_free + 1 : dims%x_l_end ) ::  Z_l
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+             DIMENSION( dims%x_u_start : n ) :: Z_u
+      TYPE ( LPB_control_type ), INTENT( IN ) :: control
+      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( m ) :: C_stat
+      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: X_stat
 
 !  Local variables
 
       INTEGER :: i
-      REAL ( KIND = wp ) :: g, h, x_l, x_u
-      LOGICAL :: stat_required
-      REAL :: time, time_start
 
-      CALL CPU_TIME( time_start )
-      stat_required = PRESENT( B_stat )
+!  equality constraints
 
-!  Set information parameters
+      C_stat( : dims%c_equality ) = - 1
 
-      inform%alloc_status = 0
-      inform%iter = 0
-      inform%factorization_status = 0
-      inform%factorization_integer = 0
-      inform%factorization_real = 0
-      inform%nfacts = 0
-      inform%nbacts = 0
-      inform%nmods = 0
-      inform%non_negligible_pivot = zero
+!  free variables
 
-!  Set initial timing breakdowns
+      X_stat( : dims%x_free ) = 0
 
-      inform%time%total = 0.0     ; inform%time%phase1_total = 0.0    
-      inform%time%analyse = 0.0   ; inform%time%phase1_analyse = 0.0  
-      inform%time%factorize = 0.0 ; inform%time%phase1_factorize = 0.0
-      inform%time%solve = 0.0     ; inform%time%phase1_solve = 0.0    
-      inform%time%preprocess = 0.0 ; inform%time%find_dependent = 0.0
+!  Compute the required indicator
 
-      inform%status = 0
-      inform%obj = prob%f
+!  ----------------------------------
+!  Type 1 ("primal") indicator used:
+!  ----------------------------------
 
-!  Now consider the solution, one component at a time
+!    a variable/constraint will be "inactive" if
+!        distance to nearest bound > indicator_p_tol
+!    for some constant indicator_p_tol close-ish to zero
 
-      DO i = 1, prob%n
-        x_l = prob%X_l( i ) ; x_u = prob%X_u( i )
-        IF ( x_l > x_u ) THEN
-          inform%feasible = .FALSE. ; inform%status = - 6 ; RETURN
-        END IF
-        g = prob%G( i ) ; h = prob%X( i )
-
-        IF ( g > zero ) THEN
-          prob%X( i ) = x_l
-
-!  The objective is unbounded 
-
-          IF ( x_l < - control%infinity ) THEN
-            inform%status = - 11
-            prob%Z( i ) = zero
-            IF ( stat_required ) B_stat( i ) = 0
-
-!  The minimizer occurs at the lower bound
-
+      IF ( control%indicator_type == 1 ) THEN
+        DO i = dims%c_equality + 1, m
+          IF ( ABS( C( i ) - C_l( i ) ) < control%indicator_tol_p ) THEN
+            IF ( ABS( Y_l( i ) ) < control%indicator_tol_p ) THEN
+              C_stat( i ) = - 2
+            ELSE
+              C_stat( i ) = - 1
+            END IF
+          ELSE IF ( ABS( C( i ) - C_u( i ) ) < control%indicator_tol_p ) THEN
+            IF ( ABS( Y_u( i ) ) < control%indicator_tol_p ) THEN
+              C_stat( i ) = 2
+            ELSE
+              C_stat( i ) = 1
+            END IF
           ELSE
-            prob%Z( i ) = g + h * x_l
-            IF ( stat_required ) B_stat( i ) = - 1
+            C_stat( i ) = 0
           END IF
-        ELSE IF ( g < zero ) THEN
-          prob%X( i ) = x_u
-
-!  The objective is unbounded 
-
-          IF ( x_u > control%infinity ) THEN
-            inform%status = - 11
-            prob%Z( i ) = zero
-            IF ( stat_required ) B_stat( i ) = 0
-
-!  The minimizer occurs at the upper bound
-
+        END DO
+        DO i = dims%x_free + 1, n
+          IF ( ABS( X( i ) - X_l( i ) ) < control%indicator_tol_p ) THEN
+            IF ( ABS( Z_l( i ) ) < control%indicator_tol_p ) THEN
+              X_stat( i ) = - 2
+            ELSE
+              X_stat( i ) = - 1
+            END IF
+          ELSE IF ( ABS( X( i ) - X_u( i ) ) < control%indicator_tol_p ) THEN
+            IF ( ABS( Z_u( i ) ) < control%indicator_tol_p ) THEN
+              X_stat( i ) = 2
+            ELSE
+              X_stat( i ) = 1
+            END IF
           ELSE
-            prob%Z( i ) = g + h * x_u
-            IF ( stat_required ) B_stat( i ) = 1
+            X_stat( i ) = 0
           END IF
-        ELSE
+        END DO
 
-!  The objective is constant along this component direction
+!  --------------------------------------
+!  Type 2 ("primal-dual") indicator used:
+!  --------------------------------------
 
-          prob%Z( i ) = zero
+!    a variable/constraint will be "inactive" if
+!        distance to nearest bound
+!          > indicator_tol_pd * size of corresponding multiplier
+!    for some constant indicator_tol_pd close-ish to one.
 
-!  Pick an arbitrary minimizer between the bounds
+      ELSE IF ( control%indicator_type == 2 ) THEN
 
-          IF ( stat_required ) B_stat( i ) = 0
-          IF ( x_l >= - control%infinity .AND. x_u <=  control%infinity ) THEN
-            prob%X( i ) = half * ( x_l + x_u )
-          ELSE IF ( x_l >= - control%infinity ) THEN
-            prob%X( i ) = x_l
-          ELSE IF ( x_u <= control%infinity ) THEN
-            prob%X( i ) = x_u
+!  constraints with lower bounds
+
+        DO i = dims%c_l_start, dims%c_u_start - 1
+          IF ( DIST_C_l( i ) > control%indicator_tol_pd * Y_l( i ) ) THEN
+            C_stat( i ) = 0
           ELSE
-            prob%X( i ) = zero
+            C_stat( i ) = - 1
           END IF
-        END IF
-        inform%obj = inform%obj + prob%X( i ) * g
-      END DO
-      IF ( inform%obj < control%obj_unbounded ) inform%status = - 11
+        END DO
 
-      CALL CPU_TIME( time ) ; inform%time%total = time - time_start 
+!  constraints with both lower and upper bounds
+
+        DO i = dims%c_u_start, dims%c_l_end
+          IF ( DIST_C_l( i ) <= DIST_C_u( i ) ) THEN
+            IF ( DIST_C_l( i ) > control%indicator_tol_pd * Y_l( i ) ) THEN
+              C_stat( i ) = 0
+            ELSE
+              C_stat( i ) = - 1
+            END IF
+          ELSE
+            IF ( DIST_C_u( i ) > - control%indicator_tol_pd * Y_u( i ) ) THEN
+              C_stat( i ) = 0
+            ELSE
+              C_stat( i ) = 1
+            END IF
+          END IF
+        END DO
+
+!  constraints with upper bounds
+
+        DO i = dims%c_l_end + 1, m
+          IF ( DIST_C_u( i ) > - control%indicator_tol_pd * Y_u( i ) ) THEN
+            C_stat( i ) = 0
+          ELSE
+            C_stat( i ) = 1
+          END IF
+        END DO
+
+!  simple non-negativity
+
+        DO i = dims%x_free + 1, dims%x_l_start - 1
+          IF ( X( i ) > control%indicator_tol_pd * Z_l( i ) ) THEN
+            X_stat( i ) = 0
+          ELSE
+            X_stat( i ) = - 1
+          END IF
+        END DO
+
+!  simple bound from below
+
+        DO i = dims%x_l_start, dims%x_u_start - 1
+          IF ( DIST_X_l( i ) > control%indicator_tol_pd * Z_l( i ) ) THEN
+            X_stat( i ) = 0
+          ELSE
+            X_stat( i ) = - 1
+          END IF
+        END DO
+
+!  simple bound from below and above
+
+        DO i = dims%x_u_start, dims%x_l_end
+          IF ( DIST_X_l( i ) <= DIST_X_u( i ) ) THEN
+            IF ( DIST_X_l( i ) > control%indicator_tol_pd * Z_l( i ) ) THEN
+              X_stat( i ) = 0
+            ELSE
+              X_stat( i ) = - 1
+            END IF
+          ELSE
+            IF ( DIST_x_u( i ) > - control%indicator_tol_pd * Z_u( i ) ) THEN
+              X_stat( i ) = 0
+            ELSE
+              X_stat( i ) = 1
+            END IF
+          END IF
+        END DO
+
+!  simple bound from above
+
+        DO i = dims%x_l_end + 1, dims%x_u_end
+          IF ( DIST_x_u( i ) > - control%indicator_tol_pd * Z_u( i ) ) THEN
+            X_stat( i ) = 0
+          ELSE
+            X_stat( i ) = 1
+          END IF
+        END DO
+
+!  simple non-positivity
+
+        DO i = dims%x_u_end + 1, n
+          IF ( - X( i ) > - control%indicator_tol_pd * Z_u( i ) ) THEN
+            X_stat( i ) = 0
+          ELSE
+            X_stat( i ) = 1
+          END IF
+        END DO
+
+!  --------------------------------
+!  Type 3 ("Tapia") indicator used:
+!  --------------------------------
+
+!    a variable/constraint will be "inactive" if
+!        distance to nearest bound now
+!          > indicator_tol_tapia * distance to same bound at previous iteration
+!    for some constant indicator_tol_tapia close-ish to one.
+
+      ELSE IF ( control%indicator_type == 3 ) THEN
+
+!  constraints with lower bounds
+
+        DO i = dims%c_l_start, dims%c_u_start - 1
+          IF ( ABS( C( i ) - C_l( i ) ) > control%indicator_tol_tapia *        &
+               ABS( C_last( i ) - C_l( i ) ) ) THEN
+            C_stat( i ) = 0
+          ELSE
+            IF ( ABS( Y_l( i ) / Y_last( i ) )                                 &
+                 > control%indicator_tol_tapia ) THEN
+              C_stat( i ) = - 1
+            ELSE
+!             write(6,*) i, ABS( Y_l( i ) / Y_last( i ) )
+              C_stat( i ) = - 2
+            END IF
+          END IF
+        END DO
+
+!  constraints with both lower and upper bounds
+
+        DO i = dims%c_u_start, dims%c_l_end
+          IF ( DIST_C_l( i ) <= DIST_C_u( i ) ) THEN
+            IF ( ABS( C( i ) - C_l( i ) ) > control%indicator_tol_tapia *      &
+                 ABS( C_last( i ) - C_l( i ) ) ) THEN
+              C_stat( i ) = 0
+            ELSE
+              IF ( ABS( Y_l( i ) / Y_last( i ) )                               &
+                   > control%indicator_tol_tapia ) THEN
+                C_stat( i ) = - 1
+              ELSE
+!               write(6,*) i, ABS( Y_l( i ) / Y_last( i ) )
+                C_stat( i ) = - 2
+              END IF
+            END IF
+          ELSE
+            IF ( ABS( C( i ) - C_u( i ) ) > control%indicator_tol_tapia *      &
+                 ABS( C_last( i ) - C_u( i ) ) )  THEN
+              C_stat( i ) = 0
+            ELSE
+              IF ( ABS( Y_u( i ) / Y_last( i ) )                               &
+                   > control%indicator_tol_tapia ) THEN
+                C_stat( i ) = 1
+              ELSE
+!               write(6,*) i, ABS( Y_u( i ) / Y_last( i ) )
+                C_stat( i ) = 2
+              END IF
+            END IF
+          END IF
+        END DO
+
+!  constraints with upper bounds
+
+        DO i = dims%c_l_end + 1, m
+          IF ( ABS( C( i ) - C_u( i ) ) > control%indicator_tol_tapia *        &
+               ABS( C_last( i ) - C_u( i ) ) )  THEN
+            C_stat( i ) = 0
+          ELSE
+            IF ( ABS( Y_u( i ) / Y_last( i ) )                                 &
+                 > control%indicator_tol_tapia ) THEN
+              C_stat( i ) = 1
+            ELSE
+!             write(6,*) i, ABS( Y_u( i ) / Y_last( i ) )
+              C_stat( i ) = 2
+            END IF
+          END IF
+        END DO
+
+!  simple non-negativity
+
+        DO i = dims%x_free + 1, dims%x_l_start - 1
+          IF ( ABS( X( i ) ) > control%indicator_tol_tapia *                   &
+               ABS( X_last( i ) ) ) THEN
+            X_stat( i ) = 0
+          ELSE
+            IF ( ABS( Z_l( i ) / Z_last( i ) )                                 &
+                 > control%indicator_tol_tapia ) THEN
+              X_stat( i ) = - 1
+            ELSE
+!             write(6,*) i, ABS( Z_l( i ) / Z_last( i ) )
+              X_stat( i ) = - 2
+            END IF
+          END IF
+        END DO
+
+!  simple bound from below
+
+        DO i = dims%x_l_start, dims%x_u_start - 1
+          IF ( ABS( X( i ) - X_l( i ) ) > control%indicator_tol_tapia *        &
+               ABS( X_last( i ) - X_l( i ) ) ) THEN
+            X_stat( i ) = 0
+          ELSE
+            IF ( ABS( Z_l( i ) / Z_last( i ) )                                 &
+                 > control%indicator_tol_tapia ) THEN
+              X_stat( i ) = - 1
+            ELSE
+!             write(6,*) i, ABS( Z_l( i ) / Z_last( i ) )
+              X_stat( i ) = - 2
+            END IF
+          END IF
+        END DO
+
+!  simple bound from below and above
+
+        DO i = dims%x_u_start, dims%x_l_end
+          IF ( DIST_X_l( i ) <= DIST_X_u( i ) ) THEN
+            IF ( ABS( X( i ) - X_l( i ) ) > control%indicator_tol_tapia *      &
+                 ABS( X_last( i ) - X_l( i ) ) ) THEN
+              X_stat( i ) = 0
+            ELSE
+              IF ( ABS( Z_l( i ) / Z_last( i ) )                               &
+                   > control%indicator_tol_tapia ) THEN
+                X_stat( i ) = - 1
+              ELSE
+!               write(6,*) i, ABS( Z_l( i ) / Z_last( i ) )
+                X_stat( i ) = - 2
+              END IF
+            END IF
+          ELSE
+            IF ( ABS( X( i ) - X_u( i ) ) > control%indicator_tol_tapia *      &
+                 ABS( X_last( i ) - X_u( i ) ) ) THEN
+              X_stat( i ) = 0
+            ELSE
+              IF ( ABS( Z_u( i ) / Z_last( i ) )                               &
+                   > control%indicator_tol_tapia ) THEN
+                X_stat( i ) = 1
+              ELSE
+!               write(6,*) i, ABS( Z_u( i ) / Z_last( i ) )
+                X_stat( i ) = 2
+              END IF
+            END IF
+          END IF
+        END DO
+
+!  simple bound from above
+
+        DO i = dims%x_l_end + 1, dims%x_u_end
+            IF ( ABS( X( i ) - X_u( i ) ) > control%indicator_tol_tapia *      &
+                 ABS( X_last( i ) - X_u( i ) ) ) THEN
+            X_stat( i ) = 0
+          ELSE
+            IF ( ABS( Z_u( i ) / Z_last( i ) )                                 &
+                 > control%indicator_tol_tapia ) THEN
+              X_stat( i ) = 1
+            ELSE
+!             write(6,*) i, ABS( Z_u( i ) / Z_last( i ) )
+              X_stat( i ) = 2
+            END IF
+          END IF
+        END DO
+
+!  simple non-positivity
+
+        DO i = dims%x_u_end + 1, n
+          IF ( ABS( X( i ) ) > control%indicator_tol_tapia *                   &
+               ABS( X_last( i ) ) ) THEN
+            X_stat( i ) = 0
+          ELSE
+            IF ( ABS( Z_u( i ) / Z_last( i ) )                                 &
+                 > control%indicator_tol_tapia ) THEN
+              X_stat( i ) = 1
+            ELSE
+!             write(6,*) i, ABS( Z_u( i ) / Z_last( i ) )
+              X_stat( i ) = 2
+            END IF
+          END IF
+        END DO
+      ELSE
+      END IF
+
+!     IF ( .TRUE. ) THEN
+!       WRITE(  control%out,                                                   &
+!         "( /, ' Constraints : ', /, '                   ',                   &
+!      &   '        <------ Bounds ------> ', /                                &
+!      &   '      # name       state      Lower       Upper     Multiplier' )" )
+!       DO i = dims%c_equality + 1, m
+!         WRITE(  control%out,"( 2I7, 4ES12.4 )" ) i,                          &
+!           C_stat( i ), C( i ), C_l( i ), C_u( i ), Y( i )
+!       END DO
+
+!       WRITE(  control%out,                                                   &
+!          "( /, ' Solution : ', /,'                    ',                     &
+!         &    '        <------ Bounds ------> ', /                            &
+!         &    '      # name       state      Lower       Upper       Dual' )" )
+!       DO i = dims%x_free + 1, n
+!         WRITE(  control%out,"( 2I7, 4ES12.4 )" ) i,                          &
+!           X_stat( i ), X( i ), X_l( i ), X_u( i ), Z( i )
+!       END DO
+!     END IF
+
       RETURN
 
-!  End of subroutine LPB_optimal_for_SBLP
+!  End of LPB_indicators
 
-      END SUBROUTINE LPB_optimal_for_SBLP
+      END SUBROUTINE LPB_indicators
 
-!-*-*-*-*-*-*-*-   Q P B _ F O R M _ S _ C   S U B R O U T I N E   -*-*-*-*-*-
+!-*-*-*-*-*-*-   L P B _ w o r k s p a c e   S U B R O U T I N E  -*-*-*-*-*-*-
 
-      SUBROUTINE LPB_form_Schur_complement(                                    &
-                          dims, n, m, Abycol_ne, Abycol_val, Abycol_row,       &
-                          Abycol_ptr, DIAG_X, SCALE_C, DIAG_C, ls, S_val,      &
-                          S_row, S_colptr, nes, ierr, col_count, row_count,    &
-                          reals, control_error, control_print_level )
+      SUBROUTINE LPB_workspace( m, n, dims, a_ne, stat_required, order,        &
+                                GRAD_L, DIST_X_l, DIST_X_u, Z_l, Z_u,          &
+                                BARRIER_X, Y_l, DIST_C_l, Y_u, DIST_C_u, C,    &
+                                BARRIER_C, SCALE_C, RHS, OPT_alpha, OPT_merit, &
+                                BINOMIAL, CS_coef, COEF, ROOTS, DX_zh,         &
+                                DY_zh, DC_zh, DY_l_zh, DY_u_zh, DZ_l_zh,       &
+                                DZ_u_zh, X_coef, C_coef, Y_coef, Y_l_coef,     &
+                                Y_u_coef, Z_l_coef, Z_u_coef, H_s, A_s,        &
+                                Y_last, Z_last, A_sbls, H_sbls,                &
+                                control, inform )
 
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  This subroutine computes the Schur-complement matrix 
-!    S = A DIAG_X(inv) A(trans) + SCALE_C * DIAG_C(inv) * SCALE_C
-!  given the matrix A and vector of weights DIAG_X and DIAG_C
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  Arguments:
-
-!  m is the number of rows in matrix A.
-!  n is the number of columns in matrix A, and the number of rows and
-!    columns in matrix S.
-!  Abycol_ne is the number of entries in matrix A. It is the length of 
-!     arrays Abycol_val and Abycol_row.
-!  Abycol_val holds the values of the entries in matrix A.
-!  Abycol_row holds the row indices of the corresponding entries in A
-!  Abycol_ptr points to the start of each column of A.
-!  DIAG_X, DIAG_C are vectors of weights
-!  ls is the length of arrays S and S_row.
-!  S_val is set to the values of the entries in the lower triangle of S, 
-!   ordered by columns
-!  S_row is set to the row numbers of the entries in the lower triangle of S
-!  S_colptr is set to point to the start of each column of S.
-!  ierr is set by the routine to the code specifying the type of input
-!       error:
-!            = 0    no input errors;
-!            = 1    n less than or equal to zero;
-!            = 2    m less than or equal to zero;
-!            = 3    ls less than Abycol_ne+m;
-!            = 4    ls less than the number of entries in S (the
-!                   number required is in nes);
-!  nes is the actual number of entries in S
-!  COL_count is the number of entries in each column of A
-!  ROW_count is the number of entries in each row in A and, later,
-!            the number of entries in each row of the lower triangle of S
-
-!  Based on Iain Duff's routine MC35
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!  allocate workspace arrays for use in LPB_solve_main
 
 !  Dummy arguments
 
-      TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, ls, Abycol_ne
-      INTEGER, INTENT( IN ) :: control_error, control_print_level
-      INTEGER, INTENT( OUT ) :: nes, ierr
-      LOGICAL, INTENT( IN ) :: reals
-      INTEGER, INTENT( INOUT ), DIMENSION( Abycol_ne ) :: Abycol_row
-      INTEGER, INTENT( INOUT ), DIMENSION( n + 1 ) :: Abycol_ptr
-      INTEGER, INTENT( OUT ), DIMENSION( ls )  :: S_row
-      INTEGER, INTENT( OUT ), DIMENSION( m + 1 )  :: S_colptr
-      INTEGER, INTENT( OUT ), DIMENSION( n )  :: COL_count
-      INTEGER, INTENT( OUT ), DIMENSION( m )  :: ROW_count
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n )  :: DIAG_X
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_l_start : dims%c_u_end ) :: SCALE_C
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_l_start : dims%c_u_end ) :: DIAG_C
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( Abycol_ne )  :: Abycol_val
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( ls )  :: S_val
+      INTEGER, INTENT( IN ) :: m, n, a_ne
+      INTEGER, INTENT( OUT ) :: order
+      LOGICAL, INTENT( IN ) :: stat_required
+      TYPE ( LPB_dims_type ), INTENT( IN ) :: dims
+      REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) ::      &
+           GRAD_L, DIST_X_l, DIST_X_u, Z_l, Z_u, BARRIER_X, Y_l, DIST_C_l,     &
+           Y_u, DIST_C_u, C, BARRIER_C, SCALE_C, RHS, OPT_alpha, OPT_merit,    &
+           CS_coef, COEF, ROOTS, DX_zh, DY_zh, DC_zh, DY_l_zh,                 &
+           DY_u_zh, DZ_l_zh, DZ_u_zh, H_s, A_s, Y_last, Z_last
+      REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( :, : ) ::   &
+           X_coef, C_coef, Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,     &
+           BINOMIAL
+      TYPE ( SMT_type ), INTENT( INOUT ) :: A_sbls, H_sbls
+      TYPE ( LPB_control_type ), INTENT( IN ) :: control
+      TYPE ( LPB_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: i, i1, i2, ii, ij, ipos, j, j1, j2, jj
-      INTEGER :: icount, idist, k, k1, k2, kk
-      REAL ( KIND = wp ) :: amult
-      LOGICAL :: error
+      INTEGER :: A_sbls_ne, H_sbls_ne, n_sbls
+      CHARACTER ( LEN = 80 ) :: array_name
 
-!  Check for input errors
+!  allocate workspace arrays
 
-      IF ( n <= 0 ) THEN
-        ierr = 1
-        IF ( control_error > 0 .AND. control_print_level >= 2 )                &
-          WRITE( control_error, 2010 ) n
-        GO TO 900
+      array_name = 'lpb: GRAD_L'
+      CALL SPACE_resize_array( dims%c_e, GRAD_L,                               &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: DIST_X_l'
+      CALL SPACE_resize_array( dims%x_l_start, dims%x_l_end, DIST_X_l,         &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: DIST_X_u'
+      CALL SPACE_resize_array( dims%x_u_start, dims%x_u_end, DIST_X_u,         &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: Z_l'
+      CALL SPACE_resize_array( dims%x_free + 1, dims%x_l_end, Z_l,             &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: Z_u'
+      CALL SPACE_resize_array( dims%x_u_start, n, Z_u,                         &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: BARRIER_X'
+      CALL SPACE_resize_array( dims%x_free + 1, n, BARRIER_X,                  &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: Y_l'
+      CALL SPACE_resize_array( dims%c_l_start, dims%c_l_end, Y_l,              &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: DIST_C_l'
+      CALL SPACE_resize_array( dims%c_l_start, dims%c_l_end, DIST_C_l,         &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: Y_u'
+      CALL SPACE_resize_array( dims%c_u_start, dims%c_u_end, Y_u,              &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: DIST_C_u'
+      CALL SPACE_resize_array( dims%c_u_start, dims%c_u_end, DIST_C_u,         &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: C'
+      CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, C,                &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: BARRIER_C'
+      CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, BARRIER_C,        &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: SCALE_C'
+      CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, SCALE_C,          &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: RHS'
+      CALL SPACE_resize_array( dims%v_e, RHS,                                  &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      order = control%series_order
+
+      array_name = 'lpb: OPT_alpha'
+      CALL SPACE_resize_array( order, OPT_alpha,                               &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: OPT_merit'
+      CALL SPACE_resize_array( order, OPT_merit,                               &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: X_coef'
+      CALL SPACE_resize_array( 1, n, 0, order, X_coef,                         &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: C_coef'
+      CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, 0, order, C_coef, &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: Y_coef'
+      CALL SPACE_resize_array( 1, m, 0, order, Y_coef,                         &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: Y_l_coef'
+      CALL SPACE_resize_array(                                                 &
+             dims%c_l_start, dims%c_l_end, 0, order, Y_l_coef,                 &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: Y_u_coef'
+      CALL SPACE_resize_array(                                                 &
+             dims%c_u_start, dims%c_u_end, 0, order, Y_u_coef,                 &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: Z_l_coef'
+      CALL SPACE_resize_array(                                                 &
+             dims%x_free + 1, dims%x_l_end, 0, order, Z_l_coef,                &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: Z_u_coef'
+      CALL SPACE_resize_array(                                                 &
+             dims%x_u_start, n, 0, order, Z_u_coef,                            &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: BINOMIAL'
+      CALL SPACE_resize_array( 0, order - 1, order, BINOMIAL,                  &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: CS_coef'
+      CALL SPACE_resize_array( 0, 2 * order, CS_coef,                          &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: COEF'
+      CALL SPACE_resize_array( 0, 2 * order, COEF,                             &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: ROOTS'
+      CALL SPACE_resize_array( 2 * order, ROOTS,                               &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: DX_zh'
+      CALL SPACE_resize_array( 1, n, DX_zh,                                    &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: DC_zh'
+      CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, DC_zh,            &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: DY_zh'
+      CALL SPACE_resize_array( 1, m, DY_zh,                                    &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: DY_l_zh'
+      CALL SPACE_resize_array( dims%c_l_start, dims%c_l_end, DY_l_zh,          &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: DY_u_zh'
+      CALL SPACE_resize_array( dims%c_u_start, dims%c_u_end, DY_u_zh,          &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: DZ_l_zh'
+      CALL SPACE_resize_array( dims%x_free + 1, dims%x_l_end, DZ_l_zh,         &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: DZ_u_zh'
+      CALL SPACE_resize_array( dims%x_u_start, n, DZ_u_zh,                     &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  H is diagonal
+
+      n_sbls = n + dims%nc ; H_sbls_ne = n_sbls
+
+!  allocate real space for H
+
+      array_name = 'lpb: H_sbls%val'
+      CALL SPACE_resize_array( H_sbls_ne, H_sbls%val,                          &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+
+!  allocate space for A
+
+      A_sbls_ne = a_ne + dims%nc
+
+      array_name = 'lpb: A_sbls%row'
+      CALL SPACE_resize_array( A_sbls_ne, A_sbls%row,                          &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: A_sbls%col'
+      CALL SPACE_resize_array( A_sbls_ne, A_sbls%col,                          &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpb: A_sbls%val'
+      CALL SPACE_resize_array( A_sbls_ne, A_sbls%val,                          &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) RETURN
+
+!  allocate optional extra arrays
+
+      IF ( stat_required ) THEN
+        array_name = 'lpb: H_s'
+        CALL SPACE_resize_array( n, H_s,                                       &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) RETURN
+
+        array_name = 'lpb: A_s'
+        CALL SPACE_resize_array( m, A_s,                                       &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) RETURN
+
+        array_name = 'lpb: Y_last'
+        CALL SPACE_resize_array( m, Y_last,                                    &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) RETURN
+
+        array_name = 'lpb: Z_last'
+        CALL SPACE_resize_array( n, Z_last,                                    &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) RETURN
       END IF
 
-      IF ( m <= 0 ) THEN
-        ierr = 2
-        IF ( control_error > 0 .AND. control_print_level >= 2 )                &
-          WRITE( control_error, 2020 ) m
-        GO TO 900
-      END IF
-
-      IF ( ls < Abycol_ne + m ) THEN
-        ierr = 3
-        IF ( control_error > 0 .AND. control_print_level >= 2 )                &
-          WRITE( control_error, 2030 ) ls, Abycol_ne + m
-        GO TO 900
-      END IF
-
-      ierr = 0
-
-!  Set up column counts
-
-!     COL_count( : n ) =                                                  &
-!       Abycol_ptr( 2 : n + 1 ) - Abycol_ptr( : n )
-      DO i = 1, n
-        COL_count( i ) = Abycol_ptr( i + 1 ) - Abycol_ptr( i )
-      END DO
-
-!  Set up row counts
-
-      ROW_count( : m ) = 0
-      DO i = 1, Abycol_ne
-        j = Abycol_row( i )
-        ROW_count( j ) = ROW_count( j ) + 1
-      END DO
-
-!  Set up column pointer
-
-      S_colptr( 1 ) = ls - Abycol_ne + 1
-      DO i = 1, m
-        S_colptr( i + 1 ) = S_colptr( i ) + ROW_count( i )
-      END DO
-
-!  Generate structure of A by columns in S/S_row
-
-      j1 = 1
-      DO i = 1, n
-        j2 = j1 + COL_count( i ) - 1
-        DO jj = j1, j2
-          j = Abycol_row( jj )
-          ipos = S_colptr( j )
-          S_val( ipos ) = Abycol_val( jj )
-          S_row( ipos ) = i
-          S_colptr( j ) = ipos + 1
-        END DO
-        j1 = j2 + 1
-      END DO
-
-!  Regenerate structure of A by columns but in row order within each column.
-!  Order the row indices in Abycol_row using S_val/S_row to create 
-!  Abycol_val/Abycol_row
-
-      i1 = ls - Abycol_ne + 1
-      DO j = 1, m
-        ij = m - j + 1
-
-!  Reset S_colptr after the last loop altered it
-
-        IF ( ij > 1 ) S_colptr( ij ) = S_colptr( ij - 1 )
-        i2 = i1 + ROW_count( j ) - 1
-        DO ii = i1, i2
-          i = S_row( ii )
-          ipos = Abycol_ptr( i )
-          Abycol_row( ipos ) = j
-          Abycol_val( ipos ) = S_val( ii )
-          Abycol_ptr( i ) = ipos + 1
-        END DO
-        i1 = i2 + 1
-      END DO
-      S_colptr( 1 ) = 1 + ls - Abycol_ne
-
-!  Reset Abycol_ptr since it has been altered
-
-      DO j = n, 2, - 1
-        Abycol_ptr( j ) = Abycol_ptr( j - 1 )
-      END DO
-      Abycol_ptr( 1 ) = 1
-
-!  Now assemble S
-
-      error = .FALSE.
-      nes = 0
-      icount = 0
-      idist = 0
-      k1 = S_colptr( 1 )
-
-!  Form row i of S from a linear combination of rows of A
-
-      DO i = 1, m
-
-!  Leave room for possible diagonal if row i of A is empty
-
-        IF ( ROW_count( i ) == 0 ) THEN
-          IF ( i >= dims%c_l_start ) THEN
-            IF ( error ) THEN
-              icount = icount + 1
-            ELSE
-              ROW_count( i ) = 1
-              nes = nes + 1
-              IF ( nes <= ls ) THEN
-                S_row( nes ) = i
-                IF ( reals ) S_val( nes ) = zero
-              ELSE
-                error = .TRUE.
-                icount = 1
-              END IF
-            END IF
-          END IF
-          CYCLE
-        END IF
-
-!  row i of A is non-empty
-
-        k2 = k1 + ROW_count( i ) - 1
-        ROW_count( i ) = 0
-
-!  Scan row i of A(trans) to find which rows of A contribute to row i of S
-
-        DO kk = k1, k2
-          k = S_row( kk )
-          IF ( reals ) amult = S_val( kk ) / DIAG_X( k )
-          j1 = Abycol_ptr( k )
-          j2 = j1 + COL_count( k ) - 1
-
-!  The column indices for the entries in each row are in order
-
-          Abycol_ptr( k ) = j1 + 1
-          COL_count( k ) = j2 - j1
-
-!  Scan row k of A and add multiple of it to row i of S
-
-          DO jj = j1, j2
-            j = Abycol_row( jj )
-            IF ( error ) THEN
-
-!  Only count the size of arrays needed because of the error
-
-              IF ( S_colptr( j ) < 0 ) CYCLE
-              ROW_count( i ) = ROW_count( i ) + 1
-              ipos = ROW_count( i )
-              S_colptr( j ) = - ROW_count( i )
-              IF ( ipos + idist > kk ) THEN
-               icount = icount + 1
-               idist = idist - 1
-              END IF
-  
-              S_row( ipos ) = j
-              CYCLE
-
-            END IF
-
-            IF ( S_colptr( j ) >= 0 ) THEN
-
-!  First contribution to row i of S
-
-              ROW_count( i ) = ROW_count( i ) + 1
-
-!  S_colptr is used to obtain offset for column positions in present row
-
-              S_colptr( j ) = - ROW_count( i )
-              ipos = nes + ROW_count( i )
-              IF ( ipos > kk ) THEN
-
-!  Insufficient room in S to continue calculation, so only calculate
-!  the size required
-
-                error = .TRUE.
-
-!  Overwrite the beginning of S_row since it is not now needed.
-
-                ij = ROW_count( i )
-                S_row( 1 : ij - 1 ) = S_row( nes + 1 : nes + ij - 1 )
-                nes = 0
-
-!  idist holds the difference between the current position in S_row
-!  and the position that it would be if S_row was long enough
-
-                idist = kk - ij
-
-!  icount is the amount by which S_row is too short
-
-                icount = 1
-                ipos = ij
-                S_row( ipos ) = j
-                CYCLE
-
-              END IF
-
-              S_row( ipos ) = j
-              IF ( reals ) S_val( ipos ) = Abycol_val( jj ) * amult
-              CYCLE
-
-            END IF
-            ipos = nes - S_colptr( j )
-            IF ( reals ) S_val( ipos ) = S_val( ipos ) + Abycol_val( jj) * amult
-          END DO
-        END DO
-
-!  Reset S_colptr
-
-        IF ( error ) nes = 0
-        j1 = nes + 1
-        nes = nes + ROW_count( i )
-        S_colptr( S_row( j1 : nes ) ) = 0
-
-        IF ( error ) THEN
-         idist = idist + ROW_count( i )
-         nes = 0
-        END IF
-
-        k1 = k2 + 1
-      END DO
-
-!  Set pointer arrays for the start of each column of A and S
-
-      IF ( .NOT. error ) THEN
-        S_colptr( 1 ) = 1
-        DO i = 1, m
-          S_colptr( i + 1 ) = S_colptr( i ) + ROW_count( i )
-        END DO
-      END IF
-
-      DO j = n, 2, - 1
-        Abycol_ptr( j ) = Abycol_ptr( j - 1 )
-      END DO
-      Abycol_ptr( 1 ) = 1
-
-      IF ( icount > 0 ) THEN
-        nes = icount + ls
-        ierr = 4
-        IF ( control_error > 0 .AND. control_print_level >= 2 )                &
-          WRITE( control_error, 2040 ) ls, nes
-      END IF
-
-!  Find the diagonal entries in columns dims%c_l_start to dims%c_u_end
-
-      IF ( reals ) THEN
-        DO j = dims%c_l_start, dims%c_u_end
-          i = S_colptr( j )
-          IF ( j == S_row( i ) ) THEN
-            S_val( i ) = S_val( i ) +                                          &
-                           ( SCALE_C( j ) / DIAG_C( j ) ) * SCALE_C( j )
-          ELSE
-            WRITE( 6, "( ' j = ', i6, ' i = ', /, ( 10i6 ) )" ) &
-              j, S_row( S_colptr( j ) : S_colptr( j + 1 ) - 1 )
-            WRITE( 6, "( ' This should be impossible: '/,                      &
-           &             ' please report to n.gould@rl.ac.uk' )" )
-            STOP
-          END IF
-        END DO
-      END IF
-
-  900 CONTINUE
       RETURN
 
-!  Non-executable statements
+!  End of subroutine LPB_workspace
 
- 2010 FORMAT( ' ** Error return from LPB_form_Schur_complement', /,            &
-              '    Value of n (number of rows of A) is set to ', I10, /,       &
-              '    but n must be at least 1 ' )
- 2020 FORMAT( ' ** Error return from LPB_form_Schur_complement', /,            &
-              '    Value of m (number of columns of A) is set to ', I10, /,    &
-              '    but m must be at least 1 ' )
- 2030 FORMAT( ' ** Error return from LPB_form_Schur_complement', /,            &
-              '    Value of ls = ', I10, ' too small. ', /,                    &
-              '    ls must be at least', I10 )
- 2040 FORMAT( ' ** Error return from LPB_form_Schur_complement', /,            &
-              '    Arrays S_row and S are too small ', /, '    ls is ', I10, /,&
-              '    but must be at least ', I10 )
-
-!  End of LPB_form_Schur_complement
-
-      END SUBROUTINE LPB_form_Schur_complement
+      END SUBROUTINE LPB_workspace
 
 !  End of module LPB
 
-   END MODULE GALAHAD_LPB_double
+    END MODULE GALAHAD_LPB_double
