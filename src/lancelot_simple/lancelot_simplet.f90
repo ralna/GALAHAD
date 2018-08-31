@@ -63,63 +63,62 @@
 !
        WRITE(6,*) '====================================================', &
                   ' ================'
-       CALL LANCELOT_simple( 0, X, fx, exit_code )
+       CALL LANCELOT_simple( 0, X, FUN, fx, exit_code )
        WRITE(6,*) '==================== TEST 1: EXIT_CODE = ', exit_code, &
                   '  ======================'
 !
        X(1) = -1.2_wp
        X(2) =  1.0_wp
-       CALL LANCELOT_simple( 2, X, fx, exit_code, NEQ = -1 )
+       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code, NEQ = -1 )
        WRITE(6,*) '==================== TEST 2: EXIT_CODE = ', exit_code, &
                   ' ======================'
 !
        X(1) = -1.2_wp
        X(2) =  1.0_wp
-       CALL LANCELOT_simple( 2, X, fx, exit_code, NIN = -1 )
+       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code, NIN = -1 )
        WRITE(6,*) '==================== TEST 3: EXIT_CODE = ', exit_code, &
                   '  ======================'
 !
        X(1) = -1.2_wp
        X(2) =  1.0_wp
-       CALL LANCELOT_simple( 2, X, fx, exit_code )
+       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code )
        WRITE(6,*) '==================== TEST 4: EXIT_CODE = ', exit_code, &
                   '  ======================'
        X(1) = -1.2_wp
        X(2) =  1.0_wp
-       CALL LANCELOT_simple( 2, X, fx, exit_code, FUN )
+       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code )
        WRITE(6,*) '==================== TEST 5: EXIT_CODE = ', exit_code, &
                   '  ======================'
 !
        X(1) = -1.2_wp
        X(2) =  1.0_wp
-       CALL LANCELOT_simple( 2, X, fx, exit_code, MY_FUN = FUN )
+       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code )
        WRITE(6,*) '==================== TEST 6: EXIT_CODE = ', exit_code, &
                   '  ======================'
 !
        X(1) = -1.2_wp
        X(2) =  1.0_wp
-       CALL LANCELOT_simple( 2, X, fx, exit_code, MY_FUN = FUN, MY_GRAD = GRAD )
+       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code, MY_GRAD = GRAD )
        WRITE(6,*) '==================== TEST 7: EXIT_CODE = ', exit_code, &
                   '  ======================'
 !
        X(1) = -1.2_wp
        X(2) =  1.0_wp
-       CALL LANCELOT_simple( 2, X, fx, exit_code,                         &
-                            MY_FUN = FUN, MY_GRAD = GRAD,                 &
-                            MY_HESS = HESS, PRINT_LEVEL = 0 )
+       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code,                    &
+                             MY_GRAD = GRAD, MY_HESS = HESS, PRINT_LEVEL = 0 )
        WRITE(6,*) '==================== TEST 8: EXIT_CODE = ', exit_code, &
                   '  ======================'
 !
        X(1) = -1.2_wp
        X(2) =  1.0_wp
-       CALL LANCELOT_simple( n,  X, fx, exit_code,                        &
-                            MY_FUN = FUN, MY_GRAD = GRAD,                 &
-                            MY_HESS =  HESS, BL  =  BL, BU   =   BU,      &
-                            VNAMES   =  VNAMES, CNAMES =  CNAMES,         &
-                            NEQ = neq, NIN = nin, CX = CX, Y = Y,         &
-                            ITERS   = iters  , MAXIT   =   maxit,         &
-                            GRADTOL = gradtol, FEASTOL = feastol,         &
-                            PRINT_LEVEL = print_level )
+       CALL LANCELOT_simple( n, X, FUN, fx, exit_code,                    &
+                             MY_GRAD = GRAD, MY_HESS =  HESS,             &
+                             BL  =  BL, BU   =   BU,                      &
+                             VNAMES   =  VNAMES, CNAMES =  CNAMES,        &
+                             NEQ = neq, NIN = nin, CX = CX, Y = Y,        &
+                             ITERS   = iters  , MAXIT   =   maxit,        &
+                             GRADTOL = gradtol, FEASTOL = feastol,        &
+                             PRINT_LEVEL = print_level )
        WRITE(6,*) ' CX = ', CX
        WRITE(6,*) ' Y  = ', Y
        WRITE(6,*) '==================== Test 9: EXIT_CODE = ', exit_code, &
@@ -127,9 +126,9 @@
 !
        X(1) = -1.2_wp
        X(2) =  1.0_wp
-       CALL LANCELOT_simple( n,  X, fx, exit_code,                         &
-                            MY_FUN = FUN, MY_GRAD = GRAD, MY_HESS =  HESS, &
-                            BL  =  BL, BU   =   BU, NIN  =  1, NEQ = 1 )
+       CALL LANCELOT_simple( n,  X, FUN, fx, exit_code,                    &
+                             MY_GRAD = GRAD, MY_HESS =  HESS,              &
+                             BL  =  BL, BU   =   BU, NIN  =  1, NEQ = 1 )
        WRITE(6,*) '==================== Test 10: EXIT_CODE = ', exit_code, &
                   ' ======================'
 !
@@ -149,19 +148,19 @@
        REAL( KIND = wp ), INTENT( IN )   :: X( : )
        REAL( KIND = wp ), INTENT( OUT )  :: F
        INTEGER, INTENT( IN ), OPTIONAL   :: i
-       IF ( .NOT. PRESENT( i ) ) THEN 
+       IF ( .NOT. PRESENT( i ) ) THEN
 !         the objective function value (user defined)
 !===============================================================================
           F = 100.0_wp*(X(2)-X(1)**2)**2 +(1.0_wp-X(1))**2                     !
 !===============================================================================
        ELSE
           SELECT CASE ( i )
-          CASE ( 1 )   
+          CASE ( 1 )
 !             the equality constraint value (user defined)
 !===============================================================================
               F = X(1)+3.0_wp*X(2)-3.0_wp                                      !
 !===============================================================================
-          CASE ( 2 ) 
+          CASE ( 2 )
 !             the inequality constraint value (user defined)
 !===============================================================================
               F = X(1)**2+X(2)**2-4.0_wp                                       !
@@ -178,7 +177,7 @@
        REAL( KIND = wp ), INTENT( IN )  :: X( : )
        REAL( KIND = wp ), INTENT( OUT ) :: G( : )
        INTEGER, INTENT( IN ), OPTIONAL  :: i
-       IF ( .NOT. PRESENT( i ) ) THEN 
+       IF ( .NOT. PRESENT( i ) ) THEN
 !          the objective functions's gradient components (user defined)
 !===============================================================================
            G( 1 ) = -400.0_wp*(X(2)-X(1)**2)*X(1)-2.0_wp*(1.0_wp-X(1))         !
@@ -186,13 +185,13 @@
 !===============================================================================
        ELSE
           SELECT CASE ( i )
-          CASE ( 1 )   
+          CASE ( 1 )
 !             the equality constraint's gradient components (user defined)
 !===============================================================================
               G( 1 ) =  1.0_wp                                                 !
               G( 2 ) =  3.0_wp                                                 !
 !===============================================================================
-          CASE ( 2 )    
+          CASE ( 2 )
 !            the inequality constraint's gradient components (user defined)
 !===============================================================================
               G( 1 ) =  2.0_wp*X(1)                                            !
@@ -211,8 +210,8 @@
        REAL( KIND = wp ), INTENT( OUT ) :: H( : )
        INTEGER, INTENT( IN ), OPTIONAL  :: i
        IF ( .NOT. PRESENT( i ) ) THEN
-!        the entries of the upper triangle of the objective function's 
-!        Hessian  matrix, stored by columns (user defined) 
+!        the entries of the upper triangle of the objective function's
+!        Hessian  matrix, stored by columns (user defined)
 !===============================================================================
           H( 1 ) = -400.0_wp*(X(2)-3.0_wp*X(1)**2)+2.0_wp                      !
           H( 2 ) = -400.0_wp*X(1)                                              !
@@ -221,7 +220,7 @@
        ELSE
           SELECT CASE ( i )
           CASE ( 1 )
-!             the entries of the upper triangle of the equality 
+!             the entries of the upper triangle of the equality
 !             constraint's Hessian matrix, stored by columns (user defined)
 !===============================================================================
               H( 1 ) = 0.0_wp                                                  !
@@ -229,8 +228,8 @@
               H( 3 ) = 0.0_wp                                                  !
 !===============================================================================
           CASE ( 2 )
-!            the entries of the upper triangle of the inequality 
-!            constraint's Hessian matrix, stored by columns (user defined) 
+!            the entries of the upper triangle of the inequality
+!            constraint's Hessian matrix, stored by columns (user defined)
 !===============================================================================
               H( 1 ) = 2.0_wp                                                  !
               H( 2 ) = 0.0_wp                                                  !
@@ -241,4 +240,3 @@
        RETURN
        END SUBROUTINE HESS
 !...............................................................................
-

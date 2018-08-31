@@ -1,4 +1,4 @@
-\documentclass{galahad} 
+\documentclass{galahad}
 
 % set the package name
 
@@ -36,32 +36,32 @@ ease of interface matters more than numerical performance.
 \galbasics
 
 We consider the nonlinear minimization problem given by
-\[                                                                        
+\[
 \min_{x \in \smallRe^n} f( x ),
 \]
-possibly subject to constraints of the one or more of the forms         
-\[                                                                        
+possibly subject to constraints of the one or more of the forms
+\[
 l \leq  \bmx \leq u,
 \]
-\[                                                                        
+\[
 c_e( \bmx )  = 0,
 \]
-\[                                                                        
+\[
 c_i( \bmx ) \leq 0,
 \]
-where $f: \Re^n \rightarrow \Re$, $c_e: \Re^n \rightarrow \Re^{m}$ and 
+where $f: \Re^n \rightarrow \Re$, $c_e: \Re^n \rightarrow \Re^{m}$ and
 $c_i: \Re^n \rightarrow \Re^{q}$ are twice-continuously differentiable
 functions, and $l, u$ are vectors of $\Re^n$ whose components are allowed
-to be arbitrarily large in absolute value. 
+to be arbitrarily large in absolute value.
 
 The inequality constraints are first internally reformulated as equalities by
 the introduction of (non-negative) slack variables. This defines the set
 $\calC$ of all (original and reformulated) equality constraints. The method
 used to solve this reformulated problem is iterative and features two levels of
 iteration. In the outer level, a composite function, the augmented Lagrangian
-merit function, 
+merit function,
 \eqn{objectiveb}{
-\phi( \bmx, \bmy, \mu ) = f(\bmx) + \sum_{i \in \calC} 
+\phi( \bmx, \bmy, \mu ) = f(\bmx) + \sum_{i \in \calC}
  y_i c_i (\bmx) + \frac{1}{2 \mu} \sum_{i\in \calC} [c_i (\bmx)]^2,
 }
 is formulated, where $\mu$ is known as the penalty parameter,  $\bmy$ is a
@@ -70,11 +70,11 @@ vector of Lagrange multiplier estimates and $c_i$ now ranges over all
 requires the approximate minimization of this merit function
 within the feasible box, for given values of $\mu$ and $\bmy$.
 
-The required approximate minimization for fixed $\mu$ and $\bmy$ is 
+The required approximate minimization for fixed $\mu$ and $\bmy$ is
 carried out using a series of inner iterations.  At each inner
 iteration, a quadratic model of the merit function is
 constructed.  An approximation to the minimizer of this model within a
-trust-region is calculated.  The trust region is a ``box'' 
+trust-region is calculated.  The trust region is a ``box''
 of specified radius, centered at the current best estimate
 of the minimizer.  If there is an accurate agreement between the model
 and the true objective function at the new approximation to the
@@ -86,17 +86,17 @@ carried out by using an iterative approach.
 
 The approximate minimization of the model is performed in two stages.
 In the first, a so-called generalized Cauchy point is determined
-by approximately minimizing the model within the intersection of 
-the feasible box and the trust-region along a scaled steepest descent 
+by approximately minimizing the model within the intersection of
+the feasible box and the trust-region along a scaled steepest descent
 direction. Having taken this step, the model is further reduced
 by solving one or more quadratic minimization problems in which
 any constraints activated at the Cauchy point remain so. The latter
-computation is essentially equivalent to the solution of a sequence 
+computation is essentially equivalent to the solution of a sequence
 of linear systems, and is performed using an iterative (preconditioned
 conjugate gradient) method.
 
 After an appropriate approximation to the minimizer of the merit
-function is obtained, and if there are general constraints, 
+function is obtained, and if there are general constraints,
 $\mu$ and $\bmy$ are adjusted to ensure
 convergence of the outer iteration to the required solution of the
 constrained minimization problem.
@@ -107,10 +107,10 @@ constrained minimization problem.
 \galversions{\tt  \fullpackagename\_double},
 \galuses {\tt LANCELOT}.
 \galdate November 2007.
-\galorigin N. I. M. Gould, Oxford University and Rutherford Appleton Laboratory, 
+\galorigin N. I. M. Gould, Oxford University and Rutherford Appleton Laboratory,
 England, D. Orban, Ecole Polytechnique, Montr\'{e}al, Canada, and
 Ph. L. Toint, University of Namur - FUNDP, Belgium.
-\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
 
 %%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%
 
@@ -131,7 +131,7 @@ Access to the package requires a {\tt USE} statement such as
 \medskip
 
 \noindent
-If it is required to use both modules at the same time, 
+If it is required to use both modules at the same time,
 the subroutine
 {\tt \fullpackagename}
 (Section~\ref{galarguments})
@@ -142,65 +142,62 @@ must be renamed on one of the {\tt USE} statements.
 \galarguments
 
 The minimization subroutine {\tt LANCELOT\_simple} is called as follows:
-\hskip0.5in 
+\hskip0.5in
 \def\baselinestretch{0.8} {\tt \begin{verbatim}
-   CALL LANCELOT_simple( n, X, fx, exit_code [, MY_FUN] [,MY_GRAD] [,MY_HESS] & 
-                       [,BL] [,BU] [,VNAMES] [,CNAMES]                        & 
-                       [,neq] [,nin] [,CX] [,Y] [,iters] [,maxit]             & 
-                       [,gradtol] [,feastol] [,print_level]                   ) 
+   CALL LANCELOT_simple( n, X, MY_FUN, fx, exit_code [,MY_GRAD] [,MY_HESS]    &
+                        [,BL] [,BU] [,VNAMES] [,CNAMES]                       &
+                        [,neq] [,nin] [,CX] [,Y] [,iters] [,maxit]            &
+                        [,gradtol] [,feastol] [,print_level] )
 \end{verbatim}}
 \def\baselinestretch{1.0}
 \noindent
 where
 \begin{description}
-\ittf{n} is a scalar variable of type default \integer, that holds 
+\ittf{n} is a scalar variable of type default \integer, that holds
 the number of optimization variables, $n$ which must all be set on entry. It
 will thereafter be unaltered.
 
-\itt{X} is a rank-one array of dimension {\tt n} and type 
-default \realdp, that holds the current values of the 
+\itt{X} is a rank-one array of dimension {\tt n} and type
+default \realdp, that holds the current values of the
 minimization variables, $\bmx$. On input, it must contain the values of the
 variables corresponding to the minimization starting point.  On output, it
 contains the best point found by the routine.
 
+\itt{MY\_FUN} is a variable whose value is the name of a
+user-supplied subroutine whose purpose is to compute objective function
+and constraint values. See Section~\ref{pfe} for details.
+The subroutine associated with the variable must be declared \external\
+in the calling program.
+
 \itt{fx} is a scalar variable of type default \realdp, that
 holds  on output the value of the objective function $f$ at {\tt X}.
 
-\itt{exit\_code} is a scalar variable of type default \integer, that holds 
+\itt{exit\_code} is a scalar variable of type default \integer, that holds
 on output the final status for the minimization, a value 0 indicating
 success.  Other values are described below (see Section~\ref{serrors}).
 
-\itt{MY\_FUN} is an \optional\ variable whose value is the name of a 
-user-supplied subroutine whose purpose is to compute objective function 
-and constraint values. See Section~\ref{pfe} for details. 
-If {\tt MY\_FUN} is present the subroutine associated with the variable must be 
-declared \external\ in the calling program.
-If this argument is not present on input, a user-supplied subroutine 
-named {\tt FUN} will be assumed, and it will also be assumed that the
-derivatives of the functions described by the FUN subroutine are unavailable.
-
-\itt{MY\_GRAD} is an \optional\ variable whose value is the name of a 
+\itt{MY\_GRAD} is an \optional\ variable whose value is the name of a
 user-supplied subroutine whose purpose is to compute the first derivatives
-of the objective function and constraints. See Section~\ref{pfg} for details. 
-If {\tt MY\_GRAD} is present the subroutine associated with the variable must be 
+of the objective function and constraints. See Section~\ref{pfg} for details.
+If {\tt MY\_GRAD} is present the subroutine associated with the variable must be
 declared \external\ in the calling program. If the argument is not present,
 first derivatives will be estimated by finite differences.
 
-\itt{MY\_HESS} is an \optional\ variable whose value is the name of a 
+\itt{MY\_HESS} is an \optional\ variable whose value is the name of a
 user-supplied subroutine whose purpose is to compute the second derivatives
-of the objective function and constraints. See Section~\ref{pfh} for details. 
-If {\tt MY\_HESS} is present the subroutine associated with the variable must be 
+of the objective function and constraints. See Section~\ref{pfh} for details.
+If {\tt MY\_HESS} is present the subroutine associated with the variable must be
 declared \external\ in the calling program. If the argument is not present,
 or if {\tt MY\_GRAD} is not present,
-second derivatives will be estimated by secant formulae. 
+second derivatives will be estimated by secant formulae.
 
-\itt{BL} is an \optional\ rank-one array of dimension {\tt n} and type 
+\itt{BL} is an \optional\ rank-one array of dimension {\tt n} and type
  default \realdp, whose $i$-th entry may be set
 to the value of the lower bound $l_i$ on the $i$-th variable.
 If the $i$-th variable has no lower bound, {\tt BL($i$)} should be set to
 a large negative number. It is not altered by the routine.
 
-\itt{BU} is an \optional\ rank-one array of dimension {\tt n} and type 
+\itt{BU} is an \optional\ rank-one array of dimension {\tt n} and type
 default \realdp, whose $i$-th entry may be set
 to the value of the upper bound $u_i$ on the $i$-th variable.
 If the $i$-th variable has no upper bound, {\tt BU($i$)} should be set to
@@ -208,36 +205,36 @@ a large positive number.  It is not altered by the routine.
 
 \itt{CNAMES} is an \optional\  rank-one array of dimension {\tt neq + nin }
 and type default \character\ and length 10, whose $i$-th entry contains (on
-input) the ``name'' of the $i$-th equality constraint  for 
-{\tt i = 1, ..., neq} and of the $i$th inequality constraint for 
+input) the ``name'' of the $i$-th equality constraint  for
+{\tt i = 1, ..., neq} and of the $i$th inequality constraint for
 {\tt i = neq+1, ..., neq+nin}.  It is not altered by the routine.
 
-\itt{VNAMES} is an \optional\ rank-one array of dimension {\tt n} and type 
+\itt{VNAMES} is an \optional\ rank-one array of dimension {\tt n} and type
 default \character\ and length 10, whose $j$-th entry contains (on input) the
 ``name'' of the $j$-th variable.  It is not altered by the routine.
 
 \itt{neq} is an \optional\ scalar variable of type default \integer, that holds
 the number of equality constraints. If not present on input, it is assumed
 that there are no inequality constraints {\tt neq = 0}). It is not altered by
-the routine. 
+the routine.
 
-\itt{nin} is an \optional\ scalar variable of type default \integer, that holds 
+\itt{nin} is an \optional\ scalar variable of type default \integer, that holds
 the number of inequality constraints. If not present on input, it is assumed
 that there are no inequality constraints {\tt nin = 0}). It is not altered by
 the routine.
 
-\itt{CX} is an \optional\ rank-one array of dimension {\tt neq + nin} and type 
+\itt{CX} is an \optional\ rank-one array of dimension {\tt neq + nin} and type
 default \realdp, whose $i$-th component holds on output the current
 estimates of the values of the equality constraints ({\tt i = 1, ..., neq}),
 and of the inequality constraints  ({\tt i = neq+1, ..., neq+nin}).
 
-\itt{Y} is an \optional\ rank-one array of dimension {\tt neq+nin} and type 
+\itt{Y} is an \optional\ rank-one array of dimension {\tt neq+nin} and type
 default \realdp, whose $i$-th component holds on output the current
 estimates of the Lagrange multipliers, $\bmy$, for the equality constraints
 ({\tt i = 1, ..., neq}), and for the inequality constraints  ({\tt i = neq+1,
   ..., neq+nin}).
 
-\itt{iters} is an \optional\ scalar variable of type default \integer, that gives 
+\itt{iters} is an \optional\ scalar variable of type default \integer, that gives
 on output the number of iterations that have been performed since the start of
 the  minimization.
 
@@ -245,20 +242,20 @@ the  minimization.
 holds the maximum number of iterations which will be allowed in the solver.
 The default is {\tt maxit = 1000}.
 
-\itt{gradtol} is an \optional\ scalar variable of type default \realdp, 
+\itt{gradtol} is an \optional\ scalar variable of type default \realdp,
 that is used to specify on input the maximum permitted (infinity)
-norm of the projected gradient of the Lagrangian function 
+norm of the projected gradient of the Lagrangian function
 (see Section~\ref{galmethod}) at the estimate of the solution sought.
 The default is {\tt gradtol =} $10^{-5}$.  It is not altered by the routine.
 
-\itt{feastol} is an \optional\ scalar variable of type default \realdp, 
+\itt{feastol} is an \optional\ scalar variable of type default \realdp,
 that is used to specify on input the maximum permitted violation (measured in
 infinity norm) of the constraints at the estimate of the solution sought.
 The default is {\tt feastol =} $10^{-5}$.
 
 \itt{print\_level} is an \optional\ scalar variable of type default \integer,
 that is used to control on input the amount of informational output which is
-required. No informational output will occur if {\tt print\_level} $\leq 0$. If 
+required. No informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $= 1$, a single line of output will be produced for each
 iteration of the process, while additionally if {\tt print\_level} $= 2$
 a summary of the inner iteration will be given.
@@ -274,8 +271,8 @@ The default is {\tt print\_level = 1}.
 \subsubsection{Evaluating problem functions\label{pfe}}
 
 {\tt LANCELOT\_simple} requires that the user provides a
-subroutine, with prescribed argument lists, that accept input 
-values $(\bmx)$, and provide as output 
+subroutine, with prescribed argument lists, that accept input
+values $(\bmx)$, and provide as output
 $f(\bmx))$ or $c_i(\bmx)$ ($i \in \calC$).
 This default routine name is {\tt FUN} and it must have the following argument
 list:
@@ -287,10 +284,10 @@ list:
 \noindent
 where
 \begin{description}
-\itt{X} is a rank-one \intentin array argument of 
+\itt{X} is a rank-one \intentin array argument of
 dimension {\tt n} and type default \realdp,
 that contains the values of $\bmx$ at which the
-subroutine is required to evaluate the values 
+subroutine is required to evaluate the values
 of the objective or constraint functions.
 
 \itt{fx} is a rank-one \intentout scalar argument of
@@ -303,7 +300,7 @@ evaluated  ({\tt i = 1, ..., neq+nin}).  The values of {\tt i}
 between 1 and {\tt neq} correspond to equality constraints, those between
 {\tt neq+1} and {\tt neq+nin} to inequality constraints. If {\tt i} is not
 present, this indicates that the value of the objective function must be
-evaluated. 
+evaluated.
 \end{description}
 
 \noindent
@@ -311,18 +308,18 @@ The name of the function evaluation routine may be modified by the user
 by specifying {\tt MY\_FUN} to a value different from {\tt FUN} in the calling
 sequence, but the argument list of the associated subroutine must be identical
 to that described above. Specifying  {\tt MY\_FUN = FUN} is redundant in the
-calling sequence if the name of the function evaluation routine is {\tt FUN} 
+calling sequence if the name of the function evaluation routine is {\tt FUN}
 (but this explicit identification is nevertheless recommended for clarity).
 
 \subsubsection{Evaluating the first derivatives of problem functions\label{pfg}}
 
 If the first derivatives of the problem functions are available, which is
-indicated by the specification of the \optional\ argument {\tt MY\_GRAD}, they 
+indicated by the specification of the \optional\ argument {\tt MY\_GRAD}, they
 must be available for the objective function and all constraints.
 {\tt LANCELOT\_simple} then requires that the user provide a subroutine, with
 a  prescribed argument list, that accepts input values $(\bmx)$, and returns as
 output  $\nabla_x f(\bmx)$,  $\nabla_x c_e(\bmx)$ or $\nabla_x c_i(\bmx)$.
-This routine is specified by setting the value of the \optional\ argument 
+This routine is specified by setting the value of the \optional\ argument
 {\tt MY\_GRAD}. If one uses {\tt MY\_GRAD = GRAD} in the call to {\tt
   LANCELOT\_simple}, the {\tt GRAD} routine must have the following argument
 list:
@@ -335,7 +332,7 @@ list:
 \noindent
 where
 \begin{description}
-\itt{X} is a rank-one \intentin\ array argument of 
+\itt{X} is a rank-one \intentin\ array argument of
 dimension {\tt n} and type default \realdp,
 that contains the values of $\bmx$ at which the
 subroutine is required to evaluate the gradient
@@ -354,9 +351,9 @@ present, this indicates that the gradient of the objective function must be
 evaluated.
 \end{description}
 
-\subsubsection{Evaluating the second derivatives of problem 
+\subsubsection{Evaluating the second derivatives of problem
 functions\label{pfh}}
- 
+
 If the second derivatives of the problem functions are available, which is
 indicated by the specification of the \optional\ argument {\tt HESS}, they must
 be available for the objective function and all constraints. Moreover, first
@@ -367,7 +364,7 @@ a prescribed argument list, that accepts input values $(\bmx)$, and returns as
 output  $\nabla_{xx}f(\bmx)$,  $\nabla_{xx}c_e(\bmx)$ or
 $\nabla_{xx}c_i(\bmx)$. This routine is specified by setting the value of the
 \optional\ argument {\tt MY\_HESS}. If one uses {\tt MY\_HESS = HESS} in the
-call to {\tt LANCELOT\_simple}, the {\tt HESS} routine must have the following 
+call to {\tt LANCELOT\_simple}, the {\tt HESS} routine must have the following
 argument list:
 
 \def\baselinestretch{0.8}
@@ -378,7 +375,7 @@ argument list:
 \noindent
 where
 \begin{description}
-\itt{X} is a rank-one \intentin\ array argument of 
+\itt{X} is a rank-one \intentin\ array argument of
 dimension {\tt n} and type default \realdp,
 that contains the value of $\bmx$ at which the
 subroutine is required to evaluate the Hessian
@@ -408,7 +405,7 @@ on return from the solver, an error has been detected.
 The user should correct the error and restart the minimization.
 Possible values of {\tt exit\_code} and their consequences are:
 \begin{description}
-\itt{exit\_code $= 1.$} More than {\tt maxit} iterations have been 
+\itt{exit\_code $= 1.$} More than {\tt maxit} iterations have been
       performed. This is often a symptom of incorrectly programmed
       derivatives or of the preconditioner used being
       insufficiently effective. Recheck the derivatives.
@@ -434,7 +431,7 @@ Possible values of {\tt exit\_code} and their consequences are:
 \itt{exit\_code $= 15.$} The problem dimension
      {\tt n} is nonpositive. Ensure that {\tt n $>$ 0}.
 \itt{exit\_code $= 19.$} One or both of the numbers of constraints
-      {\tt neq} or {\tt nin} is negative. Ensure that both {\tt neq $\geq$ 0} 
+      {\tt neq} or {\tt nin} is negative. Ensure that both {\tt neq $\geq$ 0}
       and {\tt nin $\geq$ 0}.
 \end{description}
 
@@ -472,7 +469,7 @@ of output produced are as follows.
                  method ended, the number of variables which lie
                  away from their bounds and the total time
                  spent on the minimization.
-\itt{print\_level $= 2.$} In addition to the information output with 
+\itt{print\_level $= 2.$} In addition to the information output with
                  {\tt print\_level = 1},
                  a short description of the approximate solution
                  to the inner-iteration linear system is given.
@@ -502,19 +499,19 @@ of output produced are as follows.
                  estimate of the minimizer of the augmented Lagrangian
                  function, values of the general constraints and
                  estimates of the Lagrange multipliers are also given.
-\itt{print\_level $= 4.$} In addition to the information output with 
-                 {\tt print\_level= 3}, 
+\itt{print\_level $= 4.$} In addition to the information output with
+                 {\tt print\_level= 3},
                  the gradient of the augmented Lagrangian function at
                  the current estimate of the minimizer is given.
                  Full details of the approximate solution
                  to the inner-iteration linear system are also given.
                  This level of output is intended as a debugging aid
                  for the expert only.
-\itt{print\_level $= 5.$} In addition to the information output with 
+\itt{print\_level $= 5.$} In addition to the information output with
                  {\tt print\_level = 4},
                  the diagonal elements of the second derivative
                  approximation are given.
-\itt{print\_level $\geq 6.$} In addition to the information output with 
+\itt{print\_level $\geq 6.$} In addition to the information output with
                   {\tt print\_level = 5},
                   the second derivative approximations
                   to each problem function are given.
@@ -529,17 +526,17 @@ of output produced are as follows.
 \galroutines The user must provide an external {\tt MY\_FUN} subroutine
 (see Section~\ref{pfe}), and optionally may provide
 external {\tt MY\_GRAD} (see Section~\ref{pfg}) and
-{\tt MY\_HESS} (see Section~\ref{pfh}) subroutines. 
+{\tt MY\_HESS} (see Section~\ref{pfh}) subroutines.
 \galmodules
 {\tt LANCELOT}.
 \galio No input; output on device number 6.
     Output is provided under the control of {\tt print\_level}.
 \galrestrictions
-     {\tt n $>$ 0}, 
+     {\tt n $>$ 0},
      {\tt neq $\geq$ 0},
      {\tt nin $\geq$ 0}.
-\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
-The package is thread-safe.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
+%The package is thread-safe.
 
 %%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%
 
@@ -558,7 +555,7 @@ minimization problem, there are Lagrange multipliers $\bmy^{\star}$ for
 which the components of the gradient of the Lagrangian function
 $\partial \ell(\bmx^{\star}, \bmy^{\star}) / \partial x_i= 0$ whenever
 the corresponding variable $x_i^{\star}$ lies strictly between its lower
-and upper bounds. 
+and upper bounds.
 
 The augmented Lagrangian function is the composite function
 \eqn{objectivec}{\phi( \bmx, \bmy, \mu ) = \ell( \bmx, \bmy) +
@@ -593,7 +590,7 @@ projection and is described in detail in Conn, Gould and Toint (1988a).
 \vspace*{1mm}
 
 \noindent
-The basic method is described in detail in 
+The basic method is described in detail in
 \vspace*{1mm}
 
 \noindent
@@ -672,7 +669,7 @@ Belgium.
 \galexample
 We now consider the small example problem
 \[
-\min_{x_1,x_2 } f( x_1, x_2 ) = 100 ( x_2 - x_1^2 )^2 + ( 1 - x_1 )^2,    
+\min_{x_1,x_2 } f( x_1, x_2 ) = 100 ( x_2 - x_1^2 )^2 + ( 1 - x_1 )^2,
 \]
 subject to the constraints
 \[
@@ -681,7 +678,7 @@ subject to the constraints
 x_1 + 3x_2   - 3  &  = &  0,\\
 x_1^2 + x_2^2 - 4 &  \leq & 0.
 \end{array}
-\]                                          
+\]
 
 \noindent
 A simple Fortran program to use the interface on this problem is given as
@@ -740,8 +737,8 @@ follows.
 !
 ! solve by calling LANCELOT_simple
 !
-       CALL LANCELOT_simple( n,  X, fx, exit_code,                         &
-                            MY_FUN = FUN, MY_GRAD = GRAD , MY_HESS = HESS, &
+       CALL LANCELOT_simple( n,  X, FUN, fx, exit_code,                    &
+                            MY_GRAD = GRAD , MY_HESS = HESS,               &
                             BL = BL, BU = BU, VNAMES   =  VNAMES,          &
                             CNAMES =  CNAMES, NEQ = neq, NIN = nin,        &
                             CX = CX, Y = Y, ITERS  = iters, MAXIT = maxit, &
@@ -773,19 +770,19 @@ follows.
        REAL( KIND = wp ), INTENT( IN )   :: X( : )
        REAL( KIND = wp ), INTENT( OUT )  :: F
        INTEGER, INTENT( IN ), OPTIONAL   :: i
-       IF ( .NOT. PRESENT( i ) ) THEN 
+       IF ( .NOT. PRESENT( i ) ) THEN
 !         the objective function value (user defined)
 !==============================================================================
           F = 100.0_wp*(X(2)-X(1)**2)**2 +(1.0_wp-X(1))**2                    !
 !==============================================================================
        ELSE
           SELECT CASE ( i )
-          CASE ( 1 )   
+          CASE ( 1 )
 !             the equality constraint value (user defined)
 !==============================================================================
               F = X(1)+3.0_wp*X(2)-3.0_wp                                     !
 !==============================================================================
-          CASE ( 2 ) 
+          CASE ( 2 )
 !             the inequality constraint value (user defined)
 !==============================================================================
               F = X(1)**2+X(2)**2-4.0_wp                                      !
@@ -802,7 +799,7 @@ follows.
        REAL( KIND = wp ), INTENT( IN )  :: X( : )
        REAL( KIND = wp ), INTENT( OUT ) :: G( : )
        INTEGER, INTENT( IN ), OPTIONAL  :: i
-       IF ( .NOT. PRESENT( i ) ) THEN 
+       IF ( .NOT. PRESENT( i ) ) THEN
 !          the objective function's gradient components (user defined)
 !==============================================================================
            G( 1 ) = -400.0_wp*(X(2)-X(1)**2)*X(1)-2.0_wp*(1.0_wp-X(1))        !
@@ -810,13 +807,13 @@ follows.
 !==============================================================================
        ELSE
           SELECT CASE ( i )
-          CASE ( 1 )   
+          CASE ( 1 )
 !             the equality constraint's gradient components (user defined)
 !==============================================================================
               G( 1 ) =  1.0_wp                                                !
               G( 2 ) =  3.0_wp                                                !
 !==============================================================================
-          CASE ( 2 )    
+          CASE ( 2 )
 !            the inequality constraint's gradient components (user defined)
 !==============================================================================
               G( 1 ) =  2.0_wp*X(1)                                           !
@@ -835,8 +832,8 @@ follows.
        REAL( KIND = wp ), INTENT( OUT ) :: H( : )
        INTEGER, INTENT( IN ), OPTIONAL  :: i
        IF ( .NOT. PRESENT( i ) ) THEN
-!        the entries of the upper triangle of the objective function's 
-!        Hessian  matrix,  stored by columns  (user defined) 
+!        the entries of the upper triangle of the objective function's
+!        Hessian  matrix,  stored by columns  (user defined)
 !==============================================================================
           H( 1 ) = -400.0_wp*(X(2)-3.0_wp*X(1)**2)+2.0_wp                     !
           H( 2 ) = -400.0_wp*X(1)                                             !
@@ -845,7 +842,7 @@ follows.
        ELSE
           SELECT CASE ( i )
           CASE ( 1 )
-!             the entries of the upper triangle of the equality 
+!             the entries of the upper triangle of the equality
 !             constraint's Hessian matrix, stored by columns (user defined)
 !==============================================================================
               H( 1 ) = 0.0_wp                                                 !
@@ -853,8 +850,8 @@ follows.
               H( 3 ) = 0.0_wp                                                 !
 !==============================================================================
           CASE ( 2 )
-!            the entries of the upper triangle of the inequality 
-!            constraint's Hessian matrix, stored by columns (user defined) 
+!            the entries of the upper triangle of the inequality
+!            constraint's Hessian matrix, stored by columns (user defined)
 !==============================================================================
               H( 1 ) = 2.0_wp                                                 !
               H( 2 ) = 0.0_wp                                                 !
@@ -876,7 +873,3 @@ The use of the above calling program then produces the following output:
 \end{verbatim} }\def\baselinestretch{1.0}
 
 \end{document}
-
-
-
-

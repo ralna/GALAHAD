@@ -1,14 +1,17 @@
-!      This version: 28-11-2007
+! THIS VERSION: GALAHAD 3.1 - 31/08/2018 AT 07:40 GMT.
+
+!-*--*-*-  G A L A H A D _ L A N C E L O T _ S I M P L E    M O D U L E  -*-*-*-
+
    MODULE LANCELOT_simple_double
       PRIVATE
       PUBLIC :: LANCELOT_simple
    CONTAINS
 !===============================================================================
 !
-       SUBROUTINE LANCELOT_simple( n, X, fx, exit_code,                        &
-                                  MY_FUN, MY_GRAD, MY_HESS,                    &
-                                  BL, BU, VNAMES, CNAMES, neq, nin, CX, Y,     &
-                                  iters, maxit, gradtol, feastol, print_level )
+       SUBROUTINE LANCELOT_simple( n, X, MY_FUN, fx, exit_code,                &
+                                   MY_GRAD, MY_HESS,                           &
+                                   BL, BU, VNAMES, CNAMES, neq, nin, CX, Y,    &
+                                   iters, maxit, gradtol, feastol, print_level )
 !
 !-------------------------------------------------------------------------------
 !                                                                              !
@@ -58,7 +61,7 @@
 !                                                                              !
 !      and then                                                                !
 !                                                                              !
-!         CALL LANCELOT_simple( n, X, fx, exit_code [, MY_FUN] [,MY_GRAD]    & !
+!         CALL LANCELOT_simple( n, X, MY_FUN, fx, exit_code  [,MY_GRAD]      & !
 !                             [,MY_HESS] [,BL] [,BU] [,VNAMES] [,CNAMES]     & !
 !                             [,neq] [,nin] [,CX] [,Y] [,iters] [,maxit]     & !
 !                             [,gradtol] [,feastol] [,print_level]           ) !
@@ -78,21 +81,12 @@
 !      and a subroutine for computing the objective function value for any X,  !
 !      whose interface has the default form                                    !
 !                                                                              !
-!       PROBFUN( X, fx )                                                       !
+!       MY_FUN( X, fx )                                                        !
 !                                                                              !
 !      where X(1:n) contains the values of the variables on input, and where   !
-!      fx is a double precision scalar returning the value f(X). In this case, !
-!      the problem is assumed to be unconstrained, and derivatives of f are    !
-!      reputed to be unavailable (gradients will be estimated by forward       !
-!      finite-differences by the LANCELOT package, and Hessian approximated    !
-!      using the Symmetric-Rank-One quasi-Newton update).                      !
-!                                                                              !
-!      It is also possible to specify the name of the objective function       !
-!      evaluation subroutine, replacing PROBFUN by FUNPROB, say. This is           !
-!      accomplished by specifying the optional argument FUN to have the value  !
-!      FUNPROB. This is, in turn, best done by including the explicit          !
-!      declaration FUN = FUNPROB in the calling sequence to LANCELOT_simple,   !
-!      as well as the declaration of FUNPROB as external.                      !
+!      fx is a double precision scalar returning the value f(X). The actual    !
+!      subroutine corresponding to the variable MY_FUN should be declared as   !
+!      external.                                                               !
 !                                                                              !
 !      If the gradient of f can be computed, then the (optional) input         !
 !      argument MY_GRAD must be specified and given the name of the            !
@@ -153,32 +147,26 @@
 !      is, assuming the starting point X = (/ -1.2d0, 1.0d0 /) known, to       !
 !      perform the call                                                        !
 !                                                                              !
-!       CALL LANCELOT_simple( 2, X, fx, exit_code )                            !
+!       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code )                       !
 !                                                                              !
-!      where the function FUN is given by                                      !
+!      where the user-provided subroutine FUN is given by                      !
 !                                                                              !
-!       SUBROUTINE PROBFUN( X, F )                                                 !
+!       SUBROUTINE FUN( X, F )                                                 !
 !       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )                              !
 !       REAL( KIND = wp ), INTENT( IN )   :: X( : )                            !
 !       REAL( KIND = wp ), INTENT( OUT )  :: F                                 !
 !       F = 100.0_wp*(X(2)-X(1)**2)**2 +(1.0_wp-X(1))**2                       !
 !       RETURN                                                                 !
-!       END SUBROUTINE PROBFUN                                                     !
+!       END SUBROUTINE FUN                                                     !
 !                                                                              !
 !      After compiling and linking (with the GALAHAD modules and library),     !
 !      the solution is returned in 60 iterations (with exit_code = 0).         !
-!      The same effect is obtained by the call                                 !
-!                                                                              !
-!       CALL LANCELOT_simple( 2, X, fx, exit_code, MY_FUN = PROBFUN )              !
-!                                                                              !
-!      but this syntax allows the change of the PROBFUN to FUNPROB, say, in the    !
-!      user-supplied program, as discussed above.                              !
 !                                                                              !
 !      If we now wish to use first and second derivatives of the objective     !
 !      function, one should use the call                                       !
 !                                                                              !
-!       CALL LANCELOT_simple( 2, X, fx, exit_code,                           & !
-!                            MY_FUN = PROBFUN, MY_GRAD = GRAD, MY_HESS = HESS )    !
+!       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code,                      & !
+!                             MY_GRAD = GRAD, MY_HESS = HESS )                 !
 !                                                                              !
 !      provide the additional routines                                         !
 !                                                                              !
@@ -234,9 +222,9 @@
 !                                                                              !
 !       VNAMES(1) = 'x1'                                                       !
 !       VNAMES(2) = 'x2'                                                       !
-!       CALL LANCELOT_simple( 2, X, fx, exit_code,                           & !
-!                            MY_FUN = PROBFUN, MY_GRAD = GRAD, MY_HESS = HESS,   & !
-!                            BU = (/ 0.0d0, 0.0d0/), VNAMES = VNAMES         ) !
+!       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code,                      & !
+!                        MY_GRAD = GRAD, MY_HESS = HESS,                     & !
+!                        BU = (/ 0.0d0, 0.0d0/), VNAMES = VNAMES         )     !
 !                                                                              !
 !      in which case convergence is obtained in 6 iterations.                  !
 !                                                                              !
@@ -254,13 +242,13 @@
 !      and the value of the i-th equality constraint must be computed by a     !
 !      user-supplied routine of the form                                       !
 !                                                                              !
-!       PROBFUN( X, fx, i )                     ( i = 1,...,neq )                  !
+!       FUN( X, fx, i )                     ( i = 1,...,neq )                  !
 !                                                                              !
 !      where the fx now returns the value of the i-th equality constraint      !
 !      evaluated at X if i is specified. (This extension of the unconstrained  !
 !      case is best implemented by adding an optional argument i to the        !
-!      unconstrained version of PROBFUN.) If derivatives are available, then the   !
-!      GRAD and HESS subroutines must be adapted as well                       !
+!      unconstrained version of FUN.) If derivatives are available, then       !
+!      the GRAD and HESS subroutines must be adapted as well                   !
 !                                                                              !
 !       GRAD( X, G, i )   HESS( X, H, i )   ( i = 1,...,neq )                  !
 !                                                                              !
@@ -292,7 +280,7 @@
 !      and their values or that of their derivatives is again computing by     !
 !      calling, for i = 1,..., nin,                                            !
 !                                                                              !
-!       PROBFUN( X, fx, i )  GRAD( X, G, i )  HESS( X, H, i )                      !
+!       FUN( X, fx, i )  GRAD( X, G, i )  HESS( X, H, i )                      !
 !                                                                              !
 !      The inequality constraints are internally converted in equality ones    !
 !      by the addition of a slack variables, whose names are set to 'Slack_i', !
@@ -313,11 +301,11 @@
 !      specified and the values and derivatives of the constraints are         !
 !      computed by                                                             !
 !                                                                              !
-!       PROBFUN( X, fx, i )  GRAD( X, G, i )  HESS( X, H, i )  (i=1,...,neq)       !
+!       FUN( X, fx, i )  GRAD( X, G, i )  HESS( X, H, i )  (i=1,...,neq)       !
 !                                                                              !
 !      for the equality constraints, and                                       !
 !                                                                              !
-!       PROBFUN( X, fx, i )  GRAD( X, G, i )  HESS( X, H, i )  (i=neq+1,neq+nin)   !
+!       FUN( X, fx, i )  GRAD( X, G, i )  HESS( X, H, i ) (i=neq+1,neq+nin)    !
 !                                                                              !
 !      for the inequality constraints. As above, the components (1:neq)        !
 !      of the vector CNAMES may now contain the names of the neq equality      !
@@ -339,8 +327,9 @@
 !                                                                              !
 !      we may transform our call to                                            !
 !                                                                              !
-!       CALL LANCELOT_simple( 2, X, fx, exit_code, BL = (/0.0D0, -1.0D20/),  & !
-!                            MY_FUN = FUN, MY_GRAD = GRAD, MY_HESS = HESS,   & !
+!       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code,
+!                            MY_GRAD = GRAD, MY_HESS = HESS,                 & !
+!                            BL = (/0.0D0, -1.0D20/),                        & !
 !                            NEQ = 1, NIN = 1, CX =  cx, Y = y )             & !
 !                                                                              !
 !      (assuming we need cx and y), and modify the FUN, GRAD and HESS          !
@@ -413,14 +402,13 @@
 !      example, the objective function or its derivatives is/are computed if   !
 !      the index i is omitted (see above). The full call could be              !
 !                                                                              !
-!       CALL LANCELOT_simple( 2, X, fx, exit_code,                           & !
-!                            MY_FUN = FUN, MY_GRAD = GRAD, MY_HESS = HESS,   & !
-!                            BL  =  BL, BU = BU, VNAMES = VNAMES,            & !
-!                            CNAMES = CNAMES,  NEQ = 1, NIN = 1,             & !
-!                            CX = cx, Y = y, ITERS = iters , MAXIT = 100,    & !
-!                            GRADTOL = 0.00001d0, FEASTOL = 0.00001d0,       & !
-!                            PRINT_LEVEL = 1 )                                 !
-!                                                                              !
+!       CALL LANCELOT_simple( 2, X, FUN, fx, exit_code,                      & !
+!                             FUN, MY_GRAD = GRAD, MY_HESS = HESS,           & !
+!                             BL  =  BL, BU = BU, VNAMES = VNAMES,           & !
+!                             CNAMES = CNAMES,  NEQ = 1, NIN = 1,            & !
+!                             CX = cx, Y = y, ITERS = iters , MAXIT = 100,   & !
+!                             GRADTOL = 0.00001d0, FEASTOL = 0.00001d0,      & !
+!                             PRINT_LEVEL = 1 )                                !
 !                                                                              !
 !      Of course, the above examples can easily be modified to represent new   !
 !      minimization problems :-).                                              !
@@ -489,9 +477,9 @@
        INTEGER,                OPTIONAL :: maxit, print_level
        INTEGER,                OPTIONAL :: nin, neq, iters
        REAL ( KIND = wp ),     OPTIONAL :: gradtol, feastol
-       REAL ( KIND = wp ),     OPTIONAL :: BL( : ), BU( : ), CX( : ), Y( : ) 
-                               OPTIONAL :: MY_FUN, MY_GRAD, MY_HESS
- 
+       REAL ( KIND = wp ),     OPTIONAL :: BL( : ), BU( : ), CX( : ), Y( : )
+                               OPTIONAL :: MY_GRAD, MY_HESS
+
        REAL ( KIND = wp ), PARAMETER  :: infinity = 10.0_wp ** 20
        REAL ( KIND = wp ), PARAMETER  :: one = 1.0_wp, zero = 0.0_wp
        TYPE ( LANCELOT_control_type ) :: control
@@ -506,16 +494,7 @@
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )    :: FVALUE, FUVALS
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( :, : ) :: GVALUE
 
-!      EXTERNAL :: PROBFUN
-
        INTERFACE
-
-          SUBROUTINE PROBFUN( X, F, i )
-          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-          REAL( KIND = wp ), INTENT( IN )   :: X( : )
-          REAL( KIND = wp ), INTENT( OUT )  :: F
-          INTEGER, INTENT( IN ), OPTIONAL   :: i
-          END SUBROUTINE PROBFUN
 
           SUBROUTINE MY_FUN( X, F, i )
           INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -540,11 +519,10 @@
 
        END INTERFACE
 
-
 ! print banner
 !
        IF ( PRESENT( print_level ) ) THEN
-          IF( print_level > 0 ) THEN 
+          IF( print_level > 0 ) THEN
           WRITE(6,'('' '' )' )
           WRITE(6,'(15x,''**********************************************'' )')
           WRITE(6,'(15x,''*                                            *'' )')
@@ -587,8 +565,8 @@
        ngpvlu   = 0             ! the number of group parameters
        nepvlu   = 0             ! the number of element parameters
        prob%n   = n + ninr ;    ! new variables <= original variables + slacks
-       prob%ng  = ng 
-       prob%nel = nel 
+       prob%ng  = ng
+       prob%nel = nel
        nh       = ( ( n + 1 ) * n ) / 2  ! Hessians' size
 !
 ! make space for problem data
@@ -626,7 +604,7 @@
           prob%VNAMES(1:n) = VNAMES(1:n)
        ELSE                                ! give default names
           DO iv = 1, prob%n
-             IF ( iv < 10 ) THEN              
+             IF ( iv < 10 ) THEN
                 WRITE( prob%VNAMES( iv ), '( A2,I1 )' ) 'X_', iv
              ELSEIF ( i < 100 ) THEN
                 WRITE( prob%VNAMES( iv ), '( A2,I2 )' ) 'X_', iv
@@ -645,7 +623,7 @@
           END If
        ELSE                                ! give default names
           DO ig = 1, ninr                  ! ... inequalities
-             IF ( ig < 10 ) THEN              
+             IF ( ig < 10 ) THEN
                 WRITE( prob%GNAMES( ig ), '( A6,I1 )' ) 'Inequ_', ig
              ELSEIF ( i < 100 ) THEN
                 WRITE( prob%GNAMES( ig ), '( A6,I2 )' ) 'Inequ_', ig
@@ -657,7 +635,7 @@
           ENDDO
           DO i = 1, neqr                   ! ... equalities
              ig = ninr + i
-             IF ( i < 10 ) THEN              
+             IF ( i < 10 ) THEN
                 WRITE( prob%GNAMES( ig ), '( A6,I1 )' ) 'Equal_', i
              ELSEIF ( i < 100 ) THEN
                 WRITE( prob%GNAMES( ig ), '( A6,I2 )' ) 'Equal_', i
@@ -677,10 +655,10 @@
               prob%KNDOFG( ig ) = 2        ! first groups <= constraints
               prob%Y(ig)        = zero     ! initial Lagrange multipliers
           ELSE
-              prob%KNDOFG( ig ) = 1        ! last group <= objective function 
+              prob%KNDOFG( ig ) = 1        ! last group <= objective function
           END IF
           prob%IELING( ig )  = ig          ! each group contains one element
-          prob%ISTADG( ig )  = ig          ! start of the list of elements 
+          prob%ISTADG( ig )  = ig          ! start of the list of elements
                                            ! in group ig
           prob%ITYPEG( ig )  = 0           ! all groups are trivial
           prob%GXEQX ( ig )  = .TRUE.      ! all groups are of the TRIVIAL type
@@ -697,7 +675,7 @@
           prob%ESCALE( iel ) = one         ! all elements are scaled by 1.0
           prob%ISTEPA( iel ) = 1           ! there are no element parameters
           prob%INTVAR( iel ) = n           ! each element involves all variables
-          prob%ISTAEV( iel ) = i           ! start of the list of variables 
+          prob%ISTAEV( iel ) = i           ! start of the list of variables
                                            ! for element iel
           DO iv = 1, n
             prob%IELVAR( i ) = iv          ! each element involves each one
@@ -764,7 +742,7 @@
 !
        control%linear_solver = 8           ! linear solver = preconditioned CG
 !
-       IF ( PRESENT ( MY_GRAD ) ) THEN     ! derivative availability 
+       IF ( PRESENT ( MY_GRAD ) ) THEN     ! derivative availability
           control%first_derivatives = 0    ! use exact gradients
           IF ( PRESENT ( MY_HESS ) ) THEN
              control%second_derivatives = 0  ! use exact Hessians
@@ -794,42 +772,33 @@
                info%status == -7      )  THEN
 
              DO i = 1, info%ncalcf
-                iel  = ICALCF( i ) 
+                iel  = ICALCF( i )
+!
+!                  the objective function
+!
                 IF ( iel == prob%ng ) THEN
-!
-!                  the objective function 
-!
-                   IF ( PRESENT ( MY_FUN ) ) THEN
-                      CALL MY_FUN( XT(1:n), fiel )      ! user defined
-                   ELSE
-                      CALL PROBFUN ( XT(1:n), fiel )    ! default
-                   END IF
-                ELSE
+                   CALL MY_FUN( XT(1:n), fiel )      ! user defined
 !
 !                  the constraint value
 !
-                   IF ( PRESENT ( MY_FUN ) ) THEN
-                      CALL MY_FUN( XT(1:n), fiel, iel ) ! user defined
-                   ELSE
-                      CALL PROBFUN ( XT(1:n), fiel, iel )   ! default
-                   END IF
-
+                ELSE
+                   CALL MY_FUN( XT(1:n), fiel, iel ) ! user defined
                 END IF
                 FUVALS( iel ) = fiel
              END DO
 
-          END IF  
+          END IF
 
           IF ( control%first_derivatives > 0 ) CYCLE
 !
-!         Compute (first and, possibly, second) derivatives values 
+!         Compute (first and, possibly, second) derivatives values
 !
           IF ( info%status == -1 .OR. &
                info%status == -5 .OR. &
                info%status == -6      ) THEN
 
              DO i = 1, info%ncalcf
-               iel    = ICALCF( i ) 
+               iel    = ICALCF( i )
                igstrt = prob%INTVAR( iel ) - 1
                ihstrt = prob%ISTADH( iel ) - 1
                IF ( iel == prob%ng ) THEN
@@ -841,7 +810,7 @@
 
                   IF ( control%second_derivatives > 0 ) CYCLE
 !
-!                 the entries of the upper triangle of the objective 
+!                 the entries of the upper triangle of the objective
 !                 function's Hessian matrix, stored by columns (user defined)
 !
                   CALL MY_HESS( XT(1:n), S(1:nh) )
@@ -849,14 +818,14 @@
 
                ELSE
 !
-!                 the constraint's gradient components (user defined) 
+!                 the constraint's gradient components (user defined)
 !
                   CALL MY_GRAD( XT(1:n), S(1:n), iel )
                   FUVALS( igstrt+1:igstrt+n ) = S(1:n)
 
                   IF ( control%second_derivatives > 0 ) CYCLE
 !
-!                 the entries of the upper triangle of constraint's 
+!                 the entries of the upper triangle of constraint's
 !                 Hessian matrix, stored by columns (user defined)
 !
                   CALL MY_HESS( XT(1:n), S(1:nh), iel )
@@ -866,12 +835,12 @@
              END DO
 
           END IF
-  
+
        END DO                              ! loop to reenter LANCELOT
 !
 ! print message on error return status
 !
-       IF ( control%print_level > 0 .AND. info%status /= 0 ) THEN 
+       IF ( control%print_level > 0 .AND. info%status /= 0 ) THEN
           WRITE( 6, "( ' LANCELOT_solve exit status = ', I6 ) " ) info%status
        END IF
 !
@@ -923,7 +892,3 @@
 !
 !===============================================================================
    END MODULE LANCELOT_simple_double
-
-
-
-
