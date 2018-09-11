@@ -655,7 +655,7 @@ QPTDT = basics linearsolver $(QPT_double) $(OBJD)/qptt.o
 QPTSS = basics linearsolver $(QPT_single) $(OBJS)/qpts.o
 QPTST = basics linearsolver $(QPT_single) $(OBJS)/qptt.o
 
-PRESOLVEDS = $(OBJD)/presolves.o -L$(OBJD) $(LIBS)
+RPRESOLVEDS = $(OBJD)/presolves.o -L$(OBJD) $(LIBS)
 RPRESOLVESS = $(OBJS)/presolves.o -L$(OBJS) $(LIBS)
 
 RQPPDS = $(OBJD)/qpps.o -L$(OBJD) $(LIBS)
@@ -4773,7 +4773,7 @@ $(OBJ)/presolves.o: ../presolve/presolves.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "presolves  "
 	$(SED) -f $(SEDS) ../presolve/presolves.f90 > $(OBJ)/presolves1.f90
 	$(SED) -f $(LSEDS) $(OBJ)/presolves1.f90 > $(OBJ)/presolves.f90
-	cd $(OBJ) ; $(FORTRAN) -o presolves.o $(FFLAGS) presolves.f90 presolves1.f90
+	cd $(OBJ) ; $(FORTRAN) -o presolves.o $(FFLAGS) presolves.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 

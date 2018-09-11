@@ -658,7 +658,7 @@ $(LG)(lancelot_simple.o): ../lancelot_simple/lancelot_simple.f90
              $(RM) lancelot_simple.f90 lancelot_simple1.f90 lancelot_simple.o
 	$(RMOBFILE) lancelot_simples.o
 	$(RMOBFILE) lancelot_simplet.o
-#	$(MVMODS)
+	$(MVMODS)
 	@printf '[ OK ]\n'
 
 #  SIF interfaces
