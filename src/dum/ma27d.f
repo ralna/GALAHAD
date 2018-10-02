@@ -16,10 +16,11 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n, nz, liw, iflag
+      INTEGER, INTENT( IN ) :: n, nz, liw
+      INTEGER, INTENT( INOUT ) :: iflag
       INTEGER, INTENT( OUT ) :: nsteps
       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ) :: ops
-      INTEGER, INTENT( IN ), DIMENSION( : ) :: IRN, ICN
+      INTEGER, INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
       INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
       INTEGER, INTENT( INOUT ), DIMENSION( n, 3 ) :: IKEEP
       INTEGER, INTENT( OUT ), DIMENSION( n, 2 ) :: IW1
@@ -60,7 +61,7 @@
 
       INTEGER, INTENT( IN ) :: n, nz, la, liw, nsteps
       INTEGER, INTENT( OUT ) :: maxfrt
-      INTEGER, INTENT( IN ), DIMENSION( : ) :: IRN, ICN
+      INTEGER, INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
       INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
       INTEGER, INTENT( IN ), DIMENSION( n, 3 ) :: IKEEP
       INTEGER, INTENT( OUT ), DIMENSION( n ) :: IW1
@@ -103,7 +104,7 @@
 
       INTEGER, INTENT( IN ) :: n, la, liw, maxfrt, nsteps
       INTEGER, INTENT( IN ), DIMENSION( liw ) :: IW
-      INTEGER, INTENT( IN ), DIMENSION( nsteps ) :: IW1
+      INTEGER, INTENT( OUT ), DIMENSION( nsteps ) :: IW1
       INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
       INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), 
