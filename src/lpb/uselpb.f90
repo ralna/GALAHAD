@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 3.1 - 07/08/2018 AT 10:35 GMT.
 
-!-*-*-*-*-*-*-*-  G A L A H A D   U S E C Q P   M O D U L E  -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-  G A L A H A D   U S E L P B   M O D U L E  -*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal authors: Nick Gould and Dominique Orban
@@ -640,6 +640,7 @@
 
 !  Call the presolver
 
+        CALL SMT_put( prob%H%type, 'ZERO', smt_stat )
         CALL PRESOLVE_apply( prob, PRE_control, PRE_inform, PRE_data )
         IF ( PRE_inform%status < 0 ) THEN
           WRITE( out, "( '  ERROR return from PRESOLVE (exitc =', I6, ')' )" ) &

@@ -30,16 +30,15 @@
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
    p%H%val = (/ 1.0_wp, 2.0_wp, 1.0_wp, 3.0_wp /) ! Hessian H
-   p%H%row = (/ 1, 2, 2, 3 /)                     ! NB lower triangle
-   p%H%col = (/ 1, 2, 1, 3 /) ; p%H%ne = h_ne
+   p%H%row = (/ 1, 2, 3, 3 /)                     ! NB lower triangle
+   p%H%col = (/ 1, 2, 2, 3 /) ; p%H%ne = h_ne
    p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
    p%A%row = (/ 1, 1, 2, 2 /)
    p%A%col = (/ 1, 2, 2, 3 /) ; p%A%ne = a_ne
 ! problem data complete
    CALL DQP_initialize( data, control, inform ) ! Initialize control parameters
+!  control%print_level = 1
    control%infinity = infinity                  ! Set infinity
-   control%print_level = 1
-   control%rho = 1.0_wp
    CALL DQP_solve( p, data, control, inform, C_stat, X_stat ) ! Solve
    IF ( inform%status == 0 ) THEN               !  Successful return
      WRITE( 6, "( ' DQP: ', I0, ' iterations  ', /,                            &

@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 19th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_CQP_MATLAB_TYPES
@@ -51,7 +51,7 @@
         mwPointer :: analyse, factorize, solve
         mwPointer :: clock_total, clock_preprocess, clock_find_dependent
         mwPointer :: clock_analyse, clock_factorize, clock_solve
-      END TYPE 
+      END TYPE
 
       TYPE, PUBLIC :: CQP_pointer_type
         mwPointer :: pointer
@@ -63,7 +63,7 @@
         TYPE ( CQP_time_pointer_type ) :: time_pointer
         TYPE ( FDC_pointer_type ) :: FDC_pointer
         TYPE ( SBLS_pointer_type ) :: SBLS_pointer
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  C Q P _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-
@@ -107,34 +107,34 @@
         CASE( 'print_level' )
           CALL MATLAB_get_value( ps, 'print_level',                            &
                                  pc, CQP_control%print_level )
-        CASE( 'start_print' )                                                  
+        CASE( 'start_print' )
           CALL MATLAB_get_value( ps, 'start_print',                            &
                                  pc, CQP_control%start_print )
-        CASE( 'stop_print' )                                                    
+        CASE( 'stop_print' )
           CALL MATLAB_get_value( ps, 'stop_print',                             &
                                  pc, CQP_control%stop_print )
-        CASE( 'maxit ' )                                                        
-          CALL MATLAB_get_value( ps, 'maxit ',                                 &
+        CASE( 'maxit' )
+          CALL MATLAB_get_value( ps, 'maxit',                                  &
                                  pc, CQP_control%maxit  )
-        CASE( 'infeas_max ' )                                                   
+        CASE( 'infeas_max ' )
           CALL MATLAB_get_value( ps, 'infeas_max ',                            &
                                  pc, CQP_control%infeas_max  )
-        CASE( 'muzero_fixed' )                                               
+        CASE( 'muzero_fixed' )
           CALL MATLAB_get_value( ps, 'muzero_fixed',                           &
                                  pc, CQP_control%muzero_fixed )
-        CASE( 'restore_problem' )                                               
+        CASE( 'restore_problem' )
           CALL MATLAB_get_value( ps, 'restore_problem',                        &
                                  pc, CQP_control%restore_problem )
-        CASE( 'indicator_type' )                                                
+        CASE( 'indicator_type' )
           CALL MATLAB_get_value( ps, 'indicator_type',                         &
                                  pc, CQP_control%indicator_type )
-        CASE( 'arc' )                                               
+        CASE( 'arc' )
           CALL MATLAB_get_value( ps, 'arc',                                    &
                                  pc, CQP_control%arc )
-        CASE( 'series_order' )                                               
+        CASE( 'series_order' )
           CALL MATLAB_get_value( ps, 'series_order',                           &
                                  pc, CQP_control%series_order )
-        CASE( 'infinity' )                                                     
+        CASE( 'infinity' )
           CALL MATLAB_get_value( ps, 'infinity',                               &
                                  pc, CQP_control%infinity )
         CASE( 'stop_abs_p' )
@@ -149,91 +149,91 @@
         CASE( 'stop_rel_d' )
           CALL MATLAB_get_value( ps, 'stop_rel_d',                             &
                                  pc, CQP_control%stop_rel_d )
-        CASE( 'stop_abs_c' )                                         
+        CASE( 'stop_abs_c' )
           CALL MATLAB_get_value( ps, 'stop_abs_c',                             &
                                  pc, CQP_control%stop_abs_c )
-        CASE( 'stop_rel_c' )                                         
+        CASE( 'stop_rel_c' )
           CALL MATLAB_get_value( ps, 'stop_rel_c',                             &
                                  pc, CQP_control%stop_rel_c )
-        CASE( 'perturb_h' )                                         
+        CASE( 'perturb_h' )
           CALL MATLAB_get_value( ps, 'perturb_h',                              &
                                  pc, CQP_control%perturb_h )
-        CASE( 'prfeas' )                                                        
+        CASE( 'prfeas' )
           CALL MATLAB_get_value( ps, 'prfeas',                                 &
                                  pc, CQP_control%prfeas )
-        CASE( 'dufeas' )                                                        
+        CASE( 'dufeas' )
           CALL MATLAB_get_value( ps, 'dufeas',                                 &
                                  pc, CQP_control%dufeas )
-        CASE( 'muzero' )                                                        
+        CASE( 'muzero' )
           CALL MATLAB_get_value( ps, 'muzero',                                 &
                                  pc, CQP_control%muzero )
-        CASE( 'tau' )                                                        
+        CASE( 'tau' )
           CALL MATLAB_get_value( ps, 'tau',                                    &
                                  pc, CQP_control%tau )
-        CASE( 'gamma_c' )                                                       
+        CASE( 'gamma_c' )
           CALL MATLAB_get_value( ps, 'gamma_c',                                &
                                  pc, CQP_control%gamma_c )
-        CASE( 'gamma_f' )                                                       
+        CASE( 'gamma_f' )
           CALL MATLAB_get_value( ps, 'gamma_f',                                &
                                  pc, CQP_control%gamma_f )
-        CASE( 'reduce_infeas' )                                                 
+        CASE( 'reduce_infeas' )
           CALL MATLAB_get_value( ps, 'reduce_infeas',                          &
                                  pc, CQP_control%reduce_infeas )
-        CASE( 'obj_unbounded' )                                           
+        CASE( 'obj_unbounded' )
           CALL MATLAB_get_value( ps, 'obj_unbounded',                          &
                                  pc, CQP_control%obj_unbounded )
-        CASE( 'potential_unbounded' )                                           
+        CASE( 'potential_unbounded' )
           CALL MATLAB_get_value( ps, 'potential_unbounded',                    &
                                  pc, CQP_control%potential_unbounded )
-        CASE( 'identical_bounds_tol' )                                         
+        CASE( 'identical_bounds_tol' )
           CALL MATLAB_get_value( ps, 'identical_bounds_tol',                   &
                                  pc, CQP_control%identical_bounds_tol )
-        CASE( 'mu_lunge' )                                               
+        CASE( 'mu_lunge' )
           CALL MATLAB_get_value( ps, 'mu_lunge',                               &
                                  pc, CQP_control%mu_lunge )
         CASE( 'indicator_tol_p' )
           CALL MATLAB_get_value( ps, 'indicator_tol_p',                        &
                                  pc, CQP_control%indicator_tol_p )
-        CASE( 'indicator_tol_pd' )                         
+        CASE( 'indicator_tol_pd' )
           CALL MATLAB_get_value( ps, 'indicator_tol_pd',                       &
                                  pc, CQP_control%indicator_tol_pd )
         CASE( 'indicator_tol_tapia' )
           CALL MATLAB_get_value( ps, 'indicator_tol_tapia',                    &
                                  pc, CQP_control%indicator_tol_tapia )
-        CASE( 'cpu_time_limit' )                                               
+        CASE( 'cpu_time_limit' )
           CALL MATLAB_get_value( ps, 'cpu_time_limit',                         &
                                  pc, CQP_control%cpu_time_limit )
-        CASE( 'clock_time_limit' )                
+        CASE( 'clock_time_limit' )
           CALL MATLAB_get_value( ps, 'clock_time_limit',                       &
                                  pc, CQP_control%clock_time_limit )
-        CASE( 'remove_dependencies' )                                          
+        CASE( 'remove_dependencies' )
           CALL MATLAB_get_value( ps, 'remove_dependencies',                    &
                                  pc, CQP_control%remove_dependencies )
-        CASE( 'treat_zero_bounds_as_general' )                                 
+        CASE( 'treat_zero_bounds_as_general' )
           CALL MATLAB_get_value( ps,'treat_zero_bounds_as_general',            &
                                  pc, CQP_control%treat_zero_bounds_as_general )
-        CASE( 'just_feasible' )                                               
+        CASE( 'just_feasible' )
           CALL MATLAB_get_value( ps, 'just_feasible',                          &
-                                 pc, CQP_control%just_feasible )        
-        CASE( 'getdua' )                                               
+                                 pc, CQP_control%just_feasible )
+        CASE( 'getdua' )
           CALL MATLAB_get_value( ps, 'getdua',                                 &
-                                 pc, CQP_control%getdua )        
-        CASE( 'puiseux' )                                               
+                                 pc, CQP_control%getdua )
+        CASE( 'puiseux' )
           CALL MATLAB_get_value( ps, 'puiseux',                                &
-                                 pc, CQP_control%puiseux )        
-        CASE( 'every_order' )                                               
+                                 pc, CQP_control%puiseux )
+        CASE( 'every_order' )
           CALL MATLAB_get_value( ps, 'every_order',                            &
-                                 pc, CQP_control%every_order )        
-        CASE( 'feasol' )                                               
+                                 pc, CQP_control%every_order )
+        CASE( 'feasol' )
           CALL MATLAB_get_value( ps, 'feasol',                                 &
-                                 pc, CQP_control%feasol )        
-        CASE( 'balance_initial_complentarity' )                                
+                                 pc, CQP_control%feasol )
+        CASE( 'balance_initial_complentarity' )
           CALL MATLAB_get_value( ps, 'balance_initial_complentarity',          &
                                  pc, CQP_control%balance_initial_complentarity )
-        CASE( 'space_critical' )                                               
+        CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
-                                 pc, CQP_control%space_critical )        
-        CASE( 'deallocate_error_fatal' )                                       
+                                 pc, CQP_control%space_critical )
+        CASE( 'deallocate_error_fatal' )
           CALL MATLAB_get_value( ps, 'deallocate_error_fatal',                 &
                                  pc, CQP_control%deallocate_error_fatal )
         CASE( 'prefix' )
@@ -599,19 +599,19 @@
       CALL MATLAB_copy_to_ptr( CQP_pointer%pointer,                            &
                                'bad_alloc', CQP_inform%bad_alloc )
       CALL MATLAB_copy_to_ptr( CQP_inform%iter,                                &
-                               mxGetPr( CQP_pointer%iter ) )    
+                               mxGetPr( CQP_pointer%iter ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%factorization_status,                &
-                               mxGetPr( CQP_pointer%factorization_status ) )    
+                               mxGetPr( CQP_pointer%factorization_status ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%factorization_integer,               &
-                               mxGetPr( CQP_pointer%factorization_integer ) )   
+                               mxGetPr( CQP_pointer%factorization_integer ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%factorization_real,                  &
-                               mxGetPr( CQP_pointer%factorization_real ) )    
+                               mxGetPr( CQP_pointer%factorization_real ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%nfacts,                              &
-                               mxGetPr( CQP_pointer%nfacts ) )    
+                               mxGetPr( CQP_pointer%nfacts ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%nbacts,                              &
-                               mxGetPr( CQP_pointer%nbacts ) )    
+                               mxGetPr( CQP_pointer%nbacts ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%obj,                                 &
-                               mxGetPr( CQP_pointer%obj ) )                     
+                               mxGetPr( CQP_pointer%obj ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%primal_infeasibility,                &
                                mxGetPr( CQP_pointer%primal_infeasibility ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%dual_infeasibility,                  &
@@ -619,11 +619,11 @@
       CALL MATLAB_copy_to_ptr( CQP_inform%complementary_slackness,             &
                                mxGetPr( CQP_pointer%complementary_slackness ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%potential,                           &
-                               mxGetPr( CQP_pointer%potential ) )    
+                               mxGetPr( CQP_pointer%potential ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%non_negligible_pivot,                &
-                               mxGetPr( CQP_pointer%non_negligible_pivot ) )    
+                               mxGetPr( CQP_pointer%non_negligible_pivot ) )
       CALL MATLAB_copy_to_ptr( CQP_inform%feasible,                            &
-                               mxGetPr( CQP_pointer%feasible ) )    
+                               mxGetPr( CQP_pointer%feasible ) )
 
 
 !  time components

@@ -1364,7 +1364,7 @@
 
       INTEGER, INTENT( IN ) :: n, m, gradient_kind, nv
       INTEGER, INTENT( INOUT ) :: m_ref
-      INTEGER, INTENT( OUT ) :: m_active, n_active
+      INTEGER, INTENT( INOUT ) :: m_active, n_active
       TYPE ( DQP_dims_type ), INTENT( IN ) :: dims
       REAL ( KIND = wp ), INTENT( IN ) :: f
       REAL ( KIND = wp ), INTENT( INOUT ) :: perturbation
@@ -2053,5 +2053,3 @@
 !  end of module DLP
 
     END MODULE GALAHAD_DLP_double
-
-

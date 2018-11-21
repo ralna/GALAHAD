@@ -508,6 +508,7 @@ echo 'CCBASIC   = '$CCBASIC                                        >> $MAKEFILE
 echo 'CCISO     = '$CCISO                                          >> $MAKEFILE
 echo 'CCONDEF   = '$CCONDEF                                        >> $MAKEFILE
 echo 'CCDEBUG   = '$CCDEBUG                                        >> $MAKEFILE
+echo 'HWLOC     = '$HWLOC                                          >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'CXX       = '$CXX                                            >> $MAKEFILE
 echo 'CXXBASIC  = '$CXXBASIC                                       >> $MAKEFILE

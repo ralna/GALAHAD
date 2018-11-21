@@ -14,7 +14,7 @@
 %%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galsummary
-This package uses an primal-dual interior-point method
+This package uses a {\bf primal-dual interior-point method}
 to solve the {\bf linear programming problem}
 \eqn{qp}{\mbox{minimize}\;\; \ell(\bmx) = \bmg^T \bmx + f}
 subject to the general linear constraints
@@ -76,7 +76,7 @@ Access to the package requires a {\tt USE} statement such as
 If it is required to use both modules at the same time, the derived types
 {\tt SMT\_type},
 {\tt QPT\_problem\_type},
-{\tt NLPT\_userdata\-\_type},
+%{\tt NLPT\_userdata\-\_type},
 {\tt \packagename\_time\_type},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_inform\_type}
@@ -96,7 +96,8 @@ must be renamed on one of the {\tt USE} statements.
 %%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galmatrix
-When its is explicitly available, the constraint Jacobian $\bmA$, the matrix
+%When its is explicitly available,
+The constraint Jacobian $\bmA$, the matrix
 whose rows are the vectors $\bma_{i}^{T}$, $i = 1, \ldots , m$,
 may be stored in a variety of input formats.
 
@@ -522,7 +523,7 @@ The linear programming solution algorithm is called as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_solve( prob, data, control, inform[, C\_stat, B\_stat] )}
+{\tt CALL \packagename\_solve( prob, data, control, inform[, C\_stat, X\_stat] )}
 
 %\vspace*{-3mm}
 \begin{description}
@@ -598,11 +599,11 @@ is on its upper bound but linearly dependent on others, and
 \itt{0} the $i$-th general constraint is not in the active set.
 \end{description}
 
-\itt{B\_stat} is an \optional\ rank-one \intentout\ array argument of
+\itt{X\_stat} is an \optional\ rank-one \intentout\ array argument of
 dimension {\tt p\%n}
 and type default \integer, that indicates which of the simple bound
 constraints are in the current active set. Possible values for
-{\tt B\_stat(j)}, {\tt j}$=1, \ldots ,$ {\tt p\%n}, and their meanings are
+{\tt X\_stat(j)}, {\tt j}$=1, \ldots ,$ {\tt p\%n}, and their meanings are
 \begin{description}
 \itt{<0} the $j$-th simple bound constraint
 is in the active set, on its lower bound,
@@ -1077,14 +1078,14 @@ large-scale  degenerate convex quadratic programming,
 
 \galexample
 Suppose we wish to minimize
-$2 x_2 + 1$
+$x_1 + 2 x_2 + 1$
 subject to the the general linear constraints
 $1 \leq  2 x_{1}  +  x_{2}  \leq  2$ and
 $x_{2}  +  x_{3}  =  2$, and simple bounds
-$-1  \leq  x_{1}  \leq  1$ and $x_{3}  \leq  2$.
-Then, on writing the data for this problem as
-\disp{ \bmg = \vect{ 0 \\ 2 \\ 0 }, \;\;
-\bmx^{l} = \vect{ -1 \\ - \infty \\ - \infty } \tim{and}
+$-1  \leq  x_{1}  \leq  1$, $x_2 \geq 3$  and $x_{3}  \leq  2$.
+Then, on writing the data for this problem as $f = 1$,
+\disp{ \bmg = \vect{ 1 \\ 2 \\ 0 }, \;\;
+\bmx^{l} = \vect{ -1 \\ - \infty \\ 3 } \tim{and}
 \bmx^{u} = \vect{ 1 \\ \infty \\ 2 },}
 and
 \disp{

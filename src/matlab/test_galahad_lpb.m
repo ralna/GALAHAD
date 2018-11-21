@@ -42,3 +42,5 @@ SA = sparse(A) ;
 [ x, inform, aux ] = galahad_lpb( g, f, SA, c_l, c_u, x_l, x_u, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
   ' - optimal f =', inform.obj, '- status =', inform.status ) )
+
+galahad_lpa( 'final' )

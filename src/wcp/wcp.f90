@@ -545,7 +545,7 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Default control data for WCP. This routine should be called before
-!  WCP_primal_dual
+!  WCP_solve
 !
 !  --------------------------------------------------------------------
 !
@@ -7787,6 +7787,3 @@
 !  End of module WCP
 
    END MODULE GALAHAD_WCP_double
-
-
-

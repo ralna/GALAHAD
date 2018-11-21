@@ -1,4 +1,4 @@
-! THIS VERSION: 10/04/2006 AT 15:25:00 GMT.
+! THIS VERSION: 13/11/2018 AT 08:37:00 GMT.
 
 !-*-*-*-*-*-*-  G A L A H A D  -  MA33 and MC20  S U B R O U T I N E S *-*-*-*-
 
@@ -6,16 +6,16 @@
 !  Copyright reserved
 !  April 10th 2006
 
-      SUBROUTINE MA33AD(  n, ICN, A, licn, LENR, LENRL, IDISP, IP, IQ, 
-     *                    IRN, lirn, LENC, IFIRST, LASTR, NEXTR, LASTC, 
-     *                    NEXTC, IPTR, IPC, u, iflag, ICNTL, CNTL, INFO, 
-     *                    RINFO )
+      SUBROUTINE MA33AD( n, ICN, A, licn, LENR, LENRL, IDISP, IP, IQ,
+     *                   IRN, lirn, LENC, IFIRST, LASTR, NEXTR, LASTC,
+     *                   NEXTC, IPTR, IPC, u, iflag, ICNTL, CNTL, INFO,
+     *                   RINFO )
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  
+      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
       INTEGER, INTENT( IN ) :: n, licn, lirn
       INTEGER, INTENT( OUT ) :: iflag
       REAL ( KIND = wp ), INTENT( INOUT ) :: u
@@ -42,13 +42,13 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
+ 2000 FORMAT( /,
+     *     ' We regret that the solution options that you have ', /,
      *     ' chosen are not all freely available with GALAHAD.', //,
      *     ' If you have HSL (formerly the Harwell Subroutine',
      *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,      
-     *     ' subroutine MA33AD with its HSL namesake ', /,        
+     *     ' option may be enabled by replacing the dummy ', /,
+     *     ' subroutine MA33AD with its HSL namesake ', /,
      *     ' and dependencies. See ', /,
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )
@@ -59,17 +59,17 @@
 
 
       SUBROUTINE MA33CD( n, ICN, A, licn, LENR, LENRL, LENOFF, IDISP,
-     *                    IP, IQ, X, W, mtype, RINFO )
+     *                   IP, IQ, X, W, mtype, RINFO )
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( IN ) :: n, licn, mtype
        INTEGER, INTENT( IN ), DIMENSION( licn ) :: ICN
        INTEGER, INTENT( IN ), DIMENSION( n ) :: LENR, LENRL
-       INTEGER, INTENT( IN ), DIMENSION( : ) :: LENOFF
+       INTEGER, INTENT( IN ), DIMENSION( n ) :: LENOFF
        INTEGER, INTENT( IN ), DIMENSION( 2 ) :: IDISP
        INTEGER, INTENT( INOUT ), DIMENSION( n ) :: IP, IQ
        REAL ( KIND = wp ), INTENT( IN ), DIMENSION( licn ) :: A
@@ -84,13 +84,13 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
+ 2000 FORMAT( /,
+     *     ' We regret that the solution options that you have ', /,
      *     ' chosen are not all freely available with GALAHAD.', //,
      *     ' If you have HSL (formerly the Harwell Subroutine',
      *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,      
-     *     ' subroutine MA33CD with its HSL namesake ', /,        
+     *     ' option may be enabled by replacing the dummy ', /,
+     *     ' subroutine MA33CD with its HSL namesake ', /,
      *     ' and dependencies. See ', /,
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )
@@ -106,7 +106,7 @@
 !-----------------------------------------------
 
       INTEGER, INTENT( OUT ), DIMENSION( 10 ) :: ICNTL
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), 
+      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ),
      *                                DIMENSION( 5 ) :: CNTL
 
 !  Dummy subroutine available with GALAHAD
@@ -117,13 +117,13 @@
 
 !  Non-executable statements
 
-!2000 FORMAT( /, 
-!    *     ' We regret that the solution options that you have ', /, 
+!2000 FORMAT( /,
+!    *     ' We regret that the solution options that you have ', /,
 !    *     ' chosen are not all freely available with GALAHAD.', //,
 !    *     ' If you have HSL (formerly the Harwell Subroutine',
 !    *     ' Library), this ', /,
-!    *     ' option may be enabled by replacing the dummy ', /,      
-!    *     ' subroutine MA33ID with its HSL namesake ', /,        
+!    *     ' option may be enabled by replacing the dummy ', /,
+!    *     ' subroutine MA33ID with its HSL namesake ', /,
 !    *     ' and dependencies. See ', /,
 !    *     '   $GALAHAD/src/makedefs/packages for details.', //,
 !    *     ' *** EXECUTION TERMINATING *** ', / )
@@ -139,7 +139,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  
+      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
       INTEGER, INTENT( IN ) :: nc, maxa, jdisp
       INTEGER, INTENT( INOUT ), DIMENSION( maxa ) :: INUM, JNUM
       INTEGER, INTENT( OUT ), DIMENSION( nc ) :: JPTR
@@ -152,13 +152,13 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
+ 2000 FORMAT( /,
+     *     ' We regret that the solution options that you have ', /,
      *     ' chosen are not all freely available with GALAHAD.', //,
      *     ' If you have HSL (formerly the Harwell Subroutine',
      *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,      
-     *     ' subroutine MC20AD with its HSL namesake ', /,        
+     *     ' option may be enabled by replacing the dummy ', /,
+     *     ' subroutine MC20AD with its HSL namesake ', /,
      *     ' and dependencies. See ', /,
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )

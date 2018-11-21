@@ -75,6 +75,7 @@ MAT_GLRT = $(MAT_BASIC) $(MLG)(galahad_glrt_matlab_types.o)
 MAT_GLTR = $(MAT_BASIC) $(MLG)(galahad_gltr_matlab_types.o)
 MAT_QPA = $(MAT_BASIC) $(MLG)(galahad_qpa_matlab_types.o)
 MAT_LSQP = $(MAT_SBLS) $(MAT_FDC) $(MLG)(galahad_lsqp_matlab_types.o)
+MAT_LPA = $(MAT_BASIC) $(MLG)(galahad_lpa_matlab_types.o)
 MAT_LPB = $(MAT_SBLS)  $(MAT_FDC) $(MLG)(galahad_lpb_matlab_types.o)
 MAT_QPB = $(MAT_GLTR) $(MAT_LSQP) $(MLG)(galahad_qpb_matlab_types.o)
 MAT_EQP = $(MAT_GLTR) $(MAT_SBLS) $(MLG)(galahad_eqp_matlab_types.o)
@@ -94,10 +95,10 @@ SUCC_MATLAB = precision version) for Matlab compiled successfully
 
 all: all_$(PRECIS)
 
-all_single: basics sils lpb cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt \
+all_single: basics sils lpa lpb cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt \
             qpa qpb qpc qp rqs sbls trs wcp tru arc
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
-all_double: basics sils lpb cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt \
+all_double: basics sils lpa lpb cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt \
             qpa qpb qpc qp rqs sbls trs wcp tru arc
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 
@@ -113,8 +114,8 @@ all_current_double: all_double bqp bqpb
 
 allqp: allqp_$(PRECIS)
 
-allqp_single: basics lpb cqp dqp eqp lsqp qpa qpb qpc qp wcp
-allqp_double: basics lpb cqp dqp eqp lsqp qpa qpb qpc qp wcp
+allqp_single: basics lpa lpb cqp dqp eqp lsqp qpa qpb qpc qp wcp
+allqp_double: basics lpa lpb cqp dqp eqp lsqp qpa qpb qpc qp wcp
 
 #  everything for regularization from the distribution
 
@@ -170,6 +171,18 @@ bqpb: $(MAT_BQPB) galahad_bqpb.F90
 	$(MEX) galahad_bqpb1.F90 -output galahad_bqpb \
           -L$(OBJD) $(LIBS)  $(MFLAGS)
 	$(RM) galahad_bqpb1.F90
+	@printf '[ OK ]\n'
+
+#  lpa
+
+lpa: $(MAT_LPA) galahad_lpa.F90
+	( cd ../lpa ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     lpa_silent PRECIS=double PWD=$(PWD)/../lpa )
+	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_lpa"
+	$(SED) -f $(LSEDS) galahad_lpa.F90 > galahad_lpa1.F90
+	$(MEX) galahad_lpa1.F90 -output galahad_lpa \
+          -L$(OBJD) $(LIBS)  $(MFLAGS)
+	$(RM) galahad_lpa1.F90
 	@printf '[ OK ]\n'
 
 #  lpb
@@ -540,6 +553,23 @@ $(MLG)(galahad_bqpb_matlab_types.o): galahad_bqpb_matlab_types.F90
 	cd $(OBJ) ; $(MARR) galahad_bqpb_matlab_types.o
 	$(RM) $(OBJ)/galahad_bqpb_matlab_types.o \
               $(OBJ)/galahad_bqpb_matlab_types.F90
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  lpa
+
+galahad_lpa_matlab_types.o: $(MLG)(galahad_lpa_matlab_types.o)
+
+$(MLG)(galahad_lpa_matlab_types.o): galahad_lpa_matlab_types.F90
+	( cd ../lpa ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     lpa_silent PRECIS=double PWD=$(PWD)/../lpa )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_lpa_matlab_types"
+	$(CP) galahad_lpa_matlab_types.F90 $(OBJ)/galahad_lpa_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_lpa_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_lpa_matlab_types.o
+	$(RM) $(OBJ)/galahad_lpa_matlab_types.o \
+              $(OBJ)/galahad_lpa_matlab_types.F90
+	$(MRMARFILE) galahad_qpc_matlab_types.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

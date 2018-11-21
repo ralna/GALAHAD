@@ -17,7 +17,7 @@
 !   originally released pre GALAHAD Version 1.0. July 16th 2000
 !   update released with GALAHAD Version 2.0. April 7th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_QPT_double
@@ -80,7 +80,7 @@
       USE GALAHAD_SYMBOLS,                                                    &
           INACTIVE            => GALAHAD_INACTIVE,                            &
           ELIMINATED          => GALAHAD_ELIMINATED
-         
+
 !     Exit codes
 
       USE GALAHAD_SYMBOLS,                                                    &
@@ -147,14 +147,14 @@
         REAL ( KIND = wp ) :: infinity = ( 10.0_wp ) ** 20 ! bound infinity
         REAL ( KIND = wp ) :: df = 0.0_wp    ! parametric constant term
         REAL ( KIND = wp ) :: q = 0.0_wp     ! value of the objective
-        REAL ( KIND = wp ) :: theta_max = 0.0_wp ! upper bound on parametric 
+        REAL ( KIND = wp ) :: theta_max = 0.0_wp ! upper bound on parametric
                                              ! range
         REAL ( KIND = wp ) :: theta = 0.0    ! current value of parameter
         REAL ( KIND = wp ) :: rho_g = 1.0_wp ! penalty parameter for general
                                              ! linear constraints for l_1QPs
         REAL ( KIND = wp ) :: rho_b = 1.0_wp ! penalty parameter for simple
                                              ! bound constraints for l_1QPs
-        LOGICAL :: new_problem_structure     ! has the structure changed?
+        LOGICAL :: new_problem_structure = .TRUE. ! has the structure changed?
 
 !  allocatable arrays
 
@@ -256,7 +256,7 @@
 !-*-*-*-*-*-*-*-*-   Q P T _ k e y w o r d _ H   F U N C T I O N  -*-*-*--*-*-*-
 
      FUNCTION QPT_keyword_H( array )
-     LOGICAL :: QPT_keyword_H 
+     LOGICAL :: QPT_keyword_H
 
 !  Dummy arguments
 
@@ -264,7 +264,7 @@
 
 !  Check to see if the string is an appropriate keyword
 
-     SELECT CASE( SMT_get( array ) ) 
+     SELECT CASE( SMT_get( array ) )
 
 !  Keyword known
 
@@ -344,11 +344,11 @@
 
 !  Check to see if the string is an appropriate keyword
 
-     SELECT CASE( SMT_get( array ) ) 
+     SELECT CASE( SMT_get( array ) )
 
 !  Keyword known
 
-     CASE( 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' ) 
+     CASE( 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' )
        QPT_keyword_A = .TRUE.
 
 !  Keyword unknown
@@ -403,20 +403,28 @@
 
 !===============================================================================
 
-      SUBROUTINE QPT_summarize_problem( out, prob )
+      SUBROUTINE QPT_summarize_problem( out, prob, lp )
 
 !  Summarizes the problem prob on output device out
 
-!  Nick Gould, December 23rd 2014 
+!  Nick Gould, December 23rd 2014
 
 !  Dummy arguments
 
       INTEGER, INTENT( IN ) :: out
       TYPE ( QPT_problem_type ), INTENT( IN ) :: prob
+      LOGICAL, OPTIONAL, INTENT( IN ) :: lp
 
 !  local variables
 
       INTEGER :: i, j
+      LOGICAL :: is_lp
+
+      IF ( PRESENT( lp ) ) THEN
+        is_lp = lp
+      ELSE
+        is_lp = .FALSE.
+      END IF
 
       WRITE( out, "( ' n, m = ', I0, 1X, I0 )" ) prob%n, prob%m
 
@@ -430,55 +438,57 @@
       ELSE
         WRITE( out, "( ' G = ', /, ( 5ES12.4 ) )" ) prob%G( : prob%n )
       END IF
-      IF ( prob%Hessian_kind == 0 ) THEN
-        WRITE( out, "( ' W = zeros' )" )
-      ELSE IF ( prob%Hessian_kind == 1 ) THEN
-        WRITE( out, "( ' W = ones ' )" )
-        IF ( prob%target_kind == 0 ) THEN
-          WRITE( out, "( ' X0 = zeros' )" )
-        ELSE IF ( prob%target_kind == 1 ) THEN
-          WRITE( out, "( ' X0 = ones ' )" )
+      IF ( .NOT. is_lp ) THEN
+        IF ( prob%Hessian_kind == 0 ) THEN
+          WRITE( out, "( ' W = zeros' )" )
+        ELSE IF ( prob%Hessian_kind == 1 ) THEN
+          WRITE( out, "( ' W = ones ' )" )
+          IF ( prob%target_kind == 0 ) THEN
+            WRITE( out, "( ' X0 = zeros' )" )
+          ELSE IF ( prob%target_kind == 1 ) THEN
+            WRITE( out, "( ' X0 = ones ' )" )
+          ELSE
+            WRITE( out, "( ' X0 = ', /, ( 5ES12.4 ) )" ) prob%X0( : prob%n )
+          END IF
+        ELSE IF ( prob%Hessian_kind == 2 ) THEN
+          WRITE( out, "( ' W = ', /, ( 5ES12.4 ) )" ) prob%WEIGHT( : prob%n )
+          IF ( prob%target_kind == 0 ) THEN
+            WRITE( out, "( ' X0 = zeros' )" )
+          ELSE IF ( prob%target_kind == 1 ) THEN
+            WRITE( out, "( ' X0 = ones ' )" )
+          ELSE
+            WRITE( out, "( ' X0 = ', /, ( 5ES12.4 ) )" ) prob%X0( : prob%n )
+          END IF
         ELSE
-          WRITE( out, "( ' X0 = ', /, ( 5ES12.4 ) )" ) prob%X0( : prob%n )
-        END IF
-      ELSE IF ( prob%Hessian_kind == 2 ) THEN
-        WRITE( out, "( ' W = ', /, ( 5ES12.4 ) )" ) prob%WEIGHT( : prob%n )
-        IF ( prob%target_kind == 0 ) THEN
-          WRITE( out, "( ' X0 = zeros' )" )
-        ELSE IF ( prob%target_kind == 1 ) THEN
-          WRITE( out, "( ' X0 = ones ' )" )
-        ELSE
-          WRITE( out, "( ' X0 = ', /, ( 5ES12.4 ) )" ) prob%X0( : prob%n )
-        END IF
-      ELSE
-        IF ( SMT_get( prob%H%type ) == 'NONE' .OR.                             &
-             SMT_get( prob%H%type ) == 'ZERO' ) THEN
-          WRITE( out, "( ' No H' )" )
-        ELSE IF ( SMT_get( prob%H%type ) == 'IDENTITY' ) THEN
-          WRITE( out, "( ' H (identity)' )" )
-        ELSE IF ( SMT_get( prob%H%type ) == 'SCALED_IDENTITY' ) THEN
-          WRITE( out, "( ' H (identity scaled by ', /, ES12.4,')')" )          &
-            prob%H%val( 1 )
-        ELSE IF ( SMT_get( prob%H%type ) == 'DIAGONAL' ) THEN
-          WRITE( out, "( ' H (diagonal) = ', /, ( 5ES12.4 ) )" )               &
-            prob%H%val( : prob%n )
-        ELSE IF ( SMT_get( prob%H%type ) == 'DENSE' ) THEN
-          WRITE( out, "( ' H (dense) = ', /, ( 5ES12.4 ) )" )                  &
-            prob%H%val( : prob%n * ( prob%n + 1 ) / 2 )
-        ELSE IF ( SMT_get( prob%H%type ) == 'SPARSE_BY_ROWS' ) THEN
-          WRITE( out, "( ' H (row-wise) = ' )" )
-          DO i = 1, prob%n
+          IF ( SMT_get( prob%H%type ) == 'NONE' .OR.                           &
+               SMT_get( prob%H%type ) == 'ZERO' ) THEN
+            WRITE( out, "( ' No H' )" )
+          ELSE IF ( SMT_get( prob%H%type ) == 'IDENTITY' ) THEN
+            WRITE( out, "( ' H (identity)' )" )
+          ELSE IF ( SMT_get( prob%H%type ) == 'SCALED_IDENTITY' ) THEN
+            WRITE( out, "( ' H (identity scaled by ', /, ES12.4,')')" )        &
+              prob%H%val( 1 )
+          ELSE IF ( SMT_get( prob%H%type ) == 'DIAGONAL' ) THEN
+            WRITE( out, "( ' H (diagonal) = ', /, ( 5ES12.4 ) )" )             &
+              prob%H%val( : prob%n )
+          ELSE IF ( SMT_get( prob%H%type ) == 'DENSE' ) THEN
+            WRITE( out, "( ' H (dense) = ', /, ( 5ES12.4 ) )" )                &
+              prob%H%val( : prob%n * ( prob%n + 1 ) / 2 )
+          ELSE IF ( SMT_get( prob%H%type ) == 'SPARSE_BY_ROWS' ) THEN
+            WRITE( out, "( ' H (row-wise) = ' )" )
+            DO i = 1, prob%n
+              WRITE( out, "( ( 2( 2I8, ES12.4 ) ) )" )                         &
+                ( i, prob%H%col( j ), prob%H%val( j ),                         &
+                  j = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1 )
+            END DO
+          ELSE IF ( SMT_get( prob%H%type ) == 'COORDINATE' ) THEN
+            WRITE( out, "( ' H (co-ordinate) = ' )" )
             WRITE( out, "( ( 2( 2I8, ES12.4 ) ) )" )                           &
-              ( i, prob%H%col( j ), prob%H%val( j ),                           &
-                j = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1 )
-          END DO
-        ELSE IF ( SMT_get( prob%H%type ) == 'COORDINATE' ) THEN
-          WRITE( out, "( ' H (co-ordinate) = ' )" )
-          WRITE( out, "( ( 2( 2I8, ES12.4 ) ) )" )                             &
-          ( prob%H%row( i ), prob%H%col( i ), prob%H%val( i ),                 &
-            i = 1, prob%H%ne)
-        ELSE IF ( SMT_get( prob%H%type ) == 'LBFGS' ) THEN
-          WRITE( out, "( ' L-BFGS H (not explicit)' )" )
+            ( prob%H%row( i ), prob%H%col( i ), prob%H%val( i ),               &
+              i = 1, prob%H%ne)
+          ELSE IF ( SMT_get( prob%H%type ) == 'LBFGS' ) THEN
+            WRITE( out, "( ' L-BFGS H (not explicit)' )" )
+          END IF
         END IF
       END IF
 
@@ -507,7 +517,7 @@
         END IF
         WRITE( out, "( ' C_l = ', /, ( 5ES12.4 ) )" ) prob%C_l( : prob%m )
         WRITE( out, "( ' C_u = ', /, ( 5ES12.4 ) )" ) prob%C_u( : prob%m )
-      END IF 
+      END IF
 
       RETURN
 
@@ -528,19 +538,19 @@
 !            the output device
 
       TYPE ( QPT_problem_type ), INTENT( IN ) :: prob
- 
-!            the problem to print out 
+
+!            the problem to print out
 
       INTEGER, INTENT( IN ), OPTIONAL :: level
 
 !            the level of detail required on output:
-!            0 : writes the values of n, m, X, C,  Z, Y, X_l, X_u, C_l, C_u, 
-!                Y_l, Y_u, Z_l, Z_u, A, f, q, G, H, X0, WEIGHT.  
+!            0 : writes the values of n, m, X, C,  Z, Y, X_l, X_u, C_l, C_u,
+!                Y_l, Y_u, Z_l, Z_u, A, f, q, G, H, X0, WEIGHT.
 !            1 : additionally writes new_problem_structure, gradient_kind,
 !                Hessian_kind, rho_g and rho_b and indicates which of the
 !                variables/constraints components are inactive.
-!            2 : writes every component of the prob structure. 
-!            Each vector is only written if it is associated.     
+!            2 : writes every component of the prob structure.
+!            Each vector is only written if it is associated.
 
 !     Programming: Ph. Toint, November 2000.
 !
@@ -757,7 +767,7 @@
 !     --------------------------------------------------------------------------
 !                         Write the dual variables.
 !     --------------------------------------------------------------------------
-  
+
          lowv = ALLOCATED( prob%Z_l )
          valv = ALLOCATED( prob%Z   )
          uppv = ALLOCATED( prob%Z_u )
@@ -923,7 +933,7 @@
 !     --------------------------------------------------------------------------
 !                            Write the constraints.
 !     --------------------------------------------------------------------------
-  
+
       WRITE( out, * ) ' '
       WRITE( out, * ) '   m = ', prob%m
 
@@ -1104,7 +1114,7 @@
 !     --------------------------------------------------------------------------
 !                            Write the multipliers.
 !     --------------------------------------------------------------------------
-  
+
          lowv = ALLOCATED( prob%Y_l )
          valv = ALLOCATED( prob%Y   )
          uppv = ALLOCATED( prob%Y_u )
@@ -1284,7 +1294,7 @@
 
          SELECT CASE ( TRIM( SMT_get( prob%A%type ) ) )
          CASE ( 'DENSE' )  ! Dense Jacobian
-  
+
             IF ( stav ) THEN
                k = 0
                DO i = 1, prob%m
@@ -1383,9 +1393,9 @@
             WRITE( out, * ) '   gradient_kind = ', prob%gradient_kind
             WRITE( out, * ) ' '
          END IF
-            
+
          SELECT CASE ( prob%gradient_kind )
-         
+
          CASE ( ALL_ZEROS )
 
             IF ( stav ) THEN
@@ -1441,17 +1451,17 @@
 
 !        Write the Hessian
 
-         gotH = ALLOCATED( prob%H%val ) 
+         gotH = ALLOCATED( prob%H%val )
          IF ( gotH  ) THEN
 
             SELECT CASE ( TRIM( SMT_get( prob%H%type ) ) )
-   
+
             CASE ( 'DENSE' )  ! Dense Hessian
-   
+
                WRITE( out, * ) ' '
                WRITE( out, * ) '   Hessian '
                WRITE( out, * ) ' '
-    
+
                IF ( lev == 2 ) THEN
                   WRITE( out, * )                                              &
                        '   index of last free diagonal element          = ',   &
@@ -1476,7 +1486,7 @@
                        prob%h_diag_end_fixed
                   WRITE( out, * )' '
                END IF
-     
+
                IF ( stav ) THEN
                   k = 0
                   DO i = 1, prob%n
@@ -1499,15 +1509,15 @@
                      END DO
                   END DO
                END IF
-   
+
             CASE ( 'SPARSE_BY_ROWS' )  ! Sparse Hessian
-   
+
                IF( prob%H%ptr( prob%n + 1 ) > 1 ) THEN
-   
+
                   WRITE( out, * ) ' '
                   WRITE( out, * ) '   Hessian '
                   WRITE( out, * ) ' '
-    
+
                   IF ( lev == 2 ) THEN
                      WRITE( out, * )                                           &
                           '   index of last free diagonal element          = ',&
@@ -1532,7 +1542,7 @@
                          prob%h_diag_end_fixed
                      WRITE( out, * )' '
                   END IF
-     
+
                   IF ( stav ) THEN
                      DO i = 1, prob%n
                         DO k = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
@@ -1552,17 +1562,17 @@
                         END DO
                      END DO
                   END IF
-   
+
                END IF
-   
+
             CASE ( 'COORDINATE' ) ! Coordinate Hessian
-   
+
                IF ( prob%H%ne > 0 ) THEN
-   
+
                   WRITE( out, * ) ' '
                   WRITE( out, * ) '   Hessian '
                   WRITE( out, * ) ' '
-    
+
                   IF ( lev == 2 ) THEN
                      WRITE( out, * )' '
                      WRITE( out, * ) '   H_ne = ', prob%H%ne
@@ -1583,14 +1593,14 @@
                           prob%h_diag_end_range
                      WRITE( out, * )                                           &
                           '   index of last upper bounded diagonal element = ',&
-                          prob%h_diag_end_upper 
+                          prob%h_diag_end_upper
                      WRITE( out, * )                                           &
                           '   index of last fixed diagonal element         = ',&
                           prob%h_diag_end_fixed
                      WRITE( out, * )' '
                   END IF
-     
-                  IF ( stav ) THEN 
+
+                  IF ( stav ) THEN
                      DO k = 1, prob%H%ne
                         i = prob%H%row( k )
                         j = prob%H%col( k )
@@ -1610,13 +1620,13 @@
                END IF
 
             CASE ( 'DIAGONAL' ) ! Diagonal Hessian
-   
+
                IF ( prob%H%ne > 0 ) THEN
-   
+
                   WRITE( out, * ) ' '
                   WRITE( out, * ) '   Hessian '
                   WRITE( out, * ) ' '
-    
+
                   IF ( lev == 2 ) THEN
                      WRITE( out, * )                                           &
                           '   index of last free diagonal element          = ',&
@@ -1635,14 +1645,14 @@
                           prob%h_diag_end_range
                      WRITE( out, * )                                           &
                           '   index of last upper bounded diagonal element = ',&
-                          prob%h_diag_end_upper 
+                          prob%h_diag_end_upper
                      WRITE( out, * )                                           &
                           '   index of last fixed diagonal element         = ',&
                           prob%h_diag_end_fixed
                      WRITE( out, * )' '
                   END IF
-     
-                  IF ( stav ) THEN 
+
+                  IF ( stav ) THEN
                      DO i = 1, prob%n
                         IF ( prob%X_status( i ) == INACTIVE ) THEN
                            WRITE( out , 701 )  i, i, prob%H%val( i )
@@ -1660,24 +1670,24 @@
             END SELECT
 
          ELSE
-  
+
 !           Write the weights.
 
             IF ( lev > 0 ) THEN
                WRITE( out, * ) '   Hessian_kind = ', prob%Hessian_kind
                WRITE( out, * ) ' '
             END IF
-         
+
             stav = ALLOCATED( prob%X_status )
 
             WRITE( out, * ) ' '
             WRITE( out, * ) '   weights '
             WRITE( out, * ) ' '
-   
+
             SELECT CASE ( prob%Hessian_kind )
-            
+
             CASE ( ALL_ZEROS )
-   
+
                IF ( stav ) THEN
                   DO j = 1, prob%n
                      SELECT CASE ( prob%X_status( j ) )
@@ -1692,9 +1702,9 @@
                      WRITE( out, 800 ) j, ZERO
                   END DO
                END IF
-   
+
             CASE ( ALL_ONES )
-   
+
                IF ( stav ) THEN
                   DO j = 1, prob%n
                      SELECT CASE ( prob%X_status( j ) )
@@ -1709,9 +1719,9 @@
                      WRITE( out, 800 ) j, ONE
                   END DO
                END IF
-   
+
             CASE DEFAULT
-   
+
                IF ( stav ) THEN
                   DO j = 1, prob%n
                      SELECT CASE ( prob%X_status( j ) )
@@ -1726,9 +1736,9 @@
                      WRITE( out, 800 ) j, prob%WEIGHT( j )
                   END DO
                END IF
-   
+
             END SELECT
-   
+
          END IF
 
       END IF
@@ -1774,10 +1784,10 @@
 403   FORMAT( 3x, 'y(', i4, ') =', 3x, 3ES12.4, 3x, 'inactive'   )
 500   FORMAT( 3x, 'g(', i4, ') =', 3x,  ES12.4 )
 501   FORMAT( 3x, 'g(', i4, ') =', 3x,  ES12.4, 3x, 'inactive'   )
-600   FORMAT( 3x, 'A(', i4, ',', i4, ') = ', ES12.4 ) 
-601   FORMAT( 3x, 'A(', i4, ',', i4, ') = ', ES12.4, 3x, 'inactive'   ) 
-700   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4 ) 
-701   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4, 3x, 'inactive'   ) 
+600   FORMAT( 3x, 'A(', i4, ',', i4, ') = ', ES12.4 )
+601   FORMAT( 3x, 'A(', i4, ',', i4, ') = ', ES12.4, 3x, 'inactive'   )
+700   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4 )
+701   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4, 3x, 'inactive'   )
 800   FORMAT( 3x, 'w(', i4, ') =', 3x,  ES12.4 )
 801   FORMAT( 3x, 'w(', i4, ') =', 3x,  ES12.4, 3x, 'inactive'   )
 900   FORMAT( 3x, 'penalty parameter for the bound   constraints = ', ES12.4 )
@@ -1797,8 +1807,8 @@
 !     Arguments
 
       TYPE ( QPT_problem_type ), INTENT( IN ) :: prob
- 
-!            the problem to print out       
+
+!            the problem to print out
 
       CHARACTER( 10 ), INTENT( IN ) :: probname
 
@@ -1848,15 +1858,15 @@
       INTEGER, PARAMETER :: BOTH    =  5
       INTEGER, PARAMETER :: FIXED   =  6
 
-!     The maximum number of distinct values to consider for establishing 
+!     The maximum number of distinct values to consider for establishing
 !     defaults values
 
-      INTEGER, PARAMETER :: NVALUES = 20  
+      INTEGER, PARAMETER :: NVALUES = 20
 
 !     These are symbols for the side of the two column data specification
 !     of the SIF format on which the next value is to be written.
 
-      INTEGER, PARAMETER :: LEFT    =  0  
+      INTEGER, PARAMETER :: LEFT    =  0
       INTEGER, PARAMETER :: RIGHT   =  1
 
 !     Numerical parameter
@@ -1958,9 +1968,9 @@
                   cobj = 'S'
                END IF
             END DO
-         END IF 
+         END IF
 
-!        Update the indicator for the type of constraints, if a finite bound 
+!        Update the indicator for the type of constraints, if a finite bound
 !        is met.
 
          xlj = prob%X_l( j )
@@ -2027,7 +2037,7 @@
                   END IF
                END IF
             END IF
-         ELSE  
+         ELSE
             IF ( bl0 > - infinity ) THEN
                b_unique  = LOWER                                   ! lower bound
             END IF
@@ -2171,7 +2181,7 @@
          SELECT CASE ( ccon )
          CASE ( 'L' )
             WRITE( out, 101 )
-         CASE ( 'B' )     
+         CASE ( 'B' )
             WRITE( out, 102 )
          CASE ( 'U' )
             WRITE( out, 103 )
@@ -2180,7 +2190,7 @@
          SELECT CASE ( ccon )
          CASE ( 'L' )
             WRITE( out, 104 )
-         CASE ( 'B' )     
+         CASE ( 'B' )
             WRITE( out, 105 )
          CASE ( 'U' )
             WRITE( out, 106 )
@@ -2189,7 +2199,7 @@
          WRITE( out, 107 )
       END SELECT
       WRITE( out, 110 )  date( 7:8 ), date( 5:6 ), date( 3:4 )
-         
+
 !     Write the classification.
 
       fmt = '( ''*   classification '',A1,A1,''R2-AN-'' '
@@ -2215,7 +2225,7 @@
       CASE ( 100:999 )
          fmt = TRIM( fmt ) // ',I3)'
       CASE ( 1000:9999 )
-         fmt = TRIM( fmt ) // ',I4)' 
+         fmt = TRIM( fmt ) // ',I4)'
       CASE ( 10000:99999 )
          fmt = TRIM( fmt ) // ',I5)'
       CASE DEFAULT
@@ -2305,7 +2315,7 @@
          END DO
          IF ( side == RIGHT ) WRITE( out, 1000 ) 'N ', 'OBJ       ', f3, f4
          IF ( notfound ) WRITE( out, 1000 ) 'N ', 'OBJ       '
-      ELSE 
+      ELSE
          IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
            IF ( prob%gradient_kind == 1 ) THEN
               CALL QPT_trim_real( ONE, f4 )
@@ -2328,7 +2338,7 @@
       END IF
 
 !     The constraints
-      
+
       IF ( ccon == 'L' ) THEN
          WRITE( out, '( '' '' )' )
          DO i = 1, prob%m
@@ -2385,7 +2395,7 @@
             END IF
          END DO
       END IF
-      
+
 !-------------------------------------------------------------------------------
 
 !                             The constants
@@ -2408,7 +2418,7 @@
             END IF
          END IF
 
-!        The constant objective function term 
+!        The constant objective function term
 !        (negated to reflect SIF definition of constants).
 
          IF (  ( c_unique == NO  .AND.  prob%f /= ZERO ) .OR. &
@@ -2482,7 +2492,7 @@
                   ELSE
                      CYCLE
                   END IF
-               ELSE 
+               ELSE
                   CYCLE
                END IF
                IF ( r_unique == YES ) THEN
@@ -2502,7 +2512,7 @@
             IF ( side == RIGHT ) WRITE( out, 1000 ) '  ', probname, f3, f4
          END IF
       END IF
-         
+
 !-------------------------------------------------------------------------------
 
 !                             The bounds
@@ -2532,7 +2542,7 @@
 
 !        Write the default if the lower bound has a non zero default.
 
-         CASE ( LOWER ) 
+         CASE ( LOWER )
             IF ( bl0 /= ZERO ) THEN
                WRITE( out, '( /, ''BOUNDS'', / )' )
                written = .TRUE.                ! section title just written
@@ -2575,7 +2585,7 @@
          IF ( l_details .OR. u_details ) THEN
 
 !           Write the section title, if not already done.
-         
+
             IF ( .NOT. written ) WRITE( out, '( /, ''BOUNDS'', / )' )
 
 !           Write the remaining bounds.
@@ -2743,7 +2753,7 @@
                   WRITE( out, 1000 ) 'V ', probname, f3, f4, f5, f6
                   side = LEFT
                END IF
-            END DO            
+            END DO
             IF ( side == RIGHT ) WRITE( out, 1000 ) 'V ', probname, f3, f4
          END IF
       END IF
@@ -3008,8 +3018,8 @@
 !     position in the vector is idx, is compared to all the previously distinct
 !     values found so far: if it corresponds to one of the previous values, the
 !     occurrence count of that value is incremented by one; otherwise, it is
-!     stored in val, cval and ival are updated, and nval is incremented by one, 
-!     unless nval > NVALUES (in which case no action is taken except 
+!     stored in val, cval and ival are updated, and nval is incremented by one,
+!     unless nval > NVALUES (in which case no action is taken except
 !     incrementing nval to NVALUES + 1).
 
 !     Arguments:
@@ -3028,7 +3038,7 @@
 
       INTEGER, DIMENSION( NVALUES ), INTENT( INOUT ) :: cval
 
-!            input : the number of times each of the values (from 1 to 
+!            input : the number of times each of the values (from 1 to
 !                    MIN( NVALUES, nval ) ) has been met so far in the vector
 !            output : if value = val( i ), the cval( i ) is incremented by one,
 
@@ -3096,7 +3106,7 @@
 
 !            this function return one of the values
 !            OK         : successful transformation,
-!            MEMORY_FULL: the transformation could not be carried out because 
+!            MEMORY_FULL: the transformation could not be carried out because
 !                         the necessary memory allocation failed.
 
 !     Programming: Ph. Toint, June 2001.
@@ -3109,7 +3119,7 @@
 
 !     Allocate the pointer to the beginning of each row.
 
-      ALLOCATE( prob%A%ptr( prob%m + 1 ), STAT = iostat ) 
+      ALLOCATE( prob%A%ptr( prob%m + 1 ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
          exitcode = MEMORY_FULL
          RETURN
@@ -3123,8 +3133,8 @@
       DO i = 1, prob%m
          p = 0
          DO j = 1, prob%n
-            k = k + 1 
-            IF ( prob%A%val( k ) /= ZERO ) p = p + 1 
+            k = k + 1
+            IF ( prob%A%val( k ) /= ZERO ) p = p + 1
          END DO
          prob%A%ptr( i + 1 ) = prob%A%ptr( i ) + p
       END DO
@@ -3132,7 +3142,7 @@
 
 !     Allocate the pointer for the column indices.
 
-      ALLOCATE( prob%A%col( prob%A%ne ), STAT = iostat ) 
+      ALLOCATE( prob%A%col( prob%A%ne ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
          exitcode = MEMORY_FULL
          RETURN
@@ -3155,7 +3165,7 @@
 
 !     Update the type of matrix.
 
-      CALL QPT_put_A( prob%A%type, 'SPARSE_BY_ROWS' ) 
+      CALL QPT_put_A( prob%A%type, 'SPARSE_BY_ROWS' )
 
       RETURN
 
@@ -3178,7 +3188,7 @@
 
 !            this function return one of the values
 !            OK         : successful transformation,
-!            MEMORY_FULL: the transformation could not be carried out because 
+!            MEMORY_FULL: the transformation could not be carried out because
 !                         the necessary memory allocation failed.
 
 !     Programming: Ph. Toint, June 2001.
@@ -3242,7 +3252,7 @@
 
 !     Update the type of matrix.
 
-      CALL QPT_put_A( prob%A%type, 'DENSE' ) 
+      CALL QPT_put_A( prob%A%type, 'DENSE' )
 
 !     Indicate successful exit.
 
@@ -3269,7 +3279,7 @@
 
 !            this function return one of the values
 !            OK         : successful transformation,
-!            MEMORY_FULL: the transformation could not be carried out because 
+!            MEMORY_FULL: the transformation could not be carried out because
 !                         the necessary memory allocation failed.
 
 !     Programming: Ph. Toint, November 2000
@@ -3343,14 +3353,14 @@
 
 !     Update the matrix type
 
-      CALL QPT_put_A( prob%A%type, 'SPARSE_BY_ROWS' ) 
+      CALL QPT_put_A( prob%A%type, 'SPARSE_BY_ROWS' )
 
 !     Indicate successful exit.
 
       exitcode = OK
 
       RETURN
-    
+
       END SUBROUTINE QPT_A_from_C_to_S
 
 !==============================================================================
@@ -3370,7 +3380,7 @@
 
 !            this function return one of the values
 !            OK         : successful transformation,
-!            MEMORY_FULL: the transformation could not be carried out because 
+!            MEMORY_FULL: the transformation could not be carried out because
 !                         the necessary memory allocation failed.
 
 !     Programming: Ph. Toint, June 2001.
@@ -3427,7 +3437,7 @@
 
 !            this function return one of the values
 !            OK         : successful transformation,
-!            MEMORY_FULL: the transformation could not be carried out because 
+!            MEMORY_FULL: the transformation could not be carried out because
 !                         the necessary memory allocation failed.
 
 !     Programming: Ph. Toint, June 2001.
@@ -3507,7 +3517,7 @@
       SUBROUTINE QPT_H_from_D_to_S( prob, exitcode )
 
 !     Transforms the matrix H from dense (lower triangular) storage to
-!     sparse-by-row format. 
+!     sparse-by-row format.
 
 !     Arguments:
 
@@ -3519,7 +3529,7 @@
 
 !            this function return one of the values
 !            OK         : successful transformation,
-!            MEMORY_FULL: the transformation could not be carried out because 
+!            MEMORY_FULL: the transformation could not be carried out because
 !                         the necessary memory allocation failed.
 
 !     Programming: Ph. Toint, June 2001.
@@ -3532,7 +3542,7 @@
 
 !     Allocate the pointer to the beginning of each row.
 
-      ALLOCATE( prob%H%ptr( prob%n + 1 ), STAT = iostat ) 
+      ALLOCATE( prob%H%ptr( prob%n + 1 ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
          exitcode = MEMORY_FULL
          RETURN
@@ -3546,8 +3556,8 @@
       DO i = 1, prob%n
          p = 0
          DO j = 1, i
-            k = k + 1 
-            IF ( prob%H%val( k ) /= ZERO ) p = p + 1 
+            k = k + 1
+            IF ( prob%H%val( k ) /= ZERO ) p = p + 1
          END DO
          prob%H%ptr( i + 1 ) = prob%H%ptr( i ) + p
       END DO
@@ -3555,7 +3565,7 @@
 
 !     Allocate the pointer for the column indices.
 
-      ALLOCATE( prob%H%col( prob%H%ne ), STAT = iostat ) 
+      ALLOCATE( prob%H%col( prob%H%ne ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
          exitcode = MEMORY_FULL
          RETURN
@@ -3593,7 +3603,7 @@
 
       SUBROUTINE QPT_H_from_S_to_Di( prob, exitcode )
 
-!     Transforms the lower triangle of the (diagonal) matrix H from 
+!     Transforms the lower triangle of the (diagonal) matrix H from
 !     sparse-by-row format to diagonal format.
 
 !     Arguments:
@@ -3647,7 +3657,7 @@
       SUBROUTINE QPT_H_from_Di_to_S( prob, exitcode )
 
 !     Transforms the (diagonal) matrix H from diagonal storage to
-!     sparse-by-row format. 
+!     sparse-by-row format.
 
 !     Arguments:
 
@@ -3659,7 +3669,7 @@
 
 !            this function return one of the values
 !            OK         : successful transformation,
-!            MEMORY_FULL: the transformation could not be carried out because 
+!            MEMORY_FULL: the transformation could not be carried out because
 !                         the necessary memory allocation failed.
 
 !     Programming: Nick Gould, April 2005, based on Ph. Toint, June 2001.
@@ -3672,7 +3682,7 @@
 
 !     Allocate the pointer to the beginning of each row.
 
-      ALLOCATE( prob%H%ptr( prob%n + 1 ), STAT = iostat ) 
+      ALLOCATE( prob%H%ptr( prob%n + 1 ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
          exitcode = MEMORY_FULL
          RETURN
@@ -3680,7 +3690,7 @@
 
 !     Allocate the pointer for the column indices.
 
-      ALLOCATE( prob%H%col( prob%n ), STAT = iostat ) 
+      ALLOCATE( prob%H%col( prob%n ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
          exitcode = MEMORY_FULL
          RETURN
@@ -3723,7 +3733,7 @@
 
 !            this function return one of the values
 !            OK         : successful transformation,
-!            MEMORY_FULL: the transformation could not be carried out because 
+!            MEMORY_FULL: the transformation could not be carried out because
 !                         the necessary memory allocation failed.
 
 !     Programming: Ph. Toint, September 2000
@@ -3760,7 +3770,7 @@
       END DO
 
 !     Assign the pointers to the beginning of each row.
-      
+
       ii = 1
       DO i = 1, prob%n + 1
          k = prob%H%ptr( i )
@@ -3822,7 +3832,7 @@
       exitcode = OK
 
       RETURN
-    
+
       END SUBROUTINE QPT_H_from_C_to_S
 
 !===============================================================================
@@ -3842,7 +3852,7 @@
 
 !            this function return one of the values
 !            OK         : successful transformation,
-!            MEMORY_FULL: the transformation could not be carried out because 
+!            MEMORY_FULL: the transformation could not be carried out because
 !                         the necessary memory allocation failed.
 
 !     Programming: Ph. Toint, June 2001.

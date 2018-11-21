@@ -1,0 +1,26 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            LPA.data
+! problem-data-file-device                          26
+! write-initial-sif                                 no
+! initial-sif-file-name                             INITIAL.SIF
+! initial-sif-file-device                           51
+! scale-problem                                     0
+! pre-solve-problem                                 no
+! write-presolved-sif                               no
+! presolved-sif-file-name                           PRESOLVE.SIF
+! presolved-sif-file-device                         50
+! write-scaled-sif                                  no
+! scaled-sif-file-name                              SCALED.SIF
+! scaled-sif-file-device                            58
+! solve-problem                                     yes
+! print-full-solution                               no
+! write-solution                                    no
+! solution-file-name                                LPASOL.d
+! solution-file-device                              62
+! write-result-summary                              no
+! result-summary-file-name                          LPARES.d
+! result-summary-file-device                        47
+! test-warm-start                                   no
+
+INCLUDE LPA

@@ -1,4 +1,4 @@
-# THIS VERSION: GALAHAD 2.6 - 29/05/2015 AT 14:50 GMT.
+# THIS VERSION: GALAHAD 3.1 - 07/10/2018 AT 12:45 GMT.
 
 # Updates 12/Nov/2004 to allow for MA57, version 2
 #         29/Mar/2005 to allow for MA57, version 3
@@ -23,6 +23,7 @@
 #         29/May/2015 to allow for MI35
 #         08/Feb/2018 to reintroduce MA61 as this is not in the HSL Archive,
 #                     and to allow for the HSL Archive
+#         07/Oct/2018 to allow for LA04
 
 # Set directories for optional packages
 # Change these to override provided defaults containing dummy routines
@@ -285,6 +286,20 @@ MI28 = $(GALAHAD)/src/dum
 
 MI35 = $(GALAHAD)/src/dum
 #MI35 = $(GALAHAD)/../hsl-galahad/hsl_mi35
+
+# -------------------- LA04 environment variable ------------------------
+
+#  LA04 is the actual source directory for the HSL package LA04
+#  This directory must contain files with the following names
+#     la04 (single precision): ./la04s.f
+#     la04 (double precision): ./la04d.f
+#     auxiliary routines (single precision): ./fa14s.f  ./fd15s.f  ./mc29s.f
+#       ./mc59s.f ./la15s.f
+#     auxiliary routines (double precision): ./fa14d.f  ./fd15d.f  ./mc29d.f
+#       ./mc59d.f ./la15d.f
+
+LA04 = $(GALAHAD)/src/dum
+#LA04 = $(GALAHAD)/../hsl-galahad/la04
 
 # -------------------- ICFS environment variable ------------------------
 

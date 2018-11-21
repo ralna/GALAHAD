@@ -584,7 +584,7 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Default control data for CQP. This routine should be called before
-!  CQP_primal_dual
+!  CQP_solve
 !
 !  ---------------------------------------------------------------------------
 !
@@ -605,11 +605,11 @@
 !  Set real control parameters
 
       control%stop_abs_p = epsmch ** 0.33
-      control%stop_rel_p = epsmch ** 0.33
+!     control%stop_rel_p = epsmch ** 0.33
       control%stop_abs_c = epsmch ** 0.33
-      control%stop_rel_c = epsmch ** 0.33
+!     control%stop_rel_c = epsmch ** 0.33
       control%stop_abs_d = epsmch ** 0.33
-      control%stop_rel_d = epsmch ** 0.33
+!     control%stop_rel_d = epsmch ** 0.33
       control%obj_unbounded = - epsmch ** ( - 2 )
       control%indicator_tol_p = control%stop_abs_p
 

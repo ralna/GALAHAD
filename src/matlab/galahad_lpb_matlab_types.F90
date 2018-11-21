@@ -113,8 +113,8 @@
         CASE( 'stop_print' )
           CALL MATLAB_get_value( ps, 'stop_print',                             &
                                  pc, LPB_control%stop_print )
-        CASE( 'maxit ' )
-          CALL MATLAB_get_value( ps, 'maxit ',                                 &
+        CASE( 'maxit' )
+          CALL MATLAB_get_value( ps, 'maxit',                                  &
                                  pc, LPB_control%maxit  )
         CASE( 'infeas_max ' )
           CALL MATLAB_get_value( ps, 'infeas_max ',                            &

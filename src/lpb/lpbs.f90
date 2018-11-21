@@ -16,10 +16,10 @@
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ), p%Y( m ), C_stat( m ) )
    p%new_problem_structure = .TRUE.           ! new structure
    p%n = n ; p%m = m ; p%f = 1.0_wp           ! dimensions & objective constant
-   p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)         ! objective gradient
+   p%G = (/ 1.0_wp, 2.0_wp, 0.0_wp /)         ! objective gradient
    p%C_l = (/ 1.0_wp, 2.0_wp /)               ! constraint lower bound
    p%C_u = (/ 2.0_wp, 2.0_wp /)               ! constraint upper bound
-   p%X_l = (/ - 1.0_wp, - infinity, - infinity /) ! variable lower bound
+   p%X_l = (/ - 1.0_wp, 3.0_wp, - infinity /) ! variable lower bound
    p%X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp ! start from zero
 !  sparse co-ordinate storage format

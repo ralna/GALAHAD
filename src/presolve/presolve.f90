@@ -17,7 +17,7 @@
 !   originally released pre GALAHAD Version 1.0. March 1st 2002
 !   update released with GALAHAD Version 2.0. February 16th 2005
 !
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 !
 !             +-----------------------------------------------+
@@ -35,7 +35,7 @@
 !
 !  Presolving consists in simplifying the formulation of the problem using
 !  simple transformations, in order to produce a "reduced" problem in a
-!  "standard form".  This reduced problem is then passed to a solver.  
+!  "standard form".  This reduced problem is then passed to a solver.
 !  Once the reduced problem has been solved, it is then "restored" to obtain
 !  its solution in the context of its original formulation.
 !
@@ -43,15 +43,15 @@
 !
 !     - The variables are ordered so that their bounds appear in the order
 !
-!                     free                      x 
+!                     free                      x
 !                     non-negativity      0  <= x
 !                     lower              x_l <= x
 !                     range              x_l <= x <= x_u
 !                     upper                     x <= x_u
 !                     non-positivity            x <=  0
 !
-!       Fixed variables are removed. Within each category, the variables 
-!       are further ordered so that those with non-zero diagonal Hessian 
+!       Fixed variables are removed. Within each category, the variables
+!       are further ordered so that those with non-zero diagonal Hessian
 !       entries occur before the remainder.
 !
 !     - The constraints are ordered so that their bounds appear in the order
@@ -63,18 +63,18 @@
 !                     upper                     A x <= c_u
 !                     non-positivity            A x <=  0
 !
-!      Free constraints are removed. 
+!      Free constraints are removed.
 !
 !  In addition:
 !
 !     - Constraints may be removed or bounds tightened, to reduce the size of
 !       the feasible region or simplify the problem if this is possible.
 !
-!     - Bounds may be tightened on the dual variables and the multipliers 
-!       associated  with the problem. 
+!     - Bounds may be tightened on the dual variables and the multipliers
+!       associated  with the problem.
 !
 !  The PRESOLVE module implements the presolving process by  providing
-!  different subroutines  which specify the various actions that occur before 
+!  different subroutines  which specify the various actions that occur before
 !  and after the solution of the reduced problem.  These routines are:
 !
 !  - PRESOLVE_initialize:
@@ -84,7 +84,7 @@
 !         optional reads a specification file (that allows changing some
 !         control parameters without recompiling the code);
 !  - PRESOLVE_apply:
-!         reduces the problem and permutes the resulting reduced problem 
+!         reduces the problem and permutes the resulting reduced problem
 !         to standard form;
 !  - PRESOLVE_restore:
 !         restores the (solved) reduced problem to the original definition
@@ -98,24 +98,24 @@
 !                 +--------------------+         +---------------------+
 !                 |    INITIALIZE      |         |     INITIALIZE      |
 !                 +--------------------+         +---------------------+
-!                          |                               |              
+!                          |                               |
 !                 +--------------------+                   |
 !                 |    READ_SPECFILE   |                   |
 !                 +--------------------+                   |
-!                          |                               |              
-!                 +--------------------+         +---------------------+  
-!                 |      APPLY         |         |       APPLY         |  
-!                 +--------------------+         +---------------------+  
-!                          |                               |              
-!                       (solve)                         (solve)           
-!                          |                               |              
-!                 +--------------------+         +---------------------+  
-!                 |     RESTORE        |         |      RESTORE        |  
-!                 +--------------------+         +---------------------+  
-!                          |                               |              
-!                 +--------------------+         +---------------------+  
-!                 |     TERMINATE      |         |      TERMINATE      |  
-!                 +--------------------+         +---------------------+  
+!                          |                               |
+!                 +--------------------+         +---------------------+
+!                 |      APPLY         |         |       APPLY         |
+!                 +--------------------+         +---------------------+
+!                          |                               |
+!                       (solve)                         (solve)
+!                          |                               |
+!                 +--------------------+         +---------------------+
+!                 |     RESTORE        |         |      RESTORE        |
+!                 +--------------------+         +---------------------+
+!                          |                               |
+!                 +--------------------+         +---------------------+
+!                 |     TERMINATE      |         |      TERMINATE      |
+!                 +--------------------+         +---------------------+
 !
 !  where (solve) indicates that the reduced problem is solved by a quadratic
 !  or linear programming solver, thus ensuring sufficiently small primal-dual
@@ -131,7 +131,7 @@
 !  (see the description of the PRESOLVE_control structure below).
 !
 !  Note that the values of the multipliers and dual variables (and thus of
-!  their respective bounds) depend on the functional form assumed for the 
+!  their respective bounds) depend on the functional form assumed for the
 !  Lagrangian function associated with the problem.  This form is given by
 !
 !        L( x, y, z ) = q( x ) - y_sign * y^T ( A x - c ) - z_sign * z,
@@ -140,20 +140,20 @@
 !  y_sign and z_sign are +1 or -1 and can be chosen by the user.  Thus,
 !  if y_sign = +1, the multipliers associated to active constraints originally
 !  posed as inequalities are non-negative if the inequality is a lower bound
-!  and non-positive if it is an upper bound. Obvioulsy they are not 
-!  constrained in sign for constraints originally posed as equalities. These 
-!  sign conventions are reversed if y_sign = -1. 
+!  and non-positive if it is an upper bound. Obvioulsy they are not
+!  constrained in sign for constraints originally posed as equalities. These
+!  sign conventions are reversed if y_sign = -1.
 !  Similarly, if z_sign = +1, the dual variables associated to active bounds
-!  are non-negative if the original bound is an lower bound, non-positive if 
-!  it is an upper bound, or unconstrained in sign if the variables is fixed; 
+!  are non-negative if the original bound is an lower bound, non-positive if
+!  it is an upper bound, or unconstrained in sign if the variables is fixed;
 !  and this convention is reversed in z_sign = -1.
 !
-!  The presolving techniques used in this module are 
+!  The presolving techniques used in this module are
 !
 !     - the removal of empty and singleton rows,
 !     - the removal of redundant and forcing primal constraints,
 !     - the tightening of primal and dual bounds,
-!     - the exploitation of linear singleton, linear doubleton and linearly 
+!     - the exploitation of linear singleton, linear doubleton and linearly
 !       unconstrained columns,
 !     - the merging dependent variables,
 !     - row sparsification,
@@ -167,10 +167,10 @@
 !-------------------------------------------------------------------------------
 !
 !              T h e   s p e c i f i c a t i o n   f i l e
-! 
+!
 !-------------------------------------------------------------------------------
 !
-!  Like most algorithmic packages, PRESOLVE features a number of "control 
+!  Like most algorithmic packages, PRESOLVE features a number of "control
 !  parameters", that is of parameters that condition the various algorithmic,
 !  printing and other options of the package (They are documented in detail
 !  with the PRESOLVE_control type below). While the value of these parameters
@@ -179,22 +179,22 @@
 !  recompiling the code.  This is achieved by specifying the desired values
 !  for the control parameters in a "specification file" (specfile).
 
-!  A specification file consists of a number of "specification commands", 
-!  each of these being decomposed into 
+!  A specification file consists of a number of "specification commands",
+!  each of these being decomposed into
 !  - a "keyword", which is a string (in a close-to-natural language) that will
 !    be used to identify a control parameter in the specfile, and
 !  - an (optional) "value", which is the value to be attributed to the
 !    said control parameter.
 
 !  A specific algorithmic "control parameter" is associated to each such
-!  keyword, and the effect of interpreting the specification file is to assign 
-!  the value associated with the keyword (in each specification command) to 
-!  the corresponding algorithmic parameter. The specification file starts with 
-!  a "BEGIN PRESOLVE SPECIFICATIONS" command and ends with an 
+!  keyword, and the effect of interpreting the specification file is to assign
+!  the value associated with the keyword (in each specification command) to
+!  the corresponding algorithmic parameter. The specification file starts with
+!  a "BEGIN PRESOLVE SPECIFICATIONS" command and ends with an
 !  "END PRESOLVE SPECIFICATIONS" command.  The syntax of the specfile is
 !  defined as follows:
 
-!      BEGIN PRESOLVE SPECIFICATIONS 
+!      BEGIN PRESOLVE SPECIFICATIONS
 !         printout-device                            (integer)
 !         error-printout device                      (integer)
 !         print-level                    SILENT|TRACE|ACTION|DETAILS|DEBUG|CRAZY
@@ -247,16 +247,16 @@
 !      END PRESOLVE SPECIFICATIONS
 !
 !  where the | symbols means "or".  Thus print-level may take the values
-!  SILENT or TRACE or ACTION or DETAILS or DEBUG or CRAZY, where the upper 
-!  case words are symbols that are recognized by PRESOLVE. Empty values are 
+!  SILENT or TRACE or ACTION or DETAILS or DEBUG or CRAZY, where the upper
+!  case words are symbols that are recognized by PRESOLVE. Empty values are
 !  acceptable for logical switches, that is switches with ON|OFF|TRUE|FALSE|T|F
-!  values, and are interpreted in the same manner as "ON", "TRUE" ot "T". 
+!  values, and are interpreted in the same manner as "ON", "TRUE" ot "T".
 !  Note that the specification commands are case insensitive.
-!  
+!
 !  Furthermore, the specification command lines (between the BEGIN and
 !  END delimiters) may be specified in any order. Blank lines and lines whose
 !  first non-blank character is ! are ignored. The content of a line
-!  after a ! or a * character is also ignored (as is the ! or * character 
+!  after a ! or a * character is also ignored (as is the ! or * character
 !  itself). This provides an easy manner to "comment off" some specification
 !  commands or to add comments associated to specific values of certain control
 !  parameters.
@@ -264,7 +264,7 @@
 !  The specification file must be open for input when PRESOLVE_read_specfile
 !  is called. Note that the corresponding file is first REWINDed, which make
 !  it possible to combine it with other specifications associated with other
-!  algorithms used in conjunction with PRESOLVE, such as the quadratic 
+!  algorithms used in conjunction with PRESOLVE, such as the quadratic
 !  programming routine. For the same reason, the file is not closed by PRESOLVE.
 !
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -291,7 +291,8 @@
           DIAGONAL              => GALAHAD_DIAGONAL,                           &
           DENSE                 => GALAHAD_DENSE,                              &
           SPARSE                => GALAHAD_SPARSE_BY_ROWS,                     &
-          COORDINATE            => GALAHAD_COORDINATE
+          COORDINATE            => GALAHAD_COORDINATE,                         &
+          ABSENT                => GALAHAD_ZERO
 
 !     Variable and constraints status
 
@@ -345,7 +346,7 @@
           NON_DEGENERATE        => GALAHAD_NON_DEGENERATE,                     &
           LOOSEST               => GALAHAD_LOOSEST
 
-!     Level of feasibility checks 
+!     Level of feasibility checks
 
       USE GALAHAD_SYMBOLS,                                                     &
           NONE                  => GALAHAD_NONE,                               &
@@ -357,7 +358,7 @@
       USE GALAHAD_SYMBOLS,                                                     &
           KEEP                  => GALAHAD_KEEP,                               &
           DELETE                => GALAHAD_DELETE
- 
+
 !     Exit conditions
 
       USE GALAHAD_SYMBOLS,                                                     &
@@ -369,7 +370,7 @@
           NOT_DIAGONAL          => GALAHAD_NOT_DIAGONAL
 
 !-------------------------------------------------------------------------------
-!   A c c e s s 
+!   A c c e s s
 !-------------------------------------------------------------------------------
 
       IMPLICIT NONE
@@ -447,7 +448,7 @@
 
       INTEGER, PRIVATE, PARAMETER :: DEF_MAX_T_BUFFER          = 50000
 
-!     Default name for the file used to store the problem 
+!     Default name for the file used to store the problem
 !     transformations on disk
 
       CHARACTER( LEN = 30 ), PRIVATE, PARAMETER ::                             &
@@ -468,7 +469,7 @@
       REAL ( KIND = dp ), PRIVATE, PARAMETER ::                                &
                                    DEF_PIVOT_TOL_dp = TEN_dp ** (-10 )
 
-!     Default minimum relative bound improvement 
+!     Default minimum relative bound improvement
 
       REAL ( KIND = sp ), PRIVATE, PARAMETER :: DEF_MRBI_sp = TEN_sp ** ( -6 )
       REAL ( KIND = dp ), PRIVATE, PARAMETER :: DEF_MRBI_dp = TEN_dp ** ( -10 )
@@ -521,7 +522,7 @@
       INTEGER, PRIVATE, PARAMETER :: DEF_BD_CHECK_FREQ         =  1
 
 !-------------------------------------------------------------------------------
-!   N u m b e r   o f   h e u r i s t i c s 
+!   N u m b e r   o f   h e u r i s t i c s
 !-------------------------------------------------------------------------------
 
       INTEGER, PRIVATE, PARAMETER :: NBRH = 8
@@ -555,18 +556,18 @@
 !                         being reduced;
 !                   - FULL_PRESOLVE: presolving is continued as long as problem
 !                         transformations remain possible.
-!                   NOTE: the maximum number of analysis passes 
+!                   NOTE: the maximum number of analysis passes
 !                         (control%max_nbr_passes)  and the maximum number of
-!                         problem transformations (control%max_nbr_transforms) 
-!                         set an upper limit on the  presolving effort 
-!                         irrespective of the choice of control%termination.  
+!                         problem transformations (control%max_nbr_transforms)
+!                         set an upper limit on the  presolving effort
+!                         irrespective of the choice of control%termination.
 !                         The only effect of this latter parameter is to allow
 !                         for early termination.
 !                   Default: REDUCED_SIZE
 
          INTEGER :: max_nbr_transforms = DEF_MAX_NBR_TRANSF ! INTENT( IN )
 
-!                   The maximum number of problem transformations, cumulated 
+!                   The maximum number of problem transformations, cumulated
 !                   over all calls to PRESOLVE.
 !                   Default: 1000000
 
@@ -597,7 +598,7 @@
          REAL ( KIND = wp ) :: infinity = ten ** 19  ! INTENT( IN )
 
 !                   The value beyond which a number is deemed equal to
-!                   plus infinity 
+!                   plus infinity
 !                   (minus infinity being defined as its opposite)
 !                   Default: 10.**(19).
 
@@ -630,12 +631,12 @@
 
 !                   .TRUE. if dual transformations of the problem are allowed.
 !                   Note that this implies that the reduced problem is solved
-!                   accurately (for the dual feasibility condition to hold) 
+!                   accurately (for the dual feasibility condition to hold)
 !                   as to be able to restore the problem to the original
 !                   constraints and variables. .FALSE. prevents dual
 !                   transformations to be applied, thus allowing for inexact
 !                   solution of the reduced problem. The setting of this control
-!                   parameter overides that of get_z, get_z_bounds, get_y, 
+!                   parameter overides that of get_z, get_z_bounds, get_y,
 !                   get_y_bounds, dual_constraints_freq, singleton_columns_freq,
 !                   doubleton_columns_freq, z_accuracy, check_dual_feasibility.
 !                   Default: .TRUE.
@@ -644,7 +645,7 @@
 
 !                   .TRUE. if the redundant variables and constraints (i.e.
 !                   variables that do not appear in the objective
-!                   function and appear with a consistent sign in the 
+!                   function and appear with a consistent sign in the
 !                   constraints) are to be removed with their associated
 !                   constraints before other transformations are attempted.
 !                   Default: .TRUE.
@@ -668,8 +669,8 @@
          INTEGER :: singleton_columns_freq = DEF_AN_SING_FREQ    ! INTENT( IN )
 
 !                   The frequency of singleton column analysis in terms of
-!                   presolving passes.  A value of j = 2 indicates that 
-!                   singleton columns are analyzed every 2 presolving passes.  
+!                   presolving passes.  A value of j = 2 indicates that
+!                   singleton columns are analyzed every 2 presolving passes.
 !                   A zero value indicates that they are never analyzed.
 !                   Default: 1
 
@@ -693,9 +694,9 @@
          INTEGER :: dependent_variables_freq = DEF_DEP_COLS_FREQ ! INTENT( IN )
 
 !                   The frequency of search for dependent variables in terms of
-!                   presolving passes.  A value of j = 2 indicates that 
-!                   dependent variables are searched for every 2 presolving 
-!                   passes.  A zero value indicates that they are never 
+!                   presolving passes.  A value of j = 2 indicates that
+!                   dependent variables are searched for every 2 presolving
+!                   passes.  A zero value indicates that they are never
 !                   searched for.
 !                   Default: 1
 
@@ -711,7 +712,7 @@
 
 !                   The maximum percentage of fill in each row of A. Note that
 !                   this is a row-wise measure: globally fill never exceeds
-!                   the storage initially used for A, no matter how large 
+!                   the storage initially used for A, no matter how large
 !                   control%max_fill is chosen. If max_fill is negative,
 !                   no limit is put on row fill.
 !                   Default: -1 (no limit).
@@ -736,27 +737,27 @@
 !                   DELETE : the file is not deleted after program termination
 !                   Default: KEEP
 
-         CHARACTER( LEN = 30 ) :: transf_file_name  = DEF_transf_file_name  
+         CHARACTER( LEN = 30 ) :: transf_file_name  = DEF_transf_file_name
                                                 ! INTENT( IN )
 
-!                   The name of the file (to be) used for storing 
+!                   The name of the file (to be) used for storing
 !                   problem transformation on disk.
 !                   Default: transf.sav
-!                   NOTE: this parameter must be identical for all calls to 
+!                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE following PRESOLVE_read_specfile. It can
 !                         then only be changed after calling PRESOLVE_terminate.
 
          INTEGER :: y_sign = POSITIVE          ! INTENT( IN )
 
 !                   Determines the convention of sign used for the multipliers
-!                   associated with the general linear constraints. 
-!                   - POSITIVE ( +1 ): All multipliers corresponding to active 
-!                                inequality constraints are non-negative for 
-!                                lower bound constraints and non-positive for 
+!                   associated with the general linear constraints.
+!                   - POSITIVE ( +1 ): All multipliers corresponding to active
+!                                inequality constraints are non-negative for
+!                                lower bound constraints and non-positive for
 !                                upper bounds constraints.
-!                   - NEGATIVE ( -1 ): All multipliers corresponding to active 
-!                                inequality constraints are non-positive for 
-!                                lower bound constraints and non-negative for 
+!                   - NEGATIVE ( -1 ): All multipliers corresponding to active
+!                                inequality constraints are non-positive for
+!                                lower bound constraints and non-negative for
 !                                upper bounds constraints.
 !                   Default: POSITIVE.
 
@@ -766,8 +767,8 @@
 !                   to constraints that are inactive at the unreduced point
 !                   corresponding to the reduced point on input of RESTORE
 !                   must be set to zero. Possible values are:
-!                   associated with the general linear constraints. 
-!                   - FORCE_TO_ZERO: All multipliers corresponding to inactive 
+!                   associated with the general linear constraints.
+!                   - FORCE_TO_ZERO: All multipliers corresponding to inactive
 !                                inequality constraints are forced to zero,
 !                                possibly at the expense of deteriorating the
 !                                dual feasibility condition.
@@ -775,18 +776,18 @@
 !                                      control%get_y = .TRUE.
 !                                      control%get_c = .TRUE.
 !                                      control%get_c_bounds = .TRUE.
-!                   - LEAVE_AS_IS: Multipliers corresponding to inactive 
+!                   - LEAVE_AS_IS: Multipliers corresponding to inactive
 !                                inequality constraints are left unaltered.
 !                   Default: LEAVE_AS_IS
 
          INTEGER :: z_sign = POSITIVE            ! INTENT( IN )
 
-!                   Determines the convention of sign used for the dual 
-!                   variables associated with the bound constraints. 
-!                   - POSITIVE ( +1 ): All dual variables corresponding to 
+!                   Determines the convention of sign used for the dual
+!                   variables associated with the bound constraints.
+!                   - POSITIVE ( +1 ): All dual variables corresponding to
 !                                active lower bounds are non-negative, and
 !                                non-positive for active upper bounds.
-!                   - NEGATIVE ( -1 ): All dual variables corresponding to 
+!                   - NEGATIVE ( -1 ): All dual variables corresponding to
 !                                active lower bounds are non-positive, and
 !                                non-negative for active upper bounds.
 !                   Default: POSITIVE.
@@ -797,7 +798,7 @@
 !                   to bounds that are inactive at the unreduced point
 !                   corresponding to the reduced point on input of RESTORE
 !                   must be set to zero. Possible values are:
-!                   associated with the general linear constraints. 
+!                   associated with the general linear constraints.
 !                   - FORCE_TO_ZERO: All dual variables corresponding to
 !                                inactive bounds are forced to zero,
 !                                possibly at the expense of deteriorating the
@@ -806,7 +807,7 @@
 !                                      control%get_z = .TRUE.
 !                                      control%get_x = .TRUE.
 !                                      control%get_x_bounds = .TRUE.
-!                   - LEAVE_AS_IS: Dual variables corresponding to inactive 
+!                   - LEAVE_AS_IS: Dual variables corresponding to inactive
 !                                bounds are left unaltered.
 !                   Default: LEAVE_AS_IS
 
@@ -824,17 +825,17 @@
 !                                     2 * prob%n must be allocated.
 !                   - LOOSEST       : the loosest bounds that are known to
 !                                     keep the problem equivalent to the
-!                                     original problem. This option also 
-!                                     implies that an additional real 
-!                                     workspace of size 2 * prob%n must be 
+!                                     original problem. This option also
+!                                     implies that an additional real
+!                                     workspace of size 2 * prob%n must be
 !                                     allocated.
 !                   Default: TIGHTEST
-!                   NOTE: this parameter must be identical for all calls to 
+!                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE).
-         
+
          INTEGER :: final_z_bounds = TIGHTEST       ! INTENT( IN )
 
-!                   The type of final bounds on the dual variables returned by 
+!                   The type of final bounds on the dual variables returned by
 !                   the package.  This parameter can take the values:
 !                   - TIGHTEST      : the final bounds are the tightest bounds
 !                                     known on the dual variables (at the risk
@@ -846,14 +847,14 @@
 !                                     2 * prob%n must be allocated.
 !                   - LOOSEST       : the loosest bounds that are known to
 !                                     keep the problem equivalent to the
-!                                     original problem. This option also 
-!                                     implies that an additional real 
-!                                     workspace of size 2 * prob%n must be 
+!                                     original problem. This option also
+!                                     implies that an additional real
+!                                     workspace of size 2 * prob%n must be
 !                                     allocated.
 !                   Default: TIGHTEST
-!                   NOTE: this parameter must be identical for all calls to 
+!                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE).
-         
+
          INTEGER :: final_c_bounds = TIGHTEST       ! INTENT( IN )
 
 !                   The type of final bounds on the constraints returned by the
@@ -868,17 +869,17 @@
 !                                     2 * prob%m must be allocated.
 !                   - LOOSEST       : the loosest bounds that are known to
 !                                     keep the problem equivalent to the
-!                                     original problem. This option also 
-!                                     implies that an additional real 
-!                                     workspace of size 2 * prob%n must be 
+!                                     original problem. This option also
+!                                     implies that an additional real
+!                                     workspace of size 2 * prob%n must be
 !                                     allocated.
 !                   Default: TIGHTEST
 !                   NOTES:
-!                   1) This parameter must be identical for all calls to 
+!                   1) This parameter must be identical for all calls to
 !                      PRESOLVE (except INITIALIZE).
 !                   2) If different from TIGHTEST, its value must be identical
 !                      to that of control%final_x_bounds.
-         
+
          INTEGER :: final_y_bounds = TIGHTEST       ! INTENT( IN )
 
 !                   The type of final bounds on the multipliers returned by the
@@ -893,14 +894,14 @@
 !                                     2 * prob%m must be allocated.
 !                   - LOOSEST       : the loosest bounds that are known to
 !                                     keep the problem equivalent to the
-!                                     original problem. This option also 
-!                                     implies that an additional real 
-!                                     workspace of size 2 * prob%n must be 
+!                                     original problem. This option also
+!                                     implies that an additional real
+!                                     workspace of size 2 * prob%n must be
 !                                     allocated.
 !                   Default: TIGHTEST
-!                   NOTE: this parameter must be identical for all calls to 
+!                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE).
-         
+
          INTEGER :: check_primal_feasibility = NONE  ! INTENT( IN )
 
 !                   The level of feasibility check (on the values of x) at
@@ -918,12 +919,12 @@
          INTEGER :: check_dual_feasibility = NONE   ! INTENT( IN )
 
 !                   The level of dual feasibility check (on the values of x,
-!                   y and z) at the start of the restoration phase.  
+!                   y and z) at the start of the restoration phase.
 !                   This parameter can take the values:
 !                   - NONE  : no check at all;
-!                   - BASIC : the dual feasibility condition is  recomputed 
-!                             at ( x, y, z ) and a message issued if the 
-!                             computed value does not match the input value 
+!                   - BASIC : the dual feasibility condition is  recomputed
+!                             at ( x, y, z ) and a message issued if the
+!                             computed value does not match the input value
 !                             (if control%print_level >= ACTION);
 !                   - SEVERE: the same as for BASIC, but PRESOLVE is
 !                             terminated if an incompatibilty is detected.
@@ -985,9 +986,9 @@
          LOGICAL :: get_z = .TRUE.                      ! INTENT( IN )
 
 !                   Must be set to .TRUE. if the value of the dual variables
-!                   must be reconstructed on RESTORE from the (possibly 
+!                   must be reconstructed on RESTORE from the (possibly
 !                   solved) reduced problem.
-!                   Default: .TRUE. 
+!                   Default: .TRUE.
 
          LOGICAL :: get_z_bounds = .TRUE.              ! INTENT( IN )
 
@@ -995,18 +996,18 @@
 !                   problem dual variables must be reconstructed on RESTORE
 !                   from the (possibly solved) reduced problem.
 !                   If set to true, this may require to store specific
-!                   additional information on the problem transformations, 
-!                   therefore increasing the storage needed for these 
-!                   transformations. 
+!                   additional information on the problem transformations,
+!                   therefore increasing the storage needed for these
+!                   transformations.
 !                   Default: .TRUE.
-!                   NOTE: this parameter must be identical for all calls to 
+!                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE).
 
          LOGICAL :: get_c = .TRUE.                     ! INTENT( IN )
 
 !                   Must be set to .TRUE. if the value of the constraints
 !                   must be reconstructed on RESTORE from the (possibly
-!                   solved) reduced problem. 
+!                   solved) reduced problem.
 !                   Default: .TRUE.
 
          LOGICAL :: get_c_bounds= .TRUE.              ! INTENT( IN )
@@ -1020,7 +1021,7 @@
          LOGICAL :: get_y = .TRUE.                     ! INTENT( IN )
 
 !                   Must be set to .TRUE. if the value of the multipliers
-!                   must be reconstructed on RESTORE from the (possibly 
+!                   must be reconstructed on RESTORE from the (possibly
 !                   solved) reduced problem.
 !                   Default: .TRUE.
 
@@ -1030,11 +1031,11 @@
 !                   problem multipliers must be reconstructed on RESTORE
 !                   from the (possibly solved) reduced problem.
 !                   If set to true, this may require to store specific
-!                   additional information on the problem transformations, 
-!                   therefore increasing the storage needed for these 
-!                   transformations. 
+!                   additional information on the problem transformations,
+!                   therefore increasing the storage needed for these
+!                   transformations.
 !                   Default: .FALSE.
-!                   NOTE: this parameter must be identical for all calls to 
+!                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE)
 
          REAL ( KIND = wp ) :: pivot_tol = TEN ** ( - 10 )  ! INTENT( IN )
@@ -1049,20 +1050,20 @@
 
          REAL ( KIND = wp ) :: min_rel_improve = TEN ** ( - 10 ) ! INTENT( IN )
 
-!                   The minimum relative improvement in the bounds on x, y 
-!                   and z for a tighter bound on these quantities to be 
-!                   accepted in the course of the analysis.  More formally, 
+!                   The minimum relative improvement in the bounds on x, y
+!                   and z for a tighter bound on these quantities to be
+!                   accepted in the course of the analysis.  More formally,
 !                   if lower is the current value of the lower bound on one
 !                   of the x, y or z, and if new_lower is a tentative tighter
 !                   lower bound on the same quantity, it is only accepted
-!                   if 
+!                   if
 !
 !                      new_lower >= lower + tol * MAX( 1, ABS( lower ) ),
 !
 !                   where
 !
 !                      tol = control%min_rel_improve.
-! 
+!
 !                   Similarly, a tentative tighter upper bound new_upper
 !                   only replaces the current upper bound upper
 !
@@ -1075,10 +1076,10 @@
 
          REAL ( KIND = wp ) :: max_growth_factor = TEN ** 8 ! INTENT( IN )
 
-!                  The maximum growth factor (in absolute value) that is 
-!                  accepted between the maximum data item in the original 
-!                  problem  and any data item in the reduced problem. 
-!                  If a transformation results in this bound being exceeded, 
+!                  The maximum growth factor (in absolute value) that is
+!                  accepted between the maximum data item in the original
+!                  problem  and any data item in the reduced problem.
+!                  If a transformation results in this bound being exceeded,
 !                  the transformation is skipped.
 !                  Default : 10.**8 in double precision,
 !                            10.**4 in single precision.
@@ -1086,7 +1087,7 @@
       END TYPE
 
 !   Note that the default double precision settings correpond to the following
-!   specfile, which is optionnaly read by PRESOLVE (see the description of 
+!   specfile, which is optionnaly read by PRESOLVE (see the description of
 !   read_specfile below)
 
 !      BEGIN PRESOLVE SPECIFICATIONS (DEFAULT)
@@ -1152,145 +1153,145 @@
 !                   The PRESOLVE exit condition.  It can take the following
 !                   values:
 
-!                    0 (OK)                    : 
+!                    0 (OK)                    :
 !
 !                        successful exit;
 !
-!                    1 (MAX_NBR_TRANSF)        : 
+!                    1 (MAX_NBR_TRANSF)        :
 !
 !                        the maximum number of problem transformation has been
 !                        reached
-!                        | NOTE: 
+!                        | NOTE:
 !                        | this exit is not really an error, since the problem
 !                        | can  nevertheless be permuted and  solved.  It merely
 !                        | signals that further problem reduction could possibly
 !                        | be obtained with a larger value of the parameter
 !                        | control%max_nbr_transforms
 !
-!                   -21 (PRIMAL_INFEASIBLE)     : 
+!                   -21 (PRIMAL_INFEASIBLE)     :
 !
 !                        the problem is primal infeasible;
 !
-!                   -22 (DUAL_INFEASIBLE)       : 
+!                   -22 (DUAL_INFEASIBLE)       :
 !
 !                        the problem is dual infeasible;
 !
 !
-!                   -23 (WRONG_G_DIMENSION)     : 
+!                   -23 (WRONG_G_DIMENSION)     :
 !
 !                        the dimension of the gradient is incompatible with
 !                        the problem dimension;
 !
-!                   -24 (WRONG_HVAL_DIMENSION)  : 
+!                   -24 (WRONG_HVAL_DIMENSION)  :
 !
 !                        the dimension of the vector containing the entries of
 !                        the Hessian is erroneously specified;
 !
-!                   -25 (WRONG_HPTR_DIMENSION)  : 
+!                   -25 (WRONG_HPTR_DIMENSION)  :
 !
 !                        the dimension of the vector containing the addresses
 !                        of the first entry of each Hessian row is erroneously
 !                        specified;
 !
-!                   -26 (WRONG_HCOL_DIMENSION)  : 
+!                   -26 (WRONG_HCOL_DIMENSION)  :
 !
-!                        the dimension of the vector containing the column 
+!                        the dimension of the vector containing the column
 !                        indices of the nonzero Hessian entries is erroneously
 !                        specified;
 !
-!                   -27 (WRONG_HROW_DIMENSION)  : 
+!                   -27 (WRONG_HROW_DIMENSION)  :
 !
 !                        the dimension of the vector containing the row indices
-!                        of the nonzero Hessian entries is erroneously 
+!                        of the nonzero Hessian entries is erroneously
 !                        specified;
 !
-!                   -28 (WRONG_AVAL_DIMENSION)  : 
+!                   -28 (WRONG_AVAL_DIMENSION)  :
 !
-!                        the dimension of the vector containing the entries of 
+!                        the dimension of the vector containing the entries of
 !                        the Jacobian is erroneously specified;
 !
-!                   -29 (WRONG_APTR_DIMENSION) : 
+!                   -29 (WRONG_APTR_DIMENSION) :
 !
-!                        the dimension of the vector containing the addresses 
+!                        the dimension of the vector containing the addresses
 !                        of the first entry of each Jacobian row is erroneously
 !                        specified;
 !
-!                   -30 (WRONG_ACOL_DIMENSION) : 
+!                   -30 (WRONG_ACOL_DIMENSION) :
 !
-!                        the dimension of the vector containing the column 
+!                        the dimension of the vector containing the column
 !                        indices of the nonzero Jacobian entries is erroneously
 !                        specified;
 !
-!                   -31 (WRONG_AROW_DIMENSION) : 
+!                   -31 (WRONG_AROW_DIMENSION) :
 !
 !                        the dimension of the vector containing the row indices
-!                        of the nonzero Jacobian entries is erroneously 
+!                        of the nonzero Jacobian entries is erroneously
 !                        specified;
 !
-!                   -32 (WRONG_X_DIMENSION)    : 
+!                   -32 (WRONG_X_DIMENSION)    :
 !
-!                        the dimension of the vector of variables is 
+!                        the dimension of the vector of variables is
 !                        incompatible with the problem dimension;
 !
-!                   -33 (WRONG_XL_DIMENSION)   : 
+!                   -33 (WRONG_XL_DIMENSION)   :
 !
-!                        the dimension of the vector of lower bounds on the 
+!                        the dimension of the vector of lower bounds on the
 !                        variables is incompatible with the problem dimension;
 !
-!                   -34 (WRONG_XU_DIMENSION)   : 
+!                   -34 (WRONG_XU_DIMENSION)   :
 !
 !                        the dimension of the vector of upper bounds on the
 !                        variables is incompatible with the problem dimension;
 !
-!                   -35 (WRONG_Z_DIMENSION)    : 
+!                   -35 (WRONG_Z_DIMENSION)    :
 !
-!                        the dimension of the vector of dual variables is 
+!                        the dimension of the vector of dual variables is
 !                        incompatible with the problem dimension;
 !
-!                   -36 (WRONG_ZL_DIMENSION)   : 
+!                   -36 (WRONG_ZL_DIMENSION)   :
 !
 !                        the dimension of the vector of lower bounds on the dual
 !                        variables is incompatible with the problem dimension;
 !
-!                   -37 (WRONG_ZU_DIMENSION)   : 
+!                   -37 (WRONG_ZU_DIMENSION)   :
 !
-!                        the dimension of the vector of upper bounds on the 
-!                        dual variables is incompatible with the problem 
+!                        the dimension of the vector of upper bounds on the
+!                        dual variables is incompatible with the problem
 !                        dimension;
 !
-!                   -38 (WRONG_C_DIMENSION)    : 
+!                   -38 (WRONG_C_DIMENSION)    :
 !
 !                        the dimension of the vector of constraints values is
 !                        incompatible with the problem dimension;
 !
-!                   -39 (WRONG_CL_DIMENSION)   : 
+!                   -39 (WRONG_CL_DIMENSION)   :
 !
-!                        the dimension of the vector of lower bounds on the 
+!                        the dimension of the vector of lower bounds on the
 !                        constraints is incompatible with the problem dimension;
 !
-!                   -40 (WRONG_CU_DIMENSION)   : 
+!                   -40 (WRONG_CU_DIMENSION)   :
 !
 !                        the dimension of the vector of upper bounds on the
 !                        constraints is incompatible with the problem dimension;
 !
-!                   -41 (WRONG_Y_DIMENSION)    : 
+!                   -41 (WRONG_Y_DIMENSION)    :
 !
 !                        the dimension of the vector of multipliers values is
 !                        incompatible with the problem dimension;
 !
-!                   -42 (WRONG_YL_DIMENSION)   : 
+!                   -42 (WRONG_YL_DIMENSION)   :
 !
 !                        the dimension of the vector of lower bounds on the
 !                        multipliers is incompatible with the problem dimension;
 !
 !                   -43 (WRONG_YU_DIMENSION)   :
 !
-!                        the dimension of the vector of upper bounds on the 
+!                        the dimension of the vector of upper bounds on the
 !                        multipliers is incompatible with the problem dimension;
 !
-!                   -44 (STRUCTURE_NOT_SET)    : 
+!                   -44 (STRUCTURE_NOT_SET)    :
 !
-!                        the problem structure has not been set or has been 
+!                        the problem structure has not been set or has been
 !                        cleaned up before an attempt to analyze;
 !
 !                   -45 (PROBLEM_NOT_ANALYZED) :
@@ -1298,21 +1299,21 @@
 !                        the problem has not been analyzed before an attempt to
 !                        permute it;
 !
-!                   -46 (PROBLEM_NOT_PERMUTED) : 
+!                   -46 (PROBLEM_NOT_PERMUTED) :
 !
-!                        the problem has not been permuted or fully reduced 
+!                        the problem has not been permuted or fully reduced
 !                        before an attempt to restore it
 !
 !                   -47 (H_MISSPECIFIED)       :
 !
-!                        the column indices of a row of the sparse Hessian are 
-!                        not in increasing order, in that they specify an entry 
+!                        the column indices of a row of the sparse Hessian are
+!                        not in increasing order, in that they specify an entry
 !                        above the diagonal;
 !
 !
 !                   -48 (CORRUPTED_SAVE_FILE)  :
 !
-!                        one of the files containing saved problem 
+!                        one of the files containing saved problem
 !                        transformations has been corrupted between  writing
 !                        and reading;
 !
@@ -1334,7 +1335,7 @@
 !
 !                        the problem contains a negative number of constraints;
 !
-!                   -54 (SORT_TOO_LONG)        : 
+!                   -54 (SORT_TOO_LONG)        :
 !
 !                        the vectors are too long for the sorting routine;
 !
@@ -1358,7 +1359,7 @@
 !
 !                        the value of a dual variable that is obtained by
 !                        recomputing its value on input of RESTORE (assuming
-!                        dual feasibility) from the current values of 
+!                        dual feasibility) from the current values of
 !                        ( x, y, z ) is incompatible with its declared value.
 !                        This may caused the restored problem to be infeasible
 !                        or suboptimal.
@@ -1367,22 +1368,22 @@
 !
 !                        a dual variable whose value is nonzero because the
 !                        corresponding primal is at an artificial bound cannot
-!                        be zeroed while maintaining dual feasibility 
-!                        (at RESTORE). This can happen when ( x, y, z ) on 
+!                        be zeroed while maintaining dual feasibility
+!                        (at RESTORE). This can happen when ( x, y, z ) on
 !                        input of RESTORE are not (sufficiently) optimal.
 
-!                   -1 (MEMORY_FULL)           : 
+!                   -1 (MEMORY_FULL)           :
 !
 !                        memory allocation failed
 
-!                   -2 (FILE_NOT_OPENED)      : 
+!                   -2 (FILE_NOT_OPENED)      :
 !
-!                        a file intended for saving problem transformations 
+!                        a file intended for saving problem transformations
 !                        could not be opened;
 
-!                   -3 (COULD_NOT_WRITE)      : 
+!                   -3 (COULD_NOT_WRITE)      :
 !
-!                        an IO error occurred while saving transformations on 
+!                        an IO error occurred while saving transformations on
 !                        the relevant disk file;
 !
 !                   -4 (TOO_FEW_BITS_PER_BYTE)
@@ -1449,7 +1450,7 @@
 !                   -72 (HROW_NOT_ALLOCATED)
 
 !                       the vector prob%H%row has not been allocated although
-!                       prob%H%ne > 0 and A is stored in sparse coordinate 
+!                       prob%H%ne > 0 and A is stored in sparse coordinate
 !                       format
 
 !                   -73 (WRONG_ANE)
@@ -1493,7 +1494,7 @@
 !        ---------------------------------------------
 
          INTEGER :: m_original          ! the original number of constraints
-   
+
          INTEGER :: n_original          ! the original number of variables
 
          INTEGER :: a_ne_original       ! the original number of elements in A
@@ -1511,10 +1512,10 @@
          INTEGER :: m_active            ! the number of currently active
                                         ! constraints
 
-         INTEGER :: m_eq_active         ! the number of currently active 
+         INTEGER :: m_eq_active         ! the number of currently active
                                         ! equality constraints
 
-         INTEGER :: n_active            ! the number of currently active 
+         INTEGER :: n_active            ! the number of currently active
                                         ! variables
 
          INTEGER :: a_ne_active         ! the number of currently active
@@ -1524,12 +1525,12 @@
                                         ! elements in the lower triangular
                                         ! part of H
 
-         INTEGER :: n_in_prob           ! the number of variables in the 
+         INTEGER :: n_in_prob           ! the number of variables in the
                                         ! problem (as seen during the last
                                         ! call to PRESOLVE)
- 
-         INTEGER :: m_in_prob           ! the number of constraints in the 
-                                        !problem 
+
+         INTEGER :: m_in_prob           ! the number of constraints in the
+                                        !problem
 
 !        ---------------------------------------------
 !        Various presolving parameters
@@ -1539,22 +1540,22 @@
 
          INTEGER :: level               ! the level of printout (globally)
 
-         INTEGER :: lsc_f               ! the index of the 1rst linear 
+         INTEGER :: lsc_f               ! the index of the 1rst linear
                                         ! singleton column
 
          INTEGER :: ldc_f               ! the index of the 1rst linear
                                         ! doubleton column
 
-         INTEGER :: unc_f               ! the index if the first 
+         INTEGER :: unc_f               ! the index if the first
                                         ! unconstrained variable
 
-         INTEGER :: lfx_f               ! the index if the 1rst "last minute" 
+         INTEGER :: lfx_f               ! the index if the 1rst "last minute"
                                         ! fixed vars
 
-         INTEGER :: recl                ! the record length for saving 
+         INTEGER :: recl                ! the record length for saving
                                         ! transformations
 
-         INTEGER :: icheck1             ! the first integer checksum for 
+         INTEGER :: icheck1             ! the first integer checksum for
                                         ! transformation files
 
          INTEGER :: icheck2             ! the second integer checksum for
@@ -1563,7 +1564,7 @@
          INTEGER :: icheck3             ! the third integer checksum for
                                         ! transformation files
 
-         INTEGER :: npass               ! the index of the current presolving 
+         INTEGER :: npass               ! the index of the current presolving
                                         ! pass
 
          INTEGER :: tm                  ! the number of transformations
@@ -1575,10 +1576,10 @@
          INTEGER :: ts                  ! the number of saved transformations
 
          INTEGER :: max_tm              ! the maximum number of transformations
-                                        ! that can be held in memory (the 
+                                        ! that can be held in memory (the
                                         ! transf buffer size)
 
-         INTEGER :: rts                 ! the number of reapplied saved 
+         INTEGER :: rts                 ! the number of reapplied saved
                                         ! transformations
 
          INTEGER :: rtm                 ! the number of reapplied
@@ -1596,18 +1597,18 @@
          INTEGER :: loop                ! the index of the current presolving
                                         ! loop
 
-         INTEGER :: hindex              ! the index of the current heuristic 
+         INTEGER :: hindex              ! the index of the current heuristic
                                         ! being applied in the presolving loop
 
-         INTEGER :: nmods( NBRH )       ! the number of row and columns 
-                                        ! modified by other heuristics than 
+         INTEGER :: nmods( NBRH )       ! the number of row and columns
+                                        ! modified by other heuristics than
                                         ! the current one since the last pass
                                         ! in the current heuristic
 
          INTEGER :: maxmn               ! MAX( prob%n, prob%m )
 
- 
-         REAL ( KIND = wp ) :: a_max    ! the maximal element of A in 
+
+         REAL ( KIND = wp ) :: a_max    ! the maximal element of A in
                                         ! absolute value
 
          REAL ( KIND = wp ) :: h_max    ! the maximal element of H in absolute
@@ -1625,19 +1626,19 @@
          REAL ( KIND = wp ) :: y_max    ! the maximal bound on y in
                                         ! absolute value
 
-         REAL ( KIND = wp ) :: g_max    ! the maximal element of g in 
+         REAL ( KIND = wp ) :: g_max    ! the maximal element of g in
                                         ! absolute value
 
-         REAL ( KIND = wp ) :: a_tol    ! the pivoting threshold for 
+         REAL ( KIND = wp ) :: a_tol    ! the pivoting threshold for
                                         ! eliminations and  bounds in A
 
-         REAL ( KIND = wp ) :: h_tol    ! the pivoting threshold for 
+         REAL ( KIND = wp ) :: h_tol    ! the pivoting threshold for
                                         !bounds in H
 
-         REAL ( KIND = wp ) :: rcheck   ! the real checksum for 
+         REAL ( KIND = wp ) :: rcheck   ! the real checksum for
                                         ! transformations files
 
-         REAL ( KIND = wp ) :: max_fill_prop ! the maximal fill proportion 
+         REAL ( KIND = wp ) :: max_fill_prop ! the maximal fill proportion
                                         ! for merging  operations in A
 
          REAL ( KIND = wp ) :: mrbi     ! the current minimum relative
@@ -1649,10 +1650,10 @@
          REAL ( KIND = wp ) :: ACCURACY ! the problem dependent precision
                                         ! value
 
-         REAL ( KIND = wp ) :: INFINITY ! the value corresponding to plus 
+         REAL ( KIND = wp ) :: INFINITY ! the value corresponding to plus
                                         ! infinity
 
-         REAL ( KIND = wp ) :: P_INFINITY ! the threshold above which a value 
+         REAL ( KIND = wp ) :: P_INFINITY ! the threshold above which a value
                                         ! is deemed to be equal to plus infinity
 
          REAL ( KIND = wp ) :: M_INFINITY ! the threshold below which a value
@@ -1663,7 +1664,7 @@
 !        The value of the controls at the previous call
 !        ----------------------------------------------
 
-         TYPE ( PRESOLVE_control_type ) ::  prev_control ! the value of control 
+         TYPE ( PRESOLVE_control_type ) ::  prev_control ! the value of control
                                         ! for the previous execution of PRESOLVE
 
 !        ---------------------------------------------
@@ -1671,15 +1672,15 @@
 !        ---------------------------------------------
 
          INTEGER, ALLOCATABLE, DIMENSION( : ) ::  A_col_f
-                                        ! A_col_f( j ) is the position in A 
+                                        ! A_col_f( j ) is the position in A
                                         ! of the first element in column j of A
 
          INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_col_n
                                         ! A_col_n( k ) is the position in A of
-                                        ! the next element in the same column 
+                                        ! the next element in the same column
                                         ! as that in  position k
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row 
+         INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row
                                         ! the row index of the element in
                                         ! position k in A
 
@@ -1690,11 +1691,11 @@
                                         ! the sizes of the rows of H
 
          INTEGER, ALLOCATABLE, DIMENSION( : ) :: conc
-                                        ! conc( i ) is the index of the row 
+                                        ! conc( i ) is the index of the row
                                         ! of A that is to be concatenated
                                         ! to row i of A, if any
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) ::  a_perm 
+         INTEGER, ALLOCATABLE, DIMENSION( : ) ::  a_perm
                                         ! a work vector of dimension
                                         ! proportional to MAX( size of A, m, n )
                                         ! NOTE: this vector is used in order
@@ -1714,18 +1715,18 @@
                                         !              nonzero off-diagonal
                                         !              elements
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) ::  H_col_f 
+         INTEGER, ALLOCATABLE, DIMENSION( : ) ::  H_col_f
                                         ! H_col_f( j ) is the position in A of
-                                        ! the first element in column j of H 
+                                        ! the first element in column j of H
                                         ! (below the diagonal)
 
          INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_col_n
-                                        ! H_col_n( k ) is the position in A 
+                                        ! H_col_n( k ) is the position in A
                                         ! of the next element in the same
                                         ! column (below the diagonal) as that
                                         ! in position k
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row 
+         INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row
                                         ! the row index of element k in H
 
          INTEGER, ALLOCATABLE, DIMENSION( : ) :: h_perm
@@ -1743,7 +1744,7 @@
          INTEGER, ALLOCATABLE, DIMENSION( : ) :: w_n
                                         ! a work vector of size n
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: w_m 
+         INTEGER, ALLOCATABLE, DIMENSION( : ) :: w_m
                                         ! a work vector of size m + 1
 
          INTEGER, ALLOCATABLE, DIMENSION( : ) :: w_mn
@@ -1758,7 +1759,7 @@
                                         ! of the transformations
 
          INTEGER, ALLOCATABLE, DIMENSION( : ) :: hist_j
-                                        ! the second integer characteristic 
+                                        ! the second integer characteristic
                                         ! of the transformations
 
 
@@ -1768,7 +1769,7 @@
 
          REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: x_l2
                                         ! the vector of non-degenerate lower
-                                        ! bounds on x (only used if 
+                                        ! bounds on x (only used if
                                         ! final_x_bounds /= TIGHTEST)
 
          REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: x_u2
@@ -1820,7 +1821,7 @@
 !
 !-------------------------------------------------------------------------------
 !
-!  NOTE: REALLY DON'T MODIFY WHAT FOLLOWS 
+!  NOTE: REALLY DON'T MODIFY WHAT FOLLOWS
 !        (unless you are absolutely certain that you know what you are doing)!!
 !
 !----------------------
@@ -1856,10 +1857,10 @@
 !     Possible map and problem stages
 
       INTEGER, PRIVATE, PARAMETER :: VOID                      =  -1
-      INTEGER, PRIVATE, PARAMETER :: READY                     =   1 
-      INTEGER, PRIVATE, PARAMETER :: ANALYZED                  =   2 
-      INTEGER, PRIVATE, PARAMETER :: FULLY_REDUCED             =   3 
-      INTEGER, PRIVATE, PARAMETER :: PERMUTED                  =   4 
+      INTEGER, PRIVATE, PARAMETER :: READY                     =   1
+      INTEGER, PRIVATE, PARAMETER :: ANALYZED                  =   2
+      INTEGER, PRIVATE, PARAMETER :: FULLY_REDUCED             =   3
+      INTEGER, PRIVATE, PARAMETER :: PERMUTED                  =   4
       INTEGER, PRIVATE, PARAMETER :: RESTORED                  =   5
 
 !     Problem transformation types
@@ -1916,7 +1917,7 @@
 
 !     Bound updating values
 
-      INTEGER, PRIVATE, PARAMETER :: TIGHTEN                   =  2 
+      INTEGER, PRIVATE, PARAMETER :: TIGHTEN                   =  2
       INTEGER, PRIVATE, PARAMETER :: SET                       =  4
       INTEGER, PRIVATE, PARAMETER :: UPDATE                    =  6
 
@@ -1934,12 +1935,12 @@
       INTEGER, PRIVATE, PARAMETER :: Y_GIVEN                   = 12
       INTEGER, PRIVATE, PARAMETER :: Y_FROM_FORCING_LOW        = 13
       INTEGER, PRIVATE, PARAMETER :: Y_FROM_FORCING_UP         = 14
-      
+
 !     Exit conditions specific to presolve (outside the [-20,0] range)
 
       INTEGER, PRIVATE, PARAMETER :: MAX_NBR_TRANSF            =   1
       INTEGER, PRIVATE, PARAMETER :: PRIMAL_INFEASIBLE         = -21
-      INTEGER, PRIVATE, PARAMETER :: DUAL_INFEASIBLE           = -22 
+      INTEGER, PRIVATE, PARAMETER :: DUAL_INFEASIBLE           = -22
       INTEGER, PRIVATE, PARAMETER :: WRONG_G_DIMENSION         = -23
       INTEGER, PRIVATE, PARAMETER :: WRONG_HVAL_DIMENSION      = -24
       INTEGER, PRIVATE, PARAMETER :: WRONG_HPTR_DIMENSION      = -25
@@ -1962,8 +1963,8 @@
       INTEGER, PRIVATE, PARAMETER :: WRONG_YL_DIMENSION        = -42
       INTEGER, PRIVATE, PARAMETER :: WRONG_YU_DIMENSION        = -43
       INTEGER, PRIVATE, PARAMETER :: STRUCTURE_NOT_SET         = -44
-      INTEGER, PRIVATE, PARAMETER :: PROBLEM_NOT_ANALYZED      = -45 
-      INTEGER, PRIVATE, PARAMETER :: PROBLEM_NOT_PERMUTED      = -46 
+      INTEGER, PRIVATE, PARAMETER :: PROBLEM_NOT_ANALYZED      = -45
+      INTEGER, PRIVATE, PARAMETER :: PROBLEM_NOT_PERMUTED      = -46
       INTEGER, PRIVATE, PARAMETER :: H_MISSPECIFIED            = -47
       INTEGER, PRIVATE, PARAMETER :: CORRUPTED_SAVE_FILE       = -48
       INTEGER, PRIVATE, PARAMETER :: WRONG_XS_DIMENSION        = -49
@@ -1989,7 +1990,7 @@
       INTEGER, PRIVATE, PARAMETER :: HROW_NOT_ALLOCATED        = -72
       INTEGER, PRIVATE, PARAMETER :: WRONG_ANE                 = -73
       INTEGER, PRIVATE, PARAMETER :: WRONG_HNE                 = -74
-       
+
 !     Internal error indicators
 
       INTEGER, PRIVATE, PARAMETER :: NO_DOUBLETON_ENTRIES      = -1000
@@ -2004,11 +2005,11 @@
 
 !     H row structure indicator
 
-      INTEGER, PRIVATE, PARAMETER :: EMPTY                     =  0 
+      INTEGER, PRIVATE, PARAMETER :: EMPTY                     =  0
 
 !     End of pointer lists
 
-      INTEGER, PRIVATE, PARAMETER :: END_OF_LIST               = -1 
+      INTEGER, PRIVATE, PARAMETER :: END_OF_LIST               = -1
 
 !----------------------
 !   G l o b a l s
@@ -2023,7 +2024,7 @@
 !==============================================================================
 
 !     The presolving loop is defined as a sequence of applications of
-!     heuristics to the problem.  Each heuristic has its indentifier, 
+!     heuristics to the problem.  Each heuristic has its indentifier,
 !     and the loop is defined by the vector SEQUENCE that contain the
 !     list of the successive heuristics.
 
@@ -2031,11 +2032,11 @@
 
       INTEGER, PRIVATE, PARAMETER :: N_HEURISTICS = 8
 
-!     The sequencing of the heuristics in the presolving loop 
+!     The sequencing of the heuristics in the presolving loop
 
 !     The constraints on the sequencing are as follows:
 !     1) EMPTY_AND_SINGLETON_ROWS must occur immediately before
-!        SPECIAL_LINEAR_COLUMNS, because of the possible occurence of 
+!        SPECIAL_LINEAR_COLUMNS, because of the possible occurence of
 !        empty or singleton rows that modify the bounds.
 
       INTEGER, PRIVATE, DIMENSION( N_HEURISTICS ), PARAMETER ::                &
@@ -2051,7 +2052,7 @@
                                     CHECK_BOUNDS_CONSISTENCY                   &
                                                                 /)
 
-!     Note that N_HEURISTICS must be equal to the dimension of 
+!     Note that N_HEURISTICS must be equal to the dimension of
 !     PRESOLVING_SEQUENCE.
 
 !===============================================================================
@@ -2148,7 +2149,7 @@
               ' initial verifications and workspace allocation'
       END IF
 
-!     Initialize the exit status and the exit message to that corresponding 
+!     Initialize the exit status and the exit message to that corresponding
 !     to a successful exit, unless the dimensions of the problem are silly.
 
       inform%message( 1 ) = ''
@@ -2172,7 +2173,7 @@
 !     Global accuracy.  Note that this value is recomputed by PRESOLVE_apply to
 !     better reflect the problem's characteristics.
 
-     s%ACCURACY = TEN * TEN * EPSMACH 
+     s%ACCURACY = TEN * TEN * EPSMACH
 
 !-------------------------------------------------------------------------------
 !
@@ -2207,7 +2208,7 @@
          END SELECT
       END IF
 
-!     Determine the record length for saving transformations on disk 
+!     Determine the record length for saving transformations on disk
 !     files whenever necessary.
 
       IF ( s%level >= DEBUG ) WRITE( s%out, * ) '    mode is INITIALIZE'
@@ -2240,7 +2241,7 @@
          '    size of transformation buffer set to',                           &
          control%transf_buffer_size
 
-!     Name of the file used to store the problem transformations 
+!     Name of the file used to store the problem transformations
 !     on disk
 
       s%prev_control%transf_file_name = control%transf_file_name
@@ -2355,7 +2356,7 @@
 
 !     5) analysis of the linearly unconstrained variables
 
-      s%prev_control%unc_variables_freq = control%unc_variables_freq 
+      s%prev_control%unc_variables_freq = control%unc_variables_freq
       IF ( s%level >= DEBUG ) WRITE( s%out, * )                                &
          '    frequency of unconstrained variables analysis set to',           &
          control%unc_variables_freq
@@ -2369,7 +2370,7 @@
 
 !     7) row sparsification frequency
 
-      s%prev_control%sparsify_rows_freq = control%sparsify_rows_freq 
+      s%prev_control%sparsify_rows_freq = control%sparsify_rows_freq
       IF ( s%level >= DEBUG ) WRITE( s%out, * )                                &
          '    frequency of row sparsification analysis set to',                &
          control%sparsify_rows_freq
@@ -2406,25 +2407,25 @@
 
 !     Final status of the bounds on the variables
 
-      s%prev_control%final_x_bounds = control%final_x_bounds 
+      s%prev_control%final_x_bounds = control%final_x_bounds
       IF ( s%level >= DEBUG )  WRITE( s%out, * )                               &
          '    final status of the bounds on the variables set to TIGHTEST'
 
 !     Final status of the bounds on the dual variables
 
-      s%prev_control%final_z_bounds = control%final_z_bounds 
+      s%prev_control%final_z_bounds = control%final_z_bounds
       IF ( s%level >= DEBUG )  WRITE( s%out, * )                               &
          '    final status of the bounds on the dual variables set to TIGHTEST'
 
 !     Final status of the bounds on the constraints
 
-      s%prev_control%final_c_bounds = control%final_c_bounds 
+      s%prev_control%final_c_bounds = control%final_c_bounds
       IF ( s%level >= DEBUG )  WRITE( s%out, * )                               &
          '    final status of the bounds on the constraints set to TIGHTEST'
 
 !     Final status of the bounds on the multipliers
 
-      s%prev_control%final_y_bounds = control%final_y_bounds 
+      s%prev_control%final_y_bounds = control%final_y_bounds
       IF ( s%level >= DEBUG )  WRITE( s%out, * )                               &
          '    final status of the bounds on the multipliers set to TIGHTEST'
 
@@ -2575,7 +2576,7 @@
 !              BEGIN PRESOLVE
 !              END PRESOLVE
 !            An alternative to the string 'PRESOLVE' may be provided
-!            using the optional string alt_specname 
+!            using the optional string alt_specname
 
 !     Programming: Ph. Toint, December 2001.
 !
@@ -2600,12 +2601,12 @@
             ' PRESOLVE ERROR: no memory left for allocating spec(',  lspec, ')'
          RETURN
       END IF
-      
+
 !     Define the keywords.
 
       spec(  1 )%keyword = 'error-printout-device'
       spec(  2 )%keyword = 'printout-device'
-      spec(  3 )%keyword = 'print-level' 
+      spec(  3 )%keyword = 'print-level'
       spec(  4 )%keyword = 'infinity-value'
       spec(  5 )%keyword = 'maximum-number-of-passes'
       spec(  6 )%keyword = 'transformations-buffer-size'
@@ -2891,7 +2892,7 @@
       SUBROUTINE PRESOLVE_check_consistency
 
 !     Checks consistency of the problem data and initializes problem dependent
-!     workspace. Additionally, performs the structure analysis for the 
+!     workspace. Additionally, performs the structure analysis for the
 !     Jacobian and Hessian.
 
 !     Programming: Ph. Toint, November 2000
@@ -3025,7 +3026,7 @@
                  '    is incompatible with the problem dimension (', prob%n, ')'
             RETURN
          END IF
-      ELSE 
+      ELSE
          ALLOCATE( prob%X_l( prob%n ) , STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
@@ -3199,7 +3200,7 @@
                     prob%m, ')'
                RETURN
              END IF
-         ELSE 
+         ELSE
             ALLOCATE( prob%C_status( prob%m ) , STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
@@ -3487,6 +3488,9 @@
       CASE ( 'COORDINATE' )
          s%h_type = COORDINATE
          h_ne     = prob%H%ne
+      CASE ( 'ZERO' )
+         s%h_type = ABSENT
+         h_ne     = 0
       CASE DEFAULT
          inform%status = WRONG_HNE
          WRITE( inform%message( 1 ), * )                                       &
@@ -3696,7 +3700,7 @@
       END IF
 
 !     Space for the permutation of A and the various linked lists during the
-!     analysis phase (linear singletons, linear doubletons, linearly 
+!     analysis phase (linear singletons, linear doubletons, linearly
 !     unconstrained fixed variables) and heuristic dependent marks.
 
       s%maxmn = MAX( prob%m, prob%n )
@@ -3725,7 +3729,7 @@
       IF ( s%level >= DEBUG ) WRITE( s%out, * ) '    h_perm(', dim,') allocated'
       i_space = i_space + dim
 
-!     Initialize the lists by defining their first element and 
+!     Initialize the lists by defining their first element and
 !     setting h_perm to zero
 
       s%lsc_f  = END_OF_LIST
@@ -3754,8 +3758,8 @@
          RETURN
       END IF
       IF ( s%level >= DEBUG ) WRITE( s%out, * ) '    w_mn(', dim,') allocated'
-         
-!     A vector of size prob%n 
+
+!     A vector of size prob%n
 
       ALLOCATE( s%w_n( prob%n ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
@@ -3768,7 +3772,7 @@
          '    w_n(', prob%n, ') allocated'
       i_space = i_space + prob%n
 
-!     A vector of size prob%m + 1 
+!     A vector of size prob%m + 1
 
       IF ( prob%m > 0 ) THEN
          dim = prob%m + 1
@@ -3798,9 +3802,9 @@
          s%conc = END_OF_LIST
       END IF
 
-!     A_col_s: the number of nonzero entries in the active part of 
+!     A_col_s: the number of nonzero entries in the active part of
 !              an original column of A. Since it is also used as temporary
-!              workspace in apply_permutation for the Hessian, its size is 
+!              workspace in apply_permutation for the Hessian, its size is
 !              increased by one and is also allocated even if there are no
 !              constraints, but the Hessian is non empty.
 
@@ -3852,7 +3856,7 @@
 !        Allocate and build the pointers giving its column structure.
 
 !        A_col_f: the position of the first entry of each column
-!   
+!
          ALLOCATE( s%A_col_f( prob%n ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
             inform%status = MEMORY_FULL
@@ -3865,7 +3869,7 @@
             '    A_col_f(', prob%n, ') allocated'
          i_space = i_space + prob%n
 
-!        A_col_n : the position of the next entry in the same column, 
+!        A_col_n : the position of the next entry in the same column,
 !                  or - the column index if none
 
          ALLOCATE( s%A_col_n( a_ne ), STAT = iostat )
@@ -3918,7 +3922,7 @@
             '    H_str(', prob%n, ') allocated'
          i_space = i_space + prob%n
 
-!        Allocate and build the pointers that hold the structure of the 
+!        Allocate and build the pointers that hold the structure of the
 !        superdiagonal part of the Hessian rows.
 
 !        H_col_f: the position of the first entry of each superdiagonal row
@@ -3940,7 +3944,7 @@
 
          ALLOCATE( s%H_col_n( h_ne ), STAT = iostat )
          IF ( iostat /= 0 ) THEN
-            inform%status = MEMORY_FULL 
+            inform%status = MEMORY_FULL
             WRITE( inform%message( 1 ), * )                                    &
                ' PRESOLVE ERROR: no memory left for allocating H_col_n(',      &
                h_ne, ')'
@@ -4134,7 +4138,7 @@
 
       s%n_in_prob = s%n_active
 
-!     Count the active constraints, while changing the sign of the 
+!     Count the active constraints, while changing the sign of the
 !     multipliers, if necessary.
 
       s%m_active    = 0
@@ -4219,7 +4223,7 @@
                '    A processed from dense to sparse storage'
          END SELECT
          prob%A%ne = prob%A%ptr( prob%m + 1 ) - 1
- 
+
 !        Get the column structure of A, when it is sparse.
 
          CALL PRESOLVE_get_sparse_cols_A
@@ -4284,7 +4288,7 @@
             IF ( inform%status /= OK ) RETURN
             IF ( s%level >= ACTION ) WRITE( s%out, * )                         &
                    '  H processed from coordinate to sparse storage'
-         CASE ( DENSE ) 
+         CASE ( DENSE )
             CALL QPT_H_from_D_to_S( prob, inform%status )
             IF ( inform%status /= OK ) RETURN
             IF ( s%level >= ACTION ) WRITE( s%out, * )                         &
@@ -4298,7 +4302,7 @@
          prob%H%ne = prob%H%ptr( prob%n + 1 ) - 1
 
 !        Get the structure of the column of the lower triangular part of H.
- 
+
          CALL PRESOLVE_get_sparse_cols_H
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
             '    superdiagonal row structure of H determined'
@@ -4325,11 +4329,11 @@
 !-------------------------------------------------------------------------------
 !
 !          Determine the problem dependent precision and tolerances
-!          and prepare for analysis 
+!          and prepare for analysis
 !
 !-------------------------------------------------------------------------------
 
-!     Compute the accuracy level 
+!     Compute the accuracy level
 
       itmp = 500
       IF ( prob%A%ne > 0 ) THEN
@@ -4376,7 +4380,7 @@
 
       maxloop = MAX( control%max_nbr_passes, 0 ) - s%npass
 
-!     Initialize the markers of eliminated entries, modified variables and 
+!     Initialize the markers of eliminated entries, modified variables and
 !     constraints, and cancelled entries.
 
       s%a_perm( :s%maxmn ) = 0
@@ -4403,14 +4407,14 @@
       IF ( s%level >= TRACE ) THEN
          WRITE( s%out, * ) ' '
          WRITE( s%out, * )                                                     &
-              ' ============ starting problem analysis ============' 
+              ' ============ starting problem analysis ============'
          WRITE( s%out, * ) ' '
       END IF
 
 !-------------------------------------------------------------------------------
 !
 !              Additional elementary checks at first analysis
-!      
+!
 !-------------------------------------------------------------------------------
 
       IF ( s%tt == 0 ) THEN
@@ -4457,7 +4461,7 @@
 !-------------------------------------------------------------------------------
 !
 !                       Main loop of problem analysis
-!      
+!
 !-------------------------------------------------------------------------------
 
 !     Remember the initial dimensions of the problem and the initial number
@@ -4487,7 +4491,7 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
             WRITE( s%out, * ) ' '
             WRITE( s%out, * )                                                  &
                  ' ============= main processing loop', s%npass,               &
-                 ' =============' 
+                 ' ============='
             WRITE( s%out, * ) '   ( n =', s%n_active,                          &
                                ', m =', s%m_active,                            &
                                ', a_ne =', s%a_ne_active,                      &
@@ -4500,14 +4504,14 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
          DO heuristic = 1, N_HEURISTICS       ! the heuristics loop
 
             ttbef  = s%tt
-            s%hindex = PRESOLVING_SEQUENCE( heuristic ) 
+            s%hindex = PRESOLVING_SEQUENCE( heuristic )
 
             SELECT CASE ( s%hindex )
 
-!           Build the linked lists of linear singleton, linear doubleton and 
+!           Build the linked lists of linear singleton, linear doubleton and
 !           linear unconstrained quadratic variables, whenever needed
-    
-!           Handle special linear columns 
+
+!           Handle special linear columns
 !           (singletons, doubletons and unconstrained ).
 
             CASE ( SPECIAL_LINEAR_COLUMNS )
@@ -4518,10 +4522,10 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
                          MOD( npass_1, control%unc_variables_freq ) == 0
                IF ( control%singleton_columns_freq > 0 )                       &
                   tupletons = tupletons .OR.                                   &
-                         MOD( npass_1, control%singleton_columns_freq ) == 0 
+                         MOD( npass_1, control%singleton_columns_freq ) == 0
                IF ( control%doubleton_columns_freq > 0 )                       &
                   tupletons = tupletons .OR.                                   &
-                         MOD( npass_1, control%doubleton_columns_freq ) == 0 
+                         MOD( npass_1, control%doubleton_columns_freq ) == 0
                IF ( tupletons ) THEN
                   IF ( s%level > TRACE ) WRITE( s%out, * )                     &
                         ' analyzing special linear columns'
@@ -4699,7 +4703,7 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
 
 !-------------------------------------------------------------------------------
 
-!     Enforce the user's convention on the sign of the multipliers and dual 
+!     Enforce the user's convention on the sign of the multipliers and dual
 !     variables.
 
 !-------------------------------------------------------------------------------
@@ -4728,7 +4732,7 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
 
 !-------------------------------------------------------------------------------
 
-!     If tt > tm, then some transformations have been saved. 
+!     If tt > tm, then some transformations have been saved.
 !     The transformations currently in memory must then be saved too.
 
       IF ( s%tt > s%tm ) THEN
@@ -4738,7 +4742,7 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
             CLOSE( control%transf_file_nbr, STATUS = 'KEEP' )
          END IF
 
-!     Else, (tt == tm),  no transformation was ever saved, 
+!     Else, (tt == tm),  no transformation was ever saved,
 !     and therefore ts = 0.
 
       ELSE
@@ -4782,7 +4786,7 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
 !     the active subproblem resulting from the analysis (if the problem has
 !     not been fully reduced).
 !
-!     Note: At the end of the routine, we have that 
+!     Note: At the end of the routine, we have that
 !           x_status( j ) = jj means that jj is the position of the original
 !                           variable j in the permuted structure.
 !           c_status( i ) = ii means that ii is the position of the original
@@ -4876,7 +4880,7 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
                   IF ( control%final_x_bounds == NON_DEGENERATE ) THEN
                      WRITE( s%out, * )                                         &
                           ' swapping tightest and non-degenerate bounds on x'
-                  ELSE 
+                  ELSE
                      WRITE( s%out, * )                                         &
                           ' swapping tightest and loosest bounds on x'
                   END IF
@@ -4892,14 +4896,14 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
                   IF ( control%final_z_bounds == NON_DEGENERATE ) THEN
                      WRITE( s%out, * )                                         &
                           ' swapping tightest and non-degenerate bounds on z'
-                  ELSE 
+                  ELSE
                      WRITE( s%out, * )                                         &
                           ' swapping tightest and loosest bounds on z'
                   END IF
                END IF
                CALL PRESOLVE_swap( prob%n, s%z_l2, prob%Z_l )
                CALL PRESOLVE_swap( prob%n, s%z_u2, prob%Z_u )
-            END IF 
+            END IF
 
 !           Bounds on c
 
@@ -4909,7 +4913,7 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
                      IF ( control%final_c_bounds == NON_DEGENERATE ) THEN
                         WRITE( s%out, * )                                      &
                              ' swapping tightest and non-degenerate bounds on c'
-                     ELSE 
+                     ELSE
                         WRITE( s%out, * )                                      &
                             ' swapping tightest and loosest bounds on c'
                      END IF
@@ -4925,7 +4929,7 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
                      IF ( control%final_y_bounds == NON_DEGENERATE ) THEN
                         WRITE( s%out, * )                                      &
                              ' swapping tightest and non-degenerate bounds on y'
-                     ELSE 
+                     ELSE
                         WRITE( s%out, * )                                      &
                              ' swapping tightest and loosest bounds on y'
                      END IF
@@ -4986,7 +4990,7 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
 
          IF ( s%level >= DEBUG ) CALL QPT_write_problem( s%out, prob )
 
-!     All variables have been eliminated (the problem is fully reduced)!  
+!     All variables have been eliminated (the problem is fully reduced)!
 !     In this case, the resulting problem is empty (and its solution trivial).
 
       ELSE
@@ -5020,11 +5024,11 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
       INTEGER, INTENT( IN ) :: analysis_level
 
 !            the level of analysis requested.  Possible values are:
-! 
+!
 !            EMPTY_AND_SINGLETON_ROWS: the analysis is restricted to the
 !                                      elimination of empty and singleton rows;
-!            PRIMAL_CONSTRAINTS      : the analysis also includes bounds 
-!                                      tightening and constraint fixing when 
+!            PRIMAL_CONSTRAINTS      : the analysis also includes bounds
+!                                      tightening and constraint fixing when
 !                                      possible.
 
 !     Programming: Ph. Toint, November 2000.
@@ -5089,7 +5093,7 @@ rows: DO i = 1, prob%m
 !           Note that the value of the corresponding dual variables are
 !           irrelevant and can be assumed to be zero. They should therefore
 !           not be remembered.
-            
+
 !-------------------------------------------------------------------------------
 !-------------------------------------------------------------------------------
 !
@@ -5116,7 +5120,7 @@ rows: DO i = 1, prob%m
 !              ----------------------------------
 
 !              Find the value of the unique non-zero entry in the row (aij)
-!              its position in A (k) and the corresponding original 
+!              its position in A (k) and the corresponding original
 !              column index (j).
 
                ic = i
@@ -5135,13 +5139,13 @@ lic:           DO
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
                   '    nonzero in column', j, ' and of value', aij
 
-               IF ( ABS( aij ) < s%a_tol ) THEN 
+               IF ( ABS( aij ) < s%a_tol ) THEN
                   IF ( s%level >= DEBUG ) WRITE( s%out, * )                    &
                      '    too small element in singleton row', i
                   CYCLE rows
                END IF
 
-!              Remember the values of the bounds on x(j) before 
+!              Remember the values of the bounds on x(j) before
 !              their modification.
 
                xlj = prob%X_l( j )
@@ -5188,9 +5192,9 @@ lic:           DO
 !                 instance, if row i is an equality constraint).
 !                 Note that in this case the final z(j) must be zero (since we
 !                 may ignore the effect of a previous bound on x(j) that would
-!                 be exactly the same as nlj = nuj).  This simplifies the dual 
-!                 equation.  However, also note that z(j) for the reduced 
-!                 problem need not being zero, as it is translated, at 
+!                 be exactly the same as nlj = nuj).  This simplifies the dual
+!                 equation.  However, also note that z(j) for the reduced
+!                 problem need not being zero, as it is translated, at
 !                 restoration, into a value for y(i).
 
                IF ( nlj > s%M_INFINITY              .AND. &
@@ -5202,20 +5206,20 @@ lic:           DO
                   IF ( PRESOLVE_is_zero( xuj - v ) ) v = xuj
 
 !                 Check primal feasibility.
-  
+
                   IF ( PRESOLVE_is_pos( xlj - v ) .OR. &
                        PRESOLVE_is_pos( v - xuj )      )THEN
                      inform%status = PRIMAL_INFEASIBLE
                      WRITE( inform%message( 1 ), * )                           &
                          ' PRESOLVE analysis stopped:',                        &
-                         ' the problem is primal infeasible' 
+                         ' the problem is primal infeasible'
                      WRITE( inform%message( 2 ), * )                           &
                           '    because the bounds on x(', j,                   &
                           ') are incompatible'
                      RETURN
                   END IF
 
-!                 Deactivate the singleton row, as it will be replaced 
+!                 Deactivate the singleton row, as it will be replaced
 !                 by bounds on the associated variable
 
                   CALL PRESOLVE_remove_c( i, Y_FROM_Z_BOTH, pos = kk )
@@ -5229,11 +5233,11 @@ lic:           DO
 !              The upper and lower bounds are different.
 
                ELSE
- 
+
 !                 Determine which of the new bound(s) is(are) active, in that
 !                 they are stronger than the previous bounds on x(j)
 
-                  lower_active = nlj >= xlj .AND. nlj > s%M_INFINITY 
+                  lower_active = nlj >= xlj .AND. nlj > s%M_INFINITY
                   upper_active = nuj <= xuj .AND. nuj < s%P_INFINITY
 
 !                 Remember the status of x(j) before the action due to
@@ -5257,7 +5261,7 @@ lic:           DO
 !                    Tighten the lower bound.
 
                      IF ( PRESOLVE_is_zero( nlj - xuj ) ) THEN
-                        CALL PRESOLVE_fix_x( j, xuj, Z_FROM_DUAL_FEAS ) 
+                        CALL PRESOLVE_fix_x( j, xuj, Z_FROM_DUAL_FEAS )
                         CYCLE rows
                      ELSE
                         CALL PRESOLVE_set_bound_x( j, LOWER, nlj )
@@ -5281,17 +5285,17 @@ lic:           DO
                      IF ( s%level >= DEBUG ) WRITE( s%out, * )                 &
                         '    the lower bound is active'
 
-!                    Deactivate the singleton row, as it will be replaced 
+!                    Deactivate the singleton row, as it will be replaced
 !                    by bounds on the associated variable.
 
                      CALL PRESOLVE_remove_c( i, Y_FROM_Z_LOW, pos = kk )
                      IF ( inform%status /= OK ) RETURN
 
-!                    Tighten the lower bound to reflect the singleton 
+!                    Tighten the lower bound to reflect the singleton
 !                    constraint.
 
                      IF ( PRESOLVE_is_zero( nlj - xuj ) ) THEN
-                        CALL PRESOLVE_fix_x( j, xuj, Z_FROM_DUAL_FEAS ) 
+                        CALL PRESOLVE_fix_x( j, xuj, Z_FROM_DUAL_FEAS )
                      ELSE
                         CALL PRESOLVE_set_bound_x( j, LOWER, nlj )
                      END IF
@@ -5310,7 +5314,7 @@ lic:           DO
                      CALL PRESOLVE_remove_c( i, Y_FROM_Z_UP, pos = kk )
                      IF ( inform%status /= OK ) RETURN
 
-!                    Tighten the upper bound to reflect the singleton 
+!                    Tighten the upper bound to reflect the singleton
 !                    constraint.
 
                      IF ( PRESOLVE_is_zero( nuj - xlj ) ) THEN
@@ -5320,7 +5324,7 @@ lic:           DO
                      END IF
                      IF ( inform%status /= OK ) RETURN
 
-!                 5 ) Neither the lower nor the upper bounds are active: 
+!                 5 ) Neither the lower nor the upper bounds are active:
 !                     the constraint is therefore redundant and inactive.
 
                   ELSE
@@ -5358,7 +5362,7 @@ lic:           DO
                         IF ( inform%status /= OK ) RETURN
                      END IF
                   END SELECT
-               
+
                END IF
             END IF
 
@@ -5382,7 +5386,7 @@ lic:           DO
 !           ------------------------------------------------
 
 !           Initialize the accumulators for the implied bounds.
-!           The variable iu is intended to be 0 if no infinite variable 
+!           The variable iu is intended to be 0 if no infinite variable
 !           upper bound was found for row i, or to be k if the variable
 !           associated with the entry in position k is the only one to have
 !           an infinite upper bound, or to be -1 in all other cases. The
@@ -5414,7 +5418,7 @@ lic:           DO
                                              imp_low, imp_up, il, iu      )
                   IF ( s%level >= DEBUG ) WRITE( s%out, 1000 )                 &
                           j, prob%A%val( k), prob%X_l( j ), prob%X_u( j ),     &
-                          imp_low, imp_up, il, iu 
+                          imp_low, imp_up, il, iu
                   IF ( il == k ) il_k = j
                   IF ( iu == k ) iu_k = j
                   IF ( il < 0 .AND. iu < 0 ) THEN
@@ -5438,7 +5442,7 @@ lic:           DO
             IF ( il == 0 ) THEN
                cili = imp_low
             ELSE
-               cili = - s%INFINITY 
+               cili = - s%INFINITY
             END IF
             IF ( il <= 0 ) il_k = 0
 
@@ -5473,12 +5477,12 @@ lic:           DO
 
 !           ----------------------------------------------------------------
 !           Now consider the cases where one of the sides of constraint i is
-!           forcing because the lower/upper implied bound is equal to the 
+!           forcing because the lower/upper implied bound is equal to the
 !           current upper/lower one.
 !           ----------------------------------------------------------------
-             
+
 !           case 1: the implied lower bound is exactly equal to the
-!           ------- actual upper bound and both bounds are finite. 
+!           ------- actual upper bound and both bounds are finite.
 
             IF ( cui  >  s%M_INFINITY  .AND.  &
                  cili == cui           .AND.  &
@@ -5498,7 +5502,7 @@ lic:           DO
 
 !              Note that the head of the list of fixed variable is still
 !              unknown, and must be set later (when the first variable
-!              is fixed). 
+!              is fixed).
 
 !              Fix the variables of the row to their upper bound when
 !              multiplied by a negative entry, and to their lower bound
@@ -5586,7 +5590,7 @@ lic:           DO
 !           the current one.
 !           ----------------------------------------------------------------
 
-!           case 0: the constraint is redundant: it can be removed 
+!           case 0: the constraint is redundant: it can be removed
 !           ------  from the problem.
 
             IF ( s%M_INFINITY < cli .AND. cli < cili  .AND. &
@@ -5596,9 +5600,9 @@ lic:           DO
                CALL PRESOLVE_remove_c( i, Y_GIVEN, yval = ZERO )
                IF ( inform%status /= OK ) RETURN
                CYCLE
-            END IF             
+            END IF
 
-!           case 1: the implied lower bound is larger than the actual one, 
+!           case 1: the implied lower bound is larger than the actual one,
 !           ------  which is finite: the lhs of the constraint can be set
 !                   to -infinity.
 
@@ -5608,7 +5612,7 @@ lic:           DO
                   '    c(', i, ') is dominated below'
                CALL PRESOLVE_bound_c( i, LOWER, SET, -s%INFINITY )
             END IF
-         
+
 !           case 2: the implied upper bound is larger than the actual one,
 !           ------  which is finite: the rhs of the constraint can be set
 !                   to + infinity.
@@ -5616,9 +5620,9 @@ lic:           DO
             IF ( ciui < cui .AND. cui < s%P_INFINITY ) THEN
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
                   '    c(', i, ') is dominated above'
-               CALL PRESOLVE_bound_c( i, UPPER, SET, s%INFINITY ) 
+               CALL PRESOLVE_bound_c( i, UPPER, SET, s%INFINITY )
             END IF
-         
+
 !           ----------------------------------------------------------------
 !           Now consider the case where the implied bounds are inconclusive
 !           as far the complete constraint is concerned.  However, further
@@ -5666,10 +5670,10 @@ lic:           DO
                            END IF
                         ELSE IF ( il_k == j ) THEN
                            IF ( aij <= - s%a_tol ) THEN
-                              nlj = MAX( nlj, ( cui - imp_low ) / aij ) 
+                              nlj = MAX( nlj, ( cui - imp_low ) / aij )
                            ELSE IF ( aij >= s%a_tol ) THEN
                               nuj = MIN( nuj, ( cui - imp_low ) / aij )
-                           END IF 
+                           END IF
                         END IF
                      END IF
 
@@ -5684,9 +5688,9 @@ lic:           DO
                            END IF
                         ELSE IF ( iu_k == j ) THEN
                            IF ( aij <= - s%a_tol ) THEN
-                              nuj = MIN( nuj, ( cli - imp_up ) / aij ) 
+                              nuj = MIN( nuj, ( cli - imp_up ) / aij )
                            ELSE IF ( aij >= s%a_tol ) THEN
-                              nlj = MAX( nlj, ( cli - imp_up ) / aij ) 
+                              nlj = MAX( nlj, ( cli - imp_up ) / aij )
                            END IF
                         END IF
                      END IF
@@ -5708,9 +5712,9 @@ lic:           DO
 
 
 !           Consider the case where one or both the implied bounds only
-!           contain a single infinite contribution. 
+!           contain a single infinite contribution.
 
-            ELSE 
+            ELSE
 
 !              There is more than one infinite contribution in the implied
 !              bounds.
@@ -5771,17 +5775,17 @@ lic:           DO
       SUBROUTINE PRESOLVE_linear_tupletons
 
 !     Processes the special linear columns: unconstrained, singletons and
-!     doubletons. Handling an unconstrained column is given priority over 
-!     handling a singleton column, which is itself given priority to handling 
+!     doubletons. Handling an unconstrained column is given priority over
+!     handling a singleton column, which is itself given priority to handling
 !     a linear doubleton column.
-!     For singletons or doubletons columns, freeing the considered variable 
+!     For singletons or doubletons columns, freeing the considered variable
 !     using a split equality is allowed in two cases:
-!     - the index of the current presolving loop is at least equal to the 
-!       index of the first preprocessing loop at which freeing the 
+!     - the index of the current presolving loop is at least equal to the
+!       index of the first preprocessing loop at which freeing the
 !       singleton/doubleton variable using a split equality is allowed,
 !       irrespective of the possibility to eliminate other singleton/doubleton
 !       columns
-!     - the elimination of singleton/doubleton columns has been unsuccessful 
+!     - the elimination of singleton/doubleton columns has been unsuccessful
 !       without resorting to split equalities, in which case a second pass over
 !       the special linear columns is performed, allowing split equalities for
 !       the so far unsuccessful singleton/doubleton transformation(s). This
@@ -5789,14 +5793,14 @@ lic:           DO
 
 !     Tuning parameters:
 
-!     1) the index of the first preprocessing loop at which freeing the 
-!        singleton variable using a split equality is allowed irrespective 
+!     1) the index of the first preprocessing loop at which freeing the
+!        singleton variable using a split equality is allowed irrespective
 !        of the possibility to eliminate other singleton columns
 
       INTEGER, PARAMETER :: first_singleton_split_loop = 3
 
-!     2) the index of the first preprocessing loop at which freeing the 
-!        doubleton variable using a split equality is allowed irrespective 
+!     2) the index of the first preprocessing loop at which freeing the
+!        doubleton variable using a split equality is allowed irrespective
 !        of the possibility to eliminate other doubleton columns
 
       INTEGER, PARAMETER :: first_doubleton_split_loop = 3
@@ -5827,7 +5831,7 @@ lic:           DO
          do_doubletons = MOD( pass, control%doubleton_columns_freq ) == 0
 
 !     Determine if equality splitting is allowed at this stage.
-      
+
       split_s = s%loop >= first_singleton_split_loop  ! for linear singletons
       split_d = s%loop >= first_doubleton_split_loop  ! for linear doubletons
 
@@ -5835,24 +5839,24 @@ lic:           DO
 
       nred_s = 0                                    ! for linear singletons
       nred_d = 0                                    ! for linear doubletons
-    
+
 !  -----------------------------------------------------------------------------
 !  Loop on the linked lists of linear singleton, doubleton and unconstrained
 !  columns
 !  -----------------------------------------------------------------------------
 
-!     There are at most two passes, the second potentially allowing split 
+!     There are at most two passes, the second potentially allowing split
 !     equalities if they were not allowed during the first.
 
       DO pass = 1, 2
 
 !        build the linked lists for the three categories of special linear
-!        variables (linear singletons, linear doubletons, linearly 
+!        variables (linear singletons, linear doubletons, linearly
 !        unconstrained).
 
          CALL PRESOLVE_get_x_lists( s )
 
-!        Loop over the successive columns in the three lists of special 
+!        Loop over the successive columns in the three lists of special
 !        linear columns.
 
          DO
@@ -5866,9 +5870,9 @@ lic:           DO
 
                j = s%unc_f
                s%unc_f = s%h_perm( j )
-               s%h_perm( j ) = 0 
+               s%h_perm( j ) = 0
 
-!             Avoid inactive columns or columns that are no longer 
+!             Avoid inactive columns or columns that are no longer
 !             unconstrained.
 
                IF ( prob%X_status(j) > ELIMINATED .AND. &
@@ -5884,7 +5888,7 @@ lic:           DO
 
                j = s%lsc_f
                s%lsc_f = s%h_perm( j )
-               s%h_perm( j ) = 0 
+               s%h_perm( j ) = 0
 
 !              Avoid inactive columns or columns that are no longer singletons.
 
@@ -5904,7 +5908,7 @@ lic:           DO
 
                j = s%ldc_f
                s%ldc_f = s%h_perm( j )
-               s%h_perm( j ) = 0 
+               s%h_perm( j ) = 0
 
 !              Avoid inactive columns or columns that are no longer doubletons.
 
@@ -5925,7 +5929,7 @@ lic:           DO
 
             END IF
 
-         END DO 
+         END DO
 
 !        Check for errors.
 
@@ -5941,7 +5945,7 @@ lic:           DO
          IF ( pass == 2 .OR. s%loop == 1 ) EXIT
 
 !        If no reduction was obtained for either singletons or doubletons
-!        try allowing split equalities in another pass provided this is 
+!        try allowing split equalities in another pass provided this is
 !        not the first presolving loop.
 
          prev_split_s = split_s
@@ -5983,7 +5987,7 @@ lic:           DO
                             h_il_k, h_iu_k, a_il_k, a_iu_k, hsj, csj
       LOGICAL            :: uf, lf
       REAL ( KIND = wp ) :: gj, imp_low, imp_up, xlj, xuj,   v, hij,           &
-                            aij, yli, yui, nli, nui, xui, xli, zlj, zuj  
+                            aij, yli, yui, nli, nui, xui, xli, zlj, zuj
 
 !     Loop on all active columns.
 
@@ -6006,7 +6010,7 @@ vars: DO j = 1, prob%n
 
          IF ( s%level >= DETAILS ) WRITE( s%out, * )                           &
             '   dual constraint', j, '( hsj =', hsj, 'csj =', csj, ')'
-         
+
 !        -----------------------------------------------------------------------
 !        Compute the implied lower and upper bounds
 !        -----------------------------------------------------------------------
@@ -6015,9 +6019,9 @@ vars: DO j = 1, prob%n
 
 !        The variable a_iu is intended to be 0 if no infinite variable upper
 !        bound was found for row i of A, or to be k if the variable associated
-!        with the entry in position k  is the only one to have an infinite 
-!        upper bound, or to be -1 in all other cases. The variable a_il plays 
-!        the same role for infinite lower bounds. The variables h_il and h_iu 
+!        with the entry in position k  is the only one to have an infinite
+!        upper bound, or to be -1 in all other cases. The variable a_il plays
+!        the same role for infinite lower bounds. The variables h_il and h_iu
 !        play the same role for H.
 
          imp_low = ZERO
@@ -6051,7 +6055,7 @@ vars: DO j = 1, prob%n
                                                 prob%X_u( i ), imp_low, imp_up,&
                                                 h_il, h_iu )
                   IF ( s%level >= DEBUG ) WRITE( s%out, 1000 )                 &
-                     i,-v,prob%X_l(i),prob%X_u(i), imp_low,imp_up,h_il,h_iu 
+                     i,-v,prob%X_l(i),prob%X_u(i), imp_low,imp_up,h_il,h_iu
                   IF ( h_il == k ) h_il_k = i
                   IF ( h_iu == k ) h_iu_k = i
                   IF ( h_il < 0 .AND. h_iu < 0 ) THEN
@@ -6083,10 +6087,10 @@ vars: DO j = 1, prob%n
                                                       imp_up, h_il, h_iu  )
                         IF ( s%level >= DEBUG ) WRITE( s%out, 1000 )           &
                            i, -v, prob%X_l( i ), prob%X_u( i ),                &
-                           imp_low, imp_up, h_il, h_iu 
+                           imp_low, imp_up, h_il, h_iu
                         IF ( h_il == k ) h_il_k = i
                         IF ( h_iu == k ) h_iu_k = i
-                        IF ( h_il < 0 .AND. h_iu < 0 ) THEN 
+                        IF ( h_il < 0 .AND. h_iu < 0 ) THEN
                            IF ( s%level >= DEBUG ) WRITE( s%out, * )           &
                               '    too many infinite bounds on x'
                            CYCLE vars
@@ -6123,10 +6127,10 @@ vars: DO j = 1, prob%n
                                                       imp_up, a_il, a_iu )
                         IF ( s%level >= DEBUG ) WRITE( s%out, 1000 )           &
                            i, v, prob%Y_l( i ), prob%Y_u( i ),                 &
-                           imp_low, imp_up, a_il, a_iu 
+                           imp_low, imp_up, a_il, a_iu
                         IF ( a_il == k ) a_il_k = i
                         IF ( a_iu == k ) a_iu_k = i
-                        IF ( a_il < 0 .AND. a_iu < 0 ) THEN 
+                        IF ( a_il < 0 .AND. a_iu < 0 ) THEN
                            IF ( s%level >= DEBUG ) WRITE( s%out, * )           &
                               '    too many infinite bounds on y'
                            CYCLE vars
@@ -6154,13 +6158,13 @@ vars: DO j = 1, prob%n
             IF ( a_il == 0 .AND. h_il == 0 ) THEN
                IF ( h_iu == 0 .AND. a_iu == 0 ) THEN
                   WRITE( s%out, 1001 ) imp_low, gj, imp_up
-               ELSE 
+               ELSE
                   WRITE( s%out, 1001 ) imp_low, gj, s%INFINITY
                END IF
             ELSE
                IF ( h_iu == 0 .AND. a_iu == 0 ) THEN
                   WRITE( s%out, 1001 ) - s%INFINITY, gj, imp_up
-               ELSE 
+               ELSE
                   WRITE( s%out, 1001 ) - s%INFINITY, gj, s%INFINITY
                END IF
             END IF
@@ -6179,14 +6183,14 @@ vars: DO j = 1, prob%n
             IF ( h_iu == 0 .AND. a_iu == 0 ) THEN
                CALL PRESOLVE_bound_z( j, UPPER, TIGHTEN, gj - imp_low )
                IF ( inform%status /= OK ) RETURN
-               CALL PRESOLVE_bound_z( j, LOWER, TIGHTEN, gj - imp_up  ) 
+               CALL PRESOLVE_bound_z( j, LOWER, TIGHTEN, gj - imp_up  )
                IF ( inform%status /= OK ) RETURN
-            ELSE 
-               CALL PRESOLVE_bound_z( j, UPPER, TIGHTEN, gj - imp_low ) 
+            ELSE
+               CALL PRESOLVE_bound_z( j, UPPER, TIGHTEN, gj - imp_low )
                IF ( inform%status /= OK ) RETURN
             END IF
          ELSE IF ( h_iu == 0 .AND. a_iu == 0 ) THEN
-            CALL PRESOLVE_bound_z( j, LOWER, TIGHTEN, gj - imp_up  ) 
+            CALL PRESOLVE_bound_z( j, LOWER, TIGHTEN, gj - imp_up  )
             IF ( inform%status /= OK ) RETURN
          END IF
 
@@ -6197,7 +6201,7 @@ vars: DO j = 1, prob%n
 !        -----------------------------------------------------------------------
 !        Consider next the case where the dual constraint is forcing,
 !        that is g(j) is equal to one of the implied bounds (augmented
-!        with the bounds on z(j)). 
+!        with the bounds on z(j)).
 !        -----------------------------------------------------------------------
 
          lf = ( a_il == 0 .AND. h_il == 0 ) .AND. (      &
@@ -6289,12 +6293,12 @@ vars: DO j = 1, prob%n
                      IF ( prob%C_status( i ) > ELIMINATED ) THEN
                         v = prob%A%val( k )
                         IF( v > ZERO )  THEN
-                           CALL PRESOLVE_fix_y( i, prob%Y_l( i ) ) 
-                        ELSE IF ( v < ZERO ) THEN    
+                           CALL PRESOLVE_fix_y( i, prob%Y_l( i ) )
+                        ELSE IF ( v < ZERO ) THEN
                            CALL PRESOLVE_fix_y( i, prob%Y_u( i ) )
                         END IF
                         IF ( inform%status /= OK ) RETURN
-                     END IF 
+                     END IF
                      k = s%A_col_n( k )
                      if ( k == END_OF_LIST ) EXIT
                   END DO
@@ -6304,7 +6308,7 @@ vars: DO j = 1, prob%n
 
             CYCLE vars
 
-!        If the upper implied bound is forcing, fix the variables and 
+!        If the upper implied bound is forcing, fix the variables and
 !        multipliers to their appropriate bound.
 
          ELSE IF ( uf ) THEN
@@ -6314,7 +6318,7 @@ vars: DO j = 1, prob%n
 
 !           Set z(j) to its upper bound, unless already done.
 
-            IF ( zuj < s%P_INFINITY                 .AND. & 
+            IF ( zuj < s%P_INFINITY                 .AND. &
                  .NOT. PRESOLVE_is_zero( zuj - zlj )      ) THEN
                CALL PRESOLVE_fix_z( j, zuj )
                IF ( inform%status /= OK ) RETURN
@@ -6380,12 +6384,12 @@ vars: DO j = 1, prob%n
                      IF ( prob%C_status( i ) > ELIMINATED ) THEN
                         v = prob%A%val( k )
                         IF( v > ZERO )  THEN
-                           CALL PRESOLVE_fix_y( i, prob%Y_u( i ) ) 
-                        ELSE IF ( v < ZERO ) THEN    
+                           CALL PRESOLVE_fix_y( i, prob%Y_u( i ) )
+                        ELSE IF ( v < ZERO ) THEN
                            CALL PRESOLVE_fix_y( i, prob%Y_l( i ) )
                         END IF
                         IF ( inform%status /= OK ) RETURN
-                     END IF 
+                     END IF
                      k = s%A_col_n( k )
                      if ( k == END_OF_LIST ) EXIT
                   END DO
@@ -6399,7 +6403,7 @@ vars: DO j = 1, prob%n
 
 !        -----------------------------------------------------------------------
 !        Consider next the case where the implied bounds are inconclusive as
-!        far as they do not imply dual infeasibility nor that x(j) is 
+!        far as they do not imply dual infeasibility nor that x(j) is
 !        dominated.  In this case, possible improvements on the bounds for
 !        the variables and multipliers may be possible.
 !        -----------------------------------------------------------------------
@@ -6414,7 +6418,7 @@ vars: DO j = 1, prob%n
 
 !        At least one implied bound is finite or contains a single infinite
 !        contribution.  Consider first the case where at least one implied
-!        bound is finite, in which case improvement is possible for the 
+!        bound is finite, in which case improvement is possible for the
 !        bounds of all variables occuring in the j-th row of the Hessian
 !        and all multipliers occuring in the j-th column of A.
 
@@ -6468,7 +6472,7 @@ vars: DO j = 1, prob%n
                            nui = MIN( nui, xli - ( gj - imp_up  ) / hij )
                         ELSE IF ( hij <= - s%h_tol ) THEN
                            nli = MAX( nli, xui - ( gj - imp_up  ) / hij )
-                        END IF 
+                        END IF
                      ELSE IF ( a_iu == 0 .AND. h_iu_k == i ) THEN
                         IF ( hij >= s%h_tol ) THEN
                            nui = MIN( nui, - ( gj - imp_up  ) / hij )
@@ -6530,14 +6534,14 @@ vars: DO j = 1, prob%n
                         END IF
 
 !                       Check if the upper bound can be used.
- 
+
                         IF ( xlj <= s%M_INFINITY .OR. zuj <= ZERO ) THEN
                            IF ( uf ) THEN
                               IF ( hij >= s%h_tol ) THEN
                                  nui = MIN( nui, xli - ( gj - imp_up ) / hij )
                               ELSE IF ( hij <= - s%h_tol ) THEN
                                  nli = MAX( nli, xui - ( gj - imp_up ) / hij )
-                              END IF 
+                              END IF
                            ELSE IF ( a_iu == 0 .AND. h_iu_k == i ) THEN
                               IF ( hij >= s%h_tol ) THEN
                                  nui = MIN( nui, - ( gj - imp_up  ) / hij )
@@ -6576,7 +6580,7 @@ vars: DO j = 1, prob%n
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
                   '    using finite implied bounds for multipliers in column', &
                   j, 'of A'
- 
+
                k = s%A_col_f( j )
                IF ( END_OF_LIST /= k ) THEN
                   DO ii = 1, prob%m
@@ -6614,7 +6618,7 @@ vars: DO j = 1, prob%n
                                  nli = MAX( nli, yui + ( gj - imp_up ) / aij )
                               ELSE IF ( aij <= - s%a_tol ) THEN
                                  nui = MIN( nui, yli + ( gj - imp_up ) / aij )
-                              END IF 
+                              END IF
                            ELSE IF ( a_iu_k == i .AND. h_iu == 0 ) THEN
                               IF ( aij >= s%a_tol ) THEN
                                  nli = MAX( nli, ( gj - imp_up  ) / aij )
@@ -6650,7 +6654,7 @@ vars: DO j = 1, prob%n
 !        contains a single infinite term.
 !        -----------------------------------------------------------------------
 
-         ELSE 
+         ELSE
 
 !           The lower bound contains a single infinite term that occurs
 !           in the x components.
@@ -6662,7 +6666,7 @@ vars: DO j = 1, prob%n
                   ' variable on subdiagonal  ', j, 'of H'
                hij = prob%H%val( h_il )
                IF ( hij >= s%h_tol ) THEN
-                  nli = - ( gj - imp_low ) / hij 
+                  nli = - ( gj - imp_low ) / hij
                   CALL PRESOLVE_dual_bound_x( h_il_k, LOWER, nli )
                   IF ( inform%status /= OK ) RETURN
                ELSE IF ( hij <= - s%h_tol ) THEN
@@ -6741,7 +6745,7 @@ vars: DO j = 1, prob%n
 
 1000  FORMAT( 4x, i6, 1x, 5ES10.2, 1x, i6, 1x, i6 )
 1001  FORMAT( '    bounds: implied lower =', ES12.4, '  gj =', ES12.4,         &
-              '  implied upper =', ES12.4 )  
+              '  implied upper =', ES12.4 )
 
       END SUBROUTINE PRESOLVE_dual_constraints
 
@@ -6768,8 +6772,8 @@ vars: DO j = 1, prob%n
 !     3) x(j) is free and occurs in a single equality constraint.
 !        In this case, its value may be chosen to satisfy this constraint
 !        exactly.
-!     In all these cases, x(j) may be removed from the problem as well as 
-!     all the constraints in which it occurs, and the associated constraint 
+!     In all these cases, x(j) may be removed from the problem as well as
+!     all the constraints in which it occurs, and the associated constraint
 !     multipliers and z(j) may be set to zero. On restoration, its value may
 !     be chosen such that all the bounds and constraints that involve it are
 !     inactive (and their associated duals/multipliers zero).
@@ -6804,7 +6808,7 @@ vars: DO j = 1, prob%n
 
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
             '    verifying constraint signs for x(', j, ')'
-         
+
          sj  = 0
          nin = 0
          neq = 0
@@ -6814,7 +6818,7 @@ vars: DO j = 1, prob%n
          IF ( END_OF_LIST /= k ) THEN
             DO ii = 1, prob%m
 
-!              Consider the next variable if an equality constraint has 
+!              Consider the next variable if an equality constraint has
 !              already been found.
 
                IF ( neq > 0 ) CYCLE vars
@@ -6823,7 +6827,7 @@ vars: DO j = 1, prob%n
 
                i  = s%A_row( k )
                IF ( prob%C_status( i ) > ELIMINATED ) THEN
-         
+
 !                 Avoid zero coefficient.
 
                   aij = prob%A%val( k )
@@ -6836,7 +6840,7 @@ vars: DO j = 1, prob%n
 
 !                 Equality constraint. Note that only a single inequality
 !                 constraint is acceptable if x(j) is free.
-         
+
                   IF ( PRESOLVE_is_zero( cui - cli ) ) THEN
                      IF ( nin > 0 ) CYCLE vars
                      IF ( xlj > s%M_INFINITY .OR. xuj < s%P_INFINITY )CYCLE vars
@@ -6846,7 +6850,7 @@ vars: DO j = 1, prob%n
 
                   ELSE
                      nin = nin + 1
-         
+
 !                    Verify the signs of the constraints coefficients
 !                    and the corresponding bound.
 
@@ -6886,8 +6890,8 @@ vars: DO j = 1, prob%n
             END DO
          END IF
 
-!        The signs of the coefficients of x(j) in A are consistent. 
-!        It can therefore be eliminated together with all constraints 
+!        The signs of the coefficients of x(j) in A are consistent.
+!        It can therefore be eliminated together with all constraints
 !        involving it.
 
 !        Remove the redundant variable.
@@ -6969,11 +6973,11 @@ vars: DO j = 1, prob%n
       REAL ( KIND = wp ) :: alpha
 
 
-!     Return if there is only one column, or if the list of potentially 
+!     Return if there is only one column, or if the list of potentially
 !     dependent variables if empty (after first pass)
 
       IF ( s%n_active <= 1                         .OR. &
-           s%loop < first_depvar_loop              .OR. & 
+           s%loop < first_depvar_loop              .OR. &
            ( s%loop > first_depvar_loop           .AND. &
              s%nmods( DEPENDENT_VARIABLES ) == 0        )       ) THEN
 
@@ -6998,7 +7002,7 @@ lj:   DO j = 1, prob%n
 
          IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE lj
 
-!        Also avoid columns with a single nonzero in H, as the latter cannot be 
+!        Also avoid columns with a single nonzero in H, as the latter cannot be
 !        multiple of another column. Column with nonempty Hessian contribution
 !        are also avoided in the Hessina is not active.
 
@@ -7021,7 +7025,7 @@ lj:   DO j = 1, prob%n
          END IF
 
 !        Loop over the column's nonzero elements to find the shortest row
-!        of A having a nonzero in column j, remembering the position in A 
+!        of A having a nonzero in column j, remembering the position in A
 !        of A(i,j) in w_m(i).
 
 !        The j-th column of the Jacobian is non empty.
@@ -7057,7 +7061,7 @@ lj:   DO j = 1, prob%n
                RETURN
             END IF
 
-!           Asmin is the minimal number of nonzeros in a row of A 
+!           Asmin is the minimal number of nonzeros in a row of A
 !           intersecting column j.
 !           Consider the next column if this row has only one nonzero
 !           (which must then be that in column j).
@@ -7072,7 +7076,7 @@ lj:   DO j = 1, prob%n
             jmin = prob%A%col( kmin )
          END IF
 
-!        The j-th column of the Hessian is non empty 
+!        The j-th column of the Hessian is non empty
 !         (since either Hcolj or Acolj must be > 0 ).
 
          inz = 0
@@ -7126,7 +7130,7 @@ lj:   DO j = 1, prob%n
             END IF
 
 !           Choose jmin as a column having nonzeros in the same positions
-!           as column j, if this column has fewer nonzeros than the minimal 
+!           as column j, if this column has fewer nonzeros than the minimal
 !           row.
 
             IF ( Hcolj < Asmin ) THEN
@@ -7190,7 +7194,7 @@ ljc:     DO jc = 1, prob%n
             ELSE
                IF ( Hcolj > 0 ) THEN
                   aset = .FALSE.
-                  CALL PRESOLVE_Hcols_mult( jmin, j, s%w_n, aset, alpha ) 
+                  CALL PRESOLVE_Hcols_mult( jmin, j, s%w_n, aset, alpha )
                   IF ( .NOT. aset ) CYCLE ljc
                END IF
                IF ( Acolj > 0 ) THEN
@@ -7228,7 +7232,7 @@ ljc:     DO jc = 1, prob%n
 
 !     Improves the sparsity pattern of A by eliminating entries in rows whose
 !     sparsity pattern are a superset of that of an equality row.
-! 
+!
 !     Note: one verifies here that all active equality constraints contain
 !           at least two nonzero entries. This is realistic if the primal
 !           constraints have already been examined, as singleton equality
@@ -7253,7 +7257,7 @@ ljc:     DO jc = 1, prob%n
                             nyle, nyue
 
 !     At the first presolving pass, find the indices of the equality type active
-!     rows with at least two nonzeros and store then in a_perm, while storing 
+!     rows with at least two nonzeros and store then in a_perm, while storing
 !     their sizes in w_m. At later passes, only consider the rows whose index
 !     has been flagged in a_perm.
 
@@ -7326,7 +7330,7 @@ ljc:     DO jc = 1, prob%n
       END DO
       s%w_m( s%w_mn( npsp ) ) = END_OF_LIST
 
-!     Loop over the equality constraints by increasing size. 
+!     Loop over the equality constraints by increasing size.
 
       DO
 
@@ -7351,7 +7355,7 @@ ljc:     DO jc = 1, prob%n
          inew  = prob%m + 1
          ic    = e
          maxae = ZERO
-         DO 
+         DO
             DO k = prob%A%ptr( ic ), prob%A%ptr( ic + 1 ) - 1
                j = prob%A%col( k )
                IF ( prob%X_status( j ) <= ELIMINATED .OR.  &
@@ -7383,7 +7387,7 @@ ljc:     DO jc = 1, prob%n
             inew = e
             e    = s%w_m( inew )
             IF ( e == END_OF_LIST ) EXIT
-        
+
 !           Mark the current pivot row as already analyzed.
 
             s%w_m( inew ) = 0
@@ -7391,14 +7395,14 @@ ljc:     DO jc = 1, prob%n
 !           End of the loop on pivot rows.
 
 
-            CYCLE 
+            CYCLE
          END IF
 
 !        col now contains the index of the pivot column
 !        piv contains the pivotal element, that is the entry
 !        in row e and column col.
 
-!        In order to verify that row ie is a superset of row e, 
+!        In order to verify that row ie is a superset of row e,
 !        first store the positions of the nonzeros of row e in w_n.
 
          s%w_n = 0
@@ -7427,7 +7431,7 @@ rlit:    DO it = 1, prob%m
                next = s%A_col_n( next )
                IF ( next == END_OF_LIST ) EXIT
             END IF
-                 
+
             aie  = prob%A%val( next )
             ie   = s%A_row( next )
             rsie = s%A_row_s( ie )
@@ -7464,7 +7468,7 @@ rlit:    DO it = 1, prob%m
             nze    = 0
             ic     = ie
             maxaie = ZERO
-            DO 
+            DO
                DO iek = prob%A%ptr( ic ), prob%A%ptr( ic + 1 ) - 1
                   iej = prob%A%col( iek )
                   tmp = prob%A%val( iek )
@@ -7485,10 +7489,10 @@ rlit:    DO it = 1, prob%m
                   '    row', ie, 'not superset of row', e
                CYCLE
             END IF
-                     
+
 !           Row ie is a superset of row e.
 
-!           Compute the multiple alpha of row e that, if added 
+!           Compute the multiple alpha of row e that, if added
 !           to row ie, would annihilate its col-th entry.
 
             alpha = - aie / piv
@@ -7513,7 +7517,7 @@ rlit:    DO it = 1, prob%m
             cuie  = prob%C_u( ie )
             bound = alpha * prob%C_l( e )
             IF ( clie > s%M_INFINITY ) THEN
-               nclie = clie + bound 
+               nclie = clie + bound
             ELSE
                nclie = ZERO         ! a convention which is never too big
             END IF
@@ -7590,14 +7594,14 @@ rlit:    DO it = 1, prob%m
             s%hist_r( l )    = alpha
 
 !           Replace, in row ie, the nonzero entries corresponding
-!           to nonzero entries of row e (not in the pivot column) 
-!           by the suitable linear combination.  
+!           to nonzero entries of row e (not in the pivot column)
+!           by the suitable linear combination.
 !           Also detect if any of these new values is zero, in which
 !           case unexpected cancellation occurs.
 
             nbr_canceled = 0
             ic = ie
-            DO 
+            DO
                DO iek = prob%A%ptr( ic ), prob%A%ptr( ic + 1 ) - 1
                   iej = prob%A%col( iek )
                   IF ( prob%X_status( iej ) <= ELIMINATED .OR. &
@@ -7614,7 +7618,7 @@ rlit:    DO it = 1, prob%m
                   IF ( iej == col ) THEN
                      CALL PRESOLVE_rm_A_entry( ie, col, iek )
 
-!                 Otherwise perform the linear combination 
+!                 Otherwise perform the linear combination
 !                 (+ cancellation detection)
 
                   ELSE
@@ -7636,8 +7640,8 @@ rlit:    DO it = 1, prob%m
 
 !           If cancellation occured, see if row ie is itself an equality
 !           row already considered as pivot.  Since its size has
-!           decreased because of cancellation, it must be reintroduced 
-!           in the list of potential pivot rows. 
+!           decreased because of cancellation, it must be reintroduced
+!           in the list of potential pivot rows.
 
             IF ( clie == cuie          .AND. &
                  s%w_m( ie ) == 0      .AND. &
@@ -7676,7 +7680,7 @@ rlit:    DO it = 1, prob%m
          inew = e
          e    = s%w_m( inew )
          IF ( e == END_OF_LIST ) EXIT
-        
+
 !        Mark the current pivot row as already analyzed.
 
          s%w_m( inew ) = 0
@@ -7697,7 +7701,7 @@ rlit:    DO it = 1, prob%m
 
 !===============================================================================
 !===============================================================================
- 
+
       SUBROUTINE PRESOLVE_check_bounds( first_pass )
 
 !     Verify the coherence of the initial bounds on the variables and
@@ -7732,8 +7736,8 @@ rlit:    DO it = 1, prob%m
          zu = prob%Z_u( j )
 
 !        Check feasibility of the multiplier bounds.
-   
-         IF ( PRESOLVE_is_pos( zl - zu ) ) THEN 
+
+         IF ( PRESOLVE_is_pos( zl - zu ) ) THEN
             inform%status = DUAL_INFEASIBLE
             WRITE( inform%message( 1 ), * )                                    &
                ' PRESOLVE analysis stopped: the problem is dual infeasible'
@@ -7823,7 +7827,7 @@ rlit:    DO it = 1, prob%m
          yu = prob%Y_u( i )
 
 !        Check feasibility of the multiplier bounds
-   
+
          IF ( PRESOLVE_is_pos( yl - yu ) ) THEN
             inform%status = DUAL_INFEASIBLE
             WRITE( inform%message( 1 ), * )                                    &
@@ -7923,7 +7927,7 @@ rlit:    DO it = 1, prob%m
 !              unconstrained variable, or is equal to END_OF_LIST if there
 !              is none.
 !
-!     h_perm( i ) indicates the position in (1:n) of the next variable in the 
+!     h_perm( i ) indicates the position in (1:n) of the next variable in the
 !              list and is equal to END_OF_LIST if there is none.
 
 !     Programming: Ph. Toint, November 2000
@@ -7939,11 +7943,11 @@ rlit:    DO it = 1, prob%m
       IF ( s%lsc_f /= END_OF_LIST ) CALL PRESOLVE_reset( s%lsc_f )
       IF ( s%ldc_f /= END_OF_LIST ) CALL PRESOLVE_reset( s%ldc_f )
       IF ( s%unc_f /= END_OF_LIST ) CALL PRESOLVE_reset( s%unc_f )
-     
+
       IF ( s%level >= DEBUG ) WRITE( s%out, * ) '    lists reset'
 
 !     Loop on the active columns
-      
+
       DO j = prob%n, 1, -1
          IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
 
@@ -8039,7 +8043,7 @@ rlit:    DO it = 1, prob%m
 
 !     Loop over column k, checking it is a multiple of column j in A
 !     note that, if a column is finished, the other must be
-!     finished too because they have the same number of nonzeros. 
+!     finished too because they have the same number of nonzeros.
 
       kk    = s%A_col_f( k )
       DO ii = 1, prob%m
@@ -8050,7 +8054,7 @@ rlit:    DO it = 1, prob%m
                IF ( s%level >= DEBUG ) WRITE( s%out, * )                       &
                   '    found element A(', ik, ',', k, ')'
 
-!              See if there is a matching (same row) nonzero in 
+!              See if there is a matching (same row) nonzero in
 !              column j. If not the two columns cannot be
 !              nonzero multiples: return.
 
@@ -8089,7 +8093,7 @@ rlit:    DO it = 1, prob%m
       END DO
 
       RETURN
-      
+
       END SUBROUTINE PRESOLVE_Acols_mult
 
 !===============================================================================
@@ -8097,7 +8101,7 @@ rlit:    DO it = 1, prob%m
 
       SUBROUTINE PRESOLVE_Hcols_mult( k, j, w_n, multiple, alpha )
 
-!     Check if columns j and k of the sparse H are multiple in the sense 
+!     Check if columns j and k of the sparse H are multiple in the sense
 !     that alpha * column k = column j
 
 !     Arguments:
@@ -8136,7 +8140,7 @@ rlit:    DO it = 1, prob%m
       INTEGER            :: kk, ii, ik, kj
       REAL ( KIND = wp ) :: ratio
 
-!     Loop on column k of H to verify that it is a multiple of column j 
+!     Loop on column k of H to verify that it is a multiple of column j
 !     (subdiagonal).
 
       DO kk = prob%H%ptr( k ), prob%H%ptr( k + 1 ) - 1
@@ -8212,7 +8216,7 @@ rlit:    DO it = 1, prob%m
             IF ( kk == END_OF_LIST ) EXIT
          END DO
       END IF
-      
+
       RETURN
 
       END SUBROUTINE PRESOLVE_Hcols_mult
@@ -8222,7 +8226,7 @@ rlit:    DO it = 1, prob%m
 
       SUBROUTINE PRESOLVE_mark( p, h )
 
-!     Marks the p-th variable/constraint has being modified, and, if this is 
+!     Marks the p-th variable/constraint has being modified, and, if this is
 !     the first time, increment the counter of modified variables/constraints
 
 !     Argument
@@ -8259,18 +8263,18 @@ rlit:    DO it = 1, prob%m
 
 !     The variables are ordered so that their bounds appear in the order
 !
-!     free                      x 
+!     free                      x
 !     non-negativity      0  <= x
 !     lower              x_l <= x
 !     range              x_l <= x <= x_u
 !     upper                     x <= x_u
 !     non-positivity            x <=  0
 !
-!     Fixed variables are removed. Within each category, the variables 
-!     are further ordered so that those with non-zero diagonal Hessian 
+!     Fixed variables are removed. Within each category, the variables
+!     are further ordered so that those with non-zero diagonal Hessian
 !     entries occur before the remainder.
 !
-!     Programming: Ph. Toint, November 2000, on the basis of a routine 
+!     Programming: Ph. Toint, November 2000, on the basis of a routine
 !     by N. Gould.
 !
 !===============================================================================
@@ -8303,9 +8307,9 @@ rlit:    DO it = 1, prob%m
          END DO
       END IF
 
-!     Run through the bounds to see how many fall into each of the 
-!     categories:  free (isfree), non-negativity (nonneg), lower (lowerb), 
-!     range (inrange), upper(upperb), non-positivity (nonpos) and 
+!     Run through the bounds to see how many fall into each of the
+!     categories:  free (isfree), non-negativity (nonneg), lower (lowerb),
+!     range (inrange), upper(upperb), non-positivity (nonpos) and
 !     ignored (ignored); of these, h_free, h_nonneg, h_lowerb, h_inrange,
 !     h_upperb and h_nonpos  have diagonal Hessian entries (the distinction is
 !     useless for ignored ones).
@@ -8313,23 +8317,23 @@ rlit:    DO it = 1, prob%m
       isfree    = 0
       nonneg    = 0
       lowerb    = 0
-      inrange   = 0 
-      upperb    = 0 
-      nonpos    = 0 
+      inrange   = 0
+      upperb    = 0
+      nonpos    = 0
       ignored   = 0
       inact     = 0
-      h_free    = 0 
-      h_nonneg  = 0 
+      h_free    = 0
+      h_nonneg  = 0
       h_lowerb  = 0
-      h_inrange = 0 
-      h_upperb  = 0 
-      h_nonpos  = 0 
+      h_inrange = 0
+      h_upperb  = 0
+      h_nonpos  = 0
 
       IF ( s%level >= DETAILS ) WRITE( s%out, * )                              &
          '   starting the first pass on the variables'
 
       DO j = 1, prob%n
-         xl = prob%X_l( j ) 
+         xl = prob%X_l( j )
          xu = prob%X_u( j )
          SELECT CASE ( prob%X_status( j ) )
          CASE ( ACTIVE:FREE )
@@ -8350,7 +8354,7 @@ rlit:    DO it = 1, prob%m
 !  Non-positivity
 
                   IF ( xu == ZERO ) THEN
-                     nonpos = nonpos + 1  
+                     nonpos = nonpos + 1
                      IF ( hjj > 0 ) h_nonpos = h_nonpos + 1
 
 !  Upper bounded variable
@@ -8366,7 +8370,7 @@ rlit:    DO it = 1, prob%m
 !  NOTE: this only happens when permutation is applied without problem
 !        reduction, thus pssibly leaving fixed variables undetected.  However
 !        these have to be removed for the permuted problem to be in the
-!        standard form.  Hence we fix them here "at the last minute", outside 
+!        standard form.  Hence we fix them here "at the last minute", outside
 !        the set of ordinary transformations, and remember their list in
 !        the linked list whose header is s%lfx_f.
 
@@ -8406,7 +8410,7 @@ rlit:    DO it = 1, prob%m
 !  Non-negativity
 
                   IF ( xl == ZERO ) THEN
-                     nonneg = nonneg + 1  
+                     nonneg = nonneg + 1
                      IF ( hjj > 0 ) h_nonneg = h_nonneg + 1
 
 !  Lower bounded variable
@@ -8418,12 +8422,12 @@ rlit:    DO it = 1, prob%m
                END IF
             END IF
 
-!  Ignored 
+!  Ignored
 
          CASE ( ELIMINATED )
             ignored = ignored + 1
 
-!  Inactive 
+!  Inactive
 
          CASE ( INACTIVE )
             inact = inact + 1
@@ -8431,7 +8435,7 @@ rlit:    DO it = 1, prob%m
       END DO
 
 !     Now set starting addresses for each division of the variables.
-      
+
       IF ( s%level >= DETAILS ) THEN
          WRITE( s%out, * ) '   end of the first pass on the variables'
          IF ( s%level >= DEBUG ) THEN
@@ -8497,7 +8501,7 @@ rlit:    DO it = 1, prob%m
       DO j = 1, prob%n
          SELECT CASE ( prob%X_status( j ) )
          CASE ( ACTIVE:FREE )
-            xl  = prob%X_l( j ) 
+            xl  = prob%X_l( j )
             xu  = prob%X_u( j )
             IF ( prob%H%ne > 0 ) THEN
                hjj = s%H_str( j )
@@ -8622,7 +8626,7 @@ rlit:    DO it = 1, prob%m
 !     upper                     A x <= c_u
 !     non-positivity            A x <=  0
 !
-!     Programming: Ph. Toint, November 2000, on the basis of a routine 
+!     Programming: Ph. Toint, November 2000, on the basis of a routine
 !     by N. Gould.
 !
 !===============================================================================
@@ -8634,13 +8638,13 @@ rlit:    DO it = 1, prob%m
       INTEGER            :: a_ignored, i, a_inactive, inact
       REAL ( KIND = wp ) :: cl, cu
 
-!     Run through the constraint bounds to see how many fall into each of the 
-!     categories:  free, lower, range, upper, equality and  ignored (or 
+!     Run through the constraint bounds to see how many fall into each of the
+!     categories:  free, lower, range, upper, equality and  ignored (or
 !     inactive).
 
-      free     = 0 
+      free     = 0
       lower    = 0
-      range    = 0 
+      range    = 0
       upper    = 0
       equality = 0
       ignored  = 0
@@ -8863,7 +8867,7 @@ rlit:    DO it = 1, prob%m
 
 !        First determine the size of subdiagonal part of each row of H
 !        after permutation.  This is achieved by looping on all elements
-!        of H. 
+!        of H.
 
          prob%H%ptr( :prob%n ) = 0
          nnz = 0
@@ -8893,7 +8897,7 @@ rlit:    DO it = 1, prob%m
          ii = 1
          DO i = 1, s%n_active
             jj              = prob%H%ptr( i )
-            prob%H%ptr( i ) = ii 
+            prob%H%ptr( i ) = ii
             ii              = ii + jj
          END DO
          prob%H%ptr( s%n_active + 1 ) = ii
@@ -8902,7 +8906,7 @@ rlit:    DO it = 1, prob%m
             '     H_ptr =', prob%H%ptr( :s%n_active )
 
 !        Determine the position of each element of the permuted H
-!        in its unpermuted version (the inverse permutation for H). 
+!        in its unpermuted version (the inverse permutation for H).
 
          IF ( s%level >= DEBUG .AND. prob%H%ne > 0 ) THEN
             WRITE( s%out, * ) '    Building the permutation of H'
@@ -9071,7 +9075,7 @@ rlit:    DO it = 1, prob%m
 
          prob%A%ptr( :prob%m ) = s%A_row_s
          CALL SORT_inplace_permute( prob%m, prob%C_status, ix = prob%A%ptr )
-         
+
          IF ( s%level >= CRAZY ) WRITE( s%out, * )'     A_ptr =',              &
               prob%A%ptr( :prob%m )
 
@@ -9091,8 +9095,8 @@ rlit:    DO it = 1, prob%m
             IF ( s%level >= CRAZY ) WRITE( s%out, * )                          &
                '     A_ptr =', prob%A%ptr( :s%m_active + 1 )
 
-!        Build the inverse permutation for the active nonzero entries. 
-!        The zero entries are stored beyond the last active nonzero, 
+!        Build the inverse permutation for the active nonzero entries.
+!        The zero entries are stored beyond the last active nonzero,
 !        that is starting from position a_ne_active + 1 in A.
 
 !        One first needs to mark all concatenated rows (which must be
@@ -9108,7 +9112,7 @@ rlit:    DO it = 1, prob%m
 
 !           Avoid active rows.
 
-            IF ( ii < 0 ) CYCLE 
+            IF ( ii < 0 ) CYCLE
 
 !           Get the concatenated rows if any, and mark them.
 
@@ -9140,7 +9144,7 @@ rlit:    DO it = 1, prob%m
 
             IF ( ii < 0 ) THEN
                prob%C_status( i ) = - ii
-               CYCLE 
+               CYCLE
             END IF
 
 !           Loop on the remaining rows
@@ -9151,7 +9155,7 @@ rlit:    DO it = 1, prob%m
                   j  = prob%A%col( k )
                   jj = prob%X_status( j )
 
-!                 Inactive entry 
+!                 Inactive entry
 !                 (inactive column, inactive row or zero value )
 
                   IF ( jj > s%n_active         .OR. &
@@ -9503,7 +9507,7 @@ rlit:    DO it = 1, prob%m
       SUBROUTINE PRESOLVE_fix_x( j, xval, z_type, pos, zval )
 
 !     Fix variable j at value xval and update the relevant other
-!     problem quantities (by calling PRESOLVE_do_fix_x). 
+!     problem quantities (by calling PRESOLVE_do_fix_x).
 !
 !     Arguments:
 
@@ -9520,10 +9524,10 @@ rlit:    DO it = 1, prob%m
 !            the method that must be used to restore the z(j), the dual
 !            variable of x(j).  Possible values are:
 !            Z_GIVEN         : the value of z(j) is known and equal to zval;
-!            Z_FROM_YZ_LOW   : z(j) must be zeroed (if positive ) with a 
+!            Z_FROM_YZ_LOW   : z(j) must be zeroed (if positive ) with a
 !                              corresponding adaptation of a single multiplier
 !                              and a single other dual variable
-!            Z_FROM_YZ_UP    : z(j) must be zeroed (if negative ) with a 
+!            Z_FROM_YZ_UP    : z(j) must be zeroed (if negative ) with a
 !                              corresponding adaptation of a single multiplier
 !                              and a single other dual variable
 !            Z_FROM_DUAL_FEAS: z(j) must be determined from the j-th dual
@@ -9549,10 +9553,10 @@ rlit:    DO it = 1, prob%m
 
       INTEGER :: l
 
-!     Exit if the value(s) exceeds the maximum value acceptable in the 
+!     Exit if the value(s) exceeds the maximum value acceptable in the
 !     reduced problem.
 
-      IF ( PRESOLVE_is_too_big( xval ) ) THEN 
+      IF ( PRESOLVE_is_too_big( xval ) ) THEN
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
             '    fixing x(', j, ') prevented by unacceptable growth'
          RETURN
@@ -9583,7 +9587,7 @@ rlit:    DO it = 1, prob%m
       SELECT CASE ( z_type )
 
       CASE ( Z_FROM_DUAL_FEAS )
- 
+
          IF ( s%level >= ACTION ) WRITE( s%out, * )                            &
             '  [', s%tt, '] fixing x(', j, ') to',xval,                        &
             '[z from dual feasibility]'
@@ -9705,7 +9709,7 @@ rlit:    DO it = 1, prob%m
          RETURN
       END IF
 
-!     Exit if the value exceeds the maximum value acceptable in the 
+!     Exit if the value exceeds the maximum value acceptable in the
 !     reduced problem.
 
       IF ( PRESOLVE_is_too_big( yi ) ) THEN
@@ -9860,7 +9864,7 @@ rlit:    DO it = 1, prob%m
          RETURN
       END IF
 
-!     Exit if the value exceeds the maximum value acceptable in the 
+!     Exit if the value exceeds the maximum value acceptable in the
 !     reduced problem.
 
       IF ( PRESOLVE_is_too_big( zj ) ) THEN
@@ -9880,7 +9884,7 @@ rlit:    DO it = 1, prob%m
 !        The upper bound
 
          IF ( zj < prob%Z_u( j ) ) THEN
-            IF ( s%tm >= s%max_tm ) THEN 
+            IF ( s%tm >= s%max_tm ) THEN
                CALL PRESOLVE_save_transf
                IF ( inform%status /= OK ) RETURN
             END IF
@@ -9903,7 +9907,7 @@ rlit:    DO it = 1, prob%m
 !        The lower bound
 
          IF ( zj > prob%Z_l( j ) ) THEN
-            IF ( s%tm >= s%max_tm ) THEN 
+            IF ( s%tm >= s%max_tm ) THEN
                CALL PRESOLVE_save_transf
                IF ( inform%status /= OK ) RETURN
             END IF
@@ -9925,7 +9929,7 @@ rlit:    DO it = 1, prob%m
 
       ELSE
 
-         IF ( s%tm >= s%max_tm ) THEN 
+         IF ( s%tm >= s%max_tm ) THEN
             CALL PRESOLVE_save_transf
             IF ( inform%status /= OK ) RETURN
          END IF
@@ -9984,7 +9988,7 @@ rlit:    DO it = 1, prob%m
          s%H_str( j )  = EMPTY
 
 !        Subdiagonal part of row j
-!        Note that the diagonal element is avoided since column j 
+!        Note that the diagonal element is avoided since column j
 !        is already eliminated.
 
          DO k = prob%H%ptr( j ), prob%H%ptr( j + 1 ) - 1
@@ -10099,7 +10103,7 @@ rlit:    DO it = 1, prob%m
 
       SUBROUTINE PRESOLVE_set_bound_x( j, lowup, bound )
 
-!     Sets a new bound for variable j. 
+!     Sets a new bound for variable j.
 
 !     Arguments:
 
@@ -10113,7 +10117,7 @@ rlit:    DO it = 1, prob%m
 
       REAL ( KIND = wp ), INTENT( IN ) :: bound
 
-!              the new lower or upper bound on x_j   
+!              the new lower or upper bound on x_j
 
 !     Programming: Ph. Toint, November 2000.
 
@@ -10123,8 +10127,8 @@ rlit:    DO it = 1, prob%m
 
       INTEGER            :: l
       REAL ( KIND = wp ) :: b, xlj, xuj
-      
-!     Exit if the bound exceeds the maximum value acceptable in the 
+
+!     Exit if the bound exceeds the maximum value acceptable in the
 !     reduced problem.
 
       IF ( PRESOLVE_is_too_big( bound ) ) THEN
@@ -10142,12 +10146,12 @@ rlit:    DO it = 1, prob%m
 
       SELECT CASE ( lowup )
 
-      CASE ( UPPER ) 
+      CASE ( UPPER )
 
 !        Check the new bound.
 
-!        Round the new bound to the existing one, if close enough.  
-!        In that case there is nothing to do. 
+!        Round the new bound to the existing one, if close enough.
+!        In that case there is nothing to do.
 !        Also round the values that are undistinguishable from zero .
 
          IF ( PRESOLVE_is_zero( bound ) ) THEN
@@ -10224,8 +10228,8 @@ rlit:    DO it = 1, prob%m
 
 !        Check the new bound.
 
-!        Round the new bound to the existing one, if close enough.  
-!        In that case there is nothing to do. 
+!        Round the new bound to the existing one, if close enough.
+!        In that case there is nothing to do.
 !        Also round the values that are undistinguishable from zero .
 
          IF ( PRESOLVE_is_zero( bound ) ) THEN
@@ -10316,8 +10320,8 @@ rlit:    DO it = 1, prob%m
 
 !     Tighten the bound for variable j as a result of the analysis of
 !     a primal constraint.  In doing so, verify that the new bound
-!     preserves primal feasibility for the problem. Also maintain the 
-!     implied status of variable j. 
+!     preserves primal feasibility for the problem. Also maintain the
+!     implied status of variable j.
 
 !     Arguments:
 
@@ -10335,7 +10339,7 @@ rlit:    DO it = 1, prob%m
 
       REAL ( KIND = wp ), INTENT( IN ) :: bound
 
-!              the new lower or upper bound on x_j   
+!              the new lower or upper bound on x_j
 
 !     Programming: Ph. Toint, November 2000.
 
@@ -10345,8 +10349,8 @@ rlit:    DO it = 1, prob%m
 
       INTEGER            :: l
       REAL ( KIND = wp ) :: b, xlj, xuj
-      
-!     Exit if the bound exceeds the maximum value acceptable in the 
+
+!     Exit if the bound exceeds the maximum value acceptable in the
 !     reduced problem.
 
       IF ( PRESOLVE_is_too_big( bound ) ) THEN
@@ -10364,10 +10368,10 @@ rlit:    DO it = 1, prob%m
 
       SELECT CASE ( lowup )
 
-      CASE ( UPPER ) 
+      CASE ( UPPER )
 
-!        Round the new bound to the existing one, if close enough.  
-!        In that case there is nothing to do. 
+!        Round the new bound to the existing one, if close enough.
+!        In that case there is nothing to do.
 !        Also round the values that are undistinguishable from zero .
 
          IF ( PRESOLVE_is_zero( xuj - bound ) ) RETURN
@@ -10445,8 +10449,8 @@ rlit:    DO it = 1, prob%m
 
       CASE ( LOWER )
 
-!        Round the new bound to the existing one, if close enough.  
-!        In that case there is nothing to do. 
+!        Round the new bound to the existing one, if close enough.
+!        In that case there is nothing to do.
 !        Also round the values that are undistinguishable from zero .
 
          IF ( PRESOLVE_is_zero( xlj - bound ) ) RETURN
@@ -10556,8 +10560,8 @@ rlit:    DO it = 1, prob%m
 
 !     Tighten the  bound for variable j as a result of the analysis of
 !     a dual constraint.  In doing so, verify that the new bound
-!     preserves primal feasibility for the problem. Also maintain the 
-!     implied status of variable j. 
+!     preserves primal feasibility for the problem. Also maintain the
+!     implied status of variable j.
 
 !     Arguments:
 
@@ -10571,7 +10575,7 @@ rlit:    DO it = 1, prob%m
 
       REAL ( KIND = wp ), INTENT( IN ) :: bound
 
-!              the new lower or upper bound on x_j   
+!              the new lower or upper bound on x_j
 
 !     Programming: Ph. Toint, November 2000.
 
@@ -10581,8 +10585,8 @@ rlit:    DO it = 1, prob%m
 
       INTEGER            :: l
       REAL ( KIND = wp ) :: b, xlj, xuj
-      
-!     Exit if the bound exceeds the maximum value acceptable in the 
+
+!     Exit if the bound exceeds the maximum value acceptable in the
 !     reduced problem.
 
       IF ( PRESOLVE_is_too_big( bound ) ) THEN
@@ -10600,10 +10604,10 @@ rlit:    DO it = 1, prob%m
 
       SELECT CASE ( lowup )
 
-      CASE ( UPPER ) 
+      CASE ( UPPER )
 
-!        Round the new bound to the existing one, if close enough.  
-!        In that case there is nothing to do. 
+!        Round the new bound to the existing one, if close enough.
+!        In that case there is nothing to do.
 !        Also round the values that are undistinguishable from zero .
 
          IF ( PRESOLVE_is_zero( xuj - bound ) ) RETURN
@@ -10678,8 +10682,8 @@ rlit:    DO it = 1, prob%m
 
       CASE ( LOWER )
 
-!        Round the new bound to the existing one, if close enough.  
-!        In that case there is nothing to do. 
+!        Round the new bound to the existing one, if close enough.
+!        In that case there is nothing to do.
 !        Also round the values that are undistinguishable from zero .
 
          IF ( PRESOLVE_is_zero( xlj - bound ) ) RETURN
@@ -10786,7 +10790,7 @@ rlit:    DO it = 1, prob%m
 
 !     Set a new bound for multiplier i, or tighten the existing one.  In doing
 !     so, verify that the new bound preserves dual feasibility for the
-!     problem. 
+!     problem.
 
 !     Arguments:
 
@@ -10806,7 +10810,7 @@ rlit:    DO it = 1, prob%m
 
       REAL ( KIND = wp ), INTENT( IN ) :: bound
 
-!              the new lower or upper bound on y_i   
+!              the new lower or upper bound on y_i
 
 !     Programming: Ph. Toint, November 2000.
 
@@ -10817,7 +10821,7 @@ rlit:    DO it = 1, prob%m
       INTEGER            :: l
       REAL ( KIND = wp ) :: b, yli, yui, cbnd
 
-!     Exit if the bound exceeds the maximum value acceptable in the 
+!     Exit if the bound exceeds the maximum value acceptable in the
 !     reduced problem.
 
       IF ( PRESOLVE_is_too_big( bound ) ) THEN
@@ -10966,8 +10970,8 @@ rlit:    DO it = 1, prob%m
       SUBROUTINE PRESOLVE_bound_z( j, lowup, type, bound )
 
 !     Set a new bound for the dual variable j, or tighten the existing one.
-!     In doing so, verify that the new bound preserves dual feasibility for 
-!     the problem. 
+!     In doing so, verify that the new bound preserves dual feasibility for
+!     the problem.
 
 !     Arguments:
 
@@ -10987,7 +10991,7 @@ rlit:    DO it = 1, prob%m
 
       REAL ( KIND = wp ), INTENT( IN ) :: bound
 
-!              the new lower or upper bound on z_j   
+!              the new lower or upper bound on z_j
 
 !     Programming: Ph. Toint, November 2000.
 
@@ -10998,7 +11002,7 @@ rlit:    DO it = 1, prob%m
       INTEGER            :: l
       REAL ( KIND = wp ) :: b, zlj, zuj, xbnd
 
-!     Exit if the bound exceeds the maximum value acceptable in the 
+!     Exit if the bound exceeds the maximum value acceptable in the
 !     reduced problem.
 
       IF ( PRESOLVE_is_too_big( bound ) ) THEN
@@ -11013,7 +11017,7 @@ rlit:    DO it = 1, prob%m
       zlj = prob%Z_l( j )
 
       SELECT CASE ( lowup )
-      
+
       CASE ( UPPER )
 
          b   = MIN( s%INFINITY, bound )
@@ -11032,7 +11036,7 @@ rlit:    DO it = 1, prob%m
             END IF
          END IF
 
-         IF ( s%tm >= s%max_tm ) THEN 
+         IF ( s%tm >= s%max_tm ) THEN
             CALL PRESOLVE_save_transf
             IF ( inform%status /= OK ) RETURN
          END IF
@@ -11070,7 +11074,7 @@ rlit:    DO it = 1, prob%m
                   '    because z(', j, ') has an infinite active lower bound'
                RETURN
             END IF
-         END IF 
+         END IF
 
          IF ( s%tm >= s%max_tm ) THEN
             CALL PRESOLVE_save_transf
@@ -11115,7 +11119,7 @@ rlit:    DO it = 1, prob%m
             '    because the bounds on z(', j, ') are incompatible'
          RETURN
       END IF
-  
+
 !     Check for maximum number of transformations.
 
       IF ( s%tt >= control%max_nbr_transforms ) THEN
@@ -11161,7 +11165,7 @@ rlit:    DO it = 1, prob%m
 
       SUBROUTINE PRESOLVE_bound_c( i, lowup, type, bound )
 
-!     Set a new bound for constraint i.  
+!     Set a new bound for constraint i.
 
 !     Arguments:
 
@@ -11175,12 +11179,12 @@ rlit:    DO it = 1, prob%m
 
       INTEGER, INTENT( IN ) :: type
 
-!              SET or UPDATE, depending whether or not the specified bound 
+!              SET or UPDATE, depending whether or not the specified bound
 !              should be remembered in the loose bounds
 
       REAL ( KIND = wp ), INTENT( IN ) :: bound
 
-!              the new lower or upper bound on c_i   
+!              the new lower or upper bound on c_i
 !
 !     Programming: Ph. Toint, November 2000.
 
@@ -11192,7 +11196,7 @@ rlit:    DO it = 1, prob%m
       LOGICAL            :: equality
       REAL ( KIND = wp ) :: b, cli, cui
 
-!     Exit if the bound exceeds the maximum value acceptable in the 
+!     Exit if the bound exceeds the maximum value acceptable in the
 !     reduced problem
 
       IF ( PRESOLVE_is_too_big( bound ) ) THEN
@@ -11206,7 +11210,7 @@ rlit:    DO it = 1, prob%m
       cli = prob%C_l( i )
       cui = prob%C_u( i )
       equality = cui == cli
-      
+
       SELECT CASE ( lowup )
 
       CASE ( UPPER )
@@ -11317,7 +11321,7 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i 
+      INTEGER, INTENT( IN ) :: i
 
 !            the index of the constraint to ignore
 
@@ -11349,7 +11353,7 @@ rlit:    DO it = 1, prob%m
       INTEGER, OPTIONAL, INTENT( INOUT ) :: pos
 
 !            the position in A of A(i,j) if y_type /= Y_GIVEN (input); or
-!            the index of the current transformation if 
+!            the index of the current transformation if
 !            y_type = Y_FROM_FORCING_LOW or Y_FROM_FORCING_UP (output);
 !            or the index of the column from which the constraint is reduced
 !            if y_type = Y_FROM_ATY.
@@ -11437,7 +11441,7 @@ rlit:    DO it = 1, prob%m
          s%hist_type( l ) = C_REMOVED_FU
          IF ( s%level >= ACTION )                                              &
             WRITE( s%out, * ) '  [', s%tt, '] deactivating c(', i, ') =',      &
-            prob%C( i ), '[ y from forcing upper]' 
+            prob%C( i ), '[ y from forcing upper]'
          s%hist_j( l ) = END_OF_LIST
          s%hist_r( l ) = ZERO
          pos = l
@@ -11446,7 +11450,7 @@ rlit:    DO it = 1, prob%m
       END SELECT
 
       CALL PRESOLVE_do_ignore_c( i )
- 
+
 !     Check for maximum number of transformations.
 
       IF ( s%tt >= control%max_nbr_transforms ) inform%status = MAX_NBR_TRANSF
@@ -11461,11 +11465,11 @@ rlit:    DO it = 1, prob%m
       SUBROUTINE PRESOLVE_do_ignore_c( i  )
 
 !     Effectively deactivates constraint i and update the relevant problem
-!     quantities 
+!     quantities
 
 !     Argument:
 
-      INTEGER, INTENT( IN ) :: i 
+      INTEGER, INTENT( IN ) :: i
 
 !         the (original) index of the row to deactivate
 
@@ -11513,7 +11517,7 @@ rlit:    DO it = 1, prob%m
       SUBROUTINE PRESOLVE_rm_A_entry( i, j, k )
 
 !     Removes the (i,j)-th entry of A, which is found in position k.
-!     The column index of the entry is remembered as well as its position and 
+!     The column index of the entry is remembered as well as its position and
 !     value, and the row and column sizes updated.
 
 !     Arguments:
@@ -11552,7 +11556,7 @@ rlit:    DO it = 1, prob%m
       s%hist_type( l )  = A_ENTRY_REMOVED
       s%hist_i( l )     = k
       s%hist_j( l )     = 0
-      prob%A%val( k ) = ZERO 
+      prob%A%val( k ) = ZERO
       s%hist_r( l )     = a
 
       IF ( s%level >= ACTION ) WRITE( s%out, * )                   &
@@ -11561,7 +11565,7 @@ rlit:    DO it = 1, prob%m
       s%a_ne_active = s%a_ne_active - 1
       s%a_perm( k )   = IBSET( s%a_perm( k ), ELIMINATED )
 
-!     Update the row and column sizes.  
+!     Update the row and column sizes.
 
       CALL PRESOLVE_decr_A_row_size( i )
       CALL PRESOLVE_decr_A_col_size( j )
@@ -11573,7 +11577,7 @@ rlit:    DO it = 1, prob%m
       RETURN
 
       END SUBROUTINE PRESOLVE_rm_A_entry
-     
+
 !==============================================================================
 !==============================================================================
 
@@ -11719,7 +11723,7 @@ rlit:    DO it = 1, prob%m
       REAL( KIND = wp ) :: aij, cli, cui, yi, nf, a_val
       REAL( KIND = wp ), DIMENSION ( 6 ) :: txdata
 
-!     Get the value (aij) and the position (kij) of the single 
+!     Get the value (aij) and the position (kij) of the single
 !     nonzero element in the j-th column of A, as well as its row
 !     index (i).
 
@@ -11777,10 +11781,10 @@ rlit:    DO it = 1, prob%m
 
 !     -----------------------------------------------------------------
 !     The multiplier may now be computed from dual feasibility.
-!     The sign of the multiplier yi then indicates which of 
-!     the <= or >= is active (if any).  Moreover, since column j is 
-!     a singleton column and variable j is purely linear, it can be 
-!     determined uniquely as a function of the other variables 
+!     The sign of the multiplier yi then indicates which of
+!     the <= or >= is active (if any).  Moreover, since column j is
+!     a singleton column and variable j is purely linear, it can be
+!     determined uniquely as a function of the other variables
 !     occuring in constraint i. Thus it can be eliminated from the
 !     problem, which  also causes constraint i to be eliminated.
 !     (Unfortunately, this may create a lot of fill-in in H when x( j )
@@ -11792,7 +11796,7 @@ rlit:    DO it = 1, prob%m
 
       yi = prob%G( j ) / aij
 
-!     Avoid any transformation if it exceeds the maximum acceptable value 
+!     Avoid any transformation if it exceeds the maximum acceptable value
 !     for the reduced problem data.
 
       IF ( PRESOLVE_is_too_big( yi ) ) THEN
@@ -11805,9 +11809,9 @@ rlit:    DO it = 1, prob%m
 !     -----------------------------------------------------------------
 !     Consider the different cases for a linear singleton column
 !
-!     First consider the active columns with (possibly implied) 
+!     First consider the active columns with (possibly implied)
 !     infinite bounds for the associated variable
-!     (Also verify there is enough history space to store the 
+!     (Also verify there is enough history space to store the
 !     transformation)
 !     -----------------------------------------------------------------
 
@@ -11833,8 +11837,8 @@ rlit:    DO it = 1, prob%m
             END IF
 
 !           Anticipate the new values for the gradient components corresponding
-!           to the nonzeros of row i. Note that the j-th component may be 
-!           neglected as the j-th variable is going to be eliminated by 
+!           to the nonzeros of row i. Note that the j-th component may be
+!           neglected as the j-th variable is going to be eliminated by
 !           the transformation.
 
             ic = i
@@ -11880,7 +11884,7 @@ rlit:    DO it = 1, prob%m
             END IF
 
             CALL PRESOLVE_transfer_x_bounds( i, j, kij, 1, txdata, yi )
- 
+
          ELSE
 
 !           The constraint may be removed.
@@ -11955,10 +11959,10 @@ rlit:    DO it = 1, prob%m
          s%needs( X_VALS, A_VALS ) = MIN( s%tt, s%needs( X_VALS, A_VALS ) )
          s%needs( X_VALS, C_BNDS ) = MIN( s%tt, s%needs( X_VALS, C_BNDS ) )
 
-!        If the case where constraint i is active, the objective function 
-!        and gradient are influenced by its value and must be updated to 
+!        If the case where constraint i is active, the objective function
+!        and gradient are influenced by its value and must be updated to
 !        reflect its elimination.
-         
+
          IF ( yi /= ZERO ) THEN
 
 !           Update the objective value.
@@ -12007,8 +12011,8 @@ rlit:    DO it = 1, prob%m
 
          END IF
 
-!        If a split equality was used, row i has been marked as a modified 
-!        equality row by do_ignore_x( j ), which is inadequate in this case 
+!        If a split equality was used, row i has been marked as a modified
+!        equality row by do_ignore_x( j ), which is inadequate in this case
 !        since it is no longer an equality. Thus make sure it is not selected
 !        in the list of potential sparsification pivots.
 
@@ -12048,8 +12052,8 @@ rlit:    DO it = 1, prob%m
          IF ( inform%status /= OK ) RETURN
 
 !     -----------------------------------------------------------------
-!     No action has been taken, either because variable j cannot be 
-!     freed or because the action would require transformations beyond 
+!     No action has been taken, either because variable j cannot be
+!     freed or because the action would require transformations beyond
 !     their maximum number.
 !     -----------------------------------------------------------------
 
@@ -12074,7 +12078,7 @@ rlit:    DO it = 1, prob%m
 
 !     Eliminate (if possible) the variable corresponding to a linear doubleton
 !     column by substituting its value from one equality constraint into the
-!     other constraint. 
+!     other constraint.
 
 !     Arguments:
 
@@ -12100,8 +12104,8 @@ rlit:    DO it = 1, prob%m
 
 !-------------------------------------------------------------------------------
 
-!     Get the positions and row indices of the two nonzero elements in 
-!     the j-th column of A.  The positions are stored in ke and ko, 
+!     Get the positions and row indices of the two nonzero elements in
+!     the j-th column of A.  The positions are stored in ke and ko,
 !     respectively, and the rows in ie and io, respectively.
 
 !-------------------------------------------------------------------------------
@@ -12137,7 +12141,7 @@ rlit:    DO it = 1, prob%m
 !     If no element was found, error.
 
       IF ( ko == 0 ) THEN
-         inform%status = NO_DOUBLETON_ENTRIES 
+         inform%status = NO_DOUBLETON_ENTRIES
          WRITE( inform%message( 1 ), * )                                       &
               ' PRESOLVE INTERNAL ERROR: doubleton entries in column', j,      &
               'not found (ANALYZE)'
@@ -12158,7 +12162,7 @@ rlit:    DO it = 1, prob%m
 
 !        Loop over the two possibilities for pivot, in order to take the
 !        fact that constraint io might also be an equality, in which case
-!        it could also be used for pivoting if pivoting on constraint ie 
+!        it could also be used for pivoting if pivoting on constraint ie
 !        fails.
 
          DO icase = 1, 2
@@ -12179,13 +12183,13 @@ rlit:    DO it = 1, prob%m
                       EXIT
 
 !                 The switch is possible because constraint io is also
-!                 an equality: 
+!                 an equality:
 !                 1) exchange the row indices...
 
                   ii = ie
                   ie = io
                   io = ii
-  
+
 !                 2) ... and the positions of their nonzero in column j.
 
                   ii = ke
@@ -12204,7 +12208,7 @@ rlit:    DO it = 1, prob%m
                '    doubleton', j, ': rows', ie, '(equality) and', io
 
 !           See if the column cannot be made implied free by exploiting
-!           an equality doubleton or a split equality.  
+!           an equality doubleton or a split equality.
 
             split_equality = .FALSE.
             IF ( prob%X_status( j ) /= FREE ) THEN
@@ -12226,24 +12230,24 @@ rlit:    DO it = 1, prob%m
                   split_equality     = .TRUE.
                END IF
             END IF
-         
+
 !-------------------------------------------------------------------------------
 
 !           Assume now that x_j is unbounded: it can therefore be
 !           eliminated from row ie  (if there remains enough history space
-!           to remember the transformation).      
+!           to remember the transformation).
 
 !-------------------------------------------------------------------------------
-  
+
             IF ( prob%X_status( j ) == FREE                     .AND. &
                  s%tt + 3 + s%A_row_s( ie ) <= control%max_nbr_transforms ) THEN
 
-!              Compute the number of fills created by 
-!              the merging of rows ie and io, and verify it is not too 
+!              Compute the number of fills created by
+!              the merging of rows ie and io, and verify it is not too
 !              large, compared with the original size of row io.
 
-!              Loop over the non-pivot row to remember the positions 
-!              of its nonzeros in w_n, as well as the index of the 
+!              Loop over the non-pivot row to remember the positions
+!              of its nonzeros in w_n, as well as the index of the
 !              last of its concatenated rows (in last).
 
                s%w_n  = 0
@@ -12254,13 +12258,13 @@ rlit:    DO it = 1, prob%m
                      IF ( prob%X_status( jo ) <= ELIMINATED .OR. &
                           prob%A%val( k )     == ZERO            )CYCLE
                      s%w_n( jo ) = k
-                  END DO 
+                  END DO
                   last = ic
                   ic   = s%conc( ic )
                   IF ( ic == END_OF_LIST ) EXIT
                END DO
 
-!              Now loop on the pivot row, accumulating the number of 
+!              Now loop on the pivot row, accumulating the number of
 !              fills in nfills.
 
                nfills = 0
@@ -12274,20 +12278,20 @@ rlit:    DO it = 1, prob%m
                      IF ( prob%X_status( je ) <= ELIMINATED .OR.&
                           a                   == ZERO       .OR.&
                           s%w_n( je )            > 0              ) CYCLE
-               
+
                      maxaie = MAX( maxaie, ABS( a ) )
                      maxgie = MAX( maxgie, ABS( prob%G( je ) ) )
-               
+
 !                    If variable jo does not appear in the non-pivot
 !                    row, then a fill is created in this row.
-               
+
                      nfills = nfills + 1
-                  END DO 
+                  END DO
                   ic = s%conc( ic )
                   IF ( ic == END_OF_LIST ) EXIT
                END DO
 
-!              Check if the number of fills does not exceed the 
+!              Check if the number of fills does not exceed the
 !              maximum proportion of the original size of row io.
 
                IF ( split_equality                 .OR. &
@@ -12301,7 +12305,7 @@ rlit:    DO it = 1, prob%m
 
                   IF ( split_equality ) THEN
 
-!                    If a split equality has been used, no fill is 
+!                    If a split equality has been used, no fill is
 !                    allowed to occur, as this would prevent keeping
 !                    the shortened row io in the problem.
 !                    remember to restore the status of x(j) before exiting
@@ -12314,7 +12318,7 @@ rlit:    DO it = 1, prob%m
                         EXIT
                      END IF
 
-                  ELSE 
+                  ELSE
 
                      IF ( s%A_row_s( io ) + nfills > s%max_fill_prop * ns ) THEN
                         IF ( s%level >= DEBUG ) WRITE( s%out, * )              &
@@ -12326,11 +12330,11 @@ rlit:    DO it = 1, prob%m
 
                END IF
 
-!              Pivoting is possible: compute the ratios for updating the 
+!              Pivoting is possible: compute the ratios for updating the
 !              gradient and matrix elements.
 
                gj = prob%G( j )
-               ao = prob%A%val( ko ) 
+               ao = prob%A%val( ko )
                r  = ao / pivot
                rg = gj / pivot
 
@@ -12442,7 +12446,7 @@ rlit:    DO it = 1, prob%m
                   WRITE( s%out, * ) '  [', s%tt, '] pivoting c(', ie,          &
                        ') and c(', io, ') from A(', ie, ',', j,')'
                END IF
-             
+
                s%tm             = l
                s%hist_type( l ) = A_ROWS_MERGED
                s%hist_i( l )    = ke
@@ -12457,7 +12461,7 @@ rlit:    DO it = 1, prob%m
                      IF ( yue < s%P_INFINITY ) THEN
                         CALL PRESOLVE_bound_y( io, LOWER, TIGHTEN, nylio )
                         IF ( inform%status /= OK ) RETURN
-                     END IF 
+                     END IF
                      IF ( yle > s%M_INFINITY ) THEN
                         CALL PRESOLVE_bound_y( io, UPPER, TIGHTEN, nyuio )
                         IF ( inform%status /= OK ) RETURN
@@ -12500,13 +12504,13 @@ rlit:    DO it = 1, prob%m
 
                IF ( s%level >= DETAILS ) WRITE( s%out, * ) '    f and c updated'
 
-!              Perform the pivoting (elimination of x_j from its value in 
+!              Perform the pivoting (elimination of x_j from its value in
 !              constraint ie) on the pivot and non-pivot rows, as well as
 !              on the gradient.
 
                nbr_canceled = 0
 
-!              Loop on the pivot row, performing the pivoting in the 
+!              Loop on the pivot row, performing the pivoting in the
 !              non-pivot row.
 
                itmp   = MIN( s%tt, s%needs( G_VALS, A_VALS ))
@@ -12519,8 +12523,8 @@ rlit:    DO it = 1, prob%m
                      a = prob%A%val( k )
                      IF ( a == ZERO ) CYCLE
 
-!                    If variable jo also appears in the non-pivot row, 
-!                    its coefficient in the non-pivot row must be updated 
+!                    If variable jo also appears in the non-pivot row,
+!                    its coefficient in the non-pivot row must be updated
 !                    (detecting possible cancellation if it occurs).
 
                      pjo = s%w_n( je )
@@ -12534,9 +12538,9 @@ rlit:    DO it = 1, prob%m
                         END IF
                         prob%A%val( pjo ) = ao
 
-!                    If it does not appear in the non-pivot row, then 
-!                    a fill is created in this row, which is kept in 
-!                    the pivot row considered as an extension of the 
+!                    If it does not appear in the non-pivot row, then
+!                    a fill is created in this row, which is kept in
+!                    the pivot row considered as an extension of the
 !                    non-pivot row.
 
                      ELSE
@@ -12551,8 +12555,8 @@ rlit:    DO it = 1, prob%m
 
                      prob%G( je ) = prob%G( je ) - rg * a
                      s%needs( G_VALS, A_VALS ) = itmp
-                                           
-                  END DO 
+
+                  END DO
                   ic = s%conc( ic )
                   IF ( ic == END_OF_LIST ) EXIT
                END DO
@@ -12561,7 +12565,7 @@ rlit:    DO it = 1, prob%m
 !              the non-pivot row and update its structure.
 
                IF ( nfills > 0 ) THEN
- 
+
                   IF ( s%level >= DEBUG ) WRITE( s%out, * )                    &
                      '    the pivot row still contains', nfills, 'nonzero(s)'
 
@@ -12569,8 +12573,8 @@ rlit:    DO it = 1, prob%m
 
                   s%conc( last ) = ie
 
-!                 Loop over the old pivot row, considering if a 
-!                 nonzero must be removed because it has moved to 
+!                 Loop over the old pivot row, considering if a
+!                 nonzero must be removed because it has moved to
 !                 the non pivot row or if it has to stay, in which
 !                 case the row and column structure must be updated.
 
@@ -12585,13 +12589,13 @@ rlit:    DO it = 1, prob%m
 
                         IF ( s%w_n( je ) > 0 ) THEN
 
-!                          element transfered to the non-pivot row: 
+!                          element transfered to the non-pivot row:
 !                          remove its occurrence from the pivot row
 
                            CALL PRESOLVE_rm_A_entry( ie, je, k )
                            IF ( inform%status /= OK ) RETURN
 
-!                       New fill element ( ie, je ), now considered 
+!                       New fill element ( ie, je ), now considered
 !                       as element ( io, je ) because of concatenation
 
                         ELSE
@@ -12610,7 +12614,7 @@ rlit:    DO it = 1, prob%m
                             s%a_ne_active = s%a_ne_active + 1
 
                          END IF
-                      END DO 
+                      END DO
                       ic = s%conc( ic )
                       IF ( ic == END_OF_LIST ) EXIT
                    END DO
@@ -12655,14 +12659,14 @@ rlit:    DO it = 1, prob%m
 !              The current doubleton cannot be exploited in this
 !              configuration.
 
-               IF ( prob%X_status( j ) /= FREE ) THEN 
+               IF ( prob%X_status( j ) /= FREE ) THEN
                   IF ( s%level >= DEBUG ) WRITE( s%out, * )                    &
                      '    variable', j, 'cannot be made free'
 
 !                 See if a switch between rows ie and io is possible.
 
 !                 The switch is possible because constraint io is also
-!                 an equality: 
+!                 an equality:
 
                   IF ( icase == 1 ) THEN
                      IF ( PRESOLVE_is_zero( prob%C_l(io)-prob%C_u(io) ) ) THEN
@@ -12717,7 +12721,7 @@ rlit:    DO it = 1, prob%m
 
       SUBROUTINE PRESOLVE_unconstrained( j )
 
-!     Consider the case of an unconstrained variable. It is eliminated 
+!     Consider the case of an unconstrained variable. It is eliminated
 !     whenever enough information is available to obtain its value.
 
 !     Argument:
@@ -12752,13 +12756,13 @@ rlit:    DO it = 1, prob%m
       hsj2 = PRESOLVE_H_row_s( j )
 
 !-------------------------------------------------------------------------------
-!     If the linearly unconstrained variable j occurs linearly in the 
+!     If the linearly unconstrained variable j occurs linearly in the
 !     objective function, then it can be fixed to one of its bounds.
 !-------------------------------------------------------------------------------
 
       IF ( hsj == EMPTY ) THEN
 
-!        Variable j is a pure linear variable: 
+!        Variable j is a pure linear variable:
 !        it may be set to one of its bounds.
 
          IF ( gj == ZERO ) THEN
@@ -12779,7 +12783,7 @@ rlit:    DO it = 1, prob%m
 
             IF ( s%level >= DEBUG ) WRITE( s%out, * )                          &
                '   x(', j, ') is purely linear with negative gradient'
-            IF ( xuj < s%P_INFINITY ) THEN 
+            IF ( xuj < s%P_INFINITY ) THEN
                CALL PRESOLVE_fix_x( j, xuj, Z_GIVEN, zval=  gj )
                IF ( inform%status /= OK ) RETURN
             ELSE
@@ -12798,7 +12802,7 @@ rlit:    DO it = 1, prob%m
             IF ( s%level >= DEBUG ) WRITE( s%out, * )                          &
             '   x(', j, ') is purely linear with positive gradient'
 
-            IF ( xlj > s%M_INFINITY ) THEN 
+            IF ( xlj > s%M_INFINITY ) THEN
                CALL PRESOLVE_fix_x( j, xlj, Z_GIVEN, zval=  gj )
                IF ( inform%status /= OK ) RETURN
             ELSE
@@ -12863,7 +12867,7 @@ rlit:    DO it = 1, prob%m
 !     The j-th column of the Hessian contains a single nondiagonal element
 !     and x(j) is free.  First find the position and value of that nonzero.
 !-------------------------------------------------------------------------------
-      
+
       ELSE IF ( prob%X_status( j ) == FREE .AND. hsj == -1 ) THEN
 
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
@@ -12899,11 +12903,11 @@ rlit:    DO it = 1, prob%m
                         p    = i
                         khpj = k
                         hpj  = b
-                        EXIT 
+                        EXIT
                      END IF
                   END IF
                   k = s%H_col_n( k )
-                  IF ( k == END_OF_LIST ) EXIT 
+                  IF ( k == END_OF_LIST ) EXIT
                END DO
             END IF
             IF ( khpj == 0 ) THEN
@@ -12924,7 +12928,7 @@ rlit:    DO it = 1, prob%m
 !        nonzero.  This corresponds to a simple Gaussian elimination on the
 !        2 X 2 principal submatrix of H spanned by j and p.
 !-------------------------------------------------------------------------------
-      
+
          IF (  hsj2 == 2 ) THEN
 
             IF ( s%level >= DEBUG ) THEN
@@ -13007,11 +13011,11 @@ rlit:    DO it = 1, prob%m
             END IF
 
 !-------------------------------------------------------------------------------
-!        The j-th column of the Hessian contains a single nonzero element 
-!        in row p, which is not on the diagonal.  In this case, variable p 
+!        The j-th column of the Hessian contains a single nonzero element
+!        in row p, which is not on the diagonal.  In this case, variable p
 !        can be eliminated from the dual feasibility condition.
 !-------------------------------------------------------------------------------
-      
+
          ELSE IF ( hsj2 == 1 ) THEN
 
             CALL PRESOLVE_fix_x( p, - gj / hpj, Z_FROM_DUAL_FEAS )
@@ -13030,7 +13034,7 @@ rlit:    DO it = 1, prob%m
       SUBROUTINE PRESOLVE_merge_x( j, k, alpha )
 
 !     We have that alpha * column k = column j (in A and H).
-!     In this case, merge the variables j and k, such that 
+!     In this case, merge the variables j and k, such that
 !     new variable k <--- old variable k + alpha * old variable j.
 
 !     Arguments:
@@ -13042,7 +13046,7 @@ rlit:    DO it = 1, prob%m
       INTEGER, INTENT( IN ) :: k
 
 !            the index of the variable into which variable j is to be merged
-            
+
       REAL ( KIND = wp ), INTENT( IN ) :: alpha
 
 !            the coefficient of the merging.
@@ -13083,8 +13087,8 @@ rlit:    DO it = 1, prob%m
 
 !     Consider first the case of "duplicate" variables, that is variables
 !     playing exactly the same role in the objective function and constraints.
-!     the k-th variable is replaced by  the linear combination 
-!     ( variable k + alpha * variable j ). 
+!     the k-th variable is replaced by  the linear combination
+!     ( variable k + alpha * variable j ).
 
 !-------------------------------------------------------------------------------
 
@@ -13102,18 +13106,18 @@ rlit:    DO it = 1, prob%m
                nxl = alpha * xlj + xlk
             ELSE
                nxl = - s%INFINITY
-            END IF 
+            END IF
             IF ( xuj < s%P_INFINITY .AND. xuk < s%P_INFINITY ) THEN
                nxu = alpha * xuj + xuk
             ELSE
                nxu = s%INFINITY
-            END IF 
+            END IF
          ELSE
             IF ( xuj < s%P_INFINITY .AND. xlk > s%M_INFINITY ) THEN
                nxl = alpha * xuj + xlk
             ELSE
                nxl = - s%INFINITY
-            END IF 
+            END IF
             IF ( xlj > s%M_INFINITY .AND. xuk < s%P_INFINITY ) THEN
                nxu = alpha * xlj + xuk
             ELSE
@@ -13121,7 +13125,7 @@ rlit:    DO it = 1, prob%m
             END IF
          END IF
 
-!        Avoid the transformation if any of the finite bounds exceed the 
+!        Avoid the transformation if any of the finite bounds exceed the
 !        maximum acceptable value for the reduced problem.
 
          IF ( PRESOLVE_is_too_big( nxl ) .OR. &
@@ -13143,18 +13147,18 @@ rlit:    DO it = 1, prob%m
                nzl = alpha * zlj + zlk
             ELSE
                nzl = -s%INFINITY
-            END IF 
+            END IF
             IF ( zuj < s%P_INFINITY .AND. zuk < s%P_INFINITY ) THEN
                nzu = alpha * zuj + zuk
             ELSE
                nzu = s%INFINITY
-            END IF 
+            END IF
          ELSE
             IF ( zuj < s%P_INFINITY .AND. zlk > s%M_INFINITY ) THEN
                nzl = alpha * zuj + zlk
             ELSE
                nzl = -s%INFINITY
-            END IF 
+            END IF
             IF ( zlj > s%M_INFINITY .AND. zuk < s%P_INFINITY ) THEN
                nzu = alpha * zlj + zuk
             ELSE
@@ -13162,7 +13166,7 @@ rlit:    DO it = 1, prob%m
             END IF
          END IF
 
-!        Avoid the transformation if any of the finite bounds exceed the 
+!        Avoid the transformation if any of the finite bounds exceed the
 !        maximum acceptable value for the reduced problem.
 
          IF ( PRESOLVE_is_too_big( nzl ) .OR. &
@@ -13470,7 +13474,7 @@ rlit:    DO it = 1, prob%m
 !     Find the other active nonzero in row i.
 
       IF ( s%level >= DETAILS ) WRITE( s%out, * )                              &
-         '    c(', i, ') is an equality doubleton'        
+         '    c(', i, ') is an equality doubleton'
 
       k  = 0
       ic = i
@@ -13496,7 +13500,7 @@ lic:  DO
          RETURN
       END IF
 
-!     The doubleton has been found.  
+!     The doubleton has been found.
 
       IF ( s%level >= DEBUG ) WRITE( s%out, * )                                &
          '    doubleton element is in column', k
@@ -13506,7 +13510,7 @@ lic:  DO
 
       IF ( ( prob%X_status( k ) /= FREE .OR. s%A_col_s( k ) /= 1 ) .AND. &
            prob%X_status( k )   >  ELIMINATED                          ) THEN
-               
+
 !        Get the values that are relevant for the doubleton.
 
          aij = prob%A%val( kij )
@@ -13548,11 +13552,11 @@ lic:  DO
             END IF
          END IF
 
-         IF ( s%level >= DEBUG ) THEN 
+         IF ( s%level >= DEBUG ) THEN
             WRITE( s%out, * ) '    equality doubleton analysis details:',      &
                   '  c(', i, ') =', cli
             WRITE( s%out, * )                                                  &
-                 '    A(', i,',', j , ') =', aij, 'A(', i,',', k , ') =', aik 
+                 '    A(', i,',', j , ') =', aij, 'A(', i,',', k , ') =', aik
             WRITE( s%out, * ) '    x(', j,') in [', xlj, ',', xuj, ']'
             WRITE( s%out, * ) '    => x(', k, ') in [', nxlk, ',', nxuk, ']'
          END IF
@@ -13561,7 +13565,7 @@ lic:  DO
 !        cuts away the original problem bound.
 
          lower_active = .NOT. PRESOLVE_is_neg( nxlk - xlk ) .AND. &
-                        nxlk > s%M_INFINITY 
+                        nxlk > s%M_INFINITY
          upper_active = .NOT. PRESOLVE_is_pos( nxuk - xuk ) .AND. &
                         nxuk < s%P_INFINITY
 
@@ -13571,7 +13575,7 @@ lic:  DO
 
 !        Note that one remembers the index of the variable on which the new
 !        bound(s) are imposed (ie k) and the position of A(i,k) in A (ie kij),
-!        from which the values of i, k and A(i,k) can easily be reconstructed. 
+!        from which the values of i, k and A(i,k) can easily be reconstructed.
 
 !        1) The new lower bound is active.
 
@@ -13590,7 +13594,7 @@ lic:  DO
 
             ELSE
 
-!              Update the lower bound on x(k). 
+!              Update the lower bound on x(k).
 
                IF ( .NOT. PRESOLVE_is_zero( nxlk - xlk ) .AND. &
                     .NOT. PRESOLVE_is_too_big( nxlk )          ) THEN
@@ -13618,7 +13622,7 @@ lic:  DO
 !              Update the status of x(k).
 
                SELECT CASE ( prob%X_status( k ) )
-               CASE ( FREE ) 
+               CASE ( FREE )
                   prob%X_status( k ) = LOWER
                   CALL PRESOLVE_bound_z( k, UPPER, SET,   s%INFINITY )
                   IF ( inform%status /= OK ) RETURN
@@ -13670,7 +13674,7 @@ lic:  DO
 
             ELSE
 
-!              Update the upper bound on x(k).  
+!              Update the upper bound on x(k).
 
                IF ( .NOT. PRESOLVE_is_zero( nxuk - xuk ) .AND. &
                     .NOT. PRESOLVE_is_too_big( nxuk )          ) THEN
@@ -13698,7 +13702,7 @@ lic:  DO
 !              Update the status of x(k).
 
                SELECT CASE ( prob%X_status( k ) )
-               CASE ( FREE ) 
+               CASE ( FREE )
                   prob%X_status( k )  = UPPER
                   CALL PRESOLVE_bound_z( k, LOWER, SET, - s%INFINITY )
                   IF ( inform%status /= OK ) RETURN
@@ -13790,7 +13794,7 @@ lic:  DO
 
 !     Transforms an equality constraint of the form
 
-!                 A(i,j) x(j) + SUM A(i,p) x(p) = c    
+!                 A(i,j) x(j) + SUM A(i,p) x(p) = c
 
 !     in which x(j) in [ x_l, x_u ] into a new constraint of the form
 
@@ -13833,7 +13837,7 @@ lic:  DO
 
       REAL( KIND = wp ), OPTIONAL, INTENT( IN ) :: yi
 
-!            the value of the multiplier associated with the constraint, 
+!            the value of the multiplier associated with the constraint,
 !            if known
 
 !     Programming: Ph. Toint, May 2001.
@@ -13858,18 +13862,18 @@ lic:  DO
 
       CASE ( 0 ) ! Compute the transformation values.
 
-         txdata = ZERO         
+         txdata = ZERO
 
-!        Anticipate the values for the lower and upper bounds of the i-th 
-!        constraint that reflect the bounds on x(j). (Note that at least one 
+!        Anticipate the values for the lower and upper bounds of the i-th
+!        constraint that reflect the bounds on x(j). (Note that at least one
 !        of the new bounds must be finite, otherwise x(j) was already free.)
 
          IF ( aij > ZERO ) THEN
-         IF ( xuj < s%P_INFINITY ) txdata( 1 ) = ci - aij * xuj 
-         IF ( xlj > s%M_INFINITY ) txdata( 2 ) = ci - aij * xlj 
+         IF ( xuj < s%P_INFINITY ) txdata( 1 ) = ci - aij * xuj
+         IF ( xlj > s%M_INFINITY ) txdata( 2 ) = ci - aij * xlj
          ELSE
             IF ( xuj < s%P_INFINITY ) txdata( 2 ) = ci - aij * xuj
-            IF ( xlj > s%M_INFINITY ) txdata( 1 ) = ci - aij * xlj 
+            IF ( xlj > s%M_INFINITY ) txdata( 1 ) = ci - aij * xlj
          END IF
 
 !        Anticipate the values of the finite loose bounds in a similar manner.
@@ -13880,7 +13884,7 @@ lic:  DO
             IF ( aij > ZERO ) THEN
                IF ( xuj < s%P_INFINITY ) txdata( 3 ) = s%c_l2( i ) - aij * xuj
                IF ( xlj > s%M_INFINITY ) txdata( 4 ) = s%c_u2( i ) - aij * xlj
-            ELSE 
+            ELSE
                IF ( xuj < s%P_INFINITY ) txdata( 4 ) = s%c_u2( i ) - aij * xuj
                IF ( xlj > s%M_INFINITY ) txdata( 3 ) = s%c_l2( i ) - aij * xlj
             END IF
@@ -13890,9 +13894,9 @@ lic:  DO
 
          IF ( aij > ZERO ) THEN
             IF ( zuj < s%P_INFINITY ) txdata( 5 ) = - zuj / aij
-            IF ( zlj > s%M_INFINITY ) txdata( 6 ) = - zlj / aij 
+            IF ( zlj > s%M_INFINITY ) txdata( 6 ) = - zlj / aij
          ELSE
-            IF ( zuj < s%P_INFINITY ) txdata( 6 ) = - zuj / aij 
+            IF ( zuj < s%P_INFINITY ) txdata( 6 ) = - zuj / aij
             IF ( zlj > s%M_INFINITY ) txdata( 5 ) = - zlj / aij
          END IF
 
@@ -13900,9 +13904,9 @@ lic:  DO
 
 !        Record the transformation.
 
-!        Note that one remembers the index of the variable from which the 
+!        Note that one remembers the index of the variable from which the
 !        bound(s) are freed (ie j) and the position of A(i,j) in A (ie kij),
-!        from which the value of i can easily be reconstructed. 
+!        from which the value of i can easily be reconstructed.
 
 
          IF ( s%tm >= s%max_tm ) THEN
@@ -13917,7 +13921,7 @@ lic:  DO
          s%hist_type( l ) = X_BOUNDS_TO_C
          s%hist_i( l )    = kij
 
-!        If the multiplier is known, save it and mark this fact by negating 
+!        If the multiplier is known, save it and mark this fact by negating
 !        the column index, otherwise save aij (unused).
 
          IF ( PRESENT( yi ) ) THEN
@@ -13935,8 +13939,8 @@ lic:  DO
 
          s%a_perm( i ) = IBCLR( s%a_perm( i ), ROW_SPARSIFICATION )
 
-!        Effectively adapt the lower and upper bounds of the i-th constraint 
-!        to reflect the bounds on x(j). 
+!        Effectively adapt the lower and upper bounds of the i-th constraint
+!        to reflect the bounds on x(j).
 
          IF ( aij > ZERO ) THEN
             IF ( xuj < s%P_INFINITY ) THEN
@@ -13988,7 +13992,7 @@ lic:  DO
                ELSE
                   s%c_u2( i ) = s%INFINITY
                END IF
-            ELSE 
+            ELSE
                IF ( xuj < s%P_INFINITY ) THEN
                   s%c_u2( i ) = txdata( 4 )
                ELSE
@@ -14049,7 +14053,7 @@ lic:  DO
 
       INTEGER, INTENT( INOUT ) :: last_written
 
-!              the (global) index of the last transformation written on 
+!              the (global) index of the last transformation written on
 !              the file filename.  Updated by the subroutine.
 
       INTEGER, INTENT( IN ) :: first
@@ -14084,7 +14088,7 @@ lic:  DO
          IF ( iostat /= 0 ) THEN
             inform%status = COULD_NOT_WRITE
             WRITE( inform%message( 1 ), * )                                    &
-               ' PRESOLVE ERROR: an error occurred while writing on file' 
+               ' PRESOLVE ERROR: an error occurred while writing on file'
             WRITE( inform%message( 2 ), * )                                    &
                '    ', filename, ' ( unit =', control%transf_file_nbr, ')'
             RETURN
@@ -14197,7 +14201,7 @@ lic:  DO
 !     Programming: Ph. Toint, November 2000.
 !
 !==============================================================================
-                        
+
       IF ( first == END_OF_LIST ) THEN
          first = j
       ELSE
@@ -14215,7 +14219,7 @@ lic:  DO
 
       SUBROUTINE PRESOLVE_rm_from_list( j, first )
 
-!     Removes the index j from the linked list (in h_perm) starting with first 
+!     Removes the index j from the linked list (in h_perm) starting with first
 !     element first.
 
 !     Argument:
@@ -14243,7 +14247,7 @@ lic:  DO
          s%h_perm( j ) = 0
       ELSE
          p = first
-         DO 
+         DO
            k = s%h_perm( p )
            IF ( k == j ) THEN
               s%h_perm( p ) = s%h_perm( j )
@@ -14265,7 +14269,7 @@ lic:  DO
 
       SUBROUTINE PRESOLVE_reset( first )
 
-!     Resets the linked list (in h_perm) to the empty list, starting with 
+!     Resets the linked list (in h_perm) to the empty list, starting with
 !     the first element first.
 
 !     Argument:
@@ -14331,7 +14335,7 @@ lic:  DO
          nnzr = 0
          IF ( prob%C_status( i ) > ELIMINATED ) THEN
             ic = i
-            DO 
+            DO
                DO k = prob%A%ptr( ic ), prob%A%ptr( ic + 1 ) - 1
                   j = prob%A%col( k )
                   IF (  prob%X_status( j ) <= ELIMINATED ) CYCLE
@@ -14360,7 +14364,7 @@ lic:  DO
 
 !     Obtain the structure of nonzeros in the rows of H. This structure
 !     is held in the vector H_str, whose j-th component means
-!     > 0        : the j-th row is diagonal with diagonal element in 
+!     > 0        : the j-th row is diagonal with diagonal element in
 !                  position H_str( j ) in H,
 !     0 ( EMPTY ): the j-th row is empty,
 !     < 0        : the j-th row has - H_str( j ) nonzero off-diagonal elements
@@ -14426,19 +14430,19 @@ lic:  DO
             END IF
 
 !          Check for the diagonal element.
-          
+
             IF ( diagonal .AND. s%H_str( j ) == EMPTY ) THEN
 
 !              see if the diagonal is nonzero
 
                IF ( prob%H%val( ie ) /= ZERO ) s%H_str( j ) = ie
             END IF
- 
+
          END DO
 
       END IF
 
-      IF ( s%level >= CRAZY ) WRITE( s%out, * )                               & 
+      IF ( s%level >= CRAZY ) WRITE( s%out, * )                               &
          '     H_str =', s%H_str( :prob%n )
 
       RETURN
@@ -14468,9 +14472,9 @@ lic:  DO
 
 !     The Hessian is non empty.
 
-      IF ( prob%H%ne > 0 ) THEN 
+      IF ( prob%H%ne > 0 ) THEN
 
-         hsj = s%H_str( j ) 
+         hsj = s%H_str( j )
 
          SELECT CASE ( hsj )
 
@@ -14561,7 +14565,7 @@ lic:  DO
       SUBROUTINE PRESOLVE_get_sparse_cols_H
 
 !     Obtains the column oriented structure corresponding to superdiagonal
-!     part of the rows of the Hessian H when it is stored in column-wise 
+!     part of the rows of the Hessian H when it is stored in column-wise
 !     sparse format, given that only its lower triangular part is stored.
 !
 !     Programming: Ph. Toint, November 2000.
@@ -14581,10 +14585,10 @@ lic:  DO
       s%H_row  ( :prob%H%ne ) = 0
 
 !     Loop on the active variables.
-  
+
       DO i = prob%n, 1, -1
          is = prob%H%ptr( i )
-         ie = prob%H%ptr( i + 1 ) - 1 
+         ie = prob%H%ptr( i + 1 ) - 1
 
 !        Loop on active columns corresponding to nonzero entries to determine
 !        the sparse structure. At the same time, ensure that the diagonal
@@ -14678,8 +14682,8 @@ lic:  DO
 
 !     Decreases the size of the i-th row of A by 1, also updating the list
 !     of potential sparsification pivots.
-!     Note that we have to guard against negative sizes because an element 
-!     might be removed from a concatenated row, in which case its size is 
+!     Note that we have to guard against negative sizes because an element
+!     might be removed from a concatenated row, in which case its size is
 !     already set to 0.
 
 !     Argument:
@@ -14692,7 +14696,7 @@ lic:  DO
 !
 !==============================================================================
 
-!     Update the row size.  
+!     Update the row size.
 
       s%A_row_s( i ) = MAX( s%A_row_s( i ) - 1, 0 )
 
@@ -14708,7 +14712,7 @@ lic:  DO
       RETURN
 
       END SUBROUTINE PRESOLVE_decr_A_row_size
-       
+
 !==============================================================================
 !==============================================================================
 
@@ -14873,7 +14877,7 @@ lic:  DO
 
       INTEGER :: i, ic, j, k, ie, nactx, nactc, nacta, nacte, nacth
       LOGICAL :: error
-       
+
       error = .FALSE.
 
 !     Accumulate the number of active variables and constraints.
@@ -14903,7 +14907,7 @@ lic:  DO
       END IF
 
 
-!     Accumulate the sizes of A. 
+!     Accumulate the sizes of A.
 
       IF ( prob%m > 0 ) THEN
 
@@ -14994,7 +14998,7 @@ lic:  DO
 !        Verify the row sizes.
 
          DO j = 1, prob%n
-            k = PRESOLVE_H_row_s( j ) 
+            k = PRESOLVE_H_row_s( j )
             IF ( s%w_n( j ) /= k ) THEN
                WRITE( s%out, * ) '    PRESOLVE INTERNAL ERROR:', s%w_n ( j ),  &
                     'active elements found in row', j, 'of H instead of', k
@@ -15060,7 +15064,7 @@ lic:  DO
 !===============================================================================
 !===============================================================================
 !===============================================================================
- 
+
       SUBROUTINE PRESOLVE_restore( prob, control, inform, s )
 
 !     Restores the original problem bounds and the values of the variables,
@@ -15070,13 +15074,13 @@ lic:  DO
 !
 !     Note that restoring certain quantities implies the restoration of certain
 !     others.  These dependencies have been tracked in the array
-! 
-!        s%needs( desired, needed ) 
+!
+!        s%needs( desired, needed )
 !
 !     that contains the index of the first transformation where this dependence
 !     is observed.
 !
-!     Besides the values returned from the solver, the restoration is based 
+!     Besides the values returned from the solver, the restoration is based
 !     on three sources of information:
 !
 !     - the original problem dimensions (n, m, a_ne, h_ne);
@@ -15085,24 +15089,24 @@ lic:  DO
 !     - the content of the workspace saved from the analysis and permutation
 !       phases.  In particular,
 !
-!       * a_perm( :prob%A%ne )       : the permutation of A, 
+!       * a_perm( :prob%A%ne )       : the permutation of A,
 !       * conc( :prob%m )            : the constraint concatenation indicators,
 !       * A_col_f, A_col_n and A_row : the column structure of A,
 !       * w_m( :prob%m + 1 )         : the starting positions of the rows of A
 !                                      in the original structure,
 !       * h_perm( :prob%H%ne )       : the permutation of H,
-!       * H_col_f, A_col_n and H_row : the column structure of the lower 
-!                                      triangular part of H, 
+!       * H_col_f, A_col_n and H_row : the column structure of the lower
+!                                      triangular part of H,
 !       * w_mn( :prob%n + 1 )        : the starting positions of the rows of H
 !                                      in the original structure,
-!       * w_n( :prob%n )             : the linked lists of variables in forcing 
+!       * w_n( :prob%n )             : the linked lists of variables in forcing
 !                                      constraints, and of variables fixed "at
 !                                      the last minute",
-!       * x_l2, x_u2, ..., y_u2      : the (saved) tightest bounds on the 
-!                                      reduced problem (in NON_DEGENERATE or 
+!       * x_l2, x_u2, ..., y_u2      : the (saved) tightest bounds on the
+!                                      reduced problem (in NON_DEGENERATE or
 !                                      LOOSEST bounding schemes).
 !
-!     Note that not all information available in the analysis phase is not 
+!     Note that not all information available in the analysis phase is not
 !     reconstructed.  In particular, the row and columns sizes for A and H
 !     are no longer available in the restore mode.
 
@@ -15181,7 +15185,11 @@ lic:  DO
 !     Reset the matrix dimensions.
 
       prob%A%ne = prob%A%ptr( prob%m + 1 ) - 1
-      prob%H%ne = prob%H%ptr( prob%n + 1 ) - 1
+      IF (  s%h_type /= ABSENT ) THEN
+        prob%H%ne = prob%H%ptr( prob%n + 1 ) - 1
+      ELSE
+        prob%H%ne = 0
+      END IF
 
 !     Review the control structure.
 
@@ -15199,7 +15207,7 @@ lic:  DO
 
 !        Accumulate the primal feasibility error on the linear constraints
 
-         primal_feasible = .TRUE. 
+         primal_feasible = .TRUE.
          err             = ZERO
 
          IF ( s%level >= DEBUG ) CALL PRESOLVE_compute_c( .FALSE., prob, s )
@@ -15277,7 +15285,7 @@ lic:  DO
 
 !           Accumulate the dual feasibility error on all variables.
 
-            dual_feasible = .TRUE. 
+            dual_feasible = .TRUE.
             err           = ZERO
 
             DO j = 1, prob%n
@@ -15285,7 +15293,7 @@ lic:  DO
 !              Compute the error of the j-th dual variable (alpha).
 
                zval  = s%ztmp( j )
-               alpha = ABS( prob%Z( j ) - zval ) 
+               alpha = ABS( prob%Z( j ) - zval )
 
 !              If the error is larger than the user specified maximum value,
 !              set the dual infeasibility flag and possibly print the current
@@ -15338,8 +15346,8 @@ lic:  DO
       s%m_active = prob%m
       prob%n     = s%n_original
       prob%m     = s%m_original
-      prob%A%ne  = s%a_ne_original     
-      prob%H%ne  = s%h_ne_original  
+      prob%A%ne  = s%a_ne_original
+      prob%H%ne  = s%h_ne_original
 
       IF ( s%level >= DETAILS ) THEN
          WRITE( s%out, * ) '   dimensions restored'
@@ -15365,7 +15373,7 @@ lic:  DO
 
       control%get_x        = control%get_x .OR. control%get_q .OR.             &
                              control%get_c .OR. control%get_z
-      control%get_f        = control%get_f .OR. control%get_q 
+      control%get_f        = control%get_f .OR. control%get_q
       control%get_g        = control%get_g .OR. control%get_q .OR. control%get_z
       control%get_y        = control%get_y .OR. control%get_c .OR. control%get_z
       control%get_H        = control%get_H .OR. control%get_q .OR. control%get_z
@@ -15379,7 +15387,7 @@ lic:  DO
       control%get_A        = control%get_A        .AND. prob%A%ne > 0
       control%get_H        = control%get_H        .AND. prob%H%ne > 0
 
-!     Ensure mutual implications and check dependencies at the end of the 
+!     Ensure mutual implications and check dependencies at the end of the
 !     transformation history.
 !     (note that there are no dependencies from C_VALS, Q_VAL or Y_BNDS)
 
@@ -15397,7 +15405,7 @@ lic:  DO
          IF ( get( Z_VALS ) ) WRITE( s%out,'( 3X, A7, 10I7)')                  &
               ' Z_VALS', ( s%needs( Z_VALS, k ), k = 1, 10 )
          IF ( get( C_BNDS ) ) WRITE( s%out,'( 3X, A7, 10I7)')                  &
-              ' C_BNDS', ( s%needs( C_BNDS, k ), k = 1, 10 )  
+              ' C_BNDS', ( s%needs( C_BNDS, k ), k = 1, 10 )
          IF ( get( Y_VALS ) ) WRITE( s%out,'( 3X, A7, 10I7)')                  &
               ' Y_VALS', ( s%needs( Y_VALS, k ), k = 1, 10 )
          IF ( get( F_VAL  ) ) WRITE( s%out,'( 3X, A7, 10I7)')                  &
@@ -15426,7 +15434,7 @@ lic:  DO
 
 !-------------------------------------------------------------------------------
 !
-!     Enforce the default convention on the sign of the multipliers and dual 
+!     Enforce the default convention on the sign of the multipliers and dual
 !     variables.
 !
 !-------------------------------------------------------------------------------
@@ -15469,7 +15477,7 @@ lic:  DO
 
       IF ( s%stage == PERMUTED ) THEN
          inform%status = OK
-         
+
          IF ( s%level >= DEBUG ) WRITE( s%out, * ) '    map reported set'
 
 !-------------------------------------------------------------------------------
@@ -15551,7 +15559,7 @@ lic:  DO
                END DO
             END DO
 
-!           Remember the starting positions of the rows in the 
+!           Remember the starting positions of the rows in the
 !           original structure.
 
             prob%H%ptr( :prob%n + 1 ) = s%w_mn( :prob%n + 1 )
@@ -15711,10 +15719,10 @@ lic:  DO
 
 !-------------------------------------------------------------------------------
 !-------------------------------------------------------------------------------
-      END IF ! End of the permutation unscrambling: the rest of the 
+      END IF ! End of the permutation unscrambling: the rest of the
              ! processing does not depend on the permutations being set
              ! or not, and therefore also applies to infeasible or empty
-             ! problems.      
+             ! problems.
 !-------------------------------------------------------------------------------
 !-------------------------------------------------------------------------------
 
@@ -15726,7 +15734,7 @@ lic:  DO
 !
 !-------------------------------------------------------------------------------
 
-!     Loop over the (linked) list of variables that were fixed at 
+!     Loop over the (linked) list of variables that were fixed at
 !     the last minute.
 
       IF ( s%lfx_f /= END_OF_LIST ) THEN
@@ -15763,7 +15771,7 @@ lic:  DO
 !
 !-------------------------------------------------------------------------------
 
-!     Initialize the counters of restored transformations for the 
+!     Initialize the counters of restored transformations for the
 !     saved and memory categories, respectively.
 
       s%rts = 0
@@ -15788,7 +15796,7 @@ lic:  DO
 !        Get the next set of transformations (of size at most max_tm),
 !        either from memory or from the saved files.
 !
-!        If no transformations were saved but there are transformations 
+!        If no transformations were saved but there are transformations
 !        in memory , undo these first.
 
          IF ( s%ts == 0 .AND. s%tm > s%rtm ) THEN
@@ -15841,7 +15849,7 @@ lic:  DO
             ll = ll - 1
 
 !           Recompute dependencies, if necessary
- 
+
             IF ( ll == next ) CALL PRESOLVE_check_dependencies( ll, next, get )
 
 !           Check that optimality is maintained, if debugging
@@ -15866,7 +15874,7 @@ lic:  DO
 !           ------------------------
 
 !           -------------------------------------------------------------------
-            CASE ( A_ROWS_COMBINED ) ! linear combination of rows of A 
+            CASE ( A_ROWS_COMBINED ) ! linear combination of rows of A
                                      ! to make it sparser
 !           -------------------------------------------------------------------
 
@@ -15887,7 +15895,7 @@ lic:  DO
                     ') with', rr
                   col = prob%A%col( k )
 
-!                 Loop over the pivot row to remember the 
+!                 Loop over the pivot row to remember the
 !                 positions of its nonzeros in w_n.
 
                   s%w_n = 0
@@ -15903,7 +15911,7 @@ lic:  DO
                      ic = s%conc( ic )
                      IF ( ic == END_OF_LIST ) EXIT
                    END DO
-                        
+
 !                 Now uncombine the rows
 
                   ic = ie
@@ -15953,7 +15961,7 @@ lic:  DO
 !                 from their positions.
 
                   io = s%A_row( ko )
-                  ie = s%A_row( ke )  
+                  ie = s%A_row( ke )
                   j  = prob%A%col( ke )
 
 !                 Get the ratios for updating the matrix A and the gradient
@@ -15962,24 +15970,24 @@ lic:  DO
                   r  = prob%A%val( ko ) / aij
                   rg = prob%G( j )      / aij
 
-!                 Unperform the pivoting (elimination of x_j from its value in 
+!                 Unperform the pivoting (elimination of x_j from its value in
 !                 constraint ie) on the pivot and non-pivot rows, as well as
 !                 on the gradient.
 
                   IF ( get( A_VALS ) .OR. get( G_VALS ) ) THEN
 
-!                    Loop over the non-pivot row to remember the 
+!                    Loop over the non-pivot row to remember the
 !                    positions of its nonzeros in w_n.  At the end
 !                    of the non-pivot row, separate it from the pivot
 !                    row (containing the fills).
-!                    (Note that we do not exclude zero entries in the 
-!                    non-pivot row because they might be created by 
+!                    (Note that we do not exclude zero entries in the
+!                    non-pivot row because they might be created by
 !                    cancellation during pivoting.  But this creates the
-!                    problem that zero entries corresponding to removed 
-!                    entries in concatenated rows are not exluded either, 
+!                    problem that zero entries corresponding to removed
+!                    entries in concatenated rows are not exluded either,
 !                    although they should.  This is solved by only
 !                    retaining the first occurrence of a column in the
-!                    non-pivot row, as such entries always occur in the 
+!                    non-pivot row, as such entries always occur in the
 !                    concatenated part, which is always *after* the
 !                    original part of the non-pivot row.).
 
@@ -15994,7 +16002,7 @@ lic:  DO
 
                            IF ( s%w_n( jo ) == 0 ) s%w_n( jo ) = k
 
-                        END DO 
+                        END DO
                         k1 = s%conc( ic )
 
 !                       End of the non-pivot row: separate it from the fills.
@@ -16021,15 +16029,15 @@ lic:  DO
                            a = prob%A%val( k )
                            IF ( a == ZERO ) CYCLE
 
-!                          See if variable je also appears in the 
+!                          See if variable je also appears in the
 !                          nonpivot row (in which case w_n( je ) contains
 !                          the position of A(io,je)).
 
                            kk = s%w_n( je )
 
-!                          If variable je also appears in the non-pivot row, 
-!                          only its coefficient in the non-pivot row must be 
-!                          updated, the coefficient in the pivot row being 
+!                          If variable je also appears in the non-pivot row,
+!                          only its coefficient in the non-pivot row must be
+!                          updated, the coefficient in the pivot row being
 !                          restored from its zeroing.
 
                            IF ( get( A_VALS ) ) THEN
@@ -16037,7 +16045,7 @@ lic:  DO
                                  prob%A%val( kk ) = prob%A%val( kk ) + r * a
 
 !                             If variable je does not appear in the non-pivot
-!                             row, the entry is thus a fill: it must be 
+!                             row, the entry is thus a fill: it must be
 !                             rescaled and the column structure updated.
 
                               ELSE
@@ -16051,7 +16059,7 @@ lic:  DO
                            IF ( get( G_VALS ) )                                &
                                prob%G( je ) = prob%G( je ) + rg*prob%A%val(k)
 
-                        END DO 
+                        END DO
                         ic = s%conc( ic )
                         IF ( ic == END_OF_LIST ) EXIT
                      END DO
@@ -16204,7 +16212,7 @@ lic:  DO
                   '  [', ll, '] reactivating c(', ii, ') [lower singleton row]'
                prob%C_status( ii ) = ACTIVE
 
-!              Obtain the column index of the singleton element from its 
+!              Obtain the column index of the singleton element from its
 !              position.
 
                jj = prob%A%col( kk )
@@ -16331,7 +16339,7 @@ lic:  DO
                   '  [', ll, '] reactivating c(', ii, ') =', prob%C( ii ),     &
                   ' [doubleton column]'
 
-!              note that the computation of y(ii) (from g and y) is postposed 
+!              note that the computation of y(ii) (from g and y) is postposed
 !              (see A_ROWS_MERGED)
 
 !           -------------------------------------------------------------------
@@ -16711,7 +16719,7 @@ lic:  DO
                            DO ke = prob%A%ptr( ic ), prob%A%ptr( ic + 1 ) - 1
                               kk = prob%A%col( ke )
                               IF ( prob%X_status( kk ) <= ELIMINATED ) CYCLE
-                              aij = prob%A%val( ke ) 
+                              aij = prob%A%val( ke )
                               IF ( aij == ZERO ) CYCLE
                               r = prob%X( kk )
                               IF ( r == ZERO ) CYCLE
@@ -16781,7 +16789,7 @@ lic:  DO
                               END IF
                               xval = MIN( cval, xval )
                            ELSE                ! Single equality constraint
-                              cval = HALF * ( prob%C_l( i ) + prob%C_u( i ) ) 
+                              cval = HALF * ( prob%C_l( i ) + prob%C_u( i ) )
                               xval = ( cval - prob%C( i ) ) / aij
                            END IF
                            IF ( s%level >= DEBUG ) WRITE( s%out, * )           &
@@ -16990,7 +16998,7 @@ lic:  DO
             CASE ( X_MERGE ) ! merging of two linear variables
 !           -------------------------------------------------------------------
 
-               jj    = s%hist_i( l )  ! the index of the deactivated variable 
+               jj    = s%hist_i( l )  ! the index of the deactivated variable
                j     = s%hist_j( l )  ! the index of the merged variable
                alpha = s%hist_r( l )  ! the merging coefficient
 
@@ -17048,7 +17056,7 @@ lic:  DO
                      IF ( get( Z_VALS ) ) prob%Z( jj ) = alpha * zj
 
 !                 Consider now the case where the merged variable is inactive.
-  
+
                   ELSE
 
 !                    Compute the values of the variables.
@@ -17065,7 +17073,7 @@ lic:  DO
                            prob%X( j )  = xval - alpha * prob%X( jj )
                         ELSE IF ( prob%X( jj ) < prob%X_l( jj ) ) THEN
                            prob%X( jj ) = prob%X_l( jj )
-                           prob%X( j )  = xval - alpha * prob%X( jj ) 
+                           prob%X( j )  = xval - alpha * prob%X( jj )
                         END IF
 
 !                       If x(j) is now unfeasible, we have a problem.
@@ -17090,7 +17098,7 @@ lic:  DO
 
 !                    Compute the values of the dual variables.
 
-                     IF ( get( Z_VALS ) ) THEN 
+                     IF ( get( Z_VALS ) ) THEN
                         IF ( PRESOLVE_is_zero( prob%X( j) - prob%X_l( j) ).OR. &
                              PRESOLVE_is_zero( prob%X( j) - prob%X_u( j) )    )&
                         THEN
@@ -17117,7 +17125,7 @@ lic:  DO
                END IF
 
 !           -------------------------------------------------------------------
-            CASE ( X_IGNORED ) ! ignored variable 
+            CASE ( X_IGNORED ) ! ignored variable
 !           -------------------------------------------------------------------
 
                jj = s%hist_i( l )  ! the index of the ignored variable
@@ -17142,7 +17150,7 @@ lic:  DO
                j = s%hist_i( l )   ! the index of the variable to be substituted
                k = s%hist_j( l )   ! the position of its coefficient
 
-!              Find the index of the constraint from which x(j) must be 
+!              Find the index of the constraint from which x(j) must be
 !              substituted, using the position of its coefficient.
 
                i = s%A_row( k )
@@ -17178,7 +17186,7 @@ lic:  DO
                            DO k = prob%A%ptr( ic ), prob%A%ptr( ic + 1 ) - 1
                               jj  = prob%A%col( k )
                               IF ( prob%X_status( jj ) <= ELIMINATED ) CYCLE
-                              aij = prob%A%val( k ) 
+                              aij = prob%A%val( k )
                               IF ( aij == ZERO ) CYCLE
                               ccorr = aij * rr
                               prob%G( jj ) = prob%G( jj ) + ccorr
@@ -17198,7 +17206,7 @@ lic:  DO
 !              Reactivate the j-th variable.
 
                prob%X_status( j ) = ACTIVE
- 
+
 !              Find the associated dual variable.  Note that this is always
 !              zero as only free variables are removed by substitution.
 
@@ -17220,7 +17228,7 @@ lic:  DO
 
                ii = s%A_row( kk )
 
-!              Find the index of the variable and the value of the 
+!              Find the index of the variable and the value of the
 !              transfer coefficient
 
                jj  = ABS( s%hist_j( l ) )
@@ -17232,13 +17240,13 @@ lic:  DO
 !              Recovering the original (and equal) constraint bounds
 !              is done automatically because of the UPDATE actions.
 
-!              Determine the multiplier of the hidden equality, when the 
+!              Determine the multiplier of the hidden equality, when the
 !              latter is known (which is when s%hist_j( l ) = - j ).
 
                yval = prob%Y( ii )
                zval = - aij * yval
                IF ( s%hist_j( l ) < 0 ) THEN
-                  IF ( get( Y_VALS ) ) THEN 
+                  IF ( get( Y_VALS ) ) THEN
                      prob%Y( ii ) = yval + s%hist_r( l )
                      IF ( s%level >= DEBUG ) WRITE( s%out, * )                 &
                         '    setting y(', ii,' ) =', prob%Y( ii )
@@ -17264,7 +17272,7 @@ lic:  DO
                kk = s%hist_i( l )        !  the position of the removed entry
                ii = s%A_row( kk )        !  its row index
                rr = s%hist_r( l )        !  its value
-               jj = prob%A%col( kk )   
+               jj = prob%A%col( kk )
                IF ( get( A_VALS ) ) THEN
                   IF ( s%level >= ACTION ) WRITE( s%out, * )                   &
                    '  [', ll, '] reinserting A(', ii, ',', jj, ') =', rr, 'in A'
@@ -17295,7 +17303,7 @@ lic:  DO
                   rr = s%hist_r( l )   ! the value of gjj/ hjj
 
                   IF ( s%level >= ACTION ) WRITE( s%out, * )                   &
-                   '  [', ll, '] uneliminating x(', ii, ') using x(', jj, ')' 
+                   '  [', ll, '] uneliminating x(', ii, ') using x(', jj, ')'
 
 !                 Uneliminate x(ii)
 
@@ -17318,7 +17326,7 @@ lic:  DO
                ELSE
                   IF ( s%level >= ACTION ) WRITE( s%out, * )                   &
                      '  [', ll, '] not uneliminating x(', ii,                  &
-                     ') using x(', jj, ')' 
+                     ') using x(', jj, ')'
                END IF
 
 !-------------------------------------------------------------------------------
@@ -17337,7 +17345,7 @@ lic:  DO
 !-------------------------------------------------------------------------------
 !
 !     Recover the value of the constraints and the quadratic objective.
-!     Zero the dual of inactive primal quantities and possibly check 
+!     Zero the dual of inactive primal quantities and possibly check
 !     the values of the dual variables, if requested by the user.
 !
 !-------------------------------------------------------------------------------
@@ -17346,7 +17354,7 @@ lic:  DO
       CALL PRESOLVE_compute_c( .TRUE., prob, s )
       IF ( s%level >= DETAILS ) WRITE( s%out, * )                              &
          '   values assigned to q and c'
-      
+
 !     Zero the inactive dual variables.
 
       IF ( control%get_z                       .AND. &
@@ -17362,7 +17370,7 @@ lic:  DO
             rr = prob%X( j )
             IF ( PRESOLVE_is_pos( rr - prob%X_l( j ) ) .AND.   &
                  PRESOLVE_is_pos( prob%X_u( j ) - rr )       ) &
-               prob%Z( j ) = ZERO 
+               prob%Z( j ) = ZERO
          END DO
       END IF
 
@@ -17381,7 +17389,7 @@ lic:  DO
             rr = prob%C( i )
             IF ( PRESOLVE_is_pos( rr - prob%C_l( i ) ) .AND.   &
                  PRESOLVE_is_pos( prob%C_l( i ) - rr )       ) &
-               prob%Y( i ) = ZERO 
+               prob%Y( i ) = ZERO
          END DO
       END IF
 
@@ -17395,7 +17403,7 @@ lic:  DO
 
 !-------------------------------------------------------------------------------
 
-!     Enforce the user's convention on the sign of the multipliers and dual 
+!     Enforce the user's convention on the sign of the multipliers and dual
 !     variables.
 
 !-------------------------------------------------------------------------------
@@ -17448,7 +17456,7 @@ lic:  DO
                   ' PRESOLVE ERROR: no memory left for allocating a_row(',     &
                   prob%A%ne, ')'
                RETURN
-            END IF 
+            END IF
             IF( s%level >= DETAILS ) WRITE( s%out, * )                         &
               '   A restored to coordinate storage'
          CASE ( DENSE )
@@ -17477,7 +17485,7 @@ lic:  DO
                inform%status = MEMORY_FULL
                WRITE( inform%message( 1 ), * )                                 &
                   ' PRESOLVE ERROR: no memory left for allocating h_row(',     &
-                  prob%H%ne, ')' 
+                  prob%H%ne, ')'
                RETURN
             END IF
             IF( s%level >= DETAILS ) WRITE( s%out, * )                         &
@@ -17518,7 +17526,7 @@ lic:  DO
 
 1000  FORMAT( '      A_val  =', 5 ( ES12.4, 1x ), /, ( 12x, 5 ( 1x,ES12.4) ) )
 1001  FORMAT( '      H_val  =', 5 ( ES12.4, 1x ), /, ( 12x, 5 ( 1x,ES12.4) ) )
-1003  FORMAT( '     ', i4, ' = ', i4, 1x, i4, 3x, a7, '   --> ', i4, 1x, i4 ) 
+1003  FORMAT( '     ', i4, ' = ', i4, 1x, i4, 3x, a7, '   --> ', i4, 1x, i4 )
 1007  FORMAT( '     ', i4, 4( 2x, ES12.4 ) )
 
 !==============================================================================
@@ -17546,7 +17554,7 @@ lic:  DO
 !     Programming: Ph. Toint, June 2001.
 
 !==============================================================================
-!     
+!
 !     If the multiplier is positive, the lower bound must be active.
 
       IF ( yi > ZERO ) THEN
@@ -17646,7 +17654,7 @@ lic:  DO
 
       LOGICAL, INTENT( INOUT ) :: get( 10 )
 
-!              a vector whose j-th component is .TRUE. iff the corresponding 
+!              a vector whose j-th component is .TRUE. iff the corresponding
 !              value must be restored for the forthcoming transformations
 
 !     Programming: Ph. Toint, November 2000
@@ -17847,12 +17855,12 @@ lic:  DO
 
 !             the index of the considered equality doubleton constraint
 
-      INTEGER, INTENT( IN ) :: j 
+      INTEGER, INTENT( IN ) :: j
 
 !             the index of the variable in constraint i whose bounds have
 !             been shifted to the other variable in the constraint
 
-      INTEGER, INTENT( IN ) :: k  
+      INTEGER, INTENT( IN ) :: k
 
 !             the index of the variable in constraint i whose bounds have
 !             been modified to reflect those on the other variable of the
@@ -17943,7 +17951,7 @@ lic:   DO
 !     Recomputes the values of the dual variables z and multiplier y_i
 !     when restoring a forcing constraint i. The argument lowup must be equal
 !     to either LOWER or UPPER and indicates whether the lower or upper bound
-!     of constraint i is active. The multiplier y_i is corrected iff 
+!     of constraint i is active. The multiplier y_i is corrected iff
 !     get_y == .TRUE., and the dual variables corresponding to the
 !     variables fixed by the elemination of the forcing constraint are
 !     corrected iff get_z == .TRUE..
@@ -17982,7 +17990,7 @@ lic:   DO
       INTEGER            :: k, kk, j, jj, ns
       REAL ( KIND = wp ) :: zj, aij, yi
 
-!     Initialize the multiplier y(i).  
+!     Initialize the multiplier y(i).
 !     We know y(i) >= 0 if lowup == LOWER and y(i) <= 0 if lowup == UPPER.
 
       yi = ZERO
@@ -18016,7 +18024,7 @@ lic:   DO
                EXIT
             ELSE
 
-!           If the end of row kk is reached, find row (in merged row i) 
+!           If the end of row kk is reached, find row (in merged row i)
 !           which follows row kk.
 
                IF ( k == prob%A%ptr( kk + 1 ) ) THEN
@@ -18042,14 +18050,14 @@ lic:   DO
                  CALL PRESOLVE_write_full_prob( prob, control, s )
             RETURN
          END IF
- 
+
 !        Now determine the minimal value of y(i) that makes it
 !        consistent with the bound at which x(j) is fixed.
 
          SELECT CASE ( lowup )
 
          CASE ( LOWER )
- 
+
 !           If aij > 0, then x(j) must be fixed to its upper bound
 !           for the constraint to be forcing (lower). Thus z(j) <= 0.
 !           Determine the  minimal value of yi using the relation
@@ -18164,7 +18172,7 @@ lic:   DO
           PRESOLVE_max_dual_correction( low, val, upp, yz, dyz )
 
 !     see how much of the correction dyz to yz, the dual associated to the
-!     primal constraint low <= val <= upp  can be imposed while preserving 
+!     primal constraint low <= val <= upp  can be imposed while preserving
 !     complementarity.  The value returned is between 0 and 1.
 
 !     Arguments:
@@ -18235,10 +18243,10 @@ lic:   DO
 !     Update the values of the dual variables and multipliers to reflect the
 !     fact that z(j) must be set to zero without altering dual feasibility.
 !     This occurs when x(j) is at a bound derived from the analysis of a
-!     dual constraint (which one is irrelevant). 
+!     dual constraint (which one is irrelevant).
 !     The method used is to loop on the active constraints i with a nonzero
 !     in column j whose active variables are all at a bound which is
-!     compatible with the required change in z resulting itself from the 
+!     compatible with the required change in z resulting itself from the
 !     required change in y(i) that is necessary for setting z(j) = 0.
 
 !     Arguments:
@@ -18275,7 +18283,7 @@ lic:   DO
          WRITE( inform%message( 1 ), * )                                       &
               ' PRESOLVE ERROR: z(', j,') cannot be zeroed while preserving'
          WRITE( inform%message( 2 ), * )                                       &
-              '    dual feasibility' 
+              '    dual feasibility'
          RETURN
       END IF
 
@@ -18294,7 +18302,7 @@ sli:     DO ii = 1, prob%m
             i = s%A_row( k )
             IF ( prob%C_status( i ) <= ELIMINATED ) CYCLE
             aij = prob%A%val ( k )
-            IF ( aij == ZERO ) CYCLE 
+            IF ( aij == ZERO ) CYCLE
             dyi = czj / aij
             alpha = PRESOLVE_max_dual_correction( prob%C_l( i ), prob%C( i ),  &
                                                   prob%C_u( i ), prob%Y( i ),  &
@@ -18363,18 +18371,18 @@ sli:     DO ii = 1, prob%m
       END IF
 
 !     We have a problem if we reach this point!
-    
+
       IF ( control%check_dual_feasibility == SEVERE ) THEN
          inform%status = Z_CANNOT_BE_ZEROED
          WRITE( inform%message( 1 ), * )                                       &
               ' PRESOLVE ERROR: z(', j, ') cannot be zeroed while preserving'
          WRITE( inform%message( 2 ), * )                                       &
-              '    dual feasibility' 
+              '    dual feasibility'
          RETURN
       ELSE IF ( s%level >= TRACE ) THEN
          WRITE( s%out, * )                                                     &
               '    PRESOLVE WARNING: z(', j,                                   &
-              ') cannot be zeroed while preserving dual feasibility' 
+              ') cannot be zeroed while preserving dual feasibility'
       END IF
 
       END SUBROUTINE PRESOLVE_correct_yz_for_z
@@ -18403,7 +18411,7 @@ sli:     DO ii = 1, prob%m
 
       REAL ( KIND = wp ), INTENT( INOUT ) :: cval
 
-!            on entry: the value to which c(i) must be equalled to extract 
+!            on entry: the value to which c(i) must be equalled to extract
 !                      x(j)
 !
 !     Programming: Ph. Toint, March 2001.
@@ -18424,7 +18432,7 @@ sli:     DO ii = 1, prob%m
          DO k = prob%A%ptr( ic ), prob%A%ptr( ic + 1 ) - 1
             jj  = prob%A%col( k )
             IF ( prob%X_status( jj ) <= ELIMINATED ) CYCLE
-            aijj = prob%A%val( k ) 
+            aijj = prob%A%val( k )
             IF ( aijj == ZERO ) CYCLE
             xjj = prob%X( jj )
             IF ( xjj == ZERO ) CYCLE
@@ -18439,7 +18447,7 @@ sli:     DO ii = 1, prob%m
       IF ( s%level >= DEBUG ) WRITE( s%out, * )                                &
          '    setting x(', j, ') =', prob%X( j )
 
-!     Attempt to correct an out-of-bounds value of x(j) due to 
+!     Attempt to correct an out-of-bounds value of x(j) due to
 !     inaccurate primal feasibility in the solver's output by reprojecting
 !     x(j) onto its feasible interval.
 
@@ -18454,7 +18462,7 @@ sli:     DO ii = 1, prob%m
             inform%status = X_OUT_OF_BOUNDS
          END IF
       END IF
-                  
+
       IF ( prob%X( j ) > xuj .AND. control%final_x_bounds == TIGHTEST  ) THEN
          ccorr = aij * ( xuj - prob%X( j ) )
          IF ( ABS( ccorr ) <= control%c_accuracy ) THEN
@@ -18499,7 +18507,7 @@ sli:     DO ii = 1, prob%m
 
       CHARACTER( LEN = 30 ), INTENT( IN ) :: filename
 
-!              the name of the file from which the transformations have to 
+!              the name of the file from which the transformations have to
 !              be read
 !
 !     Programming: Ph. Toint, November 2000.
@@ -18558,7 +18566,7 @@ sli:     DO ii = 1, prob%m
 !     Initialize with the gradient component.
 
       tmp = prob%G( j )
-      
+
 !     Add the j-th component of Hx
 
       IF ( prob%H%ne > 0 ) THEN
@@ -18621,7 +18629,7 @@ sli:     DO ii = 1, prob%m
 
 !     Compute the full vector of dual variables from the equation
 !
-!              (z-sign) * z = g + H*x - (y-sign) * A^T*y, 
+!              (z-sign) * z = g + H*x - (y-sign) * A^T*y,
 !
 !     assuming that the problem is in reduced form (as opposed to the
 !     extensive form that includes the eliminated variables and constraints).
@@ -18644,7 +18652,7 @@ sli:     DO ii = 1, prob%m
 !     Initialize z to the gradient.
 
       z = prob%G( :prob%n )
-      
+
 !     Add  Hx.
 
       IF ( prob%H%ne > 0 ) THEN
@@ -18658,7 +18666,7 @@ sli:     DO ii = 1, prob%m
                IF ( j /= i  ) z( j ) = z( j ) + val * prob%X( i )
             END DO
          END DO
-            
+
       END IF
 
 !     Substract A^T y
@@ -18775,7 +18783,7 @@ sli:     DO ii = 1, prob%m
 
 !           Update the objective function for the change in the first
 !           order term and Hessian diagonal.
- 
+
             IF ( getf ) THEN
                prob%f = prob%f - xval * prob%G( jj )
                IF ( prob%H%ne > 0 ) THEN
@@ -18794,8 +18802,8 @@ sli:     DO ii = 1, prob%m
 !           Update the constraint bounds.
 
             IF ( getcb .AND. prob%A%ne > 0 ) THEN
-  
-!              Use the structure of the fixed column of A 
+
+!              Use the structure of the fixed column of A
 !              to update the relevant quantities
 
                k = s%A_col_f( jj )
@@ -18838,7 +18846,7 @@ sli:     DO ii = 1, prob%m
 
 !         .TRUE. iff the details of the components must be output,
 !          additionnally to the summary
-!      
+!
 !     Programming: Ph. Toint, November 2000.
 
 !===============================================================================
@@ -18863,7 +18871,7 @@ sli:     DO ii = 1, prob%m
 !        bound constraints and the maximal complementarity violation.
 
          DO j = 1, prob%n
-            IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE 
+            IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
 
 !           Compute the feasibility error.
 
@@ -18903,7 +18911,7 @@ sli:     DO ii = 1, prob%m
          CALL PRESOLVE_compute_c( .TRUE., prob, s )
          IF ( detailed ) WRITE( s%out, 1005 )
          DO i = 1, prob%m
-            IF ( prob%C_status( i ) <= ELIMINATED ) CYCLE 
+            IF ( prob%C_status( i ) <= ELIMINATED ) CYCLE
             cval  = prob%C( i )
             ccorr = MAX( ZERO, prob%C_l( i ) - cval, cval - prob%C_u( i ) )
             IF ( ccorr > mxinf ) THEN
@@ -18932,12 +18940,12 @@ sli:     DO ii = 1, prob%m
 
 !     Verify the values of the dual variables.
 
-      IF ( control%get_z .AND. control%get_z_bounds ) THEN 
+      IF ( control%get_z .AND. control%get_z_bounds ) THEN
          err    = ZERO
          mxzinf = ZERO
          IF ( detailed ) WRITE( s%out, 1006 )
          DO j = 1, prob%n
-            IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE 
+            IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
 
 !           Compute the ideal dual variable and the error.
 
@@ -19026,7 +19034,7 @@ sli:     DO ii = 1, prob%m
 !===============================================================================
 !===============================================================================
 !===============================================================================
- 
+
       SUBROUTINE PRESOLVE_terminate( control, inform, s )
 
 !     Cleans up the workspace and the map space.
@@ -19138,9 +19146,9 @@ sli:     DO ii = 1, prob%m
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE PRESOLVE_guess_x( j, xj, prob, s  )        
+      SUBROUTINE PRESOLVE_guess_x( j, xj, prob, s  )
 
-!     Guess a value xj for the j-th variable, given its associated bounds 
+!     Guess a value xj for the j-th variable, given its associated bounds
 
 !     Arguments:
 
@@ -19199,7 +19207,7 @@ sli:     DO ii = 1, prob%m
 !==============================================================================
 !==============================================================================
 
-      SUBROUTINE PRESOLVE_guess_z( j, zj, prob, s )        
+      SUBROUTINE PRESOLVE_guess_z( j, zj, prob, s )
 
 !     Guess a value zj for the j-th dual variable, given its associated bounds.
 
@@ -19290,7 +19298,7 @@ sli:     DO ii = 1, prob%m
       INTEGER            :: i
       REAL ( KIND = wp ) :: cl, cu, yl, yu
 
-!     Loop on all active rows 
+!     Loop on all active rows
 
       DO i = 1, prob%m
          cl = prob%C_l( i )
@@ -19582,13 +19590,13 @@ sli:     DO ii = 1, prob%m
                '  infinity value changed from', s%prev_control%infinity, 'to', &
                control%infinity
             s%prev_control%infinity = control%infinity
-         ELSE 
+         ELSE
             IF ( s%level >= ACTION ) THEN
                WRITE( s%out, * )  '  PRESOLVE WARNING: ',                      &
                     'attempt to increase the value of infinity from',          &
                s%prev_control%infinity, 'to', control%infinity
                WRITE( s%out, * )  '    infinity value kept at',                &
-                    s%prev_control%infinity  
+                    s%prev_control%infinity
             END IF
             control%infinity = s%prev_control%infinity
          END IF
@@ -19655,7 +19663,7 @@ sli:     DO ii = 1, prob%m
          control%singleton_columns_freq = 0
          control%doubleton_columns_freq = 0
       END IF
-    
+
 !     Sign convention for the multipliers
 
       IF ( control%y_sign /= s%prev_control%y_sign ) THEN
@@ -19670,7 +19678,7 @@ sli:     DO ii = 1, prob%m
                 '  sign convention for the mulipliers',                        &
                 ' changed from POSITIVE to NEGATIVE'
             s%prev_control%y_sign = control%y_sign
-         CASE DEFAULT 
+         CASE DEFAULT
             IF ( s%level >= ACTION ) THEN
                   WRITE( s%out, * )  '  PRESOLVE WARNING:',                    &
                    ' attempt to change the sign',                              &
@@ -19710,7 +19718,7 @@ sli:     DO ii = 1, prob%m
                 '  policy for the multipliers of inactive constraints',        &
                 ' changed from FORCE_TO_ZERO to LEAVE_AS_IS'
             s%prev_control%inactive_y = control%inactive_y
-         CASE DEFAULT 
+         CASE DEFAULT
             IF ( s%level >= ACTION ) THEN
                   WRITE( s%out, * )  '  PRESOLVE WARNING:',                    &
                        ' attempt to change the policy for the multipliers'
@@ -19756,7 +19764,7 @@ sli:     DO ii = 1, prob%m
                 '  sign convention for the dual variables',                    &
                 ' changed from POSITIVE to NEGATIVE'
             s%prev_control%z_sign = control%z_sign
-         CASE DEFAULT 
+         CASE DEFAULT
             IF ( s%level >= ACTION ) THEN
                WRITE( s%out, * ) '  PRESOLVE WARNING:',                        &
                     '  attempt to change the sign convention for the dual'
@@ -19798,14 +19806,14 @@ sli:     DO ii = 1, prob%m
                 '  policy for the dual variables of inactive bounds',          &
                 ' changed from FORCE_TO_ZERO to LEAVE_AS_IS'
             s%prev_control%inactive_z = control%inactive_z
-         CASE DEFAULT 
+         CASE DEFAULT
             IF ( s%level >= ACTION ) THEN
                   WRITE( s%out, * ) '  PRESOLVE WARNING:',                     &
                        ' attempt to change the policy for the dual variables'
                   WRITE( s%out, * ) '  of inactive bounds to the unknown',     &
                        ' value', control%inactive_z
                SELECT CASE ( s%prev_control%inactive_z )
-               CASE ( FORCE_TO_ZERO)  
+               CASE ( FORCE_TO_ZERO)
                   WRITE( s%out, * )                                            &
                        '  policy for the dual variables of inactive bounds',   &
                        ' kept as FORCE_TO_ZERO'
@@ -19845,7 +19853,7 @@ sli:     DO ii = 1, prob%m
          WRITE( s%out, * ) '  request for the value of the quadratic is',      &
               control%get_q
       END IF
-         
+
 !     Obtention of the quadratic constant
 
       IF ( control%get_f .NEQV. s%prev_control%get_f ) THEN
@@ -19857,7 +19865,7 @@ sli:     DO ii = 1, prob%m
          WRITE( s%out, * ) '  request for the constant of the quadratic is',   &
               control%get_f
       END IF
-         
+
 !     Obtention of the quadratic gradient
 
       IF ( control%get_g .NEQV. s%prev_control%get_g ) THEN
@@ -19869,7 +19877,7 @@ sli:     DO ii = 1, prob%m
          WRITE( s%out, * ) '  request for the gradient of the quadratic is',   &
               control%get_g
       END IF
-         
+
 !     Obtention of the quadratic Hessian
 
       IF ( control%get_H .NEQV. s%prev_control%get_H ) THEN
@@ -19881,7 +19889,7 @@ sli:     DO ii = 1, prob%m
          WRITE( s%out, * ) '  request for the Hessian of the quadratic is',    &
               control%get_H
       END IF
-         
+
 !     Obtention of the matrix A
 
       IF ( control%get_A .NEQV. s%prev_control%get_A ) THEN
@@ -19892,7 +19900,7 @@ sli:     DO ii = 1, prob%m
       ELSE IF ( s%level >= ACTION ) THEN
          WRITE( s%out, * ) '  request for the matrix A is', control%get_A
       END IF
-         
+
 !     Obtention of x
 
       IF ( control%get_x .NEQV. s%prev_control%get_x ) THEN
@@ -19904,7 +19912,7 @@ sli:     DO ii = 1, prob%m
          WRITE( s%out, * ) '  request for the values of the variables is',     &
               control%get_x
       END IF
-         
+
 !     Obtention of the bounds on x
 
       IF ( control%get_x_bounds .NEQV. s%prev_control%get_x_bounds ) THEN
@@ -19916,7 +19924,7 @@ sli:     DO ii = 1, prob%m
          WRITE( s%out, * ) '  request for the bounds on the variables is',     &
               control%get_x_bounds
       END IF
-         
+
 !     Obtention of z
 
       IF ( control%get_z .NEQV. s%prev_control%get_z ) THEN
@@ -19928,7 +19936,7 @@ sli:     DO ii = 1, prob%m
          WRITE( s%out, * ) '  request for the values of the dual variables is',&
               control%get_z
       END IF
-         
+
 !     Obtention of the bounds on z
 
       IF ( control%get_z_bounds .NEQV. s%prev_control%get_z_bounds ) THEN
@@ -19951,7 +19959,7 @@ sli:     DO ii = 1, prob%m
          WRITE( s%out, * ) '  request for the bounds on the dual variables',   &
               ' is', control%get_z_bounds
       END IF
-         
+
 !     Obtention of c
 
       IF ( control%get_c .NEQV. s%prev_control%get_c ) THEN
@@ -19963,7 +19971,7 @@ sli:     DO ii = 1, prob%m
          WRITE( s%out, * ) '  request for the values of the constraints is',   &
               control%get_c
       END IF
-         
+
 !     Obtention of the bounds on c
 
       IF ( control%get_c_bounds .NEQV. s%prev_control%get_c_bounds ) THEN
@@ -19975,7 +19983,7 @@ sli:     DO ii = 1, prob%m
          WRITE( s%out, * ) '  request for the bounds on the constraints is',   &
               control%get_c_bounds
       END IF
-         
+
 !     Obtention of y
 
       IF ( control%get_y .NEQV. s%prev_control%get_y ) THEN
@@ -19987,7 +19995,7 @@ sli:     DO ii = 1, prob%m
          WRITE( s%out, * ) '  request for the values of the multipliers is',   &
               control%get_y
       END IF
-         
+
 !     Obtention of the bounds on y
 
       IF ( control%get_y_bounds .NEQV. s%prev_control%get_y_bounds ) THEN
@@ -20256,7 +20264,7 @@ sli:     DO ii = 1, prob%m
                 '  strategy for presolve termination',                         &
                 ' changed from REDUCED_SIZE to FULL_PRESOLVE'
             s%prev_control%termination = control%termination
-         CASE DEFAULT 
+         CASE DEFAULT
             IF ( s%level >= ACTION ) THEN
                WRITE( s%out, * ) '  PRESOLVE WARNING:',                        &
                     ' attempt to change the strategy for presolve termination'
@@ -20334,7 +20342,7 @@ sli:     DO ii = 1, prob%m
                IF ( s%prev_control%max_fill >= 0 ) THEN
                   WRITE( s%out, * )                                            &
                        '  maximum percentage of fill in a row changed from',   &
-                        s%prev_control%max_fill, '% to', control%max_fill, '%' 
+                        s%prev_control%max_fill, '% to', control%max_fill, '%'
                ELSE
                   WRITE( s%out, * )                                            &
                        '  maximum percentage of fill in a row changed from',   &
@@ -20343,10 +20351,10 @@ sli:     DO ii = 1, prob%m
             ELSE IF ( s%prev_control%max_fill >= 0 ) THEN
                   WRITE( s%out, * )                                            &
                        '  maximum percentage of fill in a row changed from',   &
-                       s%prev_control%max_fill, '% to infinite' 
+                       s%prev_control%max_fill, '% to infinite'
             END IF
          END IF
-         s%prev_control%max_fill = control%max_fill 
+         s%prev_control%max_fill = control%max_fill
       ELSE IF ( s%level >= ACTION ) THEN
          IF ( control%max_fill >= 0 ) THEN
             WRITE( s%out, * ) '  maximum percentage of fill in a row is',      &
@@ -20388,7 +20396,7 @@ sli:     DO ii = 1, prob%m
             s%prev_control%primal_constraints_freq, 'to',                      &
             control%primal_constraints_freq
          s%prev_control%primal_constraints_freq =                              &
-            control%primal_constraints_freq 
+            control%primal_constraints_freq
       ELSE IF ( s%level >= ACTION ) THEN
          WRITE( s%out, * ) '  frequency of primal constraints analysis is',    &
               control%primal_constraints_freq
@@ -20402,7 +20410,7 @@ sli:     DO ii = 1, prob%m
             '  frequency of dual constraints analysis changed from',           &
             s%prev_control%dual_constraints_freq, 'to',                        &
             control%dual_constraints_freq
-         s%prev_control%dual_constraints_freq = control%dual_constraints_freq 
+         s%prev_control%dual_constraints_freq = control%dual_constraints_freq
       ELSE IF ( s%level >= ACTION ) THEN
          WRITE( s%out, * ) '  frequency of dual constraints analysis is',      &
               control%dual_constraints_freq
@@ -20416,7 +20424,7 @@ sli:     DO ii = 1, prob%m
             '  frequency of singleton columns analysis changed from',          &
             s%prev_control%singleton_columns_freq, 'to',                       &
             control%singleton_columns_freq
-         s%prev_control%singleton_columns_freq = control%singleton_columns_freq 
+         s%prev_control%singleton_columns_freq = control%singleton_columns_freq
       ELSE IF ( s%level >= ACTION ) THEN
          WRITE( s%out, * ) '  frequency of singleton columns analysis is',     &
               control%singleton_columns_freq
@@ -20430,7 +20438,7 @@ sli:     DO ii = 1, prob%m
             '  frequency of doubleton columns analysis changed from',          &
             s%prev_control%doubleton_columns_freq, 'to',                       &
             control%doubleton_columns_freq
-         s%prev_control%doubleton_columns_freq = control%doubleton_columns_freq 
+         s%prev_control%doubleton_columns_freq = control%doubleton_columns_freq
       ELSE IF ( s%level >= ACTION ) THEN
          WRITE( s%out, * ) '  frequency of doubleton columns analysis is',     &
               control%doubleton_columns_freq
@@ -20442,7 +20450,7 @@ sli:     DO ii = 1, prob%m
          IF ( s%level >= ACTION ) WRITE( s%out, * )                            &
             '  frequency of unconstrained variables analysis changed from',    &
             s%prev_control%unc_variables_freq, 'to', control%unc_variables_freq
-         s%prev_control%unc_variables_freq = control%unc_variables_freq 
+         s%prev_control%unc_variables_freq = control%unc_variables_freq
       ELSE IF ( s%level >= ACTION ) THEN
          WRITE( s%out, * ) '  frequency of unconstrained variables',           &
               ' analysis is', control%unc_variables_freq
@@ -20457,7 +20465,7 @@ sli:     DO ii = 1, prob%m
             s%prev_control%dependent_variables_freq, 'to',                     &
             control%dependent_variables_freq
          s%prev_control%dependent_variables_freq =                             &
-            control%dependent_variables_freq 
+            control%dependent_variables_freq
       ELSE IF ( s%level >= ACTION ) THEN
          WRITE( s%out, * ) '  frequency of dependent variables analysis is',   &
               control%dependent_variables_freq
@@ -20469,7 +20477,7 @@ sli:     DO ii = 1, prob%m
          IF ( s%level >= ACTION ) WRITE( s%out, * )                            &
             '  frequency of row sparsification analysis changed from',         &
             s%prev_control%sparsify_rows_freq, 'to', control%sparsify_rows_freq
-         s%prev_control%sparsify_rows_freq = control%sparsify_rows_freq 
+         s%prev_control%sparsify_rows_freq = control%sparsify_rows_freq
       ELSE IF ( s%level >= ACTION ) THEN
          WRITE( s%out, * ) '  frequency of row sparsification analysis is',    &
               control%sparsify_rows_freq
@@ -20477,7 +20485,7 @@ sli:     DO ii = 1, prob%m
 
 !-------------------------------------------------------------------------------
 
-!     Final status of the bounds on the variables, dual variables and 
+!     Final status of the bounds on the variables, dual variables and
 !     multipliers.
 
 !-------------------------------------------------------------------------------
@@ -20577,7 +20585,7 @@ sli:     DO ii = 1, prob%m
 
 !           Change allowed, but erroneous value specified.
 
-            CASE DEFAULT 
+            CASE DEFAULT
                IF ( s%level >= ACTION ) THEN
                   WRITE( s%out, * ) '  PRESOLVE WARNING:',                     &
                       ' attempt to change the final status of the bounds'
@@ -20641,7 +20649,7 @@ sli:     DO ii = 1, prob%m
                      WRITE( s%out, * ) '  final status of the bounds on the',  &
                           ' variables kept to NON_DEGENERATE'
                    END SELECT
-               CASE DEFAULT 
+               CASE DEFAULT
                   WRITE( s%out, * ) '  PRESOLVE WARNING:',                     &
                       ' attempt to change the final status of the bounds'
                   WRITE( s%out, * ) '  on the variables to the unknown value', &
@@ -20775,7 +20783,7 @@ sli:     DO ii = 1, prob%m
 
 !           Change allowed, but erroneous value specified.
 
-            CASE DEFAULT 
+            CASE DEFAULT
                IF ( s%level >= ACTION ) THEN
                   WRITE( s%out, * ) '  PRESOLVE WARNING:',                     &
                       ' attempt to change the final status of the bounds'
@@ -20841,9 +20849,9 @@ sli:     DO ii = 1, prob%m
                      WRITE( s%out, * ) '  final status of the bounds on the',  &
                           ' dual variables kept to NON_DEGENERATE'
                   END SELECT
-               CASE DEFAULT 
+               CASE DEFAULT
                   WRITE( s%out, * ) '  PRESOLVE WARNING:',                     &
-                      ' attempt to change the final status of the bounds' 
+                      ' attempt to change the final status of the bounds'
                   WRITE( s%out, * ) '   on the dual variables to the',         &
                        ' unknown value', control%final_z_bounds
                   SELECT CASE ( s%prev_control%final_z_bounds )
@@ -20991,7 +20999,7 @@ sli:     DO ii = 1, prob%m
 
 !           Change allowed, but erroneous value specified.
 
-            CASE DEFAULT 
+            CASE DEFAULT
                IF ( s%level >= ACTION ) THEN
                   WRITE( s%out, * ) '  PRESOLVE WARNING:',                     &
                        ' attempt to change the final status of the bounds'
@@ -21057,7 +21065,7 @@ sli:     DO ii = 1, prob%m
                      WRITE( s%out, * ) '  status of the final bounds on the',  &
                           ' constraints kept to NON_DEGENERATE'
                   END SELECT
-               CASE DEFAULT 
+               CASE DEFAULT
                   WRITE( s%out, * ) '  PRESOLVE WARNING:',                     &
                        ' attempt to change the final status of the bounds'
                   WRITE( s%out, * ) '   on the multipliers to the unknown',    &
@@ -21192,7 +21200,7 @@ sli:     DO ii = 1, prob%m
 
 !           Change allowed, but erroneous value specified.
 
-            CASE DEFAULT 
+            CASE DEFAULT
                IF ( s%level >= ACTION ) THEN
                   WRITE( s%out, * ) '  PRESOLVE WARNING:',                     &
                        ' attempt to change the final status of the bounds'
@@ -21258,7 +21266,7 @@ sli:     DO ii = 1, prob%m
                      WRITE( s%out, * ) '  status of the final bounds on the',  &
                           ' multipliers kept to NON_DEGENERATE'
                   END SELECT
-               CASE DEFAULT 
+               CASE DEFAULT
                   WRITE( s%out, * ) '  PRESOLVE WARNING:',                     &
                        ' attempt to change the final status of the bounds'
                   WRITE( s%out, * ) '   on the multipliers to the unknown',    &
@@ -21311,7 +21319,7 @@ sli:     DO ii = 1, prob%m
 
       LOGICAL FUNCTION PRESOLVE_is_too_big( val )
 
-!     Decides whether or not val is too large (in absolute value) 
+!     Decides whether or not val is too large (in absolute value)
 !     compared to the maximum acceptable value for reduced problem data.
 
 !     Argument:
@@ -21332,7 +21340,7 @@ sli:     DO ii = 1, prob%m
 
       RETURN
 
-      END FUNCTION PRESOLVE_is_too_big       
+      END FUNCTION PRESOLVE_is_too_big
 
 !==============================================================================
 !==============================================================================
@@ -21355,7 +21363,7 @@ sli:     DO ii = 1, prob%m
 
       RETURN
 
-      END FUNCTION PRESOLVE_is_pos       
+      END FUNCTION PRESOLVE_is_pos
 
 !==============================================================================
 !==============================================================================
@@ -21378,7 +21386,7 @@ sli:     DO ii = 1, prob%m
 
       RETURN
 
-      END FUNCTION PRESOLVE_is_neg       
+      END FUNCTION PRESOLVE_is_neg
 
 !==============================================================================
 !==============================================================================
@@ -21399,13 +21407,13 @@ sli:     DO ii = 1, prob%m
 
       IF ( val < ZERO ) THEN
          PRESOLVE_is_zero = val >= - ACCURACY
-      ELSE 
+      ELSE
          PRESOLVE_is_zero = val <=   ACCURACY
       END IF
 
       RETURN
 
-      END FUNCTION PRESOLVE_is_zero        
+      END FUNCTION PRESOLVE_is_zero
 
 !==============================================================================
 !==============================================================================
@@ -21629,7 +21637,7 @@ sli:     DO ii = 1, prob%m
             END IF
          END IF
       END IF
-      
+
       RETURN
 
       END SUBROUTINE PRESOLVE_open_h
@@ -21682,7 +21690,7 @@ sli:     DO ii = 1, prob%m
 
 !     Write the variables.
 
-      WRITE( s%out, * ) '    n = ', n 
+      WRITE( s%out, * ) '    n = ', n
 
       IF ( show_inactive .AND. s%level >= CRAZY ) THEN
          WRITE( s%out, * ) ' '
@@ -21728,7 +21736,7 @@ sli:     DO ii = 1, prob%m
                END SELECT
             END DO
          END IF
-  
+
 !        Write the dual variables.
 
          WRITE( s%out, * ) ' '
@@ -21739,7 +21747,7 @@ sli:     DO ii = 1, prob%m
             WRITE( s%out, * ) ' '
             DO j = 1, prob%n
                SELECT CASE ( prob%X_status( j ) )
-               CASE ( ACTIVE:FREE ) 
+               CASE ( ACTIVE:FREE )
                   WRITE( s%out, 200 )                                          &
                        j, prob%Z_l( j ), prob%Z( j ), prob%Z_u( j )
                CASE ( INACTIVE )
@@ -21760,7 +21768,7 @@ sli:     DO ii = 1, prob%m
             WRITE( s%out, * ) ' '
             DO j = 1, prob%n
                SELECT CASE ( prob%X_status( j ) )
-               CASE ( ACTIVE:FREE ) 
+               CASE ( ACTIVE:FREE )
                   WRITE( s%out, 205 )                                          &
                        j, s%z_l2(j), prob%Z_l(j),prob%Z(j),prob%Z_u(j),s%z_u2(j)
                CASE ( INACTIVE )
@@ -21827,7 +21835,7 @@ sli:     DO ii = 1, prob%m
                END SELECT
             END DO
          END IF
- 
+
 !        Write the multipliers.
 
          WRITE( s%out, * ) ' '
@@ -21867,7 +21875,7 @@ sli:     DO ii = 1, prob%m
                END SELECT
             END DO
          END IF
-  
+
 !        Write the Jacobian.
 
          WRITE( s%out, * ) ' '
@@ -21941,13 +21949,13 @@ sli:     DO ii = 1, prob%m
             WRITE( s%out, * ) ' '
             WRITE( s%out, * ) '    Hessian '
             WRITE( s%out, * ) ' '
- 
+
             DO i = 1, prob%n
                DO k = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
                   j = prob%H%col( k )
                   IF ( prob%X_status(j) > ELIMINATED .AND. &
                        prob%X_status(i) > ELIMINATED       ) THEN
-                     WRITE( s%out, 700 ) i, j, prob%H%val( k ) 
+                     WRITE( s%out, 700 ) i, j, prob%H%val( k )
                   ELSE IF ( show_inactive ) THEN
                      IF ( prob%X_status(i) == INACTIVE .OR. &
                           prob%X_status(j) == INACTIVE      ) THEN
@@ -21997,12 +22005,12 @@ sli:     DO ii = 1, prob%m
 500   FORMAT( 3x, 'g(', i4, ') =', 3x,  ES12.4 )
 501   FORMAT( 3x, 'g(', i4, ') =', 3x,  ES12.4, 3x, 'inactive'   )
 502   FORMAT( 3x, 'g(', i4, ') =', 3x,  ES12.4, 3x, 'eliminated' )
-600   FORMAT( 3x, 'A(', i4, ',', i4, ') = ', ES12.4 ) 
-601   FORMAT( 3x, 'A(', i4, ',', i4, ') = ', ES12.4, 3x, 'inactive'   ) 
-603   FORMAT( 3x, 'A(', i4, ',', i4, ') = ', ES12.4, 3x, 'eliminated' ) 
-700   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4 ) 
-701   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4, 3x, 'inactive'   ) 
-702   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4, 3x, 'eliminated' ) 
+600   FORMAT( 3x, 'A(', i4, ',', i4, ') = ', ES12.4 )
+601   FORMAT( 3x, 'A(', i4, ',', i4, ') = ', ES12.4, 3x, 'inactive'   )
+603   FORMAT( 3x, 'A(', i4, ',', i4, ') = ', ES12.4, 3x, 'eliminated' )
+700   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4 )
+701   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4, 3x, 'inactive'   )
+702   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4, 3x, 'eliminated' )
 
       END SUBROUTINE PRESOLVE_write_full_prob
 

@@ -397,7 +397,7 @@ MODULE GALAHAD_CCQP_double
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Default control data for CCQP. This routine should be called before
-!  CCQP_primal_dual
+!  CCQP_solve
 !
 !  ---------------------------------------------------------------------------
 !

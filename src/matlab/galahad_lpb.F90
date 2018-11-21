@@ -83,7 +83,7 @@
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released with GALAHAD Version 2.4. January 1st 2010
+!   originally released with GALAHAD Version 3.1. August 9st 2018
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html

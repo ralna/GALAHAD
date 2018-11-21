@@ -1,0 +1,113 @@
+#!/bin/bash
+
+# galtests: run GALAHAD package on a set of SIF examples
+# This version October 5th, 2018
+
+# Use: galtests architecture package test_set [option_file]
+
+# run the architecture version of package on the SIF examples in the file
+# test_set, and print the last line of the results file after each
+# optimization, optionally adding a stripped version of option_file to
+# results file before the run starts
+
+# Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+# Principal author: Nick Gould
+
+if [ ! -e $GALAHAD/versions/$1 ] ; then
+  echo "no known architecture $1 installed in GALAHAD"
+  exit 1
+fi
+
+if [ ! -e $3 ] ; then
+  echo "no test set file $3"
+  exit 3
+fi
+
+PACKAGE=`echo "$2" | tr '[:lower:]' '[:upper:]'`
+results="$PACKAGE"RES.d
+options=RUN"$PACKAGE".SPC
+
+# obtain number of arguments
+
+let last=$#
+
+#  process any options
+
+strip_options=0
+lines=1
+
+let i=4
+
+while (( i <= last ))
+do
+  opt=${!i}
+#echo $opt
+  if [[ "$opt" == '-h' || "$opt" == '--help' ]]; then
+    echo ' Use:galtests architecture package test_set [-h] [-o] [-l n]'
+    echo ' '
+    echo ' where: options -h : print this help and stop execution'
+    echo '                -o : add a stripped version of the options file to'
+    echo '                     the results file before the tests start'
+    echo '                     (Default: leave the results file alone)'
+    echo '                -l : prints the last n lines of the results file'
+    echo '                     (Default: print 1 line)'
+    echo ' '
+    echo '       probname      probname.SIF is the name of the file containing'
+    echo '                     the SIF file for the problem of interest.'
+    exit 0
+  elif [[ "$opt" == '-o' ]]; then
+    strip_options=1
+  elif [[ "$opt" == '-l' ]]; then
+    (( i++ ))
+    lines=${!i}
+  fi
+  (( i++ ))
+done
+
+#  append active options to result summary file if required
+
+# [-e "/tmp/$2.temp_out" ] && rm  /tmp/$2.temp_out
+echo `date` > /tmp/$2.temp_out
+echo "" >> /tmp/$2.temp_out
+
+if [ $strip_options == "1" ] ; then
+  if [ -e $options ] ; then
+    echo "" > $results.blank
+    sed -f $GALAHAD/seds/galtests.sed $options | \
+      cat $results $results.blank - $results.blank > $results.tmp
+    sed -f $GALAHAD/seds/galtests.sed $options | \
+      cat - $results.blank >> /tmp/$2.temp_out
+    rm $results.blank
+    mv $results.tmp $results
+  fi
+fi
+
+[ -e "/tmp/warnings" ] && rm /tmp/warnings
+[ ! -e res$2 ] && mkdir res$2
+
+echo "testing package $2"
+
+#  run package on test examples
+
+for prob in `cat $3`; do
+   if [ -e $prob ] || [ -e $prob.SIF ] ; then
+#  echo "the next test example is $prob"
+    ( eval sdgal $1 $2 $prob > res$2/$prob.out ) >& /tmp/warnings_prob
+    tail -n -$lines $results
+    tail -n -$lines $results >> /tmp/$2.temp_out
+    if [ -s /tmp/warnings_prob ] ; then
+      echo $prob | cat - /tmp/warnings_prob >> /tmp/warnings
+    fi
+  else
+    echo "no SIF example $prob, skipping test"
+  fi
+done
+
+# report warnings
+
+if [ -s /tmp/warnings ] ; then
+ echo ""
+ echo " ** There are warnings, see /tmp/warnings"
+#  echo $2
+#  cat /tmp/warnings
+fi

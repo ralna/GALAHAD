@@ -1,0 +1,180 @@
+.TH galtests 1
+.SH NAME
+\fBgaltests\fR \- Decode a sequence of SIF test examples, run
+a GALAHAD package on each in turn and report a summary of the results
+as they appear
+.SH USAGE
+.B galtests architecture package test_set [options]
+,
+
+where
+.B architecture
+is a string of the form machine.os.compiler
+indicating the machine/operating system/compiler combination to be used,
+.B package
+indicates the package required, and
+.B test_set
+is a file containing a list of names of SIF examples (with or without the .SIF suffix), one example per line.
+
+The name
+.B architecture
+must match that of one of the files in the directory
+$GALAHAD/bin/sys ,
+while
+.B package
+may be one of
+.LP
+.TP 1i
+.BI lancelot
+LANCELOT B for general nonlinear programming
+.TP
+.BI nls
+NLS for nonlinear least-squares
+.TP
+.BI filtrane
+FILTRANE for nonlinear equations/inequlaities and nonlinear least-squares
+.TP
+.BI presolve
+PRESOLVE for presolving general linear or quadratic programs
+.TP
+.BI qp
+QP for general quadratic programming
+.TP
+.BI qpa
+QPA for general quadratic programming using an active-set method
+.TP
+.BI qpb
+QPB for general quadratic programming using an interior-point method
+.TP
+.BI qpc
+QPC for general quadratic programming using a cross-over method
+.TP
+.BI cqp
+CQP for convex quadratic programming using an interior-point method
+.TP
+.BI dqp
+DQP for convex quadratic programming using an dual projection method
+.TP
+.BI ccqp
+CCQP for convex quadratic programming using a cross-over method
+.TP
+.BI l1qp
+L1QP for convex l_1 quadratic programming using a cross-over method
+.TP
+.BI eqp
+EQP for equality-constrained quadratic programming
+.TP
+.BI bqp
+BQP for bound-constrained quadratic programming using a projection method
+.TP
+.BI bqpb
+BQPB for bound-constrained quadratic programming using an interior-point method
+.TP
+.BI lpb
+LPB for linear programming using an interior-point method
+.TP
+.BI dlp
+DLP for linear programming using an dual projection method
+.TP
+.BI wcp
+WCP for well-centered feasible points of a polyhedral region
+.TP
+.BI trs
+TRS for the trust-region subproblem
+.TP
+.BI rqs
+RQS for the regularized quadratic subproblem
+.TP
+.BI dps
+DPS for the diagonilising norm trust-region and regularized quadratic subproblems
+.TP
+.BI tru
+TRU for unconstrained optimization using a trust-region method
+.TP
+.BI arc
+ARC for unconstrained optimization using a regularization method
+
+Other packages will be available in due course.
+
+.SH DESCRIPTION
+.LP
+.B galtests
+decodes a sequence of user-defined SIF files, and calls
+.B gal
+to apply the relevant GALAHAD large-scale nonlinear-optimization
+packags for each in turn.
+.SH OPTIONS
+.LP
+.TP 1i
+.B \-h
+Print a list of these options and stop execution.
+.TP 1i
+.B \-o
+Before the tests start, the non-default values from the relevant package
+options file
+.B option_file
+will be added to output summary file
+.TP
+.BI \-l " lines"
+Specify the number
+.IR lines
+of lines from the end of the output file that will be printed to the
+terminal on completeion of each run
+(1 line; the default)
+.SH FILES
+.TP 20
+.BI achitecture.package
+executable output file created by galtests
+.TP
+.IB RUN package .SPC
+user-supplied option specification file
+.TP
+.IB package RES.SPC
+output summary file
+.TP
+.IB OUTSDIF.d
+file containing problem structure created by galtests
+.TP
+.IB AUTOMAT.d
+file indicating derivative mode created by galtests
+.TP
+.IB SAVEDATA.d
+file containing intermediate solution created by gal
+.TP
+.IB SOLUTION.d
+file containing solution created by galtests
+.TP
+.IB SUMMARY.d
+file containing summary of solution created by galtests
+.TP
+.IB file.f
+Fixed-form Fortran 90 or FORTRAN 77 source decoded from the SIF file
+by galtests
+.TP
+.IB file.f90
+Free-form Fortran 90 source decoded from the SIF file by galtests
+.TP
+.IB file.o
+object file created by galtests
+.SH DIAGNOSTICS
+The diagnostics produced by galtests itself are intended to be self-explanatory.
+.SH "SEE ALSO"
+
+N. I. M. Gould, D. Orban and Ph. L. Toint,
+"GALAHAD - a library of thread-safe fortran 90 packages for large-scale
+nonlinear optimization",
+.I ACM Transactions on Mathematic Software
+.B 29
+(4)
+(2003) 353-372.
+
+.BR sdgal (1), gal(1)
+.SH BUGS
+Please report any bugs found to
+.IB nick.gould@rl.ac.uk ,
+along with any suggestions for improvements.
+.SH AUTHORS
+Nick Gould, Rutherford Appleton Laboratory,
+Dominique Orban, Ecole Polytechnique de Montreal,
+and
+Philippe Toint, University of Namur

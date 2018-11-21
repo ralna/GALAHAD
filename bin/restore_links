@@ -140,6 +140,9 @@ fi ;
 if [[ -f ./src/cqp/makemaster ]]; then
   rm ./src/cqp/makemaster; ln -s ../qp/makemaster ./src/cqp/makemaster
 fi ;
+if [[ -f ./src/dqp/makemaster ]]; then
+  rm ./src/dqp/makemaster; ln -s ../qp/makemaster ./src/dqp/makemaster
+fi ;
 if [[ -f ./src/cqp/RUNCQP.SPC ]]; then
   rm ./src/cqp/RUNCQP.SPC; ln -s RUNCQP.current ./src/cqp/RUNCQP.SPC
 fi ;
@@ -376,4 +379,16 @@ if [[ -f ./README.matlab ]]; then
 fi ;
 if [[ -f ./src/opt/makemaster ]]; then
   rm ./src/opt/makemaster; ln -s ../general/makemaster ./src/opt/makemaster
+fi ;
+if [[ -f ./src/lmt/makemaster ]]; then
+  rm ./src/lmt/makemaster; ln -s ../lms/makemaster ./src/lmt/makemaster
+fi ;
+if [[ -f ./src/lpa/makemaster ]]; then
+  rm ./src/lpa/makemaster; ln -s ../qp/makemaster ./src/lpa/makemaster
+fi ;
+if [[ -f ./src/lpb/makemaster ]]; then
+  rm ./src/lpb/makemaster; ln -s ../qp/makemaster ./src/lpb/makemaster
+fi ;
+if [[ -f ./src/dlp/makemaster ]]; then
+  rm ./src/dlp/makemaster; ln -s ../qp/makemaster ./src/dlp/makemaster
 fi ;

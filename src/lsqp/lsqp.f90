@@ -512,7 +512,7 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Default control data for LSQP. This routine should be called before
-!  LSQP_primal_dual
+!  LSQP_solve
 !
 !  ---------------------------------------------------------------------------
 !
@@ -7049,6 +7049,3 @@
 !  End of module LSQP
 
    END MODULE GALAHAD_LSQP_double
-
-
-

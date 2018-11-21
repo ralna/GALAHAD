@@ -13,17 +13,17 @@
 %%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galsummary
-Given a real $m$ by $n$ matrix $\bmA$, a real $m$ vector $\bmb$ and 
-scalars $\sigma>0$ and $p \geq 2$, this package finds an  
-{\bf approximate minimizer of the regularised linear-least-squares 
-objective function  
+Given a real $m$ by $n$ matrix $\bmA$, a real $m$ vector $\bmb$ and
+scalars $\sigma>0$ and $p \geq 2$, this package finds an
+{\bf approximate minimizer of the regularised linear-least-squares
+objective function
 $\half\| \bmA \bmx - \bmb\|_2^2 + \sfrac{1}{p} \sigma \| \bmx \|_2^p$.}
-This problem commonly occurs as a subproblem in nonlinear 
+This problem commonly occurs as a subproblem in nonlinear
 optimization calculations involving cubic regularisation,
-and may be used to regularise the solution 
+and may be used to regularise the solution
 of under-determined or ill-conditioned linear least-squares problems.
-The method may be suitable for large $m$ and/or $n$ as no factorization 
-involving $\bmA$ is required. Reverse communication is used to obtain  
+The method may be suitable for large $m$ and/or $n$ as no factorization
+involving $\bmA$ is required. Reverse communication is used to obtain
 matrix-vector products of the form $\bmu + \bmA \bmv$ and
 $\bmv + \bmA^T \bmu$.
 
@@ -31,15 +31,15 @@ $\bmv + \bmA^T \bmu$.
 
 \galattributes
 \galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
-\galuses 
-{\tt \libraryname\_SY\-M\-BOLS}, 
-{\tt \libraryname\_SPACE}, {\tt \libraryname\_\-NORMS}, 
+\galuses
+{\tt \libraryname\_SY\-M\-BOLS},
+{\tt \libraryname\_SPACE}, {\tt \libraryname\_\-NORMS},
 {\tt \libraryname\_ROOTS}, {\tt \libraryname\_LSTR},
 {\tt \libraryname\_SPECFILE},
 {\tt *ROTG}.
 \galdate November 2007.
 \galorigin N. I. M. Gould, Oxford University and Rutherford Appleton Laboratory.
-\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
 
 %%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -58,15 +58,15 @@ Access to the package requires a {\tt USE} statement such as
 \medskip
 
 \noindent
-If it is required to use both modules at the same time, the derived types 
-{\tt \packagename\_control\_type}, {\tt \packagename\_inform\_type}, 
+If it is required to use both modules at the same time, the derived types
+{\tt \packagename\_control\_type}, {\tt \packagename\_inform\_type},
 {\tt \packagename\_data\_type},
 (Section~\ref{galtypes})
 and the subroutines
-{\tt \packagename\_initialize},  
+{\tt \packagename\_initialize},
 {\tt \packagename\_solve}, {\tt \packagename\_terminate}
 (Section~\ref{galarguments})
-and 
+and
 {\tt \packagename\_read\_specfile}
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
@@ -78,104 +78,104 @@ Three derived data types are accessible from the package.
 
 %%%%%%%%%%% control type %%%%%%%%%%%
 
-\subsubsection{The derived data type for holding control 
+\subsubsection{The derived data type for holding control
  parameters}\label{typecontrol}
-The derived data type 
-{\tt \packagename\_control\_type} 
-is used to hold controlling data. Default values may be obtained by calling 
+The derived data type
+{\tt \packagename\_control\_type}
+is used to hold controlling data. Default values may be obtained by calling
 {\tt \packagename\_initialize}
-(see Section~\ref{subinit}). The components of 
-{\tt \packagename\_control\_type} 
+(see Section~\ref{subinit}). The components of
+{\tt \packagename\_control\_type}
 are:
 
 \begin{description}
-\itt{error} is a scalar variable of type default \integer, that holds the 
-stream number for error messages. 
-Printing of error messages in  
-{\tt \packagename\_solve} and {\tt \packagename\_terminate} 
-is suppressed if ${\tt error} \leq {\tt 0}$. 
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages.
+Printing of error messages in
+{\tt \packagename\_solve} and {\tt \packagename\_terminate}
+is suppressed if ${\tt error} \leq {\tt 0}$.
 The default is {\tt error = 6}.
- 
-\ittf{out} is a scalar variable of type default \integer, that holds the 
-stream number for informational messages. 
-Printing of informational messages in  
-{\tt \packagename\_solve} is suppressed if ${\tt out} < {\tt 0}$. 
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages.
+Printing of informational messages in
+{\tt \packagename\_solve} is suppressed if ${\tt out} < {\tt 0}$.
 The default is {\tt out = 6}.
- 
-\itt{print\_level} is a scalar variable of type default \integer, 
-that is used 
-to control the amount of informational output which is required. No  
-informational output will occur if ${\tt print\_level} \leq {\tt 0}$. If  
-{\tt print\_level = 1} a single line of output will be produced for each 
-iteration of the process. If {\tt print\_level} $\geq$ {\tt 2} this output 
-will be increased to provide significant detail of each iteration. 
+
+\itt{print\_level} is a scalar variable of type default \integer,
+that is used
+to control the amount of informational output which is required. No
+informational output will occur if ${\tt print\_level} \leq {\tt 0}$. If
+{\tt print\_level = 1} a single line of output will be produced for each
+iteration of the process. If {\tt print\_level} $\geq$ {\tt 2} this output
+will be increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
- 
-\itt{itmin} is a scalar variable of type default \integer, that holds the 
+
+\itt{itmin} is a scalar variable of type default \integer, that holds the
 minimum number of iterations which will be performed by
-{\tt \packagename\_solve}. 
+{\tt \packagename\_solve}.
 The default is {\tt itmin = -1}.
- 
-\itt{itmax} is a scalar variable of type default \integer, that holds the 
-maximum number of iterations which will be allowed in 
-{\tt \packagename\_solve}. 
-If {\tt itmax} is set to a negative number, it will be reset by  
-{\tt \packagename\_solve} to $\max(m,n)+1$. 
+
+\itt{itmax} is a scalar variable of type default \integer, that holds the
+maximum number of iterations which will be allowed in
+{\tt \packagename\_solve}.
+If {\tt itmax} is set to a negative number, it will be reset by
+{\tt \packagename\_solve} to $\max(m,n)+1$.
 The default is {\tt itmax = -1}.
- 
-\itt{bitmax} is a scalar variable of type default \integer, that holds the 
+
+\itt{bitmax} is a scalar variable of type default \integer, that holds the
 maximum number of Newton inner iterations which will be allowed for each
-main iteration in {\tt \packagename\_solve}. 
-If {\tt bitmax} is set to a negative number, it will be reset by  
-{\tt \packagename\_solve} to $10$. 
+main iteration in {\tt \packagename\_solve}.
+If {\tt bitmax} is set to a negative number, it will be reset by
+{\tt \packagename\_solve} to $10$.
 The default is {\tt bitmax = -1}.
- 
-\itt{extra\_vectors} is a scalar variable of type default \integer, 
+
+\itt{extra\_vectors} is a scalar variable of type default \integer,
 that specifies the number of additional vectors of length $n$
 that will be allocated to try to speed up the computation during the
 second pass.
 The default is {\tt extra\_vectors = 0}.
- 
+
 \itt{space\_critical} is a scalar variable of type default \logical, that
 may be set \true\ if the user wishes the package to allocate as little
 internal storage as possible, and \false\ otherwise. The package may
 be more efficient if {\tt space\_critical} is set \false.
 The default is {\tt space\_critical = \false}.
 
-\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical, 
-that may be set \true\ if the user wishes the package to return to the user 
-in the unlikely event that an internal array deallocation fails, 
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical,
+that may be set \true\ if the user wishes the package to return to the user
+in the unlikely event that an internal array deallocation fails,
 and \false\ if the package should be allowed to try to continue.
 The default is {\tt deallocate\_error\_fatal = \false}.
 
-\itt{stop\_relative} and {\tt stop\_absolute} are scalar variables of type 
-\realdp, that holds the 
-relative and absolute convergence tolerances (see Section~\ref{galmethod}).  
-The computed solution $\bmx$ is accepted by {\tt \packagename\_solve} 
-if the computed value of  
+\itt{stop\_relative} and {\tt stop\_absolute} are scalar variables of type
+\realdp, that holds the
+relative and absolute convergence tolerances (see Section~\ref{galmethod}).
+The computed solution $\bmx$ is accepted by {\tt \packagename\_solve}
+if the computed value of
 $\|\bmA^T ( \bmA \bmx - \bmb ) + \lambda \bmx\|_2$
-is less than or equal 
-to $\max (\| \bmA^T \bmb \|_2 \ast$ {\tt stop\_relative}, 
-{\tt stop\_absolute}$)$, where the multiplier 
+is less than or equal
+to $\max (\| \bmA^T \bmb \|_2 \ast$ {\tt stop\_relative},
+{\tt stop\_absolute}$)$, where the multiplier
 $\lambda = \sigma \|\bmx\|_2^{p-2}$.
 The defaults are {\tt stop\_relative = $\sqrt{u}$} and
-{\tt stop\_absolute = 0.0}, 
-where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
+{\tt stop\_absolute = 0.0},
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
-\itt{fraction\_opt} is a scalar variable of type default 
-\realdp, that specifies the fraction 
-of the optimal value which is to be considered acceptable by the algorithm. 
-A negative value is considered to be zero, and a value of larger than one 
-is considered to be one. Reducing {\tt fraction\_opt} below one will result 
-in a reduction of the computation performed at the expense of an inferior 
-optimal value. 
+\itt{fraction\_opt} is a scalar variable of type default
+\realdp, that specifies the fraction
+of the optimal value which is to be considered acceptable by the algorithm.
+A negative value is considered to be zero, and a value of larger than one
+is considered to be one. Reducing {\tt fraction\_opt} below one will result
+in a reduction of the computation performed at the expense of an inferior
+optimal value.
 The default is {\tt fraction\_opt = 1.0}.
 
 \itt{prefix} is a scalar variable of type default \character\
-and length 30, that may be used to provide a user-selected 
-character string to preface every line of printed output. 
-Specifically, each line of output will be prefaced by the string 
+and length 30, that may be used to provide a user-selected
+character string to preface every line of printed output.
+Specifically, each line of output will be prefaced by the string
 {\tt prefix(2:LEN(TRIM(prefix))-1)},
 thus ignoring the first and last non-null components of the
 supplied string. If the user does not want to preface lines by such
@@ -187,61 +187,61 @@ a string, they may use the default {\tt prefix = ""}.
 
 \subsubsection{The derived data type for holding informational
  parameters}\label{typeinform}
-The derived data type 
-{\tt \packagename\_inform\_type} 
-is used to hold parameters that give information about the progress and needs 
+The derived data type
+{\tt \packagename\_inform\_type}
+is used to hold parameters that give information about the progress and needs
 of the algorithm. The components of
-{\tt \packagename\_inform\_type} 
+{\tt \packagename\_inform\_type}
 are:
 
 \begin{description}
-\itt{status} is a scalar variable of type default \integer, that gives the 
-current status of the algorithm. See Sections~\ref{galreverse} and 
-\ref{galerrors} for details. 
+\itt{status} is a scalar variable of type default \integer, that gives the
+current status of the algorithm. See Sections~\ref{galreverse} and
+\ref{galerrors} for details.
 
-\itt{alloc\_status} is a scalar variable of type default \integer, 
-that gives the status of the last internal array allocation 
+\itt{alloc\_status} is a scalar variable of type default \integer,
+that gives the status of the last internal array allocation
 or deallocation. This will be 0 if {\tt status = 0}.
 
 \itt{bad\_alloc} is a scalar variable of type default \character\
-and length 80, that  gives the name of the last internal array 
+and length 80, that  gives the name of the last internal array
 for which there were allocation or deallocation errors.
-This will be the null string if {\tt status = 0}. 
+This will be the null string if {\tt status = 0}.
 
-\itt{obj} is a scalar variable of type default 
+\itt{obj} is a scalar variable of type default
 \realdp, that holds the value of the objective function
 $\half\| \bmA \bmx - \bmb\|_2^2 + \sfrac{1}{p} \sigma \| \bmx \|_2^p$.
- 
-\itt{multiplier} is a scalar variable of type default 
-\realdp, that holds the 
+
+\itt{multiplier} is a scalar variable of type default
+\realdp, that holds the
 value of the multiplier $\lambda = \sigma \|\bmx\|_2^{p-2}$.
- 
-\itt{x\_norm} is a scalar variable of type default \realdp, 
+
+\itt{x\_norm} is a scalar variable of type default \realdp,
 that holds the current value of $\|\bmx\|_2$.
- 
-\itt{r\_norm} is a scalar variable of type default \realdp, 
+
+\itt{r\_norm} is a scalar variable of type default \realdp,
 that holds the current value of $\|\bmA\bmx-\bmb\|_2$.
- 
-\itt{Atr\_norm} is a scalar variable of type default \realdp, 
-that holds the current value of 
+
+\itt{Atr\_norm} is a scalar variable of type default \realdp,
+that holds the current value of
 $\|\bmA^T ( \bmA \bmx - \bm b ) + \lambda \bmx \|_2$.
- 
-\ittf{iter} is a scalar variable of type default \integer, that holds the 
-current number of Lanczos vectors used. 
- 
-\itt{iter\_pass2} is a scalar variable of type default \integer, that holds the 
-current number of Lanczos vectors used in the second pass. 
- 
+
+\ittf{iter} is a scalar variable of type default \integer, that holds the
+current number of Lanczos vectors used.
+
+\itt{iter\_pass2} is a scalar variable of type default \integer, that holds the
+current number of Lanczos vectors used in the second pass.
+
 \end{description}
 
 %%%%%%%%%%% data type %%%%%%%%%%%
 
 \subsubsection{The derived data type for holding problem data}\label{typedata}
-The derived data type 
-{\tt \packagename\_data\_type} 
-is used to hold all the data for a particular problem between calls of 
-{\tt \packagename} procedures. 
-This data should be preserved, untouched, from the initial call to 
+The derived data type
+{\tt \packagename\_data\_type}
+is used to hold all the data for a particular problem between calls of
+{\tt \packagename} procedures.
+This data should be preserved, untouched, from the initial call to
 {\tt \packagename\_initialize}
 to the final call to
 {\tt \packagename\_terminate}.
@@ -250,28 +250,28 @@ to the final call to
 
 \galarguments
 There are three procedures for user calls
-(see Section~\ref{galfeatures} for further features): 
+(see Section~\ref{galfeatures} for further features):
 
 \begin{enumerate}
-\item The subroutine 
-      {\tt \packagename\_initialize} 
+\item The subroutine
+      {\tt \packagename\_initialize}
       is used to set default values, and initialize private data.
-\item The subroutine 
-      {\tt \packagename\_solve} 
-      is called repeatedly to solve the problem. 
-      On each exit, the user may be expected to provide additional 
-      information and, if necessary, re-enter the subroutine. 
-\item The subroutine 
-      {\tt \packagename\_terminate} 
-      is provided to allow the user to automatically deallocate array 
-       components of the private data, allocated by 
-       {\tt \packagename\_solve}, 
-       at the end of the solution process. 
-       It is important to do this if the data object is re-used for another  
-       problem since {\tt \packagename\_initialize} cannot test for this 
-       situation,  
-       and any existing associated targets will subsequently become 
-       unreachable. 
+\item The subroutine
+      {\tt \packagename\_solve}
+      is called repeatedly to solve the problem.
+      On each exit, the user may be expected to provide additional
+      information and, if necessary, re-enter the subroutine.
+\item The subroutine
+      {\tt \packagename\_terminate}
+      is provided to allow the user to automatically deallocate array
+       components of the private data, allocated by
+       {\tt \packagename\_solve},
+       at the end of the solution process.
+       It is important to do this if the data object is re-used for another
+       problem since {\tt \packagename\_initialize} cannot test for this
+       situation,
+       and any existing associated targets will subsequently become
+       unreachable.
 \end{enumerate}
 
 %%%%%% initialization subroutine %%%%%%
@@ -279,29 +279,29 @@ There are three procedures for user calls
 \subsubsection{The initialization subroutine}\label{subinit}
  Default values are provided as follows:
 
-\hskip0.5in 
+\hskip0.5in
 {\tt CALL \packagename\_initialize( data, control, inform )}
 
 \begin{description}
 
-\itt{data} is a scalar \intentinout argument of type 
+\itt{data} is a scalar \intentinout argument of type
 {\tt \packagename\_data\_type}
-(see Section~\ref{typedata}). It is used to hold data about the problem being 
-solved. 
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved.
 
-\itt{control} is a scalar \intentout argument of type 
+\itt{control} is a scalar \intentout argument of type
 {\tt \packagename\_control\_type}
-(see Section~\ref{typecontrol}). 
+(see Section~\ref{typecontrol}).
 On exit, {\tt control} contains default values for the components as
 described in Section~\ref{typecontrol}.
-These values should only be changed after calling 
+These values should only be changed after calling
 {\tt \packagename\_initialize}.
 
-\itt{inform} is a scalar \intentout\ argument of type 
+\itt{inform} is a scalar \intentout\ argument of type
 {\tt \packagename\_inform\_type}
 (see Section~\ref{typeinform}). A successful call to
 {\tt \packagename\_initialize}
-is indicated when the  component {\tt status} has the value 0. 
+is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 \end{description}
@@ -311,71 +311,71 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 \subsubsection{The optimization problem solution subroutine}
 The optimization problem solution algorithm is called as follows:
 
-\hskip0.5in 
+\hskip0.5in
 {\tt CALL \packagename\_solve( m, n, p, sigma, X, U, V, data, control, inform )}
 
 \begin{description}
 
-\ittf{m} is a scalar \intentin\ argument of type default \integer, that must be 
-set to the number of equations, $m$. {\bf Restriction: } $m > 0$. 
- 
-\ittf{n} is a scalar \intentin\ argument of type default \integer, that must be 
-set to the number of unknowns, $n$. {\bf Restriction: } $n > 0$. 
- 
-\ittf{p} is a scalar \intentin\ variable of type default 
-\realdp, 
-that must be set on initial entry to the desired order $p$ of regularisation.
-{\bf Restriction: } $p \geq 2$. 
+\ittf{m} is a scalar \intentin\ argument of type default \integer, that must be
+set to the number of equations, $m$. {\bf Restriction: } $m > 0$.
 
-\itt{sigma} is a scalar \intentin\ variable of type default 
-\realdp, 
+\ittf{n} is a scalar \intentin\ argument of type default \integer, that must be
+set to the number of unknowns, $n$. {\bf Restriction: } $n > 0$.
+
+\ittf{p} is a scalar \intentin\ variable of type default
+\realdp,
+that must be set on initial entry to the desired order $p$ of regularisation.
+{\bf Restriction: } $p \geq 2$.
+
+\itt{sigma} is a scalar \intentin\ variable of type default
+\realdp,
 that must be set on initial entry
 to the value of the weight $\sigma$ associated with the regularisation term.
-{\bf Restriction: } $\sigma > 0$. 
- 
-\ittf{X} is an array \intentinout\ argument of dimension {\tt n} and  
-type default \realdp,  
-that holds an estimate of the solution $\bmx$ of the linear system. 
-On initial entry, {\tt X} need not be set. 
-It must not be changed between entries. 
-On exit, {\tt X} contains the current best estimate of the solution. 
- 
-\ittf{U} is an array \intentinout\ argument of dimension {\tt m} and  
-type default \realdp,  
+{\bf Restriction: } $\sigma > 0$.
+
+\ittf{X} is an array \intentinout\ argument of dimension {\tt n} and
+type default \realdp,
+that holds an estimate of the solution $\bmx$ of the linear system.
+On initial entry, {\tt X} need not be set.
+It must not be changed between entries.
+On exit, {\tt X} contains the current best estimate of the solution.
+
+\ittf{U} is an array \intentinout\ argument of dimension {\tt m} and
+type default \realdp,
 that is used to hold left-Lanczos vectors used during the iteration.
-On initial entry, {\tt U} must contain the vector $\bmb$.  
+On initial entry, {\tt U} must contain the vector $\bmb$.
 If {\tt inform\%status} = 2 or 4 on exit, {\tt U} must be reset
-as directed by  {\tt inform\%status}; otherwise  
-it must be left unchanged. 
- 
-\ittf{V} is an array \intentinout\ argument of dimension {\tt n} and  
-type default \realdp,  
+as directed by  {\tt inform\%status}; otherwise
+it must be left unchanged.
+
+\ittf{V} is an array \intentinout\ argument of dimension {\tt n} and
+type default \realdp,
 that is used to hold left-Lanczos vectors used during the iteration.
 It need not be set on initial entry.
 If {\tt inform\%status} = 3 on exit, {\tt V} must be reset
-as directed by  {\tt inform\%status}; otherwise it must be left unchanged. 
- 
-\itt{data} is a scalar \intentinout argument of type 
+as directed by  {\tt inform\%status}; otherwise it must be left unchanged.
+
+\itt{data} is a scalar \intentinout argument of type
 {\tt \packagename\_data\_type}
-(see Section~\ref{typedata}). It is used to hold data about the problem being 
-solved. It must not have been altered {\bf by the user} since the last call to 
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved. It must not have been altered {\bf by the user} since the last call to
 {\tt \packagename\_initialize}.
 
-\itt{control} is a scalar \intentin\ argument of type 
-{\tt \packagename\_control\_type}. 
-(see Section~\ref{typecontrol}). 
-Default values may be assigned by calling {\tt \packagename\_initialize} 
-prior to the first call to {\tt \packagename\_solve}.  
- 
-\itt{inform} is a scalar \intentinout argument of type 
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}.
+(see Section~\ref{typecontrol}).
+Default values may be assigned by calling {\tt \packagename\_initialize}
+prior to the first call to {\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentinout argument of type
 {\tt \packagename\_inform\_type}
-(see Section~\ref{typeinform}). 
-On initial entry, the component {\tt status} must be set to {\tt 1.} 
-The remaining components need not be set. 
+(see Section~\ref{typeinform}).
+On initial entry, the component {\tt status} must be set to {\tt 1.}
+The remaining components need not be set.
 A successful call to
 {\tt \packagename\_solve}
-is indicated when the  component {\tt status} has the value 0. 
-For other return values of {\tt status}, see Sections~\ref{galreverse} 
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Sections~\ref{galreverse}
 and \ref{galerrors}.
 \end{description}
 
@@ -384,20 +384,20 @@ and \ref{galerrors}.
 \subsubsection{The  termination subroutine}
 All previously allocated arrays are deallocated as follows:
 
-\hskip0.5in 
+\hskip0.5in
 {\tt CALL \packagename\_terminate( data, control, inform )}
 
 \begin{description}
 
-\itt{data} is a scalar \intentinout argument of type 
-{\tt \packagename\_data\_type} 
+\itt{data} is a scalar \intentinout argument of type
+{\tt \packagename\_data\_type}
 exactly as for
 {\tt \packagename\_solve}
-that must not have been altered {\bf by the user} since the last call to 
+that must not have been altered {\bf by the user} since the last call to
 {\tt \packagename\_initialize}.
-On exit, array components will have been deallocated. 
+On exit, array components will have been deallocated.
 
-\itt{control} is a scalar \intentin argument of type 
+\itt{control} is a scalar \intentin argument of type
 {\tt \packagename\_control\_type}
 exactly as for
 {\tt \packagename\_solve}.
@@ -405,10 +405,10 @@ exactly as for
 \itt{inform} is a scalar \intentout argument of type {\tt \packagename\_type}
 exactly as for
 {\tt \packagename\_solve}.
-Only the component {\tt status} will be set on exit, and a 
-successful call to 
+Only the component {\tt status} will be set on exit, and a
+successful call to
 {\tt \packagename\_terminate}
-is indicated when this  component {\tt status} has the value 0. 
+is indicated when this  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 \end{description}
@@ -416,90 +416,90 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 %%%%%%%%%%%%%%%%%%%%%% Reverse communications %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galreverse
-A positive value of {\tt inform\%status} on exit from  
-{\tt \packagename\_solve} indicates that the user needs to take appropriate 
-action before re-entering the subroutine. Possible values are: 
- 
-\begin{description} 
- 
-\itt{2.} The user must perform the operation  
+A positive value of {\tt inform\%status} on exit from
+{\tt \packagename\_solve} indicates that the user needs to take appropriate
+action before re-entering the subroutine. Possible values are:
+
+\begin{description}
+
+\itt{2.} The user must perform the operation
 \disp{\bmu := \bmu + \bmA \bmv,}
-and recall {\tt \packagename\_solve}. 
+and recall {\tt \packagename\_solve}.
 The vectors $\bmu$ and $\bmv$ are available in the arrays {\tt U}
-and {\tt V} respectively, and the result  
-$\bmu$ must overwrite the content of {\tt U}. 
-No argument except {\tt U} should be altered before recalling 
-{\tt \packagename\_solve}. 
- 
-\itt{3.} The user must perform the operation  
+and {\tt V} respectively, and the result
+$\bmu$ must overwrite the content of {\tt U}.
+No argument except {\tt U} should be altered before recalling
+{\tt \packagename\_solve}.
+
+\itt{3.} The user must perform the operation
 \disp{\bmv := \bmv + \bmA^T \bmu,}
-and recall {\tt \packagename\_solve}. 
+and recall {\tt \packagename\_solve}.
 The vectors $\bmu$ and $\bmv$ are available in the arrays {\tt U}
-and {\tt V} respectively, and the result  
-$\bmv$ must overwrite the content of {\tt V}. 
-No argument except {\tt V} should be altered before recalling 
-{\tt \packagename\_solve}. 
- 
-\itt{4.}  The user should reset {\tt U} to $\bmb$ and recall 
-{\tt \packagename\_solve}. 
-No argument except {\tt U} should be altered before recalling 
-{\tt \packagename\_solve}. 
-\end{description} 
+and {\tt V} respectively, and the result
+$\bmv$ must overwrite the content of {\tt V}.
+No argument except {\tt V} should be altered before recalling
+{\tt \packagename\_solve}.
+
+\itt{4.}  The user should reset {\tt U} to $\bmb$ and recall
+{\tt \packagename\_solve}.
+No argument except {\tt U} should be altered before recalling
+{\tt \packagename\_solve}.
+\end{description}
 
 %%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galerrors
-A negative value of  {\tt inform\%status} on exit from 
+A negative value of  {\tt inform\%status} on exit from
 {\tt \packagename\_solve}
-or 
+or
 {\tt \packagename\_terminate}
 indicates that an error has occurred. No further calls should be made
 until the error has been corrected. Possible values are:
 
 \begin{description}
-\itt{\galerrallocate.} An allocation error occurred. A message indicating 
-the offending 
-array is written on unit {\tt control\%error}, and the returned allocation 
+\itt{\galerrallocate.} An allocation error occurred. A message indicating
+the offending
+array is written on unit {\tt control\%error}, and the returned allocation
 status and a string containing the name of the offending array
 are held in {\tt inform\%alloc\_\-status}
 and {\tt inform\%bad\_alloc} respectively.
 
-\itt{\galerrdeallocate.} A deallocation error occurred. 
-A message indicating the offending 
-array is written on unit {\tt control\%error} and the returned allocation 
+\itt{\galerrdeallocate.} A deallocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error} and the returned allocation
 status and a string containing the name of the offending array
 are held in {\tt inform\%alloc\_\-status}
 and {\tt inform\%bad\_alloc} respectively.
 
-\itt{\galerrrestrictions.} ({\tt \packagename\_solve} only) 
-At least one of the restrictions 
-{\tt m > 0}, 
+\itt{\galerrrestrictions.} ({\tt \packagename\_solve} only)
+At least one of the restrictions
+{\tt m > 0},
 {\tt n > 0},
 {\tt sigma} $> 0$
 or
 {\tt p} $\geq 2$
 has been violated.
 
-\itt{\galerrmaxiterations.} ({\tt \packagename\_solve} only) More than  
-{\tt control\%itmax} iterations have been performed without obtaining 
-convergence. 
- 
+\itt{\galerrmaxiterations.} ({\tt \packagename\_solve} only) More than
+{\tt control\%itmax} iterations have been performed without obtaining
+convergence.
+
 \itt{\galerrinput.} ({\tt \packagename\_solve} only)  {\tt inform\%status} is
 not $>$ 0 on entry.
- 
-\end{description} 
+
+\end{description}
 
 %%%%%%%%%%%%%%%%%%%%%% Re-entry %%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Weighted least-squares, scaled regularisation and preconditioning}
-The package may also be used to solve a weighted regularisation 
+The package may also be used to solve a weighted regularisation
 least-squares problem
-\disp{ \min \half \| \bmW( \bmA\bmx - \bmb)\|_2^2 
+\disp{ \min \half \| \bmW( \bmA\bmx - \bmb)\|_2^2
  + \sfrac{1}{p} \sigma \|\bmS\bmx\|_2^p}
 simply by solving instead the problem
-\disp{ \min \half \| \bar{\bmA} \bar{\bmx} - \bar{\bmb}\|_2^2 
+\disp{ \min \half \| \bar{\bmA} \bar{\bmx} - \bar{\bmb}\|_2^2
  + \sfrac{1}{p} \sigma \|\bar{\bmx}\|_2^p}
-where $\bar{\bmA} = \bmW \bmA \bmS^{-1}$ and 
+where $\bar{\bmA} = \bmW \bmA \bmS^{-1}$ and
 $\bar{\bmb} = \bmW \bmb$
 and then recovering $\bmx = \bmS^{-1} \bar{\bmx}$. Note the implication here
 that $\bmS$ must be non-singular.
@@ -507,60 +507,60 @@ that $\bmS$ must be non-singular.
 Thus on initial entry ({\tt inform\%status} = 1) and re-entry
 ({\tt inform\%status} = 4), {\tt U} should contain $\bmW \bmb$,
 while for {\tt inform\%status} = 2 and 3 entries, the operations
-\disp{\bmu := \bmu + \bmW \bmA \bmS^{-1} \bmv \;\; \mbox{and} \;\; 
+\disp{\bmu := \bmu + \bmW \bmA \bmS^{-1} \bmv \;\; \mbox{and} \;\;
 \bmv := \bmv + \bmS^{-T} \bmA^T \bmW^T \bmu}
 respectively, should be performed.
 
 Note that the choice of $\bmW$ and $\bmS$ will affect the convergence of the
 method, and thus good choices may be used to accelerate its convergence. This
 is often known as preconditioning, but be aware that preconditioning changes
-the norms that define the problem. Good preconditioners will cluster 
+the norms that define the problem. Good preconditioners will cluster
 the singular values of $\bar{\bmA}$ around a few distinct values, and ideally
 (but usually unrealistically) all the singular values will be mapped to 1.
 
 %%%%%%%%%%%%%%%%%%%%%% Re-entry %%%%%%%%%%%%%%%%%%%%%%%%
 
 %\subsection{Re-entry with a new value of $\Delta$}
-%It commonly happens that, having solved the problem for a particular value 
-%of the radius $\Delta$, a user now wishes to solve the problem for a different  
-%value of $\Delta$. Rather than restarting the calculation with  
-%{\tt inform\%status = 1,} a useful approximation may be found 
+%It commonly happens that, having solved the problem for a particular value
+%of the radius $\Delta$, a user now wishes to solve the problem for a different
+%value of $\Delta$. Rather than restarting the calculation with
+%{\tt inform\%status = 1,} a useful approximation may be found
 %resetting {\tt radius} to the new required value and {\tt R} to $\bmc$,
-%and recalling {\tt \packagename\_solve}  
-%with {\tt inform\%status = 4} and the remaining arguments unchanged. 
-%This will determine the best solution within the Krylov space investigated 
-%in the previous minimization (see Section~\ref{galmethod}). 
+%and recalling {\tt \packagename\_solve}
+%with {\tt inform\%status = 4} and the remaining arguments unchanged.
+%This will determine the best solution within the Krylov space investigated
+%in the previous minimization (see Section~\ref{galmethod}).
 
 %%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galfeatures
-\noindent In this section, we describe an alternative means of setting 
+\noindent In this section, we describe an alternative means of setting
 control parameters, that is components of the variable {\tt control} of type
 {\tt \packagename\_control\_type}
-(see Section~\ref{typecontrol}), 
+(see Section~\ref{typecontrol}),
 by reading an appropriate data specification file using the
 subroutine {\tt \packagename\_read\_specfile}. This facility
-is useful as it allows a user to change  {\tt \packagename} control parameters 
+is useful as it allows a user to change  {\tt \packagename} control parameters
 without editing and recompiling programs that call {\tt \packagename}.
 
-A specification file, or specfile, is a data file containing a number of 
-"specification commands". Each command occurs on a separate line, 
-and comprises a "keyword", 
-which is a string (in a close-to-natural language) used to identify a 
-control parameter, and 
+A specification file, or specfile, is a data file containing a number of
+"specification commands". Each command occurs on a separate line,
+and comprises a "keyword",
+which is a string (in a close-to-natural language) used to identify a
+control parameter, and
 an (optional) "value", which defines the value to be assigned to the given
-control parameter. All keywords and values are case insensitive, 
+control parameter. All keywords and values are case insensitive,
 keywords may be preceded by one or more blanks but
 values must not contain blanks, and
 each value must be separated from its keyword by at least one blank.
-Values must not contain more than 30 characters, and 
+Values must not contain more than 30 characters, and
 each line of the specfile is limited to 80 characters,
 including the blanks separating keyword and value.
 
-The portion of the specification file used by 
+The portion of the specification file used by
 {\tt \packagename\_read\_specfile}
 must start
-with a "{\tt BEGIN \packagename}" command and end with an 
+with a "{\tt BEGIN \packagename}" command and end with an
 "{\tt END}" command.  The syntax of the specfile is thus defined as follows:
 \begin{verbatim}
   ( .. lines ignored by LSRT_read_specfile .. )
@@ -568,12 +568,12 @@ with a "{\tt BEGIN \packagename}" command and end with an
        keyword    value
        .......    .....
        keyword    value
-    END 
+    END
   ( .. lines ignored by LSRT_read_specfile .. )
 \end{verbatim}
 where keyword and value are two strings separated by (at least) one blank.
-The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines 
-may contain additional (trailing) strings so long as such strings are 
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
+may contain additional (trailing) strings so long as such strings are
 separated by one or more blanks, so that lines such as
 \begin{verbatim}
     BEGIN LSRT SPECIFICATION
@@ -582,34 +582,34 @@ and
 \begin{verbatim}
     END LSRT SPECIFICATION
 \end{verbatim}
-are acceptable. Furthermore, 
+are acceptable. Furthermore,
 between the
 ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
 specification commands may occur in any order.  Blank lines and
-lines whose first non-blank character is {\tt !} or {\tt *} are ignored. 
-The content 
-of a line after a {\tt !} or {\tt *} character is also 
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored.
+The content
+of a line after a {\tt !} or {\tt *} character is also
 ignored (as is the {\tt !} or {\tt *}
-character itself). This provides an easy manner to "comment out" some 
-specification commands, or to comment specific values 
-of certain control parameters.  
+character itself). This provides an easy manner to "comment out" some
+specification commands, or to comment specific values
+of certain control parameters.
 
 The value of a control parameters may be of three different types, namely
 integer, logical or real.
 Integer and real values may be expressed in any relevant Fortran integer and
 floating-point formats (respectively). Permitted values for logical
-parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}", 
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}",
 "{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
-"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}". 
-Empty values are also allowed for 
-logical control parameters, and are interpreted as "{\tt TRUE}".  
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}".
+Empty values are also allowed for
+logical control parameters, and are interpreted as "{\tt TRUE}".
 
-The specification file must be open for 
+The specification file must be open for
 input when {\tt \packagename\_read\_specfile}
-is called, and the associated device number 
-passed to the routine in device (see below). 
-Note that the corresponding 
-file is {\tt REWIND}ed, which makes it possible to combine the specifications 
+is called, and the associated device number
+passed to the routine in device (see below).
+Note that the corresponding
+file is {\tt REWIND}ed, which makes it possible to combine the specifications
 for more than one program/routine.  For the same reason, the file is not
 closed by {\tt \packagename\_read\_specfile}.
 
@@ -617,26 +617,26 @@ closed by {\tt \packagename\_read\_specfile}.
 \label{readspec}
 
 Control parameters may be read from a file as follows:
-\hskip0.5in 
+\hskip0.5in
 \def\baselinestretch{0.8} {\tt \begin{verbatim}
      CALL LSRT_read_specfile( control, device )
 \end{verbatim}}
 \def\baselinestretch{1.0}
 
 \begin{description}
-\itt{control} is a scalar \intentinout argument of type 
+\itt{control} is a scalar \intentinout argument of type
 {\tt \packagename\_control\_type}
-(see Section~\ref{typecontrol}). 
-Default values should have already been set, perhaps by calling 
+(see Section~\ref{typecontrol}).
+Default values should have already been set, perhaps by calling
 {\tt \packagename\_initialize}.
 On exit, individual components of {\tt control} may have been changed
-according to the commands found in the specfile. Specfile commands and 
-the component (see Section~\ref{typecontrol}) of {\tt control} 
+according to the commands found in the specfile. Specfile commands and
+the component (see Section~\ref{typecontrol}) of {\tt control}
 that each affects are given in Table~\ref{specfile}.
 
-\bctable{|l|l|l|} 
+\bctable{|l|l|l|}
 \hline
-  command & component of {\tt control} & value type \\ 
+  command & component of {\tt control} & value type \\
 \hline
   {\tt error-printout-device} & {\tt \%error} & integer \\
   {\tt printout-device} & {\tt \%out} & integer \\
@@ -652,7 +652,7 @@ that each affects are given in Table~\ref{specfile}.
   {\tt deallocate-error-fatal} & {\tt \%deallocate\_error\_fatal} & logical \\
 \hline
 
-\ectable{\label{specfile}Specfile commands and associated 
+\ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
 \itt{device} is a scalar \intentin argument of type default \integer,
@@ -666,21 +666,21 @@ will be printed on unit {\tt control\%error}.
 %%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galinfo
-If {\tt control\%print\_level} is positive, information about the progress 
+If {\tt control\%print\_level} is positive, information about the progress
 of the algorithm will be printed on unit {\tt control\-\%\-out}.
-If {\tt control\%print\_level = 1}, a single line of output will be produced  
-for each iteration of the process. So long as the current estimate lies 
-within the constraint boundary, this will include  
-the iteration number, the norm of the residual $\bmA\bmx-\bmb$, the 
+If {\tt control\%print\_level = 1}, a single line of output will be produced
+for each iteration of the process. So long as the current estimate lies
+within the constraint boundary, this will include
+the iteration number, the norm of the residual $\bmA\bmx-\bmb$, the
 norm of the gradient, and the norm of $\bmx$.
-A further message will be printed  
-if the constraint boundary is encountered during the current iteration.  
+A further message will be printed
+if the constraint boundary is encountered during the current iteration.
 Thereafter, the one-line summary will also record the value of the Lagrange
 multiplier $\lambda = \sigma \|\bmx\|_2^{p-2}$
 and the number of Newton steps required to find $\lambda$.
-If {\tt control\%print\_level} $\geq$ {\tt 2}, this  
-output will be increased to provide significant detail of each iteration.  
-This extra output includes a complete history of the inner iteration required 
+If {\tt control\%print\_level} $\geq$ {\tt 2}, this
+output will be increased to provide significant detail of each iteration.
+This extra output includes a complete history of the inner iteration required
 to solve the ``bi-diagonal'' least-squares subproblem.
 
 %%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
@@ -690,68 +690,68 @@ to solve the ``bi-diagonal'' least-squares subproblem.
 \galcommon None.
 \galworkspace Provided automatically by the module.
 \galroutines {\tt \packagename\_solve} calls the
-BLAS function {\tt *ROTG}, where {\tt *} is {\tt S} for 
+BLAS function {\tt *ROTG}, where {\tt *} is {\tt S} for
 the default real version and {\tt D} for the double precision version.
-\galmodules {\tt \packagename\_solve} calls the \galahad\ packages 
-{\tt \libraryname\_SY\-M\-BOLS}, 
-{\tt \libraryname\_SPACE}, 
-{\tt \libraryname\_NORMS}, 
+\galmodules {\tt \packagename\_solve} calls the \galahad\ packages
+{\tt \libraryname\_SY\-M\-BOLS},
+{\tt \libraryname\_SPACE},
+{\tt \libraryname\_NORMS},
 {\tt \libraryname\_\-ROOTS},
 {\tt \libraryname\_LSTR} and
 {\tt \libraryname\_SPECFILE}.
-\galio Output is under control of the arguments 
+\galio Output is under control of the arguments
 {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
-\galrestrictions $m > 0, \; n  >  0, \;  \sigma  >  0, \; p \geq 2$. 
+\galrestrictions $m > 0, \; n  >  0, \;  \sigma  >  0, \; p \geq 2$.
 \galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
 The package is thread-safe.
 
 %%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galmethod
-The required solution $\bmx$ necessarily satisfies the optimality condition 
-$\bmA^T ( \bmA \bmx - \bmb ) + \lambda \bmx = 0$, where 
+The required solution $\bmx$ necessarily satisfies the optimality condition
+$\bmA^T ( \bmA \bmx - \bmb ) + \lambda \bmx = 0$, where
 $\lambda = \sigma \|\bmx\|_2^{p-2}$.
- 
-\noindent 
+
+\noindent
 The method is iterative. Starting  with the vector $\bmu_1 = \bmb$, a
-bi-diagonalisation process is used to generate the vectors $\bmv_k$ and 
-$\bmu_k+1$ so that the $n$ by $k$ matrix $\bmV_k = ( \bmv_1 \ldots \bmv_k)$ 
-and the $m$ by $(k+1)$ matrix $\bmU_k = ( \bmu_1 \ldots \bmu_{k+1})$ 
+bi-diagonalisation process is used to generate the vectors $\bmv_k$ and
+$\bmu_k+1$ so that the $n$ by $k$ matrix $\bmV_k = ( \bmv_1 \ldots \bmv_k)$
+and the $m$ by $(k+1)$ matrix $\bmU_k = ( \bmu_1 \ldots \bmu_{k+1})$
 together satisfy
-\disp{\bmA \bmV_k = \bmU_{k+1} \bmB_k \tim{and} 
+\disp{\bmA \bmV_k = \bmU_{k+1} \bmB_k \tim{and}
  \bmb = \|\bmb\|_2 \bmU_{k+1} \bme_1}
-where $\bmB_k$ is $(k+1)$ by $k$ and lower bi-diagonal, $\bmU_k$ and 
-$\bmV_k$ have orthonormal columns and $\bme_1$ is the first unit vector. 
+where $\bmB_k$ is $(k+1)$ by $k$ and lower bi-diagonal, $\bmU_k$ and
+$\bmV_k$ have orthonormal columns and $\bme_1$ is the first unit vector.
 The solution sought is of the form $\bmx_k = \bmV_k \bmy_k$, where $\bmy_k$
 solves the bi-diagonal regularised least-squares problem
-\eqn{4.1}{ \min \| \bmB_k \bmy - \|\bmb\| \bme_1 \|_2 
+\eqn{4.1}{ \min \| \bmB_k \bmy - \|\bmb\| \bme_1 \|_2
 + \sfrac{1}{p} \sigma \|  \bmy \|_2^p.}
 
 To minimize \req{4.1}, the optimality conditions
 \eqn{4.2}{ ( \bmB_k^T ( \bmB_k^{} \bmy(\lambda) - \|\bmb\| \bme_1^{} ) + \lambda
 \bmy(\lambda) = 0,}
 where $\lambda = \sigma \|\bmy(\lambda)\|_2^{p-2} \|$,
-are used as the basis of an iteration. 
-The vector $\bmy(\lambda)$ is equivalently the solution to the 
-regularised least-squares problem 
-\eqn{4.3}{ \min  \left \| \vect{ \bmB_k \\ \lambda^{\half} \bmI } y 
+are used as the basis of an iteration.
+The vector $\bmy(\lambda)$ is equivalently the solution to the
+regularised least-squares problem
+\eqn{4.3}{ \min  \left \| \vect{ \bmB_k \\ \lambda^{\half} \bmI } y
  - \|\bmb\| \bme_1^{} \right \|_2.}
-Thus, given an estimate $\lambda \geq 0$, \req{4.3} may be efficiently 
-solved to give $\bmy(\lambda)$. 
-It is then simply a matter of adjusting $\lambda$ 
+Thus, given an estimate $\lambda \geq 0$, \req{4.3} may be efficiently
+solved to give $\bmy(\lambda)$.
+It is then simply a matter of adjusting $\lambda$
 (for example by a Newton-like process) to solve the scalar nonlinear equation
-\eqn{4.4}{\theta(\lambda) \equiv 
+\eqn{4.4}{\theta(\lambda) \equiv
 \| \bmy(\lambda) \|_2^{p-2} - \frac{\lambda}{\sigma} = 0.}
 In practice \req{4.4} is reformulated, and a more rapidly converging iteration is
-used. Having found  $\bmy_k$, a second pass in which 
+used. Having found  $\bmy_k$, a second pass in which
 $\bmx_k = \bmV_k \bmy_k$ is regenerated is needed---this need only be done
 once $\bmx_k$ has implicitly deemed to be sufficiently close to optimality.
-As this second pass is an additional expense, a record is kept of the 
-optimal objective function values for each value of $k$, and the second 
-pass is only performed so far as to ensure a given fraction of the 
-final optimal objective value. Large savings may be made in the second 
-pass by choosing the required fraction to be significantly smaller than one. 
- 
+As this second pass is an additional expense, a record is kept of the
+optimal objective function values for each value of $k$, and the second
+pass is only performed so far as to ensure a given fraction of the
+final optimal objective value. Large savings may be made in the second
+pass by choosing the required fraction to be significantly smaller than one.
+
 Special code is used in the special case $p=2$, as in this case a single
 pass suffices.
 
@@ -760,43 +760,43 @@ A complete description of the un- and quadratically-regularised
 cases is given by
 \vspace*{1mm}
 
-\noindent  
+\noindent
 C. C. Paige and M. A. Saunders,
 LSQR: an algorithm for sparse linear equations and sparse least  squares.
 {\em ACM Transactions on Mathematical Software}, 8(1):43--71, 1982
 
-\noindent  
+\noindent
 and
 
-\noindent  
+\noindent
 C. C. Paige and M. A. Saunders,
 ALGORITHM 583: LSQR: an algorithm for sparse linear equations and
   sparse least squares.
 {\em ACM Transactions on Mathematical Software}, 8(2):195--209, 1982.
 
-\noindent  
+\noindent
 Additional details on the Newton-like process needed to determine $\lambda$ and
-other details are described in 
+other details are described in
 \vspace*{1mm}
 
-\noindent  
+\noindent
 C.\ Cartis, N.\ I.\ M.\ Gould and Ph.\ L.\ Toint,
-Trust-region and other regularisation of linear 
+Trust-region and other regularisation of linear
 least-squares problems.
-Technical Report RAL-TR-2008-005, Rutherford Appleton Laboratory, 2008.
+{\em BIT} 49(1):21-53 (2009).
 
 %%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galexample
-Suppose we wish to solve a problem in 50 unknowns, whose data is 
-\disp{\bmA  = \mat{cccc}{ 
+Suppose we wish to solve a problem in 50 unknowns, whose data is
+\disp{\bmA  = \mat{cccc}{
 1 & \\ & 1 & \\ & & \ddots & \\ & & & 1 \\
 1 & \\ & 2 & \\ & & \ddots & \\ & & & 50
 } \;\;
 \tim{and}
 \bmb  =  \vect{ 1 \\ . \\ . \\ . \\ . \\ . \\ . \\ . \\ 1 },}
 with regularisation weight $\sigma = 1$ and order $p = 3$.
-Suppose further that we are content with 
+Suppose further that we are content with
 an approximation which is within 99\% of the best.
 Then we may use the following code:
 

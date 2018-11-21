@@ -42,6 +42,19 @@ catch excpt
 end
 
 try
+    pkg = 'LPA';
+    disp(sprintf('******* Testing %s *******', pkg));
+    ntests = ntests + 1;
+    test_galahad_lpa
+    if inform.status ~= 0
+        pkg_failures = pkg_failures + 1;
+    end
+catch excpt
+    disp(sprintf('%d %d\n', err, pkg));
+    syntax_errors = syntax_errors + 1;
+end
+
+try
     pkg = 'CQP';
     disp(sprintf('******* Testing %s *******', pkg));
     ntests = ntests + 1;

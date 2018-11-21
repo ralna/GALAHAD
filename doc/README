@@ -220,11 +220,30 @@ In order to get GALAHAD working, here is what you need to do.
 
    #undef HAVE_HWLOC
 
+   Alternatively, during the GALAHAD install (13 below), when you get to
+   the prompt
+
+     Would you like to review and modify the C compiler settings (y/N)?
+
+   answer y, and change the variable HWLOC to read
+
+     HWLOC='un'
+
+   Currently this is done automatically for ifort/icc to avoid a compiler bug
+
+12. For Windows systems that use MSYS/MINGW, you will also need to set the
+   environment variable MSYS2 to point to the folder that contains the
+   Unix-style shell and commands, and MINGW64 to the folder that holds
+   ths commands relating to the GCC/Gfortran compilers. For example,
+
+    export MSYS2="/usr"
+    export MINGW64="/c/msys64/mingw64"
+
     ============
     INSTALLATION
     ============
 
-12. To install GALAHAD for a particular machine/os/compiler
+13. To install GALAHAD for a particular machine/os/compiler
    combination, move into the $GALAHAD directory,
    issue the command
 
@@ -241,7 +260,7 @@ In order to get GALAHAD working, here is what you need to do.
    On completion of the installation, please read the message that
    gives full details of environment variables that need to be set.
 
-13. To recompile the whole of GALAHAD, move into the directory
+14. To recompile the whole of GALAHAD, move into the directory
 
      $GALAHAD/src
 
@@ -253,12 +272,12 @@ In order to get GALAHAD working, here is what you need to do.
 
       machine.os.compiler
 
-   created during one of the installations described in 10 above.
+   created during one of the installations described in 13 above.
    If you want the single-precision version, the appropriate command is
 
      make -f $GALAHAD/makefiles/# PRECIS=single
 
-14. To recompile LANCELOT B, move into the directory
+15. To recompile LANCELOT B, move into the directory
 
      $GALAHAD/src/
 
@@ -283,7 +302,7 @@ In order to get GALAHAD working, here is what you need to do.
     EXECUTION
     =========
 
-15. To run the QP codes qpa/qpb/qpc on the CUTEst example EXAMPLE.SIF
+16. To run the QP codes qpa/qpb/qpc on the CUTEst example EXAMPLE.SIF
    issue the command
 
      sdgal # qpa [other options] EXAMPLE[.SIF]
@@ -296,7 +315,7 @@ In order to get GALAHAD working, here is what you need to do.
 
      sdgal # qpc [other options] EXAMPLE[.SIF]
 
-   where # is as in 13 above, from the directory containing the SIF file.
+   where # is as in 14 above, from the directory containing the SIF file.
 
    To rerun the most recently decoded example, issue the command
 
@@ -308,12 +327,12 @@ In order to get GALAHAD working, here is what you need to do.
 
    See README.SIF for more details.
 
-16. To run/rerun LANCELOT B on the CUTE example EXAMPLE.SIF
+17. To run/rerun LANCELOT B on the CUTE example EXAMPLE.SIF
    issue the command
 
      sdgal # lancelot [other options] EXAMPLE[.SIF]
 
-   where # is as in 13 above, from the directory containing the SIF file.
+   where # is as in 14 above, from the directory containing the SIF file.
 
    To rerun the most recently decoded example, issue the command
 
@@ -321,12 +340,12 @@ In order to get GALAHAD working, here is what you need to do.
 
    See README.SIF for more details.
 
-17. To run/rerun FILTRANE on the CUTE example EXAMPLE.SIF
+18. To run/rerun FILTRANE on the CUTE example EXAMPLE.SIF
    issue the command
 
      sdgal # filtrane [other options] EXAMPLE[.SIF]
 
-   where # is as in 13 above, from the directory containing the SIF file.
+   where # is as in 14 above, from the directory containing the SIF file.
 
    To rerun the most recently decoded example, issue the command
 
@@ -338,7 +357,7 @@ In order to get GALAHAD working, here is what you need to do.
     TESTING
     =======
 
-18. To test that the installation of GALAHAD has been successful, you can
+19. To test that the installation of GALAHAD has been successful, you can
     move into the directory
 
       $GALAHAD/src
@@ -347,7 +366,7 @@ In order to get GALAHAD working, here is what you need to do.
 
       make -f $GALAHAD/makefiles/# test
 
-    where # is as above -- for a single precision installation, the command is
+    where # is as 14 above - for a single precision installation, the command is
 
       make -f $GALAHAD/makefiles/# test PRECIS=single
 
@@ -356,7 +375,7 @@ In order to get GALAHAD working, here is what you need to do.
     $GALAHAD/src/qp , and to test FILTRANE, do the same in the directory
     $GALAHAD/src/filtrane .
 
-19. If you are not using CUTEst, the GALAHAD link library for the
+20. If you are not using CUTEst, the GALAHAD link library for the
     precision you compiled with is in $GALAHAD/objects/#/(precision)/
     where (precision) is double or single, and # is as above.
     You should add this to your LIBPATH environment variable,
@@ -370,12 +389,12 @@ In order to get GALAHAD working, here is what you need to do.
     DOCUMENTATION
     =============
 
-20. Postscript documentation for each package is available in the
+21. Postscript documentation for each package is available in the
     directory $GALAHAD/doc . Man pages for sdgal and gal are in
     $GALAHAD/man/man1 . You may wish to add $GALAHAD/man to your
     MANPATH environment variable.
 
-21. If you like using graphical user-interfaces, why not try the GALAHAD
+22. If you like using graphical user-interfaces, why not try the GALAHAD
      python GUI(see $GAHALAD/doc/README.gui for details). This has not
      been kept fully up to date, so is probably of limited use.
 
@@ -383,7 +402,7 @@ In order to get GALAHAD working, here is what you need to do.
     NEWS
     ====
 
-22. Refer to the GALAHAD WWW page
+23. Refer to the GALAHAD WWW page
 
       http://galahad.rl.ac.uk/galahad-www/
 
@@ -397,4 +416,4 @@ Philippe Toint
 
 For GALAHAD productions
 25 April 2002
-This version: 9 February 2018
+This version: 30 October 2018

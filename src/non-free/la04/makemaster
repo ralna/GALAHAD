@@ -1,0 +1,181 @@
+#  Main body of the installation makefile for the LA04 packages
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 07 VIII 2019
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = $(HSL) $(METIS) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
+
+SUCC = precision version) compiled successfully
+
+#  compilation agenda
+
+la04: la04_$(PRECIS)
+	@printf ' %-21s\n' "HSL LA04 routines ($(PRECIS) $(SUCC)"
+la04_silent: la04_$(PRECIS)
+la04_single: $(HLGS)(fa14d.o) $(HLGS)(fd15d.o) $(HLGS)(mc29d.o) \
+               $(HLGS)(mc59d.o) $(HLGS)(la15d.o) $(HLGS)(la04d.o)
+la04_double: $(HLGD)(fa14d.o) $(HLGD)(fd15d.o) $(HLGD)(mc29d.o) \
+               $(HLGD)(mc59d.o) $(HLGD)(la15d.o) $(HLGD)(la04d.o)
+
+#  individual compilations
+
+fa14s.o: $(HLG)(fa14s.o)
+
+$(HLG)(fa14s.o): $(LA04)/fa14s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "fa14s"
+	$(CP) $(LA04)/fa14s.f $(OBJ)/fa14s.f90
+	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) fa14s.f90
+	cd $(OBJ) ; $(HARR) fa14s.o ; $(RM) fa14s.f90 fa14s.o
+	@printf '[ OK ]\n'
+
+fa14d.o: $(HLG)(fa14d.o)
+
+$(HLG)(fa14d.o): $(LA04)/fa14d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "fa14d"
+	$(CP) $(LA04)/fa14d.f $(OBJ)/fa14d.f90
+	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) fa14d.f90
+	cd $(OBJ) ; $(HARR) fa14d.o ; $(RM) fa14d.f90 fa14d.o
+	@printf '[ OK ]\n'
+
+fd15s.o: $(HLG)(fd15s.o)
+
+$(HLG)(fd15s.o): $(LA04)/fd15s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "fd15s"
+	$(CP) $(LA04)/fd15s.f $(OBJ)/fd15s.f90
+	cd $(OBJ) ; $(FORTRAN) -o fd15s.o $(FFLAGS77) fd15s.f90
+	cd $(OBJ) ; $(HARR) fd15s.o ; $(RM) fd15s.f90 fd15s.o
+	@printf '[ OK ]\n'
+
+fd15d.o: $(HLG)(fd15d.o)
+
+$(HLG)(fd15d.o): $(LA04)/fd15d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "fd15d"
+	$(CP) $(LA04)/fd15d.f $(OBJ)/fd15d.f90
+	cd $(OBJ) ; $(FORTRAN) -o fd15d.o $(FFLAGS77) fd15d.f90
+	cd $(OBJ) ; $(HARR) fd15d.o ; $(RM) fd15d.f90 fd15d.o
+	@printf '[ OK ]\n'
+
+mc29s.o: $(HLG)(mc29s.o)
+
+$(HLG)(mc29s.o): $(LA04)/mc29s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc29s"
+	$(CP) $(LA04)/mc29s.f $(OBJ)/mc29s.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc29s.o $(FFLAGS77) mc29s.f90
+	cd $(OBJ) ; $(HARR) mc29s.o ; $(RM) mc29s.f90 mc29s.o
+	@printf '[ OK ]\n'
+
+mc29d.o: $(HLG)(mc29d.o)
+
+$(HLG)(mc29d.o): $(LA04)/mc29d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc29d"
+	$(CP) $(LA04)/mc29d.f $(OBJ)/mc29d.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc29d.o $(FFLAGS77) mc29d.f90
+	cd $(OBJ) ; $(HARR) mc29d.o ; $(RM) mc29d.f90 mc29d.o
+	@printf '[ OK ]\n'
+
+mc59s.o: $(HLG)(mc59s.o)
+
+$(HLG)(mc59s.o): $(LA04)/mc59s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc59s"
+	$(CP) $(LA04)/mc59s.f $(OBJ)/mc59s.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc59s.o $(FFLAGS77) mc59s.f90
+	cd $(OBJ) ; $(HARR) mc59s.o ; $(RM) mc59s.f90 mc59s.o
+	@printf '[ OK ]\n'
+
+mc59d.o: $(HLG)(mc59d.o)
+
+$(HLG)(mc59d.o): $(LA04)/mc59d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc59d"
+	$(CP) $(LA04)/mc59d.f $(OBJ)/mc59d.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc59d.o $(FFLAGS77) mc59d.f90
+	cd $(OBJ) ; $(HARR) mc59d.o ; $(RM) mc59d.f90 mc59d.o
+	@printf '[ OK ]\n'
+
+la15s.o: $(HLG)(la15s.o)
+
+$(HLG)(la15s.o): $(LA04)/la15s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "la15s"
+	$(CP) $(LA04)/la15s.f $(OBJ)/la15s.f90
+	cd $(OBJ) ; $(FORTRAN) -o la15s.o $(FFLAGS77) la15s.f90
+	cd $(OBJ) ; $(HARR) la15s.o ; $(RM) la15s.f90 la15s.o
+	@printf '[ OK ]\n'
+
+la15d.o: $(HLG)(la15d.o)
+
+$(HLG)(la15d.o): $(LA04)/la15d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "la15d"
+	$(CP) $(LA04)/la15d.f $(OBJ)/la15d.f90
+	cd $(OBJ) ; $(FORTRAN) -o la15d.o $(FFLAGS77) la15d.f90
+	cd $(OBJ) ; $(HARR) la15d.o ; $(RM) la15d.f90 la15d.o
+	@printf '[ OK ]\n'
+
+la04s.o: $(HLG)(la04s.o)
+
+$(HLG)(la04s.o): $(LA04)/la04s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "la04s"
+	$(CP) $(LA04)/la04s.f $(OBJ)/la04s.f90
+	cd $(OBJ) ; $(FORTRAN) -o la04s.o $(FFLAGS77) la04s.f90
+	cd $(OBJ) ; $(HARR) la04s.o ; $(RM) la04s.f90 la04s.o
+	@printf '[ OK ]\n'
+
+la04d.o: $(HLG)(la04d.o)
+
+$(HLG)(la04d.o): $(LA04)/la04d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "la04d"
+	$(CP) $(LA04)/la04d.f $(OBJ)/la04d.f90
+	cd $(OBJ) ; $(FORTRAN) -o la04d.o $(FFLAGS77) la04d.f90
+	cd $(OBJ) ; $(HARR) la04d.o ; $(RM) la04d.f90 la04d.o
+	@printf '[ OK ]\n'

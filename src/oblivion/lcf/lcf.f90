@@ -8,7 +8,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.0.July 20th 2006
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_LCF_double
@@ -38,7 +38,7 @@
       USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build,                      &
          SORT_heapsort_smallest, SORT_inverse_permute
       USE GALAHAD_ROOTS_double
-!     USE GALAHAD_LSQP_double, ONLY: 
+!     USE GALAHAD_LSQP_double, ONLY:
       USE GALAHAD_FDC_double
       USE GALAHAD_STRING_double
 
@@ -190,8 +190,8 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Default control data for LCF. This routine should be called before
-!  LCF_primal_dual
-! 
+!  LCF_solve
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -201,14 +201,14 @@
 !
 !  INTEGER control parameters:
 !
-!   error. Error and warning diagnostics occur on stream error 
-!   
+!   error. Error and warning diagnostics occur on stream error
+!
 !   out. General output occurs on stream out
-!   
+!
 !   print_level. The level of output required is specified by print_level
-!   
-!   maxit. At most maxit inner iterations are allowed 
-!   
+!
+!   maxit. At most maxit inner iterations are allowed
+!
 !   start_print. Any printing will start on this iteration
 !
 !   stop_print. Any printing will stop on this iteration
@@ -226,7 +226,7 @@
 !   factor. The factorization to be used.
 !     Possible values are
 !
-!      0  automatic 
+!      0  automatic
 !      1  Schur-complement factorization
 !      2  augmented-system factorization
 !
@@ -236,7 +236,7 @@
 !   indmin. An initial guess as to the integer workspace required by SBLS
 !
 !   valmin. An initial guess as to the real workspace required by SBLS
-! 
+!
 !   itref_max. The maximum number of iterative refinements allowed
 !
 !   infeas_max. The number of iterations for which the overall infeasibility
@@ -260,34 +260,34 @@
 
 !  REAL control parameters:
 !
-!   infinity. Any bound larger than infinity in modulus will be regarded as 
-!    infinite 
-!   
+!   infinity. Any bound larger than infinity in modulus will be regarded as
+!    infinite
+!
 !   stop_p. The required accuracy for the primal infeasibility
-!   
+!
 !   stop_d. The required accuracy for the dual infeasibility
-!   
+!
 !   stop_c. The required accuracy for the complementarity
-!   
-!   prfeas. The initial primal variables will not be closer than prfeas 
-!    from their bounds 
-!   
-!   dufeas. The initial dual variables will not be closer than dufeas from 
-!    their bounds 
-!   
-!   reduce_infeas. If the overall infeasibility of the problem is not reduced 
+!
+!   prfeas. The initial primal variables will not be closer than prfeas
+!    from their bounds
+!
+!   dufeas. The initial dual variables will not be closer than dufeas from
+!    their bounds
+!
+!   reduce_infeas. If the overall infeasibility of the problem is not reduced
 !    by at least a factor reduce_infeas over control%infeas_max iterations,
 !    the problem is flagged as infeasible (see infeas_max)
 !
 !   pivot_tol. The threshold pivot used by the matrix factorization.
 !    See the documentation for SBLS for details
 !
-!   pivot_tol_for_dependencies. The threshold pivot used by the matrix 
+!   pivot_tol_for_dependencies. The threshold pivot used by the matrix
 !    factorization when attempting to detect linearly dependent constraints.
 !    See the documentation for SBLS for details
 !
-!   zero_pivot. Any pivots smaller than zero_pivot in absolute value will 
-!    be regarded to be zero when attempting to detect linearly dependent 
+!   zero_pivot. Any pivots smaller than zero_pivot in absolute value will
+!    be regarded to be zero when attempting to detect linearly dependent
 !    constraints
 !
 !   identical_bounds_tol. Any pair of constraint bounds (c_l,c_u) or (x_l,x_u)
@@ -298,7 +298,7 @@
 !     bound constraints in the Block Iterative Projection method
 !
 !   step. The step size for the Block Iterative Projection method
-!      
+!
 !  LOGICAL control parameters:
 !
 !   use_simultaneous_projection. If true, use the simulatneous orthogonal
@@ -317,7 +317,7 @@
 !    soon as a feasible interior point is found. Otherwise, a well-centered
 !    interior point will be sought
 !
-!   feasol. If feasol is true, the final solution obtained will be perturbed 
+!   feasol. If feasol is true, the final solution obtained will be perturbed
 !    so that variables close to their bounds are moved onto these bounds
 !
 !   balance_initial_complentarity is .true. if the initial complemetarity
@@ -331,16 +331,16 @@
 !
 !  CHARACTER control parameters:
 !
-!  prefix (len=30). All output lines will be prefixed by 
+!  prefix (len=30). All output lines will be prefixed by
 !    %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
+!   where %prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
       TYPE ( LCF_data_type ), INTENT( INOUT ) :: data
       TYPE ( LCF_control_type ), INTENT( OUT ) :: control
-      TYPE ( LCF_inform_type ), INTENT( OUT ) :: inform     
+      TYPE ( LCF_inform_type ), INTENT( OUT ) :: inform
 
 !  Initalize SBLS components
 
@@ -409,7 +409,7 @@
       data%trans = 0 ; data%tried_to_remove_deps = .FALSE.
       data%save_structure = .TRUE.
 
-      RETURN  
+      RETURN
 
 !  End of LCF_initialize
 
@@ -419,10 +419,10 @@
 
       SUBROUTINE LCF_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by LCF_initialize could (roughly) 
+!  The defauly values as given by LCF_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN LCF SPECIFICATIONS (DEFAULT)
@@ -470,7 +470,7 @@
 
 !  Dummy arguments
 
-      TYPE ( LCF_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( LCF_control_type ), INTENT( INOUT ) :: control
       INTEGER, INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -490,7 +490,7 @@
 
       spec(  1 )%keyword = 'error-printout-device'
       spec(  2 )%keyword = 'printout-device'
-      spec(  3 )%keyword = 'print-level' 
+      spec(  3 )%keyword = 'print-level'
       spec(  4 )%keyword = 'maximum-number-of-iterations'
       spec(  5 )%keyword = 'start-print'
       spec(  6 )%keyword = 'stop-print'
@@ -563,7 +563,7 @@
       CALL SPECFILE_assign_integer( spec( 6 ), control%stop_print,             &
                                     control%error )
       CALL SPECFILE_assign_integer( spec( 22 ), control%print_gap,             &
-                                    control%error )                
+                                    control%error )
       CALL SPECFILE_assign_integer( spec( 32 ), control%initial_point,         &
                                     control%error )
       CALL SPECFILE_assign_integer( spec( 7 ), control%factor,                 &
@@ -589,13 +589,13 @@
       CALL SPECFILE_assign_real( spec( 14 ), control%infinity,                 &
                                  control%error )
       CALL SPECFILE_assign_real( spec( 15 ), control%stop_p,                   &
-                                 control%error )     
+                                 control%error )
       CALL SPECFILE_assign_real( spec( 16 ), control%stop_d,                   &
-                                 control%error )     
+                                 control%error )
       CALL SPECFILE_assign_real( spec( 17 ), control%stop_c,                   &
-                                 control%error )     
+                                 control%error )
       CALL SPECFILE_assign_real( spec( 18 ), control%prfeas,                   &
-                                 control%error )     
+                                 control%error )
       CALL SPECFILE_assign_real( spec( 19 ), control%dufeas,                   &
                                  control%error )
       CALL SPECFILE_assign_real( spec( 21 ), control%reduce_infeas,            &
@@ -681,11 +681,11 @@
 !
 !  Arguments:
 !
-!  prob is a structure of type QPT_problem_type, whose components hold 
+!  prob is a structure of type QPT_problem_type, whose components hold
 !   information about the problem on input, and its solution on output.
 !   The following components must be set:
 !
-!   %new_problem_structure is a LOGICAL variable, which must be set to 
+!   %new_problem_structure is a LOGICAL variable, which must be set to
 !    .TRUE. by the user if this is the first problem with this "structure"
 !    to be solved since the last call to LCF_initialize, and .FALSE. if
 !    a previous call to a problem with the same "structure" (but different
@@ -693,11 +693,11 @@
 !
 !   %n is an INTEGER variable, which must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
-!                 
+!
 !   %m is an INTEGER variable, which must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
-!                 
-!   %A is a structure of type SMT_type used to hold the matrix A. 
+!
+!   %A is a structure of type SMT_type used to hold the matrix A.
 !    Three storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -726,71 +726,71 @@
 !
 !       A%type( 1 : 5 ) = TRANSFER( 'DENSE', A%type )
 !       A%val( : )   the values of the components of A, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
 !    On exit, the components will most likely have been reordered.
 !    The output  matrix will be stored by rows, according to scheme (ii) above.
 !    However, if scheme (i) is used for input, the output A%row will contain
 !    the row numbers corresponding to the values in A%val, and thus in this
-!    case the output matrix will be available in both formats (i) and (ii).   
-! 
-!   %C is a REAL array of length %m, which is used to store the values of 
-!    A x. It need not be set on entry. On exit, it will have been filled 
+!    case the output matrix will be available in both formats (i) and (ii).
+!
+!   %C is a REAL array of length %m, which is used to store the values of
+!    A x. It need not be set on entry. On exit, it will have been filled
 !    with appropriate values.
 !
 !   %X is a REAL array of length %n, which must be set by the user
-!    to estimaes of the solution, x. On successful exit, it will contain 
+!    to estimaes of the solution, x. On successful exit, it will contain
 !    the required solution, x.
 !
 !   %C_l, %C_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays c_l and c_u of lower and upper bounds on A x.
-!    Any bound c_l_i or c_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %C_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %C_u to a value larger than 
-!    control%infinity. On exit, %C_l and %C_u will most likely have been 
+!    Any bound c_l_i or c_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %C_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %C_u to a value larger than
+!    control%infinity. On exit, %C_l and %C_u will most likely have been
 !    reordered.
-!   
+!
 !   %Y is a REAL array of length %m, which must be set by the user to
-!    appropriate estimates of the values of the Lagrange multipliers 
-!    corresponding to the general constraints c_l <= A x <= c_u. 
-!    On successful exit, it will contain the required vector of Lagrange 
+!    appropriate estimates of the values of the Lagrange multipliers
+!    corresponding to the general constraints c_l <= A x <= c_u.
+!    On successful exit, it will contain the required vector of Lagrange
 !    multipliers.
 !
 !   %X_l, %X_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays x_l and x_u of lower and upper bounds on x.
-!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %X_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %X_u to a value larger than 
-!    control%infinity. On exit, %X_l and %X_u will most likely have been 
+!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %X_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %X_u to a value larger than
+!    control%infinity. On exit, %X_l and %X_u will most likely have been
 !    reordered.
-!   
+!
 !   %Z is a REAL array of length %n, which must be set by the user to
-!    appropriate estimates of the values of the dual variables 
-!    (Lagrange multipliers corresponding to the simple bound constraints 
+!    appropriate estimates of the values of the dual variables
+!    (Lagrange multipliers corresponding to the simple bound constraints
 !    x_l <= x <= x_u). On successful exit, it will contain
-!   the required vector of dual variables. 
+!   the required vector of dual variables.
 !
 !  data is a structure of type LCF_data_type which holds private internal data
 !
-!  control is a structure of type LCF_control_type that controls the 
+!  control is a structure of type LCF_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to LCF_initialize. See LCF_initialize 
+!   the elements may be set by a call to LCF_initialize. See LCF_initialize
 !   for details
 !
-!  inform is a structure of type LCF_inform_type that provides 
-!    information on exit from LCF_solve. The component status 
+!  inform is a structure of type LCF_inform_type that provides
+!    information on exit from LCF_solve. The component status
 !    has possible values:
-!  
+!
 !     0 Normal termination with a locally optimal solution.
 !
-!   - 1 one of the restrictions 
+!   - 1 one of the restrictions
 !          prob%n     >=  1
 !          prob%m     >=  0
 !          prob%A%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' }
@@ -807,30 +807,30 @@
 !
 !    -7 The factorization failed; the return status from the factorization
 !       package is given in the component factor_status.
-!      
-!    -8 The problem is so ill-conditoned that further progress is impossible.  
+!
+!    -8 The problem is so ill-conditoned that further progress is impossible.
 !
 !    -9 The step is too small to make further impact.
 !
 !   -10 Too many iterations have been performed. This may happen if
-!       control%maxit is too small, but may also be symptomatic of 
+!       control%maxit is too small, but may also be symptomatic of
 !       a badly scaled problem.
 !
-!   -11 Too much CPU time has passed. This may happen if control%cpu_time_limit 
+!   -11 Too much CPU time has passed. This may happen if control%cpu_time_limit
 !       is too small, but may also be symptomatic of a badly scaled problem.
 !
-!  On exit from LCF_solve, other components of inform give the 
+!  On exit from LCF_solve, other components of inform give the
 !  following:
 !
-!     alloc_status = The status of the last attempted allocation/deallocation 
+!     alloc_status = The status of the last attempted allocation/deallocation
 !     iter   = The total number of iterations required.
-!     factorization_integer = The total integer workspace required by the 
+!     factorization_integer = The total integer workspace required by the
 !              factorization.
-!     factorization_real = The total real workspace required by the 
+!     factorization_real = The total real workspace required by the
 !              factorization.
 !     nfacts = The total number of factorizations performed.
 !     factorization_status = the return status from the matrix factorization
-!              package.   
+!              package.
 !     obj = the value of the objective function ||W*(x-x^0)||_2.
 !     non_negligible_pivot = the smallest pivot which was not judged to be
 !       zero when detecting linearly dependent constraints
@@ -862,7 +862,7 @@
       LOGICAL :: printi, remap_freed, reset_bnd
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( FDC_data_type ) :: FDC_data
-      TYPE ( FDC_control_type ) :: FDC_control        
+      TYPE ( FDC_control_type ) :: FDC_control
       TYPE ( FDC_inform_type ) :: FDC_inform
 
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
@@ -880,13 +880,13 @@
 
       inform%status = 0 ; inform%alloc_status = 0 ; inform%bad_alloc = ''
       inform%iter = - 1 ; inform%nfacts = - 1
-      inform%factorization_integer = - 1 ; inform%factorization_real = - 1 
+      inform%factorization_integer = - 1 ; inform%factorization_real = - 1
       inform%obj = - one ; inform%non_negligible_pivot = zero
       inform%feasible = .FALSE. ; inform%factorization_status = 0
 
 !  Basic single line of output per iteration
 
-      printi = control%out > 0 .AND. control%print_level >= 1 
+      printi = control%out > 0 .AND. control%print_level >= 1
 
 !  Ensure that input parameters are within allowed ranges
 
@@ -894,12 +894,12 @@
            .NOT. QPT_keyword_A( prob%A%type ) ) THEN
         inform%status = GALAHAD_error_restrictions
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
-          WRITE( control%error, 2010 ) inform%status 
-        GO TO 800 
-      END IF 
+          WRITE( control%error, 2010 ) inform%status
+        GO TO 800
+      END IF
       prob%Hessian_kind = 0
 
-!  If required, write out problem 
+!  If required, write out problem
 
       IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
         WRITE( control%out, "( ' n, m = ', 2I8 )" ) prob%n, prob%m
@@ -936,8 +936,8 @@
         IF ( prob%X_l( i ) - prob%X_u( i ) > control%identical_bounds_tol ) THEN
           inform%status = GALAHAD_error_bad_bounds
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) inform%status 
-          GO TO 800 
+            WRITE( control%error, 2010 ) inform%status
+          GO TO 800
         ELSE IF ( prob%X_u( i ) == prob%X_l( i )  ) THEN
         ELSE IF ( prob%X_u( i ) - prob%X_l( i )                                &
                   <= control%identical_bounds_tol ) THEN
@@ -945,7 +945,7 @@
           prob%X_l( i ) = av_bnd ; prob%X_u( i ) = av_bnd
           reset_bnd = .TRUE.
         END IF
-      END DO   
+      END DO
       IF ( reset_bnd .AND. printi ) WRITE( control%out,                        &
         "( ' ', /, '   **  Warning: one or more variable bounds reset ' )" )
 
@@ -954,8 +954,8 @@
         IF ( prob%C_l( i ) - prob%C_u( i ) > control%identical_bounds_tol ) THEN
           inform%status = GALAHAD_error_bad_bounds
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) inform%status 
-          GO TO 800 
+            WRITE( control%error, 2010 ) inform%status
+          GO TO 800
         ELSE IF ( prob%C_u( i ) == prob%C_l( i ) ) THEN
         ELSE IF ( prob%C_u( i ) - prob%C_l( i )                                &
                   <= control%identical_bounds_tol ) THEN
@@ -963,7 +963,7 @@
           prob%C_l( i ) = av_bnd ; prob%C_u( i ) = av_bnd
           reset_bnd = .TRUE.
         END IF
-      END DO   
+      END DO
       IF ( reset_bnd .AND. printi ) WRITE( control%out,                        &
         "( ' ', /, '   **  Warning: one or more constraint bounds reset ' )" )
 
@@ -989,7 +989,7 @@
         ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
           a_ne = prob%A%ptr( prob%m + 1 ) - 1
         ELSE
-          a_ne = prob%A%ne 
+          a_ne = prob%A%ne
         END IF
 
         IF ( printi ) WRITE( control%out,                                      &
@@ -997,17 +997,17 @@
      &         ' n = ', I8, ' m = ', I8, ' a_ne = ', I8 )" )                   &
                prob%n, prob%m, a_ne
 
-!  Perform the preprocessing. 
+!  Perform the preprocessing.
 
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
         CALL QPP_reorder( data%QPP_map, data%QPP_control,                      &
                           data%QPP_inform, data%dims, prob,                    &
                           .FALSE., .FALSE., .FALSE. )
-        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%preprocess = inform%time%preprocess + time_now - time_record
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
-  
+
 !  Test for satisfactory termination
 
         IF ( data%QPP_inform%status /= 0 ) THEN
@@ -1016,9 +1016,9 @@
             WRITE( control%out, "( ' status ', I3, ' after QPP_reorder ')" )   &
              data%QPP_inform%status
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) inform%status 
-          GO TO 800 
-        END IF 
+            WRITE( control%error, 2010 ) inform%status
+          GO TO 800
+        END IF
 
 !  Record array lengths
 
@@ -1027,7 +1027,7 @@
         ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
           a_ne = prob%A%ptr( prob%m + 1 ) - 1
         ELSE
-          a_ne = prob%A%ne 
+          a_ne = prob%A%ne
         END IF
 
         IF ( printi ) WRITE( control%out,                                      &
@@ -1048,7 +1048,7 @@
                           get_x_bounds = .TRUE., get_c_bounds = .TRUE.,        &
                           get_x = .TRUE., get_y = .TRUE., get_z = .TRUE.,      &
                           get_c = .TRUE., get_A = .TRUE. )
-          CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
+          CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           inform%time%preprocess =                                             &
             inform%time%preprocess + time_now - time_record
           inform%time%clock_preprocess =                                       &
@@ -1062,10 +1062,10 @@
               WRITE( control%out, "( ' status ', I3, ' after QPP_apply ')" )   &
                data%QPP_inform%status
             IF ( control%error > 0 .AND. control%print_level > 0 )             &
-              WRITE( control%error, 2010 ) inform%status 
-            GO TO 800 
-          END IF 
-        END IF 
+              WRITE( control%error, 2010 ) inform%status
+            GO TO 800
+          END IF
+        END IF
         data%trans = data%trans + 1
       END IF
 
@@ -1092,15 +1092,15 @@
 
 !  Find any dependent rows
 
-        nzc = prob%A%ptr( data%dims%c_equality + 1 ) - 1 
-        CALL CPU_TIME( time_record )  ; CALL CLOCK_time( clock_record ) 
+        nzc = prob%A%ptr( data%dims%c_equality + 1 ) - 1
+        CALL CPU_TIME( time_record )  ; CALL CLOCK_time( clock_record )
         CALL FDC_find_dependent( prob%n, data%dims%c_equality,                 &
                                  prob%A%val( : nzc ),                          &
                                  prob%A%col( : nzc ),                          &
                                  prob%A%ptr( : data%dims%c_equality + 1 ),     &
                                  prob%C_l, n_depen, data%Index_C_freed,        &
                                  FDC_data, FDC_control, FDC_inform )
-        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%find_dependent =                                           &
           inform%time%find_dependent + time_now - time_record
         inform%time%clock_find_dependent =                                     &
@@ -1119,16 +1119,16 @@
 
         CALL FDC_terminate( FDC_data, FDC_control, FDC_inform )
 
-        CALL CPU_TIME( time_now ); CALL CLOCK_time( clock_now ) 
+        CALL CPU_TIME( time_now ); CALL CLOCK_time( clock_now )
         IF ( ( control%cpu_time_limit >= zero .AND.                            &
                time_now - time_start > control%cpu_time_limit ) .OR.           &
              ( control%clock_time_limit >= zero .AND.                          &
                clock_now - clock_start > control%clock_time_limit ) ) THEN
           inform%status = GALAHAD_error_cpu_limit
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) inform%status 
-          GO TO 800 
-        END IF 
+            WRITE( control%error, 2010 ) inform%status
+          GO TO 800
+        END IF
 
         IF ( printi .AND. inform%non_negligible_pivot <                        &
              thousand * control%zero_pivot ) WRITE( control%out, "(            &
@@ -1191,7 +1191,7 @@
                exact_size = control%space_critical,                            &
                bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= 0 ) GO TO 900
-        
+
 !  Free the constraint bounds as required
 
         DO i = 1, n_depen
@@ -1210,7 +1210,7 @@
 !  Store the problem dimensions
 
         data%dims_save_freed = data%dims
-        a_ne = prob%A%ne 
+        a_ne = prob%A%ne
 
         IF ( printi ) WRITE( control%out,                                      &
                "( /, ' problem dimensions before removal of dependecies: ', /, &
@@ -1223,19 +1223,19 @@
         CALL QPP_reorder( data%QPP_map_freed, data%QPP_control,                &
                           data%QPP_inform, data%dims, prob,                    &
                           .FALSE., .FALSE., .FALSE. )
-        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%preprocess = inform%time%preprocess + time_now - time_record
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
-  
-        data%dims%nc = data%dims%c_u_end - data%dims%c_l_start + 1 
+
+        data%dims%nc = data%dims%c_u_end - data%dims%c_l_start + 1
         data%dims%x_s = 1 ; data%dims%x_e = prob%n
-        data%dims%c_s = data%dims%x_e + 1 
-        data%dims%c_e = data%dims%x_e + data%dims%nc  
+        data%dims%c_s = data%dims%x_e + 1
+        data%dims%c_e = data%dims%x_e + data%dims%nc
         data%dims%c_b = data%dims%c_e - prob%m
-        data%dims%y_s = data%dims%c_e + 1 
+        data%dims%y_s = data%dims%c_e + 1
         data%dims%y_e = data%dims%c_e + prob%m
-        data%dims%y_i = data%dims%c_s + prob%m 
+        data%dims%y_i = data%dims%c_s + prob%m
         data%dims%v_e = data%dims%y_e
 
 !  Test for satisfactory termination
@@ -1246,9 +1246,9 @@
             WRITE( control%out, "( ' status ', I3, ' after QPP_reorder ')" )   &
              data%QPP_inform%status
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
-            WRITE( control%error, 2010 ) inform%status 
-          GO TO 800 
-        END IF 
+            WRITE( control%error, 2010 ) inform%status
+          GO TO 800
+        END IF
 
 !  Record revised array lengths
 
@@ -1257,7 +1257,7 @@
         ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
           a_ne = prob%A%ptr( prob%m + 1 ) - 1
         ELSE
-          a_ne = prob%A%ne 
+          a_ne = prob%A%ne
         END IF
 
         IF ( printi ) WRITE( control%out,                                      &
@@ -1267,9 +1267,9 @@
 
       END IF
 
-!  Compute the dimension of the KKT system 
+!  Compute the dimension of the KKT system
 
-      data%dims%nc = data%dims%c_u_end - data%dims%c_l_start + 1 
+      data%dims%nc = data%dims%c_u_end - data%dims%c_l_start + 1
 
 !  Arrays containing data relating to the composite vector ( x  c  y )
 !  are partitioned as follows:
@@ -1285,16 +1285,16 @@
 !    ^                 ^    ^ ^               ^ ^    ^               ^
 !    |                 |    | |               | |    |               |
 !   x_s                |    |c_s              |y_s  y_i             y_e = v_e
-!                      |    |                 |                     
+!                      |    |                 |
 !                     c_b  x_e               c_e
 
       data%dims%x_s = 1 ; data%dims%x_e = prob%n
-      data%dims%c_s = data%dims%x_e + 1 
-      data%dims%c_e = data%dims%x_e + data%dims%nc  
+      data%dims%c_s = data%dims%x_e + 1
+      data%dims%c_e = data%dims%x_e + data%dims%nc
       data%dims%c_b = data%dims%c_e - prob%m
-      data%dims%y_s = data%dims%c_e + 1 
+      data%dims%y_s = data%dims%c_e + 1
       data%dims%y_e = data%dims%c_e + prob%m
-      data%dims%y_i = data%dims%c_s + prob%m 
+      data%dims%y_i = data%dims%c_s + prob%m
       data%dims%v_e = data%dims%y_e
 
 !  Allocate real workspace
@@ -1350,7 +1350,7 @@
                           get_all = .TRUE. )
         CALL QPP_terminate( data%QPP_map_freed, data%QPP_control,              &
                             data%QPP_inform )
-        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%preprocess = inform%time%preprocess + time_now - time_record
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
@@ -1368,7 +1368,7 @@
 
 !  Retore the problem to its original form
 
-  700 CONTINUE 
+  700 CONTINUE
       data%trans = data%trans - 1
       IF ( data%trans == 0 ) THEN
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
@@ -1399,7 +1399,7 @@
                             get_z = .TRUE., get_c = .TRUE. )
         END IF
         CALL QPP_terminate( data%QPP_map, data%QPP_control, data%QPP_inform )
-        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%preprocess = inform%time%preprocess + time_now - time_record
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
@@ -1409,11 +1409,11 @@
 
 !  Compute total time
 
-  800 CONTINUE 
+  800 CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start 
+      inform%time%total = inform%time%total + time_now - time_start
       inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start 
+        inform%time%clock_total + clock_now - clock_start
 
       IF ( printi ) WRITE( control%out, 2000 ) inform%time%total,              &
         inform%time%preprocess, inform%time%analyse, inform%time%factorize,    &
@@ -1422,20 +1422,20 @@
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( ' leaving LCF_solve ' )" )
 
-      RETURN  
+      RETURN
 
 !  Allocation error
 
-  900 CONTINUE 
+  900 CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start 
+      inform%time%total = inform%time%total + time_now - time_start
       inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start 
+        inform%time%clock_total + clock_now - clock_start
 !     IF ( printi ) WRITE( control%out, 2900 ) bad_alloc, inform%alloc_status
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( ' leaving LCF_solve ' )" )
 
-      RETURN  
+      RETURN
 
 !  Non-executable statements
 
@@ -1445,8 +1445,8 @@
               /, 14X, ' =    preprocess    analyse    factorize     solve   =',&
               /, 14X, ' =', 4F12.2, 3x, '=',                                   &
               /, 14X, ' =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=' )
- 2010 FORMAT( ' ', /, '   **  Error return ',I3,' from LCF ' ) 
- 2020 FORMAT( '   **  Error return ', I6, ' from ', A15 ) 
+ 2010 FORMAT( ' ', /, '   **  Error return ',I3,' from LCF ' )
+ 2020 FORMAT( '   **  Error return ', I6, ' from ', A15 )
 
 !  End of LCF_solve
 
@@ -1474,8 +1474,8 @@
 !  The subroutine is particularly appropriate when A is sparse.
 !
 !  In order that many of the internal computations may be performed
-!  efficiently, it is required that   
-!  
+!  efficiently, it is required that
+!
 !  * the variables are ordered so that their bounds appear in the order
 !
 !    free                      x
@@ -1485,7 +1485,7 @@
 !    upper                     x <= x_u
 !    non-positivity            x <=  0
 !
-!    Fixed variables are not permitted (ie, x_l < x_u for range variables). 
+!    Fixed variables are not permitted (ie, x_l < x_u for range variables).
 !
 !  * the constraints are ordered so that their bounds appear in the order
 !
@@ -1510,42 +1510,42 @@
 !
 !   %x_free is an INTEGER variable, which must be set by the user to the
 !    number of free variables. RESTRICTION: %x_free >= 0
-!                 
+!
 !   %x_l_start is an INTEGER variable, which must be set by the user to the
 !    index of the first variable with a nonzero lower (or lower range) bound.
 !    RESTRICTION: %x_l_start >= %x_free + 1
-!                 
+!
 !   %x_l_end is an INTEGER variable, which must be set by the user to the
 !    index of the last variable with a nonzero lower (or lower range) bound.
 !    RESTRICTION: %x_l_end >= %x_l_start
-!                 
+!
 !   %x_u_start is an INTEGER variable, which must be set by the user to the
-!    index of the first variable with a nonzero upper (or upper range) bound. 
+!    index of the first variable with a nonzero upper (or upper range) bound.
 !    RESTRICTION: %x_u_start >= %x_l_start
-!                 
+!
 !   %x_u_end is an INTEGER variable, which must be set by the user to the
-!    index of the last variable with a nonzero upper (or upper range) bound. 
+!    index of the last variable with a nonzero upper (or upper range) bound.
 !    RESTRICTION: %x_u_end >= %x_u_start
-!                 
+!
 !   %c_equality is an INTEGER variable, which must be set by the user to the
 !    number of equality constraints, m. RESTRICTION: %c_equality >= 0
-!                 
+!
 !   %c_l_start is an INTEGER variable, which must be set by the user to the
-!    index of the first inequality constraint with a lower (or lower range) 
-!    bound. RESTRICTION: %c_l_start = %c_equality + 1 
+!    index of the first inequality constraint with a lower (or lower range)
+!    bound. RESTRICTION: %c_l_start = %c_equality + 1
 !    (strictly, this information is redundant!)
-!                 
+!
 !   %c_l_end is an INTEGER variable, which must be set by the user to the
-!    index of the last inequality constraint with a lower (or lower range) 
+!    index of the last inequality constraint with a lower (or lower range)
 !    bound. RESTRICTION: %c_l_end >= %c_l_start
-!                 
+!
 !   %c_u_start is an INTEGER variable, which must be set by the user to the
-!    index of the first inequality constraint with an upper (or upper range) 
+!    index of the first inequality constraint with an upper (or upper range)
 !    bound. RESTRICTION: %c_u_start >= %c_l_start
 !    (strictly, this information is redundant!)
-!                 
+!
 !   %c_u_end is an INTEGER variable, which must be set by the user to the
-!    index of the last inequality constraint with an upper (or upper range) 
+!    index of the last inequality constraint with an upper (or upper range)
 !    bound. RESTRICTION: %c_u_end = %m
 !    (strictly, this information is redundant!)
 !
@@ -1559,7 +1559,7 @@
 !    value n
 !
 !   %c_s is an INTEGER variable, which must be set by the user to the
-!    value dims%x_e + 1 
+!    value dims%x_e + 1
 !
 !   %c_e is an INTEGER variable, which must be set by the user to the
 !    value dims%x_e + dims%nc
@@ -1580,10 +1580,10 @@
 !    value dims%y_e
 !
 !  n, m, ..., X exactly as for prob% in LCF_solve
-!  
-!  The remaining arguments are used as internal workspace, and need not be 
+!
+!  The remaining arguments are used as internal workspace, and need not be
 !  set on entry
-!  
+!
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
@@ -1608,7 +1608,7 @@
 
       TYPE ( SMT_type ), INTENT( INOUT ) :: H_sbls, A_sbls, C_sbls
       TYPE ( SBLS_data_type ), INTENT( INOUT ) :: SBLS_data
-      TYPE ( LCF_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( LCF_control_type ), INTENT( INOUT ) :: control
       TYPE ( LCF_inform_type ), INTENT( INOUT ) :: inform
 
 !  Parameters
@@ -1654,7 +1654,7 @@
          dims%x_l_end - dims%x_u_start + 2
 
 ! -------------------------------------------------------------------
-!  If desired, generate a SIF file for problem passed 
+!  If desired, generate a SIF file for problem passed
 
       IF ( generate_sif ) THEN
         WRITE( sif, "( 'NAME          LCF_OUT', //, 'VARIABLES', / )" )
@@ -1744,17 +1744,17 @@
         stop_print = control%stop_print
       END IF
 
-      error = control%error ; out = control%out 
+      error = control%error ; out = control%out
 
       set_printe = error > 0 .AND. control%print_level >= 1
 
 !  Basic single line of output per iteration
 
-      set_printi = out > 0 .AND. control%print_level >= 1 
+      set_printi = out > 0 .AND. control%print_level >= 1
 
 !  As per printi, but with additional timings for various operations
 
-      set_printt = out > 0 .AND. control%print_level >= 2 
+      set_printt = out > 0 .AND. control%print_level >= 2
 
 !  As per printt but also with details of innner iterations
 
@@ -1793,7 +1793,7 @@
 
 !  If there are no variables, exit
 
-      IF ( n == 0 ) THEN 
+      IF ( n == 0 ) THEN
         i = COUNT( ABS( C_l( : dims%c_equality ) ) > control%stop_p ) +        &
             COUNT( C_l( dims%c_l_start : dims%c_l_end ) > control%stop_p ) +   &
             COUNT( C_u( dims%c_u_start : dims%c_u_end ) < - control%stop_p )
@@ -1805,18 +1805,18 @@
         C_RES = zero
         inform%obj = zero
         GO TO 600
-      END IF 
+      END IF
 
 !  Check that range constraints are not simply fixed variables,
 !  and that the upper bounds are larger than the corresponing lower bounds
 
       DO i = dims%x_u_start, dims%x_l_end
-        IF ( X_u( i ) - X_l( i ) <= epsmch ) THEN 
+        IF ( X_u( i ) - X_l( i ) <= epsmch ) THEN
           inform%status = GALAHAD_error_bad_bounds ; GO TO 600 ; END IF
       END DO
 
       DO i = dims%c_u_start, dims%c_l_end
-        IF ( C_u( i ) - C_l( i ) <= epsmch ) THEN 
+        IF ( C_u( i ) - C_l( i ) <= epsmch ) THEN
           inform%status = GALAHAD_error_bad_bounds ; GO TO 600 ; END IF
       END DO
 
@@ -1890,7 +1890,7 @@
       DO i = 1, m
         A_sbls%row( A_ptr( i ) : A_ptr( i + 1 ) - 1 ) = i
       END DO
-      A_sbls%col( : A_ne ) = A_col( : A_ne ) 
+      A_sbls%col( : A_ne ) = A_col( : A_ne )
       A_sbls%val( : A_ne ) = A_val( : A_ne )
       j = 0
       DO i = dims%c_l_start, dims%c_u_end
@@ -2102,13 +2102,13 @@
 
 !  Check that the CPU time limit has not been reached
 
-          CALL CPU_TIME( time_now ); CALL CLOCK_time( clock_now ) 
+          CALL CPU_TIME( time_now ); CALL CLOCK_time( clock_now )
           IF ( ( control%cpu_time_limit >= zero .AND.                          &
                  time_now - time_start > control%cpu_time_limit ) .OR.         &
                ( control%clock_time_limit >= zero .AND.                        &
                  clock_now - clock_start > control%clock_time_limit ) ) THEN
             inform%status = GALAHAD_error_cpu_limit ; GO TO 600
-          END IF 
+          END IF
 
           IF ( inform%iter >= start_print .AND. inform%iter <= stop_print ) THEN
             printe = set_printe ; printi = set_printi ; printt = set_printt
@@ -2118,7 +2118,7 @@
             printw = .FALSE. ; printd = .FALSE.
           END IF
 
-!  Compute the new point using Combettes' Extrapolated Parallel Projection 
+!  Compute the new point using Combettes' Extrapolated Parallel Projection
 
           IF ( control%step_strategy == 4 ) THEN
             size_p = SUM( ( two * X - Pb_x - Pl_x ) ** 2 ) +                   &
@@ -2137,7 +2137,7 @@
 
           ELSE IF ( control%step_strategy > 0 ) THEN
 
-!  Let (z_x,z_c) = lambda_b * (Pb_x,Pb_c) + lambda_l * (Pl_x,Pl_c). 
+!  Let (z_x,z_c) = lambda_b * (Pb_x,Pb_c) + lambda_l * (Pl_x,Pl_c).
 
             Z_x = lambda_b * Pb_x + lambda_l * Pl_x
             Z_c = lambda_b * Pb_c + lambda_l * Pl_c
@@ -2195,11 +2195,11 @@
 
 !  compute (1-alpha) (x,c) + alpha * ( laabda_b * Pb(x,c) + lambda_l * Pl(x,c) )
 
-            IF ( alpha == zero ) alpha = one           
+            IF ( alpha == zero ) alpha = one
             one_minus_alpha = one - alpha
             X = one_minus_alpha * X + alpha * Z_x
             C = one_minus_alpha * C + alpha * Z_c
-            
+
             Pl_x = one_minus_alpha * Pl_x + alpha * PZ_x
             Pl_c = one_minus_alpha * Pl_c + alpha * PZ_c
 
@@ -2363,7 +2363,7 @@
               IF ( printt .AND. i < 0 )                                        &
                 WRITE( out, "( ' exit status from linesearch ', I0 )" ) i
   !           alpha = MAX( one, alpha )
-              IF ( alpha == zero ) alpha = one           
+              IF ( alpha == zero ) alpha = one
             ELSE IF ( control%step_strategy == 4 ) THEN
 
 !  record the sizes of the projections
@@ -2513,13 +2513,13 @@
 
 !  Check that the CPU time limit has not been reached
 
-          CALL CPU_TIME( time_now ); CALL CLOCK_time( clock_now ) 
+          CALL CPU_TIME( time_now ); CALL CLOCK_time( clock_now )
           IF ( ( control%cpu_time_limit >= zero .AND.                          &
                  time_now - time_start > control%cpu_time_limit ) .OR.         &
                ( control%clock_time_limit >= zero .AND.                        &
                  clock_now - clock_start > control%clock_time_limit ) ) THEN
             inform%status = GALAHAD_error_cpu_limit ; GO TO 600
-          END IF 
+          END IF
 
           IF ( inform%iter >= start_print .AND. inform%iter < stop_print ) THEN
             printe = set_printe ; printi = set_printi ; printt = set_printt
@@ -2559,35 +2559,35 @@
       IF ( printi ) then
 
         SELECT CASE( inform%status )
-          CASE( - 1  ) ; WRITE( out, 2210 ) 
-          CASE( - 5  ) ; WRITE( out, 2250 ) 
-          CASE( - 6  ) ; WRITE( out, 2260 ) 
-          CASE( - 7  ) ; WRITE( out, 2270 ) 
-          CASE( - 8  ) ; WRITE( out, 2280 ) 
-          CASE( - 9  ) ; WRITE( out, 2290 ) 
-          CASE( - 10 ) ; WRITE( out, 2300 ) 
+          CASE( - 1  ) ; WRITE( out, 2210 )
+          CASE( - 5  ) ; WRITE( out, 2250 )
+          CASE( - 6  ) ; WRITE( out, 2260 )
+          CASE( - 7  ) ; WRITE( out, 2270 )
+          CASE( - 8  ) ; WRITE( out, 2280 )
+          CASE( - 9  ) ; WRITE( out, 2290 )
+          CASE( - 10 ) ; WRITE( out, 2300 )
         END SELECT
 
       END IF
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( ' leaving LCF_solve_main ' )" )
 
-      RETURN  
+      RETURN
 
 !  Non-executable statements
 
  2010 FORMAT( //, '  Final objective function value ', ES22.14,                &
               /,  '  Total number of iterations = ', I0 )
  2110 FORMAT( /,'  Norm of equality constraints is ', ES12.4, /,               &
-                '  Norm of bound infeasibility is  ', ES12.4 ) 
+                '  Norm of bound infeasibility is  ', ES12.4 )
  2150 FORMAT( A6, /, ( 4( 2I5, ES10.2 ) ) )
- 2210 FORMAT( /, '  Warning - input paramters incorrect ' ) 
- 2250 FORMAT( /, '  Warning - the constraints are inconsistent ' ) 
- 2260 FORMAT( /, '  Warning - the constraints appear to be inconsistent ' ) 
- 2270 FORMAT( /, '  Warning - factorization failure ' ) 
- 2280 FORMAT( /, '  Warning - no further progress possible ' ) 
- 2290 FORMAT( /, '  Warning - step too small to make further progress ' ) 
- 2300 FORMAT( /, '  Warning - iteration bound exceeded ' ) 
+ 2210 FORMAT( /, '  Warning - input paramters incorrect ' )
+ 2250 FORMAT( /, '  Warning - the constraints are inconsistent ' )
+ 2260 FORMAT( /, '  Warning - the constraints appear to be inconsistent ' )
+ 2270 FORMAT( /, '  Warning - factorization failure ' )
+ 2280 FORMAT( /, '  Warning - no further progress possible ' )
+ 2290 FORMAT( /, '  Warning - step too small to make further progress ' )
+ 2300 FORMAT( /, '  Warning - iteration bound exceeded ' )
 
 !  End of LCF_solve_main
 
@@ -2617,9 +2617,9 @@
 !  Dummy arguments
 
       TYPE ( LCF_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LCF_control_type ), INTENT( IN ) :: control        
+      TYPE ( LCF_control_type ), INTENT( IN ) :: control
       TYPE ( LCF_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !  Local variables
 
       CHARACTER ( LEN = 80 ) :: array_name
@@ -2697,7 +2697,7 @@
 
 !  End of subroutine LCF_terminate
 
-      END SUBROUTINE LCF_terminate 
+      END SUBROUTINE LCF_terminate
 
 !-*-*-*-*-*-    L C F _ L I N E S E A R C H    S U B R O U T I N E   -*-*-*-*-
 
@@ -2712,14 +2712,14 @@
 !
 !  Find the global minimizer of the function
 !
-!        lambda_q ( q0 + q1 t + q2 t ** 2 ) 
+!        lambda_q ( q0 + q1 t + q2 t ** 2 )
 !        + lambda_b ( min( c - c_l , 0 ) ** 2 + max( c - c_u , 0 ) ** 2
 !                   + min( x - x_l , 0 ) ** 2 + max( x - x_u , 0 ) ** 2 )
 !
 !  along the arc (x(t),c(t)) = (x,t) + t (dx,dc)  (t >= 0)
 !
-!  where x is a vector of n components ( x_1, .... , x_n ), 
-!  and c is a vector of m components ( c_1, .... , c_m ), 
+!  where x is a vector of n components ( x_1, .... , x_n ),
+!  and c is a vector of m components ( c_1, .... , c_m ),
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -2728,42 +2728,42 @@
 !  dims is a structure of type LCF_data_type, whose components hold SCALAR
 !   information about the problem on input. The components will be unaltered
 !   on exit. See LCF_solve_main for details.
-!                 
+!
 !  q_0, q_1, q_2 are REAL variables that give the constant, linear and quadratic
 !   coefficients for the quadratic part of the objective
 !
 !  lambda_q, lambda_b are REAL variables that give the weights assigned to
 !   the quadratic and other parts of the objective
 !
-!  X is a REAL array of length n, which must be set by the user to the 
+!  X is a REAL array of length n, which must be set by the user to the
 !   value of x
 !
-!  C is a REAL array of length m, which must be set by the user to the 
+!  C is a REAL array of length m, which must be set by the user to the
 !   value of c
 !
-!  X_l is a REAL array of length n, that must be set by 
+!  X_l is a REAL array of length n, that must be set by
 !   the user to the value of x_l for all components which have lower bounds
 !
 !  X_u is a REAL array of  length n, that must be set
 !   by the user to the value of x_u for all components which have upper bounds
 !
-!  C_l is a REAL array of length m that must be set by the user to the 
+!  C_l is a REAL array of length m that must be set by the user to the
 !   value of c_l for all components which have lower bounds
 !
-!  C_u is a REAL array of length m that must be set by the user to the 
+!  C_u is a REAL array of length m that must be set by the user to the
 !   value of c_u for all components which have upper bounds
 !
-!  DX is a REAL array of length n, which must be set by the user to the 
+!  DX is a REAL array of length n, which must be set by the user to the
 !   value of dx
 !
-!  DC is a REAL array of length m, which must be set by the user to the 
+!  DC is a REAL array of length m, which must be set by the user to the
 !   value of dc
 !
 !  IBREAK is an INTEGER workspace array of length lbreak
 !
 !  BREAKP is a REAL workspace array of length lbreak
 !
-!  lbreak is an INTEGER that must be at least 
+!  lbreak is an INTEGER that must be at least
 !   m + dims%x_l_end - dims%x_u_start + 1
 !
 !  t_opt  is a REAL variable, which gives the required value of t on exit
@@ -2837,7 +2837,7 @@
         DO i = dims%c_l_start, dims%c_u_end
           WRITE( out, "( I7, 4ES12.4 )" ) i, C_l( i ), C( i ), C_u( i ), DC( i )
         END DO
-      END IF 
+      END IF
 
 !  simple non-negativity
 !  ---------------------
@@ -2999,7 +2999,7 @@
 !  Record the initial function and slope
 
       val = lambda_q * q_0 + lambda_b * ( infeas_c + infeas_x )
-      slope = lambda_q * q_1 + lambda_b * ( slope_infeas_c + slope_infeas_x ) 
+      slope = lambda_q * q_1 + lambda_b * ( slope_infeas_c + slope_infeas_x )
       curv = lambda_q * q_2 + lambda_b * ( curv_infeas_c + curv_infeas_x )
       gradient = slope
 
@@ -3314,7 +3314,7 @@
 !  End of subroutine LCF_linesearch
 
       END SUBROUTINE LCF_linesearch
-      
+
 !-*-*-*-*-*-*-*-*-*-   L C F _ P _ V A L   F U N C T I O N   -*-*-*-*-*-*-*-*-*-
 
       FUNCTION LCF_n_val( dims, n, m, X, C, X_l, X_u, C_l, C_u, DX, DC,        &
@@ -3427,7 +3427,7 @@
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Compute the value, slope and curvature (in the direction S) 
+!  Compute the value, slope and curvature (in the direction S)
 !  of the l_2 norm squared of the projection of
 !  (x,c) + t(dx,dc) into x_l <= x <= x_u and c_l <= c <= c_u
 !
@@ -3569,6 +3569,3 @@
 !  End of module LCF
 
    END MODULE GALAHAD_LCF_double
-
-
-
