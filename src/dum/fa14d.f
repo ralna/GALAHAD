@@ -1,0 +1,7 @@
+      DOUBLE PRECISION FUNCTION FA14AD( ix, i )
+      INTEGER :: ix, i
+      END FUNCTION FA14AD
+
+      SUBROUTINE FA14ID( ix )
+      INTEGER :: ix
+      END SUBROUTINE FA14ID
