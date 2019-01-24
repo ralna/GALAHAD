@@ -1609,6 +1609,7 @@ $(LG)(gltr.o): ../gltr/gltr.f90
 	$(RMARFILE) lls.o
 	$(RMARFILE) eqp.o
 	$(RMARFILE) superb.o
+	$(RMARFILE) usegltr.o
 	$(RMOBFILE) gltrs.o
 	$(RMOBFILE) gltrt.o
 	$(MVMODS)
@@ -1629,6 +1630,7 @@ $(LG)(glrt.o): ../glrt/glrt.f90
                                              glrt3.f90 glrt.o
 	$(RMARFILE) arc.o
 	$(RMARFILE) barc.o
+	$(RMARFILE) useglrt.o
 	$(RMOBFILE) glrts.o
 	$(RMOBFILE) glrtt.o
 	$(MVMODS)

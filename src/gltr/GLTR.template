@@ -4,6 +4,7 @@
 ! maximum-number-of-iterations                      -1
 ! maximum-number-of-Lanczos-iterations              -1
 ! number-extra-n-vectors-used                       0
+! ritz-printout-device                              34
 ! relative-accuracy-required                        1.0E-8
 ! absolute-accuracy-required                        0.0
 ! small-f-stop                                      -1.0D+100
@@ -16,4 +17,5 @@
 ! equality-problem                                  no
 ! space-critical                                    no
 ! deallocate-error-fatal                            no
+! print-ritz                                        no
 ! output-line-prefix                                ""

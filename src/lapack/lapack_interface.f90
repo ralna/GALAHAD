@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 10/06/2013 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 3.2 - 23/01/2019 AT 08:10 GMT.
 
 !-*-*-*-  G A L A H A D _ L A P A C K _ i n t e r f a c e   M O D U L E  -*-*-*-
 
@@ -369,25 +369,41 @@
 
 !  eigenvalues of a Hessenberg matrix
 
-      INTERFACE HSEQR
-        SUBROUTINE SHSEQR( job, compz, n, ilo, ihi, H, ldh,  WR, WI, Z, ldz,   &
-                           WORK, lwork, info )
-        INTEGER, INTENT( IN ) :: ihi, ilo, ldh, ldz, lwork, n
-        INTEGER, INTENT( OUT ) :: info
-        CHARACTER ( LEN = 1 ), INTENT( IN ) :: compz, job
-        REAL, INTENT( INOUT ) :: H( ldh, * ), Z( ldz, * )
-        REAL, INTENT( OUT ) :: WI( * ), WR( * ), WORK( * )
-        END SUBROUTINE SHSEQR
+     INTERFACE HSEQR
+       SUBROUTINE SHSEQR( job, compz, n, ilo, ihi, H, ldh,  WR, WI, Z, ldz,    &
+                          WORK, lwork, info )
+       INTEGER, INTENT( IN ) :: ihi, ilo, ldh, ldz, lwork, n
+       INTEGER, INTENT( OUT ) :: info
+       CHARACTER ( LEN = 1 ), INTENT( IN ) :: compz, job
+       REAL, INTENT( INOUT ) :: H( ldh, * ), Z( ldz, * )
+       REAL, INTENT( OUT ) :: WI( * ), WR( * ), WORK( * )
+       END SUBROUTINE SHSEQR
 
-        SUBROUTINE DHSEQR( job, compz, n, ilo, ihi, H, ldh,  WR, WI, Z, ldz,   &
-                           WORK, lwork, info )
-        INTEGER, INTENT( IN ) :: ihi, ilo, ldh, ldz, lwork, n
-        INTEGER, INTENT( OUT ) :: info
-        CHARACTER ( LEN = 1 ), INTENT( IN ) :: compz, job
-        DOUBLE PRECISION, INTENT( INOUT ) :: H( ldh, * ), Z( ldz, * )
-        DOUBLE PRECISION, INTENT( OUT ) :: WI( * ), WR( * ), WORK( * )
-        END SUBROUTINE DHSEQR
-      END INTERFACE HSEQR
+       SUBROUTINE DHSEQR( job, compz, n, ilo, ihi, H, ldh,  WR, WI, Z, ldz,    &
+                          WORK, lwork, info )
+       INTEGER, INTENT( IN ) :: ihi, ilo, ldh, ldz, lwork, n
+       INTEGER, INTENT( OUT ) :: info
+       CHARACTER ( LEN = 1 ), INTENT( IN ) :: compz, job
+       DOUBLE PRECISION, INTENT( INOUT ) :: H( ldh, * ), Z( ldz, * )
+       DOUBLE PRECISION, INTENT( OUT ) :: WI( * ), WR( * ), WORK( * )
+       END SUBROUTINE DHSEQR
+     END INTERFACE HSEQR
+
+!  eigenvalues of a symmetric tridigonal matrix
+
+     INTERFACE STERF
+       SUBROUTINE SSTERF( n, D, E, info )
+       INTEGER, INTENT( IN ) :: n
+       INTEGER, INTENT( OUT ) :: info
+       REAL, INTENT( INOUT ) :: D( n ), E( n - 1 )
+       END SUBROUTINE SSTERF
+
+       SUBROUTINE DSTERF( n, D, E, info )
+       INTEGER, INTENT( IN ) :: n
+       INTEGER, INTENT( OUT ) :: info
+       DOUBLE PRECISION, INTENT( INOUT ) :: D( n ), E( n - 1 )
+       END SUBROUTINE DSTERF
+     END INTERFACE STERF
 
 !  End of module GALAHAD_LAPACK_interface
 

@@ -33,7 +33,7 @@
       USE GALAHAD_ROOTS_double, ONLY: ROOTS_quadratic
       USE GALAHAD_SPECFILE_double
       USE GALAHAD_NORMS_double, ONLY: TWO_NORM
-      USE GALAHAD_LAPACK_interface, ONLY : PTTRF
+      USE GALAHAD_LAPACK_interface, ONLY : PTTRF, STERF
 
       IMPLICIT NONE
 
@@ -100,6 +100,10 @@
 
         INTEGER :: extra_vectors = 0
 
+!   output stream for debug Ritz values        
+
+        INTEGER :: out_ritz = 34
+
 !   the iteration stops successfully when the gradient in the M(inverse) norm
 !    is smaller than max( stop_relative * initial M(inverse)
 !                         gradient norm, stop_absolute )
@@ -150,6 +154,10 @@
 !     will terminate execution. Otherwise, computation will continue
 
         LOGICAL :: deallocate_error_fatal = .FALSE.
+
+!   should the Ritz values be written to the debug stream?       
+
+        LOGICAL :: print_ritz = .FALSE.
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
 !   where %prefix contains the required string enclosed in
@@ -237,6 +245,8 @@
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: D
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: OFFD
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: E
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: OFFE
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ALPHAS
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RMINVRS
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: MIN_f
@@ -318,6 +328,7 @@
 !   maximum-number-of-iterations                    -1
 !   maximum-number-of-Lanczos-iterations            -1
 !   number-extra-n-vectors-used                     0
+!   ritz-printout-device                            34
 !   relative-accuracy-required                      1.0E-8
 !   absolute-accuracy-required                      0.0
 !   fraction-optimality-required                    1.0
@@ -330,6 +341,7 @@
 !   equality-problem                                F
 !   space-critical                                  F
 !   deallocate-error-fatal                          F
+!   print-ritz                                      F
 !   output-line-prefix                              ""
 !  END GLTR SPECIFICATIONS
 
@@ -359,7 +371,8 @@
       spec(  4 )%keyword = 'maximum-number-of-iterations'
       spec(  5 )%keyword = 'maximum-number-of-Lanczos-iterations'
       spec( 18 )%keyword = 'number-extra-n-vectors-used'
-
+      spec( 20 )%keyword = 'ritz-printout-device'
+      
 !  Real key-words
 
       spec(  6 )%keyword = 'relative-accuracy-required'
@@ -377,6 +390,7 @@
       spec( 13 )%keyword = 'equality-problem'
       spec( 14 )%keyword = 'space-critical'
       spec( 15 )%keyword = 'deallocate-error-fatal'
+      spec( 21 )%keyword = 'print-ritz'
 
 !  Character key-words
 
@@ -405,6 +419,8 @@
       CALL SPECFILE_assign_value( spec( 5 ), control%Lanczos_itmax,            &
                                   control%error )
       CALL SPECFILE_assign_value( spec( 18 ), control%extra_vectors,           &
+                                  control%error )
+      CALL SPECFILE_assign_value( spec( 20 ), control%out_ritz,                &
                                   control%error )
 
 !  Set real values
@@ -437,6 +453,9 @@
       CALL SPECFILE_assign_value( spec( 15 ),                                  &
                                   control%deallocate_error_fatal,              &
                                   control%error )
+      CALL SPECFILE_assign_value( spec( 21 ), control%print_ritz,              &
+                                  control%error )
+
 !  Set charcter values
 
       CALL SPECFILE_assign_value( spec( 16 ), control%prefix,                  &
@@ -508,7 +527,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: dim_sub, it, itp1, nroots
+      INTEGER :: dim_sub, it, itp1, nroots, info
       REAL ( KIND = wp ) :: alpha, f_tol, other_root, xmx_trial, u_norm
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -620,6 +639,24 @@
             bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= 0 ) GO TO 960
 
+        IF ( control%print_ritz ) THEN
+          array_name = 'gltr: E'
+          CALL SPACE_resize_array( data%itmax + 2, data%E,                     &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= 0 ) GO TO 960
+
+          array_name = 'gltr: OFFE'
+          CALL SPACE_resize_array( data%itmax + 1, data%OFFE,                  &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= 0 ) GO TO 960
+        END IF
+        
 !  Allocate space for the factors of the Lanczos tridiagonal
 
         array_name = 'gltr: D_fact'
@@ -898,79 +935,79 @@
 
 !  Test to see that iteration limit has not been exceeded
 
-         IF ( data%iter >= data%itmax .AND. data%interior ) THEN
-           inform%mnormx = SQRT( data%xmx )
-           data%dim_sub = data%iter
-           GO TO 910
-         END IF
+        IF ( data%iter >= data%itmax .AND. data%interior ) THEN
+          inform%mnormx = SQRT( data%xmx )
+          data%dim_sub = data%iter
+          GO TO 910
+        END IF
 
 !  Obtain the search direction P
 
-         data%xmp = data%beta * ( data%xmp + data%alpha * data%pmp )
-         data%pmp = data%rminvr + data%pmp * data%beta * data%beta
-         data%P( : n ) = - VECTOR + data%beta * data%P( : n )
+        data%xmp = data%beta * ( data%xmp + data%alpha * data%pmp )
+        data%pmp = data%rminvr + data%pmp * data%beta * data%beta
+        data%P( : n ) = - VECTOR + data%beta * data%P( : n )
 
 !  If required, continue accumulating the Lanczos tridiagonal
 
-         IF ( .NOT. control%steihaug_toint ) THEN
-           data%D( data%iter ) = data%diag
-           data%OFFD( data%iter ) = data%offdiag
-         END IF
+        IF ( .NOT. control%steihaug_toint ) THEN
+          data%D( data%iter ) = data%diag
+          data%OFFD( data%iter ) = data%offdiag
+        END IF
 
 !  Check for convergence on the trust-region boundary
 
-         IF ( data%iter >= data%itmax .OR. ( .NOT. data%interior .AND.         &
-              ABS( data%offdiag * data%x_last ) <= data%stop ) ) THEN
+        IF ( data%iter >= data%itmax .OR. ( .NOT. data%interior .AND.          &
+             ABS( data%offdiag * data%x_last ) <= data%stop ) ) THEN
 
 !  Convergence on the trust-region boundary has occured. Determine at which
 !  iteration a fraction, fraction_opt, of the optimal solution was found
 
-           IF ( control%fraction_opt < one ) THEN
-             f_tol = data%MIN_f( data%itm1 ) * control%fraction_opt
-             DO dim_sub = 1, data%iter
-                IF ( data%MIN_f( dim_sub - 1 ) <= f_tol ) EXIT
-             END DO
-           ELSE
-             dim_sub = data%iter
-           END IF
-           data%dim_sub = dim_sub
+          IF ( control%fraction_opt < one ) THEN
+            f_tol = data%MIN_f( data%itm1 ) * control%fraction_opt
+            DO dim_sub = 1, data%iter
+               IF ( data%MIN_f( dim_sub - 1 ) <= f_tol ) EXIT
+            END DO
+          ELSE
+            dim_sub = data%iter
+          END IF
+          data%dim_sub = dim_sub
 
 !  Special case: the required fraction of f was achieved by an interior point
 
-           IF ( dim_sub <= data%switch ) THEN
-             inform%mnormx = SQRT( data%xmx )
-             GO TO 900
-           END IF
+          IF ( dim_sub <= data%switch ) THEN
+            inform%mnormx = SQRT( data%xmx )
+            GO TO 900
+          END IF
 
-!          IF ( data%printi ) WRITE( control%out, 2020 )                       &
-!            WRITE( control%out, 2020 ) data%MIN_f( dim_sub - 1 ), dim_sub, iter
+!         IF ( data%printi ) WRITE( control%out, 2020 )                        &
+!           WRITE( control%out, 2020 ) data%MIN_f( dim_sub - 1 ), dim_sub, iter
 
 !  Restore the solution to the Lanczos TR subproblem for this iteration
 
-           data%use_old = .FALSE.
-           IF ( dim_sub > 1 + data%switch ) THEN
-             data%LAMBDA( dim_sub - 1 ) = data%LAMBDA( dim_sub - 2 )
-           ELSE
-             data%LAMBDA( dim_sub - 1 ) = zero
-             data%try_warm = .FALSE.
-           END IF
+          data%use_old = .FALSE.
+          IF ( dim_sub > 1 + data%switch ) THEN
+            data%LAMBDA( dim_sub - 1 ) = data%LAMBDA( dim_sub - 2 )
+          ELSE
+            data%LAMBDA( dim_sub - 1 ) = zero
+            data%try_warm = .FALSE.
+          END IF
 
-           CALL GLTR_ttrs( dim_sub, data%D( : dim_sub - 1 ),                   &
-                      data%OFFD( : dim_sub - 1 ),                              &
-                      data%D_fact( : dim_sub - 1 ),                            &
-                      data%OFFD_fact( : dim_sub - 1 ),                         &
-                      data%C_sub( : dim_sub - 1 ), radius, data%rtol,          &
-                      data%interior, control%equality_problem,                 &
-                      data%titmax, data%try_warm, data%use_old,                &
-                      inform%leftmost, data%LAMBDA( dim_sub - 1 ),             &
-                      data%MIN_f( dim_sub - 1 ),                               &
-                      data%X_sub( : dim_sub - 1 ), data%tinfo, data%titer,     &
-                      data%U_sub( : dim_sub - 1 ), data%W( : dim_sub - 1 ),    &
-                      data%seed, data%printd, control%out, prefix,             &
-                      inform%hard_case, data%hard_case_step )
+          CALL GLTR_ttrs( dim_sub, data%D( : dim_sub - 1 ),                    &
+                     data%OFFD( : dim_sub - 1 ),                               &
+                     data%D_fact( : dim_sub - 1 ),                             &
+                     data%OFFD_fact( : dim_sub - 1 ),                          &
+                     data%C_sub( : dim_sub - 1 ), radius, data%rtol,           &
+                     data%interior, control%equality_problem,                  &
+                     data%titmax, data%try_warm, data%use_old,                 &
+                     inform%leftmost, data%LAMBDA( dim_sub - 1 ),              &
+                     data%MIN_f( dim_sub - 1 ),                                &
+                     data%X_sub( : dim_sub - 1 ), data%tinfo, data%titer,      &
+                     data%U_sub( : dim_sub - 1 ), data%W( : dim_sub - 1 ),     &
+                     data%seed, data%printd, control%out, prefix,              &
+                     inform%hard_case, data%hard_case_step )
 
-!          IF ( data%printi ) WRITE( control%out, 2020 )                       &
-!          WRITE( control%out, 2020 ) data%MIN_f(dim_sub-1), dim_sub, data%iter
+!         IF ( data%printi ) WRITE( control%out, 2020 )                        &
+!         WRITE( control%out, 2020 ) data%MIN_f(dim_sub-1), dim_sub, data%iter
 
 !  Record the optimal objective function value and prepare to recover the
 !  approximate solution
@@ -1180,6 +1217,25 @@
 
         IF (  data%MIN_f( data%itm1 ) < control%f_min ) GO TO 970
 
+      END IF
+
+!  just in case the Ritz values are useful ...
+
+      IF ( control%print_ritz .AND. .NOT. control%steihaug_toint ) THEN
+        data%E( : data%iter ) = data%D( 0 : data%itm1 )
+        data%OFFE( : data%itm1 ) = data%OFFD( : data%itm1)
+        CALL STERF( data%iter, data%E, data%OFFE, info )
+        IF ( info == 0 ) THEN
+          IF ( .NOT. ( control%steihaug_toint .OR. data%interior ) ) THEN
+            WRITE( control%out_ritz, * ) data%iter, data%LAMBDA( data%iter )
+          ELSE
+            WRITE( control%out_ritz, * ) data%iter, zero
+          END IF
+          WRITE( control%out_ritz, * ) data%E( : data%iter )
+        ELSE
+          IF ( data%printi ) WRITE( control%out, * )                           &
+            info, ' warning: unconverged Ritz values out of ', data%iter
+        END IF
       END IF
 
 !  Update the residual
@@ -1502,8 +1558,20 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'gltr: OFFD'
+      array_name = 'gltr: OFFE'
       CALL SPACE_dealloc_array( data%OFFD,                                     &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'gltr: E'
+      CALL SPACE_dealloc_array( data%D,                                        &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'gltr: OFFE'
+      CALL SPACE_dealloc_array( data%OFFE,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
