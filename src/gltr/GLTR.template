@@ -17,5 +17,6 @@
 ! equality-problem                                  no
 ! space-critical                                    no
 ! deallocate-error-fatal                            no
-! print-ritz                                        no
+! print-ritz-values                                 no
+! ritz-file-name                                    gltr_ritz.dat
 ! output-line-prefix                                ""

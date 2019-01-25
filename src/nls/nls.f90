@@ -1842,7 +1842,8 @@
   10 CONTINUE
      CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
      data%set_printw = control%out > 0 .AND. control%print_level >= 4
-     IF ( data%printw ) WRITE( data%out, "( A, ' statement 10' )" ) prefix
+     IF ( data%set_printw )                                                    &
+       WRITE( control%out, "( A, ' statement 10' )" ) prefix
 
 !  ensure that input parameters are within allowed ranges
 
@@ -2312,7 +2313,9 @@
   20 CONTINUE
 !    CALL CLOCK_time( data%clock_now )
 !    write(6,*) ' 20 elapsed', data%clock_now - data%clock_start
-     IF ( data%printw ) WRITE( data%out, "( A, ' statement 20' )" ) prefix
+     data%set_printw = control%out > 0 .AND. control%print_level >= 4
+     IF ( data%set_printw )                                                    &
+       WRITE( control%out, "( A, ' statement 20' )" ) prefix
 
 !  control the output printing
 

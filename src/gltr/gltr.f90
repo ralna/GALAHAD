@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.0 - 19/02/2018 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 3.2 - 25/02/2018 AT 07:45 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ G L T R  double  M O D U L E  *-*-*-*-*-*-*-
 
@@ -100,9 +100,9 @@
 
         INTEGER :: extra_vectors = 0
 
-!   output stream for debug Ritz values        
+!   the unit number for writing debug Ritz values
 
-        INTEGER :: out_ritz = 34
+        INTEGER :: ritz_printout_device = 34
 
 !   the iteration stops successfully when the gradient in the M(inverse) norm
 !    is smaller than max( stop_relative * initial M(inverse)
@@ -111,14 +111,14 @@
         REAL ( KIND = wp ) :: stop_relative = epsmch
         REAL ( KIND = wp ) :: stop_absolute = zero
 
-!   the iteration stops if the objective-function value is lower than f_min
-
-        REAL ( KIND = wp ) :: f_min = - ( biginf / two )
-
 !   an estimate of the solution that gives at least %fraction_opt times
 !    the optimal objective value will be found
 
         REAL ( KIND = wp ) :: fraction_opt = one
+
+!   the iteration stops if the objective-function value is lower than f_min
+
+        REAL ( KIND = wp ) :: f_min = - ( biginf / two )
 
 !   the smallest value that the square of the M norm of the gradient of the
 !    the objective may be before it is considered to be zero
@@ -145,19 +145,24 @@
 
         LOGICAL :: equality_problem = .FALSE.
 
-!   if %space_critical true, every effort will be made to use as little
-!     space as possible. This may result in longer computation time
+!  if %space_critical true, every effort will be made to use as little
+!    space as possible. This may result in longer computation time
 
         LOGICAL :: space_critical = .FALSE.
 
-!   if %deallocate_error_fatal is true, any array/pointer deallocation error
-!     will terminate execution. Otherwise, computation will continue
+!  if %deallocate_error_fatal is true, any array/pointer deallocation error
+!    will terminate execution. Otherwise, computation will continue
 
         LOGICAL :: deallocate_error_fatal = .FALSE.
 
-!   should the Ritz values be written to the debug stream?       
+!  should the Ritz values be written to the debug stream?
 
-        LOGICAL :: print_ritz = .FALSE.
+        LOGICAL :: print_ritz_values = .FALSE.
+
+!  name of debug file containing the Ritz values
+
+        CHARACTER ( LEN = 30 ) :: ritz_file_name =                             &
+          "gltr_ritz.dat"  // REPEAT( ' ', 17 )
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
 !   where %prefix contains the required string enclosed in
@@ -333,15 +338,16 @@
 !   absolute-accuracy-required                      0.0
 !   fraction-optimality-required                    1.0
 !   small-f-stop                                    - 1.0D+100
-!   constant-term-in-objective                      0.0
 !   zero-gradient-tolerance                         2.0E-15
+!   constant-term-in-objective                      0.0
 !   two-norm-trust-region                           T
 !   stop-as-soon-as-boundary-encountered            F
 !   solution-is-likely-on-boundary                  F
 !   equality-problem                                F
 !   space-critical                                  F
 !   deallocate-error-fatal                          F
-!   print-ritz                                      F
+!   print-ritz-values                               F
+!   ritz-file-name                                  gltr_ritz.dat
 !   output-line-prefix                              ""
 !  END GLTR SPECIFICATIONS
 
@@ -355,48 +361,71 @@
 
 !  Local variables
 
-      INTEGER, PARAMETER :: lspec = 34
+      INTEGER, PARAMETER :: error = 1
+      INTEGER, PARAMETER :: out = error + 1
+      INTEGER, PARAMETER :: print_level = out + 1
+      INTEGER, PARAMETER :: itmax = print_level + 1
+      INTEGER, PARAMETER :: Lanczos_itmax = itmax + 1
+      INTEGER, PARAMETER :: extra_vectors = Lanczos_itmax + 1
+      INTEGER, PARAMETER :: ritz_printout_device = extra_vectors + 1
+      INTEGER, PARAMETER :: stop_relative = ritz_printout_device + 1
+      INTEGER, PARAMETER :: stop_absolute = stop_relative + 1
+      INTEGER, PARAMETER :: fraction_opt = stop_absolute + 1
+      INTEGER, PARAMETER :: rminvr_zero = fraction_opt + 1
+      INTEGER, PARAMETER :: f_0 = rminvr_zero + 1
+      INTEGER, PARAMETER :: f_min = f_0 + 1
+      INTEGER, PARAMETER :: unitm = f_min + 1
+      INTEGER, PARAMETER :: steihaug_toint = unitm + 1
+      INTEGER, PARAMETER :: boundary = steihaug_toint + 1
+      INTEGER, PARAMETER :: equality_problem = boundary + 1
+      INTEGER, PARAMETER :: space_critical = equality_problem + 1
+      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
+      INTEGER, PARAMETER :: print_ritz_values = deallocate_error_fatal + 1
+      INTEGER, PARAMETER :: ritz_file_name =  print_ritz_values + 1
+      INTEGER, PARAMETER :: prefix = ritz_file_name + 1
+      INTEGER, PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'GLTR'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
-!  Define the keywords
+!  define the keywords
 
      spec%keyword = ''
 
-!  Integer key-words
+!  integer key-words
 
-      spec(  1 )%keyword = 'error-printout-device'
-      spec(  2 )%keyword = 'printout-device'
-      spec(  3 )%keyword = 'print-level'
-      spec(  4 )%keyword = 'maximum-number-of-iterations'
-      spec(  5 )%keyword = 'maximum-number-of-Lanczos-iterations'
-      spec( 18 )%keyword = 'number-extra-n-vectors-used'
-      spec( 20 )%keyword = 'ritz-printout-device'
-      
-!  Real key-words
+      spec( error )%keyword = 'error-printout-device'
+      spec( out )%keyword = 'printout-device'
+      spec( print_level )%keyword = 'print-level'
+      spec( itmax )%keyword = 'maximum-number-of-iterations'
+      spec( Lanczos_itmax )%keyword = 'maximum-number-of-Lanczos-iterations'
+      spec( extra_vectors )%keyword = 'number-extra-n-vectors-used'
+      spec( ritz_printout_device )%keyword = 'ritz-printout-device'
 
-      spec(  6 )%keyword = 'relative-accuracy-required'
-      spec(  7 )%keyword = 'absolute-accuracy-required'
-      spec(  8 )%keyword = 'fraction-optimality-required'
-      spec(  9 )%keyword = 'constant-term-in-objective'
-      spec( 17 )%keyword = 'zero-gradient-tolerance'
-      spec( 19 )%keyword = 'small-f-stop'
+!  real key-words
 
-!  Logical key-words
+      spec( stop_relative )%keyword = 'relative-accuracy-required'
+      spec( stop_absolute )%keyword = 'absolute-accuracy-required'
+      spec( fraction_opt )%keyword = 'fraction-optimality-required'
+      spec( rminvr_zero )%keyword = 'zero-gradient-tolerance'
+      spec( f_0 )%keyword = 'constant-term-in-objective'
+      spec( f_min )%keyword = 'small-f-stop'
 
-      spec( 10 )%keyword = 'two-norm-trust-region'
-      spec( 11 )%keyword = 'stop-as-soon-as-boundary-encountered'
-      spec( 12 )%keyword = 'solution-is-likely-on-boundary'
-      spec( 13 )%keyword = 'equality-problem'
-      spec( 14 )%keyword = 'space-critical'
-      spec( 15 )%keyword = 'deallocate-error-fatal'
-      spec( 21 )%keyword = 'print-ritz'
+!  logical key-words
 
-!  Character key-words
+      spec( unitm )%keyword = 'two-norm-trust-region'
+      spec( steihaug_toint )%keyword = 'stop-as-soon-as-boundary-encountered'
+      spec( boundary )%keyword = 'solution-is-likely-on-boundary'
+      spec( equality_problem )%keyword = 'equality-problem'
+      spec( space_critical )%keyword = 'space-critical'
+      spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
+      spec( print_ritz_values )%keyword = 'print-ritz-values'
 
-!     spec( 16 )%keyword = 'output-line-prefix'
+!  character key-words
 
-!  Read the specfile
+      spec( ritz_file_name )%keyword = 'ritz-file-name'
+      spec( prefix )%keyword = 'output-line-prefix'
+
+!  read the specfile
 
       IF ( PRESENT( alt_specname ) ) THEN
         CALL SPECFILE_read( device, alt_specname, spec, lspec, control%error )
@@ -404,61 +433,84 @@
         CALL SPECFILE_read( device, specname, spec, lspec, control%error )
       END IF
 
-!  Interpret the result
+!  interpret the result
 
 !  Set integer values
 
-      CALL SPECFILE_assign_value( spec( 1 ), control%error,                    &
+      CALL SPECFILE_assign_value( spec( error ),                               &
+                                  control%error,                               &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 2 ), control%out,                      &
+      CALL SPECFILE_assign_value( spec( out ),                                 &
+                                  control%out,                                 &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 3 ), control%print_level,              &
+      CALL SPECFILE_assign_value( spec( print_level ),                         &
+                                  control%print_level,                         &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 4 ), control%itmax,                    &
+      CALL SPECFILE_assign_value( spec( itmax ),                               &
+                                  control%itmax,                               &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 5 ), control%Lanczos_itmax,            &
+      CALL SPECFILE_assign_value( spec( Lanczos_itmax ),                       &
+                                  control%Lanczos_itmax,                       &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 18 ), control%extra_vectors,           &
+      CALL SPECFILE_assign_value( spec( extra_vectors ),                       &
+                                  control%extra_vectors,                       &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 20 ), control%out_ritz,                &
+      CALL SPECFILE_assign_value( spec( ritz_printout_device ),                &
+                                  control%ritz_printout_device,                &
                                   control%error )
 
 !  Set real values
 
-      CALL SPECFILE_assign_value( spec( 6 ), control%stop_relative,            &
+      CALL SPECFILE_assign_value( spec( stop_relative ),                       &
+                                  control%stop_relative,                       &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 7 ), control%stop_absolute,            &
+      CALL SPECFILE_assign_value( spec( stop_absolute ),                       &
+                                  control%stop_absolute,                       &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 8 ), control%fraction_opt,             &
+      CALL SPECFILE_assign_value( spec( fraction_opt ),                        &
+                                  control%fraction_opt,                        &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 9 ), control%f_0,                      &
+      CALL SPECFILE_assign_value( spec( f_min ),                               &
+                                  control%f_min,                               &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 17 ), control%rminvr_zero,             &
+      CALL SPECFILE_assign_value( spec( rminvr_zero ),                         &
+                                  control%rminvr_zero,                         &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 19 ), control%f_min,                   &
+      CALL SPECFILE_assign_value( spec( f_0 ),                                 &
+                                  control%f_0,                                 &
                                   control%error )
 
 !  Set logical values
 
-      CALL SPECFILE_assign_value( spec( 10 ), control%unitm,                   &
+      CALL SPECFILE_assign_value( spec( unitm ),                               &
+                                  control%unitm,                               &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 11 ), control%steihaug_toint,          &
+      CALL SPECFILE_assign_value( spec( steihaug_toint ),                      &
+                                  control%steihaug_toint,                      &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 12 ), control%boundary,                &
+      CALL SPECFILE_assign_value( spec( boundary ),                            &
+                                  control%boundary,                            &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 13 ), control%equality_problem,        &
+      CALL SPECFILE_assign_value( spec( equality_problem ),                    &
+                                  control%equality_problem,                    &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 14 ), control%space_critical,          &
+      CALL SPECFILE_assign_value( spec( space_critical ),                      &
+                                  control%space_critical,                      &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 15 ),                                  &
+      CALL SPECFILE_assign_value( spec( deallocate_error_fatal ),              &
                                   control%deallocate_error_fatal,              &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( 21 ), control%print_ritz,              &
+      CALL SPECFILE_assign_value( spec( print_ritz_values ),                   &
+                                  control%print_ritz_values,                   &
                                   control%error )
 
 !  Set charcter values
 
-      CALL SPECFILE_assign_value( spec( 16 ), control%prefix,                  &
+      CALL SPECFILE_assign_value( spec( ritz_file_name ),                      &
+                                  control%ritz_file_name,                      &
+                                  control%error )
+      CALL SPECFILE_assign_value( spec( prefix ),                              &
+                                  control%prefix,                              &
                                   control%error )
 
       RETURN
@@ -529,6 +581,7 @@
 
       INTEGER :: dim_sub, it, itp1, nroots, info
       REAL ( KIND = wp ) :: alpha, f_tol, other_root, xmx_trial, u_norm
+      LOGICAL :: filexx
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -621,6 +674,21 @@
       IF ( .NOT. control%steihaug_toint ) THEN
         data%titmax = 100
 
+!  if required, open a file to write the Ritz values data
+
+        IF ( control%print_ritz_values ) THEN
+          INQUIRE( FILE = control%ritz_file_name, EXIST = filexx )
+          IF ( filexx ) THEN
+            OPEN( control%ritz_printout_device,                                &
+                  FILE = control%ritz_file_name, FORM = 'FORMATTED',           &
+                  STATUS = 'OLD', IOSTAT = info )
+          ELSE
+            OPEN( control%ritz_printout_device,                                &
+                  FILE = control%ritz_file_name, FORM = 'FORMATTED',           &
+                  STATUS = 'NEW', IOSTAT = info )
+          END IF
+        END IF
+
 !  Allocate space for the Lanczos tridiagonal
 
         array_name = 'gltr: D'
@@ -639,7 +707,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= 0 ) GO TO 960
 
-        IF ( control%print_ritz ) THEN
+        IF ( control%print_ritz_values ) THEN
           array_name = 'gltr: E'
           CALL SPACE_resize_array( data%itmax + 2, data%E,                     &
               inform%status, inform%alloc_status, array_name = array_name,     &
@@ -656,7 +724,7 @@
               bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= 0 ) GO TO 960
         END IF
-        
+
 !  Allocate space for the factors of the Lanczos tridiagonal
 
         array_name = 'gltr: D_fact'
@@ -1221,17 +1289,18 @@
 
 !  just in case the Ritz values are useful ...
 
-      IF ( control%print_ritz .AND. .NOT. control%steihaug_toint ) THEN
+      IF ( control%print_ritz_values .AND. .NOT. control%steihaug_toint ) THEN
         data%E( : data%iter ) = data%D( 0 : data%itm1 )
         data%OFFE( : data%itm1 ) = data%OFFD( : data%itm1)
         CALL STERF( data%iter, data%E, data%OFFE, info )
         IF ( info == 0 ) THEN
           IF ( .NOT. ( control%steihaug_toint .OR. data%interior ) ) THEN
-            WRITE( control%out_ritz, * ) data%iter, data%LAMBDA( data%iter )
+            WRITE( control%ritz_printout_device, * )                           &
+              data%iter, data%LAMBDA( data%iter )
           ELSE
-            WRITE( control%out_ritz, * ) data%iter, zero
+            WRITE( control%ritz_printout_device, * ) data%iter, zero
           END IF
-          WRITE( control%out_ritz, * ) data%E( : data%iter )
+          WRITE( control%ritz_printout_device, * ) data%E( : data%iter )
         ELSE
           IF ( data%printi ) WRITE( control%out, * )                           &
             info, ' warning: unconverged Ritz values out of ', data%iter
@@ -1653,6 +1722,8 @@
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      IF ( control%print_ritz_values ) CLOSE( control%ritz_printout_device )
 
       RETURN
 
