@@ -151,7 +151,7 @@
       mwPointer input_x( 1 ), output_f( 2 ), output_g( 2 ), output_h( 2 )
       mwPointer :: x_pr, s_in, s_pr, f_in, f_pr, g_in, g_pr, h_in, h_pr
       mwSize :: status
-      mwSize :: m_mwsize, n_nwsize, nn
+      mwSize :: m_mwsize, n_mwsize, nn
 
       CHARACTER ( len = 80 ) :: output_unit, filename
       CHARACTER ( len = 80 ) :: debug = REPEAT( ' ', 80 )
@@ -162,9 +162,6 @@
       INTEGER :: iores
       CHARACTER ( len = 8 ) :: mode
       TYPE ( ARC_pointer_type ) :: ARC_pointer
-!     mwPointer :: IW
-!     INTEGER * 8, ALLOCATABLE, DIMENSION( : ) :: IW
-!     mwSize, ALLOCATABLE, DIMENSION( : ) :: IW
       REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: IW
 
 !  arguments for ARC
@@ -362,7 +359,6 @@
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
           nlp%H%row( : nlp%H%ne ) = INT( IW( : nlp%H%ne ) )
           nlp%H%col( : nlp%H%ne ) = INT( IW( nlp%H%ne + 1 : ) )
-!         DEALLOCATE( IW, STAT = alloc_stat )
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' deallocation failure ' )
           ALLOCATE( nlp%H%val( nlp%H%ne ), STAT = alloc_stat )
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
@@ -379,8 +375,8 @@
 !  set for initial entry
 
         inform%status = 1
-        m_mwsize = 1 ; n_nwsize = n
-        input_x( 1 ) = mxCreateDoubleMatrix( m_mwsize, n_nwsize, 0 )
+        m_mwsize = 1 ; n_mwsize = n
+        input_x( 1 ) = mxCreateDoubleMatrix( m_mwsize, n_mwsize, 0 )
 
 !  loop to solve problem
 
@@ -520,6 +516,7 @@
         IF ( ALLOCATED( nlp%H%val ) ) DEALLOCATE( nlp%H%val, STAT = info )
         IF ( ALLOCATED( nlp%G ) ) DEALLOCATE( nlp%G, STAT = info )
         IF ( ALLOCATED( nlp%X ) ) DEALLOCATE( nlp%X, STAT = info )
+        IF ( ALLOCATED( IW ) ) DEALLOCATE( IW, STAT = alloc_stat )
         CALL ARC_terminate( data, control, inform )
       END IF
 

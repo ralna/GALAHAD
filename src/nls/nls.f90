@@ -4122,7 +4122,7 @@
        CASE ( gauss_to_newton_model )
          WRITE( data%out, "( A, '  Gauss-Newton-to-Newton model used' )") prefix
        END SELECT
-       WRITE( data%out, "( A, '  Regularization power = ', F4.1 )" )           &
+       WRITE( data%out, "( A, '  Regularization power =', F4.1 )" )            &
           prefix, data%power
        IF ( data%control%magic_step )                                          &
          WRITE( data%out, "( A, '  Magic step used' )" ) prefix
@@ -6970,7 +6970,7 @@
          WRITE( data%out, "( A, '  Regularized tensor Gauus-Newton then',      &
        &   ' Newton model used'  )" ) prefix
        END SELECT
-       WRITE( data%out, "( A, '  Regularization power = ', F4.1 )" )           &
+       WRITE( data%out, "( A, '  Regularization power =', F4.1 )" )            &
           prefix, data%power
        IF ( data%control%subproblem_control%subproblem_direct ) THEN
 !      IF ( data%control%subproblem_direct ) THEN

@@ -634,7 +634,8 @@
       data%one_pass = sigma == zero .OR. ( p == two .AND. .NOT. PRESENT( O ) )
 !     data%one_pass = .FALSE.
 
-      data%iter = 0 ; data%iter_descent = 0 ; data%descent = ' '
+      data%iter = 0 ; data%itm1 = - 1
+      data%iter_descent = 0 ; data%descent = ' '
       data%itmax = control%itmax ; IF ( data%itmax < 0 ) data%itmax = n
       data%printi = control%out > 0 .AND. control%print_level >= 1
       data%printd = control%out > 0 .AND. control%print_level >= 2
@@ -742,6 +743,7 @@
                   FILE = control%ritz_file_name, FORM = 'FORMATTED',           &
                   STATUS = 'NEW', IOSTAT = info )
           END IF
+          WRITE( control%ritz_printout_device, * ) 'glrt', n, sigma
         END IF
 
 !  Allocate space for the Lanczos tridiagonal
@@ -1043,6 +1045,28 @@
           data%C_sub( 0 ) = data%pgnorm
         END IF
 
+!  just in case the Ritz values are useful ...
+
+        IF ( control%print_ritz_values  ) THEN
+          data%E( : data%iter ) = data%D( 0 : data%itm1 )
+          data%OFFE( : data%itm1 ) = data%OFFD( : data%itm1)
+          CALL STERF( data%iter, data%E, data%OFFE, info )
+          IF ( info == 0 ) THEN
+            IF (  data%iter /= 0 ) THEN
+              WRITE( control%ritz_printout_device, * )                         &
+                data%iter, data%LAMBDA( data%iter ), data%offdiag,             &
+                ABS( data%x_last * data%offdiag )
+            ELSE
+              WRITE( control%ritz_printout_device, * )                         &
+                data%iter, zero, zero, data%pgnorm
+            END IF
+            WRITE( control%ritz_printout_device, * ) data%E( : data%iter )
+          ELSE
+            IF ( data%printi ) WRITE( control%out, * )                         &
+              info, ' warning: unconverged Ritz values out of ', data%iter
+          END IF
+        END IF
+
 !  Print details of the latest iteration
 
 !if ( data%itm1 >= 1 ) then
@@ -1058,10 +1082,12 @@
           IF ( MOD( data%iter, 25 ) == 0 .OR. data%printd )                    &
             WRITE( control%out, 2000 ) prefix
           IF ( data%iter /= 0 ) THEN
-            WRITE( control%out, "( A, I7, ES16.8, ES9.2, ES15.8, 2I5, A )" )   &
-              prefix, data%iter, data%MIN_f_regularized( data%itm1 )           &
+            WRITE( control%out, "( A, I7, ES16.8, ES9.2, ES15.8, ES9.2,        &
+              &  2I5, A )" ) prefix, data%iter,                                &
+              data%MIN_f_regularized( data%itm1 )                              &
               + control%f_0, ABS( data%x_last * data%offdiag ),                &
-              data%LAMBDA( data%itm1 ), data%titer, data%tinfo, data%descent
+              data%LAMBDA( data%itm1 ), data%offdiag,                          &
+              data%titer, data%tinfo, data%descent
 !write(6,"(2ES12.4)" ) data%x_last, data%offdiag
           ELSE
             WRITE( control%out, "( A, I7, ES16.8, ES9.2, 8X, '-', 6X,          &
@@ -1381,22 +1407,6 @@
         END IF
         data%try_warm = .TRUE.
         data%LAMBDA( data%iter ) = data%LAMBDA( data%itm1 )
-
-!  just in case the Ritz values are useful ...
-
-        IF ( control%print_ritz_values  ) THEN
-          data%E( : data%iter ) = data%D( 0 : data%itm1 )
-          data%OFFE( : data%itm1 ) = data%OFFD( : data%itm1)
-          CALL STERF( data%iter, data%E, data%OFFE, info )
-          IF ( info == 0 ) THEN
-            WRITE( control%ritz_printout_device, * )                           &
-                data%iter, data%LAMBDA( data%iter )
-            WRITE( control%ritz_printout_device, * ) data%E( : data%iter )
-          ELSE
-            IF ( data%printi ) WRITE( control%out, * )                         &
-              info, ' warning: unconverged Ritz values out of ', data%iter
-          END IF
-        END IF
 
 !  Update the residual
 
@@ -1750,7 +1760,7 @@
 !  Non-executable statements
 
  2000 FORMAT( /, A, '   Iter    objective     pgnorm      lambda   ',          &
-                    '    it info' )
+                    '      gamma  it info' )
  2010 FORMAT( /, A, '   Iter       f          pgnorm ' )
 !2020 FORMAT( /, ' MIN_f, it_exit, it_total ', ES22.14, 2I6 )
 

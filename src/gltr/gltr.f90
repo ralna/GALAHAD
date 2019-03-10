@@ -626,7 +626,7 @@
       IF ( n <= 0 ) GO TO 940
       IF ( radius <= zero ) GO TO 950
 
-      data%iter = 0
+      data%iter = 0 ; data%itm1 = - 1
       data%itmax = control%itmax ; IF ( data%itmax < 0 ) data%itmax = n
       data%Lanczos_itmax = control%Lanczos_itmax
       data%switch_to_Lanczos = .FALSE.
@@ -687,6 +687,7 @@
                   FILE = control%ritz_file_name, FORM = 'FORMATTED',           &
                   STATUS = 'NEW', IOSTAT = info )
           END IF
+          WRITE( control%ritz_printout_device, * ) 'gltr', n, radius
         END IF
 
 !  Allocate space for the Lanczos tridiagonal
@@ -928,10 +929,10 @@
         data%diag = data%beta / data%alpha
 !       data%offdiag = - SQRT( data%beta ) / data%alpha
         data%offdiag = SQRT( data%beta ) / ABS( data%alpha )
-      ELSE
 
 !  Compute the stopping tolerance
 
+      ELSE
         data%diag = zero ; data%xmx = zero
         data%stop = MAX( control%stop_relative * data%pgnorm,                  &
                          control%stop_absolute )
@@ -939,6 +940,33 @@
           WRITE( control%out, "( /, A, ' stopping tolerance = ',               &
          &         ES10.4, ', radius = ', ES10.4 )" ) prefix, data%stop, radius
         IF ( .NOT. control%steihaug_toint ) data%C_sub( 0 ) = data%pgnorm
+      END IF
+
+!  just in case the Ritz values are useful ...
+
+      IF ( control%print_ritz_values .AND. .NOT. control%steihaug_toint ) THEN
+        data%E( : data%iter ) = data%D( 0 : data%itm1 )
+        data%OFFE( : data%itm1 ) = data%OFFD( : data%itm1 )
+        CALL STERF( data%iter, data%E, data%OFFE, info )
+        IF ( info == 0 ) THEN
+          IF ( control%steihaug_toint .OR. data%interior ) THEN
+            IF (  data%iter /= 0 ) THEN
+              WRITE( control%ritz_printout_device, * )                         &
+                data%iter, zero, data%offdiag, data%pgnorm
+            ELSE
+              WRITE( control%ritz_printout_device, * )                         &
+                data%iter, zero, zero, data%pgnorm
+            END IF
+          ELSE
+            WRITE( control%ritz_printout_device, * )                           &
+              data%iter, data%LAMBDA( data%iter ), data%offdiag,               &
+              ABS( data%x_last * data%offdiag )
+          END IF
+          WRITE( control%ritz_printout_device, * ) data%E( : data%iter )
+        ELSE
+          IF ( data%printi ) WRITE( control%out, * )                           &
+            info, ' warning: unconverged Ritz values out of ', data%iter
+        END IF
       END IF
 
 !  Print details of the latest iteration
@@ -978,10 +1006,12 @@
           END IF
         ELSE
           IF ( data%iter /= 0 ) THEN
-            WRITE( control%out, "( A, I7, ES16.8, ES9.2, ES15.8, 2I5 )" )      &
+            WRITE( control%out, "( A, I7, ES16.8, ES9.2, ES15.8, ES9.2, 2I5 )")&
                    prefix, data%iter, data%MIN_f( data%itm1 ) + control%f_0,   &
                    ABS( data%x_last * data%offdiag ),                          &
-                   data%LAMBDA( data%itm1 ), data%titer, data%tinfo
+!                  data%LAMBDA( data%itm1 ),  ABS( data%x_last ),              &
+                   data%LAMBDA( data%itm1 ), data%offdiag,                     &
+                   data%titer, data%tinfo
           END IF
         END IF
       END IF
@@ -1287,26 +1317,6 @@
 
       END IF
 
-!  just in case the Ritz values are useful ...
-
-      IF ( control%print_ritz_values .AND. .NOT. control%steihaug_toint ) THEN
-        data%E( : data%iter ) = data%D( 0 : data%itm1 )
-        data%OFFE( : data%itm1 ) = data%OFFD( : data%itm1)
-        CALL STERF( data%iter, data%E, data%OFFE, info )
-        IF ( info == 0 ) THEN
-          IF ( .NOT. ( control%steihaug_toint .OR. data%interior ) ) THEN
-            WRITE( control%ritz_printout_device, * )                           &
-              data%iter, data%LAMBDA( data%iter )
-          ELSE
-            WRITE( control%ritz_printout_device, * ) data%iter, zero
-          END IF
-          WRITE( control%ritz_printout_device, * ) data%E( : data%iter )
-        ELSE
-          IF ( data%printi ) WRITE( control%out, * )                           &
-            info, ' warning: unconverged Ritz values out of ', data%iter
-        END IF
-      END IF
-
 !  Update the residual
 
       R = R + data%alpha * VECTOR
@@ -1568,7 +1578,7 @@
 !  Non-executable statements
 
  2000 FORMAT( /, A, '  Iter        f         pgnorm      lambda    ',          &
-                    ' tr it info' )
+                    '   gamma  tr it info' )
  2010 FORMAT( /, A, ' Boundary encountered. Switching to Lanczos mode ' )
 !2020 FORMAT( /, ' MIN_f, it_exit, it_total ', ES22.14, 2I6 )
 

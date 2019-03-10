@@ -47,6 +47,9 @@ MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
 
 MAT_BASIC = basics $(MLG)(galahad_matlab.o) $(MLG)(galahad_transfer_matlab.o)
 MAT_DEMO = $(MAT_BASIC)
+MAT_DEBUG = $(MAT_BASIC)
+MAT_BSC = $(MAT_BASIC) $(MLG)(galahad_bsc_matlab_types.o)
+MAT_ROOTS = $(MAT_BASIC) $(MLG)(galahad_roots_matlab_types.o)
 MAT_SILS = $(MAT_BASIC) $(MLG)(galahad_sils_matlab_types.o)
 MAT_LSRT = $(MAT_BASIC) $(MLG)(galahad_lsrt_matlab_types.o)
 MAT_LSTR = $(MAT_BASIC) $(MLG)(galahad_lstr_matlab_types.o)
@@ -70,6 +73,8 @@ MAT_TRU = $(MAT_GLTR) $(MAT_TRS) $(MAT_PSLS) $(MAT_LMS) $(MAT_SHA) \
           $(MLG)(galahad_tru_matlab_types.o)
 MAT_ARC = $(MAT_GLRT) $(MAT_RQS) $(MAT_PSLS) $(MAT_LMS) $(MAT_SHA) \
           $(MLG)(galahad_arc_matlab_types.o)
+MAT_NLS = $(MAT_GLRT) $(MAT_RQS) $(MAT_PSLS) $(MAT_BSC) $(MAT_ROOTS) \
+          $(MLG)(galahad_nls_matlab_types.o)
 MAT_LLST = $(MAT_IR) $(MAT_SBLS) $(MLG)(galahad_llst_matlab_types.o)
 MAT_GLRT = $(MAT_BASIC) $(MLG)(galahad_glrt_matlab_types.o)
 MAT_GLTR = $(MAT_BASIC) $(MLG)(galahad_gltr_matlab_types.o)
@@ -96,10 +101,10 @@ SUCC_MATLAB = precision version) for Matlab compiled successfully
 all: all_$(PRECIS)
 
 all_single: basics sils lpa lpb cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt \
-            qpa qpb qpc qp rqs sbls trs wcp tru arc
+            qpa qpb qpc qp rqs sbls trs wcp tru arc nls
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 all_double: basics sils lpa lpb cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt \
-            qpa qpb qpc qp rqs sbls trs wcp tru arc
+            qpa qpb qpc qp rqs sbls trs wcp tru arc nls
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 
 #  everything including current developments
@@ -321,6 +326,18 @@ l2rt: $(MAT_L2RT) galahad_l2rt.F90
 	$(RM) galahad_l2rt1.F90
 	@printf '[ OK ]\n'
 
+#  nls
+
+nls: $(MAT_NLS) galahad_nls.F90
+	( cd ../nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     nls_silent PRECIS=double PWD=$(PWD)/../nls )
+	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_nls"
+	$(SED) -f $(LSEDS) galahad_nls.F90 > galahad_nls1.F90
+	$(MEX) galahad_nls1.F90 -output galahad_nls \
+          -L$(OBJD) $(LIBS)  $(MFLAGS)
+	$(RM) galahad_nls1.F90
+	@printf '[ OK ]\n'
+
 #  qpa
 
 qpa: $(MAT_QPA) galahad_qpa.F90
@@ -475,6 +492,16 @@ demo: $(MAT_DEMO) galahad_demo.F90
 	$(RM) galahad_demo1.F90
 	@printf '[ OK ]\n'
 
+#  debug
+
+debug: $(MAT_DEBUG) galahad_debug.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_debug"
+	$(SED) -f $(LSEDS) galahad_debug.F90 > galahad_debug1.F90
+	$(MEX) galahad_debug1.F90 -output galahad_debug \
+          -L$(OBJD) $(LIBS)  $(MFLAGS)
+	$(RM) galahad_debug1.F90
+	@printf '[ OK ]\n'
+
 #  Generic GALAHAD interface to Mex
 
 #  main copying utilities
@@ -553,6 +580,23 @@ $(MLG)(galahad_bqpb_matlab_types.o): galahad_bqpb_matlab_types.F90
 	cd $(OBJ) ; $(MARR) galahad_bqpb_matlab_types.o
 	$(RM) $(OBJ)/galahad_bqpb_matlab_types.o \
               $(OBJ)/galahad_bqpb_matlab_types.F90
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  bsc
+
+galahad_bsc_matlab_types.o: $(MLG)(galahad_bsc_matlab_types.o)
+
+$(MLG)(galahad_bsc_matlab_types.o): galahad_bsc_matlab_types.F90
+	( cd ../bsc ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     bsc_silent PRECIS=double PWD=$(PWD)/../bsc )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_bsc_matlab_types"
+	$(CP) galahad_bsc_matlab_types.F90 $(OBJ)/galahad_bsc_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_bsc_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_bsc_matlab_types.o
+	$(RM) $(OBJ)/galahad_bsc_matlab_types.o \
+              $(OBJ)/galahad_bsc_matlab_types.F90
+	$(MRMARFILE) galahad_nls_matlab_types.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -691,6 +735,7 @@ $(MLG)(galahad_glrt_matlab_types.o): galahad_glrt_matlab_types.F90
 	$(RM) $(OBJ)/galahad_glrt_matlab_types.o \
               $(OBJ)/galahad_glrt_matlab_types.F90
 	$(MRMARFILE) galahad_arc_matlab_types.o
+	$(MRMARFILE) galahad_nls_matlab_types.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -744,23 +789,6 @@ $(MLG)(galahad_lms_matlab_types.o): galahad_lms_matlab_types.F90
 	cd $(OBJ) ; $(MARR) galahad_lms_matlab_types.o
 	$(RM) $(OBJ)/galahad_lms_matlab_types.o \
               $(OBJ)/galahad_lms_matlab_types.F90
-	$(MRMARFILE) galahad_tru_matlab_types.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-#  sha
-
-galahad_sha_matlab_types.o: $(MLG)(galahad_sha_matlab_types.o)
-
-$(MLG)(galahad_sha_matlab_types.o): galahad_sha_matlab_types.F90
-	( cd ../sha ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     sha_silent PRECIS=double PWD=$(PWD)/../sha )
-	@printf ' %-9s %-15s\t' "Compiling" "galahad_sha_matlab_types"
-	$(CP) galahad_sha_matlab_types.F90 $(OBJ)/galahad_sha_matlab_types.F90
-	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_sha_matlab_types.F90
-	cd $(OBJ) ; $(MARR) galahad_sha_matlab_types.o
-	$(RM) $(OBJ)/galahad_sha_matlab_types.o \
-              $(OBJ)/galahad_sha_matlab_types.F90
 	$(MRMARFILE) galahad_tru_matlab_types.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
@@ -852,6 +880,22 @@ $(MLG)(galahad_l2rt_matlab_types.o): galahad_l2rt_matlab_types.F90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
+# nls
+
+galahad_nls_matlab_types.o: $(MLG)(galahad_nls_matlab_types.o)
+
+$(MLG)(galahad_nls_matlab_types.o): galahad_nls_matlab_types.F90
+	( cd ../nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     nls_silent PRECIS=double PWD=$(PWD)/../nls )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_nls_matlab_types"
+	$(CP) galahad_nls_matlab_types.F90 $(OBJ)/galahad_nls_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_nls_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_nls_matlab_types.o
+	$(RM) $(OBJ)/galahad_nls_matlab_types.o \
+              $(OBJ)/galahad_nls_matlab_types.F90
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
 #  presolve
 
 galahad_presolve_matlab_types.o: $(MLG)(galahad_presolve_matlab_types.o)
@@ -867,6 +911,25 @@ $(MLG)(galahad_presolve_matlab_types.o): galahad_presolve_matlab_types.F90
 	$(RM) $(OBJ)/galahad_presolve_matlab_types.o \
               $(OBJ)/galahad_presolve_matlab_types.F90
 	$(MRMARFILE) galahad_qp_matlab_types.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  psls
+
+galahad_psls_matlab_types.o: $(MLG)(galahad_psls_matlab_types.o)
+
+$(MLG)(galahad_psls_matlab_types.o): galahad_psls_matlab_types.F90
+	( cd ../psls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     psls_silent PRECIS=double PWD=$(PWD)/../psls )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_psls_matlab_types"
+	$(CP) galahad_psls_matlab_types.F90 $(OBJ)/galahad_psls_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_psls_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_psls_matlab_types.o
+	$(RM) $(OBJ)/galahad_psls_matlab_types.o \
+              $(OBJ)/galahad_psls_matlab_types.F90
+	$(MRMARFILE) galahad_tru_matlab_types.o
+	$(MRMARFILE) galahad_arc_matlab_types.o
+	$(MRMARFILE) galahad_nls_matlab_types.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -937,6 +1000,24 @@ $(MLG)(galahad_qp_matlab_types.o): galahad_qp_matlab_types.F90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
+#  roots
+
+galahad_roots_matlab_types.o: $(MLG)(galahad_roots_matlab_types.o)
+
+$(MLG)(galahad_roots_matlab_types.o): galahad_roots_matlab_types.F90
+	( cd ../roots ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     roots_silent PRECIS=double PWD=$(PWD)/../roots )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_roots_matlab_types"
+	$(CP) galahad_roots_matlab_types.F90 \
+              $(OBJ)/galahad_roots_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_roots_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_roots_matlab_types.o
+	$(RM) $(OBJ)/galahad_roots_matlab_types.o \
+              $(OBJ)/galahad_roots_matlab_types.F90
+	$(MRMARFILE) galahad_nls_matlab_types.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
 #  rqs
 
 galahad_rqs_matlab_types.o: $(MLG)(galahad_rqs_matlab_types.o)
@@ -951,6 +1032,7 @@ $(MLG)(galahad_rqs_matlab_types.o): galahad_rqs_matlab_types.F90
 	$(RM) $(OBJ)/galahad_rqs_matlab_types.o \
               $(OBJ)/galahad_rqs_matlab_types.F90
 	$(MRMARFILE) galahad_arc_matlab_types.o
+	$(MRMARFILE) galahad_nls_matlab_types.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -995,6 +1077,23 @@ $(MLG)(galahad_scale_matlab_types.o): galahad_scale_matlab_types.F90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
+#  sha
+
+galahad_sha_matlab_types.o: $(MLG)(galahad_sha_matlab_types.o)
+
+$(MLG)(galahad_sha_matlab_types.o): galahad_sha_matlab_types.F90
+	( cd ../sha ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     sha_silent PRECIS=double PWD=$(PWD)/../sha )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_sha_matlab_types"
+	$(CP) galahad_sha_matlab_types.F90 $(OBJ)/galahad_sha_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_sha_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_sha_matlab_types.o
+	$(RM) $(OBJ)/galahad_sha_matlab_types.o \
+              $(OBJ)/galahad_sha_matlab_types.F90
+	$(MRMARFILE) galahad_tru_matlab_types.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
 #  sils
 
 galahad_sils_matlab_types.o: $(MLG)(galahad_sils_matlab_types.o)
@@ -1026,24 +1125,6 @@ $(MLG)(galahad_sls_matlab_types.o): galahad_sls_matlab_types.F90
               $(OBJ)/galahad_sls_matlab_types.F90
 	$(MRMARFILE) galahad_ir_matlab_types.o
 	$(MRMARFILE) galahad_sbls_matlab_types.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-#  psls
-
-galahad_psls_matlab_types.o: $(MLG)(galahad_psls_matlab_types.o)
-
-$(MLG)(galahad_psls_matlab_types.o): galahad_psls_matlab_types.F90
-	( cd ../psls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     psls_silent PRECIS=double PWD=$(PWD)/../psls )
-	@printf ' %-9s %-15s\t' "Compiling" "galahad_psls_matlab_types"
-	$(CP) galahad_psls_matlab_types.F90 $(OBJ)/galahad_psls_matlab_types.F90
-	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_psls_matlab_types.F90
-	cd $(OBJ) ; $(MARR) galahad_psls_matlab_types.o
-	$(RM) $(OBJ)/galahad_psls_matlab_types.o \
-              $(OBJ)/galahad_psls_matlab_types.F90
-	$(MRMARFILE) galahad_tru_matlab_types.o
-	$(MRMARFILE) galahad_arc_matlab_types.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

@@ -125,16 +125,18 @@ BASICZ = $(LG)(cputim.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(string.o) buildspec_silent minpack
 #        $(SSIDS)
 
-BASICS = $(BASICZ) $(LGS)(symbols.o) $(LGS)(specfile.o) \
-         $(LGS)(rand.o) $(LGS)(oldscale.o) $(LGS)(sort.o) $(LGS)(tools.o) \
-         zd11 $(LGS)(smt.o) qpt $(LGS)(space.o) $(LGS)(string.o) \
-         $(LGS)(trans.o) $(LGS)(scale.o) $(LGS)(roots.o) $(LGS)(norms.o) \
+ROOTSS = $(BASICZ) $(LGS)(symbols.o) $(LGS)(specfile.o) \
+         $(LGS)(sort.o) zd11 $(LGS)(smt.o) $(LGS)(space.o) $(LGS)(roots.o)
+
+ROOTSD = $(BASICZ) $(LGD)(symbols.o) $(LGD)(specfile.o) \
+         $(LGD)(sort.o) zd11 $(LGD)(smt.o) $(LGD)(space.o) $(LGD)(roots.o)
+
+BASICS = $(ROOTSS) $(LGS)(rand.o) $(LGS)(oldscale.o) $(LGS)(tools.o) qpt \
+         $(LGS)(string.o) $(LGS)(trans.o) $(LGS)(scale.o) $(LGS)(norms.o) \
          $(LGS)(checkpoint.o) $(LGS)(opt.o) $(LGS)(convert.o)
 
-BASICD = $(BASICZ) $(LGD)(symbols.o) $(LGD)(specfile.o) \
-         $(LGD)(rand.o) $(LGD)(oldscale.o) $(LGD)(sort.o) $(LGD)(tools.o) \
-         zd11  $(LGD)(smt.o) qpt $(LGD)(space.o) $(LGD)(string.o) \
-         $(LGD)(trans.o) $(LGD)(scale.o) $(LGD)(roots.o) $(LGD)(norms.o) \
+BASICD = $(ROOTSD) $(LGD)(rand.o) $(LGD)(oldscale.o) $(LGD)(tools.o) qpt \
+         $(LGD)(string.o) $(LGD)(trans.o) $(LGD)(scale.o) $(LGD)(norms.o) \
          $(LGD)(checkpoint.o) $(LGD)(opt.o) $(LGD)(convert.o)
 
 #        zd11 $(LGD)(smt.o) qpt $(LGD)(space.o) $(LGD)(string.o) $(LGD)(trans.o)
@@ -439,6 +441,17 @@ scudrunall: scuds scudt
 scurunall: scudrunall scusrunall
 
 # roots
+
+roots_silent: roots_silent_$(PRECIS)
+roots_silent_single: $(ROOTSS)
+roots_silent_double: $(ROOTSD)
+
+roots: roots_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: ROOTS ($(PRECIS) $(SUCC)"
+roots_single: $(ROOTSS)
+	$(RANLIB) $(LGS)
+roots_double: $(ROOTSD)
+	$(RANLIB) $(LGD)
 
 rootssrunall: rootsss rootsst
 rootsdrunall: rootsds rootsdt
