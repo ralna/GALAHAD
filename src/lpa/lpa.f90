@@ -886,7 +886,7 @@
 !  Local variables
 
       INTEGER :: i, j, l, n_depen, nzc, a_ne
-      REAL ( KIND = wp ) :: time_start, time_record, time_now
+      REAL :: time_start, time_now
       REAL ( KIND = wp ) :: time_analyse, time_factorize
       REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
       REAL ( KIND = wp ) :: clock_analyse, clock_factorize, cro_clock_matrix
@@ -1158,7 +1158,8 @@
 !     a_ne = data%A_ptr( data%n + 1 ) - 1
       a_ne = SIZE( data%A_val )
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%preprocess = inform%time%preprocess + time_now - time_start
+      inform%time%preprocess =                                                 &
+        inform%time%preprocess + REAL( time_now - time_start, wp )
       inform%time%clock_preprocess =                                           &
         inform%time%clock_preprocess + clock_now - clock_start
 
@@ -1323,7 +1324,7 @@
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         IF ( ( control%cpu_time_limit >= zero .AND.                            &
-               time_now - time_start > control%cpu_time_limit ) .OR.           &
+             REAL( time_now - time_start, wp ) > control%cpu_time_limit ) .OR. &
              ( control%clock_time_limit >= zero .AND.                          &
                clock_now - clock_start > control%clock_time_limit ) ) THEN
           IF ( printi ) WRITE( control%out,                                    &
@@ -1534,7 +1535,7 @@
 
   800 CONTINUE
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
 
@@ -1553,7 +1554,7 @@
 
   900 CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
       IF ( printi ) WRITE( control%out,                                        &
@@ -1566,7 +1567,7 @@
   910 CONTINUE
       inform%status = GALAHAD_error_allocate
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
       IF ( printi ) WRITE( control%out,                                        &

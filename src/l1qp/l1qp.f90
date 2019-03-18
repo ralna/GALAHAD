@@ -1123,7 +1123,7 @@
 
       INTEGER :: i, j, l, nv, lbd
       INTEGER :: a_ne, h_ne, dual_starting_point
-      REAL ( KIND = wp ) :: time_start, time_record, time_now
+      REAL :: time_start, time_record, time_now
       REAL ( KIND = wp ) :: time_analyse, time_factorize, time_solve
       REAL ( KIND = wp ) :: clock_start, clock_record, clock_now, clock_solve
       REAL ( KIND = wp ) :: clock_analyse, clock_factorize, cro_clock_matrix
@@ -1509,7 +1509,8 @@
                           data%QPP_inform, data%dims, prob,                    &
                           .FALSE., .FALSE., .FALSE. )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%preprocess =                                               &
+          inform%time%preprocess + REAL( time_now - time_record, wp )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
 
@@ -1573,7 +1574,7 @@
                           prob, get_all = .TRUE. )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           inform%time%preprocess =                                             &
-            inform%time%preprocess + time_now - time_record
+            inform%time%preprocess + REAL( time_now - time_record, wp )
           inform%time%clock_preprocess =                                       &
             inform%time%clock_preprocess + clock_now - clock_record
 
@@ -1687,7 +1688,7 @@
           CQP_control%cpu_time_limit = control%cpu_time_limit - time_record
         ELSE
           CQP_control%cpu_time_limit = MIN( CQP_control%cpu_time_limit,        &
-                                         control%cpu_time_limit ) - time_record
+            control%cpu_time_limit ) - REAL( time_record, wp )
         END IF
       END IF
       CALL CLOCK_time( clock_now ) ; clock_record = clock_now - clock_start
@@ -2090,7 +2091,7 @@
       END IF
 
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%CQP_inform%time%total = time_now - time_record
+      inform%CQP_inform%time%total = REAL( time_now - time_record, wp )
       inform%CQP_inform%time%clock_total = clock_now - clock_record
 
 !  record output statistics
@@ -2140,7 +2141,7 @@
                             get_all = .TRUE. )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           inform%time%preprocess =                                             &
-            inform%time%preprocess + time_now - time_record
+            inform%time%preprocess + REAL( time_now - time_record, wp )
           inform%time%clock_preprocess =                                       &
             inform%time%clock_preprocess + clock_now - clock_record
 !         prob%new_problem_structure = data%new_problem_structure
@@ -2263,7 +2264,8 @@
         CALL QPP_restore( data%QPP_map, data%QPP_inform, prob,                 &
                           get_all = .TRUE. )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%preprocess =                                               &
+          inform%time%preprocess + REAL( time_now - time_record, wp )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
 !       prob%new_problem_structure = data%new_problem_structure
@@ -2335,7 +2337,8 @@
                           data%QPP_inform, data%dims_dqp, prob,                &
                           .FALSE., .FALSE., .FALSE. )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%preprocess =                                               &
+          inform%time%preprocess + REAL( time_now - time_record, wp )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
 
@@ -2400,7 +2403,7 @@
                           prob, get_all = .TRUE. )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           inform%time%preprocess =                                             &
-            inform%time%preprocess + time_now - time_record
+            inform%time%preprocess + REAL( time_now - time_record, wp )
           inform%time%clock_preprocess =                                       &
             inform%time%clock_preprocess + clock_now - clock_record
 
@@ -2496,10 +2499,11 @@ H_loop: DO i = 1, prob%n
       CALL CPU_TIME( time_now ) ; time_record = time_now - time_start
       IF ( control%cpu_time_limit >= zero ) THEN
         IF ( DQP_control%cpu_time_limit < zero ) THEN
-          DQP_control%cpu_time_limit = control%cpu_time_limit - time_record
+          DQP_control%cpu_time_limit =                                         &
+            control%cpu_time_limit - REAL( time_record, wp )
         ELSE
           DQP_control%cpu_time_limit = MIN( DQP_control%cpu_time_limit,        &
-                                         control%cpu_time_limit ) - time_record
+            control%cpu_time_limit ) - REAL( time_record, wp )
         END IF
       END IF
       CALL CLOCK_time( clock_now ) ; clock_record = clock_now - clock_start
@@ -3026,7 +3030,7 @@ H_loop: DO i = 1, prob%n
       END IF
 
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%DQP_inform%time%total = time_now - time_record
+      inform%DQP_inform%time%total = REAL( time_now - time_record, wp )
       inform%DQP_inform%time%clock_total = clock_now - clock_record
 
 !  record output statistics
@@ -3125,7 +3129,8 @@ H_loop: DO i = 1, prob%n
         END IF
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%preprocess =                                               &
+          inform%time%preprocess + REAL( time_now - time_record, wp )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
         prob%new_problem_structure = data%new_problem_structure_dqp
@@ -3143,7 +3148,7 @@ H_loop: DO i = 1, prob%n
 
   800 CONTINUE
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
 
@@ -3172,7 +3177,7 @@ H_loop: DO i = 1, prob%n
   900 CONTINUE
       inform%status = GALAHAD_error_allocate
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
       IF ( printi ) WRITE( control%out,                                        &

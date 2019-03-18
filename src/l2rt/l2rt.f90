@@ -9,7 +9,7 @@
 !   originally released with GALAHAD Version 2.1, Januray 22nd, 2008
 !   extended for mu > 0  GALAHAD Version 2.2, May 30th, 2008
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_L2RT_double
@@ -70,14 +70,14 @@
 !  Derived type definitions
 !--------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: L2RT_control_type
 
-!   error and warning diagnostics occur on stream error 
-   
+!   error and warning diagnostics occur on stream error
+
         INTEGER :: error = 6
 
 !   general output occurs on stream out
@@ -125,13 +125,13 @@
 
         INTEGER :: freq = 1
 
-!   the iteration stops successfully when ||A^Tr|| is less than 
+!   the iteration stops successfully when ||A^Tr|| is less than
 !     max( stop_relative * ||A^Tr initial ||, stop_absolute )
 
         REAL ( KIND = wp ) :: stop_relative = epsmch
         REAL ( KIND = wp ) :: stop_absolute = zero
 
-!   an estimate of the solution that gives at least %fraction_opt times 
+!   an estimate of the solution that gives at least %fraction_opt times
 !    the optimal objective value will be found
 
         REAL ( KIND = wp ) :: fraction_opt = one
@@ -151,15 +151,15 @@
         LOGICAL :: deallocate_error_fatal = .FALSE.
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
+!   where %prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 
         CHARACTER ( LEN = 30 ) :: prefix = '""                            '
       END TYPE
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: L2RT_inform_type
 
@@ -183,7 +183,7 @@
 
         INTEGER :: iter_pass2 = - 1
 
-!  the total number of inner iterations performed 
+!  the total number of inner iterations performed
 
         INTEGER :: biters = - 1
 
@@ -234,7 +234,7 @@
         REAL ( KIND = wp ) :: s, c, s_w, c_w, zeta_bar, gamma, z_norm
         REAL ( KIND = wp ) :: eta_bar, lambda_km1, lambda_bar, ww, sigma2
         REAL ( KIND = wp ) :: error_tol, stop, decrease_st, omega
-        REAL ( KIND = wp ) :: time_start, time_now
+        REAL :: time_start, time_now
         REAL ( KIND = wp ) :: clock_start, clock_now
         LOGICAL :: set_printi, printi, set_printd, printd
         LOGICAL :: header, use_old, try_warm, save_vectors, one_pass
@@ -264,7 +264,7 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  .  Set initial values for the L2RT control parameters  .
-!   
+!
 !  Argument:
 !  =========
 !
@@ -279,7 +279,7 @@
 !-----------------------------------------------
 
       TYPE ( L2RT_data_type ), INTENT( INOUT ) :: data
-      TYPE ( L2RT_control_type ), INTENT( OUT ) :: control        
+      TYPE ( L2RT_control_type ), INTENT( OUT ) :: control
       TYPE ( L2RT_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
@@ -299,10 +299,10 @@
 
       SUBROUTINE L2RT_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by L2RT_initialize could (roughly) 
+!  The default values as given by L2RT_initialize could (roughly)
 !  have been set as:
 
 !  BEGIN L2RT SPECIFICATIONS (DEFAULT)
@@ -313,12 +313,12 @@
 !   stop-print                                      -1
 !   iterations-between-printing                     1
 !   minimum-number-of-iterations                    -1
-!   maximum-number-of-iterations                    -1           
-!   maximum-number-of-inner-iterations              -1           
+!   maximum-number-of-iterations                    -1
+!   maximum-number-of-inner-iterations              -1
 !   bi-diagonal-solve-frequency                     1
 !   stopping-rule                                   1
 !   number-extra-n-vectors-used                     0
-!   relative-accuracy-required                      1.0E-8 
+!   relative-accuracy-required                      1.0E-8
 !   absolute-accuracy-required                      0.0
 !   fraction-optimality-required                    1.0
 !   maximum-time-limit                              -1.0
@@ -332,7 +332,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      TYPE ( L2RT_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( L2RT_control_type ), INTENT( INOUT ) :: control
       INTEGER, INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -373,7 +373,7 @@
 
       spec( error )%keyword = 'error-printout-device'
       spec( out )%keyword = 'printout-device'
-      spec( print_level )%keyword = 'print-level' 
+      spec( print_level )%keyword = 'print-level'
       spec( start_print )%keyword = 'start-print'
       spec( stop_print  )%keyword = 'stop-print'
       spec( print_gap )%keyword = 'iterations-between-printing'
@@ -463,7 +463,7 @@
       CALL SPECFILE_assign_value( spec( time_limit ),                          &
                                   control%time_limit,                          &
                                   control%error )
-     
+
 !  Set logical values
 
       CALL SPECFILE_assign_value( spec( space_critical ),                      &
@@ -534,7 +534,7 @@
 !    "Algorithm 583. LSQR: sparse linear equations and least squares problems",
 !    ACM Transactions on Mathematical Software, Vol 8, No 2 (1982), pp 195-209.
 !
-!  The bi-diagonalisation is due to Golub and Kahan (SIMUM 2, 1965, pp 205-224) 
+!  The bi-diagonalisation is due to Golub and Kahan (SIMUM 2, 1965, pp 205-224)
 !  (normalisation ||u_k|| = 1 = ||v_k||, 2-norm throughout).
 !
 !    Bi-diagonalisation initialization -
@@ -559,8 +559,8 @@
 !         (                    beta_k   alpha_k  )
 !         (                             beta_k+1 )
 !
-!  To solve min srqt(|| A x - b ||^2 + sigma ||x||^2) + 1/p sigma ||x||^p, 
-!  find an approximation in the expanding subspace x = V_k y 
+!  To solve min srqt(|| A x - b ||^2 + sigma ||x||^2) + 1/p sigma ||x||^p,
+!  find an approximation in the expanding subspace x = V_k y
 !  => find y_k = arg min sqrt(|| B_k y - beta_1 e_1 ||^2 + mu ||y||^2)
 !                        + 1/p sigma ||y||^p
 !  and then recover x_k = V_k y_k in a second pass
@@ -576,7 +576,7 @@
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, V
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: U
       TYPE ( L2RT_data_type ), INTENT( INOUT ) :: data
-      TYPE ( L2RT_control_type ), INTENT( IN ) :: control        
+      TYPE ( L2RT_control_type ), INTENT( IN ) :: control
       TYPE ( L2RT_inform_type ), INTENT( INOUT ) :: inform
 
 !---------------------------------
@@ -588,7 +588,7 @@
       REAL ( KIND = wp ) :: num, rat, x_kp1_norm, zeta, twoobj, rbiters
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -600,25 +600,25 @@
       IF ( inform%status == 1 ) data%branch = 1
 
       SELECT CASE ( data%branch )
-      CASE ( 1 ) 
+      CASE ( 1 )
         GO TO 100
-      CASE ( 2 )  
+      CASE ( 2 )
         GO TO 200
-      CASE ( 3 )  
+      CASE ( 3 )
         GO TO 300
-      CASE ( 4 )  
+      CASE ( 4 )
         GO TO 400
-      CASE ( 5 )  
+      CASE ( 5 )
         GO TO 500
-      CASE ( 6 )  
+      CASE ( 6 )
         GO TO 600
-      CASE ( 7 )  
+      CASE ( 7 )
         GO TO 700
       END SELECT
 
 !  On initial entry, set constants
 
-  100 CONTINUE 
+  100 CONTINUE
 
 !  Check for obvious errors
 
@@ -869,7 +869,7 @@
 
 !  Continue bi-diagonalisation initialization: alpha_1 v_1 = A^T u_1
 
-  200 CONTINUE 
+  200 CONTINUE
 
 !  Normalize v_1 and initialize w
 
@@ -910,7 +910,7 @@
           WRITE( control%out, "( A, I7, 2ES16.8, 2ES9.2 )" ) prefix,           &
              inform%iter, inform%obj, inform%r_norm, inform%ATr_norm,          &
              inform%x_norm
-        ELSE 
+        ELSE
           WRITE( control%out, 2000 ) prefix
           WRITE( control%out, "( A, I7, 2ES16.8, 2ES9.2 )" )                   &
              prefix, inform%iter, inform%obj, inform%r_norm, inform%ATr_norm,  &
@@ -932,7 +932,7 @@
         inform%iter = inform%iter + 1
         data%header = data%printd .OR. MOD( inform%iter, 25 ) == 0
 
-!  check that the time limit has not been exceeded 
+!  check that the time limit has not been exceeded
 
         CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
         data%time_now = data%time_now - data%time_start
@@ -964,7 +964,7 @@
             data%U_extra( : m ) = U
         END IF
 
-!  Bi-diagonalisation iteration: 
+!  Bi-diagonalisation iteration:
 !    beta_k+1 u_k+1 = A v_k - alpha_k u_k
 
 !  ** Return ** to obtain the product u <- u + A * v
@@ -975,14 +975,14 @@
 
 !  Normalize u
 
-  300   CONTINUE 
+  300   CONTINUE
         data%beta_kp1 = TWO_NORM( U )
         IF ( .NOT. data%one_pass ) data%B_offdiag( inform%iter ) = data%beta_kp1
 
         IF ( data%beta_kp1 > zero ) THEN
           U = U / data%beta_kp1
 
-!  Continue bi-diagonalisation iteration: 
+!  Continue bi-diagonalisation iteration:
 !    alpha_k+1 v_k+1 = A^T u_k+1 - beta_k+1 v_k
 
 !  ** Return ** to obtain the product v <- v + A^T * u
@@ -999,7 +999,7 @@
         IF ( data%alpha_kp1 > zero ) THEN
           V = V / data%alpha_kp1
         END IF
-        
+
 !  general case
 
         IF ( .NOT. data%one_pass ) THEN
@@ -1031,7 +1031,7 @@
             data%try_warm, control%print_level, control%out, prefix,           &
             data%bitmax, data%biter, data%bstatus )
 
-!  Record statistics about the number of inner iterations performed 
+!  Record statistics about the number of inner iterations performed
 
           IF ( INFORM%biters > 0 ) THEN
             rbiters = INFORM%biters
@@ -1083,7 +1083,7 @@
 !       ( beta_k+1 alpha_k+1     0    )
 !       (  omega       0         0    )
 
-!  in rows k, (k+1) and (n+1). Proceed as in Paige and Saunders, 
+!  in rows k, (k+1) and (n+1). Proceed as in Paige and Saunders,
 !  ACM TOMS, Vol 8, No 2 (1982), pp 195-209, Section 2
 
           rho_tilde = data%rho_bar
@@ -1114,12 +1114,12 @@
             data%gamma = data%s_w * data%rho_k
             data%lambda_bar = data%c_w * data%rho_k
 
-!  Compute the norm of ||x_k|| - see Paige and Saunders ACM TOMS 8(1) 1982, 
+!  Compute the norm of ||x_k|| - see Paige and Saunders ACM TOMS 8(1) 1982,
 !  Sec 5.2 for a brief summary
 
             num = data%phi_k - data%gamma * zeta
             data%zeta_bar = num / data%lambda_bar
-            x_kp1_norm = ROOT_SUM_SQUARES( data%z_norm, data%zeta_bar ) 
+            x_kp1_norm = ROOT_SUM_SQUARES( data%z_norm, data%zeta_bar )
           ELSE
             data%lambda_bar = data%rho_k
             data%z_norm = zero
@@ -1128,7 +1128,7 @@
           END IF
           inform%x_norm = x_kp1_norm
 
-!  Apply the rotation Q to the forthcoming column ( 0 alpha_k+1 ) 
+!  Apply the rotation Q to the forthcoming column ( 0 alpha_k+1 )
 !  in B to create ( r_offdiag r_diag_bar )
 
           data%theta_kp1 = data%s * data%alpha_kp1
@@ -1144,7 +1144,7 @@
 
           data%ww = one + data%ww * rat ** 2
 
-!  Compute the norms ||r_k|| and ||A^T r_k|| - see Paige and Saunders 
+!  Compute the norms ||r_k|| and ||A^T r_k|| - see Paige and Saunders
 !  ACM TOMS 8(1) 1982, Sec 5.1
 
           twoobj = data%phi_bar ** 2 + data%g_norm2
@@ -1173,7 +1173,7 @@
 
       GO TO 290
 
-!  Termination has occured. Determine at which iteration a fraction, 
+!  Termination has occured. Determine at which iteration a fraction,
 !  fraction_opt, of the optimal solution was found
 
   490 CONTINUE
@@ -1181,7 +1181,7 @@
       IF ( inform%iter == 0 ) THEN
         X = zero
         GO TO 920
-      END IF  
+      END IF
 
       IF ( control%fraction_opt < one ) THEN
         dec_tol = data%DECREASE( inform%iter ) * control%fraction_opt
@@ -1228,7 +1228,7 @@
       END IF
 
 !  =================================================
-!  Second pass to recover the solution x_k = V_k y_k 
+!  Second pass to recover the solution x_k = V_k y_k
 !  from the vectors V_k = ( v_1 : ... : v_k )
 !  =================================================
 
@@ -1244,7 +1244,7 @@
         V = zero
       ELSE
 
-!  Reentry with  data%extra_vectors saved vectors: loop over saved v_i to 
+!  Reentry with  data%extra_vectors saved vectors: loop over saved v_i to
 !  update x_k = sum_i v_i y_i
 
         inform%iter_pass2 = MIN( data%end_pass2, data%extra_vectors )
@@ -1268,7 +1268,7 @@
 
   590   CONTINUE
 
-!  Bi-diagonalisation iteration: 
+!  Bi-diagonalisation iteration:
 !    alpha_k v_k = A^T u_k - beta_k v_k-1
 
 !  ** Return ** to obtain the product v <- v + A^T * u
@@ -1278,7 +1278,7 @@
 
 !  Normalize v_k
 
-  600   CONTINUE 
+  600   CONTINUE
         inform%iter_pass2 = inform%iter_pass2 + 1
         V = V / data%B_diag( inform%iter_pass2 )
 
@@ -1290,7 +1290,7 @@
 
         IF ( inform%iter_pass2 >= data%end_pass2 ) GO TO 900
 
-!  Bi-diagonalisation iteration: 
+!  Bi-diagonalisation iteration:
 !    beta_k+1 u_k+1 = A v_k - alpha_k u_k
 
 !  ** Return ** to obtain the product u <- u + A * v
@@ -1301,7 +1301,7 @@
 
 !  Normalize u_k+1 and scale v_k
 
-  700   CONTINUE 
+  700   CONTINUE
         U = U / data%B_offdiag( inform%iter_pass2 )
         V = - data%B_offdiag( inform%iter_pass2 ) * V
 
@@ -1435,7 +1435,7 @@
 !-----------------------------------------------
 
       TYPE ( L2RT_data_type ), INTENT( INOUT ) :: data
-      TYPE ( L2RT_control_type ), INTENT( IN ) :: control        
+      TYPE ( L2RT_control_type ), INTENT( IN ) :: control
       TYPE ( L2RT_inform_type ), INTENT( INOUT ) :: inform
 
 !-----------------------------------------------
@@ -1552,13 +1552,13 @@
 !     min || (        B       ) y( lambda ) - beta e_1 ||^2                (*)
 !         || ( srqt(lambda) I )                        ||
 !
-!  and where 
+!  and where
 !
-!     sqrt(|| B y(lambda) - beta e_1 ||^2 + mu ||y(lambda)||^2 ) * 
-!       || y(lambda) ||^(p-2) = (lambda-mu) / sigma                      (**) 
+!     sqrt(|| B y(lambda) - beta e_1 ||^2 + mu ||y(lambda)||^2 ) *
+!       || y(lambda) ||^(p-2) = (lambda-mu) / sigma                      (**)
 !
-!  So pick lambda to define y(lambda) via (*) and adjust it to enforce 
-!  the scalar equation (**) or variants using Newton's method. This 
+!  So pick lambda to define y(lambda) via (*) and adjust it to enforce
+!  the scalar equation (**) or variants using Newton's method. This
 !  requires that we can solve (*), which we do by reducing
 !
 !      (        B         beta e_1 ) -> ( R  f )
@@ -1569,18 +1569,18 @@
 !
 !  Alternative secular functions (**) considered
 !
-!    phi = (|| y(lambda) ||^(p-2) *  sqrt(|| B y(lambda) - beta e_1 ||^2 
-!            + mu ||y(lambda)||^2 ) / lambda )^power 
+!    phi = (|| y(lambda) ||^(p-2) *  sqrt(|| B y(lambda) - beta e_1 ||^2
+!            + mu ||y(lambda)||^2 ) / lambda )^power
 !          - ( (lambda - mu ) / sigma * lambda)^power and
-!    psi = ( sqrt(|| B y(lambda) - beta e_1 ||^2 + mu ||y(lambda)||^2 ) 
-!            / lambda )^power 
+!    psi = ( sqrt(|| B y(lambda) - beta e_1 ||^2 + mu ||y(lambda)||^2 )
+!            / lambda )^power
 !           - ( (lambda - mu) / sigma * lambda * || y(lambda) ||^(p-2) )^power
 !
 ! ---------------------------------------------------------------------------
-! 
-! If p=2 & mu >0 the secular function considered is 
-!   
-!   phi = sigma * (||By-beta e_1||/lambda) + mu / lambda - 1 
+!
+! If p=2 & mu >0 the secular function considered is
+!
+!   phi = sigma * (||By-beta e_1||/lambda) + mu / lambda - 1
 !
 ! ---------------------------------------------------------------------------
 
@@ -1589,7 +1589,7 @@
 !-----------------------------------------------
 
       INTEGER, INTENT( IN ) :: n, itmax, out, print_level
-      INTEGER, INTENT( OUT ) :: status, iter 
+      INTEGER, INTENT( OUT ) :: status, iter
       LOGICAL, INTENT( IN ) :: try_warm
       REAL ( KIND = wp ), INTENT( IN ) :: p, sigma, mu, beta, error_tol
       REAL ( KIND = wp ), INTENT( INOUT ) :: lambda, y_norm
@@ -1626,9 +1626,9 @@
         lambda = MAX( mu + lambda_start, lambda )
         it1 = 2
 
-!  Transform the bi-diagonal subproblem to upper-traingular form R(lambda) 
+!  Transform the bi-diagonal subproblem to upper-traingular form R(lambda)
 !  for the current lambda
-        
+
         CALL L2RT_transform_bidiagonal( n, B_diag, B_offdiag, beta,            &
                                         SQRT( lambda ), R_diag, R_offdiag, F, G)
 
@@ -1648,14 +1648,14 @@
 
         y_norm = TWO_NORM( Y )
         pi = y_norm
-        
+
         IF ( p > two ) THEN
-          nu = TWO_NORM( RES ) 
+          nu = TWO_NORM( RES )
           omega = pi ** ( p - two )
           error = sigma * omega * ( nu / lambda ) - one
-        ELSE 
+        ELSE
           IF ( mu > zero ) THEN
-            nu = SQRT( TWO_NORM( RES ) ** 2 + mu *  pi ** 2 ) 
+            nu = SQRT( TWO_NORM( RES ) ** 2 + mu *  pi ** 2 )
             error = sigma * ( nu / lambda ) - one + mu / lambda
           ELSE
             nu = TWO_NORM( RES )
@@ -1665,7 +1665,7 @@
         IF ( printm ) WRITE( out, "( A, I7, ES22.14, 2ES12.4 )" )              &
           prefix, 1, error, lambda, pi
 
-!  Test for convergence 
+!  Test for convergence
 
         IF ( ABS( error ) < error_tol ) THEN
           iter = 1 ; status = 0
@@ -1696,23 +1696,23 @@
         ELSE
 
 !  Compute the derivatives of pi and nu
-           
+
           nu_prime = ( lambda - mu ) * ( h_norm / nu ) * h_norm
           prod = nu / lambda
 
 !  Compute phi and its Newton correction
 
           IF ( mu > zero ) THEN
-            phi = sigma * prod + mu / lambda -  one 
+            phi = sigma * prod + mu / lambda -  one
             phi_prime = sigma *  nu_prime /  lambda                            &
                  - sigma * nu / lambda ** 2 - mu / lambda ** 2
-          ELSE             
+          ELSE
             phi = prod ** power - ( one / sigma ) ** power
             phi_prime = power * ( prod ** ( power - one ) ) *                  &
                  ( nu_prime / lambda - ( nu / ( lambda ** 2 ) ) )
           END IF
         END IF
-        
+
 !  Compute the Newton correction
 
         dl_phi = - phi / phi_prime
@@ -1734,7 +1734,7 @@
                   ( nu_prime / lambda - nu /lambda ** 2 )                      &
                 - ( one / ( sigma * omega ) ** ( power-one ) ) *               &
                   ( ( two - p ) * pi_prime / ( sigma * pi ** ( p - one ) ) ) )
-              dl_psi = - psi / psi_prime 
+              dl_psi = - psi / psi_prime
               WRITE( out, 2010 ) prefix, dl_phi, dl_psi
             ELSE
               WRITE( out, 2020 ) prefix, dl_phi
@@ -1762,9 +1762,9 @@
 
       DO iter = it1, itmax
 
-!  Transform the bi-diagonal subproblem to upper-traingular form R(lambda) 
+!  Transform the bi-diagonal subproblem to upper-traingular form R(lambda)
 !  for the current lambda
-        
+
         CALL L2RT_transform_bidiagonal( n, B_diag, B_offdiag, beta,            &
                                         SQRT( lambda ), R_diag, R_offdiag, F, G)
 
@@ -1784,14 +1784,14 @@
 
         y_norm = TWO_NORM( Y )
         pi = y_norm
-      
+
         IF ( p > two ) THEN
           nu = TWO_NORM( RES )
           omega = pi ** ( p - two )
           error = sigma * omega * ( nu / lambda ) - one
         ELSE
           IF ( mu > zero ) THEN
-            nu = SQRT( TWO_NORM( RES ) ** 2 + mu *  pi ** 2 ) 
+            nu = SQRT( TWO_NORM( RES ) ** 2 + mu *  pi ** 2 )
             error = sigma * ( nu / lambda ) - one + mu / lambda
           ELSE
             nu = TWO_NORM( RES )
@@ -1803,7 +1803,7 @@
         IF ( printm ) WRITE( out, "( A, I7, ES22.14, 2ES12.4 )" )              &
           prefix, iter, error, lambda, pi
 
-!  Test for convergence 
+!  Test for convergence
 
         IF ( ABS( error ) < error_tol ) THEN
           status = 0 ; RETURN
@@ -1815,9 +1815,9 @@
           lambda = zero
 !         lambda = EPSILON( one ) ** 2
 
-!  Transform the bi-diagonal subproblem to upper-traingular form R(lambda) 
+!  Transform the bi-diagonal subproblem to upper-traingular form R(lambda)
 !  for the current lambda
-        
+
           CALL L2RT_transform_bidiagonal( n, B_diag, B_offdiag, beta,          &
                                           zero, R_diag, R_offdiag, F, G )
 !                                         SQRT( lambda ), R_diag, R_offdiag,F,G)
@@ -1835,7 +1835,7 @@
 
 !  Compute pi = || y(lambda) ||
 
-          y_norm = TWO_NORM( Y )               
+          y_norm = TWO_NORM( Y )
           status = 0 ; RETURN
         END IF
 
@@ -1848,7 +1848,7 @@
 
 !  Compute the derivatives of pi and nu
 
-          pi_prime = - ( h_norm / y_norm ) * h_norm   
+          pi_prime = - ( h_norm / y_norm ) * h_norm
           nu_prime = lambda * ( h_norm / nu ) * h_norm
           prod = omega * ( nu / lambda )
 
@@ -1868,21 +1868,21 @@
           prod = nu / lambda
 
 !  Compute phi and its Newton correction
-          
+
           IF ( mu > 0 ) THEN
-             
-             phi = sigma * prod + mu / lambda -  one 
+
+             phi = sigma * prod + mu / lambda -  one
              phi_prime = sigma *  nu_prime /  lambda                           &
                   - sigma * nu / lambda ** 2                                   &
                   - mu / lambda ** 2
-          ELSE             
-             
+          ELSE
+
              phi = prod ** power - ( one / sigma ) ** power
              phi_prime = power * ( prod ** ( power - one ) ) *                 &
                   ( nu_prime / lambda - ( nu / ( lambda ** 2 ) ) )
-             
+
           END IF
-          
+
        END IF
 
 !  Compute the Newton correction
@@ -1902,7 +1902,7 @@
                 ( nu_prime / lambda - nu /lambda ** 2 )                        &
               - ( one / ( sigma * omega ) ** ( power-one ) ) *                 &
                 ( ( two - p ) * pi_prime / ( sigma * pi ** ( p - one ) ) ) )
-            dl_psi = - psi / psi_prime 
+            dl_psi = - psi / psi_prime
             WRITE( out, 2010 ) prefix, dl_phi, dl_psi
           ELSE
             WRITE( out, 2020 ) prefix, dl_phi
@@ -1930,4 +1930,3 @@
 !-*-*-*-*-*-  End of G A L A H A D _ L 2 R T  double  M O D U L E  *-*-*-*-*-*-
 
    END MODULE GALAHAD_L2RT_double
-

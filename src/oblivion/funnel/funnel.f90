@@ -496,7 +496,7 @@
        INTEGER :: print_level_eqp, print_level_eqp_sbls, print_level_eqp_gltr
        INTEGER :: print_level_trs, print_level_sbls
        INTEGER :: print_level_llst, print_level_llst_sbls
-       REAL ( KIND = wp ) :: time_start, time_record, time_now
+       REAL :: time_start, time_record, time_now
        REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
        REAL ( KIND = wp ) :: violation, violation_plus, violation_max
        REAL ( KIND = wp ) :: pi_f, pi_v, radius, radius_n, radius_t, f_current
@@ -2686,7 +2686,7 @@
 !  print a summary of the iteration if required
 
          CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-         inform%time%total = data%time_now - data%time_start
+         inform%time%total = REAL( data%time_now - data%time_start, wp )
          inform%time%clock_total = data%clock_now - data%clock_start
 
          IF ( data%printi ) THEN
@@ -4155,7 +4155,7 @@
 !  print a summary of the iteration if required
 
        CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-       inform%time%total = data%time_now - data%time_start
+       inform%time%total = REAL( data%time_now - data%time_start, wp )
        inform%time%clock_total = data%clock_now - data%clock_start
 
        IF ( data%printi ) THEN
@@ -4846,7 +4846,7 @@
 !  print a summary of the iteration if required
 
      CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-     inform%time%total = data%time_now - data%time_start
+     inform%time%total = REAL( data%time_now - data%time_start, wp )
      inform%time%clock_total = data%clock_now - data%clock_start
 
      IF ( data%printi ) THEN
@@ -4863,7 +4863,7 @@
 
  610 CONTINUE
      CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-     inform%time%total = data%time_now - data%time_start
+     inform%time%total = REAL( data%time_now - data%time_start, wp )
      inform%time%clock_total = data%clock_now - data%clock_start
 
 !  compute the dual variables
@@ -5112,7 +5112,7 @@
 
  910 CONTINUE
      CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-     inform%time%total = data%time_now - data%time_start
+     inform%time%total = REAL( data%time_now - data%time_start, wp )
      inform%time%clock_total = data%clock_now - data%clock_start
      IF ( control%print_level > 0 .AND. control%error > 0 )                    &
        CALL SYMBOLS_status( inform%status, control%error, prefix, 'FUNNEL' )
@@ -5566,20 +5566,3 @@
 !  End of module GALAHAD_FUNNEL
 
    END MODULE GALAHAD_FUNNEL_double
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

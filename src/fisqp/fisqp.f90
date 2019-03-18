@@ -622,7 +622,7 @@
        INTEGER :: branch, eval_status, H_ne, J_ne, fails, success_iter
        INTEGER :: out, error, print_level, start_print, stop_print
        INTEGER :: print_level_eqp, print_level_eqp_sbls, print_level_eqp_gltr
-       REAL ( KIND = wp ) :: time_start, time_now
+       REAL :: time_start, time_now
        REAL ( KIND = wp ) :: clock_start, clock_now
        REAL ( KIND = wp ) :: alpha, tau, stop_p, stop_d, stop_c, accel_norm
        REAL ( KIND = wp ) :: del_ellf, del_ellf_ref, del_ellphi, del_ellv
@@ -4722,7 +4722,7 @@
 
  900 CONTINUE
      CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-     inform%time%total = data%time_now - data%time_start
+     inform%time%total = REAL( data%time_now - data%time_start, wp )
      inform%time%clock_total = data%clock_now - data%clock_start
 
 !  print details of the final iteration
@@ -4899,7 +4899,7 @@
  910 CONTINUE
      inform%status = GALAHAD_error_allocate
      CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-     inform%time%total = data%time_now - data%time_start
+     inform%time%total = REAL( data%time_now - data%time_start, wp )
      inform%time%clock_total = data%clock_now - data%clock_start
      RETURN
 

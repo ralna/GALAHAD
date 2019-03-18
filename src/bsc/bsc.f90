@@ -457,7 +457,8 @@
 
       INTEGER :: i, ii, j, k, kk, l, out, new_a, max_col
       INTEGER :: nnz_col_j, nnz_adat_old, nnz_adat, new_pos, a_ne
-      REAL ( KIND = wp ) :: time_start, time_end, clock_start, clock_end
+      REAL :: time_start, time_end
+      REAL ( KIND = wp ) :: clock_start, clock_end
       REAL ( KIND = wp ) :: al
       LOGICAL :: printi, got_d
       CHARACTER ( LEN = 80 ) :: array_name
@@ -1112,7 +1113,10 @@
 !     WRITE( out, "( A, /, ( 10I7) )" ) ' cols =', ( S%col )
 !     WRITE( out, "( A, /, ( F7.2) )" ) ' vals =', ( S%val )
 
-      IF ( printi ) WRITE( out,                                                &
+     CALL CPU_TIME( time_end ) ; inform%time = REAL( time_end - time_start, wp )
+     CALL CLOCK_time( clock_end ) ; inform%clock_time = clock_end - clock_start
+
+     IF ( printi ) WRITE( out,                                                &
          "( A, ' time to form matrix ', F6.2 )") prefix, time_end - time_start
 
       inform%status = GALAHAD_ok
@@ -1123,12 +1127,13 @@
 !  -------------
 
  980 CONTINUE
+     CALL CPU_TIME( time_end ) ; inform%time = REAL( time_end - time_start, wp )
      CALL CPU_TIME( time_end ) ; inform%time = time_end - time_start
      CALL CLOCK_time( clock_end ) ; inform%clock_time = clock_end - clock_start
      RETURN
 
  990 CONTINUE
-     CALL CPU_TIME( time_end ) ; inform%time = time_end - time_start
+     CALL CPU_TIME( time_end ) ; inform%time = REAL( time_end - time_start, wp )
      CALL CLOCK_time( clock_end ) ; inform%clock_time = clock_end - clock_start
      IF ( printi ) WRITE( out, "( A, ' Inform = ', I0, ' Stopping ' )" )       &
        prefix, inform%status

@@ -113,7 +113,7 @@
        INTEGER :: m_ref = 0
        LOGICAL :: refactor = .TRUE.
        LOGICAL :: subspace_direct = .FALSE.
-       REAL ( KIND = wp ) :: cpu_total = 0.0_wp
+       REAL :: cpu_total = 0.0
        REAL ( KIND = wp ) :: clock_total = 0.0_wp
 
 ! -----------------------

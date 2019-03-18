@@ -233,7 +233,7 @@
         REAL ( KIND = wp ) :: s, c, s_w, c_w, zeta_bar, gamma, z_norm
         REAL ( KIND = wp ) :: eta_bar, lambda_km1, lambda_bar, ww, radius2
         REAL ( KIND = wp ) :: error_tol, stop, decrease_st
-        REAL ( KIND = wp ) :: time_start, time_now
+        REAL :: time_start, time_now
         REAL ( KIND = wp ) :: clock_start, clock_now
         LOGICAL :: set_printi, printi, set_printd, printd, interior, header
         LOGICAL :: prev_steihaug_toint, save_vectors, try_warm
@@ -1929,4 +1929,3 @@
 !-*-*-*-*-*-  End of G A L A H A D _ L S T R  double  M O D U L E  *-*-*-*-*-*-
 
    END MODULE GALAHAD_LSTR_double
-

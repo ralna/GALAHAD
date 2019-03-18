@@ -446,7 +446,7 @@
 !  Local variables
 
       INTEGER :: i, j, n_depen, nzc, nv, lbd, dual_starting_point
-      REAL ( KIND = wp ) :: time_start, time_record, time_now
+      REAL :: time_start, time_record, time_now
       REAL ( KIND = wp ) :: time_analyse, time_factorize
       REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
       REAL ( KIND = wp ) :: clock_analyse, clock_factorize
@@ -677,7 +677,8 @@
                           data%QPP_inform, data%dims, prob,                    &
                           .FALSE., .FALSE., .FALSE. )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%preprocess =                                               &
+          inform%time%preprocess + REAL( time_now - time_record, wp )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
 
@@ -721,7 +722,7 @@
                           prob, get_all = .TRUE. )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           inform%time%preprocess =                                             &
-            inform%time%preprocess + time_now - time_record
+            inform%time%preprocess + REAL( time_now - time_record, wp )
           inform%time%clock_preprocess =                                       &
             inform%time%clock_preprocess + clock_now - clock_record
 
@@ -778,7 +779,7 @@
                                  inform%FDC_inform )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%find_dependent =                                           &
-          inform%time%find_dependent + time_now - time_record
+          inform%time%find_dependent + REAL( time_now - time_record, wp )
         inform%time%clock_find_dependent =                                     &
           inform%time%clock_find_dependent + clock_now - clock_record
 
@@ -794,7 +795,7 @@
         inform%nfacts = 1
 
         IF ( ( control%cpu_time_limit >= zero .AND.                            &
-               time_now - time_start > control%cpu_time_limit ) .OR.           &
+             REAL( time_now - time_start, wp ) > control%cpu_time_limit ) .OR. &
              ( control%clock_time_limit >= zero .AND.                          &
                clock_now - clock_start > control%clock_time_limit ) ) THEN
           inform%status = GALAHAD_error_cpu_limit
@@ -905,7 +906,8 @@
                           data%QPP_inform, data%dims, prob,                    &
                           .FALSE., .FALSE., .FALSE. )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%preprocess =                                               &
+          inform%time%preprocess + REAL( time_now - time_record, wp )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
 
@@ -1162,7 +1164,8 @@
         CALL QPP_restore( data%QPP_map_freed, data%QPP_inform, prob,           &
                           get_all = .TRUE.)
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%preprocess =                                               &
+          inform%time%preprocess + REAL( time_now - time_record, wp )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
         data%dims = data%dims_save_freed
@@ -1216,7 +1219,8 @@
         END IF
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%preprocess =                                               &
+          inform%time%preprocess + REAL( time_now - time_record, wp )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
         prob%new_problem_structure = data%new_problem_structure
@@ -1229,7 +1233,7 @@
       IF ( control%error > 0 .AND. control%print_level >= 1 )                 &
         CALL SYMBOLS_status( inform%status, control%error, prefix, 'DLP' )
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
 
@@ -1258,7 +1262,7 @@
   900 CONTINUE
       inform%status = GALAHAD_error_allocate
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
       IF ( printi ) WRITE( control%out,                                        &

@@ -9,7 +9,7 @@
 !   development started June 12th 2014
 !   originally released GALAHAD Version 2.6. June 12th 2014
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_LMS_double
@@ -68,7 +68,7 @@
 !
 !  Default control data for LMS. This routine should be called before
 !  LMS_setup
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -88,7 +88,7 @@
 
       inform%status = GALAHAD_ok
 
-      RETURN  
+      RETURN
 
 !  End of LMS_initialize
 
@@ -98,10 +98,10 @@
 
       SUBROUTINE LMS_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by LMS_initialize could (roughly) 
+!  The defauly values as given by LMS_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN LMS SPECIFICATIONS (DEFAULT)
@@ -118,7 +118,7 @@
 
 !  Dummy arguments
 
-      TYPE ( LMS_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( LMS_control_type ), INTENT( INOUT ) :: control
       INTEGER, INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -147,8 +147,8 @@
 
       spec( error )%keyword = 'error-printout-device'
       spec( out )%keyword = 'printout-device'
-      spec( print_level )%keyword = 'print-level' 
-      spec( print_level )%keyword = 'print-level' 
+      spec( print_level )%keyword = 'print-level'
+      spec( print_level )%keyword = 'print-level'
       spec( memory_length )%keyword = 'limited-memory-length'
       spec( method )%keyword = 'limited-memory-method'
 
@@ -222,7 +222,7 @@
 
       SUBROUTINE LMS_setup( n, data, control, inform )
 
-!  set up the data structures required to hold the limited memory secant 
+!  set up the data structures required to hold the limited memory secant
 !  approximation B
 
 !  Dummy arguments
@@ -235,13 +235,14 @@
 !  Local variables
 
       INTEGER :: nb, len2_qp, len2_qp_perm
-      REAL ( KIND = wp ) :: time_start, time_now, clock_start, clock_now
+      REAL :: time_start, time_now
+      REAL ( KIND = wp ) :: clock_start, clock_now
       CHARACTER ( LEN = 6 ) :: method
       CHARACTER ( LEN = 80 ) :: array_name
       INTEGER :: ILAENV
       EXTERNAL :: ILAENV
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -258,8 +259,8 @@
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
           WRITE( control%error, "( A, ' n must be +ve' )") prefix
         GO TO 900
-      END IF 
-  
+      END IF
+
 !  set initial values and method-specific workspace
 
       data%n = n ; data%m = MAX( control%memory_length, 1 ) ; data%latest = 0
@@ -418,7 +419,7 @@
 
 !  record the total time taken
 
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%setup = inform%time%setup + time_now - time_start
       inform%time%clock_setup                                                  &
         = inform%time%clock_setup + clock_now - clock_start
@@ -429,14 +430,14 @@
 !  error returns
 
  900  CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
-      inform%time%setup = inform%time%setup + time_now - time_start
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%setup = inform%time%setup + REAL( time_now - time_start, wp )
       inform%time%clock_setup                                                  &
         = inform%time%clock_setup + clock_now - clock_start
 
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
         WRITE( control%error, "( A, '    ** Error return ', I0,                &
-       &  ' from LMS_setup ' )" ) prefix, inform%status 
+       &  ' from LMS_setup ' )" ) prefix, inform%status
       RETURN
 
 !  end of subroutine LMS_setup
@@ -447,7 +448,7 @@
 
       SUBROUTINE LMS_form( S, Y, delta, data, control, inform, lambda )
 
-!  update the limited memory secant approximation B to account for 
+!  update the limited memory secant approximation B to account for
 !  the incoming data (s,y,delta)
 
 !  Dummy arguments
@@ -462,11 +463,12 @@
 !  Local variables
 
       INTEGER :: i, j, oj
-      REAL ( KIND = wp ) :: time_start, time_now, clock_start, clock_now
+      REAL :: time_start, time_now
+      REAL ( KIND = wp ) :: clock_start, clock_now
       REAL ( KIND = wp ) :: yts
       CHARACTER ( LEN = 6 ) :: method
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -581,7 +583,7 @@
           END DO
         END IF
 
-!  store gamma = 1 / delta 
+!  store gamma = 1 / delta
 
         data%gamma = one / delta
       END SELECT
@@ -626,7 +628,7 @@
 !  scaling the s^T y products so that the diagonal ones are square rooted
 !  and the off diagonal ones are divided by the sqaure roots of the previous
 !  diagonals
-        
+
         ELSE
           IF ( data%full ) THEN
             DO j = 1, data%length
@@ -635,7 +637,7 @@
                 data%YTS( data%latest, oj )                                    &
                  = DOT_PRODUCT( S, data%Y( : data%n, oj ) ) / data%YTS( oj, oj )
               ELSE
-                data%YTS( data%latest, data%latest ) = SQRT( yts ) 
+                data%YTS( data%latest, data%latest ) = SQRT( yts )
               END IF
             END DO
           ELSE
@@ -644,7 +646,7 @@
                 data%YTS( data%latest, j )                                     &
                   = DOT_PRODUCT( S, data%Y( : data%n, j ) ) / data%YTS( j, j )
               ELSE
-                data%YTS( data%latest, data%latest ) = SQRT( yts ) 
+                data%YTS( data%latest, data%latest ) = SQRT( yts )
               END IF
             END DO
           END IF
@@ -727,8 +729,8 @@
 
 !  record the total time taken
 
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
-      inform%time%form = inform%time%form + time_now - time_start
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       inform%status = GALAHAD_ok
@@ -737,13 +739,13 @@
 !  error returns
 
  900  CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
-      inform%time%form = inform%time%form + time_now - time_start
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
         WRITE( control%error, "( A, '    ** Error return ', I0,                &
-       &  ' from LMS_form ' )" ) prefix, inform%status 
+       &  ' from LMS_form ' )" ) prefix, inform%status
       RETURN
 
 !  end of subroutine LMS_form
@@ -759,7 +761,7 @@
 
 !  Dummy arguments
 
-      TYPE ( LMS_control_type ), INTENT( IN ) :: control        
+      TYPE ( LMS_control_type ), INTENT( IN ) :: control
       TYPE ( LMS_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( LMS_data_type ), INTENT( INOUT ) :: data
       REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: lambda
@@ -769,7 +771,7 @@
       INTEGER :: i, j, k, oi, oj
       REAL ( KIND = wp ) :: val
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -789,7 +791,7 @@
       CASE ( 'BFGS' )
 
 !  build the scaled matrix L with diagonal D^{1/2} and sub-diagonal L D^{-1/2}
-        
+
         IF ( data%any_method ) THEN
           DO j = 1, data%length
             oj = data%ORDER( j )
@@ -839,7 +841,7 @@
 !  B^-1 = gamma I - [ gamma Y : S ] [ D + gamma Y^T Y  R^T ]^{-1} [ gamma Y^T ],
 !                                   [       R           0  ]      [     S^T   ]
 !
-!  where gamma = 1/ delta, D = diag(s_i^T y_i) and 
+!  where gamma = 1/ delta, D = diag(s_i^T y_i) and
 !  R_ij = s_{i-1}^T y_{j-1} (i<=j) or 0 otherwise
 !  ----------------------------------------------------------------------------
 
@@ -852,7 +854,7 @@
             = data%YTS( data%ORDER( j ), data%ORDER( j :  data%length ) )
         END DO
 
-!  build the matrix C = D + gamma Y^T Y 
+!  build the matrix C = D + gamma Y^T Y
 
         DO j = 1, data%length
           oj = data%ORDER( j )
@@ -940,13 +942,13 @@
 ! [   D + 1/dl Y^T Y      -L^T + delta/dl Y^T S    ]^{-1} [    Y^T    ],
 ! [  -L + delta/dl S^T Y  -delta lambda / dl S^T S ]      [ delta S^T ]
 !
-!  where dl = delta + lambda, D = diag(s_i^T y_i) and 
+!  where dl = delta + lambda, D = diag(s_i^T y_i) and
 !  L_ij = s_{i-1}^T y_{j-1} (i>j) or 0 otherwise
 !  ----------------------------------------------------------------------------
 
 !  Dummy arguments
 
-      TYPE ( LMS_control_type ), INTENT( IN ) :: control        
+      TYPE ( LMS_control_type ), INTENT( IN ) :: control
       TYPE ( LMS_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( LMS_data_type ), INTENT( INOUT ) :: data
 
@@ -955,7 +957,7 @@
       INTEGER :: i, j, oi, oj
       REAL ( KIND = wp ) :: val, l_over_dpl, dl_over_dpl
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -1019,8 +1021,8 @@
 
       SUBROUTINE LMS_form_shift( lambda, data, control, inform )
 
-!  update an inverse limited memory secant approximation B to account for 
-!  a positive shift lamda I 
+!  update an inverse limited memory secant approximation B to account for
+!  a positive shift lamda I
 
 !  Dummy arguments
 
@@ -1031,9 +1033,10 @@
 
 !  Local variables
 
-      REAL ( KIND = wp ) :: time_start, time_now, clock_start, clock_now
+      REAL :: time_start, time_now
+      REAL ( KIND = wp ) :: clock_start, clock_now
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -1068,8 +1071,8 @@
 
 !  record the total time taken
 
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
-      inform%time%form = inform%time%form + time_now - time_start
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       inform%status = GALAHAD_ok
@@ -1078,13 +1081,13 @@
 !  error returns
 
  900  CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
-      inform%time%form = inform%time%form + time_now - time_start
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
         WRITE( control%error, "( A, '    ** Error return ', I0,                &
-       &  ' from LMS_form ' )" ) prefix, inform%status 
+       &  ' from LMS_form ' )" ) prefix, inform%status
       RETURN
 
 !  end of subroutine LMS_form_shift
@@ -1106,9 +1109,10 @@
 
 !  Local variables
 
-      REAL ( KIND = wp ) :: time_start, time_now, clock_start, clock_now
+      REAL :: time_start, time_now
+      REAL ( KIND = wp ) :: clock_start, clock_now
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -1130,8 +1134,8 @@
 
 !  record the total time taken
 
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
-      inform%time%form = inform%time%form + time_now - time_start
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       inform%status = GALAHAD_ok
@@ -1140,13 +1144,13 @@
 !  error returns
 
  900  CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
-      inform%time%form = inform%time%form + time_now - time_start
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
         WRITE( control%error, "( A, '    ** Error return ', I0,                &
-       &  ' from LMS_change_method ' )" ) prefix, inform%status 
+       &  ' from LMS_change_method ' )" ) prefix, inform%status
       RETURN
 
 !  end of subroutine LMS_change_method
@@ -1157,7 +1161,7 @@
 
       SUBROUTINE LMS_apply( V, U, data, control, inform )
 
-!  obtain the product u = B v between the limited memory secant 
+!  obtain the product u = B v between the limited memory secant
 !  approximation B and the vector v
 
 !  Dummy arguments
@@ -1171,9 +1175,10 @@
 !  Local variables
 
       INTEGER :: i, oi
-      REAL ( KIND = wp ) :: time_start, time_now, clock_start, clock_now
+      REAL :: time_start, time_now
+      REAL ( KIND = wp ) :: clock_start, clock_now
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -1225,12 +1230,12 @@
           IF ( data%lambda > zero ) U = U + data%lambda * V
 
 !  ----------------------------------------------------------------------------
-!  applyv the inverse limited-memory BFGS (IL-BFGS) secant approximation 
+!  applyv the inverse limited-memory BFGS (IL-BFGS) secant approximation
 !  formula to v:
 !
 !  B^-1 v = gamma v - [ gamma Y : S ] [ D + gamma Y^T Y R^T ]^-1 [ gamma Y^T v ]
 !                                     [       R          0  ]    [     S^T v   ]
-! i.e., 
+! i.e.,
 !
 !  B^-1 v = gamma v - [ gamma Y : S R^-T ] [ 0        I       ] [ gamma Y^T v ]
 !                                          [ I -D-gamma Y^T Y ] [  R^-1 S^T v ]
@@ -1238,13 +1243,13 @@
 !    = gamma v - [ gamma Y : S R^-T ] [              R^-1 S^T v               ]
 !                                     [ gammaY^Tv -(D+gamma Y^T Y) R^-1 S^T v ]
 !
-!  where gamma = 1/ delta, D = diag(s_i^T y_i) and 
+!  where gamma = 1/ delta, D = diag(s_i^T y_i) and
 !  R_ij = s_{i-1}^T y_{j-1} (i<=j) or 0 otherwise
 !  ----------------------------------------------------------------------------
 
         CASE ( 'IBFGS' )
 
-!  form q <- gamma Y^Tv and p <- S^T v, where the vector (q,p) is stored 
+!  form q <- gamma Y^Tv and p <- S^T v, where the vector (q,p) is stored
 !  as the two columns of the matrix QP
 
           CALL GEMV( 'T', data%n, data%length, data%gamma, data%Y, data%n,     &
@@ -1302,7 +1307,7 @@
 !    [   D + 1/dl Y^T Y      -L^T + delta/dl Y^T S    ]^{-1} [    Y^T v    ],
 !    [  -L + delta/dl S^T Y  -delta lambda / dl S^T S ]      [ delta S^T v ]
 !
-!  where dl = delta + lambda, D = diag(s_i^T y_i) and 
+!  where dl = delta + lambda, D = diag(s_i^T y_i) and
 !  L_ij = s_{i-1}^T y_{j-1} (i>j) or 0 otherwise
 !  ----------------------------------------------------------------------------
 
@@ -1315,7 +1320,7 @@
             GO TO 900
           END IF
 
-!  form q <- Y^Tv / dl and p <- delta / dl S^T v, where the vector (q,p) is 
+!  form q <- Y^Tv / dl and p <- delta / dl S^T v, where the vector (q,p) is
 !  stored as the two columns of the matrix QP
 
           CALL GEMV( 'T', data%n, data%length, data%one_over_dpl,              &
@@ -1362,7 +1367,7 @@
           U = data%one_over_dpl * U
 
 !  ----------------------------------------------------------------------------
-!  apply the limited-memory symmetric rank 1 (L-SR1) secant approximation 
+!  apply the limited-memory symmetric rank 1 (L-SR1) secant approximation
 !  formula to v:
 !
 !  B v = delta v + [ Y - delta S ] C^{-1} [ Y - delta S ]^T v.
@@ -1412,7 +1417,7 @@
             data%QP( oi, 1 ) = data%QP_perm( i, 1 )
           END DO
 
-!  apply u <- delta [ v - S q ] + Y q 
+!  apply u <- delta [ v - S q ] + Y q
 
           U = V
           CALL GEMV( 'N', data%n, data%length, - one, data%S, data%n,          &
@@ -1429,8 +1434,8 @@
 
 !  record the total time taken
 
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
-      inform%time%apply = inform%time%apply + time_now - time_start
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%apply = inform%time%apply + REAL( time_now - time_start, wp )
       inform%time%clock_apply                                                  &
         = inform%time%clock_apply + clock_now - clock_start
 
@@ -1440,14 +1445,14 @@
 !  error returns
 
  900  CONTINUE
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
-      inform%time%apply = inform%time%apply + time_now - time_start
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+      inform%time%apply = inform%time%apply + REAL( time_now - time_start, wp )
       inform%time%clock_apply                                                  &
         = inform%time%clock_apply + clock_now - clock_start
 
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
         WRITE( control%error, "( A, '    ** Error return ', I0,                &
-       &  ' from LMS_apply ' )" ) prefix, inform%status 
+       &  ' from LMS_apply ' )" ) prefix, inform%status
       RETURN
 
 !  end of subroutine LMS_apply
@@ -1462,7 +1467,7 @@
 !  obtain the product B v
 
 !  if ADD_TO_RESULT is present replace ADD_TO_RESULT by ADD_TO_RESULT + B v,
-!  otherwise if SUBTRACT_FROM_RESULT is present replace SUBTRACT_FROM_RESULT by 
+!  otherwise if SUBTRACT_FROM_RESULT is present replace SUBTRACT_FROM_RESULT by
 !  SUBTRACT_FROM_RESULT - B v, otherwise if RESULT is present, set RESULT = Bv,
 !  and otherwise overwrite v by Bv.
 
@@ -1504,7 +1509,7 @@
 !   B v = delta v - R [ Y : delta S ] [ -D    L^T     ]^{-1} [     Y^T   ] R^T v
 !                                     [ L delta S^T S ]      [ delta S^T ]
 !
-!  Since 
+!  Since
 !
 !   [ -D      L^T    ] = [   D^{1/2}   0 ] [ -I 0 ] [ D^{1/2} -D^{-1/2} L^T ]
 !   [ L  delta S^T S ]   [ -L D^{-1/2} I ] [  0 C ] [    0          I       ]
@@ -1531,7 +1536,7 @@
 
 !  the vector (q,p) is stored as the two columns of the matrix QP
 
-!  unrestricted case (L-BFGS-5): [ p ] = [     Y^T v   ] 
+!  unrestricted case (L-BFGS-5): [ p ] = [     Y^T v   ]
 !                                [ q ]   [ delta S^T v ]
 
       IF ( B%restricted == 0 ) THEN
@@ -1540,7 +1545,7 @@
         CALL GEMV( 'T', B%n, B%length, one, B%Y, B%n,                          &
                     V, 1, zero, B%QP( : , 2 ), 1 )
 
-!  restricted case (L-BFGS-5): [ p ] = [     Y^T R^T v   ] 
+!  restricted case (L-BFGS-5): [ p ] = [     Y^T R^T v   ]
 !                              [ q ]   [ delta S^T R^T v ]
 
       ELSE
@@ -1576,7 +1581,7 @@
           val = val + B%L_scaled( i, j ) * B%QP_PERM( j, 2 )
         END DO
         B%QP_PERM( i, 1 ) = val
-      END DO  
+      END DO
 
 !  apply (L-BFGS-3) q -> C^{-1} q (using the Cholesky factors of C)
 
@@ -1591,7 +1596,7 @@
           val = val + B%L_scaled( j, i ) * B%QP_PERM( j, 1 )
         END DO
         B%QP_PERM( i, 2 ) = val
-      END DO  
+      END DO
       B%QP_PERM( B%length, 2 ) = - B%QP_PERM( B%length, 2 )
 
       DO i = 1, B%length
@@ -1606,7 +1611,7 @@
         B%QP( oi, 2 ) = B%QP_perm( i, 2 )
       END DO
 
-!  unrestricted case: apply (L-BFGS-1) 
+!  unrestricted case: apply (L-BFGS-1)
 
       IF ( B%restricted == 0 ) THEN
 
@@ -1648,7 +1653,7 @@
                      B%QP( : , 2 ), 1, one, V, 1 )
         END IF
 
-!  restricted case: apply (L-BFGS-1) 
+!  restricted case: apply (L-BFGS-1)
 
       ELSE
 
@@ -1864,7 +1869,7 @@
             IF ( kp /= k - 1 ) CALL SWAP( nrhs, B( k - 1, : ), 1,              &
                                           B( kp, : ), 1 )
 
-!  multiply by inv(U(K)), where U(K) is the transformation stored in 
+!  multiply by inv(U(K)), where U(K) is the transformation stored in
 !  columns k - 1 and k of A
 
             CALL GER( k - 2, nrhs, - one, A( : , k ), 1, B( k, : ), 1,         &
@@ -1899,7 +1904,7 @@
           IF ( k > n ) EXIT
           IF ( IPIV( k ) > 0 ) THEN
 
-!  1 x 1 diagonal block: multiply by inv(U**T(K)), where U(K) is the 
+!  1 x 1 diagonal block: multiply by inv(U**T(K)), where U(K) is the
 !  transformation stored in column k of A
 
             CALL GEMV( 'T', k - 1, nrhs, - one, B, ldb, A( :, k ),             &
@@ -1911,7 +1916,7 @@
             IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1, B( kp, : ), 1 )
             k = k + 1
 
-!   2 x 2 diagonal block: multiply by inv(U**T(k + 1)), where U(k + 1) is the 
+!   2 x 2 diagonal block: multiply by inv(U**T(k + 1)), where U(k + 1) is the
 !   transformation stored in columns k and k + 1 of A
 
           ELSE
@@ -1947,7 +1952,7 @@
             kp = IPIV( k )
             IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1, B( kp, : ), 1 )
 
-!   multiply by inv(L(K)), where L(K) is the transformation stored in 
+!   multiply by inv(L(K)), where L(K) is the transformation stored in
 !   column k of A
 
             IF ( k < n ) CALL GER( n - k, nrhs, - one, A( k + 1 : , k ), 1,    &
@@ -1970,7 +1975,7 @@
             IF ( kp /= k + 1 ) CALL SWAP( nrhs, B( k + 1, : ), 1,              &
                                           B( kp, : ), 1 )
 
-!   multiply by inv(L(K)), where L(K) is the transformation stored in columns 
+!   multiply by inv(L(K)), where L(K) is the transformation stored in columns
 !   k and k + 1 of A
 
             IF ( k < n - 1 ) THEN
@@ -2007,7 +2012,7 @@
           IF ( k < 1 ) EXIT
           IF ( IPIV( k ) > 0 ) THEN
 
-!  1 x 1 diagonal block: multiply by inv(L**T(K)), where L(K) is the 
+!  1 x 1 diagonal block: multiply by inv(L**T(K)), where L(K) is the
 !  transformation stored in column k of A
 
             IF ( k < n ) CALL GEMV( 'T', n - k, nrhs, - one,                   &
@@ -2020,7 +2025,7 @@
             IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), 1, B( kp, : ), 1 )
             k = k - 1
 
-!  2 x 2 diagonal block: multiply by inv(L**T(k - 1)), where L(k - 1) is the 
+!  2 x 2 diagonal block: multiply by inv(L**T(k - 1)), where L(k - 1) is the
 !  transformation stored in columns k - 1 and k of A
 
           ELSE
@@ -2070,7 +2075,7 @@
 
 !  Dummy arguments
 
-      TYPE ( LMS_control_type ), INTENT( IN ) :: control        
+      TYPE ( LMS_control_type ), INTENT( IN ) :: control
       TYPE ( LMS_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( LMS_data_type ), INTENT( INOUT ) :: data
 
@@ -2091,98 +2096,98 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%PIVOTS'
       CALL SPACE_dealloc_array( data%PIVOTS,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%RESTRICTION'
       CALL SPACE_dealloc_array( data%RESTRICTION,                              &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%WORK'
       CALL SPACE_dealloc_array( data%WORK,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%S'
       CALL SPACE_dealloc_array( data%S,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%Y'
       CALL SPACE_dealloc_array( data%Y,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%YTS'
       CALL SPACE_dealloc_array( data%YTS,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%STS'
       CALL SPACE_dealloc_array( data%STS,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%YTY'
       CALL SPACE_dealloc_array( data%YTY,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%C'
       CALL SPACE_dealloc_array( data%C,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%R'
       CALL SPACE_dealloc_array( data%R,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%L_scaled'
       CALL SPACE_dealloc_array( data%L_scaled,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%QP'
       CALL SPACE_dealloc_array( data%QP,                                       &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       array_name = 'lms: data%QP_perm'
       CALL SPACE_dealloc_array( data%QP_perm,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-   
+
       RETURN
 
 !  end of subroutine LMS_terminate
@@ -2192,6 +2197,3 @@
 !  end of module GALAHAD_LMS_double
 
     END MODULE GALAHAD_LMS_double
-
-
-

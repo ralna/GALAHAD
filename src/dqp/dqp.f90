@@ -1396,7 +1396,7 @@
 !  Local variables
 
       INTEGER :: i, j, l, n_depen, nzc, nv, lbd, dual_starting_point
-      REAL ( KIND = wp ) :: time_start, time_record, time_now
+      REAL :: time_start, time_record, time_now
       REAL ( KIND = wp ) :: time_analyse, time_factorize
       REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
       REAL ( KIND = wp ) :: clock_analyse, clock_factorize
@@ -1792,7 +1792,8 @@
                           data%QPP_inform, data%dims, prob,                    &
                           .FALSE., .FALSE., .FALSE. )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%preprocess =                                               &
+          inform%time%preprocess + REAL( time_now - time_record, wp )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
 
@@ -1859,7 +1860,7 @@
                           prob, get_all = .TRUE. )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           inform%time%preprocess =                                             &
-            inform%time%preprocess + time_now - time_record
+            inform%time%preprocess + REAL( time_now - time_record, wp )
           inform%time%clock_preprocess =                                       &
             inform%time%clock_preprocess + clock_now - clock_record
 
@@ -1916,7 +1917,7 @@
                                  inform%FDC_inform )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%find_dependent =                                           &
-          inform%time%find_dependent + time_now - time_record
+          inform%time%find_dependent + REAL( time_now - time_record, wp )
         inform%time%clock_find_dependent =                                     &
           inform%time%clock_find_dependent + clock_now - clock_record
 
@@ -1932,7 +1933,7 @@
         inform%nfacts = 1
 
         IF ( ( control%cpu_time_limit >= zero .AND.                            &
-               time_now - time_start > control%cpu_time_limit ) .OR.           &
+             REAL( time_now - time_start, wp ) > control%cpu_time_limit ) .OR. &
              ( control%clock_time_limit >= zero .AND.                          &
                clock_now - clock_start > control%clock_time_limit ) ) THEN
           inform%status = GALAHAD_error_cpu_limit
@@ -2043,7 +2044,8 @@
                           data%QPP_inform, data%dims, prob,                    &
                           .FALSE., .FALSE., .FALSE. )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%preprocess =                                               &
+          inform%time%preprocess + REAL( time_now - time_record, wp )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
 
@@ -2518,7 +2520,8 @@
         CALL QPP_restore( data%QPP_map_freed, data%QPP_inform, prob,           &
                           get_all = .TRUE.)
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%preprocess =                                               &
+          inform%time%preprocess + REAL( time_now - time_record, wp )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
         data%dims = data%dims_save_freed
@@ -2572,7 +2575,8 @@
         END IF
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%preprocess = inform%time%preprocess + time_now - time_record
+        inform%time%preprocess =                                               &
+          inform%time%preprocess + REAL( time_now - time_record, wp )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
         prob%new_problem_structure = data%new_problem_structure
@@ -2585,7 +2589,7 @@
       IF ( control%error > 0 .AND. control%print_level >= 1 )                  &
         CALL SYMBOLS_status( inform%status, control%error, prefix, 'DQP' )
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
 
@@ -2614,7 +2618,7 @@
   900 CONTINUE
       inform%status = GALAHAD_error_allocate
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start
+      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
       IF ( printi ) WRITE( control%out,                                        &
@@ -3027,7 +3031,8 @@
       LOGICAL, INTENT( INOUT ) :: refactor
       INTEGER, INTENT( IN ) :: dual_starting_point
       INTEGER, INTENT( INOUT ) :: nv, lbd, m_ref
-      REAL ( KIND = wp ), INTENT( INOUT ) :: cpu_total, clock_total
+      REAL, INTENT( INOUT ) :: cpu_total
+      REAL ( KIND = wp ), INTENT( INOUT ) :: clock_total
       INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_status, C_status_old
       INTEGER, INTENT( INOUT ), DIMENSION( nv ) :: NZ_p, V_status
       INTEGER, INTENT( INOUT ), DIMENSION( n ) :: IUSED, INDEX_r, INDEX_w
@@ -3080,7 +3085,7 @@
       INTEGER :: start_ce, start_yl, start_yu, start_zl, start_zu
       INTEGER :: arc_search_iter, l_start, u_start, print_gap
       INTEGER :: max_row_length, added, deleted, len_list, no_change
-      REAL ( KIND = wp ) :: time_record, time_start, time_now
+      REAL :: time_record, time_start, time_now
       REAL ( KIND = wp ) :: clock_record, clock_start, clock_now, sl, slope
       REAL ( KIND = wp ) :: a_max, h_max, xi, curv, alpha, dual_g_norm, dual_f
       REAL ( KIND = wp ) :: stop_d, step_max, feas_tol, q0, qt, qc, val
@@ -3646,7 +3651,8 @@
         SLS_control%pivot_control = 2
         CALL SLS_analyse( H_sbls, SLS_data, SLS_control, inform%SLS_inform )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%analyse = inform%time%analyse + time_now - time_record
+        inform%time%analyse =                                                  &
+          inform%time%analyse + REAL( time_now - time_record, wp )
         inform%time%clock_analyse =                                            &
           inform%time%clock_analyse + clock_now - clock_record
 
@@ -3670,7 +3676,8 @@
         CALL SLS_factorize( H_sbls, SLS_data, SLS_control, inform%SLS_inform )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%nfacts = inform%nfacts + 1
-        inform%time%factorize = inform%time%factorize + time_now - time_record
+        inform%time%factorize =                                                &
+          inform%time%factorize + REAL( time_now - time_record, wp )
         inform%time%clock_factorize =                                          &
           inform%time%clock_factorize + clock_now - clock_record
 
@@ -3840,7 +3847,8 @@
           CALL SLS_solve( H_sbls, SOL, SLS_data, SLS_control, inform%SLS_inform)
         END IF
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%solve = inform%time%solve + time_now - time_record
+        inform%time%solve =                                                    &
+          inform%time%solve + REAL( time_now - time_record, wp )
         inform%time%clock_solve =                                              &
           inform%time%clock_solve + clock_now - clock_record
 
@@ -3922,7 +3930,8 @@
                                  SLS_control, inform%SLS_inform )
           END IF
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-          inform%time%solve = inform%time%solve + time_now - time_record
+          inform%time%solve =                                                  &
+            inform%time%solve + REAL( time_now - time_record, wp )
           inform%time%clock_solve =                                            &
             inform%time%clock_solve + clock_now - clock_record
 
@@ -4333,7 +4342,8 @@
           CALL SLS_solve( H_sbls, X, SLS_data, SLS_control, inform%SLS_inform )
         END IF
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%solve = inform%time%solve + time_now - time_record
+        inform%time%solve =                                                    &
+          inform%time%solve + REAL( time_now - time_record, wp )
         inform%time%clock_solve =                                              &
           inform%time%clock_solve + clock_now - clock_record
 
@@ -4453,7 +4463,7 @@
 !  test for optimality
 
         CALL CPU_TIME( time_record  )
-        CALL CHECKPOINT( inform%iter, REAL( time_record - time_start, sp ),    &
+        CALL CHECKPOINT( inform%iter, time_record - time_start,                &
                          dual_g_norm, inform%checkpointsIter,                  &
                          inform%checkpointsTime, 1, 16 )
 
@@ -4513,7 +4523,7 @@
             IF ( printw )                                                      &
               WRITE( out, "( /, A, ' ** form_and_factor complete' )" ) prefix
             inform%time%factorize                                              &
-              = inform%time%factorize + time_now - time_record
+              = inform%time%factorize + REAL( time_now - time_record, wp )
             inform%time%clock_factorize                                        &
               = inform%time%clock_factorize + clock_now - clock_record
             inform%nfacts = inform%nfacts + 1
@@ -4809,8 +4819,8 @@
 !write(6,"( ' VT ', /, ( 5ES16.8 ) )" ) VT( ce_start : zu_end )
 !write(6,"( ' V_status ', /, ( 5I5 ) )" ) V_status( : nv )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%search = inform%time%search + time_now - time_record       &
-          + t_solve - inform%time%solve
+        inform%time%search = inform%time%search +                              &
+          REAL( time_now - time_record, wp ) + t_solve - inform%time%solve
         inform%time%clock_search = inform%time%clock_search                    &
           + clock_now - clock_record + c_solve - inform%time%clock_solve
 
@@ -4877,7 +4887,8 @@
             CALL SLS_solve( H_sbls, X, SLS_data, SLS_control, inform%SLS_inform)
           END IF
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-          inform%time%solve = inform%time%solve + time_now - time_record
+          inform%time%solve =                                                  &
+            inform%time%solve + REAL( time_now - time_record, wp )
           inform%time%clock_solve =                                            &
             inform%time%clock_solve + clock_now - clock_record
 
@@ -5312,7 +5323,7 @@
             IF ( printw )                                                      &
               WRITE( out, "( /, A, ' ** form_and_factor complete' )" ) prefix
             inform%time%factorize                                              &
-              = inform%time%factorize + time_now - time_record
+              = inform%time%factorize + REAL( time_now - time_record, wp )
             inform%time%clock_factorize                                        &
               = inform%time%clock_factorize + clock_now - clock_record
             inform%nfacts = inform%nfacts + 1
@@ -5830,7 +5841,8 @@
                                    SLS_control, inform%SLS_inform )
             END IF
             CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-            inform%time%solve = inform%time%solve + time_now - time_record
+            inform%time%solve =                                                &
+              inform%time%solve + REAL( time_now - time_record, wp )
             inform%time%clock_solve =                                          &
               inform%time%clock_solve + clock_now - clock_record
 
@@ -5920,7 +5932,8 @@
                             SLS_control, inform%SLS_inform )
           END IF
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-          inform%time%solve = inform%time%solve + time_now - time_record
+          inform%time%solve =                                                  &
+            inform%time%solve + REAL( time_now - time_record, wp )
           inform%time%clock_solve =                                            &
             inform%time%clock_solve + clock_now - clock_record
 
@@ -6012,7 +6025,8 @@
                                 SLS_control, inform%SLS_inform )
               END IF
               CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-              inform%time%solve = inform%time%solve + time_now - time_record
+              inform%time%solve =                                              &
+                inform%time%solve + REAL( time_now - time_record, wp )
               inform%time%clock_solve =                                        &
                 inform%time%clock_solve + clock_now - clock_record
 
@@ -6203,7 +6217,8 @@
           END IF
 !write(6,"(A, /, (5ES16.8))" ) ' x ', RES( : n )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-          inform%time%solve = inform%time%solve + time_now - time_record
+          inform%time%solve =                                                  &
+            inform%time%solve + REAL( time_now - time_record, wp )
           inform%time%clock_solve =                                            &
             inform%time%clock_solve + clock_now - clock_record
 
@@ -6454,8 +6469,8 @@
 !write(6,"( ' VT ', /, ( 5ES16.8 ) )" ) VT( ce_start : zu_end )
 !write(6,"( ' V_status ', /, ( 5I5 ) )" ) V_status( : nv )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-          inform%time%search = inform%time%search + time_now - time_record     &
-            + t_solve - inform%time%solve
+          inform%time%search = inform%time%search +                            &
+            REAL( time_now - time_record, wp ) + t_solve - inform%time%solve
           inform%time%clock_search = inform%time%clock_search                  &
             + clock_now - clock_record + c_solve - inform%time%clock_solve
 
@@ -6654,7 +6669,8 @@
                             inform%SLS_inform )
           END IF
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-          inform%time%solve = inform%time%solve + time_now - time_record
+          inform%time%solve =                                                  &
+            inform%time%solve + REAL( time_now - time_record, wp )
           inform%time%clock_solve =                                            &
             inform%time%clock_solve + clock_now - clock_record
 
@@ -7839,7 +7855,7 @@
       END IF
 
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      solve = solve + time_now - time_record
+      solve = solve + REAL( time_now - time_record, wp )
       clock_solve = clock_solve + clock_now - clock_record
 
 !  initialize h
@@ -8123,7 +8139,7 @@
                                          SLS_data, SLS_control, SLS_inform )
         END IF
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        solve = solve + time_now - time_record
+        solve = solve + REAL( time_now - time_record, wp )
         clock_solve = clock_solve + clock_now - clock_record
 
 !  reset nonzero components of r to zero
@@ -8692,7 +8708,7 @@
         CALL SLS_part_solve( 'S', H, SLS_data, SLS_control, SLS_inform )
       END IF
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      solve = solve + time_now - time_record
+      solve = solve + REAL( time_now - time_record, wp )
       clock_solve = clock_solve + clock_now - clock_record
 
 !  compute J^T d and store in S
@@ -8740,7 +8756,7 @@
         CALL SLS_part_solve( 'S', S, SLS_data, SLS_control, SLS_inform )
       END IF
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      solve = solve + time_now - time_record
+      solve = solve + REAL( time_now - time_record, wp )
       clock_solve = clock_solve + clock_now - clock_record
 
 !  compute the slope along d
@@ -8930,7 +8946,7 @@
           CALL SLS_part_solve( 'S', S, SLS_data, SLS_control, SLS_inform )
         END IF
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        solve = solve + time_now - time_record
+        solve = solve + REAL( time_now - time_record, wp )
         clock_solve = clock_solve + clock_now - clock_record
 
 !  compute the slope along d
