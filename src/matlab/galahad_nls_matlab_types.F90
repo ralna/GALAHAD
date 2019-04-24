@@ -53,9 +53,9 @@
         mwPointer :: total, preprocess, analyse, factorize, solve
         mwPointer :: clock_total, clock_preprocess
         mwPointer :: clock_analyse, clock_factorize, clock_solve
-      END TYPE
+      END TYPE NLS_time_pointer_type
 
-      TYPE, PUBLIC :: NLS_pointer_type
+      TYPE, PUBLIC :: NLS_subproblem_pointer_type
         mwPointer :: pointer
         mwPointer :: status, alloc_status, bad_alloc
         mwPointer :: iter, cg_iter, c_eval, j_eval, h_eval
@@ -70,15 +70,19 @@
         TYPE ( PSLS_pointer_type ) :: PSLS_pointer
         TYPE ( BSC_pointer_type ) :: BSC_pointer
         TYPE ( ROOTS_pointer_type ) :: ROOTS_pointer
-      END TYPE
+      END TYPE NLS_subproblem_pointer_type
 
-    CONTAINS
+      TYPE, PUBLIC, EXTENDS( NLS_subproblem_pointer_type ) :: NLS_pointer_type
+        TYPE ( NLS_subproblem_pointer_type ) :: subproblem_pointer
+      END TYPE NLS_pointer_type
 
-!-*-*-  N L S _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-*-
+   CONTAINS
 
-      SUBROUTINE NLS_matlab_control_set( ps, NLS_control, len )
+!- N L S _ M A T L A B _ C O N T R O L _ S E T _ M A I N  S U B R O U T I N E -
 
-!  --------------------------------------------------------------
+      SUBROUTINE NLS_matlab_control_set_main( ps, NLS_control, len, nfields )
+
+!  ----------------------------------------------------------------------------
 
 !  Set matlab control arguments from values provided to NLS
 
@@ -87,22 +91,25 @@
 !  ps - given pointer to the structure
 !  NLS_control - NLS control structure
 !  len - length of any character component
+!  nfields - only the first nfields fields in the structure will be considered
 
-!  --------------------------------------------------------------
+!  ----------------------------------------------------------------------------
 
       mwPointer :: ps
       mwSize :: len
-      TYPE ( NLS_control_type ) :: NLS_control
+!     TYPE ( NLS_control_type ) :: NLS_control
+      TYPE ( NLS_subproblem_control_type ) :: NLS_control
+      INTEGER :: nfields
 
 !  local variables
 
-      INTEGER :: j, nfields
+      INTEGER :: j
       mwPointer :: pc, mxGetField
       mwSize :: mxGetNumberOfFields
       LOGICAL :: mxIsStruct
       CHARACTER ( LEN = slen ) :: name, mxGetFieldNameByNumber
 
-      nfields = mxGetNumberOfFields( ps )
+!     nfields = mxGetNumberOfFields( ps )
       DO j = 1, nfields
         name = mxGetFieldNameByNumber( ps, j )
         SELECT CASE ( TRIM( name ) )
@@ -268,13 +275,62 @@
 
       RETURN
 
+!  End of subroutine NLS_matlab_control_set_main
+
+      END SUBROUTINE NLS_matlab_control_set_main
+
+!-*-*-  N L S _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-*-
+
+      SUBROUTINE NLS_matlab_control_set( ps, NLS_control, len )
+
+!  --------------------------------------------------------------
+
+!  Set matlab control arguments from values provided to NLS
+
+!  Arguments
+
+!  ps - given pointer to the structure
+!  NLS_control - NLS control structure
+!  len - length of any character component
+
+!  --------------------------------------------------------------
+
+      mwPointer :: ps
+      mwSize :: len
+      TYPE ( NLS_control_type ) :: NLS_control
+
+!  local variables
+
+      INTEGER :: j, nfields
+      mwPointer :: pc, mxGetField
+      mwSize :: mxGetNumberOfFields
+      LOGICAL :: mxIsStruct
+      CHARACTER ( LEN = slen ) :: name, mxGetFieldNameByNumber
+
+      nfields = mxGetNumberOfFields( ps )
+      CALL NLS_matlab_control_set_main( ps,                                    &
+             NLS_control%NLS_subproblem_control_type, len, nfields - 1 )
+
+      name = mxGetFieldNameByNumber( ps, nfields )
+      IF ( TRIM( name ) == 'subproblem_control' ) THEN
+        pc = mxGetField( ps, 1_mwi_, 'subproblem_control' )
+        IF ( .NOT. mxIsStruct( pc ) )                                          &
+          CALL mexErrMsgTxt(                                                   &
+            ' component subproblem_control must be a structure' )
+        CALL NLS_matlab_control_set_main( pc,                                  &
+          NLS_control%subproblem_control, len, nfields - 1 )
+      END IF
+
+      RETURN
+
 !  End of subroutine NLS_matlab_control_set
 
       END SUBROUTINE NLS_matlab_control_set
 
-!-*-  N L S _ M A T L A B _ C O N T R O L _ G E T  S U B R O U T I N E   -*-
+!- N L S _ M A T L A B _ C O N T R O L _ G E T _ M A I N  S U B R O U T I N E -
 
-      SUBROUTINE NLS_matlab_control_get( struct, NLS_control, name )
+      SUBROUTINE NLS_matlab_control_get_main( struct, NLS_control,             &
+                                              ninform, finform, name )
 
 !  --------------------------------------------------------------
 
@@ -285,46 +341,22 @@
 !  struct - pointer to the structure for which this will be a component
 !  NLS_control - NLS control structure
 !  name - name of component of the structure
+!  ninform - number of components
+!  finform - character array of names of components
 
 !  --------------------------------------------------------------
 
       mwPointer :: struct
-      TYPE ( NLS_control_type ) :: NLS_control
+!     TYPE ( NLS_control_type ) :: NLS_control
+      TYPE ( NLS_subproblem_control_type ) :: NLS_control
+      INTEGER * 4 :: ninform
+      CHARACTER ( LEN = 31 ) :: finform( ninform )
       CHARACTER ( len = * ), OPTIONAL :: name
-      INTEGER :: out
 
 !  local variables
 
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
-
-      INTEGER * 4, PARAMETER :: ninform = 49
-      CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
-         'error                          ', 'out                            ', &
-         'print_level                    ', 'start_print                    ', &
-         'stop_print                     ', 'print_gap                      ', &
-         'maxit                          ', 'alive_unit                     ', &
-         'alive_file                     ', 'jacobian_available             ', &
-         'hessian_available              ', 'model                          ', &
-         'norm                           ', 'non_monotone                   ', &
-         'weight_update_strategy         ', 'stop_c_absolute                ', &
-         'stop_c_relative                ', 'stop_g_absolute                ', &
-         'stop_g_relative                ', 'stop_s                         ', &
-         'power                          ', 'initial_weight                 ', &
-         'minimum_weight                 ', 'initial_inner_weight           ', &
-         'eta_successful                 ', 'eta_very_successful            ', &
-         'eta_too_successful             ', 'weight_decrease_min            ', &
-         'weight_decrease                ', 'weight_increase                ', &
-         'weight_increase_max            ', 'reduce_gap                     ', &
-         'tiny_gap                       ', 'large_root                     ', &
-         'switch_to_newton               ', 'cpu_time_limit                 ', &
-         'clock_time_limit               ', 'subproblem_direct              ', &
-         'renormalize_weight             ', 'magic_step                     ', &
-         'print_obj                      ', 'space_critical                 ', &
-         'deallocate_error_fatal         ', 'prefix                         ', &
-         'RQS_control                    ', 'GLRT_control                   ', &
-         'PSLS_control                   ', 'BSC_control                    ', &
-         'ROOTS_control                  ' /)
 
 !  create the structure
 
@@ -456,13 +488,86 @@
 
       RETURN
 
+!  End of subroutine NLS_matlab_control_get_main
+
+      END SUBROUTINE NLS_matlab_control_get_main
+
+!-*-  N L S _ M A T L A B _ C O N T R O L _ G E T  S U B R O U T I N E   -*-
+
+      SUBROUTINE NLS_matlab_control_get( struct, NLS_control, name )
+
+!  --------------------------------------------------------------
+
+!  Get matlab control arguments from values provided to NLS
+
+!  Arguments
+
+!  struct - pointer to the structure for which this will be a component
+!  NLS_control - NLS control structure
+!  name - name of component of the structure
+
+!  --------------------------------------------------------------
+
+      mwPointer :: struct
+      TYPE ( NLS_control_type ) :: NLS_control
+      CHARACTER ( len = * ), OPTIONAL :: name
+      INTEGER :: out
+
+!  local variables
+
+      mwPointer :: pointer
+
+      INTEGER * 4, PARAMETER :: ninform = 50
+      INTEGER * 4, PARAMETER :: ninformm1 = ninform - 1
+      CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
+         'error                          ', 'out                            ', &
+         'print_level                    ', 'start_print                    ', &
+         'stop_print                     ', 'print_gap                      ', &
+         'maxit                          ', 'alive_unit                     ', &
+         'alive_file                     ', 'jacobian_available             ', &
+         'hessian_available              ', 'model                          ', &
+         'norm                           ', 'non_monotone                   ', &
+         'weight_update_strategy         ', 'stop_c_absolute                ', &
+         'stop_c_relative                ', 'stop_g_absolute                ', &
+         'stop_g_relative                ', 'stop_s                         ', &
+         'power                          ', 'initial_weight                 ', &
+         'minimum_weight                 ', 'initial_inner_weight           ', &
+         'eta_successful                 ', 'eta_very_successful            ', &
+         'eta_too_successful             ', 'weight_decrease_min            ', &
+         'weight_decrease                ', 'weight_increase                ', &
+         'weight_increase_max            ', 'reduce_gap                     ', &
+         'tiny_gap                       ', 'large_root                     ', &
+         'switch_to_newton               ', 'cpu_time_limit                 ', &
+         'clock_time_limit               ', 'subproblem_direct              ', &
+         'renormalize_weight             ', 'magic_step                     ', &
+         'print_obj                      ', 'space_critical                 ', &
+         'deallocate_error_fatal         ', 'prefix                         ', &
+         'RQS_control                    ', 'GLRT_control                   ', &
+         'PSLS_control                   ', 'BSC_control                    ', &
+         'ROOTS_control                  ', 'subproblem_control             ' /)
+
+!  create and get the components
+
+      CALL NLS_matlab_control_get_main( struct,                                &
+             NLS_control%NLS_subproblem_control_type, ninform, finform, name )
+
+!  create and get the components of the sub-structure subproblem_control
+
+      pointer = struct
+      CALL NLS_matlab_control_get_main( pointer,                               &
+             NLS_control%subproblem_control, ninformm1, finform,               &
+             'subproblem_control' )
+
+      RETURN
+
 !  End of subroutine NLS_matlab_control_get
 
       END SUBROUTINE NLS_matlab_control_get
 
-!-*-  N L S _ M A T L A B _ I N F O R M _ C R E A T E  S U B R O U T I N E   -*-
+! N L S _ M A T L A B _ I N F O R M _ C R E A T E _ M A I N  S U B R O U T I N E
 
-      SUBROUTINE NLS_matlab_inform_create( struct, NLS_pointer, name )
+      SUBROUTINE NLS_matlab_inform_create_main( struct, NLS_pointer,           &
+                                ninform, finform, t_ninform, t_finform, name )
 
 !  --------------------------------------------------------------
 
@@ -474,38 +579,22 @@
 !  NLS_pointer - NLS pointer sub-structure
 !  name - optional name of component of the structure (root of structure if
 !         absent)
+!  ninform - number of components
+!  finform - character array of names of components
+!  ninform - number of timing components
+!  finform - character array of names of timing components
 
 !  --------------------------------------------------------------
 
       mwPointer :: struct
-      TYPE ( NLS_pointer_type ) :: NLS_pointer
+      TYPE ( NLS_subproblem_pointer_type ) :: NLS_pointer
+      INTEGER * 4 :: ninform, t_ninform
+      CHARACTER ( LEN = 21 ) :: finform( ninform ), t_finform( t_ninform )
       CHARACTER ( len = * ), OPTIONAL :: name
 
 !  local variables
 
       mwPointer :: mxCreateStructMatrix
-
-      INTEGER * 4, PARAMETER :: ninform = 24
-      CHARACTER ( LEN = 21 ), PARAMETER :: finform( ninform ) = (/             &
-           'status               ', 'alloc_status         ',                   &
-           'bad_alloc            ', 'iter                 ',                   &
-           'cg_iter              ', 'c_eval               ',                   &
-           'j_eval               ', 'h_eval               ',                   &
-           'factorization_status ', 'factorization_max    ',                   &
-           'max_entries_factors  ', 'factorization_integer',                   &
-           'factorization_real   ', 'factorization_average',                   &
-           'obj                  ', 'norm_c               ',                   &
-           'norm_g               ', 'weight               ',                   &
-           'time                 ', 'RQS_inform           ',                   &
-           'GLRT_inform          ', 'PSLS_inform          ',                   &
-           'BSC_inform           ', 'ROOTS_inform         ' /)
-      INTEGER * 4, PARAMETER :: t_ninform = 10
-      CHARACTER ( LEN = 21 ), PARAMETER :: t_finform( t_ninform ) = (/         &
-           'total                ', 'preprocess           ',                   &
-           'analyse              ', 'factorize            ',                   &
-           'solve                ', 'clock_total          ',                   &
-           'clock_preprocess     ', 'clock_analyse        ',                   &
-           'clock_factorize      ', 'clock_solve          ' /)
 
 !  create the structure
 
@@ -609,13 +698,85 @@
 
       RETURN
 
+!  End of subroutine NLS_matlab_inform_create_main
+
+      END SUBROUTINE NLS_matlab_inform_create_main
+
+!-*-  N L S _ M A T L A B _ I N F O R M _ C R E A T E  S U B R O U T I N E   -*-
+
+      SUBROUTINE NLS_matlab_inform_create( struct, NLS_pointer, name )
+
+!  --------------------------------------------------------------
+
+!  Create matlab pointers to hold NLS_inform values
+
+!  Arguments
+
+!  struct - pointer to the structure for which this will be a component
+!  NLS_pointer - NLS pointer sub-structure
+!  name - optional name of component of the structure (root of structure if
+!         absent)
+
+!  --------------------------------------------------------------
+
+      mwPointer :: struct
+      TYPE ( NLS_pointer_type ) :: NLS_pointer
+      CHARACTER ( len = * ), OPTIONAL :: name
+
+!  local variables
+
+      mwPointer :: mxCreateStructMatrix
+
+      INTEGER * 4, PARAMETER :: ninform = 25
+      INTEGER * 4, PARAMETER :: ninformm1 = ninform - 1
+      CHARACTER ( LEN = 21 ), PARAMETER :: finform( ninform ) = (/             &
+           'status               ', 'alloc_status         ',                   &
+           'bad_alloc            ', 'iter                 ',                   &
+           'cg_iter              ', 'c_eval               ',                   &
+           'j_eval               ', 'h_eval               ',                   &
+           'factorization_status ', 'factorization_max    ',                   &
+           'max_entries_factors  ', 'factorization_integer',                   &
+           'factorization_real   ', 'factorization_average',                   &
+           'obj                  ', 'norm_c               ',                   &
+           'norm_g               ', 'weight               ',                   &
+           'time                 ', 'RQS_inform           ',                   &
+           'GLRT_inform          ', 'PSLS_inform          ',                   &
+           'BSC_inform           ', 'ROOTS_inform         ',                   &
+           'subproblem_inform    '                          /)
+      INTEGER * 4, PARAMETER :: t_ninform = 10
+      CHARACTER ( LEN = 21 ), PARAMETER :: t_finform( t_ninform ) = (/         &
+           'total                ', 'preprocess           ',                   &
+           'analyse              ', 'factorize            ',                   &
+           'solve                ', 'clock_total          ',                   &
+           'clock_preprocess     ', 'clock_analyse        ',                   &
+           'clock_factorize      ', 'clock_solve          ' /)
+
+!  local variables
+
+      mwPointer :: pointer
+
+!  create and get the components
+
+      CALL NLS_matlab_inform_create_main( struct,                              &
+             NLS_pointer%NLS_subproblem_pointer_type, ninform, finform,        &
+             t_ninform, t_finform, name )
+
+!  create and get the components of the sub-structure subproblem_control
+
+      pointer = struct
+      CALL NLS_matlab_inform_create_main( pointer,                             &
+             NLS_pointer%subproblem_pointer, ninformm1, finform,               &
+             t_ninform, t_finform, 'subproblem_inform' )
+
+      RETURN
+
 !  End of subroutine NLS_matlab_inform_create
 
       END SUBROUTINE NLS_matlab_inform_create
 
-!-*-*-  N L S _ M A T L A B _ I N F O R M _ G E T   S U B R O U T I N E   -*-*-
+!-  N L S _ M A T L A B _ I N F O R M _ G E T _ M A I N  S U B R O U T I N E   -
 
-      SUBROUTINE NLS_matlab_inform_get( NLS_inform, NLS_pointer )
+      SUBROUTINE NLS_matlab_inform_get_main( NLS_inform, NLS_pointer )
 
 !  --------------------------------------------------------------
 
@@ -628,8 +789,10 @@
 
 !  --------------------------------------------------------------
 
-      TYPE ( NLS_inform_type ) :: NLS_inform
-      TYPE ( NLS_pointer_type ) :: NLS_pointer
+!     TYPE ( NLS_inform_type ) :: NLS_inform
+      TYPE ( NLS_subproblem_inform_type ) :: NLS_inform
+!     TYPE ( NLS_pointer_type ) :: NLS_pointer
+      TYPE ( NLS_subproblem_pointer_type ) :: NLS_pointer
 
 !  local variables
 
@@ -719,6 +882,40 @@
 
       CALL ROOTS_matlab_inform_get( NLS_inform%ROOTS_inform,                   &
                                     NLS_pointer%ROOTS_pointer )
+
+      RETURN
+
+!  End of subroutine NLS_matlab_inform_get_main
+
+      END SUBROUTINE NLS_matlab_inform_get_main
+
+!-*-*-  N L S _ M A T L A B _ I N F O R M _ G E T   S U B R O U T I N E   -*-*-
+
+      SUBROUTINE NLS_matlab_inform_get( NLS_inform, NLS_pointer )
+
+!  --------------------------------------------------------------
+
+!  Set NLS_inform values from matlab pointers
+
+!  Arguments
+
+!  NLS_inform - NLS inform structure
+!  NLS_pointer - NLS pointer structure
+
+!  --------------------------------------------------------------
+
+      TYPE ( NLS_inform_type ) :: NLS_inform
+      TYPE ( NLS_pointer_type ) :: NLS_pointer
+
+!  set the components
+
+      CALL NLS_matlab_inform_get_main( NLS_inform%NLS_subproblem_inform_type,  &
+                                       NLS_pointer%NLS_subproblem_pointer_type )
+
+!  set the components of the sub-structure subproblem_inform
+
+      CALL NLS_matlab_inform_get_main( NLS_inform%subproblem_inform,           &
+                                       NLS_pointer%subproblem_pointer )
 
       RETURN
 

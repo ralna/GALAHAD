@@ -847,6 +847,9 @@
 ! Set the space and sparsity pattern for P
 
      IF ( hess_prods ) THEN
+       CALL SMT_put( nlp%P%type, 'SPARSE_BY_COLUMNS', inform%status )
+       IF ( inform%status /= 0 ) GO TO 990
+
        nnzchp = userdata%integer( ihsptr + m + 1 ) - 1
 
        CALL SPACE_resize_array( nnzchp, nlp%P%val, inform%status,              &
@@ -1943,4 +1946,3 @@
      END SUBROUTINE CUTEst_timing
 
    END MODULE GALAHAD_CUTEST_FUNCTIONS_double
-

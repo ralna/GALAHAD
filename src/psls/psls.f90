@@ -2105,7 +2105,7 @@
 !  One of the other cases will be used ... eventually
 
       CASE DEFAULT
-        WRITE( 6, "( ' PSLS: case ', I0, ' not implemented yet ' )" )          &
+        WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )           &
           control%preconditioner
         inform%status = GALAHAD_preconditioner_unknown
         RETURN
@@ -2710,7 +2710,7 @@
 !  One of the other cases will be used ... eventually
 
       CASE DEFAULT
-        WRITE( 6, "( ' PSLS: case ', I0, ' not implemented yet ' )" )          &
+        WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )           &
           control%preconditioner
         inform%status = GALAHAD_preconditioner_unknown
         RETURN
@@ -3083,7 +3083,7 @@
             inform%status = - 1 ; GO TO 910 ; END IF
         END IF
 
-!  fit the data into the diagonal and ensure that the diaginal is
+!  fit the data into the diagonal and ensure that the diagonal is
 !  sufficiently positive
 
         P%val = MAX( A%val( : data%n ), control%min_diagonal )
@@ -3297,10 +3297,10 @@
 
       CASE ( preconditioner_reordered_band )
 
-        WRITE( 6, "( ' PSLS: case ', I0, ' not implemented yet ' )" )          &
-          control%preconditioner
-        inform%status = GALAHAD_preconditioner_unknown
-        RETURN
+!       WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )           &
+!         control%preconditioner
+!       inform%status = GALAHAD_preconditioner_unknown
+!       RETURN
 
         IF ( control%new_structure ) THEN
 
@@ -3538,7 +3538,7 @@
                 ELSE
                   P%ne = P%ne + 1
                   IF ( control%new_structure ) THEN
-                    P%row( P%ne ) = ii ; P%col( P%ne ) = jj
+                    P%row( P%ne ) = i ; P%col( P%ne ) = j
                   END IF
                   P%val( P%ne ) = A%val( l )
                 END IF
@@ -3558,7 +3558,7 @@
                 ELSE
                   P%ne = P%ne + 1
                   IF ( control%new_structure ) THEN
-                    P%row( P%ne ) = ii ; P%col( P%ne ) = jj
+                    P%row( P%ne ) = i ; P%col( P%ne ) = j
                   END IF
                   P%val( P%ne ) = A%val( l )
                 END IF
@@ -3576,7 +3576,7 @@
               ELSE
                 P%ne = P%ne + 1
                 IF ( control%new_structure ) THEN
-                  P%row( P%ne ) = ii ; P%col( P%ne ) = jj
+                  P%row( P%ne ) = i ; P%col( P%ne ) = j
                 END IF
                 P%val( P%ne ) = A%val( l )
               END IF
@@ -3716,7 +3716,7 @@
 !  One of the other cases will be used ... eventually
 
       CASE DEFAULT
-        WRITE( 6, "( ' PSLS: case ', I0, ' not implemented yet ' )" )          &
+        WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )           &
           control%preconditioner
         inform%status = GALAHAD_preconditioner_unknown
         RETURN
@@ -3955,7 +3955,7 @@
 !  P is one of the other cases ... eventually
 
             CASE DEFAULT
-              WRITE( 6, "( ' PSLS: case ', I0, ' not implemented yet ' )" )    &
+              WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )     &
                 control%preconditioner
               inform%status = GALAHAD_preconditioner_unknown
               RETURN
@@ -4148,7 +4148,7 @@
 !  P is one of the other cases ... eventually
 
         CASE DEFAULT
-          WRITE( 6, "( ' PSLS: case ', I0, ' not implemented yet ' )" )        &
+          WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )         &
             control%preconditioner
           inform%status = GALAHAD_preconditioner_unknown
           RETURN
@@ -4187,7 +4187,7 @@
 !  - - - - - - - - - - - - - - - - - - - - - - - - -
 
       ELSE
-!       WRITE( 6, "( ' update not implemented yet ' )" )
+!       WRITE( 6, "( ' update not yet implemented ' )" )
 !       inform%status = GALAHAD_not_yet_implemented
 
 !  Solve for the preconditioned gradient using the Schur complement update.
@@ -4268,7 +4268,7 @@
 !  P is one of the other cases ... eventually
 
           CASE DEFAULT
-            WRITE( 6, "( ' PSLS: case ', I0, ' not implemented yet ' )" )      &
+            WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )       &
               control%preconditioner
             inform%status = GALAHAD_preconditioner_unknown
             RETURN
@@ -4543,7 +4543,7 @@
 !  One of the other cases will be used ... eventually
 
       CASE DEFAULT
-        WRITE( 6, "( ' PSLS_norm: case ', I0, ' not implemented yet ' )" )     &
+        WRITE( 6, "( ' PSLS_norm: case ', I0, ' not yet implemented' )" )      &
           control%preconditioner
         inform%status = GALAHAD_not_yet_implemented
         GO TO 910
@@ -5037,4 +5037,3 @@
 !  End of module GALAHAD_PSLS_double
 
    END MODULE GALAHAD_PSLS_double
-

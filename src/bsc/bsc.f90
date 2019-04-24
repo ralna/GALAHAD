@@ -394,7 +394,7 @@
 !
 !   S%ptr is a rank-one allocatable array of type default integer, whose ith
 !    component gives the positions in S%row (etc) of the first entry of column
-!    i of S, and S%ptr(m + 1) = S%ne+1, when control%s_also_by_column has been
+!    i of S, and S%ptr(n + 1) = S%ne+1, when control%s_also_by_column has been
 !    set .TRUE. It will not have been set if control%s_also_by_column = .FALSE.
 !
 !  control is a scalar variable of type BSC_control_type. See BSC_initialize

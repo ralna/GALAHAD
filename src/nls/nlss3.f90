@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_NLS_EXAMPLE  !  GALAHAD 3.0 - 25/11/2016 AT 09:15 GMT
+   PROGRAM GALAHAD_NLS_EXAMPLE3  !  GALAHAD 3.2 - 20/04/2019 AT 10:15 GMT
    USE GALAHAD_NLS_double                     ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -61,5 +61,4 @@
    END SELECT
    CALL NLS_terminate( data, control, inform )  ! delete internal workspace
    DEALLOCATE( nlp%X, nlp%G )
-   END PROGRAM GALAHAD_NLS_EXAMPLE
-
+   END PROGRAM GALAHAD_NLS_EXAMPLE3

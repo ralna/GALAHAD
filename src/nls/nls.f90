@@ -19,9 +19,10 @@
 !    |                                                                    |
 !    |   Aim: find a (local) minimizer of the objective function          |
 !    |                                                                    |
-!    |            1/2 ||c(x)||_2^2 = 1/2 sum_i=1^m c_i^2(x)               |
+!    |            1/2 ||c(x)||_W^2 = 1/2 sum_i=1^m w_i c_i^2(x)           |
 !    |                                                                    |
 !    |   where the residual c(x) is a smooth vector-valued function       |
+!    |   and the weights w_i are positive                                 |
 !    |                                                                    |
 !     --------------------------------------------------------------------
 
@@ -96,7 +97,7 @@
 
      INTEGER, PARAMETER  :: dynamic_model = 0
      INTEGER, PARAMETER  :: first_order_model = 1
-     INTEGER, PARAMETER  :: identity_hessian_model = 2
+     INTEGER, PARAMETER  :: diagonal_hessian_model = 2
      INTEGER, PARAMETER  :: gauss_newton_model = 3
      INTEGER, PARAMETER  :: newton_model = 4
      INTEGER, PARAMETER  :: gauss_to_newton_model = 5
@@ -104,21 +105,22 @@
      INTEGER, PARAMETER  :: tensor_newton_model = 7
      INTEGER, PARAMETER  :: tensor_gauss_to_newton_model = 8
 
-!  scalings (defines norms)
+!  regularization norms
 
-     INTEGER, PARAMETER  :: user_scaling = - 3
-     INTEGER, PARAMETER  :: identity_scaling = - 1
-     INTEGER, PARAMETER  :: automatic_scaling = 0
-     INTEGER, PARAMETER  :: diagonal_jtj_scaling = 1
-     INTEGER, PARAMETER  :: diagonal_hessian_scaling = 2
-     INTEGER, PARAMETER  :: band_scaling = 3
-     INTEGER, PARAMETER  :: reordered_band_scaling = 4
-     INTEGER, PARAMETER  :: schnabel_eskow_scaling = 5
-     INTEGER, PARAMETER  :: gmps_scaling = 6
-     INTEGER, PARAMETER  :: lin_more_scaling = 7
-     INTEGER, PARAMETER  :: mi28_scaling = 8
-     INTEGER, PARAMETER  :: munksgaard_scaling = 9
-     INTEGER, PARAMETER  :: expanding_band_scaling = 10
+     INTEGER, PARAMETER  :: user_regularization = - 3
+     INTEGER, PARAMETER  :: lmbfgs_regularization = - 2
+     INTEGER, PARAMETER  :: euclidean_regularization = - 1
+     INTEGER, PARAMETER  :: automatic_regularization = 0
+     INTEGER, PARAMETER  :: diagonal_jtj_regularization = 1
+     INTEGER, PARAMETER  :: diagonal_hessian_regularization = 2
+     INTEGER, PARAMETER  :: band_regularization = 3
+     INTEGER, PARAMETER  :: reordered_band_regularization = 4
+     INTEGER, PARAMETER  :: schnabel_eskow_regularization = 5
+     INTEGER, PARAMETER  :: gmps_regularization = 6
+     INTEGER, PARAMETER  :: lin_more_regularization = 7
+     INTEGER, PARAMETER  :: mi28_regularization = 8
+     INTEGER, PARAMETER  :: munksgaard_regularization = 9
+     INTEGER, PARAMETER  :: expanding_band_regularization = 10
 
 !  weight update strategies
 
@@ -176,12 +178,12 @@
 !   is the Jacobian matrix of first derivatives available (>= 2), is access
 !    only via matrix-vector products (=1) or is it not available (<=0) ?
 
-       INTEGER :: jacobian_available = 2
+       INTEGER :: jacobian_available = 1
 
 !   is the Hessian matrix of second derivatives available (>= 2), is access
 !    only via matrix-vector products (=1) or is it not available (<=0) ?
 
-       INTEGER :: hessian_available = 2
+       INTEGER :: hessian_available = 0
 
 !   specify the model used. Possible values are
 !
@@ -193,6 +195,7 @@
 !      5  Gauss-Newton to Newton transition
 !      6  tensor Gauss-Newton treated as a least-squares model
 !      7  tensor Gauss-Newton treated as a general model
+!      8  tensor Gauss-Newton transition from a least-squares to a general model
 
        INTEGER :: model = gauss_newton_model
 
@@ -200,7 +203,7 @@
 !    defined via ||v||^2 = v^T S v,  and will also define the preconditioner
 !    used for iterative methods. Possible values for S are
 !
-!     -3  user's own norm
+!     -3  user's own regularization norm
 !     -2  S = limited-memory BFGS matrix (with
 !          %PSLS_contro%lbfgs_vectors history) (*not yet implemented*)
 !     -1  identity (= Euclidan two-norm)
@@ -218,7 +221,7 @@
 !      9  incomplete factorization of Hessian, Munskgaard (*not yet *)
 !     10  expanding band of Hessian (*not yet implemented*)
 
-       INTEGER :: norm = identity_scaling
+       INTEGER :: norm = euclidean_regularization
 
 !   non-monotone <= 0 monotone strategy used, anything else non-monotone
 !     strategy with this history length used
@@ -558,12 +561,12 @@
      TYPE, PUBLIC :: NLS_subproblem_data_type
        INTEGER :: branch = 1
        INTEGER :: branch_newton = 1
-       INTEGER :: eval_status, out, start_print, stop_print
+       INTEGER :: eval_status, out, start_print, stop_print, regularization_type
        INTEGER :: print_level, print_level_glrt, print_level_rqs, ref( 1 )
        INTEGER :: len_history, ibound, ipoint, icp, lbfgs_mem, max_hist, jtj_ne
-       INTEGER :: scaling_type, nskip_lbfgs, nskip_prec, non_monotone_history
+       INTEGER :: nskip_lbfgs, nskip_prec, non_monotone_history
        INTEGER :: print_gap, max_diffs, latest_diff, total_diffs, model_used
-       INTEGER :: total_facts, total_inner_its, h_ne, s_ne
+       INTEGER :: total_facts, h_ne, s_ne
        REAL :: time_start, time_record, time_now
        REAL ( KIND = wp ) :: clock_start, clock_record, clock_now, delta, power
        REAL ( KIND = wp ) :: f_ref, f_trial, f_best, m_best, model, ratio, rp
@@ -578,10 +581,10 @@
        LOGICAL :: set_printi, set_printt, set_printd, set_printm, set_printw
        LOGICAL :: monotone, new_point, got_j, got_h, poor_model, reduce
        LOGICAL :: reverse_c, reverse_j, reverse_h, reverse_jprod, reverse_hprod
-       LOGICAL :: reverse_scale, reverse_hprods, non_trivial_scaling
-       LOGICAL :: successful, transpose, form_scaling, f_is_nan, g_is_nan
-       LOGICAL :: stabilised, hessian_available, jacobian_available
-       LOGICAL :: step_accepted, hessian_computed, map_h_to_jtj, re_entry
+       LOGICAL :: reverse_scale, reverse_hprods, non_trivial_regularization
+       LOGICAL :: successful, transpose, form_regularization, f_is_nan, g_is_nan
+       LOGICAL :: stabilised, hessian_available, jacobian_available, re_entry
+       LOGICAL :: w_eq_identity, step_accepted, hessian_computed, map_h_to_jtj
        CHARACTER ( LEN = 1 ) :: negcur = ' '
        CHARACTER ( LEN = 1 ) :: perturb = ' '
        CHARACTER ( LEN = 1 ) :: hard = ' '
@@ -598,13 +601,13 @@
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_current
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_current
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_current
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SX_current
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SX
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SV
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: D_hist
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: F_hist
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JS
@@ -1110,7 +1113,7 @@
                                  control%prefix,                               &
                                  control%error )
 
-!  read the controls for the sub-problem solvers and scalings
+!  read the controls for the sub-problem solvers and regularizations
 
      IF ( PRESENT( alt_specname ) ) THEN
        CALL RQS_read_specfile( control%RQS_control, device,                    &
@@ -1217,21 +1220,17 @@
 
      END SUBROUTINE NLS_read_specfile
 
-!-*-  G A L A H A D -  N L S _ n e w t o n _ s o l v e  S U B R O U T I N E  -*-
+!-*-*-*-*-  G A L A H A D -  N L S _ s o l v e  S U B R O U T I N E  -*-*-*-*-
 
-     SUBROUTINE NLS_subproblem_solve( nlp, control, inform, data, userdata,    &
-                                      stabilisation, eval_C, eval_J, eval_H,   &
-                                      eval_JPROD, eval_HPROD, eval_SCALE )
+     SUBROUTINE NLS_solve( nlp, control, inform, data, userdata,               &
+                           W, eval_C, eval_J, eval_H, eval_JPROD,              &
+                           eval_HPROD, eval_HPRODS, eval_SCALE )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 !  NLS_solve, a regularization method for finding a local unconstrained
-!    minimizer of a stabilised nonlinear least-squares objective,
-!      f(x) = 1/2 ||c(x)||_2^2 + sigma/p ||x||_S^p,
-!    where S is a positive-definite matrix and ||x||_S^2 = x^T S x
-!    and the weight sigma is non-negative
-
-!  This variant implements the Newton or Gauss-Newton method
+!    minimizer of a nonlinear least-squares objective, 1/2 ||c(x)||_W^2
+!    = 1/2 sum_i w_i c_i^2(x)
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
@@ -1301,6 +1300,3250 @@
 !  H is scalar variable of type SMT_TYPE that holds the scaled Hessian matrix
 !   H(x) = sum_{i=1}^m c_i(x) H_i(x), where H_i(x) is the Hessian of c_i(x).
 !   The following components are used here:
+!
+!   H%type is an allocatable array of rank one and type default character, that
+!    is used to indicate the storage scheme used. If the dense storage scheme
+!    is used, the first five components of H%type must contain the string DENSE.
+!    For the sparse co-ordinate scheme, the first ten components of H%type must
+!    contain the string COORDINATE, for the sparse row-wise storage scheme, the
+!    first fourteen components of H%type must contain the string SPARSE_BY_ROWS,
+!    and for the diagonal storage scheme, the first eight components of H%type
+!    must contain the string DIAGONAL.
+!
+!    For convenience, the procedure SMT_put may be used to allocate sufficient
+!    space and insert the required keyword into H%type. For example, if nlp is
+!    of derived type packagename_problem_type and involves a Hessian we wish to
+!    store using the co-ordinate scheme, we may simply
+!
+!         CALL SMT_put( nlp%H%type, 'COORDINATE', stat )
+!
+!    See the documentation for the galahad package SMT for further details on
+!    the use of SMT_put.
+
+!   H%ne is a scalar variable of type default integer, that holds the number of
+!    entries in the lower triangular part of H(x) in the sparse co-ordinate
+!    storage scheme. It need not be set for any of the other three schemes.
+!
+!   H%val is a rank-one allocatable array of type default real, that holds
+!    the values of the entries of the  lower triangular part of the Hessian
+!    matrix H in any of the available storage schemes.
+!
+!   H%row is a rank-one allocatable array of type default integer, that holds
+!    the row indices of the lower triangular part of H(x) in the sparse
+!    co-ordinate storage scheme. It need not be allocated for any of the other
+!    three schemes.
+!
+!   H%col is a rank-one allocatable array variable of type default integer,
+!    that holds the column indices of the  lower triangular part of H(x) in
+!    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
+!    need not be allocated when the dense or diagonal storage schemes are used.
+!
+!   H%ptr is a rank-one allocatable array of dimension n+1 and type default
+!    integer, that holds the starting position of each row of the lower
+!    triangular part of H(x), as well as H%ptr(n+1) = the total number of
+!    entries plus one, in the sparse row-wise storage scheme. It need not be
+!    allocated when the other schemes are used.
+!
+!  P is scalar variable of type SMT_TYPE that holds the matrix of
+!   residual-Hessian-vector products P(x,v) = (H_1(x)v,...,H_m(x)v) for
+!   a given v. The following components are used here:
+!
+!   P%type is an allocatable array of rank one and type default character, that
+!    is used to indicate the storage scheme used. If the dense storage scheme
+!    is used, the first sixteen components of P%type must contain the string
+!    DENSE_BY_COLUMNS. For the sparse co-ordinate scheme, the first ten
+!    components of P%type must contain the string COORDINATE, and for the
+!    sparse column-wise storage scheme, the first seventeen components of
+!    P%type must contain the string SPARSE_BY_COLUMNS.
+!    ** NB ** COORDINATE not yet implemented
+!
+!    For convenience, the procedure SMT_put may be used to allocate sufficient
+!    space and insert the required keyword into H%type. For example, if nlp is
+!    of derived type packagename_problem_type and involves product matrix
+!    that we wish to store using the sparse column-wise scheme, we may simply
+!
+!         CALL SMT_put( nlp%P%type, 'SPARSE_BY_COLUMNS', stat )
+!
+!    See the documentation for the galahad package SMT for further details on
+!    the use of SMT_put.
+
+!   P%ne is a scalar variable of type default integer, that holds the number of
+!    entries in P(x,v) in the sparse co-ordinate storage scheme. It need not
+!    be set for any of the other permitted schemes.
+!
+!   P%val is a rank-one allocatable array of type default real, that holds
+!    the values of the entries of the product matrix P in any of the available
+!    storage schemes. For the dense scheme P is stored by columns.
+!
+!   P%row is a rank-one allocatable array of type default integer, that holds
+!    the row indices of P(x,v) in either the sparse co-ordinate storage
+!    scheme or the sparse column-wise storage scheme. It  need not be
+!    allocated when the dense scheme is used.
+!
+!   P%col is a rank-one allocatable array variable of type default integer,
+!    that holds the column indices of P(x,v) in the sparse co-ordinate scheme
+!    It need not be allocated when the other storage schemes are used.
+!
+!   P%ptr is a rank-one allocatable array of dimension m+1 and type default
+!    integer, that holds the starting position of each column of P(x,v),
+!    as well as P%ptr(m+1) = the total number of entries plus one, in the
+!    sparse column-wise storage scheme. It need not be allocated when the
+!    other schemes are used.
+!
+!  X is a rank-one allocatable array of dimension n and type default real, that
+!   holds the values x of the optimization variables. The j-th component of
+!   X, j = 1, ... , n, contains x_j.
+!
+!  pname is a scalar variable of type default character and length 10, which
+!   contains the ``name'' of the problem for printing. The default ``empty''
+!   string is provided.
+!
+!  VNAMES is a rank-one allocatable array of dimension n and type default
+!   character and length 10, whose j-th entry contains the ``name'' of the j-th
+!   variable for printing. This is only used  if ``debug''printing
+!   control%print_level > 4) is requested, and will be ignored if the array is
+!   not allocated.
+!
+!  CNAMES is a rank-one allocatable array of dimension m and type default
+!   character and length 10, whose i-th entry contains the ``name'' of the i-th
+!   residual for printing. This is only used  if ``debug''printing
+!   control%print_level > 4) is requested, and will be ignored if the array is
+!   not allocated.
+!
+! control is a scalar variable of type NLS_control_type. See
+!  NLS_initialize for details
+!
+! inform is a scallar variable of type NLS_inform_type. On initial entry,
+!  inform%status should be set to 1. On exit, the following components will
+!  have been set in inform(1):
+!
+!  status is a scalar variable of type default integer, that gives
+!   the exit status from the package. Possible values are:
+!
+!     0. The run was successful
+!
+!    -1. An allocation error occurred. A message indicating the offending
+!        array is written on unit control%error, and the returned allocation
+!        status and a string containing the name of the offending array
+!        are held in inform%alloc_status and inform%bad_alloc respectively.
+!    -2. A deallocation error occurred.  A message indicating the offending
+!        array is written on unit control%error and the returned allocation
+!        status and a string containing the name of the offending array
+!        are held in inform%alloc_status and inform%bad_alloc respectively.
+!    -3. The restriction nlp%n > 0 or requirement that prob%H_type contains
+!        its relevant string 'DENSE', 'COORDINATE' or 'SPARSE_BY_ROWS'
+!          has been violated.
+!    -7. The objective function appears to be unbounded from below
+!    -9. The analysis phase of the factorization failed; the return status
+!        from the factorization package is given in the component
+!        inform%factor_status
+!   -10. The factorization failed; the return status from the factorization
+!        package is given in the component inform%factor_status.
+!   -11. The solution of a set of linear equations using factors from the
+!        factorization package failed; the return status from the factorization
+!        package is given in the component inform%factor_status.
+!   -16. The problem is so ill-conditioned that further progress is impossible.
+!   -18. Too many iterations have been performed. This may happen if
+!        control%maxit is too small, but may also be symptomatic of
+!        a badly scaled problem.
+!   -19. The CPU time limit has been reached. This may happen if
+!        control%cpu_time_limit is too small, but may also be symptomatic of
+!        a badly scaled problem.
+!   -40. The user has forced termination of solver by removing the file named
+!        control%alive_file from unit unit control%alive_unit.
+!
+!     2. The user should compute the residual function value c(x) at the point
+!        x indicated in nlp%X and then re-enter the subroutine. The value of
+!        the i-th component of the residual should be set in nlp%C(i), for i =
+!        1, ..., m and data%eval_status should be set to 0. If the user is
+!        unable to evaluate a component of c(x) - for instance, if the function
+!        is undefined at x - the user need not set nlp%C, but should then set
+!        data%eval_status to a non-zero value.
+!     3. The user should compute the Jacobian of the residual function J(x) =
+!        nabla_x c(x) at the point x indicated in nlp%X  and then re-enter the
+!        subroutine. The value l-th component of the Jacobian stored according
+!        to the scheme input in the remainder of nlp%J should be set in
+!        nlp%J%val(l), for l = 1, ..., nlp%J%ne and data%eval_status should
+!        be set to 0. If the user is unable to evaluate a component of J(x) -
+!        for instance if a component of the Jacobian is undefined at x - the
+!        user need not set nlp%J%val, but should then set data%eval_status
+!        to a non-zero value.
+!     4. The user should compute the weighted Hessian of the residual function
+!        H(x,y) = sum_{i=1}^m y_i nabla_xx y_i(x) at the point x indicated
+!        in nlp%X with weights y given by data%Y, and then re-enter the
+!        subroutine. The value l-th component of H(x,y) stored according to
+!        the scheme input in the remainder of nlp%H should be set in
+!        nlp%H%val(l), for l = 1, ..., nlp%H%ne and data%eval_status should
+!        be set to 0. If the user is unable to evaluate a component of H(x,y) -
+!        for instance, if a component of the Hessian is undefined at (x,y) - the
+!        user need not set nlp%H%val, but should then set data%eval_status
+!        to a non-zero value.
+!     5. The user should compute the product J(x)v (when transpose = .FALSE.)
+!        or J^T(x)v (when transpose = .TRUE.) of the Jacobian of the residual
+!        function J(x) (or its traspose) at the point x indicated in nlp%X
+!        with the vector v, and add the result to the vector u and then re-enter
+!        the subroutine. The logical transpose and vectors u and v are given
+!        in data%transpose, data%U and data%V respectively, the
+!        resulting vector u + J(x) or u + J^T(x)v as appropriate should be set
+!        in data%U and data%eval_status should be set to 0. If the user
+!        is unable to evaluate the product - for instance, if a component of
+!        J(x) is undefined at x - the user need not alter data%U, but
+!        should then set data%eval_status to a non-zero value.
+!     6. The user should compute the product H(x,y)v of the Hessian of
+!        the residual function H(x,y) at the point (x,y) indicated in nlp%X
+!        and data%Y with the vector v and add the result to the vector u
+!        and then re-enter the subroutine. The vectors u and v are given in
+!        data%U and data%V respectively, the resulting vector
+!        u + H(x,y)v should be set in data%U and  data%eval_status
+!        should be set to 0. If the user is unable to evaluate the product -
+!        for instance, if a component of H(x,y) is undefined at (x,y) - the
+!        user need not alter data%U, but should then set
+!        data%eval_status to a non-zero value.
+!     7. The user should compute the matrix whose columns are the products
+!        H_i(x)v between the HessianH_i(x) of the ith residual function at
+!        the point x indicated in nlp%X a given vector v held in data%V.
+!        The nonzeros for column i must be stored in nlp%P%val(l), for
+!        l = nlp%P%ptr(i), ...,  nlp%P%ptr(i+1) for each i = 1,...,m,
+!        in the same order as the row indices were assigned on input in
+!        nlp%P%row(l). If the user is unable to evaluate the products -
+!        for instance, if a component of H_i(x) is undefined at x - the
+!        user need not assign nlp%P%val, but should then set
+!        data%eval_status to a non-zero value.
+!     8. The user should compute the product u = S(x)v of their preconditioner
+!        S(x) at the point x indicated in nlp%X with the vector v. The vectors
+!        v is given in data%V, the resulting vector u = S(x)v should be set
+!        in data%U and data%eval status should be set to 0. If the user is
+!        unable to evaluate the product—for instance, if a component of the
+!        preconditioner is undefined at x—the user need not set data%U, but
+!        should then set data%eval statusto a non-zero value.
+!
+!  alloc_status is a scalar variable of type default integer, that gives
+!   the status of the last attempted array allocation or deallocation.
+!   This will be 0 if status = 0.
+!
+!  bad_alloc is a scalar variable of type default character
+!   and length 80, that  gives the name of the last internal array
+!   for which there were allocation or deallocation errors.
+!   This will be the null string if status = 0.
+!
+!  iter is a scalar variable of type default integer, that holds the
+!   number of iterations performed.
+!
+!  cg_iter is a scalar variable of type default integer, that gives the
+!   total number of conjugate-gradient iterations required.
+!
+!  factorization_status is a scalar variable of type default integer, that
+!   gives the return status from the matrix factorization.
+!
+!  factorization_integer is a scalar variable of type default integer,
+!   that gives the amount of integer storage used for the matrix factorization.
+!
+!  factorization_real is a scalar variable of type default integer,
+!   that gives the amount of real storage used for the matrix factorization.
+!
+!  c_eval is a scalar variable of type default integer, that gives the
+!   total number of residual function evaluations performed.
+!
+!  j_eval is a scalar variable of type default integer, that gives the
+!   total number of residual Jacobian evaluations performed.
+!
+!  h_eval is a scalar variable of type default integer, that gives the
+!   total number of scaled Hessian evaluations performed.
+!
+!  obj is a scalar variable of type default real, that holds the
+!   value of the objective function 1/2 ||c(x)||_2^2 at the best estimate
+!   of the solution found.
+!
+!  norm_c is a scalar variable of type default real, that holds the value of
+!   the norm of the residual function ||c(x)||_2 at the best estimate of the
+!   solution found.
+!
+!  norm_g is a scalar variable of type default real, that holds the value of
+!   the norm of the residual function gradient ||J^T(x)c(x)||_2/||c(x)||_2
+!   at the best estimate of the solution found.
+!
+!  time is a scalar variable of type NLS_time_type whose components are
+!   used to hold elapsed CPU and clock times for the various parts of the
+!   calculation.
+!
+!   Components are:
+!
+!    total is a scalar variable of type default real, that gives
+!     the total CPU time spent in the package.
+!
+!    preprocess is a scalar variable of type default real, that gives the
+!      CPU time spent reordering the problem to standard form prior to solution.
+!
+!    analyse is a scalar variable of type default real, that gives
+!      the CPU time spent analysing required matrices prior to factorization.
+!
+!    factorize is a scalar variable of type default real, that gives
+!      the CPU time spent factorizing the required matrices.
+!
+!    solve is a scalar variable of type default real, that gives
+!     the CPU time spent using the factors to solve relevant linear equations.
+!
+!    clock_total is a scalar variable of type default real, that gives
+!     the total clock time spent in the package.
+!
+!    clock_preprocess is a scalar variable of type default real, that gives
+!      the clock time spent reordering the problem to standard form prior
+!      to solution.
+!
+!    clock_analyse is a scalar variable of type default real, that gives
+!      the clock time spent analysing required matrices prior to factorization.
+!
+!    clock_factorize is a scalar variable of type default real, that gives
+!      the clock time spent factorizing the required matrices.
+!
+!    clock_solve is a scalar variable of type default real, that gives
+!     the clock time spent using the factors to solve relevant linear equations.
+!
+!  data is a scalar variable of type NLS_data_type used for internal data.
+!
+!  userdata is a scalar variable of type NLPT_userdata_type which may be used
+!   to pass user data to and from the eval_* subroutines (see below)
+!   Available coomponents which may be allocated as required are:
+!
+!    integer is a rank-one allocatable array of type default integer.
+!    real is a rank-one allocatable array of type default real
+!    complex is a rank-one allocatable array of type default comple.
+!    character is a rank-one allocatable array of type default character.
+!    logical is a rank-one allocatable array of type default logical.
+!    integer_pointer is a rank-one pointer array of type default integer.
+!    real_pointer is a rank-one pointer array of type default  real
+!    complex_pointer is a rank-one pointer array of type default complex.
+!    character_pointer is a rank-one pointer array of type default character.
+!    logical_pointer is a rank-one pointer array of type default logical.
+!
+!  W is an optional rank-one array of type default real that if present
+!   must be of length nlp%m and filled with the weights w_i > 0. If W is
+!   absent, weights of one will be used.
+!
+!  eval_C is an optional subroutine which if present must have the arguments
+!   given below (see the interface blocks). The value of the residual
+!   function c(x) evaluated at x=X must be returned in C, and the status
+!   variable set to 0. If the evaluation is impossible at X, status should
+!   be set to a nonzero value. If eval_C is not present, NLS_solve will
+!   return to the user with inform%status = 2 each time an evaluation is
+!   required.
+!
+!  eval_J is an optional subroutine which if present must have the arguments
+!   given below (see the interface blocks). The nonzeros of the Jacobian
+!   nabla_x c(x) of the residual function evaluated at x=X must be returned in
+!   J_val in the same order as presented in nlp%J,, and the status variable set
+!   to 0. If the evaluation is impossible at X, status should be set to a
+!   nonzero value. If eval_J is not present, NLS_solve will return to the
+!   user with inform%status = 3 each time an evaluation is required.
+!
+!  eval_H is an optional subroutine which if present must have the arguments
+!   given below (see the interface blocks). The nonzeros of the weighted Hessian
+!   H(x,y) = sum_i y_i nabla_xx c_i(x) of the residual function evaluated at
+!   x=X and y=Y must be returned in H_val in the same order as presented in
+!   nlp%H, and the status variable set to 0. If the evaluation is impossible
+!   at X, status should be set to a nonzero value. If eval_H is not present,
+!   NLS_solve will return to the user with inform%status = 4 each time an
+!   evaluation is required.
+!
+!  eval_JPROD is an optional subroutine which if present must have the
+!   arguments given below (see the interface blocks). The sum u + J(x) v,
+!   (when transpose=.FALSE.) or u + J^T(x) v (when transpose=.TRUE.)
+!   of the Jacobian (or its transpose) evaluated  at x=X with the vector v=V
+!   and the vector u=U must be returned in U, and the status variable set to 0.
+!   If the evaluation is impossible at X, status should be set to a nonzero
+!   value. If eval_JPROD is not present, NLS_solve will return to the user
+!   with inform%status = 5 each time an evaluation is required. The Jacobian
+!   has already been evaluated or used at x=X if got_j is .TRUE.
+!
+!  eval_HPROD is an optional subroutine which if present must have the
+!   arguments given below (see the interface blocks). The sum u + H(x,y) v,
+!   where H(x,y) = sum_i y_i nabla_xx c_i(x), of u=U and the product of the
+!   weighted Hessian HC(x,y) evaluated at x=X and y=Y with the vector v=V,
+!   and the vector u=U must be returned in U, and the status variable set to 0.
+!   If the evaluation is impossible at X, status should be set to a nonzero
+!   value. If eval_HPROD is not present, NLS_solve will return to the user
+!   with inform%status = 6 each time an evaluation is required. The Hessian
+!   has already been evaluated or used at x=X if got_h is .TRUE.
+!
+!  eval_HPRODS is an optional subroutine which if present must have the
+!   arguments given below (see the interface blocks). The nonzeros of
+!   the matrix whose ith column is the product nabla_xx c_i(x) v between
+!   the Hessian of the ith residual function evaluated at x=X and the
+!   vector v=V must be returned in P_val in the same order as presented in
+!   nlp%P, and the status variable set to 0. If the evaluation is impossible
+!   at X, status should be set to a nonzero value. If eval_HPRODS is not
+!   present, NLS_solve will return to the user with inform%status = 7
+!   each time an evaluation is required. The Hessians have already been
+!   evaluated or used at x=X if got_h is .TRUE.
+!
+!  eval_SCALE is an optional subroutine which if present must have the arguments
+!   given below (see the interface blocks). The product u = S(x) v of the
+!   user's regularization scaling matrix S(x) evaluated at x=X with the vector
+!   v=V, the result u must be retured in U, and the status variable set to 0.
+!   If the evaluation is impossible at X, status should be set to a nonzero
+!   value. If eval_SCALE is not present, NLS_solve will return to the user
+!   with inform%status = 8 each time an evaluation is required.
+!
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( NLPT_problem_type ), INTENT( INOUT ) :: nlp
+     TYPE ( NLS_control_type ), INTENT( IN ) :: control
+     TYPE ( NLS_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( NLS_data_type ), INTENT( INOUT ) :: data
+     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
+     OPTIONAL :: eval_C, eval_J, eval_H, eval_JPROD, eval_HPROD, eval_HPRODS,  &
+                 eval_SCALE
+
+!----------------------------------
+!   I n t e r f a c e   B l o c k s
+!----------------------------------
+
+     INTERFACE
+       SUBROUTINE eval_C( status, X, userdata, C )
+       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+       INTEGER, INTENT( OUT ) :: status
+       REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
+       REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: C
+       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       END SUBROUTINE eval_C
+     END INTERFACE
+
+     INTERFACE
+       SUBROUTINE eval_J( status, X, userdata, J_val )
+       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+       INTEGER, INTENT( OUT ) :: status
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: J_val
+       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       END SUBROUTINE eval_J
+     END INTERFACE
+
+     INTERFACE
+       SUBROUTINE eval_H( status, X, Y, userdata, H_val )
+       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+       INTEGER, INTENT( OUT ) :: status
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       END SUBROUTINE eval_H
+     END INTERFACE
+
+     INTERFACE
+       SUBROUTINE eval_JPROD( status, X, userdata, transpose, U, V, got_j )
+       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+       INTEGER, INTENT( OUT ) :: status
+       LOGICAL, INTENT( IN ) :: transpose
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
+       END SUBROUTINE eval_JPROD
+     END INTERFACE
+
+     INTERFACE
+       SUBROUTINE eval_HPROD( status, X, Y, userdata, U, V, got_h )
+       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+       INTEGER, INTENT( OUT ) :: status
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
+       END SUBROUTINE eval_HPROD
+     END INTERFACE
+
+     INTERFACE
+       SUBROUTINE eval_HPRODS( status, X, V, userdata, P_val, got_h )
+       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+       INTEGER, INTENT( OUT ) :: status
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P_val
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
+       END SUBROUTINE eval_HPRODS
+     END INTERFACE
+
+     INTERFACE
+       SUBROUTINE eval_SCALE( status, X, userdata, U, V )
+       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+       INTEGER, INTENT( OUT ) :: status
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, V
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
+       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       END SUBROUTINE eval_SCALE
+     END INTERFACE
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: i, j, ic, ir, l, ll, nroots
+     REAL ( KIND = wp ) :: ared, prered, rounding, root1, root2, root3, alpha
+     REAL ( KIND = wp ) :: c0, c1, c2, c3, sths, facts, reg, val
+
+     LOGICAL :: alive
+     CHARACTER ( LEN = 6 ) :: char_iter, char_facts
+     CHARACTER ( LEN = 80 ) :: array_name
+!    REAL ( KIND = wp ), DIMENSION( nlp%n ) :: V
+!    REAL ( KIND = wp ) :: H_dense( nlp%n, nlp%n )
+
+!  prefix for all output
+
+     CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
+     IF ( LEN( TRIM( control%prefix ) ) > 2 ) prefix =                         &
+       control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+
+!  branch to different sections of the code depending on input status
+
+     IF ( inform%status < 1 ) THEN
+       CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
+       GO TO 990
+     END IF
+
+!  initial input
+
+     IF ( inform%status == 1 ) THEN
+
+       CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
+
+!  ensure that input parameters are within allowed ranges
+
+       IF ( nlp%n <= 0 .OR. nlp%m <= 0 ) THEN
+         IF ( control%error > 0 ) WRITE( control%error,                        &
+           "( A, ' error: input m, n = ', I0, ', ', I0, ' not permitted' )" )  &
+           prefix, nlp%m , nlp%n
+         inform%status = GALAHAD_error_restrictions
+         GO TO 990
+       END IF
+
+!  check that the Jacobian is available in some form (may change in future)
+
+       IF ( control%jacobian_available <= 0 ) THEN
+         IF ( control%error > 0 ) WRITE( control%error,                        &
+           "( A, ' error: jacobian must be available in some form' )" ) prefix
+         inform%status = GALAHAD_error_restrictions
+         GO TO 990
+       END IF
+
+!  see if W = I
+
+       data%w_eq_identity = .NOT. PRESENT( W )
+       IF ( .NOT. data%w_eq_identity ) THEN
+         IF ( COUNT( W( : nlp%m ) <= zero ) > 0 ) THEN
+           IF ( control%error > 0 ) WRITE( control%error,                      &
+             "( A, ' error: input entries of W must be strictly positive' )" ) &
+             prefix
+           inform%status = GALAHAD_error_restrictions
+           GO TO 990
+         END IF
+       END IF
+
+!  branch to special code for Newton or Gauss-Newton variants
+
+       IF (  control%model == first_order_model .OR.                           &
+             control%model == diagonal_hessian_model .OR.                      &
+             control%model == gauss_newton_model .OR.                          &
+             control%model == newton_model .OR.                                &
+             control%model == gauss_to_newton_model ) THEN
+         data%subproblem_control = control%NLS_subproblem_control_type
+         data%branch_newton = 10 ; GO TO 800
+       END IF
+       data%branch = 10
+     ELSE IF ( inform%status == 11 ) THEN
+       IF (  control%model == first_order_model .OR.                           &
+             control%model == diagonal_hessian_model .OR.                      &
+             control%model == gauss_newton_model .OR.                          &
+             control%model == newton_model .OR.                                &
+             control%model == gauss_to_newton_model ) THEN
+         data%subproblem_control = control%NLS_subproblem_control_type
+         data%branch_newton = 20 ; GO TO 800
+       END IF
+       data%branch = 20
+     END IF
+!    WRITE( 6, * ) ' branch ', data%branch
+     SELECT CASE ( data%branch )
+     CASE ( 10 )  ! initialization
+       GO TO 10
+     CASE ( 20 )  ! re-entry without initialization
+       GO TO 20
+     CASE ( 30 )  ! initial residual evaluation
+       GO TO 30
+     CASE ( 110 ) ! initial Jacobian evaluation or Jacobian transpose vect prod
+       GO TO 110
+     CASE ( 120 ) ! Hessian evaluation
+       GO TO 120
+     CASE ( 220 ) ! Jacobian vector product
+       GO TO 220
+     CASE ( 230 ) ! Hessians-vector product
+       GO TO 230
+     CASE ( 280 ) ! Jacobian vector product
+       GO TO 280
+     CASE ( 290 ) ! Hessians-vector product
+       GO TO 290
+     CASE ( 320 ) ! residual evaluation
+       GO TO 320
+     CASE ( 810 ) ! Newton/Gauss-Newton variants
+       GO TO 810
+     END SELECT
+
+!  ============================================================
+!  0. Initialization - a tensor Gauss-Newton model will be used
+!  ============================================================
+
+  10 CONTINUE
+
+!  check that the Hessian is specified in a permitted format
+
+     data%hessian_available = control%hessian_available >= 2
+     IF ( data%hessian_available ) THEN
+       SELECT CASE (  SMT_get( nlp%H%type ) )
+       CASE ( 'DIAGONAL', 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE',             &
+              'IDENTITY', 'SCALE_IDENTITY', 'NONE', 'ZERO' )
+       CASE DEFAULT
+         IF ( control%error > 0 ) WRITE( control%error,                        &
+           "( A, ' error: input H%type ', A, ' not permitted' )" )             &
+             prefix, SMT_get( nlp%H%type )
+         inform%status = GALAHAD_error_restrictions
+         GO TO 990
+       END SELECT
+     END IF
+
+!  record the problem dimensions
+
+     nlp%H%n = nlp%n ; nlp%H%m = nlp%n
+     SELECT CASE ( SMT_get( nlp%H%type ) )
+     CASE( 'DENSE' )
+       IF ( MOD(  nlp%n, 2 ) == 0 ) THEN
+         nlp%H%ne = ( nlp%n / 2 ) * ( nlp%n + 1 )
+       ELSE
+         nlp%H%ne = nlp%n * ( ( nlp%n + 1 ) / 2 )
+       END IF
+     CASE ( 'SPARSE_BY_ROWS' )
+       nlp%H%ne = nlp%H%ptr( nlp%n + 1 ) - 1
+     CASE ( 'DIAGONAL' )
+       nlp%H%ne = nlp%n
+     CASE ( 'NONE' )
+       nlp%H%ne = 0
+     CASE ( 'COORDINATE' )
+     CASE DEFAULT
+       IF ( control%error > 0 ) WRITE( control%error,                          &
+         "( A, ' error: input H%type ', A, ' not permitted' )" )               &
+           prefix, SMT_get( nlp%H%type )
+       inform%status = GALAHAD_error_restrictions
+       GO TO 990
+     END SELECT
+
+!  record controls and ensure that data is consistent
+
+     data%control = control
+     data%non_monotone_history = data%control%non_monotone
+     IF ( data%non_monotone_history <= 0 ) data%non_monotone_history = 1
+     data%monotone = data%non_monotone_history == 1
+     data%control%initial_inner_weight                                         &
+       = MAX( data%control%initial_inner_weight, zero )
+     data%etat = half * ( data%control%eta_very_successful +                   &
+                          data%control%eta_successful )
+     data%ometat = one - data%etat
+     data%successful = .TRUE.
+     data%negcur = ' '
+     data%ratio = - one
+     data%total_facts = 0
+     data%nskip_prec = nskip_prec_max
+     data%re_entry = .FALSE.
+
+     inform%iter = 0 ; inform%cg_iter = 0
+     inform%c_eval = 0 ; inform%j_eval = 0 ; inform%h_eval = 0
+     inform%factorization_max = 0 ; inform%factorization_status = 0
+     inform%max_entries_factors = 0 ; inform%factorization_average = zero
+     inform%factorization_integer = - 1 ; inform%factorization_integer = - 1
+
+!  decide how much reverse communication is required
+
+     data%reverse_c = .NOT. PRESENT( eval_C )
+
+!  check to see if the Jacobian is available explicitly or only via its
+!  action on a vector, and whether reverse communication will be required
+
+     data%jacobian_available = data%control%jacobian_available >= 2
+     IF ( data%jacobian_available ) THEN
+       nlp%J%n = nlp%n ; nlp%J%m = nlp%m
+       data%reverse_j = .NOT. PRESENT( eval_J )
+
+!  if the Jacobian is not available explicitly, revert to a Gauss-Newton model
+
+     ELSE
+       data%subproblem_control = control%NLS_subproblem_control_type
+       IF ( data%hessian_available ) THEN
+         data%subproblem_control%model = gauss_to_newton_model
+       ELSE
+         data%subproblem_control%model = gauss_newton_model
+       END IF
+       data%branch_newton = 10 ; GO TO 800
+     END IF
+     data%reverse_jprod = .NOT. PRESENT( eval_JPROD )
+
+!  check to see if the Hessian is available explicitly, available via its
+!  action on a vector, or is unavailable, and whether reverse communication
+!  will be required
+
+     IF ( data%hessian_available ) THEN
+       data%reverse_h = .NOT. PRESENT( eval_H )
+     ELSE IF ( data%control%hessian_available == 1 ) THEN
+       data%reverse_h = .FALSE.
+       data%control%subproblem_direct = .FALSE.
+     ELSE
+       data%control%model = tensor_gauss_newton_model
+     END IF
+     data%reverse_hprod = .NOT. PRESENT( eval_HPROD )
+     data%reverse_hprods = .NOT. PRESENT( eval_HPRODS )
+
+!  initialize the model to Gauss-Newton if the Gauss-Newton to Newton
+!  strategy has been specified
+
+     data%gauss_to_newton_model =                                              &
+       data%control%model == tensor_gauss_to_newton_model
+     data%map_h_to_jtj = data%hessian_available .AND.                          &
+                         ( data%gauss_to_newton_model .OR.                     &
+                           data%control%model == tensor_newton_model )
+     data%model_used = data%control%model
+     IF ( data%gauss_to_newton_model )                                         &
+       data%control%model = tensor_gauss_newton_model
+     data%hessian_computed = data%hessian_available .AND.                      &
+       data%control%model == tensor_newton_model
+
+!  decide whether to form the regularization scaling matrix and make
+!  model-specific choices
+
+     IF ( data%control%model == tensor_newton_model ) THEN
+       data%form_regularization                                                &
+         = data%jacobian_available .AND. data%hessian_available
+     ELSE IF ( data%control%model == tensor_gauss_newton_model ) THEN
+       data%form_regularization = data%jacobian_available
+     ELSE
+       IF ( data%control%norm >= 0 )                                           &
+         data%control%norm = euclidean_regularization
+       data%form_regularization = .FALSE.
+     END IF
+     data%inner_weight = data%control%initial_inner_weight
+     data%reverse_scale = .NOT. PRESENT( eval_SCALE )
+
+!  set the power for the regularization
+
+     IF ( control%power >= two ) THEN
+       data%power = control%power
+     ELSE
+       data%power = two
+     END IF
+
+!  make sure that P%type is set if a tensor Newton model is required
+
+     IF ( data%control%model == tensor_newton_model .OR.                       &
+          data%control%model == tensor_gauss_newton_model .OR.                 &
+          data%control%model == tensor_gauss_to_newton_model ) THEN
+       IF ( .NOT. ALLOCATED( nlp%P%type ) ) THEN
+         CALL SMT_put( nlp%P%type, 'SPARSE_BY_COLUMNS', inform%alloc_status )
+         IF ( inform%alloc_status /= 0 ) THEN
+           inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
+       ELSE
+         SELECT CASE ( SMT_get( nlp%P%type ) )
+         CASE ( 'SPARSE_BY_COLUMNS', 'DENSE_BY_COLUMNS' )
+         CASE DEFAULT
+           IF ( control%error > 0 ) WRITE( control%error,                      &
+             "( A, ' error: input P%type ', A, ' not permitted' )" )           &
+               prefix, SMT_get( nlp%P%type )
+           inform%status = GALAHAD_error_restrictions
+           GO TO 990
+         END SELECT
+       END IF
+
+!  compute the length of nlp%P%val
+
+       nlp%P%m = nlp%n ; nlp%P%n = nlp%m
+       SELECT CASE ( SMT_get( nlp%P%type ) )
+       CASE ( 'DENSE_BY_COLUMNS' )
+         nlp%P%ne = nlp%m * nlp%n
+       CASE ( 'COORDINATE' ) ! will already be set
+       CASE DEFAULT
+         nlp%P%ne = nlp%P%ptr( nlp%m + 1 ) - 1
+       END SELECT
+     END IF
+
+!  set specific controls for the sub-problem solvers
+
+     data%regularization_type = data%control%norm
+     IF ( data%regularization_type < user_regularization .OR.                  &
+          data%regularization_type == lmbfgs_regularization .OR.               &
+          data%regularization_type == automatic_regularization .OR.            &
+          data%regularization_type > expanding_band_regularization )           &
+        data%regularization_type = diagonal_jtj_regularization
+     data%subproblem_data%regularization_type = data%regularization_type
+!write(6,*) ' * subproblem scaling type ', &
+! data%subproblem_data%regularization_type
+     data%control%GLRT_control%unitm                                           &
+       = data%regularization_type == euclidean_regularization
+     SELECT CASE ( data%regularization_type )
+     CASE ( diagonal_hessian_regularization )
+       data%control%PSLS_control%preconditioner = 1
+     CASE ( band_regularization )
+       data%control%PSLS_control%preconditioner = 2
+     CASE ( reordered_band_regularization )
+       data%control%PSLS_control%preconditioner = 3
+     CASE ( schnabel_eskow_regularization )
+       data%control%PSLS_control%preconditioner = 4
+     CASE ( gmps_regularization )
+       data%control%PSLS_control%preconditioner = 5
+     CASE ( lin_more_regularization )
+       data%control%PSLS_control%preconditioner = 6
+     CASE ( mi28_regularization )
+       data%control%PSLS_control%preconditioner = 7
+     CASE ( munksgaard_regularization )
+       data%control%PSLS_control%preconditioner = 8
+     CASE ( expanding_band_regularization )
+       data%control%PSLS_control%preconditioner = 9
+     END SELECT
+     data%control%PSLS_control%new_structure = .TRUE.
+     data%control%RQS_control%initial_multiplier = zero
+
+!  insist on iterative subproblem solution if user scaling is provided
+
+     IF ( data%regularization_type == user_regularization )                    &
+       data%control%subproblem_control%subproblem_direct = .FALSE.
+
+!  check that the Jacobian is specified in a permitted format
+
+     IF ( data%jacobian_available ) THEN
+       SELECT CASE ( SMT_get( nlp%J%type ) )
+       CASE ( 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' )
+       CASE DEFAULT
+         IF ( control%error > 0 ) WRITE( control%error,                        &
+           "( A, ' error: input J%type ', A, ' not permitted' )" )             &
+             prefix, SMT_get( nlp%J%type )
+         inform%status = GALAHAD_error_restrictions
+         GO TO 990
+       END SELECT
+     END IF
+
+!  create a file which the user may subsequently remove to cause
+!  immediate termination of a run
+
+     IF ( control%alive_unit > 0 ) THEN
+      INQUIRE( FILE = control%alive_file, EXIST = alive )
+      IF ( .NOT. alive ) THEN
+         OPEN( control%alive_unit, FILE = control%alive_file,                  &
+               FORM = 'FORMATTED', STATUS = 'NEW' )
+         REWIND control%alive_unit
+         WRITE( control%alive_unit, "( ' GALAHAD rampages onwards ' )" )
+         CLOSE( control%alive_unit )
+       END IF
+     END IF
+
+!  allocate basic space to solve the problem
+
+     array_name = 'nls: nlp%G'
+     CALL SPACE_resize_array( nlp%n, nlp%G, inform%status,                     &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'nls: data%X_current'
+     CALL SPACE_resize_array( nlp%n, data%X_current, inform%status,            &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'nls: data%C_current'
+     CALL SPACE_resize_array( nlp%m, data%C_current, inform%status,            &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'nls: data%G_current'
+     CALL SPACE_resize_array( nlp%n, data%G_current, inform%status,            &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'nls: data%S'
+     CALL SPACE_resize_array( nlp%n, data%S, inform%status,                    &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'nls: data%U'
+     CALL SPACE_resize_array( MAX( nlp%n, nlp%m ), data%U, inform%status,      &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'nls: data%V'
+     CALL SPACE_resize_array( MAX( nlp%n, nlp%m ), data%V, inform%status,      &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     array_name = 'nls: data%W'
+     CALL SPACE_resize_array( nlp%n, data%W, inform%status,                    &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+     IF ( .NOT. data%monotone ) THEN
+       array_name = 'nls: data%F_hist'
+       CALL SPACE_resize_array( data%non_monotone_history + 1, data%F_hist,    &
+              inform%status,                                                   &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       array_name = 'nls: data%D_hist'
+       CALL SPACE_resize_array( data%non_monotone_history + 1, data%D_hist,    &
+              inform%status,                                                   &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+     END IF
+
+     array_name = 'nls: data%Y'
+     CALL SPACE_resize_array( nlp%m, data%Y, inform%status,                    &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
+!  compute the number of nonzeros in J
+
+     IF ( data%regularization_type > diagonal_jtj_regularization .OR.          &
+          data%control%subproblem_control%subproblem_direct ) THEN
+       nlp%J%n = nlp%n ; nlp%J%m = nlp%m
+       SELECT CASE ( SMT_get( nlp%J%type ) )
+       CASE ( 'DENSE' )
+         nlp%J%ne = nlp%J%m * nlp%J%n
+       CASE ( 'SPARSE_BY_ROWS' )
+         nlp%J%ne = nlp%J%ptr( nlp%m + 1 ) - 1
+       END SELECT
+
+!  an assembled Hessian approximation is required to compute the scaling matrix,
+!  so provide J(transpose) = JT
+
+       data%JT%n = nlp%m ; data%JT%m = nlp%n ; data%JT%ne = nlp%J%ne
+       CALL SMT_put( data%JT%type, 'COORDINATE', inform%alloc_status )
+       IF ( inform%alloc_status /= 0 ) THEN
+         inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
+
+       array_name = 'nls: data%JT%row'
+       CALL SPACE_resize_array( data%JT%ne, data%JT%row, inform%status,        &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       array_name = 'nls: data%JT%col'
+       CALL SPACE_resize_array( data%JT%ne, data%JT%col, inform%status,        &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       array_name = 'nls: data%JT%val'
+       CALL SPACE_resize_array( data%JT%ne, data%JT%val, inform%status,        &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+!  assign the row and column indices of JT
+
+       SELECT CASE ( SMT_get( nlp%J%type ) )
+       CASE ( 'DENSE' )
+         l = 0
+         DO i = 1, nlp%m
+           DO j = 1, nlp%n
+             l = l + 1
+             data%JT%row( l ) = j ; data%JT%col( l ) = i
+           END DO
+         END DO
+       CASE ( 'SPARSE_BY_ROWS' )
+         DO i = 1, nlp%m
+           DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
+             data%JT%row( l ) = nlp%J%col( l ) ; data%JT%col( l ) = i
+           END DO
+         END DO
+       CASE ( 'COORDINATE' )
+         DO l = 1, nlp%J%ne
+           data%JT%row( l ) = nlp%J%col( l )
+           data%JT%col( l ) = nlp%J%row( l )
+         END DO
+       END SELECT
+     END IF
+
+!    IF ( data%regularization_type > diagonal_jtj_regularization ) THEN
+     IF ( data%regularization_type > diagonal_jtj_regularization .OR.          &
+          data%control%subproblem_control%subproblem_direct ) THEN
+!         data%control%subproblem_direct ) THEN
+
+!  record the sparsity pattern of J^T J in data%H
+
+       data%control%BSC_control%new_a = 3
+       data%control%BSC_control%extra_space_s = 0
+       data%control%BSC_control%s_also_by_column = data%map_h_to_jtj
+       CALL BSC_form( nlp%n, nlp%m, data%JT, data%H, data%BSC_data,            &
+                      data%control%BSC_control, inform%BSC_inform )
+       data%control%BSC_control%new_a = 1
+
+!   if required, find a mapping for the entries of H(x,c) into the existing
+!   structure in data%H for J^T J; the sparsity pattern of H(x,c) lies
+!   within that of J^T J
+
+       IF ( data%map_h_to_jtj ) THEN
+         CALL NLS_set_map( data%H, nlp%H, data%IW, data%PTR, data%ROW,         &
+                           data%ORDER, .TRUE.,                                 &
+                           data%control%deallocate_error_fatal,                &
+                           data%control%space_critical,  data%control%error,   &
+                           data%H_map, inform%status, inform%alloc_status,     &
+                           inform%bad_alloc )
+         IF ( inform%status /= 0 ) GO TO 980
+       END IF
+     END IF
+
+!  initialize additional space for the tensor module mimimization, in which
+!  the residuals c(x+s) for given x are approximated by r(s) = c(x) + J(x) s
+!  + 1/2 ( s^T H_i s )_i=1^m, where (w_i)_i=1^m denotes the vector whose
+!  ith component is w_i. The value of s is sought to minimize phi(s) =
+!  1/2||r(s)||^2_2 using a adaptive regularized Newton method
+
+     data%tensor_model%n = nlp%n ; data%tensor_model%m = nlp%m
+
+!  s is stored in tm%X
+
+     array_name = 'nls: data%tensor_model%X'
+     CALL SPACE_resize_array( data%tensor_model%n, data%tensor_model%X,        &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+
+!  r(s) is stored in tm%C
+
+     array_name = 'nls: data%tensor_model%C'
+     CALL SPACE_resize_array( nlp%m, data%tensor_model%C,                      &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+
+!  J(x)s is stored in JS
+
+     array_name = 'nls: data%JS'
+     CALL SPACE_resize_array( nlp%m, data%JS, inform%status,                   &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+
+!  1/2 ( s^T H_i s )_i=1^m is stored in HSHS
+
+     array_name = 'nls: data%HSHS'
+     CALL SPACE_resize_array( nlp%m, data%HSHS, inform%status,                 &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+
+!  store the matrix whose rows are (g_i + H_i s)^T, i = 1,...,m
+!  in tensor_model%J
+
+     IF ( data%control%subproblem_control%subproblem_direct ) THEN
+       data%tensor_model%J%m = nlp%m ; data%tensor_model%J%n = nlp%n
+       data%tensor_model%J%ne = data%JT%ne
+       CALL SMT_put( data%tensor_model%J%type, 'COORDINATE',                   &
+                     inform%alloc_status )
+       IF ( inform%alloc_status /= 0 ) THEN
+         inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
+
+       array_name = 'nls: data%tensor_model%J%row'
+       CALL SPACE_resize_array( data%tensor_model%J%ne,                        &
+              data%tensor_model%J%row, inform%status,                          &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       array_name = 'nls: data%tensor_model%J%col'
+       CALL SPACE_resize_array( data%tensor_model%J%ne,                        &
+              data%tensor_model%J%col, inform%status,                          &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       array_name = 'nls: data%tensor_model%J%val'
+       CALL SPACE_resize_array( data%tensor_model%J%ne,                        &
+              data%tensor_model%J%val, inform%status,                          &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       data%tensor_model%J%col( : data%tensor_model%J%ne )                     &
+         = data%JT%row( : data%tensor_model%J%ne )
+       data%tensor_model%J%row( : data%tensor_model%J%ne )                     &
+         = data%JT%col( : data%tensor_model%J%ne )
+     END IF
+
+!  if required, set up space for the Hessian of the tensor model
+
+!  the weighted Hessian of the tensor model is required; set up space and
+!  record its row and column indices
+
+     IF ( data%map_h_to_jtj ) THEN
+       CALL SMT_put( data%tensor_model%H%type,                                 &
+                     TRIM( SMT_get( nlp%H%type ) ), inform%alloc_status )
+       IF ( inform%alloc_status /= 0 ) THEN
+         inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
+
+       data%tensor_model%H%n = nlp%H%n
+       data%tensor_model%H%m = nlp%H%m
+       data%tensor_model%H%ne = nlp%H%ne
+
+       array_name = 'nls: data%tensor_model%H%val'
+       CALL SPACE_resize_array( nlp%H%ne, data%tensor_model%H%val,             &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       SELECT CASE ( SMT_get( nlp%H%type ) )
+       CASE ( 'SPARSE_BY_ROWS' )
+         array_name = 'nls: data%tensor_model%H%ptr'
+         CALL SPACE_resize_array( nlp%H%n + 1, data%tensor_model%H%ptr,        &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         array_name = 'nls: data%tensor_model%H%col'
+         CALL SPACE_resize_array( nlp%H%ne, data%tensor_model%H%col,           &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         data%tensor_model%H%ptr( : nlp%H%n + 1 )                              &
+           = nlp%H%ptr( : nlp%H%n + 1 )
+         data%tensor_model%H%col( : nlp%H%ne ) = nlp%H%col( : nlp%H%ne )
+       CASE ( 'COORDINATE' )
+         array_name = 'nls: data%tensor_model%H%row'
+         CALL SPACE_resize_array( nlp%H%ne, data%tensor_model%H%row,           &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         array_name = 'nls: data%tensor_model%H%col'
+         CALL SPACE_resize_array( nlp%H%ne, data%tensor_model%H%col,           &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         data%tensor_model%H%row( : nlp%H%ne ) = nlp%H%row( : nlp%H%ne )
+         data%tensor_model%H%col( : nlp%H%ne ) = nlp%H%col( : nlp%H%ne )
+       END SELECT
+
+!  no tensor-model Hessian is required
+
+     ELSE
+       CALL SMT_put( data%tensor_model%H%type, 'ZERO', inform%alloc_status )
+       IF ( inform%alloc_status /= 0 ) THEN
+         inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
+     END IF
+
+!  given the column-wise storage scheme for the matrix HS, whose columns are
+!  the vectors H_i s, i = 1,...,n, create a mapping, HS_map, of the entries
+!  of HS into J and JT. Firstly, order JT by columns
+
+     IF ( data%control%subproblem_control%subproblem_direct ) THEN
+       CALL NLS_set_map( nlp%P, data%JT, data%IW, data%PTR, data%ROW,          &
+                         data%ORDER, .FALSE.,                                  &
+                         data%control%deallocate_error_fatal,                  &
+                         data%control%space_critical,  data%control%error,     &
+                         data%Hs_map, inform%status, inform%alloc_status,      &
+                         inform%bad_alloc )
+       IF ( inform%status /= 0 ) GO TO 980
+     END IF
+
+!  provide space for the regularization
+
+!write(6,*) 'scaling type ', data%regularization_type
+     IF ( data%regularization_type == euclidean_regularization ) THEN
+       data%regularization%matrix%m = nlp%n
+       data%regularization%matrix%n = nlp%n
+       data%regularization%matrix%ne = nlp%n
+       CALL SMT_put( data%regularization%matrix%type, 'IDENTITY',              &
+                     inform%alloc_status )
+       IF ( inform%alloc_status /= 0 ) THEN
+         inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
+     ELSE IF ( data%regularization_type == diagonal_jtj_regularization ) THEN
+       array_name = 'nls: data%regularization%matrix%val'
+       CALL SPACE_resize_array( nlp%n, data%regularization%matrix%val,         &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+     ELSE IF ( data%regularization_type > diagonal_jtj_regularization ) THEN
+       array_name = 'nls: data%regularization%matrix%ptr'
+       CALL SPACE_resize_array( nlp%n + 1, data%regularization%matrix%ptr,     &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+
+       array_name = 'nls: IW'
+       CALL SPACE_resize_array( nlp%n + 1, data%IW, inform%status,             &
+              inform%alloc_status, array_name = array_name,                    &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%control%error )
+       IF ( inform%status /= 0 ) GO TO 980
+     END IF
+
+!  ===============================
+!  re-entry without initialization
+!  ===============================
+
+  20 CONTINUE
+!    CALL CLOCK_time( data%clock_now )
+!    write(6,*) ' 20 elapsed', data%clock_now - data%clock_start
+
+!  control the output printing
+
+     IF ( data%control%start_print < 0 ) THEN
+       data%start_print = - 1
+     ELSE
+       data%start_print = data%control%start_print
+     END IF
+
+     IF ( data%control%stop_print < 0 ) THEN
+       data%stop_print = data%control%maxit + 1
+     ELSE
+       data%stop_print = data%control%stop_print
+     END IF
+
+     IF ( data%control%print_gap < 2 ) THEN
+       data%print_gap = 1
+     ELSE
+       data%print_gap = data%control%print_gap
+     END IF
+
+     data%out = data%control%out
+     data%print_level_glrt = data%control%GLRT_control%print_level
+     data%print_level_rqs = data%control%RQS_control%print_level
+     data%print_1st_header = .TRUE.
+
+!  basic single line of output per iteration
+
+     data%set_printi = data%out > 0 .AND. data%control%print_level >= 1
+
+!  as per printi, but with additional timings for various operations
+
+     data%set_printt = data%out > 0 .AND. data%control%print_level >= 2
+
+!  as per printt with a few more scalars
+
+     data%set_printm = data%out > 0 .AND. data%control%print_level >= 3
+
+!  as per printm but also with an indication of where in the code we are
+
+     data%set_printw = data%out > 0 .AND. data%control%print_level >= 4
+
+!  full debug printing
+
+     data%set_printd = data%out > 0 .AND. data%control%print_level > 10
+
+!  set iteration-specific print controls
+
+     IF ( inform%iter >= data%start_print .AND.                                &
+          inform%iter < data%stop_print .AND.                                  &
+          MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 ) THEN
+       data%printi = data%set_printi ; data%printt = data%set_printt
+       data%printm = data%set_printm ; data%printw = data%set_printw
+       data%printd = data%set_printd
+       data%print_level = data%control%print_level
+     ELSE
+       data%printi = .FALSE. ; data%printt = .FALSE.
+       data%printm = .FALSE. ; data%printw = .FALSE. ; data%printd = .FALSE.
+       data%print_level = 0
+     END IF
+
+!  set the initial weight
+
+     IF ( data%control%weight_update_strategy == weight_update_zero_reset ) THEN
+       inform%weight = weight_zero
+     ELSE
+       inform%weight = data%control%initial_weight
+     END IF
+!    inform%weight = data%control%initial_weight
+     data%step_accepted = .FALSE.
+     data%poor_model = .FALSE.
+     data%s_norm_successful = one
+     data%minimum_weight = data%control%minimum_weight
+
+! evaluate the residual function c(x) at the initial point
+
+     IF ( data%reverse_c ) THEN
+       data%branch = 30 ; inform%status = 2 ; RETURN
+     ELSE
+       CALL eval_C( data%eval_status, nlp%X( : nlp%n ), userdata,              &
+                    nlp%C( : nlp%m ) )
+     END IF
+
+!  return from reverse communication with the residual function value c(x)
+
+  30 CONTINUE
+!    CALL CLOCK_time( data%clock_now )
+!    write(6,*) ' 30 elapsed', data%clock_now - data%clock_start
+     IF ( data%printw ) WRITE( data%out, "( A, ' statement 30' )" ) prefix
+     inform%c_eval = inform%c_eval + 1
+     IF ( data%w_eq_identity ) THEN
+       data%Y( : nlp%m ) = nlp%C( : nlp%m )
+       inform%norm_c = TWO_NORM( nlp%C( : nlp%m ) )
+       inform%obj = half * inform%norm_c ** 2
+     ELSE
+       data%Y( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
+       val = DOT_PRODUCT( data%Y( : nlp%m ), nlp%C( : nlp%m ) )
+       inform%norm_c = SQRT( val )
+       inform%obj = half * val
+     END IF
+
+!  test to see if the initial objective value is undefined
+
+!    data%f_is_nan = IEEE_IS_NAN( inform%obj )
+     data%f_is_nan = inform%obj /= inform%obj
+!    write(6,*) ' objective is NaN? ', data%f_is_nan
+
+     IF ( data%f_is_nan ) THEN
+       IF ( data%printi ) WRITE( data%out,                                     &
+          "( A, ' initial objective value is a NaN' )" ) prefix
+       inform%status = GALAHAD_error_evaluation ; GO TO 990
+     END IF
+
+!  compute the residual stopping tolerance
+
+     data%stop_c = MAX( MAX( data%control%stop_c_absolute, zero ),             &
+       MAX( data%control%stop_c_relative, zero ) * inform%norm_c, epsmch )
+
+!  stop in the unlikely event that the initial residual is already small
+
+     IF ( inform%norm_c <= data%stop_c ) THEN
+       inform%status = GALAHAD_ok ; GO TO 910
+     END IF
+
+!  initialize the history of objective values
+
+     data%f_ref = inform%obj
+     IF ( .NOT. data%monotone ) THEN
+        data%F_hist = data%f_ref ; data%D_hist = zero ; data%max_hist = 1
+     END IF
+
+!  ============================================================================
+!  Start of main iteration
+!  ============================================================================
+
+ 100 CONTINUE
+!      CALL CLOCK_time( data%clock_now )
+!      write(6,*) ' 100 elapsed', data%clock_now - data%clock_start
+       IF ( data%printw ) WRITE( data%out, "( A, ' statement 100' )" ) prefix
+
+!  evaluate the Jacobian J(x) of c(x)
+
+       IF ( .NOT. data%poor_model ) THEN
+         IF ( data%jacobian_available ) THEN
+           IF ( data%reverse_j ) THEN
+             data%branch = 110 ; inform%status = 3 ; RETURN
+           ELSE
+             CALL eval_J( data%eval_status, nlp%X( : nlp%n ), userdata,        &
+                          nlp%J%val )
+           END IF
+
+!  otherwise evaluate the product g = J^T(x) W c(x)
+
+         ELSE
+           data%transpose = .TRUE.
+           IF ( data%reverse_jprod ) THEN
+             data%U( : nlp%n ) = zero
+             IF ( data%w_eq_identity ) THEN
+               data%V( : nlp%m ) = nlp%C( : nlp%m )
+             ELSE
+               data%V( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
+             END IF
+             data%branch = 110 ; inform%status = 5 ; RETURN
+           ELSE
+             nlp%G( : nlp%n ) = zero
+             IF ( data%w_eq_identity ) THEN
+               CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ), userdata,  &
+                                data%transpose, nlp%G( : nlp%n ),              &
+                                nlp%C( : nlp%m ), .FALSE. )
+             ELSE
+               CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ), userdata,  &
+                                data%transpose, nlp%G( : nlp%n ),              &
+                                W( : nlp%m ) * nlp%C( : nlp%m ), .FALSE. )
+             END IF
+           END IF
+         END IF
+       END IF
+
+!  return from reverse communication with the Jacobian-residual product
+
+ 110   CONTINUE
+!      CALL CLOCK_time( data%clock_now )
+!      write(6,*) ' 110 elapsed', data%clock_now - data%clock_start
+       IF ( data%printw ) WRITE( data%out, "( A, ' statement 110' )" ) prefix
+
+       IF ( .NOT. data%poor_model ) THEN
+         inform%j_eval = inform%j_eval + 1
+
+!        write(6,*) nlp%J%m, nlp%J%n, nlp%J%ne
+!        write(6,*) ( nlp%J%row(i), nlp%J%col(i), nlp%J%val(i), i = 1, nlp%J%ne)
+
+!  compute the product g = J^T(x) W c(x) from J(x) if necessary
+
+         IF ( data%jacobian_available ) THEN
+           IF ( data%w_eq_identity ) THEN
+             CALL mop_Ax( one, nlp%J, nlp%C( : nlp%m ),                        &
+                        zero, nlp%G( : nlp%n ),                                &
+                        out = data%out, error = data%control%error,            &
+                        print_level = 0, transpose = .TRUE. )
+!                       print_level = 1, transpose = .TRUE. )
+           ELSE
+             CALL mop_Ax( one, nlp%J, W( : nlp%m ) * nlp%C( : nlp%m ),         &
+                        zero, nlp%G( : nlp%n ),                                &
+                        out = data%out, error = data%control%error,            &
+                        print_level = 0, transpose = .TRUE. )
+!                       print_level = 1, transpose = .TRUE. )
+           END IF
+         ELSE
+           IF ( data%reverse_jprod ) nlp%G( : nlp%n ) = data%U( : nlp%n )
+         END IF
+
+!  compute the gradient of ||c(x)||
+
+         data%g_norm = TWO_NORM( nlp%G( : nlp%n ) )
+         IF ( inform%norm_c > zero ) THEN
+           inform%norm_g = data%g_norm / inform%norm_c
+         ELSE
+           inform%norm_g = zero
+         END IF
+         data%new_point = .TRUE.
+
+!  deal with NaN gradient values
+!  -----------------------------
+
+         data%g_is_nan = inform%norm_g /= inform%norm_g
+         IF ( data%g_is_nan ) THEN
+           IF ( inform%iter > 0 ) THEN
+             data%poor_model = .FALSE.
+             data%accept = 'r'
+             nlp%X( : nlp%n ) = data%X_current( : nlp%n )
+             nlp%C( : nlp%m ) = data%C_current( : nlp%m )
+
+!  control printing for the NaN case
+
+             IF ( inform%iter >= data%start_print .AND.                        &
+                  inform%iter < data%stop_print .AND.                          &
+                  MOD( inform%iter + 1 - data%start_print, data%print_gap )    &
+                    == 0 ) THEN
+               data%printi = data%set_printi ; data%printt = data%set_printt
+               data%printm = data%set_printm ; data%printw = data%set_printw
+               data%printd = data%set_printd
+               data%print_level = data%control%print_level
+               data%control%GLRT_control%print_level = data%print_level_glrt
+               data%control%RQS_control%print_level = data%print_level_rqs
+             ELSE
+               data%printi = .FALSE. ; data%printt = .FALSE.
+               data%printm = .FALSE. ; data%printw = .FALSE.
+               data%printd = .FALSE.
+               data%print_level = 0
+               data%control%GLRT_control%print_level = 0
+               data%control%RQS_control%print_level = 0
+             END IF
+             data%print_iteration_header = data%print_level > 1 .OR.           &
+               ( data%control%GLRT_control%print_level > 0 .AND. .NOT.         &
+                 data%control%subproblem_direct ) .OR.                         &
+               ( data%control%RQS_control%print_level > 0 .AND.                &
+                 data%control%subproblem_direct )
+
+!  print one-line summary
+
+             IF ( data%printi ) THEN
+                IF ( data%print_iteration_header .OR.                          &
+                     data%print_1st_header ) THEN
+                 WRITE( data%out, 2090 ) prefix
+                 IF ( data%subproblem_control%subproblem_direct ) THEN
+                   IF ( data%control%print_obj ) THEN
+                     WRITE( data%out, 2170 ) prefix
+                   ELSE
+                     WRITE( data%out, 2160 ) prefix
+                   END IF
+                 ELSE
+                   IF ( data%control%print_obj ) THEN
+                     WRITE( data%out, 2180 ) prefix
+                   ELSE
+                     WRITE( data%out, 2190 ) prefix
+                   END IF
+                 END IF
+               END IF
+               data%print_1st_header = .FALSE.
+               char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
+               IF ( data%subproblem_control%subproblem_direct ) THEN
+                 char_facts =                                                  &
+                   ADJUSTR( STRING_integer_6( data%total_facts ) )
+               ELSE
+                 char_facts =                                                  &
+                 ADJUSTR( STRING_integer_6( inform%subproblem_inform%cg_iter ) )
+               END IF
+               WRITE( data%out, "( A, A6, 1X, 3A1, ES11.4, '    NaN    ',      &
+              &                    ES9.1,  2ES8.1, 1X, A6, F8.2 )" )           &
+                  prefix, char_iter, data%accept, data%negcur, data%hard,      &
+                  inform%norm_c, data%ratio, data%old_weight, data%s_norm,     &
+                  char_facts, data%clock_now
+             END IF
+             inform%obj = data%obj_current
+             inform%norm_c = data%norm_c_current
+
+!  check to see if we are still "alive"
+
+             IF ( data%control%alive_unit > 0 ) THEN
+               INQUIRE( FILE = data%control%alive_file, EXIST = alive )
+               IF ( .NOT. alive ) THEN
+                 inform%status = GALAHAD_error_alive
+                 RETURN
+               END IF
+             END IF
+
+!  check to see if the iteration limit has been exceeded
+
+             inform%iter = inform%iter + 1
+             IF ( inform%iter > data%control%maxit .AND.                       &
+                  data%step_accepted ) THEN
+               inform%status = GALAHAD_error_max_iterations ; GO TO 900
+             END IF
+
+!  increase the regularization weight and try again
+
+             inform%weight = data%control%weight_increase * data%old_weight
+             GO TO 100
+           ELSE
+             IF ( data%printi ) WRITE( data%out,                               &
+                "( A, ' initial gradient value is a NaN' )" ) prefix
+             inform%status = GALAHAD_error_evaluation ; GO TO 990
+           END IF
+         END IF
+
+!  reset the initial weight to ||g|| if no sensible value is given
+
+         IF ( inform%iter == 0 ) THEN
+           IF ( data%control%initial_weight <= zero )                          &
+              inform%weight = one / inform%norm_g
+
+!  compute the gradient stopping tolerance
+
+           data%stop_g = MAX( MAX( data%control%stop_g_absolute, zero ),       &
+             MAX( data%control%stop_g_relative, zero ) * inform%norm_g, epsmch )
+
+           IF ( data%printi )                                                  &
+             WRITE( data%out, "( A, '  Problem: ', A, ' (n = ', I0, ', m = ',  &
+          &   I0, ')', /, A, '  NLS stopping tolerances (c,J''c/c) =',         &
+          &   2ES9.2, / )" ) prefix, TRIM( nlp%pname ), nlp%n, nlp%m,          &
+             prefix, data%stop_c, data%stop_g
+         END IF
+       END IF
+
+!  control printing
+
+       IF ( inform%iter >= data%start_print .AND.                              &
+            inform%iter < data%stop_print .AND.                                &
+            MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 )   &
+           THEN
+         data%printi = data%set_printi ; data%printt = data%set_printt
+         data%printm = data%set_printm ; data%printw = data%set_printw
+         data%printd = data%set_printd
+         data%print_level = data%control%print_level
+         data%control%GLRT_control%print_level = data%print_level_glrt
+         data%control%RQS_control%print_level = data%print_level_rqs
+       ELSE
+         data%printi = .FALSE. ; data%printt = .FALSE.
+         data%printm = .FALSE. ; data%printw = .FALSE. ; data%printd = .FALSE.
+         data%print_level = 0
+         data%control%GLRT_control%print_level = 0
+         data%control%RQS_control%print_level = 0
+       END IF
+       data%print_iteration_header = data%print_level > 1 .OR.                 &
+         ( data%control%subproblem_control%GLRT_control%print_level > 0 .AND.  &
+           .NOT. data%control%subproblem_control%subproblem_direct ) .OR.      &
+         data%control%subproblem_control%RQS_control%print_level > 0 .OR.      &
+         ( ( data%control%model == tensor_gauss_newton_model .OR.              &
+             data%control%model == tensor_newton_model .OR.                    &
+             data%control%model == tensor_gauss_to_newton_model ) .AND.        &
+           data%control%subproblem_control%print_level > 0 )
+
+!  print one-line summary
+
+       IF ( data%printi ) THEN
+          IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
+           WRITE( data%out, 2090 ) prefix
+           IF ( data%subproblem_control%subproblem_direct ) THEN
+             IF ( data%control%print_obj ) THEN
+               WRITE( data%out, 2170 ) prefix
+             ELSE
+               WRITE( data%out, 2160 ) prefix
+             END IF
+           ELSE
+             IF ( data%control%print_obj ) THEN
+               WRITE( data%out, 2180 ) prefix
+             ELSE
+               WRITE( data%out, 2190 ) prefix
+             END IF
+           END IF
+         END IF
+
+         data%print_1st_header = .FALSE.
+         CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+         data%time_now = data%time_now - data%time_start
+         data%clock_now = data%clock_now - data%clock_start
+         char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
+         IF ( inform%iter > 0 ) THEN
+           IF ( data%subproblem_control%subproblem_direct ) THEN
+             char_facts =                                                      &
+               ADJUSTR( STRING_integer_6( data%total_facts ) )
+           ELSE
+             char_facts =                                                      &
+               ADJUSTR( STRING_integer_6( inform%subproblem_inform%cg_iter ) )
+           END IF
+           IF ( data%control%print_obj ) THEN
+             WRITE( data%out, 2120 ) prefix, char_iter, data%accept,           &
+                data%negcur, data%hard, inform%obj,                            &
+                inform%norm_g, data%ratio, data%old_weight,                    &
+                data%s_norm, char_facts, data%clock_now
+           ELSE
+             WRITE( data%out, 2120 ) prefix, char_iter, data%accept,           &
+                data%negcur, data%hard, inform%norm_c,                         &
+                inform%norm_g, data%ratio, data%old_weight,                    &
+                data%s_norm, char_facts, data%clock_now
+           END IF
+         ELSE
+           IF ( data%control%print_obj ) THEN
+             WRITE( data%out, 2140 ) prefix,                                   &
+                char_iter, inform%obj, inform%norm_g
+           ELSE
+             WRITE( data%out, 2140 ) prefix,                                   &
+                char_iter, inform%norm_c, inform%norm_g
+           END IF
+         END IF
+       END IF
+
+!  ============================================================================
+!  1. Test for convergence
+!  ============================================================================
+
+!  stop if the gradient is small enough
+
+       IF ( inform%norm_c <= data%stop_c .OR.                                  &
+            inform%norm_g <= data%stop_g ) THEN
+         inform%status = GALAHAD_ok ; GO TO 900
+       END IF
+
+!  stop if the gradient is swamped by the Hessian
+
+!       IF ( data%control%hessian_available .AND. inform%iter > 0 ) THEN
+!         IF ( inform%norm_g <= MIN( one,                                      &
+!               MAXVAL( ABS( data%H%val( : data%H%ne ) ) ) * epsmch ) ) THEN
+!         write(6,*) ' stopping as g is too ill-conditioned to make ',         &
+!        &   'further progress!'
+!         write(6,*) inform%norm_g,                                            &
+!           MAXVAL( ABS( nlp%H%val( : nlp%H%ne ) ) ) * epsmch
+!           inform%status = GALAHAD_error_ill_conditioned ; GO TO 900
+!         END IF
+!       END IF
+
+!  check to see if we are still "alive"
+
+       IF ( data%control%alive_unit > 0 ) THEN
+         INQUIRE( FILE = data%control%alive_file, EXIST = alive )
+         IF ( .NOT. alive ) THEN
+           inform%status = GALAHAD_error_alive
+           RETURN
+         END IF
+       END IF
+
+!  check to see if the iteration limit has been exceeded
+
+       inform%iter = inform%iter + 1
+       IF ( inform%iter > data%control%maxit .AND. data%step_accepted ) THEN
+         inform%status = GALAHAD_error_max_iterations ; GO TO 900
+       END IF
+!      write(6,*) inform%norm_c, data%stop_c, inform%norm_g, data%stop_g
+
+!  check to see if the Gauss-Newton model should be exchanged for a Newton one
+
+       IF ( data%gauss_to_newton_model ) THEN
+         IF ( inform%norm_g < data%control%switch_to_newton ) THEN
+           IF ( data%control%model == tensor_gauss_newton_model ) THEN
+!            IF ( control%power < two ) data%power = three
+             data%control%model = tensor_newton_model
+             data%subproblem_control%model = newton_model
+             data%form_regularization                                          &
+               = data%jacobian_available .AND. data%hessian_available
+             data%re_entry = .FALSE.
+             data%print_1st_header = .TRUE.
+             IF ( data%printi ) WRITE( data%out,                               &
+               "( /, A, '  ... switching to Newton model', / )" ) prefix
+           END IF
+         END IF
+       END IF
+
+!  debug printing for X and G
+
+       IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
+         WRITE ( data%out, 2040 ) prefix, TRIM( nlp%pname ), nlp%n
+         WRITE ( data%out, 2000 ) prefix, inform%c_eval, prefix, inform%j_eval,&
+           prefix, inform%h_eval, prefix, inform%iter, prefix, inform%cg_iter, &
+           prefix, inform%obj, prefix, inform%norm_g
+         WRITE ( data%out, 2010 ) prefix
+!        l = nlp%n
+         l = 2
+         DO j = 1, 2
+            IF ( j == 1 ) THEN
+               ir = 1 ; ic = MIN( l, nlp%n )
+            ELSE
+               IF ( ic < nlp%n - l ) WRITE( data%out, 2050 ) prefix
+               ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
+            END IF
+            IF ( ALLOCATED( nlp%vnames ) ) THEN
+              DO i = ir, ic
+                 WRITE( data%out, 2020 ) prefix, nlp%vnames( i ), nlp%X( i ),  &
+                  nlp%G( i )
+              END DO
+            ELSE
+              DO i = ir, ic
+                 WRITE( data%out, 2030 ) prefix, i, nlp%X( i ), nlp%G( i )
+              END DO
+            END IF
+         END DO
+       END IF
+
+!  recompute the scaled Hessian if it has changed
+
+       data%perturb = ' '
+       IF ( data%new_point ) THEN
+         data%nskip_prec = data%nskip_prec + 1
+         data%got_h = .FALSE.
+         data%hessian_computed = data%hessian_available .AND.                  &
+           data%control%model == tensor_newton_model .AND.                     &
+           data%nskip_prec > nskip_prec_max
+
+!  form the scaled Hessian or a scaling matrix based on the scaled Hessian
+
+         IF ( data%hessian_computed ) THEN
+           IF ( data%reverse_h ) THEN
+             data%branch = 120 ; inform%status = 4 ; RETURN
+           ELSE
+             CALL eval_H( data%eval_status, nlp%X( : nlp%n ),                  &
+                          data%Y( : nlp%m ), userdata,                         &
+                          nlp%H%val( : nlp%H%ne ) )
+           END IF
+         END IF
+       END IF
+
+!  return from reverse communication with the scaled Hessian
+
+ 120   CONTINUE
+       IF ( data%printw ) WRITE( data%out, "( A, ' statement 120' )" ) prefix
+
+!  the Hessian has changed
+
+       IF ( data%new_point ) THEN
+         IF ( data%hessian_computed ) THEN
+           inform%h_eval = inform%h_eval + 1  ; data%got_h = .TRUE.
+
+!  debug printing for H
+
+           IF ( data%printd ) THEN
+             WRITE( data%out, "( A, ' Scaled Hessian' )" ) prefix
+             DO l = 1, nlp%H%ne
+               WRITE( data%out, "( A, 2I7, ES24.16 )" ) prefix,                &
+                 nlp%H%row( l ), nlp%H%col( l ), nlp%H%val( l )
+             END DO
+           END IF
+         END IF
+
+!  if required, form the Hessian to provide a scaling matrix
+
+         IF ( data%regularization_type > diagonal_jtj_regularization .OR.      &
+              data%control%subproblem_control%subproblem_direct ) THEN
+
+!  form the transpose of the Jacobian
+
+           data%JT%val( : data%JT%ne ) = nlp%J%val( : data%JT%ne )
+
+!  insert the values of J^T W J into H
+
+           IF ( data%w_eq_identity ) THEN
+             CALL BSC_form( nlp%n, nlp%m, data%JT, data%H, data%BSC_data,      &
+                            data%control%BSC_control, inform%BSC_inform )
+           ELSE
+             CALL BSC_form( nlp%n, nlp%m, data%JT, data%H, data%BSC_data,      &
+                            data%control%BSC_control, inform%BSC_inform,       &
+                            D = W( : nlp%m ) )
+           END IF
+
+!  append the values of H(x,Wc) if they are required
+
+           IF ( data%hessian_computed ) THEN
+             DO l = 1, nlp%H%ne
+               j =  data%H_map( l )
+               data%H%val( j ) = data%H%val( j ) + nlp%H%val( l )
+             END DO
+           END IF
+         END IF
+
+!        write(6,"( 5ES12.4 )" ) ( nlp%G( l ), l = 1, nlp%n )
+!        write(6,"( ( 2I8, ES12.4 ) )" ) ( data%H%row( l ), data%H%col( l ),   &
+!                                          data%H%val( l ), l = 1, data%h_ne )
+
+!  recompute the scaling matrix
+
+!  build the scaling matrix from H
+
+!write(6,*) 'scaling type ', data%regularization_type
+         IF ( data%regularization_type > diagonal_jtj_regularization .AND.     &
+              data%form_regularization ) THEN
+           IF ( data%printt ) WRITE( data%out,                                 &
+                 "( A, ' Computing scaling matrix' )" ) prefix
+           CALL PSLS_build( data%H, data%regularization%matrix,                &
+             data%PSLS_data, data%control%PSLS_control, inform%PSLS_inform )
+
+!  check for error returns
+
+           IF ( inform%PSLS_inform%status /= 0 ) THEN
+             inform%status = inform%PSLS_inform%status ; GO TO 900
+           END IF
+           IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
+
+!  build the scaling matrix as the diagonal matrix whose entries are
+!  the squares of the W-norms of the columns of J
+
+         ELSE IF ( data%regularization_type ==                                 &
+            diagonal_jtj_regularization .AND. data%form_regularization ) THEN
+           data%regularization%matrix%n = nlp%n
+           data%regularization%matrix%m = nlp%n
+           data%regularization%matrix%ne = nlp%n
+           CALL SMT_put( data%regularization%matrix%type, 'DIAGONAL',          &
+                         inform%alloc_status )
+           IF ( inform%alloc_status /= 0 ) THEN
+             inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
+           CALL mop_column_2_norms( nlp%J,                                     &
+                  data%regularization%matrix%val( : nlp%n ), W = W )
+           data%regularization%matrix%val( : nlp%n )                           &
+             = data%regularization%matrix%val( : nlp%n ) ** 2
+         END IF
+         data%control%PSLS_control%new_structure = .FALSE.
+       END IF
+
+   190 CONTINUE
+       IF ( data%printw ) WRITE( data%out, "( A, ' statement 190' )" ) prefix
+
+!  ============================================================================
+!  2. Calculate the search direction, s
+!  ============================================================================
+
+!  solve the tensor model problem - the residuals c(x+s) are approximated by
+!  r(s) = c(x) + J(x) s + 1/2 ( s^T H_i s )_i=1^m, where (w_i)_i=1^m denotes
+!  the vector whose ith component is w_i. The value of s sought, s_k, is a
+!  local minimizer of phi(s) = 1/2||r(s)||^2_2 + 1/p weight ||s||_S^p
+
+       IF ( .NOT. data%successful ) THEN
+         IF ( data%inner_weight == zero ) THEN
+           data%inner_weight = 0.0001_wp
+         ELSE
+           data%inner_weight = data%inner_weight * 10.0_wp
+         END IF
+       END IF
+       data%tensor_model%pname = 'tensor    '
+
+       IF ( .TRUE. ) THEN
+         data%tensor_model%X( : nlp%n ) = zero
+         GO TO 260
+       END IF
+
+!  ------------------------------- ignore this part --------------------------
+
+!  first, find a starting guess by minimizing phi(- alpha g)
+
+       data%tensor_model%X( : nlp%n ) = - nlp%G( : nlp%n ) / data%g_norm
+
+!  compute J(x) g
+
+       IF ( data%jacobian_available ) THEN
+         CALL mop_Ax( one, nlp%J, data%tensor_model%X( : nlp%n ), zero,        &
+                      data%JS( : nlp%m ), out = data%out,                      &
+                      error = data%control%error, print_level = 0,             &
+                      transpose = .FALSE. )
+
+!  if the Jacobian is unavailable, obtain a matrix-free product
+
+       ELSE
+         data%transpose = .FALSE.
+         data%U( : nlp%m ) = zero
+         data%V( : nlp%n ) = data%tensor_model%X( : nlp%n )
+         IF ( data%reverse_jprod ) THEN
+           data%branch = 220 ; inform%status = 5 ; RETURN
+         ELSE
+           data%JS( : nlp%m ) = zero
+           CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),                &
+                            userdata, data%transpose, data%JS( : nlp%m ),      &
+                            data%tensor_model%X( : nlp%n ), got_j = data%got_j )
+         END IF
+       END IF
+
+!  return from reverse communication with the Jacobian-vector product
+
+   220 CONTINUE
+       IF ( data%printw ) WRITE( data%out, "( A, ' statement 220' )" ) prefix
+       IF ( .NOT. data%jacobian_available .AND. data%reverse_jprod )           &
+         data%JS( : nlp%m ) = data%U( : nlp%m )
+
+!  evaluate H_i(x) g
+
+       IF ( data%reverse_hprods ) THEN
+         data%branch = 230 ; inform%status = 7 ; RETURN
+       ELSE
+         CALL eval_HPRODS( data%eval_status, nlp%X( : nlp%n ),                 &
+                           data%tensor_model%X( : nlp%n ), userdata,           &
+                           nlp%P%val, got_h = .FALSE. )
+       END IF
+
+!  return from reverse communication with the Hessians-vector product
+
+   230 CONTINUE
+
+!  compute 1/2 ( g^T H_j g )_j
+
+       SELECT CASE ( SMT_get( nlp%P%type ) )
+       CASE ( 'DENSE_BY_COLUMNS' )
+         l = 0
+         DO j = 1, nlp%m
+           sths = zero
+           DO i = 1, nlp%n
+             l = l + 1
+             sths = sths + nlp%P%val( l ) * data%tensor_model%X( i )
+           END DO
+           data%HSHS( j ) = half * sths
+         END DO
+       CASE ( 'COORDINATE' )
+         data%HSHS( : nlp%m ) = zero
+         DO l = 1, nlp%P%ne
+           j = nlp%P%col( l )
+           data%HSHS( j ) = data%HSHS( j )                                     &
+             + nlp%P%val( l ) * data%tensor_model%X( nlp%P%row( l ) )
+         END DO
+         data%HSHS( : nlp%m ) = half * data%HSHS( : nlp%m )
+       CASE DEFAULT
+         DO j = 1, nlp%m
+           sths = zero
+           DO l = nlp%P%ptr( j ), nlp%P%ptr( j + 1 ) - 1
+             sths = sths                                                       &
+              + nlp%P%val( l ) * data%tensor_model%X( nlp%P%row( l ) )
+           END DO
+           data%HSHS( j ) = half * sths
+         END DO
+       END SELECT
+
+!  compute the coefficients of the tensor model along the steepest
+!  descent direction, i.e., the quartic function phi(-alpha g) =
+!   a4 * alpha ** 4 + a3 * alpha**3 + a2 * alpha**2 + a1 * alpha + a0
+
+!      data%a0 = half * DOT_PRODUCT( nlp%C(  : nlp%m ), nlp%C(  : nlp%m ) )
+       data%a1 = DOT_PRODUCT( nlp%C(  : nlp%m ), data%JS(  : nlp%m ) )
+       data%a2 = DOT_PRODUCT( nlp%C(  : nlp%m ), data%HSHS(  : nlp%m ) ) +     &
+                 half * DOT_PRODUCT( data%JS(  : nlp%m ), data%JS(  : nlp%m ) )
+       data%a3 = DOT_PRODUCT( data%JS(  : nlp%m ), data%HSHS(  : nlp%m ) )
+       data%a4 =                                                               &
+         half * DOT_PRODUCT( data%HSHS(  : nlp%m ), data%HSHS(  : nlp%m ) )
+
+!  since regularization is required, add 1/p weight ||s||_S^p to ap term
+
+       IF ( data%power == two ) THEN
+         data%a2 = data%a2 + half * data%inner_weight                          &
+           * SUM( data%tensor_model%X( : nlp%n ) ** 2 )
+       ELSE
+         data%a4 = data%a4 + quarter * data%inner_weight                       &
+           * SUM( data%tensor_model%X( : nlp%n ) ** 4 )
+       END IF
+
+!  find the roots of the cubic
+!    phi'(-alpha g) = 4 a4 * alpha**3 + 3 a3 * alpha**2 + 2 a2 * alpha + a1 = 0
+
+       CALL ROOTS_cubic( data%a1, two * data%a2, three * data%a3,              &
+                         four * data%a4, data%control%ROOTS_control%tol,       &
+                         nroots, root1, root2, root3, .FALSE. )
+!      write(6,*) data%a1, two * data%a2, three * data%a3,                     &
+!        four * data%a4, nroots, root1, root2, root3
+
+!  pick the smallest positive root
+
+       IF ( nroots == 3 .AND. root1 <= zero ) THEN
+         data%steplength = root3
+       ELSE
+         data%steplength = root1
+       END IF
+!      data%tensor_model%X( : nlp%n )                                          &
+!        = data%steplength * data%tensor_model%X( : nlp%n )
+
+!  --------------------------- end of ignored part -----------------------
+
+!  a stabilised (Gauss-)Newton method is applied to phi(s) to find s_k
+
+  260  CONTINUE
+
+!  mock do loop to allow reverse communication
+
+       data%regularization%weight = inform%weight
+       data%regularization%power = data%power
+
+       IF ( data%re_entry ) THEN
+         inform%subproblem_inform%status = 11
+       ELSE
+         inform%subproblem_inform%status = 1
+         data%subproblem_control = data%control%subproblem_control
+
+         IF ( data%control%model == tensor_gauss_newton_model ) THEN
+           data%subproblem_control%model = gauss_newton_model
+         ELSE IF ( data%control%model == tensor_newton_model ) THEN
+           data%subproblem_control%model = newton_model
+         ELSE IF ( data%control%model == tensor_gauss_to_newton_model ) THEN
+           data%subproblem_control%model = gauss_to_newton_model
+         END IF
+
+         data%re_entry = .TRUE.
+!        data%subproblem_control%subproblem_direct = .TRUE.
+!        data%subproblem_control%hessian_available = 1
+         IF ( .NOT. data%control%subproblem_control%subproblem_direct ) THEN
+           data%subproblem_control%jacobian_available = 1
+           IF ( data%subproblem_control%norm /= user_regularization )          &
+             data%subproblem_control%norm = euclidean_regularization
+           IF ( data%subproblem_data%regularization_type /=                    &
+                user_regularization )                                          &
+             data%subproblem_data%regularization_type = euclidean_regularization
+         END IF
+         data%subproblem_control%prefix = "'-" // data%control%prefix( 2 : 29 )
+       END IF
+       inform%subproblem_inform%iter = 0
+       inform%subproblem_inform%cg_iter = 0
+       inform%subproblem_inform%RQS_inform%factorizations = 0
+
+       data%subproblem_control%stop_g_relative = MIN( half,                    &
+         MAX( control%subproblem_control%stop_g_relative, zero ) )
+       data%subproblem_control%stop_g_absolute = MIN( half * inform%norm_g,    &
+         MAX( control%subproblem_control%stop_g_absolute, zero ) )
+       data%control%subproblem_control%norm = data%control%norm
+
+!  main loop to minimize the tensor model; the current estimate of the
+!  solution is s = tensor_model%X
+
+!data%subproblem_control%print_level = 1
+   270 CONTINUE
+       IF ( data%printw ) WRITE( data%out, "( A, ' statement 270, status = ',  &
+      &  I0  )" ) prefix, inform%subproblem_inform%status
+
+!  minimize the tensor model; the current estimate of the solution s = tm%X
+
+!write(6,*) ' into NLS_subproblem_solve'
+         CALL NLS_subproblem_solve( data%tensor_model,                         &
+                                    data%subproblem_control,                   &
+                                    inform%subproblem_inform,                  &
+                                    data%subproblem_data,                      &
+                                    data%subproblem_userdata, W = W,           &
+                                    stabilisation = data%regularization )
+!write(6,*) ' out of NLS_subproblem_solve, status = ', &
+! inform%subproblem_inform%status
+
+         SELECT CASE ( inform%subproblem_inform%status )
+
+!  obtain the residual function r(s) = c(x) + J(x) s + 1/2 ( s^T H_i(x) s )_i,
+!  i=1^m, or, componentwise, r_i(s) = c_i(s) + g^T_i(x) s + 1/2 s^T H_i(x) s,
+!  where g_i(x) is the gradient of c_i(x). Firstly compute J(x) s
+
+         CASE ( 2 )
+           IF ( data%jacobian_available ) THEN
+             CALL mop_Ax( one, nlp%J, data%tensor_model%X( : nlp%n ), zero,    &
+                          data%JS( : nlp%m ), out = data%out,                  &
+                          error = data%control%error, print_level = 0,         &
+                          transpose = .FALSE. )
+
+!  if the Jacobian is unavailable, obtain a matrix-free product
+
+           ELSE
+             data%transpose = .FALSE.
+             IF ( data%reverse_jprod ) THEN
+               data%U( : nlp%m ) = zero
+               data%V( : nlp%n ) = data%tensor_model%X( : nlp%n )
+               data%branch = 280 ; inform%status = 5 ; RETURN
+             ELSE
+               data%JS( : nlp%m ) = zero
+               CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),            &
+                                userdata, data%transpose, data%JS( : nlp%m ),  &
+                                data%tensor_model%X( : nlp%n ),                &
+                                got_j = data%got_j )
+             END IF
+           END IF
+
+!  evaluate the scaled Hessian H(x,y) = sum_i y_i H_i(x)
+
+         CASE ( 4 )
+           IF ( data%reverse_h ) THEN
+             data%Y( : nlp%m ) = data%subproblem_data%Y( : nlp%m )
+             data%branch = 280 ; inform%status = 4 ; RETURN
+           ELSE
+             CALL eval_H( data%eval_status, nlp%X( : nlp%n ),                  &
+                          data%subproblem_data%Y( : nlp%m ), userdata,         &
+                          data%tensor_model%H%val( : nlp%H%ne ) )
+           END IF
+
+!  evaluate the sum u = u + J(s) v or u = u + J^T(s) v, where
+!  J(s) = J(x) + P(x,s) and (P^T(x,s))_i = H_i s _i=1,...,m.
+
+         CASE ( 5 )
+
+!  firstly compute u = u + J^T(x) v
+
+           IF ( data%subproblem_data%transpose ) THEN
+             IF ( data%jacobian_available ) THEN
+               CALL mop_Ax( one, nlp%J, data%subproblem_data%V( : nlp%m ), one,&
+                            data%subproblem_data%U( : nlp%n ), out = data%out, &
+                            error = data%control%error, print_level = 0,       &
+                            transpose = .TRUE. )
+             ELSE
+               data%transpose = .TRUE.
+               IF ( data%reverse_jprod ) THEN
+                 data%U( : nlp%n ) = data%subproblem_data%U( : nlp%n )
+                 data%V( : nlp%m ) = data%subproblem_data%V( : nlp%m )
+                 data%branch = 280 ; inform%status = 5 ; RETURN
+               ELSE
+                 CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
+                                  userdata, data%transpose,                    &
+                                  data%subproblem_data%U( : nlp%n ),           &
+                                  data%subproblem_data%V( : nlp%m ),           &
+                                  got_j = data%got_j )
+               END IF
+             END IF
+
+!  otherwise compute u = u + J(x) v
+
+           ELSE
+             IF ( data%jacobian_available ) THEN
+               CALL mop_Ax( one, nlp%J, data%subproblem_data%V( : nlp%n ), one,&
+                            data%subproblem_data%U( : nlp%m ), out = data%out, &
+                            error = data%control%error, print_level = 0,       &
+                            transpose = .FALSE. )
+             ELSE
+               data%transpose = .FALSE.
+               IF ( data%reverse_jprod ) THEN
+                 data%U( : nlp%m ) = data%subproblem_data%U( : nlp%m )
+                 data%V( : nlp%n ) = data%subproblem_data%V( : nlp%n )
+                 data%branch = 280 ; inform%status = 5 ; RETURN
+               ELSE
+                 CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
+                                  userdata, data%transpose,                    &
+                                  data%subproblem_data%U( : nlp%m ),           &
+                                  data%subproblem_data%V( : nlp%n ),           &
+                                  got_j = data%got_j )
+               END IF
+             END IF
+           END IF
+
+!  evaluate the sum u = u + H(x,y) v
+
+         CASE ( 6 )
+           CALL mop_Ax( one, data%tensor_model%H,                              &
+                        data%subproblem_data%V( : nlp%m ), one,                &
+                        data%subproblem_data%U( : nlp%n ), out = data%out,     &
+                        error = data%control%error, print_level = 0,           &
+                        symmetric = .TRUE. )
+
+!  evaluate the scaled vector u = S(x) x
+
+         CASE ( 8 )
+           IF ( data%reverse_scale ) THEN
+             data%V( : nlp%n ) = data%subproblem_data%V( : nlp%n )
+             data%branch = 280 ; inform%status = 8 ; RETURN
+           ELSE
+             CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,    &
+                              data%subproblem_data%U( : nlp%n ),               &
+                              data%subproblem_data%V( : nlp%n ) )
+           END IF
+
+!  compute a "magic" step. Find the stepsize alpha for which phi(alpha s)
+!  is smallest
+
+         CASE ( 9 )
+
+!  for given alpha,
+
+!    phi(alpha s) = a0 + a1 alpha + a2 alpha^2 + a3 alpha^3 + a4 alpha^4,
+
+!  where
+
+!    a0 = 1/2 ||c(x)||_2^2,
+!    a1 = c^T(x) (J(x) s),
+!    a2 = 1/2 s^T (J^T(x) J(x) + H(x,c))s,
+!    a3 = sum_i g(x)_i^T s ) ( 1/2 s^T h_i(x) s ), and
+!    a4 = 1/2 sum_i (1/2 s^T h_i(x) s)^2.
+
+!  Compute the corefficients a0, ..., a4
+
+           IF ( data%power == two ) THEN
+             data%a0 = half * DOT_PRODUCT( nlp%C( : nlp%m ), nlp%C( : nlp%m ) )
+             data%a1 = DOT_PRODUCT( nlp%C( : nlp%m ), data%JS( : nlp%m ) )
+             data%a2 = DOT_PRODUCT( nlp%C( : nlp%m ), data%HSHS( : nlp%m ) ) + &
+                    half * DOT_PRODUCT( data%JS( : nlp%m ), data%JS( : nlp%m ) )
+             data%a3 = DOT_PRODUCT( data%JS( : nlp%m ), data%HSHS( : nlp%m ) )
+             data%a4 =                                                         &
+               half * DOT_PRODUCT( data%HSHS( : nlp%m ), data%HSHS( : nlp%m ) )
+
+!  add the regularization term 1/2 weight ||s||_S^2 to a2
+
+             CALL mop_Ax( one, data%regularization%matrix,                     &
+                          data%tensor_model%X( : nlp%n ),                      &
+                          zero, data%subproblem_data%SX( : nlp%n ),            &
+                          symmetric = .TRUE., out = data%out,                  &
+                          error = data%control%error, print_level = 0 )
+             reg = half * inform%weight *                        &
+                         DOT_PRODUCT( data%tensor_model%X( : nlp%n ),          &
+                                      data%subproblem_data%SX( : nlp%n ) )
+             data%a2 = data%a2 + reg
+
+!  find the roots of the cubic
+!    phi'(alpha s) = a1 + 2 a2 * alpha + 3 a3 * alpha^2 + 4 a4 * alpha^3 = 0
+
+             CALL ROOTS_cubic( data%a1, two * data%a2, three * data%a3,        &
+                               four * data%a4, data%control%ROOTS_control%tol, &
+                               nroots, root1, root2, root3, .FALSE. )
+!      write(6,*) data%a1, two * data%a2, three * data%a3,                     &
+!        four * data%a4, nroots, root1, root2, root3
+
+             c0 = data%a0 + data%a1 + data%a2 - reg + data%a3 + data%a4
+             c0 = SQRT( two * c0 )
+             c1 = data%a0 + root1 * ( data%a1 + root1 *                        &
+                 ( data%a2 - reg + root1 * ( data%a3 + data%a4 * root1 ) ) )
+             c1 = SQRT( two * c1 )
+             IF ( nroots == 3 ) THEN
+               c2 = data%a0 + root2 * ( data%a1 + root2 *                      &
+                   ( data%a2 - reg + root2 * ( data%a3 + data%a4 * root2 ) ) )
+               c2 = SQRT( two * c2 )
+               c3 = data%a0 + root3 * ( data%a1 + root3 *                      &
+                   ( data%a2 - reg + root3 * ( data%a3 + data%a4 * root3 ) ) )
+               c3 = SQRT( two * c3 )
+             END IF
+
+             IF ( .FALSE. ) THEN
+!            IF ( .TRUE. ) THEN
+               write(6,"( ' weight ', ES12.4 )" ) inform%weight
+               write(6,"( 's,a', 6ES12.4 )" ) TWO_NORM( nlp%X( : nlp%n ) ),    &
+                 data%a0, data%a1, data%a2, data%a3, data%a4
+               write(6,"( ' alpha =', ES18.10, ' c,phi''(alpha) =',2ES18.10 )")&
+                 one, c0, data%a1 + two * data%a2 + three * data%a3 +          &
+                            four * data%a4
+               write(6,"( ' alpha =', ES18.10, ' c,phi''(alpha) =',2ES18.10 )")&
+                 root1, c1, data%a1 + root1 * ( two * data%a2 + root1 *        &
+                              ( three * data%a3 + four * data%a4 * root1 ) )
+               IF ( nroots == 3 ) THEN
+                 write(6,"( ' alpha =', ES18.10,' c,phi''(alpha) =',2ES18.10)")&
+                   root2, c2, data%a1 + root2 * ( two * data%a2 + root2 *      &
+                                ( three * data%a3 + four * data%a4 * root2 ) )
+                 write(6,"( ' alpha =', ES18.10,' c,phi''(alpha) =',2ES18.10)")&
+                   root3, c3, data%a1 + root3 * ( two * data%a2 + root3 *      &
+                                ( three * data%a3 + four * data%a4 * root3 ) )
+               END IF
+             END IF
+
+!  pick the best root, alpha
+
+             IF ( nroots == 3 ) THEN
+               IF ( c1 <= c3 ) THEN
+                 alpha = root1
+               ELSE
+                 alpha = root3
+               END IF
+             ELSE
+               alpha = root1
+             END IF
+
+!  replace s by alpha s
+
+             data%tensor_model%X( : nlp%n )                                    &
+               = alpha * data%tensor_model%X( : nlp%n )
+
+!  replace r(s) by r(alpha s)
+
+             data%JS( : nlp%m ) = alpha * data%JS( : nlp%m )
+             data%HSHS( : nlp%m ) = ( alpha ** 2 ) * data%HSHS( : nlp%m )
+             data%tensor_model%C( : nlp%m )                                    &
+               = nlp%C( : nlp%m ) + data%JS( : nlp%m ) + data%HSHS( : nlp%m )
+             nlp%P%val( : nlp%P%ne ) = alpha * nlp%P%val( : nlp%P%ne )
+           END IF
+         END SELECT
+
+!  return from reverse communication with the Jacobian-vector product
+
+   280   CONTINUE
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement 280, status = ',&
+        &  I0  )" ) prefix, inform%subproblem_inform%status
+
+!  continue with the computation of r(s). Recover reverse-communication data
+
+         SELECT CASE ( inform%subproblem_inform%status )
+         CASE ( 2 )
+           IF ( .NOT. data%jacobian_available .AND. data%reverse_jprod )       &
+             data%JS( : nlp%m ) = data%U( : nlp%m )
+         CASE ( 4 )
+           IF ( data%reverse_h ) data%tensor_model%H%val( : nlp%H%ne )         &
+             = nlp%H%val( : nlp%H%ne )
+         CASE ( 5 )
+           IF ( data%subproblem_data%transpose ) THEN
+             IF ( .NOT. data%jacobian_available .AND. data%reverse_jprod )     &
+               data%subproblem_data%U( : nlp%n ) = data%U( : nlp%n )
+           ELSE
+             IF ( .NOT. data%jacobian_available .AND. data%reverse_jprod )     &
+               data%subproblem_data%U( : nlp%m ) = data%U( : nlp%m )
+           END IF
+         CASE ( 8 )
+           IF ( data%reverse_scale )                                           &
+             data%subproblem_data%U( : nlp%n ) = data%U( : nlp%n )
+         END SELECT
+
+!  evaluate H_i(x) s
+
+         SELECT CASE ( inform%subproblem_inform%status )
+         CASE ( 2, 3, 5 )
+           IF ( data%reverse_hprods ) THEN
+             data%V( : nlp%n ) = data%tensor_model%X( : nlp%n )
+             data%branch = 290 ; inform%status = 7 ; RETURN
+           ELSE
+             CALL eval_HPRODS( data%eval_status, nlp%X( : nlp%n ),             &
+                               data%tensor_model%X( : nlp%n ), userdata,       &
+                               nlp%P%val, got_h = .FALSE. )
+           END IF
+         END SELECT
+
+!  return from reverse communication with the Hessains-vector product
+
+   290   CONTINUE
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement 290, status = ',&
+        &  I0  )" ) prefix, inform%subproblem_inform%status
+
+!  continue with the computation of r(s)
+
+         SELECT CASE ( inform%subproblem_inform%status )
+
+!  compute 1/2 ( s^T H_i s )_j
+
+         CASE ( 2 )
+           SELECT CASE ( SMT_get( nlp%P%type ) )
+           CASE ( 'DENSE_BY_COLUMNS' )
+             l = 0
+             DO j = 1, nlp%m
+               sths = zero
+               DO i = 1, nlp%n
+                 l = l + 1
+                 sths = sths + nlp%P%val( l ) * data%tensor_model%X( i )
+               END DO
+               data%HSHS( j ) = half * sths
+             END DO
+           CASE ( 'COORDINATE' )
+             data%HSHS( : nlp%m ) = zero
+             DO l = 1, nlp%P%ne
+               j = nlp%P%col( l )
+               data%HSHS( j ) = data%HSHS( j )                                 &
+                 + nlp%P%val( l ) * data%tensor_model%X( nlp%P%row( l ) )
+             END DO
+             data%HSHS( : nlp%m ) = half * data%HSHS( : nlp%m )
+           CASE DEFAULT
+             DO j = 1, nlp%m
+               sths = zero
+               DO l = nlp%P%ptr( j ), nlp%P%ptr( j + 1 ) - 1
+                 sths = sths                                                   &
+                  + nlp%P%val( l ) * data%tensor_model%X( nlp%P%row( l ) )
+               END DO
+               data%HSHS( j ) = half * sths
+             END DO
+           END SELECT
+
+!  compute r(s) = c(x) + J(x) s + 1/2 ( s^T H_i s )_i
+
+           data%tensor_model%C( : nlp%m ) =                                    &
+             nlp%C( : nlp%m ) + data%JS( : nlp%m ) + data%HSHS( : nlp%m )
+
+!  obtain the Jacobian J(s), where J^T(s) = ( g_i + H_i s )_i=1,...,m
+
+         CASE ( 3 )
+           data%tensor_model%J%val( : nlp%J%ne ) = nlp%J%val( : nlp%J%ne )
+           SELECT CASE ( SMT_get( nlp%P%type ) )
+           CASE ( 'DENSE_BY_COLUMNS' )
+             l = 0
+             DO i = 1, nlp%m
+               DO j = 1, nlp%n
+                 l = l + 1
+                 ll = data%Hs_map( l )
+                 IF ( ll > 0 ) data%tensor_model%J%val( ll )                   &
+                   = data%tensor_model%J%val( ll ) + nlp%P%val( l )
+               END DO
+             END DO
+           CASE ( 'COORDINATE' )
+             DO l = 1, nlp%P%ne
+               ll = data%Hs_map( l )
+               IF ( ll > 0 ) data%tensor_model%J%val( ll )                     &
+                 = data%tensor_model%J%val( ll ) + nlp%P%val( l )
+             END DO
+           CASE DEFAULT
+             DO i = 1, nlp%m
+               DO l = nlp%P%ptr( i ), nlp%P%ptr( i + 1 ) - 1
+                 ll = data%Hs_map( l )
+                 IF ( ll > 0 ) data%tensor_model%J%val( ll )                   &
+                   = data%tensor_model%J%val( ll ) + nlp%P%val( l )
+               END DO
+             END DO
+           END SELECT
+
+!  continue with the sums u = u + J(s) v or u = u + J^T(s) v by including the
+!  terms P^T(x,s) v or P(x,s) v respectively
+
+         CASE ( 5 )
+
+!  compute u = u + P(x,s) v
+
+           IF ( data%subproblem_data%transpose ) THEN
+             CALL mop_Ax( one, nlp%P, data%subproblem_data%V( : nlp%m ), one,  &
+                          data%subproblem_data%U( : nlp%n ), out = data%out,   &
+                          error = data%control%error, print_level = 0,         &
+                          transpose = .FALSE. )
+
+!  compute u = u + P^T(x,s) v
+
+           ELSE
+             CALL mop_Ax( one, nlp%P, data%subproblem_data%V( : nlp%n ), one,  &
+                          data%subproblem_data%U( : nlp%m ), out = data%out,   &
+                          error = data%control%error, print_level = 0,         &
+                          transpose = .TRUE. )
+           END IF
+
+         END SELECT
+
+!  continue the computation of the search direction
+
+       IF ( inform%subproblem_inform%status > 0 ) GO TO 270
+
+!  search direction found
+
+       data%S( : nlp%n ) = data%tensor_model%X( : nlp%n )
+       CALL mop_Ax( one, data%regularization%matrix,                           &
+                    data%S( : nlp%n ), zero,                                   &
+                    data%subproblem_data%SX( : nlp%n ),                        &
+                    symmetric = .TRUE., out = data%out,                        &
+                    error = data%control%error, print_level = 0 )
+       data%subproblem_data%xtsx                                               &
+         = DOT_PRODUCT( data%S( : nlp%n ), data%subproblem_data%SX( : nlp%n ) )
+       data%s_norm = SQRT( data%subproblem_data%xtsx )
+       data%model = inform%subproblem_inform%obj - inform%obj                  &
+         - ( data%regularization%weight / data%regularization%power )          &
+            * data%s_norm ** data%regularization%power
+
+       data%final_weight = inform%subproblem_inform%weight
+
+!  update the factorization or Krylov iteration counts
+
+       IF ( data%control%subproblem_control%subproblem_direct ) THEN
+         data%total_facts                                                      &
+           = data%total_facts + data%subproblem_data%total_facts
+         inform%factorization_max = MAX( inform%factorization_max,             &
+           inform%subproblem_inform%RQS_inform%factorizations )
+         inform%factorization_average =  data%total_facts / inform%iter
+       END IF
+
+!  ============================================================================
+!  3. check for acceptance of the new point
+!  ============================================================================
+
+!  see if the correction will make any difference
+
+       IF ( MAXVAL( ABS( data%S( : nlp%n ) ) / MAX( one, nlp%X( : nlp%n ) ) )  &
+            <= data%control%stop_s ) THEN
+         inform%status = GALAHAD_error_tiny_step ; GO TO 900
+       END IF
+
+!  compute the slope and curvature along the step
+
+       data%stg = DOT_PRODUCT( data%S( : nlp%n ), nlp%G( : nlp%n ) )
+       data%hstbs = data%model - data%stg
+!      write(6,*) ' stg = ', data%stg
+
+!  record the current point
+
+       data%obj_current = inform%obj
+       data%norm_c_current = inform%norm_c
+       data%X_current( : nlp%n ) = nlp%X( : nlp%n )
+       data%C_current( : nlp%m ) = nlp%C( : nlp%m )
+
+!  form the trial point
+
+       nlp%X( : nlp%n ) = data%X_current( : nlp%n ) + data%S( : nlp%n )
+
+!  evaluate the objective function at the trial point
+
+       IF ( data%reverse_c ) THEN
+         data%branch = 320 ; inform%status = 2 ; RETURN
+       ELSE
+         CALL eval_C( data%eval_status, nlp%X( : nlp%n ), userdata,            &
+                      nlp%C( : nlp%m ) )
+       END IF
+
+!  return from reverse communication with the objective value
+
+   320 CONTINUE
+       IF ( data%printw ) WRITE( data%out, "( A, ' statement 320' )" ) prefix
+       inform%c_eval = inform%c_eval + 1
+       IF ( data%w_eq_identity ) THEN
+         data%Y( : nlp%m ) = nlp%C( : nlp%m )
+         data%norm_c_trial = TWO_NORM( nlp%C( : nlp%m ) )
+         data%f_trial = half * data%norm_c_trial ** 2
+       ELSE
+         data%Y( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
+         val = DOT_PRODUCT( data%Y( : nlp%m ), nlp%C( : nlp%m ) )
+         data%norm_c_trial = SQRT( val )
+         data%f_trial = half * val
+       END IF
+
+!      if(data%printi) write(6,*) ' f_trial ', data%f_trial
+
+!  deal with NaN trial objective values
+!  ------------------------------------
+
+!      data%f_is_nan = IEEE_IS_NAN( data%f_trial )
+       data%f_is_nan = data%f_trial /= data%f_trial
+       IF ( data%f_is_nan ) THEN
+         data%poor_model = .TRUE.
+         data%accept = 'r'
+         nlp%X( : nlp%n ) = data%X_current( : nlp%n )
+         nlp%C( : nlp%m ) = data%C_current( : nlp%m )
+
+!  control printing for the NaN case
+
+         IF ( inform%iter >= data%start_print .AND.                            &
+              inform%iter < data%stop_print .AND.                              &
+              MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 ) &
+             THEN
+           data%printi = data%set_printi ; data%printt = data%set_printt
+           data%printm = data%set_printm ; data%printw = data%set_printw
+           data%printd = data%set_printd
+           data%print_level = data%control%print_level
+           data%control%GLRT_control%print_level = data%print_level_glrt
+           data%control%RQS_control%print_level = data%print_level_rqs
+         ELSE
+           data%printi = .FALSE. ; data%printt = .FALSE.
+           data%printm = .FALSE. ; data%printw = .FALSE. ; data%printd = .FALSE.
+           data%print_level = 0
+           data%control%GLRT_control%print_level = 0
+           data%control%RQS_control%print_level = 0
+         END IF
+         data%print_iteration_header = data%print_level > 1 .OR.               &
+           ( data%control%GLRT_control%print_level > 0 .AND. .NOT.             &
+             data%control%subproblem_control%subproblem_direct ) .OR.          &
+!            data%control%subproblem_direct ) .OR.                             &
+           ( data%control%RQS_control%print_level > 0 .AND.                    &
+             data%control%subproblem_control%subproblem_direct )
+!            data%control%subproblem_direct )
+
+!  print one-line summary
+
+         IF ( data%printi ) THEN
+            IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
+             WRITE( data%out, 2090 ) prefix
+             IF ( data%subproblem_control%subproblem_direct ) THEN
+               IF ( data%control%print_obj ) THEN
+                 WRITE( data%out, 2170 ) prefix
+               ELSE
+                 WRITE( data%out, 2160 ) prefix
+               END IF
+             ELSE
+               IF ( data%control%print_obj ) THEN
+                 WRITE( data%out, 2180 ) prefix
+               ELSE
+                 WRITE( data%out, 2190 ) prefix
+               END IF
+             END IF
+           END IF
+           data%print_1st_header = .FALSE.
+           char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
+           IF ( data%subproblem_control%subproblem_direct ) THEN
+             char_facts =                                                      &
+               ADJUSTR( STRING_integer_6( data%total_facts ) )
+           ELSE
+             char_facts =                                                      &
+                 ADJUSTR( STRING_integer_6( inform%subproblem_inform%cg_iter ) )
+           END IF
+           WRITE( data%out,  "( A, A6, 1X, 3A1, '    NaN           -    ',     &
+          &  '    - Inf ',  2ES8.1, 1X, A6, F8.2 )" )                          &
+              prefix, char_iter, data%accept, data%negcur, data%hard,          &
+              inform%weight, data%s_norm, char_facts, data%clock_now
+         END IF
+
+!  check to see if we are still "alive"
+
+         IF ( data%control%alive_unit > 0 ) THEN
+           INQUIRE( FILE = data%control%alive_file, EXIST = alive )
+           IF ( .NOT. alive ) THEN
+             inform%status = GALAHAD_error_alive
+             RETURN
+           END IF
+         END IF
+
+!  check to see if the iteration limit has been exceeded
+
+         inform%iter = inform%iter + 1
+         IF ( inform%iter > data%control%maxit .AND. data%step_accepted ) THEN
+           inform%status = GALAHAD_error_max_iterations ; GO TO 900
+         END IF
+
+!  increase the regularization weight and try again
+
+         IF ( inform%weight == zero ) THEN
+           inform%weight = 0.0001_wp
+         ELSE
+           inform%weight = inform%weight * 10.0_wp
+           inform%weight = data%control%weight_increase * inform%weight
+         END IF
+         GO TO 190
+       END IF
+
+!  compute the change in objective and the slope
+
+       data%df = inform%obj - data%f_trial
+!      if (data%printi) write(6,*) ' dm, df ', - data%model, data%df
+
+!  compute the ratio of actual to predicted reduction over the current iteration
+
+       rounding =                                                              &
+         MAX( one, ABS( inform%obj ) ) * REAL( nlp%n, KIND = wp ) * epsmch
+
+       ared = data%df + rounding
+       prered = - data%model + rounding
+       IF ( ABS( ared ) < teneps .AND. ABS( inform%obj ) > teneps )            &
+         ared = prered
+       data%ratio = ared / prered
+!      write(6,*) ' ratio ', data%ratio, ared, prered
+       IF ( data%printm ) WRITE( data%out, "( /, A, ' actual, predicted',      &
+      &   ' reductions = ', 2ES12.4 )" ) prefix, ared, prered
+
+!  compute the ratio of actual to predicted reduction over the recent history
+
+       IF ( .NOT. data%monotone ) THEN
+
+!  compute the largest f in the history
+
+         data%ref = MAXLOC( data%F_hist( data%non_monotone_history + 2         &
+                            - data%max_hist : data%non_monotone_history + 1 ) )
+         data%f_ref = data%F_hist( data%ref( 1 ) )
+
+!  use the larger of these two ratios to assess progress
+
+         data%ratio = MAX( data%ratio, ( data%f_trial - data%f_ref ) /         &
+           ( SUM( data%D_hist( data%ref( 1 ) + 1 :                             &
+             data%non_monotone_history + 1 ) ) + data%model ) )
+       END IF
+
+!  the new point is acceptable
+
+       IF ( data%ratio >= data%control%eta_successful ) THEN
+         data%poor_model = .FALSE.
+         data%accept = 'a'
+         data%step_accepted = .TRUE.
+         inform%norm_c = data%norm_c_trial
+         inform%obj = data%f_trial
+         data%s_norm_successful = data%s_norm
+
+!  stop if the residual is sufficiently small
+
+         IF ( inform%norm_c <= data%stop_c ) THEN
+
+!  print one-line summary
+
+           IF ( data%printi ) THEN
+             CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+             data%time_now = data%time_now - data%time_start
+             data%clock_now = data%clock_now - data%clock_start
+             IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
+               WRITE( data%out, 2090 ) prefix
+               IF ( data%subproblem_control%subproblem_direct ) THEN
+                 IF ( data%control%print_obj ) THEN
+                   WRITE( data%out, 2170 ) prefix
+                 ELSE
+                   WRITE( data%out, 2160 ) prefix
+                 END IF
+               ELSE
+                 IF ( data%control%print_obj ) THEN
+                   WRITE( data%out, 2180 ) prefix
+                 ELSE
+                   WRITE( data%out, 2190 ) prefix
+                 END IF
+               END IF
+             END IF
+             data%print_1st_header = .FALSE.
+             char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
+             IF ( inform%iter > 0 ) THEN
+               IF ( data%subproblem_control%subproblem_direct ) THEN
+                 char_facts =                                                  &
+                   ADJUSTR( STRING_integer_6( data%total_facts ) )
+               ELSE
+                 char_facts =                                                  &
+                 ADJUSTR( STRING_integer_6( inform%subproblem_inform%cg_iter ) )
+               END IF
+               IF ( data%control%print_obj ) THEN
+                 WRITE( data%out, 2120 ) prefix, char_iter, data%accept,       &
+                    data%negcur, data%hard, inform%obj,                        &
+                    inform%norm_g, data%ratio, data%old_weight,                &
+                    data%s_norm, char_facts, data%clock_now
+               ELSE
+                 WRITE( data%out, 2120 ) prefix, char_iter, data%accept,       &
+                    data%negcur, data%hard, inform%norm_c,                     &
+                    inform%norm_g, data%ratio, data%old_weight,                &
+                    data%s_norm, char_facts, data%clock_now
+               END IF
+             ELSE
+               IF ( data%control%print_obj ) THEN
+                 WRITE( data%out, 2140 ) prefix,                               &
+                    char_iter, inform%obj, inform%norm_g
+               ELSE
+                 WRITE( data%out, 2140 ) prefix,                               &
+                    char_iter, inform%norm_c, inform%norm_g
+               END IF
+             END IF
+           END IF
+           inform%status = GALAHAD_ok ; GO TO 900
+         END IF
+
+!  update the history
+
+         IF ( data%monotone ) THEN
+           data%f_ref = inform%obj
+
+!  shift history of function and model values
+
+         ELSE
+           DO i = 1, data%non_monotone_history
+             data%F_hist( i ) = data%F_hist( i + 1 )
+             data%D_hist( i ) = data%D_hist( i + 1 )
+           END DO
+
+!  replace the oldest
+
+           data%F_hist( data%non_monotone_history + 1 ) = inform%obj
+           data%D_hist( data%non_monotone_history + 1 ) = data%model
+
+!  find how much past history is allowed
+
+           data%max_hist = MIN( data%max_hist + 1, data%non_monotone_history )
+         END IF
+
+!  the new point is not acceptable
+
+       ELSE
+         data%poor_model = .TRUE.
+         data%accept = 'r'
+         nlp%X( : nlp%n ) = data%X_current( : nlp%n )
+         nlp%C( : nlp%m ) = data%C_current( : nlp%m )
+         IF ( data%w_eq_identity ) THEN
+           data%Y( : nlp%m ) = nlp%C( : nlp%m )
+         ELSE
+           data%Y( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
+         END IF
+         data%new_point = .FALSE.
+       END IF
+
+!  ==========================================================
+!  4. Update the regularization weight and other book-keeping
+!  ==========================================================
+
+       data%old_weight = inform%weight
+       data%successful = data%ratio >= data%control%eta_successful
+
+!  update the weight
+
+       SELECT CASE ( data%control%weight_update_strategy )
+       CASE ( weight_update_zero_reset )
+         IF ( data%ratio < data%control%eta_successful ) THEN
+           inform%weight = MAX( data%control%weight_increase * inform%weight,  &
+                                data%minimum_weight )
+         ELSE IF ( data%ratio >= data%control%eta_very_successful .AND.        &
+                  data%ratio <= data%control%eta_too_successful ) THEN
+           inform%weight = weight_zero
+         END IF
+!      CASE ( weight_update_gpt )
+!         CALL ARC_adjust_weight( inform%weight, data%model, data%stg,         &
+!                                 data%hstbs, data%s_norm, data%ratio,         &
+!                                 data%ARC_control )
+!         inform%weight = MAX( data%minimum_weight, inform%weight )
+
+!         IF ( data%ratio < control%eta_successful ) THEN
+!           IF ( data%control%subproblem_direct ) THEN
+!             val = two * inform%RQS_inform%pole / data%s_norm_successful
+!           ELSE
+!             val = - two * inform%GLRT_inform%leftmost /data%s_norm_successful
+!           END IF
+!           inform%weight = MAX( inform%weight, val )
+!         END IF
+       CASE DEFAULT
+         IF ( data%ratio < data%control%eta_successful ) THEN
+           inform%weight = data%control%weight_increase * inform%weight
+         ELSE IF ( data%ratio >= data%control%eta_very_successful .AND.        &
+                  data%ratio <= data%control%eta_too_successful ) THEN
+           inform%weight = MAX( data%minimum_weight,                           &
+                                  data%control%weight_decrease * inform%weight )
+         END IF
+       END SELECT
+
+       IF ( data%ratio >= data%control%eta_successful ) THEN
+         IF ( data%control%model == tensor_newton_model .OR.                   &
+              data%control%model == tensor_gauss_to_newton_model .OR.          &
+              data%control%model == tensor_gauss_newton_model ) THEN
+           data%inner_weight = data%control%initial_inner_weight
+         END IF
+
+!  compute ||s||_S
+
+         IF ( data%control%norm /= euclidean_regularization ) THEN
+           IF ( data%control%renormalize_weight ) THEN
+             data%s_new_norm = data%s_norm
+             IF ( data%printt )                                                &
+               WRITE( data%out, "( A, ' ratio new, old norms = ', ES12.4 )" )  &
+                 prefix, data%s_new_norm / data%s_norm
+           ELSE
+             data%s_new_norm = data%s_norm
+           END IF
+
+!  if the norm has changed, adjust the weight accordingly
+
+           inform%weight = inform%weight * ( data%s_new_norm / data%s_norm )
+           data%s_norm = data%s_new_norm
+         END IF
+       END IF
+!      write(6,*) 'weight', inform%weight
+
+!  record the clock time
+
+       CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
+       data%time_now = data%time_now - data%time_start
+       data%clock_now = data%clock_now - data%clock_start
+       IF ( data%printt ) WRITE( data%out, "( /, A, ' Time so far = ', 0P,     &
+      &    F12.2,  ' seconds' )" ) prefix, data%clock_now
+       IF ( ( data%control%cpu_time_limit >= zero .AND.                        &
+              data%time_now > data%control%cpu_time_limit ) .OR.               &
+            ( data%control%clock_time_limit >= zero .AND.                      &
+              data%clock_now > data%control%clock_time_limit ) ) THEN
+         inform%status = GALAHAD_error_cpu_limit ; GO TO 900
+       END IF
+
+!  =========================================
+!  End of the main (Tensor-Newton) iteration
+!  =========================================
+
+       GO TO 100
+
+!  ==================================
+!  Newton or Gauss-Newton solver used
+!  ==================================
+
+ 800 CONTINUE
+     data%branch = data%branch_newton
+!    WRITE(6,*) ' in data%branch ', data%branch
+
+     CALL NLS_subproblem_solve( nlp, data%subproblem_control,                  &
+                            inform%NLS_subproblem_inform_type,                 &
+                            data%NLS_subproblem_data_type, userdata, W = W,    &
+                            eval_C = eval_C, eval_J = eval_J, eval_H = eval_H, &
+                            eval_JPROD = eval_JPROD, eval_HPROD = eval_HPROD,  &
+                            eval_SCALE = eval_SCALE )
+!    WRITE( 6, * ) ' out data%branch ', &
+!      data%branch, inform%NLS_subproblem_inform_type%status
+     data%branch_newton = data%branch
+     SELECT CASE ( inform%NLS_subproblem_inform_type%status )
+     CASE ( 2 : 6, 8 )
+       inform%status = inform%NLS_subproblem_inform_type%status
+       data%branch = 810 ; RETURN
+     CASE( : - 1 )
+       inform%status = inform%NLS_subproblem_inform_type%status
+       GO TO 990
+     CASE DEFAULT
+       inform%status = GALAHAD_ok
+       GO TO 900
+     END SELECT
+
+ 810 CONTINUE
+     GO TO 800
+
+!  ================
+!  Terminal returns
+!  ================
+
+ 900 CONTINUE
+     IF ( data%printw ) WRITE( data%out, "( A, ' statement 900' )" ) prefix
+
+!  print details of solution
+
+     IF ( inform%norm_c > zero ) THEN
+       inform%norm_g = TWO_NORM( nlp%G( : nlp%n ) ) / inform%norm_c
+     ELSE
+       inform%norm_g = zero
+     END IF
+!    write(6,*) ' final weight = ', inform%weight
+
+ 910 CONTINUE
+     IF ( data%printw ) WRITE( data%out, "( A, ' statement 910' )" ) prefix
+     CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
+     inform%time%total = data%time_record - data%time_start
+     inform%time%clock_total = data%clock_record - data%clock_start
+
+     IF ( data%printi ) THEN
+
+!      WRITE ( data%out, 2040 ) nlp%pname, nlp%n
+!      WRITE ( data%out, 2000 ) inform%c_eval, inform%j_eval, inform%h_eval,   &
+!         inform%iter, inform%cg_iter, inform%obj, inform%norm_g
+!      WRITE ( data%out, 2010 )
+!      IF ( data%print_level > 3 ) THEN
+!         l = nlp%n
+!      ELSE
+!         l = 2
+!      END IF
+!      DO j = 1, 2
+!         IF ( j == 1 ) THEN
+!            ir = 1 ; ic = MIN( l, nlp%n )
+!         ELSE
+!            IF ( ic < nlp%n - l ) WRITE( data%out, 2050 )
+!            ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
+!         END IF
+!         DO i = ir, ic
+!            WRITE ( data%out, 2020 ) nlp%vnames( i ), nlp%X( i ), nlp%G( i )
+!         END DO
+!      END DO
+
+       WRITE( data%out, "( /, A, '  Problem: ', A, ' (n = ', I0, ', m = ', I0, &
+    &   ')', /, A, '  NLS stopping tolerances (c,J''c/c) =', 2ES9.2 )" )     &
+       prefix, TRIM( nlp%pname ), nlp%n, nlp%m, prefix, data%stop_c, data%stop_g
+       IF ( .NOT. data%monotone ) WRITE( data%out,                             &
+           "( A, '  Non-monotone method used (history = ', I0, ')' )" ) prefix,&
+         data%non_monotone_history
+       SELECT CASE( data%model_used )
+       CASE ( tensor_gauss_newton_model )
+         WRITE( data%out, "( A, '  Regularized tensor Gauss-Newton',           &
+       &   ' model used'  )" ) prefix
+       CASE ( tensor_newton_model )
+         WRITE( data%out, "( A, '  Regularized tensor Newton',                 &
+       &   ' model used'  )" ) prefix
+       CASE ( tensor_gauss_to_newton_model )
+         WRITE( data%out, "( A, '  Regularized tensor Gauus-Newton then',      &
+       &   ' Newton model used'  )" ) prefix
+       END SELECT
+       WRITE( data%out, "( A, '  Regularization power =', F4.1 )" )            &
+          prefix, data%power
+       IF ( data%control%subproblem_control%subproblem_direct ) THEN
+!      IF ( data%control%subproblem_direct ) THEN
+         IF ( inform%RQS_inform%dense_factorization ) THEN
+           WRITE( data%out,                                                    &
+           "( A, '  Direct solution (eigen solver SYSV',                       &
+          &      ') of the regularization sub-problem' )" ) prefix
+         ELSE
+           WRITE( data%out,                                                    &
+           "( A, '  Direct solution (solver ', A,                              &
+          &      ') of the regularization sub-problem' )" )                    &
+              prefix, TRIM( data%control%RQS_control%definite_linear_solver )
+         END IF
+         SELECT CASE ( data%regularization_type )
+         CASE ( user_regularization )
+           WRITE( data%out, "( A, '  User-defined regularization used' )" )    &
+             prefix
+         CASE ( euclidean_regularization )
+           WRITE( data%out, "( A, '  Euclidean regularization used' )" ) prefix
+         CASE ( diagonal_jtj_regularization )
+           WRITE( data%out, "( A, '  Diagonal (JTJ) regularization used' )" )  &
+             prefix
+         CASE ( diagonal_hessian_regularization )
+           WRITE( data%out, "( A, '  Diagonal (H) regularization used' )" )    &
+             prefix
+         CASE ( band_regularization )
+           WRITE( data%out, "( A, '  Band regularization (semi-bandwidth ',    &
+          &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
+         CASE ( reordered_band_regularization )
+           WRITE( data%out, "( A, ' Reordered band regularization',            &
+          &  ' (semi-bandwidth ',  I0, ') used' )" ) prefix,                   &
+             inform%PSLS_inform%semi_bandwidth_used
+         CASE ( schnabel_eskow_regularization, gmps_regularization,            &
+                lin_more_regularization, mi28_regularization )
+           WRITE( data%out, "( A, '  Modified full matrix regularization',     &
+          &  ' used' )" ) prefix
+         END SELECT
+         WRITE( data%out, "( A, '  Number of factorization = ', I0,            &
+        &     ', factorization time = ', F0.2, ' seconds'  )" ) prefix,        &
+           inform%RQS_inform%factorizations,                                   &
+           inform%RQS_inform%time%clock_factorize
+         IF ( TRIM( data%control%RQS_control%definite_linear_solver ) ==       &
+              'pbtr' ) THEN
+           WRITE( data%out, "( A, '  Max entries in factors = ', I0,           &
+          & ', semi-bandwidth = ', I0  )" ) prefix, inform%max_entries_factors,&
+              inform%RQS_inform%SLS_inform%semi_bandwidth
+         ELSE
+           WRITE( data%out, "( A, '  Max entries in factors = ', I0 )" )       &
+             prefix, inform%max_entries_factors
+         END IF
+       ELSE
+         WRITE( data%out,                                                      &
+           "( A, '  Iterative solution of the regularization sub-problem' )" ) &
+              prefix
+         IF ( data%regularization_type > 0 )                                   &
+           WRITE( data%out, "( A, '  Hessian semi-bandwidth (original,',       &
+          &     ' re-ordered) = ', I0, ', ', I0 )" ) prefix,                   &
+             inform%PSLS_inform%semi_bandwidth,                                &
+             inform%PSLS_inform%reordered_semi_bandwidth
+         SELECT CASE ( data%regularization_type )
+         CASE ( user_regularization )
+           WRITE( data%out, "( A, '  User-defined regularization used' )" )    &
+             prefix
+         CASE ( euclidean_regularization )
+           WRITE( data%out, "( A, '  Euclidean regularization used' )" ) prefix
+         CASE ( diagonal_jtj_regularization )
+           WRITE( data%out, "( A, '  Diagonal (JTJ) regularization used' )" )  &
+             prefix
+         CASE ( diagonal_hessian_regularization )
+           WRITE( data%out, "( A, '  Diagonal (H) regularization used' )" )    &
+             prefix
+         CASE ( band_regularization )
+           WRITE( data%out, "( A, '  Band regularization (semi-bandwidth ',    &
+          &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
+         CASE ( reordered_band_regularization )
+           WRITE( data%out, "( A, ' Reordered band regularization',            &
+          &  ' (semi-bandwidth ', I0, ') used' )" ) prefix,                    &
+             inform%PSLS_inform%semi_bandwidth_used
+         CASE ( schnabel_eskow_regularization )
+           WRITE( data%out, "( A, '  SE (solver ', A, ') full regularization', &
+          & ' used' )" ) prefix,                                               &
+             TRIM( data%control%PSLS_control%definite_linear_solver )
+         CASE ( gmps_regularization )
+          WRITE( data%out, "( A, '  GMPS (solver ', A, ') full',               &
+         & ' regularization used')" ) prefix,                                  &
+            TRIM( data%control%PSLS_control%definite_linear_solver )
+         CASE ( lin_more_regularization )
+           WRITE( data%out, "( A, '  Lin-More''(', I0, ') incomplete',         &
+          &  ' Cholesky factorization regularization used ' )" )               &
+            prefix, data%control%PSLS_control%icfs_vectors
+         CASE ( mi28_regularization )
+           WRITE( data%out, "( A, '  HSL_MI28(', I0, ',', I0,                  &
+             & ') incomplete Cholesky factorization regularization used ' )" ) &
+             prefix, data%control%PSLS_control%mi28_lsize,                     &
+            data%control%PSLS_control%mi28_rsize
+         END SELECT
+         IF ( data%control%renormalize_weight ) WRITE( data%out,               &
+            "( A, '  Weight renormalized' )" ) prefix
+       END IF
+       WRITE ( data%out, "( A, '  Total time = ', 0P, F0.2, ' seconds', / )" ) &
+         prefix, inform%time%clock_total
+     END IF
+     IF ( inform%status /= GALAHAD_OK ) GO TO 990
+     RETURN
+
+!  -------------
+!  Error returns
+!  -------------
+
+ 980 CONTINUE
+     IF ( data%printw ) WRITE( data%out, "( A, ' statement 980' )" ) prefix
+     CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
+     inform%time%total = data%time_record - data%time_start
+     inform%time%clock_total = data%clock_record - data%clock_start
+     RETURN
+
+ 990 CONTINUE
+     IF ( data%printw ) WRITE( data%out, "( A, ' statement 990' )" ) prefix
+     CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
+     inform%time%total = data%time_record - data%time_start
+     inform%time%clock_total = data%clock_record - data%clock_start
+     IF ( data%printi ) THEN
+       CALL SYMBOLS_status( inform%status, data%out, prefix, 'NLS_solve' )
+       WRITE( data%out, "( ' ' )" )
+     END IF
+     RETURN
+
+!  Non-executable statements
+
+ 2000 FORMAT( /, A, ' # function evaluations  = ', I10,                        &
+              /, A, ' # gradient evaluations  = ', I10,                        &
+              /, A, ' # Hessian evaluations   = ', I10,                        &
+              /, A, ' # major  iterations     = ', I10,                        &
+              /, A, ' # minor (cg) iterations = ', I10,                        &
+             //, A, ' objective value         = ', ES22.14,                    &
+              /, A, ' gradient norm           = ', ES12.4 )
+ 2010 FORMAT( /, A, ' name                  X                   G ' )
+ 2020 FORMAT(  A, 1X, A10, 2ES22.14 )
+ 2030 FORMAT(  A, 1X, I10, 2ES22.14 )
+ 2040 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
+ 2050 FORMAT( A, ' .          ........... ...........' )
+ 2090 FORMAT( A, '        (a=accept r=reject b=TR boundary',                   &
+                 ' n=-ve curvature h=hard case)' )
+ 2120 FORMAT( A, A6, 1X, 3A1, 2ES11.4, ES9.1, 2ES8.1, 1X, A6, F8.2 )
+ 2140 FORMAT( A, A6, 4X, 2ES11.4 )
+ 2160 FORMAT( A, '    It         c        J''c/c     ',                        &
+             ' ratio   weight   step  # fact    time' )
+ 2170 FORMAT( A, '    It         f           g      ',                         &
+             ' ratio   weight   step  # fact    time' )
+ 2180 FORMAT( A, '    It         c        J''c/c     ',                        &
+             ' ratio   weight   step    # cg    time' )
+ 2190 FORMAT( A, '    It         f           g      ',                         &
+             ' ratio   weight   step    # cg    time' )
+
+ !  End of subroutine NLS_solve
+
+     END SUBROUTINE NLS_solve
+
+!-  G A L A H A D - N L S _ s u b p r o b l e m _ s o l v e  S U B R O U T I N E
+
+     SUBROUTINE NLS_subproblem_solve( nlp, control, inform, data, userdata,    &
+                                      W, stabilisation, eval_C, eval_J,        &
+                                      eval_H, eval_JPROD, eval_HPROD,          &
+                                      eval_SCALE )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!  NLS_solve, a regularization method for finding a local unconstrained
+!    minimizer of a stabilised nonlinear least-squares objective,
+!      f(x) = 1/2 ||c(x)||_W^2 + sigma/p ||x||_S^p,
+!    where W and S are positive-definite matrices, ||x||_S^2 = x^T S x
+!    and the weight sigma is non-negative
+
+!  This variant implements the Newton or Gauss-Newton method
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+!
+!  For full details see the specification sheet for GALAHAD_NLS.
+!
+!  ** NB. default real/complex means double precision real/complex in
+!  ** GALAHAD_NLS_double
+!
+! nlp is a scalar variable of type NLPT_problem_type that is used to
+!  hold data about the objective function. Relevant components are
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   residuals
+!
+!  C is a rank-one allocatable array of dimension m and type default real,
+!   that holds the residuals c(x). The i-th component of C, i = 1,  ... ,  m,
+!   contains c_i(x).
+!
+!  J is scalar variable of type SMT_TYPE that holds the Jacobian matrix
+!   J(x) = nabla r(x), i.e., J_i,j(x) = d r_i(x) / d x_j. The following
+!   components are used here:
+!
+!   J%type is an allocatable array of rank one and type default character, that
+!    is used to indicate the storage scheme used. If the dense storage scheme
+!    is used, the first five components of J%type must contain the string DENSE.
+!    For the sparse co-ordinate scheme, the first ten components of J%type must
+!    contain the string COORDINATE, and for the sparse row-wise storage scheme,
+!    the first fourteen components of J%type must contain the string
+!    SPARSE_BY_ROWS.
+!
+!    For convenience, the procedure SMT_put may be used to allocate sufficient
+!    space and insert the required keyword into J%type. For example, if nlp is
+!    of derived type packagename_problem_type and involves a Jacobian we wish
+!    to store using the co-ordinate scheme, we may simply
+!
+!         CALL SMT_put( nlp%J%type, 'COORDINATE', stat )
+!
+!    See the documentation for the galahad package SMT for further details on
+!    the use of SMT_put.
+
+!   J%ne is a scalar variable of type default integer, that holds the number
+!    of entries in the Jacobian J(x) in the sparse co-ordinate storage scheme.
+!    It need not be set for any of the other two schemes.
+!
+!   J%val is a rank-one allocatable array of type default real, that holds
+!    the values of the entries in the Jacobian J(x) in any of the available
+!    storage schemes.
+!
+!   J%row is a rank-one allocatable array of type default integer, that holds
+!    the row indices in the Jacobian J(x) in the sparse co-ordinate storage
+!    scheme. It need not be allocated for any of the other two schemes.
+!
+!   J%col is a rank-one allocatable array variable of type default integer,
+!    that holds the column indices of the Jacobian J(x) in either
+!    the sparse co-ordinate, or the sparse row-wise storage scheme.
+!    It need not be allocated when the dense scheme is used.
+!
+!   J%ptr is a rank-one allocatable array of dimension m+1 and type default
+!    integer, that holds the starting position of each row of Jacobian J(x),
+!    as well as J%ptr(m+1) = the total number of entries plus one, in the
+!    sparse row-wise storage scheme. It need not be allocated when the other
+!    schemes are used.
+!
+!  H(x,y) is scalar variable of type SMT_TYPE that holds the scaled Hessian
+!   matrix H(x,y) = sum_{i=1}^m y_i(x) H_i(x), where H_i(x) is the Hessian
+!   of c_i(x) and y is given. The following components are used here:
 !
 !   H%type is an allocatable array of rank one and type default character, that
 !    is used to indicate the storage scheme used. If the dense storage scheme
@@ -1454,17 +4697,15 @@
 !        for instance, if a component of H(x,y) is undefined at (x,y) - the
 !        user need not alter data%U, but should then set
 !        data%eval_status to a non-zero value.
-!     7. The user should compute the matrix whose columns are the products
-!        H_i(x)v between the HessianH_i(x) of the ith residual function at
-!        the point x indicated in nlp%X a given vector v held in data%V.
-!        The nonzeros for column i must be stored in nlp%P%val(l), for
-!        l = nlp%P%ptr(i), ...,  nlp%P%ptr(i+1) for each i = 1,...,m,
-!        in the same order as the row indices were assigned on input in
-!        nlp%P%row(l). If the user is unable to evaluate the products -
-!        for instance, if a component of H_i(x) is undefined at x - the
-!        user need not assign nlp%P%val, but should then set
-!        data%eval_status to a non-zero value.
-!     8. The user has the opportunity to replace the estimate x in nlp%X
+!     7. Not used by this subroutine.
+!     8. The user should compute the product u = S(x)v of their preconditioner
+!        S(x) at the point x indicated in nlp%X with the vector v. The vectors
+!        v is given in data%V, the resulting vector u = S(x)v should be set
+!        in data%U and data%eval status should be set to 0. If the user is
+!        unable to evaluate the product—for instance, if a component of the
+!        preconditioner is undefined at x—the user need not set data%U, but
+!        should then set data%eval statusto a non-zero value.
+!     9. The user has the opportunity to replace the estimate x in nlp%X
 !        by a value x_better for which f(x_better) <= f(x). If the user
 !        choses to do so, she should replace nlp%X by x_better and also
 !        record c(x_better) in nlp%C.
@@ -1569,6 +4810,10 @@
 !    character_pointer is a rank-one pointer array of type default character.
 !    logical_pointer is a rank-one pointer array of type default logical.
 !
+!  W is an optional rank-one array of type default real that if present
+!   must be of length nlp%m and filled with the weights w_i > 0. If W is
+!   absent, weights of one will be used.
+!
 !  stabilisation is an optional scalar variable of type NLS_regularization_type
 !   that contains the data for the stablilisation term, weight/p ||x||_S^p. If
 !   absent, no stabilisation term is added, while if present, the following
@@ -1582,7 +4827,7 @@
 !      p of the stabilisation sigma/p ||x||_S^p. The default is %power = 2.0.
 !
 !    matrix is scalar variable of type SMT_TYPE that holds the
-!     scaling matrix S. The following components are used here:
+!     regularization scaling matrix S. The following components are used here:
 !
 !     matrix%type is an allocatable array of rank one and type
 !      default character, that is used to indicate the storage scheme used.
@@ -1699,6 +4944,7 @@
      TYPE ( NLS_subproblem_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( NLS_subproblem_data_type ), INTENT( INOUT ) :: data
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
      TYPE ( NLS_regularization_data_type ), INTENT( IN ),                      &
                                             OPTIONAL :: stabilisation
      OPTIONAL :: eval_C, eval_J, eval_H, eval_JPROD, eval_HPROD, eval_SCALE
@@ -1792,7 +5038,7 @@
 !  prefix for all output
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-     IF ( LEN( TRIM( control%prefix ) ) > 2 ) prefix =                   &
+     IF ( LEN( TRIM( control%prefix ) ) > 2 ) prefix =                         &
        control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
 !  branch to different sections of the code depending on input status
@@ -1819,19 +5065,27 @@
        GO TO 20
      CASE ( 30 )  ! initial residual evaluation
        GO TO 30
+     CASE ( 40 )  ! initial norm scaling
+       GO TO 40
      CASE ( 110 ) ! initial Jacobian evaluation or Jacobian transpose vect prod
        GO TO 110
      CASE ( 120 ) ! Hessian evaluation
        GO TO 120
-     CASE ( 220 ) ! Jacobian vector product
+     CASE ( 220 ) ! norm scaling
        GO TO 220
-     CASE ( 230 ) ! Jacobian transpose vector product
+     CASE ( 230 ) ! Jacobian vector product
        GO TO 230
-     CASE ( 240 ) ! Hessian-vector or scaling-matrix product
+     CASE ( 240 ) ! Jacobian transpose vector product
        GO TO 240
+     CASE ( 250 ) ! Hessian-vector or scaling-matrix product
+       GO TO 250
      CASE ( 320 ) ! residual evaluation
        GO TO 320
-     CASE ( 390 ) ! allow the user to compute a "magic" step
+     CASE ( 330 ) ! norm scaling
+       GO TO 330
+     CASE ( 380 ) ! allow the user to compute a "magic" step
+       GO TO 380
+     CASE ( 390 ) ! norm scaling after a "magic" step
        GO TO 390
      END SELECT
 
@@ -1845,24 +5099,11 @@
      IF ( data%set_printw )                                                    &
        WRITE( control%out, "( A, ' statement 10' )" ) prefix
 
-!  ensure that input parameters are within allowed ranges
-
-     IF ( nlp%n <= 0 .OR. nlp%m <= 0 ) THEN
-       inform%status = GALAHAD_error_restrictions
-       GO TO 990
-     END IF
-
-!  check that the Jacobian is available in some form (may change in future)
-
-    IF ( control%jacobian_available <= 0 ) THEN
-       inform%status = GALAHAD_error_restrictions
-       GO TO 990
-     END IF
-
 !  record controls and ensure that data is consistent
 
      data%control%NLS_subproblem_control_type = control
 
+     data%w_eq_identity = .NOT. PRESENT( W )
      data%non_monotone_history = data%control%non_monotone
      IF ( data%non_monotone_history <= 0 ) data%non_monotone_history = 1
      data%monotone = data%non_monotone_history == 1
@@ -1875,7 +5116,6 @@
      data%negcur = ' '
      data%ratio = - one
      data%total_facts = 0
-     data%total_inner_its = 0
      data%nskip_prec = nskip_prec_max
      data%reduce = .FALSE.
 
@@ -1908,7 +5148,8 @@
      ELSE
        data%reverse_j = .FALSE.
        data%control%subproblem_direct = .FALSE.
-       IF ( data%control%norm >= 0 ) data%control%norm = identity_scaling
+       IF ( data%control%norm >= 0 )                                           &
+         data%control%norm = euclidean_regularization
      END IF
      data%reverse_jprod = .NOT. PRESENT( eval_JPROD )
 
@@ -1922,12 +5163,12 @@
      ELSE IF ( data%control%hessian_available == 1 ) THEN
        data%reverse_h = .FALSE.
        IF ( data%control%model /= first_order_model .AND.                      &
-            data%control%model /= identity_hessian_model .AND.                 &
+            data%control%model /= diagonal_hessian_model .AND.                 &
             data%control%model /= gauss_newton_model )                         &
          data%control%subproblem_direct = .FALSE.
      ELSE
        IF ( data%control%model /= first_order_model .AND.                      &
-            data%control%model /= identity_hessian_model .AND.                 &
+            data%control%model /= diagonal_hessian_model .AND.                 &
             data%control%model /= gauss_newton_model )                         &
          data%control%model = gauss_newton_model
      END IF
@@ -1941,9 +5182,6 @@
      data%map_h_to_jtj = data%hessian_available .AND.                          &
                          ( data%gauss_to_newton_model .OR.                     &
                            data%control%model == newton_model )
-!                          data%control%model == newton_model )                &
-!                          .AND. data%control%subproblem_direct
-
      data%model_used = data%control%model
      IF ( data%gauss_to_newton_model )                                         &
        data%control%model = gauss_newton_model
@@ -1956,32 +5194,55 @@
         nlp%J%m = nlp%m ; nlp%J%n = nlp%n
      END IF
 
+!  check that the Hessian is specified in a permitted format
+
+!inform%status = -1
+!write(6,*) ' **************** deliberate quit', data%hessian_available
+!GO TO 990
+     IF ( data%hessian_available ) THEN
+       SELECT CASE ( SMT_get( nlp%H%type ) )
+       CASE ( 'DIAGONAL', 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE',             &
+              'IDENTITY', 'SCALE_IDENTITY', 'NONE', 'ZERO' )
+       CASE DEFAULT
+         IF ( control%error > 0 ) WRITE( control%error,                        &
+           "( A, ' error: input H%type ', A, ' not permitted' )" )             &
+             prefix, SMT_get( nlp%H%type )
+         inform%status = GALAHAD_error_restrictions
+         GO TO 990
+       END SELECT
+     END IF
+
+!  find the number of nonzeros in the Hessian
+
      IF ( data%map_h_to_jtj ) THEN
        nlp%H%n = nlp%n ; nlp%H%m = nlp%n
-       IF ( SMT_get( nlp%H%type ) == 'DIAGONAL' ) THEN
+       SELECT CASE (  SMT_get( nlp%H%type ) )
+       CASE ( 'DIAGONAL' )
          nlp%H%ne = nlp%n
-       ELSE IF ( SMT_get( nlp%H%type ) == 'DENSE' ) THEN
+       CASE ( 'DENSE' )
          IF ( MOD(  nlp%n, 2 ) == 0 ) THEN
            nlp%H%ne = ( nlp%n / 2 ) * ( nlp%n + 1 )
          ELSE
            nlp%H%ne = nlp%n * ( ( nlp%n + 1 ) / 2 )
          END IF
-       ELSE IF ( SMT_get( nlp%H%type ) == 'SPARSE_BY_ROWS' ) THEN
+       CASE ( 'SPARSE_BY_ROWS' )
          nlp%H%ne = nlp%H%ptr( nlp%n + 1 ) - 1
-       ELSE IF ( SMT_get( nlp%H%type ) == 'NONE' ) THEN
+       CASE ( 'NONE' )
          nlp%H%ne = 0
-       END IF
+       END SELECT
      END IF
 
 !  decide whether to form the scaling matrix and make model-specific choices
 
      IF ( data%control%model == newton_model ) THEN
-       data%form_scaling = data%jacobian_available .AND. data%hessian_available
+       data%form_regularization                                                &
+         = data%jacobian_available .AND. data%hessian_available
      ELSE IF ( data%control%model == gauss_newton_model ) THEN
-       data%form_scaling = data%jacobian_available
+       data%form_regularization = data%jacobian_available
      ELSE
-       IF ( data%control%norm >= 0 ) data%control%norm = identity_scaling
-       data%form_scaling = .FALSE.
+       IF ( data%control%norm >= 0 )                                           &
+         data%control%norm = euclidean_regularization
+       data%form_regularization = .FALSE.
      END IF
      data%reverse_scale = .NOT. PRESENT( eval_SCALE )
 
@@ -1991,7 +5252,7 @@
        data%power = control%power
      ELSE
        SELECT CASE ( data%control%model )
-       CASE ( first_order_model, identity_hessian_model,                       &
+       CASE ( first_order_model, diagonal_hessian_model,                       &
               gauss_newton_model, gauss_to_newton_model )
          data%power = two
        CASE DEFAULT
@@ -2003,11 +5264,47 @@
 
 !  set specific controls for the sub-problem solvers
 
-     data%scaling_type = data%control%norm
-     data%control%GLRT_control%unitm = data%scaling_type == identity_scaling
-     data%control%PSLS_control%preconditioner = data%scaling_type
+!write(6,*) ' ** subproblem scaling type ', data%regularization_type
+!     data%regularization_type = data%control%norm
+!write(6,*) ' ** subproblem scaling type ', data%regularization_type
+     data%control%GLRT_control%unitm                                           &
+       = data%regularization_type == euclidean_regularization
+     SELECT CASE ( data%regularization_type )
+     CASE ( diagonal_hessian_regularization )
+       data%control%PSLS_control%preconditioner = 1
+     CASE ( band_regularization )
+       data%control%PSLS_control%preconditioner = 2
+     CASE ( reordered_band_regularization )
+       data%control%PSLS_control%preconditioner = 3
+     CASE ( schnabel_eskow_regularization )
+       data%control%PSLS_control%preconditioner = 4
+     CASE ( gmps_regularization )
+       data%control%PSLS_control%preconditioner = 5
+     CASE ( lin_more_regularization )
+       data%control%PSLS_control%preconditioner = 6
+     CASE ( mi28_regularization )
+       data%control%PSLS_control%preconditioner = 7
+     CASE ( munksgaard_regularization )
+       data%control%PSLS_control%preconditioner = 8
+     CASE ( expanding_band_regularization )
+       data%control%PSLS_control%preconditioner = 9
+     END SELECT
      data%control%PSLS_control%new_structure = .TRUE.
      data%control%RQS_control%initial_multiplier = zero
+
+!  check that the Jacobian is specified in a permitted format
+
+     IF ( data%jacobian_available ) THEN
+       SELECT CASE ( SMT_get( nlp%J%type ) )
+       CASE ( 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' )
+       CASE DEFAULT
+         IF ( control%error > 0 ) WRITE( control%error,                        &
+           "( A, ' error: input J%type ', A, ' not permitted' )" )             &
+             prefix, SMT_get( nlp%J%type )
+         inform%status = GALAHAD_error_restrictions
+         GO TO 990
+       END SELECT
+     END IF
 
 !  create a file which the user may subsequently remove to cause
 !  immediate termination of a run
@@ -2089,6 +5386,14 @@
             bad_alloc = inform%bad_alloc, out = data%control%error )
      IF ( inform%status /= 0 ) GO TO 980
 
+     array_name = 'nls: data%Y'
+     CALL SPACE_resize_array( nlp%m, data%Y, inform%status,                    &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
+     IF ( inform%status /= 0 ) GO TO 980
+
      IF ( .NOT. data%monotone ) THEN
        array_name = 'nls: data%F_hist'
        CALL SPACE_resize_array( data%non_monotone_history + 1, data%F_hist,    &
@@ -2109,25 +5414,14 @@
        IF ( inform%status /= 0 ) GO TO 980
      END IF
 
-     IF ( data%reverse_hprod .AND.                                             &
-          ( data%control%model /= first_order_model .AND.                      &
-            data%control%model /= identity_hessian_model .AND.                 &
-            data%control%model /= gauss_newton_model ) ) THEN
-       array_name = 'nls: data%Y'
-       CALL SPACE_resize_array( nlp%m, data%Y, inform%status,                  &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-     END IF
-
-!  ensure that parameters are set correctly for the identity-Hessian model case
+!  ensure that parameters are set correctly for the diagonal-Hessian model case
 
      IF ( data%control%subproblem_direct .AND.                                 &
-          data%control%model == identity_hessian_model ) THEN
+          data%control%model == diagonal_hessian_model ) THEN
        data%H%n = nlp%n ; data%H%m = nlp%n ; data%H%ne = nlp%n
-       CALL SMT_put( data%H%type, 'DIAGONAL', i )
+       CALL SMT_put( data%H%type, 'DIAGONAL', inform%alloc_status )
+       IF ( inform%alloc_status /= 0 ) THEN
+         inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
 
        array_name = 'nls: H%val'
        CALL SPACE_resize_array( nlp%n, data%H%val, inform%status,              &
@@ -2141,12 +5435,14 @@
 
 !  provide space for the regularization
 
-     IF ( data%scaling_type == diagonal_jtj_scaling ) THEN
+     IF ( data%regularization_type == diagonal_jtj_regularization ) THEN
        data%regularization%matrix%m = nlp%n
        data%regularization%matrix%n = nlp%n
        data%regularization%matrix%ne = nlp%n
        CALL SMT_put( data%regularization%matrix%type, 'DIAGONAL',              &
                      inform%alloc_status )
+       IF ( inform%alloc_status /= 0 ) THEN
+         inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
 
        array_name = 'nls: data%regularization%matrix%val'
        CALL SPACE_resize_array( nlp%n, data%regularization%matrix%val,         &
@@ -2159,7 +5455,7 @@
 
 !  compute the number of nonzeros in J
 
-     IF ( data%scaling_type > diagonal_jtj_scaling .OR.                        &
+     IF ( data%regularization_type > diagonal_jtj_regularization .OR.          &
           ( data%control%subproblem_direct .AND.                               &
             ( data%control%model == gauss_newton_model .OR.                    &
               data%control%model == newton_model ) ) ) THEN
@@ -2175,7 +5471,9 @@
 !  so provide J(transpose) = JT
 
        data%JT%n = nlp%m ; data%JT%m = nlp%n ; data%JT%ne = nlp%J%ne
-       CALL SMT_put( data%JT%type, 'COORDINATE', i )
+       CALL SMT_put( data%JT%type, 'COORDINATE', inform%alloc_status )
+       IF ( inform%alloc_status /= 0 ) THEN
+         inform%status = GALAHAD_error_allocate ; GO TO 980 ; END IF
 
        array_name = 'nls: data%JT%row'
        CALL SPACE_resize_array( data%JT%ne, data%JT%row, inform%status,        &
@@ -2226,7 +5524,7 @@
        END SELECT
      END IF
 
-     IF ( data%scaling_type > diagonal_jtj_scaling .OR.                        &
+     IF ( data%regularization_type > diagonal_jtj_regularization .OR.          &
           ( data%control%subproblem_direct .AND.                               &
             ( data%control%model == gauss_newton_model .OR.                    &
               data%control%model == newton_model ) ) ) THEN
@@ -2237,7 +5535,6 @@
        data%control%BSC_control%extra_space_s = 0
        data%control%BSC_control%s_also_by_column                               &
           = data%map_h_to_jtj .OR. data%stabilised
-!         = data%scaling_type > diagonal_jtj_scaling
        CALL BSC_form( nlp%n, nlp%m, data%JT, data%H, data%BSC_data,            &
                       data%control%BSC_control, inform%BSC_inform )
        data%control%BSC_control%new_a = 1
@@ -2282,8 +5579,8 @@
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= 0 ) GO TO 980
 
-       array_name = 'nls: data%SX_current'
-       CALL SPACE_resize_array( nlp%n, data%SX_current, inform%status,         &
+       array_name = 'nls: data%SV'
+       CALL SPACE_resize_array( nlp%n, data%SV, inform%status,                 &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = data%control%deallocate_error_fatal,    &
               exact_size = data%control%space_critical,                        &
@@ -2292,20 +5589,24 @@
 
 !  determine how much space was required to hold S
 
-       SELECT CASE ( SMT_get( stabilisation%matrix%type ) )
-       CASE ( 'DENSE' )
-         IF ( MOD(  nlp%n, 2 ) == 0 ) THEN
-           data%s_ne = ( nlp%n / 2 ) * ( nlp%n + 1 )
-         ELSE
-           data%s_ne = nlp%n * ( ( nlp%n + 1 ) / 2 )
-         END IF
-       CASE ( 'SPARSE_BY_ROWS' )
-         data%s_ne = stabilisation%matrix%ptr( nlp%n + 1 ) - 1
-       CASE ( 'COORDINATE' )
-         data%s_ne = stabilisation%matrix%ne
-       CASE DEFAULT
+       IF ( data%regularization_type == euclidean_regularization ) THEN
          data%s_ne = nlp%n
-       END SELECT
+       ELSE IF ( data%regularization_type /= user_regularization ) THEN
+         SELECT CASE ( SMT_get( stabilisation%matrix%type ) )
+         CASE ( 'DENSE' )
+           IF ( MOD(  nlp%n, 2 ) == 0 ) THEN
+             data%s_ne = ( nlp%n / 2 ) * ( nlp%n + 1 )
+           ELSE
+             data%s_ne = nlp%n * ( ( nlp%n + 1 ) / 2 )
+           END IF
+         CASE ( 'SPARSE_BY_ROWS' )
+           data%s_ne = stabilisation%matrix%ptr( nlp%n + 1 ) - 1
+         CASE ( 'COORDINATE' )
+           data%s_ne = stabilisation%matrix%ne
+         CASE DEFAULT
+           data%s_ne = nlp%n
+         END SELECT
+       END IF
      END IF
 
 !  re-entry without initialization
@@ -2384,12 +5685,10 @@
      ELSE
        inform%weight = control%initial_weight
      END IF
-!    inform%weight = data%control%initial_weight
      data%step_accepted = .FALSE.
      data%poor_model = .FALSE.
      data%s_norm_successful = one
      data%minimum_weight = data%control%minimum_weight
-!write(6,*) ' weight ',  inform%weight
 
 ! evaluate the residual function c(x) at the initial point
 
@@ -2407,16 +5706,43 @@
 !    write(6,*) ' 30 elapsed', data%clock_now - data%clock_start
      IF ( data%printw ) WRITE( data%out, "( A, ' statement 30' )" ) prefix
      inform%c_eval = inform%c_eval + 1
-     inform%norm_c = TWO_NORM( nlp%C( : nlp%m ) )
-     inform%obj = half * inform%norm_c ** 2
+     IF ( data%w_eq_identity ) THEN
+       data%Y( : nlp%m ) = nlp%C( : nlp%m )
+       inform%norm_c = TWO_NORM( nlp%C( : nlp%m ) )
+       inform%obj = half * inform%norm_c ** 2
+     ELSE
+       data%Y( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
+       val = DOT_PRODUCT( data%Y( : nlp%m ), nlp%C( : nlp%m ) )
+       inform%norm_c = SQRT( val )
+       inform%obj = half * val
+     END IF
 
 !  account for the stabilization term if necessary
 
      IF ( data%stabilised ) THEN
-       CALL mop_Ax( one, stabilisation%matrix,                                 &
-                    nlp%X( : nlp%n ), zero, data%SX( : nlp%n ),                &
-                    symmetric = .TRUE., out = data%out,                        &
-                    error = data%control%error, print_level = 0 )
+       IF ( data%regularization_type == user_regularization ) THEN
+         IF ( data%reverse_scale ) THEN
+           data%V( : nlp%n ) = nlp%X( : nlp%n )
+           data%branch = 40 ; inform%status = 8 ; RETURN
+         ELSE
+           CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,      &
+                            data%SX( : nlp%n ), nlp%X( : nlp%n ) )
+         END IF
+       ELSE
+         CALL mop_Ax( one, stabilisation%matrix,                               &
+                      nlp%X( : nlp%n ), zero, data%SX( : nlp%n ),              &
+                      symmetric = .TRUE., out = data%out,                      &
+                      error = data%control%error, print_level = 0 )
+       END IF
+     END IF
+
+!  return from reverse communication with the scaled vector u = S(x) x
+
+  40 CONTINUE
+     IF ( data%stabilised ) THEN
+       IF ( data%regularization_type ==                                        &
+              user_regularization .AND. data%reverse_scale )                   &
+         data%SX( : nlp%n ) = data%U( : nlp%n )
        data%xtsx = DOT_PRODUCT( nlp%X( : nlp%n ), data%SX( : nlp%n ) )
        inform%obj = inform%obj +                                               &
          ( stabilisation%weight / stabilisation%power )                        &
@@ -2465,7 +5791,6 @@
 
 !  evaluate the Jacobian J(x) of c(x)
 
-!write(6,*) ' poor model ?', data%poor_model
        IF ( .NOT. data%poor_model ) THEN
          IF ( data%jacobian_available ) THEN
            IF ( data%reverse_j ) THEN
@@ -2475,18 +5800,20 @@
                           nlp%J%val )
            END IF
 
-!  otherwise evaluate the product J^T(x) c(x)
+!  otherwise evaluate the product g = J^T(x) W c(x)
 
          ELSE
            data%transpose = .TRUE.
            IF ( data%reverse_jprod ) THEN
-             data%U( : nlp%n ) = zero ; data%V( : nlp%m ) = nlp%C( : nlp%m )
+             data%U( : nlp%n ) = zero ; data%V( : nlp%m ) = data%Y( : nlp%m )
+!write(6,*) ' c ',  nlp%C( : nlp%m )
+!write(6,*) ' v ',  data%V( : nlp%m )
              data%branch = 110 ; inform%status = 5 ; RETURN
            ELSE
              nlp%G( : nlp%n ) = zero
              CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ), userdata,    &
                               data%transpose, nlp%G( : nlp%n ),                &
-                              nlp%C( : nlp%m ), .FALSE. )
+                              data%Y( : nlp%m ), .FALSE. )
            END IF
          END IF
        END IF
@@ -2494,6 +5821,7 @@
 !  return from reverse communication with the Jacobian-residual product
 
  110   CONTINUE
+
 !      CALL CLOCK_time( data%clock_now )
 !      write(6,*) ' 110 elapsed', data%clock_now - data%clock_start
        IF ( data%printw ) WRITE( data%out, "( A, ' statement 110' )" ) prefix
@@ -2501,19 +5829,16 @@
        IF ( .NOT. data%poor_model ) THEN
          inform%j_eval = inform%j_eval + 1
 
-!     write(6,*) nlp%J%m, nlp%J%n, nlp%J%ne
-!     write(6,*) ( nlp%J%row(i), nlp%J%col(i), nlp%J%val(i), i = 1, nlp%J%ne )
+!  compute the product g = J^T(x) W c(x) from J(x) if necessary
 
-!  compute the product J^T(x) c(x) from J(x) if necessary
-
-!write(6,*) ' ja ', data%jacobian_available
          IF ( data%jacobian_available ) THEN
-           CALL mop_Ax( one, nlp%J,  nlp%C( : nlp%m ), zero, nlp%G( : nlp%n ), &
+           CALL mop_Ax( one, nlp%J, data%Y( : nlp%m ), zero, nlp%G( : nlp%n ), &
                         out = data%out, error = data%control%error,            &
                         print_level = 0, transpose = .TRUE. )
          ELSE
            IF ( data%reverse_jprod ) nlp%G( : nlp%n ) = data%U( : nlp%n )
          END IF
+!write(6,*) ' g ',  nlp%G( : nlp%n )
 
 !  account for the gradient of the stabilization term if necessary
 
@@ -2527,8 +5852,10 @@
                *  data%SX( : nlp%n )
            END IF
          END IF
+!write(6,*) ' x ',  nlp%X( : nlp%n )
+!write(6,*) ' g ',  nlp%G( : nlp%n )
 
-!  compute the gradient of ||c(x)||
+!  compute the gradient of ||g(x)||
 
          data%g_norm = TWO_NORM( nlp%G( : nlp%n ) )
          IF ( inform%norm_c > zero ) THEN
@@ -2549,7 +5876,7 @@
              nlp%X( : nlp%n ) = data%X_current( : nlp%n )
              nlp%C( : nlp%m ) = data%C_current( : nlp%m )
              IF ( data%stabilised ) THEN
-               data%SX( : nlp%n ) = data%SX_current( : nlp%n )
+               data%SX( : nlp%n ) = data%SV( : nlp%n )
                data%xtsx = data%xtsx_current
              END IF
 
@@ -2837,7 +6164,7 @@
              data%control%BSC_control%extra_space_s = 0
              data%BSC_control_tensor_model%new_a = 2
              data%BSC_control_tensor_model%extra_space_s = 0
-             data%form_scaling                                                 &
+             data%form_regularization                                          &
                = data%jacobian_available .AND. data%hessian_available
              data%print_1st_header = .TRUE.
              IF ( data%printi ) WRITE( data%out,                               &
@@ -2890,11 +6217,10 @@
 
          IF ( data%hessian_computed ) THEN
            IF ( data%reverse_h ) THEN
-             data%Y( : nlp%m ) = nlp%C( : nlp%m )
              data%branch = 120 ; inform%status = 4 ; RETURN
            ELSE
              CALL eval_H( data%eval_status, nlp%X( : nlp%n ),                  &
-                          nlp%C( : nlp%m ), userdata,                          &
+                          data%Y( : nlp%m ), userdata,                         &
                           nlp%H%val( : nlp%H%ne ) )
            END IF
          END IF
@@ -2924,7 +6250,7 @@
 
 !  if required, form the Hessian to provide a scaling matrix
 
-         IF ( data%scaling_type > diagonal_jtj_scaling .OR.                    &
+         IF ( data%regularization_type > diagonal_jtj_regularization .OR.      &
               ( data%control%subproblem_direct .AND.                           &
                 ( data%control%model == gauss_newton_model .OR.                &
                   data%control%model == newton_model ) ) ) THEN
@@ -2933,13 +6259,19 @@
 
            data%JT%val( : data%JT%ne ) = nlp%J%val( : data%JT%ne )
 
-!  form J^T J in H, ensuring that there is sufficent additional
+!  form J^T W J in H, ensuring that there is sufficent additional
 !  space to store the stabilisation Hessian if used
 
-           CALL BSC_form( nlp%n, nlp%m, data%JT, data%H, data%BSC_data,        &
-                          data%control%BSC_control, inform%BSC_inform )
+           IF ( data%w_eq_identity ) THEN
+             CALL BSC_form( nlp%n, nlp%m, data%JT, data%H, data%BSC_data,      &
+                            data%control%BSC_control, inform%BSC_inform )
+           ELSE
+             CALL BSC_form( nlp%n, nlp%m, data%JT, data%H, data%BSC_data,      &
+                            data%control%BSC_control, inform%BSC_inform,       &
+                            D = W( : nlp%m ) )
+           END IF
 
-!  append the values of H(x,c) if they are required
+!  append the values of H(x,Wc) if they are required
 
            IF ( data%hessian_computed ) THEN
              DO l = 1, nlp%H%ne
@@ -2960,7 +6292,7 @@
                    ( data%xtsx ** ( ( stabilisation%power - two ) / two ) )
                END IF
                DO l = 1, stabilisation%matrix%ne
-                 j =  data%S_map( l )
+                 j = data%S_map( l )
                  data%H%val( j ) = data%H%val( j ) + val
                END DO
              CASE ( 'SCALED_IDENTITY' )
@@ -2972,7 +6304,7 @@
                    * stabilisation%matrix%val( 1 )
                END IF
                DO l = 1, stabilisation%matrix%ne
-                 j =  data%S_map( l )
+                 j = data%S_map( l )
                  data%H%val( j ) = data%H%val( j ) + val
                END DO
              CASE DEFAULT
@@ -2983,7 +6315,7 @@
                  ( data%xtsx ** ( ( stabilisation%power - two ) / two ) )
                END IF
                DO l = 1, stabilisation%matrix%ne
-                 j =  data%S_map( l )
+                 j = data%S_map( l )
                  data%H%val( j ) = data%H%val( j ) +                           &
                    val * stabilisation%matrix%val( l )
                END DO
@@ -3005,8 +6337,8 @@
 
 !  build the scaling matrix
 
-           IF ( data%scaling_type > diagonal_jtj_scaling .AND.                 &
-                data%form_scaling ) THEN
+           IF ( data%regularization_type > diagonal_jtj_regularization .AND.   &
+                data%form_regularization ) THEN
              IF ( data%printt ) WRITE( data%out,                               &
                    "( A, ' Computing scaling matrix' )" ) prefix
              CALL PSLS_build( data%H, data%regularization%matrix,              &
@@ -3018,23 +6350,23 @@
                inform%status = inform%PSLS_inform%status ; GO TO 900
              END IF
 
-             data%non_trivial_scaling  = .TRUE.
+             data%non_trivial_regularization  = .TRUE.
              IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
 
 !  build the scaling matrix as the diagonal matrix whose entries are
 !  the squares of the two-norms of the columns of J
 
-           ELSE IF ( data%scaling_type == diagonal_jtj_scaling .AND.           &
-                     data%form_scaling ) THEN
-             CALL mop_column_2_norms(  nlp%J,                                  &
-                    data%regularization%matrix%val( : nlp%n ) )
+           ELSE IF ( data%regularization_type == diagonal_jtj_regularization   &
+                     .AND. data%form_regularization ) THEN
+             CALL mop_column_2_norms( nlp%J,                                   &
+                    data%regularization%matrix%val( : nlp%n ), W = W )
              data%regularization%matrix%val( : nlp%n )                         &
                = data%regularization%matrix%val( : nlp%n ) ** 2
-             data%non_trivial_scaling = .TRUE.
+             data%non_trivial_regularization = .TRUE.
 !            write(6,"( ' scaling ', /, ( 5ES12.4 ) )" )                       &
 !              data%regularization%matrix%val( : nlp%n )
            ELSE
-             data%non_trivial_scaling = .FALSE.
+             data%non_trivial_regularization = .FALSE.
            END IF
            data%control%PSLS_control%new_structure = .FALSE.
 
@@ -3042,8 +6374,8 @@
 
          ELSE
            IF ( data%nskip_prec > nskip_prec_max ) THEN
-             IF ( data%scaling_type > diagonal_jtj_scaling .AND.               &
-                  data%form_scaling ) THEN
+             IF ( data%regularization_type > diagonal_jtj_regularization .AND. &
+                  data%form_regularization ) THEN
 
 !  form and factorize the scaling matrix obtained from H
 
@@ -3063,10 +6395,10 @@
 !  build the scaling matrix as the diagonal matrix whose entries are
 !  the squares of the two-norms of the columns of J
 
-             ELSE IF ( data%scaling_type == diagonal_jtj_scaling .AND.         &
-                       data%form_scaling ) THEN
-               CALL mop_column_2_norms(  nlp%J,                                &
-                      data%regularization%matrix%val( : nlp%n ) )
+             ELSE IF ( data%regularization_type ==                             &
+               diagonal_jtj_regularization .AND. data%form_regularization ) THEN
+               CALL mop_column_2_norms( nlp%J,                                 &
+                      data%regularization%matrix%val( : nlp%n ), W = W )
                data%regularization%matrix%val( : nlp%n )                       &
                  = data%regularization%matrix%val( : nlp%n ) ** 2
              END IF
@@ -3089,7 +6421,8 @@
 !  2a. Direct solution
 !  -------------------
 
-       IF ( data%control%subproblem_direct ) THEN
+!      write(6,*) ' direct? ', data%control%subproblem_direct
+      IF ( data%control%subproblem_direct ) THEN
 
 !  estimate Lagrange multipler for the next regularization subproblem
 
@@ -3190,8 +6523,7 @@
 !write(6,*) 'g', nlp%G( : nlp%n )
 !write(6,*) 'h', data%H%val( : nlp%n )
 !write(6,*) 'power', data%power
-         IF ( data%non_trivial_scaling ) THEN
-!write(6,*) 'nontriv'
+         IF ( data%non_trivial_regularization ) THEN
            CALL RQS_solve( nlp%n, data%power, inform%weight, data%model,       &
                            nlp%G, data%H, data%S, data%RQS_data,               &
                            data%control%RQS_control, inform%RQS_inform,        &
@@ -3218,6 +6550,7 @@
            GO TO 900
          END IF
          data%model = inform%RQS_inform%obj
+!write(6,*) ' obj, reg',inform%RQS_inform%obj, inform%RQS_inform%obj_regularized
 
 !        CALL mop_Ax( one, data%H, data%S( : nlp%n ), zero, &
 !                     data%U( : nlp%n ), data%out, data%control%error, &
@@ -3274,24 +6607,51 @@
 !        inform%GLRT_inform%status = 6
          inform%GLRT_inform%status = 1
        END IF
+!data%control%GLRT_control%print_level = 1
 
 !  Start of the generalized Lanczos iteration
 !  ..........................................
 
   210  CONTINUE
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 210, GLRT_',    &
-        &  'inform%status = ', I0 )" ) prefix, inform%GLRT_inform%status
 
 !  perform a generalized Lanczos iteration
 
-         IF ( data%printw ) WRITE( data%out, "( A, ' enter glrt_solve')") prefix
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement 210, GLRT_',    &
+        &  'inform%status = ', I0 )" ) prefix, inform%GLRT_inform%status
          CALL GLRT_solve( nlp%n, data%power, inform%weight, data%S,            &
                           data%G_current, data%V, data%GLRT_data,              &
                           data%control%GLRT_control, inform%GLRT_inform )
-         IF ( data%printw ) WRITE( data%out, "( A, ' exit glrt_solve')") prefix
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement > 210, GLRT_',  &
+        &  'inform%status = ', I0 )" ) prefix, inform%GLRT_inform%status
 
-!       write(6,*) ' gltr_status = ', inform%GLRT_inform%status
-!write(6,*) ' vector ', MAXVAL( ABS( data%V( : nlp%n ) ) )
+
+!  compute sv = S(x) v for the stabilization term if necessary
+
+       IF ( inform%GLRT_inform%status == 3 .AND. data%stabilised ) THEN
+         IF ( data%regularization_type == user_regularization ) THEN
+           IF ( data%reverse_scale ) THEN
+             data%branch = 220 ; inform%status = 8 ; RETURN
+           ELSE
+             CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,    &
+                              data%SV( : nlp%n ), data%V( : nlp%n ) )
+           END IF
+         ELSE
+           CALL mop_Ax( one, stabilisation%matrix,                             &
+                        data%V( : nlp%n ), zero, data%SV( : nlp%n ),           &
+                        symmetric = .TRUE., out = data%out,                    &
+                        error = data%control%error, print_level = 0 )
+         END IF
+       END IF
+
+!  return from reverse communication with the scaled vector u = S(x) x
+
+  220  CONTINUE
+       IF ( inform%GLRT_inform%status == 3 .AND. data%stabilised .AND.         &
+              data%regularization_type == user_regularization .AND.            &
+              data%reverse_scale ) data%SV( : nlp%n ) = data%U( : nlp%n )
+
+!  branch to perform required computation before re-entering GLRT
+
          SELECT CASE( inform%GLRT_inform%status )
 
 !  form the preconditioned gradient
@@ -3300,24 +6660,25 @@
 
 !  use the factors obtained from PSLS
 
-           IF ( data%scaling_type > diagonal_jtj_scaling ) THEN
+           IF ( data%regularization_type > diagonal_jtj_regularization ) THEN
              CALL PSLS_solve( data%V, data%PSLS_data,                          &
                               data%control%PSLS_control, inform%PSLS_inform )
 
 !  use the column scaling factors from J
 
-           ELSE IF ( data%scaling_type == diagonal_jtj_scaling ) THEN
+           ELSE IF ( data%regularization_type ==                               &
+                     diagonal_jtj_regularization ) THEN
              data%V( : nlp%n )                                                 &
                = data%V( : nlp%n ) / data%regularization%matrix%val( : nlp%n )
 
 !  apply the user's scaling matrix
 
-           ELSE IF ( data%scaling_type == user_scaling ) THEN
+           ELSE IF ( data%regularization_type == user_regularization ) THEN
              IF ( data%reverse_scale ) THEN
-               data%branch = 240 ; inform%status = 8 ; RETURN
+               data%branch = 250 ; inform%status = 8 ; RETURN
              ELSE
                CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,  &
-                               data%U( : nlp%n ), data%V( : nlp%n ) )
+                                data%U( : nlp%n ), data%V( : nlp%n ) )
                data%V( : nlp%n ) = data%U( : nlp%n )
              END IF
            END IF
@@ -3332,16 +6693,18 @@
            CASE ( first_order_model )
              data%V( : nlp%n ) = zero
 
-!  quadratic model with identity Hessian
+!  quadratic model with diagonal Hessian
 
-           CASE ( identity_hessian_model )
+           CASE ( diagonal_hessian_model )
+             IF ( .NOT. data%w_eq_identity )                                   &
+               data%V( : nlp%n ) = W( : nlp%n ) * data%V( : nlp%n )
 
 !  quadratic model with true Hessian
 
            CASE ( newton_model, gauss_newton_model )
              data%W( : nlp%n ) = data%V( : nlp%n )
 
-!  if the Jacobian has been calculated, form the product v = J s directly
+!  if the Jacobian has been calculated, form the product v <- J v directly
 
              IF ( data%jacobian_available ) THEN
                CALL mop_Ax( one, nlp%J,  data%W( : nlp%n ), zero,              &
@@ -3356,7 +6719,7 @@
                IF ( data%reverse_jprod ) THEN
                  data%V( : nlp%n ) = data%W( : nlp%n )
                  data%U( : nlp%m ) = zero
-                 data%branch = 220 ; inform%status = 5 ; RETURN
+                 data%branch = 230 ; inform%status = 5 ; RETURN
                ELSE
                  data%V( : nlp%m ) = zero
                  CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
@@ -3378,7 +6741,7 @@
          CASE ( GALAHAD_ok, GALAHAD_warning_on_boundary,                       &
                 GALAHAD_error_max_iterations )
            data%model = inform%GLRT_inform%obj
-           GO TO 250
+           GO TO 260
 
 !  error returns
 
@@ -3392,34 +6755,52 @@
 
 !  return from reverse communication with the Jacobian-vector product
 
-   220   CONTINUE
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 220, GLRT_',    &
+   230   CONTINUE
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement 230, GLRT_',    &
         &  'inform%status = ', I0 )" ) prefix, inform%GLRT_inform%status
          IF ( inform%GLRT_inform%status == 3 .AND.                             &
               ( data%control%model == newton_model .OR.                        &
                 data%control%model == gauss_newton_model ) ) THEN
 
-!  if the Jacobian has been calculated, form the product u = J^T v directly
+!  if the Jacobian has been calculated, form the product u = J^T W v directly
 
            IF ( data%jacobian_available ) THEN
-             CALL mop_Ax( one, nlp%J,  data%V( : nlp%m ), zero,                &
-                          data%U( : nlp%n ), out = data%out,                   &
-                          error = data%control%error, print_level = 0,         &
-                          transpose = .TRUE. )
+             IF ( data%w_eq_identity ) THEN
+               CALL mop_Ax( one, nlp%J, data%V( : nlp%m ), zero,               &
+                            data%U( : nlp%n ), out = data%out,                 &
+                            error = data%control%error, print_level = 0,       &
+                            transpose = .TRUE. )
+             ELSE
+               CALL mop_Ax( one, nlp%J, W( : nlp%m ) * data%V( : nlp%m ),      &
+                            zero, data%U( : nlp%n ), out = data%out,           &
+                            error = data%control%error, print_level = 0,       &
+                            transpose = .TRUE. )
+             END IF
 
 !  if the Jacobian is unavailable, obtain a matrix-free product
 
            ELSE
              data%transpose = .TRUE.
              IF ( data%reverse_jprod ) THEN
-!write(6,*) ' u220 ', MAXVAL( ABS( data%U( : nlp%m ) ) )
-               data%V( : nlp%m ) = data%U( : nlp%m ) ; data%U( : nlp%n ) = zero
-               data%branch = 230 ; inform%status = 5 ; RETURN
+               IF ( data%w_eq_identity ) THEN
+                  data%V( : nlp%m ) = data%U( : nlp%m )
+               ELSE
+                  data%V( : nlp%m ) = W( : nlp%m ) * data%U( : nlp%m )
+               END IF
+               data%U( : nlp%n ) = zero
+               data%branch = 240 ; inform%status = 5 ; RETURN
              ELSE
                data%U( : nlp%n ) = zero
-               CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),            &
-                                userdata, data%transpose, data%U( : nlp%n ),   &
-                                data%V( : nlp%m ), got_j = data%got_j )
+               IF ( data%w_eq_identity ) THEN
+                 CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
+                                  userdata, data%transpose, data%U( : nlp%n ), &
+                                  data%V( : nlp%m ), got_j = data%got_j )
+               ELSE
+                 CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
+                                  userdata, data%transpose, data%U( : nlp%n ), &
+                                  W( : nlp%m ) * data%V( : nlp%m ),            &
+                                  got_j = data%got_j )
+               END IF
              END IF
            END IF
          END IF
@@ -3427,8 +6808,8 @@
 !  return from reverse communication with the Jacobian transpose-vector
 !  product
 
-   230   CONTINUE
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 230, GLRT_',    &
+   240   CONTINUE
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement 240, GLRT_',    &
         &  'inform%status = ', I0 )" ) prefix, inform%GLRT_inform%status
          IF ( inform%GLRT_inform%status == 3 .AND.                             &
               data%control%model == newton_model ) THEN
@@ -3447,11 +6828,10 @@
            ELSE
              IF ( data%reverse_hprod ) THEN
                data%V( : nlp%n ) = data%W( : nlp%n )
-               data%Y( : nlp%m ) = nlp%C( : nlp%m )
-               data%branch = 240 ; inform%status = 6 ; RETURN
+               data%branch = 250 ; inform%status = 6 ; RETURN
              ELSE
                CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ),            &
-                                nlp%C( : nlp%m ), userdata,                    &
+                                data%Y( : nlp%m ), userdata,                   &
                                 data%U( : nlp%n ), data%W( : nlp%n ),          &
                                 got_h = data%got_h )
                data%got_h = .TRUE.
@@ -3462,8 +6842,8 @@
 !  return from reverse communication with the Hessian-vector product
 !  or preconditioned vector
 
-   240   CONTINUE
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 240, GLRT_',    &
+   250   CONTINUE
+         IF ( data%printw ) WRITE( data%out, "( A, ' statement 250, GLRT_',    &
         &  'inform%status = ', I0 )" ) prefix, inform%GLRT_inform%status
          IF ( inform%GLRT_inform%status == 3 ) THEN
            IF ( data%control%model == newton_model .OR.                        &
@@ -3476,21 +6856,20 @@
 !            weight*(x^TSx)^(power-2)/2 * S when p>2 or
 !          = weight * S when p=2
 
+!  i.e., Hessian v = weight*(power-2)*(x^TSx)^(power-4)/2 * ( v^T Sx ) * Sx +
+!                    weight*(x^TSx)^(power-2)/2 * Sv when p>2 or
+!                  = weight * Sv when p=2
+
            IF ( data%stabilised ) THEN
              IF ( stabilisation%power == two ) THEN
-               CALL mop_Ax( stabilisation%weight,                              &
-                            stabilisation%matrix,                              &
-                            data%W( : nlp%n ), one, data%V( : nlp%n ),         &
-                            symmetric = .TRUE., out = data%out,                &
-                            error = data%control%error, print_level = 0 )
+               data%V( : nlp%n ) =                                             &
+                 data%V( : nlp%n ) + stabilisation%weight * data%SV( : nlp%n )
              ELSE
                IF ( data%xtsx > zero ) THEN
                  val = stabilisation%weight *                                  &
                    ( data%xtsx ** ( ( stabilisation%power - two ) / two ) )
-                 CALL mop_Ax( val, stabilisation%matrix,                       &
-                              data%W( : nlp%n ), one, data%V( : nlp%n ),       &
-                              symmetric = .TRUE., out = data%out,              &
-                              error = data%control%error, print_level = 0 )
+                 data%V( : nlp%n ) =                                           &
+                   data%V( : nlp%n ) + val * data%SV( : nlp%n )
                  IF ( stabilisation%power == four ) THEN
                    val = stabilisation%weight * two                            &
                          * DOT_PRODUCT( data%W( : nlp%n ), data%SX( : nlp%n ) )
@@ -3500,15 +6879,15 @@
                    ( data%xtsx ** ( ( stabilisation%power - four ) / two ) )   &
                          * DOT_PRODUCT( data%W( : nlp%n ), data%SX( : nlp%n ) )
                  END IF
-                 data%V( : nlp%n )                                             &
-                   = data%V( : nlp%n ) + val * data%SX( : nlp%n )
+                 data%V( : nlp%n ) =                                           &
+                   data%V( : nlp%n ) + val * data%SX( : nlp%n )
                END IF
              END IF
            END IF
          END IF
 
          IF ( inform%GLRT_inform%status == 2 .AND. data%reverse_scale .AND.    &
-              data%scaling_type == user_scaling ) THEN
+              data%regularization_type == user_regularization ) THEN
            data%V( : nlp%n ) = data%U( : nlp%n )
          END IF
        GO TO 210
@@ -3516,8 +6895,9 @@
 !  End of the generalized Lanczos iteration
 !  ........................................
 
-   250 CONTINUE
-       IF ( data%printw ) WRITE( data%out, "( A, ' statement 240' )" ) prefix
+   260 CONTINUE
+       IF ( data%printw ) WRITE( data%out, "( A, ' statement 260' )" ) prefix
+!write(6,*) ' model ', data%model
        data%model = data%model - inform%obj
 
 !  Record whether there is negative curvature or if the boundary is encountered
@@ -3586,8 +6966,6 @@
        data%obj_current = inform%obj
        data%norm_c_current = inform%norm_c
 
-!write(6,*) ' c 3 ', nlp%C( : nlp%m )
-
 !  form the trial point
 
        nlp%X( : nlp%n ) = data%X_current( : nlp%n ) + data%S( : nlp%n )
@@ -3606,8 +6984,16 @@
    320 CONTINUE
        IF ( data%printw ) WRITE( data%out, "( A, ' statement 320' )" ) prefix
        inform%c_eval = inform%c_eval + 1
-       data%norm_c_trial = TWO_NORM( nlp%C( : nlp%m ) )
-       data%f_trial = half * data%norm_c_trial ** 2
+       IF ( data%w_eq_identity ) THEN
+         data%Y( : nlp%m ) = nlp%C( : nlp%m )
+         data%norm_c_trial = TWO_NORM( nlp%C( : nlp%m ) )
+         data%f_trial = half * data%norm_c_trial ** 2
+       ELSE
+         data%Y( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
+         val = DOT_PRODUCT( data%Y( : nlp%m ), nlp%C( : nlp%m ) )
+         data%norm_c_trial = SQRT( val )
+         data%f_trial = half * val
+       END IF
 
 !      IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
 !        WRITE( data%out, "( /, A, ' name                  C' )" ) prefix
@@ -3623,18 +7009,36 @@
 !  account for the stabilization term if necessary
 
        IF ( data%stabilised ) THEN
-         data%SX_current( : nlp%n ) = data%SX( : nlp%n )
+         data%SV( : nlp%n ) = data%SX( : nlp%n )
          data%xtsx_current = data%xtsx
-         CALL mop_Ax( one, stabilisation%matrix,                               &
-                      nlp%X( : nlp%n ), zero, data%SX( : nlp%n ),              &
-                      symmetric = .TRUE., out = data%out,                      &
-                      error = data%control%error, print_level = 0 )
+         IF ( data%regularization_type == user_regularization ) THEN
+           IF ( data%reverse_scale ) THEN
+             data%V( : nlp%n ) = nlp%X( : nlp%n )
+             data%branch = 330 ; inform%status = 8 ; RETURN
+           ELSE
+             CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,    &
+                              data%SX( : nlp%n ), nlp%X( : nlp%n ) )
+           END IF
+         ELSE
+           CALL mop_Ax( one, stabilisation%matrix,                             &
+                        nlp%X( : nlp%n ), zero, data%SX( : nlp%n ),            &
+                        symmetric = .TRUE., out = data%out,                    &
+                        error = data%control%error, print_level = 0 )
+         END IF
+       END IF
+!      write(6,*) ' ftrial after ', data%f_trial
+
+!  return from reverse communication with the scaled vector u = S(x) x
+
+  330  CONTINUE
+       IF ( data%stabilised ) THEN
+         IF ( data%regularization_type == user_regularization .AND.            &
+                data%reverse_scale ) data%SX( : nlp%n ) = data%U( : nlp%n )
          data%xtsx = DOT_PRODUCT( nlp%X( : nlp%n ), data%SX( : nlp%n ) )
          data%f_trial = data%f_trial +                                         &
            ( stabilisation%weight / stabilisation%power )                      &
               * data%xtsx ** ( stabilisation%power / two )
        END IF
-!      write(6,*) ' ftrial after ', data%f_trial
 
 !  deal with NaN trial objective values
 !  ------------------------------------
@@ -3647,7 +7051,7 @@
          nlp%X( : nlp%n ) = data%X_current( : nlp%n )
          nlp%C( : nlp%m ) = data%C_current( : nlp%m )
          IF ( data%stabilised ) THEN
-           data%SX( : nlp%n ) = data%SX_current( : nlp%n )
+           data%SX( : nlp%n ) = data%SV( : nlp%n )
            data%xtsx = data%xtsx_current
          END IF
 
@@ -3752,6 +7156,7 @@
        prered = - data%model + rounding
        IF ( ABS( ared ) < teneps .AND. ABS( inform%obj ) > teneps )            &
          ared = prered
+!write(6,*) ' ared, pred ', ared, prered
        data%ratio = ared / prered
 !      write(6,*) ' ratio ', data%ratio, ared, prered
        IF ( data%printm ) WRITE( data%out, "( /, A, ' actual, predicted',      &
@@ -3868,7 +7273,7 @@
 !  opportunity
 
          IF ( data%control%magic_step ) THEN
-           data%branch = 390 ; inform%status = 8 ; RETURN
+           data%branch = 380 ; inform%status = 9 ; RETURN
          END IF
 
 !  the new point is not acceptable
@@ -3878,8 +7283,13 @@
          data%accept = 'r'
          nlp%X( : nlp%n ) = data%X_current( : nlp%n )
          nlp%C( : nlp%m ) = data%C_current( : nlp%m )
+         IF ( data%w_eq_identity ) THEN
+           data%Y( : nlp%m ) = nlp%C( : nlp%m )
+         ELSE
+           data%Y( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
+         END IF
          IF ( data%stabilised ) THEN
-           data%SX( : nlp%n ) = data%SX_current( : nlp%n )
+           data%SX( : nlp%n ) = data%SV( : nlp%n )
            data%xtsx = data%xtsx_current
          END IF
          data%new_point = .FALSE.
@@ -3887,29 +7297,56 @@
 
 !  return after possible magic step
 
-  390  CONTINUE
-       IF ( data%printw ) WRITE( data%out, "( A, ' statement 390' )" ) prefix
+  380  CONTINUE
+       IF ( data%printw ) WRITE( data%out, "( A, ' statement 380' )" ) prefix
 
 !  update the objective function value to account for the magic step
 
-       IF ( data%ratio >= data%control%eta_successful ) THEN
-         IF ( data%control%magic_step ) THEN
-           inform%c_eval = inform%c_eval + 1
+       IF ( data%ratio >= data%control%eta_successful .AND.                    &
+            data%control%magic_step ) THEN
+         inform%c_eval = inform%c_eval + 1
+         IF ( data%w_eq_identity ) THEN
+           data%Y( : nlp%m ) = nlp%C( : nlp%m )
            inform%norm_c = TWO_NORM( nlp%C( : nlp%m ) )
            inform%obj = half * inform%norm_c ** 2
+         ELSE
+           data%Y( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
+           val = DOT_PRODUCT( data%Y( : nlp%m ), nlp%C( : nlp%m ) )
+           inform%norm_c = SQRT( val )
+           inform%obj = half * val
+         END IF
 
 !  account for the stabilization term if necessary
 
-           IF ( data%stabilised ) THEN
+         IF ( data%stabilised ) THEN
+           IF ( data%regularization_type == user_regularization ) THEN
+             IF ( data%reverse_scale ) THEN
+               data%V( : nlp%n ) = nlp%X( : nlp%n )
+               data%branch = 390 ; inform%status = 8 ; RETURN
+             ELSE
+               CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,  &
+                                data%SX( : nlp%n ), nlp%X( : nlp%n ) )
+             END IF
+           ELSE
              CALL mop_Ax( one, stabilisation%matrix,                           &
                           nlp%X( : nlp%n ), zero, data%SX( : nlp%n ),          &
                           symmetric = .TRUE., out = data%out,                  &
                           error = data%control%error, print_level = 0 )
-             data%xtsx = DOT_PRODUCT( nlp%X( : nlp%n ), data%SX( : nlp%n ) )
+           END IF
+         END IF
+       END IF
+
+!  return from reverse communication with the scaled vector u = S(x) x
+
+  390  CONTINUE
+       IF ( data%ratio >= data%control%eta_successful ) THEN
+         IF ( data%control%magic_step .AND. data%stabilised ) THEN
+           IF ( data%regularization_type == user_regularization .AND.          &
+                data%reverse_scale ) data%SX( : nlp%n ) = data%U( : nlp%n )
+           data%xtsx = DOT_PRODUCT( nlp%X( : nlp%n ), data%SX( : nlp%n ) )
              inform%obj = inform%obj +                                         &
                ( stabilisation%weight / stabilisation%power )                  &
                   * data%xtsx ** ( stabilisation%power / two )
-           END IF
          END IF
 
 !  update the history
@@ -4005,12 +7442,13 @@
        END SELECT
 
        IF ( data%ratio >= data%control%eta_successful ) THEN
-         IF ( data%control%norm /= identity_scaling ) THEN
+         IF ( data%control%norm /= euclidean_regularization ) THEN
            IF ( data%control%renormalize_weight ) THEN
              IF ( data%control%subproblem_direct ) THEN
                data%s_new_norm = data%s_norm
              ELSE
-               IF ( data%scaling_type > diagonal_jtj_scaling ) THEN
+               IF ( data%regularization_type >                                 &
+                    diagonal_jtj_regularization ) THEN
                  data%s_new_norm = PSLS_norm( data%H, data%S, data%PSLS_data,  &
                      data%control%PSLS_control, inform%PSLS_inform )
                  IF ( inform%PSLS_inform%status == GALAHAD_norm_unknown ) THEN
@@ -4018,7 +7456,8 @@
                  ELSE IF ( inform%PSLS_inform%status /= 0 ) THEN
                    GO TO 980
                  END IF
-               ELSE IF ( data%scaling_type == diagonal_jtj_scaling ) THEN
+               ELSE IF ( data%regularization_type ==                           &
+                         diagonal_jtj_regularization ) THEN
                  data%s_new_norm = SQRT( DOT_PRODUCT( data%S( : nlp%n ),       &
                    data%regularization%matrix%val( : nlp%n )                   &
                      * data%S( : nlp%n ) ) )
@@ -4053,6 +7492,8 @@
          inform%status = GALAHAD_error_cpu_limit ; GO TO 900
        END IF
 
+!write(6,*) ' f ', data%f_trial, data%ratio
+!stop
      GO TO 100
 
 !  ============================================================================
@@ -4112,7 +7553,7 @@
        SELECT CASE( data%model_used )
        CASE ( first_order_model )
          WRITE( data%out, "( A, '  First-order model used' )" ) prefix
-       CASE ( identity_hessian_model )
+       CASE ( diagonal_hessian_model )
          WRITE( data%out, "( A, '  Second-order model with identity',          &
         &  ' Hessian used' )" ) prefix
        CASE ( gauss_newton_model )
@@ -4137,26 +7578,29 @@
           &      ') of the regularization sub-problem' )" )                    &
               prefix, TRIM( data%control%RQS_control%definite_linear_solver )
          END IF
-         SELECT CASE ( data%scaling_type )
-         CASE ( user_scaling )
-           WRITE( data%out, "( A, '  User-defined scaling used' )" )           &
+         SELECT CASE ( data%regularization_type )
+         CASE ( user_regularization )
+           WRITE( data%out, "( A, '  User-defined regularization used' )" )    &
              prefix
-         CASE ( identity_scaling )
-           WRITE( data%out, "( A, '  No scaling used' )" ) prefix
-         CASE ( diagonal_jtj_scaling )
-           WRITE( data%out, "( A, '  Diagonal (JTJ) scaling used' )" ) prefix
-         CASE ( diagonal_hessian_scaling )
-           WRITE( data%out, "( A, '  Diagonal (H) scaling used' )" ) prefix
-         CASE ( band_scaling )
-           WRITE( data%out, "( A, '  Band scaling (semi-bandwidth ',           &
-          &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( reordered_band_scaling )
-           WRITE( data%out, "( A, ' Reordered band scaling (semi-bandwidth ',  &
-          &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( schnabel_eskow_scaling, gmps_scaling,                          &
-                lin_more_scaling, mi28_scaling )
-           WRITE( data%out, "( A, '  Modified full matrix scaling used' )")    &
+         CASE ( euclidean_regularization )
+           WRITE( data%out, "( A, '  Euclidean regularization used' )" ) prefix
+         CASE ( diagonal_jtj_regularization )
+           WRITE( data%out, "( A, '  Diagonal (JTJ) regularization used' )" )  &
              prefix
+         CASE ( diagonal_hessian_regularization )
+           WRITE( data%out, "( A, '  Diagonal (H) regularization used' )" )    &
+             prefix
+         CASE ( band_regularization )
+           WRITE( data%out, "( A, '  Band regularization (semi-bandwidth ',    &
+          &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
+         CASE ( reordered_band_regularization )
+           WRITE( data%out, "( A, ' Reordered band regularization',            &
+          &   ' (semi-bandwidth ', I0, ') used' )" ) prefix,                   &
+             inform%PSLS_inform%semi_bandwidth_used
+         CASE ( schnabel_eskow_regularization, gmps_regularization,            &
+                lin_more_regularization, mi28_regularization )
+           WRITE( data%out, "( A, '  Modified full matrix regularization',     &
+          & ' used' )" ) prefix
          END SELECT
          WRITE( data%out, "( A, '  Number of factorization = ', I0,            &
         &     ', factorization time = ', F0.2, ' seconds'  )" ) prefix,        &
@@ -4172,40 +7616,48 @@
              prefix, inform%max_entries_factors
          END IF
        ELSE
-         IF ( data%scaling_type > 0 )                                          &
+         WRITE( data%out,                                                      &
+           "( A, '  Iterative solution of the regularization sub-problem' )" ) &
+              prefix
+         IF ( data%regularization_type > 0 )                                   &
            WRITE( data%out, "( A, '  Hessian semi-bandwidth (original,',       &
           &     ' re-ordered) = ', I0, ', ', I0 )" ) prefix,                   &
              inform%PSLS_inform%semi_bandwidth,                                &
              inform%PSLS_inform%reordered_semi_bandwidth
-         SELECT CASE ( data%scaling_type )
-         CASE ( user_scaling )
-           WRITE( data%out, "( A, '  User-defined scaling used' )" )           &
+         SELECT CASE ( data%regularization_type )
+         CASE ( user_regularization )
+           WRITE( data%out, "( A, '  User-defined regularization used' )" )    &
              prefix
-         CASE ( identity_scaling )
-           WRITE( data%out, "( A, '  No scaling used' )" ) prefix
-         CASE ( diagonal_jtj_scaling )
-           WRITE( data%out, "( A, '  Diagonal (JTJ) scaling used' )" ) prefix
-         CASE ( diagonal_hessian_scaling )
-           WRITE( data%out, "( A, '  Diagonal (H) scaling used' )" ) prefix
-         CASE ( band_scaling )
-           WRITE( data%out, "( A, '  Band scaling (semi-bandwidth ',           &
+         CASE ( euclidean_regularization )
+           WRITE( data%out, "( A, '  Euclidean regularization used' )" ) prefix
+         CASE ( diagonal_jtj_regularization )
+           WRITE( data%out, "( A, '  Diagonal (JTJ) regularization used' )" )  &
+             prefix
+         CASE ( diagonal_hessian_regularization )
+           WRITE( data%out, "( A, '  Diagonal (H) regularization used' )" )    &
+             prefix
+         CASE ( band_regularization )
+           WRITE( data%out, "( A, '  Band regularization (semi-bandwidth ',    &
           &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( reordered_band_scaling )
-           WRITE( data%out, "( A, ' Reordered band scaling (semi-bandwidth ',  &
-          &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( schnabel_eskow_scaling )
-           WRITE( data%out, "( A, '  SE (solver ', A, ') full scaling used' )")&
-             prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
-         CASE ( gmps_scaling )
-          WRITE( data%out, "( A, '  GMPS (solver ', A, ') full scaling used')")&
-             prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
-         CASE ( lin_more_scaling )
-           WRITE( data%out, "( A, '  Lin-More''(', I0, ') incomplete Cholesky',&
-          &  ' factorization scaling used ' )" )                               &
+         CASE ( reordered_band_regularization )
+           WRITE( data%out, "( A, ' Reordered band regularization',            &
+          &    ' (semi-bandwidth ', I0, ') used' )" ) prefix,                  &
+               inform%PSLS_inform%semi_bandwidth_used
+         CASE ( schnabel_eskow_regularization )
+           WRITE( data%out, "( A, '  SE (solver ', A, ') full',                &
+          &  ' regularization used' )" ) prefix,                               &
+           TRIM( data%control%PSLS_control%definite_linear_solver )
+         CASE ( gmps_regularization )
+           WRITE( data%out, "( A, '  GMPS (solver ', A, ') full',              &
+          &    ' regularization used' )" ) prefix,                             &
+               TRIM( data%control%PSLS_control%definite_linear_solver )
+         CASE ( lin_more_regularization )
+           WRITE( data%out, "( A, '  Lin-More''(', I0, ') incomplete',         &
+          & ' Cholesky factorization regularization used ' )" )                &
             prefix, data%control%PSLS_control%icfs_vectors
-         CASE ( mi28_scaling )
-           WRITE( data%out, "( A, '  HSL_MI28(', I0, ',', I0,                  &
-          & ') incomplete Cholesky factorization scaling used ' )" ) prefix,   &
+         CASE ( mi28_regularization )
+           WRITE( data%out, "( A, '  HSL_MI28(', I0, ',', I0, ') incomplete',  &
+           & ' Cholesky factorization regularization used ' )" ) prefix,       &
             data%control%PSLS_control%mi28_lsize,                              &
             data%control%PSLS_control%mi28_rsize
          END SELECT
@@ -4272,2848 +7724,6 @@
 
      END SUBROUTINE NLS_subproblem_solve
 
-!-*-*-*-*-  G A L A H A D -  N L S _ s o l v e  S U B R O U T I N E  -*-*-*-*-
-
-     SUBROUTINE NLS_solve( nlp, control, inform, data, userdata,               &
-                           eval_C, eval_J, eval_H, eval_JPROD,                 &
-                           eval_HPROD, eval_HPRODS, eval_SCALE )
-
-!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-
-!  NLS_solve, a regularization method for finding a local unconstrained
-!    minimizer of a nonlinear least-squares objective, 1/2 ||c(x)||_2^2
-
-!  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-!
-!  For full details see the specification sheet for GALAHAD_NLS.
-!
-!  ** NB. default real/complex means double precision real/complex in
-!  ** GALAHAD_NLS_double
-!
-! nlp is a scalar variable of type NLPT_problem_type that is used to
-!  hold data about the objective function. Relevant components are
-!
-!  n is a scalar variable of type default integer, that holds the number of
-!   variables
-!
-!  m is a scalar variable of type default integer, that holds the number of
-!   residuals
-!
-!  C is a rank-one allocatable array of dimension m and type default real,
-!   that holds the residuals c(x). The i-th component of C, i = 1,  ... ,  m,
-!   contains c_i(x).
-!
-!  J is scalar variable of type SMT_TYPE that holds the Jacobian matrix
-!   J(x) = nabla r(x), i.e., J_i,j(x) = d r_i(x) / d x_j. The following
-!   components are used here:
-!
-!   J%type is an allocatable array of rank one and type default character, that
-!    is used to indicate the storage scheme used. If the dense storage scheme
-!    is used, the first five components of J%type must contain the string DENSE.
-!    For the sparse co-ordinate scheme, the first ten components of J%type must
-!    contain the string COORDINATE, and for the sparse row-wise storage scheme,
-!    the first fourteen components of J%type must contain the string
-!    SPARSE_BY_ROWS.
-!
-!    For convenience, the procedure SMT_put may be used to allocate sufficient
-!    space and insert the required keyword into J%type. For example, if nlp is
-!    of derived type packagename_problem_type and involves a Jacobian we wish
-!    to store using the co-ordinate scheme, we may simply
-!
-!         CALL SMT_put( nlp%J%type, 'COORDINATE', stat )
-!
-!    See the documentation for the galahad package SMT for further details on
-!    the use of SMT_put.
-
-!   J%ne is a scalar variable of type default integer, that holds the number
-!    of entries in the Jacobian J(x) in the sparse co-ordinate storage scheme.
-!    It need not be set for any of the other two schemes.
-!
-!   J%val is a rank-one allocatable array of type default real, that holds
-!    the values of the entries in the Jacobian J(x) in any of the available
-!    storage schemes.
-!
-!   J%row is a rank-one allocatable array of type default integer, that holds
-!    the row indices in the Jacobian J(x) in the sparse co-ordinate storage
-!    scheme. It need not be allocated for any of the other two schemes.
-!
-!   J%col is a rank-one allocatable array variable of type default integer,
-!    that holds the column indices of the Jacobian J(x) in either
-!    the sparse co-ordinate, or the sparse row-wise storage scheme.
-!    It need not be allocated when the dense scheme is used.
-!
-!   J%ptr is a rank-one allocatable array of dimension m+1 and type default
-!    integer, that holds the starting position of each row of Jacobian J(x),
-!    as well as J%ptr(m+1) = the total number of entries plus one, in the
-!    sparse row-wise storage scheme. It need not be allocated when the other
-!    schemes are used.
-!
-!  H is scalar variable of type SMT_TYPE that holds the scaled Hessian matrix
-!   H(x) = sum_{i=1}^m c_i(x) H_i(x), where H_i(x) is the Hessian of c_i(x).
-!   The following components are used here:
-!
-!   H%type is an allocatable array of rank one and type default character, that
-!    is used to indicate the storage scheme used. If the dense storage scheme
-!    is used, the first five components of H%type must contain the string DENSE.
-!    For the sparse co-ordinate scheme, the first ten components of H%type must
-!    contain the string COORDINATE, for the sparse row-wise storage scheme, the
-!    first fourteen components of H%type must contain the string SPARSE_BY_ROWS,
-!    and for the diagonal storage scheme, the first eight components of H%type
-!    must contain the string DIAGONAL.
-!
-!    For convenience, the procedure SMT_put may be used to allocate sufficient
-!    space and insert the required keyword into H%type. For example, if nlp is
-!    of derived type packagename_problem_type and involves a Hessian we wish to
-!    store using the co-ordinate scheme, we may simply
-!
-!         CALL SMT_put( nlp%H%type, 'COORDINATE', stat )
-!
-!    See the documentation for the galahad package SMT for further details on
-!    the use of SMT_put.
-
-!   H%ne is a scalar variable of type default integer, that holds the number of
-!    entries in the lower triangular part of H(x) in the sparse co-ordinate
-!    storage scheme. It need not be set for any of the other three schemes.
-!
-!   H%val is a rank-one allocatable array of type default real, that holds
-!    the values of the entries of the  lower triangular part of the Hessian
-!    matrix H in any of the available storage schemes.
-!
-!   H%row is a rank-one allocatable array of type default integer, that holds
-!    the row indices of the lower triangular part of H(x) in the sparse
-!    co-ordinate storage scheme. It need not be allocated for any of the other
-!    three schemes.
-!
-!   H%col is a rank-one allocatable array variable of type default integer,
-!    that holds the column indices of the  lower triangular part of H(x) in
-!    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
-!    need not be allocated when the dense or diagonal storage schemes are used.
-!
-!   H%ptr is a rank-one allocatable array of dimension n+1 and type default
-!    integer, that holds the starting position of each row of the lower
-!    triangular part of H(x), as well as H%ptr(n+1) = the total number of
-!    entries plus one, in the sparse row-wise storage scheme. It need not be
-!    allocated when the other schemes are used.
-!
-!  X is a rank-one allocatable array of dimension n and type default real, that
-!   holds the values x of the optimization variables. The j-th component of
-!   X, j = 1, ... , n, contains x_j.
-!
-!  pname is a scalar variable of type default character and length 10, which
-!   contains the ``name'' of the problem for printing. The default ``empty''
-!   string is provided.
-!
-!  VNAMES is a rank-one allocatable array of dimension n and type default
-!   character and length 10, whose j-th entry contains the ``name'' of the j-th
-!   variable for printing. This is only used  if ``debug''printing
-!   control%print_level > 4) is requested, and will be ignored if the array is
-!   not allocated.
-!
-!  CNAMES is a rank-one allocatable array of dimension m and type default
-!   character and length 10, whose i-th entry contains the ``name'' of the i-th
-!   residual for printing. This is only used  if ``debug''printing
-!   control%print_level > 4) is requested, and will be ignored if the array is
-!   not allocated.
-!
-! control is a scalar variable of type NLS_control_type. See
-!  NLS_initialize for details
-!
-! inform is a scallar variable of type NLS_inform_type. On initial entry,
-!  inform%status should be set to 1. On exit, the following components will
-!  have been set in inform(1):
-!
-!  status is a scalar variable of type default integer, that gives
-!   the exit status from the package. Possible values are:
-!
-!     0. The run was successful
-!
-!    -1. An allocation error occurred. A message indicating the offending
-!        array is written on unit control%error, and the returned allocation
-!        status and a string containing the name of the offending array
-!        are held in inform%alloc_status and inform%bad_alloc respectively.
-!    -2. A deallocation error occurred.  A message indicating the offending
-!        array is written on unit control%error and the returned allocation
-!        status and a string containing the name of the offending array
-!        are held in inform%alloc_status and inform%bad_alloc respectively.
-!    -3. The restriction nlp%n > 0 or requirement that prob%H_type contains
-!        its relevant string 'DENSE', 'COORDINATE' or 'SPARSE_BY_ROWS'
-!          has been violated.
-!    -7. The objective function appears to be unbounded from below
-!    -9. The analysis phase of the factorization failed; the return status
-!        from the factorization package is given in the component
-!        inform%factor_status
-!   -10. The factorization failed; the return status from the factorization
-!        package is given in the component inform%factor_status.
-!   -11. The solution of a set of linear equations using factors from the
-!        factorization package failed; the return status from the factorization
-!        package is given in the component inform%factor_status.
-!   -16. The problem is so ill-conditioned that further progress is impossible.
-!   -18. Too many iterations have been performed. This may happen if
-!        control%maxit is too small, but may also be symptomatic of
-!        a badly scaled problem.
-!   -19. The CPU time limit has been reached. This may happen if
-!        control%cpu_time_limit is too small, but may also be symptomatic of
-!        a badly scaled problem.
-!   -40. The user has forced termination of solver by removing the file named
-!        control%alive_file from unit unit control%alive_unit.
-!
-!     2. The user should compute the residual function value c(x) at the point
-!        x indicated in nlp%X and then re-enter the subroutine. The value of
-!        the i-th component of the residual should be set in nlp%C(i), for i =
-!        1, ..., m and data%eval_status should be set to 0. If the user is
-!        unable to evaluate a component of c(x) - for instance, if the function
-!        is undefined at x - the user need not set nlp%C, but should then set
-!        data%eval_status to a non-zero value.
-!     3. The user should compute the Jacobian of the residual function J(x) =
-!        nabla_x c(x) at the point x indicated in nlp%X  and then re-enter the
-!        subroutine. The value l-th component of the Jacobian stored according
-!        to the scheme input in the remainder of nlp%J should be set in
-!        nlp%J%val(l), for l = 1, ..., nlp%J%ne and data%eval_status should
-!        be set to 0. If the user is unable to evaluate a component of J(x) -
-!        for instance if a component of the Jacobian is undefined at x - the
-!        user need not set nlp%J%val, but should then set data%eval_status
-!        to a non-zero value.
-!     4. The user should compute the weighted Hessian of the residual function
-!        H(x,y) = sum_{i=1}^m y_i nabla_xx y_i(x) at the point x indicated
-!        in nlp%X with weights y given by data%Y, and then re-enter the
-!        subroutine. The value l-th component of H(x,y) stored according to
-!        the scheme input in the remainder of nlp%H should be set in
-!        nlp%H%val(l), for l = 1, ..., nlp%H%ne and data%eval_status should
-!        be set to 0. If the user is unable to evaluate a component of H(x,y) -
-!        for instance, if a component of the Hessian is undefined at (x,y) - the
-!        user need not set nlp%H%val, but should then set data%eval_status
-!        to a non-zero value.
-!     5. The user should compute the product J(x)v (when transpose = .FALSE.)
-!        or J^T(x)v (when transpose = .TRUE.) of the Jacobian of the residual
-!        function J(x) (or its traspose) at the point x indicated in nlp%X
-!        with the vector v, and add the result to the vector u and then re-enter
-!        the subroutine. The logical transpose and vectors u and v are given
-!        in data%transpose, data%U and data%V respectively, the
-!        resulting vector u + J(x) or u + J^T(x)v as appropriate should be set
-!        in data%U and data%eval_status should be set to 0. If the user
-!        is unable to evaluate the product - for instance, if a component of
-!        J(x) is undefined at x - the user need not alter data%U, but
-!        should then set data%eval_status to a non-zero value.
-!     6. The user should compute the product H(x,y)v of the Hessian of
-!        the residual function H(x,y) at the point (x,y) indicated in nlp%X
-!        and data%Y with the vector v and add the result to the vector u
-!        and then re-enter the subroutine. The vectors u and v are given in
-!        data%U and data%V respectively, the resulting vector
-!        u + H(x,y)v should be set in data%U and  data%eval_status
-!        should be set to 0. If the user is unable to evaluate the product -
-!        for instance, if a component of H(x,y) is undefined at (x,y) - the
-!        user need not alter data%U, but should then set
-!        data%eval_status to a non-zero value.
-!     7. The user should compute the matrix whose columns are the products
-!        H_i(x)v between the HessianH_i(x) of the ith residual function at
-!        the point x indicated in nlp%X a given vector v held in data%V.
-!        The nonzeros for column i must be stored in nlp%P%val(l), for
-!        l = nlp%P%ptr(i), ...,  nlp%P%ptr(i+1) for each i = 1,...,m,
-!        in the same order as the row indices were assigned on input in
-!        nlp%P%row(l). If the user is unable to evaluate the products -
-!        for instance, if a component of H_i(x) is undefined at x - the
-!        user need not assign nlp%P%val, but should then set
-!        data%eval_status to a non-zero value.
-!
-!  alloc_status is a scalar variable of type default integer, that gives
-!   the status of the last attempted array allocation or deallocation.
-!   This will be 0 if status = 0.
-!
-!  bad_alloc is a scalar variable of type default character
-!   and length 80, that  gives the name of the last internal array
-!   for which there were allocation or deallocation errors.
-!   This will be the null string if status = 0.
-!
-!  iter is a scalar variable of type default integer, that holds the
-!   number of iterations performed.
-!
-!  cg_iter is a scalar variable of type default integer, that gives the
-!   total number of conjugate-gradient iterations required.
-!
-!  factorization_status is a scalar variable of type default integer, that
-!   gives the return status from the matrix factorization.
-!
-!  factorization_integer is a scalar variable of type default integer,
-!   that gives the amount of integer storage used for the matrix factorization.
-!
-!  factorization_real is a scalar variable of type default integer,
-!   that gives the amount of real storage used for the matrix factorization.
-!
-!  c_eval is a scalar variable of type default integer, that gives the
-!   total number of residual function evaluations performed.
-!
-!  j_eval is a scalar variable of type default integer, that gives the
-!   total number of residual Jacobian evaluations performed.
-!
-!  h_eval is a scalar variable of type default integer, that gives the
-!   total number of scaled Hessian evaluations performed.
-!
-!  obj is a scalar variable of type default real, that holds the
-!   value of the objective function 1/2 ||c(x)||_2^2 at the best estimate
-!   of the solution found.
-!
-!  norm_c is a scalar variable of type default real, that holds the value of
-!   the norm of the residual function ||c(x)||_2 at the best estimate of the
-!   solution found.
-!
-!  norm_g is a scalar variable of type default real, that holds the value of
-!   the norm of the residual function gradient ||J^T(x)c(x)||_2/||c(x)||_2
-!   at the best estimate of the solution found.
-!
-!  time is a scalar variable of type NLS_time_type whose components are
-!   used to hold elapsed CPU and clock times for the various parts of the
-!   calculation.
-!
-!   Components are:
-!
-!    total is a scalar variable of type default real, that gives
-!     the total CPU time spent in the package.
-!
-!    preprocess is a scalar variable of type default real, that gives the
-!      CPU time spent reordering the problem to standard form prior to solution.
-!
-!    analyse is a scalar variable of type default real, that gives
-!      the CPU time spent analysing required matrices prior to factorization.
-!
-!    factorize is a scalar variable of type default real, that gives
-!      the CPU time spent factorizing the required matrices.
-!
-!    solve is a scalar variable of type default real, that gives
-!     the CPU time spent using the factors to solve relevant linear equations.
-!
-!    clock_total is a scalar variable of type default real, that gives
-!     the total clock time spent in the package.
-!
-!    clock_preprocess is a scalar variable of type default real, that gives
-!      the clock time spent reordering the problem to standard form prior
-!      to solution.
-!
-!    clock_analyse is a scalar variable of type default real, that gives
-!      the clock time spent analysing required matrices prior to factorization.
-!
-!    clock_factorize is a scalar variable of type default real, that gives
-!      the clock time spent factorizing the required matrices.
-!
-!    clock_solve is a scalar variable of type default real, that gives
-!     the clock time spent using the factors to solve relevant linear equations.
-!
-!  data is a scalar variable of type NLS_data_type used for internal data.
-!
-!  userdata is a scalar variable of type NLPT_userdata_type which may be used
-!   to pass user data to and from the eval_* subroutines (see below)
-!   Available coomponents which may be allocated as required are:
-!
-!    integer is a rank-one allocatable array of type default integer.
-!    real is a rank-one allocatable array of type default real
-!    complex is a rank-one allocatable array of type default comple.
-!    character is a rank-one allocatable array of type default character.
-!    logical is a rank-one allocatable array of type default logical.
-!    integer_pointer is a rank-one pointer array of type default integer.
-!    real_pointer is a rank-one pointer array of type default  real
-!    complex_pointer is a rank-one pointer array of type default complex.
-!    character_pointer is a rank-one pointer array of type default character.
-!    logical_pointer is a rank-one pointer array of type default logical.
-!
-!  eval_C is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). The value of the residual
-!   function c(x) evaluated at x=X must be returned in C, and the status
-!   variable set to 0. If the evaluation is impossible at X, status should
-!   be set to a nonzero value. If eval_C is not present, NLS_solve will
-!   return to the user with inform%status = 2 each time an evaluation is
-!   required.
-!
-!  eval_J is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). The nonzeros of the Jacobian
-!   nabla_x c(x) of the residual function evaluated at x=X must be returned in
-!   J_val in the same order as presented in nlp%J,, and the status variable set
-!   to 0. If the evaluation is impossible at X, status should be set to a
-!   nonzero value. If eval_J is not present, NLS_solve will return to the
-!   user with inform%status = 3 each time an evaluation is required.
-!
-!  eval_H is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). The nonzeros of the weighted Hessian
-!   H(x,y) = sum_i y_i nabla_xx c_i(x) of the residual function evaluated at
-!   x=X and y=Y must be returned in H_val in the same order as presented in
-!   nlp%H, and the status variable set to 0. If the evaluation is impossible
-!   at X, status should be set to a nonzero value. If eval_H is not present,
-!   NLS_solve will return to the user with inform%status = 4 each time an
-!   evaluation is required.
-!
-!  eval_JPROD is an optional subroutine which if present must have the
-!   arguments given below (see the interface blocks). The sum u + J(x) v,
-!   (when transpose=.FALSE.) or u + J^T(x) v (when transpose=.TRUE.)
-!   of the Jacobian (or its transpose) evaluated  at x=X with the vector v=V
-!   and the vector u=U must be returned in U, and the status variable set to 0.
-!   If the evaluation is impossible at X, status should be set to a nonzero
-!   value. If eval_JPROD is not present, NLS_solve will return to the user
-!   with inform%status = 5 each time an evaluation is required. The Jacobian
-!   has already been evaluated or used at x=X if got_j is .TRUE.
-!
-!  eval_HPROD is an optional subroutine which if present must have the
-!   arguments given below (see the interface blocks). The sum u + H(x,y) v,
-!   where H(x,y) = sum_i y_i nabla_xx c_i(x), of u=U and the product of the
-!   weighted Hessian HC(x,y) evaluated at x=X and y=Y with the vector v=V,
-!   and the vector u=U must be returned in U, and the status variable set to 0.
-!   If the evaluation is impossible at X, status should be set to a nonzero
-!   value. If eval_HPROD is not present, NLS_solve will return to the user
-!   with inform%status = 6 each time an evaluation is required. The Hessian
-!   has already been evaluated or used at x=X if got_h is .TRUE.
-!
-!  eval_HPRODS is an optional subroutine which if present must have the
-!   arguments given below (see the interface blocks). The nonzeros of
-!   the matrix whose ith column is the product nabla_xx c_i(x) v between
-!   the Hessian of the ith residual function evaluated at x=X and the
-!   vector v=V must be returned in P_val in the same order as presented in
-!   nlp%P, and the status variable set to 0. If the evaluation is impossible
-!   at X, status should be set to a nonzero value. If eval_HPRODS is not
-!   present, NLS_solve will return to the user with inform%status = 7
-!   each time an evaluation is required. The Hessians have already been
-!   evaluated or used at x=X if got_h is .TRUE.
-!
-!  eval_SCALE is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). The product u = S(x) v of the
-!   user's scaling matrix S(x) evaluated at x=X with the vector v=V, the result
-!   u must be retured in U, and the status variable set to 0. If the evaluation
-!   is impossible at X, status should be set to a nonzero value. If eval_SCALE
-!   is not present, NLS_solve will return to the user with inform%status = 8
-!   each time an evaluation is required.
-!
-!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-
-!-----------------------------------------------
-!   D u m m y   A r g u m e n t s
-!-----------------------------------------------
-
-     TYPE ( NLPT_problem_type ), INTENT( INOUT ) :: nlp
-     TYPE ( NLS_control_type ), INTENT( IN ) :: control
-     TYPE ( NLS_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( NLS_data_type ), INTENT( INOUT ) :: data
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-     OPTIONAL :: eval_C, eval_J, eval_H, eval_JPROD, eval_HPROD, eval_HPRODS,  &
-                 eval_SCALE
-
-!----------------------------------
-!   I n t e r f a c e   B l o c k s
-!----------------------------------
-
-     INTERFACE
-       SUBROUTINE eval_C( status, X, userdata, C )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: C
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_C
-     END INTERFACE
-
-     INTERFACE
-       SUBROUTINE eval_J( status, X, userdata, J_val )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: J_val
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_J
-     END INTERFACE
-
-     INTERFACE
-       SUBROUTINE eval_H( status, X, Y, userdata, H_val )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_H
-     END INTERFACE
-
-     INTERFACE
-       SUBROUTINE eval_JPROD( status, X, userdata, transpose, U, V, got_j )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       LOGICAL, INTENT( IN ) :: transpose
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
-       END SUBROUTINE eval_JPROD
-     END INTERFACE
-
-     INTERFACE
-       SUBROUTINE eval_HPROD( status, X, Y, userdata, U, V, got_h )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-       END SUBROUTINE eval_HPROD
-     END INTERFACE
-
-     INTERFACE
-       SUBROUTINE eval_HPRODS( status, X, V, userdata, P_val, got_h )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P_val
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-       LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-       END SUBROUTINE eval_HPRODS
-     END INTERFACE
-
-     INTERFACE
-       SUBROUTINE eval_SCALE( status, X, userdata, U, V )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V, X
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_SCALE
-     END INTERFACE
-
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     INTEGER :: i, j, ic, ir, l, ll, nroots
-     REAL ( KIND = wp ) :: ared, prered, rounding, root1, root2, root3, alpha
-     REAL ( KIND = wp ) :: c0, c1, c2, c3, sths, facts, reg
-
-     LOGICAL :: alive
-     CHARACTER ( LEN = 6 ) :: char_iter, char_facts
-     CHARACTER ( LEN = 80 ) :: array_name
-!    REAL ( KIND = wp ), DIMENSION( nlp%n ) :: V
-!    REAL ( KIND = wp ) :: H_dense( nlp%n, nlp%n )
-
-!  prefix for all output
-
-     CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-     IF ( LEN( TRIM( control%prefix ) ) > 2 ) prefix =                         &
-       control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
-!  branch to different sections of the code depending on input status
-
-     IF ( inform%status < 1 ) THEN
-       CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
-       GO TO 990
-     END IF
-
-!  branch to special code for Newton or Gauss-Newton variants
-
-     IF ( inform%status == 1 ) THEN
-       IF (  control%model == first_order_model .OR.                           &
-             control%model == identity_hessian_model .OR.                      &
-             control%model == gauss_newton_model .OR.                          &
-             control%model == newton_model .OR.                                &
-             control%model == gauss_to_newton_model ) THEN
-         data%subproblem_control = control%NLS_subproblem_control_type
-         data%branch_newton = 10 ; GO TO 800
-       END IF
-       data%branch = 10
-     ELSE IF ( inform%status == 11 ) THEN
-       IF (  control%model == first_order_model .OR.                           &
-             control%model == identity_hessian_model .OR.                      &
-             control%model == gauss_newton_model .OR.                          &
-             control%model == newton_model .OR.                                &
-             control%model == gauss_to_newton_model ) THEN
-         data%subproblem_control = control%NLS_subproblem_control_type
-         data%branch_newton = 20 ; GO TO 800
-       END IF
-       data%branch = 20
-     END IF
-!write(6,*) ' branch ', data%branch
-     SELECT CASE ( data%branch )
-     CASE ( 10 )  ! initialization
-       GO TO 10
-     CASE ( 20 )  ! re-entry without initialization
-       GO TO 20
-     CASE ( 30 )  ! initial residual evaluation
-       GO TO 30
-     CASE ( 110 ) ! initial Jacobian evaluation or Jacobian transpose vect prod
-       GO TO 110
-     CASE ( 120 ) ! Hessian evaluation
-       GO TO 120
-     CASE ( 220 ) ! Jacobian vector product
-       GO TO 220
-     CASE ( 230 ) ! Hessians-vector product
-       GO TO 230
-     CASE ( 280 ) ! Jacobian vector product
-       GO TO 280
-     CASE ( 290 ) ! Hessians-vector product
-       GO TO 290
-     CASE ( 320 ) ! residual evaluation
-       GO TO 320
-     CASE ( 810 ) ! Newton/Gauss-Newton variants
-       GO TO 810
-     END SELECT
-
-!  ============================================================================
-!  0. Initialization
-!  ============================================================================
-
-  10 CONTINUE
-     CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
-
-!  ensure that input parameters are within allowed ranges
-
-     IF ( nlp%n <= 0 .OR. nlp%m <= 0 ) THEN
-       inform%status = GALAHAD_error_restrictions
-       GO TO 990
-     END IF
-
-!  check that the Jacobian is available in some form (may change in future)
-
-    IF ( control%jacobian_available <= 0 ) THEN
-       inform%status = GALAHAD_error_restrictions
-       GO TO 990
-     END IF
-
-!  record the problem dimensions
-
-     nlp%H%n = nlp%n ; nlp%H%m = nlp%n
-     IF ( SMT_get( nlp%H%type ) == 'DENSE' ) THEN
-       IF ( MOD(  nlp%n, 2 ) == 0 ) THEN
-         nlp%H%ne = ( nlp%n / 2 ) * ( nlp%n + 1 )
-       ELSE
-         nlp%H%ne = nlp%n * ( ( nlp%n + 1 ) / 2 )
-       END IF
-     ELSE IF ( SMT_get( nlp%H%type ) == 'SPARSE_BY_ROWS' ) THEN
-       nlp%H%ne = nlp%H%ptr( nlp%n + 1 ) - 1
-     ELSE IF ( SMT_get( nlp%H%type ) == 'DIAGONAL' ) THEN
-       nlp%H%ne = nlp%n
-     ELSE IF ( SMT_get( nlp%H%type ) == 'NONE' ) THEN
-       nlp%H%ne = 0
-     END IF
-
-!  record controls and ensure that data is consistent
-
-     data%control = control
-     data%non_monotone_history = data%control%non_monotone
-     IF ( data%non_monotone_history <= 0 ) data%non_monotone_history = 1
-     data%monotone = data%non_monotone_history == 1
-     data%control%initial_inner_weight                                         &
-       = MAX( data%control%initial_inner_weight, zero )
-     data%etat = half * ( data%control%eta_very_successful +                   &
-                          data%control%eta_successful )
-     data%ometat = one - data%etat
-     data%successful = .TRUE.
-     data%negcur = ' '
-     data%ratio = - one
-     data%total_facts = 0
-     data%total_inner_its = 0
-     data%nskip_prec = nskip_prec_max
-     data%re_entry = .FALSE.
-
-     inform%iter = 0 ; inform%cg_iter = 0
-     inform%c_eval = 0 ; inform%j_eval = 0 ; inform%h_eval = 0
-     inform%factorization_max = 0 ; inform%factorization_status = 0
-     inform%max_entries_factors = 0 ; inform%factorization_average = zero
-     inform%factorization_integer = - 1 ; inform%factorization_integer = - 1
-
-!  decide how much reverse communication is required
-
-     data%reverse_c = .NOT. PRESENT( eval_C )
-
-!  check to see if the Jacobian is available explicitly or only via its
-!  action on a vector, and whether reverse communication will be required
-
-     data%jacobian_available = data%control%jacobian_available >= 2
-     IF ( data%jacobian_available ) THEN
-       nlp%J%n = nlp%n ; nlp%J%m = nlp%m
-       data%reverse_j = .NOT. PRESENT( eval_J )
-     ELSE
-       data%subproblem_control = control%NLS_subproblem_control_type
-       IF ( data%control%hessian_available >= 2 ) THEN
-         data%subproblem_control%model = gauss_to_newton_model
-       ELSE
-         data%subproblem_control%model = gauss_newton_model
-       END IF
-       data%branch_newton = 10 ; GO TO 800
-     END IF
-     data%reverse_jprod = .NOT. PRESENT( eval_JPROD )
-
-!  check to see if the Hessian is available explicitly, available via its
-!  action on a vector, or is unavailable, and whether reverse communication
-!  will be required
-
-     data%hessian_available = data%control%hessian_available >= 2
-     IF ( data%hessian_available ) THEN
-       data%reverse_h = .NOT. PRESENT( eval_H )
-     ELSE IF ( data%control%hessian_available == 1 ) THEN
-       data%reverse_h = .FALSE.
-       data%control%subproblem_direct = .FALSE.
-     ELSE
-!      data%subproblem_control = control%NLS_subproblem_control_type
-       data%control%model = tensor_gauss_newton_model
-!      data%branch_newton = 10 ; GO TO 800
-     END IF
-     data%reverse_hprod = .NOT. PRESENT( eval_HPROD )
-     data%reverse_hprods = .NOT. PRESENT( eval_HPRODS )
-
-!  initialize the model to Gauss-Newton if the Gauss-Newton to Newton
-!  strategy has been specified
-
-     data%gauss_to_newton_model =                                              &
-       data%control%model == tensor_gauss_to_newton_model
-     data%map_h_to_jtj = data%hessian_available .AND.                          &
-                         ( data%gauss_to_newton_model .OR.                     &
-                           data%control%model == tensor_newton_model )
-     data%model_used = data%control%model
-     IF ( data%gauss_to_newton_model )                                         &
-       data%control%model = tensor_gauss_newton_model
-     data%hessian_computed = data%hessian_available .AND.                      &
-       data%control%model == tensor_newton_model
-
-!  decide whether to form the scaling matrix and make model-specific choices
-
-     IF ( data%control%model == tensor_newton_model ) THEN
-       data%form_scaling = data%jacobian_available .AND. data%hessian_available
-     ELSE IF ( data%control%model == tensor_gauss_newton_model ) THEN
-       data%form_scaling = data%jacobian_available
-     ELSE
-       IF ( data%control%norm >= 0 ) data%control%norm = identity_scaling
-       data%form_scaling = .FALSE.
-     END IF
-     data%inner_weight = data%control%initial_inner_weight
-     data%reverse_scale = .NOT. PRESENT( eval_SCALE )
-
-!  set the power for the regularization
-
-     IF ( control%power >= two ) THEN
-       data%power = control%power
-     ELSE
-       data%power = two
-     END IF
-
-!  set specific controls for the sub-problem solvers
-
-     data%scaling_type = data%control%norm
-     data%control%GLRT_control%unitm = data%scaling_type == identity_scaling
-     data%control%PSLS_control%preconditioner = data%scaling_type
-     data%control%PSLS_control%new_structure = .TRUE.
-     data%control%RQS_control%initial_multiplier = zero
-
-!  create a file which the user may subsequently remove to cause
-!  immediate termination of a run
-
-     IF ( control%alive_unit > 0 ) THEN
-      INQUIRE( FILE = control%alive_file, EXIST = alive )
-      IF ( .NOT. alive ) THEN
-         OPEN( control%alive_unit, FILE = control%alive_file,                  &
-               FORM = 'FORMATTED', STATUS = 'NEW' )
-         REWIND control%alive_unit
-         WRITE( control%alive_unit, "( ' GALAHAD rampages onwards ' )" )
-         CLOSE( control%alive_unit )
-       END IF
-     END IF
-
-!  allocate basic space to solve the problem
-
-     array_name = 'nls: nlp%G'
-     CALL SPACE_resize_array( nlp%n, nlp%G, inform%status,                     &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'nls: data%X_current'
-     CALL SPACE_resize_array( nlp%n, data%X_current, inform%status,            &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'nls: data%C_current'
-     CALL SPACE_resize_array( nlp%m, data%C_current, inform%status,            &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'nls: data%G_current'
-     CALL SPACE_resize_array( nlp%n, data%G_current, inform%status,            &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'nls: data%S'
-     CALL SPACE_resize_array( nlp%n, data%S, inform%status,                    &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'nls: data%U'
-     CALL SPACE_resize_array( MAX( nlp%n, nlp%m ), data%U, inform%status,      &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'nls: data%V'
-     CALL SPACE_resize_array( MAX( nlp%n, nlp%m ), data%V, inform%status,      &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     array_name = 'nls: data%W'
-     CALL SPACE_resize_array( nlp%n, data%W, inform%status,                    &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     IF ( .NOT. data%monotone ) THEN
-       array_name = 'nls: data%F_hist'
-       CALL SPACE_resize_array( data%non_monotone_history + 1, data%F_hist,    &
-              inform%status,                                                   &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'nls: data%D_hist'
-       CALL SPACE_resize_array( data%non_monotone_history + 1, data%D_hist,    &
-              inform%status,                                                   &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-     END IF
-
-     IF ( data%reverse_hprod ) THEN
-       array_name = 'nls: data%Y'
-       CALL SPACE_resize_array( nlp%m, data%Y, inform%status,                  &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-     END IF
-
-!  compute the number of nonzeros in J
-
-     IF ( data%scaling_type > diagonal_jtj_scaling .OR.                        &
-          data%control%subproblem_control%subproblem_direct ) THEN
-       nlp%J%n = nlp%n ; nlp%J%m = nlp%m
-       SELECT CASE ( SMT_get( nlp%J%type ) )
-       CASE ( 'DENSE' )
-         nlp%J%ne = nlp%J%m * nlp%J%n
-       CASE ( 'SPARSE_BY_ROWS' )
-         nlp%J%ne = nlp%J%ptr( nlp%m + 1 ) - 1
-       END SELECT
-
-!  an assembled Hessian approximation is required to compute the scaling matrix,
-!  so provide J(transpose) = JT
-
-       data%JT%n = nlp%m ; data%JT%m = nlp%n ; data%JT%ne = nlp%J%ne
-       CALL SMT_put( data%JT%type, 'COORDINATE', i )
-
-       array_name = 'nls: data%JT%row'
-       CALL SPACE_resize_array( data%JT%ne, data%JT%row, inform%status,        &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'nls: data%JT%col'
-       CALL SPACE_resize_array( data%JT%ne, data%JT%col, inform%status,        &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'nls: data%JT%val'
-       CALL SPACE_resize_array( data%JT%ne, data%JT%val, inform%status,        &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-!  assign the row and column indices of JT
-
-       SELECT CASE ( SMT_get( nlp%J%type ) )
-       CASE ( 'DENSE' )
-         l = 0
-         DO i = 1, nlp%m
-           DO j = 1, nlp%n
-             l = l + 1
-             data%JT%row( l ) = j ; data%JT%col( l ) = i
-           END DO
-         END DO
-       CASE ( 'SPARSE_BY_ROWS' )
-         DO i = 1, nlp%m
-           DO l = nlp%J%ptr( i ), nlp%J%ptr( i + 1 ) - 1
-             data%JT%row( l ) = nlp%J%col( l ) ; data%JT%col( l ) = i
-           END DO
-         END DO
-       CASE ( 'COORDINATE' )
-         DO l = 1, nlp%J%ne
-           data%JT%row( l ) = nlp%J%col( l )
-           data%JT%col( l ) = nlp%J%row( l )
-         END DO
-       END SELECT
-     END IF
-
-!    IF ( data%scaling_type > diagonal_jtj_scaling ) THEN
-     IF ( data%scaling_type > diagonal_jtj_scaling .OR.                        &
-          data%control%subproblem_control%subproblem_direct ) THEN
-!         data%control%subproblem_direct ) THEN
-
-!  record the sparsity pattern of J^T J in data%H
-
-       data%control%BSC_control%new_a = 3
-       data%control%BSC_control%extra_space_s = 0
-       data%control%BSC_control%s_also_by_column = data%map_h_to_jtj
-       CALL BSC_form( nlp%n, nlp%m, data%JT, data%H, data%BSC_data,            &
-                      data%control%BSC_control, inform%BSC_inform )
-       data%control%BSC_control%new_a = 1
-
-!   if required, find a mapping for the entries of H(x,c) into the existing
-!   structure in data%H for J^T J; the sparsity pattern of H(x,c) lies
-!   within that of J^T J
-
-       IF ( data%map_h_to_jtj ) THEN
-         CALL NLS_set_map( data%H, nlp%H, data%IW, data%PTR, data%ROW,         &
-                           data%ORDER, .TRUE.,                                 &
-                           data%control%deallocate_error_fatal,                &
-                           data%control%space_critical,  data%control%error,   &
-                           data%H_map, inform%status, inform%alloc_status,     &
-                           inform%bad_alloc )
-         IF ( inform%status /= 0 ) GO TO 980
-       END IF
-     END IF
-
-!  initialize additional space for the tensor module mimimization, in which
-!  the residuals c(x+s) for given x are approximated by r(s) = c(x) + J(x) s
-!  + 1/2 ( s^T H_i s )_i=1^m, where (w_i)_i=1^m denotes the vector whose
-!  ith component is w_i. The value of s is sought to minimize phi(s) =
-!  1/2||r(s)||^2_2 using a adaptive regularized Newton method
-
-     data%tensor_model%n = nlp%n ; data%tensor_model%m = nlp%m
-
-!  s is stored in tm%X
-
-     array_name = 'nls: data%tensor_model%X'
-     CALL SPACE_resize_array( data%tensor_model%n, data%tensor_model%X,        &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-
-!  r(s) is stored in tm%C
-
-     array_name = 'nls: data%tensor_model%C'
-     CALL SPACE_resize_array( nlp%m, data%tensor_model%C,                      &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-
-!  J(x)s is stored in JS
-
-     array_name = 'nls: data%JS'
-     CALL SPACE_resize_array( nlp%m, data%JS, inform%status,                   &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-
-!  1/2 ( s^T H_i s )_i=1^m is stored in HSHS
-
-     array_name = 'nls: data%HSHS'
-     CALL SPACE_resize_array( nlp%m, data%HSHS, inform%status,                 &
-            inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-
-!  store the matrix whose rows are (g_i + H_i s)^T, i = 1,...,m
-!  in tensor_model%J
-
-!    IF ( data%control%subproblem_direct ) THEN
-     IF ( data%control%subproblem_control%subproblem_direct ) THEN
-       data%tensor_model%J%m = nlp%m ; data%tensor_model%J%n = nlp%n
-       data%tensor_model%J%ne = data%JT%ne
-       CALL SMT_put( data%tensor_model%J%type, 'COORDINATE', i )
-
-       array_name = 'nls: data%tensor_model%J%row'
-       CALL SPACE_resize_array( data%tensor_model%J%ne,                        &
-              data%tensor_model%J%row, inform%status,                          &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'nls: data%tensor_model%J%col'
-       CALL SPACE_resize_array( data%tensor_model%J%ne,                        &
-              data%tensor_model%J%col, inform%status,                          &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'nls: data%tensor_model%J%val'
-       CALL SPACE_resize_array( data%tensor_model%J%ne,                        &
-              data%tensor_model%J%val, inform%status,                          &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       data%tensor_model%J%col( : data%tensor_model%J%ne )                     &
-         = data%JT%row( : data%tensor_model%J%ne )
-       data%tensor_model%J%row( : data%tensor_model%J%ne )                     &
-         = data%JT%col( : data%tensor_model%J%ne )
-     END IF
-
-!  if required, set up space for the Hessian of the tensor model
-
-!  the weighted Hessian of the tensor model is required; set up space and
-!  record its row and column indices
-
-     IF ( data%map_h_to_jtj ) THEN
-       CALL SMT_put( data%tensor_model%H%type,                                 &
-                     TRIM( SMT_get( nlp%H%type ) ), i )
-       data%tensor_model%H%n = nlp%H%n
-       data%tensor_model%H%m = nlp%H%m
-       data%tensor_model%H%ne = nlp%H%ne
-
-       array_name = 'nls: data%tensor_model%H%val'
-       CALL SPACE_resize_array( nlp%H%ne, data%tensor_model%H%val,             &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
-            exact_size = data%control%space_critical,                          &
-            bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       SELECT CASE ( SMT_get( nlp%H%type ) )
-       CASE ( 'SPARSE_BY_ROWS' )
-         array_name = 'nls: data%tensor_model%H%ptr'
-         CALL SPACE_resize_array( nlp%H%n + 1, data%tensor_model%H%ptr,        &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-         IF ( inform%status /= 0 ) GO TO 980
-
-         array_name = 'nls: data%tensor_model%H%col'
-         CALL SPACE_resize_array( nlp%H%ne, data%tensor_model%H%col,           &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-         IF ( inform%status /= 0 ) GO TO 980
-
-         data%tensor_model%H%ptr( : nlp%H%n + 1 )                              &
-           = nlp%H%ptr( : nlp%H%n + 1 )
-         data%tensor_model%H%col( : nlp%H%ne ) = nlp%H%col( : nlp%H%ne )
-       CASE ( 'COORDINATE' )
-         array_name = 'nls: data%tensor_model%H%row'
-         CALL SPACE_resize_array( nlp%H%ne, data%tensor_model%H%row,           &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-         IF ( inform%status /= 0 ) GO TO 980
-
-         array_name = 'nls: data%tensor_model%H%col'
-         CALL SPACE_resize_array( nlp%H%ne, data%tensor_model%H%col,           &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-         IF ( inform%status /= 0 ) GO TO 980
-
-         data%tensor_model%H%row( : nlp%H%ne ) = nlp%H%row( : nlp%H%ne )
-         data%tensor_model%H%col( : nlp%H%ne ) = nlp%H%col( : nlp%H%ne )
-       END SELECT
-
-!  no tensor-model Hessian is required
-
-     ELSE
-       CALL SMT_put( data%tensor_model%H%type, 'ZERO', i )
-     END IF
-
-!  given the column-wise storage scheme for the matrix HS, whose columns are
-!  the vectors H_i s, i = 1,...,n, create a mapping, HS_map, of the entries
-!  of HS into J and JT. Firstly, order JT by columns
-
-     IF ( data%control%subproblem_control%subproblem_direct ) THEN
-       CALL NLS_set_map( nlp%P, data%JT, data%IW, data%PTR, data%ROW,          &
-                         data%ORDER, .FALSE.,                                  &
-                         data%control%deallocate_error_fatal,                  &
-                         data%control%space_critical,  data%control%error,     &
-                         data%Hs_map, inform%status, inform%alloc_status,      &
-                         inform%bad_alloc )
-       IF ( inform%status /= 0 ) GO TO 980
-     END IF
-
-!  provide space for the regularization
-
-     IF ( data%scaling_type == identity_scaling ) THEN
-       data%regularization%matrix%m = nlp%n
-       data%regularization%matrix%n = nlp%n
-       data%regularization%matrix%ne = nlp%n
-       CALL SMT_put( data%regularization%matrix%type, 'IDENTITY',              &
-                     inform%alloc_status )
-
-     ELSE IF ( data%scaling_type == diagonal_jtj_scaling ) THEN
-       array_name = 'nls: data%regularization%matrix%val'
-       CALL SPACE_resize_array( nlp%n, data%regularization%matrix%val,         &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-     ELSE IF ( data%scaling_type > diagonal_jtj_scaling ) THEN
-       array_name = 'nls: data%regularization%matrix%ptr'
-       CALL SPACE_resize_array( nlp%n + 1, data%regularization%matrix%ptr,     &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       array_name = 'nls: IW'
-       CALL SPACE_resize_array( nlp%n + 1, data%IW, inform%status,             &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-     END IF
-
-!  ===============================
-!  re-entry without initialization
-!  ===============================
-
-  20 CONTINUE
-!    CALL CLOCK_time( data%clock_now )
-!    write(6,*) ' 20 elapsed', data%clock_now - data%clock_start
-
-!  control the output printing
-
-     IF ( data%control%start_print < 0 ) THEN
-       data%start_print = - 1
-     ELSE
-       data%start_print = data%control%start_print
-     END IF
-
-     IF ( data%control%stop_print < 0 ) THEN
-       data%stop_print = data%control%maxit + 1
-     ELSE
-       data%stop_print = data%control%stop_print
-     END IF
-
-     IF ( data%control%print_gap < 2 ) THEN
-       data%print_gap = 1
-     ELSE
-       data%print_gap = data%control%print_gap
-     END IF
-
-     data%out = data%control%out
-     data%print_level_glrt = data%control%GLRT_control%print_level
-     data%print_level_rqs = data%control%RQS_control%print_level
-     data%print_1st_header = .TRUE.
-
-!  basic single line of output per iteration
-
-     data%set_printi = data%out > 0 .AND. data%control%print_level >= 1
-
-!  as per printi, but with additional timings for various operations
-
-     data%set_printt = data%out > 0 .AND. data%control%print_level >= 2
-
-!  as per printt with a few more scalars
-
-     data%set_printm = data%out > 0 .AND. data%control%print_level >= 3
-
-!  as per printm but also with an indication of where in the code we are
-
-     data%set_printw = data%out > 0 .AND. data%control%print_level >= 4
-
-!  full debug printing
-
-     data%set_printd = data%out > 0 .AND. data%control%print_level > 10
-
-!  set iteration-specific print controls
-
-     IF ( inform%iter >= data%start_print .AND.                                &
-          inform%iter < data%stop_print .AND.                                  &
-          MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 ) THEN
-       data%printi = data%set_printi ; data%printt = data%set_printt
-       data%printm = data%set_printm ; data%printw = data%set_printw
-       data%printd = data%set_printd
-       data%print_level = data%control%print_level
-     ELSE
-       data%printi = .FALSE. ; data%printt = .FALSE.
-       data%printm = .FALSE. ; data%printw = .FALSE. ; data%printd = .FALSE.
-       data%print_level = 0
-     END IF
-
-!  set the initial weight
-
-     IF ( data%control%weight_update_strategy == weight_update_zero_reset ) THEN
-       inform%weight = weight_zero
-     ELSE
-       inform%weight = data%control%initial_weight
-     END IF
-!    inform%weight = data%control%initial_weight
-     data%step_accepted = .FALSE.
-     data%poor_model = .FALSE.
-     data%s_norm_successful = one
-     data%minimum_weight = data%control%minimum_weight
-!    write(6,*) ' weight ',  inform%weight
-
-! evaluate the residual function c(x) at the initial point
-
-     IF ( data%reverse_c ) THEN
-       data%branch = 30 ; inform%status = 2 ; RETURN
-     ELSE
-       CALL eval_C( data%eval_status, nlp%X( : nlp%n ), userdata,              &
-                    nlp%C( : nlp%m ) )
-     END IF
-
-!  return from reverse communication with the residual function value c(x)
-
-  30 CONTINUE
-!    CALL CLOCK_time( data%clock_now )
-!    write(6,*) ' 30 elapsed', data%clock_now - data%clock_start
-     IF ( data%printw ) WRITE( data%out, "( A, ' statement 30' )" ) prefix
-     inform%c_eval = inform%c_eval + 1
-     inform%norm_c = TWO_NORM( nlp%C( : nlp%m ) )
-     inform%obj = half * inform%norm_c ** 2
-
-!  test to see if the initial objective value is undefined
-
-!    data%f_is_nan = IEEE_IS_NAN( inform%obj )
-     data%f_is_nan = inform%obj /= inform%obj
-!    write(6,*) ' objective is NaN? ', data%f_is_nan
-
-     IF ( data%f_is_nan ) THEN
-       IF ( data%printi ) WRITE( data%out,                                     &
-          "( A, ' initial objective value is a NaN' )" ) prefix
-       inform%status = GALAHAD_error_evaluation ; GO TO 990
-     END IF
-
-!  compute the residual stopping tolerance
-
-     data%stop_c = MAX( MAX( data%control%stop_c_absolute, zero ),             &
-       MAX( data%control%stop_c_relative, zero ) * inform%norm_c, epsmch )
-
-!  stop in the unlikely event that the initial residual is already small
-
-     IF ( inform%norm_c <= data%stop_c ) THEN
-       inform%status = GALAHAD_ok ; GO TO 910
-     END IF
-
-!  initialize the history of objective values
-
-     data%f_ref = inform%obj
-     IF ( .NOT. data%monotone ) THEN
-        data%F_hist = data%f_ref ; data%D_hist = zero ; data%max_hist = 1
-     END IF
-
-!  ============================================================================
-!  Start of main iteration
-!  ============================================================================
-
- 100 CONTINUE
-!      CALL CLOCK_time( data%clock_now )
-!      write(6,*) ' 100 elapsed', data%clock_now - data%clock_start
-       IF ( data%printw ) WRITE( data%out, "( A, ' statement 100' )" ) prefix
-
-!  evaluate the Jacobian J(x) of c(x)
-
-       IF ( .NOT. data%poor_model ) THEN
-         IF ( data%jacobian_available ) THEN
-           IF ( data%reverse_j ) THEN
-             data%branch = 110 ; inform%status = 3 ; RETURN
-           ELSE
-             CALL eval_J( data%eval_status, nlp%X( : nlp%n ), userdata,        &
-                          nlp%J%val )
-           END IF
-
-!  otherwise evaluate the product J^T(x) c(x)
-
-         ELSE
-           data%transpose = .TRUE.
-           IF ( data%reverse_jprod ) THEN
-             data%U( : nlp%n ) = zero ; data%V( : nlp%m ) = nlp%C( : nlp%m )
-             data%branch = 110 ; inform%status = 5 ; RETURN
-           ELSE
-             nlp%G( : nlp%n ) = zero
-             CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ), userdata,    &
-                              data%transpose, nlp%G( : nlp%n ),                &
-                              nlp%C( : nlp%m ), .FALSE. )
-           END IF
-         END IF
-       END IF
-
-!  return from reverse communication with the Jacobian-residual product
-
- 110   CONTINUE
-!      CALL CLOCK_time( data%clock_now )
-!      write(6,*) ' 110 elapsed', data%clock_now - data%clock_start
-       IF ( data%printw ) WRITE( data%out, "( A, ' statement 110' )" ) prefix
-
-       IF ( .NOT. data%poor_model ) THEN
-         inform%j_eval = inform%j_eval + 1
-
-!        write(6,*) nlp%J%m, nlp%J%n, nlp%J%ne
-!        write(6,*) ( nlp%J%row(i), nlp%J%col(i), nlp%J%val(i), i = 1, nlp%J%ne)
-
-!  compute the product J^T(x) c(x) from J(x) if necessary
-
-         IF ( data%jacobian_available ) THEN
-           CALL mop_Ax( one, nlp%J,  nlp%C( : nlp%m ), zero, nlp%G( : nlp%n ), &
-                        out = data%out, error = data%control%error,            &
-                        print_level = 0, transpose = .TRUE. )
-         ELSE
-           IF ( data%reverse_jprod ) nlp%G( : nlp%n ) = data%U( : nlp%n )
-         END IF
-
-!  compute the gradient of ||c(x)||
-
-         data%g_norm = TWO_NORM( nlp%G( : nlp%n ) )
-         IF ( inform%norm_c > zero ) THEN
-           inform%norm_g = data%g_norm / inform%norm_c
-         ELSE
-           inform%norm_g = zero
-         END IF
-         data%new_point = .TRUE.
-
-!  deal with NaN gradient values
-!  -----------------------------
-
-         data%g_is_nan = inform%norm_g /= inform%norm_g
-         IF ( data%g_is_nan ) THEN
-           IF ( inform%iter > 0 ) THEN
-             data%poor_model = .FALSE.
-             data%accept = 'r'
-             nlp%X( : nlp%n ) = data%X_current( : nlp%n )
-             nlp%C( : nlp%m ) = data%C_current( : nlp%m )
-
-!  control printing for the NaN case
-
-             IF ( inform%iter >= data%start_print .AND.                        &
-                  inform%iter < data%stop_print .AND.                          &
-                  MOD( inform%iter + 1 - data%start_print, data%print_gap )    &
-                    == 0 ) THEN
-               data%printi = data%set_printi ; data%printt = data%set_printt
-               data%printm = data%set_printm ; data%printw = data%set_printw
-               data%printd = data%set_printd
-               data%print_level = data%control%print_level
-               data%control%GLRT_control%print_level = data%print_level_glrt
-               data%control%RQS_control%print_level = data%print_level_rqs
-             ELSE
-               data%printi = .FALSE. ; data%printt = .FALSE.
-               data%printm = .FALSE. ; data%printw = .FALSE.
-               data%printd = .FALSE.
-               data%print_level = 0
-               data%control%GLRT_control%print_level = 0
-               data%control%RQS_control%print_level = 0
-             END IF
-             data%print_iteration_header = data%print_level > 1 .OR.           &
-               ( data%control%GLRT_control%print_level > 0 .AND. .NOT.         &
-                 data%control%subproblem_direct ) .OR.                         &
-               ( data%control%RQS_control%print_level > 0 .AND.                &
-                 data%control%subproblem_direct )
-
-!  print one-line summary
-
-             IF ( data%printi ) THEN
-                IF ( data%print_iteration_header .OR.                          &
-                     data%print_1st_header ) THEN
-                 WRITE( data%out, 2090 ) prefix
-                 IF ( data%control%print_obj ) THEN
-                   WRITE( data%out, 2170 ) prefix
-                 ELSE
-                   WRITE( data%out, 2160 ) prefix
-                 END IF
-               END IF
-               data%print_1st_header = .FALSE.
-               char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
-               char_facts = ADJUSTR( STRING_integer_6( data%total_facts ) )
-               WRITE( data%out, "( A, A6, 1X, 3A1, ES11.4, '    NaN    ',      &
-              &                    ES9.1,  2ES8.1, 1X, A6, F8.2 )" )           &
-                  prefix, char_iter, data%accept, data%negcur, data%hard,      &
-                  inform%norm_c, data%ratio, data%old_weight, data%s_norm,     &
-                  char_facts, data%clock_now
-             END IF
-             inform%obj = data%obj_current
-             inform%norm_c = data%norm_c_current
-
-!  check to see if we are still "alive"
-
-             IF ( data%control%alive_unit > 0 ) THEN
-               INQUIRE( FILE = data%control%alive_file, EXIST = alive )
-               IF ( .NOT. alive ) THEN
-                 inform%status = GALAHAD_error_alive
-                 RETURN
-               END IF
-             END IF
-
-!  check to see if the iteration limit has been exceeded
-
-             inform%iter = inform%iter + 1
-             IF ( inform%iter > data%control%maxit .AND.                       &
-                  data%step_accepted ) THEN
-               inform%status = GALAHAD_error_max_iterations ; GO TO 900
-             END IF
-
-!  increase the regularization weight and try again
-
-             inform%weight = data%control%weight_increase * data%old_weight
-             GO TO 100
-           ELSE
-             IF ( data%printi ) WRITE( data%out,                               &
-                "( A, ' initial gradient value is a NaN' )" ) prefix
-             inform%status = GALAHAD_error_evaluation ; GO TO 990
-           END IF
-         END IF
-
-!  reset the initial weight to ||g|| if no sensible value is given
-
-         IF ( inform%iter == 0 ) THEN
-           IF ( data%control%initial_weight <= zero )                          &
-              inform%weight = one / inform%norm_g
-
-!  compute the gradient stopping tolerance
-
-           data%stop_g = MAX( MAX( data%control%stop_g_absolute, zero ),       &
-             MAX( data%control%stop_g_relative, zero ) * inform%norm_g, epsmch )
-
-           IF ( data%printi )                                                  &
-             WRITE( data%out, "( A, '  Problem: ', A, ' (n = ', I0, ', m = ',  &
-          &   I0, ')', /, A, '  NLS stopping tolerances (c,J''c/c) =',         &
-          &   2ES9.2, / )" ) prefix, TRIM( nlp%pname ), nlp%n, nlp%m,          &
-             prefix, data%stop_c, data%stop_g
-         END IF
-       END IF
-
-!  control printing
-
-       IF ( inform%iter >= data%start_print .AND.                              &
-            inform%iter < data%stop_print .AND.                                &
-            MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 )   &
-           THEN
-         data%printi = data%set_printi ; data%printt = data%set_printt
-         data%printm = data%set_printm ; data%printw = data%set_printw
-         data%printd = data%set_printd
-         data%print_level = data%control%print_level
-         data%control%GLRT_control%print_level = data%print_level_glrt
-         data%control%RQS_control%print_level = data%print_level_rqs
-       ELSE
-         data%printi = .FALSE. ; data%printt = .FALSE.
-         data%printm = .FALSE. ; data%printw = .FALSE. ; data%printd = .FALSE.
-         data%print_level = 0
-         data%control%GLRT_control%print_level = 0
-         data%control%RQS_control%print_level = 0
-       END IF
-       data%print_iteration_header = data%print_level > 1 .OR.                 &
-         ( data%control%subproblem_control%GLRT_control%print_level > 0 .AND.  &
-           .NOT. data%control%subproblem_control%subproblem_direct ) .OR.      &
-         data%control%subproblem_control%RQS_control%print_level > 0 .OR.      &
-         ( ( data%control%model == tensor_gauss_newton_model .OR.              &
-             data%control%model == tensor_newton_model .OR.                    &
-             data%control%model == tensor_gauss_to_newton_model ) .AND.        &
-           data%control%subproblem_control%print_level > 0 )
-
-!  print one-line summary
-
-       IF ( data%printi ) THEN
-          IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
-           WRITE( data%out, 2090 ) prefix
-           IF ( data%control%print_obj ) THEN
-             WRITE( data%out, 2170 ) prefix
-           ELSE
-             WRITE( data%out, 2160 ) prefix
-           END IF
-         END IF
-
-         data%print_1st_header = .FALSE.
-         CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-         data%time_now = data%time_now - data%time_start
-         data%clock_now = data%clock_now - data%clock_start
-         char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
-         IF ( inform%iter > 0 ) THEN
-           char_facts =                                                        &
-             ADJUSTR( STRING_integer_6( data%total_facts ) )
-           IF ( data%control%print_obj ) THEN
-             WRITE( data%out, 2120 ) prefix, char_iter, data%accept,           &
-                data%negcur, data%hard, inform%obj,                            &
-                inform%norm_g, data%ratio, data%old_weight,                    &
-                data%s_norm, char_facts, data%clock_now
-           ELSE
-             WRITE( data%out, 2120 ) prefix, char_iter, data%accept,           &
-                data%negcur, data%hard, inform%norm_c,                         &
-                inform%norm_g, data%ratio, data%old_weight,                    &
-                data%s_norm, char_facts, data%clock_now
-           END IF
-         ELSE
-           IF ( data%control%print_obj ) THEN
-             WRITE( data%out, 2140 ) prefix,                                   &
-                char_iter, inform%obj, inform%norm_g
-           ELSE
-             WRITE( data%out, 2140 ) prefix,                                   &
-                char_iter, inform%norm_c, inform%norm_g
-           END IF
-         END IF
-       END IF
-
-!  ============================================================================
-!  1. Test for convergence
-!  ============================================================================
-
-!  stop if the gradient is small enough
-
-       IF ( inform%norm_c <= data%stop_c .OR.                                  &
-            inform%norm_g <= data%stop_g ) THEN
-         inform%status = GALAHAD_ok ; GO TO 900
-       END IF
-
-!  stop if the gradient is swamped by the Hessian
-
-!       IF ( data%control%hessian_available .AND. inform%iter > 0 ) THEN
-!         IF ( inform%norm_g <= MIN( one,                                      &
-!               MAXVAL( ABS( data%H%val( : data%H%ne ) ) ) * epsmch ) ) THEN
-!         write(6,*) ' stopping as g is too ill-conditioned to make ',         &
-!        &   'further progress!'
-!         write(6,*) inform%norm_g,                                            &
-!           MAXVAL( ABS( nlp%H%val( : nlp%H%ne ) ) ) * epsmch
-!           inform%status = GALAHAD_error_ill_conditioned ; GO TO 900
-!         END IF
-!       END IF
-
-!  check to see if we are still "alive"
-
-       IF ( data%control%alive_unit > 0 ) THEN
-         INQUIRE( FILE = data%control%alive_file, EXIST = alive )
-         IF ( .NOT. alive ) THEN
-           inform%status = GALAHAD_error_alive
-           RETURN
-         END IF
-       END IF
-
-!  check to see if the iteration limit has been exceeded
-
-       inform%iter = inform%iter + 1
-       IF ( inform%iter > data%control%maxit .AND. data%step_accepted ) THEN
-         inform%status = GALAHAD_error_max_iterations ; GO TO 900
-       END IF
-!      write(6,*) inform%norm_c, data%stop_c, inform%norm_g, data%stop_g
-
-!  check to see if the Gauss-Newton model should be exchanged for a Newton one
-
-       IF ( data%gauss_to_newton_model ) THEN
-         IF ( inform%norm_g < data%control%switch_to_newton ) THEN
-           IF ( data%control%model == tensor_gauss_newton_model ) THEN
-!            IF ( control%power < two ) data%power = three
-             data%control%model = tensor_newton_model
-             data%subproblem_control%model = newton_model
-             data%form_scaling = data%jacobian_available .AND.                 &
-                                 data%hessian_available
-             data%re_entry = .FALSE.
-             data%print_1st_header = .TRUE.
-             IF ( data%printi ) WRITE( data%out,                               &
-               "( /, A, '  ... switching to Newton model', / )" ) prefix
-           END IF
-         END IF
-       END IF
-
-!  debug printing for X and G
-
-       IF ( data%out > 0 .AND. data%print_level > 4 ) THEN
-         WRITE ( data%out, 2040 ) prefix, TRIM( nlp%pname ), nlp%n
-         WRITE ( data%out, 2000 ) prefix, inform%c_eval, prefix, inform%j_eval,&
-           prefix, inform%h_eval, prefix, inform%iter, prefix, inform%cg_iter, &
-           prefix, inform%obj, prefix, inform%norm_g
-         WRITE ( data%out, 2010 ) prefix
-!        l = nlp%n
-         l = 2
-         DO j = 1, 2
-            IF ( j == 1 ) THEN
-               ir = 1 ; ic = MIN( l, nlp%n )
-            ELSE
-               IF ( ic < nlp%n - l ) WRITE( data%out, 2050 ) prefix
-               ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
-            END IF
-            IF ( ALLOCATED( nlp%vnames ) ) THEN
-              DO i = ir, ic
-                 WRITE( data%out, 2020 ) prefix, nlp%vnames( i ), nlp%X( i ),  &
-                  nlp%G( i )
-              END DO
-            ELSE
-              DO i = ir, ic
-                 WRITE( data%out, 2030 ) prefix, i, nlp%X( i ), nlp%G( i )
-              END DO
-            END IF
-         END DO
-       END IF
-
-!  recompute the scaled Hessian if it has changed
-
-       data%perturb = ' '
-       IF ( data%new_point ) THEN
-         data%nskip_prec = data%nskip_prec + 1
-         data%got_h = .FALSE.
-         data%hessian_computed = data%hessian_available .AND.                  &
-           data%control%model == tensor_newton_model .AND.                     &
-           data%nskip_prec > nskip_prec_max
-
-!  form the scaled Hessian or a scaling matrix based on the scaled Hessian
-
-         IF ( data%hessian_computed ) THEN
-           IF ( data%reverse_h ) THEN
-             data%Y( : nlp%m ) = nlp%C( : nlp%m )
-             data%branch = 120 ; inform%status = 4 ; RETURN
-           ELSE
-             CALL eval_H( data%eval_status, nlp%X( : nlp%n ),                  &
-                          nlp%C( : nlp%m ), userdata,                          &
-                          nlp%H%val( : nlp%H%ne ) )
-           END IF
-         END IF
-       END IF
-
-!  return from reverse communication with the scaled Hessian
-
- 120   CONTINUE
-       IF ( data%printw ) WRITE( data%out, "( A, ' statement 120' )" ) prefix
-
-!  the Hessian has changed
-
-       IF ( data%new_point ) THEN
-         IF ( data%hessian_computed ) THEN
-           inform%h_eval = inform%h_eval + 1  ; data%got_h = .TRUE.
-
-!  debug printing for H
-
-           IF ( data%printd ) THEN
-             WRITE( data%out, "( A, ' Scaled Hessian' )" ) prefix
-             DO l = 1, nlp%H%ne
-               WRITE( data%out, "( A, 2I7, ES24.16 )" ) prefix,                &
-                 nlp%H%row( l ), nlp%H%col( l ), nlp%H%val( l )
-             END DO
-           END IF
-         END IF
-
-!  if required, form the Hessian to provide a scaling matrix
-
-         IF ( data%scaling_type > diagonal_jtj_scaling .OR.                    &
-              data%control%subproblem_control%subproblem_direct ) THEN
-
-!  form the transpose of the Jacobian
-
-           data%JT%val( : data%JT%ne ) = nlp%J%val( : data%JT%ne )
-
-!  insert the values of J^T J into H
-
-           CALL BSC_form( nlp%n, nlp%m, data%JT, data%H, data%BSC_data,        &
-                          data%control%BSC_control, inform%BSC_inform )
-
-!  append the values of H(x,c) if they are required
-
-           IF ( data%hessian_computed ) THEN
-             DO l = 1, nlp%H%ne
-               j =  data%H_map( l )
-               data%H%val( j ) = data%H%val( j ) + nlp%H%val( l )
-             END DO
-           END IF
-         END IF
-
-!        write(6,"( 5ES12.4 )" ) ( nlp%G( l ), l = 1, nlp%n )
-!        write(6,"( ( 2I8, ES12.4 ) )" ) ( data%H%row( l ), data%H%col( l ),   &
-!                                          data%H%val( l ), l = 1, data%h_ne )
-
-!  recompute the scaling matrix
-
-!  build the scaling matrix from H
-
-         IF ( data%scaling_type > diagonal_jtj_scaling .AND.                   &
-              data%form_scaling ) THEN
-           IF ( data%printt ) WRITE( data%out,                                 &
-                 "( A, ' Computing scaling matrix' )" ) prefix
-           CALL PSLS_build( data%H, data%regularization%matrix,                &
-             data%PSLS_data, data%control%PSLS_control, inform%PSLS_inform )
-
-!  check for error returns
-
-           IF ( inform%PSLS_inform%status /= 0 ) THEN
-             inform%status = inform%PSLS_inform%status ; GO TO 900
-           END IF
-
-           data%non_trivial_scaling = .TRUE.
-           IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
-
-!  build the scaling matrix as the diagonal matrix whose entries are
-!  the squares of the two-norms of the columns of J
-
-         ELSE IF ( data%scaling_type == diagonal_jtj_scaling .AND.             &
-                   data%form_scaling ) THEN
-           data%regularization%matrix%n = nlp%n
-           data%regularization%matrix%m = nlp%n
-           data%regularization%matrix%ne = nlp%n
-           CALL SMT_put( data%regularization%matrix%type, 'DIAGONAL',          &
-                         inform%alloc_status )
-           CALL mop_column_2_norms(  nlp%J,                                    &
-                         data%regularization%matrix%val( : nlp%n ) )
-           data%regularization%matrix%val( : nlp%n )                           &
-             = data%regularization%matrix%val( : nlp%n ) ** 2
-           data%non_trivial_scaling = .TRUE.
-
-!  the scaling matrix is the identity
-
-         ELSE
-           data%non_trivial_scaling = .FALSE.
-         END IF
-         data%control%PSLS_control%new_structure = .FALSE.
-       END IF
-
-   190 CONTINUE
-       IF ( data%printw ) WRITE( data%out, "( A, ' statement 190' )" ) prefix
-
-!  ============================================================================
-!  2. Calculate the search direction, s
-!  ============================================================================
-
-!  solve the tensor model problem - the residuals c(x+s) are approximated by
-!  r(s) = c(x) + J(x) s + 1/2 ( s^T H_i s )_i=1^m, where (w_i)_i=1^m denotes
-!  the vector whose ith component is w_i. The value of s sought, s_k, is a
-!  local minimizer of phi(s) = 1/2||r(s)||^2_2 + 1/p weight ||s||_S^p
-
-       IF ( .NOT. data%successful ) THEN
-         IF ( data%inner_weight == zero ) THEN
-           data%inner_weight = 0.0001_wp
-         ELSE
-           data%inner_weight = data%inner_weight * 10.0_wp
-         END IF
-       END IF
-       data%tensor_model%pname = 'tensor    '
-
-       IF ( .TRUE. ) THEN
-         data%tensor_model%X( : nlp%n ) = zero
-         GO TO 260
-       END IF
-
-!  ------------------------------- ignore this part --------------------------
-
-!  first, find a starting guess by minimizing phi(- alpha g)
-
-       data%tensor_model%X( : nlp%n ) = - nlp%G( : nlp%n ) / data%g_norm
-
-!  compute J(x) g
-
-       IF ( data%jacobian_available ) THEN
-         CALL mop_Ax( one, nlp%J, data%tensor_model%X( : nlp%n ), zero,        &
-                      data%JS( : nlp%m ), out = data%out,                      &
-                      error = data%control%error, print_level = 0,             &
-                      transpose = .FALSE. )
-
-!  if the Jacobian is unavailable, obtain a matrix-free product
-
-       ELSE
-         data%transpose = .FALSE.
-         data%U( : nlp%m ) = zero
-         data%V( : nlp%n ) = data%tensor_model%X( : nlp%n )
-         IF ( data%reverse_jprod ) THEN
-           data%branch = 220 ; inform%status = 5 ; RETURN
-         ELSE
-           data%JS( : nlp%m ) = zero
-           CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),                &
-                            userdata, data%transpose, data%JS( : nlp%m ),      &
-                            data%tensor_model%X( : nlp%n ), got_j = data%got_j )
-         END IF
-       END IF
-
-!  return from reverse communication with the Jacobian-vector product
-
-   220 CONTINUE
-       IF ( data%printw ) WRITE( data%out, "( A, ' statement 220' )" ) prefix
-       IF ( .NOT. data%jacobian_available .AND. data%reverse_jprod )           &
-         data%JS( : nlp%m ) = data%U( : nlp%m )
-
-!  evaluate H_i(x) g
-
-       IF ( data%reverse_hprods ) THEN
-         data%branch = 230 ; inform%status = 7 ; RETURN
-       ELSE
-         CALL eval_HPRODS( data%eval_status, nlp%X( : nlp%n ),                 &
-                           data%tensor_model%X( : nlp%n ), userdata,           &
-                           nlp%P%val, got_h = .FALSE. )
-       END IF
-
-!  return from reverse communication with the Hessians-vector product
-
-   230 CONTINUE
-
-!  compute 1/2 ( g^T H_i g )_i
-
-       DO i = 1, nlp%m
-         sths = zero
-         DO l = nlp%P%ptr( i ), nlp%P%ptr( i + 1 ) - 1
-           sths = sths + nlp%P%val( l ) * data%tensor_model%X( nlp%P%row( l ) )
-         END DO
-         data%HSHS( i ) = half * sths
-       END DO
-
-!  compute the coefficients of the tensor model along the steepest
-!  descent direction, i.e., the quartic function phi(-alpha g) =
-!   a4 * alpha ** 4 + a3 * alpha**3 + a2 * alpha**2 + a1 * alpha + a0
-
-!      data%a0 = half * DOT_PRODUCT( nlp%C(  : nlp%m ), nlp%C(  : nlp%m ) )
-       data%a1 = DOT_PRODUCT( nlp%C(  : nlp%m ), data%JS(  : nlp%m ) )
-       data%a2 = DOT_PRODUCT( nlp%C(  : nlp%m ), data%HSHS(  : nlp%m ) ) +     &
-                 half * DOT_PRODUCT( data%JS(  : nlp%m ), data%JS(  : nlp%m ) )
-       data%a3 = DOT_PRODUCT( data%JS(  : nlp%m ), data%HSHS(  : nlp%m ) )
-       data%a4 =                                                               &
-         half * DOT_PRODUCT( data%HSHS(  : nlp%m ), data%HSHS(  : nlp%m ) )
-
-!  since regularization is required, add 1/p weight ||s||_S^p to ap term
-
-       IF ( data%power == two ) THEN
-         data%a2 = data%a2 + half * data%inner_weight                          &
-           * SUM( data%tensor_model%X( : nlp%n ) ** 2 )
-       ELSE
-         data%a4 = data%a4 + quarter * data%inner_weight                       &
-           * SUM( data%tensor_model%X( : nlp%n ) ** 4 )
-       END IF
-
-!  find the roots of the cubic
-!    phi'(-alpha g) = 4 a4 * alpha**3 + 3 a3 * alpha**2 + 2 a2 * alpha + a1 = 0
-
-       CALL ROOTS_cubic( data%a1, two * data%a2, three * data%a3,              &
-                         four * data%a4, data%control%ROOTS_control%tol,       &
-                         nroots, root1, root2, root3, .FALSE. )
-!      write(6,*) data%a1, two * data%a2, three * data%a3,                     &
-!        four * data%a4, nroots, root1, root2, root3
-
-!  pick the smallest positive root
-
-       IF ( nroots == 3 .AND. root1 <= zero ) THEN
-         data%steplength = root3
-       ELSE
-         data%steplength = root1
-       END IF
-!      data%tensor_model%X( : nlp%n )                                          &
-!        = data%steplength * data%tensor_model%X( : nlp%n )
-
-!  --------------------------- end of ignored part -----------------------
-
-!  a stabilised (Gauss-)Newton method is applied to phi(s) to find s_k
-
-  260  CONTINUE
-
-!  mock do loop to allow reverse communication
-
-       data%regularization%weight = inform%weight
-       data%regularization%power = data%power
-
-       IF ( data%re_entry ) THEN
-         inform%subproblem_inform%status = 11
-       ELSE
-         inform%subproblem_inform%status = 1
-         data%subproblem_control = data%control%subproblem_control
-
-         IF ( data%control%model == tensor_gauss_newton_model ) THEN
-           data%subproblem_control%model = gauss_newton_model
-         ELSE IF ( data%control%model == tensor_newton_model ) THEN
-           data%subproblem_control%model = newton_model
-         ELSE IF ( data%control%model == tensor_gauss_to_newton_model ) THEN
-           data%subproblem_control%model = gauss_to_newton_model
-         END IF
-
-         data%re_entry = .TRUE.
-!        data%subproblem_control%subproblem_direct = .TRUE.
-!        data%subproblem_control%hessian_available = 1
-         IF ( .NOT. data%control%subproblem_control%subproblem_direct )        &
-           data%subproblem_control%jacobian_available = 1
-         data%subproblem_control%prefix = "'-" // data%control%prefix( 2 : 29 )
-       END IF
-       inform%subproblem_inform%iter = 0
-       inform%subproblem_inform%cg_iter = 0
-       inform%subproblem_inform%RQS_inform%factorizations = 0
-
-       data%subproblem_control%stop_g_relative = MIN( half,                    &
-         MAX( control%subproblem_control%stop_g_relative, zero ) )
-       data%subproblem_control%stop_g_absolute = MIN( half * inform%norm_g,    &
-         MAX( control%subproblem_control%stop_g_absolute, zero ) )
-       data%control%subproblem_control%norm = data%control%norm
-
-!  main loop to minimize the tensor model; the current estimate of the
-!  solution is s = tensor_model%X
-
-   270 CONTINUE
-       IF ( data%printw ) WRITE( data%out, "( A, ' statement 270, status = ',  &
-      &  I0  )" ) prefix, inform%subproblem_inform%status
-
-!  minimize the tensor model; the current estimate of the solution s = tm%X
-
-         CALL NLS_subproblem_solve( data%tensor_model, data%subproblem_control,&
-                                inform%subproblem_inform, data%subproblem_data,&
-                                data%subproblem_userdata,                      &
-                                stabilisation = data%regularization )
-
-!        WRITE(6,*) ' nls_status ', inform%subproblem_inform%status
-         SELECT CASE ( inform%subproblem_inform%status )
-
-!  obtain the residual function r(s) = c(x) + J(x) s + 1/2 ( s^T H_i s )_i=1^m,
-!  or, componentwise, r_i(s) = c_i(s) + g^T_i(x) s + 1/2 s^T H_i(x) s, where
-!  g_i(x) is the gradient of c_i(x)
-
-!  compute J(x) s
-
-         CASE ( 2 )
-           IF ( data%jacobian_available ) THEN
-             CALL mop_Ax( one, nlp%J, data%tensor_model%X( : nlp%n ), zero,    &
-                          data%JS( : nlp%m ), out = data%out,                  &
-                          error = data%control%error, print_level = 0,         &
-                          transpose = .FALSE. )
-
-!  if the Jacobian is unavailable, obtain a matrix-free product
-
-           ELSE
-             data%transpose = .FALSE.
-             IF ( data%reverse_jprod ) THEN
-               data%U( : nlp%m ) = zero
-               data%V( : nlp%n ) = data%tensor_model%X( : nlp%n )
-               data%branch = 280 ; inform%status = 5 ; RETURN
-             ELSE
-               data%JS( : nlp%m ) = zero
-               CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),            &
-                                userdata, data%transpose, data%JS( : nlp%m ),  &
-                                data%tensor_model%X( : nlp%n ),                &
-                                got_j = data%got_j )
-             END IF
-           END IF
-
-!  obtain the Jacobian J(s), where J^T(s) = ( g_i + H_i s )_i=1,...,m
-
-         CASE ( 3 )
-           data%tensor_model%J%val( : nlp%J%ne ) = nlp%J%val( : nlp%J%ne )
-           DO i = 1, nlp%m
-             DO l = nlp%P%ptr( i ), nlp%P%ptr( i + 1 ) - 1
-               ll = data%Hs_map( l )
-               data%tensor_model%J%val( ll )                                   &
-                 = data%tensor_model%J%val( ll ) + nlp%P%val( l )
-             END DO
-           END DO
-
-!  evaluate the scaled Hessian H(x,y)) = sum_i y_i H_i
-
-         CASE ( 4 )
-           IF ( data%reverse_h ) THEN
-             data%Y( : nlp%m ) = data%subproblem_data%Y( : nlp%m )
-             data%branch = 280 ; inform%status = 4 ; RETURN
-           ELSE
-             CALL eval_H( data%eval_status, nlp%X( : nlp%n ),                  &
-                          data%subproblem_data%Y( : nlp%m ), userdata,         &
-                          data%tensor_model%H%val( : nlp%H%ne ) )
-           END IF
-
-!  evaluate the sum u = u + J(s) v or u = u + J^T(s) v
-
-         CASE ( 5 )
-
-!  compute u = u + J^T(x) v
-
-           IF ( data%subproblem_data%transpose ) THEN
-             IF ( data%jacobian_available ) THEN
-               CALL mop_Ax( one, nlp%J, data%subproblem_data%V( : nlp%m ), one,&
-                            data%subproblem_data%U( : nlp%n ), out = data%out, &
-                            error = data%control%error, print_level = 0,       &
-                            transpose = .TRUE. )
-             ELSE
-               data%transpose = .TRUE.
-               IF ( data%reverse_jprod ) THEN
-                 data%U( : nlp%n ) = data%subproblem_data%U( : nlp%n )
-                 data%V( : nlp%m ) = data%subproblem_data%V( : nlp%m )
-                 data%branch = 280 ; inform%status = 5 ; RETURN
-               ELSE
-                 CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
-                                  userdata, data%transpose,                    &
-                                  data%subproblem_data%U( : nlp%n ),           &
-                                  data%subproblem_data%V( : nlp%m ),           &
-                                  got_j = data%got_j )
-               END IF
-             END IF
-
-!  compute u = u + J(x) v
-
-           ELSE
-             IF ( data%jacobian_available ) THEN
-               CALL mop_Ax( one, nlp%J, data%subproblem_data%V( : nlp%n ), one,&
-                            data%subproblem_data%U( : nlp%m ), out = data%out, &
-                            error = data%control%error, print_level = 0,       &
-                            transpose = .FALSE. )
-             ELSE
-               data%transpose = .FALSE.
-               IF ( data%reverse_jprod ) THEN
-                 data%U( : nlp%m ) = data%subproblem_data%U( : nlp%m )
-                 data%V( : nlp%n ) = data%subproblem_data%V( : nlp%n )
-                 data%branch = 280 ; inform%status = 5 ; RETURN
-               ELSE
-                 CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
-                                  userdata, data%transpose,                    &
-                                  data%subproblem_data%U( : nlp%m ),           &
-                                  data%subproblem_data%V( : nlp%n ),           &
-                                  got_j = data%got_j )
-               END IF
-             END IF
-           END IF
-
-!  evaluate the sum u = u + H(x,y) v
-
-         CASE ( 6 )
-           CALL mop_Ax( one, data%tensor_model%H,                              &
-                        data%subproblem_data%V( : nlp%m ), one,                &
-                        data%subproblem_data%U( : nlp%n ), out = data%out,     &
-                        error = data%control%error, print_level = 0,           &
-                        symmetric = .TRUE. )
-
-!  compute a "magic" step. Find the stepsize alpha for which phi(alpha s)
-!  is smallest
-
-         CASE ( 8 )
-
-!  for given alpha,
-
-!    phi(alpha s) = a0 + a1 alpha + a2 alpha^2 + a3 alpha^3 + a4 alpha^4,
-
-!  where
-
-!    a0 = 1/2 ||c(x)||_2^2,
-!    a1 = c^T(x) (J(x) s),
-!    a2 = 1/2 s^T (J^T(x) J(x) + H(x,c))s,
-!    a3 = sum_i g(x)_i^T s ) ( 1/2 s^T h_i(x) s ), and
-!    a4 = 1/2 sum_i (1/2 s^T h_i(x) s)^2.
-
-!  Compute the corefficients a0, ..., a4
-
-           IF ( data%power == two ) THEN
-             data%a0 = half * DOT_PRODUCT( nlp%C( : nlp%m ), nlp%C( : nlp%m ) )
-             data%a1 = DOT_PRODUCT( nlp%C( : nlp%m ), data%JS( : nlp%m ) )
-             data%a2 = DOT_PRODUCT( nlp%C( : nlp%m ), data%HSHS( : nlp%m ) ) + &
-                    half * DOT_PRODUCT( data%JS( : nlp%m ), data%JS( : nlp%m ) )
-             data%a3 = DOT_PRODUCT( data%JS( : nlp%m ), data%HSHS( : nlp%m ) )
-             data%a4 =                                                         &
-               half * DOT_PRODUCT( data%HSHS( : nlp%m ), data%HSHS( : nlp%m ) )
-
-!  add the regularization term 1/2 weight ||s||_S^2 to a2
-
-             CALL mop_Ax( one, data%regularization%matrix,                     &
-                          data%tensor_model%X( : nlp%n ),                      &
-                          zero, data%subproblem_data%SX( : nlp%n ),            &
-                          symmetric = .TRUE., out = data%out,                  &
-                          error = data%control%error, print_level = 0 )
-             reg = half * inform%weight *                        &
-                         DOT_PRODUCT( data%tensor_model%X( : nlp%n ),          &
-                                      data%subproblem_data%SX( : nlp%n ) )
-             data%a2 = data%a2 + reg
-
-!  find the roots of the cubic
-!    phi'(alpha s) = a1 + 2 a2 * alpha + 3 a3 * alpha^2 + 4 a4 * alpha^3 = 0
-
-             CALL ROOTS_cubic( data%a1, two * data%a2, three * data%a3,        &
-                               four * data%a4, data%control%ROOTS_control%tol, &
-                               nroots, root1, root2, root3, .FALSE. )
-!      write(6,*) data%a1, two * data%a2, three * data%a3,                     &
-!        four * data%a4, nroots, root1, root2, root3
-
-             c0 = data%a0 + data%a1 + data%a2 - reg + data%a3 + data%a4
-             c0 = SQRT( two * c0 )
-             c1 = data%a0 + root1 * ( data%a1 + root1 *                        &
-                 ( data%a2 - reg + root1 * ( data%a3 + data%a4 * root1 ) ) )
-             c1 = SQRT( two * c1 )
-             IF ( nroots == 3 ) THEN
-               c2 = data%a0 + root2 * ( data%a1 + root2 *                      &
-                   ( data%a2 - reg + root2 * ( data%a3 + data%a4 * root2 ) ) )
-               c2 = SQRT( two * c2 )
-               c3 = data%a0 + root3 * ( data%a1 + root3 *                      &
-                   ( data%a2 - reg + root3 * ( data%a3 + data%a4 * root3 ) ) )
-               c3 = SQRT( two * c3 )
-             END IF
-
-             IF ( .FALSE. ) THEN
-!            IF ( .TRUE. ) THEN
-               write(6,"( ' weight ', ES12.4 )" ) inform%weight
-               write(6,"( 's,a', 6ES12.4 )" ) TWO_NORM( nlp%X( : nlp%n ) ),    &
-                 data%a0, data%a1, data%a2, data%a3, data%a4
-               write(6,"( ' alpha =', ES18.10, ' c,phi''(alpha) =',2ES18.10 )")&
-                 one, c0, data%a1 + two * data%a2 + three * data%a3 +          &
-                            four * data%a4
-               write(6,"( ' alpha =', ES18.10, ' c,phi''(alpha) =',2ES18.10 )")&
-                 root1, c1, data%a1 + root1 * ( two * data%a2 + root1 *        &
-                              ( three * data%a3 + four * data%a4 * root1 ) )
-               IF ( nroots == 3 ) THEN
-                 write(6,"( ' alpha =', ES18.10,' c,phi''(alpha) =',2ES18.10)")&
-                   root2, c2, data%a1 + root2 * ( two * data%a2 + root2 *      &
-                                ( three * data%a3 + four * data%a4 * root2 ) )
-                 write(6,"( ' alpha =', ES18.10,' c,phi''(alpha) =',2ES18.10)")&
-                   root3, c3, data%a1 + root3 * ( two * data%a2 + root3 *      &
-                                ( three * data%a3 + four * data%a4 * root3 ) )
-               END IF
-             END IF
-
-!  pick the best root, alpha
-
-             IF ( nroots == 3 ) THEN
-               IF ( c1 <= c3 ) THEN
-                 alpha = root1
-               ELSE
-                 alpha = root3
-               END IF
-             ELSE
-               alpha = root1
-             END IF
-
-!  replace s by alpha s
-
-             data%tensor_model%X( : nlp%n )                                    &
-               = alpha * data%tensor_model%X( : nlp%n )
-
-!  replace r(s) by r(alpha s)
-
-             data%JS( : nlp%m ) = alpha * data%JS( : nlp%m )
-             data%HSHS( : nlp%m ) = ( alpha ** 2 ) * data%HSHS( : nlp%m )
-             data%tensor_model%C( : nlp%m )                                    &
-               = nlp%C( : nlp%m ) + data%JS( : nlp%m ) + data%HSHS( : nlp%m )
-             nlp%P%val( : nlp%P%ptr( nlp%m + 1 ) - 1 )                         &
-               = alpha * nlp%P%val( : nlp%P%ptr( nlp%m + 1 ) - 1 )
-           END IF
-         END SELECT
-
-!  return from reverse communication with the Jacobian-vector product
-
-   280   CONTINUE
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 280, status = ',&
-        &  I0  )" ) prefix, inform%subproblem_inform%status
-
-!  continue with the computation of r(s)
-
-         SELECT CASE ( inform%subproblem_inform%status )
-         CASE ( 2 )
-           IF ( .NOT. data%jacobian_available .AND. data%reverse_jprod )       &
-             data%JS( : nlp%m ) = data%U( : nlp%m )
-
-!  evaluate H_i(x) s
-
-           IF ( data%reverse_hprods ) THEN
-             data%V( : nlp%n ) = data%tensor_model%X( : nlp%n )
-             data%branch = 290 ; inform%status = 7 ; RETURN
-           ELSE
-             CALL eval_HPRODS( data%eval_status, nlp%X( : nlp%n ),             &
-                               data%tensor_model%X( : nlp%n ), userdata,       &
-                               nlp%P%val, got_h = .FALSE. )
-           END IF
-
-!  record the scaled Hessian
-
-         CASE ( 4 )
-           IF ( data%reverse_h ) data%tensor_model%H%val( : nlp%H%ne )         &
-             = nlp%H%val( : nlp%H%ne )
-
-!  continue with the sum u = u + J(s) v or u = u + J^T(s) v
-
-         CASE ( 5 )
-
-!  compute u = u + P(x,s) v
-
-           IF ( data%subproblem_data%transpose ) THEN
-             IF ( .NOT. data%jacobian_available .AND. data%reverse_jprod ) THEN
-               data%subproblem_data%U( : nlp%n ) = data%U( : nlp%n )
-             END IF
-             CALL mop_Ax( one, nlp%P, data%subproblem_data%V( : nlp%m ), one,  &
-                          data%subproblem_data%U( : nlp%n ), out = data%out,   &
-                          error = data%control%error, print_level = 0,         &
-                          transpose = .FALSE. )
-
-!  compute u = u + P^T(x,s) v
-
-           ELSE
-             IF ( .NOT. data%jacobian_available .AND. data%reverse_jprod ) THEN
-               data%subproblem_data%U( : nlp%m ) = data%U( : nlp%m )
-             END IF
-             CALL mop_Ax( one, nlp%P, data%subproblem_data%V( : nlp%m ), one,  &
-                          data%subproblem_data%U( : nlp%n ), out = data%out,   &
-                          error = data%control%error, print_level = 0,         &
-                          transpose = .TRUE. )
-           END IF
-         END SELECT
-
-!  return from reverse communication with the Hessains-vector product
-
-   290   CONTINUE
-         IF ( data%printw ) WRITE( data%out, "( A, ' statement 290, status = ',&
-        &  I0  )" ) prefix, inform%subproblem_inform%status
-
-!  continue with the computation of r(s)
-
-         SELECT CASE ( inform%subproblem_inform%status )
-
-!  compute 1/2 ( s^T H_i s )_i
-
-         CASE ( 2 )
-           DO i = 1, nlp%m
-             sths = zero
-             DO l = nlp%P%ptr( i ), nlp%P%ptr( i + 1 ) - 1
-               sths = sths +                                                   &
-                        nlp%P%val( l ) * data%tensor_model%X( nlp%P%row( l ) )
-             END DO
-             data%HSHS( i ) = half * sths
-           END DO
-
-!  compute r(s) = c(x) + J(x) s + 1/2 ( s^T H_i s )_i
-
-           data%tensor_model%C( : nlp%m ) =                                    &
-             nlp%C( : nlp%m ) + data%JS( : nlp%m ) + data%HSHS( : nlp%m )
-         END SELECT
-       IF ( inform%subproblem_inform%status > 0 ) GO TO 270
-
-!  search direction found
-
-       data%S( : nlp%n ) = data%tensor_model%X( : nlp%n )
-       CALL mop_Ax( one, data%regularization%matrix,                           &
-                    data%S( : nlp%n ), zero,                                   &
-                    data%subproblem_data%SX( : nlp%n ),                        &
-                    symmetric = .TRUE., out = data%out,                        &
-                    error = data%control%error, print_level = 0 )
-       data%subproblem_data%xtsx                                               &
-         = DOT_PRODUCT( data%S( : nlp%n ), data%subproblem_data%SX( : nlp%n ) )
-       data%s_norm = SQRT( data%subproblem_data%xtsx )
-       data%model = inform%subproblem_inform%obj - inform%obj                  &
-         - ( data%regularization%weight / data%regularization%power )          &
-            * data%s_norm ** data%regularization%power
-
-       data%final_weight = inform%subproblem_inform%weight
-
-!  update the factorization counts
-
-       IF ( data%control%subproblem_control%subproblem_direct ) THEN
-         IF ( .FALSE.) THEN  ! old (innacurate) way to find these
-           facts = inform%subproblem_inform%factorization_average              &
-                     * REAL( inform%subproblem_inform%iter, wp )
-           data%total_facts = data%total_facts + INT( facts )
-           data%total_inner_its                                                &
-             = data%total_inner_its + inform%subproblem_inform%iter
-           IF ( data%total_inner_its > 0 ) inform%factorization_average =      &
-               REAL( data%total_facts, wp ) / REAL( data%total_inner_its, wp )
-           inform%factorization_max = MAX( inform%factorization_max,           &
-             inform%subproblem_inform%factorization_max )
-         ELSE
-           data%total_facts                                                    &
-             = data%total_facts + data%subproblem_data%total_facts
-           inform%factorization_max = MAX( inform%factorization_max,           &
-             inform%subproblem_inform%RQS_inform%factorizations )
-           inform%factorization_average =  data%total_facts / inform%iter
-         END IF
-       END IF
-
-!  ============================================================================
-!  3. check for acceptance of the new point
-!  ============================================================================
-
-!  see if the correction will make any difference
-
-       IF ( MAXVAL( ABS( data%S( : nlp%n ) ) / MAX( one, nlp%X( : nlp%n ) ) )  &
-            <= data%control%stop_s ) THEN
-         inform%status = GALAHAD_error_tiny_step ; GO TO 900
-       END IF
-
-!  compute the slope and curvature along the step
-
-       data%stg = DOT_PRODUCT( data%S( : nlp%n ), nlp%G( : nlp%n ) )
-       data%hstbs = data%model - data%stg
-!      write(6,*) ' stg = ', data%stg
-
-!  record the current point
-
-       data%obj_current = inform%obj
-       data%norm_c_current = inform%norm_c
-       data%X_current( : nlp%n ) = nlp%X( : nlp%n )
-       data%C_current( : nlp%m ) = nlp%C( : nlp%m )
-
-!  form the trial point
-
-       nlp%X( : nlp%n ) = data%X_current( : nlp%n ) + data%S( : nlp%n )
-
-!  evaluate the objective function at the trial point
-
-       IF ( data%reverse_c ) THEN
-         data%branch = 320 ; inform%status = 2 ; RETURN
-       ELSE
-         CALL eval_C( data%eval_status, nlp%X( : nlp%n ), userdata,            &
-                      nlp%C( : nlp%m ) )
-       END IF
-
-!  return from reverse communication with the objective value
-
-   320 CONTINUE
-       IF ( data%printw ) WRITE( data%out, "( A, ' statement 320' )" ) prefix
-       inform%c_eval = inform%c_eval + 1
-       data%norm_c_trial = TWO_NORM( nlp%C( : nlp%m ) )
-       data%f_trial = half * data%norm_c_trial ** 2
-!      if(data%printi) write(6,*) ' f_trial ', data%f_trial
-
-!  deal with NaN trial objective values
-!  ------------------------------------
-
-!      data%f_is_nan = IEEE_IS_NAN( data%f_trial )
-       data%f_is_nan = data%f_trial /= data%f_trial
-       IF ( data%f_is_nan ) THEN
-         data%poor_model = .TRUE.
-         data%accept = 'r'
-         nlp%X( : nlp%n ) = data%X_current( : nlp%n )
-         nlp%C( : nlp%m ) = data%C_current( : nlp%m )
-
-!  control printing for the NaN case
-
-         IF ( inform%iter >= data%start_print .AND.                            &
-              inform%iter < data%stop_print .AND.                              &
-              MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 ) &
-             THEN
-           data%printi = data%set_printi ; data%printt = data%set_printt
-           data%printm = data%set_printm ; data%printw = data%set_printw
-           data%printd = data%set_printd
-           data%print_level = data%control%print_level
-           data%control%GLRT_control%print_level = data%print_level_glrt
-           data%control%RQS_control%print_level = data%print_level_rqs
-         ELSE
-           data%printi = .FALSE. ; data%printt = .FALSE.
-           data%printm = .FALSE. ; data%printw = .FALSE. ; data%printd = .FALSE.
-           data%print_level = 0
-           data%control%GLRT_control%print_level = 0
-           data%control%RQS_control%print_level = 0
-         END IF
-         data%print_iteration_header = data%print_level > 1 .OR.               &
-           ( data%control%GLRT_control%print_level > 0 .AND. .NOT.             &
-             data%control%subproblem_control%subproblem_direct ) .OR.          &
-!            data%control%subproblem_direct ) .OR.                             &
-           ( data%control%RQS_control%print_level > 0 .AND.                    &
-             data%control%subproblem_control%subproblem_direct )
-!            data%control%subproblem_direct )
-
-!  print one-line summary
-
-         IF ( data%printi ) THEN
-            IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
-             WRITE( data%out, 2090 ) prefix
-             IF ( data%control%print_obj ) THEN
-               WRITE( data%out, 2170 ) prefix
-             ELSE
-               WRITE( data%out, 2160 ) prefix
-             END IF
-           END IF
-           data%print_1st_header = .FALSE.
-           char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
-           char_facts = ADJUSTR( STRING_integer_6( data%total_facts ) )
-           WRITE( data%out,  "( A, A6, 1X, 3A1, '    NaN           -    ',     &
-          &  '    - Inf ',  2ES8.1, 1X, A6, F8.2 )" )                          &
-              prefix, char_iter, data%accept, data%negcur, data%hard,          &
-              inform%weight, data%s_norm, char_facts, data%clock_now
-         END IF
-
-!  check to see if we are still "alive"
-
-         IF ( data%control%alive_unit > 0 ) THEN
-           INQUIRE( FILE = data%control%alive_file, EXIST = alive )
-           IF ( .NOT. alive ) THEN
-             inform%status = GALAHAD_error_alive
-             RETURN
-           END IF
-         END IF
-
-!  check to see if the iteration limit has been exceeded
-
-         inform%iter = inform%iter + 1
-         IF ( inform%iter > data%control%maxit .AND. data%step_accepted ) THEN
-           inform%status = GALAHAD_error_max_iterations ; GO TO 900
-         END IF
-
-!  increase the regularization weight and try again
-
-         IF ( inform%weight == zero ) THEN
-           inform%weight = 0.0001_wp
-         ELSE
-           inform%weight = inform%weight * 10.0_wp
-           inform%weight = data%control%weight_increase * inform%weight
-         END IF
-         GO TO 190
-       END IF
-
-!  compute the change in objective and the slope
-
-       data%df = inform%obj - data%f_trial
-!      if (data%printi) write(6,*) ' dm, df ', - data%model, data%df
-
-!  compute the ratio of actual to predicted reduction over the current iteration
-
-       rounding =                                                              &
-         MAX( one, ABS( inform%obj ) ) * REAL( nlp%n, KIND = wp ) * epsmch
-
-       ared = data%df + rounding
-       prered = - data%model + rounding
-       IF ( ABS( ared ) < teneps .AND. ABS( inform%obj ) > teneps )            &
-         ared = prered
-       data%ratio = ared / prered
-!      write(6,*) ' ratio ', data%ratio, ared, prered
-       IF ( data%printm ) WRITE( data%out, "( /, A, ' actual, predicted',      &
-      &   ' reductions = ', 2ES12.4 )" ) prefix, ared, prered
-
-!  compute the ratio of actual to predicted reduction over the recent history
-
-       IF ( .NOT. data%monotone ) THEN
-
-!  compute the largest f in the history
-
-         data%ref = MAXLOC( data%F_hist( data%non_monotone_history + 2         &
-                            - data%max_hist : data%non_monotone_history + 1 ) )
-         data%f_ref = data%F_hist( data%ref( 1 ) )
-
-!  use the larger of these two ratios to assess progress
-
-         data%ratio = MAX( data%ratio, ( data%f_trial - data%f_ref ) /         &
-           ( SUM( data%D_hist( data%ref( 1 ) + 1 :                             &
-             data%non_monotone_history + 1 ) ) + data%model ) )
-       END IF
-
-!  the new point is acceptable
-
-       IF ( data%ratio >= data%control%eta_successful ) THEN
-         data%poor_model = .FALSE.
-         data%accept = 'a'
-         data%step_accepted = .TRUE.
-         inform%norm_c = data%norm_c_trial
-         inform%obj = data%f_trial
-         data%s_norm_successful = data%s_norm
-
-!  stop if the residual is sufficiently small
-
-         IF ( inform%norm_c <= data%stop_c ) THEN
-
-!  print one-line summary
-
-           IF ( data%printi ) THEN
-             CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-             data%time_now = data%time_now - data%time_start
-             data%clock_now = data%clock_now - data%clock_start
-             IF ( data%print_iteration_header .OR. data%print_1st_header ) THEN
-               WRITE( data%out, 2090 ) prefix
-               IF ( data%control%print_obj ) THEN
-                 WRITE( data%out, 2170 ) prefix
-               ELSE
-                 WRITE( data%out, 2160 ) prefix
-               END IF
-             END IF
-             data%print_1st_header = .FALSE.
-             char_iter = ADJUSTR( STRING_integer_6( inform%iter ) )
-             IF ( inform%iter > 0 ) THEN
-               char_facts =                                                    &
-                 ADJUSTR( STRING_integer_6( data%total_facts ) )
-               IF ( data%control%print_obj ) THEN
-                 WRITE( data%out, 2120 ) prefix, char_iter, data%accept,       &
-                    data%negcur, data%hard, inform%obj,                        &
-                    inform%norm_g, data%ratio, data%old_weight,                &
-                    data%s_norm, char_facts, data%clock_now
-               ELSE
-                 WRITE( data%out, 2120 ) prefix, char_iter, data%accept,       &
-                    data%negcur, data%hard, inform%norm_c,                     &
-                    inform%norm_g, data%ratio, data%old_weight,                &
-                    data%s_norm, char_facts, data%clock_now
-               END IF
-             ELSE
-               IF ( data%control%print_obj ) THEN
-                 WRITE( data%out, 2140 ) prefix,                               &
-                    char_iter, inform%obj, inform%norm_g
-               ELSE
-                 WRITE( data%out, 2140 ) prefix,                               &
-                    char_iter, inform%norm_c, inform%norm_g
-               END IF
-             END IF
-           END IF
-           inform%status = GALAHAD_ok ; GO TO 900
-         END IF
-
-!  update the history
-
-         IF ( data%monotone ) THEN
-           data%f_ref = inform%obj
-
-!  shift history of function and model values
-
-         ELSE
-           DO i = 1, data%non_monotone_history
-             data%F_hist( i ) = data%F_hist( i + 1 )
-             data%D_hist( i ) = data%D_hist( i + 1 )
-           END DO
-
-!  replace the oldest
-
-           data%F_hist( data%non_monotone_history + 1 ) = inform%obj
-           data%D_hist( data%non_monotone_history + 1 ) = data%model
-
-!  find how much past history is allowed
-
-           data%max_hist = MIN( data%max_hist + 1, data%non_monotone_history )
-         END IF
-
-!  the new point is not acceptable
-
-       ELSE
-         data%poor_model = .TRUE.
-         data%accept = 'r'
-         nlp%X( : nlp%n ) = data%X_current( : nlp%n )
-         nlp%C( : nlp%m ) = data%C_current( : nlp%m )
-         data%new_point = .FALSE.
-       END IF
-
-!  ==========================================================
-!  4. Update the regularization weight and other book-keeping
-!  ==========================================================
-
-       data%old_weight = inform%weight
-       data%successful = data%ratio >= data%control%eta_successful
-
-!  update the weight
-
-       SELECT CASE ( data%control%weight_update_strategy )
-       CASE ( weight_update_zero_reset )
-         IF ( data%ratio < data%control%eta_successful ) THEN
-           inform%weight = MAX( data%control%weight_increase * inform%weight,  &
-                                data%minimum_weight )
-         ELSE IF ( data%ratio >= data%control%eta_very_successful .AND.        &
-                  data%ratio <= data%control%eta_too_successful ) THEN
-           inform%weight = weight_zero
-         END IF
-!      CASE ( weight_update_gpt )
-!         CALL ARC_adjust_weight( inform%weight, data%model, data%stg,         &
-!                                 data%hstbs, data%s_norm, data%ratio,         &
-!                                 data%ARC_control )
-!         inform%weight = MAX( data%minimum_weight, inform%weight )
-
-!         IF ( data%ratio < control%eta_successful ) THEN
-!           IF ( data%control%subproblem_direct ) THEN
-!             val = two * inform%RQS_inform%pole / data%s_norm_successful
-!           ELSE
-!             val = - two * inform%GLRT_inform%leftmost /data%s_norm_successful
-!           END IF
-!           inform%weight = MAX( inform%weight, val )
-!         END IF
-       CASE DEFAULT
-         IF ( data%ratio < data%control%eta_successful ) THEN
-           inform%weight = data%control%weight_increase * inform%weight
-         ELSE IF ( data%ratio >= data%control%eta_very_successful .AND.        &
-                  data%ratio <= data%control%eta_too_successful ) THEN
-           inform%weight = MAX( data%minimum_weight,                           &
-                                  data%control%weight_decrease * inform%weight )
-         END IF
-       END SELECT
-
-       IF ( data%ratio >= data%control%eta_successful ) THEN
-         IF ( data%control%model == tensor_newton_model .OR.                   &
-              data%control%model == tensor_gauss_to_newton_model .OR.          &
-              data%control%model == tensor_gauss_newton_model ) THEN
-           data%inner_weight = data%control%initial_inner_weight
-         END IF
-
-!  compute ||s||_S
-
-         IF ( data%control%norm /= identity_scaling ) THEN
-           IF ( data%control%renormalize_weight ) THEN
-             data%s_new_norm = data%s_norm
-             IF ( data%printt )                                                &
-               WRITE( data%out, "( A, ' ratio new, old norms = ', ES12.4 )" )  &
-                 prefix, data%s_new_norm / data%s_norm
-           ELSE
-             data%s_new_norm = data%s_norm
-           END IF
-
-!  if the norm has changed, adjust the weight accordingly
-
-           inform%weight = inform%weight * ( data%s_new_norm / data%s_norm )
-           data%s_norm = data%s_new_norm
-         END IF
-       END IF
-!      write(6,*) 'weight', inform%weight
-
-!  record the clock time
-
-       CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
-       data%time_now = data%time_now - data%time_start
-       data%clock_now = data%clock_now - data%clock_start
-       IF ( data%printt ) WRITE( data%out, "( /, A, ' Time so far = ', 0P,     &
-      &    F12.2,  ' seconds' )" ) prefix, data%clock_now
-       IF ( ( data%control%cpu_time_limit >= zero .AND.                        &
-              data%time_now > data%control%cpu_time_limit ) .OR.               &
-            ( data%control%clock_time_limit >= zero .AND.                      &
-              data%clock_now > data%control%clock_time_limit ) ) THEN
-         inform%status = GALAHAD_error_cpu_limit ; GO TO 900
-       END IF
-
-     GO TO 100
-
-!  Newton or Gauss-Newton solver used
-
- 800 CONTINUE
-     data%branch = data%branch_newton
-!    write(6,*) ' in data%branch ', data%branch
-     CALL NLS_subproblem_solve( nlp, data%subproblem_control,                  &
-                            inform%NLS_subproblem_inform_type,                 &
-                            data%NLS_subproblem_data_type, userdata,           &
-                            eval_C = eval_C, eval_J = eval_J, eval_H = eval_H, &
-                            eval_JPROD = eval_JPROD, eval_HPROD = eval_HPROD,  &
-                            eval_SCALE = eval_SCALE )
-!    write(6,*) ' out data%branch ', &
-!      data%branch, inform%NLS_subproblem_inform_type%status
-     data%branch_newton = data%branch
-     SELECT CASE ( inform%NLS_subproblem_inform_type%status )
-     CASE ( 8 )
-       GO TO 800
-     CASE ( 2 : 7 )
-     CASE DEFAULT
-       RETURN
-     END SELECT
-     data%branch = 810
-     RETURN
-
- 810 CONTINUE
-     GO TO 800
-
-!  ============================================================================
-!  End of the main iteration
-!  ============================================================================
-
- 900 CONTINUE
-     IF ( data%printw ) WRITE( data%out, "( A, ' statement 900' )" ) prefix
-
-!  print details of solution
-
-     IF ( inform%norm_c > zero ) THEN
-       inform%norm_g = TWO_NORM( nlp%G( : nlp%n ) ) / inform%norm_c
-     ELSE
-       inform%norm_g = zero
-     END IF
-!    write(6,*) ' final weight = ', inform%weight
-
- 910 CONTINUE
-     IF ( data%printw ) WRITE( data%out, "( A, ' statement 910' )" ) prefix
-     CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
-     inform%time%total = data%time_record - data%time_start
-     inform%time%clock_total = data%clock_record - data%clock_start
-
-     IF ( data%printi ) THEN
-
-!      WRITE ( data%out, 2040 ) nlp%pname, nlp%n
-!      WRITE ( data%out, 2000 ) inform%c_eval, inform%j_eval, inform%h_eval,   &
-!         inform%iter, inform%cg_iter, inform%obj, inform%norm_g
-!      WRITE ( data%out, 2010 )
-!      IF ( data%print_level > 3 ) THEN
-!         l = nlp%n
-!      ELSE
-!         l = 2
-!      END IF
-!      DO j = 1, 2
-!         IF ( j == 1 ) THEN
-!            ir = 1 ; ic = MIN( l, nlp%n )
-!         ELSE
-!            IF ( ic < nlp%n - l ) WRITE( data%out, 2050 )
-!            ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
-!         END IF
-!         DO i = ir, ic
-!            WRITE ( data%out, 2020 ) nlp%vnames( i ), nlp%X( i ), nlp%G( i )
-!         END DO
-!      END DO
-
-       WRITE( data%out, "( /, A, '  Problem: ', A, ' (n = ', I0, ', m = ', I0, &
-    &   ')', /, A, '  NLS stopping tolerances (c,J''c/c) =', 2ES9.2 )" )     &
-       prefix, TRIM( nlp%pname ), nlp%n, nlp%m, prefix, data%stop_c, data%stop_g
-       IF ( .NOT. data%monotone ) WRITE( data%out,                             &
-           "( A, '  Non-monotone method used (history = ', I0, ')' )" ) prefix,&
-         data%non_monotone_history
-       SELECT CASE( data%model_used )
-       CASE ( tensor_gauss_newton_model )
-         WRITE( data%out, "( A, '  Regularized tensor Gauss-Newton',           &
-       &   ' model used'  )" ) prefix
-       CASE ( tensor_newton_model )
-         WRITE( data%out, "( A, '  Regularized tensor Newton',                 &
-       &   ' model used'  )" ) prefix
-       CASE ( tensor_gauss_to_newton_model )
-         WRITE( data%out, "( A, '  Regularized tensor Gauus-Newton then',      &
-       &   ' Newton model used'  )" ) prefix
-       END SELECT
-       WRITE( data%out, "( A, '  Regularization power =', F4.1 )" )            &
-          prefix, data%power
-       IF ( data%control%subproblem_control%subproblem_direct ) THEN
-!      IF ( data%control%subproblem_direct ) THEN
-         IF ( inform%RQS_inform%dense_factorization ) THEN
-           WRITE( data%out,                                                    &
-           "( A, '  Direct solution (eigen solver SYSV',                       &
-          &      ') of the regularization sub-problem' )" ) prefix
-         ELSE
-           WRITE( data%out,                                                    &
-           "( A, '  Direct solution (solver ', A,                              &
-          &      ') of the regularization sub-problem' )" )                    &
-              prefix, TRIM( data%control%RQS_control%definite_linear_solver )
-         END IF
-         SELECT CASE ( data%scaling_type )
-         CASE ( user_scaling )
-           WRITE( data%out, "( A, '  User-defined scaling used' )" )           &
-             prefix
-         CASE ( identity_scaling )
-           WRITE( data%out, "( A, '  No scaling used' )" ) prefix
-         CASE ( diagonal_jtj_scaling )
-           WRITE( data%out, "( A, '  Diagonal (JTJ) scaling used' )" ) prefix
-         CASE ( diagonal_hessian_scaling )
-           WRITE( data%out, "( A, '  Diagonal (H) scaling used' )" ) prefix
-         CASE ( band_scaling )
-           WRITE( data%out, "( A, '  Band scaling (semi-bandwidth ',           &
-          &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( reordered_band_scaling )
-           WRITE( data%out, "( A, ' Reordered band scaling (semi-bandwidth ',  &
-          &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( schnabel_eskow_scaling, gmps_scaling,                          &
-                lin_more_scaling, mi28_scaling )
-           WRITE( data%out, "( A, '  Modified full matrix scaling used' )")    &
-             prefix
-         END SELECT
-         WRITE( data%out, "( A, '  Number of factorization = ', I0,            &
-        &     ', factorization time = ', F0.2, ' seconds'  )" ) prefix,        &
-           inform%RQS_inform%factorizations,                                   &
-           inform%RQS_inform%time%clock_factorize
-         IF ( TRIM( data%control%RQS_control%definite_linear_solver ) ==       &
-              'pbtr' ) THEN
-           WRITE( data%out, "( A, '  Max entries in factors = ', I0,           &
-          & ', semi-bandwidth = ', I0  )" ) prefix, inform%max_entries_factors,&
-              inform%RQS_inform%SLS_inform%semi_bandwidth
-         ELSE
-           WRITE( data%out, "( A, '  Max entries in factors = ', I0 )" )       &
-             prefix, inform%max_entries_factors
-         END IF
-       ELSE
-         IF ( data%scaling_type > 0 )                                          &
-           WRITE( data%out, "( A, '  Hessian semi-bandwidth (original,',       &
-          &     ' re-ordered) = ', I0, ', ', I0 )" ) prefix,                   &
-             inform%PSLS_inform%semi_bandwidth,                                &
-             inform%PSLS_inform%reordered_semi_bandwidth
-         SELECT CASE ( data%scaling_type )
-         CASE ( user_scaling )
-           WRITE( data%out, "( A, '  User-defined scaling used' )" )           &
-             prefix
-         CASE ( identity_scaling )
-           WRITE( data%out, "( A, '  No scaling used' )" ) prefix
-         CASE ( diagonal_jtj_scaling )
-           WRITE( data%out, "( A, '  Diagonal (JTJ) scaling used' )" ) prefix
-         CASE ( diagonal_hessian_scaling )
-           WRITE( data%out, "( A, '  Diagonal (H) scaling used' )" ) prefix
-         CASE ( band_scaling )
-           WRITE( data%out, "( A, '  Band scaling (semi-bandwidth ',           &
-          &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( reordered_band_scaling )
-           WRITE( data%out, "( A, ' Reordered band scaling (semi-bandwidth ',  &
-          &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( schnabel_eskow_scaling )
-           WRITE( data%out, "( A, '  SE (solver ', A, ') full scaling used' )")&
-             prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
-         CASE ( gmps_scaling )
-          WRITE( data%out, "( A, '  GMPS (solver ', A, ') full scaling used')")&
-             prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
-         CASE ( lin_more_scaling )
-           WRITE( data%out, "( A, '  Lin-More''(', I0, ') incomplete Cholesky',&
-          &  ' factorization scaling used ' )" )                               &
-            prefix, data%control%PSLS_control%icfs_vectors
-         CASE ( mi28_scaling )
-           WRITE( data%out, "( A, '  HSL_MI28(', I0, ',', I0,                  &
-          & ') incomplete Cholesky factorization scaling used ' )" ) prefix,   &
-            data%control%PSLS_control%mi28_lsize,                              &
-            data%control%PSLS_control%mi28_rsize
-         END SELECT
-         IF ( data%control%renormalize_weight ) WRITE( data%out,               &
-            "( A, '  Weight renormalized' )" ) prefix
-       END IF
-       WRITE ( data%out, "( A, '  Total time = ', 0P, F0.2, ' seconds', / )" ) &
-         prefix, inform%time%clock_total
-     END IF
-     IF ( inform%status /= GALAHAD_OK ) GO TO 990
-     RETURN
-
-!  -------------
-!  Error returns
-!  -------------
-
- 980 CONTINUE
-     IF ( data%printw ) WRITE( data%out, "( A, ' statement 980' )" ) prefix
-     CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
-     inform%time%total = data%time_record - data%time_start
-     inform%time%clock_total = data%clock_record - data%clock_start
-     RETURN
-
- 990 CONTINUE
-     IF ( data%printw ) WRITE( data%out, "( A, ' statement 990' )" ) prefix
-     CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
-     inform%time%total = data%time_record - data%time_start
-     inform%time%clock_total = data%clock_record - data%clock_start
-     IF ( data%printi ) THEN
-       CALL SYMBOLS_status( inform%status, data%out, prefix, 'NLS_solve' )
-       WRITE( data%out, "( ' ' )" )
-     END IF
-     RETURN
-
-!  Non-executable statements
-
- 2000 FORMAT( /, A, ' # function evaluations  = ', I10,                        &
-              /, A, ' # gradient evaluations  = ', I10,                        &
-              /, A, ' # Hessian evaluations   = ', I10,                        &
-              /, A, ' # major  iterations     = ', I10,                        &
-              /, A, ' # minor (cg) iterations = ', I10,                        &
-             //, A, ' objective value         = ', ES22.14,                    &
-              /, A, ' gradient norm           = ', ES12.4 )
- 2010 FORMAT( /, A, ' name                  X                   G ' )
- 2020 FORMAT(  A, 1X, A10, 2ES22.14 )
- 2030 FORMAT(  A, 1X, I10, 2ES22.14 )
- 2040 FORMAT( /, A, ' Problem: ', A, ' n = ', I8 )
- 2050 FORMAT( A, ' .          ........... ...........' )
- 2090 FORMAT( A, '        (a=accept r=reject b=TR boundary',                   &
-                 ' n=-ve curvature h=hard case)' )
- 2120 FORMAT( A, A6, 1X, 3A1, 2ES11.4, ES9.1, 2ES8.1, 1X, A6, F8.2 )
- 2140 FORMAT( A, A6, 4X, 2ES11.4 )
- 2160 FORMAT( A, '    It         c        J''c/c     ',                        &
-             ' ratio   weight   step  # fact    time' )
- 2170 FORMAT( A, '    It         f           g      ',                         &
-             ' ratio   weight   step  # fact    time' )
-
- !  End of subroutine NLS_solve
-
-     END SUBROUTINE NLS_solve
-
 !! G A L A H A D - N L S _ u p d a t e _ h i s t o r y  S U B R O U T I N E
 !
 !     SUBROUTINE NLS_update_history( history, max_hist, F_hist, F_ref, f )
@@ -7164,7 +7774,9 @@
 
 !  find a mapping of the entries of the matrix B into A, or vice versa - the
 !  sparsity pattern of the relevant one is presumed to be a subset of the other,
-!  and b_in_a should be set true iff it is B in A that is required
+!  and b_in_a should be set true iff it is B in A that is required. A should
+!  be stored by columns (either as a sparse or dense matrix) while B can
+!  be in any supported GALAHAD format.
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -7184,8 +7796,11 @@
 !-----------------------------------------------
 
      INTEGER :: i, j, l, ll
+     LOGICAL :: b_dense
      CHARACTER ( LEN = 80 ) :: array_name
 
+!    write(6,*) ' B in A? ', b_in_a
+!    write(6,*) ' type A, B ', SMT_get( A%type ), ' ', SMT_get( B%type )
 !  First order B by columns. Assign workspace as well as space for the required
 !  mapping, MAP
 
@@ -7306,36 +7921,72 @@
      IW( : B%m ) = 0
 
      IF ( b_in_a ) THEN
-       DO j = 1, A%n
-         DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
-           IW( A%row( l ) ) = l
+       IF ( SMT_get( A%type ) == 'SPARSE_BY_COLUMNS' .OR.                      &
+            SMT_get( A%type ) == 'COORDINATE' ) THEN
+         DO j = 1, A%n
+           DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+             IW( A%row( l ) ) = l
+           END DO
+           DO l = PTR( j ), PTR( j + 1 ) - 1
+             MAP( ORDER( l ) ) = IW( ROW( l ) )
+           END DO
+           DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+             IW( A%row( l ) ) = 0
+           END DO
          END DO
-
-         DO l = PTR( j ), PTR( j + 1 ) - 1
-           MAP( ORDER( l ) ) = IW( ROW( l ) )
+       ELSE ! dense A
+         ll = 0
+         DO j = 1, A%n
+           DO i = 1, A%m
+             ll = ll + 1
+             IW( i ) = ll
+           END DO
+           DO l = PTR( j ), PTR( j + 1 ) - 1
+             MAP( ORDER( l ) ) = IW( ROW( l ) )
+           END DO
+           IW( : A%m ) = 0
          END DO
-
-         DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
-           IW( A%row( l ) ) = 0
-         END DO
-       END DO
+       END IF
 
 !  for each column in turn, find the position in B of each entry of A
 
      ELSE
-       DO j = 1, B%n
-         DO l = PTR( j ), PTR( j + 1 ) - 1
-           IW( ROW( l ) ) = ORDER( l )
+       b_dense = SMT_get( B%type ) == 'DENSE'
+       ll = 0
+       IF ( SMT_get( A%type ) == 'SPARSE_BY_COLUMNS' .OR.                      &
+            SMT_get( A%type ) == 'COORDINATE' ) THEN
+         DO j = 1, B%n
+           DO l = PTR( j ), PTR( j + 1 ) - 1
+             IW( ROW( l ) ) = ORDER( l )
+           END DO
+           IF ( b_dense ) THEN
+             DO i = 1, B%m
+               ll = ll + 1
+               MAP( ll ) = IW( i )
+             END DO
+           ELSE
+             DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+               MAP( l ) = IW( A%row( l ) )
+             END DO
+           END IF
+           DO l = PTR( j ), PTR( j + 1 ) - 1
+             IW( ROW( l ) ) = 0
+           END DO
          END DO
-
-         DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
-           MAP( l ) = IW( A%row( l ) )
+       ELSE ! dense A by columns
+         DO j = 1, B%n
+           DO l = PTR( j ), PTR( j + 1 ) - 1
+             IW( ROW( l ) ) = ORDER( l )
+           END DO
+           DO i = 1, B%m
+             ll = ll + 1
+             MAP( ll ) = IW( i )
+           END DO
+           DO l = PTR( j ), PTR( j + 1 ) - 1
+             IW( ROW( l ) ) = 0
+           END DO
          END DO
-
-         DO l = PTR( j ), PTR( j + 1 ) - 1
-           IW( ROW( l ) ) = 0
-         END DO
-       END DO
+       END IF
      END IF
 
 !  discard the workspace
@@ -7494,8 +8145,8 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'nls: data%SX_current'
-     CALL SPACE_dealloc_array( data%SX_current,                                &
+     array_name = 'nls: data%SV'
+     CALL SPACE_dealloc_array( data%SV,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

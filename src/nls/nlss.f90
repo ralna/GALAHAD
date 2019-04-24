@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_NLS_EXAMPLE  !  GALAHAD 3.0 - 25/11/2016 AT 09:15 GMT
+   PROGRAM GALAHAD_NLS_EXAMPLE  !  GALAHAD 3.2 - 20/04/2019 AT 10:15 GMT
    USE GALAHAD_NLS_double                     ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -33,6 +33,7 @@
    CALL NLS_initialize( data, control, inform ) ! Initialize control params
    control%subproblem_direct = .TRUE.           ! directly solve model problem
    control%model = 3                            ! Gauss-Newton model
+   control%jacobian_available = 2               ! Jacobian is available
    inform%status = 1                            ! set for initial entry
    CALL NLS_solve( nlp, control, inform, data, userdata, eval_C = EVALC,       &
               eval_J = EVALJ, eval_H = EVALH )  ! Solve problem
@@ -47,6 +48,7 @@
 ! now solve using a Newton model
    control%subproblem_direct = .TRUE.           ! directly solve model problem
    control%model = 4                            ! Change to Newton model
+   control%hessian_available = 2                ! Hessian is available
    nlp%X = (/ 1.0_wp, 1.0_wp, 1.0_wp /)         ! start from (-1,1,1)
    inform%status = 1                            ! set for initial entry
    CALL NLS_solve( nlp, control, inform, data, userdata, eval_C = EVALC,       &

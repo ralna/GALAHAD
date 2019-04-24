@@ -26,7 +26,7 @@
 !                                                                             !
 !  Contains:                                                                  !
 !              mop_Ax, mop_getval, mop_row_1_norms, mop_row_2_norms,          !
-!              mop_row_infinity_norms, mop_colum_2_norms, mop_scaleA          !
+!              mop_row_infinity_norms, mop_column_2_norms, mop_scaleA          !
 !                                                                             !
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -259,7 +259,7 @@
 
            SELECT CASE ( SMT_get( A%type ) )
 
-           CASE ( 'DENSE' )
+           CASE ( 'DENSE', 'DENSE_BY_COLUMNS' )
               WRITE( i_dev, 1009 ) &
                     ( A%val(i), i = 1, m*n )
            CASE ( 'SPARSE_BY_ROWS' )
@@ -384,6 +384,62 @@
               ELSE
                 DO j = 1, m
                   R(j) = R(j) + alpha*DOT_PRODUCT(A%val(n*(j-1)+1:n*j), X(1:n))
+                END DO
+              END IF
+
+           END IF
+
+        END IF
+
+
+     ! Storage type GALAHAD_DENSE_BY_COLUMNS
+     ! *************************************
+
+     CASE ( 'DENSE_BY_COLUMNS' )
+
+        IF ( symm ) THEN
+
+           nA = 1
+
+           IF ( alpha == one ) THEN
+
+             DO j = 1, n
+               R( j : m ) = R( j : m ) + A%val( nA : nA+m-j ) * X( j )
+               R( j ) = R( j ) + DOT_PRODUCT( A%val( nA+1 : nA+m-j ), X(j+1:m) )
+               nA = nA + m - j + 1
+             END DO
+              !write(*,*) 'Testing 1'
+
+           ELSE
+
+             DO j = 1, n
+               R( j : m ) = R( j : m ) + alpha * A%val( nA : nA+m-j ) * X( j )
+               R( j ) = R( j ) + alpha *                                      &
+                 DOT_PRODUCT( A%val( nA+1 : nA+m-j ), X(j+1:m) )
+               nA = nA + m - j + 1
+             END DO
+              !write(*,*) 'Testing 2'
+
+           END IF
+        ELSE
+           IF ( trans ) THEN
+              IF ( alpha == one ) THEN
+                DO j = 1, n
+                  R(j) = R(j) + DOT_PRODUCT(A%val(m*(j-1)+1:m*j), X(1:m))
+                END DO
+              ELSE
+                DO j = 1, n
+                  R(j) = R(j) + alpha*DOT_PRODUCT(A%val(m*(j-1)+1:m*j), X(1:m))
+                END DO
+             END IF
+           ELSE
+              IF ( alpha == one ) THEN
+                DO j = 1, n
+                  R(1:m) = R(1:m) + A%val( m*(j-1)+1 : m*j ) * X(j)
+                END DO
+              ELSE
+                DO j = 1, n
+                  R(1:m) = R(1:m) + alpha*A%val( m*(j-1)+1 : m*j ) * X(j)
                 END DO
               END IF
 
@@ -523,7 +579,6 @@
            END IF
 
         ELSE
-
            IF ( trans ) THEN
 
               IF ( alpha == one ) THEN
@@ -2445,16 +2500,16 @@
 
 !-*-  B E G I N  m o p _ c o l u m n _ 2 _ n o r m s   S U B R O U T I N E  -*-
 
-   SUBROUTINE mop_column_2_norms( A, column_norms, symmetric, out, error,      &
-                               print_level )
+   SUBROUTINE mop_column_2_norms( A, column_norms, W, symmetric, out, error,   &
+                                  print_level )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-!      .................................................................
-!      .                                                               .
-!      .  Returns the vector of column-wise two norms of the matrix A. .
-!      .                                                               .
-!      .................................................................
+!   .......................................................................
+!   .                                                                     .
+!   .  Returns the vector of column-wise two norms of the matrix W^1/2 A. .
+!   .                                                                     .
+!   .......................................................................
 
 !  Arguments:
 !  =========
@@ -2464,6 +2519,9 @@
 !   column_norms  rank 1 array of type real. The value column_norms(i)
 !              gives the 2-norm of the i-th column.
 !
+!   W (optional) rank 1 array of type real. The positive value W(i) specifies
+!              the ith entry of the diagonal matrix W.
+
 !   symmetric (optional) is a scalar variable of type logical.  Set
 !             symmetric = .TRUE. if the matrix A is symmetric; otherwise
 !             set symmetric = .FALSE.  If not present, then the
@@ -2494,6 +2552,7 @@
 
   TYPE( SMT_type), INTENT( IN  ) :: A
   REAL( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: column_norms
+  REAL( KIND = wp ), DIMENSION( : ), INTENT( IN ), OPTIONAL :: W
   LOGICAL, INTENT( IN ), OPTIONAL :: symmetric
   INTEGER, INTENT( IN ), OPTIONAL :: error, out, print_level
 
@@ -2507,10 +2566,11 @@
   INTEGER :: i, j, l, l1, l2, m, n
   INTEGER :: i_dev, e_dev, printing
   REAL ( KIND = wp ) :: val
-  LOGICAL :: symm
+  LOGICAL :: symm, w_eq_identity
 
 !  Check for optional arguments
 
+  w_eq_identity = .NOT. PRESENT( W )
   IF ( PRESENT( symmetric ) ) THEN
     symm = symmetric
   ELSE
@@ -2593,84 +2653,171 @@
   SELECT CASE ( SMT_get( A%type ) )
   CASE ( 'DENSE' )
     IF ( symm ) THEN
-      l = 0
-      DO i = 1, m
-        DO j = 1, i
-          l = l + 1 ; val = A%val( l ) ** 2
-          column_norms( j ) = column_norms( j ) + val
-          IF ( i /= j ) column_norms( i ) = column_norms( i ) + val
+      IF ( w_eq_identity ) THEN
+        l = 0
+        DO i = 1, m
+          DO j = 1, i
+            l = l + 1 ; val = A%val( l ) ** 2
+            column_norms( j ) = column_norms( j ) + val
+            IF ( i /= j ) column_norms( i ) = column_norms( i ) + val
+          END DO
         END DO
-      END DO
+      ELSE
+        l = 0
+        DO i = 1, m
+          DO j = 1, i
+            l = l + 1
+            column_norms( j ) = column_norms( j ) + W( i ) * A%val( l ) ** 2
+            IF ( i /= j )                                                      &
+              column_norms( i ) = column_norms( i ) + W( j ) * A%val( l ) ** 2
+          END DO
+        END DO
+      END IF
     ELSE
       column_norms = zero
-      l = 1
-      DO i = 1, m
-        l2 = l + n - 1
-        column_norms( : n ) = column_norms( : n ) + A%val( l : l2 ) ** 2
-        l = l + n
-      END DO
+      IF ( w_eq_identity ) THEN
+        l = 1
+        DO i = 1, m
+          l2 = l + n - 1
+          column_norms( : n ) = column_norms( : n ) + A%val( l : l2 ) ** 2
+          l = l + n
+        END DO
+      ELSE
+        l = 1
+        DO i = 1, m
+          DO j = 1, n
+            l = l + 1
+            column_norms( j ) = column_norms( j ) + W( i ) * A%val( l ) ** 2
+          END DO
+        END DO
+      END IF
     END IF
   CASE ( 'SPARSE_BY_ROWS' )
     IF ( symm ) THEN
       column_norms = zero
-      DO i = 1, m
-        l1 = A%ptr( i ) ; l2 = A%ptr( i + 1 ) - 1
-        DO l = l1, l2
-          j = A%col( l ) ; val = A%val( l ) ** 2
-          column_norms( j ) = column_norms( j ) + val
-          IF ( i /= j ) column_norms( i ) = column_norms( i ) + val
+      IF ( w_eq_identity ) THEN
+        DO i = 1, m
+          DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
+            j = A%col( l ) ; val = A%val( l ) ** 2
+            column_norms( j ) = column_norms( j ) + val
+            IF ( i /= j ) column_norms( i ) = column_norms( i ) + val
+          END DO
         END DO
-      END DO
+      ELSE
+        DO i = 1, m
+          DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
+            j = A%col( l )
+            column_norms( j ) = column_norms( j ) + W( i ) * A%val( l ) ** 2
+            IF ( i /= j )                                                      &
+              column_norms( i ) = column_norms( i ) + W( j ) * A%val( l ) ** 2
+          END DO
+        END DO
+      END IF
     ELSE
-      DO i = 1, m
-        l1 = A%ptr( i ) ; l2 = A%ptr( i + 1 ) - 1
-        IF ( l2 >= l1 ) column_norms( A%col( l1 : l2 ) ) =                     &
-            column_norms( A%col( l1 : l2 ) ) + A%val( l1 : l2 ) ** 2
-      END DO
+      IF ( w_eq_identity ) THEN
+        DO i = 1, m
+          l1 = A%ptr( i ) ; l2 = A%ptr( i + 1 ) - 1
+          IF ( l2 >= l1 ) column_norms( A%col( l1 : l2 ) ) =                   &
+              column_norms( A%col( l1 : l2 ) ) + A%val( l1 : l2 ) ** 2
+        END DO
+      ELSE
+        DO i = 1, m
+          DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
+            j = A%col( l )
+            column_norms( j ) = column_norms( j ) + W( i ) * A%val( l ) ** 2
+          END DO
+        END DO
+      END IF
     END IF
   CASE ( 'SPARSE_BY_COLUMNS' )
     IF ( symm ) THEN
       column_norms = zero
-      DO j = 1, n
-        l1 = A%ptr( j ) ; l2 = A%ptr( j + 1 ) - 1
-        DO l = l1, l2
-          i = A%row( l ) ; val = A%val( l ) ** 2
-          column_norms( j ) = column_norms( j ) + val
-          IF ( i /= j ) column_norms( i ) = column_norms( i ) + val
+      IF ( w_eq_identity ) THEN
+        DO j = 1, n
+          DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+            i = A%row( l ) ; val = A%val( l ) ** 2
+            column_norms( j ) = column_norms( j ) + val
+            IF ( i /= j ) column_norms( i ) = column_norms( i ) + val
+          END DO
         END DO
-      END DO
+      ELSE
+        DO j = 1, n
+          DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+            i = A%row( l )
+            column_norms( j ) = column_norms( j ) + W( i ) * A%val( l ) ** 2
+            IF ( i /= j )                                                      &
+              column_norms( i ) = column_norms( i ) + W( j ) * A%val( l ) ** 2
+          END DO
+        END DO
+      END IF
     ELSE
-      DO j = 1, n
-        l1 = A%ptr( j ) ; l2 = A%ptr( j + 1 ) - 1
-        IF ( l2 >= l1 ) THEN
-          column_norms( j ) = DOT_PRODUCT( A%val( l1 : l2 ), A%val( l1 : l2 ) )
-        ELSE
-          column_norms( j )  = zero
-        END IF
-      END DO
+      IF ( w_eq_identity ) THEN
+        DO j = 1, n
+          l1 = A%ptr( j ) ; l2 = A%ptr( j + 1 ) - 1
+          IF ( l2 >= l1 ) THEN
+            column_norms( j ) = DOT_PRODUCT( A%val( l1 : l2 ), A%val( l1 : l2 ))
+          ELSE
+            column_norms( j )  = zero
+          END IF
+        END DO
+      ELSE
+        DO j = 1, n
+          DO l = A%ptr( j ), A%ptr( j + 1 ) - 1
+            i = A%row( l )
+            column_norms( j ) = column_norms( j ) + W( i ) * A%val( l ) ** 2
+          END DO
+        END DO
+      END IF
     END IF
     column_norms = SQRT( column_norms )
   CASE ( 'COORDINATE' )
     column_norms = zero
     IF ( symm ) THEN
-      DO l = 1, A%ne
-        i = A%row( l ) ; j = A%col( l ) ; val = A%val( l ) ** 2
-        column_norms( j ) = column_norms( j ) + val
-        IF ( i /= j ) column_norms( i ) = column_norms( i ) + val
-      END DO
+      IF ( w_eq_identity ) THEN
+        DO l = 1, A%ne
+          i = A%row( l ) ; j = A%col( l ) ; val = A%val( l ) ** 2
+          column_norms( j ) = column_norms( j ) + val
+          IF ( i /= j ) column_norms( i ) = column_norms( i ) + val
+        END DO
+      ELSE
+        DO l = 1, A%ne
+          i = A%row( l ) ; j = A%col( l )
+          column_norms( j ) = column_norms( j ) + W( i ) * A%val( l ) ** 2
+          IF ( i /= j )                                                        &
+            column_norms( i ) = column_norms( i ) + W( j ) * A%val( l ) ** 2
+        END DO
+      END IF
     ELSE
-      DO l = 1, A%ne
-        j = A%col( l )
-        column_norms( j ) = column_norms( j ) + A%val( l ) ** 2
-      END DO
+      IF ( w_eq_identity ) THEN
+        DO l = 1, A%ne
+          j = A%col( l )
+          column_norms( j ) = column_norms( j ) + A%val( l ) ** 2
+        END DO
+      ELSE
+        DO l = 1, A%ne
+          i = A%row( l ) ; j = A%col( l )
+          column_norms( j ) = column_norms( j ) + W( i ) * A%val( l ) ** 2
+        END DO
+      END IF
     END IF
     column_norms = SQRT( column_norms )
   CASE ( 'DIAGONAL' )
-    column_norms( : n ) = ABS( A%val( : n ) )
+    IF ( w_eq_identity ) THEN
+      column_norms( : n ) = ABS( A%val( : n ) )
+    ELSE
+      column_norms( : n ) = ABS( SQRT( W( : n ) ) * A%val( : n ) )
+    END IF
   CASE ( 'SCALED_IDENTITY' )
-    column_norms( : n ) = ABS( A%val( 1 ) )
+    IF ( w_eq_identity ) THEN
+      column_norms( : n ) = ABS( SQRT( W( : n ) ) * A%val( 1 ) )
+    ELSE
+    END IF
   CASE ( 'IDENTITY' )
-    column_norms( : n ) = one
+    IF ( w_eq_identity ) THEN
+      column_norms( : n ) = one
+    ELSE
+      column_norms( : n ) = SQRT( W( : n ) )
+    END IF
   CASE( 'NONE', 'ZERO' )
     column_norms( : n ) = zero
   CASE DEFAULT

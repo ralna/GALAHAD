@@ -45,7 +45,7 @@
       USE GALAHAD_SORT_double, ONLY: SORT_reorder_by_rows
       USE GALAHAD_SCALE_double
       USE GALAHAD_PRESOLVE_double
-      USE GALAHAD_MOP_double
+      USE GALAHAD_MOP_double, ONLY: mop_AX
       USE GALAHAD_QPA_double
       USE GALAHAD_QPB_double
       USE GALAHAD_QPC_double
@@ -1660,14 +1660,3 @@
 !  End of module QP
 
    END MODULE GALAHAD_QP_double
-
-
-
-
-
-
-
-
-
-
-

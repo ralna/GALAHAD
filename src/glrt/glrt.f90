@@ -633,6 +633,9 @@
       IF ( p < two ) GO TO 980
       data%one_pass = sigma == zero .OR. ( p == two .AND. .NOT. PRESENT( O ) )
 !     data%one_pass = .FALSE.
+!write(6,*) ' one pass ',  data%one_pass
+!write(6,*) ' unit m ',  control%unitm
+!write(6,*) 'R ', R
 
       data%iter = 0 ; data%itm1 = - 1
       data%iter_descent = 0 ; data%descent = ' '
@@ -1218,10 +1221,10 @@
             data%branch = 500 ; inform%status = 4
             RETURN
           END IF
-        ELSE
 
 !  Special case for the first iteration
 
+        ELSE
           data%P( : n ) = - VECTOR
           data%pmp = data%rminvr
           data%D( 0 ) = data%diag
@@ -1248,10 +1251,10 @@
       ELSE
         IF ( data%iter > 0 ) THEN
           data%beta = data%rminvr / data%rminvr_old
-        ELSE
 
 !  Compute the stopping tolerance
 
+        ELSE
           data%stop = MAX( control%stop_relative * data%pgnorm,                &
                            control%stop_absolute )
           data%pgnorm_zero = data%pgnorm
@@ -1295,18 +1298,26 @@
             inform%multiplier = sigma
             GO TO 900
           END IF
-        ELSE
 
 !  Special case for the first iteration
 
+        ELSE
           IF ( sigma > zero ) data%W( : n ) = - R
           data%P( : n ) = - VECTOR
           data%pmp = data%rminvr ; data%xmp = zero
+
+!  Check for convergence
+
+          IF ( data%iter >= data%itmax .OR. data%rminvr <= data%stop ) THEN
+            inform%multiplier = sigma
+            GO TO 900
+          END IF
         END IF
         data%rminvr_old = data%rminvr
 
         data%itm1 = data%iter ; data%iter = data%iter + 1
       END IF
+!write(6,*) ' obj, ob_reg ', inform%obj, inform%obj_regularized
 
 !  ------------------------------
 !  Obtain the product of H with p
@@ -1440,12 +1451,16 @@
                      ( two * data%xmp + data%alpha * data%pmp )
         inform%xpo_norm = SQRT( data%xmx )
         X = X + data%alpha * data%P( : n )
-        inform%obj = inform%obj - half * data%alpha * data%alpha * data%curv
-        IF ( PRESENT( eps ) ) THEN
-          inform%obj_regularized = inform%obj + half * sigma * eps
-        ELSE
-          inform%obj_regularized = inform%obj
-        END IF
+!       inform%obj = inform%obj - half * data%alpha * data%alpha * data%curv
+!        IF ( PRESENT( eps ) ) THEN
+!         inform%obj_regularized = inform%obj + half * sigma * eps
+!       ELSE
+!         inform%obj_regularized = inform%obj
+!       END IF
+        inform%obj_regularized =                                               &
+          inform%obj_regularized - half * data%alpha * data%alpha * data%curv
+        inform%obj = inform%obj_regularized - half * sigma * data%xmx
+        IF ( PRESENT( eps ) ) inform%obj = inform%obj - half * sigma * eps
 
 !  Update the residual
 

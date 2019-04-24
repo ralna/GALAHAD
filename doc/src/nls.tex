@@ -15,14 +15,14 @@
 
 \galsummary
 This package uses a {\bf regularization method to find a (local)
-unconstrained minimizer of a differentiable sum-of-squares objective
+unconstrained minimizer of a differentiable weighted sum-of-squares objective
 function
 \disp{f(\bmx) \eqdef
- \half \sum_{i=1}^m c_i^2(\bmx) \equiv \half \|\bmc(\bmx)\|_2^2}
+ \half \sum_{i=1}^m w_i^{} c_i^2(\bmx) \equiv \half \|\bmc(\bmx)\|_W^2}
 %or, more generally, a stabilised version
 %\disp{f_{\rho,r}(\bmx) \eqdef f(\bmx) +  \sfrac{\rho}{r} \sum_{1=1}^n x_i^r
 %\equiv f(\bmx) + \sfrac{\rho}{r} \|\bmx\|_r^r,}
-of many variables $\bmx$}.
+of many variables $\bmx$ involving positive weights $w_i$, $i=1,\ldots,m$.}
 %for given stabilisation weight $\rho\geq 0$ and order $r\geq 2$};
 %here and elsewhere we define the $q$-norm of a
 %vector $\bmv$, whose $i$-th component is $v_i$, $i=1,\ldots,n$,
@@ -33,7 +33,7 @@ First derivatives of the {\bf residual function}
 $\bmc(\bmx)$ are required, and if second derivatives of the
 $c_i(\bmx)$ can be calculated, they may be exploited---if suitable products
 of the first or second derivatives with a vector may be found but not the
-derivatives themselves, that can also be exploited.
+derivatives themselves, that can also be used to advantage.
 
 %%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -48,7 +48,7 @@ derivatives themselves, that can also be exploited.
 {\tt GALAHAD\_GLRT},
 {\tt GALAHAD\_RQS},
 {\tt GALAHAD\_BSC},
-{\tt GALAHAD\_SPACE},
+{\tt GALAHAD\_\-SPACE},
 {\tt GALAHAD\_ROOTS},
 {\tt GALAHAD\_MOP},
 {\tt GALAHAD\_NORMS},
@@ -109,10 +109,10 @@ the objective function $f(\bmx_k+\bms)$ built around
 $\bmx_k$. The model is the sum of two basic components,
 a suitable approximation $t_k(\bms)$ of $f(\bmx_k+\bms)$,
 %another approximation of $\sfrac{\rho}{r} \|\bmx_k+\bms\|_r^r$ (if $\rho > 0$),
-and a regularization term
-$\sfrac{\sigma_k}{p} \|s\|_{M_k}^p$ involving a weight $\sigma_k$, power $p$ and
-a norm $\|\bms\|_{S_k} \eqdef \sqrt{\bms^T \bmS_k \bms}$ for a given positive
-definite scaling matrix $S_k$ that is included to prevent large corrections.
+and a regularization term $\sfrac{\sigma_k}{p} \|\bms\|_{\bmS_k}^p$
+involving a weight $\sigma_k$, power $p$ and
+a norm $\|\bms\|_{\bmS_k} \eqdef \sqrt{\bms^T \bmS_k \bms}$ for a given positive
+definite scaling matrix $\bmS_k$ that is included to prevent large corrections.
 The weight  $\sigma_k$ is adjusted as the algorithm progresses to
 ensure convergence.
 
@@ -137,20 +137,24 @@ The models $t_k(\bms)$ provided are,
 \begin{enumerate}
 \item the first-order Taylor approximation $f(\bmx_k) + \bmg(\bmx_k)^T \bms$,
 where
-$\bmg(\bmx) = \bmJ^T(\bmx) \bmc(\bmx)$,
+$\bmg(\bmx) = \bmJ^T(\bmx) \bmW \bmc(\bmx)$,
 \item a barely second-order approximation
-$f(\bmx_k) + \bmg(\bmx_k)^T \bms + \half \bms^T \bms$,
+$f(\bmx_k) + \bmg(\bmx_k)^T \bms + \half \bms^T \bmW \bms$,
 \item the Gauss-Newton approximation
-$\half \| \bmc(\bmx_k) + \bmJ(\bmx_k) \bms\|_2^2$,
+$\half \| \bmc(\bmx_k) + \bmJ(\bmx_k) \bms\|_{\bmW}^2$,
 \item the Newton (second-order Taylor) approximation
-$f(\bmx_k) + \bmg(\bmx_k)^T s + \half \bms^T [ \bmJ^T(\bmx_k) \bmJ(\bmx_k) +
-\bmH(\bmx_k,\bmc(\bmx_k))] \bms$, and
+  $f(\bmx_k) + \bmg(\bmx_k)^T s + \half \bms^T
+  [ \bmJ^T(\bmx_k) \bmW \bmJ(\bmx_k) +
+\bmH(\bmx_k,\bmW \bmc(\bmx_k))] \bms$, and
 \item the tensor Gauss-Newton approximation
 $\half \| \bmc(\bmx_k) + \bmJ(\bmx_k) \bms +
- \half \bms^T \cdot \bmP(\bmx_k,\bms) \|_2^2$,
+ \half \bms^T \cdot \bmP(\bmx_k,\bms) \|_{\bmW}^2$,
 where the $i$-th component of $\bms^T \cdot \bmP(\bmx_k,\bms)$ is
-shorthand for the scalar $\bms^T \bmH_i(\bmx_k) \bms$.
+shorthand for the scalar $\bms^T \bmH_i(\bmx_k) \bms$,
 \end{enumerate}
+where $\bmW$ is the diagonal matrix of weights $w_i$, $i = 1, \ldots m$.
+
+\noindent
 Access to a particular model requires that the user is either able to
 provide the derivatives needed ({\bf ``matrix available''}) or that the products
 of these derivatives (and their transposes) with specified vectors are possible
@@ -172,7 +176,10 @@ part (that is the part $\bmH_{ij}$ for $1 \leq j \leq i \leq n$)
 should be stored. In this case the lower triangle will be stored by rows,
 that is component $i \ast (i-1)/2 + j$ of the storage array {\tt H\%val} will
 hold the value $\bmH_{ij}$ (and, by symmetry, $\bmH_{ji}$) for $1 \leq j
-\leq i \leq n$.
+\leq i \leq n$. If tensor-Newton models are used, the required matrix $\bmP$
+may be stored as a compact dense matrix by columns, that is, the values of
+the entries of each column in turn are stored in order within an appropriate
+real one-dimensional array.
 
 \subsubsection{Sparse co-ordinate storage format}\label{coordinate}
 Only the nonzero entries of the matrices are stored. For the $l$-th
@@ -209,12 +216,12 @@ For sparse matrices, this scheme almost always requires less storage than
 its predecessor.
 
 \subsubsection{Sparse column-wise storage format}\label{columnwise}
-For the matrix $\bmP(\bmx,\bmv)$, once again only the nonzero entries are
+For the matrix $\bmP$, once again only the nonzero entries are
 stored, but this time they are ordered so that those in column $j$ appear
 directly before those in column $j+1$. For the $j$-th column of $\bmP$, the
 $j$-th component of the integer array {\tt P\%ptr} holds the position of the
 first entry in this column, while {\tt P\%ptr} $(n+1)$ holds the total number
-of entries plus one.  The row indices $i$ and values $\bmA_{ij}$ of the
+of entries plus one.  The row indices $i$ and values $\bmP_{ij}$ of the
 entries in the $j$-th column are stored in components $l =$ {\tt
   P\%ptr}$(j)$, \ldots ,{\tt P\%ptr} $(j+1)-1$ of the integer array
 {\tt P\%row}, and real array {\tt P\%val}, respectively.
@@ -224,7 +231,7 @@ If $\bmH$ is diagonal (i.e., $\bmH_{ij} = 0$ for all $1 \leq i \neq j \leq n$)
 only the diagonal entries $\bmH_{ii}$ for $1 \leq i \leq n$ need be stored,
 and the first $n$ components of the array {\tt H\%val} may be used for
 the purpose. There is no sensible equivalent for the non-square
-matrix $\bmJ$.
+matrices $\bmJ$ and $\bmP$.
 
 %%%%%%%%%%%%%%%%%%%%%% long integers %%%%%%%%%%%%%%%%%%%%%%
 
@@ -345,7 +352,7 @@ we may simply
 %\vspace*{-2mm}
 {\tt
 \begin{verbatim}
-        CALL SMT_put( nlp%H%type, 'COORDINATE' )
+        CALL SMT_put( nlp%J%type, 'COORDINATE' )
 \end{verbatim}
 }
 %\vspace*{-4mm}
@@ -457,11 +464,40 @@ other schemes are used.
 that may hold the matrix of residual-Hessians-vector products
 $\bmP(\bmx,\bmv) = (\bmH_1(\bmx) \bmv, \ldots, \bmH_m(\bmx) \bmv)$
 for a supplied vector $\bmv$ (if it is needed).
-The matrix $P$ is held as a
-sparse matrix by columns (see Section~\ref{columnwise}).
+The matrix $\bmP$ is held as a
+sparse matrix by columns (see Section~\ref{columnwise}) or as a
+dense matrix (see Section~\ref{dense}).
 The following components are used here:
 
 \begin{description}
+
+\itt{P\%type} is an allocatable array of rank one and type default
+\character, that
+is used to indicate the storage scheme used. If the dense storage scheme
+(see Section~\ref{dense}) is used,
+the first sixteen components of {\tt P\%type} must contain the
+string {\tt DENSE\_BY\_COLUMNS}, while
+and for the sparse column-wise storage scheme (see Section~\ref{columnwise}),
+the first seventeen components of {\tt P\%type} must contain the
+string {\tt SPARSE\_BY\_COLUMNS}.
+
+For convenience, the procedure {\tt SMT\_put}
+may be used to allocate sufficient space and insert the required keyword
+into {\tt P\%type}.
+For example, if {\tt nlp} is of derived type {\tt \packagename\_problem\_type}
+and involves a residual=Hessian-vector product matrix we wish to store
+using the dense scheme,
+we may simply
+%\vspace*{-2mm}
+{\tt
+\begin{verbatim}
+        CALL SMT_put( nlp%P%type, 'DENSE_BY_COLUMNS' )
+\end{verbatim}
+}
+%\vspace*{-4mm}
+\noindent
+See the documentation for the \galahad\ package {\tt SMT}
+for further details on the use of {\tt SMT\_put}.
 
 \itt{P\%val} is a rank-one allocatable array of type default \realdp,
 that holds the values of the entries of the product matrix $\bmP$ stored
@@ -508,6 +544,9 @@ is used to hold controlling data. Default values may be obtained by calling
 while components may also be changed by calling
 {\tt \fullpackagename\_read\-\_spec}
 (see Section~\ref{readspec}).
+The derived type {\tt \packagename\_subproblem\_control\_type}
+comprises all of the components of {\tt \packagename\_control\_type}
+except for the last (i.e., {\tt subproblem\_control}).
 The components of
 {\tt \packagename\_control\_type}
 are:
@@ -575,7 +614,7 @@ may be accessed by matrix-vector products, i.e., it is ``matrix-free''.
 \itt{$\leq$ 0} The Jacobian is not available either explicitly or via
 matrix-vector products.
 \end{description}
-The default is {\tt jacobian\_available = 2}
+The default is {\tt jacobian\_available = 1}.
 
 \itt{hessian\_available} is a scalar variable of type default \integer,
 that specifies the availability of the weighted-residual Hessian.
@@ -588,7 +627,7 @@ may be accessed by matrix-vector products, i.e., it is ``matrix-free''.
 \itt{$\leq$ 0} The Hessian is not available either explicitly or via
 matrix-vector products.
 \end{description}
-The default is {\tt hessian\_available = 2}
+The default is {\tt hessian\_available = 0}.
 
 \itt{model} is a scalar variable of type default \integer, that specifies
 which model to be used to approximate $f(\bmx)$ when computing the step.
@@ -601,11 +640,12 @@ Possible values are:
         {\bf Not yet implemented.}
 \itt{1} a first-order model, not involving the Hessian, will be used.
 \itt{2} a barely-second-order model, in which the Hessian is approximated
-        by the identity matrix, will be used.
+        by the matrix $\bmW$, will be used.
 \itt{3} a Gauss-Newton model, in which the Hessian of $f(\bmx)$
-        is approximated by $\bmJ^T(\bmx)\bmJ(\bmx)$, will be used.
+        is approximated by $\bmJ^T(\bmx) \bmW \bmJ(\bmx)$, will be used.
 \itt{4} a second-order Newton model, in which the exact Hessian of $f(\bmx)$,
-                $\bmJ^T(\bmx)\bmJ(\bmx) + \bmH(\bmx)$, will be used.
+$\bmJ^T(\bmx) \bmW \bmJ(\bmx) + \bmH(\bmx,\bmW \bmc(\bmx))$,
+will be used.
 \itt{5} an adaptive second-order model, in which there is a transition from
          Gauss-Newton to Newton models, will be used.
 \itt{6} a tensor Gauss-Newton model will be used, and an approximate minimizer
@@ -633,16 +673,17 @@ inner model minimization.  Possible values are:
 \begin{description}
 \itt{-3} the user's own norm will be used.
 \itt{-2} a norm based on a limited-memory BFGS formula will be used.
+        {\bf Not yet implemented.}
 \itt{-1} the Euclidean ($\ell_2$-) norm is used.
 \itt{0} the type is chosen automatically on the basis of which option looks
         likely to be the most efficient at any given stage of the solution
         process. Different norms may be used at different stages.
         {\bf Not yet implemented.}
-\itt{1} $\bmS$ is the diagonal of the matrix $\bmJ^T(\bmx_k) \bmJ(\bmx_k)$,
+\itt{1} $\bmS$ is the diagonal of the matrix $\bmJ^T(\bmx_k) \bmW \bmJ(\bmx_k)$,
         or equivalently the squares of the two-norms of the columns of
-        $\bmJ(\bmx_k)$.
+        $\bmW^{\half} \bmJ(\bmx_k)$.
 \itt{2} $\bmS$ is the diagonal of the Hessian matrix,
-        $\bmJ^T(\bmx_k) \bmJ(\bmx_k) + \bmH(\bmx_k,\bmc(\bmx_k))$,
+        $\bmJ^T(\bmx_k) \bmW \bmJ(\bmx_k) + \bmH(\bmx_k,\bmW\bmc(\bmx_k))$,
         suitably modified to ensure that it is significantly positive definite.
 \itt{3} $\bmS$ is the Hessian matrix whose entries outside a band of
          given semi-bandwidth are replaced by zeros
@@ -658,14 +699,15 @@ inner model minimization.  Possible values are:
         using the Gill-Murray-Ponc\'{e}leon-Saunders
         modification method to ensure that the resultant matrix is
         positive definite.
-        {\bf Not yet implemented.}
+%        {\bf Not yet implemented.}
 \itt{7} $\bmS$ will be that from the incomplete factorization of the Hessian
         using the Lin-Mor\'{e} method
-        (see {\tt control\%PSLS\_control\%icfs\_vectors} below).
+        (see {\tt control\%PSLS\-\_control\%icfs\_vectors} below).
 \itt{8} $\bmS$ will be that from the incomplete factorization of the Hessian
         using the method implemented by HSL\_MI28.
 \end{description}
-The default is {\tt norm = 1}.
+Any value outside this range, and those not yet implemented, will be
+treated as the default, {\tt norm = 1}.
 
 \itt{non\_monotone} is a scalar variable of type default \integer, that
 specifies the history-length for non-monotone descent strategy.
@@ -693,14 +735,14 @@ and this is the default.
 
 \itt{stop\_c\_absolute} is a scalar variable of type default \realdp,
 that is used to specify the maximum permitted two-norm of the
-residual, $\|\bmc(\bmx)\|_2$,
+residual, $\|\bmc(\bmx)\|_{\bmW}$,
 (see Section~\ref{galmethod}) at the estimate of the solution sought.
 Any negative value will be recorded as zero.
 The default is {\tt stop\_g\_absolute =} $10^{-6}$.
 
 \itt{stop\_c\_relative} is a scalar variable of type default \realdp,
 that is used to specify the largest relative reduction in the two-norm of the
-residual, $\|\bmc(\bmx)\|_2$, that will be permitted
+residual, $\|\bmc(\bmx)\|_{\bmW}$, that will be permitted
 (see Section~\ref{galmethod}) at the estimate of the solution sought
 compared to that at the initial point.
 Any negative value will be recorded as zero.
@@ -708,15 +750,15 @@ The default is {\tt stop\_g\_relative =} $0.0$.
 
 \itt{stop\_g\_absolute} is a scalar variable of type default \realdp,
 that is used to specify the maximum permitted two-norm of the gradient,
- $\|\bmJ^T(\bmx) \bmc(\bmx)\|_2/\|\bmc(\bmx)\|_2$,
-of the residual  $\|\bmc(\bmx)\|_2$,
+ $\|\bmJ^T(\bmx) \bmW \bmc(\bmx)\|_2/\|\bmc(\bmx)\|_{\bmW}$,
+of the residual  $\|\bmc(\bmx)\|_{\bmW}$,
 (see Section~\ref{galmethod}) at the estimate of the solution sought.
 Any negative value will be recorded as zero.
 The default is {\tt stop\_g\_absolute =} $10^{-6}$.
 
 \itt{stop\_g\_relative} is a scalar variable of type default \realdp,
 that is used to specify the largest relative reduction in the norm of the
-gradient of the objective function that will be permitted
+gradient of the residual that will be permitted
 (see Section~\ref{galmethod}) at the estimate of the solution sought
 compared to that at the initial point.
 Any negative value will be recorded as zero.
@@ -797,8 +839,8 @@ The defaults are
 
 \itt{switch\_to\_newton} is a scalar variable of type default \realdp,
 that is used to specify the value of the two-norm of the gradient,
- $\|\bmJ^T(\bmx) \bmc(\bmx)\|_2/\|\bmc(\bmx)\|_2$,
-of the residual  $\|\bmc(\bmx)\|_2$, required before a switch is made
+ $\|\bmJ^T(\bmx) \bmW \bmc(\bmx)\|_2/\|\bmc(\bmx)\|_{\bmW}$,
+of the residual  $\|\bmc(\bmx)\|_{\bmW}$, required before a switch is made
 from the Gauss-Newton model to the Newton one when {\tt \%model = 5}).
 The default is
 {\tt switch\_to\_newton = 0.1}.
@@ -826,6 +868,19 @@ that should be set \true\ if the regularization weight is to be
 re-normaized to account for the shape of the regularization norm
 every iteration, and \false\ if no re-normalization is required.
 The default is {\tt renormalize\_weight = .FALSE.}.
+
+\itt{magic\_step}
+is a scalar variable of type default \logical,
+that should be set \true\ if additional ``magic'' steps are to be
+used in order to improve the objective as the iteration proceeds,
+and \false\ if no ``magic'' steps are used.
+The default is {\tt magic\_step = .FALSE.}.
+
+\itt{print\_obj}
+is a scalar variable of type default \logical,
+that should be set \true\ if output values relate to $f(\bmx)$,
+and \false\ if they relate to $\|\bmc(\bmx)\|_{\bmW}$.
+The default is {\tt print\_obj = .FALSE.}.
 
 \itt{space\_critical} is a scalar variable of type default \logical,
 that must be set \true\ if space is critical when allocating arrays
@@ -910,6 +965,13 @@ See the specification sheet for the package
 {\tt \libraryname\_ROOTS}
 for details, and appropriate default values.
 
+\itt{subproblem\_control}  is a scalar variable of type
+{\tt \packagename\_subproblem\_control\_type}
+whose components are used to control the solution of the
+least-squares subproblem that defines the step.
+The only differences are that the default values
+{\tt subproblem\_control\%maxit = 50} and
+{\tt subproblem\_control\%print\_obj = .TRUE.}.
 \end{description}
 
 %%%%%%%%%%% time type %%%%%%%%%%%
@@ -965,7 +1027,11 @@ linear equations.
 The derived data type
 {\tt \packagename\_inform\_type}
 is used to hold parameters that give information about the progress and needs
-of the algorithm. The components of
+of the algorithm.
+The derived type {\tt \packagename\_subproblem\_inform\_type}
+comprises all of the components of {\tt \packagename\_inform\_type}
+except for the last (i.e., {\tt subproblem\_inform}).
+The components of
 {\tt \packagename\_inform\_type}
 are:
 
@@ -1026,12 +1092,12 @@ value of the objective function $f(\bmx)$  at the best estimate
 of the solution found.
 
 \itt{norm\_c} is a scalar variable of type default \realdp, that holds the
-value of the two-norm of the residual function, $\|\bmc(\bmx)\|_2$.
+value of the two-norm of the residual function, $\|\bmc(\bmx)\|_{\bmW}$.
 at the best estimate of the solution found.
 
 \itt{norm\_g} is a scalar variable of type default \realdp, that holds the
 value of the norm of the gradient of the two-norm of the residual function,
-$\|\bmJ^T(\bmx) \bmc(\bmx)\|_2/\|\bmc(\bmx)\|_2$, at the best estimate
+$\|\bmJ^T(\bmx) \bmW \bmc(\bmx)\|_2/\|\bmc(\bmx)\|_{\bmW}$, at the best estimate
 of the solution found.
 
 \itt{weight} is a scalar variable of type default \realdp, that holds the
@@ -1085,6 +1151,10 @@ as performed by the package
 See the specification sheet for the package
 {\tt \libraryname\_ROOTS} for details.
 
+\itt{subproblem\_inform}  is a scalar variable of type
+{\tt \packagename\_subproblem\_inform\_type}
+whose components are used to give information about the solution of the
+least-squares subproblem that defines the step.
 \end{description}
 
 %%%%%%%%%%% data type %%%%%%%%%%%
@@ -1201,8 +1271,8 @@ The minimization algorithm is called as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_solve( nlp, control, inform, data, userdata[, eval\_C,
-eval\_J, eval\_H, \hspace{8mm}                  \&}
+{\tt CALL \packagename\_solve( nlp, control, inform, data, userdata[, W,
+   eval\_C, eval\_J, eval\_H, \hspace{3mm}                  \&}
 \vspace*{-5mm}
 
 \hspace{37mm}
@@ -1324,6 +1394,13 @@ to communicate user-supplied data to and from the \optional\ subroutines
 {\tt eval\_C}, {\tt eval\_J}, {\tt eval\_H}, {\tt eval\_JPROD},
 {\tt eval\_HPROD}, {\tt eval\_HPRODS} and {\tt eval\_SCALE}
 (see Section~\ref{typeuserdata}).
+
+\itt{W} is an \optional\ rank-one array of type default \realdp\
+whose components specifies the diagonal weighting matrix $\bmW$ that
+defines the objective function $f(\bmx)$. If {\tt W} is present, it
+must be of length at least $n$, and {\tt W}$(i)$ should contain $w_i > 0$
+$i = 1, \ldots, n$. If $\bmW$ is absent, the weights $w_i$ will all be
+taken to be $1.0$.
 
 \itt{eval\_C} is an \optional\
 user-supplied subroutine whose purpose is to evaluate the value of the
@@ -1756,7 +1833,7 @@ The routine must be specified as
 \def\baselinestretch{0.8}
 {\tt
 \begin{verbatim}
-       SUBROUTINE eval_PREC( status, X, userdata, U, V )
+       SUBROUTINE eval_SCALE( status, X, userdata, U, V )
 \end{verbatim} }
 \def\baselinestretch{1.0}
 \noindent whose arguments are as follows:
@@ -2210,7 +2287,7 @@ estimate of the required minimizer, $\bmx_k$ is sought by computing a
 step $\bms_k$. The step is chosen to approximately minimize a model $t_k(\bms)$
 of $f_{\rho,r}(\bmx_k+\bms)$
 that includes a weighted regularization term
-$\sfrac{\sigma_k}{p} \|s\|_{M_k}^p$
+$\sfrac{\sigma_k}{p} \|s\|_{\bmS_k}^p$
 for some specified positive weight $\sigma_k$. The quality of the
 resulting step $\bms_k$ is assessed by computing the "ratio"
 %$(f_{\rho,p}(\bmx_k) - f_{\rho,p}(\bmx_k+\bms_k))/(t_k(\bmzero)-t_k(\bms_k))$.
@@ -2221,7 +2298,8 @@ $\bmx_{k+1} = \bmx_k$, and the weight is increased by powers of a given
 increase factor up to a given limit. If the ratio is larger than
 $\eta_v \geq \eta_d$, the weight will be decreased by powers of a given
 decrease factor again up to a given limit. The method will terminate
-as soon as $\|\nabla_x f(\bmx_k)\|$ is smaller than a specified value.
+as soon as $f(\bmx_k)$ or
+$\|\nabla_x f(\bmx_k)\|$ is smaller than a specified value.
 
 A choice of linear, quadratic or quartic models $t_k(\bms)$ is available
 (see \S\ref{galterminology}), and normally a two-norm regularization will
@@ -2283,8 +2361,10 @@ The specific methods employed here are discussed in
 
 \noindent
 N. I. M. Gould, J. A. Scott and T. Rees,
-``Solving nonlinear least-squares problems''.
-RAL Technical Report (in preparation) (2017).
+``Convergence and evaluation-complexity analysis of a regularized
+tensor-Newton method for solving nonlinear least-squares problems''.
+{\em Computational Optimization and Applications}
+DOI: 10.1007/s10589-019-00064-2 (2019).
 
 %%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2351,4 +2431,3 @@ This produces the same output as in the previous case.
 
 
 \end{document}
-

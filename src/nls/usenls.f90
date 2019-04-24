@@ -216,6 +216,8 @@ USE GALAHAD_STRING_double
 
      CALL NLS_initialize( data, control, inform )
      IF ( is_specfile ) CALL NLS_read_specfile( control, input_specfile )
+     control%jacobian_available = 2
+     control%hessian_available = 2
 
 !  Initialize the problem data
 

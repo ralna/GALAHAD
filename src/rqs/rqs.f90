@@ -39,7 +39,7 @@
       USE GALAHAD_NORMS_double, ONLY: TWO_NORM
       USE GALAHAD_SLS_double
       USE GALAHAD_IR_double
-      USE GALAHAD_MOP_double
+      USE GALAHAD_MOP_double, ONLY: mop_AX
       USE GALAHAD_LAPACK_interface, ONLY : SYEV, SYGV
 
       IMPLICIT NONE

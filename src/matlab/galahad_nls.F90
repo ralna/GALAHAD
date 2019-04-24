@@ -1,25 +1,27 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 3.2 - 06/03/2019 AT 10:30 GMT.
+!  THIS VERSION: GALAHAD 3.2 - 19/04/2019 AT 14:30 GMT.
 
-! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
 !                 MEX INTERFACE TO GALAHAD_NLS
 !
-! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!  find a local (unconstrained) minimizer of a differentiable nonlinear
-!  least-squares objective function f(x) = 1/2 sum_i=1^n r_i^2(x)
-!  of n real variables x using a regularized tensor-Newton method.
+!  find a local (unconstrained) minimizer of a differentiable, possibly
+!  weighted, nonlinear least-squares objective function
+!    f(x) = 1/2 sum_i=1^m w_i r_i^2(x)
+!  of n real variables x, using a regularized tensor-Newton method.
 !  Advantage may be taken of sparsity in the problem.
 !
 !  Terminology -
 !
 !  r_i(x) is the ith residual, and the vector r(x) are the residuals.
+!  Weights w_i>0 may be provided, but otherwise will be assumed to be 1.
 !  The matrix J(x) for which J_i,j = d r_i(x) / dx_j is the Jacobian
 !  of the residuals. For a specified m-vector y, the weighted residual
 !  Hessian H(x,y) = sum_i=1^m y_i H_i(x), where (H_i(x))_j,k =
-!   d^2 r_i(x) / dx_j dx_k is the Hessian of the ith residual. Finally,
+!  d^2 r_i(x) / dx_j dx_k is the Hessian of the ith residual. Finally,
 !  for a given n-vector v, the residual-Hessians-vector product matrix
 !  P(x,v) = (H_1(x) v, ...., H_m(x)v)
 !
@@ -64,6 +66,8 @@
 !              the Jacobian, Hessian and residual-Hessian product
 !              matrices, if any. Components are -
 !                m: number of residuals (compulsory)
+!                w: a vector of m positive weights (optional). If
+!                  absent, weights of one will be used.
 !                j_row, j_col: row and column indices of the nonzeros
 !                  in the Jacobian of the residuals J(x) (optional).
 !                  If absent, J(x) is assumed dense and stored by rows
@@ -86,9 +90,9 @@
 !      eval_j: a user-provided subroutine named eval_j.m for which
 !                [j_val,status] = eval_j(x)
 !              returns a vector of values of the Jacobian J(x) of the
-!              residuals. If J(x) is dense, the n*(i-1)+j-th conponent
-!              of j_val should contain the derivative dr_i(x)/dx_j dx_j
-!              at x, 1<=i<=m, 1<=j<=n. If J(x) is sparse,
+!              residuals stored by rows. If J(x) is dense, the n*(i-1)+j-th
+!              conponent of j_val should contain the derivative
+!              dr_i(x)/dx_j dx_j at x, 1<=i<=m, 1<=j<=n. If J(x) is sparse,
 !              the k-th component of j_val contains the derivative
 !              dr_i(x)/dx_i dx_j for which i=j_row(k) and j=j_col(k),
 !              as set in the structure pattern (see above).
@@ -99,12 +103,12 @@
 !      eval_h: a user-provided subroutine named eval_h.m for which
 !                [h_val,status] = eval_h(x,y)
 !              returns a vector of values of the weighted residual
-!              Hessian H(x,y) at (x,y) (if required). If H(x,y) is dense,
-!              the i*(i-1)/2+j-th conponent of h_val should contain the
-!              (H(x,y))_i,j at (x,y), 1<=j<=i<=n. If H(x,y) is sparse,
-!              the k-th component of h_val contains the component
-!              (H(x,y))_i,j for which i=h_row(k) and j=h_col(k),
-!              as set in the structure pattern (see above).
+!              Hessian H(x,y) at (x,y) (if required) stored by rows.
+!              If H(x,y) is dense, the i*(i-1)/2+j-th conponent of h_val
+!              should contain the (H(x,y))_i,j at (x,y), 1<=j<=i<=n.
+!              If H(x,y) is sparse, the k-th component of h_val contains
+!              the component (H(x,y))_i,j for which i=h_row(k) and
+!              j=h_col(k), as set in the structure pattern (see above).
 !              status should be set to 0 if the evaluation succeeds,
 !              and a non-zero value if the evaluation fails.
 !              If eval_h is absent, the solver will resort to a
@@ -112,12 +116,12 @@
 !      eval_p: a user-provided subroutine named eval_p.m for which
 !                [p_val,status] = eval_p(x,v)
 !              returns a vector of values of the residual-Hessians-vector
-!              product matrix P(x,v) at (x,v) (if required). If P(x,v)
-!              is dense, the i+m*(j-1)-th conponent of p_val should contain
-!              (P(x,v))_i,j at (x,v), 1<=i<=n, 1<=j<=m. If P(x,v) is sparse,
-!              the k-th component of h_val contains the component
-!              (P(x,v))_i,j for which i=p_row(k) and j=p_col(k),
-!              as set in the structure pattern (see above).
+!              product matrix P(x,v) at (x,v) (if required) stored by
+!              columns. If P(x,v) is dense, the i+m*(j-1)-th conponent
+!              of p_val should contain (P(x,v))_i,j at (x,v), 1<=i<=n,
+!              1<=j<=m. If P(x,v) is sparse, the k-th component of h_val
+!              contains the component (P(x,v))_i,j for which i=p_row(k)
+!              and j=p_col(k), as set in the structure pattern (see above).
 !              status should be set to 0 if the evaluation succeeds,
 !              and a non-zero value if the evaluation fails.
 !              If eval_p is absent, the solver will resort to a
@@ -146,7 +150,7 @@
 !             BSC_inform_type, and ROOTS_inform_type, respectively.
 !             See: http://galahad.rl.ac.uk/galahad-www/doc/nls.pdf
 !
-! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
@@ -197,8 +201,8 @@
 
       mwPointer :: pat_in, x0_in, er_in, ej_in, eh_in, ep_in, con_in
       mwPointer :: pat_pr, x0_pr, er_pr, ej_pr, eh_pr, ep_pr, con_pr
-      mwPointer :: m_in, row_in, col_in
-      mwPointer :: m_pr, nz_pr, row_pr, col_pr
+      mwPointer :: m_in, row_in, col_in, w_in
+      mwPointer :: m_pr, nz_pr, w_pr, row_pr, col_pr
 
       mwPointer input_x( 2 )
       mwPointer output_r( 2 ), output_j( 2 ), output_h( 2 ),output_p( 2 )
@@ -228,6 +232,7 @@
       TYPE ( NLS_data_type ), SAVE :: data
       TYPE ( NLS_control_type ), SAVE :: control
       TYPE ( NLS_inform_type ) :: inform
+      REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
 
 !  debugging
 
@@ -457,6 +462,27 @@
         ALLOCATE( nlp%C( m ), STAT = alloc_stat )
         IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
 
+!  see if the weights w are provided
+
+        w_in = 0
+        w_in = mxGetField( pat_in, 1, 'w' )
+        IF ( w_in /= 0 ) THEN
+          nz = mxGetNumberOfElements( w_in )
+          IF ( nz < m ) CALL mexErrMsgTxt(                                     &
+            ' length of pattern.w must be at least patter.m' //                &
+            ' on input to galahad_nls' )
+
+!  allocate space for the weights, and assign their values
+
+          ALLOCATE( W( m ), STAT = alloc_stat )
+          IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
+
+          w_pr = mxGetPr( w_in )
+          CALL MATLAB_copy_from_ptr( w_pr, W, m )
+        ELSE
+          nz = 0
+        END IF
+
 !  see if the Jacobian is dense or sparse
 
         row_in = mxGetField( pat_in, 1, 'j_row' )
@@ -501,6 +527,7 @@
         END IF
         ALLOCATE( nlp%J%val( nlp%J%ne ), STAT = alloc_stat )
         IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
+        control%jacobian_available = 2
 
 !  see if the weighted Hessian is dense or sparse
 
@@ -549,6 +576,7 @@
           END IF
           ALLOCATE( nlp%H%val( nlp%H%ne ), STAT = alloc_stat )
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
+          control%hessian_available = 2
         END IF
 
 !  see if the residual-Hessian-vector product matrix is dense or sparse
@@ -575,7 +603,7 @@
           sparse_j = nz > 0
           IF ( sparse_j ) THEN
             nlp%P%n = m ; nlp%P%m = n ; nlp%P%ne = nz
-!           CALL SMT_put( nlp%P%type, 'COORDINATE', alloc_stat )
+            CALL SMT_put( nlp%P%type, 'SPARSE_BY_COLUMNS', alloc_stat )
             IF ( ALLOCATED( IW ) ) DEALLOCATE( IW, STAT = alloc_stat )
             IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' deallocation failure ' )
             ALLOCATE( nlp%P%ptr( m + 1 ), IW( nz ), STAT = alloc_stat )
@@ -616,7 +644,7 @@
               l = l + n
             END DO
             nlp%P%ptr( m + 1 ) = l + 1
-!           CALL SMT_put( nlp%P%type, 'DENSE', alloc_stat )
+            CALL SMT_put( nlp%P%type, 'DENSE_BY_COLUMNS', alloc_stat )
           END IF
           ALLOCATE( nlp%P%val( nlp%P%ne ), STAT = alloc_stat )
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
@@ -640,6 +668,7 @@
 !  set for initial entry
 
         inform%status = 1
+!       inform%status = -1
         m_mwsize = 1 ; n_mwsize = n
         input_x( 1 ) = mxCreateDoubleMatrix( m_mwsize, n_mwsize, 0 )
         n_mwsize = MAX( m, n )
@@ -650,8 +679,14 @@
         IF ( debug ) CALL mexWarnMsgTxt( ' start loop' )
         DO
           IF ( debug ) CALL mexWarnMsgTxt( ' enter solve' )
-          CALL NLS_solve( nlp, control, inform, data, userdata )
+           IF ( w_in /= 0 ) THEN
+!CALL mexWarnMsgTxt( ' w /= I' )
+             CALL NLS_solve( nlp, control, inform, data, userdata, W = W )
+           ELSE
+            CALL NLS_solve( nlp, control, inform, data, userdata )
+           END IF
           IF ( debug ) CALL mexWarnMsgTxt( ' end solve' )
+!inform%status = 0
           SELECT CASE ( inform%status )
 
 !  obtain the residuals
@@ -821,10 +856,23 @@
       END IF
       IF ( debug ) CALL mexWarnMsgTxt( ' write out' )
 
+!  close any opened io units
+
+      IF ( control%error > 0 ) THEN
+        INQUIRE( control%error, OPENED = opened )
+        IF ( opened ) CLOSE( control%error )
+      END IF
+
+      IF ( control%out > 0 ) THEN
+        INQUIRE( control%out, OPENED = opened )
+        IF ( opened ) CLOSE( control%out )
+      END IF
+
 !  check for errors
 
-        IF ( inform%status < 0 )                                               &
-          CALL mexErrMsgTxt( ' Call to NLS_solve failed ' )
+      IF ( inform%status < 0 )                                               &
+        CALL mexWarnMsgTxt( ' Call to NLS_solve failed, check inform.status ' )
+!       CALL mexErrMsgTxt( ' Call to NLS_solve failed ' )
       END IF
 
 !  all components now set
@@ -842,21 +890,11 @@
         IF ( ALLOCATED( nlp%C ) ) DEALLOCATE( nlp%C, STAT = info )
         IF ( ALLOCATED( nlp%G ) ) DEALLOCATE( nlp%G, STAT = info )
         IF ( ALLOCATED( nlp%X ) ) DEALLOCATE( nlp%X, STAT = info )
+        IF ( ALLOCATED( W ) ) DEALLOCATE( W, STAT = alloc_stat )
         IF ( ALLOCATED( IW ) ) DEALLOCATE( IW, STAT = alloc_stat )
         CALL NLS_terminate( data, control, inform )
       END IF
 
-!  close any opened io units
-
-      IF ( control%error > 0 ) THEN
-        INQUIRE( control%error, OPENED = opened )
-        IF ( opened ) CLOSE( control%error )
-      END IF
-
-      IF ( control%out > 0 ) THEN
-        INQUIRE( control%out, OPENED = opened )
-        IF ( opened ) CLOSE( control%out )
-      END IF
       RETURN
 
       END SUBROUTINE mexFunction

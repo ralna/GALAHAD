@@ -1,12 +1,33 @@
 
  error exit tests 
 
+
+ Error return from TRU_solve -
+   one or more restrictions violated
+ 
  3: TRU_solve exit status =     -3
+
+ Error return from TRU_solve -
+   the problem appears to be unbounded from below
+ 
  7: TRU_solve exit status =     -7
+
+ Error return from TRU_solve -
+   the provided preconditioner is flawed
+ 
 15: TRU_solve exit status =    -15
+
+ Error return from TRU_solve -
+   the iteration limit has been exceeded
+ 
 18: TRU_solve exit status =    -18
+
+ Error return from TRU_solve -
+   the time limit has been exceeded
+ 
 19: TRU_solve exit status =    -19
 40: TRU_solve exit status =    -82
+ 
 
  test of availible options 
 

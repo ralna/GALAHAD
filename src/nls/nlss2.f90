@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_NLS_EXAMPLE  !  GALAHAD 3.0 - 25/11/2016 AT 09:15 GMT
+   PROGRAM GALAHAD_NLS_EXAMPLE2 !  GALAHAD 3.2 - 20/04/2019 AT 10:15 GMT
    USE GALAHAD_NLS_double                     ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -24,6 +24,7 @@
    userdata%real( 1 ) = p                       ! Record parameter, p
 ! problem data complete ; solve using a Newton model
    CALL NLS_initialize( data, control, inform ) ! Initialize control params
+   control%jacobian_available = 2               ! Jacobian is available
    control%hessian_available = 1                ! only Hessian-vector products
    control%model = 4                            ! use the Newton model
    inform%status = 1                            ! set for initial entry
@@ -39,7 +40,7 @@
    END IF
    CALL NLS_terminate( data, control, inform )  ! delete internal workspace
    DEALLOCATE( nlp%X, nlp%G, nlp%J%val, nlp%J%row, nlp%J%col, userdata%real )
-   END PROGRAM GALAHAD_NLS_EXAMPLE
+   END PROGRAM GALAHAD_NLS_EXAMPLE2
 
    SUBROUTINE EVALC( status, X, userdata, C )   ! residual
    USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
@@ -88,4 +89,3 @@
    status = 0
    RETURN
    END SUBROUTINE EVALHPROD
-

@@ -186,6 +186,19 @@ catch excpt
 end
 
 try
+    pkg = 'NLS';
+    disp(sprintf('******* Testing %s *******', pkg));
+    ntests = ntests + 1;
+    test_galahad_nls
+    if inform.status ~= 0
+        pkg_failures = pkg_failures + 1;
+    end
+catch excpt
+    disp(sprintf('%d %d\n', err, pkg));
+    syntax_errors = syntax_errors + 1;
+end
+
+try
     pkg = 'QPA';
     disp(sprintf('******* Testing %s *******', pkg));
     ntests = ntests + 1;
