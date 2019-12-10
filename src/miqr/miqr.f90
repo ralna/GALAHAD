@@ -932,7 +932,8 @@
         TYPE ( MIQR_data_global_type ), INTENT( INOUT ) :: global
         TYPE ( MIQR_control_type ), INTENT( INOUT ) :: control
         TYPE ( MIQR_inform_type ), INTENT( INOUT ) :: inform
-        REAL ( KIND = wp ), INTENT( IN ) :: start_time, start_clock
+        REAL, INTENT( IN ) :: start_time
+        REAL ( KIND = wp ), INTENT( IN ) :: start_clock
 
 !  Local variables
 
@@ -1559,7 +1560,8 @@
         TYPE ( MIQR_data_workspace_type ), INTENT( INOUT ) :: workspace
         TYPE ( MIQR_control_type ), INTENT( INOUT ) :: control
         TYPE ( MIQR_inform_type ), INTENT( INOUT ) :: inform
-        REAL ( KIND = wp ), INTENT( IN ) :: start_time, start_clock
+        REAL, INTENT( IN ) :: start_time
+        REAL ( KIND = wp ), INTENT( IN ) :: start_clock
 
 !  Local variables
 

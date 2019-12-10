@@ -14,7 +14,7 @@
     MODULE GALAHAD_USEMIQR_double
 
 !    -----------------------------------------------
-!    | CUTEst/AMPL interface to MIQR, a multilevel | 
+!    | CUTEst/AMPL interface to MIQR, a multilevel |
 !    | incomplete QR factorization package         |
 !    -----------------------------------------------
 
@@ -26,7 +26,7 @@
       USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
       USE GALAHAD_NORMS_double, ONLY: TWO_NORM
       USE GALAHAD_MIQR_double
-      USE GALAHAD_SPECFILE_double 
+      USE GALAHAD_SPECFILE_double
       USE GALAHAD_STRING_double, ONLY: STRING_upper_word
       USE GALAHAD_COPYRIGHT
       USE GALAHAD_SYMBOLS,                                                     &
@@ -49,7 +49,7 @@
 
 !  --------------------------------------------------------------------
 !
-!  Form a multilevel incomplete QR factorization of a rectangular 
+!  Form a multilevel incomplete QR factorization of a rectangular
 !  matrix A using the GALAHAD package GALAHAD_MIQR
 !
 !  --------------------------------------------------------------------
@@ -126,7 +126,7 @@
       CHARACTER ( LEN = 30 ) :: sfilename = 'MIQRSOL.d'
 !     CHARACTER ( LEN = 30 ) :: lfilename = 'LPROWS.d'
       LOGICAL :: do_solve = .TRUE.
-      LOGICAL :: fulsol = .FALSE. 
+      LOGICAL :: fulsol = .FALSE.
 
 !  Output file characteristics
 
@@ -139,7 +139,7 @@
 !  Arrays
 
       TYPE ( MIQR_data_type ) :: data
-      TYPE ( MIQR_control_type ) :: MIQR_control        
+      TYPE ( MIQR_control_type ) :: MIQR_control
       TYPE ( MIQR_inform_type ) :: MIQR_inform
       TYPE ( QPT_problem_type ) :: prob
 
@@ -267,7 +267,7 @@
 
       CALL CUTEST_cnames( cutest_status, n, m, pname, VNAME, CNAME )
       IF ( cutest_status /= 0 ) GO TO 910
-      WRITE( out, 2020 ) pname 
+      WRITE( out, 2020 ) pname
 
 !  Set up the initial estimate of the solution and
 !  right-hand-side of the Kuhn-Tucker system.
@@ -279,21 +279,21 @@
 
 !  Set X0 to zero to determine the constant terms for the problem functions
 
-      prob%X0 = zero 
+      prob%X0 = zero
 
-!  Evaluate the constant terms of the objective (objf) and constraint 
+!  Evaluate the constant terms of the objective (objf) and constraint
 !  functions (C)
 
       CALL CUTEST_cfn( cutest_status, n, m, prob%X0, objf, C( : m ) )
       IF ( cutest_status /= 0 ) GO TO 910
-      DO i = 1, m 
-        IF ( EQUATN( i ) ) THEN 
+      DO i = 1, m
+        IF ( EQUATN( i ) ) THEN
           prob%C_l( i ) = prob%C_l( i ) - C( i )
           prob%C_u( i ) = prob%C_l( i )
         ELSE
           prob%C_l( i ) = prob%C_l( i ) - C( i )
           prob%C_u( i ) = prob%C_u( i ) - C( i )
-        END IF 
+        END IF
       END DO
 
 !  Determine the number of nonzeros in the Jacobian
@@ -326,13 +326,13 @@
         IF ( prob%A%val( i ) /= zero ) THEN
           IF ( prob%A%row( i ) > 0 ) THEN
             A_ne = A_ne + 1
-            prob%A%row( A_ne ) = prob%A%row( i ) 
+            prob%A%row( A_ne ) = prob%A%row( i )
             prob%A%col( A_ne ) = prob%A%col( i )
             prob%A%val( A_ne ) = prob%A%val( i )
           ELSE
             prob%G( prob%A%col( i ) ) = prob%A%val( i )
             prob%gradient_kind        = GENERAL
-          END IF  
+          END IF
         END IF
       END DO
       prob%A%n = n ; prob%A%m = m ; prob%A%ne = A_ne
@@ -373,7 +373,7 @@
       IF ( ALLOCATED( prob%A%type ) ) DEALLOCATE( prob%A%type )
       CALL SMT_put( prob%A%type, 'SPARSE_BY_ROWS', smt_stat )
       prob%f    = objf
-        
+
 !  ------------------- problem set-up complete ----------------------
 
       CALL CPU_TIME( times ) ; CALL CLOCK_time( clocks )
@@ -389,7 +389,7 @@
            OPEN( dfiledevice, FILE = dfilename, FORM = 'FORMATTED',            &
                   STATUS = 'NEW', IOSTAT = iores )
         END IF
-        IF ( iores /= 0 ) THEN 
+        IF ( iores /= 0 ) THEN
           write( out, 2160 ) iores, dfilename
           STOP
         END IF
@@ -420,7 +420,7 @@
            OPEN( rfiledevice, FILE = rfilename, FORM = 'FORMATTED',            &
                  STATUS = 'NEW', IOSTAT = iores )
         END IF
-        IF ( iores /= 0 ) THEN 
+        IF ( iores /= 0 ) THEN
           write( out, 2160 ) iores, rfilename
           STOP
         END IF
@@ -428,7 +428,7 @@
       END IF
 
 !  Set all default values, and override defaults if requested
- 
+
       CALL MIQR_initialize( data, MIQR_control, MIQR_inform )
 
       IF ( is_specfile )                                                       &
@@ -469,7 +469,7 @@
       ALLOCATE( COUNT( 0 : maxc ) )
       COUNT = 0
       DO i = 1, nm
-        j = IW( i ) 
+        j = IW( i )
         COUNT( j ) = COUNT( j ) + 1
       END DO
 
@@ -481,7 +481,7 @@
 !        OPEN( lfiledevice, FILE = lfilename, FORM = 'FORMATTED',            &
 !              STATUS = 'NEW', IOSTAT = iores )
 !     END IF
-!     IF ( iores /= 0 ) THEN 
+!     IF ( iores /= 0 ) THEN
 !       write( out, 2160 ) iores, lfilename
 !       STOP
 !     END IF
@@ -491,9 +491,9 @@
       DO j = 0, maxc
         IF ( COUNT( j ) > 0 ) THEN
           WRITE( out, "( 1X, I0, 1X, A, ' have ', I0, ' nonzeros' )" )         &
-            COUNT( j ), rowcol, j 
+            COUNT( j ), rowcol, j
 !         WRITE( lfiledevice, "( 1X, I0, 1X, A, ' have ', I0, ' nonzeros' )" ) &
-!           COUNT( j ), rowcol, j 
+!           COUNT( j ), rowcol, j
         END IF
       END DO
       DEALLOCATE( IW, COUNT )
@@ -512,14 +512,14 @@
           STOP
         END IF
         prob%X_status = ACTIVE
-        
+
         ALLOCATE( prob%C_status( m ), STAT = alloc_stat )
         IF ( alloc_stat /= 0 ) THEN
           IF ( printe ) WRITE( out, 2150 ) 'X_status', alloc_stat
           STOP
         END IF
         prob%C_status = ACTIVE
-        
+
         ALLOCATE( prob%Z_l( n ), prob%Z_u( n ), STAT = alloc_stat )
         IF ( alloc_stat /= 0 ) THEN
           IF ( printe ) WRITE( out, 2150 ) 'Z_lu', alloc_stat
@@ -527,7 +527,7 @@
         END IF
         prob%Z_l( : n ) = - infinity
         prob%Z_u( : n ) =   infinity
-        
+
         ALLOCATE( prob%Y_l( m ), prob%Y_u( m ), STAT = alloc_stat )
         IF ( alloc_stat /= 0 ) THEN
           IF ( printe ) WRITE( out, 2150 ) 'C_lu', alloc_stat
@@ -547,21 +547,21 @@
 
 !  Call the factorization package
 
-      qfval = objf 
+      qfval = objf
 
       IF ( do_solve .AND. prob%n > 0 ) THEN
         CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
-  
+
         prob%m = m ; prob%n = n
         DEALLOCATE( prob%X0 )
-    
+
 !       prob%m = m
 !       prob%n = n
-  
+
 !       WRITE( 6, "( ' x ', /, (5ES12.4) )" ) prob%X
 !       WRITE( 6, "( ' y ', /, (5ES12.4) )" ) prob%Y
 !       WRITE( 6, "( ' z ', /, (5ES12.4) )" ) prob%Z
-  
+
 !  =================
 !  solve the problem
 !  =================
@@ -575,8 +575,8 @@
         WRITE( 6, "( ' on exit from MIQR_form, status = ', I0,                 &
        &    ', dropped = ', I0, ', time = ', F6.2 )" )                         &
           MIQR_inform%status, MIQR_inform%drop, MIQR_inform%time%clock_form
-        IF ( MIQR_inform%zero_columns > 0 )                                    &
-          WRITE( 6, "( 1X, I0, ' zero columns ' )" ) MIQR_inform%zero_columns
+        IF ( MIQR_inform%zero_diagonals > 0 )                                  &
+          WRITE( 6, "( 1X, I0, ' zero columns ' )" ) MIQR_inform%zero_diagonals
 
         IF ( MIQR_control%transpose ) THEN
           IF ( printo ) WRITE( out,                                            &
@@ -647,9 +647,9 @@
 !       WRITE( 6, "( ' sol =', /, ( 5ES11.4 ) )" ) RHS( : n )
 
         CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
-  
+
 !  Deallocate arrays from the minimization
-  
+
         status = MIQR_inform%status
         CALL MIQR_terminate( data, MIQR_control, MIQR_inform )
         DEALLOCATE( RHS, SOL )
@@ -691,5 +691,3 @@
 !  End of module USEMIQR_double
 
    END MODULE GALAHAD_USEMIQR_double
-
-
