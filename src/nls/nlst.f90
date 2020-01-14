@@ -19,7 +19,7 @@
    logical :: alive
    REAL ( KIND = wp ) :: dum
 
-! GO TO 10
+!  GO TO 10
 
 ! start problem data
 
@@ -224,7 +224,7 @@
 
 10 CONTINUE
 
-!   IF ( .TRUE. ) GO TO 20
+!  IF ( .TRUE. ) GO TO 20
 ! start problem data
    nlp%n = 2 ;  nlp%m = 3 ; nlp%J%ne = 5 ; nlp%H%ne = 2 ; nlp%P%ne = 2
    ALLOCATE( nlp%X( nlp%n ), nlp%C( nlp%m ), nlp%G( nlp%n ), W( nlp%m ) )
@@ -599,6 +599,7 @@
        nlp%P%ptr = (/ 1, 2, 3, 3 /)
      END IF
      DO scaling = - 1, 8
+!    DO scaling = 1, 1
 !    DO scaling = - 1, - 1
 !      IF ( scaling == 0 .OR. scaling == 6 ) CYCLE
        DO rev = 0, 1

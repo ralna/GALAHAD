@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.0 - 01/12/2016 AT 09:15 GMT
+! THIS VERSION: GALAHAD 3.2 - 08/05/2019 AT 08:10 GMT
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ N L S   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -438,6 +438,10 @@
 
        CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
 
+!  the name of the user-supplied evaluation routine for which an error ocurred
+
+       CHARACTER ( LEN = 12 ) :: bad_eval = REPEAT( ' ', 12 )
+
 !  the total number of iterations performed
 
        INTEGER :: iter = 0
@@ -579,7 +583,7 @@
        LOGICAL :: printi, printt, printd, printw, printm, gauss_to_newton_model
        LOGICAL :: print_iteration_header, print_1st_header
        LOGICAL :: set_printi, set_printt, set_printd, set_printm, set_printw
-       LOGICAL :: monotone, new_point, got_j, got_h, poor_model, reduce
+       LOGICAL :: monotone, new_point, got_j, got_h, poor_model, reduce, n_or_gn
        LOGICAL :: reverse_c, reverse_j, reverse_h, reverse_jprod, reverse_hprod
        LOGICAL :: reverse_scale, reverse_hprods, non_trivial_regularization
        LOGICAL :: successful, transpose, form_regularization, f_is_nan, g_is_nan
@@ -1793,7 +1797,7 @@
 
      INTEGER :: i, j, ic, ir, l, ll, nroots
      REAL ( KIND = wp ) :: ared, prered, rounding, root1, root2, root3, alpha
-     REAL ( KIND = wp ) :: c0, c1, c2, c3, sths, facts, reg, val
+     REAL ( KIND = wp ) :: c0, c1, c2, c3, sths, reg, val
 
      LOGICAL :: alive
      CHARACTER ( LEN = 6 ) :: char_iter, char_facts
@@ -1860,7 +1864,10 @@
              control%model == newton_model .OR.                                &
              control%model == gauss_to_newton_model ) THEN
          data%subproblem_control = control%NLS_subproblem_control_type
+         data%n_or_gn = .TRUE.
          data%branch_newton = 10 ; GO TO 800
+       ELSE
+         data%n_or_gn = .FALSE.
        END IF
        data%branch = 10
      ELSE IF ( inform%status == 11 ) THEN
@@ -1870,9 +1877,14 @@
              control%model == newton_model .OR.                                &
              control%model == gauss_to_newton_model ) THEN
          data%subproblem_control = control%NLS_subproblem_control_type
+         data%n_or_gn = .TRUE.
          data%branch_newton = 20 ; GO TO 800
+       ELSE
+         data%n_or_gn = .FALSE.
        END IF
        data%branch = 20
+     ELSE
+       data%n_or_gn = .FALSE.
      END IF
 !    WRITE( 6, * ) ' branch ', data%branch
      SELECT CASE ( data%branch )
@@ -1896,8 +1908,8 @@
        GO TO 290
      CASE ( 320 ) ! residual evaluation
        GO TO 320
-     CASE ( 810 ) ! Newton/Gauss-Newton variants
-       GO TO 810
+     CASE ( 820 ) ! Newton/Gauss-Newton variants
+       GO TO 820
      END SELECT
 
 !  ============================================================
@@ -2114,6 +2126,8 @@
        data%control%PSLS_control%preconditioner = 8
      CASE ( expanding_band_regularization )
        data%control%PSLS_control%preconditioner = 9
+     CASE DEFAULT
+       data%control%PSLS_control%preconditioner = - 1
      END SELECT
      data%control%PSLS_control%new_structure = .TRUE.
      data%control%RQS_control%initial_multiplier = zero
@@ -2644,6 +2658,10 @@
      ELSE
        CALL eval_C( data%eval_status, nlp%X( : nlp%n ), userdata,              &
                     nlp%C( : nlp%m ) )
+       IF ( data%eval_status /= 0 ) THEN
+         inform%bad_eval = 'eval_C'
+         inform%status = GALAHAD_error_evaluation ; GO TO 900
+       END IF
      END IF
 
 !  return from reverse communication with the residual function value c(x)
@@ -2673,6 +2691,7 @@
      IF ( data%f_is_nan ) THEN
        IF ( data%printi ) WRITE( data%out,                                     &
           "( A, ' initial objective value is a NaN' )" ) prefix
+       inform%bad_eval = 'NaN'
        inform%status = GALAHAD_error_evaluation ; GO TO 990
      END IF
 
@@ -2884,6 +2903,7 @@
            ELSE
              IF ( data%printi ) WRITE( data%out,                               &
                 "( A, ' initial gradient value is a NaN' )" ) prefix
+             inform%bad_eval = 'NaN'
              inform%status = GALAHAD_error_evaluation ; GO TO 990
            END IF
          END IF
@@ -3099,6 +3119,10 @@
              CALL eval_H( data%eval_status, nlp%X( : nlp%n ),                  &
                           data%Y( : nlp%m ), userdata,                         &
                           nlp%H%val( : nlp%H%ne ) )
+             IF ( data%eval_status /= 0 ) THEN
+               inform%bad_eval = 'eval_H'
+               inform%status = GALAHAD_error_evaluation ; GO TO 900
+             END IF
            END IF
          END IF
        END IF
@@ -3269,6 +3293,10 @@
          CALL eval_HPRODS( data%eval_status, nlp%X( : nlp%n ),                 &
                            data%tensor_model%X( : nlp%n ), userdata,           &
                            nlp%P%val, got_h = .FALSE. )
+         IF ( data%eval_status /= 0 ) THEN
+           inform%bad_eval = 'eval_HPRODS'
+           inform%status = GALAHAD_error_evaluation ; GO TO 900
+         END IF
        END IF
 
 !  return from reverse communication with the Hessians-vector product
@@ -3456,6 +3484,10 @@
              CALL eval_H( data%eval_status, nlp%X( : nlp%n ),                  &
                           data%subproblem_data%Y( : nlp%m ), userdata,         &
                           data%tensor_model%H%val( : nlp%H%ne ) )
+             IF ( data%eval_status /= 0 ) THEN
+               inform%bad_eval = 'eval_H'
+               inform%status = GALAHAD_error_evaluation ; GO TO 900
+             END IF
            END IF
 
 !  evaluate the sum u = u + J(s) v or u = u + J^T(s) v, where
@@ -3529,6 +3561,10 @@
              CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,    &
                               data%subproblem_data%U( : nlp%n ),               &
                               data%subproblem_data%V( : nlp%n ) )
+             IF ( data%eval_status /= 0 ) THEN
+               inform%bad_eval = 'eval_SCALE'
+               inform%status = GALAHAD_error_evaluation ; GO TO 900
+             END IF
            END IF
 
 !  compute a "magic" step. Find the stepsize alpha for which phi(alpha s)
@@ -3681,6 +3717,10 @@
              CALL eval_HPRODS( data%eval_status, nlp%X( : nlp%n ),             &
                                data%tensor_model%X( : nlp%n ), userdata,       &
                                nlp%P%val, got_h = .FALSE. )
+             IF ( data%eval_status /= 0 ) THEN
+               inform%bad_eval = 'eval_HPRODS'
+               inform%status = GALAHAD_error_evaluation ; GO TO 900
+             END IF
            END IF
          END SELECT
 
@@ -3853,6 +3893,10 @@
        ELSE
          CALL eval_C( data%eval_status, nlp%X( : nlp%n ), userdata,            &
                       nlp%C( : nlp%m ) )
+         IF ( data%eval_status /= 0 ) THEN
+           inform%bad_eval = 'eval_C'
+           inform%status = GALAHAD_error_evaluation ; GO TO 900
+         END IF
        END IF
 
 !  return from reverse communication with the objective value
@@ -4211,6 +4255,9 @@
 !  ==================================
 
  800 CONTINUE
+     data%NLS_subproblem_data_type%regularization_type = control%norm
+
+ 810 CONTINUE
      data%branch = data%branch_newton
 !    WRITE(6,*) ' in data%branch ', data%branch
 
@@ -4226,7 +4273,7 @@
      SELECT CASE ( inform%NLS_subproblem_inform_type%status )
      CASE ( 2 : 6, 8 )
        inform%status = inform%NLS_subproblem_inform_type%status
-       data%branch = 810 ; RETURN
+       data%branch = 820 ; RETURN
      CASE( : - 1 )
        inform%status = inform%NLS_subproblem_inform_type%status
        GO TO 990
@@ -4235,8 +4282,8 @@
        GO TO 900
      END SELECT
 
- 810 CONTINUE
-     GO TO 800
+ 820 CONTINUE
+     GO TO 810
 
 !  ================
 !  Terminal returns
@@ -4260,7 +4307,7 @@
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
 
-     IF ( data%printi ) THEN
+     IF ( data%printi .AND. .NOT. data%n_or_gn ) THEN
 
 !      WRITE ( data%out, 2040 ) nlp%pname, nlp%n
 !      WRITE ( data%out, 2000 ) inform%c_eval, inform%j_eval, inform%h_eval,   &
@@ -5245,6 +5292,7 @@
        data%form_regularization = .FALSE.
      END IF
      data%reverse_scale = .NOT. PRESENT( eval_SCALE )
+     data%regularization_type = data%control%norm
 
 !  set the power for the regularization
 
@@ -5267,6 +5315,7 @@
 !write(6,*) ' ** subproblem scaling type ', data%regularization_type
 !     data%regularization_type = data%control%norm
 !write(6,*) ' ** subproblem scaling type ', data%regularization_type
+!write(6,*) ' ** subproblem regularization type ', data%regularization_type
      data%control%GLRT_control%unitm                                           &
        = data%regularization_type == euclidean_regularization
      SELECT CASE ( data%regularization_type )
@@ -5288,6 +5337,8 @@
        data%control%PSLS_control%preconditioner = 8
      CASE ( expanding_band_regularization )
        data%control%PSLS_control%preconditioner = 9
+     CASE DEFAULT
+       data%control%PSLS_control%preconditioner = - 1
      END SELECT
      data%control%PSLS_control%new_structure = .TRUE.
      data%control%RQS_control%initial_multiplier = zero
@@ -5697,6 +5748,10 @@
      ELSE
        CALL eval_C( data%eval_status, nlp%X( : nlp%n ), userdata,              &
                     nlp%C( : nlp%m ) )
+       IF ( data%eval_status /= 0 ) THEN
+         inform%bad_eval = 'eval_C'
+         inform%status = GALAHAD_error_evaluation ; GO TO 900
+       END IF
      END IF
 
 !  return from reverse communication with the residual function value c(x)
@@ -5727,6 +5782,10 @@
          ELSE
            CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,      &
                             data%SX( : nlp%n ), nlp%X( : nlp%n ) )
+           IF ( data%eval_status /= 0 ) THEN
+             inform%bad_eval = 'eval_SCALE'
+             inform%status = GALAHAD_error_evaluation ; GO TO 900
+           END IF
          END IF
        ELSE
          CALL mop_Ax( one, stabilisation%matrix,                               &
@@ -5758,6 +5817,7 @@
      IF ( data%f_is_nan ) THEN
        IF ( data%printi ) WRITE( data%out,                                     &
           "( A, ' initial objective value is a NaN' )" ) prefix
+       inform%bad_eval = 'NaN'
        inform%status = GALAHAD_error_evaluation ; GO TO 990
      END IF
 
@@ -5798,6 +5858,10 @@
            ELSE
              CALL eval_J( data%eval_status, nlp%X( : nlp%n ), userdata,        &
                           nlp%J%val )
+             IF ( data%eval_status /= 0 ) THEN
+               inform%bad_eval = 'eval_J'
+               inform%status = GALAHAD_error_evaluation ; GO TO 900
+             END IF
            END IF
 
 !  otherwise evaluate the product g = J^T(x) W c(x)
@@ -5814,6 +5878,10 @@
              CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ), userdata,    &
                               data%transpose, nlp%G( : nlp%n ),                &
                               data%Y( : nlp%m ), .FALSE. )
+             IF ( data%eval_status /= 0 ) THEN
+               inform%bad_eval = 'eval_JPROD'
+               inform%status = GALAHAD_error_evaluation ; GO TO 900
+             END IF
            END IF
          END IF
        END IF
@@ -5975,6 +6043,7 @@
            ELSE
              IF ( data%printi ) WRITE( data%out,                               &
                 "( A, ' initial gradient value is a NaN' )" ) prefix
+             inform%bad_eval = 'eval_JPROD'
              inform%status = GALAHAD_error_evaluation ; GO TO 990
            END IF
          END IF
@@ -6222,6 +6291,10 @@
              CALL eval_H( data%eval_status, nlp%X( : nlp%n ),                  &
                           data%Y( : nlp%m ), userdata,                         &
                           nlp%H%val( : nlp%H%ne ) )
+             IF ( data%eval_status /= 0 ) THEN
+               inform%bad_eval = 'eval_H'
+               inform%status = GALAHAD_error_evaluation ; GO TO 900
+             END IF
            END IF
          END IF
        END IF
@@ -6634,6 +6707,10 @@
            ELSE
              CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,    &
                               data%SV( : nlp%n ), data%V( : nlp%n ) )
+             IF ( data%eval_status /= 0 ) THEN
+               inform%bad_eval = 'eval_SCALE'
+               inform%status = GALAHAD_error_evaluation ; GO TO 900
+             END IF
            END IF
          ELSE
            CALL mop_Ax( one, stabilisation%matrix,                             &
@@ -6679,6 +6756,10 @@
              ELSE
                CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,  &
                                 data%U( : nlp%n ), data%V( : nlp%n ) )
+               IF ( data%eval_status /= 0 ) THEN
+                 inform%bad_eval = 'eval_SCALE'
+                 inform%status = GALAHAD_error_evaluation ; GO TO 900
+               END IF
                data%V( : nlp%n ) = data%U( : nlp%n )
              END IF
            END IF
@@ -6726,6 +6807,10 @@
                                   userdata, data%transpose,                    &
                                   data%V( : nlp%m ), data%W( : nlp%n ),        &
                                   got_j = data%got_j )
+                 IF ( data%eval_status /= 0 ) THEN
+                   inform%bad_eval = 'eval_JPROD'
+                   inform%status = GALAHAD_error_evaluation ; GO TO 900
+                 END IF
                END IF
              END IF
 
@@ -6795,11 +6880,19 @@
                  CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
                                   userdata, data%transpose, data%U( : nlp%n ), &
                                   data%V( : nlp%m ), got_j = data%got_j )
+                 IF ( data%eval_status /= 0 ) THEN
+                   inform%bad_eval = 'eval_JPROD'
+                   inform%status = GALAHAD_error_evaluation ; GO TO 900
+                 END IF
                ELSE
                  CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
                                   userdata, data%transpose, data%U( : nlp%n ), &
                                   W( : nlp%m ) * data%V( : nlp%m ),            &
                                   got_j = data%got_j )
+                 IF ( data%eval_status /= 0 ) THEN
+                   inform%bad_eval = 'eval_JPROD'
+                   inform%status = GALAHAD_error_evaluation ; GO TO 900
+                 END IF
                END IF
              END IF
            END IF
@@ -6834,6 +6927,10 @@
                                 data%Y( : nlp%m ), userdata,                   &
                                 data%U( : nlp%n ), data%W( : nlp%n ),          &
                                 got_h = data%got_h )
+               IF ( data%eval_status /= 0 ) THEN
+                 inform%bad_eval = 'eval_HPROD'
+                 inform%status = GALAHAD_error_evaluation ; GO TO 900
+               END IF
                data%got_h = .TRUE.
              END IF
            END IF
@@ -6977,6 +7074,10 @@
        ELSE
          CALL eval_C( data%eval_status, nlp%X( : nlp%n ), userdata,            &
                       nlp%C( : nlp%m ) )
+         IF ( data%eval_status /= 0 ) THEN
+           inform%bad_eval = 'eval_C'
+           inform%status = GALAHAD_error_evaluation ; GO TO 900
+         END IF
        END IF
 
 !  return from reverse communication with the objective value
@@ -7018,6 +7119,10 @@
            ELSE
              CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,    &
                               data%SX( : nlp%n ), nlp%X( : nlp%n ) )
+             IF ( data%eval_status /= 0 ) THEN
+               inform%bad_eval = 'eval_SCALE'
+               inform%status = GALAHAD_error_evaluation ; GO TO 900
+             END IF
            END IF
          ELSE
            CALL mop_Ax( one, stabilisation%matrix,                             &
@@ -7326,6 +7431,10 @@
              ELSE
                CALL eval_SCALE( data%eval_status, nlp%X( : nlp%n ), userdata,  &
                                 data%SX( : nlp%n ), nlp%X( : nlp%n ) )
+               IF ( data%eval_status /= 0 ) THEN
+                 inform%bad_eval = 'eval_SCALE'
+                 inform%status = GALAHAD_error_evaluation ; GO TO 900
+               END IF
              END IF
            ELSE
              CALL mop_Ax( one, stabilisation%matrix,                           &
