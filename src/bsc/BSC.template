@@ -1,0 +1,9 @@
+! error-printout-device                           6
+! printout-device                                 6
+! print-level                                     0
+! has-a-changed                                   2
+! maximum-column-nonzeros-in-schur-complement     -1
+! extra-space-in-s                                0
+! also-store-s-by-column                          no
+! deallocate-error-fatal                          no
+! output-line-prefix                              ""
