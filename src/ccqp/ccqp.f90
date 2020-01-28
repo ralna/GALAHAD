@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.7 - 17/07/2015 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ C C Q P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -39,8 +39,8 @@ MODULE GALAHAD_CCQP_double
 !NOT95USE GALAHAD_CPU_time
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_STRING_double, ONLY: STRING_pleural, STRING_verb_pleural,    &
-                                       STRING_ies, STRING_are, STRING_ordinal
+      USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural,           &
+                                STRING_ies, STRING_are, STRING_ordinal
       USE GALAHAD_SPACE_double
       USE GALAHAD_SMT_double
       USE GALAHAD_QPT_double

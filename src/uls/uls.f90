@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 24/08/2009 AT 23:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ U L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -27,7 +27,7 @@
      USE GALAHAD_SPACE_double
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_SMT_double
-     USE GALAHAD_STRING_double, ONLY: STRING_put, STRING_get, STRING_lower_word
+     USE GALAHAD_STRING, ONLY: STRING_put, STRING_get, STRING_lower_word
      USE GALAHAD_GLS_double
      USE HSL_ZD11_double
      USE HSL_MA48_double

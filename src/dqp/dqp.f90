@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.0 - 10/04/2017 AT 08:50 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ D Q P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -47,7 +47,7 @@
 !NOT95USE GALAHAD_CPU_time
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_STRING_double, ONLY: STRING_pleural, STRING_verb_pleural,    &
+      USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural,           &
                                        STRING_ies, STRING_are, STRING_ordinal, &
                                        STRING_their, STRING_integer_6
       USE GALAHAD_SPACE_double
@@ -1473,87 +1473,91 @@
 !  if required, write out problem
 
       IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
-        WRITE( control%out, "( ' n, m = ', I0, 1X, I0 )" ) prob%n, prob%m
-        WRITE( control%out, "( ' f = ', ES12.4 )" ) prob%f
+        WRITE( control%out, "( /, A, ' n = ', I0, ', m = ', I0, ', f =',       &
+       &                       ES24.16 )" ) prefix, prob%n, prob%m, prob%f
         IF ( prob%gradient_kind == 0 ) THEN
-          WRITE( control%out, "( ' G = zeros' )" )
+          WRITE( control%out, "( A, ' G = zeros' )" ) prefix
         ELSE IF ( prob%gradient_kind == 1 ) THEN
-          WRITE( control%out, "( ' G = ones' )" )
+          WRITE( control%out, "( A, ' G = ones' )" ) prefix
         ELSE
-          WRITE( control%out, "( ' G = ', /, ( 5ES12.4 ) )" )                  &
-            prob%G( : prob%n )
+          WRITE( control%out, "( A, ' G =', /, ( 5X, 3ES24.16 ) )" )           &
+            prefix, prob%G( : prob%n )
         END IF
         IF ( prob%Hessian_kind == 0 ) THEN
-          WRITE( control%out, "( ' W = zeros' )" )
+          WRITE( control%out, "( A, ' W = zeros' )" ) prefix
         ELSE IF ( prob%Hessian_kind == 1 ) THEN
-          WRITE( control%out, "( ' W = ones ' )" )
+          WRITE( control%out, "( A, ' W = ones ' )" ) prefix
           IF ( prob%target_kind == 0 ) THEN
-            WRITE( control%out, "( ' X0 = zeros ' )" )
+            WRITE( control%out, "( A, ' X0 = zeros ' )" ) prefix
           ELSE IF ( prob%target_kind == 1 ) THEN
-            WRITE( control%out, "( ' X0 = ones ' )" )
+            WRITE( control%out, "( A, ' X0 = ones ' )" ) prefix
           ELSE
-            WRITE( control%out, "( ' X0 = ', /, ( 5ES12.4 ) )" )               &
-              prob%X0( : prob%n )
+            WRITE( control%out, "( A, ' X0 =', /, ( 5X, 3ES24.16 ) )" )        &
+              prefix, prob%X0( : prob%n )
           END IF
         ELSE IF ( prob%Hessian_kind == 2 ) THEN
-          WRITE( control%out, "( ' W = ', /, ( 5ES12.4 ) )" )                  &
-            prob%WEIGHT( : prob%n )
+          WRITE( control%out, "( A, ' W =', /, ( 5X, 3ES24.16 ) )" )           &
+            prefix, prob%WEIGHT( : prob%n )
           IF ( prob%target_kind == 0 ) THEN
-            WRITE( control%out, "( ' X0 = zeros ' )" )
+            WRITE( control%out, "( A, ' X0 = zeros ' )" ) prefix
           ELSE IF ( prob%target_kind == 1 ) THEN
-            WRITE( control%out, "( ' X0 = ones ' )" )
+            WRITE( control%out, "( A, ' X0 = ones ' )" ) prefix
           ELSE
-            WRITE( control%out, "( ' X0 = ', /, ( 5ES12.4 ) )" )               &
-              prob%X0( : prob%n )
+            WRITE( control%out, "( A, ' X0 = ', /, ( 5X, 3ES24.16 ) )" )       &
+              prefix, prob%X0( : prob%n )
           END IF
         ELSE
           IF ( SMT_get( prob%H%type ) == 'IDENTITY' ) THEN
-            WRITE( control%out, "( ' H  = I' )" )
+            WRITE( control%out, "( A, ' H  = I' )" ) prefix
           ELSE IF ( SMT_get( prob%H%type ) == 'SCALED_IDENTITY' ) THEN
-            WRITE( control%out, "( ' H  =', ES12.4, ' * I' )" ) prob%H%val( 1 )
+            WRITE( control%out, "( A, ' H  = ', ES24.16, ' * I' )" )           &
+              prefix, prob%H%val( 1 )
           ELSE IF ( SMT_get( prob%H%type ) == 'DIAGONAL' ) THEN
-            WRITE( control%out, "( ' H (diagonal) = ', /, ( 5ES12.4 ) )" )     &
-              prob%H%val( : prob%n )
+            WRITE( control%out, "( A, ' H (diagonal) =', /,                    &
+           &    ( 5X, 3ES24.16 ) )" ) prob%H%val( : prob%n )
           ELSE IF ( SMT_get( prob%H%type ) == 'DENSE' ) THEN
-            WRITE( control%out, "( ' H (dense) = ', /, ( 5ES12.4 ) )" )        &
-              prob%H%val( : prob%n * ( prob%n + 1 ) / 2 )
+            WRITE( control%out, "( A, ' H (dense) = ', /,                      &
+           &  ( 5X, 3ES24.16 ) )" )                                            &
+              prefix, prob%H%val( : prob%n * ( prob%n + 1 ) / 2 )
           ELSE IF ( SMT_get( prob%H%type ) == 'SPARSE_BY_ROWS' ) THEN
-            WRITE( control%out, "( ' H (row-wise) = ' )" )
+            WRITE( control%out, "( A, ' H (row-wise) = ' )" ) prefix
             DO i = 1, prob%n
-              WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                 &
-                ( i, prob%H%col( j ), prob%H%val( j ),                         &
-                  j = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1 )
+              IF ( prob%H%ptr( i ) <= prob%H%ptr( i + 1 ) - 1 )                &
+                WRITE( control%out, "( ( 2( 2I8, ES24.16 ) ) )" )              &
+                  ( i, prob%H%col( j ), prob%H%val( j ),                       &
+                    j = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1 )
             END DO
           ELSE
-            WRITE( control%out, "( ' H (co-ordinate) = ' )" )
-            WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                   &
+            WRITE( control%out, "( A, ' H (co-ordinate) = ' )" ) prefix
+            WRITE( control%out, "( ( 2( 2I8, ES24.16 ) ) )" )                  &
             ( prob%H%row( i ), prob%H%col( i ), prob%H%val( i ),               &
               i = 1, prob%H%ne)
           END IF
         END IF
-        WRITE( control%out, "( ' X_l = ', /, ( 5ES12.4 ) )" )                  &
-          prob%X_l( : prob%n )
-        WRITE( control%out, "( ' X_u = ', /, ( 5ES12.4 ) )" )                  &
-          prob%X_u( : prob%n )
+        WRITE( control%out, "( A, ' X_l =', /, ( 5X, 3ES24.16 ) )" )           &
+          prefix, prob%X_l( : prob%n )
+        WRITE( control%out, "( A, ' X_u =', /, ( 5X, 3ES24.16 ) )" )           &
+          prefix, prob%X_u( : prob%n )
         IF ( SMT_get( prob%A%type ) == 'DENSE' ) THEN
-          WRITE( control%out, "( ' A (dense) = ', /, ( 5ES12.4 ) )" )          &
+          WRITE( control%out, "( ' A (dense) = ', /, ( 5X, 3ES24.16 ) )" )     &
             prob%A%val( : prob%n * prob%m )
         ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
-          WRITE( control%out, "( ' A (row-wise) = ' )" )
+          WRITE( control%out, "( A, ' A (row-wise) = ' )" ) prefix
           DO i = 1, prob%m
-            WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                   &
-              ( i, prob%A%col( j ), prob%A%val( j ),                           &
-                j = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1 )
+            IF ( prob%A%ptr( i ) <= prob%A%ptr( i + 1 ) - 1 )                  &
+              WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                 &
+                ( i, prob%A%col( j ), prob%A%val( j ),                         &
+                  j = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1 )
           END DO
         ELSE
-          WRITE( control%out, "( ' A (co-ordinate) = ' )" )
+          WRITE( control%out, "( A, ' A (co-ordinate) = ' )" ) prefix
           WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                     &
           ( prob%A%row( i ), prob%A%col( i ), prob%A%val( i ), i = 1, prob%A%ne)
         END IF
-        WRITE( control%out, "( ' C_l = ', /, ( 5ES12.4 ) )" )                  &
-          prob%C_l( : prob%m )
-        WRITE( control%out, "( ' C_u = ', /, ( 5ES12.4 ) )" )                  &
-          prob%C_u( : prob%m )
+        WRITE( control%out, "( A, ' C_l =', /, ( 5X, 3ES24.16 ) )" )           &
+          prefix, prob%C_l( : prob%m )
+        WRITE( control%out, "( A, ' C_u =', /, ( 5X, 3ES24.16 ) )" )           &
+          prefix, prob%C_u( : prob%m )
       END IF
 
 !  check that problem bounds are consistent; reassign any pair of bounds
@@ -3283,53 +3287,64 @@
         WRITE( control%out, "( ' n, m = ', I0, 1X, I0 )" ) n, m
         WRITE( control%out, "( ' f = ', ES12.4 )" ) f
         IF ( gradient_kind == 0 ) THEN
-          WRITE( control%out, "( ' G = zeros' )" )
+          WRITE( control%out, "( A, ' G = zeros' )" ) prefix
         ELSE IF ( gradient_kind == 1 ) THEN
-          WRITE( control%out, "( ' G = ones' )" )
+          WRITE( control%out, "( A, ' G = ones' )" ) prefix
         ELSE
-          WRITE( control%out, "( ' G = ', /, ( 5ES12.4 ) )" ) G( : n )
+          WRITE( control%out, "( A, ' G =', /, ( 5X, 3ES24.16 ) )" )           &
+            prefix, G( : n )
         END IF
         IF ( Hessian_kind == 1 ) THEN
-          WRITE( control%out, "( ' W = ones ' )" )
+          WRITE( control%out, "( A, ' W = ones ' )" ) prefix
           IF ( target_kind == 0 ) THEN
-            WRITE( control%out, "( ' X0 = zeros ' )" )
+            WRITE( control%out, "( A, ' X0 = zeros ' )" ) prefix
           ELSE IF ( target_kind == 1 ) THEN
-            WRITE( control%out, "( ' X0 = ones ' )" )
+            WRITE( control%out, "( A, ' X0 = ones ' )" ) prefix
           ELSE
-            WRITE( control%out, "( ' X0 = ', /, ( 5ES12.4 ) )" ) X0( : n )
+            WRITE( control%out, "( A, ' X0 =', /, ( 5X, 3ES24.16 ) )" )        &
+             prefix, X0( : n )
           END IF
         ELSE IF ( Hessian_kind == 2 ) THEN
-          WRITE( control%out, "( ' W = ', /, ( 5ES12.4 ) )" ) WEIGHT( : n )
+          WRITE( control%out, "( A, ' W = ', /, ( 5X, 3ES24.16 ) )" )          &
+            prefix, WEIGHT( : n )
           IF ( target_kind == 0 ) THEN
-            WRITE( control%out, "( ' X0 = zeros ' )" )
+            WRITE( control%out, "( A, ' X0 = zeros ' )" ) prefix
           ELSE IF ( target_kind == 1 ) THEN
-            WRITE( control%out, "( ' X0 = ones ' )" )
+            WRITE( control%out, "( A, ' X0 = ones' )" ) prefix
           ELSE
-            WRITE( control%out, "( ' X0 = ', /, ( 5ES12.4 ) )" ) X0( : n )
+            WRITE( control%out, "( A, ' X0 =', /, ( 5X, 3ES24.16 ) )" )        &
+              prefix, X0( : n )
           END IF
         ELSE IF ( Hessian_kind /= 0 ) THEN
           IF ( identity_h ) THEN
-            WRITE( control%out, "( ' H  = I ' )" )
+            WRITE( control%out, "( A, ' H  = I' )" ) prefix
           ELSE IF ( scaled_identity_h ) THEN
-            WRITE( control%out, "( ' H  =', ES12.4, ' * I ' )" ) h_scale( 1 )
+            WRITE( control%out, "( A, ' H  = ', ES24.16, ' * I ' )" )          &
+              prefix, h_scale( 1 )
           ELSE
-            WRITE( control%out, "( ' H (row-wise) = ' )" )
+            WRITE( control%out, "( A, ' H (row-wise) =' )" ) prefix
             DO i = 1, n
-              WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                 &
+              IF ( H_ptr( i ) <= H_ptr( i + 1 ) - 1 )                          &
+                WRITE( control%out, "( ( 2( 2I8, ES24.16 ) ) )" )              &
                ( i, H_col( j ), H_val( j ), j = H_ptr( i ), H_ptr( i + 1 ) - 1 )
             END DO
           END IF
         END IF
-        WRITE( control%out, "( ' X_l = ', /, ( 5ES12.4 ) )" ) X_l( : n )
-        WRITE( control%out, "( ' X_u = ', /, ( 5ES12.4 ) )" ) X_u( : n )
+        WRITE( control%out, "( A, ' X_l =', /, ( 5X, 3ES24.16 ) )" )           &
+          prefix, X_l( : n )
+        WRITE( control%out, "( A, ' X_u =', /, ( 5X, 3ES24.16 ) )" )           &
+          prefix, X_u( : n )
         IF ( m > 0 ) THEN
-          WRITE( control%out, "( ' A (row-wise) = ' )" )
+          WRITE( control%out, "( A, ' A (row-wise) = ' )" ) prefix
           DO i = 1, m
-            WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                   &
+            IF ( A_ptr( i ) <= A_ptr( i + 1 ) - 1 )                            &
+              WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                 &
               ( i, A_col( j ), A_val( j ), j = A_ptr( i ), A_ptr( i + 1 ) - 1 )
           END DO
-          WRITE( control%out, "( ' C_l = ', /, ( 5ES12.4 ) )" ) C_l( : m )
-          WRITE( control%out, "( ' C_u = ', /, ( 5ES12.4 ) )" ) C_u( : m )
+          WRITE( control%out, "( A, ' C_l =', /, ( 5X, 3ES24.16 ) )" )         &
+            prefix, C_l( : m )
+          WRITE( control%out, "( A, ' C_u =', /, ( 5X, 3ES24.16 ) )" )         &
+            prefix, C_u( : m )
         END IF
       END IF
 

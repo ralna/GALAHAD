@@ -122,27 +122,28 @@ problemd = $(SMTD) nlpt $(PLGD)(problem.o)
 BASICZ = $(LG)(cputim.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(symbols.o) $(SLG)(pardiso.o) $(MLG)(metis.o) $(WLG)(wsmp.o) \
          $(DLG)(dummy.o) $(LG)(blas_interface.o) $(LG)(lapack_interface.o) \
-         $(LG)(string.o) buildspec_silent minpack
-#        $(SSIDS)
+         minpack
 
-ROOTSS = $(BASICZ) $(LGS)(symbols.o) $(LGS)(specfile.o) \
+ROOTSS = $(BASICZ) $(LGS)(string.o) buildspec_silent \
+         $(LGS)(symbols.o) $(LGS)(specfile.o) \
          $(LGS)(sort.o) zd11 $(LGS)(smt.o) $(LGS)(space.o) $(LGS)(roots.o)
 
-ROOTSD = $(BASICZ) $(LGD)(symbols.o) $(LGD)(specfile.o) \
+ROOTSD = $(BASICZ) $(LGD)(string.o) buildspec_silent \
+         $(LGD)(symbols.o) $(LGD)(specfile.o) \
          $(LGD)(sort.o) zd11 $(LGD)(smt.o) $(LGD)(space.o) $(LGD)(roots.o)
 
 BASICS = $(ROOTSS) $(LGS)(rand.o) $(LGS)(oldscale.o) $(LGS)(tools.o) qpt \
-         $(LGS)(string.o) $(LGS)(trans.o) $(LGS)(scale.o) $(LGS)(norms.o) \
+         $(LGS)(trans.o) $(LGS)(scale.o) $(LGS)(norms.o) \
          $(LGS)(checkpoint.o) $(LGS)(opt.o) $(LGS)(convert.o)
 
 BASICD = $(ROOTSD) $(LGD)(rand.o) $(LGD)(oldscale.o) $(LGD)(tools.o) qpt \
-         $(LGD)(string.o) $(LGD)(trans.o) $(LGD)(scale.o) $(LGD)(norms.o) \
+         $(LGD)(trans.o) $(LGD)(scale.o) $(LGD)(norms.o) \
          $(LGD)(checkpoint.o) $(LGD)(opt.o) $(LGD)(convert.o)
 
 #        zd11 $(LGD)(smt.o) qpt $(LGD)(space.o) $(LGD)(string.o) $(LGD)(trans.o)
 
-SSIDSS = $(LG)(symbols.o) $(RLGS)(ssids.o)
-SSIDSD = $(LG)(symbols.o) $(RLGD)(ssids.o)
+SSIDSS = $(LG)(symbols.o) $(RLGS)(ssidss.o)
+SSIDSD = $(LG)(symbols.o) $(RLGD)(ssidsd.o)
 
 PARDISOS = $(LG)(symbols.o) $(SLGS)(pardiso.o)
 PARDISOD = $(LG)(symbols.o) $(SLGD)(pardiso.o)
@@ -316,7 +317,12 @@ ssids:
 	( cd ../ssids ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             ssids PRECIS=$(PRECIS) PWD=$(PWD)/../ssids )
 
-ssids_dum_silent: ssids_dum_$(PRECIS)
+ssids_dum_silent: ssids_dum_silent_$(PRECIS)
+ssids_dum_silent_single: $(SSIDSS)
+	$(RANLIB) $(RLGS)
+ssids_dum_silent_double: $(SSIDSD)
+	$(RANLIB) $(RLGD)
+
 ssids_dum: ssids_dum_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(SSIDS) ($(PRECIS) $(SUCC)"
 ssids_dum_single: $(SSIDSS)
@@ -976,13 +982,25 @@ $(MLG)(metis.o): ../dum/metis.f
 	$(RANLIB) $(MLG)
 	@printf '[ OK ]\n'
 
-ssids.o: $(RLG)(ssids.o)
+ssidss.o: $(RLG)(ssidss.o)
 
-$(RLG)(ssids.o): ../dum/ssids.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "ssids_dum"
-	$(SED) -f $(SEDS) ../dum/ssids.f90 > $(OBJ)/ssids.f90
-	cd $(OBJ); $(FORTRAN) -o ssids.o $(FFLAGS) ssids.f90
-	cd $(OBJ); $(RARR) ssids.o ; $(RM) ssids.f90 ssids.o
+$(RLG)(ssidss.o): ../dum/ssidss.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidss_dum"
+	$(SED) -f $(SEDS) ../dum/ssidss.f90 > $(OBJ)/ssidss.f90
+	cd $(OBJ); $(FORTRAN) -o ssidss.o $(FFLAGS) ssidss.f90
+	cd $(OBJ); $(RARR) ssidss.o ; $(RM) ssidss.f90 ssidss.o
+	$(MVMODS)
+	$(RMARFILE) sls.o
+	$(RANLIB) $(RLG)
+	@printf '[ OK ]\n'
+
+ssidsd.o: $(RLG)(ssidsd.o)
+
+$(RLG)(ssidsd.o): ../dum/ssidsd.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssidsd_dum"
+	$(SED) -f $(SEDS) ../dum/ssidsd.f90 > $(OBJ)/ssidsd.f90
+	cd $(OBJ); $(FORTRAN) -o ssidsd.o $(FFLAGS) ssidsd.f90
+	cd $(OBJ); $(RARR) ssidsd.o ; $(RM) ssidsd.f90 ssidsd.o
 	$(MVMODS)
 	$(RMARFILE) sls.o
 	$(RANLIB) $(RLG)
@@ -1214,12 +1232,13 @@ string.o: $(LG)(string.o)
 
 $(LG)(string.o): ../string/string.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "string  "
-#	$(SED) -f $(SEDS) ../string/string.f90 > $(OBJ)/string.f90
+	$(SED) -f $(SEDS) ../string/string.f90 > $(OBJ)/string.f90
 	$(CP) ../string/string.f90 $(OBJ)/string.f90
 	cd $(OBJ); $(FORTRAN) -o string.o $(FFLAGSS) string.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o string.o $(FFLAGSN) string.f90 )
-	cd $(OBJ); $(ARR) string.o ; $(RM) string.f90 string.o
+#	cd $(OBJ); $(ARR) string.o ; $(RM) string.f90 string.o
+	cd $(OBJ); $(ARR) string.o ; $(RM) string.o
 	$(RMARFILE) uls.o
 	$(RMARFILE) sls.o
 	$(RMARFILE) wcp.o

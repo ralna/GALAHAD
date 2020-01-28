@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.0 - 04/04/2018 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ C R O   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -42,7 +42,7 @@
       USE GALAHAD_ULS_double
       USE GALAHAD_SCU_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_STRING_double, ONLY: STRING_pleural, STRING_ies
+      USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_ies
       USE GALAHAD_LMS_double, ONLY: LMS_data_type, LMS_apply_lbfgs
 
       USE GALAHAD_MOP_double
@@ -861,7 +861,8 @@
 
       REAL ( KIND = wp ), DIMENSION( m ) :: C_new, Y_new
       REAL ( KIND = wp ), DIMENSION( n ) :: X_new, Z_new
-      REAL ( KIND = wp ), DIMENSION( n + m ) :: V_new, R_new
+      REAL ( KIND = wp ), DIMENSION( n + m ) :: V_new
+!     REAL ( KIND = wp ), DIMENSION( n + m ) :: R_new
 
 !  insert into data
 
@@ -910,28 +911,31 @@
 !  print out input data if required
 
       IF ( out > 0 .AND. control%print_level >= 101 ) THEN
-        WRITE( out, * ) ' n ', n
-        WRITE( out, * ) ' m ', m
-        WRITE( out, * ) ' m_equal ', m_equal
+        WRITE( out, "( ' n, m, m_equal = ', I0, 1X, I0, 1X, I0 )" )            &
+          n, m, m_equal
         IF ( is_h ) THEN
-          WRITE( out, * ) ' H_val ', H_val( : H_ptr( n + 1 ) - 1 )
-          WRITE( out, * ) ' H_col ', H_col( : H_ptr( n + 1 ) - 1 )
-          WRITE( out, * ) ' H_ptr ', H_ptr
+          WRITE( out, "( ' H = ' )" )
+          DO i = 1, n
+            WRITE( out, "( ( 2( 2I8, ES24.16 ) ) )" )                          &
+           ( i, H_col( j ), H_val( j ), j = H_ptr( i ), H_ptr( i + 1 ) - 1 )
+          END DO
         END IF
-        WRITE( out, * ) ' A_val ', A_val
-        WRITE( out, * ) ' A_col ', A_col
-        WRITE( out, * ) ' A_ptr ', A_ptr
-        WRITE( out, * ) ' G ', G
-        WRITE( out, * ) ' C_l ', C_l
-        WRITE( out, * ) ' C_u ', C_u
-        WRITE( out, * ) ' X_l ', X_l
-        WRITE( out, * ) ' X_u ', X_u
-        WRITE( out, * ) ' C ', C
-        WRITE( out, * ) ' X ', X
-        WRITE( out, * ) ' Y ', Y
-        WRITE( out, * ) ' Z ', Z
-        WRITE( out, * ) ' C_stat ', C_stat
-        WRITE( out, * ) ' X_stat ', X_stat
+        WRITE( out, "( ' A (row-wise) = ' )" )
+        DO i = 1, m
+          WRITE( out, "( ( 2( 2I8, ES24.16 ) ) )" ) ( i, A_col( j ),           &
+             A_val( j ), j = A_ptr( i ), A_ptr( i + 1 ) - 1 )
+        END DO
+        WRITE( out, "( ' G = ', /, ( 3ES24.16 ) )" ) G( : n )
+        WRITE( out, "( ' C_l = ', /, ( 3ES24.16 ) )" ) C_l( : m )
+        WRITE( out, "( ' C_u = ', /, ( 3ES24.16 ) )" ) C_u( : m )
+        WRITE( out, "( ' X_l = ', /, ( 3ES24.16 ) )" ) X_l( : n )
+        WRITE( out, "( ' X_u = ', /, ( 3ES24.16 ) )" ) X_u( : n )
+        WRITE( out, "( ' C = ', /, ( 3ES24.16 ) )" ) C( : m )
+        WRITE( out, "( ' X = ', /, ( 3ES24.16 ) )" ) X( : n )
+        WRITE( out, "( ' Y = ', /, ( 3ES24.16 ) )" ) Y( : m )
+        WRITE( out, "( ' Z = ', /, ( 3ES24.16 ) )" ) Z( : n )
+        WRITE( out, "( ' C_stat = ', /, ( 9I8 ) )" ) C_stat( : m )
+        WRITE( out, "( ' X_stat = ', /, ( 9I8 ) )" ) X_stat( : n )
       END IF
 
 !  if required, check the given primal-dual point is a KKT point
@@ -1863,6 +1867,7 @@
           step = - Y( i )
         END IF
         outgoing = - i
+!write(6,*) ' tryboth ', tryboth
 ! write(6,*) ' i, C_stat, Y ', i, C_stat( i ), Y( i )
 !write(6,*) ' step ', step
 !  set up the right-hand side ( b  c ) in VECTOR
@@ -1881,6 +1886,7 @@
 !         j = j + 1
         END DO
         b_fr_neq_0 = b_fr
+!write(6,"('rhs', 6ES12.4 )") data%RHS( : n )
 
 !  write(6,*) ' rhs ',  data%RHS( : data%SCU_matrix%n + data%SCU_matrix%m )
 
@@ -1982,6 +1988,8 @@
 !write(6,"( ' DY ', /, (5ES12.4 ) )" ) data%DY
 !write(6,"( ' DZ ', /, (5ES12.4 ) )" ) data%DZ
 
+!write(6,"('dy', 6ES12.4 )") data%DY( : m )
+
 !  print residuals for debugging
 
         IF ( printa ) THEN
@@ -1992,15 +2000,15 @@
                                  H_ptr = H_ptr, H_lm = H_lm )
           IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-          write(6,"( '     j st    RES_d        DX' )" )
+          WRITE( out, "( '     j st    RES_d        DX          DZ' )" )
           DO j = 1, n
-            write(6,"( I6, I3, 2ES12.4 )" )                                    &
-              j, data%X_inorder( j ), data%RES_d( j ), data%DX( j )
+            WRITE( out, "( I6, I3, 3ES12.4 )" ) j, data%X_inorder( j ),        &
+              data%RES_d( j ), data%DX( j ), data%DZ( j )
           END DO
-          write(6,"( '     i st    RES_p        DY' )" )
+          WRITE( out, "( '     i st    RES_p        DY' )" )
           DO i = 1, m
-            write(6,"( I6, I3, 2ES12.4 )" )                                    &
-              i, data%C_inorder( i ), data%RES_p( i ), data%DY( i )
+            WRITE( out, "( I6, I3, 2ES12.4 )" ) i, data%C_inorder( i ),        &
+              data%RES_p( i ), data%DY( i )
           END DO
         END IF
 
@@ -2015,7 +2023,7 @@
 !       IF ( n_free > 0 ) THEN
           DO l = 1, m_fixed
             i = data%C_fixed( l )
-            IF ( i > m_equal ) THEN
+!           IF ( i > m_equal ) THEN
               IF ( C_stat( i ) < 0 ) THEN             ! active at lower bound
                 IF ( data%DY( i ) > zero ) THEN
                   IF ( Y( i ) / data%DY( i ) < step ) THEN
@@ -2031,7 +2039,7 @@
                   END IF
                 END IF
               END IF
-            END IF
+!           END IF
           END DO
 !       END IF
 !write(6,*) 'outgoing y ', outgoing, step
@@ -2265,6 +2273,24 @@
             Y( i ) = Y( i ) - step * data%DY( i )
           END IF
         END DO
+
+        IF ( .FALSE. ) THEN
+          WRITE( out, "( /, A, '      i       X_l             X   ',           &
+         &   '          X_u            Z        st' )" ) prefix
+          DO i = 1, n
+            WRITE( out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,                  &
+              X_l( i ), X( i ), X_u( i ), Z( i ), X_stat( i )
+          END DO
+
+          IF ( m > 0 ) THEN
+            WRITE( out, "( /, A, '      i       C_l             C ',           &
+           &   '            C_u            Y        st' )" ) prefix
+            DO i = 1, m
+              WRITE( out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,                &
+                C_l( i ), C( i ), C_u( i ), Y( i ), C_stat( i )
+            END DO
+          END IF
+        END IF
 
         IF ( data%control%check_io ) THEN
           CALL CRO_check_status( n, m, m_equal, A_val, A_col, A_ptr, G, C_l,   &

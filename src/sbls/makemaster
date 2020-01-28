@@ -85,18 +85,18 @@ DRUNSBLS = copyright $(LGD)(usesbls.o) $(OBJD)/runsbls_sif.o
 SBLSOBJECTSS_CUTEST = $(SSBLS) $(SRUNSBLS)
 SBLSOBJECTSD_CUTEST = $(DSBLS) $(DRUNSBLS)
 
-SBLSDS = $(DSBLS) lms $(OBJD)/sblss.o
-SBLSDT = $(DSBLS) lms $(OBJD)/sblst.o
 SBLSSS = $(SSBLS) lms $(OBJS)/sblss.o
 SBLSST = $(SSBLS) lms $(OBJS)/sblst.o
+SBLSDS = $(DSBLS) lms $(OBJD)/sblss.o
+SBLSDT = $(DSBLS) lms $(OBJD)/sblst.o
 
-SBLSDSLS = $(DSBLS) $(OBJD)/sblssls.o
 SBLSSSLS = $(SSBLS) $(OBJS)/sblssls.o
+SBLSDSLS = $(DSBLS) $(OBJD)/sblssls.o
 
-RSBLSDS = $(OBJD)/sblss.o -L$(OBJD) $(LIBS)
-RSBLSDT = $(OBJD)/sblst.o -L$(OBJD) $(LIBS)
 RSBLSSS = $(OBJS)/sblss.o -L$(OBJS) $(LIBS)
 RSBLSST = $(OBJS)/sblst.o -L$(OBJS) $(LIBS)
+RSBLSDS = $(OBJD)/sblss.o -L$(OBJD) $(LIBS)
+RSBLSDT = $(OBJD)/sblst.o -L$(OBJD) $(LIBS)
 
 RSBLSDSLS = $(OBJD)/sblssls.o -L$(OBJD) $(LIBS)
 RSBLSSSLS = $(OBJS)/sblssls.o -L$(OBJS) $(LIBS)
@@ -380,4 +380,3 @@ rmsbls:
 	@printf ' %-9s %-15s\t\t' "Removing" "sbls from archive "
 	$(RMARFILE) sbls.o
 	@printf '[ OK ]\n'
-

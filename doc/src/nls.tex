@@ -184,7 +184,7 @@ real one-dimensional array.
 \subsubsection{Sparse co-ordinate storage format}\label{coordinate}
 Only the nonzero entries of the matrices are stored. For the $l$-th
 entry of $\bmJ$, its row index $i$, column index $j$ and value
-$\bmA_{ij}$ are stored in the $l$-th components of the integer arrays
+$\bmJ_{ij}$ are stored in the $l$-th components of the integer arrays
 {\tt J\%row}, {\tt J\%col} and real array {\tt J\%val}.
 The order is unimportant, but the total number of entries {\tt J\%ne} is
 required.  The same scheme is applicable to $\bmH$
@@ -317,7 +317,7 @@ The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.
 \ittf{C} is a rank-one allocatable array of dimension {\tt m} and type
 default \realdp, that holds the residual values $\bmc(\bmx)$
 at the point $\bmx$. The $i$-th component of
-{\tt C}, $i = 1, \ldots, m$, contains $\bmc_{1}(\bmx)$.
+{\tt C}, $i = 1, \ldots, m$, contains $\bmc_{i}(\bmx)$.
 
 \ittf{G} is a rank-one allocatable array of dimension {\tt m} and type
 default \realdp, that holds the gradient $g(\bmx) = \nabla_x f(\bmx)$ of the
@@ -738,7 +738,7 @@ that is used to specify the maximum permitted two-norm of the
 residual, $\|\bmc(\bmx)\|_{\bmW}$,
 (see Section~\ref{galmethod}) at the estimate of the solution sought.
 Any negative value will be recorded as zero.
-The default is {\tt stop\_g\_absolute =} $10^{-6}$.
+The default is {\tt stop\_c\_absolute =} $10^{-6}$.
 
 \itt{stop\_c\_relative} is a scalar variable of type default \realdp,
 that is used to specify the largest relative reduction in the two-norm of the
@@ -746,7 +746,7 @@ residual, $\|\bmc(\bmx)\|_{\bmW}$, that will be permitted
 (see Section~\ref{galmethod}) at the estimate of the solution sought
 compared to that at the initial point.
 Any negative value will be recorded as zero.
-The default is {\tt stop\_g\_relative =} $0.0$.
+The default is {\tt stop\_c\_relative =} $0.0$.
 
 \itt{stop\_g\_absolute} is a scalar variable of type default \realdp,
 that is used to specify the maximum permitted two-norm of the gradient,
@@ -1136,7 +1136,7 @@ See the specification sheet for the package
 \itt{BSC\_inform} is a scalar variable of type
 {\tt BSC\_inform\_type}
 whose components give information about the progress and needs
-of the construct of required Schur complements
+of the construction of required Schur complements
 as performed by the package
 {\tt \libraryname\_BSC}.
 See the specification sheet for the package
@@ -2273,7 +2273,7 @@ and
 {\tt nlp\%J\%type} $\in \{
   \mbox{\tt 'DENSE'}, \mbox{\tt 'COORDINATE'}, \mbox{\tt 'SPARSE\_BY\_ROWS'}
  \}$ and
-{\tt nlp\%H\_type} $\in \{${\tt 'DENSE'},
+{\tt nlp\%H\%type} $\in \{${\tt 'DENSE'},
  {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}, {\tt 'DIAGONAL'} $\}$.
 \galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
 The package is thread-safe.

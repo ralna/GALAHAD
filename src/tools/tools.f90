@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 12/05/2011 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 28/01/2020 AT 08:30 GMT.
 ! 30/06/2003: procedures _is_are and _s moved from QPA.
 ! 23/07/2003: invalid "END INTERFACE" arguments removed
 ! 17/11/2009: procedures _char_integer and _char_real imported from OTHERS.
@@ -24,10 +24,10 @@
 !               +---------------------------------------------+
 !
 
-   MODULE GALAHAD_TOOLS_double
+   MODULE GALAHAD_TOOLS
 
 !-------------------------------------------------------------------------------
-!   A c c e s s 
+!   A c c e s s
 !-------------------------------------------------------------------------------
 
       IMPLICIT NONE
@@ -88,7 +88,7 @@
 !   O t h e r s
 !-------------------------------------------------------------------------------
 
-      INTEGER, PRIVATE, PARAMETER :: OK            =   0
+      INTEGER, PRIVATE, PARAMETER :: OK = 0
 
    CONTAINS
 
@@ -120,14 +120,14 @@
 
       INTEGER :: j, i
 
-      WRITE( out, 101 ) 
+      WRITE( out, 101 )
       j = 1
       DO i = 1, n / 5
          WRITE( out, 100 ) j, x( j:j+4 )
          j = j + 5
       END DO
       IF ( j <= n ) WRITE( out, 100 ) j, x( j:n )
-      WRITE( out, 101 ) 
+      WRITE( out, 101 )
 
       RETURN
 
@@ -162,14 +162,14 @@
 
       INTEGER :: j, i
 
-      WRITE( out, 101 ) 
+      WRITE( out, 101 )
       j = 1
       DO i = 1, n / 5
          WRITE( out, 100 ) j, x( j:j+4 )
          j = j + 5
       END DO
       IF ( j <= n ) WRITE( out, 100 ) j, x( j:n )
-      WRITE( out, 101 ) 
+      WRITE( out, 101 )
 
       RETURN
 
@@ -227,15 +227,11 @@
 !==============================================================================
 
       SUBROUTINE TOOLS_output_matrix_real_C_sp( nnz, A_val, A_row, A_col, out )
-                 
+
       INTEGER, INTENT( IN ) :: nnz
-
       REAL( KIND = sp ), DIMENSION( nnz ), INTENT( IN ) :: A_val
-
       INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_row
-
       INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_col
-
       INTEGER, INTENT( IN ) :: out
 
 !     Programming: Ph. L. Toint, November 2002.
@@ -261,7 +257,7 @@
          CASE ( 2 )
             WRITE ( out, 100 ) A_row( k + 1 ), A_col( k + 1 ), A_val( k + 1  ),&
                                A_row( nnz ), A_col( nnz ), A_val( nnz )
-         END SELECT            
+         END SELECT
       END IF
       WRITE( out, 101 )
 
@@ -277,15 +273,10 @@
 !==============================================================================
 
       SUBROUTINE TOOLS_output_matrix_real_S_sp( nnz, A_val, A_ptr, A_col, out )
-
       INTEGER, INTENT( IN ) :: nnz
-
       REAL( KIND = sp ), DIMENSION( nnz ), INTENT( IN ) :: A_val
-
       INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_ptr
-
       INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_col
-
       INTEGER, INTENT( IN ) :: out
 
 !     Programming: Ph. L. Toint, November 2002.
@@ -341,7 +332,7 @@
             i2 = i
             WRITE ( out, 100 ) i1, A_col( k + 1 ), A_val( k + 1  ),            &
                                i2, A_col( nnz ), A_val( nnz )
-         END SELECT            
+         END SELECT
       END IF
       WRITE( out, 101 )
 
@@ -357,13 +348,9 @@
 !==============================================================================
 
       SUBROUTINE TOOLS_output_matrix_real_D_sp( nrow, ncol, A_val, sym, out )
-
       INTEGER, INTENT( IN ) :: nrow, ncol
-
       REAL( KIND = sp ), DIMENSION( : ), INTENT( IN ) :: A_val
-
       LOGICAL, INTENT( IN ) :: sym
-
       INTEGER, INTENT( IN ) :: out
 
 !     Programming: Ph. L. Toint, November 2002.
@@ -407,8 +394,7 @@
             IF ( sym ) lrow = i
             j = 1
          END IF
-         WRITE( out, 100 ) i1, j1, A_val( k + 1 ),                             &
-                           i2, j2, A_val( k + 2 ),                             &
+         WRITE( out, 100 ) i1, j1, A_val( k + 1 ), i2, j2, A_val( k + 2 ),     &
                            i , j , A_val( k + 3 )
          k = k + 3
       END DO
@@ -439,7 +425,7 @@
             END IF
             WRITE ( out, 100 ) i1, j1, A_val( k + 1  ),            &
                                i , j , A_val( nval )
-         END SELECT            
+         END SELECT
       END IF
       WRITE( out, 101 )
 
@@ -455,15 +441,10 @@
 !==============================================================================
 
       SUBROUTINE TOOLS_output_matrix_real_C_dp( nnz, A_val, A_row, A_col, out )
-                 
       INTEGER, INTENT( IN ) :: nnz
-
       REAL( KIND = dp ), DIMENSION( nnz ), INTENT( IN ) :: A_val
-
       INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_row
-
       INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_col
-
       INTEGER, INTENT( IN ) :: out
 
 !     Programming: Ph. L. Toint, November 2002.
@@ -489,7 +470,7 @@
          CASE ( 2 )
             WRITE ( out, 100 ) A_row( k + 1 ), A_col( k + 1 ), A_val( k + 1  ),&
                                A_row( nnz ), A_col( nnz ), A_val( nnz )
-         END SELECT            
+         END SELECT
       END IF
       WRITE( out, 101 )
 
@@ -505,15 +486,10 @@
 !==============================================================================
 
       SUBROUTINE TOOLS_output_matrix_real_S_dp( nnz, A_val, A_ptr, A_col, out )
-
       INTEGER, INTENT( IN ) :: nnz
-
       REAL( KIND = dp ), DIMENSION( nnz ), INTENT( IN ) :: A_val
-
       INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_ptr
-
       INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_col
-
       INTEGER, INTENT( IN ) :: out
 
 !     Programming: Ph. L. Toint, November 2002.
@@ -569,7 +545,7 @@
             i2 = i
             WRITE ( out, 100 ) i1, A_col( k + 1 ), A_val( k + 1  ),            &
                                i2, A_col( nnz ), A_val( nnz )
-         END SELECT            
+         END SELECT
       END IF
       WRITE( out, 101 )
 
@@ -585,13 +561,9 @@
 !==============================================================================
 
       SUBROUTINE TOOLS_output_matrix_real_D_dp( nrow, ncol, A_val, sym, out )
-
       INTEGER, INTENT( IN ) :: nrow, ncol
-
       REAL( KIND = dp ), DIMENSION( : ), INTENT( IN ) :: A_val
-
       LOGICAL, INTENT( IN ) :: sym
-
       INTEGER, INTENT( IN ) :: out
 
 !     Programming: Ph. L. Toint, November 2002.
@@ -635,8 +607,7 @@
             IF ( sym ) lrow = i
             j = 1
          END IF
-         WRITE( out, 100 ) i1, j1, A_val( k + 1 ),                             &
-                           i2, j2, A_val( k + 2 ),                             &
+         WRITE( out, 100 ) i1, j1, A_val( k + 1 ), i2, j2, A_val( k + 2 ),     &
                            i , j , A_val( k + 3 )
          k = k + 3
       END DO
@@ -667,7 +638,7 @@
             END IF
             WRITE ( out, 100 ) i1, j1, A_val( k + 1  ),            &
                                i , j , A_val( nval )
-         END SELECT            
+         END SELECT
       END IF
       WRITE( out, 101 )
 
@@ -835,9 +806,9 @@
 
 !  Non-executable statements
 
- 2000    FORMAT( 0P, F7.1 )
- 2010    FORMAT( I7 )
- 2020    FORMAT( I6 )
+ 2000 FORMAT( 0P, F7.1 )
+ 2010 FORMAT( I7 )
+ 2020 FORMAT( I6 )
 
 !  End of TOOLS_char_real_sp
 
@@ -905,9 +876,9 @@
 
 !  Non-executable statements
 
- 2000    FORMAT( 0P, F7.1 )
- 2010    FORMAT( I7 )
- 2020    FORMAT( I6 )
+ 2000 FORMAT( 0P, F7.1 )
+ 2010 FORMAT( I7 )
+ 2020 FORMAT( I6 )
 
 !  End of TOOLS_char_real_dp
 
@@ -919,8 +890,8 @@
      FUNCTION TOOLS_expon_sp( r )
      CHARACTER ( LEN = 3 ) :: TOOLS_expon_sp
 
-!  Obtain a 3 character representation of the exponent of the single precision 
-!  real r. exponents outside [-99,+99] will be represented as +in or -in as 
+!  Obtain a 3 character representation of the exponent of the single precision
+!  real r. exponents outside [-99,+99] will be represented as +in or -in as
 !  relevant
 !  Nick Gould, 2010
 
@@ -960,8 +931,8 @@
      FUNCTION TOOLS_expon_dp( r )
      CHARACTER ( LEN = 3 ) :: TOOLS_expon_dp
 
-!  Obtain a 3 character representation of the exponent of the single precision 
-!  real r. exponents outside [-99,+99] will be represented as +in or -in as 
+!  Obtain a 3 character representation of the exponent of the single precision
+!  real r. exponents outside [-99,+99] will be represented as +in or -in as
 !  relevant
 !  Nick Gould, 2010
 
@@ -1040,8 +1011,8 @@
 
 !  Non-executable statements
 
- 2010    FORMAT( I6 )
- 2020    FORMAT( I5 )
+ 2010 FORMAT( I6 )
+ 2020 FORMAT( I5 )
 
 !  End of TOOLS_char_integer
 
@@ -1050,12 +1021,7 @@
 !==============================================================================
 !==============================================================================
 
-   END MODULE GALAHAD_TOOLS_double
-
-
-
-
-
+   END MODULE GALAHAD_TOOLS
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1066,10 +1032,3 @@
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-
-
-
-
-
-
-

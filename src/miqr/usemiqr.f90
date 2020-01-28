@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 23/05/2014 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E M I Q R   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -27,7 +27,7 @@
       USE GALAHAD_NORMS_double, ONLY: TWO_NORM
       USE GALAHAD_MIQR_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_STRING_double, ONLY: STRING_upper_word
+      USE GALAHAD_STRING, ONLY: STRING_upper_word
       USE GALAHAD_COPYRIGHT
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &

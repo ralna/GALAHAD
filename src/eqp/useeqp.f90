@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 09/02/2013 AT 17:15 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E E Q P  *-*-*-*-*-*-*-*-*-*-*-
 
@@ -18,7 +18,7 @@
       USE GALAHAD_QPT_double
       USE GALAHAD_EQP_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_STRING_double, ONLY: STRING_upper_word
+      USE GALAHAD_STRING, ONLY: STRING_upper_word
       USE GALAHAD_COPYRIGHT
 
       IMPLICIT NONE

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 24/12/2013 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ S L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -44,7 +44,7 @@
      USE GALAHAD_SORT_double
      USE GALAHAD_SPACE_double
      USE GALAHAD_SPECFILE_double
-     USE GALAHAD_STRING_double, ONLY: STRING_lower_word
+     USE GALAHAD_STRING, ONLY: STRING_lower_word
      USE GALAHAD_SMT_double
      USE GALAHAD_SILS_double
      USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV
@@ -8485,4 +8485,3 @@
 !  End of module GALAHAD_SLS_double
 
    END MODULE GALAHAD_SLS_double
-

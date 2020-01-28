@@ -45,7 +45,8 @@ MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
 
 #  Derived type dependencies
 
-MAT_BASIC = basics $(MLG)(galahad_matlab.o) $(MLG)(galahad_transfer_matlab.o)
+MAT_BASIC = basics_$(PRECIS) $(MLG)(galahad_matlab.o) \
+            $(MLG)(galahad_transfer_matlab.o)
 MAT_DEMO = $(MAT_BASIC)
 MAT_DEBUG = $(MAT_BASIC)
 MAT_BSC = $(MAT_BASIC) $(MLG)(galahad_bsc_matlab_types.o)
@@ -93,6 +94,7 @@ MAT_QP = $(MAT_SCALE) $(MAT_PRESOLVE) $(MAT_QPC) \
 MAT_WCP = $(MAT_SBLS) $(MAT_FDC) $(MLG)(galahad_wcp_matlab_types.o)
 
 SUCC_MATLAB = precision version) for Matlab compiled successfully
+NO_MATLAB = precision GALAHAD interface to Matlab not currently available
 
 #  main compilations and runs
 
@@ -100,11 +102,13 @@ SUCC_MATLAB = precision version) for Matlab compiled successfully
 
 all: all_$(PRECIS)
 
-all_single: basics sils lpa lpb cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt \
-            qpa qpb qpc qp rqs sbls trs wcp tru arc nls
-	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
-all_double: basics sils lpa lpb cqp dqp eqp glrt gltr llst lsqp lsrt lstr l2rt \
-            qpa qpb qpc qp rqs sbls trs wcp tru arc nls
+#all_single: basics_single sils lpa lpb cqp dqp eqp glrt gltr llst lsqp \
+#            lsrt lstr l2rt qpa qpb qpc qp rqs sbls trs wcp tru arc nls
+#	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
+all_single:
+	@printf ' %-21s\n' "$(PRECIS) $(NO_MATLAB)"
+all_double: basics_double sils lpa lpb cqp dqp eqp glrt gltr llst lsqp \
+            lsrt lstr l2rt qpa qpb qpc qp rqs sbls trs wcp tru arc nls
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 
 #  everything including current developments
@@ -119,15 +123,15 @@ all_current_double: all_double bqp bqpb
 
 allqp: allqp_$(PRECIS)
 
-allqp_single: basics lpa lpb cqp dqp eqp lsqp qpa qpb qpc qp wcp
-allqp_double: basics lpa lpb cqp dqp eqp lsqp qpa qpb qpc qp wcp
+allqp_single: basics_single lpa lpb cqp dqp eqp lsqp qpa qpb qpc qp wcp
+allqp_double: basics_double lpa lpb cqp dqp eqp lsqp qpa qpb qpc qp wcp
 
 #  everything for regularization from the distribution
 
 allrq: allrq_$(PRECIS)
 
-allrq_single: basics glrt gltr llst lsrt lstr l2rt rqs trs
-allrq_double: basics glrt gltr llst lsrt lstr l2rt rqs trs
+allrq_single: basics_single glrt gltr llst lsrt lstr l2rt rqs trs
+allrq_double: basics_double glrt gltr llst lsrt lstr l2rt rqs trs
 
 #  basic packages
 
@@ -136,7 +140,12 @@ smt:
             zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../zd11 )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                     smt.o PRECIS=double PWD=$(PWD)/../general )
-basics:
+basics_single:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ssids_dum PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+basics_double:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \

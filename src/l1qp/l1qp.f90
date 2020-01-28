@@ -50,9 +50,9 @@
       USE GALAHAD_CRO_double
       USE GALAHAD_LPQP_double
       USE GALAHAD_CQP_double
-      USE GALAHAD_DLP_double
       USE GALAHAD_DQP_double
-      USE GALAHAD_DLP_double, ONLY: DLP_control_type
+      USE GALAHAD_DLP_double, ONLY: DLP_control_type, DLP_next_perturbation,   &
+                                    DLP_read_specfile
       USE GALAHAD_RPD_double, ONLY: RPD_inform_type, RPD_write_qp_problem_data
       USE GALAHAD_ROOTS_double, ONLY: ROOTS_terminate
       USE GALAHAD_FIT_double, ONLY: FIT_terminate
@@ -144,17 +144,17 @@
 
 !   the required absolute and relative accuracies for the primal infeasibility
 
-        REAL ( KIND = wp ) :: stop_abs_p = epsmch
+        REAL ( KIND = wp ) :: stop_abs_p = ten ** ( - 5 )
         REAL ( KIND = wp ) :: stop_rel_p = epsmch
 
 !   the required absolute and relative accuracies for the dual infeasibility
 
-        REAL ( KIND = wp ) :: stop_abs_d = epsmch
+        REAL ( KIND = wp ) :: stop_abs_d = ten ** ( - 5 )
         REAL ( KIND = wp ) :: stop_rel_d = epsmch
 
 !   the required absolute and relative accuracies for the complementarity
 
-        REAL ( KIND = wp ) :: stop_abs_c = epsmch
+        REAL ( KIND = wp ) :: stop_abs_c = ten ** ( - 5 )
         REAL ( KIND = wp ) :: stop_rel_c = epsmch
 
 !   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than
@@ -190,7 +190,7 @@
 !  if %refine is true, apply the dual projected-gradient method to refine
 !   the solution
 !
-        LOGICAL :: refine = .TRUE.
+        LOGICAL :: refine = .FALSE.
 
 !   if %space_critical true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
@@ -429,12 +429,6 @@
       TYPE ( L1QP_control_type ), INTENT( OUT ) :: control
       TYPE ( L1QP_inform_type ), INTENT( OUT ) :: inform
 
-!  Set real control parameters
-
-      control%stop_rel_p = epsmch ** 0.33
-      control%stop_rel_c = epsmch ** 0.33
-      control%stop_rel_d = epsmch ** 0.33
-
 !  Set control parameters
 
       CALL LPQP_initialize( control%LPQP_control )
@@ -623,7 +617,7 @@
       spec( converted_qplib_file_name )%keyword = 'converted_qplib-file-name'
       spec( prefix )%keyword = 'output-line-prefix'
 
-      IF ( PRESENT( alt_specname ) ) WRITE(6,*) ' liqp: ', alt_specname
+!     IF ( PRESENT( alt_specname ) ) WRITE(6,*) ' liqp: ', alt_specname
 
 !  Read the specfile
 
@@ -1752,7 +1746,7 @@
                                  data%OPT_alpha, data%OPT_merit,               &
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
-  !                              prob%Hessian_kind, prob%gradient_kind,        &
+!                                prob%Hessian_kind, prob%gradient_kind,        &
                                  - 1, prob%gradient_kind, H_val = prob%H%val,  &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
@@ -1780,7 +1774,7 @@
                                  data%OPT_alpha, data%OPT_merit,               &
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
-  !                              prob%Hessian_kind, prob%gradient_kind,        &
+!                                prob%Hessian_kind, prob%gradient_kind,        &
                                  - 1, prob%gradient_kind, H_val = prob%H%val,  &
                                  G = prob%G,                                   &
                                  C_last = data%A_s, X_last = data%H_s,         &
@@ -1811,7 +1805,7 @@
                                  data%OPT_alpha, data%OPT_merit,               &
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
-  !                              prob%Hessian_kind, prob%gradient_kind,        &
+!                                prob%Hessian_kind, prob%gradient_kind,        &
                                  0, prob%gradient_kind,                        &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
@@ -1839,7 +1833,7 @@
                                  data%OPT_alpha, data%OPT_merit,               &
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
-  !                              prob%Hessian_kind, prob%gradient_kind,        &
+!                                prob%Hessian_kind, prob%gradient_kind,        &
                                  0, prob%gradient_kind,                        &
                                  G = prob%G,                                   &
                                  C_last = data%A_s, X_last = data%H_s,         &
@@ -2150,7 +2144,8 @@
 
 !  ... and restore the original problem and solution from the L1QP formulation
 
-        IF ( control%rho > zero ) CALL LPQP_restore( prob, data%LPQP_data )
+        IF ( control%rho > zero ) CALL LPQP_restore( prob, data%LPQP_data,     &
+                                                     C_stat = data%C_stat )
         GO TO 600
       END IF
 
@@ -2192,6 +2187,7 @@
         ELSE
           data%CRO_control%feasibility_tolerance = infinity
         END IF
+!data%CRO_control%print_level = 101
         IF ( printi ) WRITE( control%out,                                      &
           "( /, A, ' compute crossover solution' )" ) prefix
         time_analyse = inform%CRO_inform%time%analyse
@@ -2205,6 +2201,13 @@
                               prob%C_u, prob%X_l, prob%X_u, prob%C, prob%X,    &
                               prob%Y, prob%Z, data%C_stat, data%X_stat,        &
                               data%CRO_data, data%CRO_control,                 &
+                              inform%CRO_inform )
+        ELSE IF ( prob%Hessian_kind == 0 ) THEN
+          CALL CRO_crossover( prob%n, prob%m, data%dims%c_equality,            &
+                              prob%A%val, prob%A%col, prob%A%ptr, prob%G,      &
+                              prob%C_l, prob%C_u, prob%X_l, prob%X_u, prob%C,  &
+                              prob%X, prob%Y, prob%Z, data%C_stat,             &
+                              data%X_stat, data%CRO_data, data%CRO_control,    &
                               inform%CRO_inform )
         ELSE
           CALL CRO_crossover( prob%n, prob%m, data%dims%c_equality,            &
@@ -2227,7 +2230,7 @@
           inform%CRO_inform%time%clock_analyse - clock_analyse +               &
           inform%CRO_inform%time%clock_factorize - clock_factorize
 
-        IF ( printa ) THEN
+       IF ( printa ) THEN
           WRITE( control%out, "( A, ' After crossover:' )" ) prefix
           WRITE( control%out, "( /, A, '      i       X_l             X   ',   &
          &   '          X_u            Z        st' )" ) prefix
@@ -2274,7 +2277,8 @@
 
 !  restore the original problem and solution from the L1QP formulation
 
-      IF ( control%rho > zero ) CALL LPQP_restore( prob, data%LPQP_data )
+      IF ( control%rho > zero ) CALL LPQP_restore( prob, data%LPQP_data,       &
+                                                     C_stat = data%C_stat )
 
 !  ==============================================================
 !  refine solution by applying a dual gradient projection method

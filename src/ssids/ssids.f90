@@ -125,7 +125,7 @@ contains
 !> @brief Analyse phase.
 !>
 !> Matrix entered in CSC format (lower triangle).
-!> The user optionally inputs the pivot order. If not, metis called. 
+!> The user optionally inputs the pivot order. If not, metis called.
 !> Structure is then expanded.
 !> Supervariables are computed
 !> and then the assembly tree is constructed and the data structures
@@ -171,7 +171,7 @@ contains
 
     ! The following are only used for matching-based orderings
     real(wp), dimension(:), allocatable :: val_clean ! cleaned values if
-      ! val is present and checking is required. 
+      ! val is present and checking is required.
     real(wp), dimension(:), allocatable :: val2 ! expanded matrix if
       ! val is present.
 
@@ -489,7 +489,7 @@ contains
 ! Analyse phase.
 ! Matrix entered in coordinate format.
 ! matrix_util routine is used to convert the data to CSC format.
-! The user optionally inputs the pivot order. If not, metis called. 
+! The user optionally inputs the pivot order. If not, metis called.
 ! Structure is then expanded.
 ! Supervariables are computed
 ! and then the assembly tree is constructed and the data structures
@@ -506,14 +506,14 @@ contains
     type(ssids_options), intent(in) :: options ! See derived-type declaration
     type(ssids_inform), intent(out) :: inform ! See derived-type declaration
     integer, intent(inout), optional  :: order(:)
-      ! Must be present and set on entry if options%ordering = 0 
+      ! Must be present and set on entry if options%ordering = 0
       ! i is used to index a variable, order(i) must
       ! hold its position in the pivot sequence.
       ! If i is not used to index a variable,
       ! order(i) must be set to zero.
       ! On exit, holds the pivot order to be used by factorization.
     real(wp), optional, intent(in) :: val(:) ! must be present
-      ! if a matching-based elimination ordering is required 
+      ! if a matching-based elimination ordering is required
       ! (options%ordering = 2).
       ! If present, val(k) must hold value of entry in row(k) and col(k).
     type(numa_region), dimension(:), optional, intent(in) :: topology
@@ -730,7 +730,7 @@ contains
   subroutine ssids_factor_ptr32_double(posdef, val, akeep, fkeep, options, &
        inform, scale, ptr, row)
     implicit none
-    logical, intent(in) :: posdef 
+    logical, intent(in) :: posdef
     real(wp), dimension(*), target, intent(in) :: val
     type(ssids_akeep), intent(in) :: akeep
     type(ssids_fkeep), intent(inout) :: fkeep
@@ -738,7 +738,7 @@ contains
     type(ssids_inform), intent(out) :: inform
     real(wp), dimension(:), optional, intent(inout) :: scale
     integer, dimension(akeep%n+1), intent(in) :: ptr
-    integer, dimension(*), optional, intent(in) :: row 
+    integer, dimension(*), optional, intent(in) :: row
 
     integer(long), dimension(:), allocatable :: ptr64
 
@@ -764,7 +764,7 @@ contains
   subroutine ssids_factor_ptr64_double(posdef, val, akeep, fkeep, options, &
        inform, scale, ptr, row)
     implicit none
-    logical, intent(in) :: posdef 
+    logical, intent(in) :: posdef
     real(wp), dimension(*), target, intent(in) :: val ! A values (lwr triangle)
     type(ssids_akeep), intent(in) :: akeep
     type(ssids_fkeep), intent(inout) :: fkeep
@@ -776,10 +776,10 @@ contains
       ! Note: Has to be assumed shape, not assumed size or fixed size to work
       ! around funny compiler bug
     integer(long), dimension(akeep%n+1), optional, intent(in) :: ptr ! must be
-      ! present if on call to analyse phase, check = .false.. Must be unchanged 
+      ! present if on call to analyse phase, check = .false.. Must be unchanged
       ! since that call.
     integer, dimension(*), optional, intent(in) :: row ! must be present if
-      ! on call to analyse phase, check = .false.. Must be unchanged 
+      ! on call to analyse phase, check = .false.. Must be unchanged
       ! since that call.
 
     real(wp), dimension(:), allocatable, target :: val2
@@ -804,7 +804,7 @@ contains
     type(omp_settings) :: user_omp_settings
     type(rb_write_options) :: rb_options
     integer :: flag
-   
+
     ! Setup for any printing we may require
     context = 'ssids_factor'
 
@@ -870,7 +870,7 @@ contains
        end if
     end if
 
-    ! At this point, either  ptr, row, val   
+    ! At this point, either  ptr, row, val
     !                  or    akeep%ptr, akeep%row, val2
     ! hold the lower triangular part of A
 
@@ -968,7 +968,7 @@ contains
        if (inform%auction%flag .ne. 0) then
           ! only possible error is allocation failed
           st = inform%auction%stat
-          goto 10 
+          goto 10
        end if
        ! Permute scaling to correct order
        do i = 1, n
@@ -1103,7 +1103,7 @@ contains
 
 !*************************************************************************
 !
-! Solve phase single x. 
+! Solve phase single x.
 !
   subroutine ssids_solve_one_double(x1, akeep, fkeep, options, inform, job)
     implicit none
@@ -1256,7 +1256,7 @@ contains
 
     character(50)  :: context      ! Procedure name (used when printing).
 
-    context = 'ssids_enquire_posdef' 
+    context = 'ssids_enquire_posdef'
     inform%flag = SSIDS_SUCCESS
 
     if (.not. allocated(fkeep%subtree)) then
@@ -1307,7 +1307,7 @@ contains
 
     character(50)  :: context      ! Procedure name (used when printing).
 
-    context = 'ssids_enquire_indef' 
+    context = 'ssids_enquire_indef'
     inform%flag = SSIDS_SUCCESS
 
     if (.not. allocated(fkeep%subtree)) then
@@ -1456,7 +1456,7 @@ contains
     type(omp_settings), intent(in) :: user_settings
 
 !$  if (.not. user_settings%nested) call omp_set_nested(user_settings%nested)
-!$  if (user_settings%dynamic) call omp_set_dynamic(user_settings%dynamic)    
+!$  if (user_settings%dynamic) call omp_set_dynamic(user_settings%dynamic)
 !$  if (user_settings%max_active_levels .lt. 2) &
 !$       call omp_set_max_active_levels(user_settings%max_active_levels)
   end subroutine pop_omp_settings

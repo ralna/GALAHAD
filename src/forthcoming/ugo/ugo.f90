@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.8 - 20/05/2016 AT 15:15 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ U G O   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -26,7 +26,7 @@
      USE GALAHAD_SYMBOLS
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_SPACE_double
-     USE GALAHAD_STRING_double, ONLY: STRING_integer_6
+     USE GALAHAD_STRING, ONLY: STRING_integer_6
      USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
 
      IMPLICIT NONE

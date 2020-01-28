@@ -91,6 +91,7 @@
      LOGICAL :: not_fatale = .FALSE.
      LOGICAL :: not_fatalg = .FALSE.
      LOGICAL :: getsca = .FALSE.
+     INTEGER :: print_level_override = 0
      INTEGER :: print_level_scaling = 0
      LOGICAL :: scale  = .FALSE.
      LOGICAL :: scaleg = .FALSE.
@@ -116,7 +117,7 @@
        spec( 1 )%keyword  = 'write-problem-data'
        spec( 2 )%keyword  = 'problem-data-file-name'
        spec( 3 )%keyword  = 'problem-data-file-device'
-       spec( 4 )%keyword  = ''
+       spec( 4 )%keyword  = 'print-level-override'
        spec( 5 )%keyword  = 'write-solution'
        spec( 6 )%keyword  = 'solution-file-name'
        spec( 7 )%keyword  = 'solution-file-device'
@@ -154,6 +155,7 @@
        CALL SPECFILE_assign_logical( spec( 1 ), write_problem_data, errout )
        CALL SPECFILE_assign_string ( spec( 2 ), dfilename, errout )
        CALL SPECFILE_assign_integer( spec( 3 ), dfiledevice, errout )
+       CALL SPECFILE_assign_integer( spec( 4 ), print_level_override, errout )
        CALL SPECFILE_assign_logical( spec( 5 ), write_solution, errout )
        CALL SPECFILE_assign_string ( spec( 6 ), sfilename, errout )
        CALL SPECFILE_assign_integer( spec( 7 ), sfiledevice, errout )
@@ -223,6 +225,56 @@
 
      CALL FISQP_initialize( data, control, inform )
      IF ( is_specfile ) CALL FISQP_read_specfile( control, input_specfile )
+
+!  override print options if required
+
+     SELECT CASE (print_level_override )
+     CASE ( 1 )
+       control%print_level = 1
+     CASE ( 2 )
+       control%print_level = 4
+       control%QP_steer_control%print_level = 1
+       control%QP_steer_control%CQP_control%print_level = 1
+       control%QP_steer_control%DLP_control%print_level = 1
+       control%QP_steer_control%DQP_control%print_level = 1
+       control%QP_pred_control%print_level = 1
+       control%QP_pred_control%CQP_control%print_level = 1
+       control%QP_pred_control%DLP_control%print_level = 1
+       control%QP_pred_control%DQP_control%print_level = 1
+       control%QP_accel_control%print_level = 1
+     CASE ( 3 : 100 )
+       control%print_level = 4
+       control%QP_steer_control%print_level = 1
+       control%QP_steer_control%CQP_control%print_level = 101
+       control%QP_steer_control%DLP_control%print_level = 1
+       control%QP_steer_control%DQP_control%print_level = 1
+       control%QP_pred_control%print_level = 1
+       control%QP_pred_control%CQP_control%print_level = 101
+       control%QP_pred_control%DLP_control%print_level = 1
+       control%QP_pred_control%DQP_control%print_level = 1
+       control%QP_accel_control%print_level = 1
+       control%QP_accel_control%SBLS_control%print_level = 1
+       control%QP_accel_control%SBLS_control%SLS_control%print_level = 1
+       control%QP_accel_control%SBLS_control%SLS_control%print_level_solver = 1
+       control%QP_accel_control%GLTR_control%print_level = 1
+     CASE ( 101 : )
+       control%print_level = 101
+       control%QP_steer_control%print_level = 101
+       control%QP_steer_control%CQP_control%print_level = 101
+       control%QP_steer_control%CQP_control%CRO_control%print_level = 101
+       control%QP_steer_control%DLP_control%print_level = 1
+       control%QP_steer_control%DQP_control%print_level = 1
+       control%QP_pred_control%print_level = 101
+       control%QP_pred_control%CQP_control%print_level = 101
+       control%QP_pred_control%CQP_control%CRO_control%print_level = 101
+       control%QP_pred_control%DLP_control%print_level = 1
+       control%QP_pred_control%DQP_control%print_level = 1
+       control%QP_accel_control%print_level = 101
+       control%QP_accel_control%SBLS_control%print_level = 1
+       control%QP_accel_control%SBLS_control%SLS_control%print_level = 1
+       control%QP_accel_control%SBLS_control%SLS_control%print_level_solver = 1
+       control%QP_accel_control%GLTR_control%print_level = 1
+     END SELECT
 
 !  Solve the problem
 

@@ -63,7 +63,7 @@ SUCC = precision version) compiled successfully
 mc68: mc68_integer
 	@printf ' %-21s\n' "HSL MC68 routines ($(PRECIS) $(SUCC)"
 mc68_silent: mc68_integer
-mc68_integer: $(HLGD)(hsl_zb01i.o) $(HLGD)(hsl_mc68i.o)
+mc68_integer: $(HLG)(hsl_zb01i.o) $(HLG)(hsl_mc68i.o)
 
 #  individual compilations
 

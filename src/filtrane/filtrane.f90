@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 15/05/2010 AT 14:40 GMT.
+! THIS VERSION: GALAHAD 3.3 - 28/01/2020 AT 08:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -359,13 +359,13 @@
 
       USE GALAHAD_NORMS_double    ! norm functions
 
-      USE GALAHAD_TOOLS_double    ! the GALAHAD toolbox
-
       USE GALAHAD_SORT_double     ! the sorting procedures
 
       USE GALAHAD_GLTR_double     ! the GLTR truncated CG procedure
 
       USE GALAHAD_COPYRIGHT       ! copyright statement
+
+      USE GALAHAD_TOOLS           ! the GALAHAD toolbox
 
 !     Print levels
 

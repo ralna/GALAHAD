@@ -474,7 +474,7 @@ for i  in  $NSUB; do
     if [[ $? != 0 ]]; then
       exit 1
     fi
-    $RM ${j}.f90
+#    $RM ${j}.f90
   fi
 done
 
@@ -991,7 +991,7 @@ elif [[ $2 == 'lancelot_steering' ]]; then
   [[ ! -e RUNLANCELOT.SPC ]] && \
     ln -s ~/.galahad/specs/RUNLANCELOT.SPC RUNLANCELOT.SPC
   CUTESTLIB=""
-  LAPACKLIB=""
+#  LAPACKLIB=""
 
 #  lancelot b
 
@@ -1004,7 +1004,7 @@ else
   [[ ! -e RUNLANCELOT.SPC ]] && \
      ln -s ~/.galahad/specs/RUNLANCELOT.SPC RUNLANCELOT.SPC
   CUTESTLIB=""
-  LAPACKLIB=""
+#  LAPACKLIB=""
 fi
 
 # See if there already is a decoded problem in the current directory

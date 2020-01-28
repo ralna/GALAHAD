@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 17/02/2014 AT 14:50 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ E Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -9,7 +9,7 @@
 !   development started March 25th 2004
 !   originally released GALAHAD Version 2.0. February 16th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
   MODULE GALAHAD_EQP_double
@@ -19,7 +19,7 @@
 !     | Solve the equaity-constrained quadratic program   |
 !     |                                                   |
 !     |   minimize     1/2 x(T) H x + g(T) x + f          |
-!     |   or   1/2 || W * ( x - x^0 ) ||_2^2 + g^T x + f  |    
+!     |   or   1/2 || W * ( x - x^0 ) ||_2^2 + g^T x + f  |
 !     |   subject to     A x + c = 0                      |
 !     |   and            ||x|| <= Delta                   |
 !     |                                                   |
@@ -30,7 +30,7 @@
 !NOT95USE GALAHAD_CPU_time
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_STRING_double, ONLY: STRING_pleural, STRING_verb_pleural
+      USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural
       USE GALAHAD_SPACE_double
 !     USE GALAHAD_SMT_double
       USE GALAHAD_QPD_double, ONLY : QPD_SIF, EQP_data_type => QPD_data_type
@@ -39,7 +39,7 @@
       USE GALAHAD_GLTR_double
       USE GALAHAD_FDC_double
       USE GALAHAD_SPECFILE_double
-   
+
       IMPLICIT NONE
 
       PRIVATE
@@ -73,14 +73,14 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: EQP_control_type
 
-!   error and warning diagnostics occur on stream error 
-   
+!   error and warning diagnostics occur on stream error
+
         INTEGER :: error = 6
 
 !   general output occurs on stream out
@@ -93,7 +93,7 @@
 
 !   the factorization to be used. Possible values are
 
-!      0  automatic 
+!      0  automatic
 !      1  Schur-complement factorization
 !      2  augmented-system factorization                              (OBSOLETE)
 
@@ -125,10 +125,10 @@
 !
         INTEGER :: cg_maxit = 200
 
-!   the preconditioner to be used for the CG is defined by precon. 
+!   the preconditioner to be used for the CG is defined by precon.
 !    Possible values are
 
-!      0  automatic 
+!      0  automatic
 !      1  no preconditioner, i.e, the identity within full factorization
 !      2  full factorization
 !      3  band within full factorization
@@ -151,7 +151,7 @@
 
         INTEGER :: new_h = 2
 
-!   specifies the unit number to write generated SIF file describing the 
+!   specifies the unit number to write generated SIF file describing the
 !    current problem
 
         INTEGER :: sif_file_device = 49
@@ -171,12 +171,12 @@
 
         REAL ( KIND = wp ) :: zero_pivot = epsmch
 
-!   the computed solution which gives at least inner_fraction_opt times the 
+!   the computed solution which gives at least inner_fraction_opt times the
 !    optimal value will be found                                      (OBSOLETE)
 
         REAL ( KIND = wp ) :: inner_fraction_opt = point1
 
-!   an upper bound on the permitted step (-ve will be reset to an appropriate 
+!   an upper bound on the permitted step (-ve will be reset to an appropriate
 !    large value by eqp_solve)
 
         REAL ( KIND = wp ) :: radius = - one
@@ -194,9 +194,9 @@
         REAL ( KIND = wp ) :: max_infeasibility_relative = epsmch
         REAL ( KIND = wp ) :: max_infeasibility_absolute = epsmch
 
-!   the computed solution is considered as an acceptable approximation to the 
-!    minimizer of the problem if the gradient of the objective in the 
-!    preconditioning(inverse) norm is less than 
+!   the computed solution is considered as an acceptable approximation to the
+!    minimizer of the problem if the gradient of the objective in the
+!    preconditioning(inverse) norm is less than
 !     max( inner_stop_relative * initial preconditioning(inverse)
 !                                 gradient norm, inner_stop_absolute )
 
@@ -209,11 +209,11 @@
 
        LOGICAL :: find_basis_by_transpose = .TRUE.
 
-!   if %remove_dependencies is true, the equality constraints will be 
+!   if %remove_dependencies is true, the equality constraints will be
 !    preprocessed to remove any linear dependencies
 !
         LOGICAL :: remove_dependencies = .TRUE.
- 
+
 !   if %space_critical true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
 
@@ -224,7 +224,7 @@
 
         LOGICAL :: deallocate_error_fatal = .FALSE.
 
-!   if %generate_sif_file is .true. if a SIF file describing the current 
+!   if %generate_sif_file is .true. if a SIF file describing the current
 !    problem is to be generated
 
         LOGICAL :: generate_sif_file = .FALSE.
@@ -235,7 +235,7 @@
          "EQPPROB.SIF"  // REPEAT( ' ', 19 )
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
+!   where %prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 
         CHARACTER ( LEN = 30 ) :: prefix = '""                            '
@@ -250,7 +250,7 @@
 
 !  control parameters for GLTR
 
-        TYPE ( GLTR_control_type ) :: GLTR_control 
+        TYPE ( GLTR_control_type ) :: GLTR_control
       END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - -
@@ -320,7 +320,7 @@
 
         INTEGER :: factorization_real = - 1
 
-!  the value of the objective function at the best estimate of the solution 
+!  the value of the objective function at the best estimate of the solution
 !   determined by QPB_solve
 
         REAL ( KIND = wp ) :: obj = HUGE( one )
@@ -352,7 +352,7 @@
 !
 !  Default control data for EQP. This routine should be called before
 !  EQP_solve
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -364,7 +364,7 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
       TYPE ( EQP_data_type ), INTENT( INOUT ) :: data
-      TYPE ( EQP_control_type ), INTENT( OUT ) :: control        
+      TYPE ( EQP_control_type ), INTENT( OUT ) :: control
       TYPE ( EQP_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
@@ -402,7 +402,7 @@
 
       data%new_c = .TRUE.
 
-      RETURN  
+      RETURN
 
 !  End of EQP_initialize
 
@@ -412,10 +412,10 @@
 
       SUBROUTINE EQP_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by EQP_initialize could (roughly) 
+!  The defauly values as given by EQP_initialize could (roughly)
 !  have been set as:
 
 !  BEGIN EQP SPECIFICATIONS (DEFAULT)
@@ -454,7 +454,7 @@
 
 !  Dummy arguments
 
-      TYPE ( EQP_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( EQP_control_type ), INTENT( INOUT ) :: control
       INTEGER, INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -474,7 +474,7 @@
 
       spec(  1 )%keyword = 'error-printout-device'
       spec(  2 )%keyword = 'printout-device'
-      spec(  3 )%keyword = 'print-level' 
+      spec(  3 )%keyword = 'print-level'
       spec(  7 )%keyword = 'factorization-used'
       spec(  8 )%keyword = 'maximum-column-nonzeros-in-schur-complement'
       spec(  4 )%keyword = 'initial-workspace-for-unsymmetric-solver'
@@ -646,7 +646,7 @@
 !     subject to    A x = c
 !
 !  where x is a vector of n components ( x_1, .... , x_n ), f is a constant
-!  g, w and x^0 are an n-vectors, H is a symmetric matrix and A is an m by n 
+!  g, w and x^0 are an n-vectors, H is a symmetric matrix and A is an m by n
 !  matrix, using a projected preconditioned conjugate-gradient method.
 !  The subroutine is particularly appropriate when A and H are sparse
 !
@@ -654,11 +654,11 @@
 !
 !  Arguments:
 !
-!  prob is a structure of type QPT_problem_type, whose components hold 
+!  prob is a structure of type QPT_problem_type, whose components hold
 !   information about the problem on input, and its solution on output.
 !   The following components must be set:
 !
-!   %new_problem_structure is a LOGICAL variable, which must be set to 
+!   %new_problem_structure is a LOGICAL variable, which must be set to
 !    .TRUE. by the user if this is the first problem with this "structure"
 !    to be solved since the last call to EQP_initialize, and .FALSE. if
 !    a previous call to a problem with the same "structure" (but different
@@ -666,26 +666,26 @@
 !
 !   %n is an INTEGER variable, which must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
-!                 
+!
 !   %m is an INTEGER variable, which must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
-!                 
+!
 !   %Hessian_kind is an INTEGER variable which defines the type of objective
 !    function to be used. Possible values are
 !
-!     0  all the weights will be zero, and the analytic centre of the 
+!     0  all the weights will be zero, and the analytic centre of the
 !        feasible region will be found. %WEIGHT (see below) need not be set
 !
 !     1  all the weights will be one. %WEIGHT (see below) need not be set
 !
 !     2  the weights will be those given by %WEIGHT (see below)
 !
-!    <0  the Hessian H will be used 
+!    <0  the Hessian H will be used
 !
-!   %H is a structure of type SMT_type used to hold the LOWER TRIANGULAR part 
+!   %H is a structure of type SMT_type used to hold the LOWER TRIANGULAR part
 !    of H. Four storage formats are permitted:
 !
-!    i) sparse, co-ordinate
+!    i) sparse, coordinate
 !
 !       In this case, the following must be set:
 !
@@ -693,7 +693,7 @@
 !       H%val( : )   the values of the components of H
 !       H%row( : )   the row indices of the components of H
 !       H%col( : )   the column indices of the components of H
-!       H%ne         the number of nonzeros used to store 
+!       H%ne         the number of nonzeros used to store
 !                    the LOWER TRIANGULAR part of H
 !
 !    ii) sparse, by rows
@@ -712,7 +712,7 @@
 !
 !       H%type( 1 : 5 ) = TRANSFER( 'DENSE', H%type )
 !       H%val( : )   the values of the components of H, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
 !    iv) diagonal
@@ -727,12 +727,12 @@
 !    However, if scheme (i) is used for input, the output H%row will contain
 !    the row numbers corresponding to the values in H%val, and thus in this
 !    case the output matrix will be available in both formats (i) and (ii).
-!    
+!
 !   %WEIGHT is a REAL array, which need only be set if %Hessian_kind is larger
 !    than 1. If this is so, it must be of length at least %n, and contain the
-!    weights W for the objective function. 
-!  
-!   %target_kind is an INTEGER variable that defines possible special 
+!    weights W for the objective function.
+!
+!   %target_kind is an INTEGER variable that defines possible special
 !     targets X0. Possible values are
 !
 !     0  X0 will be a vector of zeros.
@@ -744,17 +744,17 @@
 !     any other value - the values of X0 will be those given by %X0 (see below)
 !
 !   %X0 is a REAL array, which need only be set if %Hessian_kind is larger
-!    that 0 and %target_kind /= 0,1. If this is so, it must be of length at 
-!    least %n, and contain the targets X^0 for the objective function. 
+!    that 0 and %target_kind /= 0,1. If this is so, it must be of length at
+!    least %n, and contain the targets X^0 for the objective function.
 !
 !   %gradient_kind is an INTEGER variable which defines the type of linear
 !    term of the objective function to be used. Possible values are
 !
-!     0  the linear term g will be zero, and the analytic centre of the 
+!     0  the linear term g will be zero, and the analytic centre of the
 !        feasible region will be found if in addition %Hessian_kind is 0.
 !        %G (see below) need not be set
 !
-!     1  each component of the linear terms g will be one. 
+!     1  each component of the linear terms g will be one.
 !        %G (see below) need not be set
 !
 !     any other value - the gradients will be those given by %G (see below)
@@ -762,17 +762,17 @@
 !   %G is a REAL array of length %n, which must be set by
 !    the user to the value of the gradient, g, of the linear term of the
 !    quadratic objective function. The i-th component of G, i = 1, ....,
-!    n, should contain the value of g_i.  
+!    n, should contain the value of g_i.
 !    On exit, G will most likely have been reordered.
-!   
+!
 !   %f is a REAL variable, which must be set by the user to the value of
 !    the constant term f in the objective function. On exit, it may have
 !    been changed to reflect variables which have been fixed.
 !
-!   %A is a structure of type SMT_type used to hold the matrix A. 
+!   %A is a structure of type SMT_type used to hold the matrix A.
 !    Three storage formats are permitted:
 !
-!    i) sparse, co-ordinate
+!    i) sparse, coordinate
 !
 !       In this case, the following must be set:
 !
@@ -798,15 +798,15 @@
 !
 !       A%type( 1 : 5 ) = TRANSFER( 'DENSE', A%type )
 !       A%val( : )   the values of the components of A, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
 !    On exit, the components will most likely have been reordered.
 !    The output  matrix will be stored by rows, according to scheme (ii) above.
 !    However, if scheme (i) is used for input, the output A%row will contain
 !    the row numbers corresponding to the values in A%val, and thus in this
-!    case the output matrix will be available in both formats (i) and (ii).   
-! 
+!    case the output matrix will be available in both formats (i) and (ii).
+!
 !   %X is a REAL array of length %n, which must be set by the user
 !    to an estimate of the solution x. On successful exit, it will contain
 !    the required solution.
@@ -814,18 +814,18 @@
 !   %C is a REAL array of length %m, which must be set by the user
 !    to the values of the array c of constant terms of the constraints
 !    Ax + c = 0
-!   
+!
 !  data is a structure of type EQP_data_type which holds private internal data
 !
-!  control is a structure of type EQP_control_type that controls the 
+!  control is a structure of type EQP_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to EQP_initialize. See EQP_initialize 
+!   the elements may be set by a call to EQP_initialize. See EQP_initialize
 !   for details
 !
-!  inform is a structure of type EQP_inform_type that provides 
-!    information on exit from EQP_solve. The component status 
+!  inform is a structure of type EQP_inform_type that provides
+!    information on exit from EQP_solve. The component status
 !    has possible values:
-!  
+!
 !     0 Normal termination with a locally optimal solution.
 !
 !    -1 An allocation error occured; the status is given in the component
@@ -834,7 +834,7 @@
 !    -2 A deallocation error occured; the status is given in the component
 !       alloc_status.
 !
-!   - 3 one of the restrictions 
+!   - 3 one of the restrictions
 !          prob%n     >=  1
 !          prob%m     >=  0
 !          prob%A%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' }
@@ -857,17 +857,17 @@
 !
 !   -16 the residuals are large; the factorization may be unsatisfactory
 !
-!  On exit from EQP_solve, other components of inform give the 
+!  On exit from EQP_solve, other components of inform give the
 !  following:
 !
-!     alloc_status = the status of the last attempted allocation/deallocation 
+!     alloc_status = the status of the last attempted allocation/deallocation
 !     bad_alloc = the name of the last array for which (de)allocation failed
 !     cg_iter = the total number of conjugate gradient iterations required.
-!     factorization_integer = the total integer workspace required for the 
+!     factorization_integer = the total integer workspace required for the
 !       factorization.
-!     factorization_real = the total real workspace required for the 
+!     factorization_real = the total real workspace required for the
 !       factorization.
-!     obj = the value of the objective function at the best estimate of the 
+!     obj = the value of the objective function at the best estimate of the
 !       solution determined by EQP_solve.
 !     time%total = the total time spent in the package.
 !     time%factorize = the time spent factorizing the required matrices.
@@ -875,7 +875,7 @@
 !     SBLS_inform = inform components from SBLS
 !     GLTR_inform = inform components from GLTR
 !
-!   D is an optional REAL array of length prob%n, that if present must be set 
+!   D is an optional REAL array of length prob%n, that if present must be set
 !    by the user to the (nonzero) values of the diagonal matrix G = D
 !    needed when control%preconditioner = 5
 
@@ -896,7 +896,7 @@
       REAL ( KIND = wp ) :: clock_start, clock_record, clock_now, f
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -906,7 +906,7 @@
         WRITE( control%out, "( A, ' -- entering EQP_solve ' )" ) prefix
 
 ! -------------------------------------------------------------------
-!  If desired, generate a SIF file for problem passed 
+!  If desired, generate a SIF file for problem passed
 
       IF ( control%generate_sif_file ) THEN
         CALL QPD_SIF( prob, control%sif_file_name, control%sif_file_device,    &
@@ -943,9 +943,9 @@
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
           WRITE( control%error,                                                &
             "( ' ', /, A, ' **  Error return ', I0,' from EQP ' )" )           &
-            prefix, inform%status 
+            prefix, inform%status
         RETURN
-      END IF 
+      END IF
 
       IF ( prob%Hessian_kind < 0 ) THEN
         IF ( .NOT. QPT_keyword_H( prob%H%type ) ) THEN
@@ -953,23 +953,24 @@
           IF ( control%error > 0 .AND. control%print_level > 0 )               &
             WRITE( control%error,                                              &
               "( ' ', /, A, ' **  Error return ', I0,' from EQP ' )" )         &
-              prefix, inform%status 
+              prefix, inform%status
           RETURN
-        END IF 
-      END IF 
+        END IF
+      END IF
 
-!  If required, write out problem 
+!  If required, write out the problem
 
-      IF ( control%out > 0 .AND. control%print_level >= 10 ) THEN
-        WRITE( control%out, "( A, ' n = ', I0, ', m = ', I0, ', f =',          &
-       &                       ES11.4 )" ) prefix, prob%n, prob%m, prob%f
+!     IF ( control%out > 0 .AND. control%print_level >= 10 ) THEN
+      IF ( control%out > 0 .AND. control%print_level >= 1 ) THEN
+        WRITE( control%out, "( /, A, ' n = ', I0, ', m = ', I0, ', f =',       &
+       &                       ES24.16 )" ) prefix, prob%n, prob%m, prob%f
         IF ( prob%gradient_kind == 0 ) THEN
           WRITE( control%out, "( A, ' G = zeros' )" ) prefix
         ELSE IF ( prob%gradient_kind == 1 ) THEN
           WRITE( control%out, "( A, ' G = ones' )" ) prefix
         ELSE
-          WRITE( control%out, "( A, ' G = ', /, ( 5ES12.4 ) )" )               &
-             prefix, prob%G( : prob%n )
+          WRITE( control%out, "( A, ' G =', /, ( 5X, 3ES24.16 ) )" )           &
+            prefix, prob%G( : prob%n )
         END IF
         IF ( prob%Hessian_kind == 0 ) THEN
           WRITE( control%out, "( A, ' W = zeros' )" ) prefix
@@ -980,57 +981,57 @@
           ELSE IF ( prob%target_kind == 1 ) THEN
             WRITE( control%out, "( A, ' X0 = ones ' )" ) prefix
           ELSE
-            WRITE( control%out, "( A, ' X0 = ', /, ( 5ES12.4 ) )" )            &
+            WRITE( control%out, "( A, ' X0 =', /, ( 3ES24.16 ) )" )            &
              prefix, prob%X0( : prob%n )
           END IF
         ELSE IF ( prob%Hessian_kind == 2 ) THEN
-          WRITE( control%out, "( A, ' W = ', /, ( 5ES12.4 ) )" )               &
-             prefix, prob%WEIGHT( : prob%n )
+          WRITE( control%out, "( A, ' W =', /, ( 5X, 3ES24.16 ) )" )           &
+            prefix, prob%WEIGHT( : prob%n )
           IF ( prob%target_kind == 0 ) THEN
             WRITE( control%out, "( A, ' X0 = zeros' )" ) prefix
           ELSE IF ( prob%target_kind == 1 ) THEN
             WRITE( control%out, "( A, ' X0 = ones ' )" ) prefix
           ELSE
-            WRITE( control%out, "( A, ' X0 = ', /, ( 5ES12.4 ) )" )            &
+            WRITE( control%out, "( A, ' X0 =', /, ( 6X, 3ES24.16 ) )" )        &
               prefix, prob%X0( : prob%n )
           END IF
         ELSE
           IF ( SMT_get( prob%H%type ) == 'DIAGONAL' ) THEN
-            WRITE( control%out, "( A, ' H (diagonal) = ', /, ( 5ES12.4 ) )" )  &
+            WRITE( control%out, "( A, ' H (diagonal) = ', /, ( 3ES24.16 ) )" ) &
               prefix, prob%H%val( : prob%n )
           ELSE IF ( SMT_get( prob%H%type ) == 'DENSE' ) THEN
-            WRITE( control%out, "( A, ' H (dense) = ', /, ( 5ES12.4 ) )" )     &
+            WRITE( control%out, "( A, ' H (dense) = ', /, ( 3ES24.16 ) )" )    &
               prefix, prob%H%val( : prob%n * ( prob%n + 1 ) / 2 )
           ELSE IF ( SMT_get( prob%H%type ) == 'SPARSE_BY_ROWS' ) THEN
             WRITE( control%out, "( A, ' H (row-wise) = ' )" ) prefix
             DO i = 1, prob%n
-              WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                 &
+              WRITE( control%out, "( ( 2X, 2( 2I8, ES24.16 ) ) )" )            &
                 ( i, prob%H%col( j ), prob%H%val( j ),                         &
                   j = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1 )
             END DO
           ELSE
-            WRITE( control%out, "( A, ' H (co-ordinate) = ' )" ) prefix
-            WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                   &
+            WRITE( control%out, "( A, ' H (coordinate) = ' )" ) prefix
+            WRITE( control%out, "( ( 2X, 2( 2I8, ES24.16 ) ) )" )              &
               ( prob%H%row( i ), prob%H%col( i ), prob%H%val( i ),             &
               i = 1, prob%H%ne)
           END IF
         END IF
         IF ( SMT_get( prob%A%type ) == 'DENSE' ) THEN
-          WRITE( control%out, "( A, ' A (dense) = ', /, ( 10X, 5ES12.4 ) )" )  &
+          WRITE( control%out, "( A, ' A (dense) = ', /, ( 10X, 3ES24.16 ) )" ) &
             prefix, prob%A%val( : prob%n * prob%m )
         ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
           WRITE( control%out, "( A, ' A (row-wise) = ' )" ) prefix
           DO i = 1, prob%m
-            WRITE( control%out, "( ( 10X, 2( 2I8, ES12.4 ) ) )" )              &
+            WRITE( control%out, "( ( 2X, 2( 2I8, ES24.16 ) ) )" )              &
               ( i, prob%A%col( j ), prob%A%val( j ),                           &
                 j = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1 )
           END DO
         ELSE
-          WRITE( control%out, "( A, ' A (co-ordinate) = ' )" ) prefix
-          WRITE( control%out, "( ( 10X, 2( 2I8, ES12.4 ) ) )" )                &
+          WRITE( control%out, "( A, ' A (coordinate) = ' )" ) prefix
+          WRITE( control%out, "( ( 2X, 2( 2I8, ES24.16 ) ) )" )                &
          ( prob%A%row( i ), prob%A%col( i ), prob%A%val( i ), i = 1, prob%A%ne )
         END IF
-        WRITE( control%out, "( A, ' C = ', /, ( 10X, 5ES12.4 ) )" )            &
+        WRITE( control%out, "( A, ' C =', /, ( 5X, 3ES24.16 ) )" )             &
           prefix, prob%C( : prob%m )
       END IF
 
@@ -1046,7 +1047,7 @@
         CALL SMT_put( data%A_eqp%type, 'SPARSE_BY_ROWS', inform%alloc_status )
 
         SELECT CASE ( SMT_get( prob%A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           data%A_eqp%ne = prob%n * prob%m
         CASE ( 'SPARSE_BY_ROWS' )
           data%A_eqp%ne = prob%A%ptr( prob%m + 1 ) - 1
@@ -1080,7 +1081,7 @@
 !  copy A to row-wise storage
 
         SELECT CASE ( SMT_get( prob%A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           data%A_eqp%ptr( 1 ) = 1
           l = 0
           DO i = 1, prob%m
@@ -1105,7 +1106,7 @@
           END DO
           data%A_eqp%ptr( 1 ) = 1
           DO i = 2, data%A_eqp%m
-            data%A_eqp%ptr( i ) = data%A_eqp%ptr( i - 1 ) + data%A_eqp%ptr( i ) 
+            data%A_eqp%ptr( i ) = data%A_eqp%ptr( i - 1 ) + data%A_eqp%ptr( i )
           END DO
           DO l = 1, prob%A%ne
             i = prob%A%row( l ) ; j = data%A_eqp%ptr( i )
@@ -1121,6 +1122,18 @@
 
 !  find any dependent rows
 
+        IF ( control%out > 0 .AND. control%print_level >= 1 ) THEN
+          IF ( control%FDC_control%use_sls ) THEN
+            WRITE( control%out, "( /, A, ' FDC (using ', A, ') called to',     &
+           &  ' remove any dependent constraints' )" )  prefix,                &
+              TRIM( control%FDC_control%symmetric_linear_solver )
+          ELSE
+            WRITE( control%out, "( /, A, ' FDC (using ', A, ') called to',     &
+           &  ' remove any dependent constraints' )" )  prefix,                &
+              TRIM( control%FDC_control%unsymmetric_linear_solver )
+          END IF
+        END IF
+
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
         CALL FDC_find_dependent( data%A_eqp%n, data%A_eqp%m,                   &
                                  data%A_eqp%val( : data%A_eqp%ne ),            &
@@ -1129,7 +1142,7 @@
                                  prob%C, data%n_depen, data%C_depen,           &
                                  data%FDC_data, control%FDC_control,           &
                                  inform%FDC_inform )
-        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%find_dependent =                                           &
           inform%time%find_dependent + time_now - time_record
         inform%time%clock_find_dependent =                                     &
@@ -1229,7 +1242,7 @@
         data%n_depen = 0
       END IF
 
-!  create temporary gradient and, if necessary, Hessian storage, and set 
+!  create temporary gradient and, if necessary, Hessian storage, and set
 !  H, G and f according to Hessian_kind, gradient_kind and target_kind
 
       array_name = 'eqp: data%G_eqp'
@@ -1296,6 +1309,13 @@
 !  Call the solver
 ! ----------------
 
+      IF ( control%out > 0 .AND. control%print_level >= 1 )                    &
+        WRITE( control%out, "( /, A, ' find solution using linear equation',   &
+       &  ' solvers ', A, ', ', A, ', ', A )" ) prefix,                        &
+          TRIM( control%SBLS_control%symmetric_linear_solver ),                &
+          TRIM( control%SBLS_control%definite_linear_solver ),                 &
+          TRIM( control%SBLS_control%unsymmetric_linear_solver )
+
       IF ( prob%Hessian_kind >= 0 ) THEN
         IF ( data%n_depen == 0 ) THEN
           CALL EQP_solve_main( prob%n, prob%m, data%H_eqp, data%G_eqp,         &
@@ -1304,7 +1324,7 @@
         ELSE
           CALL EQP_solve_main( prob%n, data%A_eqp%m, data%H_eqp, data%G_eqp,   &
                                f, data%A_eqp, prob%q, prob%X, prob%Y,          &
-                               data, control, inform, C = prob%C, D = D )
+                               data, control, inform, C = data%C, D = D )
         END IF
       ELSE
         IF ( data%n_depen == 0 ) THEN
@@ -1314,14 +1334,14 @@
         ELSE
           CALL EQP_solve_main( prob%n, data%A_eqp%m, prob%H, data%G_eqp,       &
                                f, data%A_eqp, prob%q, prob%X, prob%Y,          &
-                               data, control, inform, C = prob%C, D = D )
+                               data, control, inform, C = data%C, D = D )
         END IF
       END IF
 
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start 
+      inform%time%total = inform%time%total + time_now - time_start
       inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start 
+        inform%time%clock_total + clock_now - clock_start
 
       IF ( inform%status /= GALAHAD_ok ) RETURN
 
@@ -1340,6 +1360,14 @@
         END DO
       END IF
 
+!  If required, write out the solution
+
+      IF ( control%out > 0 .AND. control%print_level >= 10 ) THEN
+        WRITE( control%out, "( A,                                              &
+       &  ' X = ', 3ES24.16, /, ( 5X, 3ES24.16 ) )" ) prefix, prob%X( : prob%n )
+        IF ( prob%m > 0 ) WRITE( control%out, "( A,                            &
+       &  ' Y = ', 3ES24.16, /, ( 5X, 3ES24.16 ) )" ) prefix, prob%Y( : prob%m )
+      END IF
       RETURN
 
 !  End of EQP_solve
@@ -1391,7 +1419,7 @@
       REAL ( KIND = wp ) :: pivot_tol, relative_pivot_tol, min_pivot_tol
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -1422,18 +1450,18 @@
 
 !  basic output
 
-      printi = out > 0 .AND. control%print_level >= 1 
+      printi = out > 0 .AND. control%print_level >= 1
 
 !  single line of output per iteration with timings for various operations
 
-      printt = out > 0 .AND. control%print_level >= 2 
+      printt = out > 0 .AND. control%print_level >= 2
 
       IF ( SMT_get( A%type ) == 'DENSE' ) THEN
         data%a_ne = m * n
       ELSE IF ( SMT_get( A%type ) == 'SPARSE_BY_ROWS' ) THEN
         data%a_ne = A%ptr( m + 1 ) - 1
       ELSE
-        data%a_ne = A%ne 
+        data%a_ne = A%ne
       END IF
 
 !  Set C appropriately
@@ -1482,7 +1510,7 @@
 
       CALL CPU_TIME( inform%time%factorize )
 
-!  set initial pivot control values 
+!  set initial pivot control values
 
       pivot_tol = control%SBLS_control%SLS_control%relative_pivot_tolerance
       min_pivot_tol = control%SBLS_control%SLS_control%minimum_pivot_tolerance
@@ -1499,7 +1527,7 @@
       CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
       CALL SBLS_form_and_factorize( n, m, H, A, data%C0, data%SBLS_data,       &
                                     data%SBLS_control, inform%SBLS_inform, D )
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%factorize = inform%time%factorize + time_now - time_record
         inform%time%clock_factorize =                                          &
           inform%time%clock_factorize + clock_now - clock_record
@@ -1563,7 +1591,7 @@
         END SELECT
       END IF
       RETURN
- 
+
 !  if the method failed because of a poor preconditioner, try again
 
  910  CONTINUE
@@ -1572,7 +1600,7 @@
 
       IF ( data%SBLS_control%factorization == 2 .AND. maxpiv ) THEN
         RETURN
-              
+
 !  ... or we may change the method ....
 
       ELSE IF ( data%SBLS_control%factorization < 2 .AND. maxpiv ) THEN
@@ -1665,7 +1693,7 @@
         END DO
       END IF
 
-!  create temporary gradient and, if necessary, Hessian storage, and set 
+!  create temporary gradient and, if necessary, Hessian storage, and set
 !  H, G and f according to Hessian_kind, gradient_kind and target_kind
 
       f = prob%f
@@ -1734,9 +1762,9 @@
       END IF
 
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + time_now - time_start 
+      inform%time%total = inform%time%total + time_now - time_start
       inform%time%clock_total =                                                &
-        inform%time%clock_total + clock_now - clock_start 
+        inform%time%clock_total + clock_now - clock_start
 
 !  assign lagrange multipliers to the dependent constraints
 
@@ -1773,7 +1801,7 @@
 !     subject to    (Ax)_i + c_i = 0 , i = 1, .... , m,
 !
 !  where x is a vector of n components ( x_1, .... , x_n ), f is a constant,
-!  g is an n-vector, c is an m-vector, H is a symmetric matrix, 
+!  g is an n-vector, c is an m-vector, H is a symmetric matrix,
 !  A is an m by n matrix, and A and H are unchanged since a previous call,
 !  using a projected conjugate gradient method.
 !
@@ -1805,7 +1833,7 @@
       REAL ( KIND = wp ) :: pgnorm, stop_inter
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -1831,18 +1859,18 @@
 
 !  Basic single line of output per iteration
 
-      printi = out > 0 .AND. control%print_level >= 1 
+      printi = out > 0 .AND. control%print_level >= 1
 
 !  As per printi, but with additional timings for various operations
 
-      printt = out > 0 .AND. control%print_level >= 2 
+      printt = out > 0 .AND. control%print_level >= 2
 
-!  As per printt, but with checking of residuals, etc, and also with an 
+!  As per printt, but with checking of residuals, etc, and also with an
 !  indication of where in the code we are
 
       printw = out > 0 .AND. control%print_level >= 4
 
-      inform%GLTR_inform%status = 1 
+      inform%GLTR_inform%status = 1
       inform%GLTR_inform%negative_curvature = .TRUE.
 
       null_space_prec = inform%SBLS_inform%factorization == 3
@@ -1908,7 +1936,7 @@
           CALL SBLS_basis_solve( data%SBLS_data%ifactors, data%SBLS_control,   &
                                  inform%SBLS_inform, data%VECTOR )
         END IF
-        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
+        CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           inform%time%solve = inform%time%solve + time_now - time_record
           inform%time%clock_solve =                                            &
             inform%time%clock_solve + clock_now - clock_record
@@ -1925,7 +1953,7 @@
 
         data%RES( : m ) = C( : m )
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             data%RES( i )                                                      &
@@ -1957,12 +1985,12 @@
         IF ( rank_def ) THEN
           IF ( val <= maxres ) THEN
             IF ( printw ) WRITE( out,                                          &
-              "( A, ' residual', ES12.4, ' acceptably small relative to',      &
-             &  ES12.4, /, A, ' - constraints are consistent' )" )             &
+              "( A, ' residual', ES13.5, ' acceptably small relative to',      &
+             &  ES13.5, /, A, ' - constraints are consistent' )" )             &
                prefix, val, maxres, prefix
           ELSE
             IF ( printi ) WRITE( out,                                          &
-              "( A, ' residual', ES12.4, ' too large relative to', ES12.4, /,  &
+              "( A, ' residual', ES13.5, ' too large relative to', ES13.5, /,  &
              &   A, ' - constraints likely inconsistent' )" )                  &
                prefix, val, maxres, prefix
             inform%status = GALAHAD_error_primal_infeasible ; RETURN
@@ -1970,7 +1998,7 @@
         ELSE
           IF ( val > maxres ) THEN
             IF ( printi ) WRITE( out,                                          &
-              "( A, ' residual ', ES12.4, ' too large relative to', ES12.4, /, &
+              "( A, ' residual ', ES13.5, ' too large relative to', ES13.5, /, &
              &   A, ' - factorization likely inaccurate' )" )                  &
                prefix, val, maxres, prefix
             inform%status = GALAHAD_error_ill_conditioned ; RETURN
@@ -1980,11 +2008,11 @@
 !  Compute the function and gradient values at x_f
 
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' ) 
+        CASE ( 'DIAGONAL' )
           DO i = 1, n
             data%G_f( i ) = H%val( i ) * X( i )
           END DO
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           data%G_f = zero
           l = 0
           DO i = 1, n
@@ -2019,25 +2047,25 @@
         IF ( m > 0 ) THEN
           IF ( printi ) WRITE( out,                                            &
              "( /, A, ' objective & constraints (feasibility phase) =',        &
-            &  ES12.4, ',', ES11.4 )" )                                        &
+            &  ES13.5, ',', ES11.4 )" )                                        &
                prefix, q_save, MAXVAL( ABS( data%RES( : m ) ) )
         ELSE
           IF ( printi ) WRITE( out,                                            &
              "( /, A, ' objective & constraints (feasibility phase) =',        &
-            &  ES12.4, ',', ES11.4 )" ) prefix, q_save, zero
+            &  ES13.5, ',', ES11.4 )" ) prefix, q_save, zero
         END IF
       ELSE
         xfeq0 = .TRUE.
         X = zero
-        q_save = f 
+        q_save = f
         data%G_f( : n ) = G( : n )
         IF ( printi ) WRITE( out,                                              &
            "( /, A, ' objective & constraints (feasibility phase) =',          &
-          &  ES12.4, ',', ES11.4 )" ) prefix, q_save, zero
+          &  ES13.5, ',', ES11.4 )" ) prefix, q_save, zero
       END IF
 
 !  --------------------------------------------------
-!   1b. From the feasible point, use GLTR to minimize 
+!   1b. From the feasible point, use GLTR to minimize
 !       the objective in the null-space of A
 !  --------------------------------------------------
 
@@ -2068,12 +2096,12 @@
       IF ( inform%status /= GALAHAD_ok ) RETURN
 
 !  Set initial data
-     
+
       IF ( control%radius > zero ) THEN
         radius = control%radius
       ELSE
         radius = SQRT( point1 * HUGE( one ) )
-      END IF 
+      END IF
       q = q_save
       IF ( xfeq0 ) THEN
         data%R( : n ) = G( : n )
@@ -2117,7 +2145,7 @@
          &  A, ' Warning return from GLTR, status = ', I0 )" ) prefix,         &
               inform%GLTR_inform%status
           EXIT
-          
+
 !  Allocation errors
 
            CASE ( GALAHAD_error_allocate )
@@ -2165,17 +2193,17 @@
           IF ( inform%GLTR_inform%status == 2 ) THEN
             pgnorm = DOT_PRODUCT( data%R( : n ), data%VECTOR( : n ) )
             IF ( ABS( pgnorm ) < ten * EPSILON( one ) ) pgnorm = zero
-            pgnorm = SIGN( SQRT( ABS( pgnorm ) ), pgnorm ) 
+            pgnorm = SIGN( SQRT( ABS( pgnorm ) ), pgnorm )
             IF ( inform%cg_iter == 0 )                                         &
               stop_inter = pgnorm * control%inner_stop_inter
           END IF
 
 !  Compute the residuals
 
-          IF ( printw ) THEN 
+          IF ( printw ) THEN
             data%RES = zero
             SELECT CASE ( SMT_get( A%type ) )
-            CASE ( 'DENSE' ) 
+            CASE ( 'DENSE' )
               l = 0
               DO i = 1, m
                 data%RES( i ) = data%RES( i )                                  &
@@ -2219,11 +2247,11 @@
           data%WORK( : n ) = data%VECTOR( : n )
 
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             DO i = 1, n
               data%VECTOR( i ) = H%val( i ) * data%WORK( i )
             END DO
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             data%VECTOR( : n ) = zero
             l = 0
             DO i = 1, n
@@ -2257,7 +2285,7 @@
 !  Reform the initial residual
 
         CASE ( 5 )
-          
+
           IF ( printw ) WRITE( out,                                            &
             "( A, ' ................. restarting ................ ' )" ) prefix
 
@@ -2271,7 +2299,7 @@
         END SELECT
 
       END DO
-      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now ) 
+      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%solve = inform%time%solve + time_now - time_record
         inform%time%clock_solve =                                              &
           inform%time%clock_solve + clock_now - clock_record
@@ -2294,7 +2322,7 @@
         data%RES( : m ) = zero
       END IF
       SELECT CASE ( SMT_get( A%type ) )
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, m
           data%RES( i ) =                                                      &
@@ -2318,11 +2346,11 @@
 
       IF ( printt ) THEN
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' ) 
+        CASE ( 'DIAGONAL' )
           DO i = 1, n
             data%G_f( i ) = H%val( i ) * X( i )
           END DO
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           data%G_f = zero
           l = 0
           DO i = 1, n
@@ -2363,12 +2391,12 @@
       IF ( m > 0 ) THEN
         IF ( printi ) WRITE( out,                                              &
            "(  A, ' objective & constraints (optimality',                      &
-          &   '  phase) =', ES12.4, ',', ES11.4 )" )                           &
+          &   '  phase) =', ES13.5, ',', ES11.4 )" )                           &
               prefix, inform%obj, MAXVAL( ABS( data%RES( : m ) ) )
       ELSE
         IF ( printi ) WRITE( out,                                              &
            "(  A, ' objective & constraints (optimality',                      &
-          &   '  phase) =', ES12.4, ',', ES11.4 )" )                           &
+          &   '  phase) =', ES13.5, ',', ES11.4 )" )                           &
               prefix, inform%obj, zero
       END IF
 
@@ -2377,7 +2405,7 @@
       Y( : m ) = data%VECTOR( n + 1 : n + m )
 
       RETURN
- 
+
 !  End of EQP_resolve_main
 
       END SUBROUTINE EQP_resolve_main
@@ -2407,7 +2435,7 @@
 !  Dummy arguments
 
       TYPE ( EQP_data_type ), INTENT( INOUT ) :: data
-      TYPE ( EQP_control_type ), INTENT( IN ) :: control        
+      TYPE ( EQP_control_type ), INTENT( IN ) :: control
       TYPE ( EQP_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
@@ -2501,7 +2529,7 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
-                                 
+
       array_name = 'eqp: data%A_eqp%val'
       CALL SPACE_dealloc_array( data%A_eqp%val,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &

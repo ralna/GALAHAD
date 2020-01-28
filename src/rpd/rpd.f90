@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.1 - 16/06/2018 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ R P D   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -57,9 +57,8 @@
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SMT_double, ONLY: SMT_put
       USE GALAHAD_QPT_double
-      USE GALAHAD_STRING_double, ONLY: STRING_trim_real_24,                    &
-                                       STRING_trim_integer_16,                 &
-                                       STRING_lower_word
+      USE GALAHAD_STRING, ONLY: STRING_trim_real_24, STRING_trim_integer_16,   &
+                                STRING_lower_word
       USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build, SORT_heapsort_smallest
       USE GALAHAD_LMS_double, ONLY: LMS_data_type, LMS_apply_lbfgs
 

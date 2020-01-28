@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 20/07/2012 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-  G A L A H A D _ F A S T R   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -38,7 +38,7 @@
      USE GALAHAD_EQP_double
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_SPACE_double
-     USE GALAHAD_STRING_double
+     USE GALAHAD_STRING
      USE GALAHAD_FILTER_double
      USE GALAHAD_OPT_double
      USE GALAHAD_NORMS_double, ONLY: TWO_norm, INFINITY_norm

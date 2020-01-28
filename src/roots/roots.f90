@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 21/06/2012 AT 08:15 GMT.
+! THIS VERSION: GALAHAD 3.2 - 09/06/2019 AT 14:10 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ R O O T S   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -1511,7 +1511,6 @@
 ! dmax  Maximum distance to a root in the group
 ! dist  Distance from root I to root K
 ! dmin  Minimum distance to a root not in the group
-! 1.1**M  1.05**(1./N )
 ! i     Index of root under test
 ! ig1   First root of the group
 ! l     Nearset root not in the group
@@ -1529,8 +1528,7 @@
 ! r     Real(r)
 ! s     Abs(r)+RAD
 ! tb    top/btm
-! top   Numerator of the expression (3.9 ) of the report R 7986
-!          polynomial
+! top   Numerator of the expression (3.9) of the report R 7986 polynomial
 
         INTEGER :: i, ig1, ii, j, k, l, loop, loopb, loopr, m
         REAL ( KIND = wp ) :: btm, dist, dmax, dmin, fact, oldr, prod, rad
@@ -1753,9 +1751,9 @@
       INTEGER :: i, im1, im2, ip1, j, n, nm1, nm2, nonzero, roots_in_int
       INTEGER :: ii, it, i_zero, lwork, nroots, n_roots_a, n_roots_b, nn, np1
       INTEGER :: var_low, var_up, var_z
-      REAL ( KIND = wp ) :: low, up, z, p_z, q_0, q_1
-      REAL ( KIND = wp ) :: f_low, f_up, df_low, df_up, dp_z, teeny
-      REAL ( KIND = wp ) :: c_max, root1, root2, root3
+      REAL ( KIND = wp ) :: smallest_root_in_interval, z, p_z, dp_z, teeny
+      REAL ( KIND = wp ) :: low, up, f_low, f_up, df_low, df_up
+      REAL ( KIND = wp ) :: c_max, root1, root2, root3, q_0, q_1
       LOGICAL :: debug
       LOGICAL, PARAMETER :: get_roots_ab = .FALSE.
       CHARACTER ( LEN = 80 ) :: array_name
@@ -1764,6 +1762,7 @@
 !     REAL ( KIND = wp ) :: growth = ten ** 8
 
       inform%status = 0
+      ROOTS_smallest_root_in_interval = zero
 !     debug = .TRUE.
       debug = control%out > 0 .AND. control%print_level > 0
 
@@ -1793,7 +1792,7 @@
 !  polynomials of degree 0
 
       CASE ( : 0 )
-        ROOTS_smallest_root_in_interval = b
+        smallest_root_in_interval = b
         IF ( debug ) write( control%out, 2000 ) b
 
 !  linear polynomials
@@ -1801,10 +1800,10 @@
       CASE ( 1 )
         root1 = - C( i_zero ) / C( i_zero + 1 )
         IF ( root1 > a .AND. root1 <= b ) THEN
-          ROOTS_smallest_root_in_interval = root1
+          smallest_root_in_interval = root1
         ELSE
           IF ( debug ) write( control%out, 2000 ) b
-          ROOTS_smallest_root_in_interval = b
+          smallest_root_in_interval = b
         END IF
 
 !  quadratic polynomials
@@ -1814,16 +1813,16 @@
                               control%tol, nroots, root1, root2, debug )
         IF ( nroots == 2 ) THEN
           IF ( root1 > a .AND. root1 <= b ) THEN
-            ROOTS_smallest_root_in_interval = root1
+            smallest_root_in_interval = root1
           ELSE IF ( root2 > a .AND. root2 <= b ) THEN
-            ROOTS_smallest_root_in_interval = root2
+            smallest_root_in_interval = root2
           ELSE
             IF ( debug ) write( control%out, 2000 ) b
-            ROOTS_smallest_root_in_interval = b
+            smallest_root_in_interval = b
           END IF
         ELSE
           IF ( debug ) write( control%out, 2000 ) b
-          ROOTS_smallest_root_in_interval = b
+          smallest_root_in_interval = b
         END IF
 
 !  cubic polynomials
@@ -1834,21 +1833,21 @@
                           nroots, root1, root2, root3, debug )
         IF ( nroots == 3 ) THEN
           IF ( root1 > a .AND. root1 <= b ) THEN
-            ROOTS_smallest_root_in_interval = root1
+            smallest_root_in_interval = root1
           ELSE IF ( root2 > a .AND. root2 <= b ) THEN
-            ROOTS_smallest_root_in_interval = root2
+            smallest_root_in_interval = root2
           ELSE IF ( root3 > a .AND. root3 <= b ) THEN
-            ROOTS_smallest_root_in_interval = root3
+            smallest_root_in_interval = root3
           ELSE
             IF ( debug ) write( control%out, 2000 ) b
-            ROOTS_smallest_root_in_interval = b
+            smallest_root_in_interval = b
           END IF
        ELSE
          IF ( root1 > a .AND. root1 <= b ) THEN
-           ROOTS_smallest_root_in_interval = root1
+           smallest_root_in_interval = root1
          ELSE
            IF ( debug ) write( control%out, 2000 ) b
-           ROOTS_smallest_root_in_interval = b
+           smallest_root_in_interval = b
          END IF
        END IF
 
@@ -1871,7 +1870,7 @@
           IF ( inform%status /= GALAHAD_ok ) RETURN
 
           array_name = 'roots: data%RHS'
-          CALL SPACE_resize_array( np1, 1, data%RHS,                         &
+          CALL SPACE_resize_array( np1, 1, data%RHS,                           &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -2065,15 +2064,15 @@
 
 !  extract the smallest real root in the desired interval
 
-            ROOTS_smallest_root_in_interval = b
+            smallest_root_in_interval = b
             DO j = 1, n
               IF ( AIMAG( data%CROOTS( j ) ) == zero .AND.                     &
                    REAL( data%CROOTS( j ) ) > a )                              &
-                ROOTS_smallest_root_in_interval = MIN(                         &
+                smallest_root_in_interval = MIN(                               &
                   REAL( data%CROOTS( j ), KIND = wp ),                         &
-                  ROOTS_smallest_root_in_interval )
+                  smallest_root_in_interval )
             END DO
-            RETURN
+            GO TO 990
           END IF
 
 !  compute the coefficients of the linear factor q(x)
@@ -2256,14 +2255,14 @@
             roots_in_int = var_low - var_z
             IF ( roots_in_int == 0 ) THEN
 !write(6,*) up, f_up
-              ROOTS_smallest_root_in_interval = b
+              smallest_root_in_interval = b
               IF ( debug ) write( control%out, 2000 ) b
-              RETURN
+              GO TO 990
 
 !  if the only roots are at the interval ends, exit
 
 !           ELSE IF ( roots_in_int == n_roots_a + n_roots_b ) THEN
-!             ROOTS_smallest_root_in_interval = b
+!             smallest_root_in_interval = b
 !             IF ( debug ) write( control%out, 2000 ) b
 !             RETURN
 
@@ -2332,12 +2331,12 @@
         IF ( debug ) write( control%out,*) ' phase 2'
         DO it = 1, itmax
           IF ( ABS( f_low ) < control%zero_f ) THEN
-            ROOTS_smallest_root_in_interval = low
+            smallest_root_in_interval = low
             EXIT
           ELSE IF ( ABS( f_up ) < control%zero_f ) THEN
             z = MAX( up * ( one - control%tol ), half * ( low  + up ) )
           ELSE
-!           ROOTS_smallest_root_in_interval = up
+!           smallest_root_in_interval = up
 !           EXIT
 
 !  compute the Newton step from the currrent best point
@@ -2375,7 +2374,7 @@
             low, up
           IF ( debug ) write( control%out, "( ' z, p_z, dp_z ', 3ES24.16 )" )  &
             z, p_z, dp_z
-          ROOTS_smallest_root_in_interval = z
+          smallest_root_in_interval = z
 
 !  refine the interval
 
@@ -2397,14 +2396,15 @@
 !  check that the step makes progress
 
           IF ( ABS( up - low ) <= control%tol ) THEN
-            ROOTS_smallest_root_in_interval = low
+            smallest_root_in_interval = low
             EXIT
           END IF
-
-
         END DO
       END SELECT
 
+  990 CONTINUE
+!write(6,*) ' 990 out', smallest_root_in_interval
+      ROOTS_smallest_root_in_interval = smallest_root_in_interval
       RETURN
 
 !  non-executable statements
@@ -2551,4 +2551,3 @@
 !  End of module ROOTS
 
    END MODULE GALAHAD_ROOTS_double
-

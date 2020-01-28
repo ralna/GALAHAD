@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 15/10/2014 AT 13:20 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ Q P B   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -34,7 +34,7 @@
       USE GALAHAD_NORMS_double
       USE GALAHAD_SPACE_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_STRING_double, ONLY: STRING_pleural, STRING_ies, STRING_are
+      USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_ies, STRING_are
       USE GALAHAD_QPT_double
       USE GALAHAD_QPP_double
       USE GALAHAD_QPD_double, QPB_data_type => QPD_data_type,                  &

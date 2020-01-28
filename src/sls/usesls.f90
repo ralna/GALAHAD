@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 08/02/2013 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E S L S   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -25,7 +25,7 @@
       USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
       USE GALAHAD_SLS_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_STRING_double, ONLY: STRING_upper_word
+      USE GALAHAD_STRING, ONLY: STRING_upper_word
       USE GALAHAD_COPYRIGHT
       USE GALAHAD_SYMBOLS,                                                     &
             GENERAL => GALAHAD_GENERAL, ALL_ZEROS => GALAHAD_ALL_ZEROS

@@ -1218,6 +1218,7 @@
 !  Compute addition to off-diagonal 1-norm
 
        addon = maxdag * machep ** 0.75
+!      addon = maxdag * machep ** 0.33333
 
 !  Move sorted matrix to the end of the arrays
 

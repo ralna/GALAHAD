@@ -229,7 +229,8 @@ In order to get GALAHAD working, here is what you need to do.
 
      HWLOC='un'
 
-   Currently this is done automatically for ifort/icc to avoid a compiler bug
+   Currently this is done automatically for ifort/icc and
+   gfortran/gcc to avoid compiler bugs
 
 12. For Windows systems that use MSYS/MINGW, you will also need to set the
    environment variable MSYS2 to point to the folder that contains the

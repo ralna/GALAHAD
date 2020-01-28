@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 26/06/2013 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ T R A L   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -52,7 +52,7 @@
      USE LANCELOT_CG_double
      USE GALAHAD_SPACE_double
      USE GALAHAD_NORMS_double, ONLY: TWO_NORM, INFINITY_NORM
-     USE GALAHAD_STRING_double, ONLY: STRING_integer_6
+     USE GALAHAD_STRING, ONLY: STRING_integer_6
      USE GALAHAD_MOP_double, ONLY: mop_Ax
 !    USE SPDSOL
 !    USE HSL_MI13

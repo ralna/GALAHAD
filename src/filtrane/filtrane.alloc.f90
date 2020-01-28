@@ -17,7 +17,7 @@
 !   originally released with GALAHAD Version 1.4. June  9th 2003
 !   update released with GALAHAD Version 2.0. May 2nd 2006
 !
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 !
 !              **************************************************
@@ -45,19 +45,19 @@
 !  This module implements a combined filter and trust-region algorithm.
 !  The filter is used as a tool for potentially accepting new iterates that
 !  would otherwise be rejected by the more restrictive monotone trust-region
-!  algorithm. The main original feature of the method is that it uses a 
-!  multi-dimensional sign unrestricted filter combined with prefiltering 
+!  algorithm. The main original feature of the method is that it uses a
+!  multi-dimensional sign unrestricted filter combined with prefiltering
 !  techniques.
 !
 !  The method is described in
 !
-!  N. I. M. Gould, S. Leyffer and Ph. L. Toint, 
+!  N. I. M. Gould, S. Leyffer and Ph. L. Toint,
 !  "A Filter Algorithm for Nonlinear Equations and Nonlinear Least-Squares",
 !  SIAM J. Optimization 15(1) 17-38 (2005)
 !
 !  and, in more details, in
 !
-!  N. I. M. Gould and Ph. L. Toint, 
+!  N. I. M. Gould and Ph. L. Toint,
 !  "FILTRANE, a Fortran 95 filter-trust-region package for solving nonlinear
 !  feasibility problems",
 !  Technical Report 03/17, Department of Mathematics, University of Namur,
@@ -66,14 +66,14 @@
 !-------------------------------------------------------------------------------
 !
 !              T h e   F I L T R A N E   r o u t i n e s
-! 
+!
 !-------------------------------------------------------------------------------
 !
 !  The package consists in 4 routines:
 !
 !  FILTRANE_initialize :
 !
-!      assigns default values to the internal data type that controls the 
+!      assigns default values to the internal data type that controls the
 !      algorithmic options of FILTRANE ( the control type described below)
 !      and also initializes some global variables.
 !
@@ -82,7 +82,7 @@
 !      reads the specification file (see below), and possibly alters the
 !      value of some algorithmic parameters.
 !
-!  FILTRANE_solve : 
+!  FILTRANE_solve :
 !
 !      performs the effective numerical problem treatment by applying a
 !      combined filter and trust-region method.
@@ -102,10 +102,10 @@
 !-------------------------------------------------------------------------------
 !
 !              T h e   s p e c i f i c a t i o n   f i l e
-! 
+!
 !-------------------------------------------------------------------------------
 !
-!  Like most algorithmic packages, FILTRANE features a number of "control 
+!  Like most algorithmic packages, FILTRANE features a number of "control
 !  parameters", that is of parameters that condition the various algorithmic,
 !  printing and other options of the package (They are documented in detail
 !  with the FILTRANE_control type below). While the value of these parameters
@@ -114,22 +114,22 @@
 !  recompiling the code.  This is achieved by specifying the desired values
 !  for the control parameters in a "specification file" (specfile).
 !
-!  A specification file consists of a number of "specification commands", 
-!  each of these being decomposed into 
+!  A specification file consists of a number of "specification commands",
+!  each of these being decomposed into
 !  - a "keyword", which is a string (in a close-to-natural language) that will
 !    be used to identify a control parameter in the specfile, and
 !  - an (optional) "value", which is the value to be attributed to the
 !    said control parameter.
 !
 !  A specific algorithmic "control parameter" is associated to each such
-!  keyword, and the effect of interpreting the specification file is to assign 
-!  the value associated with the keyword (in each specification command) to 
-!  the corresponding algorithmic parameter. The specification file starts with 
-!  a "BEGIN FILTRANE SPECIFICATIONS" command and ends with an 
+!  keyword, and the effect of interpreting the specification file is to assign
+!  the value associated with the keyword (in each specification command) to
+!  the corresponding algorithmic parameter. The specification file starts with
+!  a "BEGIN FILTRANE SPECIFICATIONS" command and ends with an
 !  "END FILTRANE SPECIFICATIONS" command.  The syntax of the specfile is
 !  defined as follows:
 !
-!      BEGIN FILTRANE SPECIFICATIONS 
+!      BEGIN FILTRANE SPECIFICATIONS
 !         printout-device                            (integer)
 !         error-printout-device                      (integer)
 !         print-level                    SILENT|TRACE|ACTION|DETAILS|DEBUG|CRAZY
@@ -179,16 +179,16 @@
 !      END FILTRANE SPECIFICATIONS
 !
 !  where the | symbols means "or".  Thus print-level may take the values
-!  SILENT or TRACE or ACTION or DETAILS or DEBUG or CRAZY, where the upper 
-!  case words are symbols that are recognized by FILTRANE. Empty values are 
+!  SILENT or TRACE or ACTION or DETAILS or DEBUG or CRAZY, where the upper
+!  case words are symbols that are recognized by FILTRANE. Empty values are
 !  acceptable for logical switches, that is switches with ON|OFF|TRUE|FALSE|T|F
-!  values, and are interpreted in the same manner as "ON", "TRUE" ot "T". 
+!  values, and are interpreted in the same manner as "ON", "TRUE" ot "T".
 !  Note that the specification commands are case insensitive.
-!  
+!
 !  Furthermore, the specification command lines (between the BEGIN and
 !  END delimiters) may be specified in any order. Blank lines and lines whose
 !  first non-blank character is ! are ignored. The content of a line
-!  after a ! or a * character is also ignored (as is the ! or * character 
+!  after a ! or a * character is also ignored (as is the ! or * character
 !  itself). This provides an easy manner to "comment off" some specification
 !  commands or to add comments associated to specific values of certain control
 !  parameters.
@@ -196,34 +196,34 @@
 !  The specification file must be open for input when FILTRANE_read_specfile
 !  is called. Note that the corresponding file is first REWINDed, which make
 !  it possible to combine it with other specifications associated with other
-!  algorithms used in conjunction with FILTRANE. For the same reason, the 
+!  algorithms used in conjunction with FILTRANE. For the same reason, the
 !  specification file is not closed by FILTRANE.
 !
 !-------------------------------------------------------------------------------
 !
 !   T h e   i n t e r f a c e   w i t h   t h e   p r o b l e m ' s   d a t a
-! 
+!
 !-------------------------------------------------------------------------------
 !
 !-------------------------------------------------------------------------------
 !                               INPUT
 !-------------------------------------------------------------------------------
 !
-!  The algorithm used in FILTRANE_solve requires the user to provide 
-!  information about the problem using the NLPT_problem_type, as described in 
-!  the NLPT module. 
+!  The algorithm used in FILTRANE_solve requires the user to provide
+!  information about the problem using the NLPT_problem_type, as described in
+!  the NLPT module.
 !
 !  IN ALL CASES,
-!  ------------- 
+!  -------------
 !
-!  the following components of this data structure should be set to 
+!  the following components of this data structure should be set to
 !  approriate values on first input in FILTRANE_solve:
 !
 !  - problem%n                       [INTEGER, INTENT( IN )]:
 !         the number of variables in the problem,
-!  - problem%m                       [INTEGER, INTENT( IN )]: 
+!  - problem%m                       [INTEGER, INTENT( IN )]:
 !         the number of constraints in the problem,
-!  - problem%x( 1:problem%n )        [REAL( KIND = wp ), INTENT( INOUT )]: 
+!  - problem%x( 1:problem%n )        [REAL( KIND = wp ), INTENT( INOUT )]:
 !         the values of the variables a the starting point.
 !
 !  In addition, the vector
@@ -231,7 +231,7 @@
 !  - problem%g( 1:problem%n )
 !
 !  should be allocated (it needs not being assigned a value). It is
-!  used as workspace by the package. 
+!  used as workspace by the package.
 !
 ! WHEN BOUNDS ON THE VARIABLES ARE PRESENT,
 ! -----------------------------------------
@@ -239,17 +239,17 @@
 ! the following components should be also set to approriate values on first
 ! input in FILTRANE_solve:
 !
-!  - problem%x_l( 1:problem%n)       [REAL( KIND = wp ), INTENT( IN )]: 
+!  - problem%x_l( 1:problem%n)       [REAL( KIND = wp ), INTENT( IN )]:
 !         the vector of lower bounds on the problem's variables,
 !  - problem%x_u( 1:problem%n )      [REAL( KIND = wp ), INTENT( IN )]:
 !         the vector of upper bounds on the problem's variables.
 !
 !  In addition, the vector
 !
-!  - problem%x_status( 1:problem%n ) 
+!  - problem%x_status( 1:problem%n )
 !
 !  should be allocated (it needs not being assigned a value). It is
-!  used as workspace by the package. 
+!  used as workspace by the package.
 !
 ! WHEN CONSTRAINTS ARE PRESENT (problem%m > 0),
 ! ---------------------------------------------
@@ -257,25 +257,25 @@
 ! the following components should be also set to approriate values on first
 ! input in FILTRANE_solve:
 !
-!  - problem%c_l( 1:problem%m )      [REAL( KIND = wp ), INTENT( IN )]: 
+!  - problem%c_l( 1:problem%m )      [REAL( KIND = wp ), INTENT( IN )]:
 !         the vector of lower bounds on the problem's constriants,
-!  - problem%c_u( 1:problem%m )      [REAL( KIND = wp ), INTENT( IN )]: 
+!  - problem%c_u( 1:problem%m )      [REAL( KIND = wp ), INTENT( IN )]:
 !         the vector of upper bounds on the problem's constraints.
 !
 !  In addition, the vectors
 !
-!  - problem%c( 1:problem%m ) 
+!  - problem%c( 1:problem%m )
 !  - problem%y( 1:problem%m )
-!  - problem%equation( 1:problem%m ) 
+!  - problem%equation( 1:problem%m )
 !
 !  should be allocated (they need not being assigned a value). These are
-!  used as workspace by the package. 
+!  used as workspace by the package.
 !
 ! *** NOTE *** THE PROBLEM ONLY MAKES SENSE IF BOUNDS OR CONSTRAINTS (OR BOTH)
 !              ARE PRESENT IN THE PROBLEM!
 !
 ! WHEN EXTERNAL JACOBIAN PRODUCTS ARE NOT REQUIRED (the default),
-! --------------------------------------------------------------- 
+! ---------------------------------------------------------------
 !
 ! the following components should be also set to approriate values on first
 ! input in FILTRANE_solve:
@@ -291,34 +291,34 @@
 !  - problem%J_val( 1:problem%Jsize+problem%n )
 !  - problem%J_col( 1:problem%Jsize+problem%n )
 !  - problem%J_row( 1:problem%Jsize+problem%n )
-! 
+!
 !  should be allocated (they need not being assigned a value). These are
-!  used as workspace by the package. 
+!  used as workspace by the package.
 !
 !-------------------------------------------------------------------------------
 !                         DURING EXECUTION
 !-------------------------------------------------------------------------------
 !
 !  The package uses a reverse communication interface.  This means that
-!  control is passed back to the user, with an indication of the task 
-!  required and the values of the necessary arguments; the package should 
-!  then be called again after the desired computations have been performed. 
-!  These indications as well as the description of the arguments and results 
+!  control is passed back to the user, with an indication of the task
+!  required and the values of the necessary arguments; the package should
+!  then be called again after the desired computations have been performed.
+!  These indications as well as the description of the arguments and results
 !  are fully detailed in the description of the inform%status below.
 !
-!  In particular, FILTRANE_solve requires, at each iteration, the computation, 
-!  for a given x, of 
+!  In particular, FILTRANE_solve requires, at each iteration, the computation,
+!  for a given x, of
 !
-!  - new constraint values, 
+!  - new constraint values,
 !  - (possibly) Jacobian values, or product of the Jacobian (or its transpose)
 !    with given vectors,
 !  - (possibly) the product
 !
 !       H(x,y) * w     where    H(x,y) = SUM y_i \nabla_{xx} c_i(x)
 !
-!    (for given values of y) whenever the AUTOMATIC model choice is 
+!    (for given values of y) whenever the AUTOMATIC model choice is
 !    selected (this is the default) or the NEWTON type model is selected,
-!  - (when a user-defined preconditioner is requested) the multiplication of 
+!  - (when a user-defined preconditioner is requested) the multiplication of
 !    a given vector with a preconditioner for the matrix J^T(x) J(x),
 !    where J(x) is the Jacobian of the constraints at x.
 !
@@ -336,9 +336,9 @@
 !  - problem%g : the gradient of the merit function at the solution found;
 !  - problem%J_val : the values of the nonzero entries of the constraints'
 !                Jacobian at the solution found,
-!  - problem%J_row : the row indices of the nonzero entries of the 
+!  - problem%J_row : the row indices of the nonzero entries of the
 !                constraints' Jacobian at the solution found,
-!  - problem%J_col : the column indices of the nonzero entries of the 
+!  - problem%J_col : the column indices of the nonzero entries of the
 !                constraints' Jacobian at the solution found,
 !
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -359,11 +359,11 @@
 
       USE GALAHAD_NORMS_double    ! norm functions
 
-      USE GALAHAD_TOOLS_double    ! the GALAHAD toolbox
+      USE GALAHAD_TOOLS           ! the GALAHAD toolbox
 
       USE GALAHAD_SORT_double     ! the sorting procedures
 
-      USE GALAHAD_GLTR_double     ! the GLTR truncated CG procedure   
+      USE GALAHAD_GLTR_double     ! the GLTR truncated CG procedure
 
       USE GALAHAD_COPYRIGHT       ! copyright statement
 
@@ -444,7 +444,7 @@
           BEST_REDUCTION              => GALAHAD_BEST_REDUCTION
 
 !-------------------------------------------------------------------------------
-!   A c c e s s 
+!   A c c e s s
 !-------------------------------------------------------------------------------
 
       IMPLICIT NONE
@@ -462,7 +462,7 @@
                  ADAPTIVE, FULL, COULD_NOT_WRITE,                              &
                  WRONG_N, WRONG_M, LOWER, UPPER, FREE, RANGE, CURRENT,         &
                  SMALLEST, BEST_FIT, BEST_REDUCTION, FILE_NOT_OPENED
-                 
+
 
 !     Make the FILTRANE calls public
 
@@ -506,8 +506,8 @@
 
          REAL ( KIND = wp ) :: g_accuracy       ! INTENT( IN )
 
-!                   Successful termination occurs if the (possibly 
-!                   preconditioned) Euclidean norm of the merit function 
+!                   Successful termination occurs if the (possibly
+!                   preconditioned) Euclidean norm of the merit function
 !                   is smaller that sqrt(n) times this parameter.
 !                   Default: 10.**(-6) in double precision,
 !                            10.**(-4) in single precision.
@@ -543,7 +543,7 @@
 
          INTEGER :: grouping          ! INTENT( IN )
 
-!                   The type of equations/inequalities/bounds groups required 
+!                   The type of equations/inequalities/bounds groups required
 !                   for the FILTRANE algorithm. Valid values are:
 !                   - NONE         : each equation is considered individually,
 !                   - AUTOMATIC    : use the automatic grouping strategy
@@ -557,7 +557,7 @@
 !                   If AUTOMATIC grouping is used:
 !                      If positive, the smallest between this value and the
 !                      problem's number of variables is used as the number of
-!                      groups. If negative, this number of groups is set to 
+!                      groups. If negative, this number of groups is set to
 !                      the number of items divided by the absolute value of the
 !                      parameter.
 !                      Default: 10
@@ -568,9 +568,9 @@
 
          INTEGER, ALLOCATABLE, DIMENSION( : ) :: group   ! INTENT( IN )
 
-!                   group( i ) contains the index of the group to which 
+!                   group( i ) contains the index of the group to which
 !                   the i-th constrained item is assigned. A constrained
-!                   item is either one constraint (equality or inequality) 
+!                   item is either one constraint (equality or inequality)
 !                   or a variable which is lower/upper/range bounded.
 !                   The groups of the equalities and inequalities
 !                   are specified in components 1 to problem%m of group.
@@ -586,8 +586,8 @@
 
 !                   .TRUE. if the constraints values (at the initial point)
 !                   must be sorted before they are distributed into groups.
-!                   This has the effect of approximately balancing the 
-!                   constraint violations (at the initial point) between 
+!                   This has the effect of approximately balancing the
+!                   constraint violations (at the initial point) between
 !                   the groups. It is only relevant if control%grouping
 !                   is set to AUTOMATIC.
 !                   Default: .FALSE.
@@ -686,7 +686,7 @@
 
          INTEGER :: inequality_penalty_type
 
-!                   Defines the type of penalty function to apply on the 
+!                   Defines the type of penalty function to apply on the
 !                   inequalities:
 !                   2 : the L2 penalty function,
 !                   3 : the L3 penalty function,
@@ -698,12 +698,12 @@
 !                   The type of accuracy required in the solution of the
 !                   linear subproblem.  Possibles values are:
 !                   - ADAPTIVE : the residual norm at the trial point should be
-!                                at most 
+!                                at most
 !
-!                                 MIN( control%min_gltr_accuracy, 
+!                                 MIN( control%min_gltr_accuracy,
 !                                      ||r0||**gltr_accuracy_power   ),
 !
-!                                where ||r0|| is the norm of the residual at 
+!                                where ||r0|| is the norm of the residual at
 !                                the beginning of the subproblem computation;
 !                   - FULL     : the residual norm at the trial point should be
 !                                at most one hundred times machine precision.
@@ -720,17 +720,17 @@
 
 !                   The power at which the gradient norm must be raised in
 !                   the stopping rule for GLTR with adaptive accuracy. It must
-!                   be positive. Note that this power does not include the 
-!                   gradient norm used to make the test relative, so that 
-!                   choosing gltr_accuracy_power = 0 results in a requested 
-!                   decrease of the residual norm by min_gltr_accuracy. 
+!                   be positive. Note that this power does not include the
+!                   gradient norm used to make the test relative, so that
+!                   choosing gltr_accuracy_power = 0 results in a requested
+!                   decrease of the residual norm by min_gltr_accuracy.
 !                   Default: 1.0
 
          REAL ( KIND = wp ) :: initial_radius   ! INTENT( IN )
 
 !                   The initial trust-region radius. Note that this value is
-!                   not used to limit the length of the first step if 
-!                   control%use_filter = .TRUE. 
+!                   not used to limit the length of the first step if
+!                   control%use_filter = .TRUE.
 !                   Default: 1.0
 
          REAL( KIND = wp )  :: min_weak_accept_factor  ! INTENT( IN )
@@ -739,8 +739,8 @@
 !                   for the weak acceptance test, i.e. in the test
 !                   that declares the trial point acceptable iff the decrease in
 !                   constraint violation is larger that min_weak_accept_factor
-!                   times the power weak_accept_power of this violation.  
-!                   This test is set to allow more iterates to be accepted, 
+!                   times the power weak_accept_power of this violation.
+!                   This test is set to allow more iterates to be accepted,
 !                   at the risk of slower convergence. It is only relevant
 !                   if weak_accept_power >= 0, in which case it must be
 !                   strictly positive.
@@ -752,10 +752,10 @@
 !                   raised for the weak acceptance test, i.e. in the test
 !                   that declares the trial point acceptable iff the decrease in
 !                   constraint violation is larger that min_weak_accept_factor
-!                   times the power weak_accept_power of this violation.  
-!                   This test is set to allow more iterates to be accepted, 
+!                   times the power weak_accept_power of this violation.
+!                   This test is set to allow more iterates to be accepted,
 !                   at the risk of slower convergence. If weak_accept_power < 0,
-!                   then the trial point is always declared unacceptable 
+!                   then the trial point is always declared unacceptable
 !                   for this test.
 !                   Default: -1.0
 
@@ -774,7 +774,7 @@
 
          REAL( KIND = wp ) :: gamma_0          ! INTENT( IN )
 
-!                   The strongest factor by which the trust-region radius 
+!                   The strongest factor by which the trust-region radius
 !                   is decreased when the iteration is very unsuccessful.
 !                   Default: 0.0625
 
@@ -805,9 +805,9 @@
 
 !                   .TRUE. if the filter is constructed by looking at the
 !                   absolute value of the constraint/bound violations,
-!                   .FALSE. if the violation have to be considered with their 
-!                   sign. Note that each group containing more than a single 
-!                   constraint/inequality/bound is always considered in 
+!                   .FALSE. if the violation have to be considered with their
+!                   sign. Note that each group containing more than a single
+!                   constraint/inequality/bound is always considered in
 !                   absolute value.
 !                   Default: .FALSE.
 
@@ -849,7 +849,7 @@
 
          REAL ( KIND = wp ) :: gamma_f
 
-!                   The filter margin is defined as the minimum between this 
+!                   The filter margin is defined as the minimum between this
 !                   constant and 1/(2 * sqrt( p ) ).
 !                   Default: 0.001
 
@@ -884,12 +884,12 @@
 !                   The frequency (expressed in number of iterations) at which
 !                   problem%x and problem%c are saved on a checkpointing
 !                   file for a possible package restart. It must be
-!                   non-negative. 
+!                   non-negative.
 !                   Default: 0 (no checkpointing)
 
          CHARACTER( LEN = 30 ) :: checkpoint_file ! INTENT( IN )
 
-!                   The name of the file use for storing checkpointing 
+!                   The name of the file use for storing checkpointing
 !                   information on disk.
 !                   Default: FILTRANE.sav
 
@@ -936,7 +936,7 @@
 !         equations-grouping                           NONE
 !         number-of-groups                             10
 !         balance-initial-group-values                 NO
-!         use-filter                                   ALWAYS 
+!         use-filter                                   ALWAYS
 !         filter-sign-restriction                      NO
 !         maximum-filter-size                          1000
 !         filter-size-increment                        50
@@ -976,8 +976,8 @@
 !                        initial entry and successful exit;
 !
 !                    1 (GET_C_AND_J_0)
-! 
-!                       FILTRANE_solve requires the user to compute 
+!
+!                       FILTRANE_solve requires the user to compute
 !                       the values, at the point problem%x, of
 !                       - the constraint functions (in problem%c),
 !                       - the nonzero entries of their Jacobian matrix
@@ -986,18 +986,18 @@
 !                         (in problem%J_col),
 !                       - the row indices of these entries
 !                         (in problem%J_row);
-!                       No other argument of FILTRANE may be modified 
+!                       No other argument of FILTRANE may be modified
 !                       before FILTRANE_solve is called again.
 !                       This is only used at the initial (starting) point.
 !
 !                    2  (GET_C_AND_J_F)
 !
-!                       FILTRANE_solve requires the user to compute 
+!                       FILTRANE_solve requires the user to compute
 !                       the values, at the point problem%x, of
 !                       - the constraint functions (in problem%c),
 !                       - the nonzero entries of their Jacobian matrix
 !                         (in problem%J_val),
-!                       No other argument of FILTRANE may be modified 
+!                       No other argument of FILTRANE may be modified
 !                       before FILTRANE_solve is called again.
 !
 !                    3, 4 and 5 (GET_C_0, GET_C and GET_C_F)
@@ -1012,9 +1012,9 @@
 !
 !                       FILTRANE_solve requires the user to compute the
 !                       values of the entries of the constraints Jacobian
-!                       matrix at the current point (problem%x). The result 
+!                       matrix at the current point (problem%x). The result
 !                       is to be set in the vector problem%J_val
-!                       No other argument of FILTRANE may be modified before 
+!                       No other argument of FILTRANE may be modified before
 !                       FILTRANE_solve is called again. This is only used when
 !                       extrenal Jacobian products are NOT resqueted (the
 !                       default)
@@ -1028,9 +1028,9 @@
 !                       where J(problem%x) is the Jacobian of the constraints
 !                       evaluated at the current point problem%x.
 !                       This is only used if external Jacobian products are
-!                       specifically requested (this is not the default). 
-!                       Note that only the vector targeted by s%RC_Mv may 
-!                       be modified by the user before  FILTRANE_solve is 
+!                       specifically requested (this is not the default).
+!                       Note that only the vector targeted by s%RC_Mv may
+!                       be modified by the user before  FILTRANE_solve is
 !                       re-entered.
 !
 !                   8, 9, 10 and 11 (GET_JTC_0, GET_JTV, GET_JTC_A, GET_JTC_F)
@@ -1044,16 +1044,16 @@
 !                       This is only used if external Jacobian products are
 !                       specifically requested (this is not the default).
 !                       Note that only the vector targeted by s%RC_Mv may be
-!                       modified by the user before FILTRANE_solve is 
+!                       modified by the user before FILTRANE_solve is
 !                       re-entered.
 !
 !                   12, 13 and 14 (GET_PREC_G_0, GET_PREC and GET_PREC_G_A)
 !
 !                       FILTRANE requires the user to apply thus user-defined
-!                       preconditioner for the model's Hessian matrix to the 
+!                       preconditioner for the model's Hessian matrix to the
 !                       vector specified by s%RC_Pv and return the result in
 !                       the same vector s%RC_Pv. Note that only the vector
-!                       targeted by s%RC_Pv may be modified by the user before 
+!                       targeted by s%RC_Pv may be modified by the user before
 !                       FILTRANE_solve is re-entered.
 !                       This case only occurs if the USER_DEFINED preconditioner
 !                       has been selected. It is most useful when there are no
@@ -1064,8 +1064,8 @@
 !                   15 and 16 (GET_MP1 and GET_MP2)
 !
 !                       FILTRANE_solve requires the user to compute the
-!                       product 
-!    
+!                       product
+!
 !                           s%RC_Mv = ( H( problem%x, problem%y ) ) * s%RC_v
 !
 !                       where, as above, the matrix H(x,y) is defined by
@@ -1078,18 +1078,18 @@
 !                       has the value .TRUE. iff the current product request is
 !                       the first that involves the Hessians of the constraints
 !                       at problem%x. Note that only the vector targeted by
-!                       s%RC_Mv may be modified by the user before 
+!                       s%RC_Mv may be modified by the user before
 !                       FILTRANE_solve is re-entered.
 !
 !                   -1 (MEMORY_FULL)
 !
 !                        memory allocation failed;
 !
-!                   -2 (FILE_NOT_OPENED)      : 
+!                   -2 (FILE_NOT_OPENED)      :
 !
 !                        the checkpointing file could not be opened;
 !
-!                   -3 (COULD_NOT_WRITE)      : 
+!                   -3 (COULD_NOT_WRITE)      :
 !
 !                        an IO error occurred while saving variables and value
 !                        on the checkpoiting file;
@@ -1129,7 +1129,7 @@
 !                       problem%g, problem%J_val, problem%J_col, problem%J_row
 !                       problem%equation is not allocated on input;
 !
-!                   -24 (SORT_TOO_LONG)        : 
+!                   -24 (SORT_TOO_LONG)        :
 !
 !                        the vectors are too long for the sorting routine;
 !
@@ -1152,7 +1152,7 @@
 !                   -28 (WRONG_USER_GROUP_INDEX)
 !
 !                       the user-supplied group index (for a constraint or a
-!                       bound) is either negative, or exceeds 
+!                       bound) is either negative, or exceeds
 !                       control%nbr_groups;
 !
 !                   -29 (WRONG_STATUS)
@@ -1173,17 +1173,17 @@
 
          INTEGER :: nbr_cg_iterations                     ! INTENT( OUT )
 
-!                   The number of conjugate-gradients iterations used by 
+!                   The number of conjugate-gradients iterations used by
 !                   the minimization algorithm.
 
          INTEGER :: nbr_c_evaluations                     ! INTENT( OUT )
 
-!                   The number of evaluations of the residuals used by 
+!                   The number of evaluations of the residuals used by
 !                   the minimization algorithm.
 
          INTEGER :: nbr_J_evaluations                     ! INTENT( OUT )
 
-!                   The number of evaluations of the Jacobian used by 
+!                   The number of evaluations of the Jacobian used by
 !                   the minimization algorithm.
 
          CHARACTER( LEN = 80 ), DIMENSION( 3 ) :: message  ! INTENT( OUT )
@@ -1228,13 +1228,13 @@
          INTEGER :: next_vote           ! the position of the next vote for a
                                         ! model in the vector s%vote
 
-         INTEGER :: nsemib              ! the requested band preconditioner 
+         INTEGER :: nsemib              ! the requested band preconditioner
                                         ! semi-bandwidth
 
-         INTEGER :: bandw               ! the actual band preconditioner 
+         INTEGER :: bandw               ! the actual band preconditioner
                                         ! semi-bandwidth
 
-         INTEGER :: filter_size         ! the number of theta values in the 
+         INTEGER :: filter_size         ! the number of theta values in the
                                         ! filter
 
          INTEGER :: filter_nbr_inactive ! the number of inactive values in the
@@ -1255,8 +1255,8 @@
                                         ! Possible values: READY, ONGOING,
                                         ! DONE, VOID
 
-         INTEGER :: filter_sign         ! indicates whether groups are 
-                                        ! restricted in sign or not : 
+         INTEGER :: filter_sign         ! indicates whether groups are
+                                        ! restricted in sign or not :
                                         ! (RESTRICTED, UNRESTRICTED, MIXED )
 
          INTEGER :: step_accuracy       ! the subproblem accuracy currently
@@ -1279,7 +1279,7 @@
                                         ! have bounds
 
          LOGICAL :: goth                ! .TRUE. if the Hessians of the
-                                        ! individual constraints have already 
+                                        ! individual constraints have already
                                         ! been calculated at the current iterate
 
          LOGICAL :: restrict            ! .TRUE. iff the next step must lie in
@@ -1355,10 +1355,10 @@
 
          REAL ( KIND = wp ) :: g_norminf! the max norm of the current gradient
 
-         REAL ( KIND = wp ) :: g_norminf_u ! the max norm of the current 
+         REAL ( KIND = wp ) :: g_norminf_u ! the max norm of the current
                                         ! unpreconditioned gradient
 
-         REAL ( KIND = wp ) :: g_norm2  ! the Euclidean norm of the current 
+         REAL ( KIND = wp ) :: g_norm2  ! the Euclidean norm of the current
                                         ! gradient
 
          REAL ( KIND = wp ) :: extent   ! the current trust-region relaxation
@@ -1366,7 +1366,7 @@
 
          REAL ( KIND = wp ) :: gltr_radius ! the current radius used for
                                         ! computing the TR step with GLTR
-         
+
          CHARACTER( LEN = 4 ) :: it_status ! a string reflecting the nature of
                                         ! the current iteration
 
@@ -1382,7 +1382,7 @@
 !        The value of the controls at the previous call
 !        ----------------------------------------------
 
-         TYPE ( FILTRANE_control_type ) :: prev_control ! the value of control 
+         TYPE ( FILTRANE_control_type ) :: prev_control ! the value of control
                                         ! for the previous execution of FILTRANE
 
 !        ---------------------------------------------
@@ -1393,7 +1393,7 @@
                                         ! the group to which c_i belongs.
                                         ! It points either s%aut_group (when
                                         ! AUTOMATIC grouping is used) or to
-                                        ! control%group (when USER-DEFINED 
+                                        ! control%group (when USER-DEFINED
                                         ! grouping is used).
 
          INTEGER, ALLOCATABLE, DIMENSION( : ) :: aut_group ! the automatic avatar
@@ -1413,15 +1413,15 @@
                                         ! problem%J_ne
 
          INTEGER, ALLOCATABLE, DIMENSION( : ) :: vote ! the most recent votes for
-                                        ! a model 
+                                        ! a model
 
          INTEGER, ALLOCATABLE, DIMENSION( : ) :: filter_next_1, filter_next_2
                                         ! the position in the
                                         ! filter of the entry which is next by
                                         ! order of increasing norms
 
-         LOGICAL, ALLOCATABLE, DIMENSION( : ) :: active_1, active_2 
-                                        ! tells if values in the filter are 
+         LOGICAL, ALLOCATABLE, DIMENSION( : ) :: active_1, active_2
+                                        ! tells if values in the filter are
                                         ! active
 
          REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: theta ! the vector of
@@ -1429,22 +1429,22 @@
 
          REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: step ! the trial step
 
-         REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: r ! workspace of 
+         REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: r ! workspace of
                                         ! dimension problem%n
 
-         REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: diag ! workspace of 
+         REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: diag ! workspace of
                                         ! dimension problem%n
 
-         REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: t ! workspace of 
+         REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: t ! workspace of
                                         ! dimension MAX( problem%n, problem%m )
 
          REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: u ! workspace of
                                         ! dimension problem%n
 
-         REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: v ! workspace of 
+         REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: v ! workspace of
                                         ! dimension MAX( problem%n, problem%m )
 
-         REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: w ! workspace of 
+         REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: w ! workspace of
                                         ! dimension MAX( problem%n, problem%m )
 
          REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: best_x ! the best point
@@ -1462,12 +1462,12 @@
 
          REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RC_v ! the
                                         ! value of the vector to be
-                                        ! premultiplied by the Hessian of the 
+                                        ! premultiplied by the Hessian of the
                                         ! Lagrangian.
 
          REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RC_Mv ! the value of
                                         ! the result of premultiplying the
-                                        ! vector RC_v by the Hessian of the 
+                                        ! vector RC_v by the Hessian of the
                                         ! Lagrangian.
 
          REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RC_Pv ! the value of
@@ -1486,7 +1486,7 @@
 !
 !-------------------------------------------------------------------------------
 !
-!  NOTE: REALLY DON'T MODIFY WHAT FOLLOWS 
+!  NOTE: REALLY DON'T MODIFY WHAT FOLLOWS
 !        (unless you are absolutely certain that you know what you are doing)!!
 !
 !----------------------
@@ -1514,7 +1514,7 @@
       INTEGER, PRIVATE, PARAMETER :: VOID                         =  0
       INTEGER, PRIVATE, PARAMETER :: READY                        =  1
       INTEGER, PRIVATE, PARAMETER :: DONE                         =  2
-      
+
 !     Return codes
 
       INTEGER, PRIVATE, PARAMETER :: GET_C_AND_J_0                =   1
@@ -1624,7 +1624,7 @@
 !     Printing
 !     NOTE :  if the output device or amount of printing must be modified for
 !             the execution of INITIALIZE, they must be reset in the following
-!             two lines and the module recompiled.  (This is because the 
+!             two lines and the module recompiled.  (This is because the
 !             SPECIFICATIONS file is only read after execution of INITIALIZE.)
 
       s%out   = 6                      !  the default printout device
@@ -1636,10 +1636,10 @@
 
       IF ( s%level >= TRACE ) THEN
          CALL FILTRANE_banner( s%out )
-         IF ( s%level  >= DEBUG ) WRITE( s%out, 1001 ) 
+         IF ( s%level  >= DEBUG ) WRITE( s%out, 1001 )
       END IF
 
-!     Initialize the exit status and the exit message to that corresponding 
+!     Initialize the exit status and the exit message to that corresponding
 !     to a successful exit.
 
       inform%message( 1 ) = ''
@@ -1764,7 +1764,7 @@
              WRITE( s%out, 1017 )
          CASE ( NEWTON )
              WRITE( s%out, 1018 )
-         CASE ( AUTOMATIC ) 
+         CASE ( AUTOMATIC )
              WRITE( s%out, 1019 )
          END SELECT
       END IF
@@ -1830,7 +1830,7 @@
              WRITE( s%out, 1026 )
          CASE ( BANDED )
              WRITE( s%out, 1027 )
-         CASE ( USER_DEFINED ) 
+         CASE ( USER_DEFINED )
              WRITE( s%out, 1028 )
          END SELECT
       END IF
@@ -1866,7 +1866,7 @@
              WRITE( s%out, 1033 )
          END SELECT
       END IF
-     
+
 !     Equations grouping
 
       control%grouping = NONE
@@ -2049,8 +2049,8 @@
       control%checkpoint_freq = 0
       control%checkpoint_file = 'FILTRANE.sav'
       control%checkpoint_dev  = 55
-      s%prev_control%checkpoint_freq = control%checkpoint_freq 
-      s%prev_control%checkpoint_file = control%checkpoint_file 
+      s%prev_control%checkpoint_freq = control%checkpoint_freq
+      s%prev_control%checkpoint_file = control%checkpoint_file
       s%prev_control%checkpoint_dev  = control%checkpoint_dev
       IF ( s%level >= DEBUG ) THEN
          IF ( control%checkpoint_freq == 0 ) THEN
@@ -2226,12 +2226,12 @@
          WRITE( inform%message( 1 ), 1000 ) lspec
          RETURN
       END IF
-      
+
 !     Define the keywords.
 
       spec(  1 )%keyword = 'error-printout-device'
       spec(  2 )%keyword = 'printout-device'
-      spec(  3 )%keyword = 'print-level' 
+      spec(  3 )%keyword = 'print-level'
       spec(  4 )%keyword = 'residual-accuracy'
       spec(  5 )%keyword = 'gradient-accuracy'
       spec(  6 )%keyword = 'maximum-number-of-iterations'
@@ -2466,11 +2466,11 @@
 
 !              the FILTRANE saved information structure (see above)
 
-!     Programming: Ph. Toint, November 2002. 
+!     Programming: Ph. Toint, November 2002.
 
 !==============================================================================
 
-!     Local variables 
+!     Local variables
 
       INTEGER :: iostat, dim, i, k, SORT_exitcode, j, BAND_status,             &
                  n_Newton, n_votes, n_bounded, nxt, ig, n_free,                &
@@ -2572,7 +2572,7 @@
    CASE ( GET_JTV )
       GO TO 450
    CASE ( GET_MP1 )
-      GO TO 500 
+      GO TO 500
    CASE ( GET_MP2 )
       GO TO 550
    CASE ( GET_C )
@@ -2722,10 +2722,10 @@
             END IF
          END DO
          s%has_fixed  = n_fixed > 0
-         n_bounded    = n_lower + n_upper + n_range 
+         n_bounded    = n_lower + n_upper + n_range
          s%has_bounds = n_bounded > 0
       END IF
-         
+
       IF ( .NOT. s%has_bounds .AND. s%level >= ACTION ) WRITE( s%out, 1032 )
 
 !------------------------------------------------------------------------------
@@ -2884,7 +2884,7 @@
             WRITE( inform%message( 1 ), 1048 ) control%nbr_groups
             GO TO 999
          END IF
-         
+
 !        Verify the user-supplied group information.
 
          IF ( .NOT. ALLOCATED( control%group ) ) THEN
@@ -2900,7 +2900,7 @@
                WRITE( inform%message( 1 ), 1050 ) i
                WRITE( inform%message( 2 ), 1051 ) k
                GO TO 999
-            END IF            
+            END IF
          END DO
          nxt  = problem%m
          DO j = 1, problem%n
@@ -2910,10 +2910,10 @@
                k   = control%group( nxt )
                IF ( k <= 0 .OR. k > control%nbr_groups ) THEN
                   inform%status = WRONG_USER_GROUP_INDEX
-                  WRITE( inform%message( 1 ), 1052 ) j 
+                  WRITE( inform%message( 1 ), 1052 ) j
                   WRITE( inform%message( 2 ), 1051 ) k
                   GO TO 999
-               END IF            
+               END IF
             END SELECT
          END DO
          IF ( s%level >= DEBUG ) WRITE( s%out, 1053 ) control%nbr_groups
@@ -2964,9 +2964,9 @@
          GO TO 999
       END IF
       IF ( s%level >= DEBUG ) WRITE( s%out, 1059 ) problem%n
-      
+
       dim = MAX( problem%n, s%n_items )
-      
+
       IF ( ALLOCATED( s%v ) ) DEALLOCATE( s%v )
       ALLOCATE( s%v( dim ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
@@ -2975,7 +2975,7 @@
          GO TO 999
       END IF
       IF ( s%level >= DEBUG ) WRITE( s%out, 1061 ) dim
-      
+
       IF ( control%external_J_products ) THEN
 
          IF ( s%has_fixed .OR. s%has_inequalities ) THEN
@@ -3011,7 +3011,7 @@
          s%u_allocated = .FALSE.
 
       END IF
-      
+
       IF ( ALLOCATED( s%w ) ) DEALLOCATE( s%w )
       ALLOCATE( s%w( dim ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
@@ -3038,7 +3038,7 @@
 
       dim = 0
       IF ( control%grouping  /= NONE   ) dim = s%n_items
-      IF ( control%prec_used == BANDED ) dim = MAX( dim, problem%n + 1 ) 
+      IF ( control%prec_used == BANDED ) dim = MAX( dim, problem%n + 1 )
       IF ( .NOT. control%filter_sign_restriction .AND. &
            ( s%has_bounds .OR. s%has_inequalities )    ) dim = MAX( dim, s%p )
       IF ( dim > 0 ) THEN
@@ -3078,7 +3078,7 @@
             WRITE( inform%message( 1 ), 1073 ) control%checkpoint_file
             GO TO 999
          END IF
-            
+
          IF ( s%level >= DEBUG ) WRITE( s%out, 1074 ) inform%nbr_iterations
 
 !        Read the values of the variables.
@@ -3186,12 +3186,12 @@
             END IF
             CALL SORT_inplace_invert( s%n_items, s%iw )
 
-!           Use the sorted values to define the groups. This attempts to 
+!           Use the sorted values to define the groups. This attempts to
 !           produce groups with approximately balanced constraints values.
 
             DO i = 1, problem%m
                nxt = nxt + 1
-               k = MOD( i, s%p ) 
+               k = MOD( i, s%p )
                IF ( k == 0 ) k = s%p
                s%group( s%iw( i ) ) = k
             END DO
@@ -3201,7 +3201,7 @@
                   SELECT CASE ( problem%x_status( j ) )
                   CASE ( LOWER, UPPER, RANGE )
                      nxt = nxt + 1
-                     k = MOD( nxt, s%p ) 
+                     k = MOD( nxt, s%p )
                      IF ( k == 0 ) k = s%p
                      s%group( s%iw( nxt ) ) =  k
                   END SELECT
@@ -3212,7 +3212,7 @@
 
          ELSE
             DO i = 1, problem%m
-               k = MOD( i, s%p ) 
+               k = MOD( i, s%p )
                IF ( k == 0 ) k = s%p
                s%group( i ) = k
             END DO
@@ -3222,7 +3222,7 @@
                   SELECT CASE ( problem%x_status( j ) )
                   CASE ( LOWER, UPPER, RANGE )
                      nxt = nxt + 1
-                     k = MOD( nxt, s%p ) 
+                     k = MOD( nxt, s%p )
                      IF ( k == 0 ) k = s%p
                      s%group( nxt ) =  k
                   END SELECT
@@ -3269,7 +3269,7 @@
          END SELECT
       END IF
 
-!     Allocate the group status, if either we have mixed type groups, or if 
+!     Allocate the group status, if either we have mixed type groups, or if
 !     there are multiple groups.
 
       IF ( s%filter_sign == MIXED .OR. control%grouping /= NONE ) THEN
@@ -3383,7 +3383,7 @@
       IF ( control%save_best_point ) THEN
          s%best_x    = problem%x
          s%best_fx   = problem%f
-         IF ( s%level >= DEBUG ) WRITE( s%out, 1086 )   
+         IF ( s%level >= DEBUG ) WRITE( s%out, 1086 )
       END IF
 
 !------------------------------------------------------------------------------
@@ -3457,7 +3457,7 @@
       END IF
 
 !------------------------------------------------------------------------------
-!     Compute the preconditioner. 
+!     Compute the preconditioner.
 !------------------------------------------------------------------------------
 
      SELECT CASE ( control%prec_used )
@@ -3465,7 +3465,7 @@
      CASE ( NONE )
 
      CASE ( BANDED )
-      
+
 !       Compute the structure of the Jacobian (in a sparse storage by rows,
 !       with column indices in ascending order for each row).
 
@@ -3475,7 +3475,7 @@
         END IF
 
 !       Extract the preconditioning matrix at the initial point.
- 
+
         CALL FILTRANE_build_band_JTJ( s%bandw )
 
         IF ( s%level >= DEBUG ) THEN
@@ -3510,14 +3510,14 @@
 !------------------------------------------------------------------------------
 
      SELECT CASE ( control%prec_used )
-    
+
      CASE ( NONE )
-    
+
         s%g_norm    = s%g_norm2
         s%g_norminf = s%g_norminf_u
-    
+
      CASE ( BANDED )
-    
+
         s%v( 1:problem%n ) = problem%g
         CALL BAND_solve( problem%n, s%bandw, s%diag, s%offdiag,                &
                          s%nsemib, s%v, BAND_status )
@@ -3563,12 +3563,12 @@
         !                                  s%v( 1:problem%n ), 1 ) )
         s%g_norm = SQRT( DOT_PRODUCT( problem%g, s%v( 1:problem%n ) ) )
      END IF
-        
+
 !------------------------------------------------------------------------------
 !    Other algorithmic initializations
 !------------------------------------------------------------------------------
 
-!  Set the initial trust-region radius, for the case where 
+!  Set the initial trust-region radius, for the case where
 !  the filter is not used.
 
      s%radius      = control%initial_radius
@@ -3590,13 +3590,13 @@
 !------------------------------------------------------------------------------
 
      IF ( s%level >= TRACE ) THEN
-        WRITE( s%out, 1099 ) 
+        WRITE( s%out, 1099 )
         WRITE( s%out, 1100 )
         WRITE( s%out, 1099 )
         WRITE( s%out, 1000 ) inform%nbr_iterations, problem%f, s%g_norm,       &
                              s%radius, inform%nbr_cg_iterations, s%filter_size
         IF ( s%level >= DETAILS ) THEN
-           WRITE( s%out, 1099 ) 
+           WRITE( s%out, 1099 )
            WRITE( s%out, 1101 )
            CALL TOOLS_output_vector( problem%n, problem%x, s%out )
            WRITE( s%out, 1102 )
@@ -3698,13 +3698,13 @@
 
 !==============================================================================
 !==============================================================================
- 
+
 !       Update the iteration counter.
-	
+
         IF ( control%max_iterations >= 0 ) THEN
            IF ( inform%nbr_iterations >= control%max_iterations ) THEN
               inform%status = MAX_ITERATIONS_REACHED
-              WRITE( inform%message( 1 ), 1106 )                
+              WRITE( inform%message( 1 ), 1106 )
               GO TO 999
            END IF
         END IF
@@ -3728,28 +3728,28 @@
         END IF
 
 !       -----------------------------------------------------------------------
-	
+
 !       Set the accuracy indicator to that requested by the user.
-	
+
 !       -----------------------------------------------------------------------
-	
+
         s%step_accuracy = control%subproblem_accuracy
-	
+
 !       -----------------------------------------------------------------------
-	
+
 !       Compute the step
-	
+
 !       -----------------------------------------------------------------------
-	
+
 !       Loop on the possibility that negative curvature is found, which
 !       requires the step to be restricted, or on the possibility that the
 !       step might be negligible, in which case it must at least be computed
 !       to full accuracy.
-	
+
 3000    CONTINUE
 
 !          See if the step is restricted or unrestricted.
-	   
+
            IF ( s%restrict ) THEN
               s%gltr_radius = s%radius
               s%it_status = ' R  '
@@ -3760,49 +3760,49 @@
            IF ( s%level >= DEBUG ) THEN
               WRITE( s%out, 1124 ) s%gltr_radius
            END IF
-	   
-!          Set the part of the iteration status telling which model 
+
+!          Set the part of the iteration status telling which model
 !          is being used.
-	   
+
            SELECT CASE ( s%model_used )
            CASE ( NEWTON )
               s%it_status( 1:1 ) = 'N'
            CASE ( GAUSS_NEWTON )
               s%it_status( 1:1 ) = 'G'
            END SELECT
-	   
-!          See if this is a GLTR reentry with everything unchanged except 
-!          a smaller trust-region radius. If this the case, GLTR can produce 
+
+!          See if this is a GLTR reentry with everything unchanged except
+!          a smaller trust-region radius. If this the case, GLTR can produce
 !          the subproblem solution in the largest Krylov space explored at the
 !          previous iteration (if re-entered with info_status = 4).
-	   
+
            IF ( s%gltr_radius < s%prev_radius .AND. s%unsuccess ) THEN
-	   
+
               s%GLTR_info%status  = 4
               s%w( 1: problem%n ) = s%r( 1:problem%n )
               IF ( s%level >= DEBUG ) WRITE( s%out, 1107 ) s%prev_radius
-	   
+
 !          If this is not the case, prepare a first call to GLTR.
-	   
+
            ELSE
-	   
+
 !             Initialize GLTR, if not done already
-	   
+
               IF ( .NOT. s%gltr_initialized ) THEN
                  CALL GLTR_initialize( s%GLTR_data, s%GLTR_control )
                  s%GLTR_control%lanczos_itmax = 5
                  s%gltr_initialized = .TRUE.
                  IF ( s%level >= DEBUG ) WRITE( s%out, 1108 )
               END IF
-	   
+
 !             Set the maximum number of GLTR iterations.
-	   
+
               s%GLTR_control%itmax = control%max_cg_iterations * problem%n
-	   
+
 !             Set the GLTR preconditioning indicator.
-	   
+
               IF ( control%prec_used /= NONE ) s%GLTR_control%unitm = .FALSE.
-	   
+
 !             Make sure the absolute requested precision on the subproblem is
 !             not much higher than the final precision required for the problem.
 
@@ -3823,12 +3823,12 @@
 
 !             Adaptively increase the required relative precision on the
 !             solution of the subproblem.
-	   
+
               SELECT CASE ( s%step_accuracy )
               CASE ( ADAPTIVE )
                  IF ( s%g_norm < ONE .AND. control%gltr_accuracy_power > ZERO )&
                     THEN
-                    fwp = s%g_norm ** control%gltr_accuracy_power 
+                    fwp = s%g_norm ** control%gltr_accuracy_power
                  ELSE
                     fwp = ONE
                  END IF
@@ -3837,16 +3837,16 @@
               CASE ( FULL )
                  s%GLTR_control%stop_relative = SQRT( EPSMACH )
               END SELECT
-	   
+
               IF ( s%level >= ACTION ) THEN
                  WRITE( s%out, 1109 ) s%GLTR_control%stop_absolute,            &
                                       s%GLTR_control%stop_relative
               END IF
-	   
+
            END IF
-	   
+
 !          Set the GLTR print level.
-	   
+
            IF ( s%level >= ACTION ) THEN
               IF ( s%level >= DETAILS ) THEN
                  WRITE ( s%out, 1110 )s%gltr_radius,s%GLTR_control%stop_relative
@@ -3856,32 +3856,32 @@
                  END IF
               END IF
            END IF
-	   
+
 !          Remember the current radius.
-	   
+
            s%prev_radius = s%gltr_radius
-	   
+
 !          Set the gradient.
 
            s%u( 1:problem%n ) = problem%g
-	   
-!          The GLTR iterations 
-	   
+
+!          The GLTR iterations
+
 4000       CONTINUE
 
               IF ( s%level >= CRAZY ) THEN
-                  WRITE( s%out, 1111 ) 
+                  WRITE( s%out, 1111 )
                   WRITE( s%out, 1112 ) s%gltr_radius,                          &
                                        s%GLTR_control%stop_absolute,           &
                                        s%GLTR_control%stop_relative
                   WRITE( s%out, 1113 ) s%model_value
-                  WRITE( s%out, 1114 ) 
+                  WRITE( s%out, 1114 )
                   CALL TOOLS_output_vector( problem%n, s%step, s%out )
-                  WRITE( s%out, 1115 ) 
+                  WRITE( s%out, 1115 )
                   CALL TOOLS_output_vector( problem%n, s%u, s%out )
-                  WRITE( s%out, 1116 ) 
+                  WRITE( s%out, 1116 )
                   CALL TOOLS_output_vector( problem%n, s%w, s%out )
-                  WRITE( s%out, 1157 ) 
+                  WRITE( s%out, 1157 )
               END IF
               CALL GLTR_solve( problem%n, s%gltr_radius, s%model_value,s%step, &
                                s%u( 1:problem%n ), s%w( 1:problem%n ),         &
@@ -3889,13 +3889,13 @@
               IF ( s%level >= CRAZY ) THEN
                   WRITE( s%out, 1117 ) s%GLTR_info%status
               END IF
-	      
+
 !             .................................
 !             Restart with the initial gradient
 !             .................................
-	      
+
               IF ( s%GLTR_info%status == 5 ) THEN
-	      
+
                  s%u = problem%g
                  IF ( s%level >= DEBUG ) WRITE( s%out, 1118 )
                  GO TO 4000
@@ -3903,12 +3903,12 @@
 !             ......................
 !             Successful termination
 !             ......................
-	      
+
               ELSE IF ( s%GLTR_info%status >= -2 .AND. &
                         s%GLTR_info%status <=  0       ) THEN
-	      
+
                  s%s_norm = s%GLTR_info%mnormx
-	      
+
                  IF ( s%GLTR_info%iter >= s%GLTR_control%itmax ) THEN
                     s%it_status( 3:3 ) = 'M'
                  ELSE IF ( s%s_norm < 0.99_wp * s%radius ) THEN
@@ -3920,36 +3920,36 @@
                  END IF
                  s%s_norm2 = NRM2( problem%n, s%step, 1 )
                  s%r( 1: problem%n ) = s%w( 1:problem%n )
-	      
+
                  GO TO 4001
-	      
+
 !             ......................
 !             Error return from GLTR
 !             ......................
-              
+
               ELSE IF ( s%GLTR_info%status <= -3 ) THEN
-	      
+
                  inform%status = GLTR_ERROR
                  WRITE( inform%message( 1 ), 1119 )
                  WRITE( inform%message( 2 ), 1120 ) s%GLTR_info%status
                  GO TO 999
-	      
+
 !             ................................
 !             Form the preconditioned gradient.
 !             ................................
-	      
+
               ELSE IF ( s%GLTR_info%status == 2 .OR. &
                         s%GLTR_info%status == 6      ) THEN
 
-                 SELECT CASE ( control%prec_used ) 
+                 SELECT CASE ( control%prec_used )
 
-                 CASE ( BANDED ) 
+                 CASE ( BANDED )
 
                     CALL BAND_solve( problem%n, s%bandw, s%diag, s%offdiag,    &
                                      s%nsemib, s%w, BAND_status)
                     IF ( s%level >= CRAZY ) WRITE( s%out, 1121 )
 
-                 CASE ( USER_DEFINED ) 
+                 CASE ( USER_DEFINED )
 
                     s%RC_Pv => s%w
                     inform%status = GET_PREC
@@ -3982,52 +3982,52 @@
 	         GO TO 4000
 
 !             ............................................................
-!             Last possibility: form the matrix-vector product 
+!             Last possibility: form the matrix-vector product
 !                               w <-- Hessian . w
 !             The Hessian is:
 !             - for equalities:
 !               > J^TJ                       for the  Gauss-Newton model,
 !               > J^TJ + SUM c_i nabla^2 c_i for the full Newton model,
-!        
+!
 !             - for violated inequalities:
 !               > J^T V**alpha J             for the  Gauss-Newton model,
-!               > J^T V**alpha J  + gamma * SUM v**beta nabla^2 c_i   
+!               > J^T V**alpha J  + gamma * SUM v**beta nabla^2 c_i
 !                                     for the full Newton model
 !             - for violated bounds:
 !               > alpha * V ** beta
 !             ............................................................
-              
+
               ELSE IF (  s%GLTR_info%status == 3 .OR. &
                          s%GLTR_info%status == 7      ) THEN
-	      
+
 !                Set the work vector s%r to zero.  This vector is used to
 !                accumulate the components of the product that do not depend
 !                on JTJ, i.e. the terms involving nabla^2 c_i and the
-!                contribution of the scaled identity matrix for the 
+!                contribution of the scaled identity matrix for the
 !                variables that violate their bounds.
-      	      
+
                  IF ( s%has_bounds ) s%r = ZERO
-      	      
-!                Compute the terms in nabla^2 c_i if the full Newton model 
+
+!                Compute the terms in nabla^2 c_i if the full Newton model
 !                is used.
-      	      
+
                  IF ( problem%m > 0 ) THEN
-	      
+
                     IF ( s%model_used == NEWTON ) THEN
-  	      
-!                      Define the vector multiplying the individual 
+
+!                      Define the vector multiplying the individual
 !                      Hessians.
-	      
+
                        IF ( .NOT. s%goth ) THEN
                           CALL FILTRANE_compute_Hmult( problem%c )
                        END IF
-	      
+
 !                      Compute the product.
-	      
+
                        IF ( s%level >= CRAZY ) THEN
                           WRITE( s%out, 1123 )  s%goth
                        END IF
-	      
+
                        s%RC_v    => s%w( 1:problem%n )
                        s%RC_Mv   => s%r( 1:problem%n )
                        s%RC_newx = .NOT. s%goth
@@ -4080,11 +4080,11 @@
                        RETURN
 
                     ELSE
-      
+
                        CALL FILTRANE_J_times_v( s%w( 1:problem%n ),            &
                                                 s%v( 1:problem%m),             &
                                                 .FALSE., s%has_inequalities )
-      
+
                     END IF
                  END IF
               END IF
@@ -4113,9 +4113,9 @@
                     END IF
                  END IF
 
-!                Add the contribution from the terms in JTV^aJ for the 
+!                Add the contribution from the terms in JTV^aJ for the
 !                inequality penalty functions (into s%v).
-      
+
                  IF ( s%has_inequalities ) THEN
 
                     IF ( control%inequality_penalty_type /= 2 ) THEN
@@ -4132,7 +4132,7 @@
                                 t = ( cli + s%epsilon - ci ) / twoeps
                                 d2phi = THREE * t * ( ONE - t ) / s%epsilon
                                 s%v( i ) = d2phi * s%v( i )
-                             END IF 
+                             END IF
                              IF ( ci > cui - s%epsilon .AND. &
                                   ci < cui + s%epsilon       ) THEN
                                 t = ( ci - cui + s%epsilon ) / twoeps
@@ -4150,10 +4150,10 @@
                     END IF
 
                  END IF
-      
-!                Add the contribution from the scaled identity for the 
+
+!                Add the contribution from the scaled identity for the
 !                violated bounds (into s%r).
-      
+
                  IF ( s%has_bounds ) THEN
 
                     DO j = 1, problem%n
@@ -4172,7 +4172,7 @@
                                 t = ( s%epsilon - violation ) / twoeps
                                 d2phi = THREE * t * ( ONE - t ) / s%epsilon
                                 s%r( j ) = s%r( j ) + d2phi * s%w( j )
-                             END IF 
+                             END IF
                              IF ( xj > xuj - s%epsilon .AND. &
                                   xj < xuj + s%epsilon       ) THEN
                                 t = ( violation + s%epsilon ) / twoeps
@@ -4194,11 +4194,11 @@
                        END SELECT
 
                     END DO
-      
+
                  END IF
 
 !                Post multiply by J^T, erasing the initial value of s%w.
-      
+
                  IF ( problem%m > 0 ) THEN
 
                     IF ( control%external_J_products ) THEN
@@ -4220,7 +4220,7 @@
                        RETURN
 
                     ELSE
-      
+
                        CALL FILTRANE_J_times_v( s%v( 1:problem%m ),            &
                                                 s%w( 1:problem%n),             &
                                                 .TRUE., s%has_inequalities )
@@ -4234,7 +4234,7 @@
 !**************************************************************
 
               IF (  s%GLTR_info%status == 3 .OR. s%GLTR_info%status == 7 ) THEN
-      
+
                  IF ( control%external_J_products ) THEN
                     IF ( s%level >= DEBUG ) THEN
                        WRITE( s%out, 1003 )
@@ -4255,7 +4255,7 @@
                  END IF
 
 !                Add the terms collected in s%r, if any.
-      
+
                  IF ( problem%m > 0 ) THEN
                     IF ( s%model_used == NEWTON .OR. s%has_bounds ) THEN
                        s%w( 1:problem%n ) = s%w( 1:problem%n )                 &
@@ -4266,26 +4266,26 @@
                  END IF
 
               END IF
-      	       
+
            GO TO 4000 ! End of the GLTR iterations
 4001       CONTINUE
 
 !          --------------------------------------------------------------------
-	  
+
 !          Keep track of the number of CG iterations.
-    	  
+
 !          --------------------------------------------------------------------
-	  
+
            inform%nbr_cg_iterations = inform%nbr_cg_iterations+ s%GLTR_info%iter
-	  
+
 !          --------------------------------------------------------------------
-	  
+
 !          See if negative curvature has been encountered.  If this is the
-!          case and the step is unrestricted, then the step should be 
+!          case and the step is unrestricted, then the step should be
 !          recomputed with a restriction on its length.
-	  
+
 !          --------------------------------------------------------------------
-	  
+
            IF ( s%GLTR_info%negative_curvature .AND. .NOT. s%restrict ) THEN
               IF ( control%weak_accept_power == -666.0_wp ) THEN
                  inform%status = -666
@@ -4298,13 +4298,13 @@
                  GO TO 3000
               END IF
            END IF
-	  
+
 !          --------------------------------------------------------------------
-	  
+
 !          Print the norms of the residual and the computed step, if requested.
-	  
+
 !          --------------------------------------------------------------------
-	  
+
            IF ( s%level >= ACTION ) THEN
               WRITE( s%out, 1156 ) s%GLTR_info%iter,                           &
                                    NRM2( problem%n, s%u, 1 )
@@ -4315,15 +4315,15 @@
                  WRITE( s%out, 1128 ) s%s_norm
               END IF
            END IF
-	  
+
 !          --------------------------------------------------------------------
-	  
+
 !          Verify that the step is meaningful compared to the current values
-!          of the variables. If it is too small, ensure that it is 
+!          of the variables. If it is too small, ensure that it is
 !          computed with full accuracy before giving up.
-	  
+
 !          --------------------------------------------------------------------
-	  
+
            IF ( s%s_norm2 < s%x_norm * EPSMACH ) THEN
               IF ( s%step_accuracy == FULL ) THEN
                  inform%status = PROGRESS_IMPOSSIBLE
@@ -4340,34 +4340,34 @@
 !       END DO step loop
 
 !       -----------------------------------------------------------------------
-	
+
 !       Compute the objective function value at the trial point.
-	
+
 !       -----------------------------------------------------------------------
-	
+
 !       Save the current values of f, c and x.
-	
+
         s%v( 1:problem%n ) = problem%x
         s%f_old            = problem%f
         IF( problem%m > 0 ) s%w( 1:problem%m ) = problem%c
-	
+
 !       Compute the trial point.
-	
+
         problem%x = problem%x + s%step
-	
+
         IF ( s%level >= DETAILS ) THEN
            WRITE( s%out, 1099 )
            WRITE( s%out, 1132 )
            CALL TOOLS_output_vector( problem%n, problem%x, s%out )
         END IF
-	
+
 !       Compute the values of the constraints.
-	
+
         IF ( problem%m > 0 ) THEN
            inform%status = GET_C
            RETURN
         END IF
-	
+
 !********************************************************
 600     CONTINUE ! *** Reverse communication re-entry ***
 !********************************************************
@@ -4384,15 +4384,15 @@
            END IF
            inform%status            = OK
            inform%nbr_c_evaluations = inform%nbr_c_evaluations + 1
-	
+
            IF ( s%level >= DETAILS ) THEN
               WRITE( s%out, 1133 )
               CALL TOOLS_output_vector( problem%m, problem%c, s%out )
            END IF
-	
+
 !       Compute the value of the objective function, avoiding overflow
 !       when possible.
-	
+
            IF ( MAXVAL( problem%c ) >= SQRT( OVERFLOW ) ) THEN
               problem%f = OVERFLOW
               IF ( s%level >= ACTION ) WRITE( s%out, 1134 )
@@ -4410,9 +4410,9 @@
 
         END IF
 
-!       Save the current point and its associated objective value 
+!       Save the current point and its associated objective value
 !       if this is the best value found so far.
-	
+
         IF ( control%save_best_point ) THEN
            IF ( problem%f < s%best_fx ) THEN
               s%best_x  = problem%x
@@ -4420,20 +4420,20 @@
               IF ( s%level >= DETAILS ) WRITE( s%out, 1136 )
            END IF
         END IF
-	
+
 !       -----------------------------------------------------------------------
-	
+
 !       Evaluate rho, the ratio of achieved to predicted reductions,
 !       ensuring that rounding errors do not dominate the computations.
-	
+
 !       -----------------------------------------------------------------------
-	
+
         IF ( problem%f < OVERFLOW ) THEN
            s%ared = s%f_old - problem%f
            s%feps = MAX( ONE, ABS( s%f_old ) ) * EPSMACH
-           prered = - s%model_value + s%feps 
-           s%rho  = ( s%ared + s%feps ) / prered 
-	
+           prered = - s%model_value + s%feps
+           s%rho  = ( s%ared + s%feps ) / prered
+
            IF ( s%level >= ACTION ) THEN
               WRITE( s%out, 1137 )  s%ared
               IF ( s%model_used == GAUSS_NEWTON ) THEN
@@ -4446,31 +4446,31 @@
            s%rho  = - INFINITY
            s%ared = - INFINITY
         END IF
-	
+
 !       -----------------------------------------------------------------------
-	
+
 !       Evaluate the alternative model, if necessary.
-	
+
 !       -----------------------------------------------------------------------
-	
+
         IF ( control%model_type == AUTOMATIC ) THEN
-	
+
 !          See if the current model is satisfactory.
-	
+
            SELECT CASE ( control%model_criterion )
            CASE ( BEST_FIT )
               s%bad_model = ABS( s%rho - ONE ) > 0.1_wp .AND. s%s_norm < 0.1_wp
            CASE ( BEST_REDUCTION )
               s%bad_model = s%rho < control%eta_1 .AND. s%s_norm < 0.1_wp
            END SELECT
-	
+
            IF ( s%bad_model ) THEN
-	
+
 !             Evaluate the alternative model (at the old x)
 !             and the associated ratio of achieved to predicted reductions.
-	
+
               IF ( .NOT. s%goth ) CALL FILTRANE_compute_Hmult( s%w )
-	
+
               CALL SWAP( problem%n, problem%x, 1, s%v, 1 )
               s%RC_v    => s%step( 1:problem%n )
               s%RC_Mv   => s%r( 1:problem%n )
@@ -4539,7 +4539,7 @@
 
 !          Define the next model to use by a majority rule on the
 !          expressed votes.
-	    
+
            n_Newton = 0
            n_votes  = 0
            DO i = 1, control%model_inertia
@@ -4572,7 +4572,7 @@
         IF ( control%weak_accept_power >= ZERO ) THEN
            IF ( control%weak_accept_power == ZERO .OR. problem%f >= ONE ) THEN
               fwp = ONE
-           ELSE 
+           ELSE
               fwp = MIN( ONE, problem%f ** control%weak_accept_power )
            END IF
            s%weakly_acceptable = s%ared >= control%min_weak_accept_factor * fwp
@@ -4584,16 +4584,16 @@
 
 !       Acceptable for the filter ? Note that only test acceptablity for
 !       the filter when the weak acceptance fails, in order to save the
-!       work involved in filter comparisons when possible. this also prevents 
+!       work involved in filter comparisons when possible. this also prevents
 !       including in the filter a point which is weakly acceptable.
-	
+
         IF ( .NOT. s%weakly_acceptable ) THEN
            s%filter_acceptable = FILTRANE_is_acceptable( problem%f )
-	
+
 !       Acceptable for the trust region ?
-	
+
            s%tr_acceptable =                                                   &
-             s%rho >= control%eta_1 .AND. s%s_norm <= ONE_DOT_ONE * s%radius 
+             s%rho >= control%eta_1 .AND. s%s_norm <= ONE_DOT_ONE * s%radius
 	ELSE
            s%filter_acceptable = .FALSE.
            s%tr_acceptable     = .FALSE.
@@ -4662,7 +4662,7 @@
 !       -----------------------------------------------------------------------
 
 !       Acceptable for the objective decrease ? (weak acceptance enabled)
-	
+
         IF ( s%weakly_acceptable ) THEN
            IF ( control%weak_accept_power >= ZERO ) THEN
               s%it_status( 4:4 ) = 'W'
@@ -4672,7 +4672,7 @@
            s%unsuccess  = .FALSE.
 
 !       Acceptable for the filter ?
-	
+
         ELSE IF ( s%filter_acceptable ) THEN
 
            IF ( s%rho < control%eta_1             .OR. &
@@ -4680,12 +4680,12 @@
               s%it_status( 4:4 ) = 'f'
               CALL FILTRANE_add_to_filter
               IF ( inform%status < 0 ) GO TO 999
-	
+
               s%extent = MAX( ONE, HALF * s%extent )
-	
+
 !             If this is the last point that can be included in the filter,
 !             return to pure trust-region from now on.
-	
+
               IF ( control%maximal_filter_size > 0              .AND. &
                    s%filter_size >= control%maximal_filter_size       ) THEN
                  s%use_filter  = .FALSE.
@@ -4701,11 +4701,11 @@
               s%restrict = .FALSE.
            END IF
            s%unsuccess  = .FALSE.
-	
+
 !       Acceptable for the trust region ?
-	
+
         ELSE IF ( s%tr_acceptable ) THEN
-	
+
            IF ( s%rho >= control%eta_2 ) THEN
               IF ( s%level >= DETAILS ) WRITE( s%out, 1142 )
               s%it_status( 4:4 ) = 'S'
@@ -4718,11 +4718,11 @@
            END IF
            IF ( s%use_filter ) s%restrict = .FALSE.
            s%unsuccess= .FALSE.
-	
+
 !       Unsuccessful cases
-	
+
         ELSE
-	
+
            problem%x   = s%v( 1:problem%n )
            IF ( problem%m > 0 ) problem%c   = s%w( 1:problem%m )
            s%f_plus    = problem%f
@@ -4739,30 +4739,30 @@
               s%extent   = ONE
            END IF
            s%restrict = .TRUE.
-	
+
         END IF
-	
+
 !       -----------------------------------------------------------------------
-	
+
 !       Compute the norm of the new (preconditioned) gradient.
-	
+
 !       -----------------------------------------------------------------------
-	
+
         IF ( s%acceptable ) THEN
-	
+
            SELECT CASE ( control%prec_used )
-	
+
            CASE ( NONE )
-	
+
               s%g_norm    = s%g_norm2
 	      s%g_norminf = s%g_norminf_u
 
            CASE ( BANDED )
-	
+
 !             Obtain banded preconditioner from the JTJ, if not already done.
-	
+
               CALL FILTRANE_build_band_JTJ( s%bandw )
-	
+
               IF ( s%level >= DEBUG ) THEN
                  WRITE( s%out, 1096 ) s%nsemib, s%bandw
                  DO i = 1, problem%n
@@ -4772,10 +4772,10 @@
                     IF ( k > 5 ) WRITE( s%out, 1098 ) ( s%offdiag(j,i),j = 6,k )
                  END DO
               END IF
-	
+
               CALL BAND_factor( problem%n, s%bandw, s%diag, s%offdiag,         &
                                 s%nsemib, BAND_status )
-	
+
               IF ( s%level >= DEBUG ) THEN
                  WRITE( s%out, 1155 )
                  DO i = 1, problem%n
@@ -4785,9 +4785,9 @@
                     IF ( k > 5 ) WRITE( s%out, 1098 ) ( s%offdiag(j,i),j=6,k )
                  END DO
               END IF
-	
+
 !             Compute the preconditioned gradient and its norm.
-	
+
               s%w( 1:problem%n ) = problem%g
               CALL BAND_solve( problem%n, s%bandw, s%diag, s%offdiag,          &
                                s%nsemib, s%w, BAND_status )
@@ -4818,7 +4818,7 @@
 !********************************************************
 
         IF ( s%acceptable ) THEN
-	
+
            IF ( control%prec_used == USER_DEFINED ) THEN
               IF ( s%level >= DEBUG ) THEN
                  WRITE( s%out, 1003 )
@@ -4838,13 +4838,13 @@
            IF ( s%level >= DEBUG ) WRITE( s%out, 1146 ) s%g_norm
 
         END IF
-	
+
 !       -----------------------------------------------------------------------
-	
+
 !       Print the required information on the current iteration.
-	
+
 !       -----------------------------------------------------------------------
-	
+
         IF ( s%level >= TRACE ) THEN
            IF ( s%level > TRACE ) THEN
               WRITE( s%out, 1099 )
@@ -4871,7 +4871,7 @@
                                    ig, mult, s%it_status,                      &
                                    s%filter_size - s%filter_nbr_inactive
            END IF
-           IF ( s%level > TRACE ) WRITE( s%out, 1099 ) 
+           IF ( s%level > TRACE ) WRITE( s%out, 1099 )
            IF ( s%level >= DETAILS ) THEN
               WRITE( s%out, 1101 )
               CALL TOOLS_output_vector( problem%n, problem%x, s%out )
@@ -4893,16 +4893,16 @@
                  CALL TOOLS_output_matrix_C( problem%J_ne, problem%J_val,      &
                                            problem%J_row, problem%J_col, s%out )
               END IF
-              WRITE( s%out, 1148 )                   
+              WRITE( s%out, 1148 )
            END IF
         END IF
-	
+
 !       -----------------------------------------------------------------------
-	
+
 !       Test for convergence.
-	
+
 !       -----------------------------------------------------------------------
-	
+
         sqrtn = problem%n
         sqrtn = SQRT( sqrtn )
         IF ( control%stop_on_prec_g ) THEN
@@ -4934,15 +4934,15 @@
            WRITE( inform%message( 1 ), 1160 )
            GO TO 999
         END IF
-	
+
 !       -----------------------------------------------------------------------
-	
+
 !       Update the trust-region radius.
-	
+
 !       -----------------------------------------------------------------------
-	
+
         IF ( s%s_norm <= ONE_DOT_ONE * s%radius ) THEN
-           IF ( s%rho >= control%eta_1 ) THEN 
+           IF ( s%rho >= control%eta_1 ) THEN
               IF ( s%rho >= control%eta_2 ) THEN    ! very successful iteration
                  s%radius = MAX( s%radius, control%gamma_2 * s%s_norm )
               ELSE                                ! successful iteration
@@ -4967,15 +4967,15 @@
               END IF
            END IF
         END IF
-	
+
         IF ( s%level > DEBUG ) WRITE( s%out, 1149 ) s%radius
 
 !       -----------------------------------------------------------------------
-	
+
 !       Save checkpointing information, if requested
-	
+
 !       -----------------------------------------------------------------------
-	
+
         IF ( control%checkpoint_freq /= 0 ) THEN
            IF ( MOD(inform%nbr_iterations,ABS(control%checkpoint_freq))==0 )THEN
 
@@ -4995,7 +4995,7 @@
               WRITE( control%checkpoint_dev, 1150 ) inform%nbr_iterations
 
               IF ( ALLOCATED( problem%vnames ) ) THEN
-                 DO j = 1, problem%n 
+                 DO j = 1, problem%n
                     WRITE( UNIT = control%checkpoint_dev, FMT = 1151,          &
                            IOSTAT = iostat ) j, problem%x(j), problem%vnames(j)
                     IF ( iostat > 0 ) THEN
@@ -5005,7 +5005,7 @@
                     END IF
                  END DO
               ELSE
-                 DO j = 1, problem%n 
+                 DO j = 1, problem%n
                     WRITE( control%checkpoint_dev, 1151 ) j, problem%x( j )
                  END DO
               END IF
@@ -5046,7 +5046,7 @@
 !===============================================================================
 !===============================================================================
 
-!                              Conclude... 
+!                              Conclude...
 
 !===============================================================================
 !===============================================================================
@@ -5071,7 +5071,7 @@
      ELSE
         s%best_x_is_past = .FALSE.
      END IF
-	
+
 !*****************************************************
 700  CONTINUE ! *** Reverse communication re-entry ***
 !*****************************************************
@@ -5096,7 +5096,7 @@
         CALL FILTRANE_compute_theta
         CALL FILTRANE_compute_f
      END IF
-       
+
 !*****************************************************
 710  CONTINUE ! *** Reverse communication re-entry ***
 !*****************************************************
@@ -5126,7 +5126,7 @@
      inform%status = s%exitc
      CALL FILTRANE_say_goodbye( control, inform, s )
 
-     RETURN  
+     RETURN
 
 !===============================================================================
 
@@ -5162,7 +5162,7 @@
 1024 FORMAT(1x,'FILTRANE ERROR: the problem has ', i6, ' variables!')
 1025 FORMAT(1x,'FILTRANE ERROR: the problem has ', i6, ' constraints!')
 1026 FORMAT(4x,'s%stage = ',i3)
-1027 FORMAT(1x,'FILTRANE ERROR: attempt to SOLVE without a call to INITIALIZE') 
+1027 FORMAT(1x,'FILTRANE ERROR: attempt to SOLVE without a call to INITIALIZE')
 1028 FORMAT(1x,'FILTRANE ERROR: problem%x has not been allocated!')
 1029 FORMAT(1x,'FILTRANE ERROR: problem%x_l has not been allocated!')
 1030 FORMAT(1x,'FILTRANE ERROR: problem%x_u has not been allocated!')
@@ -5237,8 +5237,8 @@
             ',',i6,')')
 1095 FORMAT(4x,'offdiag(',i6,',',i6,') allocated')
 1096 FORMAT(4x,'PRECONDITIONER (nsemib = ',i6,', bandw =',i6,'):')
-1097 FORMAT(1x,i4,2x,1pE11.3,1x,5(1x,1pE11.3)) 
-1098 FORMAT(20x,5(1x,1pE11.3)) 
+1097 FORMAT(1x,i4,2x,1pE11.3,1x,5(1x,1pE11.3))
+1098 FORMAT(20x,5(1x,1pE11.3))
 1099 FORMAT(' ')
 1100 FORMAT(1x,'Iter     f(x)      ||g(x)||     rho',                          &
             '       ||s||      Delta   #CGits Type   F')
@@ -5355,7 +5355,7 @@
                   WRITE( s%out, 1003 ) 'TRACE to ACTION'
                CASE ( DETAILS )
                   WRITE( s%out, 1003 ) 'DETAILS to ACTION'
-               CASE ( DEBUG ) 
+               CASE ( DEBUG )
                   WRITE( s%out, 1003 ) 'DEBUG to ACTION'
                CASE ( CRAZY )
                   WRITE( s%out, 1003 ) 'CRAZY to ACTION'
@@ -5505,16 +5505,16 @@
       IF ( s%level >= ACTION ) THEN
          IF ( control%stop_on_g_max ) THEN
             IF ( control%stop_on_prec_g ) THEN
-               WRITE( s%out, 1015)  
+               WRITE( s%out, 1015)
             ELSE
-               WRITE( s%out, 1016)  
+               WRITE( s%out, 1016)
             END IF
          ELSE
             IF ( control%stop_on_prec_g ) THEN
-               WRITE( s%out, 1017)  
+               WRITE( s%out, 1017)
             ELSE
             END IF
-            WRITE( s%out,1018) 
+            WRITE( s%out,1018)
          END IF
       END IF
 
@@ -5621,7 +5621,7 @@
             SELECT CASE ( control%model_criterion )
             CASE ( BEST_FIT )
                IF ( s%level >= ACTION )                                        &
-                  WRITE( s%out, 1028 ) 'BEST_REDUCTION to BEST_FIT'  
+                  WRITE( s%out, 1028 ) 'BEST_REDUCTION to BEST_FIT'
                s%prev_control%model_criterion = control%model_criterion
             CASE ( BEST_REDUCTION )
                IF ( s%level >= ACTION )                                        &
@@ -5629,7 +5629,7 @@
                s%prev_control%model_criterion = control%model_criterion
             CASE DEFAULT
                IF ( s%level >= ACTION ) THEN
-                  WRITE( s%out, 1103 ) 
+                  WRITE( s%out, 1103 )
                   SELECT CASE ( control%model_criterion )
                   CASE ( BEST_FIT )
                      WRITE( s%out, 1104 ) 'BEST_FIT'
@@ -5681,9 +5681,9 @@
          ELSE
             IF ( s%level >= ACTION ) THEN
                WRITE( s%out, 1099 ) control%min_gltr_accuracy
-               WRITE( s%out, 1108 ) s%prev_control%min_gltr_accuracy 
+               WRITE( s%out, 1108 ) s%prev_control%min_gltr_accuracy
             END IF
-            control%min_gltr_accuracy = s%prev_control%min_gltr_accuracy 
+            control%min_gltr_accuracy = s%prev_control%min_gltr_accuracy
          END IF
       ELSE
          IF ( s%level >= ACTION ) WRITE( s%out, 1032 ) control%min_gltr_accuracy
@@ -5804,9 +5804,9 @@
             IF ( s%level >= ACTION ) THEN
                WRITE( s%out, 1106 )
                SELECT CASE ( s%prev_control%subproblem_accuracy )
-               CASE ( ADAPTIVE ) 
+               CASE ( ADAPTIVE )
                   WRITE( s%out, 1104 ) 'ADAPTIVE'
-               CASE ( FULL ) 
+               CASE ( FULL )
                   WRITE( s%out, 1104 ) 'FULL'
                END SELECT
             END IF
@@ -5908,7 +5908,7 @@
             s%prev_control%nbr_groups = control%nbr_groups
          ELSE
             IF ( s%level >= ACTION .AND. control%grouping == AUTOMATIC ) THEN
-               WRITE( s%out, 1044 ) s%prev_control%nbr_groups          
+               WRITE( s%out, 1044 ) s%prev_control%nbr_groups
             END IF
             control%nbr_groups = s%prev_control%nbr_groups
          END IF
@@ -5933,9 +5933,9 @@
             ELSE
                IF ( s%level >= ACTION ) THEN
                   IF ( control%balance_group_values ) THEN
-                     WRITE( s%out, 1048 ) 
+                     WRITE( s%out, 1048 )
                   ELSE
-                     WRITE( s%out, 1049 ) 
+                     WRITE( s%out, 1049 )
                   END IF
                END IF
                control%balance_group_values =s%prev_control%balance_group_values
@@ -5996,10 +5996,10 @@
             s%prev_control%initial_radius  = control%initial_radius
          ELSE
             IF ( s%level >= ACTION ) THEN
-               WRITE( s%out, 1055 ) 
-               WRITE( s%out, 1108 ) s%prev_control%initial_radius             
+               WRITE( s%out, 1055 )
+               WRITE( s%out, 1108 ) s%prev_control%initial_radius
             END IF
-            control%initial_radius = s%prev_control%initial_radius 
+            control%initial_radius = s%prev_control%initial_radius
          END IF
       ELSE IF ( s%level >= ACTION ) THEN
          WRITE( s%out, 1056 ) control%initial_radius
@@ -6015,7 +6015,7 @@
          ELSE
             IF ( s%level >= ACTION ) THEN
                WRITE( s%out, 1109 )
-               WRITE( s%out, 1108 ) s%prev_control%eta_1             
+               WRITE( s%out, 1108 ) s%prev_control%eta_1
             END IF
             control%eta_1 = s%prev_control%eta_1
          END IF
@@ -6034,7 +6034,7 @@
          ELSE
             IF ( s%level >= ACTION ) THEN
                WRITE( s%out, 1110 )
-               WRITE( s%out, 1108 ) s%prev_control%eta_2             
+               WRITE( s%out, 1108 ) s%prev_control%eta_2
             END IF
             control%eta_2 = s%prev_control%eta_2
          END IF
@@ -6052,7 +6052,7 @@
          ELSE
             IF ( s%level >= ACTION ) THEN
                WRITE( s%out, 1111 )
-               WRITE( s%out, 1108 ) s%prev_control%gamma_0             
+               WRITE( s%out, 1108 ) s%prev_control%gamma_0
             END IF
             control%gamma_0 = s%prev_control%gamma_0
          END IF
@@ -6071,7 +6071,7 @@
          ELSE
             IF ( s%level >= ACTION ) THEN
                WRITE( s%out, 1112 )
-               WRITE( s%out, 1108 ) s%prev_control%gamma_1             
+               WRITE( s%out, 1108 ) s%prev_control%gamma_1
             END IF
             control%gamma_1 = s%prev_control%gamma_1
          END IF
@@ -6089,7 +6089,7 @@
          ELSE
             IF ( s%level >= ACTION ) THEN
                WRITE( s%out, 1113 )
-               WRITE( s%out, 1108 ) s%prev_control%gamma_2             
+               WRITE( s%out, 1108 ) s%prev_control%gamma_2
             END IF
             control%gamma_2 = s%prev_control%gamma_2
          END IF
@@ -6103,7 +6103,7 @@
          SELECT CASE( control%use_filter )
          CASE ( NEVER )
             IF ( s%level >= ACTION ) THEN
-               SELECT CASE ( s%prev_control%use_filter ) 
+               SELECT CASE ( s%prev_control%use_filter )
                CASE ( INITIAL )
                   WRITE( s%out, 1067 ) 'INITIAL to NEVER'
                CASE ( ALWAYS )
@@ -6113,7 +6113,7 @@
             s%prev_control%use_filter = control%use_filter
          CASE ( INITIAL )
             IF ( s%level >= ACTION ) THEN
-               SELECT CASE ( s%prev_control%use_filter ) 
+               SELECT CASE ( s%prev_control%use_filter )
                CASE ( NEVER )
                   WRITE( s%out, 1067 ) 'NEVER to INITIAL'
                CASE ( ALWAYS )
@@ -6123,7 +6123,7 @@
             s%prev_control%use_filter = control%use_filter
          CASE ( ALWAYS )
             IF ( s%level >= ACTION ) THEN
-               SELECT CASE ( s%prev_control%use_filter ) 
+               SELECT CASE ( s%prev_control%use_filter )
                CASE ( NEVER )
                   WRITE( s%out, 1067 ) 'NEVER to ALWAYS'
                CASE ( INITIAL )
@@ -6145,7 +6145,7 @@
             END IF
             control%use_filter = s%prev_control%use_filter
          END SELECT
-      ELSE 
+      ELSE
          IF ( s%level >= ACTION ) THEN
             SELECT CASE( control%use_filter )
             CASE ( NEVER )
@@ -6163,7 +6163,7 @@
       s%prev_control%filter_sign_restriction = control%filter_sign_restriction
       IF ( s%level >= ACTION .AND. control%use_filter /= NEVER ) THEN
          IF ( control%filter_sign_restriction ) THEN
-            WRITE( s%out, 1069 )  
+            WRITE( s%out, 1069 )
          ELSE
             WRITE( s%out, 1070 )
          END IF
@@ -6177,7 +6177,7 @@
                SELECT CASE( control%margin_type )
                CASE ( FIXED )
                   IF ( s%level >= ACTION  ) THEN
-                     SELECT CASE ( s%prev_control%margin_type ) 
+                     SELECT CASE ( s%prev_control%margin_type )
                      CASE ( CURRENT )
                         WRITE( s%out, 1071 ) 'CURRENT to FIXED'
                      CASE ( SMALLEST )
@@ -6187,7 +6187,7 @@
                   s%prev_control%margin_type = control%margin_type
                CASE ( CURRENT )
                   IF ( s%level >= ACTION  ) THEN
-                     SELECT CASE ( s%prev_control%use_filter ) 
+                     SELECT CASE ( s%prev_control%use_filter )
                      CASE ( FIXED )
                         WRITE( s%out, 1071 ) 'FIXED to CURRENT'
                      CASE ( SMALLEST )
@@ -6197,7 +6197,7 @@
                   s%prev_control%margin_type = control%margin_type
                CASE ( SMALLEST )
                   IF ( s%level >= ACTION  ) THEN
-                     SELECT CASE ( s%prev_control%use_filter ) 
+                     SELECT CASE ( s%prev_control%use_filter )
                      CASE ( FIXED )
                         WRITE( s%out, 1071 ) 'FIXED to SMALLEST'
                      CASE ( CURRENT )
@@ -6222,7 +6222,7 @@
             ELSE
                IF ( s%level >= ACTION ) THEN
                   WRITE( s%out, 1072 )
-                  SELECT CASE ( s%prev_control%margin_type ) 
+                  SELECT CASE ( s%prev_control%margin_type )
                   CASE ( FIXED )
                         WRITE( s%out, 1104 ) 'FIXED'
                   CASE ( CURRENT )
@@ -6234,7 +6234,7 @@
                control%margin_type = s%prev_control%margin_type
             END IF
          END IF
-      ELSE 
+      ELSE
          IF ( s%level >= ACTION .AND. control%use_filter /= NEVER ) THEN
             SELECT CASE( control%margin_type )
             CASE ( FIXED )
@@ -6335,7 +6335,7 @@
       END IF
       IF ( s%level >= ACTION ) THEN
          IF ( control%save_best_point ) THEN
-            WRITE( s%out, 1086 )  
+            WRITE( s%out, 1086 )
          ELSE
             WRITE( s%out, 1087 )
          END IF
@@ -6564,9 +6564,9 @@
 
 !     If the filter is not yet allocated, allocate a first slice
 
-      IF ( s%active_filter == 0 .AND. control%maximal_filter_size /= 0 ) THEN 
+      IF ( s%active_filter == 0 .AND. control%maximal_filter_size /= 0 ) THEN
 
-         size = control%filter_size_increment                  
+         size = control%filter_size_increment
          IF ( control%maximal_filter_size > 0 ) THEN
              size = MIN( size, control%maximal_filter_size )
          END IF
@@ -6630,7 +6630,7 @@
 
       IF ( s%filter_size         == s%filter_capacity .AND. &
            s%filter_nbr_inactive == 0                       ) THEN
-         
+
          new_capacity = s%filter_capacity + control%filter_size_increment
          IF ( control%maximal_filter_size > 0 ) THEN
             new_capacity = MIN( new_capacity, control%maximal_filter_size )
@@ -6770,7 +6770,7 @@
       END SELECT
 
 !     Determine the position of the new value.
-      
+
       IF ( s%filter_nbr_inactive > 0 ) THEN
          DO pos = 1, s%filter_size
             IF ( .NOT. active( pos ) ) EXIT
@@ -6782,7 +6782,7 @@
       END IF
 
 !     Now insert the new value.
-      
+
       IF ( control%margin_type == FIXED ) THEN
          marginc = control%gamma_f * normtheta
          SELECT CASE ( s%filter_sign )
@@ -6822,13 +6822,13 @@
 
       normpos      = normtheta - marginc
       fnorm( pos ) = normpos
-      
+
 !     Update the normwise ordered list of filter entries.
 
       IF ( s%filter_first <= 0 ) THEN
          fnext( pos )   = s%filter_first
          s%filter_first = pos
-      ELSE 
+      ELSE
          IF ( normpos < fnorm( s%filter_first ) ) THEN
             fnext( pos )   = s%filter_first
             s%filter_first = pos
@@ -6856,10 +6856,10 @@
       END IF
 
 !     Make newly dominated values inactive, if requested.
-      
+
       IF ( control%remove_dominated ) THEN
 
-         SELECT CASE ( control%margin_type ) 
+         SELECT CASE ( control%margin_type )
 
          CASE ( CURRENT, FIXED )
 
@@ -6957,7 +6957,7 @@
       END IF
 
 !     Write the new filter, if you really insist.
-      
+
       IF ( s%level >= CRAZY ) THEN
          DO k = 1, s%filter_size
             IF ( control%remove_dominated ) THEN
@@ -6991,7 +6991,7 @@
 1007  FORMAT(2x,'adding current theta to the filter in position ',i6)
 1008  FORMAT(1x,'FILTRANE INTERNAL ERROR 100: k =', i10)
 1009  FORMAT(1x,'         (Please report to Ph. Toint (with problem data',     &
-                ' and specfile). Thanks.)')     
+                ' and specfile). Thanks.)')
 1010  FORMAT(2x,'removing dominated filter entry in position ',i6)
 1011  FORMAT(/,5x,'FILTER(',i6,') active :')
 1012  FORMAT(/,5x,'FILTER(',i6,') inactive :')
@@ -7043,11 +7043,11 @@
 
 !     The general case
 !     Compute the margin, when it only depends on the current theta.
- 
+
       cnorm = NRM2( s%p, s%theta( 1:s%p ), 1 )
       s%r( 1:s%p ) = ABS( s%theta( 1:s%p ) )
       IF ( control%margin_type /= FIXED ) THEN
-         marginc = control%gamma_f * cnorm 
+         marginc = control%gamma_f * cnorm
          sqrtp = s%p
          sqrtp = SQRT( sqrtp )
       END IF
@@ -7055,26 +7055,26 @@
 !     Select the active filter.
 
       SELECT CASE ( s%active_filter )
-      
+
       CASE ( 0 )
-      
+
          FILTRANE_is_acceptable = .TRUE.
          RETURN
-      
+
       CASE ( 1 )
-      
+
          filter => s%filter_1
          fnorm  => s%fnorm_1
          fnext  => s%filter_next_1
          IF ( control%remove_dominated ) active => s%active_1
 
       CASE ( 2 )
-      
+
          filter => s%filter_2
          fnorm  => s%fnorm_2
          fnext  => s%filter_next_2
          IF ( control%remove_dominated ) active => s%active_2
-      
+
       END SELECT
 
 !     Verify acceptability for the current filter: the entry is a priori acceptable.
@@ -7085,14 +7085,14 @@
 
 !     Consider first the case where the margin is FIXED.  In this case, the
 !     filter entry already contains the margin, so the tests no longer involve
-!     it. 
+!     it.
 
       CASE( FIXED )
 
          SELECT CASE ( s%filter_sign )
-      
+
 !        The first case is when every group is sign restricted.
-      
+
          CASE ( RESTRICTED )
 
             nxt = s%filter_first
@@ -7124,9 +7124,9 @@
                END IF
             END DO
 
-      
+
 !        The second case is when every group is sign unrestricted.
-      
+
          CASE ( UNRESTRICTED )
 
             nxt = s%filter_first
@@ -7151,7 +7151,7 @@ fpt7:       DO k = 1, s%filter_size
                               IF ( nxt > 0 ) CYCLE fpt7
                               RETURN
                            END IF
-                        ELSE 
+                        ELSE
                            IF ( fval <= ZERO .OR. cval < fval ) THEN
                               nxt = fnext( nxt )
                               IF ( nxt > 0 ) CYCLE fpt7
@@ -7166,7 +7166,7 @@ fpt7:       DO k = 1, s%filter_size
                   IF ( cnorm < fnorm( nxt ) ) RETURN
                   DO j = 1, s%p
                      cval = s%theta( j )
-                     fval = filter( nxt, j ) 
+                     fval = filter( nxt, j )
                      IF ( cval < ZERO ) THEN
                         IF ( fval >= ZERO .OR. cval > fval ) THEN
                            nxt = fnext( nxt )
@@ -7179,7 +7179,7 @@ fpt7:       DO k = 1, s%filter_size
                            IF ( nxt > 0 ) CYCLE fpt7
                            RETURN
                         END IF
-                     ELSE 
+                     ELSE
                         IF ( fval <= ZERO .OR. cval < fval ) THEN
                            nxt = fnext( nxt )
                            IF ( nxt > 0 ) CYCLE fpt7
@@ -7194,7 +7194,7 @@ fpt7:       DO k = 1, s%filter_size
 
 !        The third case is when there is a mixture of sign-restricted
 !        an unrestricted groups.
-      
+
          CASE ( MIXED )
 
             nxt = s%filter_first
@@ -7204,7 +7204,7 @@ fpt8:       DO k = 1, s%filter_size
                      IF ( cnorm < fnorm( nxt ) ) RETURN
                      DO j = 1, s%p
                         cval = s%theta( j )
-                        fval = filter( nxt, j ) 
+                        fval = filter( nxt, j )
                         SELECT CASE ( s%g_status( j ) )
                         CASE ( SINGLE_RESTRICTED, MULTIPLE )
                            IF ( ABS( cval ) < fval ) THEN
@@ -7225,7 +7225,7 @@ fpt8:       DO k = 1, s%filter_size
                                  IF ( nxt > 0 ) CYCLE fpt8
                                  RETURN
                               END IF
-                           ELSE 
+                           ELSE
                               IF ( fval <= ZERO .OR. cval < fval ) THEN
                                  nxt = fnext( nxt )
                                  IF ( nxt > 0 ) CYCLE fpt8
@@ -7241,7 +7241,7 @@ fpt8:       DO k = 1, s%filter_size
                   IF ( cnorm < fnorm( k ) ) RETURN
                   DO j = 1, s%p
                      cval = s%theta( j )
-                     fval = filter( nxt, j ) 
+                     fval = filter( nxt, j )
                      SELECT CASE ( s%g_status( j ) )
                      CASE ( SINGLE_RESTRICTED, MULTIPLE )
                         IF ( ABS( cval ) < fval ) THEN
@@ -7262,7 +7262,7 @@ fpt8:       DO k = 1, s%filter_size
                               IF ( nxt > 0 ) CYCLE fpt8
                               RETURN
                            END IF
-                        ELSE 
+                        ELSE
                            IF ( fval <= ZERO .OR. cval < fval ) THEN
                               nxt = fnext( nxt )
                               IF ( nxt > 0 ) THEN
@@ -7282,17 +7282,17 @@ fpt8:       DO k = 1, s%filter_size
          END SELECT
 
 !     Consider now the CURRENT and SMALLEST margin type.  In these cases,
-!     the margin is not included in the filter, and must therefore be 
+!     the margin is not included in the filter, and must therefore be
 !     computed and used in the acceptability test.
 
       CASE( CURRENT, SMALLEST )
 
          SELECT CASE ( s%filter_sign )
-      
+
 !        The first case is when every group is sign restricted.
-      
+
          CASE ( RESTRICTED )
-      
+
             IF ( control%margin_type == SMALLEST ) THEN
 
                nxt = s%filter_first
@@ -7367,11 +7367,11 @@ fpt8:       DO k = 1, s%filter_size
                END DO
 
             END IF
-      
+
 !        The second case is when every group is sign unrestricted.
-      
+
          CASE ( UNRESTRICTED )
-      
+
             IF ( control%margin_type == SMALLEST ) THEN
 
                nxt = s%filter_first
@@ -7382,7 +7382,7 @@ fpt9:          DO k = 1, s%filter_size
                         IF ( cnorm < fnorm( nxt ) - margin *sqrtp ) RETURN
                         DO j = 1, s%p
                            cval = s%theta( j )
-                           fval = filter( nxt, j ) 
+                           fval = filter( nxt, j )
                            IF ( cval < ZERO ) THEN
                               IF ( fval>=ZERO .OR. cval>fval+margin ) THEN
                                  nxt = fnext( nxt )
@@ -7395,7 +7395,7 @@ fpt9:          DO k = 1, s%filter_size
                                  IF ( nxt > 0 ) CYCLE fpt9
                                  RETURN
                               END IF
-                           ELSE 
+                           ELSE
                               IF ( fval<=ZERO .OR. cval<fval-margin ) THEN
                                  nxt = fnext( nxt )
                                  IF ( nxt > 0 ) CYCLE fpt9
@@ -7411,7 +7411,7 @@ fpt9:          DO k = 1, s%filter_size
                      IF ( cnorm < fnorm( nxt ) - margin * sqrtp ) RETURN
                      DO j = 1, s%p
                         cval = s%theta( j )
-                        fval = filter( nxt, j ) 
+                        fval = filter( nxt, j )
                         IF ( cval < ZERO ) THEN
                            IF ( fval >= ZERO .OR. cval > fval + margin ) THEN
                               nxt = fnext( nxt )
@@ -7424,7 +7424,7 @@ fpt9:          DO k = 1, s%filter_size
                               IF ( nxt > 0 ) CYCLE fpt9
                               RETURN
                            END IF
-                        ELSE 
+                        ELSE
                            IF ( fval <= ZERO .OR. cval < fval - margin ) THEN
                               nxt = fnext( nxt )
                               IF ( nxt > 0 ) CYCLE fpt9
@@ -7447,7 +7447,7 @@ fpt0:          DO k   = 1, s%filter_size
                         IF ( cnorm < fnorm( nxt ) - margin * sqrtp ) RETURN
                         DO j = 1, s%p
                            cval = s%theta( j )
-                           fval = filter( nxt, j ) 
+                           fval = filter( nxt, j )
                            IF ( cval < ZERO ) THEN
                               IF ( fval >= ZERO .OR. cval > fval+margin ) THEN
                                  nxt = fnext( nxt )
@@ -7460,7 +7460,7 @@ fpt0:          DO k   = 1, s%filter_size
                                  IF ( nxt > 0 ) CYCLE fpt0
                                  RETURN
                               END IF
-                           ELSE 
+                           ELSE
                               IF (fval <= ZERO .OR. cval < fval - margin) THEN
                                  nxt = fnext( nxt )
                                  IF ( nxt > 0 ) CYCLE fpt0
@@ -7475,7 +7475,7 @@ fpt0:          DO k   = 1, s%filter_size
                      IF ( cnorm < fnorm( nxt ) - margin * sqrtp ) RETURN
                      DO j = 1, s%p
                         cval = s%theta( j )
-                        fval = filter( nxt, j ) 
+                        fval = filter( nxt, j )
                         IF ( cval < ZERO ) THEN
                            IF ( fval >= ZERO .OR. cval > fval + margin ) THEN
                               nxt = fnext( nxt )
@@ -7488,7 +7488,7 @@ fpt0:          DO k   = 1, s%filter_size
                               IF ( nxt > 0 ) CYCLE fpt0
                               RETURN
                            END IF
-                        ELSE 
+                        ELSE
                            IF ( fval <= ZERO .OR. cval < fval - margin ) THEN
                               nxt = fnext( nxt )
                               IF ( nxt > 0 ) CYCLE fpt0
@@ -7502,12 +7502,12 @@ fpt0:          DO k   = 1, s%filter_size
                END DO fpt0
 
             END IF
-      
+
 !        The third case is when there is a mixture of sign-restricted
 !        an unrestricted groups.
-      
+
          CASE ( MIXED )
-      
+
             IF ( control%margin_type == SMALLEST ) THEN
 
                nxt = s%filter_first
@@ -7518,7 +7518,7 @@ fpt10:         DO k = 1, s%filter_size
                         IF ( cnorm < fnorm( nxt ) - margin * sqrtp ) RETURN
                         DO j = 1, s%p
                            cval = s%theta( j )
-                           fval = filter( k, j ) 
+                           fval = filter( k, j )
                            SELECT CASE ( s%g_status( j ) )
                            CASE ( SINGLE_RESTRICTED, MULTIPLE )
                               IF ( ABS( cval ) < fval - margin ) THEN
@@ -7539,7 +7539,7 @@ fpt10:         DO k = 1, s%filter_size
                                     IF ( nxt > 0 ) CYCLE fpt10
                                     RETURN
                                  END IF
-                              ELSE 
+                              ELSE
                                  IF ( fval <= ZERO .OR. cval < fval-margin )THEN
                                     nxt = fnext( nxt )
                                     IF ( nxt > 0 ) CYCLE fpt10
@@ -7556,7 +7556,7 @@ fpt10:         DO k = 1, s%filter_size
                      IF ( cnorm < fnorm( nxt ) - margin *sqrtp ) RETURN
                      DO j = 1, s%p
                         cval = s%theta( j )
-                        fval = filter( nxt, j ) 
+                        fval = filter( nxt, j )
                         SELECT CASE ( s%g_status( j ) )
                         CASE ( SINGLE_RESTRICTED, MULTIPLE )
                            IF ( ABS( cval ) < fval - margin ) THEN
@@ -7577,7 +7577,7 @@ fpt10:         DO k = 1, s%filter_size
                                  IF ( nxt > 0 ) CYCLE fpt10
                                  RETURN
                               END IF
-                           ELSE 
+                           ELSE
                               IF (fval <= ZERO .OR. cval < fval - margin) THEN
                                  nxt = fnext( nxt )
                                  IF ( nxt > 0 ) CYCLE fpt10
@@ -7601,7 +7601,7 @@ fpt11:         DO k = 1, s%filter_size
                         IF ( cnorm < fnorm( k ) - margin * sqrtp ) RETURN
                         DO j = 1, s%p
                            cval = s%theta( j )
-                           fval = filter( nxt, j ) 
+                           fval = filter( nxt, j )
                            SELECT CASE ( s%g_status( j ) )
                            CASE ( SINGLE_RESTRICTED, MULTIPLE )
                               IF ( ABS( cval ) <= fval - margin ) THEN
@@ -7622,7 +7622,7 @@ fpt11:         DO k = 1, s%filter_size
                                     IF ( nxt > 0 ) CYCLE fpt11
                                     RETURN
                                  END IF
-                              ELSE 
+                              ELSE
                                  IF( fval <= ZERO .OR. cval < fval-margin ) THEN
                                     nxt = fnext( nxt )
                                     IF ( nxt > 0 ) CYCLE fpt11
@@ -7638,7 +7638,7 @@ fpt11:         DO k = 1, s%filter_size
                      IF ( cnorm < fnorm( nxt ) - margin * sqrtp ) RETURN
                      DO j = 1, s%p
                         cval = s%theta( j )
-                        fval = filter( nxt, j ) 
+                        fval = filter( nxt, j )
                         SELECT CASE ( s%g_status( j ) )
                         CASE ( SINGLE_RESTRICTED, MULTIPLE )
                            IF ( ABS( cval ) <= fval - margin ) THEN
@@ -7659,7 +7659,7 @@ fpt11:         DO k = 1, s%filter_size
                                  IF ( nxt > 0 ) CYCLE fpt11
                                  RETURN
                               END IF
-                           ELSE 
+                           ELSE
                               IF ( fval <= ZERO .OR. cval < fval-margin ) THEN
                                  nxt = fnext( nxt )
                                  IF ( nxt > 0 ) CYCLE fpt11
@@ -7682,7 +7682,7 @@ fpt11:         DO k = 1, s%filter_size
       FILTRANE_is_acceptable = .TRUE.
 
       RETURN
-      
+
       END FUNCTION FILTRANE_is_acceptable
 
 !==============================================================================
@@ -7698,7 +7698,7 @@ fpt11:         DO k = 1, s%filter_size
 
 !     Local variables
 
-      INTEGER :: i, j, nxt, ig 
+      INTEGER :: i, j, nxt, ig
       LOGICAL :: has_multiple
       REAL ( KIND = wp ) :: v
 
@@ -7716,7 +7716,7 @@ fpt11:         DO k = 1, s%filter_size
             ig = s%group( i )
          END SELECT
 
-         v = FILTRANE_c_violation( i ) 
+         v = FILTRANE_c_violation( i )
          SELECT CASE ( s%filter_sign )
          CASE ( RESTRICTED )
             s%theta( ig ) = s%theta( ig ) + ABS( v )
@@ -7739,7 +7739,7 @@ fpt11:         DO k = 1, s%filter_size
 !     Add the contributions of the violated bounds, if any.
 
       IF ( s%has_bounds ) THEN
-         nxt = problem%m 
+         nxt = problem%m
          DO j = 1, problem%n
             SELECT CASE ( problem%x_status( j ) )
             CASE ( LOWER, UPPER, RANGE )
@@ -7758,7 +7758,7 @@ fpt11:         DO k = 1, s%filter_size
                   s%theta( ig ) = s%theta( ig ) + ABS( v )
                CASE ( UNRESTRICTED )
                   s%theta( ig ) = s%theta( ig ) + v
-               CASE ( MIXED ) 
+               CASE ( MIXED )
                   SELECT CASE ( s%g_status( ig ) )
                   CASE ( SINGLE_RESTRICTED )
                      s%theta( ig ) = s%theta( ig ) + ABS( v )
@@ -7842,7 +7842,7 @@ fpt11:         DO k = 1, s%filter_size
 
       IF ( s%has_bounds ) THEN
 
-         nxt = problem%m 
+         nxt = problem%m
          DO j = 1, problem%n
             SELECT CASE ( problem%x_status( j ) )
             CASE ( LOWER, UPPER, RANGE )
@@ -7914,7 +7914,7 @@ fpt11:         DO k = 1, s%filter_size
       REAL( KIND = wp ) :: ci, cli, cui, t, v, twoeps
 
       DO i = 1, problem%m
-      
+
          IF ( problem%equation( i ) ) THEN
             problem%y( i ) = c( i )
          ELSE
@@ -7942,7 +7942,7 @@ fpt11:         DO k = 1, s%filter_size
                   problem%y( i ) =  ONE
                ELSE IF ( ci > cui - s%epsilon ) THEN
                   t = ( v + s%epsilon ) / twoeps
-                  problem%y( i ) = - TWO * t ** 3 + THREE * t ** 2 
+                  problem%y( i ) = - TWO * t ** 3 + THREE * t ** 2
                END IF
             CASE ( 2 )
                problem%y( i ) = v
@@ -7952,7 +7952,7 @@ fpt11:         DO k = 1, s%filter_size
                problem%y( i ) = TWO * v ** 3
             END SELECT
          END IF
-      
+
       END DO
 
       RETURN
@@ -8013,7 +8013,7 @@ fpt11:         DO k = 1, s%filter_size
                         s%r( i ) = ONE
                      ELSE IF ( ci > cui - s%epsilon ) THEN
                         t    = ( violation + s%epsilon ) / twoeps
-                        dphi = - TWO * t ** 3 + THREE * t ** 2 
+                        dphi = - TWO * t ** 3 + THREE * t ** 2
                         s%r( i ) = dphi
                      END IF
                   CASE ( 2 )
@@ -8071,13 +8071,13 @@ fpt11:         DO k = 1, s%filter_size
          DO j = 1, problem%n
             SELECT CASE ( problem%x_status( j ) )
             CASE ( LOWER, UPPER, RANGE )
-	 
+
                violation = FILTRANE_x_violation( j )
-	 
+
                SELECT CASE ( control%inequality_penalty_type )
-	 	  
+
                CASE ( 1 )
-	 	  
+
                   xj  = problem%x( j )
                   xlj = problem%x_l( j )
                   xuj = problem%x_u( j )
@@ -8093,26 +8093,26 @@ fpt11:         DO k = 1, s%filter_size
                      problem%g( j ) = problem%g( j ) + ONE
                   ELSE IF ( xj > xuj - s%epsilon ) THEN
                      t    = ( violation + s%epsilon ) / twoeps
-                     dphi = - TWO * t ** 3 + THREE * t ** 2 
+                     dphi = - TWO * t ** 3 + THREE * t ** 2
                      problem%g( j ) = problem%g( j ) + dphi
                   END IF
-	 
+
                CASE ( 2 )
-	 	  
+
                   problem%g( j ) = problem%g( j ) + violation
-	 	  
+
                CASE ( 3 )
-	 	  
+
                   IF ( violation >= ZERO ) THEN
                      problem%g( j ) = problem%g( j ) + 1.5_wp * violation **2
 	 	     ELSE
                      problem%g( j ) = problem%g( j ) - 1.5_wp * violation **2
                   END IF
-	 
+
                CASE ( 4 )
-	 	  
+
                   problem%g( j ) = problem%g( j ) + TWO * violation ** 3
-	 	  
+
                END SELECT
             END SELECT
          END DO
@@ -8145,9 +8145,9 @@ fpt11:         DO k = 1, s%filter_size
 
       REAL( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: Jv
 
-!                the result of premultiplying the vector v by the Jacobian 
+!                the result of premultiplying the vector v by the Jacobian
 !                (or its transpose);
-!                
+!
       LOGICAL :: trans
 
 !                .TRUE. if the product must involve the transpose of the
@@ -8172,7 +8172,7 @@ fpt11:         DO k = 1, s%filter_size
          IF ( s%has_fixed ) THEN
             IF ( trans ) THEN
                DO k = 1, problem%J_ne
-                  j = problem%J_col( k ) 
+                  j = problem%J_col( k )
                   IF ( problem%x_status( j ) == FIXED ) CYCLE
                   i = problem%J_row( k )
                   IF ( .NOT. problem%equation( i ) ) THEN
@@ -8182,9 +8182,9 @@ fpt11:         DO k = 1, s%filter_size
                END DO
             ELSE
                DO k = 1, problem%J_ne
-                  j = problem%J_col( k ) 
+                  j = problem%J_col( k )
                   IF ( problem%x_status( j ) == FIXED ) CYCLE
-                  i = problem%J_row( k ) 
+                  i = problem%J_row( k )
                   IF ( .NOT. problem%equation( i ) ) THEN
                      IF ( FILTRANE_c_violation( i ) == ZERO ) CYCLE
                   END IF
@@ -8194,7 +8194,7 @@ fpt11:         DO k = 1, s%filter_size
          ELSE
             IF ( trans ) THEN
                DO k = 1, problem%J_ne
-                  j = problem%J_col( k ) 
+                  j = problem%J_col( k )
                   i = problem%J_row( k )
                   IF ( .NOT. problem%equation( i ) ) THEN
                      IF ( FILTRANE_c_violation( i ) == ZERO ) CYCLE
@@ -8203,7 +8203,7 @@ fpt11:         DO k = 1, s%filter_size
                END DO
             ELSE
                DO k = 1, problem%J_ne
-                  i = problem%J_row( k ) 
+                  i = problem%J_row( k )
                   IF ( .NOT. problem%equation( i ) ) THEN
                      IF ( FILTRANE_c_violation( i ) == ZERO ) CYCLE
                   END IF
@@ -8215,27 +8215,27 @@ fpt11:         DO k = 1, s%filter_size
          IF ( s%has_fixed ) THEN
             IF ( trans ) THEN
                DO k = 1, problem%J_ne
-                 j = problem%J_col( k ) 
+                 j = problem%J_col( k )
                   IF ( problem%x_status( j ) == FIXED ) CYCLE
                   Jv( j ) = Jv(j) + problem%J_val(k) * v( problem%J_row(k) )
                END DO
             ELSE
                DO k = 1, problem%J_ne
-                  j = problem%J_col( k ) 
+                  j = problem%J_col( k )
                   IF ( problem%x_status( j ) == FIXED ) CYCLE
-                  i = problem%J_row( k ) 
+                  i = problem%J_row( k )
                   Jv( i ) = Jv(i) + problem%J_val( k ) * v( j )
                END DO
             END IF
          ELSE
             IF ( trans ) THEN
                DO k = 1, problem%J_ne
-                  j = problem%J_col( k ) 
+                  j = problem%J_col( k )
                   Jv( j ) = Jv(j) + problem%J_val(k) * v( problem%J_row(k) )
                END DO
             ELSE
                DO k = 1, problem%J_ne
-                  i = problem%J_row( k ) 
+                  i = problem%J_row( k )
                   Jv( i ) = Jv(i) + problem%J_val(k) * v( problem%J_col(k) )
                END DO
             END IF
@@ -8269,7 +8269,7 @@ fpt11:         DO k = 1, s%filter_size
 !     Reorder each column by ascending row indices.
 
       DO i = 1, problem%n
-         ie = s%iw( i + 1 ) 
+         ie = s%iw( i + 1 )
          is = s%iw( i )
          rs = ie - is
          IF ( rs > 1 ) THEN
@@ -8278,7 +8278,7 @@ fpt11:         DO k = 1, s%filter_size
             IF ( ec /= OK ) THEN
                inform%status = SORT_TOO_LONG
                WRITE( inform%message( 1 ), 1000 )
-               WRITE( inform%message( 2 ), 1001 ) 
+               WRITE( inform%message( 2 ), 1001 )
                RETURN
             END IF
          END IF
@@ -8343,7 +8343,7 @@ fpt11:         DO k = 1, s%filter_size
                val = val + problem%J_val( s%perm( kx ) ) ** 2
             END DO
             s%diag( i ) = val
- 
+
 !           Offdiagonal elements
 
             DO j = 1, MIN( s%nsemib, problem%n - i )
@@ -8481,7 +8481,7 @@ fpt11:         DO k = 1, s%filter_size
 !===============================================================================
 !===============================================================================
 !===============================================================================
- 
+
       SUBROUTINE FILTRANE_terminate( control, inform, s )
 
 !     Cleans up the workspace and the map space.
@@ -8523,7 +8523,7 @@ fpt11:         DO k = 1, s%filter_size
 !     Clean up the various workspace arrays.
 
       IF ( s%level >= TRACE ) THEN
-         WRITE( s%out, 1000 ) 
+         WRITE( s%out, 1000 )
          IF ( s%level >= DETAILS ) WRITE( s%out, 1001 )
       END IF
 
@@ -8604,7 +8604,7 @@ fpt11:         DO k = 1, s%filter_size
 
 !==============================================================================
 
-      WRITE( out, 1000 ) 
+      WRITE( out, 1000 )
       RETURN
 
 !     Format
@@ -8669,10 +8669,10 @@ fpt11:         DO k = 1, s%filter_size
                WRITE( s%out, 1003 ) TRIM( inform%message( 1 ) )
             CASE ( VOID )
             END SELECT
-      
+
 !     Unsuccessful exit
-      
-         ELSE 
+
+         ELSE
             DO line = 1, 3
                IF ( LEN_TRIM( inform%message( line ) ) > 0 ) THEN
                   WRITE( control%errout, 1003 ) TRIM( inform%message( line ) )
@@ -8681,7 +8681,7 @@ fpt11:         DO k = 1, s%filter_size
                END IF
             END DO
          END IF
-         WRITE( s%out, 1002 ) 
+         WRITE( s%out, 1002 )
       END IF
 
       RETURN

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.1 - 13/02/2008 AT 09:20 GMT.
+! THIS VERSION: GALAHAD 3.3 - 28/01/2020 AT 08:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -37,8 +37,8 @@
 !-------------------------
 
       USE GALAHAD_NORMS_double
-      USE GALAHAD_TOOLS_double
       USE GALAHAD_SMT_double
+      USE GALAHAD_TOOLS
       USE GALAHAD_SYMBOLS,                                                     &
           SILENT              => GALAHAD_SILENT,                               &
           TRACE               => GALAHAD_TRACE,                                &

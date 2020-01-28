@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.2 - 08/05/2019 AT 08:10 GMT
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ N L S   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -38,7 +38,7 @@
      USE GALAHAD_ROOTS_double
      USE GALAHAD_MOP_double, ONLY: mop_Ax, mop_column_2_norms
      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
-     USE GALAHAD_STRING_double, ONLY: STRING_integer_6
+     USE GALAHAD_STRING, ONLY: STRING_integer_6
 
      IMPLICIT NONE
 

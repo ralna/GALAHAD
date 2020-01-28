@@ -12,7 +12,10 @@ FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
 FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
 FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
 FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(OPENMP)
 RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES) $(PLPLOT)
+RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
 
 #  names of random libraries
 
@@ -78,15 +81,19 @@ FISQPOBJECTSD_CUTEST = $(DFISQP) $(DRUNFISQP)
 OBJECTSS_CUTEST = $(FISQPOBJECTSS_CUTEST)
 OBJECTSD_CUTEST = $(FISQPOBJECTSD_CUTEST)
 
-FISQPDS = $(DFISQP) $(OBJD)/fisqps.o
-FISQPDT = $(DFISQP) $(OBJD)/fisqpt.o
 FISQPSS = $(SFISQP) $(OBJS)/fisqps.o
+FISQPSS2 = $(SFISQP) $(OBJS)/fisqps2.o
+FISQPDS = $(DFISQP) $(OBJD)/fisqps.o
+FISQPDS2 = $(DFISQP) $(OBJD)/fisqps2.o
 FISQPST = $(SFISQP) $(OBJS)/fisqpt.o
+FISQPDT = $(DFISQP) $(OBJD)/fisqpt.o
 
-RFISQPDS = $(OBJD)/fisqps.o -L$(OBJD) $(LIBS)
-RFISQPDT = $(OBJD)/fisqpt.o -L$(OBJD) $(LIBS)
 RFISQPSS = $(OBJS)/fisqps.o -L$(OBJS) $(LIBS)
+RFISQPSS2 = $(OBJS)/fisqps2.o -L$(OBJS) $(LIBS)
+RFISQPDS = $(OBJD)/fisqps.o -L$(OBJD) $(LIBS)
+RFISQPDS2 = $(OBJD)/fisqps2.o -L$(OBJD) $(LIBS)
 RFISQPST = $(OBJS)/fisqpt.o -L$(OBJS) $(LIBS)
+RFISQPDT = $(OBJD)/fisqpt.o -L$(OBJD) $(LIBS)
 
 SUCC = precision version) compiled successfully
 SUCC_CUTEST = precision version) for CUTEst compiled successfully
@@ -174,30 +181,42 @@ copyright:
 
 # run spec-sheet example tests
 
-fisqpds: $(FISQPDS)
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_fisqp $(RFISQPDS)
-	- ./run_fisqp >& fisqpds.output
-	cat fisqpds.output
-	rm ./run_fisqp
-
-fisqpdt: $(FISQPDT)
-	echo " Exhaustive test of subroutine interface to fisqp"
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_fisqp $(RFISQPDT)
-	- ./run_fisqp >& fisqpdt.output
-	cat fisqpdt.output
-	rm ./run_fisqp
-
 fisqpss: $(FISQPSS)
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_fisqp $(RFISQPSS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_fisqp $(RFISQPSS)
 	- ./run_fisqp >& fisqps.output
 	cat fisqps.output
 	rm ./run_fisqp
 
+fisqpss2: $(FISQPSS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_fisqp $(RFISQPSS2)
+	- ./run_fisqp >& fisqps2.output
+	cat fisqps2.output
+	rm ./run_fisqp
+
+fisqpds: $(FISQPDS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_fisqp $(RFISQPDS)
+	- ./run_fisqp >& fisqpds.output
+	cat fisqpds.output
+	rm ./run_fisqp
+
+fisqpds2: $(FISQPDS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_fisqp $(RFISQPDS2)
+	- ./run_fisqp >& fisqpds2.output
+	cat fisqpds2.output
+	rm ./run_fisqp
+
 fisqpst: $(FISQPST)
 	echo " Exhaustive test of subroutine interface to fisqp"
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_fisqp $(RFISQPST)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_fisqp $(RFISQPST)
 	- ./run_fisqp >& fisqpt.output
 	cat fisqpt.output
+	rm ./run_fisqp
+
+fisqpdt: $(FISQPDT)
+	echo " Exhaustive test of subroutine interface to fisqp"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_fisqp $(RFISQPDT)
+	- ./run_fisqp >& fisqpdt.output
+	cat fisqpdt.output
 	rm ./run_fisqp
 
 #  Substantial GALAHAD packages
@@ -263,6 +282,16 @@ $(OBJ)/fisqps.o: ../fisqp/fisqps.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
+fisqps2.o: $(OBJ)/fisqps2.o
+
+$(OBJ)/fisqps2.o: ../fisqp/fisqps2.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "fisqps2  "
+	$(SED) -f $(SEDS) ../fisqp/fisqps2.f90 > $(OBJ)/fisqps21.f90
+	$(SED) -f $(LSEDS) $(OBJ)/fisqps21.f90 > $(OBJ)/fisqps2.f90
+	cd $(OBJ) ; $(FORTRAN) -o fisqps2.o $(FFLAGS) fisqps2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
 fisqpt.o: $(OBJ)/fisqpt.o
 
 $(OBJ)/fisqpt.o: ../fisqp/fisqpt.f90
@@ -289,4 +318,3 @@ rmfisqp:
 	@printf ' %-9s %-15s\t\t' "Removing" "fisqp from archive "
 	$(RMARFILE) fisqp.o
 	@printf '[ OK ]\n'
-

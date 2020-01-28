@@ -94,7 +94,7 @@ MA86SED = $(GALAHAD)/seds/$(MA86_VERSION).sed
 
 #  compilation agenda
 
-SLSS = basics ma57v4 sils mc61 mc64 mc68 mc77 ma77 ma86 ma87 ma97 $(SSIDS) \
+SLSS = basics ma57v4 sils mc61 mc64 mc68 mc77 ma77 ma86 ma87 ma97 ssids_dum \
        pardiso wsmp metis symbols space string specfile sort $(LGS)(sls.o)
 SLSD = basics ma57v4 sils mc61 mc64 mc68 mc77 ma77 ma86 ma87 ma97 $(SSIDS) \
        pardiso wsmp metis symbols space string specfile sort $(LGD)(sls.o)
@@ -184,6 +184,9 @@ specfile:
 sort:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             sort.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+ssids_dum:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ssids_dum_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 sils:
 	( cd ../sils ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             sils_silent PRECIS=$(PRECIS) PWD=$(PWD)/../sils )
@@ -344,7 +347,8 @@ $(LG)(sls.o): ../sls/sls.f90
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o sls.o $(FFLAGSNOMP) sls.f90 )
 	cd $(OBJ) ; cp sls.f90 /tmp/sls.f90
-	cd $(OBJ) ; $(ARR) sls.o ; $(RM) sls.f90 sls1.f90 sls2.f90 sls.o
+#	cd $(OBJ) ; $(ARR) sls.o ; $(RM) sls.f90 sls1.f90 sls2.f90 sls.o
+	cd $(OBJ) ; $(ARR) sls.o ; $(RM) sls1.f90 sls2.f90 sls.o
 	$(RMARFILE) psls.o
 	$(RMARFILE) sbls.o
 	$(RMARFILE) cro.o
@@ -424,6 +428,3 @@ rmsls:
 	@printf ' %-9s %-15s\t\t' "Removing" "sls from archive "
 	$(RMARFILE) sls.o
 	@printf '[ OK ]\n'
-
-
-

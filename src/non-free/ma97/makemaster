@@ -39,13 +39,13 @@ MLGS = $(OBJS)/libgalahad_metis.a
 MLGD = $(OBJD)/libgalahad_metis.a
 
 MA97S = blas lapack $(HLGS)(hsl_mc34s.o) \
-        $(HLGS)(hsl_mc68i.o) $(HLGS)(hsl_mc69s.o) $(HLGS)(mc64d.o) \
-        $(HLGS)(mc30s.o) $(HLGS)(hsl_mc64d.o) $(HLGS)(mc77s.o)     \
+        $(HLGS)(hsl_mc68i.o) $(HLGS)(hsl_mc69s.o) $(HLGS)(mc64s.o) \
+        $(HLGS)(mc30s.o) $(HLGS)(mc77s.o)     \
         $(HLGS)(hsl_mc78i.o) $(HLGS)(hsl_mc80s.o) $(HLGS)(hsl_ma97s.o)
 
 MA97D = blas lapack $(HLGD)(hsl_mc34d.o) \
         $(HLGD)(hsl_mc68i.o) $(HLGD)(hsl_mc69d.o) $(HLGD)(mc64d.o) \
-        $(HLGD)(mc30d.o) $(HLGD)(hsl_mc64d.o) $(HLGD)(mc77d.o)     \
+        $(HLGD)(mc30d.o) $(HLGD)(mc77d.o)     \
         $(HLGD)(hsl_mc78i.o) $(HLGD)(hsl_mc80d.o) $(HLGD)(hsl_ma97d.o)
 
 #  Libraries used

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.0 - 22/02/2017 AT 10:50 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E L 2 R T   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -28,7 +28,7 @@
       USE GALAHAD_NORMS_double, ONLY: TWO_NORM
       USE GALAHAD_L2RT_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_STRING_double, ONLY: STRING_upper_word
+      USE GALAHAD_STRING, ONLY: STRING_upper_word
       USE GALAHAD_COPYRIGHT
       USE GALAHAD_CONVERT_double
       USE GALAHAD_SYMBOLS,                                                     &

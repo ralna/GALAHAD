@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 3/05/2010 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L C F    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -40,7 +40,7 @@
       USE GALAHAD_ROOTS_double
 !     USE GALAHAD_LSQP_double, ONLY:
       USE GALAHAD_FDC_double
-      USE GALAHAD_STRING_double
+      USE GALAHAD_STRING
 
       IMPLICIT NONE
 

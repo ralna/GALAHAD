@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 15/10/2014 AT 13:20 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ B Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -25,7 +25,7 @@
 !        ----------------------------------------------------------------
 
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_STRING_double, ONLY: STRING_integer_6, STRING_real_7
+     USE GALAHAD_STRING, ONLY: STRING_integer_6, STRING_real_7
      USE GALAHAD_SPACE_double
      USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build, SORT_heapsort_smallest
      USE GALAHAD_SBLS_double

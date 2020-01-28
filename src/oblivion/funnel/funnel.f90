@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 13/02/2014 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-  G A L A H A D _ F U N N E L   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -34,7 +34,7 @@
 !NOT95USE GALAHAD_CPU_time
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_STRING_double, ONLY: STRING_pleural, STRING_are
+     USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_are
      USE GALAHAD_SPACE_double
      USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type, NLPT_userdata_type
      USE GALAHAD_SBLS_double

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.7 - 27/07/2015 AT 14:20 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ C Q P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -39,7 +39,7 @@
 !NOT95USE GALAHAD_CPU_time
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_STRING_double, ONLY: STRING_pleural, STRING_verb_pleural,    &
+      USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural,           &
                                        STRING_ies, STRING_are, STRING_ordinal
       USE GALAHAD_SPACE_double
       USE GALAHAD_SMT_double
@@ -866,7 +866,7 @@
       spec( qplib_file_name )%keyword = 'qplib-file-name'
       spec( prefix )%keyword = 'output-line-prefix'
 
-      IF ( PRESENT( alt_specname ) ) WRITE(6,*) ' cqp: ', alt_specname
+!     IF ( PRESENT( alt_specname ) ) WRITE(6,*) ' cqp: ', alt_specname
 
 !  Read the specfile
 
@@ -2641,8 +2641,8 @@
 
       IF ( stat_required .AND. control%crossover .AND.                         &
            inform%status == GALAHAD_ok ) THEN
-         IF ( printa ) THEN
-          WRITE( control%out, "( A, ' Before crossover:`' )" ) prefix
+        IF ( printa ) THEN
+          WRITE( control%out, "( A, ' Before crossover:' )" ) prefix
           WRITE( control%out, "( /, A, '      i       X_l             X   ',   &
          &   '          X_u            Z        st' )" ) prefix
           DO i = 1, prob%n
@@ -3257,47 +3257,51 @@
 
 !  move to argument list
 
-      IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
-        WRITE( control%out, "( ' n, m = ', I0, 1X, I0 )" ) n, m
-        WRITE( control%out, "( ' f = ', ES12.4 )" ) f
-        IF ( gradient_kind == 1 ) THEN
-          WRITE( control%out, "( ' G = 1.0' )" )
+!     IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
+      IF ( control%out > 0 .AND. control%print_level >= 1 ) THEN
+        WRITE( control%out, "( /, A, ' n = ', I0, ', m = ', I0, ', f =',       &
+       &                       ES24.16 )" ) prefix, n, m, f
+        IF ( gradient_kind == 0 ) THEN
+          WRITE( control%out, "( A, ' G = zeros' )" ) prefix
+        ELSE IF ( gradient_kind == 1 ) THEN
+          WRITE( control%out, "( A, ' G = ones' )" ) prefix
         ELSE
-          IF ( PRESENT( G ) )                                                  &
-            WRITE( control%out, "( ' G = ', /, ( 5ES12.4 ) )" ) G( : n )
+          WRITE( control%out, "( A, ' G =', /, ( 5X, 3ES24.16 ) )" )          &
+            prefix, G( : n )
         END IF
-        IF ( hessian_kind == 1 ) THEN
-          WRITE( control%out, "( ' H  = 1.0' )" )
-        ELSE IF ( hessian_kind == 2 ) THEN
-          WRITE( control%out, "( ' H  =' )" )
-          WRITE( control%out, "( ( 4( ES12.4 ) ) )" ) ( WEIGHT( i ), i = 1, n )
+        IF ( Hessian_kind == 0 ) THEN
+          WRITE( control%out, "( A, ' W = zeros' )" ) prefix
+        ELSE IF ( Hessian_kind == 1 ) THEN
+          WRITE( control%out, "( A, ' W = ones ' )" ) prefix
+        ELSE IF ( Hessian_kind == 2 ) THEN
+          WRITE( control%out, "( A, ' W = ', /, ( 5X, 3ES24.16 ) )" )          &
+            prefix, WEIGHT( : n )
         ELSE IF ( hessian_kind < 0 ) THEN
           IF ( lbfgs ) THEN
             WRITE( control%out, "( ' H (limited-memory, held implicitly)' )" )
           ELSE
-            WRITE( control%out, "( ' H (row-wise) = ' )" )
-            IF ( diagonal_hessian ) THEN
-              DO i = 1, n
-                WRITE( control%out, "( ( 2I8, ES12.4 ) )" ) i, i, H_val( i )
-              END DO
-            ELSE
-              DO i = 1, n
-                WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )               &
+            WRITE( control%out, "( A, ' H (row-wise) =' )" ) prefix
+            DO i = 1, n
+              IF ( H_ptr( i ) <= H_ptr( i + 1 ) - 1 )                          &
+                WRITE( control%out, "( ( 2X, 2( 2I8, ES24.16 ) ) )" )          &
                ( i, H_col( j ), H_val( j ), j = H_ptr( i ), H_ptr( i + 1 ) - 1 )
-              END DO
-            END IF
+            END DO
           END IF
         END IF
-        WRITE( control%out, "( ' X_l = ', /, ( 5ES12.4 ) )" ) X_l( : n )
-        WRITE( control%out, "( ' X_u = ', /, ( 5ES12.4 ) )" ) X_u( : n )
-          WRITE( control%out, "( ' A (row-wise) = ' )" )
-          DO i = 1, m
-            WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                   &
-              ( i, A_col( j ), A_val( j ),                                     &
-                j = A_ptr( i ), A_ptr( i + 1 ) - 1 )
-          END DO
-        WRITE( control%out, "( ' C_l = ', /, ( 5ES12.4 ) )" ) C_l( : m )
-        WRITE( control%out, "( ' C_u = ', /, ( 5ES12.4 ) )" ) C_u( : m )
+        WRITE( control%out, "( A,                                              &
+       &  ' X_l =', /, ( 5X, 3ES24.16 ) )" ) prefix, X_l( : n )
+        WRITE( control%out, "( A,                                              &
+       &  ' X_u =', /, ( 5X, 3ES24.16 ) )" ) prefix, X_u( : n )
+        WRITE( control%out, "( A, ' A (row-wise) =' )" ) prefix
+        DO i = 1, m
+         IF ( A_ptr( i ) <= A_ptr( i + 1 ) - 1 )                               &
+            WRITE( control%out, "( ( 2X, 2( 2I8, ES24.16 ) ) )" )              &
+            ( i, A_col( j ), A_val( j ), j = A_ptr( i ), A_ptr( i + 1 ) - 1 )
+        END DO
+        WRITE( control%out, "( A,                                              &
+       &  ' C_l =', /, ( 5X, 3ES24.16 ) )" ) prefix, C_l( : m )
+        WRITE( control%out, "( A,                                              &
+       &  ' C_u =', /, ( 5X, 3ES24.16 ) )" ) prefix, C_u( : m )
       END IF
 
 ! -------------------------------------------------------------------
@@ -9185,30 +9189,30 @@ END DO
 !$OMP             local_ROOTS_control, local_ROOTS_inform )
         IF ( dims%x_free + 1 <= dims%x_l_end ) THEN
 !$OMP     DO
-          DO i = dims%x_free + 1, dims%x_l_end
-            x0 = X_coef( i, 0 ) - X_l( i )
-            DO j = 0, order
-              c = x0 * Z_l_coef( i, j )
-              DO k = 1, j
-                c = c + X_coef( i, k ) * Z_l_coef( i, j - k )
+            DO i = dims%x_free + 1, dims%x_l_end
+              x0 = X_coef( i, 0 ) - X_l( i )
+              DO j = 0, order
+                c = x0 * Z_l_coef( i, j )
+                DO k = 1, j
+                  c = c + X_coef( i, k ) * Z_l_coef( i, j - k )
+                END DO
+                COEF( j ) = c - scale * CS_coef( j )
               END DO
-              COEF( j ) = c - scale * CS_coef( j )
-            END DO
-            DO j = 1, order
-              opj = order + j
-              c = X_coef( i, j ) * Z_l_coef( i, order )
-              DO k = j + 1, order
-                c = c + X_coef( i, k ) * Z_l_coef( i, opj - k )
+              DO j = 1, order
+                opj = order + j
+                c = X_coef( i, j ) * Z_l_coef( i, order )
+                DO k = j + 1, order
+                  c = c + X_coef( i, k ) * Z_l_coef( i, opj - k )
+                END DO
+                COEF( opj ) = c - scale * CS_coef( opj )
               END DO
-              COEF( opj ) = c - scale * CS_coef( opj )
+              COEF( 0 ) = MAX( COEF( 0 ), zero )
+!$            thread = OMP_get_thread_num( )
+              ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                  &
+                          COEF( 0 : 2 * order ), lower, upper,                 &
+                          local_ROOTS_data( thread ), local_ROOTS_control,     &
+                          local_ROOTS_inform( thread ) )
             END DO
-            COEF( 0 ) = MAX( COEF( 0 ), zero )
-!$          thread = OMP_get_thread_num( )
-            ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                    &
-                        COEF( 0 : 2 * order ), lower, upper,                   &
-                        local_ROOTS_data( thread ), local_ROOTS_control,       &
-                        local_ROOTS_inform( thread ) )
-          END DO
 !$OMP     END DO
           alpha_max = MIN( alpha_max,                                          &
                            MINVAL( ALPHA_m( dims%x_free + 1 : dims%x_l_end ) ) )
@@ -9217,30 +9221,30 @@ END DO
 
         IF ( dims%x_u_start <= n ) THEN
 !$OMP     DO
-          DO i = dims%x_u_start, n
-            x0 = X_coef( i, 0 ) - X_u( i )
-            DO j = 0, order
-              c = x0 * Z_u_coef( i, j )
-              DO k = 1, j
-                c = c + X_coef( i, k ) * Z_u_coef( i, j - k )
+            DO i = dims%x_u_start, n
+              x0 = X_coef( i, 0 ) - X_u( i )
+              DO j = 0, order
+                c = x0 * Z_u_coef( i, j )
+                DO k = 1, j
+                  c = c + X_coef( i, k ) * Z_u_coef( i, j - k )
+                END DO
+                COEF( j ) = c - scale * CS_coef( j )
               END DO
-              COEF( j ) = c - scale * CS_coef( j )
-            END DO
-            DO j = 1, order
-              opj = order + j
-              c = X_coef( i, j ) * Z_u_coef( i, order )
-              DO k = j + 1, order
-                c = c + X_coef( i, k ) * Z_u_coef( i, opj - k )
+              DO j = 1, order
+                opj = order + j
+                c = X_coef( i, j ) * Z_u_coef( i, order )
+                DO k = j + 1, order
+                  c = c + X_coef( i, k ) * Z_u_coef( i, opj - k )
+                END DO
+                COEF( opj ) = c - scale * CS_coef( opj )
               END DO
-              COEF( opj ) = c - scale * CS_coef( opj )
+              COEF( 0 ) = MAX( COEF( 0 ), zero )
+!$            thread = OMP_get_thread_num( )
+              ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                  &
+                          COEF( 0 : 2 * order ), lower, upper,                 &
+                          local_ROOTS_data( thread ), local_ROOTS_control,     &
+                          local_ROOTS_inform( thread ) )
             END DO
-            COEF( 0 ) = MAX( COEF( 0 ), zero )
-!$          thread = OMP_get_thread_num( )
-            ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                    &
-                        COEF( 0 : 2 * order ), lower, upper,                   &
-                        local_ROOTS_data( thread ), local_ROOTS_control,       &
-                        local_ROOTS_inform( thread ) )
-          END DO
 !$OMP     END DO
           alpha_max = MIN( alpha_max,                                          &
                            MINVAL( ALPHA_m( dims%x_u_start : n ) ) )
@@ -9249,30 +9253,30 @@ END DO
 
         IF ( dims%c_l_start <= dims%c_l_end ) THEN
 !$OMP     DO
-          DO i = dims%c_l_start, dims%c_l_end
-            c0 = C_coef( i, 0 ) - C_l( i )
-            DO j = 0, order
-              c = c0 * Y_l_coef( i, j )
-              DO k = 1, j
-                c = c + C_coef( i, k ) * Y_l_coef( i, j - k )
+            DO i = dims%c_l_start, dims%c_l_end
+              c0 = C_coef( i, 0 ) - C_l( i )
+              DO j = 0, order
+                c = c0 * Y_l_coef( i, j )
+                DO k = 1, j
+                  c = c + C_coef( i, k ) * Y_l_coef( i, j - k )
+                END DO
+                COEF( j ) = c - scale * CS_coef( j )
               END DO
-              COEF( j ) = c - scale * CS_coef( j )
-            END DO
-            DO j = 1, order
-              opj = order + j
-              c = C_coef( i, j ) * Y_l_coef( i, order )
-              DO k = j + 1, order
-                c = c + C_coef( i, k ) * Y_l_coef( i, opj - k )
+              DO j = 1, order
+                opj = order + j
+                c = C_coef( i, j ) * Y_l_coef( i, order )
+                DO k = j + 1, order
+                  c = c + C_coef( i, k ) * Y_l_coef( i, opj - k )
+                END DO
+                COEF( opj ) = c - scale * CS_coef( opj )
               END DO
-              COEF( opj ) = c - scale * CS_coef( opj )
+              COEF( 0 ) = MAX( COEF( 0 ), zero )
+!$            thread = OMP_get_thread_num( )
+              ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                  &
+                          COEF( 0 : 2 * order ), lower, upper,                 &
+                          local_ROOTS_data( thread ), local_ROOTS_control,     &
+                          local_ROOTS_inform( thread ) )
             END DO
-            COEF( 0 ) = MAX( COEF( 0 ), zero )
-!$          thread = OMP_get_thread_num( )
-            ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                    &
-                        COEF( 0 : 2 * order ), lower, upper,                   &
-                        local_ROOTS_data( thread ), local_ROOTS_control,       &
-                        local_ROOTS_inform( thread ) )
-          END DO
 !$OMP     END DO
           alpha_max = MIN( alpha_max,                                          &
                            MINVAL( ALPHA_m( dims%c_l_start : dims%c_l_end ) ) )
@@ -9281,30 +9285,30 @@ END DO
 
         IF ( dims%c_u_start <= dims%c_u_end ) THEN
 !$OMP     DO
-          DO i = dims%c_u_start, dims%c_u_end
-            c0 = C_coef( i, 0 ) - C_u( i )
-            DO j = 0, order
-              c = c0 * Y_u_coef( i, j )
-              DO k = 1, j
-                c = c + C_coef( i, k ) * Y_u_coef( i, j - k )
+            DO i = dims%c_u_start, dims%c_u_end
+              c0 = C_coef( i, 0 ) - C_u( i )
+              DO j = 0, order
+                c = c0 * Y_u_coef( i, j )
+                DO k = 1, j
+                  c = c + C_coef( i, k ) * Y_u_coef( i, j - k )
+                END DO
+                COEF( j ) = c - scale * CS_coef( j )
               END DO
-              COEF( j ) = c - scale * CS_coef( j )
-            END DO
-            DO j = 1, order
-              opj = order + j
-              c = C_coef( i, j ) * Y_u_coef( i, order )
-              DO k = j + 1, order
-                c = c + C_coef( i, k ) * Y_u_coef( i, opj - k )
+              DO j = 1, order
+                opj = order + j
+                c = C_coef( i, j ) * Y_u_coef( i, order )
+                DO k = j + 1, order
+                  c = c + C_coef( i, k ) * Y_u_coef( i, opj - k )
+                END DO
+                COEF( opj ) = c - scale * CS_coef( opj )
               END DO
-              COEF( opj ) = c - scale * CS_coef( opj )
+              COEF( 0 ) = MAX( COEF( 0 ), zero )
+!$            thread = OMP_get_thread_num( )
+              ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                  &
+                          COEF( 0 : 2 * order ), lower, upper,                 &
+                          local_ROOTS_data( thread ), local_ROOTS_control,     &
+                          local_ROOTS_inform( thread ) )
             END DO
-            COEF( 0 ) = MAX( COEF( 0 ), zero )
-!$          thread = OMP_get_thread_num( )
-            ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                    &
-                        COEF( 0 : 2 * order ), lower, upper,                   &
-                        local_ROOTS_data( thread ), local_ROOTS_control,       &
-                        local_ROOTS_inform( thread ) )
-          END DO
 !$OMP     END DO
           alpha_max = MIN( alpha_max,                                          &
                             MINVAL( ALPHA_m( dims%c_u_start : dims%c_u_end ) ) )

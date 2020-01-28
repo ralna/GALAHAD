@@ -71,8 +71,8 @@ ma51s = $(ma48s) $(HLGS)(ma51s.o)
 ma51d = $(ma48d) $(HLGD)(ma51d.o)
 
 hsl_ma48s = zd11 $(HLGS)(mc71s.o) \
-            $(HLGS)(hsl_zb01d.o) $(HLGS)(hsl_zb01i.o) \
-            $(HLGS)(hsl_ma48d.o)
+            $(HLGS)(hsl_zb01s.o) $(HLGS)(hsl_zb01i.o) \
+            $(HLGS)(hsl_ma48s.o)
 hsl_ma48d = zd11 $(HLGD)(mc71d.o) \
             $(HLGD)(hsl_zb01d.o) $(HLGD)(hsl_zb01i.o) \
             $(HLGD)(hsl_ma48d.o)
@@ -299,7 +299,7 @@ $(HLG)(hsl_ma48d.o): $(MA48)/hsl_ma48d.f90
 hsl_zb01s.o: $(HLG)(hsl_zb01s.o)
 
 $(HLG)(hsl_zb01s.o): $(MA48)/hsl_zb01s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_zb01d "
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_zb01s "
 	$(CP) $(MA48)/hsl_zb01s.f90 $(OBJ)/hsl_zb01s.f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_zb01s.f90
 	cd $(OBJ); $(HARR) hsl_zb01s.o ; $(RM) hsl_zb01s.f90 hsl_zb01s.o
@@ -321,11 +321,12 @@ $(HLG)(hsl_zb01d.o): $(MA48)/hsl_zb01d.f90
 hsl_zb01i.o: $(HLG)(hsl_zb01i.o)
 
 $(HLG)(hsl_zb01i.o): $(MA48)/hsl_zb01i.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_zb01d "
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_zb01i "
 	$(CP) $(MA48)/hsl_zb01i.f90 $(OBJ)/hsl_zb01i.f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_zb01i.f90
 	cd $(OBJ); $(HARR) hsl_zb01i.o ; $(RM) hsl_zb01i.f90 hsl_zb01i.o
-	$(HRMARFILE) hsl_ma48i.o
+	$(HRMARFILE) hsl_ma48s.o
+	$(HRMARFILE) hsl_ma48d.o
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 

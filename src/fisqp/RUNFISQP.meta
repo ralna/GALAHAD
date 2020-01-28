@@ -2,6 +2,7 @@ MAIN
 ! write-problem-data                                no
 ! problem-data-file-name                            FISQP.data
 ! problem-data-file-device                          26
+! print-level-override                              0
 ! write-solution                                    no
 ! solution-file-name                                FISQPSOL.d
 ! solution-file-device                              62
@@ -299,15 +300,15 @@ INCLUDE EQP ACCELERATOR-EQP
 REPLACE
 ! output-line-prefix                                " - AcQP:"
 
-INCLUDE SBLS ACCELERATOR-QP-SBLS
+INCLUDE SBLS ACCELERATOR-EQP-SBLS
 
-INCLUDE SLS ACCELERATOR-QP-SBLS-SLS
+INCLUDE SLS ACCELERATOR-EQP-SBLS-SLS
 
-INCLUDE ULS ACCELERATOR-QP-SBLS-ULS
+INCLUDE ULS ACCELERATOR-EQP-SBLS-ULS
 
-INCLUDE GLTR ACCELERATOR-QP-GLTR
+INCLUDE GLTR ACCELERATOR-EQP-GLTR
 
-INCLUDE FDC ACCELERATOR-QP-FDC
+INCLUDE FDC ACCELERATOR-EQP-FDC
 
 COMMENT
 ! ********************* other parts ************************

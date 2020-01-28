@@ -16,20 +16,20 @@ directory. Each file is named
 
 where machine is the machine you asked for
       os      is the operating system, and
-      comp    is the requested compiler 
+      comp    is the requested compiler
 
 (some of these may be "all", if they apply to more than one case!). If
 you have problems, you should check the contents of the file appropriate
 to your system.  You might try downgrading the level of optimization if
-appropriate, uninstalling (using the uninstall_galahad script) 
+appropriate, uninstalling (using the uninstall_galahad script)
 and installing again.
 
 2. THE COMPILATION FAILS
 ------------------------
 
-Check (and edit if necessary) the generated makefile header in the file in 
+Check (and edit if necessary) the generated makefile header in the file in
 
-   $GALAHAD/makefiles 
+   $GALAHAD/makefiles
 
 that corresponds to the system you installed.
 
@@ -38,7 +38,7 @@ that corresponds to the system you installed.
 
 Check (and edit if necessary) the generated script header in the file in
 
-   $GALAHAD/bin/sys 
+   $GALAHAD/bin/sys
 
 that corresponds to the system you installed.
 
@@ -46,20 +46,40 @@ that corresponds to the system you installed.
 4. KNOWN PROBLEMS WITH SPECIFIC SYSTEMS
 ---------------------------------------
 
-4.1. f90/f95 under SOLARIS
+4.3 ifort under LINUX
+---------------------
+
+There may be unfortunate clashes between ifort/icc and the c++ libraries
+from GNU. If you see a linking or run message along the lines of
+
+ libgalahad_spral.a(NumericSubtree.o):
+  In function `spral_ssids_cpu_subtree_solve_fwd_dbl':
+ NumericSubtree.cxx:(.text+0xa8c): undefined reference to
+ `__cxa_throw_bad_array_new_length'
+
+you will need to use libstdc++ from a version of GCC at least
+as recent as version 4.9. TO do so, edit the .ifr files in
+$GALAHAD/makfiles and $GALAHAD/bin/sys so that the SPRAL variable becomes
+
+  -L/usr/lib/gcc/x86_64-linux-gnu/xxx -lgalahad_spral -lstdc++ -lhwloc
+
+where xxx is 4.9 or later (check /usr/lib/gcc/x86_64-linux-gnu to
+see what xxx should be).
+
+4.2. f90/f95 under SOLARIS
 --------------------------
 
 Optimization has been disabled since any attempt at
 optimization here leads to internal compiler errors here.
 Please grumble to Sun!
 
-4.2 ifc under LINUX
+4.3 ifc under LINUX
 -------------------
 
-4.2.1 Pre Version 7
+4.3.1 Pre Version 7
 
 If you are using a pre Version 7 version of the Intel fortran compiler (ifc),
-the line 
+the line
 
 set MODCMD = '-module $MOD -I$MOD -Vaxlib'
 
@@ -72,17 +92,17 @@ and lines 383-393 in ./install_galahad should be uncommented.
 In addition, you may need to turn off optimization if you are
 compiling the modules presolve.f90 and (the optional) ad02.f90
 
-4.2.2 Version 7.1
+4.3.2 Version 7.1
 
 N.B. The 7.1 version of the compiler has a bug, and will not
-compile useqpb.f90. Intel have been informed, and we 
+compile useqpb.f90. Intel have been informed, and we
 await a suitable patch. Fortunately the 8.0 version works fine,
 so we suggest users ensure that they are using ifc_8 (ifort)
 
-4.3 frt under LINUX
+4.4 frt under LINUX
 -------------------
 
-Unfortunately the glibc2.1 libraries required by frt are 
+Unfortunately the glibc2.1 libraries required by frt are
 incompatible with those used by most modern C compilers,
 so we are unable to offer the GALAHAD-AMPL interface in this
 case. If you know of a fix, we would love to know ...
@@ -92,5 +112,5 @@ case. If you know of a fix, we would love to know ...
 
 If you think you have found a bug (even better, if you have
 found and fixed one!), please let us know. We will make
-every effort to issue bug fixes (although, this depends on our 
+every effort to issue bug fixes (although, this depends on our
 having time, so no guarantees).

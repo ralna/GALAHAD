@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 24/07/2019 AT 13:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ L P Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -96,7 +96,7 @@
 
        LOGICAL :: space_critical = .FALSE.
 
-!   if deallocate_error_fatal is true, any array/pointer deallocation error
+!   if deallocate_error_fatal is true, any array deallocation error
 !    will terminate execution. Otherwise, computation will continue
 
        LOGICAL :: deallocate_error_fatal  = .FALSE.
@@ -167,8 +167,6 @@
 
 !-*-*-*-*-*-   L P Q P _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
 
-!    SUBROUTINE LPQP_initialize( data, control, VNAME_lpqp, CNAME_lpqp )
-!    SUBROUTINE LPQP_initialize( control, VNAME_lpqp, CNAME_lpqp )
      SUBROUTINE LPQP_initialize( control )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -179,9 +177,6 @@
 !  --------------------------------------------------------------------
 !
 !  Arguments:
-!
-!  data is a structure of type LPQP_data_type. On output,
-!   pointer array components will have been nullified.
 !
 !  control is a structure of type LPQP_control_type that contains
 !   control parameters. Components are -
@@ -201,15 +196,13 @@
 !
 !  LOGICAL control parameters:
 !
-!  VNAME_lpqp is an optional pointer array of character strings of length
+!  VNAME_lpqp is an optional allocatable array of character strings of length
 !   10 that may be used in LPQP_formulate to store names for any additional
-!   variables that are introduced when formulating the lp_qp problem. If
-!   VNAME_lpqp is present, it will be nullified on exit.
+!   variables that are introduced when formulating the lp_qp problem.
 !
-!  CNAME_lpqp is an optional pointer array of character strings of length
+!  CNAME_lpqp is an optional allocatable array of character strings of length
 !   10 that may be used in LPQP_formulate to store names for any additional
-!   constraints that are introduced when formulating the lp_qp problem. If
-!   CNAME_lpqp is present, it will be nullified on exit.
+!   constraints that are introduced when formulating the lp_qp problem.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -645,19 +638,19 @@
 !     alloc_status = The status of the last attempted allocation/deallocation
 !     time = the total time spent in the package.
 !
-!  VNAME_lpqp is an optional pointer array of character strings of length
+!  VNAME_lpqp is an optional allocatable array of character strings of length
 !   10 that may be used in LPQP_formulate to store names for any additional
 !   variables that are introduced when formulating the lp_qp problem. If
 !   VNAME_lpqp is present, it must have previouly been nullified or allocated
 !   on entry, and will be filled with appropriate variable names on exit.
 !
-!  CNAME_lpqp is an optional pointer array of character strings of length
+!  CNAME_lpqp is an optional allocatable array of character strings of length
 !   10 that may be used in LPQP_formulate to store names for any additional
 !   constraints that are introduced when formulating the lp_qp problem. If
 !   CNAME_lpqp is present, it must have previouly been nullified or allocated
 !   on entry, and will be filled with appropriate constraint names on exit.
 !
-!  B_stat and C_stat are optional INTEGER pointer arrays of length n
+!  B_stat and C_stat are optional INTEGER allocatable arrays of length n
 !  and m (respectively) that may be extended to accomodate additonal
 !  variables and constraints. If the optional INTEGER variable cold has
 !  the value 0, the contents of B_stat and C_stat will be preserved when
@@ -2453,7 +2446,7 @@
 
 !-*-*-*-*-*-*-*-   L P Q P _ R E S T O R E   S U B R O U T I N E   -*-*-*-*-*-*-
 
-     SUBROUTINE LPQP_restore( prob, data )
+     SUBROUTINE LPQP_restore( prob, data, B_stat, C_stat )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -2464,6 +2457,7 @@
 
      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
      TYPE ( LPQP_data_type ), INTENT( IN ) :: data
+     INTEGER, OPTIONAL, ALLOCATABLE, DIMENSION( : ) :: B_stat, C_stat
 
 !  Local variables
 
@@ -2559,6 +2553,22 @@
        prob%C_l( i ) =  prob%C_l( k )
        prob%C_u( i ) =  prob%C_u( k + 1 )
      END DO
+
+!  Mkae sure that the constraint status is accurate if required
+
+     IF ( PRESENT( C_stat ) ) THEN
+       DO l = 1, data%m_b
+         i = data%BOTH( 1, data%m_b )
+         k = data%BOTH( 2, data%m_b )
+         IF ( C_stat( k ) == - 1 ) THEN
+           C_stat( i ) = - 1
+         ELSE IF ( C_stat( k + 1 ) == 1 ) THEN
+           C_stat( i ) = 1
+         ELSE
+           C_stat( i ) = 0
+         END IF
+       END DO
+     END IF
 
 !  Restore the problem dimensions
 

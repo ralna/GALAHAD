@@ -63,7 +63,6 @@ contains
     type(C_PTR) :: c_regions
     type(c_numa_region), dimension(:), pointer, contiguous :: f_regions
     integer(C_INT), dimension(:), pointer, contiguous :: f_gpus
-
     ! Get regions from C
     call spral_hw_topology_guess(nregions, c_regions)
     if (c_associated(c_regions)) then

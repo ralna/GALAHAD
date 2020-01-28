@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.8 - 24/08/2016 AT 12:40 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E C Q P   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -30,7 +30,7 @@
       USE GALAHAD_SLS_double
       USE GALAHAD_PRESOLVE_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_STRING_double, ONLY: STRING_upper_word
+      USE GALAHAD_STRING, ONLY: STRING_upper_word
       USE GALAHAD_COPYRIGHT
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
@@ -456,6 +456,11 @@
           STOP
         END IF
         CALL SLS_factorize( prob%H, sls_data, sls_control, sls_inform )
+
+        WRITE( out, "( ' convexifying - computed inertia of H = ( ',           &
+       &    I0, ', ', I0, ', ', I0, ' )' )" )                                  &
+          sls_inform%rank - sls_inform%negative_eigenvalues,                   &
+          sls_inform%negative_eigenvalues, prob%H%n - sls_inform%rank
 
 !  the Hessian is not positive definite. Compute the Gershgorin lower bound
 !  on the leftmost eigenvalue
@@ -1409,5 +1414,3 @@
 !  End of module USECQP_double
 
    END MODULE GALAHAD_USECQP_double
-
-

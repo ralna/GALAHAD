@@ -53,7 +53,10 @@ MINPACKS =
 
 #  Main compilation
 
-minpack_silent: minpack_$(PRECIS)
+minpack_silent: minpack_silent_$(PRECIS)
+minpack_silent_single: $(MINPACKS)
+minpack_silent_double: $(MINPACKD)
+
 minpack: minpack_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: MINPACK ($(PRECIS) $(SUCC)"
 minpack_single: $(MINPACKS)
@@ -88,4 +91,3 @@ $(MINLG)(dgqt.o): $(MINPACK)/dgqt.f
 	cd $(OBJ); $(MINARR) dgqt.o ; $(RM) dgqt.f90 dgqt.o
 	$(RANLIB) $(MINLG)
 	@printf '[ OK ]\n'
-

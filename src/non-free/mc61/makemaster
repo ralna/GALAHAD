@@ -63,7 +63,7 @@ SUCC = precision version) compiled successfully
 mc61: mc61_$(PRECIS)
 	@printf ' %-21s\n' "HSL MC61 routines ($(PRECIS) $(SUCC)"
 mc61_silent: mc61_$(PRECIS)
-mc61_single: $(HLGD)(mc60s.o) $(HLGD)(mc61s.o)
+mc61_single: $(HLGS)(mc60s.o) $(HLGS)(mc61s.o)
 mc61_double: $(HLGD)(mc60d.o) $(HLGD)(mc61d.o)
 
 #  individual compilations
@@ -103,4 +103,3 @@ $(HLG)(mc61d.o): $(MC61)/mc61d.f
 	cd $(OBJ); $(FORTRAN) -o mc61d.o $(FFLAGS77) mc61d.f90
 	cd $(OBJ); $(HARR) mc61d.o ; $(RM) mc61d.f90 mc61d.o
 	@printf '[ OK ]\n'
-

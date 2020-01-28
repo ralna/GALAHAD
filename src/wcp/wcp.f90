@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 15/10/2014 AT 13:20 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ W C P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -31,7 +31,7 @@
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_double
-      USE GALAHAD_STRING_double
+      USE GALAHAD_STRING
       USE GALAHAD_SPECFILE_double
       USE GALAHAD_QPT_double
       USE GALAHAD_QPP_double, WCP_dims_type => QPP_dims_type

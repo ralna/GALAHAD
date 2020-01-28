@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 31/03/2015 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ S T R I N G   M O D U L E  *-*-*-*-*-*-*-*-*
 
@@ -8,10 +8,10 @@
 !  History -
 !   originally released GALAHAD Version 2.0. September 14th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_STRING_double
+   MODULE GALAHAD_STRING
 
 !     ----------------------------
 !    |  Set strings appropriate   |
@@ -20,7 +20,7 @@
 !    |  other useful strings      |
 !     ----------------------------
 
-     IMPLICIT NONE     
+     IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: STRING_pleural, STRING_verb_pleural, STRING_are, STRING_have,   &
@@ -38,7 +38,7 @@
 
      REAL( KIND = sp ), PARAMETER :: teneps_s = 10.0_sp * EPSILON( 1.0_sp )
      REAL( KIND = dp ), PARAMETER :: teneps_d = 10.0_dp * EPSILON( 1.0_dp )
-   
+
 !---------------------------------
 !   I n t e r f a c e  B l o c k s
 !---------------------------------
@@ -236,7 +236,7 @@
 !   Given an integer val, returns string1 if val /= 1, otherwise returns string2
 
      CHARACTER ( len = 120 ) :: STRING_choice
- 
+
 !--------------------------------
 !   D u m m y   A r g u m e n t
 !--------------------------------
@@ -708,7 +708,7 @@
 
      END FUNCTION STRING_real_7_double
 
-!-  G A L A H A D -  S T R I N G _ r e a l _ 1 2 _ s i n g l e  F U N C T I O N 
+!-  G A L A H A D -  S T R I N G _ r e a l _ 1 2 _ s i n g l e  F U N C T I O N
 
      FUNCTION STRING_real_12_single( r )
 
@@ -861,7 +861,7 @@
 
      END FUNCTION STRING_real_12_single
 
-!-  G A L A H A D -  S T R I N G _ r e a l _ 1 2 _ d o u b l e  F U N C T I O N 
+!-  G A L A H A D -  S T R I N G _ r e a l _ 1 2 _ d o u b l e  F U N C T I O N
 
      FUNCTION STRING_real_12_double( r )
 
@@ -1020,7 +1020,7 @@
      CHARACTER ( LEN = 24 ) :: STRING_trim_real_24_single
      REAL ( KIND = sp ) :: value
 
-!  write a real value into 24 characters trimming as much as possible 
+!  write a real value into 24 characters trimming as much as possible
 !  without losing precision
 
      INTEGER :: i, i_start, i_point, i_end, j, k, l, zs
@@ -1218,7 +1218,7 @@
                END IF
                IF ( j == i_start ) THEN
                  DO l = i_end - 1, i_start, - 1
-                   field24( l + 1 : l + 1 ) = field24( l : l ) 
+                   field24( l + 1 : l + 1 ) = field24( l : l )
                  END DO
                  field24( i_start : i_start ) = '1'
                END IF
@@ -1244,7 +1244,7 @@
 !        STRING_trim_real_24_single( i - 1 : i - 1 )                           &
 !          = STRING_trim_real_24_single( i : i )
 !      END DO
-!    END IF 
+!    END IF
 
      zeros = .FALSE.
      DO i = 1, 24
@@ -1395,7 +1395,7 @@
      CHARACTER ( LEN = 24 ) :: STRING_trim_real_24_double
      REAL ( KIND = dp ) :: value
 
-!  write a real value into 24 characters trimming as much as possible 
+!  write a real value into 24 characters trimming as much as possible
 !  without losing precision
 
      INTEGER :: i, i_start, i_point, i_end, j, k, l, zs
@@ -1593,7 +1593,7 @@
                END IF
                IF ( j == i_start ) THEN
                  DO l = i_end - 1, i_start, - 1
-                   field24( l + 1 : l + 1 ) = field24( l : l ) 
+                   field24( l + 1 : l + 1 ) = field24( l : l )
                  END DO
                  field24( i_start : i_start ) = '1'
                END IF
@@ -1619,7 +1619,7 @@
 !        STRING_trim_real_24_double( i - 1 : i - 1 )                           &
 !          = STRING_trim_real_24_double( i : i )
 !      END DO
-!    END IF 
+!    END IF
 
      zeros = .FALSE.
      DO i = 1, 24
@@ -1993,4 +1993,4 @@
 
 !  End of module GALAHAD_STRING
 
-   END MODULE GALAHAD_STRING_double
+   END MODULE GALAHAD_STRING

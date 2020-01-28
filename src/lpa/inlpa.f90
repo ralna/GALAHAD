@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.1 - 15/10/2018 AT 09:50 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N L P A _ D A T A  *-*-*-*-*-*-*-*-*-*-
 
@@ -31,7 +31,7 @@
    USE GALAHAD_NORMS_double, ONLY: TWO_NORM
    USE GALAHAD_PRESOLVE_double
    USE GALAHAD_SPECFILE_double
-   USE GALAHAD_STRING_double, ONLY: STRING_upper_word
+   USE GALAHAD_STRING, ONLY: STRING_upper_word
    USE GALAHAD_COPYRIGHT
    USE SCALING
    USE GALAHAD_SYMBOLS,                                                        &

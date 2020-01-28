@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.0 - 1/11/2017 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
@@ -83,7 +83,7 @@
 !  The order of MAIN, INCLUDE and COMMENT sections defines the order that
 !  the resulting options will appear in the final specfile
 
-        USE GALAHAD_STRING_double, ONLY: STRING_lower_word, STRING_upper_word
+        USE GALAHAD_STRING, ONLY: STRING_lower_word, STRING_upper_word
 
 !  local variables
 

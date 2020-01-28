@@ -104,6 +104,8 @@ QPC_double = $(QPA_double) $(QPB_double) $(EQP_double) $(CQP_double) \
              $(QPD_double) $(LGD)(qpc.o)
 QPE_single = sbls $(LGS)(qpe.o)
 QPE_double = sbls $(LGD)(qpe.o)
+BLLS_single = $(QPD_single) $(LGS)(blls.o)
+BLLS_double = $(QPD_double) $(LGD)(blls.o)
 BQP_single = $(QPD_single) $(LGS)(bqp.o)
 BQP_double = $(QPD_double) $(LGD)(bqp.o)
 BQPB_single = $(QPD_single) $(LGS)(bqpb.o)
@@ -143,6 +145,8 @@ QPE_OBJECTS_single = $(BASICS) $(QPE_single)
 QPE_OBJECTS_double = $(BASICS) $(QPE_double)
 LSQP_OBJECTS_single = $(BASICS) $(LSQP_single)
 LSQP_OBJECTS_double = $(BASICS) $(LSQP_double)
+BLLS_OBJECTS_single = $(BASICS) $(BLLS_single)
+BLLS_OBJECTS_double = $(BASICS) $(BLLS_double)
 BQP_OBJECTS_single = $(BASICS) $(BQP_single)
 BQP_OBJECTS_double = $(BASICS) $(BQP_double)
 BQPB_OBJECTS_single = $(BASICS) $(BQPB_single)
@@ -175,11 +179,11 @@ L1QP_OBJECTS_double = $(BASICS) $(L1QP_double)
 QP_OBJECTS_single = $(QPC_OBJECTS_single) $(DQP_single) $(QP_single) \
                     $(L1QP_OBJECTS_single) $(BQP_single) $(BQPB_single) \
                     $(LPA_single) $(LPB_single) $(DLP_single) \
-                    $(CCQP_single)
+                    $(CCQP_single) $(BLLS_single)
 QP_OBJECTS_double = $(QPC_OBJECTS_double) $(DQP_double) $(QP_double) \
                     $(L1QP_OBJECTS_double) $(BQP_double) $(BQPB_double) \
                     $(LPA_double) $(LPB_double) $(DLP_double) \
-                    $(CCQP_double)
+                    $(CCQP_double) $(BLLS_double)
 QP_OBJECTS_CURRENT_single = $(QP_OBJECTS_single)
 QP_OBJECTS_CURRENT_double = $(QP_OBJECTS_double)
 
@@ -190,13 +194,15 @@ USE_single = $(LGS)(presolve.o) copyright $(LGS)(useqpa.o) $(LGS)(useqpb.o) \
              $(RPD_single) $(LGS)(useeqp.o) $(LGS)(usecqp.o) \
              $(LGS)(uselpa.o) $(LGS)(uselpb.o) $(LGS)(usedlp.o) \
              $(LGS)(useccqp.o) $(LGS)(usel1qp.o) $(LGS)(usedqp.o) \
-             $(LGS)(usebqp.o) $(LGS)(usebqpb.o) $(LGS)(useccqp.o)
+             $(LGS)(usebqp.o) $(LGS)(usebqpb.o) $(LGS)(useccqp.o) \
+             $(LGS)(useblls.o)
 USE_double = $(LGD)(presolve.o) copyright $(LGD)(useqpa.o) $(LGD)(useqpb.o) \
              $(LGD)(useqpc.o) $(LGD)(useqp.o) $(LGD)(usepresolve.o) \
              $(RPD_double) $(LGD)(useeqp.o) $(LGD)(usecqp.o) \
              $(LGD)(uselpa.o) $(LGD)(uselpb.o) $(LGD)(usedlp.o) \
              $(LGD)(useccqp.o) $(LGD)(usel1qp.o) $(LGD)(usedqp.o) \
-             $(LGD)(usebqp.o) $(LGD)(usebqpb.o) $(LGD)(useccqp.o)
+             $(LGD)(usebqp.o) $(LGD)(usebqpb.o) $(LGD)(useccqp.o) \
+             $(LGD)(useblls.o)
 USE_CURRENT_single = $(USE_single)
 USE_CURRENT_double = $(USE_double)
 
@@ -211,17 +217,17 @@ USE_OBJECTS_CURRENT_double = $(QP_OBJECTS_CURRENT_double) $(USE_CURRENT_double)
 
 RUN_single = $(USE_single) $(OBJS)/runqpa_sif.o $(OBJS)/runqpb_sif.o \
              $(OBJS)/runqpc_sif.o $(OBJS)/runqp_sif.o \
-             $(OBJS)/runpresolve_sif.o \
+             $(OBJS)/runpresolve_sif.o $(OBJS)/runblls_sif.o \
              $(OBJS)/runcqp_sif.o $(OBJS)/rundqp_sif.o $(OBJS)/runccqp_sif.o \
              $(OBJS)/runl1qp_sif.o $(OBJS)/runbqp_sif.o \
              $(OBJS)/runlpa_sif.o $(OBJS)/runlpb_sif.o $(OBJS)/rundlp_sif.o \
              $(OBJS)/runbqpb_sif.o $(OBJS)/runccqp_sif.o
 RUN_double = $(USE_double) $(OBJD)/runqpa_sif.o $(OBJD)/runqpb_sif.o \
              $(OBJD)/runqpc_sif.o $(OBJD)/runqp_sif.o \
-             $(OBJD)/runpresolve_sif.o \
-             $(OBJD)/runcqp_sif.o $(OBJD)/runccqp_sif.o \
+             $(OBJD)/runpresolve_sif.o $(OBJD)/runblls_sif.o \
+             $(OBJD)/runcqp_sif.o $(OBJD)/rundqp_sif.o $(OBJD)/runccqp_sif.o \
+             $(OBJD)/runl1qp_sif.o $(OBJD)/runbqp_sif.o \
              $(OBJD)/runlpa_sif.o $(OBJD)/runlpb_sif.o $(OBJD)/rundlp_sif.o \
-             $(OBJD)/runl1qp_sif.o $(OBJD)/rundlp_sif.o $(OBJD)/runbqp_sif.o \
              $(OBJD)/runbqpb_sif.o $(OBJD)/runccqp_sif.o
 
 RUN_CURRENT_single = $(USE_CURRENT_single) $(RUN_single)
@@ -272,6 +278,8 @@ WARM_RUN_single = $(LGS)(presolve.o) copyright qp \
                   $(LGS)(usewarm.o) $(OBJS)/runwarm_sif.o
 WARM_RUN_double = $(LGD)(presolve.o) copyright qp \
                   $(LGD)(usewarm.o) $(OBJD)/runwarm_sif.o
+BLLS_RUN_single = $(LGS)(useblls.o) $(OBJS)/runblls_sif.o
+BLLS_RUN_double = $(LGD)(useblls.o) $(OBJD)/runblls_sif.o
 BQP_RUN_single = $(LGS)(usebqp.o) $(OBJS)/runbqp_sif.o
 BQP_RUN_double = $(LGD)(usebqp.o) $(OBJD)/runbqp_sif.o
 BQPB_RUN_single = $(LGS)(usebqpb.o) $(OBJS)/runbqpb_sif.o
@@ -304,6 +312,8 @@ QPE_CUTEST_single = $(QPE_OBJECTS_single) $(LGS)(presolve.o) $(QPE_RUN_single)
 QPE_CUTEST_double = $(QPE_OBJECTS_double) $(LGD)(presolve.o) $(QPE_RUN_double)
 QP_CUTEST_single = $(QP_OBJECTS_single) $(QP_RUN_single)
 QP_CUTEST_double = $(QP_OBJECTS_double) $(QP_RUN_double)
+BLLS_CUTEST_single = $(BLLS_OBJECTS_single) $(BLLS_RUN_single)
+BLLS_CUTEST_double = $(BLLS_OBJECTS_double) $(BLLS_RUN_double)
 BQP_CUTEST_single = $(BQP_OBJECTS_single) $(BQP_RUN_single)
 BQP_CUTEST_double = $(BQP_OBJECTS_double) $(BQP_RUN_double)
 BQPB_CUTEST_single = $(BQPB_OBJECTS_single) $(BQPB_RUN_single)
@@ -340,12 +350,12 @@ L1QP_CUTEST_double = $(L1QP_OBJECTS_double) $(L1QP_RUN_double)
 QPLIB_RUN_single = $(RPD_single) copyright $(OBJS)/inqpa.o $(OBJS)/inqpb.o \
                    $(OBJS)/inqpc.o $(OBJS)/incqp.o $(OBJS)/indqp.o \
                    $(OBJS)/inqp.o $(OBJS)/inl1qp.o $(OBJS)/inbqp.o \
-                   $(OBJS)/inbqpb.o $(OBJS)/inccqp.o \
+                   $(OBJS)/inbqpb.o $(OBJS)/inblls.o $(OBJS)/inccqp.o \
                    $(OBJS)/inlpa.o $(OBJS)/inlpb.o $(OBJS)/indlp.o
 QPLIB_RUN_double = $(RPD_double) copyright $(OBJD)/inqpa.o $(OBJD)/inqpb.o \
                    $(OBJD)/inqpc.o $(OBJD)/incqp.o $(OBJD)/indqp.o \
                    $(OBJD)/inqp.o $(OBJD)/inl1qp.o $(OBJD)/inbqp.o \
-                   $(OBJD)/inbqpb.o $(OBJD)/inccqp.o \
+                   $(OBJD)/inbqpb.o $(OBJD)/inblls.o $(OBJD)/inccqp.o \
                    $(OBJD)/inlpa.o $(OBJD)/inlpb.o $(OBJD)/indlp.o
 QPLIB_RUN_CURRENT_single = $(QPLIB_RUN_single) $(OBJS)/ineqp.o \
                            $(OBJS)/inlls.o
@@ -359,6 +369,8 @@ QPC_QPLIB_RUN_single = $(RPD_single) copyright $(OBJS)/inqpc.o
 QPC_QPLIB_RUN_double = $(RPD_double) copyright $(OBJD)/inqpc.o
 QP_QPLIB_RUN_single = $(RPD_single) copyright $(OBJS)/inqp.o
 QP_QPLIB_RUN_double = $(RPD_double) copyright $(OBJD)/inqp.o
+BLLS_QPLIB_RUN_single = $(RPD_single) copyright $(OBJS)/inblls.o
+BLLS_QPLIB_RUN_double = $(RPD_double) copyright $(OBJD)/inblls.o
 BQP_QPLIB_RUN_single = $(RPD_single) copyright $(OBJS)/inbqp.o
 BQP_QPLIB_RUN_double = $(RPD_double) copyright $(OBJD)/inbqp.o
 BQPB_QPLIB_RUN_single = $(RPD_single) copyright $(OBJS)/inbqpb.o
@@ -489,6 +501,21 @@ RRPDDS = $(OBJD)/rpds.o -L$(OBJD) $(LIBS)
 RRPDDT = $(OBJD)/rpdt.o -L$(OBJD) $(LIBS)
 RRPDSS = $(OBJS)/rpds.o -L$(OBJS) $(LIBS)
 RRPDST = $(OBJS)/rpdt.o -L$(OBJS) $(LIBS)
+
+BLLSDS = $(BASICS) $(BLLS_double) $(OBJD)/bllss.o
+BLLSDS2 = $(BASICS) $(BLLS_double) $(OBJD)/bllss2.o
+BLLSDT = $(BASICS) $(BLLS_double) $(OBJD)/bllst.o
+BLLSSS = $(BASICS) $(BLLS_single) $(OBJS)/bllss.o
+BLLSSS2 = $(BASICS) $(BLLS_single) $(OBJS)/bllss2.o
+BLLSST = $(BASICS) $(BLLS_single) $(OBJS)/bllst.o
+
+RBLLSDS = $(OBJD)/bllss.o -L$(OBJD) $(LIBS)
+RBLLSDS2 = $(OBJD)/bllss2.o -L$(OBJD) $(LIBS)
+RBLLSDS3 = $(OBJD)/bllss3.o -L$(OBJD) $(LIBS)
+RBLLSDT = $(OBJD)/bllst.o -L$(OBJD) $(LIBS)
+RBLLSSS = $(OBJS)/bllss.o -L$(OBJS) $(LIBS)
+RBLLSSS2 = $(OBJS)/bllss3.o -L$(OBJS) $(LIBS)
+RBLLSST = $(OBJS)/bqpt.o -L$(OBJS) $(LIBS)
 
 BQPDS = $(BASICS) $(BQP_double) $(OBJD)/bqps.o
 BQPDS2 = $(BASICS) $(BQP_double) $(OBJD)/bqps2.o
@@ -1117,6 +1144,82 @@ test_spec_qpe_single: qpess
 test_spec_qpe_double: qpeds
 	echo ""
 	echo " Tests for qpe complete"
+
+# blls
+
+blls_all: blls_cutest blls_qplib
+
+blls_cutest: blls_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: BLLS ($(PRECIS) $(SUCC_CUTEST)"
+blls_cutest_single: $(BLLS_CUTEST_single)
+	$(RANLIB) $(LGS)
+blls_cutest_double: $(BLLS_CUTEST_double)
+	$(RANLIB) $(LGD)
+
+blls_qplib: blls_silent blls_qplib_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: BLLS ($(PRECIS) $(SUCC_QPLIB)"
+blls_qplib_single: $(BLLS_QPLIB_RUN_single)
+	$(RANLIB) $(LGS)
+blls_qplib_double: $(BLLS_QPLIB_RUN_double)
+	$(RANLIB) $(LGD)
+
+blls_silent: blls_silent_$(PRECIS)
+blls_silent_single: $(BLLS_OBJECTS_single)
+blls_silent_double: $(BLLS_OBJECTS_double)
+
+blls: blls_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: BLLS ($(PRECIS) $(SUCC)"
+blls_single: $(BLLS_OBJECTS_single)
+	$(RANLIB) $(LGS)
+blls_double: $(BLLS_OBJECTS_double)
+	$(RANLIB) $(LGD)
+
+bllss: blls_cutest_single
+bllsd: blls_cutest_double
+
+bllssrunall: bllsss bllsst
+bllsdrunall: bllsds bllsdt
+bllsrunall: bllsdrunall bllssrunall
+
+inblls: inblls_$(PRECIS)
+inblls_single: $(BLLS_OBJECTS_single) $(OBJS)/inblls.o
+inblls_double: $(BLLS_OBJECTS_double) $(OBJD)/inblls.o
+
+test_blls: test_blls_$(PRECIS)
+
+test_blls_single: bllsst $(BLLS_RUN_single)
+	echo ""
+	echo " Testing CUTEst interface to blls"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) blls -s QPBAND
+	echo ""
+	echo " Tests for blls complete"
+
+test_blls_double: bllsdt $(BLLS_RUN_double)
+	echo ""
+	echo " Testing CUTEst interface to blls"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) blls QPBAND
+	echo ""
+	echo " Tests for blls complete"
+
+test_blls_nocutest: test_blls_nocutest_$(PRECIS)
+
+test_blls_nocutest_single: bllsst
+	echo ""
+	echo " Tests for blls complete"
+
+test_blls_nocutest_double: bllsdt
+	echo ""
+	echo " Tests for blls complete"
+
+test_spec_blls: test_spec_blls_$(PRECIS)
+
+test_spec_blls_single: bllsss
+	echo ""
+	echo " Tests for blls complete"
+
+test_spec_blls_double: bllsds
+	echo ""
+	echo " Tests for blls complete"
 
 # bqp
 
@@ -2397,6 +2500,20 @@ qpst: $(QPST)
 	cat ../qp/qp_tests.output
 	rm ../qp/run_qp
 
+bllsds: $(BLLSDS)
+	cd ../blls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_blls $(RBLLSDS)
+	cd ../blls ; $(RMOOC)
+	- ../blls/run_blls >& ../blls/bllsds.output
+	cat ../blls/bllsds.output
+	rm ../blls/run_blls
+
+bllsds4: $(BLLSDS2)
+	cd ../blls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_blls $(RBLLSDS2)
+	cd ../blls ; $(RMOOC)
+	- ../blls/run_blls >& ../blls/bllsds2.output
+	cat ../blls/bllsds2.output
+	rm ../blls/run_blls
+
 bqpds: $(BQPDS)
 	cd ../bqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bqp $(RBQPDS)
 	cd ../bqp ; $(RMOOC)
@@ -3334,6 +3451,27 @@ $(LG)(qpe.o): ../qpe/qpe.f90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
+blls.o: $(LG)(blls.o)
+
+$(LG)(blls.o): ../blls/blls.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "blls   "
+	$(SED) -f $(SEDS) ../blls/blls.f90 > $(OBJ)/blls1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/blls1.f90 > $(OBJ)/blls2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/blls2.f90 > $(OBJ)/blls.f90
+	cd $(OBJ); $(FORTRAN) -o blls.o $(FFLAGSS) blls.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o blls.o $(FFLAGSN) blls.f90 )
+	cd $(OBJ); $(ARR) blls.o ; $(RM) blls.f90 blls1.f90 blls2.f90 blls.o
+	$(RMARFILE) cqps.o
+	$(RMARFILE) useblls.o
+	$(RMOBFILE) inblls.o
+	$(RMOBFILE) galahad_ampl.o
+	$(RMOBFILE) bllss.o
+	$(RMOBFILE) bllss2.o
+	$(RMOBFILE) bllst.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
 bqp.o: $(LG)(bqp.o)
 
 $(LG)(bqp.o): ../bqp/bqp.f90
@@ -3716,6 +3854,22 @@ $(LG)(useqp.o): ../qp/useqp.f90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
+useblls.o: $(LG)(useblls.o)
+
+$(LG)(useblls.o): ../blls/useblls.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "useblls   "
+	$(SED) -f $(SEDS) ../blls/useblls.f90 > $(OBJ)/useblls1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/useblls1.f90 > $(OBJ)/useblls2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/useblls2.f90 > $(OBJ)/useblls.f90
+	cd $(OBJ); $(FORTRAN) -o useblls.o $(FFLAGSOMP) useblls.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o useblls.o $(FFLAGSN) useblls.f90 )
+	cd $(OBJ); $(ARR) useblls.o ; $(RM) useblls.f90 useblls1.f90 \
+                                           useblls2.f90 useblls.o
+	$(RMOBFILE) runblls_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
 usebqp.o: $(LG)(usebqp.o)
 
 $(LG)(usebqp.o): ../bqp/usebqp.f90
@@ -3989,6 +4143,15 @@ $(OBJ)/runqp_sif.o: ../qp/runqp_sif.f90
 	rm $(OBJ)/runqp_sif.f90
 	@printf '[ OK ]\n'
 
+runblls_sif.o: $(OBJ)/runblls_sif.o
+
+$(OBJ)/runblls_sif.o: ../blls/runblls_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runblls_sif"
+	$(SED) -f $(SEDS) ../blls/runblls_sif.f90 > $(OBJ)/runblls_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runblls_sif.o $(FFLAGSS) runblls_sif.f90
+	rm $(OBJ)/runblls_sif.f90
+	@printf '[ OK ]\n'
+
 runbqp_sif.o: $(OBJ)/runbqp_sif.o
 
 $(OBJ)/runbqp_sif.o: ../bqp/runbqp_sif.f90
@@ -4170,6 +4333,16 @@ $(OBJ)/inqp.o: ../qp/inqp.f90
 	$(SED) -f $(LSEDS) $(OBJ)/inqp1.f90 > $(OBJ)/inqp.f90
 	cd $(OBJ); $(FORTRAN) -o inqp.o $(FFLAGSOMP) inqp.f90
 	rm $(OBJ)/inqp.f90 $(OBJ)/inqp1.f90
+	@printf '[ OK ]\n'
+
+inblls.o: $(OBJ)/inblls.o
+
+$(OBJ)/inblls.o: ../blls/inblls.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "inblls"
+	$(SED) -f $(SEDS) ../blls/inblls.f90 > $(OBJ)/inblls1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/inblls1.f90 > $(OBJ)/inblls.f90
+	cd $(OBJ); $(FORTRAN) -o inblls.o $(FFLAGSOMP) inblls.f90
+	rm $(OBJ)/inblls.f90 $(OBJ)/inblls1.f90
 	@printf '[ OK ]\n'
 
 inbqp.o: $(OBJ)/inbqp.o
@@ -4431,6 +4604,26 @@ $(OBJ)/qp_test.o: ../qp/qp_test.f90
 	$(SED) -f $(SEDS) ../qp/qp_test.f90 > $(OBJ)/qp_test1.f90
 	$(SED) -f $(LSEDS) $(OBJ)/qp_test1.f90 > $(OBJ)/qp_test.f90
 	cd $(OBJ) ; $(FORTRAN) -o qp_test.o $(FFLAGSS) qp_test.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+bllss.o: $(OBJ)/bllss.o
+
+$(OBJ)/bllss.o: ../blls/bllss.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bllss  "
+	$(SED) -f $(SEDS) ../blls/bllss.f90 > $(OBJ)/bllss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/bllss1.f90 > $(OBJ)/bllss.f90
+	cd $(OBJ) ; $(FORTRAN) -o bllss.o $(FFLAGS) bllss.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+bllss2.o: $(OBJ)/bllss2.o
+
+$(OBJ)/bllss2.o: ../blls/bllss2.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bllss2  "
+	$(SED) -f $(SEDS) ../blls/bllss2.f90 > $(OBJ)/bllss21.f90
+	$(SED) -f $(LSEDS) $(OBJ)/bllss21.f90 > $(OBJ)/bllss2.f90
+	cd $(OBJ) ; $(FORTRAN) -o bllss2.o $(FFLAGS) bllss2.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
@@ -5048,6 +5241,11 @@ rmqpe:
 rmqp:
 	@printf ' %-9s %-15s\t\t' "Removing" "qp from archive "
 	$(RMARFILE) qp.o
+	@printf '[ OK ]\n'
+
+rmblls:
+	@printf ' %-9s %-15s\t\t' "Removing" "blls from archive "
+	$(RMARFILE) blls.o
 	@printf '[ OK ]\n'
 
 rmbqp:

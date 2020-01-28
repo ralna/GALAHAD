@@ -182,6 +182,7 @@
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY_u
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DG
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X0
@@ -204,7 +205,7 @@
 
    CONTAINS
 
-!-*-*-*-*-*-*-*-*-   Q P T _ p u t _H   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-   Q P T _ p u t _ H   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
 
      SUBROUTINE QPT_put_H( array, string, inform, stat )
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 23/10/2014 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ T R A C E   M O D U L E  *-*-*-*-*-*-*-*-*-
 
@@ -39,7 +39,7 @@
      USE GALAHAD_SPACE_double
      USE GALAHAD_MOP_double, ONLY: mop_Ax
      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
-     USE GALAHAD_STRING_double, ONLY: STRING_integer_6
+     USE GALAHAD_STRING, ONLY: STRING_integer_6
      USE GALAHAD_LAPACK_interface, ONLY : GESVD
 !    USE SPDSOL
 !    USE HSL_MI13

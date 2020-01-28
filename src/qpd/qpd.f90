@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 12/09/2013 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ Q P D  M O D U L E  -*-*-*-*-*-*-*-*-*-*-
 
@@ -19,7 +19,7 @@
 
    MODULE GALAHAD_QPD_double
 
-     USE GALAHAD_STRING_double, ONLY: STRING_real_12
+     USE GALAHAD_STRING, ONLY: STRING_real_12
      USE GALAHAD_SYMBOLS
      USE GALAHAD_RAND_double, ONLY: RAND_seed
      USE GALAHAD_SMT_double, ONLY: SMT_put, SMT_get

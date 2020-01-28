@@ -1561,7 +1561,8 @@
 
 !  Local variables
 
-      INTEGER :: c_ne, i
+      INTEGER :: c_ne
+!     INTEGER :: i
       REAL :: time_start, time_now
       REAL ( KIND = wp ) :: clock_start, clock_now
 

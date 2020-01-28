@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.7 - 26/02/2016 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*  G A L A H A D _ C U T E S T _ F U N C T I O N S  M O D U L E  *-*-*-
 
@@ -12,7 +12,7 @@
 
      USE GALAHAD_SMT_double
      USE GALAHAD_SPACE_double
-     USE GALAHAD_STRING_double
+     USE GALAHAD_STRING
      USE GALAHAD_SYMBOLS
      USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type, NLPT_userdata_type,     &
                                     NLPT_cleanup
@@ -1836,9 +1836,15 @@
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ) :: time
 
+!  local variables
+
+     REAL :: time_real
+
 !  enable recording of timings for CUTEst calls
 
-     CALL CUTEST_timings( status, 'start', time )
+     CALL CUTEST_timings( status, 'start', time_real )
+     time = REAL( time_real, wp )
+
      RETURN
 
 !  End of subroutine CUTEst_start_timing
@@ -1864,7 +1870,7 @@
 !  local variables
 
      INTEGER :: m
-     REAL ( KIND = wp ) :: part_time
+     REAL :: time_real
      CHARACTER ( LEN = LEN( name ) ) :: name_lower_case
 
 !  extract scalar addresses
@@ -1883,58 +1889,78 @@
      SELECT CASE ( TRIM( name_lower_case ) )
      CASE ( 'cutest_eval_f' )
        IF ( m > 0 ) THEN
-         CALL CUTEST_timings( status, 'cutest_cfn', time )
+         CALL CUTEST_timings( status, 'cutest_cfn', time_real )
        ELSE
-         CALL CUTEST_timings( status, 'cutest_ufn', time )
+         CALL CUTEST_timings( status, 'cutest_ufn', time_real )
        END IF
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_fc' )
-       CALL CUTEST_timings( status, 'cutest_cfn', time )
+       CALL CUTEST_timings( status, 'cutest_cfn', time_real )
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_c' )
-       CALL CUTEST_timings( status, 'cutest_cfn', time )
+       CALL CUTEST_timings( status, 'cutest_cfn', time_real )
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_g' )
        IF ( m > 0 ) THEN
-         CALL CUTEST_timings( status, 'cutest_cofg', time )
+         CALL CUTEST_timings( status, 'cutest_cofg', time_real )
        ELSE
-         CALL CUTEST_timings( status, 'cutest_ugr', time )
+         CALL CUTEST_timings( status, 'cutest_ugr', time_real )
        END IF
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_gj' )
        IF ( m > 0 ) THEN
-         CALL CUTEST_timings( status, 'cutest_csgr', time )
+         CALL CUTEST_timings( status, 'cutest_csgr', time_real )
        ELSE
-         CALL CUTEST_timings( status, 'cutest_ugr', time )
+         CALL CUTEST_timings( status, 'cutest_ugr', time_real )
        END IF
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_j' )
-       IF ( m > 0 ) CALL CUTEST_timings( status, 'cutest_csgr', time )
+       IF ( m > 0 ) THEN
+         CALL CUTEST_timings( status, 'cutest_csgr', time_real )
+         time = REAL( time_real, wp )
+       END IF
      CASE ( 'cutest_eval_h' )
-       CALL CUTEST_timings( status, 'cutest_ush', time )
+       CALL CUTEST_timings( status, 'cutest_ush', time_real )
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_hprod' )
-       CALL CUTEST_timings( status, 'cutest_uhprod', time )
+       CALL CUTEST_timings( status, 'cutest_uhprod', time_real )
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_shprod' )
-       CALL CUTEST_timings( status, 'cutest_ushprod', time )
+       CALL CUTEST_timings( status, 'cutest_ushprod', time_real )
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_jprod' )
-       CALL CUTEST_timings( status, 'cutest_cjprod', time )
+       CALL CUTEST_timings( status, 'cutest_cjprod', time_real )
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_sjprod' )
-       CALL CUTEST_timings( status, 'cutest_csjprod', time )
+       CALL CUTEST_timings( status, 'cutest_csjprod', time_real )
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_hl' )
-       CALL CUTEST_timings( status, 'cutest_csh', time )
-       CALL CUTEST_timings( status, 'cutest_cshc', part_time )
-       time = time + part_time
+       CALL CUTEST_timings( status, 'cutest_csh', time_real )
+       time = REAL( time_real, wp )
+       CALL CUTEST_timings( status, 'cutest_cshc', time_real )
+       time = time + REAL( time_real, wp )
      CASE ( 'cutest_eval_hlc' )
-       CALL CUTEST_timings( status, 'cutest_cshc', time )
+       CALL CUTEST_timings( status, 'cutest_cshc', time_real )
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_hlprod' )
-       CALL CUTEST_timings( status, 'cutest_chprod', time )
-       CALL CUTEST_timings( status, 'cutest_chcprod', part_time )
-       time = time + part_time
+       CALL CUTEST_timings( status, 'cutest_chprod', time_real )
+       time = REAL( time_real, wp )
+       CALL CUTEST_timings( status, 'cutest_chcprod', time_real )
+       time = time + REAL( time_real, wp )
      CASE ( 'cutest_eval_shlprod' )
-       CALL CUTEST_timings( status, 'cutest_cshprod', time )
-       CALL CUTEST_timings( status, 'cutest_cshcprod', part_time )
-       time = time + part_time
+       CALL CUTEST_timings( status, 'cutest_cshprod', time_real )
+       time = REAL( time_real, wp )
+       CALL CUTEST_timings( status, 'cutest_cshcprod', time_real )
+       time = time + REAL( time_real, wp )
      CASE ( 'cutest_eval_hlcprod' )
-       CALL CUTEST_timings( status, 'cutest_chcprod', time )
+       CALL CUTEST_timings( status, 'cutest_chcprod', time_real )
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_shlcprod' )
-       CALL CUTEST_timings( status, 'cutest_cshcprod', time )
+       CALL CUTEST_timings( status, 'cutest_cshcprod', time_real )
+       time = REAL( time_real, wp )
      CASE ( 'cutest_eval_hcprods' )
-       CALL CUTEST_timings( status, 'cutest_cchprods', time )
+       CALL CUTEST_timings( status, 'cutest_cchprods', time_real )
+       time = REAL( time_real, wp )
      CASE DEFAULT
        status = GALAHAD_unavailable_option
      END SELECT

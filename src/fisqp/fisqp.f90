@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 23/11/2014 AT 13:15 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-  G A L A H A D _ F I S Q P   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -43,7 +43,7 @@
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
      USE GALAHAD_ROOTS_double, ONLY: ROOTS_quadratic
-     USE GALAHAD_STRING_double
+     USE GALAHAD_STRING
      USE GALAHAD_OPT_double
      USE GALAHAD_MOP_double
      USE GALAHAD_LMS_double
@@ -52,7 +52,8 @@
 
      PRIVATE
      PUBLIC :: FISQP_initialize, FISQP_read_specfile, FISQP_solve,             &
-               FISQP_terminate, NLPT_problem_type
+               FISQP_terminate, NLPT_problem_type, NLPT_userdata_type,         &
+               SMT_type, SMT_put
 
 !--------------------
 !   P r e c i s i o n
@@ -77,10 +78,10 @@
      INTEGER, PARAMETER :: s_normal = 2
 
      INTEGER, PARAMETER :: identity_predictor_hessian = 0
-     INTEGER, PARAMETER :: modifed_exact_predictor_hessian = 1
-     INTEGER, PARAMETER :: l_bfgs_predictor_hessian = 2
-     INTEGER, PARAMETER :: powell_l_bfgs_predictor_hessian = 2
-
+     INTEGER, PARAMETER :: se_modified_predictor_hessian = 1
+     INTEGER, PARAMETER :: dd_modified_predictor_hessian = 2
+     INTEGER, PARAMETER :: l_bfgs_predictor_hessian = 3
+     INTEGER, PARAMETER :: powell_l_bfgs_predictor_hessian = 4
      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
@@ -104,9 +105,7 @@
 
 !    LOGICAL, PARAMETER :: print_debug = .TRUE.
      LOGICAL, PARAMETER :: print_debug = .FALSE.
-
-!    LOGICAL, PARAMETER :: nop = .TRUE.
-     LOGICAL, PARAMETER :: nop = .FALSE.
+     LOGICAL :: alt_accel = .FALSE.    !  attempt to solve EQP in one stage
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -154,17 +153,23 @@
 
        INTEGER :: maxit = 100
 
+!   number of fails allowed before a monotone step is required
+
+       INTEGER :: max_fails = 0
+
 !   predictor Hessian B_k update strategy
 !    = 0 if scaled identity
-!    = 1 if modified exact Hessian used
-!    = 2 if L-BFGS with indefinite update skipping used
-!    = 3 if L-BFGS with Powell corrections used
+!    = 1 if Schmabel_Eskow modified exact Hessian used
+!    = 2 if diagonally_dominant modified exact Hessian used
+!    = 3 if L-BFGS with indefinite update skipping used
+!    = 4 if L-BFGS with Powell corrections used
 
-       INTEGER :: predictor_hessian = modifed_exact_predictor_hessian
+       INTEGER :: predictor_hessian = se_modified_predictor_hessian
 
 !   scale the constraints
 !    = 0 unscaled
-!    = 1 scaled
+!    = 1 scale by the infinity norms of the Jacobian rows at the initial point
+!    = 2 scale as in 1 but rescale relative to the largest
 
        INTEGER :: scale_constraints = 0
 
@@ -185,109 +190,63 @@
 
 !   the required absolute and relative accuracies for the primal infeasibility
 
-       REAL ( KIND = wp ) :: stop_abs_p = epsmch
+       REAL ( KIND = wp ) :: stop_abs_p = ten ** ( - 5 )
        REAL ( KIND = wp ) :: stop_rel_p = epsmch
 
 !   the required absolute and relative accuracies for the dual infeasibility
 
-       REAL ( KIND = wp ) :: stop_abs_d = epsmch
+       REAL ( KIND = wp ) :: stop_abs_d = ten ** ( - 5 )
        REAL ( KIND = wp ) :: stop_rel_d = epsmch
 
 !   the required absolute and relative accuracies for the complementarity
 
-       REAL ( KIND = wp ) :: stop_abs_c = epsmch
+       REAL ( KIND = wp ) :: stop_abs_c = ten ** ( - 5 )
        REAL ( KIND = wp ) :: stop_rel_c = epsmch
 
 !   the required absolute and relative accuracies for the infeasibility
-!   The iteration will stop at a minimizer of the infeasibility if the
-!   gradient of the infeasibility (J^T c) is smaller in norm than
-!   control%stop_abs_i times the norm of c
+!    The iteration will stop at a minimizer of the infeasibility if the
+!    gradient of the infeasibility (J^T c) is smaller in norm than
+!    control%stop_abs_i times the norm of c
 
-       REAL ( KIND = wp ) :: stop_abs_i = epsmch
+       REAL ( KIND = wp ) :: stop_abs_i = ten ** ( - 5 )
        REAL ( KIND = wp ) :: stop_rel_i = epsmch
 
+!   the minimum useful predictor decrease allowed when approximately feasible
+
+       REAL ( KIND = wp ) :: stop_predictor = ten ** ( - 12 )
+
 !   the maximum infeasibility tolerated will be the larger of
-!    max_absolute_infeasibility and max_relative_infeasibility
-!    times the initial infeasibility
+!    max_abs_i and max_rel_i times the initial infeasibility
 
-       REAL ( KIND = wp ) :: max_absolute_infeasibility = ten
-       REAL ( KIND = wp ) :: max_relative_infeasibility = ten
+       REAL ( KIND = wp ) :: max_abs_i = ten
+       REAL ( KIND = wp ) :: max_rel_i = ten
 
-!   tolerance level to determine infeasible stationary point
+!   the minimum and maximum constraint scaling factors allowed with
+!    scale_constraints > 0
 
-       REAL ( KIND = wp ) :: tol_infeas = ten ** ( - 3 )
+       REAL ( KIND = wp ) :: min_constraint_scaling = ten ** ( - 5 )
+       REAL ( KIND = wp ) :: max_constraint_scaling = ten ** 5
 
-!   tolerance level to determine primal constraint violation
+!   the minimum perturbation when building the predictor Hessian
 
-       REAL ( KIND = wp ) :: tol_primal = ten ** ( - 5 )
+       REAL ( KIND = wp ) :: min_hessian_perturbation = ten ** ( - 5 )
 
-!   tolerance level to determine complementarity violation
+!   initial trust-region radius for steering subproblem
 
-       REAL ( KIND = wp ) :: tol_comp = ten ** ( - 5 )
+       REAL ( KIND = wp ) :: radius_steering = ten ** 2
 
-!   defined to be zero...can change later if needed.
+!   initial trust-region radius for accelerator subproblem
 
-       REAL ( KIND = wp ) :: tol_zero = 0.0_wp
+       REAL ( KIND = wp ) :: radius_accelerator = ten ** 2
 
-!   tolerance level to exit using pred step
+!   step reduction factor when back-tracking to balance the step steering and
+!    predictor steps
 
-       REAL ( KIND = wp ) :: tol_pred = ten ** ( - 12 )
+       REAL ( KIND = wp ) :: tau_reduce = 0.5_wp
 
-!   tolerance used for exit when determining ISP
-
-       REAL ( KIND = wp ) :: tol_steer = ten ** ( - 12 )
-
-!   just use the penalty function?
-
-       LOGICAL :: just_penalty = .FALSE.
-
-!   just use the filter function?
-
-       LOGICAL :: just_filter = .FALSE.
-
-!   number of fails allowed (nonmonotone parameter)
-
-       INTEGER :: max_fails = 0
-
-!   BFGS parameter > 0
-
-       REAL ( KIND = wp ) :: bfgs_theta = 0.2_wp
-
-!   initial TR radius for steering subproblem
-
-!      REAL ( KIND = wp ) :: delta_0 = 100.0_wp
-       REAL ( KIND = wp ) :: delta_0 = ten ** 10
-
-!   minimum TR radius for steering subprob
-
-       REAL ( KIND = wp ) :: delta_min = 1.0_wp
-
-!   maximum TR radius for steering subprob
-
-!      REAL ( KIND = wp ) :: delta_max = ten ** 4
-       REAL ( KIND = wp ) :: delta_max = ten ** 10
-
-!   sufficient s_k predicted violation decrease
-
-       REAL ( KIND = wp ) :: eta_v = ten ** ( - 3 )
-
-!   backtracking parameter for s_k
-
-       REAL ( KIND = wp ) :: tau = 0.5_wp
-
-!   lower bound on backtracking
+!   lower bound on the back-tracking balancing step
 
        REAL ( KIND = wp ) :: tau_min = ten ** ( - 14 )
-
-!   required sufficient s_k predicted penalty decrease compared to s_k^s
-!   predicted violation decrease (must be less than eta_v)
-
-       REAL ( KIND = wp ) :: eta_sigma = ten ** ( - 6 )
-
-!   sufficient s_k predicted penalty decrease compared to s_k^p
-!   predicted penalty decrease
-
-       REAL ( KIND = wp ) :: eta_phi = ten ** ( - 3 )
 
 !   initial penalty parameter
 
@@ -299,11 +258,7 @@
 
 !   use the accelerator step?
 
-       LOGICAL :: use_accel = .TRUE.
-
-!   TR radius for accelerator subproblem
-
-       REAL ( KIND = wp ) :: radius_accel = 100.0_wp
+       LOGICAL :: use_accelerator = .TRUE.
 
 !   lower bound on step size for cauchy-f
 
@@ -313,78 +268,72 @@
 
        REAL ( KIND = wp ) :: alpha_phi_min = ten ** ( - 8 )
 
-!   Filter envelope parameter (modifies v)
+!   Filter margin reduction parameter; require an improvement by at least
+!    beta * violation in one filter dimension
 
        REAL ( KIND = wp ) :: beta = 0.98_wp
 
-!   Filter envelope parameter (links f and v)
+!   Filter margin reduction parameter; require an improvement in violation
+!    by at least eta_v * linearized violation reduction
+
+       REAL ( KIND = wp ) :: eta_v = ten ** ( - 3 )
+
+!   Filter margin reduction parameter; require an improvement in objective
+!    by at least gamma * new violation
 
        REAL ( KIND = wp ) :: gamma = ten ** ( - 3 )
 
-!   sufficient predicted objective decrease parameter
+!   violation reduction parameter; require an improvement in linearized
+!    violation by at least gamma_v * linearized objective reduction to
+!    be a v-pair
 
        REAL ( KIND = wp ) :: gamma_v = ten ** ( - 3 )
 
-!   sufficient actual objective decrease parameter
+!   objective reduction parameter; require an improvement in objective value
+!    by at least gamma_f * predicted objective reduction to be an o-pair
 
        REAL ( KIND = wp ) :: gamma_f = ten ** ( - 4 )
 
-!   sufficient actual penalty decrease parameter
+!   penalty function reduction parameter; require an improvement in penalty
+!    value by at least gamma_phi * predicted penalty reduction to be an b-
+!    or p-pair
 
        REAL ( KIND = wp ) :: gamma_phi = ten ** ( - 4 )
+
+!   penalty parameter increase parameter; increase sigma if linearized
+!    penalty function is less that eta_sigma * linearized violation
+
+       REAL ( KIND = wp ) :: eta_sigma = ten ** ( - 6 )
+
+!   The penalty parameter will be updated if the predicted penalty function
+!    decrease at s_k relative to that at s_k^p is smaller than eta_phi
+
+       REAL ( KIND = wp ) :: eta_phi = ten ** ( - 3 )
 
 !   backtracking parameter
 
        REAL ( KIND = wp ) :: alpha_reduce = 0.5_wp
 
-!   lower bound on step size
+!   a lower bound on permitted step size
 
-       REAL ( KIND = wp ) :: s_min = ten ** ( - 14 )
-
-!   max violation allowed in filter
-
-       REAL ( KIND = wp ) :: viol_maxC = ten ** 5
-
-!   max multiple of initial violation allowed in filter
-
-       REAL ( KIND = wp ) :: viol_maxM = 100.0_wp
-
-!   a potential filter point whose linear decrease predicted by the RLP
-!    is larger than the above will only be accepted if the actual decrease
-!    f - f(x_new) is larger than eta_successful times that predicted by a
-!    quadratic model of the decrease
-
-!      REAL ( KIND = wp ) :: eta_successful = ten ** ( - 8 )
-!      REAL ( KIND = wp ) :: eta_very_successful = point9
+       REAL ( KIND = wp ) :: s_tiny = epsmch
 
 !  zero Jacobian entry tolerance
 
        REAL ( KIND = wp ) :: jacobian_zero_tolerance = epsmch
 
-!   the maximum elapsed time allowed (-ve means infinite)
+!   the maximum CPU time allowed (-ve means infinite)
 
-       REAL ( KIND = wp ) :: time_limit = - one
+       REAL ( KIND = wp ) :: cpu_time_limit = - one
 
-!  use local information from steering step for the filter evvelope?
+!   the maximum elapsed clock time allowed (-ve means infinite)
 
-       LOGICAL :: filter_uses_steering = .TRUE.
+       REAL ( KIND = wp ) :: clock_time_limit = - one
 
-!  solve the normal model using factorization
+!   full_solution specifies whether the full solution or only highlights
+!    will be printed
 
-!      LOGICAL :: direct_solution_of_normal_model = .FALSE.
-
-!  solve the tangential model using factorization
-
-!      LOGICAL :: direct_solution_of_tangential_model = .FALSE.
-
-!  use a second-order correction if necessary
-
-!      LOGICAL :: use_second_order_correction = .FALSE.
-
-!   fulsol specifies whether the full solution or only highlights will be
-!    printed
-
-       LOGICAL :: fulsol = .TRUE.
+       LOGICAL :: full_solution = .TRUE.
 
 !   if space_critical is true, every effort will be made to use as little
 !    space as possible. This may result in longer computation times
@@ -395,6 +344,18 @@
 !    will terminate execution. Otherwise, computation will continue
 
        LOGICAL :: deallocate_error_fatal  = .FALSE.
+
+!   just use the penalty function?
+
+       LOGICAL :: just_penalty = .FALSE.
+
+!   just use the filter function?
+
+       LOGICAL :: just_filter = .FALSE.
+
+!  use local information from steering step for the filter envelope?
+
+       LOGICAL :: filter_uses_steering = .TRUE.
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
 !   where %prefix contains the required string enclosed in
@@ -490,44 +451,13 @@
 
        CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
 
+!  the name of the user-supplied evaluation routine for which an error ocurred
+
+       CHARACTER ( LEN = 12 ) :: bad_eval = REPEAT( ' ', 12 )
+
 !  the total number of iterations performed
 
        INTEGER :: iter = 0
-
-!  the total number of CG iterations performed
-
-       INTEGER :: cg_iter = 0
-
-!  the number of factorizations used
-
-       INTEGER :: factorizations_normal = 0
-       INTEGER :: factorizations_tangential = 0
-
-!  the number of factorizations that modified the original matrix
-
-       INTEGER :: modifications = 0
-
-!  the return status from the factorization
-
-       INTEGER :: factorization_status = 0
-
-!   the maximum number of entries in the factors
-
-       INTEGER ( KIND = long ) :: max_entries_factors_normal = 0
-       INTEGER ( KIND = long ) :: max_entries_factors_multipliers = 0
-       INTEGER ( KIND = long ) :: max_entries_factors_tangential = 0
-
-!  the total integer workspace required for the factorization
-
-       INTEGER :: factorization_integer = - 1
-
-!  the total real workspace required for the factorization
-
-       INTEGER :: factorization_real = - 1
-
-!  the number of threads used
-
-       INTEGER :: threads = 1
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by FISQP_solve
@@ -545,7 +475,6 @@
 !  the value of the complementary slackness
 
        REAL ( KIND = wp ) :: complementary_slackness = HUGE( one )
-
 
 !  the number of times that penalty mode was entered
 
@@ -575,17 +504,29 @@
 
        INTEGER :: num_nm = 0
 
-!  the number of function evaluations
+!  the number of objective and constraint function evaluations
 
-       INTEGER :: f_eval = 0
+       INTEGER :: fc_eval = 0
 
-!  the number of derivative evaluations
+!  the number of gradient and Jacobian evaluations
 
-       INTEGER :: g_eval = 0
+       INTEGER :: gj_eval = 0
+
+!  the number of Hessian evaluations
+
+       INTEGER :: h_eval = 0
+
+!  the number of factorizations that modified the original matrix
+
+       INTEGER :: modifications = 0
+
+!  the number of threads used
+
+       INTEGER :: threads = 1
 
 !  was the last whether Hessian modified?
 
-       LOGICAL :: B_modified = .FALSE.
+!      LOGICAL :: B_modified = .FALSE.
 
 !  timings (see above)
 
@@ -624,16 +565,16 @@
        INTEGER :: print_level_eqp, print_level_eqp_sbls, print_level_eqp_gltr
        REAL :: time_start, time_now
        REAL ( KIND = wp ) :: clock_start, clock_now
-       REAL ( KIND = wp ) :: alpha, tau, stop_p, stop_d, stop_c, accel_norm
+       REAL ( KIND = wp ) :: alpha, tau, stop_p, stop_d, stop_c, stop_i
        REAL ( KIND = wp ) :: del_ellf, del_ellf_ref, del_ellphi, del_ellv
        REAL ( KIND = wp ) :: del_ellv_ref, del_ellv_steer_ref, del_qf, del_qphi
        REAL ( KIND = wp ) :: del_qphi_pred, ellv, f_current, f_ref, f_trial
        REAL ( KIND = wp ) :: rho_f_ref, rho_phi_ref, sigma, sigma_new, s_norm
-       REAL ( KIND = wp ) :: eta_successful, eta_very_successful, sigma_new_ref
+       REAL ( KIND = wp ) :: sigma_new_ref, accel_norm
        REAL ( KIND = wp ) :: phi, phi_ref, primal_viol, primal_viol_ref
        REAL ( KIND = wp ) :: comp_viol, comp_viol_ref, viol_trial,phi_trial
        REAL ( KIND = wp ) :: stop_p_inner, stop_d_inner, stop_c_inner, h_norm
-       REAL ( KIND = wp ) :: radius_accel
+       REAL ( KIND = wp ) :: radius_accelerator
        LOGICAL :: set_printt, set_printi, set_printw, set_printd
        LOGICAL :: set_printm, printe, printi, printt, printm, printw, printd
        LOGICAL :: reverse_fc, reverse_gj, reverse_hl, reverse_hlprod
@@ -712,21 +653,16 @@
 
      inform%status = GALAHAD_ok
 
-!  redefine absolute stopping tolerances
-
-     control%stop_abs_p = tenm5
-     control%stop_abs_d = tenm5
-     control%stop_abs_c = tenm5
-     control%stop_abs_i = tenm5
-
 !  Initalize L1QP components
 
      CALL L1QP_initialize( data%QP_steer_data, control%QP_steer_control,       &
                            inform%QP_steer_inform )
      control%QP_steer_control%prefix =  '" - StQP:"                   '
+     control%QP_steer_control%refine = .FALSE.
      CALL L1QP_initialize( data%QP_pred_data, control%QP_pred_control,         &
                            inform%QP_pred_inform )
      control%QP_pred_control%prefix =  '" - PrQP:"                    '
+     control%QP_pred_control%refine = .FALSE.
 
 !  Intialize EQP data
 
@@ -758,81 +694,62 @@
 !  have been set as:
 
 ! BEGIN FISQP SPECIFICATIONS (DEFAULT)
-!  error-printout-device                          6
-!  printout-device                                6
-!  alive-device                                   60
-!  print-level                                    1
-!  start-print                                    -1
-!  stop-print                                     -1
-!  iterations-between-printing                    1
-!  maximum-number-of-iterations                   50
-!  predictor-hessian                              2
-!  scale-constraints                              0
-!  linear-equation-solver-for-modifications       sils
-!  algorithm-variant-used                         3
-!  infinity-value                                 1.0D+19
-!  absolute-primal-accuracy                       6.0D-6
-!  relative-primal-accuracy                       2.0D-16
-!  absolute-dual-accuracy                         6.0D-6
-!  relative-dual-accuracy                         2.0D-16
-!  absolute-complementary-slackness-accuracy      6.0D-6
-!  relative-complementary-slackness-accuracy      2.0D-16
-!  absolute-infeasiblity-tolerated                6.0D-6
-!  relative-infeasiblity-tolerated                2.0D-16
-!  maximum-absolute-infeasibility                 10.0
-!  maximum-relative-infeasibility                 10.0
-!  tol-infeas
-!  tol-primal
-!  tol-comp
-!  tol-zero
-!  tol-pred
-!  tol-steer
-!  just-penalty
-!  just-filter
-!  max-fails
-!  bfgs-theta
-!  delta-0
-!  delta-min
-!  delta-max
-!  eta-v
-!  tau
-!  tau-min
-!  eta-sigma
-!  eta-phi
-!  sigma-0
-!  sigma-inc
-!  use-accel
-!  delta-accel
-!  alpha-f-min
-!  alpha-phi-min
-!  beta
-!  gamma
-!  gamma-v
-!  gamma-f
-!  gamma-phi
-!  alpha-reduce
-!  s-min
-!  viol-maxC
-!  viol-maxM
-!  fil-use-steer
-!  maximum-cpu-time-limit                         -1.0
-!  initial-barrier-parameter                      -1.0
-!  mininum-initial-primal-feasibility             1.0
-!  mininum-initial-dual-feasibility               1.0
-!  initial-n-model-radius                         1.0D+1
-!  initial-t-model-radius                         1.0D+1
-!  successful-iteration-tolerance                 0.01
-!  very-successful-iteration-tolerance            0.9
-!  smallest-barrier-parameter                     -1.0
-!  direct-solution-of-normal-model                no
-!  direct-solution-of-tangential-model            no
-!  allow-extrapolation                            no
-!  use-second-order-correction                    no
-!  print-full-solution                            no
-!  space-critical                                 no
-!  deallocate-error-fatal                         no
-!  alive-filename                                 ALIVE.d
-!  output-line-prefix                             ""
+! error-printout-device                             6
+! printout-device                                   6
+! alive-device                                      60
+! print-level                                       1
+! start-print                                       -1
+! stop-print                                        -1
+! iterations-between-printing                       1
+! maximum-number-of-iterations                      50
+! predictor-hessian                                 2
+! scale-constraints                                 0
+! max-fails-before-monotone                         0
+! infinity-value                                    1.0D+19
+! absolute-primal-accuracy                          6.0D-6
+! relative-primal-accuracy                          2.0D-16
+! absolute-dual-accuracy                            6.0D-6
+! relative-dual-accuracy                            2.0D-16
+! absolute-complementary-slackness-accuracy         6.0D-6
+! relative-complementary-slackness-accuracy         2.0D-16
+! absolute-infeasiblity-tolerated                   6.0D-6
+! relative-infeasiblity-tolerated                   2.0D-16
+! minimum-useful-predictor-decrease                 1.0D-12
+! maximum-absolute-infeasibility                    10.0
+! maximum-relative-infeasibility                    10.0
+! minimum-constraint-scaling-factor                 1.0D-5
+! maximum-constraint-scaling-factor                 1.0D+5
+! minimum-predictor-hessian-perturbation            1.0D-5
+! initial-steering-model-radius                     1.0D+2
+! use-accelerator                                   yes
+! initial-accelerator-model-radius                  1.0D+2
+! step-balance-reduction-factor                     0.5
+! step-balance-minimum                              1.0D-14
+! tiny-step                                         2.0D-16
+! required-filter-margin-reduction                  0.98
+! required-v-filter-reduction-vs-dlv                1.0D-3
+! required-f-filter-reduction-vs-dlv                1.0D-3
+! required-v-reduction-vs-df                        1.0D-3
+! required-f-reduction-vs-df                        1.0D-4
+! required-p-reduction-vs-dp                        1.0D-4
+! required-dlphi-reduction-vs-dlv                   1.0D-6
+! required-dqphi-reduction-s-vs-pred                1.0D-3
+! backtracking-linesearch-reduction-factor          0.5
+! cauchy-f-stepsize-minimum                         1.0D-8
+! cauchy-phi-stepsize-minimum                       1.0D-8
+! jacobian-zero-tolerance                           2.0D-16
+! maximum-cpu-time-limit                            -1.0
+! maximum-clock-time-limit                          -1.0
+! print-full-solution                               no
+! space-critical                                    no
+! deallocate-error-fatal                            no
+! just-use-the-penalty-function                     no
+! just-use-the-filter                               no
+! use-accelerator-step                              yes
+! filter-uses-steering-information                  yes
+! alive-filename                                    ALIVE.d
+! linear-equation-solver-for-modifications          sils
+! output-line-prefix                                ""
 ! END FISQP SPECIFICATIONS
 
 !-----------------------------------------------
@@ -866,37 +783,30 @@
      INTEGER, PARAMETER :: stop_rel_c = stop_abs_c + 1
      INTEGER, PARAMETER :: stop_abs_i = stop_rel_c + 1
      INTEGER, PARAMETER :: stop_rel_i = stop_abs_i + 1
-     INTEGER, PARAMETER :: max_absolute_infeasibility                          &
-                             = stop_rel_i + 1
-     INTEGER, PARAMETER :: max_relative_infeasibility                          &
-                             = max_absolute_infeasibility + 1
-!    INTEGER, PARAMETER :: min_feas_p = stop_rel_i + 1
-!    INTEGER, PARAMETER :: min_feas_d = min_feas_p + 1
-     INTEGER, PARAMETER :: tol_infeas = max_absolute_infeasibility + 1
-     INTEGER, PARAMETER :: tol_primal = tol_infeas + 1
-     INTEGER, PARAMETER :: tol_comp = tol_primal + 1
-     INTEGER, PARAMETER :: tol_zero = tol_comp + 1
-     INTEGER, PARAMETER :: tol_pred = tol_zero + 1
-     INTEGER, PARAMETER :: tol_steer = tol_pred + 1
-     INTEGER, PARAMETER :: just_penalty = tol_steer + 1
+     INTEGER, PARAMETER :: stop_predictor = stop_rel_i + 1
+     INTEGER, PARAMETER :: max_abs_i = stop_predictor + 1
+     INTEGER, PARAMETER :: max_rel_i = max_abs_i + 1
+     INTEGER, PARAMETER :: min_constraint_scaling = max_abs_i + 1
+     INTEGER, PARAMETER :: max_constraint_scaling                              &
+                             = min_constraint_scaling + 1
+     INTEGER, PARAMETER :: min_hessian_perturbation                            &
+                             = max_constraint_scaling + 1
+     INTEGER, PARAMETER :: just_penalty = min_hessian_perturbation + 1
      INTEGER, PARAMETER :: just_filter = just_penalty + 1
      INTEGER, PARAMETER :: max_fails = just_filter + 1
-     INTEGER, PARAMETER :: bfgs_theta = max_fails + 1
-     INTEGER, PARAMETER :: predictor_hessian = bfgs_theta + 1
+     INTEGER, PARAMETER :: predictor_hessian = max_fails + 1
      INTEGER, PARAMETER :: scale_constraints = predictor_hessian + 1
-     INTEGER, PARAMETER :: delta_0 = scale_constraints + 1
-     INTEGER, PARAMETER :: delta_min = delta_0 + 1
-     INTEGER, PARAMETER :: delta_max = delta_min + 1
-     INTEGER, PARAMETER :: eta_v = delta_max + 1
-     INTEGER, PARAMETER :: tau = eta_v + 1
-     INTEGER, PARAMETER :: tau_min = tau + 1
+     INTEGER, PARAMETER :: radius_steering = scale_constraints + 1
+     INTEGER, PARAMETER :: eta_v = radius_steering + 1
+     INTEGER, PARAMETER :: tau_reduce = eta_v + 1
+     INTEGER, PARAMETER :: tau_min = tau_reduce + 1
      INTEGER, PARAMETER :: eta_sigma = tau_min + 1
      INTEGER, PARAMETER :: eta_phi = eta_sigma + 1
      INTEGER, PARAMETER :: sigma_0 = eta_phi + 1
      INTEGER, PARAMETER :: sigma_inc = sigma_0 + 1
-     INTEGER, PARAMETER :: use_accel = sigma_inc + 1
-     INTEGER, PARAMETER :: radius_accel = use_accel + 1
-     INTEGER, PARAMETER :: alpha_f_min = radius_accel + 1
+     INTEGER, PARAMETER :: use_accelerator = sigma_inc + 1
+     INTEGER, PARAMETER :: radius_accelerator = use_accelerator + 1
+     INTEGER, PARAMETER :: alpha_f_min = radius_accelerator + 1
      INTEGER, PARAMETER :: alpha_phi_min = alpha_f_min + 1
      INTEGER, PARAMETER :: beta = alpha_phi_min + 1
      INTEGER, PARAMETER :: gamma = beta + 1
@@ -904,19 +814,13 @@
      INTEGER, PARAMETER :: gamma_f = gamma_v + 1
      INTEGER, PARAMETER :: gamma_phi = gamma_f + 1
      INTEGER, PARAMETER :: alpha_reduce = gamma_phi + 1
-     INTEGER, PARAMETER :: s_min = alpha_reduce + 1
-     INTEGER, PARAMETER :: viol_maxC = s_min + 1
-     INTEGER, PARAMETER :: viol_maxM = viol_maxC + 1
-     INTEGER, PARAMETER :: jacobian_zero_tolerance = viol_maxM + 1
-     INTEGER, PARAMETER :: time_limit = jacobian_zero_tolerance + 1
-     INTEGER, PARAMETER :: filter_uses_steering = time_limit + 1
-!    INTEGER, PARAMETER :: direct_solution_of_normal_model = time_limit + 1
-!    INTEGER, PARAMETER :: direct_solution_of_tangential_model                 &
-!                            = direct_solution_of_normal_model + 1
-!    INTEGER, PARAMETER :: use_second_order_correction                         &
-!                            = direct_solution_of_tangential_model + 1
-     INTEGER, PARAMETER :: fulsol = filter_uses_steering + 1
-     INTEGER, PARAMETER :: space_critical = fulsol + 1
+     INTEGER, PARAMETER :: s_tiny = alpha_reduce + 1
+     INTEGER, PARAMETER :: jacobian_zero_tolerance = s_tiny + 1
+     INTEGER, PARAMETER :: cpu_time_limit = jacobian_zero_tolerance + 1
+     INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
+     INTEGER, PARAMETER :: filter_uses_steering = clock_time_limit + 1
+     INTEGER, PARAMETER :: full_solution = filter_uses_steering + 1
+     INTEGER, PARAMETER :: space_critical = full_solution + 1
      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
      INTEGER, PARAMETER :: alive_file = deallocate_error_fatal + 1
      INTEGER, PARAMETER :: linear_solver_for_modifications = alive_file + 1
@@ -939,6 +843,9 @@
      spec( stop_print  )%keyword = 'stop-print'
      spec( print_gap )%keyword = 'iterations-between-printing'
      spec( maxit )%keyword = 'maximum-number-of-iterations'
+     spec( predictor_hessian )%keyword = 'predictor-hessian'
+     spec( scale_constraints )%keyword = 'scale-constraints'
+     spec( max_fails )%keyword = 'max-fails-before-monotone'
 
 !  real key-words
 
@@ -951,64 +858,46 @@
      spec( stop_rel_c )%keyword = 'relative-complementary-slackness-accuracy'
      spec( stop_abs_i )%keyword = 'absolute-infeasiblity-tolerated'
      spec( stop_rel_i )%keyword = 'relative-infeasiblity-tolerated'
-     spec( max_absolute_infeasibility )%keyword                                &
-       = 'maximum-absolute-infeasibility'
-     spec( max_relative_infeasibility )%keyword                                &
-       = 'maximum-relative-infeasibility'
-
-     spec( tol_infeas )%keyword = 'tol-infeas'
-     spec( tol_primal )%keyword = 'tol-primal'
-     spec( tol_comp )%keyword = 'tol-comp'
-     spec( tol_zero )%keyword = 'tol-zero'
-     spec( tol_pred )%keyword = 'tol-pred'
-     spec( tol_steer )%keyword = 'tol-steer'
-     spec( just_penalty )%keyword = 'just-penalty'
-     spec( just_filter )%keyword = 'just-filter '
-     spec( max_fails )%keyword = 'max-fails'
-     spec( bfgs_theta )%keyword = 'bfgs-theta'
-     spec( predictor_hessian )%keyword = 'predictor-hessian'
-     spec( scale_constraints )%keyword = 'scale-constraints'
-     spec( delta_0 )%keyword = 'delta-0'
-     spec( delta_min )%keyword = 'delta-min'
-     spec( delta_max )%keyword = 'delta-max'
-     spec( eta_v )%keyword = 'eta-v'
-     spec( tau )%keyword = 'tau'
-     spec( tau_min )%keyword = 'tau-min'
-     spec( eta_sigma )%keyword = 'eta-sigma'
-     spec( eta_phi )%keyword = 'eta-phi'
-     spec( sigma_0 )%keyword = 'sigma-0'
-     spec( sigma_inc )%keyword = 'sigma-inc'
-     spec( use_accel )%keyword = 'use-accel'
-     spec( radius_accel )%keyword = 'radius-accel'
-     spec( alpha_f_min )%keyword = 'alpha_f-min'
-     spec( alpha_phi_min )%keyword = 'alpha-phi-min'
-     spec( beta )%keyword = 'beta'
-     spec( gamma )%keyword = 'gamma'
-     spec( gamma_v )%keyword = 'gamma-v'
-     spec( gamma_f )%keyword = 'gamma-f'
-     spec( gamma_phi )%keyword = 'gamma-phi'
-     spec( alpha_reduce )%keyword = 'alpha-reduce'
-     spec( s_min )%keyword = 's-min'
-     spec( viol_maxC )%keyword = 'viol-maxC'
-     spec( viol_maxM )%keyword = 'viol-maxM'
-     spec( filter_uses_steering )%keyword = 'fil-use-steer'
-!    spec( min_feas_p )%keyword = 'mininum-initial-primal-feasibility'
-!    spec( min_feas_d )%keyword = 'mininum-initial-dual-feasibility'
-!    spec( eta_successful )%keyword = 'successful-iteration-tolerance'
-!    spec( eta_very_successful )%keyword = 'very-successful-iteration-tolerance'
+     spec( stop_predictor )%keyword = 'minimum-useful-predictor-decrease'
+     spec( max_abs_i )%keyword = 'maximum-absolute-infeasibility'
+     spec( max_rel_i )%keyword = 'maximum-relative-infeasibility'
+     spec( min_constraint_scaling )%keyword                                    &
+       = 'minimum-constraint-scaling-factor'
+     spec( max_constraint_scaling )%keyword                                    &
+       = 'maximum-constraint-scaling-factor'
+     spec( min_hessian_perturbation )%keyword                                  &
+       = 'minimum-predictor-hessian-perturbation'
+     spec( sigma_0 )%keyword = 'initial-penalty-parameter'
+     spec( sigma_inc )%keyword = 'minimum-penalty-parameter-increment'
+     spec( radius_steering )%keyword = 'initial-steering-model-radius'
+     spec( radius_accelerator )%keyword = 'initial-accelerator-model-radius'
+     spec( tau_reduce )%keyword = 'step-balance-reduction-factor'
+     spec( tau_min )%keyword = 'step-balance-minimum'
+     spec( s_tiny )%keyword = 'tiny-step'
+     spec( beta )%keyword = 'required-filter-margin-reduction'
+     spec( gamma )%keyword = 'required-f-filter-reduction-vs-dlv'
+     spec( eta_v )%keyword = 'required-v-filter-reduction-vs-dlv'
+     spec( gamma_v )%keyword = 'required-v-reduction-vs-df'
+     spec( gamma_f )%keyword = 'required-f-reduction-vs-df'
+     spec( gamma_phi )%keyword = 'required-p-reduction-vs-dp'
+     spec( eta_sigma )%keyword = 'required-dlphi-reduction-vs-dlv'
+     spec( eta_phi )%keyword = 'required-dqphi-reduction-s-vs-pred'
+     spec( alpha_reduce )%keyword = ' backtracking-linesearch-reduction-factor'
+     spec( alpha_f_min )%keyword = 'cauchy-f-stepsize-minimum '
+     spec( alpha_phi_min )%keyword = 'cauchy-phi-stepsize-minimum '
      spec( jacobian_zero_tolerance )%keyword = 'jacobian-zero-tolerance'
-     spec( time_limit )%keyword = 'maximum-time-limit'
+     spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
+     spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
 
 !  logical key-words
 
-!    spec( direct_solution_of_normal_model )%keyword =                         &
-!      'direct-solution-of-normal-model'
-!    spec( direct_solution_of_tangential_model )%keyword =                     &
-!      'direct-solution-of-tangential-model'
-!    spec( use_second_order_correction )%keyword = 'use-second-order-correction'
-     spec( fulsol )%keyword = 'print-full-solution'
+     spec( full_solution )%keyword = 'print-full-solution'
      spec( space_critical )%keyword = 'space-critical'
      spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
+     spec( just_penalty )%keyword = 'just-use-the-penalty-function'
+     spec( just_filter )%keyword = 'just-use-the-filter'
+     spec( use_accelerator )%keyword = 'use-accelerator-step'
+     spec( filter_uses_steering )%keyword = 'filter-uses-steering-information'
 
 !  character key-words
 
@@ -1053,6 +942,9 @@
      CALL SPECFILE_assign_value( spec( maxit ),                                &
                                  control%maxit,                                &
                                  control%error )
+     CALL SPECFILE_assign_value( spec( max_fails ),                            &
+                                 control%max_fails,                            &
+                                 control%error )
 
 !  set real values
 
@@ -1083,41 +975,23 @@
      CALL SPECFILE_assign_value( spec( stop_rel_i ),                           &
                                  control%stop_rel_i,                           &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( max_absolute_infeasibility ),           &
-                                 control%max_absolute_infeasibility,           &
+     CALL SPECFILE_assign_value( spec( stop_predictor ),                       &
+                                 control%stop_predictor,                       &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( max_relative_infeasibility ),           &
-                                 control%max_relative_infeasibility,           &
+     CALL SPECFILE_assign_value( spec( max_abs_i ),                            &
+                                 control%max_abs_i,                            &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( tol_infeas ),                           &
-                                 control%tol_infeas,                           &
+     CALL SPECFILE_assign_value( spec( max_rel_i ),                            &
+                                 control%max_rel_i,                            &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( tol_primal ),                           &
-                                 control%tol_primal,                           &
+     CALL SPECFILE_assign_value( spec( min_constraint_scaling ),               &
+                                 control%min_constraint_scaling,               &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( tol_comp ),                             &
-                                 control%tol_comp,                             &
+     CALL SPECFILE_assign_value( spec( max_constraint_scaling ),               &
+                                 control%max_constraint_scaling,               &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( tol_zero ),                             &
-                                 control%tol_zero,                             &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( tol_pred ),                             &
-                                 control%tol_pred,                             &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( tol_steer ),                            &
-                                 control%tol_steer,                            &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( just_penalty ),                         &
-                                 control%just_penalty,                         &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( just_filter ),                          &
-                                 control%just_filter,                          &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( max_fails ),                            &
-                                 control%max_fails,                            &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( bfgs_theta ),                           &
-                                 control%bfgs_theta,                           &
+     CALL SPECFILE_assign_value( spec( min_hessian_perturbation ),             &
+                                 control%min_hessian_perturbation,             &
                                  control%error )
      CALL SPECFILE_assign_value( spec( predictor_hessian ),                    &
                                  control%predictor_hessian,                    &
@@ -1125,20 +999,14 @@
      CALL SPECFILE_assign_value( spec( scale_constraints ),                    &
                                  control%scale_constraints,                    &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( delta_0 ),                              &
-                                 control%delta_0,                              &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( delta_min ),                            &
-                                 control%delta_min,                            &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( delta_max ),                            &
-                                 control%delta_max,                            &
+     CALL SPECFILE_assign_value( spec( radius_steering ),                      &
+                                 control%radius_steering,                      &
                                  control%error )
      CALL SPECFILE_assign_value( spec( eta_v ),                                &
                                  control%eta_v,                                &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( tau ),                                  &
-                                 control%tau,                                  &
+     CALL SPECFILE_assign_value( spec( tau_reduce ),                           &
+                                 control%tau_reduce,                           &
                                  control%error )
      CALL SPECFILE_assign_value( spec( tau_min ),                              &
                                  control%tau_min,                              &
@@ -1155,11 +1023,11 @@
      CALL SPECFILE_assign_value( spec( sigma_inc ),                            &
                                  control%sigma_inc,                            &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( use_accel ),                            &
-                                 control%use_accel,                            &
+     CALL SPECFILE_assign_value( spec( use_accelerator ),                      &
+                                 control%use_accelerator,                      &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( radius_accel ),                         &
-                                 control%radius_accel,                         &
+     CALL SPECFILE_assign_value( spec( radius_accelerator ),                   &
+                                 control%radius_accelerator,                   &
                                  control%error )
      CALL SPECFILE_assign_value( spec( alpha_f_min ),                          &
                                  control%alpha_f_min,                          &
@@ -1185,58 +1053,38 @@
      CALL SPECFILE_assign_value( spec( alpha_reduce ),                         &
                                  control%alpha_reduce,                         &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( s_min ),                                &
-                                 control%s_min,                                &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( viol_maxC ),                            &
-                                 control%viol_maxC,                            &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( viol_maxM ),                            &
-                                 control%viol_maxM,                            &
+     CALL SPECFILE_assign_value( spec( s_tiny ),                               &
+                                 control%s_tiny,                               &
                                  control%error )
      CALL SPECFILE_assign_value( spec( filter_uses_steering ),                 &
                                  control%filter_uses_steering,                 &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( time_limit ),                           &
-                                 control%time_limit,                           &
-                                 control%error )
-!    CALL SPECFILE_assign_value( spec( min_feas_p ),                           &
-!                                control%min_feas_p,                           &
-!                                control%error )
-!    CALL SPECFILE_assign_value( spec( min_feas_d ),                           &
-!                                control%min_feas_d,                           &
-!                                control%error )
-!    CALL SPECFILE_assign_value( spec( eta_successful ),                       &
-!                                control%eta_successful,                       &
-!                                control%error )
-!    CALL SPECFILE_assign_value( spec( eta_very_successful ),                  &
-!                                control%eta_very_successful,                  &
-!                                control%error )
      CALL SPECFILE_assign_value( spec( jacobian_zero_tolerance ),              &
                                  control%jacobian_zero_tolerance,              &
                                  control%error )
+     CALL SPECFILE_assign_value( spec( cpu_time_limit ),                       &
+                                 control%cpu_time_limit,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( clock_time_limit ),                     &
+                                 control%clock_time_limit,                     &
+                                 control%error )
+
 !  set logical values
 
-!    CALL SPECFILE_assign_value( spec( direct_solution_of_normal_model ),      &
-!                                control%direct_solution_of_normal_model,      &
-!                                control%error )
-!    CALL SPECFILE_assign_value( spec( direct_solution_of_tangential_model ),  &
-!                                control%direct_solution_of_tangential_model,  &
-!                                control%error )
-!    CALL SPECFILE_assign_value( spec( allow_extrapolatiion ),                 &
-!                                control%allow_extrapolatiion,                 &
-!                                control%error )
-!    CALL SPECFILE_assign_value( spec( use_second_order_correction ),          &
-!                                control%use_second_order_correction,          &
-!                                control%error )
-     CALL SPECFILE_assign_value( spec( fulsol ),                               &
-                                 control%fulsol,                               &
+     CALL SPECFILE_assign_value( spec( full_solution ),                        &
+                                 control%full_solution,                        &
                                  control%error )
      CALL SPECFILE_assign_value( spec( space_critical ),                       &
                                  control%space_critical,                       &
                                  control%error )
      CALL SPECFILE_assign_value( spec( deallocate_error_fatal ),               &
                                  control%deallocate_error_fatal,               &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( just_penalty ),                         &
+                                 control%just_penalty,                         &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( just_filter ),                          &
+                                 control%just_filter,                          &
                                  control%error )
 
 !  set character values
@@ -1491,8 +1339,8 @@
 !   -18. Too many iterations have been performed. This may happen if
 !        control%maxit is too small, but may also be symptomatic of
 !        a badly scaled problem.
-!   -19. The ellapsed time limit has been reached. This may happen if
-!        control%time_limit is too small, but may also be symptomatic of
+!   -19. Too much time has passed. This may happen if control%cpu_time_limit or
+!        control%clock_time_limit is too small, but may also be symptomatic of
 !        a badly scaled problem.
 !   -40. The user has forced termination of the solver by removing the file
 !        named control%alive_file from unit control%alive_unit.
@@ -1567,23 +1415,15 @@
 !  cg_iter is a scalar variable of type default integer, that gives the
 !   total number of conjugate-gradient iterations required.
 !
-!  factorization_status is a scalar variable of type default integer, that
-!   gives the return status from the matrix factorization.
+!  fc_eval is a scalar variable of type default integer, that gives the
+!   total number of objective and constraint function evaluations performed.
 !
-!  factorization_integer is a scalar variable of type default integer,
-!   that gives the amount of integer storage used for the matrix factorization.
-!
-!  factorization_real is a scalar variable of type default integer,
-!   that gives the amount of real storage used for the matrix factorization.
-!
-!  f_eval is a scalar variable of type default integer, that gives the
-!   total number of objective function evaluations performed.
-!
-!  g_eval is a scalar variable of type default integer, that gives the
-!   total number of objective function gradient evaluations performed.
+!  gj_eval is a scalar variable of type default integer, that gives the
+!   total number of objective gradient and constraint Jacobian evaluations
+!   performed.
 !
 !  h_eval is a scalar variable of type default integer, that gives the
-!   total number of objective function Hessian evaluations performed.
+!   total number of Lagrangian Hessian evaluations performed.
 !
 !  obj is a scalar variable of type default real, that holds the
 !   value of the objective function at the best estimate of the solution found.
@@ -1735,18 +1575,18 @@
 !    minimize   f(x) subject to  c_l <= c(x) <= c_u and  x_l <= x <= x_u
 !
 !  where c_l and c_u are vectors of lower and upper bounds on the constraint
-!  vector-valued function c( x ), and x_l and x_u are vectors of lower and upper
-!  bounds on the primal variables x.
+!  vector-valued function c( x ), and x_l and x_u are vectors of lower and
+!  upper bounds on the primal variables x.
 !
 !  Main algorithm -
 !
 !  Filter SQP algorithm described by Algorithm 1 in
 !
 !  Gould, Loh and Robinson
-!   "A nonmonotne Filter SQP methpd: local convergence and numerical results"
+!   "A nonmonotne Filter SQP method: local convergence and numerical results"
 !   SIAM J. Optimization 25(3) 1885-1911 (2015)
 !
-!  Corresponing step n in the algorithm marked as A1:n in comments below
+!  Corresponding step n in the algorithm marked as A1:n in comments below
 !
 !  ==========================================================================
 
@@ -1756,13 +1596,12 @@
 
      INTEGER :: i, ic, ii, ir, j, l, ne_eqp, s_start, s_type, active
 !    INTEGER :: Rk
-     REAL ( KIND = wp ) :: dual_infeasibility
      REAL ( KIND = wp ) :: complementary_slackness, multiplier_norm
      REAL ( KIND = wp ) :: ellv_pred, ellv_steer, del_ellv_pred, del_ellv_steer
      REAL ( KIND = wp ) :: fil_f, fil_viol, gts, sths, rho_f, rho_phi
      REAL ( KIND = wp ) :: max_viol, new_sigma, new_sigma_denom, relaxed_viol
-     REAL ( KIND = wp ) :: alpha, alpha_cf, del_qf_pred, del_qf_cf, si
-     REAL ( KIND = wp ) :: delta, dgtdg, dxtdg
+     REAL ( KIND = wp ) :: alpha, alpha_cf, del_qf_pred, del_qf_cf, si, val
+     REAL ( KIND = wp ) :: delta, dgtdg, dxtdg, dual_infeasibility, radius
 
 !    REAL ( KIND = wp ) :: num_c_act, num_c_free, num_x_free
 !    REAL ( KIND = wp ) :: C_l_act, C_u_act, c_act, c_free
@@ -1770,7 +1609,7 @@
 !    REAL ( KIND = wp ) :: K, rhs, sol, g_old, Jx_old, step
 !    REAL ( KIND = wp ) :: B_k, B_k_scalar, Bk_D, Hess, Hess_D, Heps
 !    REAL ( KIND = wp ) :: normg, normHess, muLS, accel_bd_viol
-     LOGICAL :: kkt_accel, kkt_pred, lin_feas, acceptable
+     LOGICAL :: kkt_accel, kkt_pred, lin_feas, acceptable, names
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  functions
@@ -1787,28 +1626,28 @@
        CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
        GO TO 900
      END IF
-     IF ( inform%status == 1 ) data%branch = 1
+     IF ( inform%status == 1 ) data%branch = 10
 
      SELECT CASE ( data%branch )
-     CASE ( 1 )  ! initialization
+     CASE ( 10 )  ! initialization
        GO TO 10
-     CASE ( 2 )  ! initial objective and constraint evaluation
+     CASE ( 20 )  ! initial objective and constraint evaluation
        GO TO 20
-     CASE ( 3 )  ! gradient and Jacobian evaluation
+     CASE ( 130 ) ! gradient and Jacobian evaluation
        GO TO 130
-     CASE ( 4 )  ! Hessian evaluation
+     CASE ( 140 ) ! Hessian evaluation
        GO TO 140
-!    CASE ( 5 )  ! Hessian-vector product
+!    CASE ( 150 ) ! Hessian-vector product
 !      GO TO 150
-     CASE ( 6 )  ! objective and constraint evaluation
-       GO TO 260
-     CASE ( 7 )  ! objective and constraint evaluation
-       GO TO 370
-!    CASE ( 7 )  ! gradient and Jacobian evaluation
+     CASE ( 210 ) ! objective and constraint evaluation
+       GO TO 210
+     CASE ( 320 ) ! objective and constraint evaluation
+       GO TO 320
+!    CASE ( 570 ) ! gradient and Jacobian evaluation
 !      GO TO 570
-!    CASE ( 8 )  ! Hessian evaluation
+!    CASE ( 580 ) ! Hessian evaluation
 !      GO TO 580
-!    CASE ( 9 )  ! objective and constraint evaluation
+!    CASE ( 590 ) ! objective and constraint evaluation
 !      GO TO 590
      END SELECT
 
@@ -1827,13 +1666,22 @@
      inform%status = GALAHAD_ok
      inform%alloc_status = 0 ; inform%bad_alloc = ''
      inform%iter = 0
-     inform%f_eval = 0 ; inform%g_eval = 0
+     inform%fc_eval = 0 ; inform%gj_eval = 0 ; inform%h_eval = 0
 
      inform%obj = HUGE( one )
 
-!  copy control variables so that the package may alter values if necessary
+!  copy control parameters so that the package may alter values if necessary
 
      data%control = control
+
+!  ensure that control parameters are sensible
+
+     IF ( data%control%predictor_hessian == powell_l_bfgs_predictor_hessian )  &
+       data%control%predictor_hessian = l_bfgs_predictor_hessian
+     IF ( data%control%predictor_hessian /= se_modified_predictor_hessian      &
+         .AND. data%control%predictor_hessian /= dd_modified_predictor_hessian &
+         .AND. data%control%predictor_hessian /= l_bfgs_predictor_hessian )    &
+       data%control%predictor_hessian = identity_predictor_hessian
 
 !  decide how much reverse communication is required
 
@@ -1842,9 +1690,7 @@
      data%reverse_hl = .NOT. PRESENT( eval_HL )
 !    data%reverse_hlprod = .NOT. PRESENT( eval_HLPROD )
 
-!  ===========================
-!  Control the output printing
-!  ===========================
+!  control the output printing
 
      data%out = data%control%out ; data%error = data%control%error
      data%print_level_eqp = data%control%QP_accel_control%print_level
@@ -1928,7 +1774,7 @@
 
 !  initialize counters
 
-     inform%B_modified = .FALSE.
+!    inform%B_modified = .FALSE.
 
 !  initialize parameters
 
@@ -1941,9 +1787,9 @@
 
      data%success_iter = 0
      data%fails = 0
-     data%radius_accel = data%control%radius_accel
+     data%radius_accelerator = data%control%radius_accelerator
 
-!  determine if a filter is to be used
+!  do not allow "neither penalty nor filter" mode
 
      IF ( data%control%just_penalty .AND. data%control%just_filter ) THEN
        WRITE( data%out, "( 'Please pick a mode (filter/penalty).' )" )
@@ -1977,10 +1823,11 @@
 !  evaluate the objective and general constraint function values
 
      IF ( data%reverse_fc ) THEN
-       data%branch = 2 ; inform%status = 2 ; RETURN
+       data%branch = 20 ; inform%status = 2 ; RETURN
      ELSE
        CALL eval_FC( data%eval_status, nlp%X, userdata, nlp%f, nlp%C )
        IF ( data%eval_status /= 0 ) THEN
+         inform%bad_eval = 'eval_FC'
          inform%status = GALAHAD_error_evaluation ; GO TO 900
        END IF
      END IF
@@ -1989,39 +1836,7 @@
 
   20 CONTINUE
      inform%obj = nlp%f
-     inform%f_eval = inform%f_eval + 1
-
-!  scale the constraints if required
-
-     IF ( data%control%scale_constraints > 0 ) THEN
-       array_name = 'fisqp: data%C_scale'
-       CALL SPACE_resize_array( nlp%m, data%C_scale,                           &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
-              exact_size = data%control%space_critical,                        &
-              bad_alloc = inform%bad_alloc, out = data%error )
-       IF ( inform%status /= 0 ) GO TO 910
-
-       data%C_scale = one
-!      data%C_scale( 1 ) = 2.5000E-03
-!      data%C_scale( 2 ) = 2.5000E-03
-!      data%C_scale( 3 ) = 1.0000E-02
-!      data%C_scale( 4 ) = 5.0000E+03
-!      data%C_scale( 5 ) = 5.0000E+03
-!      data%C_scale( 6 ) = 5.0000E+03
-
-!      data%C_scale( 1 : 2 ) = one / 400.0_wp
-!      data%C_scale( 3 ) = one / 100.0_wp
-!      data%C_scale( 4 ) = 100.0_wp
-!      data%C_scale( 5 : 6 ) = 1000.0_wp
-       data%C_scale( : nlp%m ) = one
-
-       nlp%C( : nlp%m ) = nlp%C( : nlp%m ) / data%C_scale( : nlp%m )
-       WHERE ( nlp%C_l( : nlp%m ) > - data%control%infinity )                  &
-         nlp%C_l( : nlp%m ) = nlp%C_l( : nlp%m ) / data%C_scale( : nlp%m )
-       WHERE ( nlp%C_u( : nlp%m ) < data%control%infinity )                    &
-         nlp%C_u( : nlp%m ) = nlp%C_u( : nlp%m ) / data%C_scale( : nlp%m )
-     END IF
+     inform%fc_eval = inform%fc_eval + 1
 
 !  print problem name and header, if requested
 
@@ -2029,36 +1844,8 @@
          "( A, ' +', 76( '-' ), '+', /,                                        &
       &     A, 18X, 'Filter Sequential Quadratic Programming', /,              &
       &     A, ' +', 76( '-' ), '+', /, A,                                     &
-      &     6X, 'mode (F=filter,P=penalty) pair (pe,vi,bl,ob) step ',          &
-      &     '(s=pred,a=accel)' )" ) prefix, prefix, prefix, prefix
-
-!  initialize Lagrange multiplier estimates
-
-!    C_u_act = find( nlp%C_u - nlp%C < data%control%tol_primal / 2 )
-!    C_l_act = find( nlp%C - C_l < data%control%tol_primal / 2 )
-!    c_act = union( C_u_act, C_l_act )
-!    num_c_act = length( c_act )
-!    c_free = setdiff( 1:m, c_act )
-!    num_c_free = length( c_free )
-!    X_u_act = find( ABS( nlp%X_u - nlp%X ) < data%control%tol_primal / 2 )
-!    X_l_act = find( ABS( nlp%X_l - nlp%X ) < data%control%tol_primal / 2 )
-!    x_act = union( X_u_act, X_l_act )
-!    x_free = setdiff( 1:n, x_act )
-!    num_x_free = length( x_free )
-!
-!    IF ( num_x_free <= 0 .OR. num_c_free <= 0 ) THEN
-!      nlp%Y = - prob.v
-!    ELSE
-!      rhs = - [ nlp%G( x_free,1 ) nlp%C( c_act )          ]
-!      K = [ eye( num_x_free ), Jx( c_act,x_free )'
-!                Jx( c_act,x_free ), - muLS * eye( num_c_act ) ]
-!      sol = K\rhs
-!      nlp%Y = zeros( nlp%m,1 )
-!      nlp%Y( c_act ) = - sol( num_x_free + 1 : end )
-!      nlp%Y( C_l_act ) = MAX( zero, nlp%Y( C_l_act ) )
-!      nlp%Y( C_u_act ) = MIN( zero, nlp%Y( C_u_act ) )
-!      nlp%Y = MIN( MAX( nlp%Y, - ten5 ), ten5 )       ; ! Not too crazy.
-!    END IF
+      &     6X, 'mode (F=filter,P=penalty) pair (v,o,b,p) step ',              &
+      &     '(p=pred,a=accel)' )" ) prefix, prefix, prefix, prefix
 
 !  determine the number of nonzeros in the Hessian
 
@@ -2132,7 +1919,7 @@
             bad_alloc = inform%bad_alloc, out = data%error )
      IF ( inform%status /= 0 ) GO TO 910
 
-     IF ( data%control%use_accel ) THEN
+     IF ( data%control%use_accelerator ) THEN
        array_name = 'fisqp: data%S_accel'
        CALL SPACE_resize_array( nlp%n, data%S_accel,                           &
               inform%status, inform%alloc_status, array_name = array_name,     &
@@ -2555,6 +2342,16 @@
        IF ( inform%status /= 0 ) GO TO 910
      END IF
 
+     IF ( data%control%scale_constraints > 0 ) THEN
+       array_name = 'fisqp: data%C_scale'
+       CALL SPACE_resize_array( nlp%m, data%C_scale,                           &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = data%control%deallocate_error_fatal,    &
+              exact_size = data%control%space_critical,                        &
+              bad_alloc = inform%bad_alloc, out = data%error )
+       IF ( inform%status /= 0 ) GO TO 910
+     END IF
+
 !** next arrays only needed for current lpqp
 
 !    array_name = 'fisqp: data%QP_pred%H%ptr'
@@ -2630,7 +2427,7 @@
 !  if a modified-exact-Hessian predictor Hessian is required, simply use the
 !  storage required for the exact Hessian
 
-     CASE( modifed_exact_predictor_hessian )
+     CASE( se_modified_predictor_hessian, dd_modified_predictor_hessian )
        data%QP_pred%H%ne = data%H_ne + nlp%n
        array_name = 'fisqp: data%QP_pred%H%row'
        CALL SPACE_resize_array( data%QP_pred%H%ne, data%QP_pred%H%row,         &
@@ -2702,7 +2499,10 @@
          inform%status = GALAHAD_error_analysis ; GO TO 900
        END IF
 
-       data%control%SLS_control%pivot_control = 4
+       data%control%SLS_control%pivot_control = 2
+       IF ( data%control%predictor_hessian == se_modified_predictor_hessian )  &
+         data%control%SLS_control%pivot_control = 4
+
        CALL SLS_analyse( data%QP_pred%H, data%SLS_data,                        &
                          data%control%SLS_control, inform%SLS_inform )
        IF ( inform%SLS_inform%status < 0 ) THEN
@@ -2721,7 +2521,7 @@
 
 !  if necessary, set up space for the accelerator EQP
 
-     IF ( data%control%use_accel ) THEN
+     IF ( data%control%use_accelerator ) THEN
 
        array_name = 'fisqp: data%QP_accel%H%row'
        CALL SPACE_resize_array( data%H_ne, data%QP_accel%H%row,                &
@@ -2867,7 +2667,7 @@
          nlp%f = data%f_ref
          nlp%X = data%X_ref
          data%S = data%S_ref
-         IF ( data%control%use_accel ) data%S_accel = data%S_accel_ref
+         IF ( data%control%use_accelerator ) data%S_accel = data%S_accel_ref
          data%primal_viol = data%primal_viol_ref
 !write(6,"( 'viol reset a', ES12.4 )") data%primal_viol
 !        data%comp_viol = data%comp_viol_ref
@@ -2901,7 +2701,7 @@
 !            data%primal_viol, data%comp_viol, data%sigma
          END IF
          data%pair_type = ' '
-         GO TO 190
+         GO TO 170
        END IF
 
 !  if required, record gL - J^T dy - dz for the limited-memory predictor Hessian
@@ -2919,12 +2719,13 @@
 !  obtain the gradient of the objective function and the Jacobian
 !  of the constraints. The data is stored in a sparse format
 
-         inform%g_eval = inform%g_eval + 1
+         inform%gj_eval = inform%gj_eval + 1
          IF ( data%reverse_gj ) THEN
-           data%branch = 3 ; inform%status = 3 ; RETURN
+           data%branch = 130 ; inform%status = 3 ; RETURN
          ELSE
            CALL eval_GJ( data%eval_status, nlp%X, userdata, nlp%G, nlp%J%val )
            IF ( data%eval_status /= 0 ) THEN
+             inform%bad_eval = 'eval_GJ'
              inform%status = GALAHAD_error_evaluation ; GO TO 900
            END IF
          END IF
@@ -2933,6 +2734,53 @@
 !  return from reverse communication to obtain the gradient and Jacobian
 
   130  CONTINUE
+
+!  scale the constraints if required
+
+       IF ( inform%iter == 0 .AND. data%control%scale_constraints > 0 ) THEN
+
+!  compute the largest entry in each row of the Jacobian
+
+         SELECT CASE ( SMT_get( nlp%J%type ) )
+         CASE ( 'COORDINATE' )
+           data%C_scale = zero
+           DO l = 1, nlp%J%ne
+             data%C_scale( nlp%J%row( l ) ) =                                  &
+               MAX( data%C_scale( nlp%J%row( l ) ), ABS( nlp%J%val( l ) ) )
+           END DO
+         CASE ( 'SPARSE_BY_ROWS' )
+           DO i = 1, nlp%m
+             data%C_scale( i ) = MAXVAL(                                       &
+               ABS( nlp%J%val( nlp%J%ptr( i ) : nlp%J%ptr( i + 1 ) - 1 ) ) )
+           END DO
+         CASE ( 'DENSE' )
+           l = 0
+           DO i = 1, nlp%m
+             data%C_scale( i ) = MAXVAL( ABS( nlp%J%val( l + 1 : l + nlp%n ) ) )
+             l = l + nlp%n
+           END DO
+         END SELECT
+
+!  scale by the largest entries, constrained to a safe interval
+
+         data%C_scale( : nlp%m ) = MIN( data%control% max_constraint_scaling,  &
+           MAX( data%C_scale( : nlp%m ), data%control% min_constraint_scaling ))
+
+         IF ( data%control%scale_constraints > 1 ) THEN
+           val = MAXVAL( data%C_scale( : nlp%m ) )
+           data%C_scale( : nlp%m ) = data%C_scale( : nlp%m ) / val
+         END IF
+
+         write(6,"( ' c_scale ', /, ( 5ES12.4 ) )" ) data%C_scale( : nlp%m )
+
+!  scale c and its bounds
+
+         nlp%C( : nlp%m ) = nlp%C( : nlp%m ) / data%C_scale( : nlp%m )
+         WHERE ( nlp%C_l( : nlp%m ) > - data%control%infinity )                &
+           nlp%C_l( : nlp%m ) = nlp%C_l( : nlp%m ) / data%C_scale( : nlp%m )
+         WHERE ( nlp%C_u( : nlp%m ) < data%control%infinity )                  &
+           nlp%C_u( : nlp%m ) = nlp%C_u( : nlp%m ) / data%C_scale( : nlp%m )
+       END IF
 
 !  scale the Jacobian if required
 
@@ -2984,12 +2832,22 @@
 !  compute norms of the primal and dual feasibility and the complemntary
 !  slackness
 
-       multiplier_norm                                                         &
-         = MAX( one, OPT_multiplier_norm( nlp%n, nlp%Z( : nlp%n ),             &
+       IF ( data%control%scale_constraints > 0 ) THEN
+         multiplier_norm =                                                     &
+           MAX( one, OPT_multiplier_norm( nlp%n, nlp%Z( : nlp%n ),           &
+                nlp%m, nlp%Y( : nlp%m ) / data%C_scale( : nlp%m ) ) )
+         inform%primal_infeasibility =                                         &
+           OPT_primal_infeasibility( nlp%m, nlp%C( : nlp%m ),                  &
+                                     nlp%C_l( : nlp%m ), nlp%C_u( : nlp%m ),   &
+                                     SCALE = data%C_scale( : nlp%m ) )
+       ELSE
+         multiplier_norm =                                                     &
+           MAX( one, OPT_multiplier_norm( nlp%n, nlp%Z( : nlp%n ),             &
                                           nlp%m, nlp%Y( : nlp%m ) ) )
-       inform%primal_infeasibility =                                           &
-         OPT_primal_infeasibility( nlp%m, nlp%C( : nlp%m ),                    &
-                                   nlp%C_l( : nlp%m ), nlp%C_u( : nlp%m ) )
+         inform%primal_infeasibility =                                         &
+           OPT_primal_infeasibility( nlp%m, nlp%C( : nlp%m ),                  &
+                                     nlp%C_l( : nlp%m ), nlp%C_u( : nlp%m ) )
+       END IF
        inform%dual_infeasibility =                                             &
          OPT_dual_infeasibility( nlp%n, nlp%gL( : nlp%n ) ) / multiplier_norm
        inform%complementary_slackness =                                        &
@@ -3012,6 +2870,7 @@
            data%control%stop_rel_d * inform%dual_infeasibility )
          data%stop_c = MAX( data%control%stop_abs_c,                           &
            data%control%stop_rel_c * inform%complementary_slackness )
+         data%stop_i = MAX( data%control%stop_abs_i, data%control%stop_rel_i )
          IF ( data%printi ) WRITE( data%out,                                   &
              "(  /, A, '  Primal    convergence tolerance =', ES11.4,          &
             &    /, A, '  Dual      convergence tolerance =', ES11.4,          &
@@ -3030,9 +2889,8 @@
 
 !  record the maximum infeasibility allowed, and set up the initial filter
 
-         max_viol = MAX( data%control%max_absolute_infeasibility,              &
-                            data%control%max_relative_infeasibility            &
-                              * data%primal_viol )
+         max_viol = MAX( data%control%max_abs_i,                               &
+                         data%control%max_rel_i * data%primal_viol )
 
 !  set up the initial filter
 
@@ -3107,8 +2965,12 @@
        data%time_now = data%time_now - data%time_start
        data%clock_now = data%clock_now - data%clock_start
 
-       IF ( data%control%time_limit > zero .AND.                               &
-            data%clock_now > data%control%time_limit ) THEN
+       IF ( ( data%control%cpu_time_limit >= zero .AND.                        &
+             REAL( data%time_now - data%time_start, wp )                       &
+               > data%control%cpu_time_limit ) .OR.                            &
+             ( data%control%clock_time_limit >= zero .AND.                     &
+               data%clock_now - data%clock_start                               &
+              > data%control%clock_time_limit ) ) THEN
          IF ( data%printi )                                                    &
            WRITE( data%out, "( /, A, ' Time limit exceeded ' )" ) prefix
          inform%status = GALAHAD_error_time_limit ; GO TO 900
@@ -3116,16 +2978,18 @@
 
 !  compute the Hessian
 
+       inform%h_eval = inform%h_eval + 1
        IF ( data%accepted ) THEN
          data%WORK_m( : nlp%m ) = nlp%Y( : nlp%m )  ! temporary copy
          IF ( data%control%scale_constraints > 0 )                             &
            nlp%Y( : nlp%m ) = nlp%Y( : nlp%m ) / data%C_scale( : nlp%m )
 
          IF ( data%reverse_hl ) THEN
-            data%branch = 4 ; inform%status = 4 ; RETURN
+            data%branch = 140 ; inform%status = 4 ; RETURN
          ELSE
             CALL eval_HL( data%eval_status, nlp%X, nlp%Y, userdata, nlp%H%val )
             IF ( data%eval_status /= 0 ) THEN
+              inform%bad_eval = 'eval_HL'
               inform%status = GALAHAD_error_evaluation ; GO TO 900
             END IF
          END IF
@@ -3152,42 +3016,105 @@
 
 !  if required, modify the exact Hessian
 
-         CASE( modifed_exact_predictor_hessian )
+         CASE( se_modified_predictor_hessian, dd_modified_predictor_hessian )
 
 !  compute the modifications
 
            data%QP_pred%H%n = nlp%n ; data%QP_pred%H%ne = data%H_ne
            data%QP_pred%H%val( : data%H_ne ) = nlp%H%val( : data%H_ne )
-!write(6,*)  'h ', data%QP_pred%H%val( : data%H_ne )
+write(6,*)  'h ', data%QP_pred%H%val( : data%H_ne )
 !write(6,*)  'det ', data%QP_pred%H%val( 1 ) * data%QP_pred%H%val( 3 ) - data%QP_pred%H%val( 2 ) ** 2
 !write(6,*)' pivot_control ',   data%control%SLS_control%pivot_control
            CALL SLS_factorize( data%QP_pred%H, data%SLS_data,                  &
                                data%control%SLS_control, inform%SLS_inform )
-           IF ( inform%SLS_inform%status < 0 ) THEN
-!write(6,*) ' factorize SLS_inform%status ', inform%SLS_inform%status
-             inform%status = GALAHAD_error_factorization ; GO TO 900
-           END IF
+
 !write(6,*) inform%SLS_inform%first_modified_pivot, &
 !  inform%SLS_inform%largest_modified_pivot
 !  storee the modifications
 
-           IF ( inform%SLS_inform%largest_modified_pivot > zero .AND.          &
-                data%printt ) WRITE( data%out,                                 &
-                  "( A, ' H pertubed by', ES12.4 )" ) prefix,                  &
-                     inform%SLS_inform%largest_modified_pivot
+!  use the modifications provided by the factorization, if any
 
-           CALL SLS_enquire( data%SLS_data, inform%SLS_inform,                 &
-             PERTURBATION = data%QP_pred%H%val( data%QP_pred%H%ne + 1 :        &
-                                                data%QP_pred%H%ne + nlp%n ) )
+           IF ( data%control%predictor_hessian ==                              &
+                  se_modified_predictor_hessian ) THEN
+             IF ( inform%SLS_inform%status < 0 ) THEN
+!write(6,*) ' factorize SLS_inform%status ', inform%SLS_inform%status
+               inform%status = GALAHAD_error_factorization ; GO TO 900
+             END IF
+
+             IF ( inform%SLS_inform%largest_modified_pivot > zero ) THEN
+               inform%modifications = inform%modifications + 1
+               CALL SLS_enquire( data%SLS_data, inform%SLS_inform,             &
+                 PERTURBATION = data%QP_pred%H%val( data%QP_pred%H%ne + 1 :    &
+                                                    data%QP_pred%H%ne + nlp%n ))
+               IF ( inform%SLS_inform%status < 0 ) THEN
+!write(6,*) ' enquire SLS_inform%status ', inform%SLS_inform%status
+                 inform%status = GALAHAD_error_factorization ; GO TO 900
+               END IF
+
+!  ensure that the modifications are not too small
+
+               DO i = data%QP_pred%H%ne + 1, data%QP_pred%H%ne + nlp%n
+                 data%QP_pred%H%val( i ) = MAX( data%QP_pred%H%val( i ),       &
+                   data%control%min_hessian_perturbation )
+               END DO
+
+               IF ( data%printt ) WRITE( data%out, "( A, ' H perturbed by',    &
+              &   ES23.16, ' using ', A )" ) prefix,                           &
+                inform%SLS_inform%largest_modified_pivot,                      &
+                TRIM( data%control%linear_solver_for_modifications )
 !write(6,*) ' pert = ', data%QP_pred%H%val( data%QP_pred%H%ne + 1 :        &
 !                                           data%QP_pred%H%ne + nlp%n )
-           IF ( inform%SLS_inform%status < 0 ) THEN
-!write(6,*) ' enquire SLS_inform%status ', inform%SLS_inform%status
-             inform%status = GALAHAD_error_factorization ; GO TO 900
+
+               data%QP_pred%H%ne = data%H_ne + nlp%n
+             END IF
+
+!  if the matrix is indefinite, compute diagonal-dominant modifications
+
+           ELSE ! dd_modified_predictor_hessian ) THEN
+             IF ( inform%SLS_inform%status >= 0 ) THEN ! no modification
+             ELSE IF ( inform%SLS_inform%status /= - 20 ) THEN ! error
+!write(6,*) ' factorize SLS_inform%status ', inform%SLS_inform%status
+               inform%status = GALAHAD_error_factorization ; GO TO 900
+             ELSE ! not positive definite
+
+!  temporarily store the diagonal of the Hessian in QP_pred%H%val and the
+!  sum of absolute values of its off-diagonals (+1) in WORK_n
+
+               data%QP_pred%H%val( data%H_ne + 1 : data%H_ne + nlp%n ) = zero
+               data%WORK_n( : nlp%n ) = one
+               DO l = 1, data%H_ne
+                 i = data%QP_pred%H%row( l ) ; j = data%QP_pred%H%col( l )
+                 val = data%QP_pred%H%val( l )
+                 IF ( i == j ) THEN
+                   data%QP_pred%H%val( data%H_ne + i ) =                       &
+                     data%QP_pred%H%val( data%H_ne + i ) + val
+                 ELSE
+                   data%WORK_n( i ) = data%WORK_n( i ) + ABS( val )
+                   data%WORK_n( j ) = data%WORK_n( j ) + ABS( val )
+                 END IF
+               END DO
+
+!  ensure that the model Hessian is diagonally dominant
+
+               val = zero
+               DO i = 1, nlp%n
+                 IF ( data%WORK_n( i )                                         &
+                      > data%QP_pred%H%val( data%H_ne + i ) ) THEN
+                   data%QP_pred%H%val( data%H_ne + i )                         &
+                     = data%WORK_n( i ) - data%QP_pred%H%val( data%H_ne + i )
+                   val = MAX( val, data%QP_pred%H%val( data%H_ne + i ) )
+                 ELSE
+                   data%QP_pred%H%val( data%H_ne + i ) = zero
+                 END IF
+               END DO
+               IF ( data%printt ) WRITE( data%out, "( A, ' H pertubed by',     &
+              &   ES23.16, ' using diagonal-dominance modifications' )" )      &
+                    prefix, val
+               data%QP_pred%H%ne = data%H_ne + nlp%n
+             END IF
            END IF
-           data%QP_pred%H%ne = data%H_ne + nlp%n
 !do i = 1, data%QP_pred%H%ne
-!  write(6,*) data%QP_pred%H%row(i), data%QP_pred%H%col(i), data%QP_pred%H%val(i)
+! write(6,*) data%QP_pred%H%row(i), data%QP_pred%H%col(i), data%QP_pred%H%val(i)
 !end do
 !  if required, update the limited-memory predictor Hessian, B_k
 
@@ -3290,6 +3217,8 @@
 !  ----------------------------------------------------------------------------
 
        IF ( data%printd ) WRITE( data%out, "( A, ' (A1:7)' )" ) prefix
+       IF ( data%printw ) WRITE( data%out, "( /, A, 1X, 30('-'),               &
+      &  ' Steering step ', 30('-'), / )" ) prefix
 
 !  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -3297,7 +3226,7 @@
 !
 !   min  || min( c_k + J_k s - c_l, c_u - c_k - J_k s, 0 )||_1
 !   s.t.  x_l <= x + s <= x_u
-!         inf_norm( s ) <= delta
+!         inf_norm( s ) <= radius
 !
 !  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -3307,7 +3236,7 @@
 
 !  update the trust region radius (infinity norm)
 
-         delta = data%control%delta_0
+         radius = data%control%radius_steering
 
 !  set up the steering LP data
 
@@ -3319,11 +3248,21 @@
          data%QP_steer%A%val( : data%QP_steer%A%ne )                           &
            = nlp%J%val( : data%QP_steer%A%ne )
          data%QP_steer%X_l( : nlp%n )                                          &
-           = MAX( nlp%X_l( : nlp%n ) - nlp%X( : nlp%n ), - delta )
+           = MAX( nlp%X_l( : nlp%n ) - nlp%X( : nlp%n ), - radius )
          data%QP_steer%X_u( : nlp%n )                                          &
-           = MIN( nlp%X_u( : nlp%n ) - nlp%X( : nlp%n ), delta )
-         data%QP_steer%C_l( : nlp%m ) = nlp%C_l( : nlp%m ) - nlp%C( : nlp%m )
-         data%QP_steer%C_u( : nlp%m ) = nlp%C_u( : nlp%m ) - nlp%C( : nlp%m )
+           = MIN( nlp%X_u( : nlp%n ) - nlp%X( : nlp%n ), radius )
+         IF ( nlp%m > 0 ) THEN
+           WHERE ( nlp%C_l( : nlp%m ) > - data%control%infinity )
+             data%QP_steer%C_l( : nlp%m ) = nlp%C_l( : nlp%m ) - nlp%C( : nlp%m)
+           ELSE WHERE
+             data%QP_steer%C_l( : nlp%m ) = nlp%C_l( : nlp%m )
+           END WHERE
+           WHERE ( nlp%C_u( : nlp%m ) < data%control%infinity )
+             data%QP_steer%C_u( : nlp%m ) = nlp%C_u( : nlp%m ) - nlp%C( : nlp%m)
+           ELSE WHERE
+             data%QP_steer%C_u( : nlp%m ) = nlp%C_u( : nlp%m )
+           END WHERE
+         END IF
          data%QP_steer%X( : nlp%n ) = zero
          data%QP_steer%Y( : nlp%m ) = zero
          data%QP_steer%Z( : nlp%n ) = zero
@@ -3332,7 +3271,7 @@
 !  solve the problem
 
          IF ( data%printt ) WRITE( data%out, "( A, ' linear violation before', &
-        &  ' steering =', ES12.4 )") prefix, data%primal_viol
+        &  ' steering =', ES11.4 )") prefix, data%primal_viol
          CALL L1QP_solve( data%QP_steer, data%QP_steer_data,                   &
                           data%control%QP_steer_control, inform%QP_steer_inform)
 !                         C_stat = nlp%C_status, X_stat = nlp%X_status )
@@ -3341,10 +3280,11 @@
           .AND. inform%QP_steer_inform%status /= GALAHAD_error_ill_conditioned &
           .AND. inform%QP_steer_inform%status /= GALAHAD_error_tiny_step ) THEN
            IF ( data%printe )                                                  &
-             WRITE( data%error, "( ' On exit from pred QP_solve status = ',    &
-            &  I6 )" ) inform%QP_steer_inform%status
+             WRITE( data%error, "( ' On exit from steering QP_solve status',   &
+            &  ' = ', I0 )" ) inform%QP_steer_inform%status
            inform%status = GALAHAD_error_qp_solve ; GO TO 900
          END IF
+!        WRITE(6,*) ' x ', data%QP_steer%X( : data%QP_steer%n )
 
 !  restore the solution
 
@@ -3361,7 +3301,7 @@
            = OPT_primal_infeasibility( nlp%n, nlp%X + data%S_steer, nlp%X_l,   &
                nlp%X_u, nlp%m, nlp%C + data%WORK_m, nlp%C_l, nlp%C_u, norm = 1 )
          IF ( data%printt ) WRITE( data%out, "( A, ' linear violation after',  &
-        &  ' steering =', ES12.4 )") prefix, ellv_steer
+        &  ' steering =', ES11.4 )") prefix, ellv_steer
 !write(6,*) data%primal_viol, ellv_steer
          del_ellv_steer = data%primal_viol - ellv_steer
          IF ( data%printt ) WRITE( data%out, "( A, ' steering objective ',     &
@@ -3383,11 +3323,11 @@
 
        IF ( data%printd ) WRITE( data%out, "( A, ' (A1:8-9)' )" ) prefix
 
-!write(6,*) del_ellv_steer, data%control%tol_steer
-!write(6,*) data%primal_viol, data%control%tol_infeas
+!write(6,*) del_ellv_steer, data%stop_d
+!write(6,*) data%primal_viol, data%stop_p
 
-       IF ( del_ellv_steer <= data%control%tol_steer .AND.                     &
-            data%primal_viol > data%control%tol_infeas ) THEN
+       IF ( del_ellv_steer <= data%stop_i .AND.                                &
+            data%primal_viol > data%stop_p ) THEN
          inform%status = GALAHAD_error_primal_infeasible
          GO TO 900
        END IF
@@ -3395,14 +3335,14 @@
 !  check if the steering step achieved its purpose.
 
        IF ( del_ellv_steer <= zero .AND.                                       &
-            data%primal_viol >= data%control%tol_primal / ten ) THEN
+            data%primal_viol >= data%stop_p / ten ) THEN
          inform%status = - 108
          GO TO 900
        END IF
 
 !  check if we are linearized feasible
 
-       lin_feas = ellv_steer <= data%control%tol_primal / ten
+       lin_feas = ellv_steer <= data%stop_p / ten
        IF ( data%printt ) WRITE( data%out, "( A, ' linear feasible? ', L1 )" ) &
                             prefix, lin_feas
 
@@ -3411,6 +3351,8 @@
 !  ----------------------------------------------------------------------------
 
        IF ( data%printd ) WRITE( data%out, "( A, ' (A1:10)' )" ) prefix
+       IF ( data%printw ) WRITE( data%out, "( /, A, 1X, 30('-'),               &
+      &  ' Predictor step ',    30('-') )" ) prefix
 
 !  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -3439,10 +3381,28 @@
 !        data%QP_pred%H%val( 1 ) = ten ** 4
          data%QP_pred%H%val( 1 ) = MAX( data%h_norm, one )
        END IF
-       data%QP_pred%X_l( : nlp%n ) = nlp%X_l( : nlp%n ) - nlp%X( : nlp%n )
-       data%QP_pred%X_u( : nlp%n ) = nlp%X_u( : nlp%n ) - nlp%X( : nlp%n )
-       data%QP_pred%C_l( : nlp%m ) = nlp%C_l( : nlp%m ) - nlp%C( : nlp%m )
-       data%QP_pred%C_u( : nlp%m ) = nlp%C_u( : nlp%m ) - nlp%C( : nlp%m )
+       IF ( .TRUE. ) THEN
+         data%QP_pred%X_l( : nlp%n ) = nlp%X_l( : nlp%n ) - nlp%X( : nlp%n )
+         data%QP_pred%X_u( : nlp%n ) = nlp%X_u( : nlp%n ) - nlp%X( : nlp%n )
+       ELSE
+         radius = data%control%radius_steering
+         data%QP_pred%X_l( : nlp%n )                                           &
+           = MAX( nlp%X_l( : nlp%n ) - nlp%X( : nlp%n ), - radius )
+         data%QP_pred%X_u( : nlp%n )                                           &
+           = MIN( nlp%X_u( : nlp%n ) - nlp%X( : nlp%n ), radius )
+       END IF
+       IF ( nlp%m > 0 ) THEN
+         WHERE ( nlp%C_l( : nlp%m ) > - data%control%infinity )
+           data%QP_pred%C_l( : nlp%m ) = nlp%C_l( : nlp%m ) - nlp%C( : nlp%m )
+         ELSE WHERE
+           data%QP_steer%C_l( : nlp%m ) = nlp%C_l( : nlp%m )
+         END WHERE
+         WHERE ( nlp%C_u( : nlp%m ) < data%control%infinity )
+           data%QP_pred%C_u( : nlp%m ) = nlp%C_u( : nlp%m ) - nlp%C( : nlp%m )
+         ELSE WHERE
+           data%QP_pred%C_u( : nlp%m ) = nlp%C_u( : nlp%m )
+         END WHERE
+       END IF
        data%QP_pred%X( : nlp%n ) = zero
        data%QP_pred%Y( : nlp%m ) = zero
        data%QP_pred%Z( : nlp%n ) = zero
@@ -3450,13 +3410,15 @@
 !  convert the predictor QP problem into an l_1 QP if required
 
 !write(6,*) ' lin_feas', lin_feas
+
+  160  CONTINUE
        IF ( lin_feas ) THEN
          data%control%QP_pred_control%rho = zero
        ELSE
          data%control%QP_pred_control%rho = data%sigma
        END IF
 
-!  solve the problem
+!  solve the predictor QP problem
 
 !write(6,*) ' before l1qp pred'
        CALL L1QP_solve( data%QP_pred, data%QP_pred_data,                       &
@@ -3467,9 +3429,14 @@
             inform%QP_pred_inform%status /= GALAHAD_error_max_iterations .AND. &
             inform%QP_pred_inform%status /= GALAHAD_error_ill_conditioned .AND.&
             inform%QP_pred_inform%status /= GALAHAD_error_tiny_step ) THEN
-!        IF ( data%printe )                                                    &
-           WRITE( data%error, "( ' On exit from pred QP_solve status = ',      &
-          &  I6 )" ) inform%QP_pred_inform%status
+         IF ( data%printm )                                                    &
+           WRITE( data%error, "( A, ' On exit from predictor QP_solve status', &
+          & ' = ', I0 )" ) prefix, inform%QP_pred_inform%status
+         IF ( lin_feas ) THEN
+           IF ( data%printt ) WRITE( data%out, "( /, A, ' Should be linearly', &
+          &   ' feasible, let''s have another go ...' )" ) prefix
+           lin_feas = .FALSE. ; GO TO 160
+         END IF
          inform%status = GALAHAD_error_qp_solve ; GO TO 900
        END IF
 
@@ -3483,7 +3450,60 @@
        IF ( data%printt ) WRITE( data%out, "( A, 1X, I0, ' active constraint', &
       &                     A )" ) prefix, active, STRING_pleural( active )
 
-!  calculate linearized feasiblity improvement
+!  if we are primal feasible and the step is tiny, we are likely optimal. Check
+
+       IF ( inform%primal_infeasibility <= data%stop_p .AND.                   &
+            TWO_NORM(  data%S_pred( : nlp%n ) ) <= data%control%s_tiny ) THEN
+
+!  use the predictor QP multipliers and dual variables
+
+         nlp%Y( : nlp%m ) = data%QP_pred%Y( : nlp%m )
+         nlp%Z( : nlp%n ) = data%QP_pred%Z( : nlp%n )
+         nlp%gL( : nlp%n ) = nlp%G( : nlp%n ) - nlp%Z( : nlp%n )
+         CALL mop_AX( - one, nlp%J, nlp%Y, one, nlp%gL, transpose = .TRUE.,    &
+!                   out = data%out, error = data%error,                        &
+!                   print_level = data%print_level,                            &
+                    m_matrix = nlp%m, n_matrix = nlp%n )
+         IF ( data%printd ) THEN
+           WRITE( data%out, "( /, A, ' predictor' )" ) prefix
+           IF ( nlp%m > 0 ) WRITE( data%out, "( A, ' Y ', /, ( 5ES12.4 ) )" )  &
+             prefix, nlp%Y( : nlp%m )
+           WRITE( data%out, "( A, ' Z ', /, ( 5ES12.4 ) )" )                   &
+             prefix, nlp%Z( : nlp%n )
+           WRITE( data%out, "( A, ' Gl ', /, ( 5ES12.4 ) )" )                  &
+             prefix, nlp%Gl( : nlp%n )
+         END IF
+
+!  compute the infeasibility measures
+
+         multiplier_norm                                                       &
+           = MAX( one, OPT_multiplier_norm( nlp%n, nlp%Z( : nlp%n ),           &
+                                            nlp%m, nlp%Y( : nlp%m ) ) )
+         inform%dual_infeasibility =                                           &
+           OPT_dual_infeasibility( nlp%n, nlp%gL( : nlp%n ) ) / multiplier_norm
+         inform%complementary_slackness =                                      &
+           OPT_complementary_slackness( nlp%n, nlp%X( : nlp%n ),               &
+              nlp%X_l( : nlp%n ), nlp%X_u( : nlp%n ), nlp%Z( : nlp%n ),        &
+              nlp%m, nlp%C( : nlp%m ), nlp%C_l( : nlp%m ),                     &
+              nlp%C_u( : nlp%m ), nlp%Y( : nlp%m ) ) / multiplier_norm
+
+!  check if an approximate KKT point has been found
+
+         kkt_pred = inform%primal_infeasibility <= data%stop_p .AND.           &
+                    inform%dual_infeasibility <= data%stop_d .AND.             &
+                    inform%complementary_slackness <= data%stop_c
+         IF ( data%printt ) WRITE( data%out, "( A, ' KKT measures ',           &
+        &  '(predictor  ):', 3ES11.4 )" ) prefix, inform%primal_infeasibility, &
+               inform%dual_infeasibility, inform%complementary_slackness
+
+         IF ( kkt_pred ) THEN
+           IF ( data%printt ) WRITE( data%out,                                 &
+                  "( /, A, ' Termination criteria satisfied ' )" ) prefix
+           inform%status = GALAHAD_ok ; GO TO 900
+         END IF
+       END IF
+
+!  calculate the linearized feasiblity improvement
 
        CALL mop_AX( one, nlp%J, data%S_pred, zero, data%WORK_m,                &
 !                   out = data%out, error = data%error,                        &
@@ -3494,10 +3514,10 @@
           nlp%X_l, nlp%X_u, nlp%m, nlp%C + data%WORK_m, nlp%C_l, nlp%C_u,      &
           norm = 1 )
        IF ( data%printt ) WRITE( data%out, "( A, ' linear violation after',    &
-          &  ' predictor step =', ES12.4 )") prefix, ellv_pred
+          &  ' predictor step =', ES11.4 )") prefix, ellv_pred
        del_ellv_pred = data%primal_viol - ellv_pred
 
-!  calculate penalty function improvement
+!  calculate the penalty function improvement
 
        IF ( SMT_get( data%QP_pred%H%type ) == 'LBFGS' ) THEN
          CALL LMS_apply( data%S_pred, data%WORK_n, data%QP_pred%H_lm,          &
@@ -3519,7 +3539,7 @@
 
  ! check if the predictor is linearly feasible
 
-       lin_feas = ellv_pred <= data%control%tol_primal / five
+       lin_feas = ellv_pred <= data%stop_p / five
 !write(6,*) ' lin_feas', lin_feas
 
 !  -----------------------------------------------------------------------------
@@ -3558,9 +3578,8 @@
                nlp%X_l, nlp%X_u, nlp%m, nlp%C + data%WORK_m,                   &
                nlp%C_l, nlp%C_u, norm = 1 )
              data%del_ellv = data%primal_viol - data%ellv
-             IF ( data%del_ellv >= data%control%eta_v                          &
-                    * del_ellv_steer - data%control%tol_zero ) EXIT
-             data%tau = data%tau * data%control%tau
+             IF ( data%del_ellv >= data%control%eta_v * del_ellv_steer ) EXIT
+             data%tau = data%tau * data%control%tau_reduce
            END DO
 
            IF ( data%tau < data%control%tau_min ) THEN
@@ -3570,7 +3589,7 @@
            IF ( data%printt ) WRITE( data%out, "( A, ' tau steplength = ',     &
           &   ES11.4 )" ) prefix, data%tau
 
-!  data%primal_viol < data%control%tol_primal / ten (see conditions on s_steer)
+!  data%primal_viol < data%stop_p / ten (see conditions on s_steer)
 
          ELSE
 ! write(6,*) 'S_steer', data%S_steer(:nlp%n)
@@ -3620,11 +3639,10 @@
 !  update the penalty parameter
 
        IF ( data%del_ellphi <                                                  &
-            data%sigma * data%control%eta_sigma * del_ellv_steer               &
-              - data%control%tol_zero ) THEN
+            data%sigma * data%control%eta_sigma * del_ellv_steer ) THEN
          new_sigma_denom                                                       &
            = data%del_ellv - data%control%eta_sigma * del_ellv_steer
-         IF ( new_sigma_denom <= data%control%tol_zero ) THEN
+         IF ( new_sigma_denom <= zero ) THEN
            new_sigma = zero
          ELSE
            new_sigma = - data%del_ellf / new_sigma_denom
@@ -3632,7 +3650,7 @@
          data%sigma_new                                                        &
            = MAX( data%sigma + data%control%sigma_inc, new_sigma )
          IF ( data%printt ) WRITE( data%out, "( A, ' penalty parameter',       &
-        &   ' updated to ', ES11.4 )" ) prefix, data%sigma_new
+        &   ' updated to', ES11.4 )" ) prefix, data%sigma_new
        ELSE
          data%sigma_new = data%sigma
        END IF
@@ -3657,6 +3675,8 @@
 !  ----------------------------------------------------------------------------
 
        IF ( data%printd ) WRITE( data%out, "( A, ' (A1:15)' )" ) prefix
+       IF ( data%printw ) WRITE( data%out, "( /, A, 1X, 30('-'),               &
+      &  ' Accelerator step ',    30('-'), / )" ) prefix
 
 !  -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -3670,18 +3690,30 @@
 
        data%accel_found = .FALSE.
 
-       IF ( data%control%use_accel ) THEN
-         CALL mop_AX( one, nlp%H, data%S_pred, zero, data%WORK_n,              &
-                      symmetric = .TRUE.,                                      &
-!                     out = data%out,  error = data%error,                     &
-!                     print_level = data%print_level,                          &
-                      m_matrix = nlp%n, n_matrix = nlp%n )
+       IF ( data%control%use_accelerator ) THEN
+!        IF ( inform%iter == 10 ) alt_accel = .TRUE.
 
 !  set the objective details
 
-         data%QP_accel%f = nlp%f + DOT_PRODUCT( data%S_pred( : nlp%n ),        &
-           nlp%G( : nlp%n ) + half * data%WORK_n( : nlp%n ) )
-         data%QP_accel%G( : nlp%n ) = nlp%G( : nlp%n ) + data%WORK_n( : nlp%n )
+         IF ( alt_accel ) THEN
+           data%QP_accel%f = nlp%f
+           data%QP_accel%G( : nlp%n ) = nlp%G( : nlp%n )
+         ELSE
+           CALL mop_AX( one, nlp%H, data%S_pred, zero, data%WORK_n,            &
+                        symmetric = .TRUE.,                                    &
+!                       out = data%out,  error = data%error,                   &
+!                       print_level = data%print_level,                        &
+                        m_matrix = nlp%n, n_matrix = nlp%n )
+           CALL mop_AX( one, nlp%J, data%S_pred, zero, data%WORK_m,            &
+!                       out = data%out, error = data%error,                    &
+!                       print_level = data%print_level,                        &
+                        m_matrix = nlp%m, n_matrix = nlp%n )
+
+           data%QP_accel%f = nlp%f + DOT_PRODUCT( data%S_pred( : nlp%n ),      &
+             nlp%G( : nlp%n ) + half * data%WORK_n( : nlp%n ) )
+           data%QP_accel%G( : nlp%n )                                          &
+             = nlp%G( : nlp%n ) + data%WORK_n( : nlp%n )
+         END IF
          data%QP_accel%H%val( : data%H_ne ) = nlp%H%val( : data%H_ne )
          data%QP_accel%X( : nlp%n ) = data%S_pred( : nlp%n )
 
@@ -3695,30 +3727,61 @@
 
 !  set the right-hand sides for the active constraints
 
+!write(6,*) 'C_status', nlp%C_status(:nlp%m)
+
+!write(6,*) ' alt_accel ', alt_accel
          data%QP_accel%m = 0
          DO i = 1, nlp%m
            IF ( nlp%C_status( i ) < 0 ) THEN
+!write(6,*) ' constraint ', i, ' lower bound'
              data%QP_accel%m = data%QP_accel%m + 1
              nlp%C_status( i ) = - data%QP_accel%m
-             data%QP_accel%C( data%QP_accel%m ) = zero
+             IF ( alt_accel ) THEN
+               data%QP_accel%C( data%QP_accel%m ) = nlp%C( i )
+             ELSE
+!              data%QP_accel%C( data%QP_accel%m ) = zero
+               data%QP_accel%C( data%QP_accel%m )                              &
+                 = nlp%C( i ) + data%WORK_m( i ) - nlp%C_l( i )
+             END IF
              data%QP_accel%Y( data%QP_accel%m ) = data%QP_pred%Y( i )
            ELSE IF ( nlp%C_status( i ) > 0 ) THEN
+!write(6,*) ' constraint ', i, ' upper bound'
              data%QP_accel%m = data%QP_accel%m + 1
              nlp%C_status( i ) = data%QP_accel%m
-             data%QP_accel%C( data%QP_accel%m ) = zero
+             IF ( alt_accel ) THEN
+               data%QP_accel%C( data%QP_accel%m ) = nlp%C( i )
+             ELSE
+!              data%QP_accel%C( data%QP_accel%m ) = zero
+               data%QP_accel%C( data%QP_accel%m )                              &
+                 = nlp%C( i ) + data%WORK_m( i ) - nlp%C_u( i )
+             END IF
              data%QP_accel%Y( data%QP_accel%m ) = data%QP_pred%Y( i )
            END IF
          END DO
          DO i = 1, nlp%n
            IF ( nlp%X_status( i ) < 0 ) THEN
+!write(6,*) ' variable ', i, ' lower bound'
              data%QP_accel%m = data%QP_accel%m + 1
              nlp%X_status( i ) = - data%QP_accel%m
-             data%QP_accel%C( data%QP_accel%m ) = zero
+             IF ( alt_accel ) THEN
+               data%QP_accel%C( data%QP_accel%m ) = nlp%X_l( i )
+             ELSE
+!              data%QP_accel%C( data%QP_accel%m ) = zero
+               data%QP_accel%C( data%QP_accel%m )                              &
+                 = nlp%X( i ) + data%S_pred( i ) - nlp%X_l( i )
+             END IF
              data%QP_accel%Y( data%QP_accel%m ) = data%QP_pred%Z( i )
            ELSE IF ( nlp%X_status( i ) > 0 ) THEN
+!write(6,*) ' variable ', i, ' upper bound'
              data%QP_accel%m = data%QP_accel%m + 1
              nlp%X_status( i ) = data%QP_accel%m
-             data%QP_accel%C( data%QP_accel%m ) = zero
+             IF ( alt_accel ) THEN
+               data%QP_accel%C( data%QP_accel%m ) = nlp%X_u( i )
+             ELSE
+!              data%QP_accel%C( data%QP_accel%m ) = zero
+               data%QP_accel%C( data%QP_accel%m )                              &
+                 = nlp%X( i ) + data%S_pred( i ) - nlp%X_u( i )
+             END IF
              data%QP_accel%Y( data%QP_accel%m ) = data%QP_pred%Z( i )
            END IF
          END DO
@@ -3797,11 +3860,18 @@
         &  ' step - entering EQP: n = ', I0, ', m_working = ', I0 )" )         &
              prefix, nlp%n, data%QP_accel%m
          data%accel_found = .TRUE.
-         data%control%QP_accel_control%radius = data%radius_accel
+         data%control%QP_accel_control%radius = data%radius_accelerator
          CALL EQP_solve( data%QP_accel, data%QP_accel_data,                    &
                          data%control%QP_accel_control, inform%QP_accel_inform )
-!write(6,*) ' y_accel ', data%QP_accel%Y( : data%QP_accel%m )
 
+         IF ( data%printd ) THEN
+           WRITE( control%out, "( A, ' x_accel =', 3ES24.16, /,                &
+          & ( 10X, 3ES24.16 ) )" ) prefix, data%QP_accel%X( : data%QP_accel%n )
+           WRITE( control%out, "( A, ' y_accel =', 3ES24.16, /,                &
+          & ( 10X, 3ES24.16 ) )" ) prefix, data%QP_accel%Y( : data%QP_accel%m )
+           WRITE( control%out, "( A, ' s_pred  =', 3ES24.16, /,                &
+          & ( 10X, 3ES24.16 ) )" ) prefix, data%S_pred( : nlp%n )
+         END IF
 
 !  check to see if the subproblem was infeasible
 
@@ -3850,7 +3920,11 @@
 
 !  spread the solution into the vectors (s_a,y_a,z_a,c_a)
 
-           data%S_accel = data%S_pred( : nlp%n ) + data%QP_accel%X( : nlp%n )
+           IF ( alt_accel ) THEN
+             data%S_accel = data%QP_accel%X( : nlp%n )
+           ELSE
+             data%S_accel = data%S_pred( : nlp%n ) + data%QP_accel%X( : nlp%n )
+           END IF
            DO i = 1, nlp%m
              IF ( nlp%C_status( i ) == 0 ) THEN
                data%Y_accel( i ) = zero
@@ -3929,11 +4003,11 @@
 !                             PENALTY MODE (A1:17)
 !  ----------------------------------------------------------------------------
 
-  190  CONTINUE
+  170  CONTINUE
        IF ( data%printd ) WRITE( data%out, "( A, ' (A1:17)' )" ) prefix
        data%step_used = '***    '
 
-       IF ( .NOT. data%p_mode ) GO TO 300
+       IF ( .NOT. data%p_mode ) GO TO 270
 !      IF ( data%p_mode ) THEN
          IF ( data%printt )                                                    &
            WRITE( data%out, "( A, ' in penalty mode' )" ) prefix
@@ -3943,15 +4017,24 @@
 
          IF ( data%printd ) WRITE( data%out, "( A, ' (A1:18)' )" ) prefix
 !        DO
-  200      CONTINUE
+  180      CONTINUE
            data%s_norm = TWO_norm( data%alpha * data%S )
-           IF ( data%accel_found )                                             &
+           IF ( data%accel_found ) THEN
              data%accel_norm = TWO_NORM( data%alpha * data%S_accel )
+             IF ( MAX( data%s_norm, data%accel_norm )                          &
+                    < data%control%s_tiny ) THEN
+               inform%status = GALAHAD_error_tiny_step ; GO TO 900
+             END IF
+           ELSE
+             IF ( data%s_norm < data%control%s_tiny ) THEN
+               inform%status = GALAHAD_error_tiny_step ; GO TO 900
+             END IF
+           END IF
 !          ELSE
 !            data%accel_norm = inf
 !          END IF
 !          data%s_norm = MIN( data%s_norm, data%accel_norm )
-           IF ( data%s_norm < data%control%s_min ) GO TO 290
+
 
            IF ( data%accel_found ) THEN
              s_start = s_accel
@@ -3968,7 +4051,7 @@
 
            IF ( data%printd ) WRITE( data%out, "( A, ' (A1:20)' )" ) prefix
 !          DO s_type = s_start, s_normal
-  220        CONTINUE
+  200        CONTINUE
 
 !  set the trial point
 
@@ -3986,18 +4069,19 @@
                data%WORK_m( : nlp%m ) = nlp%C( : nlp%m )  ! temporary copy
                data%f_current = nlp%f                     ! temporary copy
                nlp%X = data%X_trial
-               data%branch = 6 ; inform%status = 2 ; RETURN
+               data%branch = 210 ; inform%status = 2 ; RETURN
              ELSE
                CALL eval_FC( data%eval_status, data%X_trial, userdata,         &
                              data%f_trial, data%C_trial )
                IF ( data%eval_status /= 0 ) THEN
+                 inform%bad_eval = 'eval_FC'
                  inform%status = GALAHAD_error_evaluation ; GO TO 900
                END IF
              END IF
 
 !  return from reverse communication to obtain the objective value
 
- 260         CONTINUE
+  210        CONTINUE
              IF ( data%reverse_fc ) THEN
                data%f_trial = nlp%f
                IF ( data%control%scale_constraints > 0 ) THEN
@@ -4012,7 +4096,7 @@
                IF ( data%control%scale_constraints > 0 )                       &
                  data%C_trial = data%C_trial / data%C_scale
              END IF
-             inform%f_eval = inform%f_eval + 1
+             inform%fc_eval = inform%fc_eval + 1
 
 !  evaluate the violation and penalty function at the trial point
 
@@ -4035,42 +4119,18 @@
                END IF
              END IF
 
-!  check if the new point is acceptable to filter; if it is then exit
-
-             IF ( data%check_filter ) THEN
-               CALL FILTER_acceptable( data%f_trial, data%viol_trial,          &
-                                       data%FILTER_data,                       &
-                                       data%control%FILTER_control, acceptable )
-               IF ( acceptable ) THEN
-                 data%p_mode = .FALSE.
-                 data%filter_acceptable = .TRUE.
-                 data%accepted = .TRUE.
-                 IF ( data%printt ) THEN
-                   IF ( s_type == s_accel ) THEN
-                     WRITE( data%out, "( A, ' accelerator step with stepsize', &
-                    &   ES11.4, ' acceptable to filter' )" ) prefix, data%alpha
-                   ELSE
-                     WRITE( data%out, "( A, ' predictor step with stepsize',   &
-                    &   ES11.4, ' acceptable to filter' )" ) prefix, data%alpha
-                   END IF
-                 END IF
-                 GO TO 290
-               END IF
-             END IF
-
 !  ------------- check for a p-pair --------------
 
 !  check if the new point gives a p-pair (A1:21-22)
 
              IF ( data%phi_trial <= data%phi_ref - data%control%gamma_phi      &
-                    * data%alpha * data%rho_phi_ref + data%control%tol_zero )  &
-                 THEN
+                    * data%alpha * data%rho_phi_ref ) THEN
                IF ( data%printd ) WRITE( data%out, "( A, ' (A1:21-22)')") prefix
                data%pair_type = 'p'
                IF ( s_type == s_accel ) THEN
                  data%step_used = 'accel  '
                ELSE
-                 data%step_used = 's_k    '
+                 data%step_used = 'pred   '
                END IF
                inform%num_p = inform%num_p + 1
                data%accepted = .TRUE.
@@ -4083,9 +4143,9 @@
                   &   ES11.4, ' gives a p-pair' )" ) prefix, data%alpha
                  END IF
                END IF
-               GO TO 290
+               GO TO 250
 
-!  check if the more than max_fails failures have occurred (A1:23:24)
+!  exit loop if the more than max_fails failures have occurred (A1:23-24)
 
              ELSE IF ( data%fails <= data%control%max_fails .AND.              &
                        data%control%max_fails > 0 ) THEN
@@ -4093,7 +4153,7 @@
                IF ( s_type == s_accel ) THEN
                  data%step_used = 'accel_nm'
                ELSE
-                 data%step_used = 'sk_nm  '
+                 data%step_used = 'pred_nm '
                END IF
                inform%num_nm = inform%num_nm + 1
                data%fails = data%fails + 1
@@ -4107,53 +4167,62 @@
                   &   ES11.4, ' accepted as a failure' )" ) prefix, data%alpha
                  END IF
                END IF
-               GO TO 290
+               GO TO 450
              END IF
 
 !  end of loop over possible steps (A1:20)
 
              IF ( data%printd ) WRITE( data%out, "( A, ' (A1:20)' )" ) prefix
              s_type = s_type + 1
-             IF ( s_type <= s_normal ) GO TO 220
+             IF ( s_type <= s_normal ) GO TO 200
 !          END DO
-! 280      CONTINUE
 
 !  reduce step size (A1:19)
 
            IF ( data%printd ) WRITE( data%out, "( A, ' (A1:19)' )" ) prefix
            data%alpha = data%alpha * data%control%alpha_reduce
-!          data%radius_accel = data%radius_accel * data%control%alpha_reduce
+!          data%radius_accelerator
+!             = data%radius_accelerator * data%control%alpha_reduce
 
 !  end of loop to find acceptable step (started A1:18)
 
-           GO TO 200
+           GO TO 180
 !        END DO
-  290    CONTINUE
-!        IF ( data%alpha == one ) data%radius_accel = data%radius_accel * two
+  250    CONTINUE
+!        IF ( data%alpha == one ) data%radius_accelerator
+!               = data%radius_accelerator * two
 
-!        IF ( sk_norm < data%control%s_min ) THEN
-!          inform%status = - 103
-!          GO TO 900
-!        END IF
-
-         IF ( data%s_norm < data%control%s_min ) THEN
-           data%exit_small_s = .TRUE.
-           data%pair_type = '*'
-         END IF
-
-!  check if acceptable to filter (A1:25-26)
+!  check if the new point is acceptable to filter (A1:25-26)
 
          IF ( data%printd ) WRITE( data%out, "( A, ' (A1:25-26)' )" ) prefix
-         IF ( data%filter_acceptable ) data%p_mode = .FALSE.
-         GO TO 400
+         IF ( data%check_filter ) THEN
+           CALL FILTER_acceptable( data%f_trial, data%viol_trial,              &
+                                   data%FILTER_data,                           &
+                                   data%control%FILTER_control, acceptable )
+           IF ( acceptable ) THEN
+             data%p_mode = .FALSE.
+             data%filter_acceptable = .TRUE.
+             data%accepted = .TRUE.
+             IF ( data%printt ) THEN
+               IF ( s_type == s_accel ) THEN
+                 WRITE( data%out, "( A, ' accelerator step with stepsize',     &
+                &   ES11.4, ' acceptable to filter' )" ) prefix, data%alpha
+               ELSE
+                 WRITE( data%out, "( A, ' predictor step with stepsize',       &
+                &   ES11.4, ' acceptable to filter' )" ) prefix, data%alpha
+               END IF
+             END IF
+           END IF
+         END IF
+         GO TO 450
 
 !  ----------------------------------------------------------------------------
 !                             FILTER MODE (A1:27)
 !  ----------------------------------------------------------------------------
 
 !      ELSE
+  270    CONTINUE
          IF ( data%printd ) WRITE( data%out, "( A, ' (A1:27)' )" ) prefix
-  300    CONTINUE
          IF ( data%printt )                                                    &
            WRITE( data%out, "( A, ' in filter mode' )" ) prefix
 
@@ -4162,15 +4231,19 @@
          IF ( data%printd ) WRITE( data%out, "( A, ' (A1:29)' )" ) prefix
          data%alpha = one
 !        DO
-  310      CONTINUE
+  290      CONTINUE
            data%s_norm = TWO_norm( data%alpha * data%S )
-           IF ( data%accel_found )                                             &
+           IF ( data%accel_found ) THEN
              data%accel_norm = TWO_NORM( data%alpha * data%S_accel )
-!          ELSE
-!            data%accel_norm = inf
-!          END IF
-!          data%s_norm = MIN( data%s_norm, data%accel_norm )
-           IF ( data%s_norm < data%control%s_min ) GO TO 390
+             IF ( MAX( data%s_norm, data%accel_norm )                          &
+                    < data%control%s_tiny ) THEN
+               inform%status = GALAHAD_error_tiny_step ; GO TO 900
+             END IF
+           ELSE
+             IF ( data%s_norm < data%control%s_tiny ) THEN
+               inform%status = GALAHAD_error_tiny_step ; GO TO 900
+             END IF
+           END IF
 
            IF ( data%accel_found ) THEN
              s_start = s_accel
@@ -4187,7 +4260,7 @@
 !  loop over possible steps (A1:31)
 
 !          DO s_type = s_start, s_normal
-  330        CONTINUE
+  310        CONTINUE
              IF ( data%printd ) WRITE( data%out, "( A, ' (A1:31)' )" ) prefix
 
 !  set the trial point
@@ -4200,7 +4273,11 @@
                data%check_b_pair = .NOT. data%control%just_filter
                data%X_trial = nlp%X + data%alpha * data%S
              END IF
-             data%X_trial = MAX( nlp%X_l, MIN( data%X_trial, nlp%X_u ) )
+!write(6,*) 'x',  nlp%X( : nlp%n )
+!write(6,*) 's',  data%S_accel( : nlp%n )
+!write(6,*) 'x+', data%X_trial( : nlp%n )
+            data%X_trial = MAX( nlp%X_l, MIN( data%X_trial, nlp%X_u ) )
+!write(6,*) 'x+', data%X_trial( : nlp%n )
 
 !  evaluate the objective and constraints at the trial point
 
@@ -4209,18 +4286,19 @@
                data%WORK_m( : nlp%m ) = nlp%C( : nlp%m )  ! temporary copy
                data%f_current = nlp%f                     ! temporary copy
                nlp%X = data%X_trial
-               data%branch = 7 ; inform%status = 2 ; RETURN
+               data%branch = 320 ; inform%status = 2 ; RETURN
              ELSE
                CALL eval_FC( data%eval_status, data%X_trial, userdata,         &
                              data%f_trial, data%C_trial )
                IF ( data%eval_status /= 0 ) THEN
+                 inform%bad_eval = 'eval_FC'
                  inform%status = GALAHAD_error_evaluation ; GO TO 900
                END IF
              END IF
 
 !  return from reverse communication to obtain the objective value
 
-  370        CONTINUE
+  320        CONTINUE
              IF ( data%reverse_fc ) THEN
                data%f_trial = nlp%f
                IF ( data%control%scale_constraints > 0 ) THEN
@@ -4235,7 +4313,7 @@
                IF ( data%control%scale_constraints > 0 )                       &
                  data%C_trial = data%C_trial / data%C_scale
              END IF
-             inform%f_eval = inform%f_eval + 1
+             inform%fc_eval = inform%fc_eval + 1
 
 !  evaluate the violation and penalty function at the trial point
 
@@ -4262,6 +4340,8 @@
              CALL FILTER_acceptable( data%f_trial, data%viol_trial,            &
                                      data%FILTER_data,                         &
                                      data%control%FILTER_control, acceptable )
+!  the trial point is acceptable
+
              IF ( acceptable ) THEN
                data%filter_acceptable = .TRUE.
 
@@ -4271,14 +4351,14 @@
 
 !   WRITE(6,"( ' del_ellf_ref, gamma_v * del_ellv_ref ', 2ES12.4 )" )          &
 !     data%del_ellf_ref,                                                       &
-!     data%control%gamma_v * data%del_ellv_ref - data%control%tol_zero
+!     data%control%gamma_v * data%del_ellv_ref
 
-               IF ( data%del_ellf_ref < data%control%gamma_v                   &
-                      * data%del_ellv_ref - data%control%tol_zero ) THEN
+               IF ( data%del_ellf_ref                                          &
+                      < data%control%gamma_v * data%del_ellv_ref ) THEN
                  IF ( data%printd )                                            &
                    WRITE( data%out, "( A, ' (A1:32-33)' )" ) prefix
 
-!  compute current iterate filter elements
+!  compute the current iterate's filter elements
 
                  IF ( data%control%filter_uses_steering ) THEN
                    relaxed_viol = data%primal_viol_ref                         &
@@ -4296,8 +4376,8 @@
 
 !  check if trial step is acceptable to current iterate
 
-                 IF ( data%viol_trial <= fil_viol + data%control%tol_zero .OR. &
-                      data%f_trial <= fil_f + data%control%tol_zero ) THEN
+                 IF ( data%viol_trial <= fil_viol .OR.                         &
+                      data%f_trial <= fil_f ) THEN
                    data%pair_type = 'v'
                    data%accepted = .TRUE.
 
@@ -4316,7 +4396,8 @@
                       &   ES11.4, ' gives a v-pair' )" ) prefix, data%alpha
                      END IF
                    END IF
-                   GO TO 375
+                   inform%num_v = inform%num_v + 1
+                   GO TO 440
                  END IF
 
 !  -------------- check for an o-pair --------------
@@ -4334,8 +4415,7 @@
 !      data%control%gamma_f * data%alpha * data%rho_f_ref
 
                  IF ( data%f_trial <= data%f_ref - data%control%gamma_f *      &
-                        data%alpha * data%rho_f_ref + data%control%tol_zero )  &
-                     THEN
+                        data%alpha * data%rho_f_ref ) THEN
                    data%pair_type = 'o'
                    IF ( data%printt ) THEN
                      IF ( s_type == s_accel ) THEN
@@ -4346,27 +4426,26 @@
                       &   ES11.4, ' gives an o-pair' )" ) prefix, data%alpha
                      END IF
                    END IF
+                   inform%num_o = inform%num_o + 1
                    data%accepted = .TRUE.
-                   GO TO 375
+                   GO TO 440
                  END IF
                END IF
              END IF
 
 !  -------------- check for a b-pair --------------
 
-!  check if the new point gives a b-pair (A1:37-39)
-
              IF ( data%check_b_pair ) THEN
-               IF ( data%printd ) WRITE( data%out, "( A, ' (A1:37-39)')") prefix
-               IF ( data%phi_trial < data%phi_ref - data%control%gamma_phi     &
-                      * data%alpha * data%rho_phi_ref + data%control%tol_zero  &
+               IF ( data%printd ) WRITE( data%out,                             &
+             &    "( A, ' (A1:37-39) or (A1:42-43)')") prefix
+
+!  the new point gives a b-pair (A1:37-39) & (A1:42-43)
+
+               IF ( data%phi_trial < data%phi_ref                              &
+                      - data%control%gamma_phi * data%alpha * data%rho_phi_ref &
                      .AND. data%viol_trial < data%primal_viol_ref ) THEN
                  data%pair_type = 'b'
                  data%accepted = .TRUE.
-
-!  prepare to enter penalty mode
-
-                 data%p_mode = .TRUE.
 
 !  compute current filter elements
 
@@ -4392,96 +4471,81 @@
                     &   ES11.4, ' gives a b-pair' )" ) prefix, data%alpha
                    END IF
                  END IF
-                 GO TO 375
-               END IF
-             END IF
-
-  375        CONTINUE
-             IF ( data%accepted ) THEN
-               IF ( s_type == s_accel ) THEN
-                 data%step_used = 'accel  '
-               ELSE
-                 data%step_used = 's_k    '
-               END IF
-
-               IF ( data%pair_type == 'o' ) THEN
-                 inform%num_o = inform%num_o + 1
-               ELSE IF ( data%pair_type == 'v' ) THEN
-                 inform%num_v = inform%num_v + 1
-               ELSE IF ( data%pair_type == 'b' ) THEN
                  inform%num_b = inform%num_b + 1
-               END IF
-               GO TO 390
-             ELSE IF ( data%fails <= data%control%max_fails .AND.              &
-                       data%control%max_fails > 0 ) THEN
-               data%fails = data%fails + 1
-               IF ( s_type == s_accel ) THEN
-                 data%step_used = 'accel_nm'
-               ELSE
-                 data%step_used = 'sk_nm   '
-               END IF
-               inform%num_nm = inform%num_nm + 1
-               IF ( data%printt ) THEN
+
+!  change to penalty mode
+
+                 data%p_mode = .TRUE.
+                 GO TO 440
+
+!  exit loop if more than max_fails failures have occurred (A1:40-41)
+
+               ELSE IF ( data%fails <= data%control%max_fails .AND.            &
+                         data%control%max_fails > 0 ) THEN
                  IF ( s_type == s_accel ) THEN
-                   WRITE( data%out, "( A, ' accelerator step with stepsize',   &
-                  &   ES11.4, ' accepted as a failure' )" ) prefix, data%alpha
+                   data%step_used = 'accel_nm'
                  ELSE
-                   WRITE( data%out, "( A, ' predictor step with stepsize',     &
-                  &   ES11.4, ' accepted as a failure' )" ) prefix, data%alpha
+                   data%step_used = 'pred_nm '
                  END IF
+                 inform%num_nm = inform%num_nm + 1
+                 data%fails = data%fails + 1
+                 data%accepted = .FALSE.
+                 IF ( data%printt ) THEN
+                   IF ( s_type == s_accel ) THEN
+                     WRITE( data%out, "( A, ' accelerator step with stepsize', &
+                    &   ES11.4, ' accepted as a failure' )" ) prefix, data%alpha
+                   ELSE
+                     WRITE( data%out, "( A, ' predictor step with stepsize',   &
+                    &   ES11.4, ' accepted as a failure' )" ) prefix, data%alpha
+                   END IF
+                 END IF
+                 GO TO 450
                END IF
-               GO TO 390
              END IF
 
 !  end of loop over possible steps (A1:31)
 
              IF ( data%printd ) WRITE( data%out, "( A, ' (A1:31)' )" ) prefix
              s_type = s_type + 1
-             IF ( s_type <= s_normal ) GO TO 330
+             IF ( s_type <= s_normal ) GO TO 310
 !          END DO
-! 380      CONTINUE
 
 !  reduce step size (A1:30)
 
            IF ( data%printd ) WRITE( data%out, "( A, ' (A1:30)' )" ) prefix
            data%alpha = data%alpha * data%control%alpha_reduce
-!          data%radius_accel = data%radius_accel * data%control%alpha_reduce
+!          data%radius_accelerator
+!            = data%radius_accelerator * data%control%alpha_reduce
 
 !  end of loop to find acceptable step (A1:29)
 
-           GO TO 310
+           GO TO 290
 !        END DO
-  390    CONTINUE
-!        IF ( data%alpha == one ) data%radius_accel = data%radius_accel * two
 
-         IF ( data%s_norm < data%control%s_min ) THEN
-           data%exit_small_s = .TRUE.
-           data%pair_type = '*'
+  440    CONTINUE
+         IF ( s_type == s_accel ) THEN
+           data%step_used = 'accel  '
+           ELSE
+           data%step_used = 'pred   '
          END IF
 
-!        IF ( sk_norm < data%control%s_min ) THEN
-!          inform%status = - 104
-!          GO TO 900
-!        END IF
+!  count if entered p_mode
 
- ! Count if entered p_mode
-
-         IF ( data%p_mode )                                                    &
-           inform%entered_penalty = inform%entered_penalty + 1
+         IF ( data%p_mode ) inform%entered_penalty = inform%entered_penalty + 1
 !      END IF
 
 !  ----------------------------------------------------------------------------
 !                  UPDATE THE PENALTY PARAMETER (A1:45-46)
 !  ----------------------------------------------------------------------------
 
-  400  CONTINUE
+  450  CONTINUE
        IF ( data%printd ) WRITE( data%out, "( A, ' (A1:45-46)' )" ) prefix
        IF ( data%del_qphi_pred <= zero .OR.                                    &
             data%del_qphi < data%control%eta_phi * data%del_qphi_pred ) THEN
          data%sigma_new = MAX( two * data%sigma_new,                           &
                                data%sigma_new + data%control%sigma_inc )
          IF ( data%printt ) WRITE( data%out, "( A, ' penalty parameter',       &
-        &   ' updated to ', ES11.4 )" ) prefix, data%sigma_new
+        &   ' updated to', ES11.4 )" ) prefix, data%sigma_new
        END IF
 
 !  print a one-line summary of the iteration
@@ -4505,7 +4569,7 @@
        IF ( data%control%predictor_hessian == l_bfgs_predictor_hessian )      &
          data%DX = data%X_trial - nlp%X
        nlp%X = data%X_trial
-       nlp%f = data%f_trial
+       nlp%f = data%f_trial ; inform%obj = nlp%f
        nlp%C = data%C_trial
        data%sigma = data%sigma_new
 
@@ -4551,12 +4615,22 @@
 
 !  compute the infeasibility measures
 
-       multiplier_norm                                                         &
-         = MAX( one, OPT_multiplier_norm( nlp%n, nlp%Z( : nlp%n ),             &
-                                          nlp%m, nlp%Y( : nlp%m ) ) )
-       inform%primal_infeasibility =                                           &
-         OPT_primal_infeasibility( nlp%m, nlp%C( : nlp%m ),                    &
-                                   nlp%C_l( : nlp%m ), nlp%C_u( : nlp%m ) )
+       IF ( data%control%scale_constraints > 0 ) THEN
+         multiplier_norm =                                                     &
+           MAX( one, OPT_multiplier_norm( nlp%n, nlp%Z( : nlp%n ),             &
+                nlp%m, nlp%Y( : nlp%m ) / data%C_scale( : nlp%m ) ) )
+         inform%primal_infeasibility =                                         &
+           OPT_primal_infeasibility( nlp%m, nlp%C( : nlp%m ),                  &
+                                     nlp%C_l( : nlp%m ), nlp%C_u( : nlp%m ),   &
+                                     SCALE = data%C_scale( : nlp%m ) )
+       ELSE
+         multiplier_norm =                                                     &
+           MAX( one, OPT_multiplier_norm( nlp%n, nlp%Z( : nlp%n ),             &
+                                            nlp%m, nlp%Y( : nlp%m ) ) )
+         inform%primal_infeasibility =                                         &
+           OPT_primal_infeasibility( nlp%m, nlp%C( : nlp%m ),                  &
+                                     nlp%C_l( : nlp%m ), nlp%C_u( : nlp%m ) )
+       END IF
        inform%dual_infeasibility =                                             &
          OPT_dual_infeasibility( nlp%n, nlp%gL( : nlp%n ) ) / multiplier_norm
        inform%complementary_slackness =                                        &
@@ -4574,7 +4648,7 @@
       &  '(predictor  ):', 3ES11.4 )" ) prefix, inform%primal_infeasibility,   &
            inform%dual_infeasibility, inform%complementary_slackness
 
-       IF ( data%control%use_accel ) THEN
+       IF ( data%control%use_accelerator ) THEN
 
 !  compute the gradient of the Lagrangian using the accelerator multipliers
 
@@ -4600,11 +4674,17 @@
              prefix, data%WORK_n( : nlp%n )
          END IF
 
-!  compute the infeasibility measures
+!  compute the infeasibility measures using the accelerator's multipliers
 
-         multiplier_norm                                                       &
-           = MAX( one, OPT_multiplier_norm( nlp%n, data%Z_accel( : nlp%n ),    &
-                                            nlp%m, data%Y_accel( : nlp%m ) ) )
+         IF ( data%control%scale_constraints > 0 ) THEN
+           multiplier_norm =                                                   &
+             MAX( one, OPT_multiplier_norm( nlp%n, data%Z_accel( : nlp%n ),    &
+                  nlp%m, data%Y_accel( : nlp%m ) / data%C_scale( : nlp%m ) ) )
+         ELSE
+           multiplier_norm =                                                   &
+             MAX( one, OPT_multiplier_norm( nlp%n, data%Z_accel( : nlp%n ),    &
+                  nlp%m, data%Y_accel( : nlp%m ) ) )
+         END IF
          dual_infeasibility =                                                  &
            OPT_dual_infeasibility( nlp%n, data%WORK_n( : nlp%n ) )             &
              / multiplier_norm
@@ -4625,9 +4705,15 @@
 
 !  select the better of the (possibly) two measures
 
+!write(6,*) 'y_accel',  data%Y_accel( : nlp%m )
+!write(6,*) 'z_accel',  data%Z_accel( : nlp%n )
+!        IF ( .TRUE. ) THEN
 !        IF ( .FALSE. ) THEN
          IF ( kkt_accel .OR.                                                   &
               complementary_slackness < inform%complementary_slackness ) THEN
+!        IF ( kkt_accel .OR.                                                   &
+!          complementary_slackness < inform%complementary_slackness .OR.       &
+!            inform%iter > 8 ) THEN
            nlp%Y( : nlp%m ) = data%Y_accel( : nlp%m )
            nlp%Z( : nlp%n ) = data%Z_accel( : nlp%n )
            nlp%gL( : nlp%n ) = data%WORK_n( : nlp%n )
@@ -4656,25 +4742,25 @@
            inform%status = GALAHAD_ok ; GO TO 900
          END IF
        END IF
-!      data%primal_viol = inform%primal_infeasibility
-!write(6,"( 'viol reset c', ES12.4 )") data%primal_viol
        data%primal_viol = OPT_primal_infeasibility( nlp%n, nlp%X,              &
               nlp%X_l, nlp%X_u, nlp%m, nlp%C, nlp%C_l, nlp%C_u, norm = 1 )
-!      data%comp_viol = inform%complementary_slackness
 
-!  check optimality based on predictor step
+       IF ( data%printd ) THEN
+         WRITE( control%out, "( A, ' x = ', 3ES24.16, /,                       &
+        & ( 5X, 3ES24.16 ) )" ) prefix, nlp%X( : nlp%n )
+         WRITE( control%out, "( A, ' y = ', 3ES24.16, /,                       &
+        & ( 5X, 3ES24.16 ) )" ) prefix, nlp%Y( : nlp%m )
+         WRITE( control%out, "( A, ' z = ', 3ES24.16, /,                       &
+        & ( 5X, 3ES24.16 ) )" ) prefix, nlp%Z( : nlp%n )
+       END IF
 
-       IF ( ABS( data%del_qphi_pred ) <= data%control%tol_pred .AND.           &
-            data%primal_viol <= data%control%tol_primal ) THEN
+!  check for optimality based on the predictor step
+
+       IF ( ABS( data%del_qphi_pred ) <= data%control%stop_predictor           &
+            .AND. data%primal_viol <= data%stop_p ) THEN
          inform%status = - 102
          GO TO 900
        END IF
-
-! for now, keep trying
-!      IF ( exit_small_s ) THEN
-!        inform%status = - 3
-!        GO TO 900
-!      END IF
 
 !  update values at R(k)
 
@@ -4725,6 +4811,17 @@
      inform%time%total = REAL( data%time_now - data%time_start, wp )
      inform%time%clock_total = data%clock_now - data%clock_start
 
+!  restore scaled-cnstraint data
+
+     IF ( data%control%scale_constraints > 0 ) THEN
+       nlp%Y( : nlp%m ) = nlp%Y( : nlp%m ) / data%C_scale( : nlp%m )
+       nlp%C( : nlp%m ) = nlp%C( : nlp%m ) * data%C_scale( : nlp%m )
+       WHERE ( nlp%C_l( : nlp%m ) > - data%control%infinity )                  &
+         nlp%C_l( : nlp%m ) = nlp%C_l( : nlp%m ) * data%C_scale( : nlp%m )
+       WHERE ( nlp%C_u( : nlp%m ) < data%control%infinity )                    &
+         nlp%C_u( : nlp%m ) = nlp%C_u( : nlp%m ) * data%C_scale( : nlp%m )
+     END IF
+
 !  print details of the final iteration
 
      IF ( data%printi ) THEN
@@ -4733,10 +4830,10 @@
          data%control%QP_pred_control%print_level > 0 .OR.                     &
          data%control%QP_accel_control%print_level > 0 .OR.                    &
          data%control%FILTER_control%print_level > 0
-       IF ( data%print_iteration_header .OR.                                   &
-            data%print_1st_header) WRITE( data%out, 2000 ) prefix
        IF ( inform%status == GALAHAD_ok .OR.                                   &
             inform%status == GALAHAD_error_primal_infeasible ) THEN
+         IF ( data%print_iteration_header .OR.                                 &
+              data%print_1st_header) WRITE( data%out, 2000 ) prefix
          IF ( inform%iter > 0 ) THEN
            WRITE( data%out, 2010 )                                             &
              prefix, inform%iter, data%it_type, data%pair_type,                &
@@ -4764,16 +4861,27 @@
 !      ELSE IF ( inform%status == - 4 .OR. inform%status == - 3 ) THEN
 !        WRITE( data%out, "( '   |', 77X, ES8.2 )" ) data%alpha
 
-         WRITE( data%out, "( A, /, ' predictor Hessian = ', I0 )" ) prefix,    &
-           data%control%predictor_hessian
-
          IF ( inform%status == GALAHAD_ok ) THEN
            WRITE(  data%out,                                                   &
-             "( A, ' Approximate locally-optimal solution found' )" ) prefix
+             "( /, A, ' Approximate locally-optimal solution found' )" ) prefix
          ELSE
            WRITE(  data%out,                                                   &
-             "( A, ' Approximate infeasible critical point found' )" ) prefix
+             "( /, A, ' Approximate infeasible critical point found' )" ) prefix
          END IF
+         SELECT CASE ( data%control%predictor_hessian )
+         CASE( se_modified_predictor_hessian )
+           WRITE( data%out, "( A,                                              &
+          &   ' Modified-exact predictor Hessian used' )" )  prefix
+         CASE( l_bfgs_predictor_hessian )
+           WRITE( data%out, "( A,                                              &
+          &  ' L-BFGS predictor Hessian with skipping used' )" ) prefix
+         CASE( powell_l_bfgs_predictor_hessian )
+           WRITE( data%out, "( A,                                              &
+          &  ' L-BFGS predictor Hessian with Powell corrections used' )") prefix
+         CASE DEFAULT
+           WRITE( data%out, "( A,                                              &
+          &   ' Scaled-identity predictor Hessian used' )" )  prefix
+         END SELECT
        END IF
 
 !      WRITE( data%out, "( A, ' +', 76( '-' ), '+' )" ) prefix
@@ -4784,46 +4892,84 @@
 
      IF ( data%control%print_level > 0 .AND. data%out > 0 ) THEN
        l = 2
-       IF ( data%control%fulsol ) l = nlp%n
+       IF ( data%control%full_solution ) l = nlp%n
        IF ( data%control%print_level >= 10 ) l = nlp%n
 
-       WRITE( data%out, "( /, A, ' Solution: ', /, A, '                     ', &
-      &         '           <------ Bounds ------> ', /, A,                    &
-      &         '      # name          value   ',                              &
-      &         '    Lower       Upper       Dual ' )" ) prefix, prefix, prefix
+       names = ALLOCATED( nlp%VNAMES )
+       IF ( names ) THEN
+         WRITE( data%out, "( /, A, ' Solution: ', /, A, '                   ', &
+        &         '             <------ Bounds ------> ', /, A,                &
+        &         '      # name          value   ',                            &
+        &         '    Lower       Upper       Dual' )" ) prefix, prefix, prefix
+       ELSE
+         WRITE( data%out, "( /, A, ' Solution: ', /, A, '        ',            &
+        &         '           <------ Bounds ------> ', /, A,                  &
+        &         '      #    value   ',                                       &
+        &         '    Lower       Upper       Dual' )" ) prefix, prefix, prefix
+       END IF
        DO j = 1, 2
          IF ( j == 1 ) THEN
            ir = 1 ; ic = MIN( l, nlp%n )
          ELSE
-           IF ( ic < nlp%n - l ) WRITE( data%out, 2040 ) prefix
+           IF ( names ) THEN
+             IF ( ic < nlp%n - l ) WRITE( data%out, 2040 ) prefix
+           ELSE
+             IF ( ic < nlp%n - l ) WRITE( data%out, 2060 ) prefix
+           END IF
            ir = MAX( ic + 1, nlp%n - ic + 1 ) ; ic = nlp%n
          END IF
-         DO i = ir, ic
-           WRITE( data%out, 2030 ) prefix, i, nlp%VNAMES( i ), nlp%X( i ),     &
-             nlp%X_l( i ), nlp%X_u( i ), nlp%Z( i )
-         END DO
+         IF ( names ) THEN
+           DO i = ir, ic
+             WRITE( data%out, 2030 ) prefix, i, nlp%VNAMES( i ), nlp%X( i ),   &
+               nlp%X_l( i ), nlp%X_u( i ), nlp%Z( i )
+           END DO
+         ELSE
+           DO i = ir, ic
+             WRITE( data%out, 2050 ) prefix, i, nlp%X( i ),                    &
+               nlp%X_l( i ), nlp%X_u( i ), nlp%Z( i )
+           END DO
+         END IF
        END DO
 
        IF ( nlp%m > 0 ) THEN
          l = 2
-         IF ( data%control%fulsol ) l = nlp%m
+         IF ( data%control%full_solution ) l = nlp%m
          IF ( data%control%print_level >= 10 ) l = nlp%m
 
-         WRITE( data%out, "( /, A, ' Constraints:', /, A, '                ',  &
-        &       '                  <------ Bounds ------> ', /, A,             &
-        &       '      # name           value     ',                           &
-        &       '  Lower       Upper    Multiplier' )" ) prefix, prefix, prefix
+         names = ALLOCATED( nlp%CNAMES )
+         IF ( names ) THEN
+           WRITE( data%out, "( /, A, ' Constraints:', /, A, '              ',  &
+          &       '                    <------ Bounds ------> ', /, A,         &
+          &       '      # name           value       ',                       &
+          &       'Lower       Upper    Multiplier' )" ) prefix, prefix, prefix
+         ELSE
+           WRITE( data%out, "( /, A, ' Constraints:', /, A, '              ',  &
+          &       '         <------ Bounds ------> ', /, A,                    &
+          &       '      #     value       ',                                  &
+          &       'Lower       Upper    Multiplier' )" ) prefix, prefix, prefix
+         END IF
          DO j = 1, 2
            IF ( j == 1 ) THEN
              ir = 1 ; ic = MIN( l, nlp%m )
            ELSE
-             IF ( ic < nlp%m - l ) WRITE( data%out, 2040 ) prefix
+             IF ( names ) THEN
+               IF ( ic < nlp%m - l ) WRITE( data%out, 2040 ) prefix
+             ELSE
+               IF ( ic < nlp%m - l ) WRITE( data%out, 2060 ) prefix
+             END IF
              ir = MAX( ic + 1, nlp%m - ic + 1 ) ; ic = nlp%m
            END IF
-           DO i = ir, ic
-             WRITE( data%out, 2030 ) prefix, i, nlp%CNAMES( i ), nlp%C( i ),   &
-               nlp%C_l( i ), nlp%C_u( i ), nlp%Y( i )
-           END DO
+           IF ( names ) THEN
+             DO i = ir, ic
+               WRITE( data%out, 2030 ) prefix, i, nlp%CNAMES( i ), nlp%C( i ), &
+                 nlp%C_l( i ), nlp%C_u( i ), nlp%Y( i )
+             END DO
+           ELSE
+             DO i = ir, ic
+               WRITE( data%out, 2050 ) prefix, i, nlp%C( i ),                  &
+                 nlp%C_l( i ), nlp%C_u( i ), nlp%Y( i )
+             END DO
+           END IF
          END DO
        END IF
 
@@ -4833,24 +4979,24 @@
          multiplier_norm = zero
        END IF
 
-       WRITE( data%out, "( /, A, ' Problem: ', A10, 16X,                       &
-      &          '  Solver: FiSQP', /, A,                                      &
-      &  ' n              =    ', bn, I11,                                     &
-      &  '      m               =', bn, I11, /,                                &
-      & A, ' Objective      =', ES15.8,                                        &
-      &    '      Complementarity =', ES11.4, /,                               &
-      & A, ' Violation      =    ', ES11.4,                                    &
-      &    '      Dual infeas     =', ES11.4, /,                               &
-      & A, ' Max multiplier =    ', ES11.4,                                    &
-      &    '      Max dual var.   =', ES11.4, /,                               &
-      & A, ' Iterations     =    ', bn, I11,                                   &
-      &    '      Time            =', F11.2 , /,                               &
-      & A, ' Function evals =    ', bn, I11 )" )                               &
+       WRITE( data%out, "( /, A, ' Problem: ', A10, 17X,                       &
+      &          ' Solver: FiSQP', /, A,                                       &
+      &  ' n              =     ', bn, I11,                                    &
+      &  '     m               =', bn, I11, /,                                 &
+      & A, ' Objective      = ', ES15.8,                                       &
+      &    '     Complementarity =', ES11.4, /,                                &
+      & A, ' Violation      =     ', ES11.4,                                   &
+      &    '     Dual infeas.    =', ES11.4, /,                                &
+      & A, ' Max multiplier =     ', ES11.4,                                   &
+      &    '     Max dual var.   =', ES11.4, /,                                &
+      & A, ' Iterations     =     ', bn, I11,                                  &
+      &    '     Time            =', F11.2 , /,                                &
+      & A, ' Function evals =     ', bn, I11 )" )                              &
         prefix, nlp%pname, prefix, nlp%n, nlp%m, prefix, inform%obj,           &
         inform%complementary_slackness, prefix, inform%primal_infeasibility,   &
         inform%dual_infeasibility, prefix, multiplier_norm,                    &
         MAXVAL( ABS( nlp%Z( : nlp%n ) ) ), prefix, inform%iter,                &
-        inform%time%clock_total, prefix, inform%f_eval
+        inform%time%clock_total, prefix, inform%fc_eval
      END IF
 
      IF ( data%control%error > 0 .AND. data%control%print_level > 0 ) THEN
@@ -4911,6 +5057,8 @@
  2020 FORMAT( A, I5, '   ', ES12.4, 3ES8.1, '     -    -    ', I4, ES8.1, F8.1 )
  2030 FORMAT( A, I7, 1X, A10, 4ES12.4 )
  2040 FORMAT( A, 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
+ 2050 FORMAT( A, I7, 4ES12.4 )
+ 2060 FORMAT( A, 6X, '.', 4( 2X, 10( '.' ) ) )
 
 !2100 FORMAT( '  Iter   p_mode       f           v       comp_v    sigma   ',  &
 !       '   |   B_modified  d_lv      d_qphi_pred   ',                         &
