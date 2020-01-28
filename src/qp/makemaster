@@ -179,11 +179,13 @@ L1QP_OBJECTS_double = $(BASICS) $(L1QP_double)
 QP_OBJECTS_single = $(QPC_OBJECTS_single) $(DQP_single) $(QP_single) \
                     $(L1QP_OBJECTS_single) $(BQP_single) $(BQPB_single) \
                     $(LPA_single) $(LPB_single) $(DLP_single) \
-                    $(CCQP_single) $(BLLS_single)
+                    $(CCQP_single)
+#                   $(BLLS_single)
 QP_OBJECTS_double = $(QPC_OBJECTS_double) $(DQP_double) $(QP_double) \
                     $(L1QP_OBJECTS_double) $(BQP_double) $(BQPB_double) \
                     $(LPA_double) $(LPB_double) $(DLP_double) \
-                    $(CCQP_double) $(BLLS_double)
+                    $(CCQP_double)
+#                   $(BLLS_double)
 QP_OBJECTS_CURRENT_single = $(QP_OBJECTS_single)
 QP_OBJECTS_CURRENT_double = $(QP_OBJECTS_double)
 
@@ -194,15 +196,15 @@ USE_single = $(LGS)(presolve.o) copyright $(LGS)(useqpa.o) $(LGS)(useqpb.o) \
              $(RPD_single) $(LGS)(useeqp.o) $(LGS)(usecqp.o) \
              $(LGS)(uselpa.o) $(LGS)(uselpb.o) $(LGS)(usedlp.o) \
              $(LGS)(useccqp.o) $(LGS)(usel1qp.o) $(LGS)(usedqp.o) \
-             $(LGS)(usebqp.o) $(LGS)(usebqpb.o) $(LGS)(useccqp.o) \
-             $(LGS)(useblls.o)
+             $(LGS)(usebqp.o) $(LGS)(usebqpb.o) $(LGS)(useccqp.o)
+#            $(LGS)(useblls.o)
 USE_double = $(LGD)(presolve.o) copyright $(LGD)(useqpa.o) $(LGD)(useqpb.o) \
              $(LGD)(useqpc.o) $(LGD)(useqp.o) $(LGD)(usepresolve.o) \
              $(RPD_double) $(LGD)(useeqp.o) $(LGD)(usecqp.o) \
              $(LGD)(uselpa.o) $(LGD)(uselpb.o) $(LGD)(usedlp.o) \
              $(LGD)(useccqp.o) $(LGD)(usel1qp.o) $(LGD)(usedqp.o) \
-             $(LGD)(usebqp.o) $(LGD)(usebqpb.o) $(LGD)(useccqp.o) \
-             $(LGD)(useblls.o)
+             $(LGD)(usebqp.o) $(LGD)(usebqpb.o) $(LGD)(useccqp.o)
+#            $(LGD)(useblls.o)
 USE_CURRENT_single = $(USE_single)
 USE_CURRENT_double = $(USE_double)
 
@@ -217,18 +219,20 @@ USE_OBJECTS_CURRENT_double = $(QP_OBJECTS_CURRENT_double) $(USE_CURRENT_double)
 
 RUN_single = $(USE_single) $(OBJS)/runqpa_sif.o $(OBJS)/runqpb_sif.o \
              $(OBJS)/runqpc_sif.o $(OBJS)/runqp_sif.o \
-             $(OBJS)/runpresolve_sif.o $(OBJS)/runblls_sif.o \
+             $(OBJS)/runpresolve_sif.o \
              $(OBJS)/runcqp_sif.o $(OBJS)/rundqp_sif.o $(OBJS)/runccqp_sif.o \
              $(OBJS)/runl1qp_sif.o $(OBJS)/runbqp_sif.o \
              $(OBJS)/runlpa_sif.o $(OBJS)/runlpb_sif.o $(OBJS)/rundlp_sif.o \
              $(OBJS)/runbqpb_sif.o $(OBJS)/runccqp_sif.o
+#             $(OBJS)/runblls_sif.o
 RUN_double = $(USE_double) $(OBJD)/runqpa_sif.o $(OBJD)/runqpb_sif.o \
              $(OBJD)/runqpc_sif.o $(OBJD)/runqp_sif.o \
-             $(OBJD)/runpresolve_sif.o $(OBJD)/runblls_sif.o \
+             $(OBJD)/runpresolve_sif.o \
              $(OBJD)/runcqp_sif.o $(OBJD)/rundqp_sif.o $(OBJD)/runccqp_sif.o \
              $(OBJD)/runl1qp_sif.o $(OBJD)/runbqp_sif.o \
              $(OBJD)/runlpa_sif.o $(OBJD)/runlpb_sif.o $(OBJD)/rundlp_sif.o \
              $(OBJD)/runbqpb_sif.o $(OBJD)/runccqp_sif.o
+#             $(OBJD)/runblls_sif.o
 
 RUN_CURRENT_single = $(USE_CURRENT_single) $(RUN_single)
 RUN_CURRENT_double = $(USE_CURRENT_double) $(RUN_double)
