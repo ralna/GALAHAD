@@ -514,8 +514,6 @@ subroutine MA87_sparse_fwd_solve_single(nbi,bindex,b,order,invp,               &
    integer, intent(in) :: order(:) ! pivot order. must be unchanged
    integer, intent(in) :: invp(:) ! must hold inverse pivot order so that
       ! invp(j) holds the j-th pivot.
-   integer, intent(in) :: invp(:) ! must hold inverse pivot order so that
-      ! invp(j) holds the j-th pivot.
    integer, intent(out) :: nxi ! number of nonzero entries in the solution.
    integer, intent(out) :: index(:) ! First nxi entries holds indices of
       ! nonzero entries in solution.
