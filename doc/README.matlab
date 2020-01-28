@@ -1,4 +1,5 @@
-Matlab interfaces are now available to a growing number of GALAHAD packages.
+Matlab interfaces are now available to a growing number of GALAHAD packages
+(in double-precision).
 
                             ---------
                             For LINUX
@@ -91,7 +92,9 @@ have the trailing -4.7.
 As for MATLAB for R2011a-R2013a, but you will need gfortran/gcc-4.9 not 4.4.
 Edit $GALAHAD/makefiles/pc.lnx.gfo to check that all mentions of gfortran/gcc
 have the trailing -4.9. This should have been taken care of automatically
-during the installation process
+during the installation process.
+
+Note that at present there is no single-precision version.
 
                          ------------
                          For MAC OS X
@@ -119,11 +122,6 @@ whether g95/gfortran is compatible with Matlab in this case, we
 are sorry but the Windows user is on her/his own. Matlab claim
 to support Intel Visual Fortran as their default Windows-fortran
 interface.
-
-Nick Gould          (nick.gould@stfc.ac.uk)
-Dominique Orban     (dominique.orban@polymtl.ca)
-Philippe Toint      (philippe.toint@fundp.ac.be)
-
 
  ---------------------------------------------------------------------------
  The dreaded "MATLAB Error: Cannot load any more object with static TLS" bug
@@ -183,6 +181,9 @@ http://stackoverflow.com/questions/19268293/matlab-error-cannot-open-with-static
 
 for the discussion and tip
 
-For GALAHAD productions
-This version: 1st March 2017
+Nick Gould          (nick.gould@stfc.ac.uk)
+Dominique Orban     (dominique.orban@polymtl.ca)
+Philippe Toint      (philippe.toint@fundp.ac.be)
 
+For GALAHAD productions
+This version: 28th January 2020
