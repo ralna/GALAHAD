@@ -36,7 +36,7 @@
 
       WRITE ( 6, 2000 )
       job = - 101
-      STOP
+      RETURN
 
 !  Non-executable statements
 
@@ -44,8 +44,8 @@
      &     ' We regret that the solution options that you have ', /,
      &     ' chosen are not all freely available with GALAHAD.', //,
      &     ' If you have HSL (formerly the Harwell Subroutine',
-     &     ' Library), this ', /,
-     &     ' option may be enabled by replacing the dummy ', /,
+     &     ' Library), ', /,
+     &     ' this option may be enabled by replacing the dummy ', /,
      &     ' subroutine LA04A with its HSL namesake ', /,
      &     ' and dependencies. See ', /,
      &     '   $GALAHAD/src/makedefs/packages for details.', //,

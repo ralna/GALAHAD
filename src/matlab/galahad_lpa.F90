@@ -93,6 +93,8 @@
       USE GALAHAD_TRANSFER_MATLAB
       USE GALAHAD_LPA_MATLAB_TYPES
       USE GALAHAD_LPA_double
+      USE GALAHAD_SYMBOLS
+
       IMPLICIT NONE
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
@@ -321,7 +323,7 @@
 
         ALLOCATE( B_stat( p%n ), C_stat( p%m ), STAT = info )
 
-!  Solve the QP
+!  Solve the LP
 
         CALL LPA_solve( p, data, control, inform, C_stat, B_stat )
 
@@ -335,6 +337,9 @@
             END DO
           END IF
    500   CONTINUE
+
+!       IF ( inform%status == GALAHAD_unavailable_option )                     &
+!         CALL mexErrMsgTxt( ' Required HSL dependency LA04 not installed ' )
 
 !  Output solution
 
