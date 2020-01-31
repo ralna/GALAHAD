@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.7 - 08/03/2016 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 31/01/2020 AT 10:00 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ R Q S  double  M O D U L E  *-*-*-*-*-*-*-
 
@@ -1306,7 +1306,7 @@
 !-----------------------------------------------
 
       INTEGER :: i, j, l, it, i_max, j_max, out, nroots, n_invit, print_level
-      INTEGER :: max_order, n_lambda, in_n
+      INTEGER :: max_order, n_lambda, in_n, itt
       REAL :: time_start, time_now, time_record
       REAL ( KIND = wp ) :: clock_start, clock_now, clock_record
       REAL ( KIND = wp ) :: lambda, lambda_l, lambda_u, delta_lambda, target
@@ -1907,7 +1907,7 @@
           inform%time%solve = inform%time%solve + time_now - time_record
           inform%time%clock_solve =                                            &
             inform%time%clock_factorize + clock_now - clock_record
-          IF ( printt ) WRITE( out, 2050 ) prefix, clock_now - clock_record
+          IF ( printt ) WRITE( out, 2040 ) prefix, clock_now - clock_record
           IF ( inform%IR_inform%norm_final_residual >                          &
                inform%IR_inform%norm_initial_residual ) THEN
 ! write(6, "( ' *********** WARNING A - initial and final residuals are ',     &
@@ -2053,8 +2053,8 @@
         END IF
 
         IF ( lambda_l > lambda_u ) THEN
-          WRITE( out, "( ' lambda_l = ', ES12.4, ' > lambda_u = ', ES12.4 )" ) &
-            lambda_l, lambda_u
+          WRITE( out, "( ' lambda_l = ', ES22.15, ' > lambda_u = ',            &
+         &       ES22.15 )" ) lambda_l, lambda_u
 !         WRITE( 6, "( ' stopping as initial bracket is faulty ' )" )
           STOP
         END IF
@@ -2118,10 +2118,14 @@
       it = 0 ; in_n = 0
       DO
         it = it + 1
+itt=0
 
 !  add lambda * M to H to form H(lambda)
 
  100    CONTINUE
+itt=itt+1
+if (itt > 2 ) RETURN
+
         IF ( unit_m ) THEN
           data%H_lambda%val( data%h_ne + 1 :  data%m_end ) = lambda
         ELSE
@@ -2195,7 +2199,7 @@
             inform%time%solve = inform%time%solve + time_now - time_record
             inform%time%clock_solve =                                          &
               inform%time%clock_factorize + clock_now - clock_record
-            IF ( printt ) WRITE( out, 2050 ) prefix, clock_now - clock_record
+            IF ( printt ) WRITE( out, 2040 ) prefix, clock_now - clock_record
 
 !  if there has been an increase in the residuals, H + lambda M is likely
 !  singular, so perturb lambda and try again
@@ -2282,7 +2286,7 @@
                   prefix, ' ', 0, lambda_l, lambda, lambda_u
                 WRITE( out, "( A,                                              &
               &    ' Hard-case stopping criteria satisfied.',                  &
-              &    ' Interval width =', ES11.4 )" ) prefix, lambda_u - lambda_l
+              &    ' Interval width =', ES22.15 )" ) prefix, lambda_u - lambda_l
               END IF
               inform%obj = f ; inform%obj_regularized = f
               inform%status = 0
@@ -2306,9 +2310,9 @@
 !  debug printing
 
           IF ( printd ) THEN
-            WRITE( out, "( A, 8X, 'lambda', 13X, 'x_norm', 15X, 'target' )" )  &
+            WRITE( out, "( A, 9X, 'lambda', 15X, 'x_norm', 17X, 'target' )" )  &
               prefix
-            WRITE( out, "( A, 3ES20.12 )") prefix, lambda, inform%x_norm, target
+            WRITE( out, "( A, 3ES22.15 )") prefix, lambda, inform%x_norm, target
             IF ( phase_1 ) THEN
               WRITE( out, "( A, ' interval width =', ES22.15 )")               &
                 prefix, lambda_u - lambda_l
@@ -2356,12 +2360,13 @@
 
 !  determine which region the current lambda lies in
 
-          IF ( inform%x_norm > target ) THEN
+!  write(6,*) ' ||x||, target ', inform%x_norm, target
 
 !  ----------------------------
 !  The current lambda lies in L
 !  ----------------------------
 
+          IF ( inform%x_norm > target ) THEN
             region = 'L'
             lambda_l = MAX( lambda_l, lambda )
 
@@ -2405,14 +2410,14 @@
               END IF
               EXIT
             END IF
-          ELSE
 
 !  ----------------------------
 !  The current lambda lies in G
 !  ----------------------------
 
+          ELSE
             region = 'G'
-            lambda_u = MIN( lambda_u, lambda )
+            lambda_u = MIN( lambda_u, lambda + control%stop_hard )
             IF ( .NOT. phase_1 ) THEN
               phase_1 = .TRUE.
               IF ( printi ) WRITE( out, 2020 ) prefix
@@ -2435,10 +2440,10 @@
 !  compute first derivatives of x^T M x
 
           CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
-          IF ( data%accurate ) THEN
 
 !  solve  H(lambda) z = M x
 
+          IF ( data%accurate ) THEN
             IF ( unit_m ) data%Y( : n ) = X
             data%Z( : n ) = data%Y( : n )
             IF ( constrained ) data%Z( n + 1 : data%npm ) = zero
@@ -2447,10 +2452,21 @@
                            data%control%IR_control,                            &
                            data%control%SLS_control,                           &
                            inform%IR_inform, inform%SLS_inform )
-          ELSE
+
+!  check that the solution succeeded. If not, increase lambda and try again
+
+            IF ( inform%IR_inform%status == GALAHAD_error_solve ) THEN
+              IF ( printd ) WRITE( out,                                        &
+             &    "( ' **** WARNING *** iterative refinement diverged,',       &
+             &    ' incresaing lambda marginally' ) ")
+              lambda_l = lambda
+              lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+              GO TO 100
+            END IF
 
 !  find y so that L y = M x
 
+          ELSE
             IF ( unit_m ) data%Y( : n ) = X
             CALL SLS_part_solve( 'L', data%Y( : n ), data%SLS_data,            &
                                  data%control%SLS_control, inform%SLS_inform )
@@ -2465,7 +2481,11 @@
           inform%time%solve = inform%time%solve + time_now - time_record
           inform%time%clock_solve =                                            &
             inform%time%clock_factorize + clock_now - clock_record
-          IF ( printt ) WRITE( out, 2050 ) prefix, clock_now - clock_record
+          IF ( data%accurate ) THEN
+            IF ( printt ) WRITE( out, 2040 ) prefix, clock_now - clock_record
+          ELSE
+            IF ( printt ) WRITE( out, 2050 ) prefix, clock_now - clock_record
+          END IF
 
           IF ( inform%IR_inform%norm_final_residual >                          &
                inform%IR_inform%norm_initial_residual ) THEN
@@ -2641,10 +2661,10 @@
 
               IF ( max_order >= 3 ) THEN
                 CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
-                IF ( data%accurate ) THEN
 
 !  solve  H(lambda) z = M x
 
+                IF ( data%accurate ) THEN
                   IF ( unit_m ) THEN
                     data%Y( : n ) = data%Z( : n )
                   ELSE
@@ -2656,11 +2676,22 @@
                                  data%control%IR_control,                      &
                                  data%control%SLS_control,                     &
                                  inform%IR_inform, inform%SLS_inform )
-                ELSE
-                  IF ( unit_m ) THEN
+
+!  check that the solution succeeded. If not, increase lambda and try again
+
+                  IF ( inform%IR_inform%status == GALAHAD_error_solve ) THEN
+                    IF ( printd ) WRITE( out,                                  &
+                   &    "( ' **** WARNING *** iterative refinement diverged,', &
+                   &    ' incresaing lambda marginally' ) ")
+                    lambda_l = lambda
+                    lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+                    GO TO 100
+                  END IF
 
 !  find z so that L z = x'
 
+                ELSE
+                  IF ( unit_m ) THEN
                     CALL SLS_part_solve( 'L', data%Z( : n ), data%SLS_data,    &
                                          data%control%SLS_control,             &
                                          inform%SLS_inform )
@@ -2691,8 +2722,13 @@
                 inform%time%solve = inform%time%solve + time_now - time_record
                 inform%time%clock_solve =                                      &
                   inform%time%clock_factorize + clock_now - clock_record
-                IF ( printt )                                                  &
-                  WRITE( out, 2050 ) prefix, clock_now - clock_record
+                IF ( data%accurate ) THEN
+                  IF ( printt )                                                &
+                    WRITE( out, 2040 ) prefix, clock_now - clock_record
+                ELSE
+                  IF ( printt )                                                &
+                    WRITE( out, 2050 ) prefix, clock_now - clock_record
+                END IF
 
                 IF ( inform%IR_inform%norm_final_residual >                    &
                      inform%IR_inform%norm_initial_residual ) THEN
@@ -3387,7 +3423,7 @@
                 inform%time%solve = inform%time%solve + time_now - time_record
                 inform%time%clock_solve =                                      &
                   inform%time%clock_factorize + clock_now - clock_record
-                IF ( printt ) WRITE( out, 2050 ) prefix, clock_now -clock_record
+                IF ( printt ) WRITE( out, 2040 ) prefix, clock_now -clock_record
 
 !               IF ( inform%IR_inform%norm_final_residual >                    &
 !                    inform%IR_inform%norm_initial_residual ) THEN
@@ -3518,7 +3554,7 @@
                 prefix, region, it + 1, lambda_l, lambda, lambda_u
               WRITE( out, "( A,                                                &
             &    ' Hard-case stopping criteria satisfied.',                    &
-            &    ' Interval width =', ES11.4 )" ) prefix, lambda_u - lambda_l
+            &    ' Interval width =', ES22.15 )" ) prefix, lambda_u - lambda_l
             END IF
 
 !  build an estmate of the leftmost eigenvalue and its vector u using inverse
@@ -3595,7 +3631,7 @@
               inform%time%solve = inform%time%solve + time_now - time_record
               inform%time%clock_solve =                                      &
                 inform%time%clock_factorize + clock_now - clock_record
-              IF ( printt ) WRITE( out, 2050 ) prefix, clock_now -clock_record
+              IF ( printt ) WRITE( out, 2040 ) prefix, clock_now -clock_record
 
               IF ( unit_m ) THEN
                 u_norm = TWO_NORM( data%U( : n ) )
@@ -3654,9 +3690,9 @@
                 prefix, region, it + 1, lambda_l, lambda, lambda_u
               WRITE( out, "( A,                                                &
             &    ' Almost hard-case stopping criteria satisfied.',             &
-            &    ' Interval width =', ES11.4 )" ) prefix, lambda_u - lambda_l
-              WRITE( out, "( A, 8X, 'lambda', 13X, 'x_norm', 15X, 'target', /, &
-            &                A, 3ES20.12 )")                                   &
+            &    ' Interval width =', ES22.15 )" ) prefix, lambda_u - lambda_l
+              WRITE( out, "( A, 9X, 'lambda', 15X, 'x_norm', 17X, 'target', /, &
+            &                A, 3ES22.15 )")                                   &
                 prefix, prefix, lambda, inform%x_norm, target
             END IF
 
@@ -3749,6 +3785,7 @@
                  '              lambda_u' )
  2030 FORMAT( A, '    it    ||x||-target              lambda ',                &
                  '              d_lambda' )
+ 2040 FORMAT( A, ' time( IR_solve ) = ', F0.2 )
  2050 FORMAT( A, ' time( SLS_solve ) = ', F0.2 )
 
 !  End of subroutine RQS_solve_main

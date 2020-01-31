@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 10th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_IR_MATLAB_TYPES
@@ -46,7 +46,7 @@
       TYPE, PUBLIC :: IR_pointer_type
         mwPointer :: pointer
         mwPointer :: status, alloc_status, bad_alloc
-      END TYPE 
+      END TYPE
 
     CONTAINS
 
@@ -99,6 +99,9 @@
         CASE( 'acceptable_residual_absolute' )
           CALL MATLAB_get_value( ps, 'acceptable_residual_absolute',           &
                                  pc, IR_control%acceptable_residual_absolute )
+        CASE( 'required_residual_relative' )
+          CALL MATLAB_get_value( ps, 'required_residual_relative',             &
+                                 pc, IR_control%required_residual_relative )
         CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
                                  pc, IR_control%space_critical )
@@ -142,13 +145,13 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 9
+      INTEGER * 4, PARAMETER :: ninform = 10
       CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
          'error                          ', 'out                            ', &
          'print_level                    ', 'itref_max                      ', &
          'acceptable_residual_relative   ', 'acceptable_residual_absolute   ', &
-         'space_critical                 ', 'deallocate_error_fatal         ', &
-         'prefix                         '                      /)
+         'required_residual_relative     ', 'space_critical                 ', &
+         'deallocate_error_fatal         ', 'prefix                         ' /)
 
 !  create the structure
 
@@ -174,6 +177,8 @@
                                   IR_control%acceptable_residual_relative )
       CALL MATLAB_fill_component( pointer, 'acceptable_residual_absolute',     &
                                   IR_control%acceptable_residual_absolute )
+      CALL MATLAB_fill_component( pointer, 'required_residual_relative',     &
+                                  IR_control%required_residual_relative )
       CALL MATLAB_fill_component( pointer, 'space_critical',                   &
                                   IR_control%space_critical )
       CALL MATLAB_fill_component( pointer, 'deallocate_error_fatal',           &
@@ -279,4 +284,3 @@
 !-*-*-*-*-  E N D  o f  G A L A H A D _ I R _ T Y P E S   M O D U L E  -*-*-*-*-
 
     END MODULE GALAHAD_IR_MATLAB_TYPES
-

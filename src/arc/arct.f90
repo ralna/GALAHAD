@@ -206,6 +206,10 @@
      ELSE IF ( i == 6 ) THEN
        control%model = 1
        control%maxit = 1000
+!      control%out = 6
+!      control%error = 6
+!      control%print_level = 1
+       control%stop_g_absolute = 0.001_wp
        CALL ARC_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD )
      ELSE IF ( i == 7 ) THEN

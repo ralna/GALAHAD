@@ -170,6 +170,7 @@ TRSST = $(STRS) $(OBJS)/trst.o
 
 RQSDS = $(DRQS) $(OBJD)/rqss.o
 RQSDS2 = $(DRQS) $(OBJD)/rqss2.o
+RQSDS3 = $(DRQS) $(OBJD)/rqss3.o
 RQSDT = $(DRQS) $(OBJD)/rqst.o
 RQSSS = $(SRQS) $(OBJS)/rqss.o
 RQSST = $(SRQS) $(OBJS)/rqst.o
@@ -202,6 +203,7 @@ GLTRSS = $(SGLTR) $(OBJS)/gltrs.o
 GLTRST = $(SGLTR) $(OBJS)/gltrt.o
 
 GLRTDS = $(DGLRT) $(OBJD)/glrts.o
+GLRTDS2 = $(DGLRT) $(OBJD)/glrts2.o
 GLRTDT = $(DGLRT) $(OBJD)/glrtt.o
 GLRTSS = $(SGLRT) $(OBJS)/glrts.o
 GLRTST = $(SGLRT) $(OBJS)/glrtt.o
@@ -248,6 +250,7 @@ RTRSST = $(OBJS)/trst.o -L$(OBJS) $(LIBS)
 
 RRQSDS = $(OBJD)/rqss.o -L$(OBJD) $(LIBS)
 RRQSDS2 = $(OBJD)/rqss2.o -L$(OBJD) $(LIBS)
+RRQSDS3 = $(OBJD)/rqss3.o -L$(OBJD) $(LIBS)
 RRQSDT = $(OBJD)/rqst.o -L$(OBJD) $(LIBS)
 RRQSSS = $(OBJS)/rqss.o -L$(OBJS) $(LIBS)
 RRQSST = $(OBJS)/rqst.o -L$(OBJS) $(LIBS)
@@ -287,6 +290,7 @@ RGMTRSS = $(OBJS)/gmtrs.o -L$(OBJS) $(LIBS)
 RGMTRST = $(OBJS)/gmtrt.o -L$(OBJS) $(LIBS)
 
 RGLRTDS = $(OBJD)/glrts.o -L$(OBJD) $(LIBS)
+RGLRTDS2 = $(OBJD)/glrts2.o -L$(OBJD) $(LIBS)
 RGLRTDT = $(OBJD)/glrtt.o -L$(OBJD) $(LIBS)
 RGLRTSS = $(OBJS)/glrts.o -L$(OBJS) $(LIBS)
 RGLRTST = $(OBJS)/glrtt.o -L$(OBJS) $(LIBS)
@@ -1123,6 +1127,12 @@ rqsds2: $(RQSDS2)
 	cat rqsds2.output
 	rm ./run_rqs
 
+rqsds3: $(RQSDS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_rqs $(RRQSDS3)
+	- ./run_rqs >& rqsds3.output
+	cat rqsds3.output
+	rm ./run_rqs
+
 rqsdt: $(RQSDT)
 	echo " Exhaustive test of subroutine interface to rqs"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_rqs $(RRQSDT)
@@ -1317,6 +1327,12 @@ glrtds: $(GLRTDS)
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_glrt $(RGLRTDS)
 	- ./run_glrt >& glrtds.output
 	cat glrtds.output
+	rm ./run_glrt
+
+glrtds2: $(GLRTDS2)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_glrt $(RGLRTDS2)
+	- ./run_glrt >& glrtds2.output
+	cat glrtds2.output
 	rm ./run_glrt
 
 glrtdt: $(GLRTDT)
@@ -1527,6 +1543,7 @@ $(LG)(rqs.o): ../rqs/rqs.f90
 	$(RMARFILE) userqs.o
 	$(RMOBFILE) rqss.o
 	$(RMOBFILE) rqss2.o
+	$(RMOBFILE) rqss3.o
 	$(RMOBFILE) rqst.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
@@ -2047,6 +2064,16 @@ $(OBJ)/rqss2.o: ../rqs/rqss2.f90
 	$(SED) -f $(SEDS) ../rqs/rqss2.f90 > $(OBJ)/rqss1.f90
 	$(SED) -f $(LSEDS) $(OBJ)/rqss1.f90 > $(OBJ)/rqss2.f90
 	cd $(OBJ) ; $(FORTRAN) -o rqss2.o $(FFLAGS) rqss2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+rqss3.o: $(OBJ)/rqss3.o
+
+$(OBJ)/rqss3.o: ../rqs/rqss3.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "rqss3  "
+	$(SED) -f $(SEDS) ../rqs/rqss3.f90 > $(OBJ)/rqss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/rqss1.f90 > $(OBJ)/rqss3.f90
+	cd $(OBJ) ; $(FORTRAN) -o rqss3.o $(FFLAGS) rqss3.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 

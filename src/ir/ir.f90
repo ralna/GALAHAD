@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.3 - 30/06/2008 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 31/01/2020 AT 10:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ I R   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -78,6 +78,12 @@
 
         REAL ( KIND = wp ) :: acceptable_residual_relative  = ten * epsmch
         REAL ( KIND = wp ) :: acceptable_residual_absolute  = ten * epsmch
+
+!  refinement will be judged to have failed if the residual
+!   ||Ax-b|| >= required_residual_relative * ||b||
+!  No checking if required_residual_relative < 0
+
+        REAL ( KIND = wp ) :: required_residual_relative = 0.99_wp
 
 !  record the initial and final residual
 
@@ -390,7 +396,8 @@
 
 !  record the final residuals if required
 
-        IF ( control%record_residuals ) THEN
+        IF ( control%record_residuals .OR.                                     &
+            control%required_residual_relative >= zero ) THEN
           data%RES = data%B
           DO l = 1, A%ne
             i = A%row( l ) ; j = A%col( l )
@@ -399,7 +406,13 @@
             IF ( i /= j )                                                      &
               data%RES( j ) = data%RES( j ) - val * X( i )
           END DO
-          residual = MAXVAL( ABS( data%RES( : n ) ) )
+          IF ( control%record_residuals )                                      &
+             residual = MAXVAL( ABS( data%RES( : n ) ) )
+
+!  check that sufficient reduction occured
+
+          IF ( residual > control%required_residual_relative * residual_zero ) &
+            inform%status = GALAHAD_error_solve
         END IF
 
 !  Iterative refinement is required
@@ -445,7 +458,8 @@
 
 !  Form the residuals
 
-          IF ( iter < control%itref_max .OR. control%record_residuals ) THEN
+          IF ( iter < control%itref_max .OR. control%record_residuals .OR.     &
+                 control%required_residual_relative >= zero ) THEN
             data%RES = data%B
             DO l = 1, A%ne
               i = A%row( l ) ; j = A%col( l )
@@ -462,6 +476,15 @@
 
             IF ( residual < MAX( control%acceptable_residual_absolute,         &
                    control%acceptable_residual_relative * residual_zero ) ) EXIT
+
+!  check that sufficient reduction occured
+
+            IF ( residual <=                                                   &
+                control%required_residual_relative * residual_zero ) THEN
+              inform%status = GALAHAD_ok
+            ELSE
+              inform%status = GALAHAD_error_solve
+            END IF
           END IF
         END DO
       END IF
