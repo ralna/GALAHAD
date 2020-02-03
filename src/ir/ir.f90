@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 31/01/2020 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 03/02/2020 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ I R   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -83,7 +83,7 @@
 !   ||Ax-b|| >= required_residual_relative * ||b||
 !  No checking if required_residual_relative < 0
 
-        REAL ( KIND = wp ) :: required_residual_relative = 0.99_wp
+        REAL ( KIND = wp ) :: required_residual_relative = epsmch ** 0.2
 
 !  record the initial and final residual
 
@@ -197,6 +197,7 @@
 !   maximum-refinements                            1
 !   acceptable-residual-relative                   2.0D-15
 !   acceptable-residual-absolute                   2.0D-15
+!   required-residual-relative                     1.0D-3
 !   record-residuals                               F
 !   space-critical                                 F
 !   deallocate-error-fatal                         F
@@ -220,7 +221,9 @@
       INTEGER, PARAMETER :: acceptable_residual_relative = itref_max + 1
       INTEGER, PARAMETER :: acceptable_residual_absolute                       &
                               = acceptable_residual_relative + 1
-      INTEGER, PARAMETER :: record_residuals = acceptable_residual_absolute + 1
+      INTEGER, PARAMETER :: required_residual_relative                         &
+                              = acceptable_residual_absolute + 1
+      INTEGER, PARAMETER :: record_residuals = required_residual_relative + 1
       INTEGER, PARAMETER :: space_critical = record_residuals + 1
       INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
       INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
@@ -241,10 +244,12 @@
 
 !  Real key-words
 
-      spec( acceptable_residual_relative )%keyword                            &
+      spec( acceptable_residual_relative )%keyword                             &
         = 'acceptable-residual-relative'
-      spec( acceptable_residual_absolute )%keyword                            &
+      spec( acceptable_residual_absolute )%keyword                             &
         = 'acceptable-residual-absolute'
+      spec( required_residual_relative )%keyword                               &
+        = 'required-residual-relative'
 
 !  Logical key-words
 
@@ -332,6 +337,7 @@
 
       INTEGER :: i, j, l, iter, n
       REAL ( KIND = wp ) :: residual, residual_zero, val
+      LOGICAL :: print_more
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -364,6 +370,7 @@
         END IF
         data%B( : n ) = X( : n )
       END IF
+      print_more = control%print_level > 1 .AND. control%out > 0
 
 !  No refinement is required
 !  -------------------------
@@ -372,8 +379,12 @@
 
 !  record the initial residuals if required
 
-        IF ( control%record_residuals )                                        &
+        IF ( control%record_residuals .OR. print_more ) THEN
           residual_zero = MAXVAL( ABS( data%B( : n ) ) )
+          IF ( print_more )                                                    &
+            WRITE( control%out, "( A, ' maximum residual, sol ', 2ES24.16 )" ) &
+              prefix, residual_zero, zero
+        END IF
 
 !  Solve A x = b
 
@@ -396,8 +407,8 @@
 
 !  record the final residuals if required
 
-        IF ( control%record_residuals .OR.                                     &
-            control%required_residual_relative >= zero ) THEN
+        IF ( control%record_residuals .OR. print_more .OR.                     &
+             control%required_residual_relative >= zero ) THEN
           data%RES = data%B
           DO l = 1, A%ne
             i = A%row( l ) ; j = A%col( l )
@@ -406,8 +417,11 @@
             IF ( i /= j )                                                      &
               data%RES( j ) = data%RES( j ) - val * X( i )
           END DO
-          IF ( control%record_residuals )                                      &
-             residual = MAXVAL( ABS( data%RES( : n ) ) )
+          residual = MAXVAL( ABS( data%RES( : n ) ) )
+
+          IF ( print_more )                                                    &
+            WRITE( control%out, "( A, ' maximum residual, sol ', 2ES24.16 )")  &
+              prefix, residual, MAXVAL( ABS( X( : n ) ) )
 
 !  check that sufficient reduction occured
 
@@ -429,9 +443,9 @@
 
 !  Solve the system with iterative refinement
 
-        IF ( control%print_level > 1 .AND. control%out > 0 )                   &
+        IF ( print_more )                                                      &
           WRITE( control%out, "( A, ' maximum residual, sol ', 2ES24.16 )" )   &
-            prefix, MAXVAL( ABS( data%RES( : n ) ) ), zero
+            prefix, residual_zero, zero
 
         DO iter = 0, control%itref_max
 
@@ -470,7 +484,7 @@
             END DO
             residual = MAXVAL( ABS( data%RES( : n ) ) )
 
-            IF ( control%print_level > 1 .AND. control%out > 0 )               &
+            IF ( print_more )                                                  &
               WRITE( control%out, "( A, ' maximum residual, sol ', 2ES24.16 )")&
                 prefix, residual, MAXVAL( ABS( X( : n ) ) )
 

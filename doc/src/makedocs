@@ -30,6 +30,7 @@
 #foreach pack ( nls )
 #foreach pack ( fisqp )
 foreach pack ( blls )
+#foreach pack ( ir )
 #foreach pack ( qpp )
 #foreach pack ( lsqp )
 #foreach pack ( qpa )

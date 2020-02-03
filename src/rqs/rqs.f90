@@ -82,6 +82,7 @@
 
       REAL ( KIND = wp ), PARAMETER :: theta_ii = one
       REAL ( KIND = wp ), PARAMETER :: theta_eps = point01
+      REAL ( KIND = wp ), PARAMETER :: lambda_pert = epsmch ** 0.75
       REAL ( KIND = wp ), PARAMETER :: theta_g = half
       REAL ( KIND = wp ), PARAMETER :: theta_n = half
       REAL ( KIND = wp ), PARAMETER :: theta_n_small = ten ** ( - 1 )
@@ -2118,13 +2119,19 @@
       it = 0 ; in_n = 0
       DO
         it = it + 1
-itt=0
+        itt = 0
 
 !  add lambda * M to H to form H(lambda)
 
  100    CONTINUE
-itt=itt+1
-if (itt > 2 ) RETURN
+
+!  precaution to stop infinite loop
+
+        itt = itt + 1
+        IF ( itt > 100 ) THEN
+          inform%status = GALAHAD_error_ill_conditioned
+          RETURN
+        END IF
 
         IF ( unit_m ) THEN
           data%H_lambda%val( data%h_ne + 1 :  data%m_end ) = lambda
@@ -2206,11 +2213,16 @@ if (itt > 2 ) RETURN
 
             IF ( p /= two .AND. inform%IR_inform%norm_final_residual >         &
                  inform%IR_inform%norm_initial_residual ) THEN
+              IF ( printd ) WRITE( out,                                        &
+             &    "( ' **** WARNING *** iterative refinement diverged,',       &
+             &    ' incresaing lambda marginally' ) ")
 !write(6, "( ' *********** WARNING B - initial and final residuals are ',      &
 !& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
 !               inform%IR_inform%norm_final_residual
               lambda_l = lambda
-              lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+!             lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+              lambda = lambda_l + lambda_pert
+              it = it + 1
               GO TO 100
             END IF
 
@@ -2460,7 +2472,9 @@ if (itt > 2 ) RETURN
              &    "( ' **** WARNING *** iterative refinement diverged,',       &
              &    ' incresaing lambda marginally' ) ")
               lambda_l = lambda
-              lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+!             lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+              lambda = lambda_l + lambda_pert
+              it = it + 1
               GO TO 100
             END IF
 
@@ -2684,7 +2698,9 @@ if (itt > 2 ) RETURN
                    &    "( ' **** WARNING *** iterative refinement diverged,', &
                    &    ' incresaing lambda marginally' ) ")
                     lambda_l = lambda
-                    lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+!                   lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+                    lambda = lambda_l + lambda_pert
+                    it = it + 1
                     GO TO 100
                   END IF
 
@@ -2941,7 +2957,7 @@ if (itt > 2 ) RETURN
 !  check that the best Taylor improvement is significant
 
             IF ( ABS( delta_lambda ) < epsmch * MAX( one, ABS( lambda ) ) ) THEN
-              inform%status = 0
+              inform%status = GALAHAD_ok
               IF ( printi ) WRITE( out, "( A, ' normal exit with no ',         &
              &                     'significant Taylor improvement' )" ) prefix
               EXIT
@@ -3333,7 +3349,7 @@ if (itt > 2 ) RETURN
 
               IF ( ABS( delta_lambda ) <                                       &
                    epsmch * MAX( one, ABS( lambda ) ) ) THEN
-                inform%status = 0
+                inform%status = GALAHAD_ok
                 IF ( printi ) WRITE( out, "( A, ' normal exit with no ',       &
                &                   'significant Taylor improvement' )" ) prefix
                 EXIT
@@ -3673,7 +3689,7 @@ if (itt > 2 ) RETURN
               inform%obj = f ; inform%obj_regularized = f
             END IF
             inform%x_norm = target
-            inform%status = 0
+            inform%status = GALAHAD_ok
             inform%hard_case = .TRUE.
             GO TO 900
           END IF
@@ -3696,7 +3712,7 @@ if (itt > 2 ) RETURN
                 prefix, prefix, lambda, inform%x_norm, target
             END IF
 
-            inform%status = 0
+            inform%status = GALAHAD_ok
             EXIT
           END IF
         END IF
