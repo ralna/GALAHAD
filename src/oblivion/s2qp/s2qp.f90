@@ -8477,7 +8477,7 @@
 
  ! Order breakpoints in increasing size using a heapsort.  Build the heap.
 
- CALL SORT_heapsort_build( nbreak, BREAKP, inheap, INDA = IBREAK )
+ CALL SORT_heapsort_build( nbreak, BREAKP, inheap, ix = IBREAK )
 
  ! =====================================================================
  ! Start the main loop to find the global minimizer of the piecewise
@@ -8556,7 +8556,7 @@
 
     if ( nbreak > 0 ) then
        t_break = BREAKP(1)
-       CALL SORT_heapsort_smallest( nbreak, BREAKP, inheap, INDA=IBREAK )
+       CALL SORT_heapsort_smallest( nbreak, BREAKP, inheap, ix=IBREAK )
     else
        if ( curv <= zero ) then
 
@@ -8700,7 +8700,7 @@
        ! Determine if other terms become active at the breakpoint
 
        IF ( BREAKP(1) > t_break ) EXIT
-       CALL SORT_heapsort_smallest(nbreak, BREAKP(:nbreak), inheap, INDA=IBREAK)
+       CALL SORT_heapsort_smallest(nbreak, BREAKP(:nbreak), inheap, ix=IBREAK)
 
     END DO
 
@@ -11769,5 +11769,3 @@
 END SUBROUTINE print_int_vec
 
 END MODULE GALAHAD_S2QP_double
-
-

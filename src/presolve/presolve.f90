@@ -7308,7 +7308,7 @@ ljc:     DO jc = 1, prob%n
 
 !     Sort the retained equality rows by increasing row size.
 
-      CALL SORT_quicksort( npsp, s%w_m, inform%status, ivector = s%w_mn)
+      CALL SORT_quicksort( npsp, s%w_m, inform%status, ix = s%w_mn)
       IF ( inform%status /= OK ) THEN
          inform%status = SORT_TOO_LONG
          WRITE( inform%message( 1 ), * )                                       &
@@ -8991,8 +8991,8 @@ rlit:    DO it = 1, prob%m
 
             CALL SORT_quicksort( iie - iis + 1, prob%H%col( iis:iie ),         &
                                  inform%status,                                &
-                                 ivector = s%h_perm( iis:iie ),                &
-                                 rvector = prob%H%val( iis:iie ) )
+                                 ix = s%h_perm( iis:iie ),                     &
+                                 rx = prob%H%val( iis:iie ) )
             IF ( inform%status /= OK ) THEN
                SELECT CASE ( inform%status )
                CASE ( 1 )
@@ -9230,8 +9230,8 @@ rlit:    DO it = 1, prob%m
 
             CALL SORT_quicksort( iie - iis + 1, prob%A%col( iis:iie ),         &
                                  inform%status,                                &
-                                 ivector = s%a_perm( iis:iie ),                &
-                                 rvector = prob%A%val ( iis:iie ) )
+                                 ix = s%a_perm( iis:iie ),                     &
+                                 rx = prob%A%val ( iis:iie ) )
             IF ( inform%status /= OK ) THEN
                SELECT CASE ( inform%status )
                CASE ( 1 )

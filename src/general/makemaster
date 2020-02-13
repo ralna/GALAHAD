@@ -177,6 +177,11 @@ RANDDT = $(OBJD)/randt.o
 RANDSS = $(OBJS)/rands.o
 RANDST = $(OBJS)/randt.o
 
+SORTDS = $(OBJD)/sorts.o
+SORTDT = $(OBJD)/sortt.o
+SORTSS = $(OBJS)/sorts.o
+SORTST = $(OBJS)/sortt.o
+
 SCALEDS = $(BASICD) $(OBJD)/scale_spec.o
 SCALEDT = $(BASICD) $(OBJD)/scale_test.o
 SCALESS = $(BASICS) $(OBJS)/scale_spec.o
@@ -222,6 +227,11 @@ RRANDDS = $(OBJD)/rands.o -L$(OBJD) $(LIBS)
 RRANDDT = $(OBJD)/randt.o -L$(OBJD) $(LIBS)
 RRANDSS = $(OBJS)/rands.o -L$(OBJS) $(LIBS)
 RRANDST = $(OBJS)/randt.o -L$(OBJS) $(LIBS)
+
+RSORTDS = $(OBJD)/sorts.o -L$(OBJD) $(LIBS)
+RSORTDT = $(OBJD)/sortt.o -L$(OBJD) $(LIBS)
+RSORTSS = $(OBJS)/sorts.o -L$(OBJS) $(LIBS)
+RSORTST = $(OBJS)/sortt.o -L$(OBJS) $(LIBS)
 
 RSCUDS = $(OBJD)/scus.o -L$(OBJD) $(LIBS)
 RSCUDT = $(OBJD)/scut.o -L$(OBJD) $(LIBS)
@@ -440,6 +450,12 @@ randsrunall: randss randst
 randdrunall: randds randdt
 randrunall: randdrunall randsrunall
 
+# sort
+
+sortsrunall: sortss sortst
+sortdrunall: sortds sortdt
+sortrunall: sortdrunall sortsrunall
+
 # scu
 
 scusrunall: scuss scust
@@ -645,7 +661,7 @@ randds: $(RANDDS)
 	cd ../rand ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_rand $(RRANDDS)
 	- ../rand/run_rand >& ../rand/randds.output
 	cat ../rand/randds.output
-#	rm ../rand/run_rand
+	rm ../rand/run_rand
 
 randdt: $(RANDDT)
 	echo " Exhaustive test of subroutine interface to rand"
@@ -666,6 +682,32 @@ randst: $(RANDST)
 	- ../rand/run_rand >& ../rand/randt.output
 	cat ../rand/randt.output
 	rm ../rand/run_rand
+
+sortds: $(SORTDS)
+	cd ../sort ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sort $(RSORTDS)
+	- ../sort/run_sort >& ../sort/sortds.output
+	cat ../sort/sortds.output
+	rm ../sort/run_sort
+
+sortdt: $(SORTDT)
+	echo " Exhaustive test of subroutine interface to sort"
+	cd ../sort ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sort $(RSORTDT)
+	- ../sort/run_sort >& ../sort/sortdt.output
+	cat ../sort/sortdt.output
+	rm ../sort/run_sort
+
+sortss: $(SORTSS)
+	cd ../sort ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sort $(RSORTSS)
+	- ../sort/run_sort >& ../sort/sorts.output
+	cat ../sort/sorts.output
+	rm ../sort/run_sort
+
+sortst: $(SORTST)
+	echo " Exhaustive test of subroutine interface to sort"
+	cd ../sort ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sort $(RSORTST)
+	- ../sort/run_sort >& ../sort/sortt.output
+	cat ../sort/sortt.output
+	rm ../sort/run_sort
 
 scaleds: $(SCALEDS)
 	cd ../scale ; \
@@ -1462,6 +1504,24 @@ $(OBJ)/randt.o: ../rand/randt.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "randt  "
 	$(SED) -f $(SEDS) ../rand/randt.f90 > $(OBJ)/randt.f90
 	cd $(OBJ) ; $(FORTRAN) -o randt.o $(FFLAGSS) randt.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+sorts.o: $(OBJ)/sorts.o
+
+$(OBJ)/sorts.o: ../sort/sorts.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "sorts  "
+	$(SED) -f $(SEDS) ../sort/sorts.f90 > $(OBJ)/sorts.f90
+	cd $(OBJ) ; $(FORTRAN) -o sorts.o $(FFLAGS) sorts.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+sortt.o: $(OBJ)/sortt.o
+
+$(OBJ)/sortt.o: ../sort/sortt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "sortt  "
+	$(SED) -f $(SEDS) ../sort/sortt.f90 > $(OBJ)/sortt.f90
+	cd $(OBJ) ; $(FORTRAN) -o sortt.o $(FFLAGSS) sortt.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 

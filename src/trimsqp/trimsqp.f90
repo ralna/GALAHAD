@@ -13,7 +13,7 @@ MODULE GALAHAD_TRIMSQP_double
 !    |                                                                  |
 !    | trimSQP: a trust-region SQP method for solving nonlinear         |
 !    |          optimization problems, in which descent is imposed      |
-!    |          explicitely as an additional constraint.                |     
+!    |          explicitely as an additional constraint.                |
 !    |                                                                  |
 !    | Aim: to find a (local) minimizer of the nonlinear                |
 !    |      programming problem                                         |
@@ -41,9 +41,9 @@ MODULE GALAHAD_TRIMSQP_double
   USE GALAHAD_CHECK_double
   USE GALAHAD_SORT_double
   USE GALAHAD_mop_double
-  
-  IMPLICIT NONE     
-  
+
+  IMPLICIT NONE
+
   PRIVATE
   PUBLIC :: TRIMSQP_initialize, TRIMSQP_read_specfile,   &
             TRIMSQP_solve, TRIMSQP_terminate
@@ -126,7 +126,7 @@ MODULE GALAHAD_TRIMSQP_double
      REAL ( KIND = WP ), ALLOCATABLE, DIMENSION( : ) :: gradLx_new, gradLx
      TYPE ( SMT_type ) :: A_smt, B_smt
   END TYPE TRIMSQP_l_bfgs_type
-  
+
 !  =====================================
 !  The TRIMSQP_control_type derived type
 !  =====================================
@@ -151,7 +151,7 @@ MODULE GALAHAD_TRIMSQP_double
      TYPE ( EQP_control_type ) :: QPseqp_control
      TYPE ( LSQP_control_type ) :: QPfeas_control!, QPsteer_control
   END TYPE TRIMSQP_control_type
-  
+
 !  ================================
 !  The TRIMSQP_time_type derived type
 !  ================================
@@ -164,7 +164,7 @@ MODULE GALAHAD_TRIMSQP_double
 !  ==================================
 !  The TRIMSQP_inform_type derived type
 !  ==================================
-  
+
   TYPE, PUBLIC :: TRIMSQP_inform_type
      INTEGER :: status, alloc_status, iterate, cg_iter, itcgmx
      INTEGER :: num_f_eval, num_g_eval, num_c_eval, num_J_eval, num_H_eval
@@ -255,7 +255,7 @@ MODULE GALAHAD_TRIMSQP_double
      INTEGER :: num_consec_Y_active, consec_Y_active_needed
      INTEGER :: num_sat, num_vl_l, num_vl_u, success, best_mults
      INTEGER :: nfr, nfx, nwA, nwA_comp, nwJ, nwJ_comp
-     INTEGER :: nspos, nsneg, nJpos, nJneg, nApos, nAneg 
+     INTEGER :: nspos, nsneg, nJpos, nJneg, nApos, nAneg
      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IBREAK
      INTEGER, ALLOCATABLE, DIMENSION( : ) :: vl_l, vl_u, sat
      INTEGER, ALLOCATABLE, DIMENSION( : ) :: fr, fx, wA, wA_comp, wJ, wJ_comp
@@ -310,17 +310,17 @@ MODULE GALAHAD_TRIMSQP_double
 !  ==================================
 
 !  INTERFACE TWO_NORM
-! 
+!
 !     FUNCTION DNRM2( n, X, incx )
 !       DOUBLE PRECISION :: DNRM2
 !       INTEGER, INTENT( IN ) :: n, incx
 !       DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
 !     END FUNCTION DNRM2
-!     
+!
 !  END INTERFACE
-    
+
 CONTAINS
-    
+
 !-*-*-*-*  G A L A H A D -  TRIMSQP_initialize  S U B R O U T I N E -*-*-*-*
 
   SUBROUTINE TRIMSQP_initialize( data, control )
@@ -349,7 +349,7 @@ CONTAINS
     control%QPsteer_control%prefix = '" - QPC-(steering):"         '
     control%QPsteer_control%QPA_control%prefix = '" -- QPA-(steering):"        '
     control%QPsteer_control%QPB_control%prefix = '" -- QPB-(steering):"        '
- 
+
 !  Intialize QPC data for predictor QP subproblem.
 
     CALL QPC_initialize( data%QPpred_data, control%QPpred_control )
@@ -368,7 +368,7 @@ CONTAINS
 
     CALL EQP_initialize( data%QPseqp_data, control%QPseqp_control )
     control%QPsiqp_control%prefix = '" - QPC-(seqp-corrector):"     '
-   
+
 !  Error and ordinary output unit numbers
 
     control%error = 6
@@ -385,7 +385,7 @@ CONTAINS
 !  for each iteration, >= 3 gives increasingly verbose (debugging) output
 
     control%print_level = 1
-     
+
 !  Derivative level used.
 
     control%f_derivative_level = 2
@@ -410,25 +410,25 @@ CONTAINS
 
     control%J_implicit = .FALSE.
     control%H_implicit = .FALSE.
-     
+
 !  Maximum number of iterations
 
     control%max_iterate = 1000
 
 !  Any printing will start on this iteration
-     
+
     control%start_print = - 1
 
 !  Any printing will stop on this iteration
 
     control%stop_print = - 1
-     
+
 !  Printing will only occur every print_gap iterations
 
     control%print_gap = 1
-     
+
 !  Overall convergence tolerances. The iteration will terminate when the norm
-!  of violation of the constraints (the "primal infeasibility") is smaller than 
+!  of violation of the constraints (the "primal infeasibility") is smaller than
 !  control%stop_p and the norm of the gradient of the Lagrangian function (the
 !  "dual infeasibility") is smaller than control%stop_d
 
@@ -506,7 +506,7 @@ CONTAINS
 !  End of subroutine TRIMSQP_initialize
 
   END SUBROUTINE TRIMSQP_initialize
-     
+
 !-*-*- T R I M S Q P _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-*-
 
   SUBROUTINE TRIMSQP_read_specfile( control, device, alt_specname_TRIMSQP,    &
@@ -518,13 +518,13 @@ CONTAINS
 !  of values associated with given keywords to the corresponding control
 !  parameters.
 
-!  The default values as given by TRIMSQP_initialize could (roughly) 
+!  The default values as given by TRIMSQP_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN TRIMSQP SPECIFICATIONS (DEFAULT)
 ! error-printout-device                           6
 ! printout-device                                 6
-! alive-device                                    
+! alive-device
 ! print-level                                     1
 ! print-header-every                              30
 ! start-print                                     11
@@ -557,14 +557,14 @@ CONTAINS
 ! Hessian-implicit                                no
 ! space-critical                                  no
 ! deallocate-error-fatal                          no
-! alive-filename 
+! alive-filename
 ! END TRIMSQP SPECIFICATIONS
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-    TYPE ( TRIMSQP_control_type ), INTENT( INOUT ) :: control        
+    TYPE ( TRIMSQP_control_type ), INTENT( INOUT ) :: control
     INTEGER, INTENT( IN ) :: device
     CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname_TRIMSQP
     CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname_QPfeas
@@ -597,7 +597,7 @@ CONTAINS
     spec(  1 )%keyword = 'error-printout-device'
     spec(  2 )%keyword = 'printout-device'
     spec(  3 )%keyword = 'alive-device'
-    spec(  4 )%keyword = 'print-level' 
+    spec(  4 )%keyword = 'print-level'
     spec(  5 )%keyword = 'maximum-number-of-iterations'
     spec(  6 )%keyword = 'start-print'
     spec(  7 )%keyword = 'stop-print'
@@ -622,7 +622,7 @@ CONTAINS
     spec( 23 )%keyword = 'initial-radius-predictor'
     spec( 24 )%keyword = 'maximum-radius-predictor'
     spec( 25 )%keyword = 'corrector-trust-region-scale-factor'
-    
+
     spec( 27 )%keyword = 'maximum-infeasibility'
     spec( 28 )%keyword = 'infinity'
     spec( 29 )%keyword = 'initial-penalty-parameter'
@@ -642,13 +642,13 @@ CONTAINS
 
     spec( 48 )%keyword = 'print-solution'
     spec( 49 )%keyword = 'print-full-solution'
-    
+
 !  Character key-words
 
     spec( 60 )%keyword = 'alive-filename'
 
 !  Read the specfile
-    
+
     IF ( PRESENT( alt_specname_TRIMSQP ) ) THEN
        CALL SPECFILE_read( device, alt_specname_TRIMSQP, spec, lspec, control%error )
     ELSE
@@ -662,17 +662,17 @@ CONTAINS
     CALL SPECFILE_assign_integer( spec( 1 ), control%error,                   &
                                   control%error )
     CALL SPECFILE_assign_integer( spec( 2 ), control%out,                     &
-                                  control%error )                           
+                                  control%error )
     CALL SPECFILE_assign_integer( spec( 3 ), control%out,                     &
-                                  control%alive_unit )                         
+                                  control%alive_unit )
     CALL SPECFILE_assign_integer( spec( 4 ), control%print_level,             &
-                                  control%error )                           
+                                  control%error )
     CALL SPECFILE_assign_integer( spec( 5 ), control%max_iterate,             &
-                                  control%error )                           
+                                  control%error )
     CALL SPECFILE_assign_integer( spec( 6 ), control%start_print,             &
-                                  control%error )                           
+                                  control%error )
     CALL SPECFILE_assign_integer( spec( 7 ), control%stop_print,              &
-                                  control%error )                           
+                                  control%error )
     CALL SPECFILE_assign_integer( spec( 8 ), control%print_gap,               &
                                   control%error )
     CALL SPECFILE_assign_integer( spec( 9 ), control%f_derivative_level,      &
@@ -692,17 +692,17 @@ CONTAINS
     CALL SPECFILE_assign_integer( spec( 16 ), control%L_BFGS_curve_mod,        &
                                   control%error )
 
-                           
+
 !  Set real values
 
     CALL SPECFILE_assign_real( spec( 17 ), control%stop_p,                    &
-                                control%error )                           
+                                control%error )
     CALL SPECFILE_assign_real( spec( 18 ), control%stop_d,                    &
-                                control%error )                           
+                                control%error )
     CALL SPECFILE_assign_real( spec( 19 ), control%stop_c,                    &
-                                control%error )                    
+                                control%error )
     CALL SPECFILE_assign_real( spec( 20 ), control%eta_successful,            &
-                               control%error )                    
+                               control%error )
     CALL SPECFILE_assign_real( spec( 21 ), control%eta_very_successful,       &
                                control%error )
     CALL SPECFILE_assign_real( spec( 22 ), control%eta_extremely_successful,  &
@@ -725,7 +725,7 @@ CONTAINS
                                 control%error )
     CALL SPECFILE_assign_real( spec( 31 ), control%penalty_expansion,         &
                                 control%error )
-           
+
 
 !  Set logical values
 
@@ -750,12 +750,12 @@ CONTAINS
     CALL SPECFILE_assign_logical( spec( 48 ), control%print_sol,              &
                                    control%error )
     CALL SPECFILE_assign_logical( spec( 49 ), control%fulsol,                 &
-                                   control%error )                           
+                                   control%error )
 
 !  Set character values
 
     CALL SPECFILE_assign_string( spec( 60 ), control%alive_file,              &
-                                 control%error )                           
+                                 control%error )
 
 !  Set LSQP control values
 
@@ -797,9 +797,9 @@ CONTAINS
     ELSE
       CALL QPC_read_specfile(control%QPsteer_control,device,specname_QPsteer)
     END IF
- 
+
     RETURN
-    
+
   END SUBROUTINE TRIMSQP_read_specfile
 
 !-*-*-*  G A L A H A D -  T R I M S Q P _ s o l v e  S U B R O U T I N E  -*-*-*
@@ -816,9 +816,9 @@ CONTAINS
 ! control%print_level = GALAHAD_SILENT  : nothing is printed
 !                       GALAHAD_TRACE   : main user line is printed (one line)
 !                       GALAHAD_ACTION  : addionally, main summary info.
-!                       GALAHAD_DETAILS : 
+!                       GALAHAD_DETAILS :
 !                       GALAHAD_DEBUG   :
-!                       GALAHAD_CRAZY   : more or less everything. 
+!                       GALAHAD_CRAZY   : more or less everything.
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -833,7 +833,7 @@ CONTAINS
     OPTIONAL eval_FC, eval_G, eval_J, eval_GJ, eval_H, eval_Jv, eval_Hv
 
     INTERFACE
-        
+
        SUBROUTINE eval_FC(status, F, C, X, userdata)
          USE GALAHAD_NLPT_double
          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -843,7 +843,7 @@ CONTAINS
          REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) :: C
          TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FC
-       
+
        SUBROUTINE eval_G(status, G, X, userdata)
          USE GALAHAD_NLPT_double
          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -852,7 +852,7 @@ CONTAINS
          REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
          TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_G
-       
+
        SUBROUTINE eval_J(status, J_val, X, userdata)
          USE GALAHAD_NLPT_double
          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -861,7 +861,7 @@ CONTAINS
          REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: J_val
          TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_J
-       
+
        SUBROUTINE eval_GJ(status, G, J_val, X, userdata)
          USE GALAHAD_NLPT_double
          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -871,8 +871,8 @@ CONTAINS
          REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
          TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_GJ
-       
-       SUBROUTINE eval_H(status, Hval, X, Y, userdata) 
+
+       SUBROUTINE eval_H(status, Hval, X, Y, userdata)
          USE GALAHAD_NLPT_double
          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
          INTEGER, INTENT( OUT ) :: status
@@ -880,7 +880,7 @@ CONTAINS
          REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) ::Hval
          TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_H
-       
+
        SUBROUTINE eval_Jv(status, U, V, X, transpose, userdata)
          USE GALAHAD_NLPT_double
          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -890,7 +890,7 @@ CONTAINS
          LOGICAL :: transpose
          TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_Jv
-       
+
        SUBROUTINE eval_Hv(status, U, V, X, userdata)
          USE GALAHAD_NLPT_double
          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -899,9 +899,9 @@ CONTAINS
          REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
          TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_Hv
-       
+
     END INTERFACE
-    
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -945,12 +945,12 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
   data%penalty = data%control%initial_penalty
   data%TRpred  = data%control%initial_TRpred
   data%TRsqp   = data%control%TRsqp_scale * data%control%initial_TRpred
-  
+
   data%lbreak  = 2*nlp%m   ! generally an overestimate by far.
- 
+
   data%penalty_new            = data%penalty
   data%min_penalty            = tenm5
-  data%consec_Y_free_needed   = 10 
+  data%consec_Y_free_needed   = 10
   data%consec_Y_active_needed = 10
   !data%prev_Y_active          = 0
   data%iterate                = 0
@@ -981,7 +981,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
   !data%sub_stop_c        = data%sub_stop_p
 
 
-  data%TRpred_expand     = two 
+  data%TRpred_expand     = two
   data%TRpred_contract   = half
   data%min_TRpred        = ten ** ( - 7 )
   data%min_TRsqp         = ten ** ( - 7 )
@@ -997,14 +997,14 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
   data%change_penalty    = '    same'
   data%success_str       = '       '
   data%success           = 0
-  data%H_norm_bound      = ten ** ( 5 ) 
+  data%H_norm_bound      = ten ** ( 5 )
   data%BFGS%damp_factor  = 0.2_wp
   data%NM%revert         = .false.
   data%NM%active         = .false.
   data%NM%num_fail       = 0
 
   data%penalty_steer_reset = .false.
- 
+
   inform%iterate    = 0
   inform%primal_vl  = one
   inform%dual_vl    = one
@@ -1031,7 +1031,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      nlp%A%m = nlp%m_a
      nlp%A%n = nlp%n
   end if
- 
+
   if ( nlp%m > 0 ) then
      nlp%J%m  = nlp%m
      nlp%J%n  = nlp%n
@@ -1045,13 +1045,13 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
   CALL SPACE_resize_array( nlp%n, data%s_p, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%n, data%s_c, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   CALL SPACE_resize_array( nlp%n, data%s_ac, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%n, data%s_s, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -1097,7 +1097,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
   CALL SPACE_resize_array( nlp%n, data%X_RES_l, inform%status,      &
                                                 inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%n, data%X_RES_u, inform%status,      &
                                                 inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
@@ -1153,7 +1153,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
   CALL SPACE_resize_array( nlp%m, data%JxSsteer, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%m, data%JxSf, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -1174,10 +1174,10 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
   CALL SPACE_resize_array( nlp%n, data%JtY_cur, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%n, data%JtY_p, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%n, data%JtY_s, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -1188,7 +1188,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   !CALL SPACE_resize_array( nlp%n, data%Jtv_p, inform%status, inform%alloc_status )
-  !IF ( inform%status /= GALAHAD_ok ) GO TO 990 
+  !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   !CALL SPACE_resize_array( nlp%n, data%Jtv_s, inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
@@ -1198,17 +1198,17 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
   !CALL SPACE_resize_array( nlp%n, data%Jtv3, inform%status, inform%alloc_status)
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array(nlp%m, data%C_new, inform%status, inform%alloc_status)
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%m, data%C_cauchy, inform%status,      &
                                                  inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   CALL SPACE_resize_array( nlp%m, data%cauchy_Y, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%m, data%C_type, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -1223,7 +1223,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
   CALL SPACE_resize_array( nlp%m, data%w, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%m, data%J_norms, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -1241,16 +1241,16 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
   CALL SPACE_resize_array( data%lbreak, data%IBREAK, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( data%lbreak, data%BREAKP, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%m, data%C_RES_l, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%m, data%C_RES_u, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   !CALL SPACE_resize_array( nlp%m_a, data%Av, inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -1277,46 +1277,46 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
   CALL SPACE_resize_array( nlp%m_a, data%Ya_seqp, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   !CALL SPACE_resize_array( nlp%n, data%Atv, inform%status, inform%alloc_status )
-  !IF ( inform%status /= GALAHAD_ok ) GO TO 990 
+  !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   CALL SPACE_resize_array( nlp%n, data%G_prev, inform%status, inform%alloc_status )
-  IF ( inform%status /= GALAHAD_ok ) GO TO 990     
+  IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   CALL SPACE_resize_array( nlp%n, data%AtYa, inform%status, inform%alloc_status )
-  IF ( inform%status /= GALAHAD_ok ) GO TO 990   
+  IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   CALL SPACE_resize_array( nlp%n, data%AtYa_cur, inform%status, inform%alloc_status )
-  IF ( inform%status /= GALAHAD_ok ) GO TO 990   
+  IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   CALL SPACE_resize_array( nlp%n, data%AtYa_p, inform%status, inform%alloc_status )
-  IF ( inform%status /= GALAHAD_ok ) GO TO 990   
+  IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   CALL SPACE_resize_array( nlp%n, data%AtYa_s, inform%status, inform%alloc_status )
-  IF ( inform%status /= GALAHAD_ok ) GO TO 990   
+  IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   !CALL SPACE_resize_array( nlp%n, data%Atv_cur, inform%status, inform%alloc_status )
-  !IF ( inform%status /= GALAHAD_ok ) GO TO 990  
-  
+  !IF ( inform%status /= GALAHAD_ok ) GO TO 990
+
   !CALL SPACE_resize_array( nlp%n, data%Atv_p, inform%status, inform%alloc_status )
-  !IF ( inform%status /= GALAHAD_ok ) GO TO 990  
-  
+  !IF ( inform%status /= GALAHAD_ok ) GO TO 990
+
   !CALL SPACE_resize_array( nlp%n, data%Atv_s, inform%status, inform%alloc_status )
-  !IF ( inform%status /= GALAHAD_ok ) GO TO 990  
-  
+  !IF ( inform%status /= GALAHAD_ok ) GO TO 990
+
   !CALL SPACE_resize_array( nlp%n, data%Atv2, inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   !CALL SPACE_resize_array( nlp%n, data%Atv3, inform%status, inform%alloc_status )
   !IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%m_a, data%A_type, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%m_a, data%A_RES_l, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
   CALL SPACE_resize_array( nlp%m_a, data%A_RES_u, inform%status, inform%alloc_status )
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -1324,19 +1324,19 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
   IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   if ( data%control%NM_steps > 0 ) then
-     
+
      CALL SPACE_resize_array( nlp%n, data%revert%G_revert, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
-     
+
      CALL SPACE_resize_array( nlp%n, data%revert%X_revert, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
-     
+
      CALL SPACE_resize_array( nlp%n, data%revert%Z_revert, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
-     
+
      CALL SPACE_resize_array( nlp%m, data%revert%C_revert, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
-     
+
      CALL SPACE_resize_array( nlp%m, data%revert%Y_revert, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -1348,29 +1348,29 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      CALL SPACE_resize_array( nlp%m, data%revert%C_RES_l_revert, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
-     
+
      CALL SPACE_resize_array( nlp%m, data%revert%C_RES_u_revert, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
      CALL SPACE_resize_array( nlp%m_a, data%revert%A_RES_l_revert, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
-     
+
      CALL SPACE_resize_array( nlp%m_a, data%revert%A_RES_u_revert, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
      CALL SPACE_resize_array( nlp%n, data%revert%X_RES_l_revert, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
-     
+
      CALL SPACE_resize_array( nlp%n, data%revert%X_RES_u_revert, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
   end if
-  
+
   ! Determine constraint type.
   !***************************
 
   ! General constraints.
-  
+
   if ( nlp%m > 0 ) then
      do i = 1, nlp%m
         if ( nlp%C_l(i) > - data%control%infinity ) then
@@ -1392,7 +1392,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         end if
      end do
   end if
-  
+
   ! Linear constraints.
 
   if ( nlp%m_a > 0 ) then
@@ -1418,7 +1418,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
   end if
 
   ! Bound constraints.
-  
+
   do i = 1, nlp%n
      if ( nlp%X_l(i) > - data%control%infinity ) then
         if ( nlp%X_u(i) < data%control%infinity ) then
@@ -1463,7 +1463,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         write(out,"(' ERROR : trimsqp : subroutine build_QPseqp')")
         GO TO 999
      end if
-  end if 
+  end if
 
   !if ( nlp%pname == 'HS99' ) then
      !nlp%X = zero
@@ -1504,15 +1504,15 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         call QPT_write_problem( out, data%QPfeas, 1 )
         write(out,*) ' ================ END : QPfeas ===================='
      end if
-    
+
      call LSQP_solve( data%QPfeas, data%QPfeas_data,  &
                       data%control%QPfeas_control, inform%QPfeas_inform )
-     
-     if ( inform%QPfeas_inform%status /= GALAHAD_OK ) then 
+
+     if ( inform%QPfeas_inform%status /= GALAHAD_OK ) then
         write(out,*) ' QPfeas : return status ', inform%QPfeas_inform%status
         GO TO 999
      end if
-     
+
      ! get the solution.
 
      nlp%X   = data%QPfeas%X( : nlp%n )
@@ -1527,7 +1527,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      if ( data%control%print_level >= GALAHAD_DEBUG ) then
         write(data%control%out,3077) nlp%X
      end if
-     
+
   end if
 
   ! Build QP used for steering subproblem.
@@ -1558,19 +1558,19 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      call eval_J( inform%status, nlp%J%val, nlp%X, userdata )
      if ( inform%status /= GALAHAD_ok ) write( out, 1002 ) 'eval_J'
-     
+
      CALL SPACE_resize_array( nlp%J%ne, data%J_cauchy, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
      CALL SPACE_resize_array( nlp%J%ne, data%Jval_prev, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
- 
+
      CALL SPACE_resize_array( nlp%J%ne, data%Jval_dummy, inform%status, inform%alloc_status )
      IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
      inform%num_J_eval = inform%num_J_eval + 1
      inform%num_c_eval = inform%num_c_eval + 1  !From earlier.
-  
+
      if ( data%control%NM_steps > 0 ) then
         CALL SPACE_resize_array( nlp%J%ne, data%revert%Jval_revert, inform%status, inform%alloc_status )
         IF ( inform%status /= GALAHAD_ok ) GO TO 990
@@ -1580,7 +1580,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
   ! Constraint violation and maximum allowable infeasibility
   ! ********************************************************
- 
+
   if ( nlp%m > 0 ) then
      call constraint_violation( nlp, nlp%C, data, data%norm_c, inform%status )
   else
@@ -1594,9 +1594,9 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
   ! Compute merit function
   ! **********************
-  
+
   data%merit = nlp%f + data%penalty * data%norm_c
- 
+
   ! Print the problem.
   ! ******************
 
@@ -1632,7 +1632,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         data%NM%revert  = .false.
         data%mults_used = 'R'
         data%best_mults = 0
-        goto 710 
+        goto 710
      end if
 
      ! If penalty was increased due to steering and step not acceppted, reset.
@@ -1687,9 +1687,9 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      data%opt_measure_cur = max( data%primal_vl_cur, data%dual_vl_cur )
      data%opt_measure_cur = max( data%opt_measure_cur, data%comp_vl_cur )
-        
+
      if ( data%iterate == 0 ) then
-     
+
         data%best_mults = 1
         data%mults_used = 'I'
 
@@ -1700,15 +1700,15 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         data%primal_vl = data%primal_vl_cur
         data%dual_vl   = data%dual_vl_cur
         data%comp_vl   = data%comp_vl_cur
-        
+
         data%opt_measure = data%opt_measure_cur
-        
+
         ! need these when checking optimality of merit function.
-        
+
         data%JtY = data%JtY_cur ;     data%AtYa = data%AtYa_cur
-       
-        goto 700 
-     
+
+        goto 700
+
      end if
 
      ! Check optimality for predictor multipliers.
@@ -1756,14 +1756,14 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
            data%Z_seqp = zero
            data%Z_seqp( data%fx( : data%nfx) ) = &
-                                data%QPseqp%Y( data%nwJ + data%nwA + 1 : data%nwJ + data%nwA + data%nfx ) 
+                                data%QPseqp%Y( data%nwJ + data%nwA + 1 : data%nwJ + data%nwA + data%nfx )
 
            if ( nlp%m > 0 ) then
               data%JtY_s = zero
               call mop_Ax(one, nlp%J, data%Y_seqp, one, data%JtY_s, &
                           out, data%control%error, transpose=.true. )
            end if
-           
+
            if ( nlp%m_a > 0 ) then
               data%AtYa_s = zero
               call mop_Ax( one, nlp%A, data%Ya_seqp, one, data%AtYa_s, &
@@ -1793,7 +1793,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               call mop_Ax(one, nlp%A, data%QPsiqp%Y( m+1:m+m_a ), one, &
                          data%AtYa_s, out, data%control%error, transpose=.true.)
            end if
-           
+
            call check_optimal(nlp, nlp%G, data%JtY_s, data%AtYa_s,             &
                              data%QPsiqp%Z( : n), data%sqp_Zexact,             &
                              data%QPsiqp%Y( : m),  data%QPsiqp%Y(m+1:m+m_a),   &
@@ -1803,16 +1803,16 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                              data%X_RES_l, data%X_RES_u,                       &
                              data%primal_vl_s, data%dual_vl_s, data%comp_vl_s, &
                              exact_dual, inform%status, data%control%out )
-           
+
         end if
 
         data%opt_measure_s = max( data%primal_vl_s, data%dual_vl_s )
         data%opt_measure_s = max( data%opt_measure_s, data%comp_vl_s )
 
-        dummy_real = min( data%opt_measure_cur, data%opt_measure_p ) 
+        dummy_real = min( data%opt_measure_cur, data%opt_measure_p )
 
         if ( data%opt_measure_s <= ten*dummy_real ) then ! DPR
-           
+
            data%best_mults = 3
            data%mults_used = 'S'
 
@@ -1843,7 +1843,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               else
                  nlp%Z = data%QPsiqp%Z( 1 : nlp%n )
               end if
-           
+
            end if
 
            data%inf_norm_Y = data%inf_norm_Y_s
@@ -1851,11 +1851,11 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            data%primal_vl = data%primal_vl_s
            data%dual_vl   = data%dual_vl_s
            data%comp_vl   = data%comp_vl_s
-           
+
            data%opt_measure = data%opt_measure_s
-           
+
            ! need these when checking optimality of merit function.
-           
+
            data%JtY = data%JtY_s ;     data%AtYa = data%AtYa_s
 
         end if
@@ -1863,12 +1863,12 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      end if
 
      if ( data%best_mults == -1 ) then  ! if sqp computed, mults were bad.
-        
+
         if ( data%opt_measure_p <= ten * data%opt_measure_cur ) then
-           
+
            data%best_mults = 2
            data%mults_used = 'P'
-           
+
            if ( nlp%m > 0 ) then
               nlp%Y = data%QPpred%Y(: nlp%m)
            end if
@@ -1882,40 +1882,40 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            end if
 
            data%inf_norm_Y = data%inf_norm_Y_p
-           
+
            data%primal_vl = data%primal_vl_p
            data%dual_vl   = data%dual_vl_p
            data%comp_vl   = data%comp_vl_p
-           
+
            data%opt_measure = data%opt_measure_p
-           
+
            ! need these when checking optimality of merit function.
-           
+
            data%JtY = data%JtY_p ;     data%AtYa = data%AtYa_p
-           
+
         else  ! keep the current mults.
-           
+
            data%best_mults = 1
            data%mults_used = 'C'
-           
+
            if ( exact_dual ) then
               nlp%Z = data%Zexact
            end if
-           
+
            data%primal_vl = data%primal_vl_cur
            data%dual_vl   = data%dual_vl_cur
            data%comp_vl   = data%comp_vl_cur
-           
+
            data%opt_measure = data%opt_measure_cur
-           
+
            ! need these when checking optimality of merit function.
-           
+
            data%JtY = data%JtY_cur ;     data%AtYa = data%AtYa_cur
-           
+
         end if
-        
+
      end if
-     
+
 700  continue
 
      ! Test for convergence and max iterations.
@@ -1924,7 +1924,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      if ( data%iterate == max_iterate) then
         inform%status = GALAHAD_error_max_iterations
      end if
-     
+
      if ( data%primal_vl <= data%control%stop_p ) then
         if ( data%dual_vl <= data%control%stop_d ) then
            if ( data%comp_vl <= data%control%stop_c ) then
@@ -1951,7 +1951,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      ! Check first-order optimality of merit function.
      !************************************************
-     
+
      data%change_penalty = '    same'
 
      data%check_suboptimal = .true.
@@ -1966,27 +1966,27 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                                 data, inform, out )
 
         data%merit_first_order  = .false.
-        
+
         if ( data%sub_primal_vl <= data%sub_stop_p ) then
            if ( data%sub_dual_vl <= data%sub_stop_d ) then
               if ( data%sub_comp_vl <= data%sub_stop_c ) then
                  if ( data%sub_subgrad_vl <= teneps ) then
-                    
+
                     data%merit_first_order  = .true.
-                                        
+
                     if ( data%NM%active ) then
                        data%NM%num_fail = 0
                        data%NM%active   = .false.
                     end if
-                    
+
                     if (data%norm_c <= max(data%eta, point9*stop_p) ) then
                        data%eta        = data%eta_contract * data%eta
-                       data%sub_stop_p = max( half*data%eta, point9*stop_p ) 
-                       data%sub_stop_d = data%sub_stop_p  
+                       data%sub_stop_p = max( half*data%eta, point9*stop_p )
+                       data%sub_stop_d = data%sub_stop_p
                        data%sub_stop_c = data%sub_stop_p
                     else
-                       data%sub_stop_p = max( half*data%sub_stop_p, point9*stop_p ) 
-                       data%sub_stop_d = data%sub_stop_p  
+                       data%sub_stop_p = max( half*data%sub_stop_p, point9*stop_p )
+                       data%sub_stop_d = data%sub_stop_p
                        data%sub_stop_c = data%sub_stop_p
                        dummy_real      = data%control%penalty_expansion * data%penalty
                        data%penalty    = min( data%control%max_penalty, dummy_real )
@@ -1999,7 +1999,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         end if
 
         ! Possibly print summary of sub-optimality check.
-     
+
         if ( data%control%print_level >= GALAHAD_DETAILS ) then
            write(out, 1003) data%sub_stop_p, data%sub_stop_d, data%sub_stop_c, &
                             data%sub_primal_vl, data%sub_dual_vl,              &
@@ -2009,7 +2009,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         end if
 
      end if
-     
+
 710  continue
 
      ! Print main summary line - optimality measures.
@@ -2038,7 +2038,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      !write(*,*) 'Xl = ', nlp%X_l
      !write(*,*) 'X = ', nlp%X
      !write(*,*) 'Xu = ', nlp%X_u
-     
+
 
      ! Decide if nonmonotone should be used.
      ! *************************************
@@ -2058,8 +2058,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            data%revert%Jval_revert       = nlp%J%val
            data%revert%Ax_revert         = nlp%Ax
            data%revert%Bval_revert       = data%B%val
-           data%revert%norm_c_revert     = data%norm_c    
-           data%revert%TRpred_revert     = data%TRpred    
+           data%revert%norm_c_revert     = data%norm_c
+           data%revert%TRpred_revert     = data%TRpred
            data%revert%primal_vl_revert  = data%primal_vl
            data%revert%dual_vl_revert    = data%dual_vl
            data%revert%comp_vl_revert    = data%comp_vl
@@ -2101,12 +2101,12 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      ! ***************************************************
 
      ! Compute BFGS info if applicable.
-     
+
      if ( data%control%B_type == 3 .and. data%success >= 1  ) then
-        
+
         data%BFGS%gradLx     = data%G_prev
         data%BFGS%gradLx_new = nlp%G
-        
+
         if ( nlp%m > 0 ) then
            data%Jval_dummy = nlp%J%val
            nlp%J%val       = data%Jval_prev
@@ -2118,10 +2118,10 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         end if
 
      elseif ( data%control%B_type == 2 .and. data%success >= 1  ) then
-        
+
         data%L_BFGS%gradLx     = data%G_prev
         data%L_BFGS%gradLx_new = nlp%G
-        
+
         if ( nlp%m > 0 ) then
            data%Jval_dummy = nlp%J%val
            nlp%J%val       = data%Jval_prev
@@ -2139,7 +2139,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      call fill_QPpred( nlp, data%QPpred, inform, data )
      if ( inform%status /= GALAHAD_ok ) then
         write(out,"('ERROR : trimsqp : subroutine fill_QPpred')")
-        GO TO 999 
+        GO TO 999
      end if
 
      data%steering_good     = .false.
@@ -2162,7 +2162,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               call QPT_write_problem( out, data%QPpred, 1 )
               write(out,*) ' ================ END : QPpred ================='
            end if
-           
+
            if ( data%iterate == 1 ) then
               data%control%QPpred_control%generate_sif_file = .true.
            end if
@@ -2178,11 +2178,11 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               write( out, * ) 'Htype     = ', data%QPpred%H%type
               write( out, * ) 'Hrow      = ', data%QPpred%H%row
               write( out, * ) 'Hcol      =', data%QPpred%H%col
-              write( out, * ) 'Hval      =', data%QPpred%H%val 
+              write( out, * ) 'Hval      =', data%QPpred%H%val
               write( out, * ) 'Arow      = ', data%QPpred%A%row
               write( out, * ) 'Acol      = ', data%QPpred%A%col
               write( out, * ) 'Aval      = ', data%QPpred%A%val
-              write( out, * ) 'Ane       = ', data%QPpred%A%ne 
+              write( out, * ) 'Ane       = ', data%QPpred%A%ne
               write( out, * ) 'G         = ', data%QPpred%G
               write( out, * ) 'n         = ', data%QPpred%n
               write( out, * ) 'm         = ', data%QPpred%m
@@ -2205,7 +2205,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
            data%s_p          = data%QPpred%X( : nlp%n )
            data%inf_norm_s_p = MAXVAL( ABS(data%s_p) )
-           
+
            if (nlp%m > 0 ) then
               data%inf_norm_Y_p = maxval( abs(data%QPpred%Y( : nlp%m)) )
               data%JxSp         = zero
@@ -2217,9 +2217,9 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                                         data%sat, data%vl_l, data%vl_u,            &
                                         data%num_sat, data%num_vl_l, data%num_vl_u )
            end if
-           
+
            data%dec_norm_c_pred = data%norm_c - data%norm_c_linearize_pred
-           
+
            ! Compute decrease in CONVEX model.
            data%BxSp = zero
            call mop_Ax( one, data%B, data%s_p, one, data%BxSp, &
@@ -2231,7 +2231,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               end do
            end if
            data%Sp_B_Sp = DOT_PRODUCT( data%BxSp, data%s_p )  ! s_p^T B s_p
-           
+
            data%decreaseB = data%penalty * data%dec_norm_c_pred
            data%decreaseB = data%decreaseB - DOT_PRODUCT( nlp%G, data%s_p )
            data%decreaseB = data%decreaseB - half * data%Sp_B_Sp
@@ -2245,15 +2245,15 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               end do
               data%decreaseB_smooth = data%decreaseB_smooth + data%penalty*dummy_real
            end if
-                      
+
            if ( data%control%print_level >= GALAHAD_DEBUG ) then
               write(out, 3071 ) data%norm_c, data%norm_c_linearize_pred, &
                    data%dec_norm_c_pred, data%decreaseB
               write( out, * ) 'iterate   = ', data%iterate
               write( out, * ) 'S_p       = ', data%s_p
               write( out, * ) 'QPpred%X  = ', data%QPpred%X
-              write( out, * ) 'JxSp      = ', data%JxSp 
-              write( out, * ) 'CplusJxSp = ', data%CplusJxSp 
+              write( out, * ) 'JxSp      = ', data%JxSp
+              write( out, * ) 'CplusJxSp = ', data%CplusJxSp
               write( out, * ) 'Y_p       = ', data%QPpred%Y( : m )
               write( out, * ) 'Ya_p      = ', data%QPpred%Y( m+1 : m+m_a )
               write( out, * ) 'Z_p       = ', data%QPpred%Z( : n )
@@ -2267,57 +2267,57 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            !if ( data%iterate == 1 ) then
            !   return
            !end if
-           
+
            ! Do not need this....just doing it to have it.
            if ( nlp%m_a > 0 ) then
               data%AxSp = zero
               call mop_Ax( one, nlp%A, data%s_p, one, data%AxSp, &
                    out, control%error, transpose=.false. )
            end if
-           
+
            if ( inform%QPpred_inform%status /= GALAHAD_OK .or. data%decreaseB < - tenm5 ) then
               write(*,*) 'WARNING : trimsqp : entered the --Catch-- bad predictor.'
               write(*,*) 'Predictor status = ', inform%QPpred_inform%status
               write(*,*) 'decreaseB        = ', data%decreaseB
               return
               data%QPpred_fails     = data%QPpred_fails + 1
-              
+
               data%QPpred%X( 1:n )  = zero
               if ( m > 0 ) then
                  do i = 1, m
                     data%QPpred%X( n+i )   = max( zero, nlp%C_l(i) - nlp%C(i) )
-                    data%QPpred%X( n+m+i ) = max( zero, nlp%C(i) - nlp%C_u(i) ) 
+                    data%QPpred%X( n+m+i ) = max( zero, nlp%C(i) - nlp%C_u(i) )
                  end do
               end if
               data%QPpred%Y( 1:m ) = zero !nlp%Y
               if ( m_a > 0 ) then
                  data%QPpred%Y( m+1:m+m_a ) = zero !nlp%Y_a
               end if
-                            
+
               if ( data%QPpred_fails == 1 ) then
                  data%control%QPpred_control%qpb_or_qpa = .true.
-                 inform%QPpred_inform%status            = GALAHAD_OK 
+                 inform%QPpred_inform%status            = GALAHAD_OK
               elseif ( data%QPpred_fails == 2 ) then
                  data%control%QPpred_control%qpb_or_qpa = .false.
                  data%control%QPpred_control%no_qpb     = .true.
-                 inform%QPpred_inform%status            = GALAHAD_OK 
+                 inform%QPpred_inform%status            = GALAHAD_OK
               else
                  data%control%QPpred_control%no_qpb = .false.
               end if
            else
               qpc_successful = .true.
            end if
-              
 
-           if ( inform%QPpred_inform%status /= GALAHAD_OK ) then 
+
+           if ( inform%QPpred_inform%status /= GALAHAD_OK ) then
               write(out,*) ' QPpred : returned status ', inform%QPpred_inform%status
               GO TO 999
            end if
 
         end do
-        
+
 !!$        ! The predictor step s_p and multiplier info.
-!!$        
+!!$
 !!$        data%s_p          = data%QPpred%X( : nlp%n )
 !!$        data%inf_norm_s_p = MAXVAL( ABS(data%s_p) )
 !!$
@@ -2341,11 +2341,11 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 !!$        call mop_Ax( one, data%B, data%s_p, one, data%BxSp, &
 !!$                     out, control%error, symmetric=.true. )
 !!$        data%Sp_B_Sp = DOT_PRODUCT( data%BxSp, data%s_p )  ! s_p^T B s_p
-!!$        
+!!$
 !!$        data%decreaseB = data%penalty * data%dec_norm_c_pred
 !!$        data%decreaseB = data%decreaseB - DOT_PRODUCT( nlp%G, data%s_p )
 !!$        data%decreaseB = data%decreaseB - half * data%Sp_B_Sp
-!!$        
+!!$
 !!$        if ( data%control%print_level >= GALAHAD_DEBUG ) then
 !!$           write(out, 3071 ) data%norm_c, data%norm_c_linearize_pred, &
 !!$                             data%dec_norm_c_pred, data%decreaseB
@@ -2356,10 +2356,10 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 !!$           write( out, * ) 'Z_p       = ', data%QPpred%Z( : n )
 !!$           write( out, * ) 'X+S_p     = ', nlp%X + data%s_p
 !!$           write( out, * ) 'gts_p     = ', DOT_PRODUCT( nlp%G, data%s_p )
-!!$           write( out, * ) 'sp_B_sp   = ', data%Sp_B_sp              
+!!$           write( out, * ) 'sp_B_sp   = ', data%Sp_B_sp
 !!$           write( out, * ) 'decreaseB =  ', data%decreaseB
 !!$        end if
-!!$        
+!!$
 
         ! Compute product of A with predictor step.
         if ( nlp%m_a > 0 ) then
@@ -2376,7 +2376,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            data%steering_good = .true.
            goto 711
         end if
-        
+
         ! Possibly compute steering direction.
 
         if ( data%norm_c_linearize_pred < half * stop_p ) then
@@ -2401,17 +2401,17 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               call QPC_solve(data%QPsteer, data%QPsteer%C_status,              &
                             data%QPsteer%X_status, data%QPsteer_data,          &
                             data%control%QPsteer_control, inform%QPsteer_inform)
-              
+
               if ( inform%QPsteer_inform%status /= GALAHAD_ok ) then
                  write(out,*) ' QPsteer : returned status ', inform%QPsteer_inform%status
-                 GO TO 999 
+                 GO TO 999
               end if
-              
+
               data%s_steer          = data%QPsteer%X( : nlp%n )
               data%inf_norm_s_steer = MAXVAL( ABS(data%s_steer) )
-              
+
               data%inf_norm_Y_steer = maxval( abs(data%QPsteer%Y( : nlp%m)) )
-              
+
               data%JxSsteer = zero
               call mop_Ax( one, nlp%J, data%s_steer, one, data%JxSsteer, &
                            out, control%error, transpose=.false. )
@@ -2420,11 +2420,11 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                                          inform%status, data%sat, data%vl_l, &
                                          data%vl_u, data%num_sat,            &
                                          data%num_vl_l, data%num_vl_u)
-              
+
               data%dec_norm_c_steer = data%norm_c - data%norm_c_linearize_steer
-              
+
            end if
-              
+
 !           if ( data%norm_c_linearize_steer < min(tenm9, tenm3*stop_p) ) then
 !           if ( data%norm_c_linearize_steer < tenm10 ) then
 !              data%steering_good = .false.
@@ -2434,11 +2434,11 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               !if ( .true. ) then
                  data%steering_good = .true.
               !else
-              !   data%penalty = min( data%control%penalty_expansion*data%penalty, data%control%max_penalty ) 
+              !   data%penalty = min( data%control%penalty_expansion*data%penalty, data%control%max_penalty )
               !end if
            else
               data%steering_good = .false.
-              !data%penalty = min( data%control%penalty_expansion*data%penalty, data%control%max_penalty ) 
+              !data%penalty = min( data%control%penalty_expansion*data%penalty, data%control%max_penalty )
            end if
 
         end if
@@ -2457,7 +2457,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         if (data%control%print_level >= GALAHAD_DETAILS ) then
            call print_pred_steer( data )  ! Details on predictor/steering.
         end if
-        
+
         ! Possibly redefine data for predictor problem.
 
         if ( .not. data%steering_good ) then
@@ -2468,7 +2468,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            if ( m > 0 ) then
               do i = 1, m
                  data%QPpred%X( n+i )   = max( zero, nlp%C_l(i) - nlp%C(i) )
-                 data%QPpred%X( n+m+i ) = max( zero, nlp%C(i) - nlp%C_u(i) ) 
+                 data%QPpred%X( n+m+i ) = max( zero, nlp%C(i) - nlp%C_u(i) )
               end do
            end if
 
@@ -2500,11 +2500,11 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 !!$     call mop_Ax( one, data%B, data%s_p, one, data%BxSp, &
 !!$                  out, control%error, symmetric=.true. )
 !!$     data%Sp_B_Sp = DOT_PRODUCT( data%BxSp, data%s_p )  ! s_p^T B s_p
-!!$     
+!!$
 !!$     data%decreaseB = data%penalty * data%dec_norm_c_pred
 !!$     data%decreaseB = data%decreaseB - DOT_PRODUCT( nlp%G, data%s_p )
 !!$     data%decreaseB = data%decreaseB - half * data%Sp_B_Sp
-!!$     
+!!$
 !!$     if ( data%control%print_level >= GALAHAD_DEBUG ) then
 !!$        write(out, 3071 ) data%norm_c, data%norm_c_linearize_pred, &
 !!$                          data%dec_norm_c_pred, data%decreaseB
@@ -2516,11 +2516,11 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 !!$           write( out, * ) 'X+S_p = ', nlp%X + data%s_p
 !!$        end if
 !!$     end if
-     
+
      ! Compute merit function.
-     
+
      data%merit = nlp%f + data%penalty*data%norm_c
-     
+
      ! Evaluate Hessian now with (possibly) new multiplier information
      !****************************************************************
 
@@ -2540,39 +2540,39 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      dummy_real = zero
 
      do i = 1, nlp%n
-          
+
         Gi = nlp%G( i )
         vl = Gi
-        
+
         if ( nlp%m > 0 ) then
            vl = vl - data%JtY_p( i )
         end if
         if ( nlp%m_a > 0 ) then
            vl = vl - data%AtYa_p( i )
         end if
-        
-        vl = vl - data%QPpred%Z( i ) 
+
+        vl = vl - data%QPpred%Z( i )
         vl = abs(vl) / ( one + abs( Gi ) )
 
         dummy_real = max( dummy_real, vl )
-        
+
      end do
 
      if ( dummy_real < data%dual_vl ) then
         call eval_H( inform%status, nlp%H%val, nlp%X, data%QPpred%Y(:m), userdata )
-        if ( inform%status /= GALAHAD_OK ) write(out,1002) 'eval_H'  
+        if ( inform%status /= GALAHAD_OK ) write(out,1002) 'eval_H'
         inform%num_H_eval = inform%num_H_eval + 1
 
-        if ( data%control%print_level >= GALAHAD_DEBUG ) then 
+        if ( data%control%print_level >= GALAHAD_DEBUG ) then
            write( data%control%out, * ) ' -evaluted Hessian at (x,y_p).'
            call print_SMT( nlp%H, 'H', data%control%error, out, inform%status )
-        end if 
+        end if
      else
         call eval_H( inform%status, nlp%H%val, nlp%X, nlp%Y, userdata )
-        if ( inform%status /= GALAHAD_OK ) write(out,1002) 'eval_H'  
+        if ( inform%status /= GALAHAD_OK ) write(out,1002) 'eval_H'
         inform%num_H_eval = inform%num_H_eval + 1
 
-        if ( data%control%print_level >= GALAHAD_DEBUG ) then 
+        if ( data%control%print_level >= GALAHAD_DEBUG ) then
            write( data%control%out, * ) ' -evaluted Hessian at current (x,y).'
            call print_SMT( nlp%H, 'H', data%control%error, out, inform%status )
         end if
@@ -2582,7 +2582,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      !****************************
 
      ! compute needed data for subroutine get_cauchy_step
-     
+
      data%two_norm_s_p = NRM2( nlp%n, data%s_p, 1 )
      data%gts_pred = DOT_PRODUCT( data%s_p, nlp%G )
 
@@ -2597,7 +2597,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      data%decreaseH_pred = data%penalty * data%dec_norm_c_pred
      data%decreaseH_pred = data%decreaseH_pred - DOT_PRODUCT( nlp%G, data%s_p )
      data%decreaseH_pred = data%decreaseH_pred - half * data%Sp_H_Sp
-     
+
      if ( data%control%print_level >= GALAHAD_DEBUG ) then
         write( data%control%out, 3065 ) data%two_norm_s_p, data%gts_pred, data%Sp_H_Sp
      end if
@@ -2605,26 +2605,26 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      ! Call subroutine get_cauchy_step if needed.
 
      if ( data%inf_norm_s_p < tenm7 ) then
-        
+
         data%alpha_c = one
         if ( data%control%print_level >= GALAHAD_DEBUG ) write( out, 3082 )
-        
+
      elseif ( data%Sp_B_Sp >= data%Sp_H_Sp ) then
-           
+
         data%alpha_c = one
         if ( data%control%print_level >= GALAHAD_DEBUG ) write( out, 3081 )
 
-     else  
-        
+     else
+
         if ( nlp%m > 0 ) then
            call mop_row_2_norms(nlp%J, data%J_norms, symmetric=.false.,        &
                                 out=data%control%out, error=data%control%error,&
-                                print_level=0 ) 
+                                print_level=0 )
         end if
-           
+
         !too_small = epsmch ** 0.5
         too_small = epsmch ** point8
-           
+
         if ( data%control%print_level >= GALAHAD_DEBUG ) then
            print_1line  = .true. ; print_detail = .true. ; print_debug  = .true.
            write(out,*) 'C    = ', nlp%C
@@ -2632,7 +2632,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         else
            print_1line  = .false. ; print_detail = .false. ; print_debug  = .false.
         end if
-           
+
         call get_cauchy_step( nlp%m, data%C_type,                             &
                         zero, data%gts_pred, data%Sp_H_Sp, data%two_norm_s_p, &
                         data%penalty, data%C_RES_l, data%C_RES_u, data%JxSp,  &
@@ -2644,11 +2644,11 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            write(*,*) 'Cauchy step returned status = -4 '
            exit
         end if
-           
+
      end if
-        
+
      ! the Cauchy step s_c.
-     
+
      data%alpha_c      = min( one, data%alpha_c )  ! DPR: this should always be true.
      data%s_c          = data%alpha_c * data%s_p
      data%inf_norm_s_c = data%alpha_c * data%inf_norm_s_p
@@ -2664,7 +2664,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      ! Compute change in "faithful" model function.
      !*********************************************
-     
+
      if ( nlp%m > 0 ) then
         data%JxSc = zero
         call mop_Ax( one, nlp%J, data%s_c, one, data%JxSc, &
@@ -2681,11 +2681,11 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                   out, control%error, symmetric=.true.  )
 
      data%Sc_H_Sc = DOT_PRODUCT( data%HxSc, data%s_c )  ! s_c^T H s_c
-     
+
      data%decreaseH_cauchy = data%penalty * ( data%norm_c - data%norm_c_linearize_cauchy )
      data%decreaseH_cauchy = data%decreaseH_cauchy - DOT_PRODUCT( nlp%G, data%s_c )
      data%decreaseH_cauchy = data%decreaseH_cauchy - half * data%Sc_H_Sc
-     
+
      if ( data%control%print_level >= GALAHAD_DEBUG ) then
         write(out, 3067) data%norm_c, data%norm_c_linearize_cauchy,                      &
                          data%decreaseH_cauchy, data%num_sat, data%num_vl_l, data%num_vl_u
@@ -2721,7 +2721,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         ! Compute approximate Cauchy point.
         ! *********************************
-        
+
         if ( data%decreaseH_pred > data%ac_factor * data%decreaseH_cauchy ) then
            data%s_ac = data%s_p
            data%AxSac = data%AxSp
@@ -2750,16 +2750,16 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 !         write(*,*) 'G = ', data%QPseqp%G
 !         write(*,*) 'Hrow =  ', data%QPseqp%H%row
 !         write(*,*) 'Hcol =', data%QPseqp%H%col
-!         write(*,*) 'Hval =', data%QPseqp%H%val 
+!         write(*,*) 'Hval =', data%QPseqp%H%val
 !         write(*,*) 'radius = ', data%control%QPseqp_control%radius
 !         write(*,*) 'Arow =  ', data%QPseqp%A%row
 !         write(*,*) 'Acol =', data%QPseqp%A%col
 !         write(*,*) 'Aval =', data%QPseqp%A%val
 !         write(*,*) 'A_m =', data%QPseqp%A%m
 !         write(*,*) 'A_n =', data%QPseqp%A%n
-        
+
         call EQP_solve( data%QPseqp, data%QPseqp_data, data%control%QPseqp_control, inform%QPseqp_inform )
-         
+
         if ( inform%QPseqp_inform%status /= GALAHAD_OK ) then
            write(out,*) ' TRIMSQP : qp_seqp status = ', inform%QPseqp_inform%status
            go to 999
@@ -2771,10 +2771,10 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         data%s_s          = data%QPseqp%X
         data%inf_norm_s_s = MAXVAL( ABS(data%s_s) )
-        
+
         data%Y_seqp = zero
         data%Y_seqp( data%wJ( : data%nwJ) ) = data%QPseqp%Y( : data%nwJ )
-        
+
         data%Ya_seqp = zero
         data%Ya_seqp( data%wA( : data%nwA) ) = data%QPseqp%Y( data%nwJ + 1 : data%nwJ + data%nwA )
 
@@ -2807,7 +2807,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         data%Ss_H_Ss = DOT_PRODUCT( data%HxSs, data%s_s )
 
         data%alpha_feas = max_feas_step( nlp, data, data%X_type, data%A_type, data%C_type )
-        
+
         ! The full step s_f.
 
         !write(*,*) 'seqp_use_pred = ', data%seqp_use_pred
@@ -2872,8 +2872,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 !!$              write( out, * ) 'iterate   = ', data%iterate
 !!$              write( out, * ) 'S_p       = ', data%s_p
 !!$              write( out, * ) 'QPpred%X  = ', data%QPpred%X
-!!$              write( out, * ) 'JxSp      = ', data%JxSp 
-!!$              write( out, * ) 'CplusJxSp = ', data%CplusJxSp 
+!!$              write( out, * ) 'JxSp      = ', data%JxSp
+!!$              write( out, * ) 'CplusJxSp = ', data%CplusJxSp
 !!$              write( out, * ) 'Y_p       = ', data%QPpred%Y( : m )
 !!$              write( out, * ) 'Ya_p      = ', data%QPpred%Y( m+1 : m+m_a )
 !!$              write( out, * ) 'Z_p       = ', data%QPpred%Z( : n )
@@ -2886,62 +2886,62 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      elseif ( data%sqp_computed .and. data%control%use_siqp ) then
 
-        data%alpha_feas = -one 
+        data%alpha_feas = -one
 
         data%TRsqp = max( data%control%TRsqp_scale * data%TRpred, data%min_TRsqp )
-        
+
         ! Get A*s_c
-        
+
         if ( nlp%m_a > 0 ) then
            data%AxSc = zero
            call mop_Ax( one, nlp%A, data%s_c, one, data%AxSc, &
                         out, data%control%error, transpose=.false. )
            data%AXplusSc = nlp%Ax + data%AxSc
         end if
-        
+
         ! Compute the descent constraint for the SQP subproblem.
-        
+
         data%GplusHs     = nlp%G + data%HxSc
         data%descent_con = data%GplusHs
-        
+
         if ( nlp%m > 0 ) then
-           
+
            data%w = zero
            data%w( data%vl_l( : data%num_vl_l ) ) = - one
            data%w( data%vl_u( : data%num_vl_u ) ) =   one
-           
+
            call mop_Ax( data%penalty, nlp%J, data%w, one, data%descent_con, &
                         out, data%control%error, transpose = .true.         )
-           
+
         end if
-        
+
         ! Compute quantities that depend on the correction used.
-        
+
         if ( data%control%correction_type == 0 ) then
            ! relax
         else
            write(out,*) 'TRIMSQP : SQP corrections not yet implemented'
            GO TO 999
         end if
-        
+
         ! Decide whether only want active set phase.
-        
+
         if ( data%primal_vl <= sqrt(data%control%stop_p) .and. &
              data%dual_vl   <= sqrt(data%control%stop_d) .and. &
              data%comp_vl   <= sqrt(data%control%stop_c) ) then
-           
+
            data%control%QPsiqp_control%no_qpb = .false.
-           
+
         else
-           
+
            data%control%QPsiqp_control%no_qpb = .false.
-                      
+
         end if
-        
+
         qpc_successful = .FALSE.
-        
+
         do while ( .not. qpc_successful )
-           
+
            call fill_QPsiqp( nlp, data%QPsiqp, inform, data )
            if ( inform%status /= GALAHAD_ok ) then
               write(out,"(' ERROR : trimsqp : subroutine fill_QPsiqp')")
@@ -2956,13 +2956,13 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               write(out, 3079 ) data%descent_con
               write(out, 3080 ) dot_product(data%descent_con, data%QPsiqp%X(:n))
            end if
-           
+
            ! solve for the SIQP step.
-           
+
            call QPC_solve( data%QPsiqp, data%QPsiqp%C_status,                &
                            data%QPsiqp%X_status, data%QPsiqp_data,           &
                            data%control%QPsiqp_control, inform%QPsiqp_inform )
-           
+
            if ( inform%QPsiqp_inform%status /= GALAHAD_OK ) then
               write(out,*) 'TRIMSQP : QPsiqp status = ', inform%QPsiqp_inform%status
               GO TO 999
@@ -2971,11 +2971,11 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            qpc_successful    = .true.
            data%iterates_sqp = inform%QPsiqp_inform%QPA_inform%major_iter
            data%iterates_sqp = data%iterates_sqp + inform%QPsiqp_inform%QPB_inform%iter
-           
+
         end do
-        
+
         ! Determine "activity" of the descent constraint.
-        
+
         if ( data%QPsiqp%C_status( m + m_a + 1 ) == 0 ) then
            data%descent_constraint_status = '  FR'
         elseif ( data%QPsiqp%C_status( m + m_a + 1 ) > 0 ) then
@@ -2985,44 +2985,44 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            data%descent_constraint_status = 'FX-L'  ! Should not happen.
            inform%num_descent_active = inform%num_descent_active + 1
         end if
-        
+
         ! Based on descent-constraint activity, adjust the multipliers.
-        
+
         if ( data%descent_constraint_status == '  FR' ) then
            ! relax
         elseif ( data%descent_constraint_status == 'FX-L' ) then
            write( out, * ) ' ERROR : descent_constraint lower fixed'
            GO TO 999
         else
-           
+
            ! The multiplier for the descent constraint.
-           
+
            dummy_real   = data%QPsiqp%Y( m + m_a + 1 )
-           
+
            ! J multipliers
-           
+
            data%QPsiqp%Y( data%vl_l(:data%num_vl_l) ) = data%QPsiqp%Y( data%vl_l(:data%num_vl_l) ) - data%penalty * dummy_real
            data%QPsiqp%Y( data%vl_u(:data%num_vl_u) ) = data%QPsiqp%Y( data%vl_u(:data%num_vl_u) ) + data%penalty * dummy_real
            data%QPsiqp%Y( : nlp%m )                   = data%QPsiqp%Y( : nlp%m ) / ( one - dummy_real )
-           
+
            ! A and Z multipliers
-           
+
            data%QPsiqp%Y(m+1:m+m_a) =  data%QPsiqp%Y(m+1:m+m_a) / (one - dummy_real)
            data%QPsiqp%Z            = data%QPsiqp%Z / (one - dummy_real)
-           
+
         end if
-        
+
         ! Store the SQP step, its infinity norm, and the infinity norm of Y_sqp.
-        
+
         data%s_s          = data%QPsiqp%X( 1 : nlp%n )
         data%inf_norm_s_s = MAXVAL( ABS(data%s_s) )
-        
+
         if (nlp%m > 0 ) then
            data%inf_norm_Y_s = maxval( abs(data%QPsiqp%Y(:m)) )
         end if
-        
+
         ! The full step  : s_f = s_c + s_s.
-        
+
         data%s_f          = data%s_c + data%s_s
         data%inf_norm_s_f = MAXVAL( ABS(data%s_f) )
 
@@ -3033,7 +3033,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            write( out, * ) 'Z_s   = ', data%QPsiqp%Z( : n )
            write( out, * )' .......starting full step info'
         end if
-        
+
      end if
 
      ! Compute full step info.
@@ -3047,17 +3047,17 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            call constraint_violation(nlp, nlp%C + data%JxSf, data,             &
                                      data%norm_c_linearize_full, inform%status )
         end if
-        
+
         data%HxSf = zero
         call mop_Ax( one, nlp%H, data%s_f, one, data%HxSf, &
                      out, control%error, symmetric=.true.  )
-        
+
         data%Sf_H_Sf = DOT_PRODUCT( data%HxSf, data%s_f )  ! s_f^T H s_f
-        
+
         data%decreaseH_full = data%penalty * (data%norm_c - data%norm_c_linearize_full)
         data%decreaseH_full = data%decreaseH_full - DOT_PRODUCT(nlp%G, data%s_f)
         data%decreaseH_full = data%decreaseH_full - half * data%Sf_H_sf
-        
+
         if ( data%control%print_level >= GALAHAD_DEBUG ) then
            write(out, 3068 ) data%norm_c, data%norm_c_linearize_full
            if ( data%control%print_level >= GALAHAD_CRAZY ) then
@@ -3066,7 +3066,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               write( out, * ) 'X+S_f = ', nlp%X + data%s_f
            end if
         end if
-        
+
         if (data%decreaseH_full >= point1 * data%decreaseH_cauchy) then
            data%sqp_good_dec   = .true.
            data%sqp_ratio_used = .true.
@@ -3084,7 +3084,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         if ( data%control%print_level >= GALAHAD_DETAILS ) then
            write( out, * )' -- skipping computation of SQP step'
         end if
-        
+
         data%iterates_sqp   = 0
         data%s_s            = zero
         data%inf_norm_s_s   = zero
@@ -3092,9 +3092,9 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         data%s_f            = data%s_c
         data%inf_norm_s_f   = data%inf_norm_s_c
         data%decreaseH_full = data%decreaseH_cauchy
-        
+
         data%descent_constraint_status = '  NA'
-        
+
         data%sqp_good_dec   = .false.
         data%sqp_ratio_used = .false.
         data%alpha_feas     = -one
@@ -3103,11 +3103,11 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      ! Evaluate functions and compute ratio
      ! ************************************
-     
+
      if ( data%sqp_ratio_used ) then
 
         ! Evaluate functions and constraint violation at new point.
-        
+
         call eval_FC( inform%status, data%F_new, data%C_new,  &
                       nlp%X + data%s_f, userdata )
         if (inform%status /= GALAHAD_ok) write(out,1002) 'eval_FC'
@@ -3122,14 +3122,14 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                                       data%norm_c_new, inform%status )
 
         end if
-        
+
         if ( data%control%print_level >= GALAHAD_DEBUG ) then
            write(out, 3070 ) data%F_new, data%norm_c_new,  &
                              data%decreaseH_cauchy, data%decreaseH_full
         end if
 
         data%merit_new = data%f_new + data%penalty * data%norm_c_new
-        
+
        ! Compute ratio of actual to predicted.
 
         if ( data%NM%active ) then
@@ -3159,7 +3159,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      else  ! sqp_ratio not used.
 
         ! Evaluate functions and constraint violatoin at new point.
-        
+
         call eval_FC( inform%status, data%F_new, data%C_new,  &
                       nlp%X + data%s_c, userdata )
         if (inform%status /= GALAHAD_ok) write(out,1002) 'eval_FC'
@@ -3169,14 +3169,14 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
         if ( nlp%m > 0 ) then
 
            inform%num_c_eval = inform%num_c_eval + 1 ! From above
-           
+
            call constraint_violation( nlp, data%C_new, data,         &
                                       data%norm_c_new, inform%status )
- 
+
         end if
-        
+
         data%merit_new = data%f_new + data%penalty * data%norm_c_new
-        
+
         ! Compute ratio of actual to predicted.
 
         ! Either ~sqp_computed -> NM%active = .false.
@@ -3200,7 +3200,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            write(out,3070) data%f_new, data%norm_c_new,  &
                            data%decreaseH_cauchy, data%decreaseH_full
         end if
-        
+
      end if
 
 !!$     write(*,*) 'ratio = ', data%ratio
@@ -3220,7 +3220,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               data%ratio <= two-data%control%eta_very_successful) then
         data%success_str = '   very'
         data%success     = 2
-     elseif ( data%ratio >= data%control%eta_successful ) then 
+     elseif ( data%ratio >= data%control%eta_successful ) then
         data%success_str = 'success'
         data%success     = 1
      else
@@ -3245,7 +3245,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
               data%step_accepted      = .false.
            end if
         end if
-     else ! must be monotone 
+     else ! must be monotone
         if ( data%success >= 1 ) then
            data%step_accepted = .true.
         else
@@ -3258,7 +3258,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
      ! Print summary for Predictor, Cauchy, and SQP steps.
      !****************************************************
-     
+
      if ( data%iterate >= 0 ) then
         if ( data%control%print_level >= GALAHAD_ACTION ) then
             write( out, 1005 ) data%iterate-1,                                 &
@@ -3284,16 +3284,16 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         data%NM%active   = .false.
         data%NM%num_fail = 0
-        
-        nlp%X          = data%revert%X_revert  
+
+        nlp%X          = data%revert%X_revert
         nlp%Y          = data%revert%Y_revert
         nlp%Y_a        = data%revert%Y_a_revert
         nlp%Z          = data%revert%Z_revert
-        nlp%f          = data%revert%f_revert 
+        nlp%f          = data%revert%f_revert
         nlp%G          = data%revert%G_revert
-        nlp%C          = data%revert%C_revert 
+        nlp%C          = data%revert%C_revert
         nlp%J%val      = data%revert%Jval_revert
-        nlp%Ax         = data%revert%Ax_revert 
+        nlp%Ax         = data%revert%Ax_revert
         data%B%val     = data%revert%Bval_revert
         data%merit     = data%revert%merit_revert
         data%penalty   = data%revert%penalty_revert
@@ -3344,7 +3344,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         ! Update problem functions and merit function.
 
-        nlp%F = data%f_new 
+        nlp%F = data%f_new
 
         if ( nlp%m > 0 ) then
 
@@ -3352,7 +3352,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
            call eval_J( inform%status, nlp%J%val, nlp%X, userdata )
            if ( inform%status /= 0 ) write( out, 1002 ) 'eval_J'
-          
+
            inform%num_J_eval = inform%num_J_eval + 1
 
         end if
@@ -3364,7 +3364,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            call mop_Ax( one, nlp%A, nlp%X, one, nlp%Ax,       &
                         out, control%error, transpose=.false. )
         end if
-        
+
         call eval_G( inform%status, nlp%G, nlp%X, userdata )
         if ( inform%status /= 0 ) write( out, 1002 ) 'eval_G'
 
@@ -3374,9 +3374,9 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         if ( data%NM%active ) then ! success = 0
 
-!           data%TRpred = min( 100_wp * data%TRpred, data%control%max_TRpred 
+!           data%TRpred = min( 100_wp * data%TRpred, data%control%max_TRpred
            data%TRpred = min( data%TRpred, data%control%max_TRpred )
-           
+
         else ! sucess >= 1
 
            dummy_real = max( data%inf_norm_s_p, data%inf_norm_s_s )
@@ -3410,7 +3410,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      end if
 
 715 continue
-     
+
 end do
 
 ! **********************************
@@ -3418,7 +3418,7 @@ end do
 ! **********************************
 
 ! Check for max number of iterations
-  
+
   !if ( data%iterate >= data%control%max_iterate .and. (.not. data%converged) ) then
   !   inform%status = GALAHAD_MAX_ITERATIONS_REACHED
   !end if
@@ -3438,20 +3438,20 @@ end do
   IF ( data%control%print_level >= GALAHAD_TRACE ) then
 
      WRITE( data%control%out, "( /, ' PROBLEM NAME : ', A8 )" ) nlp%pname
-     
+
 
      SELECT CASE ( inform%status )
 
      CASE ( GALAHAD_ok )
         WRITE( out, "(' RESULT       : success' )" )
-     CASE ( GALAHAD_error_max_iterations )   
+     CASE ( GALAHAD_error_max_iterations )
         WRITE( out, "(' RESULT       : maximum iterations reached' )" )
-     CASE ( -40 )   
+     CASE ( -40 )
         WRITE( out, "(' RESULT       : maximum penalty parameter reached.')" )
      CASE DEFAULT
-        WRITE(out,*) ' ERROR : trimsqp : inform%status unrecognized on exit. ' 
+        WRITE(out,*) ' ERROR : trimsqp : inform%status unrecognized on exit. '
      END SELECT
-     
+
      write( data%control%out, "(' EXIT STATUS  : ', I4, / )" ) inform%status
      IF ( data%control%print_sol ) THEN
         IF( data%control%fulsol ) then
@@ -3468,15 +3468,15 @@ end do
         END IF
      END IF
   end IF
-  
+
  ! Deallocate problems
 
   call dealloc_QPfeas( data%QPfeas, inform, data%control )
-  if ( inform%status /= GALAHAD_ok ) go to 992 
-  
+  if ( inform%status /= GALAHAD_ok ) go to 992
+
   call dealloc_QPpred( data%QPpred, inform, data%control )
-  if ( inform%status /= GALAHAD_ok ) go to 992 
-  
+  if ( inform%status /= GALAHAD_ok ) go to 992
+
   call dealloc_QPsiqp( data%QPsiqp, inform, data%control )
   if ( inform%status /= GALAHAD_ok ) go to 992
 
@@ -3497,7 +3497,7 @@ end do
           iores, sfilename
      RETURN
   END IF
-  
+
   WRITE( sfiledevice, "( '*   TRIMSQP solution for problem name: ', A8 )" )     &
        nlp%pname
   WRITE( sfiledevice, "( /, '*   variables ', / )" )
@@ -3558,7 +3558,7 @@ end do
      1x, 'penalty         = ', ES12.6, T37, 'merit        = ', ES13.6,     &
                                        T67, 'eta_contract = ', ES12.6, /,  &
      1x, (93('=')) )
-                                     
+
 !1002 FORMAT( /,  &
 !     ' Iterate   Penalty          Merit            Primal_vl        Dual_vl  ',&
 !     '       Comp_Slack     TRpred    TRsqp       |c(x)|_1         C_forcing',&
@@ -3575,7 +3575,7 @@ end do
 
 1005 FORMAT( /, &
   2X, '****************************************************',                  &
-      '***********************************************', /,                    &      
+      '***********************************************', /,                    &
   2X, '*****                        BEGIN SUMMARY (TRIMSQP) :',                &
       ' ITERATE S(', I7,')                     *****', /,                      &
   2X, '****************************************************',                  &
@@ -3602,7 +3602,7 @@ end do
                                      T72, 'reverting       = ', 12x, L1,  /,   &
                                      T38, 'sEqp-computed   = ', 12x, L1,  /,   &
   2X, '****************************************************',                  &
-      '***********************************************', /,                    &        
+      '***********************************************', /,                    &
   2X, '*****                                 END SUMMARY (TRIMSQP)',           &
       '                                   *****', /,                           &
   2X, '****************************************************',                  &
@@ -3633,11 +3633,11 @@ end do
 !     1x, '                  ---------------------------------                    ',/, &
 !     1x, '    QPfeas%X_l           QPfeas%X         QPfeas%X_u          QPfeas%X0',/, &
 !   ( 2x, ES16.9, 3x, ES16.9, 3x, ES16.9, 3x, ES16.9) )
-!3002 format( /, & 
-!     1x, '    QPfeas%C_l           QPfeas%C_u          QPfeas%Y     ',/, &   
+!3002 format( /, &
+!     1x, '    QPfeas%C_l           QPfeas%C_u          QPfeas%Y     ',/, &
 !     ( 2x, ES16.9, 3x, ES16.9, 3x, ES16.9) )
-!3003 format( /, & 
-!     1x, '      QPfeas%Z        QPfeas%WEIGHT ',/, &   
+!3003 format( /, &
+!     1x, '      QPfeas%Z        QPfeas%WEIGHT ',/, &
 !     ( 2x, ES16.9, 3x, ES16.9) )
 !3004 format( /, 2x, ' QPfeas%m = ', I5, '  QPfeas%n = ', I5,  &
 !                2x, ' Gradient_kind = ', I1, '  Hessian_kind = ', I1 )
@@ -3646,10 +3646,10 @@ end do
 !!$     1x, '                ----------------------------------  ',/, &
 !!$     1x, '    QPpred%X_l           QPpred%X         QPpred%X_u',/, &
 !!$    (2x, ES16.9, 3x, ES16.9, 3x, ES16.9 ) )
-!!$3006 format( /, & 
-!!$     1x, '    QPpred%C_l           QPpred%C_u ',/, &   
+!!$3006 format( /, &
+!!$     1x, '    QPpred%C_l           QPpred%C_u ',/, &
 !!$     ( 2x, ES16.9, 3x, ES16.9 ) )
-!!$3007 format( /, & 
+!!$3007 format( /, &
 !!$     1x, '    QPpred%Y           QPpred%C_status ', /, ( 2x, ES16.9, 12x, I2 ) )
 !!$3008 format( /,  &
 !!$     1x, '      QPpred%Z         QPpred%X_status        QPpred%G ', /,  &
@@ -3661,17 +3661,17 @@ end do
 !!$     1x, '    QPsiqp%X_l           QPsiqp%X         QPsiqp%X_u  ',/, &
 !!$    (2x, ES16.9, 3x, ES16.9, 3x, ES16.9 ) )
 !!$
-!!$3011 format( /, & 
-!!$     1x, '    QPsiqp%C_l           QPsiqp%C_u ',/, &   
+!!$3011 format( /, &
+!!$     1x, '    QPsiqp%C_l           QPsiqp%C_u ',/, &
 !!$     ( 2x, ES16.9, 3x, ES16.9 ) )
-!!$3012 format( /, & 
+!!$3012 format( /, &
 !!$     1x, '    QPsiqp%Y           QPsiqp%C_status ', /, ( 2x, ES16.9, 12x, I2 ) )
 !!$3013 format( /,  &
 !!$     1x, '      QPsiqp%Z         QPsiqp%X_status        QPsiqp%G ', /,  &
 !!$     ( 2x, ES16.9, 12x, I2, 11x, ES16.9 ) )
 !!$3014 format( /, 2x, ' QPsiqp%m = ', I5, '   QPsiqp%n = ', I5, '   QPsiqp%f = ', ES16.9 )
 !3015 format( 1x, 'Merit function is first-order optimal', &
-!                 ' - turning non-monotone off.', /) 
+!                 ' - turning non-monotone off.', /)
 3016 format( 1x, ' NM%active = T : saving model decrease for possible revert', / )
 !3015 format( /, '---------------------------------------------------------------',/,&
 !             1x,'BFGS is being used, the following data has been computed',/ &
@@ -3686,8 +3686,8 @@ end do
 !!$     1x, '                  ---------------------------------                    ',/, &
 !!$     1x, '    QPsteer%X_l           QPsteer%X         QPsteer%X_u',/, &
 !!$   ( 2x, ES16.9, 3x, ES16.9, 3x, ES16.9) )
-!!$3019 format( /, & 
-!!$     1x, '    QPsteer%C_l           QPsteer%C_u          QPsteer%Y     ',/, &   
+!!$3019 format( /, &
+!!$     1x, '    QPsteer%C_l           QPsteer%C_u          QPsteer%Y     ',/, &
 !!$     ( 2x, ES16.9, 3x, ES16.9, 3x, ES16.9) )
 !!$3020 format( /, 1x, '      QPsteer%Z           QPsteer%G',/, ( 2x, ES16.9, 3x, ES16.9 ) )
 !!$3021 format( /, 2x, ' QPsteer%m = ', I5, '  QPsteer%n = ', I5,  &
@@ -3697,8 +3697,8 @@ end do
 !!$     1x, '                  ---------------------------------                    ',/, &
 !!$     1x, '    QPseqp%X',/, &
 !!$   ( 2x, ES16.9 ) )
-!!$3039 format( /, & 
-!!$     1x, '    QPseqp%C (constant in constraint)     QPseqp%Y',/, &   
+!!$3039 format( /, &
+!!$     1x, '    QPseqp%C (constant in constraint)     QPseqp%Y',/, &
 !!$     ( 2x, ES16.9, 15x, ES16.9 ) )
 !!$3040 format( /, 1x, '      QPseqp%G',/, ( 2x, ES16.9 ) )
 !!$3041 format( /, 2x, ' QPseqp%m = ', I5, '  QPseqp%n = ', I5 )
@@ -3709,11 +3709,11 @@ end do
 !3050 format( 2x, '        X                 G                  Z', /, &
 !            (2x, ES16.9, 3x, ES16.9, 3x, ES16.9 ) )
 !3051 format( 2x, '        C          C_type          Y', /, &
-!            (2x, ES16.9, 4x, A3, 4x, ES16.9 ) ) 
+!            (2x, ES16.9, 4x, A3, 4x, ES16.9 ) )
 !3052 format( 2x, '        Ax         A_type          Y_a', /, &
-!            (2x, ES16.9, 4x, A3, 4x, ES16.9 ) ) 
+!            (2x, ES16.9, 4x, A3, 4x, ES16.9 ) )
 !3060 format(1x, '(optimal_measure, optimal_measure2, optimal_measure_3)  =  ', &
-!            ES15.9, 3X, ES15.9, 3X, ES15.9 )  
+!            ES15.9, 3X, ES15.9, 3X, ES15.9 )
 !3061 format(1x, 'optimal_measure  =  ', ES15.9 )
 !3062 format(  &
 !     1x, '(primal_vl, dual_vl, comp_vl)     =', 3(2X, ES15.9), /, &
@@ -3729,7 +3729,7 @@ end do
       1x, 'decrease in model at cauchy point = ', ES16.9, /,                   &
       1x, 'num_sat = ', I7, 5x, 'num_vl_l = ', I7, 5x, 'num_vl_u = ', I7, /, &
       1x, '    sat                   vl_l                   vl_u', /,   &
-      1x, '  -------                -------                -------'     ) 
+      1x, '  -------                -------                -------'     )
 3068 format( 1x, '-- full step : (c_norm, c_linearize_norm) =', 2(2x, ES15.9 ) )
 !3069 format( 1x, '-- recomputing merit function at new penalty value.' )
 3070 format( 1x, '-- full step computed and gives good decrease.  GOOD!',    /, &
@@ -3781,7 +3781,7 @@ end do
      TYPE ( TRIMSQP_data_type ), INTENT( INOUT ) :: data
      TYPE ( TRIMSQP_control_type ), INTENT( IN ) :: control
      TYPE ( TRIMSQP_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -3856,7 +3856,7 @@ end do
      !     bad_alloc = inform%bad_alloc, out = control%error )
      !IF ( control%deallocate_error_fatal .AND.  &
      !     inform%status /= GALAHAD_ok ) RETURN
-     
+
      !array_name = 'trimSQP: data%Jtv'
      !CALL SPACE_dealloc_array( data%Jtv,                                       &
      !     inform%status, inform%alloc_status, array_name = array_name,         &
@@ -4063,7 +4063,7 @@ end do
 !-*-   B U I L D _ Q P f e a s   S U B R O U T I N E -*
 
   SUBROUTINE build_QPfeas( nlp, QPfeas, inform, control )
-  
+
     IMPLICIT NONE
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -4078,12 +4078,12 @@ end do
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout )  :: inform
     type( TRIMSQP_control_type ), intent( inout ) :: control
     type( NLPT_problem_type ), intent( in ) :: nlp
     type( QPT_problem_type ), intent( inout ) :: QPfeas
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -4095,55 +4095,55 @@ end do
     control%QPfeas_control%infinity = control%infinity / ten
 
     ! Set problem dimensions
-    
+
     QPfeas%m  = nlp%m_a
     QPfeas%n  = nlp%n
-    
+
     QPfeas%Hessian_kind          = 2               ! General weights used.
     QPfeas%gradient_kind         = 0               ! G = 0.
     QPfeas%new_problem_structure = .true.
 
     ! set some dimensions
 
-    QPfeas%A%m = nlp%m_a  ;  QPfeas%A%n = nlp%n 
+    QPfeas%A%m = nlp%m_a  ;  QPfeas%A%n = nlp%n
 
     ! Allocate components independent of storage type.
 
     !CALL SPACE_resize_array( QPfeas%n, QPfeas%G, inform%status, inform%alloc_status )
     !IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPfeas%n, QPfeas%X_l, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPfeas%n, QPfeas%X, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
     CALL SPACE_resize_array( QPfeas%n, QPfeas%X0, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPfeas%n, QPfeas%X_u, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPfeas%n, QPfeas%Z, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
     CALL SPACE_resize_array( QPfeas%n, QPfeas%WEIGHT, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPfeas%m, QPfeas%C_l, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPfeas%m, QPfeas%C, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPfeas%m, QPfeas%C_u, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPfeas%m, QPfeas%Y, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     ! Allocate A: since LSQP does not support all storage types that
-    ! trimsqp will support, temporarily convert storage type to 
+    ! trimsqp will support, temporarily convert storage type to
     ! coordinate.  Thus, regardless of nlp%A%type, QPfeas%A%type will be
     ! coordinate.  This spaces is the space that is allocated below.
 
@@ -4152,7 +4152,7 @@ end do
     CASE ( 'DENSE' )
 
        len = nlp%m_a * nlp%n
-              
+
        CALL SPACE_resize_array( len, QPfeas%A%val, inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
        CALL SPACE_resize_array( len, QPfeas%A%col, inform%status, inform%alloc_status )
@@ -4161,7 +4161,7 @@ end do
        IF ( inform%status /= 0 ) GO TO 990
 
        QPfeas%A%ne = len
-             
+
     CASE ( 'COORDINATE' )
 
        len =  nlp%A%ne
@@ -4174,9 +4174,9 @@ end do
        IF ( inform%status /= 0 ) GO TO 990
 
        QPfeas%A%ne = len
-                    
+
     CASE ( 'SPARSE_BY_ROWS')
-       
+
        len =  nlp%A%ptr( nlp%m_a + 1 ) - 1
 
        CALL SPACE_resize_array( len, QPfeas%A%val, inform%status, inform%alloc_status )
@@ -4185,30 +4185,30 @@ end do
        IF ( inform%status /= 0 ) GO TO 990
        CALL SPACE_resize_array( len, QPfeas%A%row, inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-             
+
        QPfeas%A%ne = len
-   
+
     CASE ( 'SPARSE_BY_COLUMNS' )
-    
+
        len =  nlp%A%ptr( nlp%n + 1 ) - 1
-       
+
        CALL SPACE_resize_array( len, QPfeas%A%val, inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
        CALL SPACE_resize_array( len, QPfeas%A%row, inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
        CALL SPACE_resize_array( len, QPfeas%A%col, inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       
-       QPfeas%A%ne = len 
+
+       QPfeas%A%ne = len
 
     CASE DEFAULT
 
        WRITE( control%error, 1000)
-       
+
     END SELECT
 
     call SMT_put( QPfeas%A%type, 'COORDINATE', inform%status )
- 
+
     inform%status = 0
 
     RETURN
@@ -4216,7 +4216,7 @@ end do
 ! Abnormal returns
 
 990 CONTINUE
-    
+
     WRITE( control%error, 1001) inform%status, inform%alloc_status
 
     RETURN
@@ -4226,13 +4226,13 @@ end do
 1000 FORMAT(1X, '** ERROR : unrecognized storage type in subroutine ALLOC_LP.')
 1001 FORMAT(1X, '** ERROR : allocation error in subroutine ALLOC_LP.',   &
             ' error= ', I0, ' status= ', I0, '.')
-    
+
   END SUBROUTINE build_QPfeas
 
 !-*-   B U I L D _ Q P s t e e r   S U B R O U T I N E -*
 
   SUBROUTINE build_QPsteer( nlp, QPsteer, inform, control )
-  
+
     IMPLICIT NONE
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -4247,12 +4247,12 @@ end do
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout )  :: inform
     type( TRIMSQP_control_type ), intent( inout ) :: control
     type( NLPT_problem_type ), intent( in ) :: nlp
     type( QPT_problem_type ), intent( inout ) :: QPsteer
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -4264,10 +4264,10 @@ end do
     control%QPsteer_control%infinity = control%infinity / ten
 
     ! Set problem dimensions
-    
+
     QPsteer%m  = nlp%m + nlp%m_a
     QPsteer%n  = nlp%n + 2*nlp%m
-    
+
     QPsteer%Hessian_kind          = 0               ! Linear program.
     !QPsteer%gradient_kind         = 1               ! general G.
     QPsteer%new_problem_structure = .true.
@@ -4277,25 +4277,25 @@ end do
 
     ! set some dimensions
 
-    QPsteer%A%m = nlp%m + nlp%m_a  ;  QPsteer%A%n = nlp%n + 2*nlp%m 
+    QPsteer%A%m = nlp%m + nlp%m_a  ;  QPsteer%A%n = nlp%n + 2*nlp%m
 
     ! Allocate components independent of storage type.
 
     CALL SPACE_resize_array( QPsteer%n, QPsteer%G, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsteer%n, QPsteer%X_l, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsteer%n, QPsteer%X, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
     CALL SPACE_resize_array( QPsteer%n, QPsteer%X0, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsteer%n, QPsteer%X_u, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsteer%n, QPsteer%X_status, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
@@ -4304,24 +4304,24 @@ end do
 
     !CALL SPACE_resize_array( QPsteer%n, QPsteer%WEIGHT, inform%status, inform%alloc_status )
     !IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsteer%m, QPsteer%C_l, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsteer%m, QPsteer%C, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
 
     CALL SPACE_resize_array( QPsteer%m, QPsteer%C_status, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsteer%m, QPsteer%C_u, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsteer%m, QPsteer%Y, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     ! Allocate A: since LSQP does not support all storage types that
-    ! trimsqp will support, temporarily convert storage type to 
+    ! trimsqp will support, temporarily convert storage type to
     ! coordinate.  Thus, regardless of nlp%A%type, QPsteer%A%type will be
     ! coordinate.  This spaces is the space that is allocated below.
 
@@ -4330,7 +4330,7 @@ end do
     CASE ( 'DENSE' )
 
        len = nlp%m_a * nlp%n
-              
+
        CALL SPACE_resize_array( len, QPsteer%A%val, inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
        CALL SPACE_resize_array( len, QPsteer%A%col, inform%status, inform%alloc_status )
@@ -4339,7 +4339,7 @@ end do
        IF ( inform%status /= 0 ) GO TO 990
 
        QPsteer%A%ne = len
-             
+
     CASE ( 'COORDINATE' )
 
        len =  nlp%A%ne + nlp%J%ne + 2*nlp%m
@@ -4352,9 +4352,9 @@ end do
        IF ( inform%status /= 0 ) GO TO 990
 
        QPsteer%A%ne = len
-                    
+
     CASE ( 'SPARSE_BY_ROWS')
-       
+
        len =  nlp%A%ptr( nlp%m_a + 1 ) - 1
 
        CALL SPACE_resize_array( len, QPsteer%A%val, inform%status, inform%alloc_status )
@@ -4363,26 +4363,26 @@ end do
        IF ( inform%status /= 0 ) GO TO 990
        CALL SPACE_resize_array( len, QPsteer%A%row, inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-             
+
        QPsteer%A%ne = len
-   
+
     CASE ( 'SPARSE_BY_COLUMNS' )
-    
+
        len =  nlp%A%ptr( nlp%n + 1 ) - 1
-       
+
        CALL SPACE_resize_array( len, QPsteer%A%val, inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
        CALL SPACE_resize_array( len, QPsteer%A%row, inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
        CALL SPACE_resize_array( len, QPsteer%A%col, inform%status, inform%alloc_status )
        IF ( inform%status /= 0 ) GO TO 990
-       
-       QPsteer%A%ne = len 
+
+       QPsteer%A%ne = len
 
     CASE DEFAULT
 
        WRITE( control%error, 1000)
-       
+
     END SELECT
 
     call SMT_put( QPsteer%A%type, 'COORDINATE', inform%status )
@@ -4394,9 +4394,9 @@ end do
     IF ( inform%status /= 0 ) GO TO 990
     CALL SPACE_resize_array( 0, QPsteer%H%row, inform%status, inform%alloc_status )
     IF ( inform%status /= 0 ) GO TO 990
-    
+
     QPsteer%H%ne = 0
- 
+
     inform%status = 0
 
     RETURN
@@ -4404,7 +4404,7 @@ end do
 ! Abnormal returns
 
 990 CONTINUE
-    
+
     WRITE( control%error, 1001) inform%status, inform%alloc_status
 
     RETURN
@@ -4414,13 +4414,13 @@ end do
 1000 FORMAT(1X, '** ERROR : unrecognized storage type in subroutine ALLOC_LP.')
 1001 FORMAT(1X, '** ERROR : allocation error in subroutine ALLOC_LP.',   &
             ' error= ', I0, ' status= ', I0, '.')
-    
+
   END SUBROUTINE build_QPsteer
 
 !-*-   B U I L D _ Q P p r e d  S U B R O U T I N E -*
 
   SUBROUTINE build_QPpred( nlp, QPpred, inform, data )
-  
+
     IMPLICIT NONE
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -4442,12 +4442,12 @@ end do
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout ) :: inform
     type( TRIMSQP_data_type ), intent( inout ) :: data
     type( NLPT_problem_type ), intent( in ) :: nlp
     type( QPT_problem_type ), intent( inout ) :: QPpred
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -4469,44 +4469,44 @@ end do
     ! Set infinity
 
     data%control%QPpred_control%infinity = data%control%infinity / 100.0_wp
-    
+
     ! Set dimensions
 
     if ( B_type == 2 )  then  ! L-BFGS
-       QPpred%m   =  m + m_a + 2 * L 
-       QPpred%n   =  n + 2*m + 2 * L 
-       QPpred%A%m =  m + m_a + 2 * L 
-       QPpred%A%n =  n + 2*m + 2 * L 
-       QPpred%H%m =  n + 2*m + 2 * L 
-       QPpred%H%n =  n + 2*m + 2 * L 
+       QPpred%m   =  m + m_a + 2 * L
+       QPpred%n   =  n + 2*m + 2 * L
+       QPpred%A%m =  m + m_a + 2 * L
+       QPpred%A%n =  n + 2*m + 2 * L
+       QPpred%H%m =  n + 2*m + 2 * L
+       QPpred%H%n =  n + 2*m + 2 * L
     elseif ( 0 <= B_type .and. B_type <= 4 )  then
        QPpred%m   = m + m_a ;    QPpred%n   = n + 2*m
        QPpred%A%m = m + m_a ;    QPpred%A%n = n + 2*m
        QPpred%H%m = n + 2*m ;    QPpred%H%n = n + 2*m
-    else 
+    else
        write(out,*) ' ERROR:TRIMSQP:illegal value for control%B_type'
     end if
 
     ! Signify new problem structure.
-    
+
     QPpred%new_problem_structure = .true.
-    
+
     ! Allocate components independent of storage type.
 
     QPpred%gradient_kind = 2
-    
+
     CALL SPACE_resize_array( QPpred%n, QPpred%G, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPpred%n, QPpred%X_l, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-        
+
     CALL SPACE_resize_array( QPpred%n, QPpred%X, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPpred%n, QPpred%X_u, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPpred%n, QPpred%Z, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -4515,21 +4515,21 @@ end do
 
     CALL SPACE_resize_array( QPpred%m, QPpred%C_l, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPpred%m, QPpred%C, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
     CALL SPACE_resize_array( QPpred%m, QPpred%C_u, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPpred%m, QPpred%C_status, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPpred%m, QPpred%Y, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
     if ( B_type == 2 ) then
-       QPpred%G( np2m+1 : )   =  zero 
+       QPpred%G( np2m+1 : )   =  zero
        QPpred%X_l( np2m+1 : ) = -data%control%QPpred_control%infinity
        QPpred%X_u( np2m+1 : ) =  data%control%QPpred_control%infinity
        QPpred%C_l = zero
@@ -4537,11 +4537,11 @@ end do
     end if
 
     ! Set up for hot starts.
-    
+
     QPpred%C_status = zero
     QPpred%X_status = zero
     !data%control%QPpred_control%QPA_control%cold_start = 0
-    
+
     !*************************************************************
     ! Allocate storage for "A" : components dependent on storage !
     !                            type of nlp%A and nlp%J         !
@@ -4568,14 +4568,14 @@ end do
           allocate( data%L_BFGS%ind( 1:L ), data%L_BFGS%SB_inner( 1:L, 1:L ) )
 
           data%L_BFGS%eta = point1
- 
+
           ! CALL SPACE_resize_array( Ltn, data%L_BFGS%A_smt%row, inform%status, inform%alloc_status )
 !           IF ( inform%status /= GALAHAD_ok ) GO TO 990
 !           CALL SPACE_resize_array( Ltn, data%L_BFGS%A_smt%col, inform%status, inform%alloc_status )
 !           IF ( inform%status /= GALAHAD_ok ) GO TO 990
 !           CALL SPACE_resize_array( Ltn, data%L_BFGS%A_smt%val, inform%status, inform%alloc_status )
 !           IF ( inform%status /= GALAHAD_ok ) GO TO 990
-          
+
 !           CALL SPACE_resize_array( Ltn, data%L_BFGS%B_smt%row, inform%status, inform%alloc_status )
 !           IF ( inform%status /= GALAHAD_ok ) GO TO 990
 !           CALL SPACE_resize_array( Ltn, data%L_BFGS%B_smt%col, inform%status, inform%alloc_status )
@@ -4601,9 +4601,9 @@ end do
 !                 data%L_BFGS%B_smt%col( tally ) = j
 !              end do
 !           end do
-          
+
        end if
-       
+
        ! allocate needed vectors
        !************************
        len = 0
@@ -4617,7 +4617,7 @@ end do
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
        CALL SPACE_resize_array( len, QPpred%A%row, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       
+
        QPpred%A%val = zero
        QPpred%A%ne  = len
 
@@ -4629,7 +4629,7 @@ end do
 
        ! Do the [ J I -I ] part.
        if ( m > 0 ) then
-          QPpred%A%row( 1 : nlp%J%ne ) = nlp%J%row 
+          QPpred%A%row( 1 : nlp%J%ne ) = nlp%J%row
           QPpred%A%col( 1 : nlp%J%ne ) = nlp%J%col
           Ane = nlp%J%ne
           do i = 1, m
@@ -4667,12 +4667,12 @@ end do
              end do
              I_Aind = I_Aind + 1
              I_Bind = I_Bind + 1
-             QPpred%A%row( I_Aind ) = m + m_a + i 
+             QPpred%A%row( I_Aind ) = m + m_a + i
              QPpred%A%col( I_Aind ) = n + 2*m + i
              QPpred%A%val( I_Aind ) = -one
              QPpred%A%row( I_Bind ) = m + m_a + L + i
              QPpred%A%col( I_Bind ) = n + 2*m + L + i
-             QPpred%A%val( I_Bind ) = -one 
+             QPpred%A%val( I_Bind ) = -one
           end do
        end if
     CASE ( 'SPARSE_BY_ROWS')
@@ -4683,11 +4683,11 @@ end do
        inform%status = GALAHAD_error_input_status
        go to 991
     END SELECT
-   
+
     !********************************************************
     ! Allocate storage for the Hessian of the predictor QP. !
     !********************************************************
- 
+
     if ( B_type == 3 ) then   ! BFGS
 
        len = n*(n+1)/2
@@ -4698,7 +4698,7 @@ end do
        CALL SPACE_resize_array( len, QPpred%H%col, inform%status, inform%alloc_status )
        QPpred%H%m  = n + 2*m
        QPpred%H%n  = n + 2*m
-       QPpred%H%ne = len 
+       QPpred%H%ne = len
 
        tally = 0
        do i = 1, n
@@ -4708,7 +4708,7 @@ end do
              QPpred%H%col( tally ) = j
           end do
        end do
-       
+
        call SMT_put( data%B%type, 'COORDINATE', inform%status )
        call SPACE_resize_array( len, data%B%val, inform%status, inform%alloc_status )
        call SPACE_resize_array( len, data%B%row, inform%status, inform%alloc_status )
@@ -4720,12 +4720,12 @@ end do
        data%B%row = QPpred%H%row
        data%B%col = QPpred%H%col
        data%B%val = QPpred%H%val
-       
+
        CALL SPACE_resize_array( n, data%BFGS%d, inform%status, inform%alloc_status )
        CALL SPACE_resize_array( n, data%BFGS%Bs, inform%status, inform%alloc_status )
        CALL SPACE_resize_array( n, data%BFGS%gradLx, inform%status, inform%alloc_status )
        CALL SPACE_resize_array( n, data%BFGS%gradLx_new, inform%status, inform%alloc_status )
-       
+
        if ( data%control%NM_steps > 0 ) then  ! non-monotone
           CALL SPACE_resize_array( len, data%revert%Bval_revert, inform%status, inform%alloc_status )
        end if
@@ -4770,12 +4770,12 @@ end do
           QPpred%H%val( i ) = zero
        end do
        if ( B_type == 2 ) then  ! L-BFGS
-          do i = np2m + 1, np2m+L 
+          do i = np2m + 1, np2m+L
              QPpred%H%val( i )   = -one
              QPpred%H%val( i+L ) =  one
           end do
        end if
-       
+
     end if
 
     return
@@ -4795,7 +4795,7 @@ end do
 1000 FORMAT(1X, '** ERROR trimsqp  : unrecognized storage type in subroutine build_QPpred.')
 1001 FORMAT(1X, '** ERROR trimsqp : allocation error in subroutine', &
                 ' build_QPpred : error= ', I0, ' status= ', I0, '.'  )
-    
+
   END SUBROUTINE build_QPpred
 
 
@@ -4803,7 +4803,7 @@ end do
 !-*-   B U I L D _ Q P s q p  S U B R O U T I N E -*
 
   SUBROUTINE build_QPsiqp( nlp, QPsiqp, inform, data )
-  
+
     IMPLICIT NONE
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
@@ -4818,19 +4818,19 @@ end do
 !---------------------------------------------------------------
 !   D u m m y   A r g u m e n t s
 !---------------------------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout )  :: inform
     type( TRIMSQP_data_type ), intent( inout )    :: data
     type( NLPT_problem_type ), intent( in )       :: nlp
     type( QPT_problem_type ), intent( out )       :: QPsiqp
- 
+
 !---------------------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------------------
 
     integer :: len, Ane, i, j, tally, descent_row
     character, allocatable, dimension( : ) :: store_type
- 
+
     ! Define infinity
 
     data%control%QPsiqp_control%infinity = data%control%infinity / ten
@@ -4839,7 +4839,7 @@ end do
 
     QPsiqp%m = nlp%m + nlp%m_a + 1
     QPsiqp%n = nlp%n + 2*nlp%m
-    
+
     QPsiqp%A%m = nlp%m + nlp%m_a + 1 ;      QPsiqp%A%n = nlp%n + 2*nlp%m
     QPsiqp%H%m = nlp%n + 2*nlp%m ;          QPsiqp%H%n = nlp%n + 2*nlp%m
 
@@ -4851,16 +4851,16 @@ end do
 
     CALL SPACE_resize_array( QPsiqp%n, QPsiqp%G, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_l, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_u, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsiqp%n, QPsiqp%Z, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -4869,21 +4869,21 @@ end do
 
     CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_l, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_u, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
     CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_status, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPsiqp%m, QPsiqp%Y, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
     ! Prepare for hot starts.
-    
+
     if ( QPsiqp%m > 0 ) then
        QPsiqp%C_status  = zero
     end if
@@ -4905,24 +4905,24 @@ end do
     end if
 
     SELECT CASE ( SMT_get( store_type ) )
-       
+
     CASE ( 'DENSE' )
- 
+
        ! allocate needed vectors
        !************************
-       
+
        len = (nlp%m + nlp%m_a + 1) * nlp%n
-              
+
        CALL SPACE_resize_array( len, QPsiqp%A%val, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        ! fill needed componenents dependent on sparsity
-       !***********************************************           
+       !***********************************************
 
        call SMT_put( QPsiqp%A%type, 'DENSE', inform%status )
 
     CASE ( 'COORDINATE' )
-    
+
        ! allocate needed vectors
        !************************
        if ( nlp%m > 0 ) then
@@ -4938,7 +4938,7 @@ end do
              len =  nlp%n
           end if
        end if
- 
+
        CALL SPACE_resize_array( len, QPsiqp%A%val, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
        CALL SPACE_resize_array( len, QPsiqp%A%col, inform%status, inform%alloc_status )
@@ -4949,10 +4949,10 @@ end do
        QPsiqp%A%ne = len
 
        ! fill needed componenents dependent on sparsity
-       !***********************************************   
-       
+       !***********************************************
+
        call SMT_put( QPsiqp%A%type, 'COORDINATE', inform%status  )
-       
+
        Ane = 0
 
        ! first [ J  I  -I ].
@@ -4985,8 +4985,8 @@ end do
     CASE ( 'SPARSE_BY_ROWS')
 
        ! allocate needed vectors
-       !************************      
-       
+       !************************
+
        len =  nlp%J%ptr( nlp%m + 1 ) + nlp%A%ptr( nlp%m_a + 1 ) - 2 + nlp%n
 
        CALL SPACE_resize_array( len, QPsiqp%A%val, inform%status, inform%alloc_status )
@@ -4997,8 +4997,8 @@ end do
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
        ! fill needed componenents dependent on sparsity
-       !***********************************************            
-       
+       !***********************************************
+
        call SMT_put( QPsiqp%A%type, 'SPARSE_BY_ROWS', inform%status )
 
        tally = 1
@@ -5011,7 +5011,7 @@ end do
              QPsiqp%A%col( tally ) = nlp%J%col( j )
              tally = tally + 1
           end do
-          QPsiqp%A%ptr( i + 1 ) = tally 
+          QPsiqp%A%ptr( i + 1 ) = tally
        end do
 
        ! the A part
@@ -5021,7 +5021,7 @@ end do
                 QPsiqp%A%col( tally ) = nlp%A%col( j )
                 tally = tally + 1
              end do
-             QPsiqp%A%ptr( nlp%m + i + 1 ) = tally 
+             QPsiqp%A%ptr( nlp%m + i + 1 ) = tally
           end do
        end if
 
@@ -5032,22 +5032,22 @@ end do
        QPsiqp%A%ptr( nlp%m + nlp%m_a + 2 ) = tally + nlp%n
 
     CASE ( 'SPARSE_BY_COLUMNS' )
-       
+
        ! allocate needed vectors
-       !************************   
-       
+       !************************
+
        len =  nlp%J%ptr( nlp%n + 1 ) + nlp%A%ptr( nlp%n + 1 ) - 2 + nlp%n
-       
+
        CALL SPACE_resize_array( len, QPsiqp%A%val, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
        CALL SPACE_resize_array( len, QPsiqp%A%row, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
        CALL SPACE_resize_array( nlp%n + 1, QPsiqp%A%ptr, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
        ! fill needed componenents dependent on sparsity
-       !***********************************************      
-       
+       !***********************************************
+
        call SMT_put( QPsiqp%A%type, 'SPARSE_BY_COLUMNS', inform%status )
 
        descent_row = nlp%m + nlp%m_a + 1
@@ -5075,39 +5075,39 @@ end do
           ! Imposed descent constraint
           QPsiqp%A%row ( tally ) = descent_row
           tally = tally + 1
-          
+
           ! Set ptr.
           QPsiqp%A%ptr( j + 1 ) = tally
-          
+
        end do
 
     CASE DEFAULT
 
        WRITE( data%control%error, 1000 )
-       
+
     END SELECT
 
     !***************************************************************
     ! Allocate H: storage dependent on storage type in nlp%H.      !
     !***************************************************************
-    
+
     SELECT CASE ( SMT_get( nlp%H%type ) )
-    
+
     CASE ( 'DENSE' )
 
        ! allocate needed vectors
        !************************
-       
+
        len = size( nlp%H%val )
-              
+
        CALL SPACE_resize_array( len, QPsiqp%H%val, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
- 
+
        ! fill needed componenents dependent on sparsity
-       !***********************************************            
-       
+       !***********************************************
+
        call SMT_put( QPsiqp%H%type, 'DENSE', inform%status )
- 
+
     CASE ( 'COORDINATE' )
 
        ! allocate needed vectors
@@ -5121,22 +5121,22 @@ end do
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
        CALL SPACE_resize_array( len, QPsiqp%H%row, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       
+
        ! fill needed componenents dependent on sparsity
        !***********************************************
-      
+
        call SMT_put( QPsiqp%H%type, 'COORDINATE', inform%status )
-       
+
        QPsiqp%H%ne = len
- 
+
        QPsiqp%H%row = nlp%H%row
-       QPsiqp%H%col = nlp%H%col 
-              
+       QPsiqp%H%col = nlp%H%col
+
     CASE ( 'SPARSE_BY_ROWS')
 
        ! allocate needed vectors
-       !************************      
-       
+       !************************
+
        len =  nlp%H%ptr(nlp%n+1) - 1
 
        CALL SPACE_resize_array( len, QPsiqp%H%val, inform%status, inform%alloc_status )
@@ -5145,56 +5145,56 @@ end do
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
        CALL SPACE_resize_array( nlp%n + 1, QPsiqp%H%ptr, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
        ! fill needed componenents dependent on sparsity
-       !***********************************************            
-       
+       !***********************************************
+
        call SMT_put( QPsiqp%H%type, 'SPARSE_BY_ROWS', inform%status )
 
        QPsiqp%H%col = nlp%H%col
-       QPsiqp%H%ptr = nlp%H%ptr 
-  
+       QPsiqp%H%ptr = nlp%H%ptr
+
     CASE ( 'SPARSE_BY_COLUMNS' )
-       
+
        ! allocate needed vectors
-       !************************   
-       
+       !************************
+
        len =  nlp%H%ptr(nlp%n+1) - 1
-       
+
        CALL SPACE_resize_array( len, QPsiqp%H%val, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
        CALL SPACE_resize_array( len, QPsiqp%H%row, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
        CALL SPACE_resize_array( nlp%n + 1, QPsiqp%H%ptr, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
        ! fill needed componenents dependent on sparsity
-       !***********************************************      
-      
+       !***********************************************
+
        call SMT_put( QPsiqp%H%type, 'SPARSE_BY_COLUMNS', inform%status )
 
        QPsiqp%H%row = nlp%H%row
        QPsiqp%H%ptr = nlp%H%ptr
 
     CASE ( 'DIAGONAL' )
- 
+
        ! allocate needed vectors
        !************************
 
        len =  nlp%n
-       
+
        CALL SPACE_resize_array( len, QPsiqp%H%val, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-  
+
        ! fill needed componenents dependent on sparsity
-       !***********************************************             
-      
-       call SMT_put( QPsiqp%H%type, 'DIAGONAL', inform%status )    
+       !***********************************************
+
+       call SMT_put( QPsiqp%H%type, 'DIAGONAL', inform%status )
 
     CASE DEFAULT
 
        WRITE( data%control%error, 1000 )
-       
+
     END SELECT
 
     inform%status = 0
@@ -5213,13 +5213,13 @@ end do
 1000 FORMAT(1X, '** ERROR trimsqp : unrecognized storage type in subroutine build_QPsiqp.')
 1001 FORMAT(1X, '** ERROR trimsqp : allocation error in subroutine build_QPsiqp.',   &
             ' error= ', I0, ' status= ', I0, '.')
-    
+
   END SUBROUTINE build_QPsiqp
 
 !-*-   B U I L D _ Q P s e q p  S U B R O U T I N E -*
 
   SUBROUTINE build_QPseqp( nlp, QPseqp, inform, data )
-  
+
     IMPLICIT NONE
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
@@ -5234,26 +5234,26 @@ end do
 !---------------------------------------------------------------
 !   D u m m y   A r g u m e n t s
 !---------------------------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout )  :: inform
     type( TRIMSQP_data_type ), intent( inout )    :: data
     type( NLPT_problem_type ), intent( in )       :: nlp
     type( QPT_problem_type ), intent( out )       :: QPseqp
- 
+
 !---------------------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------------------
 
     integer :: len
     character, allocatable, dimension( : ) :: store_type
- 
+
     !!!! Define infinity
     !!!! data%control%QPseqp_control%infinity = data%control%infinity / ten
 
     ! Set MAX dimensions.  Must reset these at fill time.
     QPseqp%m = nlp%m + nlp%m_a + nlp%n
     QPseqp%n = nlp%n
-    
+
     !QPsiqp%A%m = nlp%m + nlp%m_a + 1 ;      QPsiqp%A%n = nlp%n + 2*nlp%m
     !QPsiqp%H%m = nlp%n + 2*nlp%m ;          QPsiqp%H%n = nlp%n + 2*nlp%m
 
@@ -5266,16 +5266,16 @@ end do
 
     CALL SPACE_resize_array( QPseqp%n, QPseqp%G, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     !CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_l, inform%status, inform%alloc_status )
     !IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPseqp%n, QPseqp%X, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     !CALL SPACE_resize_array( QPsiqp%n, QPsiqp%X_u, inform%status, inform%alloc_status )
     !IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPseqp%n, QPseqp%Z, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -5284,23 +5284,23 @@ end do
 
     !CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_l, inform%status, inform%alloc_status )
     !IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     ! This is the constant term, NOT the constraints!
     CALL SPACE_resize_array( QPseqp%m, QPseqp%C, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     !CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_u, inform%status, inform%alloc_status )
     !IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
     !CALL SPACE_resize_array( QPsiqp%m, QPsiqp%C_status, inform%status, inform%alloc_status )
     !IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( QPseqp%n, data%fr, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
     CALL SPACE_resize_array( QPseqp%n, data%fx, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
-    
+
     CALL SPACE_resize_array( nlp%m_a, data%wA, inform%status, inform%alloc_status )
     IF ( inform%status /= GALAHAD_ok ) GO TO 990
 
@@ -5343,13 +5343,13 @@ end do
     end if
 
     SELECT CASE ( SMT_get( store_type ) )
-       
+
     CASE ( 'DENSE' )
- 
-       write(*,*) ' WARNING : TRIMSQP : build_QPseqp : not yet implemented!' 
+
+       write(*,*) ' WARNING : TRIMSQP : build_QPseqp : not yet implemented!'
 
     CASE ( 'COORDINATE' )
-    
+
        ! allocate needed vectors - based on maximum possible.
        !*****************************************************
 
@@ -5366,7 +5366,7 @@ end do
              len =  nlp%n
           end if
        end if
- 
+
        CALL SPACE_resize_array( len, QPseqp%A%val, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
        CALL SPACE_resize_array( len, QPseqp%A%col, inform%status, inform%alloc_status )
@@ -5377,10 +5377,10 @@ end do
        QPseqp%A%ne = len
 
        ! fill needed componenents dependent on sparsity
-       !***********************************************   
-       
+       !***********************************************
+
        call SMT_put( QPseqp%A%type, 'COORDINATE', inform%status  )
-       
+
 !!$       !Do this in fill qpseqp
 !!$       Ane = 0
 !!$
@@ -5418,19 +5418,19 @@ end do
     CASE ( 'SPARSE_BY_COLUMNS' )
 
        write(*,*) ' WARNING : TRIMSQP : build_QPseqp : not yet implemented!'
-       
+
     CASE DEFAULT
 
        WRITE( data%control%error, 1000 )
-       
+
     END SELECT
 
     !***************************************************************
     ! Allocate H: storage dependent on storage type in nlp%H.      !
     !***************************************************************
-    
+
     SELECT CASE ( SMT_get( nlp%H%type ) )
-    
+
     CASE ( 'DENSE' )
 
        write(*,*) ' WARNING : TRIMSQP : build_QPseqp : not yet implemented!'
@@ -5448,21 +5448,21 @@ end do
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
        CALL SPACE_resize_array( len, QPseqp%H%row, inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) GO TO 990
-       
+
        ! fill needed componenents dependent on sparsity
        !***********************************************
-      
+
        call SMT_put( QPseqp%H%type, 'COORDINATE', inform%status )
-       
+
        QPseqp%H%ne = len
 
        ! These are not needed.
        QPseqp%H%m  = nlp%n
        QPseqp%H%n  = nlp%n
- 
+
        QPseqp%H%row = nlp%H%row
-       QPseqp%H%col = nlp%H%col 
-              
+       QPseqp%H%col = nlp%H%col
+
     CASE ( 'SPARSE_BY_ROWS')
 
        write(*,*) ' WARNING : TRIMSQP : build_QPseqp : not yet implemented!'
@@ -5470,15 +5470,15 @@ end do
     CASE ( 'SPARSE_BY_COLUMNS' )
 
        write(*,*) ' WARNING : TRIMSQP : build_QPseqp : not yet implemented!'
-       
+
     CASE ( 'DIAGONAL' )
 
        write(*,*) ' WARNING : TRIMSQP : build_QPseqp : not yet implemented!'
- 
+
     CASE DEFAULT
 
        WRITE( data%control%error, 1000 )
-       
+
     END SELECT
 
     inform%status = 0
@@ -5497,7 +5497,7 @@ end do
 1000 FORMAT(1X, '** ERROR trimsqp : unrecognized storage type in subroutine build_QPseqp.')
 1001 FORMAT(1X, '** ERROR trimsqp : allocation error in subroutine build_QPseqp.',   &
             ' error= ', I0, ' status= ', I0, '.')
-    
+
   END SUBROUTINE build_QPseqp
 
 
@@ -5505,7 +5505,7 @@ end do
 !-*-   F I L L _ Q P F E A S  S U B R O U T I N E -*
 
   SUBROUTINE fill_QPfeas( nlp, QPfeas, inform, control )
-  
+
     IMPLICIT NONE
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -5520,23 +5520,23 @@ end do
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout )  :: inform
-    type( TRIMSQP_control_type ), intent( inout ) :: control 
+    type( TRIMSQP_control_type ), intent( inout ) :: control
     type( NLPT_problem_type ), intent( inout ) :: nlp
     type( QPT_problem_type ), intent( inout ) :: QPfeas
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
     integer :: tally, i, j
-  
+
     inform%status = -1
-   
+
     QPfeas%f    = zero
     QPfeas%C_l  = nlp%A_l
-    QPfeas%C_u  = nlp%A_u 
+    QPfeas%C_u  = nlp%A_u
     QPfeas%Y    = zero
 
     QPfeas%X_l  = nlp%X_l
@@ -5552,9 +5552,9 @@ end do
     ! Load QPfeas%A with the portion from A.
 
     SELECT CASE ( SMT_get( nlp%A%type ) )
-       
+
     CASE ('DENSE')
-       
+
        do i = 1, nlp%m_a
           QPfeas%A%val( 1+(i-1)*nlp%n : i*nlp%n ) = nlp%A%val( 1+(i-1)*nlp%n : i*nlp%n )
           QPfeas%A%row( 1+(i-1)*nlp%n : i*nlp%n ) = i
@@ -5562,11 +5562,11 @@ end do
              QPfeas%A%col( (i-1)*nlp%n + j ) = j
           end do
        end do
-       
+
     CASE ('SPARSE_BY_ROWS')
-        
+
        tally = 1
-        
+
        do i = 1, nlp%m_a
           do j = nlp%A%ptr(i), nlp%A%ptr(i+1)-1
              QPfeas%A%row( tally ) = i
@@ -5575,11 +5575,11 @@ end do
              tally = tally + 1
           end do
        end do
-       
+
     CASE ('SPARSE_BY_COLUMNS')
-       
+
        tally = 1
-       
+
        do j = 1, nlp%n
           do i = nlp%A%ptr(j), nlp%A%ptr(j+1)-1
              QPfeas%A%row( tally ) = nlp%A%row( i )
@@ -5588,21 +5588,21 @@ end do
              tally = tally + 1
           end do
        end do
-       
+
     CASE('COORDINATE')
-       
+
        QPfeas%A%val( 1:nlp%A%ne ) = nlp%A%val
-       QPfeas%A%row( 1:nlp%A%ne ) = nlp%A%row 
+       QPfeas%A%row( 1:nlp%A%ne ) = nlp%A%row
        QPfeas%A%col( 1:nlp%A%ne ) = nlp%A%col
-       
+
     CASE DEFAULT
-       
-       write( control%error, 1000 ) 
-       
+
+       write( control%error, 1000 )
+
     END SELECT
 
     inform%status = 0
-    
+
     return
 
 ! Format statements
@@ -5614,7 +5614,7 @@ end do
 !-*-   F I L L _ Q P s t e e r  S U B R O U T I N E -*
 
   SUBROUTINE fill_QPsteer( nlp, QPsteer, inform, control, data )
-  
+
     IMPLICIT NONE
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -5629,26 +5629,26 @@ end do
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout )  :: inform
     type( TRIMSQP_control_type ), intent( inout ) :: control
     type( TRIMSQP_data_type ), intent( in ) :: data
     type( NLPT_problem_type ), intent( inout ) :: nlp
     type( QPT_problem_type ), intent( inout ) :: QPsteer
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
     integer :: tally, i, j, m, m_a, n
-  
+
     inform%status = -1
 
     m = nlp%m
     m_a = nlp%m_a
     n = nlp%n
 
-   
+
     QPsteer%f = zero
 
     QPsteer%G = zero
@@ -5701,9 +5701,9 @@ end do
     ! First the J part.
 
     SELECT CASE ( SMT_get( nlp%J%type ) )
-       
+
     CASE ('DENSE')
-       
+
        do i = 1, nlp%m_a
           QPsteer%A%val( 1+(i-1)*nlp%n : i*nlp%n ) = nlp%A%val( 1+(i-1)*nlp%n : i*nlp%n )
           QPsteer%A%row( 1+(i-1)*nlp%n : i*nlp%n ) = i
@@ -5711,11 +5711,11 @@ end do
              QPsteer%A%col( (i-1)*nlp%n + j ) = j
           end do
        end do
-       
+
     CASE ('SPARSE_BY_ROWS')
-        
+
        tally = 1
-        
+
        do i = 1, nlp%m_a
           do j = nlp%A%ptr(i), nlp%A%ptr(i+1)-1
              QPsteer%A%row( tally ) = i
@@ -5724,11 +5724,11 @@ end do
              tally = tally + 1
           end do
        end do
-       
+
     CASE ('SPARSE_BY_COLUMNS')
-       
+
        tally = 1
-       
+
        do j = 1, nlp%n
           do i = nlp%A%ptr(j), nlp%A%ptr(j+1)-1
              QPsteer%A%row( tally ) = nlp%A%row( i )
@@ -5737,17 +5737,17 @@ end do
              tally = tally + 1
           end do
        end do
-       
+
     CASE('COORDINATE')
-       
+
        QPsteer%A%val( 1:nlp%J%ne ) = nlp%J%val
-       QPsteer%A%row( 1:nlp%J%ne ) = nlp%J%row 
+       QPsteer%A%row( 1:nlp%J%ne ) = nlp%J%row
        QPsteer%A%col( 1:nlp%J%ne ) = nlp%J%col
-       
+
     CASE DEFAULT
-       
-       write( control%error, 1000 ) 
-       
+
+       write( control%error, 1000 )
+
     END SELECT
 
     ! Now the I -I part.
@@ -5757,21 +5757,21 @@ end do
     do i = 1, m
 
        QPsteer%A%val( tally + i ) = one
-       QPsteer%A%row( tally + i ) = i 
+       QPsteer%A%row( tally + i ) = i
        QPsteer%A%col( tally + i ) = n + i
 
        QPsteer%A%val( tally + m + i ) = -one
-       QPsteer%A%row( tally + m + i ) = i 
+       QPsteer%A%row( tally + m + i ) = i
        QPsteer%A%col( tally + m + i ) = n + m + i
-       
+
     end do
 
     ! Finally, the A part.
 
     SELECT CASE ( SMT_get( nlp%A%type ) )
-       
+
     CASE ('DENSE')
-       
+
        do i = 1, nlp%m_a
           QPsteer%A%val( 1+(i-1)*nlp%n : i*nlp%n ) = nlp%A%val( 1+(i-1)*nlp%n : i*nlp%n )
           QPsteer%A%row( 1+(i-1)*nlp%n : i*nlp%n ) = i
@@ -5779,11 +5779,11 @@ end do
              QPsteer%A%col( (i-1)*nlp%n + j ) = j
           end do
        end do
-       
+
     CASE ('SPARSE_BY_ROWS')
-        
+
        tally = 1
-        
+
        do i = 1, nlp%m_a
           do j = nlp%A%ptr(i), nlp%A%ptr(i+1)-1
              QPsteer%A%row( tally ) = i
@@ -5792,11 +5792,11 @@ end do
              tally = tally + 1
           end do
        end do
-       
+
     CASE ('SPARSE_BY_COLUMNS')
-       
+
        tally = 1
-       
+
        do j = 1, nlp%n
           do i = nlp%A%ptr(j), nlp%A%ptr(j+1)-1
              QPsteer%A%row( tally ) = nlp%A%row( i )
@@ -5805,23 +5805,23 @@ end do
              tally = tally + 1
           end do
        end do
-       
+
     CASE('COORDINATE')
 
        tally = tally + 2*m
-       
+
        QPsteer%A%val( tally + 1 : tally + nlp%A%ne ) = nlp%A%val
-       QPsteer%A%row( tally + 1 : tally + nlp%A%ne ) = m + nlp%A%row 
+       QPsteer%A%row( tally + 1 : tally + nlp%A%ne ) = m + nlp%A%row
        QPsteer%A%col( tally + 1 : tally + nlp%A%ne ) = nlp%A%col
-       
+
     CASE DEFAULT
-       
-       write( control%error, 1001 ) 
-       
+
+       write( control%error, 1001 )
+
     END SELECT
 
     inform%status = 0
-    
+
     return
 
 ! Format statements
@@ -5834,7 +5834,7 @@ end do
 !-*-   F I L L _ Q P _ p r e d  S U B R O U T I N E -*
 
   SUBROUTINE fill_QPpred( nlp, QPpred, inform, data )
-  
+
     IMPLICIT NONE
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -5848,12 +5848,12 @@ end do
 !-------------------------------------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-------------------------------------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout ) :: inform
     type( TRIMSQP_data_type ), intent( inout )      :: data
     type( NLPT_problem_type ), intent( inout )   :: nlp
     type( QPT_problem_type ), intent( inout )    :: QPpred
-     
+
 !-------------------------------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-------------------------------------------------------------------------
@@ -5867,7 +5867,7 @@ end do
     B_lammax = tenp8
 
     ! For convenience
-    
+
     n       = nlp%n
     m       = nlp%m
     m_a     = nlp%m_a
@@ -5883,14 +5883,14 @@ end do
     !****************
 
     QPpred%f = zero
-    
+
     ! Fill vectors.
     !**************
 
     ! G
     QPpred%G( 1 : n )        = nlp%G
     QPpred%G( n + 1 : np2m ) = data%penalty
-    
+
     ! C_l, C_u, and Y
     if ( m > 0 ) then
        QPpred%C_l( 1 : m )  = nlp%C_l - nlp%C
@@ -5903,7 +5903,7 @@ end do
        QPpred%Y(   m + 1 : m + m_a )  = nlp%Y_a
     end if
     if ( B_type == 2 ) then  ! L-BFGS
-       QPpred%Y( m + m_a + 1 : m + m_a + 2*L ) = zero 
+       QPpred%Y( m + m_a + 1 : m + m_a + 2*L ) = zero
     end if
 
     ! X
@@ -5951,25 +5951,25 @@ end do
     if ( QPpred%m > 0 ) then
 
        SELECT CASE ( SMT_get( QPpred%A%type ) )
-          
+
        CASE ('DENSE')
-       
+
           ! The first m rows.
           !**********************
-   
+
           do i = 1, m
-   
+
              tally = (i-1) * (n + 2*m) + 1
-           
+
              ! The J part.
-   
+
              do j = 1, n
                 QPpred%A%val( tally ) = nlp%J%val( n*(i-1) + j )
                 tally = tally + 1
              end do
-   
+
              ! The I and -I part corresponding to (u,v) variables.
-   
+
              do l = 1, i-1
                 QPpred%A%val( tally )         = zero  ! u part
                 QPpred%A%val( tally + m ) = zero  ! v part
@@ -5979,159 +5979,159 @@ end do
              QPpred%A%val( tally +  m ) = -one  ! v part
              do l = i+1, m
                 QPpred%A%val( tally )         = zero  ! u part
-                QPpred%A%val( tally + m ) = zero  ! v part           
+                QPpred%A%val( tally + m ) = zero  ! v part
                 tally = tally + 1
              end do
-   
+
           end do
-   
+
           ! The last m_a rows.
           !***********************
-   
+
           if ( m_a > 0 ) then
-   
+
              tally = m * (n + 2*m)
-   
+
              QPpred%A%val( tally + 1 : tally + m_a * n ) = nlp%A%val
-   
+
           end if
-          
+
        CASE ('SPARSE_BY_ROWS')
-    
+
           tally = 1
-   
+
           QPpred%A%ptr( 1 ) = 1
-   
+
           ! The first m rows.
-          !**********************       
-          
+          !**********************
+
           do i = 1, m
-   
+
              ! ith row of J
-   
+
              do j = nlp%J%ptr(i), nlp%J%ptr(i+1)-1
                 QPpred%A%col( tally ) = nlp%J%col( j )
                 QPpred%A%val( tally ) = nlp%J%val( j )
                 tally = tally + 1
              end do
-   
+
              ! ith row of  [ I -I]
-    
+
              QPpred%A%col( tally ) = n + i
              QPpred%A%val( tally ) = one
-   
+
              tally = tally + 1
-   
+
              QPpred%A%col( tally ) = n + m + i
              QPpred%A%val( tally ) = -one
-   
+
              tally = tally + 1
-   
+
              ! Set ptr for row i.
-   
+
              QPpred%A%ptr( i + 1 ) = tally + 1
-   
+
           end do
-   
+
           ! The last nlp%ma rows.
           !**********************
-   
+
           if ( m_a > 0 ) then
-   
+
              do i = 1, m_a
-                
+
                 do j = nlp%A%ptr(i), nlp%A%ptr(i+1)-1
                    QPpred%A%col( tally ) = nlp%A%col( j )
                    QPpred%A%val( tally ) = nlp%A%val( j )
                    tally = tally + 1
                 end do
-   
-                QPpred%A%ptr( m + 1 + i ) = tally + 1   
-                
+
+                QPpred%A%ptr( m + 1 + i ) = tally + 1
+
              end do
-   
+
           end if
-   
+
        CASE ('SPARSE_BY_COLUMNS')
-    
+
           tally = 1
-          
+
           QPpred%A%ptr( 1 ) = 1
-          
+
           ! The first n columns.
-          !*************************       
-          
+          !*************************
+
           do i = 1, n
-   
+
              ! ith col of J
-   
+
              do j = nlp%J%ptr(i), nlp%J%ptr(i+1)-1
                 QPpred%A%row( tally ) = nlp%J%row( j )
                 QPpred%A%val( tally ) = nlp%J%val( j )
                 tally = tally + 1
              end do
-   
+
              ! ith col of  A
-   
+
              if ( m_a > 0 ) then
-   
+
                 do j = nlp%A%ptr(i), nlp%A%ptr(i+1)-1
                    QPpred%A%row( tally ) = nlp%A%row( j )
                    QPpred%A%val( tally ) = nlp%A%val( j )
                    tally = tally + 1
                 end do
-   
+
              end if
-   
+
              ! Set ptr for row i.
-   
+
              QPpred%A%ptr( i + 1 ) = tally + 1
-   
+
           end do
-   
+
           ! The last 2*m columns.
           !**************************
-   
+
           do i = 1, m
-    
+
              QPpred%A%row( tally ) = i
              QPpred%A%val( tally ) = one
              tally = tally + 1
-   
-             QPpred%A%ptr( n + 1 + i ) = tally + 1 
-   
+
+             QPpred%A%ptr( n + 1 + i ) = tally + 1
+
              QPpred%A%row( tally ) = i
              QPpred%A%val( tally ) = -one
-   
-             QPpred%A%ptr( n + 1 + i + m ) = tally + 1 + m 
-   
+
+             QPpred%A%ptr( n + 1 + i + m ) = tally + 1 + m
+
           end do
-          
+
        CASE('COORDINATE')
-   
+
           Ane = 0
-   
+
           ! First do the [ J -I  I ] row.
-   
+
           if ( m > 0 ) then
              QPpred%A%val( 1 : nlp%J%ne ) = nlp%J%val
              Ane = nlp%J%ne + 2*m
           end if
-   
+
           ! Next, the A part.
-   
+
           if ( m_a > 0 ) then
              QPpred%A%val( Ane + 1 : Ane + nlp%A%ne ) = nlp%A%val
              Ane = Ane + nlp%A%ne
           end if
-   
+
           ! Finally, the matrices for L-BFGS
           ! ********************************
-          
+
           if ( data%control%B_type == 2 ) then
 
              ! Define diagonal B_0.
-             
+
              if ( iterate == 1 ) then
                 QPpred%H%val( : n ) = one
                 data%B%val          = one
@@ -6157,9 +6157,9 @@ end do
                               data%control%out )
 
 !              ! Figure out which column is being added/replaced.
-             
+
 !              last = min( iterate - 1, L )
-             
+
 !              if ( iterate <= L+1 ) then
 !                 ind( iterate - 1 ) = iterate - 1
 !              else
@@ -6167,7 +6167,7 @@ end do
 !                 ind( 1: L-1 ) = ind( 2 : L )
 !                 ind( L )      = dummy_int
 !              end if
- 
+
 !              col = data%L_BFGS%ind( last )
 
 !              ! Replace that column in S and Y.
@@ -6177,7 +6177,7 @@ end do
 !              modified = .false.
 
 !              do i = 1, last
-        
+
 !                 if ( i == last ) then
 !                    B(:,ind(last)) = Y(:,ind(last)) / dot_product( Y(:,ind(last)), S(:,ind(last)) )**half
 !                    do j = 1, last-1
@@ -6193,20 +6193,20 @@ end do
 !                 end do
 !                 Bs = A(:,ind(i))
 !                 A(:,ind(i)) = Bs / ( dot_product( S(:,ind(i)), Bs ) )**half
-        
+
 !                 if ( i== last ) then
 
 !                    ! Check if sufficiently positive definite.
 !                    yts  = dot_product( Y(:,ind(last)), S(:,ind(last)) )
 !                    stBs = dot_product( S(:,ind(last)), Bs )  ! s_k^T B_k s_k
-                   
+
 !                    if ( yts < eta*stBs .and. .not. modified ) then
 !                       if ( curve_mod == 0 ) then ! skip it
 !                          theta = 0
 !                       elseif ( curve_mod == 1) then ! % Powell
 !                          theta          = (1-eta)*stBs/(stBs-yts)
 !                          Y(:,ind(last)) = theta * Y(:,ind(last)) + (1-theta)*Bs
-!                       else 
+!                       else
 !                          write(error, *)' ERROR:get_L_BFGS: disallowed value curve_mod.'
 !                       end if
 
@@ -6226,7 +6226,7 @@ end do
 !                 end if
 
 !              end do
- 
+
 !           do j = 1, L
 !              do i = 1, n
 !                 data%L_BFGS%A(i,j) = n*(j-1) + i
@@ -6249,28 +6249,28 @@ end do
                 A_ind = A_ind + n
                 B_ind = B_ind + n
              end do
- 
+
 400          continue
 
           end if
-          
+
        CASE DEFAULT
-          
+
           write( error, 1000 )
           inform%status = GALAHAD_error_input_status
-          return 
-          
+          return
+
        END SELECT
-   
+
     end if
-   
+
     !--------------------------------------------------
     ! Load QPpred%H with the portion from "B".        !
     ! B_type :  0 = identity, 1 = weighted diagonal,  !
     !           2 = L-BFGS, 3 = BFGS,                 !
     !           4 = exact H.                          !
     !--------------------------------------------------
-   
+
     SELECT CASE ( B_type)
 
     CASE ( 0 )  ! "B" is Identity - diagonal storage.
@@ -6315,7 +6315,7 @@ end do
 !        end if
 
 !        ! Load the matrices A and B of SMT type.
-      
+
 !        tally = 0
 !        do j = 1, L
 !           data%L_BFGS%A_smt%val( tally+1 : tally+n ) = data%L_BFGS%A( :, L )
@@ -6350,7 +6350,7 @@ end do
           ! Note: all data used must be computed at end of previous iterate.
 
           data%BFGS%d = data%BFGS%gradLx_new - data%BFGS%gradLx
-        
+
           if ( data%sqp_ratio_used ) then
              data%BFGS%std  = dot_product( data%s_f, data%BFGS%d )
              data%BFGS%Bs   = zero
@@ -6372,7 +6372,7 @@ end do
                 stBs = dot_product( data%BFGS%BS, data%s_c )
              end if
           end if
-          
+
           ! Print the data
 
           if ( data%control%print_level >= GALAHAD_DEBUG ) then
@@ -6385,12 +6385,12 @@ end do
           ! Possibly skip the BFGS update if stBs is too small.
 
           if ( stBs <= tenm5 ) then
-             
+
              if ( data%control%print_level >= GALAHAD_DEBUG ) then
                 write( out, 1018 ) stBs
              end if
 
-             data%QPpred%H%val( : data%B%ne ) = data%B%val ! Is this needed?   
+             data%QPpred%H%val( : data%B%ne ) = data%B%val ! Is this needed?
              goto 900
 
           end if
@@ -6398,18 +6398,18 @@ end do
           ! Perform the BFGS update (currently only damping option available )
 
           damp_factor = data%BFGS%damp_factor
-          
+
           if ( data%BFGS%std >= damp_factor * stBs ) then
 
              theta = one ;    data%BFGS%mod_type = 0
-             
+
           else
 
              data%BFGS%mod_type = 1
-             
+
              theta       = ( one - damp_factor )*stBs / ( stBs - data%BFGS%std )
              data%BFGS%d = theta*data%BFGS%d + (one-theta) * data%BFGS%Bs
-             
+
              if ( data%sqp_ratio_used ) then
                 data%BFGS%std  = dot_product( data%BFGS%d, data%s_f )
              else
@@ -6419,7 +6419,7 @@ end do
                    data%BFGS%std  = dot_product( data%BFGS%d, data%s_c )
                 end if
              end if
-             
+
              if ( data%control%print_level >= GALAHAD_DEBUG ) then
                 write( out, 1001 ) theta
              end if
@@ -6430,11 +6430,11 @@ end do
                      ( data%BFGS%d(i), data%BFGS%BS(i), data%BFGS%gradLx(i), data%BFGS%gradLx_new(i),  i = 1, n )
                 write( out, 1016 ) data%BFGS%std, stBs
              end if
- 
+
           end if
 
           data%BFGS%theta = theta
-          
+
           tally = 1
           do i = 1, n
              di  = data%BFGS%d(i)
@@ -6446,19 +6446,19 @@ end do
                 Bij = min( Bij, tenp9 )
                 Bij = max( Bij, -tenp9 )
                 data%B%val(tally) = Bij
-                tally = tally + 1   
+                tally = tally + 1
              end do
           end do
           data%QPpred%H%val( : data%B%ne ) = data%B%val
 
        else ! Step not accepted - just refill.
 
-          data%QPpred%H%val( : data%B%ne ) = data%B%val ! Is this needed?   
+          data%QPpred%H%val( : data%B%ne ) = data%B%val ! Is this needed?
 
        end if
-       
+
     CASE ( 4 )  ! Exact
-    !******************* 
+    !*******************
        write(*,*) 'not yet implemented - qppred_fill'
 
     CASE DEFAULT
@@ -6477,7 +6477,7 @@ end do
        data%revert%Bval_revert = data%B%val
        ! Save L-BFGS vectors/matrix.
     end if
-    
+
     return
 
 ! Format statements
@@ -6502,7 +6502,7 @@ end do
 !-*-   F I L L _ Q P _ s q p   S U B R O U T I N E -*
 
   SUBROUTINE fill_QPsiqp( nlp, QPsiqp, inform, data )
-  
+
     IMPLICIT NONE
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -6516,14 +6516,14 @@ end do
 !-------------------------------------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-------------------------------------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout )  :: inform
     type( TRIMSQP_data_type ), intent( in )       :: data
     type( NLPT_problem_type ), intent( inout )    :: nlp
     type( QPT_problem_type ), intent( inout )     :: QPsiqp
     !integer, intent( in ) :: correction_type
-    
-     
+
+
 !-------------------------------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-------------------------------------------------------------------------
@@ -6531,11 +6531,11 @@ end do
     integer :: tally, tally2, i, j, Ane, correction_type, m, m_a, n
 
     correction_type = data%control%correction_type
-    
+
     m   = nlp%m
     m_a = nlp%m_a
     n   = nlp%n
-    
+
     ! Fill constants.
     !****************
 
@@ -6548,7 +6548,7 @@ end do
     tally = 0
 
     select case (correction_type)
-    
+
     case (0)
     !*******
 
@@ -6576,20 +6576,20 @@ end do
        QPsiqp%C_l( tally + 1 )  = - data%control%infinity
        QPsiqp%C_u( tally + 1 )  = zero + tenm5 !two*epsmch**(0.1_wp) ! DPR: added for experiment
        QPsiqp%Y  ( tally + 1 )  = zero
-       
+
        ! G
        QPsiqp%G( : n )             = data%GplusHs
 !       QPsiqp%G( n + 1 : n + 2*m ) = data%SQP_penalty
        QPsiqp%G( n + 1 : n + 2*m ) = data%penalty
-       
+
        ! X_l and X_u
        do i = 1, n
-          
+
           QPsiqp%X_l( i )  = nlp%X_l(i) - ( nlp%X(i) + data%s_c(i) )   ! Suppose to be negative
           !QPsiqp%X_l( i )  = min( nlp%X_l(i), data%min_TRsqp )         ! ensure feasible region.
           QPsiqp%X_l( i )  = max( QPsiqp%X_l(i), - data%TRsqp )
           QPsiqp%X_l( i )  = min( QPsiqp%X_l(i), zero )  ! Do I want this?
-          
+
           QPsiqp%X_u( i )  = nlp%X_u(i) - ( nlp%X(i) + data%s_c(i) ) ! Suppose to be positive.
           !QPsiqp%X_u( i )  = max( QPsiqp%X_u( i ), - data%min_TRsqp ) ! Ensure feasible region.
           QPsiqp%X_u( i )  = min( QPsiqp%X_u(i), data%TRsqp )
@@ -6603,7 +6603,7 @@ end do
        QPsiqp%X_u( n + 1 : n + 2*m ) = data%control%QPsiqp_control%infinity
        QPsiqp%X_u( n + data%sat(:data%num_sat) )     = zero   ! DPR : might want to do more here.
        QPsiqp%X_u( n + m + data%sat(:data%num_sat) ) = zero
-                  
+
        ! X
        QPsiqp%X(: n ) = zero
 
@@ -6620,39 +6620,39 @@ end do
           QPsiqp%X( n + m + i ) = max( zero, data%CplusJSc(i) - nlp%C_u(i) )
 
        end do
-       
+
        ! Z
        QPsiqp%Z( : n )              = nlp%Z   ! DPR: cauchy multipliers?
        QPsiqp%Z ( n + 1 : n + 2*m ) = zero
-       
+
     case( 1 )
     !*******
 
        ! General constraints C and Y
        if ( m > 0 ) then
           QPsiqp%C_l( : m )  = nlp%C_l( : m ) - data%C_cauchy
-          QPsiqp%C_u( : m )  = nlp%C_u( : m ) - data%C_cauchy  
+          QPsiqp%C_u( : m )  = nlp%C_u( : m ) - data%C_cauchy
           QPsiqp%Y  ( : m )  = nlp%Y  ! DPR: probably use mults from predictor.
           tally             = m
        end if
 
        ! Linear constraints C and Y
        if ( m_a > 0 ) then
-          
+
           QPsiqp%C_l( tally + 1 : tally + m_a )  = nlp%A_l - ( nlp%Ax + data%AxSp )
           QPsiqp%C_u( tally + 1 : tally + m_a )  = nlp%A_u - ( nlp%Ax + data%AxSp )
-          
+
           QPsiqp%Y( tally + 1 : tally + m_a )  = nlp%Y_a  ! DPR: again use predictor multipliers.
-          
+
           tally = m + m_a
-          
+
        end if
 
        ! Descent condition C and Y.
        QPsiqp%C_l( tally + 1 )  = - data%control%infinity
        QPsiqp%C_u( tally + 1 )  = zero + 0.0005_wp !two*epsmch**(0.1_wp) ! DPR: added for experiemnt
        QPsiqp%Y  ( tally + 1 )  = zero
-       
+
        ! G
        QPsiqp%G( : n ) = data%GplusHs
 
@@ -6668,23 +6668,23 @@ end do
        if ( m > 0 ) then
           do i = 1, m
              QPsiqp%X( n + i )      = max( zero, nlp%C_l(i) - data%C_cauchy(i) )
-             QPsiqp%X( n + m + i )  = max( zero, data%C_cauchy(i) - nlp%C_u(i) ) 
+             QPsiqp%X( n + m + i )  = max( zero, data%C_cauchy(i) - nlp%C_u(i) )
           end do
        end if
 
        ! X_l and X_u
        do i = 1, n
-          
+
           QPsiqp%X_l( i )  = nlp%X_l(i) - ( nlp%X(i) + data%s_c(i) )
           QPsiqp%X_l( i )  = max( QPsiqp%X_l(i), - data%TRsqp )
           QPsiqp%X_l( i )  = min( QPsiqp%X_l(i), zero )  ! Do I want this?
-          
+
           QPsiqp%X_u( i )  = nlp%X_u(i) - ( nlp%X(i) + data%s_c(i) )
           QPsiqp%X_u( i )  = min( QPsiqp%X_u(i), data%TRsqp )   ! DPR: probably want to ensure that the initial
                                                               !point is feasible by perturbing either
                                                               ! the bound or the intial point.
           QPsiqp%X_u( i )  = max( QPsiqp%X_u(i), zero )  ! Do I want this?
-          
+
        end do
 
        if ( m > 0 ) then
@@ -6694,10 +6694,10 @@ end do
 
        ! Z
        QPsiqp%Z( 1 : n ) = nlp%Z   ! DPR: again from predictor multipliers
-       
+
        if ( m > 0 ) then
           QPsiqp%Z( n + 1 : n + 2*m ) = zero
-       end if   
+       end if
 
     case (2)
     !*******
@@ -6705,28 +6705,28 @@ end do
        ! General constraints C and Y
        if ( m > 0 ) then
           QPsiqp%C_l( : m )  = nlp%C_l( : m ) - data%C_cauchy
-          QPsiqp%C_u( : m )  = nlp%C_u( : m ) - data%C_cauchy  
+          QPsiqp%C_u( : m )  = nlp%C_u( : m ) - data%C_cauchy
           QPsiqp%Y  ( : m )  = nlp%Y  ! DPR: probably use mults from predictor.
           tally             = m
        end if
 
        ! Linear constraints C and Y
        if ( m_a > 0 ) then
-          
+
           QPsiqp%C_l( tally + 1 : tally + m_a )  = nlp%A_l - ( nlp%Ax + data%AxSp )
           QPsiqp%C_u( tally + 1 : tally + m_a )  = nlp%A_u - ( nlp%Ax + data%AxSp )
-          
+
           QPsiqp%Y( tally + 1 : tally + m_a )  = nlp%Y_a  ! DPR: again use predictor multipliers.
-          
+
           tally = m + m_a
-          
+
        end if
 
        ! Descent condition C and Y.
        QPsiqp%C_l( tally + 1 )  = - data%control%infinity
        QPsiqp%C_u( tally + 1 )  = zero + 0.0005_wp !two*epsmch**(0.1_wp) ! DPR: added for experiemnt
        QPsiqp%Y  ( tally + 1 )  = zero
-       
+
        ! G
        QPsiqp%G( : n ) = data%GplusHs
 
@@ -6741,23 +6741,23 @@ end do
        if ( m > 0 ) then
           do i = 1, m
              QPsiqp%X( n + i )      = max( zero, nlp%C_l(i) - data%C_cauchy(i) )
-             QPsiqp%X( n + m + i )  = max( zero, data%C_cauchy(i) - nlp%C_u(i) ) 
+             QPsiqp%X( n + m + i )  = max( zero, data%C_cauchy(i) - nlp%C_u(i) )
           end do
        end if
 
        ! X_l and X_u
        do i = 1, n
-          
+
           QPsiqp%X_l( i )  = nlp%X_l(i) - ( nlp%X(i) + data%s_c(i) )
           QPsiqp%X_l( i )  = max( QPsiqp%X_l(i), - data%TRsqp )
           QPsiqp%X_l( i )  = min( QPsiqp%X_l(i), zero )  ! Do I want this?
-          
+
           QPsiqp%X_u( i )  = nlp%X_u(i) - ( nlp%X(i) + data%s_c(i) )
           QPsiqp%X_u( i )  = min( QPsiqp%X_u(i), data%TRsqp )   ! DPR: probably want to ensure that the initial
                                                               !point is feasible by perturbing either
                                                               ! the bound or the intial point.
           QPsiqp%X_u( i )  = max( QPsiqp%X_u(i), zero )  ! Do I want this?
-          
+
        end do
 
        if ( m > 0 ) then
@@ -6768,7 +6768,7 @@ end do
 
        ! Z
        QPsiqp%Z( 1 : n ) = nlp%Z   ! DPR: again from predictor multipliers
-       
+
        if ( m > 0 ) then
           QPsiqp%Z( n + 1 : n + 2*m ) = zero
        end if
@@ -6784,7 +6784,7 @@ end do
     !----------------------------------------------------------------------
 
     SELECT CASE ( SMT_get( QPsiqp%A%type ) )
-       
+
     CASE ('DENSE')
 
        tally  = m * n
@@ -6804,15 +6804,15 @@ end do
        ! Finally the imposed descent constrain.
 
        QPsiqp%A%val( tally + 1 : tally + n ) = nlp%G + data%descent_con
-    
+
     CASE ('SPARSE_BY_ROWS')
- 
+
        tally = 1
 
        QPsiqp%A%ptr( 1 ) = 1
 
-       ! First do the J, which is the first m rows.      
-       
+       ! First do the J, which is the first m rows.
+
        do i = 1, m
 
           do j = nlp%J%ptr(i), nlp%J%ptr(i+1)-1
@@ -6827,7 +6827,7 @@ end do
        if ( m_a > 0 ) then
 
           do i = 1, m_a
-             
+
              do j = nlp%A%ptr(i), nlp%A%ptr(i+1)-1
                 QPsiqp%A%val( tally ) = nlp%A%val( j )
                 tally = tally + 1
@@ -6838,18 +6838,18 @@ end do
        end if
 
        ! Finally do the descent constraint, which is the final constraint.
-       
+
        QPsiqp%A%val( tally : tally + n ) = nlp%G + data%descent_con
 
     CASE ('SPARSE_BY_COLUMNS')
- 
+
        tally = 1
-       
+
        QPsiqp%A%ptr( 1 ) = 1
-       
+
        ! Loop over the n columns.
-       !*****************************       
-       
+       !*****************************
+
        do i = 1, n
 
           ! ith col of J
@@ -6894,7 +6894,7 @@ end do
           QPsiqp%A%val( Ane + m + 1 : Ane + 2*m ) = - one
           Ane = Ane + 2*m
        end if
-       
+
        ! Next the A part.
 
        if ( m_a > 0 ) then
@@ -6906,18 +6906,18 @@ end do
 
        !QPsiqp%A%val( Ane + 1 : Ane + n ) = data%GplusHs
        QPsiqp%A%val( Ane + 1 : Ane + n ) = data%descent_con
-       
-       
+
+
     CASE DEFAULT
-       
-       write( data%control%error, 1000 ) 
-       
+
+       write( data%control%error, 1000 )
+
     END SELECT
 
     !-------------------------------------------
     ! Load QPsiqp%H with nlp%H                  !
     !-------------------------------------------
-    
+
     select case ( SMT_get(data%QPsiqp%H%type) )
 
     case ('COORDINATE')
@@ -6944,7 +6944,7 @@ end do
 !-*-   F I L L _ Q P _ s e q p   S U B R O U T I N E -*
 
   SUBROUTINE fill_QPseqp( nlp, QPseqp, inform, data )
-  
+
     IMPLICIT NONE
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -6958,13 +6958,13 @@ end do
 !-------------------------------------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-------------------------------------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout )  :: inform
     type( TRIMSQP_data_type ), intent( inout )       :: data
     type( NLPT_problem_type ), intent( inout )    :: nlp
     type( QPT_problem_type ), intent( inout )     :: QPseqp
-        
-     
+
+
 !-------------------------------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-------------------------------------------------------------------------
@@ -6980,10 +6980,10 @@ end do
     ! ***************************************************************
 
     ! First the variables.
-    
+
     nfr = 0
     nfx = 0
-    
+
 !!$    write(*,*) 'QPpred_X_stat = ',data%QPpred%X_status
 !!$    write(*,*) 'X = ', nlp%X
 !!$    write(*,*) 's_p = ', data%s_p
@@ -7034,7 +7034,7 @@ end do
           case default
              write( out, 1000 )
              inform%status = -1
-             return 
+             return
           end select
        else
           nfr            = nfr + 1
@@ -7043,25 +7043,25 @@ end do
     end do
 
  else
-    
+
     call get_active( -data%X_RES_l, data%X_RES_u,                         &
                       data%s_ac + data%X_RES_l, data%X_RES_u - data%s_ac, &
                       data%X_type, nfx, data%fx, nfr, data%fr, nvl, vl,   &
                       point1*data%control%stop_p, out )
-    
+
     data%fx( nfx+1 : nfx+nvl )  = vl( : nvl )
     nfx = nfx + nvl
-    
+
  end if
- 
+
  data%nfr = nfr
  data%nfx = nfx
 
  ! Next the linear constraints.
- 
+
  nwA      = 0
  nwA_comp = 0
- 
+
  if ( data%seqp_use_pred ) then
     do i = 1, nlp%m_a
        if ( data%QPpred%C_status( nlp%m + i ) /= 0 ) then
@@ -7077,19 +7077,19 @@ end do
                      data%AxSac + data%A_RES_l, data%A_RES_u - data%AxSac,     &
                      data%A_type, nwA, data%wA, nwA_comp, data%wA_comp, nvl, vl,&
                      point1*data%control%stop_p, out )
-    
+
     data%wA( nwA+1 : nwA+nvl )  = vl( : nvl )
     nwA = nwA + nvl
  end if
- 
+
  data%nwA      = nwA
  data%nwA_comp = nwA_comp
- 
+
  ! Finally, the general constraints.
- 
+
  nwJ      = 0
  nwJ_comp = 0
- 
+
  if ( data%seqp_use_pred ) then
     do i = 1, nlp%m
        if ( data%QPpred%C_status( i ) /= 0 ) then
@@ -7105,7 +7105,7 @@ end do
                      data%JxSac + data%C_RES_l, data%C_RES_u - data%JxSac,     &
                      data%C_type, nwJ, data%wJ, nwJ_comp, data%wJ_comp, nvl, vl,&
                      point1*data%control%stop_p, out )
-    
+
     data%wJ( nwJ+1 : nwJ+nvl )  = vl( : nvl )
     nwJ = nwJ + nvl
  end if
@@ -7115,16 +7115,16 @@ end do
 
  ! Now define the problem.
  ! ***********************
- 
+
  ! The dimensions.
- 
+
  QPseqp%n = nlp%n
  QPseqp%m = nwJ + nwA + nfx
- 
+
  ! The QP Hessian, gradient, and constant.
- 
+
  QPseqp%H%val = nlp%H%val
- 
+
  if ( data%seqp_use_pred ) then
     QPseqp%G = nlp%G + data%HxSp
  else
@@ -7135,30 +7135,30 @@ end do
  end if
 
  QPseqp%f = zero
- 
+
  ! Constant in the constraints.
- 
+
  !QPseqp%C = zero  ---- set in build_QPseqp
- 
+
  ! Starting point
- 
+
  QPseqp%X = zero
- 
+
  ! The multipliers
- 
- QPseqp%Y = zero 
- 
+
+ QPseqp%Y = zero
+
  ! Now the constraint matrix A.
  ! ****************************
- 
+
  tally = 0
- 
+
  ! First the predicted active nonlinear constraints.
- 
+
  J_1: do j = 1, nlp%J%ne
     I_1: do i = 1, nwJ
        if ( nlp%J%row( j ) == data%wJ( i ) ) then
-          tally = tally + 1 
+          tally = tally + 1
           QPseqp%A%row( tally ) = i
           QPseqp%A%col( tally ) = nlp%J%col( j )
           QPseqp%A%val( tally ) = nlp%J%val( j )
@@ -7166,13 +7166,13 @@ end do
        end if
     end do I_1
  end do J_1
- 
+
  ! Now the active linear constraints.
- 
+
  J_2: do j = 1, nlp%A%ne
     I_2: do i = 1, nwA
        if ( nlp%A%row( j ) == data%wA( i ) ) then
-          tally = tally + 1 
+          tally = tally + 1
           QPseqp%A%row( tally ) = nwJ + i
           QPseqp%A%col( tally ) = nlp%A%col( j )
           QPseqp%A%val( tally ) = nlp%A%val( j )
@@ -7180,31 +7180,31 @@ end do
        end if
     end do I_2
  end do J_2
- 
+
  ! Finally the fixed variables.
- 
+
  do i = 1, nfx
-    tally = tally + 1 
+    tally = tally + 1
     QPseqp%A%row( tally ) = nwJ + nwA + i
     QPseqp%A%col( tally ) = data%fx( i )
     QPseqp%A%val( tally ) = one
  end do
- 
+
  ! The total
- 
+
  QPseqp%A%ne = tally
  QPseqp%A%m = nwJ + nwA + nfx
  QPseqp%A%n = nlp%n
  !    write(*,*) 'tally = ', tally
- 
+
  ! Set the trust-region.
- 
+
  data%control%QPseqp_control%radius = data%TRsqp
- 
+
  inform%status = 0
- 
+
  return
- 
+
 1000 FORMAT(3X, '** ERROR : unrecognized X_type in subroutine fill_QPseqp.')
 
   end SUBROUTINE fill_QPseqp
@@ -7213,9 +7213,9 @@ end do
 !-*-   D E A L L O C _ Q P f e a s  S U B R O U T I N E -*
 
   SUBROUTINE dealloc_QPfeas( QPfeas, inform, control )
-    
+
     IMPLICIT NONE
-    
+
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
 !   Deallocates components of variable LP of type
@@ -7226,11 +7226,11 @@ end do
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout )  :: inform
-    type( TRIMSQP_control_type ), intent( inout ) :: control 
+    type( TRIMSQP_control_type ), intent( inout ) :: control
     type( QPT_problem_type ), intent( inout )     :: QPfeas
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -7253,7 +7253,7 @@ end do
          bad_alloc = inform%bad_alloc, out = control%error )
     IF ( control%deallocate_error_fatal .AND.  &
          inform%status /= GALAHAD_ok ) RETURN
-    
+
     array_name = 'TRIMSQP : data%QPfeas%X'
     CALL SPACE_dealloc_array( QPfeas%X,                                 &
          inform%status, inform%alloc_status, array_name = array_name,    &
@@ -7274,14 +7274,14 @@ end do
          bad_alloc = inform%bad_alloc, out = control%error )
     IF ( control%deallocate_error_fatal .AND.  &
          inform%status /= GALAHAD_ok ) RETURN
-    
+
     array_name = 'TRIMSQP : data%QPfeas%Z'
     CALL SPACE_dealloc_array( QPfeas%Z,                                 &
          inform%status, inform%alloc_status, array_name = array_name,    &
          bad_alloc = inform%bad_alloc, out = control%error )
     IF ( control%deallocate_error_fatal .AND.  &
-         inform%status /= GALAHAD_ok ) RETURN 
-    
+         inform%status /= GALAHAD_ok ) RETURN
+
     array_name = 'TRIMSQP : data%QPfeas%C_l'
     CALL SPACE_dealloc_array( QPfeas%C_l,                               &
          inform%status, inform%alloc_status, array_name = array_name,    &
@@ -7355,15 +7355,15 @@ end do
     inform%status = GALAHAD_ok
 
   END SUBROUTINE dealloc_QPfeas
- 
+
 
 
 !-*-   D E A L L O C _ Q P p r e d   S U B R O U T I N E -*
 
   SUBROUTINE dealloc_QPpred( QPpred, inform, control )
-    
+
     IMPLICIT NONE
-    
+
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-
 !
 !   Deallocates components of variable QPpred of type
@@ -7374,11 +7374,11 @@ end do
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout )  :: inform
-    type( TRIMSQP_control_type ), intent( inout ) :: control 
+    type( TRIMSQP_control_type ), intent( inout ) :: control
     type( QPT_problem_type ), intent( inout )     :: QPpred
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -7401,7 +7401,7 @@ end do
          bad_alloc = inform%bad_alloc, out = control%error )
     IF ( control%deallocate_error_fatal .AND.  &
          inform%status /= GALAHAD_ok ) RETURN
-    
+
     array_name = 'TRIMSQP : data%QPpred%X'
     CALL SPACE_dealloc_array( QPpred%X,                                 &
          inform%status, inform%alloc_status, array_name = array_name,    &
@@ -7428,8 +7428,8 @@ end do
          inform%status, inform%alloc_status, array_name = array_name,    &
          bad_alloc = inform%bad_alloc, out = control%error )
     IF ( control%deallocate_error_fatal .AND.  &
-         inform%status /= GALAHAD_ok ) RETURN 
-    
+         inform%status /= GALAHAD_ok ) RETURN
+
     array_name = 'TRIMSQP : data%QPpred%C_l'
     CALL SPACE_dealloc_array( QPpred%C_l,                               &
          inform%status, inform%alloc_status, array_name = array_name,    &
@@ -7544,9 +7544,9 @@ end do
 !-*-   D E A L L O C _ Q P s q p   S U B R O U T I N E -*
 
   SUBROUTINE dealloc_QPsiqp( QPsiqp, inform, control )
-    
+
     IMPLICIT NONE
-    
+
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-
 !
 !   Deallocates components of variable QPsiqp of type
@@ -7557,11 +7557,11 @@ end do
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout )  :: inform
-    type( TRIMSQP_control_type ), intent( inout ) :: control 
+    type( TRIMSQP_control_type ), intent( inout ) :: control
     type( QPT_problem_type ), intent( inout )     :: QPsiqp
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -7584,7 +7584,7 @@ end do
          bad_alloc = inform%bad_alloc, out = control%error )
     IF ( control%deallocate_error_fatal .AND.  &
          inform%status /= GALAHAD_ok ) RETURN
-    
+
     array_name = 'TRIMSQP : data%QPsiqp%X'
     CALL SPACE_dealloc_array( QPsiqp%X,                                 &
          inform%status, inform%alloc_status, array_name = array_name,    &
@@ -7611,8 +7611,8 @@ end do
          inform%status, inform%alloc_status, array_name = array_name,    &
          bad_alloc = inform%bad_alloc, out = control%error )
     IF ( control%deallocate_error_fatal .AND.  &
-         inform%status /= GALAHAD_ok ) RETURN 
-    
+         inform%status /= GALAHAD_ok ) RETURN
+
     array_name = 'TRIMSQP : data%QPsiqp%C_l'
     CALL SPACE_dealloc_array( QPsiqp%C_l,                               &
          inform%status, inform%alloc_status, array_name = array_name,    &
@@ -7725,9 +7725,9 @@ end do
 !-*-   D E A L L O C _ Q P s e q p   S U B R O U T I N E -*
 
   SUBROUTINE dealloc_QPseqp( QPseqp, inform, control )
-    
+
     IMPLICIT NONE
-    
+
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*--*-*-*-*-
 !
 !   Deallocates components of variable QPseqp of type
@@ -7738,11 +7738,11 @@ end do
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
-   
+
     type( TRIMSQP_inform_type ), intent( inout )  :: inform
-    type( TRIMSQP_control_type ), intent( inout ) :: control 
+    type( TRIMSQP_control_type ), intent( inout ) :: control
     type( QPT_problem_type ), intent( inout )     :: QPseqp
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -7858,13 +7858,13 @@ end do
 !-*-   p r i n t _ s m t   S U B R O U T I N E -*
 
   SUBROUTINE print_SMT( A, name, error, out, status )
-    
+
     IMPLICIT NONE
-    
+
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
 !   Prints componenets of variable of type
-!   smt_type.  Prints appropriate components which 
+!   smt_type.  Prints appropriate components which
 !   is dependent on the storage type used.
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -7877,14 +7877,14 @@ end do
     integer, intent( inout ) :: status
     character, intent( in ) :: name
     type( SMT_type ), intent( in )  :: A
- 
+
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
 
     integer :: i
 
-    
+
     status = -1
 
     ! **********************
@@ -7892,8 +7892,8 @@ end do
     !***********************
 
     SELECT CASE ( SMT_get( A%type ) )
-  
-     
+
+
     CASE ('DENSE')
 
        ! print Ane, Aval, name, m, n,
@@ -7906,18 +7906,18 @@ end do
           write( out, 3003 ) A%n
        end if
        write( out, 3002 ) A%ne
-       
+
        write( out, '(/, T31, "val")')
        write( out, '(T22, ES19.10)')  ( A%val(i),  i = 1, A%ne )
 !       write( out, '(T22, ES19.10)')  ( A%val(i),  i = 1, A%n*(A%n + 1)/2 )
-    
+
     CASE ('SPARSE_BY_ROWS')
- 
+
        write(*,*) 'not yet implemented : print_smt'
 
 
     CASE ('SPARSE_BY_COLUMNS')
- 
+
        write(*,*) 'not yet implemented : print_smt'
 
     CASE('COORDINATE')
@@ -7935,12 +7935,12 @@ end do
        write( out, '(/, T17, "row", T28, "col", T45, "val")')
        write( out, '(T12, I8, T23, I8, T35, ES19.10)')  &
             ( A%row(i), A%col(i), A%val(i),  i = 1, A%ne )
-       
+
 
     CASE ('DIAGONAL')
 
        ! print m, n, type, id, Aval
-       
+
        write( out, 2000 ) name
        write( out, 3000 ) A%m, A%type
        if ( allocated( A%id ) ) then
@@ -7950,15 +7950,15 @@ end do
        end if
        write( out, '(/, T31, "val")')
        write( out, '(T22, ES19.10)')  ( A%val(i),  i = 1, A%n )
- 
+
 
     CASE DEFAULT
-       
-       write( error, 1000 ) 
-       
+
+       write( error, 1000 )
+
     END SELECT
 
-    
+
     status = 0
 
     return
@@ -7969,7 +7969,7 @@ end do
 
 2000 FORMAT( /,  &
      1X, '                    STATISTICS FOR MATRIX ', A, '                  ',/,  &
-     1X, '                    -----------------------                        ' )              
+     1X, '                    -----------------------                        ' )
 
 3000 FORMAT(/, T16, 'm  = ', I10, 7X, 'type = ', 60A )
 3001 FORMAT(   T16, 'n  = ', I10, 7X, 'id   = ', 60A )
@@ -7987,9 +7987,9 @@ end do
                             C_RES_l, C_RES_u, A_RES_l, A_RES_u,             &
                             X_RES_l, X_RES_u, primal_vl, dual_vl, comp_vl,  &
                             exact, status, out )
-    
+
     IMPLICIT NONE
-    
+
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
 !  Checks optimality for the given problem.
@@ -8007,12 +8007,12 @@ end do
     character( len = 2 ), dimension( : ), intent( in ) :: C_type, A_type, X_type
     real( kind = wp ), dimension( : ), intent( in )    :: C_RES_l, C_RES_u
     real( kind = wp ), dimension( : ), intent( in )    :: A_RES_l, A_RES_u
-    real( kind = wp ), dimension( : ), intent( in )    :: X_RES_l, X_RES_u  
+    real( kind = wp ), dimension( : ), intent( in )    :: X_RES_l, X_RES_u
     real( kind = wp ), intent( out ) :: primal_vl, dual_vl, comp_vl
     logical, intent( in )  :: exact
     integer, intent( in )  :: out
     integer, intent( out ) :: status
- 
+
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
@@ -8023,7 +8023,7 @@ end do
 
 
     status = -1
- 
+
     ! Primal violation.
     !******************
 
@@ -8111,7 +8111,7 @@ end do
           write( out, * ) 'ERROR: check_optimal : X_type = ? '
        end select
     end do
-     
+
     primal_vl = abs( primal_vl )
 
     ! Dual violation
@@ -8137,23 +8137,23 @@ end do
        Z = Z_out
     else
        do i = 1, nlp%n
-          
+
           Gi = G( i )
           vl = Gi
-          
+
           if ( nlp%m > 0 ) then
              vl = vl - JtY( i )
           end if
-          
+
           if ( nlp%m_a > 0 ) then
              vl = vl - AtY_a( i )
           end if
-          
-          vl = vl - Z_in( i ) 
+
+          vl = vl - Z_in( i )
           vl = abs(vl) / ( one + abs( Gi ) )
           !write(*,*) 'vl = ', vl
           dual_vl = max( dual_vl, vl )
-          
+
        end do
        Z = Z_in
     end if
@@ -8187,7 +8187,7 @@ end do
 !!$
 !!$       Gi = G( i )
 !!$       vl = Gi
-!!$       
+!!$
 !!$       if ( nlp%m > 0 ) then
 !!$          vl = vl - JtY( i )
 !!$       end if
@@ -8196,7 +8196,7 @@ end do
 !!$          vl = vl - AtY_a( i )
 !!$       end if
 !!$
-!!$       vl = vl - Z( i ) 
+!!$       vl = vl - Z( i )
 !!$       vl = abs(vl) / ( one + abs( Gi ) )
 !!$
 !!$       dual_vl = max( dual_vl, vl )
@@ -8209,18 +8209,18 @@ end do
 !!$    write(*,*) 'C_resl = ', C_RES_l
 !!$    write(*,*) 'C_resu = ', C_RES_u
 !!$    write(*,*) 'A_resl = ', A_RES_l
-!!$    write(*,*) 'A_resu = ', A_RES_u 
+!!$    write(*,*) 'A_resu = ', A_RES_u
 !!$    write(*,*) 'X_resl = ', X_RES_l
 !!$    write(*,*) 'X_resu = ', X_RES_u
 !!$    write(*,*) 'Y = ', Y
 !!$    write(*,*) 'Y_a = ', Y_a
 !!$    write(*,*) 'Z = ', Z
-    
-   
+
+
     comp_vl = zero
 
 ! First general constraints.
- 
+
     do i = 1, nlp%m
        if ( Y(i) > zero ) then
           if ( C_type(i) == 'LB' .or. C_type(i) == 'RB'  ) then
@@ -8228,7 +8228,7 @@ end do
              term2   = min( one, abs( Y(i) ) )
              comp_vl = max( comp_vl, term1 * term2 )
           elseif ( C_type(i) /= 'EQ' ) then
-             comp_vl = max( comp_vl, abs( Y(i)) ) 
+             comp_vl = max( comp_vl, abs( Y(i)) )
           end if
        elseif ( Y(i) < zero ) then
           if ( C_type(i) == 'UB' .or. C_type(i) == 'RB' ) then
@@ -8236,7 +8236,7 @@ end do
              term2   = min( one, abs( Y(i) ) )
              comp_vl = max( comp_vl, term1 * term2 )
           elseif ( C_type(i) /= 'EQ' ) then
-             comp_vl = max( comp_vl, abs( Y(i)) ) 
+             comp_vl = max( comp_vl, abs( Y(i)) )
           end if
        end if
     end do
@@ -8251,7 +8251,7 @@ end do
              term2   = min( one, abs( Y_a(i) ) )
              comp_vl = max( comp_vl, term1 * term2 )
           elseif ( A_type(i) /= 'EQ' ) then
-             comp_vl = max( comp_vl, abs( Y_a(i)) ) 
+             comp_vl = max( comp_vl, abs( Y_a(i)) )
           end if
        elseif ( Y_a(i) < zero ) then
           if ( A_type(i) == 'UB' .or. A_type(i) == 'RB' ) then
@@ -8259,7 +8259,7 @@ end do
              term2   = min( one, abs( Y_a(i) ) )
              comp_vl = max( comp_vl, term1 * term2 )
           elseif ( A_type(i) /= 'EQ' ) then
-             comp_vl = max( comp_vl, abs( Y_a(i)) ) 
+             comp_vl = max( comp_vl, abs( Y_a(i)) )
           end if
        end if
     end do
@@ -8273,7 +8273,7 @@ end do
              term2   = min( one, abs( Z(i) ) )
              comp_vl = max( comp_vl, term1 * term2 )
           elseif ( X_type(i) /= 'EQ' ) then
-             comp_vl = max( comp_vl, abs( Z(i)) ) 
+             comp_vl = max( comp_vl, abs( Z(i)) )
           end if
        elseif ( Z(i) < zero ) then
           if ( X_type(i) == 'UB' .or. X_type(i) == 'RB'  ) then
@@ -8281,7 +8281,7 @@ end do
              term2   = min( one, abs( Z(i) ) )
              comp_vl = max( comp_vl, term1 * term2 )
           elseif ( X_type(i) /= 'EQ' ) then
-             comp_vl = max( comp_vl, abs( Z(i)) ) 
+             comp_vl = max( comp_vl, abs( Z(i)) )
           end if
        end if
     end do
@@ -8290,7 +8290,7 @@ end do
 !!$    ! First general constraints.
 !!$
 !!$    if ( nlp%m > 0 ) then
-!!$       
+!!$
 !!$       do i = 1, nlp%m
 !!$          select case( C_type(i) )
 !!$          case ('LB')
@@ -8324,15 +8324,15 @@ end do
 !!$          case ('FR')
 !!$             comp_vl = max( comp_vl, abs( Y(i) ) )
 !!$          case default
-!!$             write( out, * ) 'ERROR: check_optimal : C_type = ? '  
+!!$             write( out, * ) 'ERROR: check_optimal : C_type = ? '
 !!$          end select
 !!$       end do
 !!$    end if
-!!$          
+!!$
 !!$    ! Next linear constraints nlp%A
 !!$
 !!$    if ( nlp%m_a > 0 ) then
-!!$       
+!!$
 !!$       do i = 1, nlp%m_a
 !!$          select case( A_type(i) )
 !!$          case ('LB')
@@ -8366,7 +8366,7 @@ end do
 !!$          case ('FR')
 !!$             comp_vl = max( comp_vl, abs( Y_a(i) ) )
 !!$          case default
-!!$             write( out, * ) 'ERROR: check_optimal : A_type = ? '  
+!!$             write( out, * ) 'ERROR: check_optimal : A_type = ? '
 !!$          end select
 !!$       end do
 !!$    end if
@@ -8406,12 +8406,12 @@ end do
 !!$       case ('FR')
 !!$          comp_vl = max( comp_vl, abs( Z(i) ) )
 !!$       case default
-!!$          write( out, * ) 'ERROR: check_optimal : X_type = ? '  
+!!$          write( out, * ) 'ERROR: check_optimal : X_type = ? '
 !!$       end select
 !!$    end do
 
     comp_vl = abs(comp_vl) ! to prevent -0.0000000000 from being printed.
-    
+
     status = 0
 
     return
@@ -8436,43 +8436,43 @@ end do
     !
     !  along the arc x(t) = x + t s  (t >= 0)
     !
-    !  where x is a vector of n components ( x_1, .... , x_n ), 
+    !  where x is a vector of n components ( x_1, .... , x_n ),
     !  H is a symmetric matrix, and A is an m by n matrix.
     !
     ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     !
     !  Arguments:
     !
-    !  f is a REAL variable, which must be set by the user to the value 
+    !  f is a REAL variable, which must be set by the user to the value
     !   of 1/2 <x, H x> + <c, x> at x
     !
-    !  g_s is a REAL variable, which must be set by the user to the value 
+    !  g_s is a REAL variable, which must be set by the user to the value
     !   of the inner product <s, Hx + c>
     !
-    !  s_hs is a REAL variable, which must be set by the user to the value 
+    !  s_hs is a REAL variable, which must be set by the user to the value
     !   of the inner product <s, Hs>
     !
-    !  s_norm is a REAL variable, which must be set by the user to the value 
+    !  s_norm is a REAL variable, which must be set by the user to the value
     !   of the two norm of s, ||s||_2
     !
-    !  rho_g is a REAL variable, which must be set by the user to the value 
+    !  rho_g is a REAL variable, which must be set by the user to the value
     !   of the penalty parameter rho_g for the general constraints
     !
-    !  RES_l is a REAL array of length m, that must be set by 
+    !  RES_l is a REAL array of length m, that must be set by
     !   the user to the value of A x - c_l for all components which have
     !   lower bounds/are equalities
     !
-    !  RES_u is a REAL array of length m, that must be 
+    !  RES_u is a REAL array of length m, that must be
     !   set by the user to the value of c_u - A x for all components which have
     !   upper bounds
     !
-    !  S is a REAL array of length n, which must be set by the user to the 
+    !  S is a REAL array of length n, which must be set by the user to the
     !   value of s
     !
-    !  A_s is a REAL array of length m, which must be set by the user to the 
+    !  A_s is a REAL array of length m, which must be set by the user to the
     !   value of A s
     !
-    !  A_norms is a REAL array of length m, which must be set by the user to 
+    !  A_norms is a REAL array of length m, which must be set by the user to
     !   the estimates of the norms of the rows of $A$.
     !
     !  IBREAK is an INTEGER workspace array of length lbreak
@@ -8508,7 +8508,7 @@ end do
     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_norms
     !REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S
     REAL ( KIND = wp ), INTENT( IN ),                                        &
-         DIMENSION( m ) ::  RES_l  
+         DIMENSION( m ) ::  RES_l
     REAL ( KIND = wp ), INTENT( IN ),                                        &
          DIMENSION( m ) ::  RES_u
     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_s
@@ -8560,7 +8560,7 @@ end do
        !**********************
        ! equality constraints
        !**********************
-          
+
           res = RES_l( i )
           infeas_g = infeas_g + ABS( res )
 
@@ -8588,7 +8588,7 @@ end do
              WRITE( out, "( ' const EQ ', i5, 4ES18.10 )" )                         &
                   i, res, as,  t_break, cosine
           END IF
-          
+
           if ( t_break <= one ) then
              nbreak = nbreak + 1
              IF ( res /= zero ) THEN
@@ -8639,7 +8639,7 @@ end do
              breakp_max       = MAX( breakp_max, BREAKP( nbreak ) )
           end if
 
-       case ( 'UB' ) 
+       case ( 'UB' )
        ! **********************************
        ! constraints with only upper bounds
        ! **********************************
@@ -8651,7 +8651,7 @@ end do
           IF ( ABS( as ) < too_small ) CYCLE
 
           IF ( res + t_pert * as < zero ) slope_infeas_g = slope_infeas_g - as
-          ! IF ( res + t_pert * as < zero ) write(6,*) ' slope_term = u ', i 
+          ! IF ( res + t_pert * as < zero ) write(6,*) ' slope_term = u ', i
 
           !  Find if the step will change the status of the constraint
 
@@ -8679,7 +8679,7 @@ end do
              breakp_max = MAX( breakp_max, BREAKP( nbreak ) )
           end if
 
-       case ( 'RB' ) 
+       case ( 'RB' )
        ! **************************************************************
        ! constraints have BOTH upper and lower bounds (not an equality)
        ! **************************************************************
@@ -8735,7 +8735,7 @@ end do
 
           end do
 
-       case ( 'FR' ) 
+       case ( 'FR' )
        ! ************************************
        ! constraints which are actually free.
        ! ************************************
@@ -8782,7 +8782,7 @@ end do
     !  Order the breakpoints in increasing size using a heapsort.
     !  Build the heap.
 
-    CALL SORT_heapsort_build( nbreak, BREAKP, inheap, INDA = IBREAK )
+    CALL SORT_heapsort_build( nbreak, BREAKP, inheap, ix = IBREAK )
     cluster_start = 1
     cluster_end = 0
     cluster = '      0      0'
@@ -8793,7 +8793,7 @@ end do
     !  successive pieces.
     !  =======================================================================
 
-    t_break = zero 
+    t_break = zero
     beyond_first_breakpoint = .FALSE.
     inform = - 1
 
@@ -8872,7 +8872,7 @@ end do
        t_old = t_break
        IF ( nbreak > 0 ) THEN
           t_break = BREAKP( 1 )
-          CALL SORT_heapsort_smallest( nbreak, BREAKP, inheap, INDA = IBREAK )
+          CALL SORT_heapsort_smallest( nbreak, BREAKP, inheap, ix = IBREAK )
           cluster_end = cluster_end + 1
           cluster_start = cluster_end
        ELSE
@@ -8910,7 +8910,7 @@ end do
                 end if
              end if
 
-             t_min = t_star 
+             t_min = t_star
 
              !  Calculate the function value for the piecewise quadratic
 
@@ -8934,16 +8934,16 @@ end do
                      RES_l, RES_u, A_s, t_min, too_small )
                 write( out, 2010 ) '  val', fun, exact_val
              END IF
-          
+
              EXIT
 
           ELSE  ! minimum is past the break point, and nbreak /= 0.
-             
+
              if ( print_detail ) then
                 write( out, 2050 ) t_old, t_break, t_star
                 write( out, "(' Proceeding on ...' )" )
              end IF
-             
+
           END IF
 
        ELSE  ! curv <= hzero. Take full step to next break point.
@@ -8954,8 +8954,8 @@ end do
 
           if ( nbreak == 0 ) then
              if ( print_detail )  write( out, 2070 ) ! examining t = 1
-             fun = val + slope + half * curv 
-             if ( fun < fun_min ) then 
+             fun = val + slope + half * curv
+             if ( fun < fun_min ) then
                 t_min   = one
                 fun_min = fun
                 inform  = 2
@@ -9032,14 +9032,14 @@ end do
              !  Determine if other terms become active at the breakpoint
 
              IF ( BREAKP( 1 ) >= feasep ) EXIT
-             CALL SORT_heapsort_smallest( nbreak, BREAKP( : nbreak ), inheap,   &
-                  INDA = IBREAK )
+             CALL SORT_heapsort_smallest( nbreak, BREAKP( : nbreak ), inheap,  &
+                                          ix = IBREAK )
              cluster_end = cluster_end + 1
 
           END DO
 
-          !  Compute the function value and gradient at (just on the other side of)
-          !  the breakpoint
+          !  Compute the function value and gradient at (just on the other side
+          !  of) the breakpoint
 
           fun = val + t_break * ( slope_old + half * t_break * curv )
           gradient = slope + t_break * curv
@@ -9126,7 +9126,7 @@ end do
          f + rho_g * infeas_g, val
 
     !  ==========================================================================
-    !  This part of the code is to cope with the possibility that rounding errors 
+    !  This part of the code is to cope with the possibility that rounding errors
     !  have so dominated the search that a descent point has not been found. A
     !  more cautious search will be performed.
     !  ==========================================================================
@@ -9151,7 +9151,7 @@ end do
     cluster = '      0      0'
 
     !  =========================================================================
-    !  Start the main recovery loop to find the first local minimizer of the 
+    !  Start the main recovery loop to find the first local minimizer of the
     !  piecewise quadratic function. Consider the problem over successive pieces
     !  =========================================================================
 
@@ -9363,7 +9363,7 @@ end do
 2040 FORMAT( /, ' Interval = [', ES12.4, ',', ES12.4, ']' )
 2050 FORMAT( /, ' Interval = [', ES12.4, ',', ES12.4, &
          '], stationary point = ', ES12.4 )
-2060 FORMAT( /, 'Indefinite : local minimum found. ', & 
+2060 FORMAT( /, 'Indefinite : local minimum found. ', &
                 'Documenting and moving on.', / )
 2061 format(1x, 'Minimum (possibly closest minimum if problem is linear) ', &
                 'must occur at current break point.' )
@@ -9379,7 +9379,7 @@ end do
                 'since stationary point is past t=1, the global ',  &
                 'minimizer must occur at end point t = 1.' )
 
-    ! End of subroutine get_cauchy_step    
+    ! End of subroutine get_cauchy_step
 
   END SUBROUTINE get_cauchy_step
 
@@ -9406,7 +9406,7 @@ end do
       !REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S
       CHARACTER ( Len = 2 ), INTENT( IN ), DIMENSION( m ) :: C_type
       REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( m ) ::  RES_l  
+                          DIMENSION( m ) ::  RES_l
       REAL ( KIND = wp ), INTENT( IN ),                                        &
                           DIMENSION( m ) ::  RES_u
 
@@ -9453,9 +9453,9 @@ end do
 
          case ('RB')
          ! constraints with both upper and lower bounds.  Not equality.
-             
+
             as = A_s( i )
-            
+
             IF ( ABS( as ) < too_small ) THEN
                infeas_g = infeas_g - MIN( RES_l( i ), zero )
                infeas_g = infeas_g - MIN( RES_u( i ), zero )
@@ -9463,7 +9463,7 @@ end do
                infeas_g = infeas_g - MIN( RES_l( i ) + t * as, zero )
                infeas_g = infeas_g - MIN( RES_u( i ) - t * as, zero )
             END IF
-                    
+
          case ('FR')
          ! constraint is free.
 
@@ -9514,7 +9514,7 @@ end do
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_s
 !      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S
       REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( m ) ::  RES_l  
+                          DIMENSION( m ) ::  RES_l
       REAL ( KIND = wp ), INTENT( IN ),                                        &
                           DIMENSION( m ) ::  RES_u
 
@@ -9584,11 +9584,11 @@ end do
                infeas_g = infeas_g - MIN( RES_u( i ), zero )
             ELSE
                infeas_g = infeas_g - MIN( RES_l( i ) + t * as, zero )
-               infeas_g = infeas_g - MIN( RES_u( i ) - t * as, zero ) 
+               infeas_g = infeas_g - MIN( RES_u( i ) - t * as, zero )
                IF ( RES_l( i ) + tp * as < zero ) THEN
                   slope_g = slope_g - as
                ELSEIF ( RES_u( i ) - tp * as < zero ) THEN
-                  slope_g = slope_g + as 
+                  slope_g = slope_g + as
                END IF
             END IF
 
@@ -9634,7 +9634,7 @@ end do
 !  Dummy arguments
 
     type( TRIMSQP_inform_type ), intent( inout )    :: inform
-    type( TRIMSQP_data_type ), intent( inout )      :: data 
+    type( TRIMSQP_data_type ), intent( inout )      :: data
     type( NLPT_problem_type ), intent( inout )      :: nlp
     real( kind = wp ), intent( in ), dimension( : ) :: Y, Y_a
     real( kind = wp ), intent( in ), dimension( : ) :: JtY, AtY_a, Z
@@ -9642,7 +9642,7 @@ end do
     real( kind = wp ), intent( in ), dimension( : ) :: A_RES_l, A_RES_u
     real( kind = wp ), intent( in ), dimension( : ) :: X_RES_l, X_RES_u
     integer, intent( in ) :: out
-      
+
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
@@ -9724,7 +9724,7 @@ end do
           write( data%control%out, * ) 'ERROR: check_optimal : X_type = ? '
        end select
     end do
-     
+
     primal_vl = abs( primal_vl )
 
 
@@ -9734,25 +9734,25 @@ end do
     dual_vl = zero
 
     do i = 1, nlp%n
-          
+
        Gi = nlp%G( i )
        vl = Gi
-       
+
        if ( nlp%m > 0 ) then
           vl = vl - JtY( i )
        end if
-       
+
        if ( nlp%m_a > 0 ) then
           vl = vl - AtY_a( i )
        end if
-       
-       vl = vl - Z( i ) 
+
+       vl = vl - Z( i )
        vl = abs(vl) / ( one + abs( Gi ) )
-       
+
        dual_vl = max( dual_vl, vl )
-       
+
     end do
- 
+
     ! Subgradient violation.
     !***********************
 
@@ -9762,9 +9762,9 @@ end do
     subgrad_vl = zero
 
     do i = 1, nlp%m
-    
+
        select case ( data%C_type( i ) )
-          
+
        case ('EQ')
 
           if ( C_RES_l(i) < -sub_stop_p) then
@@ -9773,11 +9773,11 @@ end do
           elseif ( C_RES_l(i) > sub_stop_p) then
              dummy_real = max( -penalty*(one+sub_stop_c) - Y(i), zero )
              subgrad_vl = max( dummy_real, Y(i) - penalty*(-one+sub_stop_c) )
-          else 
+          else
              dummy_real = max( -penalty*(one+sub_stop_c) - Y(i), zero )
-             subgrad_vl = max( dummy_real, Y(i) - penalty*(one+sub_stop_c) ) 
+             subgrad_vl = max( dummy_real, Y(i) - penalty*(one+sub_stop_c) )
           end if
-             
+
 
 !!$          if ( nlp%C(i) < nlp%C_l(i) - stop_c ) then
 !!$             dummy_real = abs( Y(i) - penalty ) / ( one + penalty )
@@ -9789,9 +9789,9 @@ end do
 !!$             comp_vl = max( comp_vl,  (Y(i) - penalty) / penalty )
 !!$             comp_vl = max( comp_vl, -(Y(i) + penalty) / penalty )
 !!$          end if
-          
+
        case ('LB')
-     
+
           if ( C_RES_l(i) > sub_stop_p ) then
              dummy_real = max( -sub_stop_c - Y(i), zero )
              subgrad_vl = max(dummy_real, Y(i) - sub_stop_c )
@@ -9803,7 +9803,7 @@ end do
              subgrad_vl = max(dummy_real, Y(i) - penalty*(1+sub_stop_c) )
           end if
 
-!!$          if ( nlp%C(i) < nlp%C_l(i) - stop_c ) then   
+!!$          if ( nlp%C(i) < nlp%C_l(i) - stop_c ) then
 !!$             dummy_real = abs( Y(i) - penalty ) / ( one + penalty )
 !!$             comp_vl    = max( comp_vl, dummy_real )
 !!$          elseif ( nlp%C(i) > nlp%C_l(i) + stop_c ) then
@@ -9812,7 +9812,7 @@ end do
 !!$             comp_vl = max( comp_vl, ( Y(i) - penalty ) / penalty )
 !!$             comp_vl = max( comp_vl, - Y(i) )
 !!$          end if
-          
+
        case ('UB')
 
           if ( C_RES_u(i) > sub_stop_p ) then
@@ -9835,7 +9835,7 @@ end do
 !!$             comp_vl = max( comp_vl, -(Y(i) + penalty) / penalty )
 !!$             comp_vl = max( comp_vl, Y(i) )
 !!$          end if
-          
+
        case ('RB')
 
           if ( C_RES_u(i) < -sub_stop_p ) then
@@ -9847,20 +9847,20 @@ end do
           elseif ( abs(C_RES_u(i))  <= sub_stop_c ) then
              if ( abs(C_RES_l(i))  <= sub_stop_c ) then
                 dummy_real = max( -penalty*(one+sub_stop_c) - Y(i), zero )
-                subgrad_vl = max(dummy_real, Y(i) - penalty*(one+sub_stop_c) ) 
+                subgrad_vl = max(dummy_real, Y(i) - penalty*(one+sub_stop_c) )
              else
                 dummy_real = max( -penalty*(one+sub_stop_c) - Y(i), zero )
                 subgrad_vl = max(dummy_real, Y(i) - sub_stop_c )
              end if
           elseif ( abs(C_RES_l(i))  <= sub_stop_c ) then
              dummy_real = max( -sub_stop_c - Y(i), zero )
-             subgrad_vl = max( dummy_real, Y(i) - penalty*(one+sub_stop_c) ) 
+             subgrad_vl = max( dummy_real, Y(i) - penalty*(one+sub_stop_c) )
           else ! free
              subgrad_vl = max( subgrad_vl, abs( Y(i) ) - sub_stop_c )
           end if
 
-!!$          
-!!$          if ( nlp%C(i) < nlp%C_l(i) - stop_c ) then   
+!!$
+!!$          if ( nlp%C(i) < nlp%C_l(i) - stop_c ) then
 !!$             dummy_real = abs( Y(i) - penalty ) / ( one + penalty )
 !!$             comp_vl    = max( comp_vl, dummy_real )
 !!$          elseif ( nlp%C(i) > nlp%C_u(i) + stop_c ) then
@@ -9879,24 +9879,24 @@ end do
 !!$             write( data%control%out, * ) ' check_subproblem_optimal :', &
 !!$                  ' this never should happen!.'
 !!$          end if
-          
+
        case ('FR')
-          
+
           subgrad_vl = max( subgrad_vl, abs( Y(i) ) - sub_stop_c )
 !         comp_vl = max( comp_vl, abs( Y(i) ) )
-          
+
        case default
           write( out, * ) 'ERROR: check_subproblem_optimal : unrecognized C_type value'
-          
+
        end select
-       
+
     end do
 
     ! Complementarity
     !****************
 
     comp_vl = zero
- 
+
     ! Linear constraints nlp%A
 
     do i = 1, nlp%m_a
@@ -9906,7 +9906,7 @@ end do
              term2   = min( one, abs( Y_a(i) ) )
              comp_vl = max( comp_vl, term1 * term2 )
           elseif ( data%A_type(i) /= 'EQ' ) then
-             comp_vl = max( comp_vl, abs( Y_a(i)) ) 
+             comp_vl = max( comp_vl, abs( Y_a(i)) )
           end if
        elseif ( Y_a(i) < zero ) then
           if ( data%A_type(i) == 'UB' .or. data%A_type(i) == 'RB' ) then
@@ -9914,7 +9914,7 @@ end do
              term2   = min( one, abs( Y_a(i) ) )
              comp_vl = max( comp_vl, term1 * term2 )
           elseif ( data%A_type(i) /= 'EQ' ) then
-             comp_vl = max( comp_vl, abs( Y_a(i)) ) 
+             comp_vl = max( comp_vl, abs( Y_a(i)) )
           end if
        end if
     end do
@@ -9928,7 +9928,7 @@ end do
              term2   = min( one, abs( Z(i) ) )
              comp_vl = max( comp_vl, term1 * term2 )
           elseif ( data%X_type(i) /= 'EQ' ) then
-             comp_vl = max( comp_vl, abs( Z(i)) ) 
+             comp_vl = max( comp_vl, abs( Z(i)) )
           end if
        elseif ( Z(i) < zero ) then
           if ( data%X_type(i) == 'UB' .or. data%X_type(i) == 'RB'  ) then
@@ -9936,7 +9936,7 @@ end do
              term2   = min( one, abs( Z(i) ) )
              comp_vl = max( comp_vl, term1 * term2 )
           elseif ( data%X_type(i) /= 'EQ' ) then
-             comp_vl = max( comp_vl, abs( Z(i)) ) 
+             comp_vl = max( comp_vl, abs( Z(i)) )
           end if
        end if
     end do
@@ -9975,10 +9975,10 @@ end do
 !!$       case ('FR')
 !!$          comp_vl = max( comp_vl, abs( Y_a(i) ) )
 !!$       case default
-!!$          write( data%control%out, * ) 'ERROR: check_optimal : A_type = ? '  
+!!$          write( data%control%out, * ) 'ERROR: check_optimal : A_type = ? '
 !!$       end select
 !!$    end do
-    
+
 !!$    ! Finally bound constraints.
 !!$
 !!$    do i = 1, nlp%n
@@ -10014,21 +10014,21 @@ end do
 !!$       case ('FR')
 !!$          comp_vl = max( comp_vl, abs( Z(i) ) )
 !!$       case default
-!!$          write( out, * ) 'ERROR: check_optimal : X_type = ? '  
+!!$          write( out, * ) 'ERROR: check_optimal : X_type = ? '
 !!$       end select
 !!$    end do
 
     comp_vl = abs(comp_vl) ! to prevent -0.0000000000 from being printed.
 
-    
+
     data%sub_primal_vl  = primal_vl
     data%sub_dual_vl    = dual_vl
     data%sub_comp_vl    = comp_vl
     data%sub_subgrad_vl = subgrad_vl
-  
+
     inform%status = 0
 
-    return     
+    return
 
     END SUBROUTINE check_sub_optimal
 
@@ -10057,7 +10057,7 @@ end do
     integer, intent( inout ), dimension( nlp%m ), optional :: sat, vl_l, vl_u
     real( kind = wp ), intent( out ) :: viol
     real( kind = wp ), intent( in ), dimension( nlp%m ) :: v
-         
+
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
@@ -10119,7 +10119,7 @@ end do
              viol = viol - abs(res)
              if ( res > tiny ) then
                 num_vl_u       = num_vl_u + 1
-                vl_u(num_vl_u) = i 
+                vl_u(num_vl_u) = i
              elseif ( res < -tiny ) then
                 num_vl_l       = num_vl_l + 1
                 vl_l(num_vl_l) = i
@@ -10163,9 +10163,9 @@ end do
                   'ERROR: constraint_violation : unrecognized C_type value'
           end select
        end do
- 
+
     end if
-      
+
     viol = abs(viol)
 
     return
@@ -10178,7 +10178,7 @@ end do
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!    qp  scalar variable of type integer. 1 = predictor, 2 = sqp-correction. 
+!    qp  scalar variable of type integer. 1 = predictor, 2 = sqp-correction.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -10187,7 +10187,7 @@ end do
     type( TRIMSQP_data_type ), intent( inout ) :: data
     integer, intent( inout ) :: status
     integer, intent( in ) :: qp
-      
+
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
@@ -10218,14 +10218,14 @@ end do
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!    print details of optimality check. 
+!    print details of optimality check.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
 
     type( TRIMSQP_data_type ), intent( in ) :: data
-          
+
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
@@ -10234,12 +10234,12 @@ end do
     write(data%control%out, 3000) data%best_mults, data%mults_used,     &
                                   data%primal_vl_cur, data%dual_vl_cur, &
                                   data%comp_vl_cur, data%opt_measure_cur
-    
+
     if ( data%iterate >= 1 ) then
        write(data%control%out, 3002) data%primal_vl_p, data%dual_vl_p, &
                                      data%comp_vl_p, data%opt_measure_p
     end if
-    
+
     if ( data%sqp_computed ) then
        write(data%control%out, 3003) data%primal_vl_s, data%dual_vl_s, &
                                      data%comp_vl_s, data%opt_measure_s
@@ -10259,7 +10259,7 @@ end do
      1x, 'best_mults    = ', I1,     T34, 'mults_used  = ', A,      /, &
      1x, 'primal_vl_cur = ', ES12.6, T34, 'dual_vl_cur = ', ES12.6, &
      T64, 'comp_vl_cur = ', ES12.6,  T94, 'opt_measure_cur = ', ES12.6 )
-3001 format(1x, (122('-')) ) 
+3001 format(1x, (122('-')) )
 3002 format( &
      1x, 'primal_vl_p   = ', ES12.6, T34, 'dual_vl_p   = ', ES12.6, &
      T64, 'comp_vl_p   = ', ES12.6, T94, 'opt_measure_p   = ', ES12.6 )
@@ -10269,7 +10269,7 @@ end do
 3004 format( &
      1x, 'primal_vl     = ', ES12.6, T34, 'dual_vl     = ', ES12.6, &
      T64, 'comp_vl     = ', ES12.6, T94, 'opt_measure     = ', ES12.6 )
-    
+
   END SUBROUTINE print_optimality_summary
 
 !-*   p r i n t _ p r e d _ s t e e r  S U B R O U T I N E -*-*
@@ -10278,7 +10278,7 @@ end do
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!    print details of predictor and steering. 
+!    print details of predictor and steering.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -10286,7 +10286,7 @@ end do
 
     type( TRIMSQP_data_type ), intent( in ) :: data
     !type( NLPT_problem_type ), intent( in ) :: nlp
-          
+
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
@@ -10299,7 +10299,7 @@ end do
                      data%computed_steering, data%inf_norm_s_p,       &
                      data%inf_norm_Y_p, data%decreaseB, data%norm_c,  &
                      data%norm_c_linearize_pred, data%dec_norm_c_pred
-    
+
     !if ( nlp%m <= 0 .or. (data%NM%active .and. data%NM%num_fail > 0)  &
     !                .or. (data%primal_vl < data%control%stop_p)      &
     !                .or. (.not. data%control%use_steering) ) then
@@ -10312,7 +10312,7 @@ end do
                         data%dec_norm_c_steer, data%inf_norm_s_steer, &
                         data%inf_norm_Y_steer
     end if
-    
+
     write(data%control%out, 3001), data%penalty, data%TRpred
 
     return
@@ -10331,9 +10331,9 @@ end do
      1x, 'penaltynew = ', ES11.5, T30, 'predictor-TR   = ', ES11.5, /,  &
      1x, (30('*-*')) )
 3002 format(1x, 'norm_c     = ', ES11.5, T30, 'norm_lin_steer = ', ES11.5,    &
-                                         T62, 'dec_c_lin_steer  = ', ES12.5,/,& 
+                                         T62, 'dec_c_lin_steer  = ', ES12.5,/,&
             1x, 'norm_steer = ', ES11.5, T30, 'norm_Y_steer   = ', ES11.5 )
-    
+
   END SUBROUTINE print_pred_steer
 
 
@@ -10343,7 +10343,7 @@ end do
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!    compute maximum feasible step 
+!    compute maximum feasible step
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -10353,7 +10353,7 @@ end do
     type( TRIMSQP_data_type ), intent( inout ) :: data
     type( NLPT_problem_type ), intent( in ) :: nlp
     character( len = 2 ), intent( in ), dimension(:) :: X_type, A_type, C_type
-          
+
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
@@ -10377,7 +10377,7 @@ end do
     end do
     data%nspos = nspos
     data%nsneg = nsneg
- 
+
     nApos = 0
     nAneg = 0
     do i = 1, data%nwA_comp
@@ -10413,10 +10413,10 @@ end do
 
 
 !!$    write(*,*) 'nfx = ', data%nfx
-!!$    write(*,*) 'fx = ', data%fx 
+!!$    write(*,*) 'fx = ', data%fx
 !!$    write(*,*) 'nfr = ', data%nfr
-!!$    write(*,*) 'fr = ', data%fr 
-!!$ 
+!!$    write(*,*) 'fr = ', data%fr
+!!$
 !!$    write(*,*) 'nspos = ', data%nspos
 !!$    write(*,*) 'nsneg = ', data%nsneg
 !!$    write(*,*) 'spos = ', data%spos
@@ -10500,9 +10500,9 @@ end do
 !!$                                  T62, 'dec_lin_s_p      = ', ES12.5 )
 !!$3001 format(1x, (30('*-*')) )
 !!$3002 format(1x, 'norm_c     = ', ES11.5, T30, 'norm_lin_steer = ', ES11.5,      &
-!!$                                         T62, 'dec_c_lin_steer  = ', ES12.5,/,& 
+!!$                                         T62, 'dec_c_lin_steer  = ', ES12.5,/,&
 !!$            1x, 'norm_steer = ', ES11.5, T30, 'norm_Y_steer   = ', ES11.5 )
-    
+
   end function max_feas_step
 
 !-*   g e t _ r e s i d u a l s  S U B R O U T I N E -*-*
@@ -10511,17 +10511,17 @@ end do
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!    
+!
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
- 
+
     character( len = 2 ), intent( in ), dimension(:) :: v_type
     real( kind = wp ), intent( in ), dimension(:) :: vl, v, vu
     real( kind = wp ), intent( out ), dimension(:) :: res_vl, res_vu
     !type( NLPT_problem_type ), intent( in ) :: nlp
-          
+
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
@@ -10529,7 +10529,7 @@ end do
     integer :: n, i
 
     n = size(vl)
- 
+
     do i = 1, n
        if ( v_type( i ) == 'EQ' .or. v_type( i ) == 'LB' .or. v_type( i ) == 'RB'  ) then
           res_vl( i ) = v( i ) - vl( i )
@@ -10547,12 +10547,12 @@ end do
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!    
+!
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 ! Dummy arguments
- 
+
   character( len = 2 ), intent( in ), dimension(:) :: x_type
   integer, intent( in ) :: out
   real( kind = wp ), intent( in ) :: tol
@@ -10561,7 +10561,7 @@ end do
   real( kind = wp ), intent( in ), dimension(:) :: res_xl, res_xu
   integer, intent( out ) :: nfx, nfr, nvl
   !type( NLPT_problem_type ), intent( in ) :: nlp
-  
+
 !---------------------------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------------------------
@@ -10636,8 +10636,8 @@ end do
            end if
         end if
      case default
-        write( out, * ) ' ERROR:trimsqp:get_active: Unrecognized value x_type(i).' 
-        return 
+        write( out, * ) ' ERROR:trimsqp:get_active: Unrecognized value x_type(i).'
+        return
      end select
 
   end do
@@ -10648,15 +10648,15 @@ end do
 
   SUBROUTINE get_L_BFGS( iterate, Bzero, A, B, S, Y, s_f, gradLx_new, gradLx, &
                          SBinner, eta, curve_mod, ind, L, error, out )
-    
+
   ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   !
-  !    
+  !
   !
   ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
   ! Dummy arguments
- 
+
   !character( len = 2 ), intent( in ), dimension(:) :: x_type
   integer, intent( in ) :: iterate, curve_mod, L, error, out
   real( kind = wp ), intent( in ) :: eta
@@ -10664,7 +10664,7 @@ end do
   integer, intent( inout ), dimension(:) ::  ind
   real( kind = wp ), intent( inout ), dimension(:,:) :: A, B, S, Y, SBinner
   type( SMT_type ), intent( in ) :: Bzero
-  
+
   !---------------------------------------------------
   !   L o c a l   V a r i a b l e s
   !---------------------------------------------------
@@ -10674,9 +10674,9 @@ end do
   real( kind = wp ), dimension(size(s_f)) :: Bs
 
  ! Figure out which column is being added/replaced.
-             
+
   last = min( iterate - 1, L )
-             
+
   if ( iterate <= L+1 ) then
      ind( iterate - 1 ) = iterate - 1
   else
@@ -10684,15 +10684,15 @@ end do
      ind( 1: L-1 ) = ind( 2 : L )
      ind( L )      = dummy_int
   end if
-  
+
   col = ind( last )
-  
+
   ! Replace that column in S and Y.
   S( :, col ) = s_f
   Y( :, col ) = gradLx_new - gradLx
-  
+
   do i = 1, last
-     
+
      if ( i == last ) then
         B(:,ind(last)) = Y(:,ind(last)) / dot_product( Y(:,ind(last)), S(:,ind(last)) )**half
         do j = 1, last-1
@@ -10708,28 +10708,28 @@ end do
      end do
      Bs = A(:,ind(i))
      A(:,ind(i)) = Bs / ( dot_product( S(:,ind(i)), Bs ) )**half
-     
+
      if ( i== last ) then
-        
+
         ! Check if sufficiently positive definite.
         yts  = dot_product( Y(:,ind(last)), S(:,ind(last)) )
         stBs = dot_product( S(:,ind(last)), Bs )  ! s_k^T B_k s_k
-        
+
         if ( yts < eta*stBs ) then
            if ( curve_mod == 0 ) then ! skip it
               theta = 0
            elseif ( curve_mod == 1) then ! % Powell
               theta          = (1-eta)*stBs/(stBs-yts)
               Y(:,ind(last)) = theta * Y(:,ind(last)) + (1-theta)*Bs
-           else 
+           else
               write(error, *)' ERROR:get_L_BFGS: disallowed value curve_mod.'
            end if
-           
+
            B(:,ind(last)) = Y(:,ind(last)) / ( dot_product( Y(:,ind(last)), S(:,ind(last)) ) )**half
            do j= 1, last-1
               SBinner(ind(last),ind(j)) = dot_product( S(:,ind(last)), B(:,ind(j)) )
            end do
-           
+
            ! Double check if sufficiently positive definite.
            yts = dot_product( Y(:,ind(last)), S(:,ind(last)) )
            sta = dot_product( S(:,ind(last)), A(:,ind(last)) )  ! s_k^T B_k s_k
@@ -10743,12 +10743,12 @@ end do
               end if
            end if
         end if
-        
+
      end if
 
   end do
-  
-  
+
+
 end SUBROUTINE get_L_BFGS
 
 
@@ -10756,5 +10756,3 @@ end SUBROUTINE get_L_BFGS
 !  End of module GALAHAD_TRIMSQP
 
    END MODULE GALAHAD_TRIMSQP_double
-
-

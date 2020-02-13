@@ -62,6 +62,7 @@
       INTEGER, PARAMETER :: history_max = 100
       INTEGER, PARAMETER :: max_degree = 3
       INTEGER, PARAMETER :: n_dense = 100
+      INTEGER, PARAMETER :: it_stalled = 100
       REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
       REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
       REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
@@ -171,11 +172,12 @@
 !  stop when | ||x|| - (multiplier/sigma)^(1/(p-2)) | <=
 !              stop_normal * max( ||x||, (multiplier/sigma)^(1/(p-2)) )
 
-        REAL ( KIND = wp ) :: stop_normal = epsmch
+        REAL ( KIND = wp ) :: stop_normal = epsmch ** 0.75
 
 !  stop when bracket on optimal multiplier <= stop_hard * max( bracket ends )
 
-        REAL ( KIND = wp ) :: stop_hard  = epsmch
+!       REAL ( KIND = wp ) :: stop_hard  = epsmch ** 0.75
+        REAL ( KIND = wp ) :: stop_hard  = ten ** ( - 12 )
 
 !  start inverse iteration when bracket on optimal multiplier <=
 !    stop_start_invit_tol * max( bracket ends )
@@ -426,11 +428,6 @@
 !  Initalize random number seed
 
       CALL RAND_initialize( data%seed )
-
-!  Set initial control parameter values
-
-      control%stop_normal = epsmch ** 0.75
-      control%stop_hard = epsmch ** 0.75
 
 !  initalize SLS components
 
@@ -2119,10 +2116,17 @@
       it = 0 ; in_n = 0
       DO
         it = it + 1
-        itt = 0
+
+!  exit if the iteration has stalled
+
+        IF ( it > it_stalled ) THEN
+          inform%status = GALAHAD_error_ill_conditioned
+          RETURN
+        END IF
 
 !  add lambda * M to H to form H(lambda)
 
+        itt = 0
  100    CONTINUE
 
 !  precaution to stop infinite loop
@@ -2213,9 +2217,10 @@
 
             IF ( p /= two .AND. inform%IR_inform%norm_final_residual >         &
                  inform%IR_inform%norm_initial_residual ) THEN
+write(6,*) 'A'
               IF ( printd ) WRITE( out,                                        &
              &    "( ' **** WARNING *** iterative refinement diverged,',       &
-             &    ' incresaing lambda marginally' ) ")
+             &    ' increasing lambda marginally' ) ")
 !write(6, "( ' *********** WARNING B - initial and final residuals are ',      &
 !& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
 !               inform%IR_inform%norm_final_residual
@@ -2468,12 +2473,16 @@
 !  check that the solution succeeded. If not, increase lambda and try again
 
             IF ( inform%IR_inform%status == GALAHAD_error_solve ) THEN
+!             write(6,*) 'in G B'
               IF ( printd ) WRITE( out,                                        &
              &    "( ' **** WARNING *** iterative refinement diverged,',       &
-             &    ' incresaing lambda marginally' ) ")
+             &    ' increasing lambda marginally' ) ")
+!             lambda_l = lambda + lambda_pert
+!             lambda = lambda_l + lambda_pert
+!             lambda_u = lambda_u + lambda_pert
               lambda_l = lambda
-!             lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
-              lambda = lambda_l + lambda_pert
+              lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+              lambda_u = lambda + lambda_pert
               it = it + 1
               GO TO 100
             END IF
@@ -2694,12 +2703,14 @@
 !  check that the solution succeeded. If not, increase lambda and try again
 
                   IF ( inform%IR_inform%status == GALAHAD_error_solve ) THEN
+!                   write(6,*) 'in G C'
                     IF ( printd ) WRITE( out,                                  &
                    &    "( ' **** WARNING *** iterative refinement diverged,', &
-                   &    ' incresaing lambda marginally' ) ")
+                   &    ' increasing lambda marginally' ) ")
                     lambda_l = lambda
 !                   lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
                     lambda = lambda_l + lambda_pert
+!                   lambda_u = lambda + lambda_pert
                     it = it + 1
                     GO TO 100
                   END IF

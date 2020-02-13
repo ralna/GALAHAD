@@ -3195,7 +3195,7 @@
 
 !           Sort the violations in ascending order.
 
-            CALL SORT_quicksort( s%n_items, s%v, SORT_exitcode, ivector = s%iw )
+            CALL SORT_quicksort( s%n_items, s%v, SORT_exitcode, ix = s%iw )
             IF ( SORT_exitcode /= 0 ) THEN
                inform%status = SORT_TOO_LONG
                WRITE( inform%message( 1 ), 1076 )
@@ -8307,7 +8307,7 @@ fpt11:         DO k = 1, s%filter_size
          rs = ie - is
          IF ( rs > 1 ) THEN
             ie = ie - 1
-            CALL SORT_quicksort( rs, s%row(is:ie), ec, ivector = s%perm(is:ie) )
+            CALL SORT_quicksort( rs, s%row(is:ie), ec, ix = s%perm(is:ie) )
             IF ( ec /= OK ) THEN
                inform%status = SORT_TOO_LONG
                WRITE( inform%message( 1 ), 1000 )

@@ -36,7 +36,7 @@
 
     TYPE :: CAUCHY_save_type
       INTEGER :: iterca, iter, itmax, nfreed, nbreak, nzero
-      REAL ( KIND = wp ) :: tk, gxt, hxt, epstl2, tpttp, tcauch 
+      REAL ( KIND = wp ) :: tk, gxt, hxt, epstl2, tpttp, tcauch
       REAL ( KIND = wp ) :: tbreak, deltat, epsqrt, gxtold, g0tp
       REAL ( KIND = wp ) :: t, tamax , ptp, gtp, flxt, tnew
       LOGICAL :: prnter, pronel, recomp
@@ -329,7 +329,7 @@
 
 !  Order the breakpoints in increasing size using a heapsort. Build the heap
 
-     CALL SORT_heapsort_build( S%nbreak, BREAKP, insort, INDA = IVAR )
+     CALL SORT_heapsort_build( S%nbreak, BREAKP, insort, ix = IVAR )
 
 !  Return to the main routine to evaluate Q = B * P
 
@@ -373,7 +373,7 @@
 !  Find the next breakpoint ( end of the piece )
 
      S%tbreak = BREAKP(  1  )
-     CALL SORT_heapsort_smallest( S%nbreak, BREAKP, insort, INDA = IVAR )
+     CALL SORT_heapsort_smallest( S%nbreak, BREAKP, insort, ix = IVAR )
 
 !  Compute the length of the current piece
 
@@ -502,7 +502,7 @@
 !  Determine if other variables hit their bounds at the breakpoint
 
      IF (  BREAKP(  1  ) < feasep  ) THEN
-       CALL SORT_heapsort_smallest( S%nbreak, BREAKP, insort, INDA = IVAR )
+       CALL SORT_heapsort_smallest( S%nbreak, BREAKP, insort, ix = IVAR )
        GO TO 220
      END IF
 
@@ -932,7 +932,7 @@
 
      IF ( S%prnter ) WRITE( iout, 2020 ) S%nfreed, n - nbreak
      IF ( S%pronel .OR. S%prnter )                                             &
-        WRITE( iout, 2000 ) S%iterca, zero, f * findmx 
+        WRITE( iout, 2000 ) S%iterca, zero, f * findmx
      S%iterca = S%iterca + 1
      nfree = nbreak
      IF ( nbreak == 0 ) GO TO 600

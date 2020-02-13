@@ -3024,7 +3024,7 @@
 
 !  Order the breakpoints in increasing size using a heapsort. Build the heap
 
-      CALL SORT_heapsort_build( nbreak, BREAKP, inheap, INDA = IBREAK )
+      CALL SORT_heapsort_build( nbreak, BREAKP, inheap, ix = IBREAK )
       cluster_start = 1
       cluster_end = 0
       cluster = '      0      0'
@@ -3065,7 +3065,7 @@
         t_old = t_break
         IF ( nbreak > 0 ) THEN
           t_break = BREAKP( 1 ) * ( one + epsmch )
-          CALL SORT_heapsort_smallest( nbreak, BREAKP, inheap, INDA = IBREAK )
+          CALL SORT_heapsort_smallest( nbreak, BREAKP, inheap, ix = IBREAK )
           cluster_end = cluster_end + 1
           cluster_start = cluster_end
         ELSE
@@ -3228,7 +3228,7 @@
             IF ( BREAKP( 1 ) >= feasep ) EXIT
             t_break = BREAKP( 1 ) * ( one + pert_eps )
             CALL SORT_heapsort_smallest( nbreak, BREAKP( : nbreak ), inheap,   &
-                                         INDA = IBREAK )
+                                         ix = IBREAK )
             cluster_end = cluster_end + 1
           END DO
 

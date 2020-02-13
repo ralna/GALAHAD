@@ -3417,8 +3417,8 @@
             IF ( COL( current ) < COL( current - 1 ) ) THEN
               CALL SORT_quicksort( inrow, COL( row_start : row_end ),          &
                                    inform_quicksort,                           &
-                                   MAP_inverse( row_start : row_end ),         &
-                                   VAL( row_start : row_end ) )
+                                   ix = MAP_inverse( row_start : row_end ),    &
+                                   rx = VAL( row_start : row_end ) )
 
               EXIT
             END IF
@@ -4588,7 +4588,3 @@
 !  End of module QPP
 
    END MODULE GALAHAD_QPP_double
-
-
-
-

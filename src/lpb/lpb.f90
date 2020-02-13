@@ -43,8 +43,7 @@
       USE GALAHAD_QPD_double, LPB_data_type => QPD_data_type,                  &
                               LPB_AX => QPD_AX, LPB_abs_AX => QPD_abs_AX
       USE GALAHAD_ROOTS_double
-      USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build,                      &
-                               SORT_heapsort_smallest, SORT_inverse_permute
+      USE GALAHAD_SORT_double, ONLY: SORT_inverse_permute
       USE GALAHAD_FDC_double
       USE GALAHAD_SBLS_double
       USE GALAHAD_CRO_double

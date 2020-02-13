@@ -51,8 +51,7 @@ MODULE GALAHAD_CCQP_double
                               CCQP_abs_AX => QPD_abs_AX,                       &
                               CCQP_abs_HX => QPD_abs_HX
       USE GALAHAD_LMS_double, ONLY: LMS_data_type, LMS_apply_lbfgs
-      USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build,                      &
-                               SORT_heapsort_smallest, SORT_inverse_permute
+      USE GALAHAD_SORT_double, ONLY: SORT_inverse_permute
       USE GALAHAD_FDC_double
       USE GALAHAD_CQP_double
       USE GALAHAD_DQP_double

@@ -7806,7 +7806,7 @@
 
 !  order the breakpoints in increasing size using a heapsort. Build the heap
 
-      CALL SORT_heapsort_build( n_break, BREAK_points, insort, INDA = NZ_p )
+      CALL SORT_heapsort_build( n_break, BREAK_points, insort, ix = NZ_p )
 
 !  compute w = J^T p
 
@@ -7934,8 +7934,7 @@
 !  find the next breakpoint ( end of the piece )
 
         tbreak = BREAK_points( 1 )
-        CALL SORT_heapsort_smallest( n_break, BREAK_points, insort,            &
-                                     INDA = NZ_p )
+        CALL SORT_heapsort_smallest( n_break, BREAK_points, insort, ix = NZ_p )
 
 !  compute the length of the current piece
 
@@ -8047,7 +8046,7 @@
 
           IF (  BREAK_points( 1 ) >= feasep  ) EXIT
           CALL SORT_heapsort_smallest( n_break, BREAK_points, insort,          &
-                                       INDA = NZ_p )
+                                       ix = NZ_p )
         END DO
 
 !  update u and beta

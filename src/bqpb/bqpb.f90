@@ -8,7 +8,7 @@
 !  History -
 !   originally released GALAHAD Version 2.4. January 1st 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_BQPB_double
@@ -27,7 +27,6 @@
      USE GALAHAD_SYMBOLS
      USE GALAHAD_STRING, ONLY: STRING_integer_6, STRING_real_7
      USE GALAHAD_SPACE_double
-     USE GALAHAD_SORT_double, ONLY : SORT_heapsort_build, SORT_heapsort_smallest
      USE GALAHAD_SBLS_double
      USE GALAHAD_QPT_double
      USE GALAHAD_QPP_double
@@ -71,14 +70,14 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: BQPB_control_type
-        
+
 !  unit number for error and warning diagnostics
-      
+
        INTEGER :: error = 6
 
 !  general output unit number
@@ -106,7 +105,7 @@
        INTEGER :: maxit = 1000
 
 !  cold_start should be set to 0 if a warm start is required (with variables
-!   assigned according to B_stat, see below), and to any other value if the 
+!   assigned according to B_stat, see below), and to any other value if the
 !   values given in prob%X suffice
 
        INTEGER :: cold_start = 1
@@ -127,7 +126,7 @@
 
        INTEGER :: sif_file_device = 52
 
-!  any bound larger than infinity in modulus will be regarded as infinite 
+!  any bound larger than infinity in modulus will be regarded as infinite
 
        REAL ( KIND = wp ) :: infinity = ten ** 19
 
@@ -152,20 +151,20 @@
 
        REAL ( KIND = wp ) :: mu_zero = - one
 
-!  initial primal variables will not be closer than this from their bounds 
+!  initial primal variables will not be closer than this from their bounds
 
        REAL ( KIND = wp ) :: pr_feas = one
 
-!  initial dual variables will not be closer than this from their bounds 
+!  initial dual variables will not be closer than this from their bounds
 
        REAL ( KIND = wp ) :: du_feas = one
 
-!  the maximum step that will be taken towards the constraint boundary 
+!  the maximum step that will be taken towards the constraint boundary
 
        REAL ( KIND = wp ) :: fraction_to_the_boundary = 0.99_wp
 
-!  the CG iteration will be stopped as soon as the current norm of the 
-!  preconditioned gradient is smaller than 
+!  the CG iteration will be stopped as soon as the current norm of the
+!  preconditioned gradient is smaller than
 !    max( stop_cg_relative * initial preconditioned gradient, stop_cg_absolute )
 
        REAL ( KIND = wp ) :: stop_cg_relative = ten ** ( - 2 )
@@ -205,7 +204,7 @@
 
 !  all output lines will be prefixed by a string (max 30 characters)
 !    prefix(2:LEN(TRIM(%prefix))-1)
-!   where prefix contains the required string enclosed in 
+!   where prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 !
        CHARACTER ( LEN = 30 ) :: prefix = '""                            '
@@ -237,10 +236,10 @@
 
        REAL :: solve = 0.0
      END TYPE BQPB_time_type
-   
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: BQPB_inform_type
 
@@ -313,7 +312,7 @@
        REAL ( KIND = wp ) :: q_t, norm_step, step, stop_cg, old_gnrmsq, pnrmsq
        REAL ( KIND = wp ) :: curvature, mu, nu, alpha, gamma_b, gamma_f
        LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
-       LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe 
+       LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe
        LOGICAL :: reverse, explicit_h, use_hprod, header
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: FREE
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, V, PROD
@@ -336,7 +335,7 @@
 !
 !  Default control data for BQPB. This routine should be called before
 !  BQPB_solve
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -349,7 +348,7 @@
 
      TYPE ( BQPB_data_type ), INTENT( INOUT ) :: data
      TYPE ( BQPB_control_type ), INTENT( OUT ) :: control
-     TYPE ( BQPB_inform_type ), INTENT( OUT ) :: inform     
+     TYPE ( BQPB_inform_type ), INTENT( OUT ) :: inform
 
      inform%status = GALAHAD_ok
 
@@ -359,7 +358,7 @@
                            inform%SBLS_inform )
      control%SBLS_control%prefix = '" - SBLS:"                    '
 
-!  added here to prevent for compiler bugs 
+!  added here to prevent for compiler bugs
 
      control%stop_p = epsmch ** 0.33_wp
      control%stop_d = epsmch ** 0.33_wp
@@ -376,10 +375,10 @@
 
      SUBROUTINE BQPB_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by BQPB_initialize could (roughly) 
+!  The defauly values as given by BQPB_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN BQPB SPECIFICATIONS (DEFAULT)
@@ -418,7 +417,7 @@
 
 !  Dummy arguments
 
-     TYPE ( BQPB_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( BQPB_control_type ), INTENT( INOUT ) :: control
      INTEGER, INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -653,8 +652,8 @@
 !     subject to   (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
 !
 !  where x is a vector of n components ( x_1, .... , x_n ), const is a
-!  constant, g is an n-vector, H is a symmetric, positive definite matrix, 
-!  and any of the bounds (x_l)_i, (x_u)_i may be infinite, using a 
+!  constant, g is an n-vector, H is a symmetric, positive definite matrix,
+!  and any of the bounds (x_l)_i, (x_u)_i may be infinite, using a
 !  using a preconditioned CG interior-point method.
 !
 !  The subroutine is particularly appropriate when H is sparse
@@ -663,17 +662,17 @@
 !
 !  Arguments:
 !
-!  prob is a structure of type QPT_problem_type, whose components hold 
+!  prob is a structure of type QPT_problem_type, whose components hold
 !   information about the problem on input, and its solution on output.
 !   The following components must be set:
 !
 !   %n is an INTEGER variable, which must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
-!                 
+!
 !   %m is an INTEGER variable, which must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
-!                 
-!   %H is a structure of type SMT_type used to hold the LOWER TRIANGULAR part 
+!
+!   %H is a structure of type SMT_type used to hold the LOWER TRIANGULAR part
 !    of H. Four storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -684,7 +683,7 @@
 !       H%val( : )   the values of the components of H
 !       H%row( : )   the row indices of the components of H
 !       H%col( : )   the column indices of the components of H
-!       H%ne         the number of nonzeros used to store 
+!       H%ne         the number of nonzeros used to store
 !                    the LOWER TRIANGULAR part of H
 !
 !    ii) sparse, by rows
@@ -703,7 +702,7 @@
 !
 !       H%type( 1 : 5 ) = TRANSFER( 'DENSE', H%type )
 !       H%val( : )   the values of the components of H, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
 !    iv) diagonal
@@ -720,8 +719,8 @@
 !   %G is a REAL array of length %n, which must be set by
 !    the user to the value of the gradient, g, of the linear term of the
 !    quadratic objective function. The i-th component of G, i = 1, ...., n,
-!    should contain the value of g_i.  
-!   
+!    should contain the value of g_i.
+!
 !   %f is a REAL variable, which must be set by the user to the value of
 !    the constant term f in the objective function. On exit, it may have
 !    been changed to reflect variables which have been fixed.
@@ -732,51 +731,51 @@
 !
 !   %X_l, %X_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays x_l and x_u of lower and upper bounds on x.
-!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %X_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %X_u to a value larger than 
-!    control%infinity. On exit, %X_l and %X_u will most likely have been 
+!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %X_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %X_u to a value larger than
+!    control%infinity. On exit, %X_l and %X_u will most likely have been
 !    reordered.
-!   
+!
 !   %Z is a REAL array of length %n, which must be set by the user to
 !    appropriate estimates of the values of the dual variables,
-!    i.e., Lagrange multipliers corresponding to the simple bound 
+!    i.e., Lagrange multipliers corresponding to the simple bound
 !    constraints x_l <= x <= x_u. On successful exit, it will contain
-!   the required vector of dual variables. 
+!   the required vector of dual variables.
 !
 !  B_stat is a INTEGER array of length n, which may be set by the user
-!   on entry to BQPB_solve to indicate which of the simple bound constraints 
+!   on entry to BQPB_solve to indicate which of the simple bound constraints
 !   are to be included in the initial working set. If this facility is required,
 !   the component control%cold_start must be set to 0 on entry; B_stat
 !   need not be set if control%cold_start is nonzero. On exit,
 !   B_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are 
-!   B_stat( i ) < 0, the i-th bound constraint is in the working set, 
-!                    on its lower bound, 
+!   Possible entry/exit values are
+!   B_stat( i ) < 0, the i-th bound constraint is in the working set,
+!                    on its lower bound,
 !               > 0, the i-th bound constraint is in the working set
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
 !  data is a structure of type BQPB_data_type which holds private internal data
 !
-!  control is a structure of type BQPB_control_type that controls the 
+!  control is a structure of type BQPB_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to BQPB_initialize. See BQPB_initialize 
+!   the elements may be set by a call to BQPB_initialize. See BQPB_initialize
 !   for details
 !
-!  inform is a structure of type BQPB_inform_type that provides 
-!    information on exit from BQPB_solve. The component %status 
+!  inform is a structure of type BQPB_inform_type that provides
+!    information on exit from BQPB_solve. The component %status
 !    must be set to 1 on initial entry, and on exit has possible values:
-!  
+!
 !     0 Normal termination with a locally optimal solution.
 !
 !     2 The product H * v of the Hessian H with a given output vector v
 !       is required from the user. The vector v will be stored in reverse%V
-!       and the product H * v must be returned in reverse%PROD, and 
-!       BQPB_solve re-entered with all other arguments unchanged. 
+!       and the product H * v must be returned in reverse%PROD, and
+!       BQPB_solve re-entered with all other arguments unchanged.
 !
 !    -1 An allocation error occured; the status is given in the component
 !       alloc_status.
@@ -784,10 +783,10 @@
 !    -2 A deallocation error occured; the status is given in the component
 !       alloc_status.
 !
-!   - 3 one of the restrictions 
+!   - 3 one of the restrictions
 !        prob%n     >=  1
 !        prob%m     >=  0
-!        prob%H%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE', 
+!        prob%H%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE',
 !                         'DIAGONAL' }
 !       has been violated.
 !
@@ -800,35 +799,35 @@
 !
 !    -9 The factorization failed; the return status from the factorization
 !       package is given in the component factorization_status.
-!      
-!    -13 The problem is so ill-conditoned that further progress is impossible.  
+!
+!    -13 The problem is so ill-conditoned that further progress is impossible.
 !
 !    -16 The step is too small to make further impact.
 !
 !    -17 Too many iterations have been performed. This may happen if
-!       control%maxit is too small, but may also be symptomatic of 
+!       control%maxit is too small, but may also be symptomatic of
 !       a badly scaled problem.
 !
-!    -18 Too much CPU time has passed. This may happen if 
-!        control%cpu_time_limit is too small, but may also be 
+!    -18 Too much CPU time has passed. This may happen if
+!        control%cpu_time_limit is too small, but may also be
 !        symptomatic of a badly scaled problem.
 !
 !    -23 an entry from the strict upper triangle of H has been input.
 !
-!  On exit from BQPB_solve, other components of inform give the 
+!  On exit from BQPB_solve, other components of inform give the
 !  following:
 !
-!     alloc_status = The status of the last attempted allocation/deallocation 
-!     factorization_integer = The total integer workspace required for the 
+!     alloc_status = The status of the last attempted allocation/deallocation
+!     factorization_integer = The total integer workspace required for the
 !       factorization.
-!     factorization_real = The total real workspace required for the 
+!     factorization_real = The total real workspace required for the
 !       factorization.
 !     nfacts = The total number of factorizations performed.
-!     nmods = The total number of factorizations which were modified to 
-!       ensure that the matrix was an appropriate preconditioner. 
+!     nmods = The total number of factorizations which were modified to
+!       ensure that the matrix was an appropriate preconditioner.
 !     factorization_status = the return status from the matrix factorization
-!       package.   
-!     obj = the value of the objective function at the best estimate of the 
+!       package.
+!     obj = the value of the objective function at the best estimate of the
 !       solution determined by BQPB_solve.
 !     non_negligible_pivot = the smallest pivot which was not judged to be
 !       zero when detecting linearly dependent constraints
@@ -840,7 +839,7 @@
 !     time%factorize = the time spent factorizing the required matrices.
 !     time%solve = the time spent computing the search direction.
 !
-!  userdata is a scalar variable of type NLPT_userdata_type which may be used 
+!  userdata is a scalar variable of type NLPT_userdata_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -855,29 +854,29 @@
 !    character_pointer is a rank-one pointer array of type default character.
 !    logical_pointer is a rank-one pointer array of type default logical.
 !
-!  reverse is an OPTIONAL structure of type BQPB_reverse_type which is used to 
-!   pass intermediate data to and from BQPB_solve. This will only be necessary 
+!  reverse is an OPTIONAL structure of type BQPB_reverse_type which is used to
+!   pass intermediate data to and from BQPB_solve. This will only be necessary
 !   if reverse-communication is to be used to form matrix-vector products
-!   of the form H * v or preconditioning steps of the form P * v. If 
+!   of the form H * v or preconditioning steps of the form P * v. If
 !   reverse is present (and eval_HPROD is absent), reverse communication
-!   will be used and the user must monitor the value of inform%status 
+!   will be used and the user must monitor the value of inform%status
 !   (see above) to await instructions about required matrix-vector products.
 !
 !  eval_HPROD is an OPTIONAL subroutine which if present must have the arguments
-!   given below (see the interface blocks). The product H * v of the given 
-!   matrix H and vector v stored in V must be returned in PROD. The status 
+!   given below (see the interface blocks). The product H * v of the given
+!   matrix H and vector v stored in V must be returned in PROD. The status
 !   variable should be set to 0 unless the product is impossible in which
 !   case status should be set to a nonzero value. If eval_HPROD is not
-!   present, BQPB_solve will either return to the user each time an evaluation 
-!   is required (see reverse above) or form the product directly from 
+!   present, BQPB_solve will either return to the user each time an evaluation
+!   is required (see reverse above) or form the product directly from
 !   user-provided %H.
 !
 !  eval_PREC is an OPTIONAL subroutine which if present must have the arguments
-!   given below (see the interface blocks). The product P * v of the given 
+!   given below (see the interface blocks). The product P * v of the given
 !   preconditioner P and vector v stored in V must be returned in PV.
-!   The status variable should be set to 0 unless the product is impossible 
+!   The status variable should be set to 0 unless the product is impossible
 !   in which case status should be set to a nonzero value. If eval_PREC
-!   is not present, BQPB_solve will return to the user each time an evaluation 
+!   is not present, BQPB_solve will return to the user each time an evaluation
 !   is required.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -906,7 +905,7 @@
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
        END SUBROUTINE eval_HPROD
      END INTERFACE
-   
+
 !    INTERFACE
 !      SUBROUTINE eval_PREC( status, userdata, V, PREC )
 !      USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
@@ -929,7 +928,7 @@
      LOGICAL :: reset_bnd
      CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -953,7 +952,7 @@
        WRITE( control%out, 2000 ) prefix, ' entering '
 
 ! -------------------------------------------------------------------
-!  If desired, generate a SIF file for problem passed 
+!  If desired, generate a SIF file for problem passed
 
      IF ( control%generate_sif_file ) THEN
        CALL QPD_SIF( prob, control%sif_file_name, control%sif_file_device,     &
@@ -992,7 +991,7 @@
 !  Control the output printing
 !  ===========================
 
-     data%out = control%out ; data%error = control%error 
+     data%out = control%out ; data%error = control%error
      data%print_level = 0
      IF ( control%start_print <= 0 ) THEN
        data%start_print = 0
@@ -1018,15 +1017,15 @@
 
 !  basic single line of output per iteration
 
-     data%set_printi = data%out > 0 .AND. control%print_level >= 1 
+     data%set_printi = data%out > 0 .AND. control%print_level >= 1
 
 !  as per printi, but with additional timings for various operations
 
-     data%set_printt = data%out > 0 .AND. control%print_level >= 2 
+     data%set_printt = data%out > 0 .AND. control%print_level >= 2
 
 !  as per printt, but with checking of residuals, etc
 
-     data%set_printm = data%out > 0 .AND. control%print_level >= 3 
+     data%set_printm = data%out > 0 .AND. control%print_level >= 3
 
 !  as per printm but also with an indication of where in the code we are
 
@@ -1041,8 +1040,8 @@
      IF ( inform%iter >= data%start_print .AND.                                &
           inform%iter < data%stop_print ) THEN
        data%print_level = control%print_level
-       data%printe = data%set_printe ; data%printi = data%set_printi 
-       data%printt = data%set_printt ; data%printm = data%set_printm 
+       data%printe = data%set_printe ; data%printi = data%set_printi
+       data%printt = data%set_printt ; data%printm = data%set_printm
        data%printw = data%set_printw ; data%printd = data%set_printd
      ELSE
        data%print_level = 0
@@ -1059,10 +1058,10 @@
        IF ( .NOT. QPT_keyword_H( prob%H%type ) ) THEN
          inform%status = GALAHAD_error_restrictions
          GO TO 910
-       END IF 
-     END IF 
+       END IF
+     END IF
 
-!  If required, write out problem 
+!  If required, write out problem
 
      IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
        WRITE( control%out, "( ' n, m = ', I0, 1X, I0 )" ) prob%n, prob%m
@@ -1100,7 +1099,7 @@
      DO i = 1, prob%n
        IF ( prob%X_l( i ) - prob%X_u( i ) > control%identical_bounds_tol ) THEN
          inform%status = GALAHAD_error_bad_bounds
-         GO TO 910 
+         GO TO 910
        ELSE IF ( prob%X_u( i ) == prob%X_l( i ) ) THEN
        ELSE IF ( prob%X_u( i ) - prob%X_l( i )                                 &
                  <= control%identical_bounds_tol ) THEN
@@ -1119,7 +1118,7 @@
            END IF
          END IF
        END IF
-     END DO   
+     END DO
      IF ( reset_bnd .AND. data%printi ) WRITE( control%out,                    &
        "( ' ', /, A, '   **  Warning: one or more variable bounds reset ' )" ) &
          prefix
@@ -1283,7 +1282,7 @@
          data%G_cg( i ) = zero ; data%PG_cg( i ) = zero ; data%HP_cg( i ) = zero
          data%H_diag( i ) = zero
        END IF
-     END DO   
+     END DO
 
 !  Build a copy of H stored by rows (both lower and upper triangles)
 
@@ -1491,17 +1490,17 @@
 !  ------------------------
 
  110 CONTINUE
-       CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start 
+       CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
 
 !  set the print levels for the iteration
 
-       inform%iter = inform%iter + 1 
+       inform%iter = inform%iter + 1
        IF ( ( inform%iter >= data%start_print .AND.                            &
               inform%iter < data%stop_print ) .AND.                            &
             MOD( inform%iter - data%start_print, data%print_gap ) == 0 ) THEN
          data%print_level = control%print_level
-         data%printe = data%set_printe ; data%printi = data%set_printi 
-         data%printt = data%set_printt ; data%printm = data%set_printm 
+         data%printe = data%set_printe ; data%printi = data%set_printi
+         data%printt = data%set_printt ; data%printm = data%set_printm
          data%printw = data%set_printw ; data%printd = data%set_printd
        ELSE
          data%print_level = 0
@@ -1585,14 +1584,14 @@
          END DO
        END IF
 
-!  compute the norm of the gradient of the Lagrangian and the complementarity 
+!  compute the norm of the gradient of the Lagrangian and the complementarity
 
        norm_gl = zero ; inform%slknes = zero ; nc = zero ; slkmin = infinity
        DO l = 1, data%n_free
          i = data%FREE( l )
          IF ( prob%X_l( i ) >= - control%infinity ) THEN
            IF ( prob%X_u( i ) <= control%infinity ) THEN
-             gl = data%G( i ) - data%Z_l( i ) + data%Z_u( i ) 
+             gl = data%G( i ) - data%Z_l( i ) + data%Z_u( i )
              cs = ( prob%X( i ) - prob%X_l( i ) ) * data%Z_l( i ) +           &
                   ( prob%X_u( i ) - prob%X( i ) ) * data%Z_u( i )
              slkmin = MIN( slkmin,                                            &
@@ -1606,7 +1605,7 @@
              nc = nc + one
            END IF
          ELSE IF ( prob%X_u( i ) <= control%infinity ) THEN
-           gl = data%G( i ) + data%Z_u( i ) 
+           gl = data%G( i ) + data%Z_u( i )
            cs = ( prob%X_u( i ) - prob%X( i ) ) * data%Z_u( i )
            slkmin = MIN( slkmin, cs )
            nc = nc + one
@@ -1617,7 +1616,7 @@
          norm_gl = MAX( norm_gl, ABS( gl ) )
          inform%slknes = inform%slknes + cs
        END DO
-       IF ( nc > zero ) THEN 
+       IF ( nc > zero ) THEN
          data%gamma_f = gamma_f0 * inform%slknes
          inform%slknes = inform%slknes / nc
          data%gamma_b = gamma_b0 * slkmin / inform%slknes
@@ -1699,16 +1698,16 @@
 
 !  test to see if more than maxit iterations have been performed
 
-       IF ( inform%iter > data%maxit ) THEN 
-         inform%status = GALAHAD_error_max_iterations ; GO TO 900 
-       END IF 
+       IF ( inform%iter > data%maxit ) THEN
+         inform%status = GALAHAD_error_max_iterations ; GO TO 900
+       END IF
 
 !  check that the CPU time limit has not been reached
 
        IF ( control%cpu_time_limit >= zero .AND.                               &
             inform%time%total > control%cpu_time_limit ) THEN
          inform%status = GALAHAD_error_cpu_limit ; GO TO 900
-       END IF 
+       END IF
 
 !  ----------------------------------------------------------------------------
 !                  compute the search direction
@@ -1762,7 +1761,7 @@
 
        data%PREC( : prob%n ) = MAX( one, data%H_diag( : prob%n ) )
 
-!  perform CG from x, starting from dx = 0 
+!  perform CG from x, starting from dx = 0
 
        data%DX( : prob%n ) = zero
        data%pnrmsq = zero
@@ -1782,7 +1781,7 @@
          ELSE
            data%PG_cg( data%FREE( : data%n_free ) ) =                          &
              data%G_cg( data%FREE( : data%n_free ) ) /                         &
-               data%PREC( data%FREE( : data%n_free ) ) 
+               data%PREC( data%FREE( : data%n_free ) )
          END IF
  300     CONTINUE
          gnrmsq = DOT_PRODUCT( data%PG_cg( : prob%n ), data%G_cg( : prob%n ) )
@@ -1807,16 +1806,16 @@
              WRITE( control%out,                                               &
                "( A, 1X, I7, 2ES12.4, '      -            -     ' )" )         &
                prefix, data%cg_iter, data%q_t, SQRT( ABS( gnrmsq ) )
-           ELSE          
+           ELSE
              WRITE( control%out, "( A, 1X, I7, 4ES12.4 )" )                    &
               prefix, data%cg_iter, data%q_t, SQRT( ABS( gnrmsq ) ),           &
               data%curvature, data%step
            END IF
          END IF
-       
-!  if the gradient of the model is sufficiently small or if the CG iteration 
+
+!  if the gradient of the model is sufficiently small or if the CG iteration
 !  limit is exceeded, exit; record the CG direction
- 
+
          IF ( SQRT( ABS( gnrmsq ) ) <= data%stop_cg .OR.                       &
               data%cg_iter + 1 > data%cg_maxit ) THEN
            IF ( data% reverse ) THEN
@@ -1901,12 +1900,12 @@
 
          IF ( data%n_free == prob%n ) THEN
            data%HP_cg( : prob%n ) = data%HP_cg( : prob%n ) +                   &
-               data%H_diag( : prob%n ) * data%P_cg( : prob%n ) 
+               data%H_diag( : prob%n ) * data%P_cg( : prob%n )
          ELSE
            data%HP_cg( data%FREE( : data%n_free ) ) =                          &
              data%HP_cg( data%FREE( : data%n_free ) ) +                        &
                data%H_diag( data%FREE( : data%n_free ) ) *                     &
-               data%P_cg( data%FREE( : data%n_free ) ) 
+               data%P_cg( data%FREE( : data%n_free ) )
          END IF
 
 !  compute the curvature p^T H p along the search direction
@@ -1945,7 +1944,7 @@ write(6,*) ' curvature ', data%curvature
 !  update the estimate of the solution dx
 
          data%DX( : prob%n ) = data%DX( : prob%n )                             &
-           + data%step * data%P_cg( : prob%n ) 
+           + data%step * data%P_cg( : prob%n )
 
 !  update the gradient at the estimate of the solution
 
@@ -1955,7 +1954,7 @@ write(6,*) ' curvature ', data%curvature
          ELSE
            data%G_cg( data%FREE( : data%n_free ) ) =                           &
              data%G_cg( data%FREE( : data%n_free ) )                           &
-               + data%step * data%HP_cg( data%FREE( : data%n_free ) ) 
+               + data%step * data%HP_cg( data%FREE( : data%n_free ) )
          END IF
          GO TO 210
 
@@ -1973,7 +1972,7 @@ write(6,*) ' curvature ', data%curvature
          IF ( prob%X_l( i ) >= - control%infinity )                            &
            data%DZ_l( i ) = ( data%mu - data%Z_l( i ) *                        &
              ( prob%X( i ) - prob%X_l( i ) + data%DX( i ) ) ) /                &
-               ( prob%X( i ) - prob%X_l( i ) ) 
+               ( prob%X( i ) - prob%X_l( i ) )
          IF ( prob%X_u( i ) <= control%infinity )                              &
            data%DZ_u( i ) = ( data%mu - data%Z_u( i ) *                        &
              ( prob%X_u( i ) - prob%X( i ) - data%DX( i ) ) ) /                &
@@ -2004,7 +2003,7 @@ write(6,*) ' curvature ', data%curvature
          END DO
 
 !  step a large fraction to the boundary
-       
+
          data%alpha =                                                          &
           MIN( one, control%fraction_to_the_boundary * MIN( alpha_x, alpha_z ) )
 
@@ -2043,15 +2042,15 @@ write(6,*) ' curvature ', data%curvature
 
 !  Successful return
 
- 900 CONTINUE 
-     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start 
+ 900 CONTINUE
+     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
      IF ( data%printd ) WRITE( control%out, 2000 ) prefix, ' leaving '
      RETURN
 
 !  Error returns
 
- 910 CONTINUE 
-     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start 
+ 910 CONTINUE
+     CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
      IF ( data%printi ) THEN
        SELECT CASE ( inform%status )
        CASE ( GALAHAD_ok )
@@ -2082,12 +2081,12 @@ write(6,*) ' curvature ', data%curvature
        WRITE( control%error, 2010 ) prefix, inform%status, 'BQPB_solve'
      END IF
      IF ( data%printd ) WRITE( control%out, 2000 ) prefix, ' leaving '
-     RETURN  
+     RETURN
 
 !  Non-executable statements
 
-2000 FORMAT( /, A, ' --', A, ' BQPB_solve' ) 
-2010 FORMAT( A, '   **  Error return ', I0, ' from ', A ) 
+2000 FORMAT( /, A, ' --', A, ' BQPB_solve' )
+2010 FORMAT( A, '   **  Error return ', I0, ' from ', A )
 2020 FORMAT( /, A, ' BQPB error exit: ', A )
 2030 FORMAT( /, A, ' allocation error status ', I0, ' for ', A )
 
@@ -2121,7 +2120,7 @@ write(6,*) ' curvature ', data%curvature
 !  Dummy arguments
 
      TYPE ( BQPB_data_type ), INTENT( INOUT ) :: data
-     TYPE ( BQPB_control_type ), INTENT( IN ) :: control        
+     TYPE ( BQPB_control_type ), INTENT( IN ) :: control
      TYPE ( BQPB_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( BQPB_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
 
@@ -2306,16 +2305,16 @@ write(6,*) ' curvature ', data%curvature
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Find the maximum allowable stepsizes alpha_max_b, which balances the 
+!  Find the maximum allowable stepsizes alpha_max_b, which balances the
 !  complementarity ie, such that
 !
 !      min (x-l)_i(z_l)_i - (gamma_b / nbds)( <x-l,z_l> + <u-x,z_u> ) >= 0
-!       i                                           
+!       i
 !  and
 !      min (u-x)_i(z_u)_i - (gamma_b / nbds)( <x-l,z_l> + <u-x,z_u> ) >= 0 ,
-!       i                                           
+!       i
 !
-!  and alpha_max_f, which favours feasibility over complementarity, 
+!  and alpha_max_f, which favours feasibility over complementarity,
 !  ie, such that
 !
 !      <x-l,z_l> + <u-x,z_u> >= nu * gamma_f
@@ -2326,15 +2325,15 @@ write(6,*) ' curvature ', data%curvature
 
      INTEGER, INTENT( IN ) :: n, print_level
      REAL ( KIND = wp ), INTENT( IN ) :: gamma_b, gamma_f, nu
-     REAL ( KIND = wp ), INTENT( OUT ) :: alpha_max_b, alpha_max_f 
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, DX 
+     REAL ( KIND = wp ), INTENT( OUT ) :: alpha_max_b, alpha_max_f
+     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, DX
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: Z_l, Z_u, DZ_l, DZ_u
-     TYPE ( BQPB_control_type ), INTENT( IN ) :: control        
+     TYPE ( BQPB_control_type ), INTENT( IN ) :: control
      TYPE ( BQPB_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, nbnds, nroots 
+     INTEGER :: i, nbnds, nroots
 
 !  Local variables
 
@@ -2342,9 +2341,9 @@ write(6,*) ' curvature ', data%curvature
      REAL ( KIND = wp ) :: coef0_f, coef1_f, coef2_f
      REAL ( KIND = wp ) :: root1, root2, tol, alpha, alp, nu_gamma_f
 
-     alpha_max_b = infinity ; alpha_max_f = infinity 
+     alpha_max_b = infinity ; alpha_max_f = infinity
      inform%status = GALAHAD_ok
-     tol = epsmch ** 0.75 
+     tol = epsmch ** 0.75
 
 !  ================================================
 !             part to compute alpha_max_b
@@ -2357,20 +2356,20 @@ write(6,*) ' curvature ', data%curvature
      DO i = 1, n
        IF ( X_l( i ) == X_u( i ) ) CYCLE
        IF ( X_l( i ) >= - control%infinity ) THEN
-         coef0_f = coef0_f + ( X( i ) - X_l( i ) ) * Z_l( i ) 
+         coef0_f = coef0_f + ( X( i ) - X_l( i ) ) * Z_l( i )
          coef1_f = coef1_f + ( X( i ) - X_l( i ) ) * DZ_l( i )                 &
-                           + DX( i ) * Z_l( i ) 
+                           + DX( i ) * Z_l( i )
          coef2_f = coef2_f + DX( i ) * DZ_l( i )
          nbnds = nbnds + 1
        END IF
        IF ( X_u( i ) <= control%infinity ) THEN
-         coef0_f = coef0_f + ( X_u( i ) - X( i ) ) * Z_u( i ) 
+         coef0_f = coef0_f + ( X_u( i ) - X( i ) ) * Z_u( i )
          coef1_f = coef1_f + ( X_u( i ) - X( i ) ) * DZ_u( i )                 &
-                           - DX( i ) * Z_u( i ) 
-         coef2_f = coef2_f - DX( i ) * DZ_u( i ) 
+                           - DX( i ) * Z_u( i )
+         coef2_f = coef2_f - DX( i ) * DZ_u( i )
          nbnds = nbnds + 1
        END IF
-     END DO 
+     END DO
      IF ( nbnds == 0 ) RETURN
 
 !  Scale these coefficients
@@ -2386,207 +2385,207 @@ write(6,*) ' curvature ', data%curvature
      DO i = 1, n
        IF ( X_l( i ) == X_u( i ) ) CYCLE
        IF ( X_l( i ) >= - control%infinity ) THEN
-         coef0 = compc + ( X( i ) - X_l( i ) ) * Z_l( i ) 
-         coef1 = compl + ( X( i ) - X_l( i ) ) * DZ_l( i ) + DX( i ) * Z_l( i ) 
-         coef2 = compq + DX( i ) * DZ_l( i ) 
+         coef0 = compc + ( X( i ) - X_l( i ) ) * Z_l( i )
+         coef1 = compl + ( X( i ) - X_l( i ) ) * DZ_l( i ) + DX( i ) * Z_l( i )
+         coef2 = compq + DX( i ) * DZ_l( i )
          coef0 = MAX( coef0, zero )
          CALL ROOTS_quadratic( coef0, coef1, coef2, tol, nroots, root1, root2, &
-                               roots_debug ) 
-         IF ( nroots == 2 ) THEN 
-           IF ( coef2 > zero ) THEN 
-             IF ( root2 > zero ) THEN 
-                alpha = root1 
-             ELSE 
-                alpha = control%infinity 
-             END IF 
-           ELSE 
-             alpha = root2 
-           END IF 
-         ELSE IF ( nroots == 1 ) THEN 
-           IF ( root1 > zero ) THEN 
-             alpha = root1 
-           ELSE 
-             alpha = control%infinity 
-           END IF 
-         ELSE 
-           alpha = control%infinity 
-         END IF 
+                               roots_debug )
+         IF ( nroots == 2 ) THEN
+           IF ( coef2 > zero ) THEN
+             IF ( root2 > zero ) THEN
+                alpha = root1
+             ELSE
+                alpha = control%infinity
+             END IF
+           ELSE
+             alpha = root2
+           END IF
+         ELSE IF ( nroots == 1 ) THEN
+           IF ( root1 > zero ) THEN
+             alpha = root1
+           ELSE
+             alpha = control%infinity
+           END IF
+         ELSE
+           alpha = control%infinity
+         END IF
 !        IF ( control%out > 0 .AND. print_level >= 2 ) THEN
-!           IF ( nroots == 2 ) THEN 
+!           IF ( nroots == 2 ) THEN
 !             WRITE( control%out, 2000 )                                       &
 !               'X', i, 'L', coef0, coef1, coef2, root1, root2
-!           ELSE IF ( nroots == 1 ) THEN 
+!           ELSE IF ( nroots == 1 ) THEN
 !             WRITE( control%out, 2000 )                                       &
-!               'X', i, 'L', coef0, coef1, coef2, root1 
-!           ELSE 
-!             WRITE( control%out, 2000 ) 'X', i, 'L', coef0, coef1, coef2 
-!           END IF 
-!           WRITE( control%out, 2010 ) 'X', i, 'L', alpha 
-!        END IF 
-         IF ( alpha < alpha_max_b ) alpha_max_b = alpha 
+!               'X', i, 'L', coef0, coef1, coef2, root1
+!           ELSE
+!             WRITE( control%out, 2000 ) 'X', i, 'L', coef0, coef1, coef2
+!           END IF
+!           WRITE( control%out, 2010 ) 'X', i, 'L', alpha
+!        END IF
+         IF ( alpha < alpha_max_b ) alpha_max_b = alpha
        END IF
        IF ( X_u( i ) <= control%infinity ) THEN
-         coef0 = compc + ( X_u( i ) - X( i ) ) * Z_u( i ) 
-         coef1 = compl + ( X_u( i ) - X( i ) ) * DZ_u( i ) - DX( i ) * Z_u( i ) 
-         coef2 = compq - DX( i ) * DZ_u( i ) 
+         coef0 = compc + ( X_u( i ) - X( i ) ) * Z_u( i )
+         coef1 = compl + ( X_u( i ) - X( i ) ) * DZ_u( i ) - DX( i ) * Z_u( i )
+         coef2 = compq - DX( i ) * DZ_u( i )
          coef0 = MAX( coef0, zero )
          CALL ROOTS_quadratic( coef0, coef1, coef2, tol, nroots, root1, root2, &
-                               roots_debug ) 
-         IF ( nroots == 2 ) THEN 
-           IF ( coef2 > zero ) THEN 
-             IF ( root2 > zero ) THEN 
-                alpha = root1 
-             ELSE 
-                alpha = control%infinity 
-             END IF 
-           ELSE 
-             alpha = root2 
-           END IF 
-         ELSE IF ( nroots == 1 ) THEN 
-           IF ( root1 > zero ) THEN 
-             alpha = root1 
-           ELSE 
-             alpha = control%infinity 
-           END IF 
-         ELSE 
-           alpha = control%infinity 
-         END IF 
+                               roots_debug )
+         IF ( nroots == 2 ) THEN
+           IF ( coef2 > zero ) THEN
+             IF ( root2 > zero ) THEN
+                alpha = root1
+             ELSE
+                alpha = control%infinity
+             END IF
+           ELSE
+             alpha = root2
+           END IF
+         ELSE IF ( nroots == 1 ) THEN
+           IF ( root1 > zero ) THEN
+             alpha = root1
+           ELSE
+             alpha = control%infinity
+           END IF
+         ELSE
+           alpha = control%infinity
+         END IF
  !       IF ( control%out > 0 .AND. print_level >= 2 ) THEN
- !          IF ( nroots == 2 ) THEN 
+ !          IF ( nroots == 2 ) THEN
  !            WRITE( control%out, 2000 )                                       &
  !              'X', i, 'L', coef0, coef1, coef2, root1, root2
- !          ELSE IF ( nroots == 1 ) THEN 
+ !          ELSE IF ( nroots == 1 ) THEN
  !            WRITE( control%out, 2000 )                                       &
- !              'X', i, 'L', coef0, coef1, coef2, root1 
- !          ELSE 
- !            WRITE( control%out, 2000 ) 'X', i, 'U', coef0, coef1, coef2 
- !          END IF 
- !          WRITE( control%out, 2010 ) 'X', i, 'U', alpha 
- !       END IF 
-         IF ( alpha < alpha_max_b ) alpha_max_b = alpha 
+ !              'X', i, 'L', coef0, coef1, coef2, root1
+ !          ELSE
+ !            WRITE( control%out, 2000 ) 'X', i, 'U', coef0, coef1, coef2
+ !          END IF
+ !          WRITE( control%out, 2010 ) 'X', i, 'U', alpha
+ !       END IF
+         IF ( alpha < alpha_max_b ) alpha_max_b = alpha
        END IF
-     END DO 
+     END DO
 
      IF ( - compc <= epsmch ** 0.75 ) alpha_max_b = 0.99_wp * alpha_max_b
 
 !  An error has occured. Investigate
 
-     IF ( alpha_max_b <= zero ) THEN 
+     IF ( alpha_max_b <= zero ) THEN
        IF ( control%out > 0 .AND. print_level >= 2 )                           &
          WRITE( control%out, 2020 ) alpha_max_b
        DO i = 1, n
          IF ( X_l( i ) == X_u( i ) ) CYCLE
          IF ( X_l( i ) >= - control%infinity ) THEN
-           coef0 = compc + ( X( i ) - X_l( i ) ) * Z_l( i ) 
+           coef0 = compc + ( X( i ) - X_l( i ) ) * Z_l( i )
            coef1 = compl + ( X( i ) - X_l( i ) ) * DZ_l( i )                   &
-                         + DX( i ) * Z_l( i ) 
-           coef2 = compq + DX( i ) * DZ_l( i ) 
+                         + DX( i ) * Z_l( i )
+           coef2 = compq + DX( i ) * DZ_l( i )
            CALL ROOTS_quadratic( coef0, coef1, coef2, tol, nroots, root1,      &
                                  root2, roots_debug )
-           IF ( nroots == 2 ) THEN 
-             IF ( coef2 > zero ) THEN 
-                IF ( root2 > zero ) THEN 
-                   alpha = root1 
-                ELSE 
-                   alpha = infinity 
-                END IF 
-             ELSE 
-                alpha = root2 
-             END IF 
-           ELSE IF ( nroots == 1 ) THEN 
-             IF ( root1 > zero ) THEN 
-                alpha = root1 
-             ELSE 
-                alpha = infinity 
-             END IF 
-           ELSE 
-             alpha = infinity 
-           END IF 
+           IF ( nroots == 2 ) THEN
+             IF ( coef2 > zero ) THEN
+                IF ( root2 > zero ) THEN
+                   alpha = root1
+                ELSE
+                   alpha = infinity
+                END IF
+             ELSE
+                alpha = root2
+             END IF
+           ELSE IF ( nroots == 1 ) THEN
+             IF ( root1 > zero ) THEN
+                alpha = root1
+             ELSE
+                alpha = infinity
+             END IF
+           ELSE
+             alpha = infinity
+           END IF
            IF ( alpha == alpha_max_b ) THEN
              IF ( control%out > 0 .AND. print_level >= 2 ) THEN
-                IF ( nroots == 2 ) THEN 
+                IF ( nroots == 2 ) THEN
                   WRITE( control%out, 2000 )                                   &
                     'X', i, 'L', coef0, coef1, coef2, root1, root2
-                ELSE IF ( nroots == 1 ) THEN 
+                ELSE IF ( nroots == 1 ) THEN
                   WRITE( control%out, 2000 )                                   &
-                    'X', i, 'L', coef0, coef1, coef2, root1 
-                ELSE 
-                  WRITE( control%out, 2000 ) 'X', i, 'L', coef0, coef1, coef2 
-                END IF 
-                WRITE( control%out, 2010 ) 'X', i, 'L', alpha 
-             END IF 
-           END IF 
+                    'X', i, 'L', coef0, coef1, coef2, root1
+                ELSE
+                  WRITE( control%out, 2000 ) 'X', i, 'L', coef0, coef1, coef2
+                END IF
+                WRITE( control%out, 2010 ) 'X', i, 'L', alpha
+             END IF
+           END IF
          END IF
          IF ( X_u( i ) <= control%infinity ) THEN
-           coef0 = compc + ( X_u( i ) - X( i ) ) * Z_u( i ) 
+           coef0 = compc + ( X_u( i ) - X( i ) ) * Z_u( i )
            coef1 = compl + ( X_u( i ) - X( i ) ) * DZ_u( i )                   &
-                         - DX( i ) * Z_u( i ) 
-           coef2 = compq - DX( i ) * DZ_u( i ) 
+                         - DX( i ) * Z_u( i )
+           coef2 = compq - DX( i ) * DZ_u( i )
            CALL ROOTS_quadratic( coef0, coef1, coef2, tol, nroots, root1,      &
                                  root2, roots_debug )
-           IF ( nroots == 2 ) THEN 
-             IF ( coef2 > zero ) THEN 
-                IF ( root2 > zero ) THEN 
-                   alpha = root1 
-                ELSE 
-                   alpha = infinity 
-                END IF 
-             ELSE 
-                alpha = root2 
-             END IF 
-           ELSE IF ( nroots == 1 ) THEN 
-             IF ( root1 > zero ) THEN 
-                alpha = root1 
-             ELSE 
-                alpha = infinity 
-             END IF 
-           ELSE 
-             alpha = infinity 
-           END IF 
+           IF ( nroots == 2 ) THEN
+             IF ( coef2 > zero ) THEN
+                IF ( root2 > zero ) THEN
+                   alpha = root1
+                ELSE
+                   alpha = infinity
+                END IF
+             ELSE
+                alpha = root2
+             END IF
+           ELSE IF ( nroots == 1 ) THEN
+             IF ( root1 > zero ) THEN
+                alpha = root1
+             ELSE
+                alpha = infinity
+             END IF
+           ELSE
+             alpha = infinity
+           END IF
            IF ( alpha == alpha_max_b ) THEN
              IF ( control%out > 0 .AND. print_level >= 2 ) THEN
-                IF ( nroots == 2 ) THEN 
+                IF ( nroots == 2 ) THEN
                   WRITE( control%out, 2000 )                                   &
                     'X', i, 'U', coef0, coef1, coef2, root1, root2
-                ELSE IF ( nroots == 1 ) THEN 
+                ELSE IF ( nroots == 1 ) THEN
                   WRITE( control%out, 2000 )                                   &
-                    'X', i, 'U', coef0, coef1, coef2, root1 
-                ELSE 
-                  WRITE( control%out, 2000 ) 'X', i, 'U', coef0, coef1, coef2 
-                END IF 
-                WRITE( control%out, 2010 ) 'X', i, 'U', alpha 
-             END IF 
-           END IF 
+                    'X', i, 'U', coef0, coef1, coef2, root1
+                ELSE
+                  WRITE( control%out, 2000 ) 'X', i, 'U', coef0, coef1, coef2
+                END IF
+                WRITE( control%out, 2010 ) 'X', i, 'U', alpha
+             END IF
+           END IF
          END IF
-       END DO 
+       END DO
        DO i = 1, n
          IF ( X_l( i ) == X_u( i ) ) CYCLE
          IF ( X_l( i ) >= - control%infinity ) THEN
-           coef0 = ( X( i ) - X_l( i ) ) * Z_l( i ) 
+           coef0 = ( X( i ) - X_l( i ) ) * Z_l( i )
            coef1 = DX( i ) * Z_l( i ) + ( X( i ) - X_l( i ) ) * DZ_l( i )
-           coef2 = DX( i ) * DZ_l( i ) 
-           alp = alpha_max_b ; alpha = coef0 + alp * ( coef1 + alp * coef2 ) 
+           coef2 = DX( i ) * DZ_l( i )
+           alp = alpha_max_b ; alpha = coef0 + alp * ( coef1 + alp * coef2 )
            IF ( control%out > 0 .AND. print_level >= 2 )                       &
-             WRITE( control%out, 2030 ) 'X', i, 'L', alp, alpha 
+             WRITE( control%out, 2030 ) 'X', i, 'L', alp, alpha
          END IF
          IF ( X_u( i ) <= control%infinity ) THEN
-           coef0 = ( X_u( i ) - X( i ) ) * Z_u( i ) 
+           coef0 = ( X_u( i ) - X( i ) ) * Z_u( i )
            coef1 = - DX( i ) * Z_u( i ) + ( X_u( i ) - X( i ) ) * DZ_u( i )
-           coef2 = - DX( i ) * DZ_u( i ) 
-           alp = alpha_max_b ; alpha = coef0 + alp * ( coef1 + alp * coef2 ) 
+           coef2 = - DX( i ) * DZ_u( i )
+           alp = alpha_max_b ; alpha = coef0 + alp * ( coef1 + alp * coef2 )
            IF ( control%out > 0 .AND. print_level >= 2 )                       &
-             WRITE( control%out, 2030 ) 'X', i, 'U', alp, alpha 
+             WRITE( control%out, 2030 ) 'X', i, 'U', alp, alpha
          END IF
-       END DO 
-       alp = alpha_max_b ; alpha = compc + alp * ( compl + alp * compq ) 
+       END DO
+       alp = alpha_max_b ; alpha = compc + alp * ( compl + alp * compq )
        IF ( control%out > 0 .AND. print_level >= 2 ) THEN
-         WRITE( control%out, 2040 ) alpha 
-         WRITE( control%out, 2020 ) alpha_max_b 
+         WRITE( control%out, 2040 ) alpha
+         WRITE( control%out, 2020 ) alpha_max_b
        END IF
        WRITE( control%out, "( ' -ve step, no further progress possible ' )" )
        inform%status = GALAHAD_error_tiny_step
        RETURN
-     END IF 
+     END IF
 
 !  ================================================
 !             part to compute alpha_max_f
@@ -2595,7 +2594,7 @@ write(6,*) ' curvature ', data%curvature
      nu_gamma_f = nu * gamma_f
 
 !  Compute the coefficients for the quadratic expression
-!  for the overall complementarity, remembering to first 
+!  for the overall complementarity, remembering to first
 !  subtract the term for the feasibility
 
      coef0_f = coef0_f - nu_gamma_f
@@ -2606,37 +2605,37 @@ write(6,*) ' curvature ', data%curvature
 !
      CALL ROOTS_quadratic( coef0_f, coef1_f, coef2_f, tol,                    &
                            nroots, root1, root2, roots_debug )
-     IF ( nroots == 2 ) THEN 
-       IF ( coef2_f > zero ) THEN 
-         IF ( root2 > zero ) THEN 
-           alpha = root1 
-         ELSE 
-           alpha = infinity 
-         END IF 
-       ELSE 
-         alpha = root2 
-       END IF 
-     ELSE IF ( nroots == 1 ) THEN 
-       IF ( root1 > zero ) THEN 
-         alpha = root1 
-       ELSE 
-         alpha = infinity 
-       END IF 
-     ELSE 
-       alpha = infinity 
-     END IF 
-     IF ( alpha < alpha_max_f ) alpha_max_f = alpha 
+     IF ( nroots == 2 ) THEN
+       IF ( coef2_f > zero ) THEN
+         IF ( root2 > zero ) THEN
+           alpha = root1
+         ELSE
+           alpha = infinity
+         END IF
+       ELSE
+         alpha = root2
+       END IF
+     ELSE IF ( nroots == 1 ) THEN
+       IF ( root1 > zero ) THEN
+         alpha = root1
+       ELSE
+         alpha = infinity
+       END IF
+     ELSE
+       alpha = infinity
+     END IF
+     IF ( alpha < alpha_max_f ) alpha_max_f = alpha
      IF ( - compc <= epsmch ** 0.75 ) alpha_max_f = 0.99_wp * alpha_max_f
 
      RETURN
-  
+
 !  Non-executable statements
 
-2000 FORMAT( A1, I6, A1,' coefs', 3ES12.4,' roots', 2ES12.4 ) 
-2010 FORMAT( A1, I6, A1,' alpha', ES12.4 ) 
-2020 FORMAT( ' alpha_min ', ES12.4 ) 
-2030 FORMAT( A1, I6, A1,' value at ', ES12.4,' = ', ES12.4 ) 
-2040 FORMAT( ' .vs. ', ES12.4 ) 
+2000 FORMAT( A1, I6, A1,' coefs', 3ES12.4,' roots', 2ES12.4 )
+2010 FORMAT( A1, I6, A1,' alpha', ES12.4 )
+2020 FORMAT( ' alpha_min ', ES12.4 )
+2030 FORMAT( A1, I6, A1,' value at ', ES12.4,' = ', ES12.4 )
+2040 FORMAT( ' .vs. ', ES12.4 )
 
 !  End of subroutine BQPB_compute_maxstep
 

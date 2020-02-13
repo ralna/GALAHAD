@@ -49,8 +49,7 @@
       USE GALAHAD_QPD_double, DLP_data_type => QPD_data_type,                  &
                               DLP_AX => QPD_AX, DLP_HX => QPD_HX,              &
                               DLP_abs_AX => QPD_abs_AX, DLP_abs_HX => QPD_abs_HX
-      USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build,                      &
-                               SORT_heapsort_smallest, SORT_inverse_permute
+      USE GALAHAD_SORT_double, ONLY: SORT_inverse_permute
       USE GALAHAD_FDC_double
       USE GALAHAD_SLS_double
       USE GALAHAD_SCU_double

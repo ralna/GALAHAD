@@ -8088,7 +8088,7 @@
 
 !  sort the columns within the i-th row
 
-         CALL SORT_quicksort( size, COLS, err, ivector = ENTS )
+         CALL SORT_quicksort( size, COLS, err, ix = ENTS )
 
 !  remap the pointers to the columns to take account of the sort
 
@@ -8441,7 +8441,7 @@
 !
 !!  sort the columns within the i-th row
 !
-!         CALL SORT_quicksort( size, COLS, err, ivector = ENTS )
+!         CALL SORT_quicksort( size, COLS, err, ix = ENTS )
 !
 !!  remap the pointers to the columns to take account of the sort
 !

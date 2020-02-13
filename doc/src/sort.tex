@@ -15,10 +15,10 @@
 
 \galsummary
 
-{\tt \fullpackagename} is a suite of Fortran procedures for 
+{\tt \fullpackagename} is a suite of Fortran procedures for
 sorting and permuting.  It includes two algorithms (heapsort and
-quicksort) to sort integer and/or real vectors, 
-another to reorder a sparse matrix from co-ordinate to row format, 
+quicksort) to sort integer and/or real vectors,
+another to reorder a sparse matrix from co-ordinate to row format,
 and a further three tools for in-place
 permutation and permutation inversion.
 
@@ -30,7 +30,7 @@ permutation and permutation inversion.
 \galdate March 2002.
 \galorigin N. I. M. Gould, Rutherford Appleton Laboratory, and
 Ph. L. Toint, University of Namur, Belgium.
-\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
 
 %%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -49,8 +49,8 @@ Access to the package requires a {\tt USE} statement such as
 %\medskip
 
 %\noindent
-%If it is required to use both modules at the same time, 
-%the subroutines 
+%If it is required to use both modules at the same time,
+%the subroutines
 %{\tt \packagename\_inplace\_invert},
 %{\tt \packagename\_inplace\_permute},
 %{\tt \packagename\_inverse\_permute},
@@ -73,11 +73,11 @@ permutation vector without resorting to extra storage.
 a given permutation to an integer vector and, optionally,
 to a real vector, without resorting to extra storage.
 \item The subroutine {\tt \packagename\_inverse\_permute} is used to apply
-the inverse of a given permutation to an integer vector 
-and, optionally, to a real vector, without resorting to extra 
+the inverse of a given permutation to an integer vector
+and, optionally, to a real vector, without resorting to extra
 storage.
-\item The subroutine {\tt \packagename\_reorder\_by\_rows} is used to 
-reorder a sparse matrix from arbitary co-ordinate order to row 
+\item The subroutine {\tt \packagename\_reorder\_by\_rows} is used to
+reorder a sparse matrix from arbitary co-ordinate order to row
 order, that is so that the entries for row $i$ appear directly before
 those for row $i+1$.
 \item The subroutine {\tt \packagename\_quicksort} is used to sort
@@ -91,21 +91,23 @@ the ``heapsort'' algorithm (see Section~\ref{galmethod}).
 possibly repeatedly, the smallest component of a real vector to which {\tt
 \packagename\_heapsort\_build} has been previously applied (see
 Section~\ref{galmethod}). Successive application of this subroutine therefore
-results in sorting the initial vector {\bf in ascending order}.
+results in sorting the initial vector {\bf in ascending order}. Optionally,
+the order may be reversed so that the entries are sorted in descending order
+instead.
 \end{enumerate}
 
-\noindent 
+\noindent
 Note that the subroutines {\tt \packagename\_heapsort\_build}
 and {\tt \packagename\_heapsort\_smallest} are particularly appropriate if
 it is not known in advance how many successive smallest components of the
-vector will be required as the heapsort method is 
-able to calculate the $k+1$-st smallest component efficiently 
-once it has determined the first $k$ smallest components.  
+vector will be required as the heapsort method is
+able to calculate the $k+1$-st smallest component efficiently
+once it has determined the first $k$ smallest components.
 If a complete sort is required, the Quicksort algorithm, {\tt
 \packagename\_quicksort} may be preferred. Both methods are
-guaranteed to sort all $n$ numbers in $O( n \log n )$ operations. 
+guaranteed to sort all $n$ numbers in $O( n \log n )$ operations.
 
-\noindent 
+\noindent
 We use square brackets {\tt [ ]} to indicate \optional\ arguments.
 
 \subsubsection{In-place inversion of a permutation}
@@ -125,15 +127,15 @@ follows:
 \itt{n} is a scalar \intentin\ argument of type default
 \integer, that must be set by the user to $n$, the size of the permutation to
 be inverted.
-{\bf Restriction:} ${\tt n} > 0$. 
- 
+{\bf Restriction:} ${\tt n} > 0$.
+
 \itt{p} is a rank-one \intentinout\ array argument of
 dimension at least {\tt n} and type either default
-\integer\ or default \realdp, that must be set by the user 
+\integer\ or default \realdp, that must be set by the user
 on input so that its $i$-th component contains the integer $p(i)$.
 On exit, the elements of {\tt p} will have overwritten by those of $q$, the
 inverse of $p$.
- 
+
 \end{description}
 
 \subsubsection{Applying a given permutation in place}
@@ -150,11 +152,11 @@ This is done without resorting to extra storage as follows:
 \itt{n} is a scalar \intentin\ argument of type default
 \integer, that must be set by the user to $n$, the size of the permutation to
 be applied.
-{\bf Restriction:} ${\tt n} > 0$. 
- 
+{\bf Restriction:} ${\tt n} > 0$.
+
 \itt{p} is a rank-one \intentinout\ array argument of
 dimension at least {\tt n} and type either default
-\integer\ or default \realdp, that must be set by the user 
+\integer\ or default \realdp, that must be set by the user
 on input so that its $i$-th component contains the integer $p(i)$, that is the
 $i$-th component of the permutation one wishes to apply.
 It is unchanged on exit.
@@ -192,10 +194,10 @@ This is done without resorting to extra storage as follows:
 \integer, that must be set by the user to $n$, the size of the permutation
 whose inverse is to be applied.
 {\bf Restriction:} ${\tt n} > 0$.
- 
+
 \itt{p} is a rank-one \intentinout\ array argument of
 dimension at least {\tt n} and type either default
-\integer\ or default \realdp, that must be set by the user 
+\integer\ or default \realdp, that must be set by the user
 on input so that its $i$-th component contains the integer $p(i)$, that is the
 $i$-th component of the permutation whose inverse is to be applied.
 It is unchanged on exit.
@@ -214,7 +216,7 @@ been replaced by {\tt ix(p(i))} on exit.
 \subsubsection{Reordering a sparse matrix from co-ordinate to row order}
 
 The matrix $\bmA$ is reordered from co-ordinate to row order as follows:
-\hskip0.5in 
+\hskip0.5in
 \def\baselinestretch{1.0} {\tt \begin{verbatim}
      CALL SORT_reorder_by_rows( nr, nc, nnz, A_row, A_col, la, A_val,  A_ptr, lptr,     &
                                 IW, liw, error, warning, inform )
@@ -225,76 +227,76 @@ The matrix $\bmA$ is reordered from co-ordinate to row order as follows:
 
 \ittf{nr} is a scalar \intentin\ argument of type default
 \integer, that must be set by the user to the number of
-rows in $\bmA$. 
+rows in $\bmA$.
 {\bf Restriction:} {\tt nr}$ > 0$.
 
 \ittf{nc} is a scalar \intentin\ argument of type default
 \integer, that must be set by the user to the number of
-columns in $\bmA$. 
+columns in $\bmA$.
 {\bf Restriction:} {\tt nc}$ > 0$.
 
 \ittf{nnz} is a scalar \intentin\ argument of type default
 \integer, that must be set by the user to the number of
-nonzeros in $\bmA$. 
+nonzeros in $\bmA$.
 {\bf Restriction:} {\tt nnz}$ > 0$.
 
-\itt{A\_row}  is a rank-one \intentinout\ array argument of type default 
+\itt{A\_row}  is a rank-one \intentinout\ array argument of type default
 \integer\ and length {\tt la}.
-On entry, {\tt A\_row}$(k)$, $k = 1, \ldots,$ {\tt nnz} give 
+On entry, {\tt A\_row}$(k)$, $k = 1, \ldots,$ {\tt nnz} give
 the row indices of $\bmA$. On exit, {\tt A\_row} will have been reordered, but
 {\tt A\_row}$(k)$ will still be the row index corresponding to the
 entry with column index {\tt A\_col}$(k)$.
 
-\itt{A\_col}  is a rank-one \intentinout\ array argument of type default 
+\itt{A\_col}  is a rank-one \intentinout\ array argument of type default
 \integer\ and length {\tt la}.
-On entry, {\tt A\_col}$(k)$, $k = 1, \ldots,$ {\tt nnz} give 
-the column indices of $\bmA$. On exit, {\tt A\_col} 
-will have been reordered so that entries in row $i$ appear directly before 
+On entry, {\tt A\_col}$(k)$, $k = 1, \ldots,$ {\tt nnz} give
+the column indices of $\bmA$. On exit, {\tt A\_col}
+will have been reordered so that entries in row $i$ appear directly before
 those in row $i+1$ for $i = 1, \ldots ,$ {\tt nr}$-1$.
 
-\ittf{la} 
+\ittf{la}
 is a scalar \intentin\ argument of type default
-\integer, that must be set by the user to the actual dimension of the arrays 
+\integer, that must be set by the user to the actual dimension of the arrays
 {\tt A\_row},
 {\tt A\_col}
 and
 {\tt A\_val}
 {\bf Restriction:} {\tt la} $\geq$ {\tt nnz}.
 
-\itt{A\_val}  
-is a rank-one \intentinout\ array argument of type default 
-\realdp\ of length {\tt la}. 
+\itt{A\_val}
+is a rank-one \intentinout\ array argument of type default
+\realdp\ of length {\tt la}.
 On entry, {\tt A\_val}$(k)$, $k = 1, \ldots,$ {\tt nnz} give the
-values of $\bmA$. 
+values of $\bmA$.
 On exit, {\tt A\_val} will have been reordered so that
-entries in row $i$ appear directly before those in row $i+1$ for 
-$i = 1, \ldots,$ {\tt nr}$-1$ and correspond to those in 
+entries in row $i$ appear directly before those in row $i+1$ for
+$i = 1, \ldots,$ {\tt nr}$-1$ and correspond to those in
 {\tt A\_row} and {\tt A\_col}.
 
-\itt{A\_ptr}  is a rank-one \intentout\ array argument of type default 
+\itt{A\_ptr}  is a rank-one \intentout\ array argument of type default
 \integer\ and length {\tt lptr}.
-On exit, {\tt A\_ptr}$(i), i = 1, \ldots,$ {\tt nr} give 
+On exit, {\tt A\_ptr}$(i), i = 1, \ldots,$ {\tt nr} give
 the starting addresses for the entries in {\tt A\_row}/{\tt A\_col}/{\tt A\_val}
-in row $i$, while {\tt A\_ptr(nr+1)} 
+in row $i$, while {\tt A\_ptr(nr+1)}
 gives the index of the first non-occupied component of $\bmA$.
 
 \ittf{lptr} is a scalar \intentin\ argument of type default
-\integer, that must be set by the user to the 
+\integer, that must be set by the user to the
 actual dimension of {\tt A\_ptr}.
 {\bf Restriction:} {\tt lptr} $\geq$ {\tt nr + 1}.
 
-\itt{IW}  is a rank-one \intentout\ array argument of type default 
+\itt{IW}  is a rank-one \intentout\ array argument of type default
 \integer\ and length {\tt liw} that is used for workspace.
 
-\itt{liw}  is a scalar \intentin\ argument of type default 
+\itt{liw}  is a scalar \intentin\ argument of type default
 \integer, that gives the actual dimension of {\tt IW}.
 {\bf Restriction:} {\tt liw} $\geq$ {\tt MAX(nr,nc) + 1}.
 
-\itt{error} is a scalar \intentin\ argument of type default 
+\itt{error} is a scalar \intentin\ argument of type default
 \integer, that holds the stream number for error messages.
 Error messages will only occur if {\tt error > 0}.
 
-\itt{warning} is a scalar \intentin\ argument of type default 
+\itt{warning} is a scalar \intentin\ argument of type default
 \integer, that holds the stream number for warning messages.
 Warning messages will only occur if {\tt warning > 0}.
 
@@ -315,16 +317,16 @@ The vector $x$ is sorted in acending order as follows:
 
 \begin{description}
 \itt{n} is a scalar \intentin\ argument of type default
-\integer, that must be set by the user to $n$, the 
-number of entries of {\tt x} that are to be sorted. 
-{\bf Restriction:} ${\tt n} > 0$  and {\tt n} $< 2^{32}$.  
+\integer, that must be set by the user to $n$, the
+number of entries of {\tt x} that are to be sorted.
+{\bf Restriction:} ${\tt n} > 0$  and {\tt n} $< 2^{32}$.
 
 \itt{x} is a rank-one \intentinout\ array argument of
 dimension at least {\tt n} and type either default
 \integer\ or default \realdp, whose first {\tt n} components must be set by
-the user on input. On successful return, these components will have 
+the user on input. On successful return, these components will have
 been sorted to ascending order.
- 
+
 \itt{inform} is a scalar \intentout\ argument of type default \integer.
 A successful call to {\tt \packagename\_quicksort}
 is indicated when {\tt inform} has the value 0 on exit.
@@ -332,42 +334,42 @@ For other return values of {\tt inform}, see Section~\ref{galerrors}.
 
 \itt{ix} is an optional rank-one \intentinout\ array argument of
 dimension at least {\tt n} and type default \integer.
-If {\tt ix} is present, exactly the same permutation is applied to the 
-components of {\tt ix} as to the components of {\tt x}. 
+If {\tt ix} is present, exactly the same permutation is applied to the
+components of {\tt ix} as to the components of {\tt x}.
 For example, the inverse permutation will be provided if {\tt ix(i)} is set to
-{\tt i,} for $i = 1, \ldots, n$ on entry. 
- 
+{\tt i,} for $i = 1, \ldots, n$ on entry.
+
 \itt{rx} is an optional rank-one \intentinout\ array argument of
 dimension at least {\tt n} and type default \realdp.
-If {\tt rx} is present, exactly the same permutation is applied to the 
-components of {\tt rx} as to the components of {\tt x}. 
- 
+If {\tt rx} is present, exactly the same permutation is applied to the
+components of {\tt rx} as to the components of {\tt x}.
+
 \end{description}
 
 %%%%%%%%% Forming the initial heap %%%%%%
 
 \subsubsection{Heapsort}
 
-\paragraph{Building the initial heap}
+\paragraph{Building the initial heap.}
 The initial heap is constructed as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_heapsort\_build ( n, x, inform [, ix ] )}
+{\tt CALL \packagename\_heapsort\_build ( n, x, inform [, ix, largest ] )}
 
 \vspace*{-3mm}
 \begin{description}
 \itt{n} is a scalar \intentin\ argument of type default
-\integer, that must be set by the user to $n$, the 
-number of entries of {\tt A} that are to be (partially) sorted. 
-{\bf Restriction:} ${\tt n} > 0$. 
- 
+\integer, that must be set by the user to $n$, the
+number of entries of {\tt x} that are to be (partially) sorted.
+{\bf Restriction:} ${\tt n} > 0$.
+
 \itt{x} is a rank-one \intentinout\ array argument of
 dimension at least {\tt n} and type either default
 \integer\ or default \realdp, whose first {\tt n} components  must be set by
-the user on input. On successful return, the elements of {\tt x} will have 
-been permuted so that they form a heap. 
- 
+the user on input. On successful return, the elements of {\tt x} will have
+been permuted so that they form a heap.
+
 \itt{inform} is a scalar \intentout\ argument of type default \integer.
 A successful call to {\tt \packagename\_heapsort\_build}
 is indicated when {\tt inform} has the value 0 on exit.
@@ -375,46 +377,52 @@ For other return values of {\tt inform}, see Section~\ref{galerrors}.
 
 \itt{ix} is an optional rank-one \intentinout\ array argument of
 dimension at least {\tt n} and type default \integer.
-If {\tt ix} is present, exactly the same permutation is applied to the 
-components of {\tt ix} as to the components of {\tt x}. 
-For example, the inverse permutation will be 
+If {\tt ix} is present, exactly the same permutation is applied to the
+components of {\tt ix} as to the components of {\tt x}.
+For example, the inverse permutation will be
 provided if {\tt ix(i)} is set to {\tt i,} for $i = 1, \ldots, n$
-on entry. 
- 
+on entry.
+
+\itt{largest} is an optional scalar \intentin\ argument
+of type default \integer.
+If {\tt largest} is present and set to \true, the heap will be built so
+that the largest entry is at the root, and thus the subsequent sort will
+determine the largest entries in order. Otherwise, the heap will be
+built with the smallest entry is at the root so that the sort will
+find the smallest entries in order.
 \end{description}
 
 %%%%%%%%% Finding the smallest entry in the current heap %%%%%%
 
-\paragraph{Finding the smallest entry in the current heap}
+\paragraph{Finding the smallest entry in the current heap.}
 
-
-To find the smallest entry in a given heap, 
-to place this entry at the end of the list of entries in the heap and 
+To find the smallest entry in a given heap,
+to place this entry at the end of the list of entries in the heap and
 to form a new heap with the remaining entries:
- 
+
 \hspace{8mm}
-{\tt CALL \packagename\_heapsort\_smallest ( m, x, inform [, ix ] )}
+{\tt CALL \packagename\_heapsort\_smallest ( m, x, inform [, ix, largest ] )}
 
 \vspace*{-3mm}
 \begin{description}
 \itt{m} is a scalar \intentin\ argument of type default
-\integer, that must be set by the user to $m$, the 
-number of entries of {\tt A} that lie on the heap on entry. 
-{\bf Restriction:} ${\tt m} > 0$. 
+\integer, that must be set by the user to $m$, the
+number of entries of {\tt x} that lie on the heap on entry.
+{\bf Restriction:} ${\tt m} > 0$.
 
 \itt{x} is a rank-one \intentinout\ array argument of
 dimension at least {\tt m} and type either default
 \integer\ or default \realdp\, whose first {\tt m} components must be set by
-the user on input so that they form a heap. 
-In practice, this normally means that they have been placed on a heap 
-by a previous call to 
-{\tt \packagename\_heapsort\_build} 
+the user on input so that they form a heap.
+In practice, this normally means that they have been placed on a heap
+by a previous call to
+{\tt \packagename\_heapsort\_build}
 or
 {\tt \packagename\_heapsort\_smallest}.
 On output, the smallest of the first {\tt m} components of {\tt x} will have
-been moved to position {\tt x(m)} and the remaining components will now occupy 
-locations $1,  2,  .... $ {\tt m-1} of {\tt x} and will again form a heap. 
- 
+been moved to position {\tt x(m)} and the remaining components will now occupy
+locations $1,  2,  .... $ {\tt m-1} of {\tt x} and will again form a heap.
+
 \itt{inform} is a scalar \intentout\ argument of type default \integer.
 A successful call to {\tt \packagename\_heapsort\_smallest}
 is indicated when {\tt inform} has the value 0 on exit.
@@ -422,40 +430,46 @@ For other return values of {\tt inform}, see Section~\ref{galerrors}.
 
 \itt{ix} is an optional rank-one \intentinout\ array argument of
 dimension at least {\tt m} and type default \integer.
-If {\tt ix} is present, exactly the same permutation is applied to the 
-components of {\tt ix} as to the components of {\tt x}. 
- 
+If {\tt ix} is present, exactly the same permutation is applied to the
+components of {\tt ix} as to the components of {\tt x}.
+
+\itt{largest} is an optional scalar \intentin\ argument
+of type default \integer.
+If {\tt largest} is present and set to \true, the largest, rather than the
+smallest, entry will be found and placed in {\tt x(m)} on exit, and
+the remaining heap rebuilt
+
 \end{description}
 
 %%%%%%%%% Finding the k smallest components of a set of $n$ elements.  %%%%%%
 
-\paragraph{Finding the $k$ smallest components of a set of $n$ elements}
+\paragraph{Finding the $k$ smallest components of a set of $n$ elements.}
 
-To find the $k$ smallest components of a set, 
-$\{ x_1 ,   x_2 ,  ...  ,  x_n \}$, of $n$ elements, the user should firstly 
-call {\tt \packagename\_heapsort\_build} with {\tt n} $= n$ and $x_1 $ to 
-$x_n $ stored in {\tt x(1)} to {\tt x(n).} This places the components of 
-{\tt x} on a heap. This should then be followed by $k$ calls of 
-{\tt \packagename\_heapsort\_smallest}, with 
-{\tt m} $= n - i + 1$ for $i  =  1,  ... ,   k$. 
-The required $k$ smallest values, in increasing order, will now 
-occupy positions $n - i + 1$ of {\tt x} for $i  =  1,  ... ,   k$. 
- 
+To find the $k$ smallest components of a set,
+$\{ x_1 ,   x_2 ,  ...  ,  x_n \}$, of $n$ elements, the user should firstly
+call {\tt \packagename\_heapsort\_build} with {\tt n} $= n$ and $x_1 $ to
+$x_n $ stored in {\tt x(1)} to {\tt x(n).} This places the components of
+{\tt x} on a heap. This should then be followed by $k$ calls of
+{\tt \packagename\_heapsort\_smallest}, with
+{\tt m} $= n - i + 1$ for $i  =  1,  ... ,   k$.
+The required $k$ smallest values, in increasing order, will now
+occupy positions $n - i + 1$ of {\tt x} for $i  =  1,  ... ,   k$.
+
 %%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galerrors
-A positive value of {\tt inform} on exit from 
+A positive value of {\tt inform} on exit from
 {\tt \packagename\_reorder\_by\_rows},
 {\tt \packagename\_quicksort},
 {\tt \packagename\_heapsort\_build}
 or \\
 {\tt \packagename\_heapsort\_smallest}
-indicates that an input error has occurred. 
+indicates that an input error has occurred.
 The other arguments will not have been altered.
 The only possible values are:
 
 \begin{description}
-\item{1.} One or more of the restrictions 
+\item{1.} One or more of the restrictions
 {\tt nr} $> 0$,
 {\tt nc} $> 0$,
 {\tt nnz} $> 0$
@@ -463,18 +477,18 @@ The only possible values are:
 {\tt n} $> 0$ ({\tt \packagename\_quicksort},
 {\tt \packagename\_heapsort\_build})
 or {\tt m} $> 0$ ({\tt \packagename\_heapsort\_smallest})
-has been violated. 
+has been violated.
 \item{2.} One of the restrictions
 {\tt la} $\geq$ {\tt nnz}
 ({\tt \packagename\_reorder\_by\_rows})
-or 
+or
 {\tt n} $< 2^{32}$ ({\tt \packagename\_quicksort})
 has been violated.
-\item{3.} The restriction 
+\item{3.} The restriction
 {\tt liw} $\geq$ {\tt MAX(nr,nc)+1}
 ({\tt \packagename\_reorder\_by\_rows})
 has been violated.
-\item{4.} The restriction 
+\item{4.} The restriction
 {\tt lptr} $\geq$ {\tt nr+1}
 ({\tt \packagename\_reorder\_by\_rows})
 has been violated.
@@ -482,16 +496,16 @@ has been violated.
 are out of range.
 \end{description}
 
-A negative value of {\tt inform} on exit from 
-{\tt \packagename\_reorder\_by\_rows} indicates 
-that $\bmA$ has been successfully reordered, but that a 
+A negative value of {\tt inform} on exit from
+{\tt \packagename\_reorder\_by\_rows} indicates
+that $\bmA$ has been successfully reordered, but that a
 a warning condition has occurred.
 The only possible values are:
 
 \begin{description}
 \item{-1.} There were duplicate input entries, which have been summed.
 \item{-2.} There were input row entries out of range, which have been ignored.
-\item{-3.} There were input column entries out of range, which have been 
+\item{-3.} There were input column entries out of range, which have been
 ignored.
 \end{description}
 
@@ -501,10 +515,10 @@ ignored.
 
 \galcommon None.
 \galworkspace None.
-\galroutines None. 
+\galroutines None.
 \galmodules None.
 \galio None.
-\galrestrictions 
+\galrestrictions
 {\tt nr} $> 0$,
 {\tt nc} $> 0$,
 {\tt nnz} $> 0$,
@@ -513,10 +527,10 @@ ignored.
 {\tt lptr} $\geq$ {\tt nr+1},
 ({\tt \packagename\_reorder\_by\_rows}),
 ${\tt n} > 0$ ({\tt \packagename\_quicksort} and {\tt
-\packagename\_heapsort\_build}), 
+\packagename\_heapsort\_build}),
 ${\tt m} > 0$ ({\tt \packagename\_heapsort\_smallest}) and
 ${\tt n} < 2^{32}$ \\ ({\tt \packagename\_quicksort})
-\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
 The package is thread-safe.
 
 %%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
@@ -542,27 +556,27 @@ but may require as many as $O( n^2 )$ operations in extreme cases.
 
 \subsection{Heapsort}
 
-The heapsort method is due to J. W. J.  Williams (Algorithm 232, 
-Communications of the ACM 
-{\bf 7 } (1964), 347-348).  Subroutine {\tt \packagename\_heapsort\_build} 
-is a partial amalgamation of Williams' Algol procedures {\em setheap} 
+The heapsort method is due to J. W. J.  Williams (Algorithm 232,
+Communications of the ACM
+{\bf 7 } (1964), 347-348).  Subroutine {\tt \packagename\_heapsort\_build}
+is a partial amalgamation of Williams' Algol procedures {\em setheap}
 and {\em inheap} while {\tt \packagename\_heapsort\_smallest}
 is based upon his procedures {\em outheap} and {\em swopheap}.
 
 \noindent
 The elements of the set $\{ x_1 ,   x_2 ,  ...  ,  x_n \}$
-are first allocated to the nodes of a heap.  A heap is a binary 
-tree in which the element at each parent node has a numerical 
-value as small as or smaller than the elements at its two children.  
-The smallest value is 
-thus placed at the root of the tree. This value is now removed from 
-the heap and a subset of the remaining elements interchanged until a 
-new, smaller, heap is constructed.  The smallest value of the new heap 
-is now at the root and may be removed as described above. The elements 
-of the initial set may thus be arranged in order of increasing size, 
-the $i$-th largest element of the array being found in the $i$-th 
-sweep of the method.  The method is guaranteed to sort all $n$ numbers 
-in $O( n \log n )$ operations. 
+are first allocated to the nodes of a heap.  A heap is a binary
+tree in which the element at each parent node has a numerical
+value as small as or smaller than the elements at its two children.
+The smallest value is
+thus placed at the root of the tree. This value is now removed from
+the heap and a subset of the remaining elements interchanged until a
+new, smaller, heap is constructed.  The smallest value of the new heap
+is now at the root and may be removed as described above. The elements
+of the initial set may thus be arranged in order of increasing size,
+the $i$-th largest element of the array being found in the $i$-th
+sweep of the method.  The method is guaranteed to sort all $n$ numbers
+in $O( n \log n )$ operations.
 
 %%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -571,7 +585,7 @@ The following example is a somewhat unnatural sequence of operations, but
 illustrates the use of the {\tt \packagename} tools. It uses the data vector
 \[
 x = \{ x_1 ,   x_2 ,  ...  , x_{20} \} =
-\{ -5,  -7,  ~2,  ~9,  ~0,  -3,  ~3,  ~5,  -2,  -6,  
+\{ -5,  -7,  ~2,  ~9,  ~0,  -3,  ~3,  ~5,  -2,  -6,
  ~8,  ~7,  -1,  -8,  ~10,  -4,  ~6,  -9,  ~1,  ~4 \}.
 \]
 Suppose now that we wish to perform the following successful operations:
@@ -586,127 +600,20 @@ ascending order,
 permutation,
 \item inverse this permutation (which yields the permutation used to sort the
 12 smallest components),
-\item 
+\item
 apply to the permuted $x$ the inverse of the this latest permutation (thus
 recovering its original ordering again).
 \end{enumerate}
-Then we may use the following code
-{\tt
-\begin{verbatim}
+Then we may use the following code:
 
-   PROGRAM GALAHAD_SORT_EXAMPLE
-   USE GALAHAD_SORT_double                   ! double precision version
-   IMPLICIT NONE 
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision 
-   INTEGER, PARAMETER :: n = 20
-   INTEGER :: i, m, inform 
-   INTEGER :: p( n ) 
-   REAL ( KIND = wp ) :: x( n ) 
-   x = (/ -5.0, -7.0, 2.0, 9.0, 0.0, -3.0, 3.0, 5.0, -2.0, -6.0,              &
-           8.0, 7.0, -1.0, -8.0, 10.0, -4.0, 6.0, -9.0, 1.0, 4.0 /)    ! values 
-   p = (/  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,                     &
-          15, 16, 17, 18, 19, 20 /)                                    ! indices
-! write the initial data
-   WRITE( 6, "( /' The vector x is' / 2( 10 ( F5.1, 2X ) / ) ) " ) x( 1:n )
-   WRITE( 6, "(  ' The permutation is' /  20 ( 2X, I2 ) / ) " ) p( 1:n )
-! sort x and obtain the inverse permutation
-   WRITE( 6, "( ' Sort x in ascending order' / )" )
-   CALL SORT_quicksort( n, x, inform, p )
-   WRITE( 6, "( ' The vector x is now' / 2( 10 ( F5.1, 2X ) / ) ) " ) x( 1:n )
-   WRITE( 6, "( ' The permutation is now' /  20 ( 2X, I2 ) / ) " ) p( 1:n )
-! apply the inverse permutation to x
-   WRITE( 6, "( ' Apply the permutation to x' / )" )
-   CALL SORT_inplace_permute( n, p, x )
-   WRITE( 6, "( ' The vector x is now' / 2( 10 ( F5.1, 2X ) / ) ) " )  x( 1:n )
-! restore the identity permutation
-   WRITE( 6, "( ' Restore the identity permutation by sorting' / )" )
-   CALL SORT_quicksort( n, p, inform )
-   WRITE( 6, "( ' The permutation is now' /  20 ( 2X, I2 ) / ) " ) p( 1:n )
-! get the 12 smallest components and the associated inverse permutation
-   WRITE( 6, "( ' Get the 12 smallest components of x' / )" )
-   CALL SORT_heapsort_build( n, x, inform, p ) !  Build the heap
-   DO i = 1, 12 
-     m = n - i + 1 
-     CALL SORT_heapsort_smallest( m, x, inform, p )    !  Reorder the variables
-     WRITE( 6, "( ' The ', I2, '-th(-st) smallest value, x(', I2, ') is ',     &
-    &       F5.1 ) " ) i, p( m ), x( m ) 
-   END DO  
-   WRITE( 6, "( / ' The permutation is now' /  20 ( 2X, I2 ) / ) " ) p( 1:n )
-! compute the direct permutation in p
-   WRITE( 6, "( ' Compute the inverse of this permutation' / )" )
-   CALL SORT_inplace_invert( n, p )
-   WRITE( 6, "( ' The permutation is now' /  20 ( 2X, I2 ) / ) " ) p( 1:n ) 
-! apply inverse permutation
-   WRITE( 6, "( ' Apply the resulting permutation to x' / )" )
-   CALL SORT_inverse_permute( n, p, x )
-   WRITE( 6, "( ' The final vector is' / 2( 10 ( F5.1, 2X ) / ) ) " ) x( 1:n )
-   STOP 
-   END PROGRAM GALAHAD_SORT_EXAMPLE
 
-\end{verbatim}
+{\tt \small
+\VerbatimInput{\packageexample}
 }
 \noindent
 This produces the following output:
-{\tt
-\begin{verbatim}
- 
- The vector x is
- -5.0   -7.0    2.0    9.0    0.0   -3.0    3.0    5.0   -2.0   -6.0
-  8.0    7.0   -1.0   -8.0   10.0   -4.0    6.0   -9.0    1.0    4.0
-
- The permutation is
-   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20
-
- Sort x in ascending order
-
- The vector x is now
- -9.0   -8.0   -7.0   -6.0   -5.0   -4.0   -3.0   -2.0   -1.0    0.0
-  1.0    2.0    3.0    4.0    5.0    6.0    7.0    8.0    9.0   10.0
-
- The permutation is now
-  18  14   2  10   1  16   6   9  13   5  19   3   7  20   8  17  12  11   4  15
-
- Apply the permutation to x
-
- The vector x is now
- -5.0   -7.0    2.0    9.0    0.0   -3.0    3.0    5.0   -2.0   -6.0
-  8.0    7.0   -1.0   -8.0   10.0   -4.0    6.0   -9.0    1.0    4.0
-
- Restore the identity permutation by sorting
-
- The permutation is now
-   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20
-
- Get the 12 smallest components of x
-
- The  1-th(-st) smallest value, x(18) is  -9.0
- The  2-th(-st) smallest value, x(14) is  -8.0
- The  3-th(-st) smallest value, x( 2) is  -7.0
- The  4-th(-st) smallest value, x(10) is  -6.0
- The  5-th(-st) smallest value, x( 1) is  -5.0
- The  6-th(-st) smallest value, x(16) is  -4.0
- The  7-th(-st) smallest value, x( 6) is  -3.0
- The  8-th(-st) smallest value, x( 9) is  -2.0
- The  9-th(-st) smallest value, x(13) is  -1.0
- The 10-th(-st) smallest value, x( 5) is   0.0
- The 11-th(-st) smallest value, x(19) is   1.0
- The 12-th(-st) smallest value, x( 3) is   2.0
-
- The permutation is now
-   7  20  12  17   8   4  11  15   3  19   5  13   9   6  16   1  10   2  14  18
-
- Compute the inverse of this permutation
-
- The permutation is now
-  16  18   9   6  11  14   1   5  13  17   7   3  12  19   8  15   4  20  10   2
-
- Apply the resulting permutation to x
-
- The final vector is
- -5.0   -7.0    2.0    9.0    0.0   -3.0    3.0    5.0   -2.0   -6.0
-  8.0    7.0   -1.0   -8.0   10.0   -4.0    6.0   -9.0    1.0    4.0
-
-\end{verbatim}
+{\tt \small
+\VerbatimInput{\packageresults}
 }
 
 \end{document}

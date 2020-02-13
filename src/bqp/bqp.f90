@@ -2504,7 +2504,7 @@ end do
 
 !  Order the breakpoints in increasing size using a heapsort. Build the heap
 
-     CALL SORT_heapsort_build( data%nbreak, data%BREAKP, insort, INDA = NZ_p )
+     CALL SORT_heapsort_build( data%nbreak, data%BREAKP, insort, ix = NZ_p )
 
 !  Calculate HP = H * p ...
 
@@ -2571,7 +2571,7 @@ end do
 
        data%tbreak = data%BREAKP(  1  )
        CALL SORT_heapsort_smallest( data%nbreak, data%BREAKP, insort,          &
-                                    INDA = NZ_p )
+                                    ix = NZ_p )
 
 !  Compute the length of the current piece
 
@@ -2683,7 +2683,7 @@ end do
 
        IF (  data%BREAKP(  1  ) < feasep  ) THEN
          CALL SORT_heapsort_smallest( data%nbreak, data%BREAKP, insort,        &
-                                      INDA = NZ_p )
+                                      ix = NZ_p )
          GO TO 220
        END IF
 
