@@ -885,15 +885,13 @@
 
 !  Local variables
 
-      INTEGER :: i, j, l, n_depen, nzc, a_ne
+      INTEGER :: i, j, l, a_ne
       REAL :: time_start, time_now
-      REAL ( KIND = wp ) :: time_analyse, time_factorize
-      REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
-      REAL ( KIND = wp ) :: clock_analyse, clock_factorize, cro_clock_matrix
+      REAL ( KIND = wp ) :: clock_start, clock_now
       REAL ( KIND = wp ) :: av_bnd, x_l, x_u, g, sigma
 !     REAL ( KIND = wp ) :: fixed_sum, xi
-      LOGICAL :: printi, printa, remap_freed, reset_bnd, stat_required
-      LOGICAL :: separable_bqp, restart, warm_start
+      LOGICAL :: printi, printa, reset_bnd, stat_required
+      LOGICAL :: restart, warm_start
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  functions
@@ -1978,7 +1976,7 @@
 
 !  local variables
 
-      INTEGER :: i, ii, j, jj, k, l, ll, b0, b1, b2, r1, r2, s0, s1, s2
+      INTEGER :: i, ii, j, jj, l, b0, b1, b2, r1, r2, s0, s1, s2
       INTEGER :: free, nonneg, lower, range, upper, nonpos, fixed, basic
       INTEGER :: c_lower, c_range, c_upper, c_equality, a_ne, a_type, v_stat
 
@@ -3062,10 +3060,10 @@
 
 !  local variables
 
-      INTEGER :: i, ii, j, jj, k, l, ll, m_e, m_l, m_u, n_l, n_u
+      INTEGER :: i, ii, j, jj, l, m_e, m_l, m_u, n_l, n_u
       INTEGER :: free, lower, range, upper, fixed, basic
       INTEGER :: c_lower, c_range, c_upper, c_equality, a_ne, a_type, v_stat
-      INTEGER :: m_es, m_ee, m_is, m_ie, n_s, n_e, ai_len
+      INTEGER :: m_es, m_is, m_ie, n_s, ai_len
 
       REAL ( KIND = wp ) :: xl, xu, cl, cu
       CHARACTER ( LEN = 80 ) :: array_name

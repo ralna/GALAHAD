@@ -64,6 +64,7 @@
       INTEGER, PARAMETER :: history_max = 100
       INTEGER, PARAMETER :: max_degree = 3
       INTEGER, PARAMETER :: n_dense = 100
+      INTEGER, PARAMETER :: it_stalled = 100
       REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
       REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
       REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
@@ -82,8 +83,10 @@
       REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
       REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
 
+      REAL ( KIND = wp ), PARAMETER :: lambda_pert = epsmch ** 0.75
       REAL ( KIND = wp ), PARAMETER :: theta_ii = one
       REAL ( KIND = wp ), PARAMETER :: theta_eps = point01
+      REAL ( KIND = wp ), PARAMETER :: theta_eps5 = point1
       REAL ( KIND = wp ), PARAMETER :: theta_g = half
       REAL ( KIND = wp ), PARAMETER :: theta_n = half
       REAL ( KIND = wp ), PARAMETER :: theta_n_small = ten ** ( - 1 )
@@ -1334,8 +1337,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, j, l, it, i_max, j_max, out, nroots, n_invit, print_level
-      INTEGER :: max_order, n_lambda, in_n
+      INTEGER :: i, j, l, it, itt, i_max, j_max, out, nroots, n_invit
+      INTEGER :: print_level, max_order, n_lambda, in_n
       REAL :: time_start, time_now, time_record
       REAL ( KIND = wp ) :: clock_start, clock_now, clock_record
       REAL ( KIND = wp ) :: lambda, lambda_l, lambda_u, delta_lambda, root_eps
@@ -1349,7 +1352,7 @@
       REAL ( KIND = wp ), DIMENSION( 0 : max_degree ) :: x_norm2, pi_beta
       LOGICAL :: printi, printt, printd, psdef, try_zero, dummy, unit_m
       LOGICAL :: problem_file_exists, phase_1, constrained, set_y
-      CHARACTER ( LEN = 1 ) :: region
+      CHARACTER ( LEN = 1 ) :: region, bad_eval
       CHARACTER ( LEN = 80 ) :: array_name
       LOGICAL :: u_set = .FALSE.
 
@@ -1914,6 +1917,16 @@
           inform%time%clock_factorize + clock_now - clock_record
         IF ( printt ) WRITE( out, 2050 ) prefix, clock_now - clock_record
 
+!  warning that the residual may be inaccurate
+
+          IF ( inform%IR_inform%norm_final_residual >                          &
+               inform%IR_inform%norm_initial_residual ) THEN
+! write(out, "( ' *********** WARNING 1 - initial and final residuals are ',   &
+!& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
+!               inform%IR_inform%norm_final_residual
+            bad_eval = '1'
+          END IF
+
 !  compute the M^-1 norm of c, while checking that M is positive definite
 
         c_norm = DOT_PRODUCT( data%V( : n ), C )
@@ -2138,7 +2151,7 @@
 !         = A%val( : data%a_ne )
 
       try_zero = lambda > zero .AND. lambda_l == zero
-      region = ' '
+      region = ' ' ; bad_eval = ' '
       max_order = MAX( 1, MIN( max_degree, control%taylor_max_degree ) )
       root_eps = SQRT( epsmch )
 
@@ -2154,9 +2167,26 @@
       DO
         it = it + 1
 
+!  exit if the iteration has stalled
+
+        IF ( it > it_stalled ) THEN
+          inform%status = GALAHAD_error_ill_conditioned
+          RETURN
+        END IF
+
 !  add lambda * M to H to form H(lambda)
 
+        itt = 0
  100    CONTINUE
+
+!  precaution to stop infinite loop
+
+        itt = itt + 1
+        IF ( itt > 100 ) THEN
+          inform%status = GALAHAD_error_ill_conditioned
+          RETURN
+        END IF
+
         IF ( unit_m ) THEN
           data%H_lambda%val( data%h_ne + 1 : data%m_end ) = lambda
         ELSE
@@ -2235,11 +2265,17 @@
 
             IF ( inform%IR_inform%norm_final_residual >                        &
                  inform%IR_inform%norm_initial_residual ) THEN
-! write(6, "( ' *********** WARNING B - initial and final residuals are ',     &
+              IF ( printd ) WRITE( out,                                        &
+             &    "( ' **** WARNING *** iterative refinement diverged,',       &
+             &    ' increasing lambda marginally' ) ")
+              bad_eval = '2'
+! write(6, "( ' *********** WARNING 2 - initial and final residuals are ',     &
 !& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
 !               inform%IR_inform%norm_final_residual
               lambda_l = lambda
-              lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+!             lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+              lambda = lambda_l + lambda_pert
+              it = it + 1
               GO TO 100
             END IF
 
@@ -2354,8 +2390,8 @@
               IF ( printt .OR. ( printi .AND. it == 1 ) ) WRITE( out, 2020 )   &
                 prefix
             END IF
-            IF ( printi ) WRITE( out, "( A, A2, I4, 3ES22.15 )" )              &
-              prefix, region, it, lambda_l, lambda, lambda_u
+            IF ( printi ) WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" )          &
+              prefix, bad_eval, region, it, lambda_l, lambda, lambda_u
             n_lambda = 0
             GO TO 200
           END IF
@@ -2377,8 +2413,9 @@
             IF ( ( phase_1 .AND. printi ) .OR. printt .OR.                     &
                  ( printi .AND. it == 1 ) ) WRITE( out, 2030 ) prefix
             IF ( printi ) THEN
-              WRITE( out, "( A, A2, I4, 3ES22.15 )" )  prefix, region,         &
-              it, ABS( inform%x_norm - radius ), lambda, ABS( delta_lambda )
+              WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" )  prefix, bad_eval,   &
+                region, it, ABS( inform%x_norm - radius ), lambda,             &
+                ABS( delta_lambda )
               WRITE( out, "( A,                                                &
            &    ' Normal stopping criteria satisfied' )" ) prefix
             END IF
@@ -2413,8 +2450,8 @@
               delta_lambda = zero
               IF ( printd ) THEN
                 WRITE( out, 2020 ) prefix
-                WRITE( out, "( A, A2, I4, 3ES22.15 )" )                        &
-                  prefix, region, it, lambda_l, lambda, lambda_u
+                WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" )                    &
+                  prefix, bad_eval, region, it, lambda_l, lambda, lambda_u
               END IF
               IF ( printt ) THEN
                 WRITE( out, "( A, 4X, 28( '-' ), ' phase two ', 28( '-' ) )" ) &
@@ -2429,8 +2466,8 @@
 !  a lambda in L has been found. It is now simply a matter of applying
 !  a variety of Taylor-series-based methods starting from this lambda
 
-            IF ( printi ) WRITE( out, "( A, A2, I4, 3ES22.15 )" ) prefix,      &
-              region, it, ABS( inform%x_norm - radius ), lambda,               &
+            IF ( printi ) WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" ) prefix,  &
+              bad_eval, region, it, ABS( inform%x_norm - radius ), lambda,     &
               ABS( delta_lambda )
 
 !  precaution against rounding producing lambda outside L
@@ -2456,8 +2493,8 @@
               IF ( printt .OR. ( printi .AND. it == 1 ) ) WRITE( out, 2020 )   &
                 prefix
             END IF
-            IF ( printi ) WRITE( out, "( A, A2, I4, 3ES22.15 )" )              &
-              prefix, region, it, lambda_l, lambda, lambda_u
+            IF ( printi ) WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" )          &
+              prefix, bad_eval, region, it, lambda_l, lambda, lambda_u
 
 !  -----------------------------------------------------
 !  The solution lies in the interior of the trust-region
@@ -2495,6 +2532,24 @@
                            data%control%IR_control,                            &
                            data%control%SLS_control,                           &
                            inform%IR_inform, inform%SLS_inform )
+
+!  check that the solution succeeded. If not, increase lambda and try again
+
+            IF ( inform%IR_inform%status == GALAHAD_error_solve ) THEN
+              IF ( printd ) WRITE( out,                                        &
+             &    "( ' **** WARNING 3 *** iterative refinement diverged,',     &
+             &    ' increasing lambda marginally' ) ")
+              bad_eval = '3'
+! write(6, "( ' *********** WARNING 3 - initial and final residuals are ',     &
+!& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
+!              inform%IR_inform%norm_final_residual
+!write(6,"( ' in ', A, ' B, was ', 3ES22.15 )" ) region,lambda_l,lambda,lambda_u
+              lambda_l = lambda
+              lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+!write(6,"( ' in ', A, ' B, is  ', 3ES22.15 )" ) region,lambda_l,lambda,lambda_u
+              it = it + 1
+              GO TO 100
+            END IF
 
 !  find y so that L y = M x
 
@@ -2582,6 +2637,24 @@
                                data%control%IR_control,                        &
                                data%control%SLS_control,                       &
                                inform%IR_inform, inform%SLS_inform )
+
+!  check that the solution succeeded. If not, increase lambda and try again
+
+                IF ( inform%IR_inform%status == GALAHAD_error_solve ) THEN
+                  IF ( printd ) WRITE( out,                                    &
+                 &    "( ' **** WARNING 5 *** iterative refinement diverged,', &
+                 &    ' increasing lambda marginally' ) ")
+                  bad_eval = '5'
+!write(6,"( ' in ', A, ' C, was ', 3ES22.15 )" ) &
+!  region, lambda_l, lambda, lambda_u
+                  lambda_l = lambda
+                  lambda = lambda_l + theta_eps5 * ( lambda_u - lambda_l )
+!write(6,"( ' in ', A, ' C, is  ', 3ES22.15 )" ) &
+!  region, lambda_l, lambda, lambda_u
+                  it = it + 1
+                  GO TO 100
+                END IF
+
 !  find z so that L z = x'
 
               ELSE
@@ -2632,12 +2705,18 @@
 !  and the resulting Taylor series approximants
 
  200      CONTINUE
-!write(6,*) ' x > del?', inform%x_norm > radius, ' hard ? ', inform%hard_case
-          IF ( inform%x_norm > radius ) THEN
+          IF ( printd ) WRITE( out,                                            &
+            "( ' --------- OK with lambda = ', ES22.15 )" ) lambda
+          bad_eval = ' '
 
 !  ----------------------------
 !  The current lambda lies in L
 !  ----------------------------
+
+!write(6,*) ' x > del?', inform%x_norm > radius, ' hard ? ', inform%hard_case
+          IF ( inform%x_norm > radius ) THEN
+
+!  for Taylor approximants of degree larger than one
 
             IF ( max_order >= 3 ) THEN
 
@@ -2920,6 +2999,14 @@
                   inform%time%clock_factorize + clock_now - clock_record
                 IF ( printt ) WRITE( out, 2050 ) prefix, clock_now -clock_record
 
+!               IF ( inform%IR_inform%norm_final_residual >                    &
+!                    inform%IR_inform%norm_initial_residual ) THEN
+!                 bad_eval = '7'
+! write(6, "( ' *********** WARNING 7 - initial and final residuals are ',     &
+!& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
+!              inform%IR_inform%norm_final_residual
+!               END IF
+
                 IF ( unit_m ) THEN
                   u_norm = TWO_NORM( data%U( : n ) )
                 ELSE
@@ -3001,8 +3088,8 @@
 
           IF ( printt .OR. ( printi .AND. it == 1 ) ) WRITE( out, 2020 ) prefix
           region = 'N'
-          IF ( printi ) WRITE( out, "( A, A2, I4, 3ES22.15 )" )                &
-            prefix, region, it, lambda_l, lambda, lambda_u
+          IF ( printi ) WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" )            &
+            prefix, bad_eval, region, it, lambda_l, lambda, lambda_u
           try_zero = .FALSE.
           lambda_s_l = MAX( lambda_s_l, lambda )
           lambda_l = lambda_s_l
@@ -3052,8 +3139,8 @@
              MAX( one, ABS( lambda_l ), ABS( lambda_u ) ) ) THEN
           IF ( printi ) THEN
             IF ( printt ) WRITE( out, 2020 ) prefix
-            WRITE( out, "( A, A2, I4, 3ES22.15 )" )                            &
-              prefix, region, it + 1, lambda_l, lambda, lambda_u
+            WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" )                        &
+              prefix, bad_eval, region, it + 1, lambda_l, lambda, lambda_u
             WRITE( out, "( A,                                                  &
            &    ' Hard-case stopping criteria satisfied.',                     &
            &    ' Interval width =', ES11.4 )" ) prefix, lambda_u - lambda_l
@@ -4532,8 +4619,8 @@
 
 !-*-*-*-*-*  T R S _ T H E T A _ D E R I V S   S U B R O U T I N E   *-*-*-*-*-
 
-      SUBROUTINE TRS_theta_derivs( max_order, beta, lambda, sigma,            &
-                                     theta_beta )
+      SUBROUTINE TRS_theta_derivs( max_order, beta, lambda, sigma,             &
+                                   theta_beta )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !

@@ -81,10 +81,10 @@
       REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
       REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
 
+      REAL ( KIND = wp ), PARAMETER :: lambda_pert = epsmch ** 0.75
       REAL ( KIND = wp ), PARAMETER :: theta_ii = one
       REAL ( KIND = wp ), PARAMETER :: theta_eps = point01
       REAL ( KIND = wp ), PARAMETER :: theta_eps5 = point1
-      REAL ( KIND = wp ), PARAMETER :: lambda_pert = epsmch ** 0.75
       REAL ( KIND = wp ), PARAMETER :: theta_g = half
       REAL ( KIND = wp ), PARAMETER :: theta_n = half
       REAL ( KIND = wp ), PARAMETER :: theta_n_small = ten ** ( - 1 )
@@ -1304,8 +1304,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, j, l, it, i_max, j_max, out, nroots, n_invit, print_level
-      INTEGER :: max_order, n_lambda, in_n, itt
+      INTEGER :: i, j, l, it, itt, i_max, j_max, out, nroots, n_invit
+      INTEGER :: print_level, max_order, n_lambda, in_n
       REAL :: time_start, time_now, time_record
       REAL ( KIND = wp ) :: clock_start, clock_now, clock_record
       REAL ( KIND = wp ) :: lambda, lambda_l, lambda_u, delta_lambda, target
@@ -1907,9 +1907,12 @@
           inform%time%clock_solve =                                            &
             inform%time%clock_factorize + clock_now - clock_record
           IF ( printt ) WRITE( out, 2040 ) prefix, clock_now - clock_record
+
+!  warning that the residual may be inaccurate
+
           IF ( inform%IR_inform%norm_final_residual >                          &
                inform%IR_inform%norm_initial_residual ) THEN
-! write(6, "( ' *********** WARNING 1 - initial and final residuals are ',     &
+! write(out, "( ' *********** WARNING 1 - initial and final residuals are ',   &
 !& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
 !               inform%IR_inform%norm_final_residual
             bad_eval = '1'
@@ -2219,7 +2222,6 @@
 
             IF ( p /= two .AND. inform%IR_inform%norm_final_residual >         &
                  inform%IR_inform%norm_initial_residual ) THEN
-write(6,*) 'A'
               IF ( printd ) WRITE( out,                                        &
              &    "( ' **** WARNING *** iterative refinement diverged,',       &
              &    ' increasing lambda marginally' ) ")
@@ -2416,7 +2418,7 @@ write(6,*) 'A'
 
             IF ( printi ) WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" ) prefix,  &
                bad_eval, region, it, ABS( inform%x_norm - target ), lambda,    &
-              ABS( delta_lambda )
+               ABS( delta_lambda )
 
 !  precaution against rounding producing lambda outside L
 
@@ -2447,7 +2449,7 @@ write(6,*) 'A'
                 prefix
             END IF
             IF ( printi ) WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" )          &
-              prefix,  bad_eval, region, it, lambda_l, lambda, lambda_u
+              prefix, bad_eval, region, it, lambda_l, lambda, lambda_u
 
 !  record, for the future, values of lambda which give small ||x||
 
@@ -2478,7 +2480,7 @@ write(6,*) 'A'
 
             IF ( inform%IR_inform%status == GALAHAD_error_solve ) THEN
               IF ( printd ) WRITE( out,                                        &
-             &    "( ' **** WARNING *** iterative refinement diverged,',       &
+             &    "( ' **** WARNING 3 *** iterative refinement diverged,',     &
              &    ' increasing lambda marginally' ) ")
               bad_eval = '3'
 ! write(6, "( ' *********** WARNING 3 - initial and final residuals are ',     &
@@ -2515,13 +2517,13 @@ write(6,*) 'A'
             IF ( printt ) WRITE( out, 2050 ) prefix, clock_now - clock_record
           END IF
 
-          IF ( inform%IR_inform%norm_final_residual >                          &
-               inform%IR_inform%norm_initial_residual ) THEN
-              bad_eval = '4'
+!         IF ( inform%IR_inform%norm_final_residual >                          &
+!              inform%IR_inform%norm_initial_residual ) THEN
+!             bad_eval = '4'
 ! write(6, "( ' *********** WARNING 4 - initial and final residuals are ',     &
 !& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
 !              inform%IR_inform%norm_final_residual
-          END IF
+!         END IF
 
 !  form ||w||^2 = y^T z = x^T L^-T D^-1 L^-1 x = x^T H^-1(lambda) x
 
@@ -2713,10 +2715,12 @@ write(6,*) 'A'
                  &    "( ' **** WARNING 5 *** iterative refinement diverged,', &
                  &    ' increasing lambda marginally' ) ")
                   bad_eval = '5'
-!write(6,"( ' in ', A, ' C, was ', 3ES22.15 )" ) region,lambda_l,lambda,lambda_u
+!write(6,"( ' in ', A, ' C, was ', 3ES22.15 )" ) &
+!  region, lambda_l, lambda, lambda_u
                   lambda_l = lambda
                   lambda = lambda_l + theta_eps5 * ( lambda_u - lambda_l )
-!write(6,"( ' in ', A, ' C, is  ', 3ES22.15 )" ) region,lambda_l,lambda,lambda_u
+!write(6,"( ' in ', A, ' C, is  ', 3ES22.15 )" ) &
+!  region, lambda_l ,lambda, lambda_u
                   it = it + 1
                   GO TO 100
                 END IF
@@ -2763,13 +2767,13 @@ write(6,*) 'A'
                   WRITE( out, 2050 ) prefix, clock_now - clock_record
               END IF
 
-              IF ( inform%IR_inform%norm_final_residual >                      &
-                   inform%IR_inform%norm_initial_residual ) THEN
-                bad_eval = '6'
+!             IF ( inform%IR_inform%norm_final_residual >                      &
+!                  inform%IR_inform%norm_initial_residual ) THEN
+!               bad_eval = '6'
 ! write(6, "( ' *********** WARNING 6 - initial and final residuals are ',     &
 !& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
 !              inform%IR_inform%norm_final_residual
-              END IF
+!             END IF
 
 !  form ||v||^2 = z^T y = x'^T L^-T D^-1 L^-1 x' = x'^T H^-1(lambda) x'
 
@@ -2790,7 +2794,8 @@ write(6,*) 'A'
 !  and the resulting Taylor series approximants
 
  200      CONTINUE
-IF ( printi ) WRITE( out, "( ' --------- OK with lambda = ', ES22.15 )" ) lambda
+          IF ( printd ) WRITE( out,                                            &
+            "( ' --------- OK with lambda = ', ES22.15 )" ) lambda
           bad_eval = ' '
 
 !  ----------------------------

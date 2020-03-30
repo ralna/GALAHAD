@@ -1,11 +1,1 @@
-Warning: Floating underflow occurred
- 1
-  n  2
-    it       lambda_l               lambda               lambda_u
- G   1 1.500000000000000E+00 1.936491673103708E+00 1.936491673103708E+00
- G   2 1.500000000000000E+00 1.607013974464365E+00 1.607013974464365E+00
- G   3 1.500000000000000E+00 1.500076203153126E+00 1.500076203153126E+00
-    it     ||x||-radius             lambda               d_lambda
- G   4 9.992007221626409E-16 1.500000000000001E+00 7.620315312628634E-05
- Normal stopping criteria satisfied
- 4 factorizations. Objective and Lagrange multiplier = -2.5000E-01  1.5000E+00
+ 4 factorizations. Objective and Lagrange multiplier = -7.0611E+02  7.0712E+00

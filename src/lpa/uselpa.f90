@@ -82,18 +82,16 @@
 
 !  Scalars
 
-      INTEGER :: n, m, ir, ic, la, lh, liw, iores, smt_stat
+      INTEGER :: i, j, l, nea, loops, n, m, ir, ic, la, liw, iores, smt_stat
 !     INTEGER :: np1, npm
-      INTEGER :: i, j, l, neh, nea, loops
       INTEGER :: status, mfixed, mdegen, nfixed, ndegen, mequal, mredun
       INTEGER :: alloc_stat, cutest_status, A_ne, iter
       REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4
       REAL ( KIND = wp ) :: clock, clocko, clocks, clockt
-      REAL ( KIND = wp ) :: objf, fval, stopr, dummy, wnorm, wnorm_old
-      REAL ( KIND = wp ) :: res_c, res_k, max_cs, max_d, lambda_lower
+      REAL ( KIND = wp ) :: objf, fval, stopr, dummy
+      REAL ( KIND = wp ) :: res_c, res_k, max_cs, max_d
       LOGICAL :: filexx, printo, printe, is_specfile
 !     LOGICAL :: ldummy
-      TYPE ( RAND_seed ) :: seed
 
 !  Specfile characteristics
 
@@ -140,7 +138,6 @@
       INTEGER :: qfiledevice = 58
       INTEGER :: rfiledevice = 47
       INTEGER :: sfiledevice = 62
-      INTEGER :: cfiledevice = 65
       LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_initial_sif    = .FALSE.
       LOGICAL :: write_presolved_sif  = .FALSE.
@@ -158,7 +155,6 @@
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE.
       REAL ( KIND = wp ) :: pert_bnd = zero
-      REAL ( KIND = wp ) :: wnorm_stop = 0.0000000000001_wp
 
 !  Output file characteristics
 
@@ -185,7 +181,7 @@
 !  Allocatable arrays
 
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C, AY, HX, D, O
+      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C, AY, HX
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, X_stat
 

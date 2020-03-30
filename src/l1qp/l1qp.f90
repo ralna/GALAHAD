@@ -1127,7 +1127,7 @@
       REAL ( KIND = wp ) :: H_val( 1 )
       LOGICAL :: printi, printa, printe, reset_bnd, stat_required
       LOGICAL :: composite_g, diagonal_h, identity_h, scaled_identity_h
-      LOGICAL :: separable_bqp, lbfgs, extrapolation_ok, initial, refine
+      LOGICAL :: separable_bqp, lbfgs, extrapolation_ok, initial
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( CQP_control_type ) :: CQP_control
       TYPE ( DQP_control_type ) :: DQP_control

@@ -1308,7 +1308,7 @@
 
 !  Local variables
 
-      INTEGER :: i, j, l, n_depen, nzc
+      INTEGER :: i, j, n_depen, nzc
       REAL :: time_start, time_record, time_now
       REAL ( KIND = wp ) :: time_analyse, time_factorize
       REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
@@ -1316,7 +1316,6 @@
       REAL ( KIND = wp ) :: av_bnd, x_l, x_u, g
 !     REAL ( KIND = wp ) :: fixed_sum, xi
       LOGICAL :: printi, printa, remap_freed, reset_bnd, stat_required
-      LOGICAL :: separable_bqp
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  functions
@@ -2556,7 +2555,7 @@
       REAL ( KIND = wp ) :: time_analyse, time_factorize
       REAL ( KIND = wp ) :: clock_record, clock_start, clock_now, clock_solve
       REAL ( KIND = wp ) :: clock_analyse, clock_factorize
-      REAL ( KIND = wp ) :: pjgnrm, mu, amax, hmax, gamma_f, bik, slope, comp
+      REAL ( KIND = wp ) :: pjgnrm, mu, amax, gamma_f, bik, slope, comp
       REAL ( KIND = wp ) :: cs, slknes, slkmin, reduce_infeas, tau
       REAL ( KIND = wp ) :: slknes_x, slknes_c, slkmax_x, slkmax_c, res_cs
       REAL ( KIND = wp ) :: slkmin_x, slkmin_c, res_primal, res_primal_dual
@@ -2564,8 +2563,8 @@
       REAL ( KIND = wp ) :: prfeas, dufeas, p_min, p_max, d_min, d_max
       REAL ( KIND = wp ) :: pivot_tol, relative_pivot_tol, min_pivot_tol
       REAL ( KIND = wp ) :: alpha, alpha_l, alpha_u, alpha_max, one_minus_alpha
-      REAL ( KIND = wp ) :: sigma, gamma_c, gi, co, sigma_mu, sigma_mu2, curv
-      REAL ( KIND = wp ) :: one_plus_sigma_mu, two_plus_sigma_mu, balance, xi
+      REAL ( KIND = wp ) :: sigma, gamma_c, gi, co, sigma_mu, sigma_mu2
+      REAL ( KIND = wp ) :: one_plus_sigma_mu, two_plus_sigma_mu, balance
       REAL ( KIND = wp ) :: one_plus_2_sigma_mu, two_sigma_mu2, two_sigma_mu
       REAL ( KIND = wp ) :: opt_alpha_guarantee, opt_merit_guarantee
       REAL ( KIND = wp ) :: stop_p, stop_d, stop_c, two_mu
