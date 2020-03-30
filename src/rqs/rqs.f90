@@ -83,6 +83,7 @@
 
       REAL ( KIND = wp ), PARAMETER :: theta_ii = one
       REAL ( KIND = wp ), PARAMETER :: theta_eps = point01
+      REAL ( KIND = wp ), PARAMETER :: theta_eps5 = point1
       REAL ( KIND = wp ), PARAMETER :: lambda_pert = epsmch ** 0.75
       REAL ( KIND = wp ), PARAMETER :: theta_g = half
       REAL ( KIND = wp ), PARAMETER :: theta_n = half
@@ -1320,7 +1321,7 @@
       REAL ( KIND = wp ), DIMENSION( 0 : max_degree ) :: pi_beta, theta_beta
       LOGICAL :: printi, printt, printd, psdef, try_zero, dummy, unit_m
       LOGICAL :: problem_file_exists, phase_1, constrained
-      CHARACTER ( LEN = 1 ) :: region
+      CHARACTER ( LEN = 1 ) :: region, bad_eval
       CHARACTER ( LEN = 80 ) :: array_name
 
 !     REAL ( KIND = wp ), DIMENSION( n, n ) :: h_dense
@@ -1908,9 +1909,10 @@
           IF ( printt ) WRITE( out, 2040 ) prefix, clock_now - clock_record
           IF ( inform%IR_inform%norm_final_residual >                          &
                inform%IR_inform%norm_initial_residual ) THEN
-! write(6, "( ' *********** WARNING A - initial and final residuals are ',     &
+! write(6, "( ' *********** WARNING 1 - initial and final residuals are ',     &
 !& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
 !               inform%IR_inform%norm_final_residual
+            bad_eval = '1'
           END IF
 
 !  compute the M^-1 norm of c, while checking that M is positive definite
@@ -2102,7 +2104,7 @@
 !          = A%val( : data%a_ne )
 
       try_zero = lambda > zero .AND. lambda_l == zero
-      region = ' '
+      region = ' ' ; bad_eval = ' '
       max_order = MAX( 1, MIN( max_degree, control%taylor_max_degree ) )
       target = zero
       root_eps = SQRT( epsmch )
@@ -2221,7 +2223,8 @@ write(6,*) 'A'
               IF ( printd ) WRITE( out,                                        &
              &    "( ' **** WARNING *** iterative refinement diverged,',       &
              &    ' increasing lambda marginally' ) ")
-!write(6, "( ' *********** WARNING B - initial and final residuals are ',      &
+              bad_eval = '2'
+!write(6, "( ' *********** WARNING 2 - initial and final residuals are ',      &
 !& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
 !               inform%IR_inform%norm_final_residual
               lambda_l = lambda
@@ -2319,8 +2322,8 @@ write(6,*) 'A'
               IF ( printt .OR. ( printi .AND. it == 1 ) ) WRITE( out, 2020 )   &
                 prefix
             END IF
-            IF ( printi ) WRITE( out, "( A, A2, I4, 3ES22.15 )" )              &
-              prefix, region, it, lambda_l, lambda, lambda_u
+            IF ( printi ) WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" )          &
+              prefix,  bad_eval, region, it, lambda_l, lambda, lambda_u
             GO TO 200
           END IF
 
@@ -2356,8 +2359,9 @@ write(6,*) 'A'
             IF ( ( phase_1 .AND. printi ) .OR. printt .OR.                     &
                  ( printi .AND. it == 1 ) ) WRITE( out, 2030 ) prefix
             IF ( printi ) THEN
-              WRITE( out, "( A, A2, I4, 3ES22.15 )" ) prefix, region,          &
-                it, ABS( inform%x_norm - target ), lambda, ABS( delta_lambda )
+              WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" ) prefix,  bad_eval,   &
+                region, it, ABS( inform%x_norm - target ), lambda,             &
+                ABS( delta_lambda )
               WRITE( out, "( A,                                                &
           &    ' Normal stopping criteria satisfied' )" ) prefix
             END IF
@@ -2394,8 +2398,8 @@ write(6,*) 'A'
               delta_lambda = zero
               IF ( printd ) THEN
                 WRITE( out, 2020 ) prefix
-                WRITE( out, "( A, A2, I4, 3ES22.15 )" )                        &
-                  prefix, region, it, lambda_l, lambda, lambda_u
+                WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" )                    &
+                  prefix,  bad_eval, region, it, lambda_l, lambda, lambda_u
               END IF
               IF ( printt ) THEN
                 WRITE( out, "( A, 4X, 28( '-' ), ' phase two ', 28( '-' ) )" ) &
@@ -2410,8 +2414,8 @@ write(6,*) 'A'
 !  a lambda in L has been found. It is now simply a matter of applying
 !  a variety of Taylor-series-based methods starting from this lambda
 
-            IF ( printi ) WRITE( out, "( A, A2, I4, 3ES22.15 )" ) prefix,      &
-              region, it, ABS( inform%x_norm - target ), lambda,               &
+            IF ( printi ) WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" ) prefix,  &
+               bad_eval, region, it, ABS( inform%x_norm - target ), lambda,    &
               ABS( delta_lambda )
 
 !  precaution against rounding producing lambda outside L
@@ -2442,8 +2446,8 @@ write(6,*) 'A'
               IF ( printt .OR. ( printi .AND. it == 1 ) ) WRITE( out, 2020 )   &
                 prefix
             END IF
-            IF ( printi ) WRITE( out, "( A, A2, I4, 3ES22.15 )" )              &
-              prefix, region, it, lambda_l, lambda, lambda_u
+            IF ( printi ) WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" )          &
+              prefix,  bad_eval, region, it, lambda_l, lambda, lambda_u
 
 !  record, for the future, values of lambda which give small ||x||
 
@@ -2476,6 +2480,10 @@ write(6,*) 'A'
               IF ( printd ) WRITE( out,                                        &
              &    "( ' **** WARNING *** iterative refinement diverged,',       &
              &    ' increasing lambda marginally' ) ")
+              bad_eval = '3'
+! write(6, "( ' *********** WARNING 3 - initial and final residuals are ',     &
+!& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
+!              inform%IR_inform%norm_final_residual
 !write(6,"( ' in ', A, ' B, was ', 3ES22.15 )" ) region,lambda_l,lambda,lambda_u
               lambda_l = lambda
               lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
@@ -2509,7 +2517,8 @@ write(6,*) 'A'
 
           IF ( inform%IR_inform%norm_final_residual >                          &
                inform%IR_inform%norm_initial_residual ) THEN
-! write(6, "( ' *********** WARNING C - initial and final residuals are ',     &
+              bad_eval = '4'
+! write(6, "( ' *********** WARNING 4 - initial and final residuals are ',     &
 !& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
 !              inform%IR_inform%norm_final_residual
           END IF
@@ -2701,11 +2710,12 @@ write(6,*) 'A'
 
                 IF ( inform%IR_inform%status == GALAHAD_error_solve ) THEN
                   IF ( printd ) WRITE( out,                                    &
-                 &    "( ' **** WARNING *** iterative refinement diverged,',   &
+                 &    "( ' **** WARNING 5 *** iterative refinement diverged,', &
                  &    ' increasing lambda marginally' ) ")
+                  bad_eval = '5'
 !write(6,"( ' in ', A, ' C, was ', 3ES22.15 )" ) region,lambda_l,lambda,lambda_u
                   lambda_l = lambda
-                  lambda = lambda_l + theta_eps * ( lambda_u - lambda_l )
+                  lambda = lambda_l + theta_eps5 * ( lambda_u - lambda_l )
 !write(6,"( ' in ', A, ' C, is  ', 3ES22.15 )" ) region,lambda_l,lambda,lambda_u
                   it = it + 1
                   GO TO 100
@@ -2755,7 +2765,8 @@ write(6,*) 'A'
 
               IF ( inform%IR_inform%norm_final_residual >                      &
                    inform%IR_inform%norm_initial_residual ) THEN
-! write(6, "( ' *********** WARNING D - initial and final residuals are ',     &
+                bad_eval = '6'
+! write(6, "( ' *********** WARNING 6 - initial and final residuals are ',     &
 !& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
 !              inform%IR_inform%norm_final_residual
               END IF
@@ -2779,6 +2790,8 @@ write(6,*) 'A'
 !  and the resulting Taylor series approximants
 
  200      CONTINUE
+IF ( printi ) WRITE( out, "( ' --------- OK with lambda = ', ES22.15 )" ) lambda
+          bad_eval = ' '
 
 !  ----------------------------
 !  The current lambda lies in L
@@ -3456,7 +3469,8 @@ write(6,*) 'A'
 
 !               IF ( inform%IR_inform%norm_final_residual >                    &
 !                    inform%IR_inform%norm_initial_residual ) THEN
-! write(6, "( ' *********** WARNING E - initial and final residuals are ',     &
+!                 bad_eval = '7'
+! write(6, "( ' *********** WARNING 7 - initial and final residuals are ',     &
 !& 2ES12.4 )" ) inform%IR_inform%norm_initial_residual,                        &
 !              inform%IR_inform%norm_final_residual
 !               END IF
@@ -3532,8 +3546,8 @@ write(6,*) 'A'
         ELSE
           IF ( printt .OR. ( printi .AND. it == 1 ) ) WRITE( out, 2020 ) prefix
           region = 'N'
-          IF ( printi ) WRITE( out, "( A, A2, I4, 3ES22.15 )" )                &
-            prefix, region, it, lambda_l, lambda, lambda_u
+          IF ( printi ) WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" )            &
+            prefix,  bad_eval, region, it, lambda_l, lambda, lambda_u
           try_zero = .FALSE.
           lambda_s_l = MAX( lambda_s_l, lambda )
           lambda_l = lambda_s_l
@@ -3583,8 +3597,8 @@ write(6,*) 'A'
                  < data%control%stop_hard *                                    &
                    MAX( one, ABS( lambda_l ), ABS( lambda_u ) ) ) THEN
             IF ( printi ) THEN
-              WRITE( out, "( A, A2, I4, 3ES22.15 )" )                          &
-                prefix, region, it + 1, lambda_l, lambda, lambda_u
+              WRITE( out, "( A, A1, A1, I4, 3ES22.15 )" )                      &
+                prefix,  bad_eval, region, it + 1, lambda_l, lambda, lambda_u
               WRITE( out, "( A,                                                &
             &    ' Hard-case stopping criteria satisfied.',                    &
             &    ' Interval width =', ES22.15 )" ) prefix, lambda_u - lambda_l
