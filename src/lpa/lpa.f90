@@ -3063,7 +3063,7 @@
       INTEGER :: i, ii, j, jj, l, m_e, m_l, m_u, n_l, n_u
       INTEGER :: free, lower, range, upper, fixed, basic
       INTEGER :: c_lower, c_range, c_upper, c_equality, a_ne, a_type, v_stat
-      INTEGER :: m_es, m_is, m_ie, n_s, ai_len
+      INTEGER :: m_es, m_is, n_s, ai_len
 
       REAL ( KIND = wp ) :: xl, xu, cl, cu
       CHARACTER ( LEN = 80 ) :: array_name
