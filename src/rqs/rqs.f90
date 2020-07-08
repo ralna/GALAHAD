@@ -173,7 +173,8 @@
 !  stop when | ||x|| - (multiplier/sigma)^(1/(p-2)) | <=
 !              stop_normal * max( ||x||, (multiplier/sigma)^(1/(p-2)) )
 
-        REAL ( KIND = wp ) :: stop_normal = epsmch ** 0.75
+!       REAL ( KIND = wp ) :: stop_normal = epsmch ** 0.75
+        REAL ( KIND = wp ) :: stop_normal = ten ** ( - 12 )
 
 !  stop when bracket on optimal multiplier <= stop_hard * max( bracket ends )
 
@@ -430,12 +431,15 @@
 
       CALL RAND_initialize( data%seed )
 
+!  revise control parameters (not all compilers currently support fortran 2013)
+
+      control%stop_normal = epsmch ** 0.75
+
 !  initalize SLS components
 
       CALL SLS_initialize( control%symmetric_linear_solver,                    &
                            data%SLS_data, control%SLS_control,                 &
                            inform%SLS_inform )
-
 !  Set initial values for factorization controls and data
 
       control%SLS_control%ordering = 0

@@ -83,7 +83,8 @@
 !   ||Ax-b|| >= required_residual_relative * ||b||
 !  No checking if required_residual_relative < 0
 
-        REAL ( KIND = wp ) :: required_residual_relative = epsmch ** 0.2
+!       REAL ( KIND = wp ) :: required_residual_relative = epsmch ** 0.2
+        REAL ( KIND = wp ) :: required_residual_relative = ten ** ( - 3 )
 
 !  record the initial and final residual
 
@@ -168,6 +169,9 @@
       TYPE ( IR_control_type ), INTENT( OUT ) :: control
       TYPE ( IR_inform_type ), INTENT( OUT ) :: inform
 
+!  revise control parameters (not all compilers currently support fortran 2013)
+
+      control%required_residual_relative = epsmch ** 0.2
       inform%status = GALAHAD_ok
 
 !  Set initial data value

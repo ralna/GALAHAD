@@ -138,12 +138,14 @@
 
 !  the tolerable relative perturbation of the data (A,g,..) defining the problem
 
-       REAL ( KIND = wp ) :: tol_data = epsmch ** ( 2.0_wp / 3.0_wp )
+!      REAL ( KIND = wp ) :: tol_data = epsmch ** ( 2.0_wp / 3.0_wp )
+       REAL ( KIND = wp ) :: tol_data = ten ** ( - 10 )
 
 !   any constraint violated by less than feas_tol will be considered to be
 !    satisfied
 
-       REAL ( KIND = wp ) :: feas_tol =  epsmch ** ( 2.0_wp / 3.0_wp )
+!      REAL ( KIND = wp ) :: feas_tol =  epsmch ** ( 2.0_wp / 3.0_wp )
+       REAL ( KIND = wp ) :: feas_tol =  ten ** ( - 10 )
 
 !  pivot threshold used to control the selection of pivot elements in the
 !   matrix factorization. Any potential pivot which is less than the largest
@@ -163,7 +165,8 @@
 !  any solution component whose change is smaller than a tolerence times the
 !   largest change may be considered to be zero
 
-       REAL ( KIND = wp ) :: change_tolerance = epsmch ** ( 2.0_wp / 3.0_wp )
+!      REAL ( KIND = wp ) :: change_tolerance = epsmch ** ( 2.0_wp / 3.0_wp )
+       REAL ( KIND = wp ) :: change_tolerance = ten ** ( - 10 )
 
 !   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than
 !    identical_bounds_tol will be reset to the average of their values
@@ -359,6 +362,12 @@
       TYPE ( LPA_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
+
+!  revise control parameters (not all compilers currently support fortran 2013)
+
+      control%tol_data = epsmch ** ( 2.0_wp / 3.0_wp )
+      control%feas_tol =  epsmch ** ( 2.0_wp / 3.0_wp )
+      control%change_tolerance = epsmch ** ( 2.0_wp / 3.0_wp )
 
 !  initialise private data
 

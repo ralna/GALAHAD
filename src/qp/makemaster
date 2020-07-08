@@ -2602,7 +2602,7 @@ cqpds: $(CQPDS)
 	cd ../cqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_cqp $(RCQPDS)
 	cd ../cqp ; $(RMOOC)
 #	- ../cqp/run_cqp
-	- ../cqp/run_cqp >& ../cqp/cqpds.output
+	- ../cqp/run_cqp > ../cqp/cqpds.output 2>&1
 	cat ../cqp/cqpds.output
 	rm ../cqp/run_cqp
 

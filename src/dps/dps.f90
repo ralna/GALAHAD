@@ -113,8 +113,10 @@
 !  stop trust-region solution when | ||x||_M - delta | <=
 !     max( stop_normal * delta, stop_absolute_normal )
 
-        REAL ( KIND = wp ) :: stop_normal = epsmch ** 0.75
-        REAL ( KIND = wp ) :: stop_absolute_normal = epsmch ** 0.75
+!       REAL ( KIND = wp ) :: stop_normal = epsmch ** 0.75
+!       REAL ( KIND = wp ) :: stop_absolute_normal = epsmch ** 0.75
+        REAL ( KIND = wp ) :: stop_normal = ten ** ( - 12 )
+        REAL ( KIND = wp ) :: stop_absolute_normal = ten ** ( - 12 )
 
 !  use the Goldfarb variant of the trust-region/regularization norm rather
 !  than the modified absolute-value version
@@ -307,6 +309,11 @@
       TYPE ( DPS_data_type ), INTENT( OUT ) :: data
       TYPE ( DPS_control_type ), INTENT( OUT ) :: control
       TYPE ( DPS_inform_type ), INTENT( OUT ) :: inform
+
+!  revise control parameters (not all compilers currently support fortran 2013)
+
+      control%stop_normal = epsmch ** 0.75
+      control%stop_absolute_normal = epsmch ** 0.75
 
 !  initalize SLS components
 

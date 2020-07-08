@@ -367,6 +367,8 @@
 
       USE GALAHAD_TOOLS           ! the GALAHAD toolbox
 
+      USE GALAHAD_BLAS_interface, ONLY: SWAP ! interfaces to the blas
+
 !     Print levels
 
       USE GALAHAD_SYMBOLS,                                                     &
@@ -2536,23 +2538,23 @@
 !
 !     END INTERFACE
 
-     INTERFACE SWAP
+!     INTERFACE SWAP
 
-        SUBROUTINE SSWAP( n, x, incx, y, incy )
-          INTEGER, INTENT( IN ) :: n, incx, incy
-          REAL, INTENT( INOUT ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
-          REAL, INTENT( INOUT ), DIMENSION( incy * ( n - 1 ) + 1 ) :: y
-        END SUBROUTINE SSWAP
+!       SUBROUTINE SSWAP( n, x, incx, y, incy )
+!         INTEGER, INTENT( IN ) :: n, incx, incy
+!         REAL, INTENT( INOUT ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
+!         REAL, INTENT( INOUT ), DIMENSION( incy * ( n - 1 ) + 1 ) :: y
+!       END SUBROUTINE SSWAP
 
-        SUBROUTINE DSWAP( n, x, incx, y, incy )
-          INTEGER, INTENT( IN ) :: n, incx, incy
-          DOUBLE PRECISION, INTENT( INOUT ),                                   &
-                            DIMENSION( incx * ( n - 1 ) + 1 ) :: x
-          DOUBLE PRECISION, INTENT( INOUT ),                                   &
-                            DIMENSION( incy * ( n - 1 ) + 1 ) :: y
-        END SUBROUTINE DSWAP
+!       SUBROUTINE DSWAP( n, x, incx, y, incy )
+!         INTEGER, INTENT( IN ) :: n, incx, incy
+!         DOUBLE PRECISION, INTENT( INOUT ),                                   &
+!                           DIMENSION( incx * ( n - 1 ) + 1 ) :: x
+!         DOUBLE PRECISION, INTENT( INOUT ),                                   &
+!                           DIMENSION( incy * ( n - 1 ) + 1 ) :: y
+!       END SUBROUTINE DSWAP
 
-     END INTERFACE
+!    END INTERFACE
 
 !==============================================================================
 
