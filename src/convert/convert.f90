@@ -1368,7 +1368,7 @@
 
 !  Local variables
 
-      INTEGER :: i, j, k, l, ll, lu, m, n, ne, order_status
+      INTEGER :: i, j, k, l, m, n, ne
       REAL ( KIND = wp ) :: val, time_start, time_now, clock_start, clock_now
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1699,8 +1699,8 @@
 
 !  Local variables
 
-      INTEGER :: i, j, k, l, ll, lu, m, n, ne, order_status
-      REAL ( KIND = wp ) :: val, time_start, time_now, clock_start, clock_now
+      INTEGER :: i, j, k, l, m, n, ne
+      REAL ( KIND = wp ) :: time_start, time_now, clock_start, clock_now
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -1960,8 +1960,8 @@
 
 !  Local variables
 
-      INTEGER :: i, j, k, l, ll, lu, m, n, ne, order_status
-      REAL ( KIND = wp ) :: val, time_start, time_now, clock_start, clock_now
+      INTEGER :: i, j, k, l, m, n, ne
+      REAL ( KIND = wp ) :: time_start, time_now, clock_start, clock_now
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output

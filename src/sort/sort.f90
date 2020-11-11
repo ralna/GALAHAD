@@ -2080,7 +2080,7 @@
 
 !  local variables
 
-      INTEGER :: more, ix_less, ix_more
+      INTEGER :: more, ix_less
       REAL ( KIND = WP ) :: x_less, x_more
 
       less = 0 ; more = n + 1
@@ -2142,7 +2142,7 @@
 
 !  local variables
 
-      INTEGER :: more, ix_less, ix_more
+      INTEGER :: more, ix_less
       INTEGER :: x_less, x_more
 
       less = 0 ; more = n + 1
