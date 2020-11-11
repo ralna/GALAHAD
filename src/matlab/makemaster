@@ -102,12 +102,12 @@ NO_MATLAB = precision GALAHAD interface to Matlab not currently available
 
 all: all_$(PRECIS)
 
-#all_single: basics_single sils lpa lpb cqp dqp eqp glrt gltr llst lsqp \
+#all_single: basics_single sils sls lpa lpb cqp dqp eqp glrt gltr llst lsqp \
 #            lsrt lstr l2rt qpa qpb qpc qp rqs sbls trs wcp tru arc nls
 #	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 all_single:
 	@printf ' %-21s\n' "$(PRECIS) $(NO_MATLAB)"
-all_double: basics_double sils lpa lpb cqp dqp eqp glrt gltr llst lsqp \
+all_double: basics_double sils sls lpa lpb cqp dqp eqp glrt gltr llst lsqp \
             lsrt lstr l2rt qpa qpb qpc qp rqs sbls trs wcp tru arc nls
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 
@@ -435,7 +435,7 @@ sls: $(MAT_SLS) galahad_sls.F90
 	( cd ../sls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      sls_silent PRECIS=double PWD=$(PWD)/../sls )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_sls"
-	$(SED) -f $(LSEDS) galahad_sls.F90 > galahad_sls1.F90
+	$(SED) -f $(GALAHAD)/seds/zd11.sed galahad_sls.F90 > galahad_sls1.F90
 	$(MEX) galahad_sls1.F90 -output galahad_sls \
           -L$(OBJD) $(LIBS) $(MFLAGS)
 	$(RM) galahad_sls1.F90

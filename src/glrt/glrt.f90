@@ -1085,7 +1085,7 @@
           IF ( MOD( data%iter, 25 ) == 0 .OR. data%printd )                    &
             WRITE( control%out, 2000 ) prefix
           IF ( data%iter /= 0 ) THEN
-            WRITE( control%out, "( A, I7, ES16.8, ES9.2, ES15.8, ES9.2,        &
+            WRITE( control%out, "( A, I7, ES16.8, ES9.2, ES21.14, ES9.2,       &
               &  2I5, A )" ) prefix, data%iter,                                &
               data%MIN_f_regularized( data%itm1 )                              &
               + control%f_0, ABS( data%x_last * data%offdiag ),                &
@@ -1093,8 +1093,8 @@
               data%titer, data%tinfo, data%descent
 !write(6,"(2ES12.4)" ) data%x_last, data%offdiag
           ELSE
-            WRITE( control%out, "( A, I7, ES16.8, ES9.2, 8X, '-', 6X,          &
-             &      2( 4X, '-' ) )" )                                          &
+            WRITE( control%out, "( A, I7, ES16.8, ES9.2, 13X, '-', 12X,        &
+             &      '-', 7X, '-', 5X, '-' )" )                                 &
                prefix, data%iter, inform%obj_regularized, data%pgnorm
           END IF
         END IF
@@ -1774,8 +1774,8 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( /, A, '   Iter    objective     pgnorm      lambda   ',          &
-                    '      gamma  it info' )
+ 2000 FORMAT( /, A, '   Iter    objective     pgnorm           lambda    ',    &
+                    '    gamma    it  info' )
  2010 FORMAT( /, A, '   Iter       f          pgnorm ' )
 !2020 FORMAT( /, ' MIN_f, it_exit, it_total ', ES22.14, 2I6 )
 
@@ -2464,7 +2464,7 @@
                        + DOT_PRODUCT( X( : n - 1 ) * OFFD, X( 2 : ) )          &
                        + ( sigma / p ) * omega ** p
             WRITE( out, "( A, ' real, recurred f = ', 2ES22.14 )" ) prefix,    &
-                                                                    real_f, f
+                                    real_f, f_regularized
           END IF
           inform = 0
           RETURN

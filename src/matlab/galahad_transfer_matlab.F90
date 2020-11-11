@@ -16,6 +16,7 @@
     MODULE GALAHAD_TRANSFER_MATLAB
 
       USE GALAHAD_SMT_double
+      USE GALAHAD_SPACE_double
       USE GALAHAD_MATLAB
 
       IMPLICIT NONE
@@ -57,7 +58,7 @@
 !  local variables
 
       INTEGER :: i, j, k, l, info
-      INTEGER * 4 :: stat, np1
+      INTEGER * 4 :: stat, np1, status, alloc_status
       mwPointer :: a_cpr_pr, a_row_pr, val_pr
       mwPointer :: mxGetPr
       mwSize :: mxGetM, mxGetN, mxGetNzmax
@@ -90,12 +91,12 @@
 
 !  Allocate space for the input matrix A
 
-      ALLOCATE( A%row( A%ne ), STAT = info )
-      IF ( info /= 0 ) CALL mexErrMsgTxt( ' allocate error A%row' )
-      ALLOCATE( A%col( A%ne ), STAT = info )
-      IF ( info /= 0 ) CALL mexErrMsgTxt( ' allocate error A%col' )
-      ALLOCATE( A%val( A%ne ), STAT = info )
-      IF ( info /= 0 ) CALL mexErrMsgTxt( ' allocate error A%val' )
+      CALL SPACE_resize_array( A%ne, A%row, status, alloc_status )
+      IF ( status /= 0 ) CALL mexErrMsgTxt( ' allocate error A%row' )
+      CALL SPACE_resize_array( A%ne, A%col, status, alloc_status )
+      IF ( status /= 0 ) CALL mexErrMsgTxt( ' allocate error A%col' )
+      CALL SPACE_resize_array( A%ne, A%val, status, alloc_status )
+      IF ( status /= 0 ) CALL mexErrMsgTxt( ' allocate error A%val' )
 
       IF ( mxIsSparse( a_in ) ) THEN
 

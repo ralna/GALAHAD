@@ -1225,6 +1225,10 @@ test_spec_blls_double: bllsds
 	echo ""
 	echo " Tests for blls complete"
 
+debug_blls: blls_debug
+	echo ""
+	echo " Tests for blls complete"
+
 # bqp
 
 bqp_all: bqp_cutest bqp_qplib
@@ -2517,6 +2521,13 @@ bllsds4: $(BLLSDS2)
 	- ../blls/run_blls >& ../blls/bllsds2.output
 	cat ../blls/bllsds2.output
 	rm ../blls/run_blls
+
+blls_debug: $(BASICS) $(BLLS_double)
+	echo " Debug blls during devlopment"
+	cd ../blls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o debug_blls \
+              debug_blls.f90 -L$(OBJD) $(LIBS)
+	- ../blls/debug_blls
+	rm ../blls/debug_blls
 
 bqpds: $(BQPDS)
 	cd ../bqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bqp $(RBQPDS)

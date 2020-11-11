@@ -522,113 +522,33 @@ SCALED_IDENTITY   -1    1    0        0     tiny
      COORDINATE   -1    1    0        0     tiny
        IDENTITY   -1    2    2        0     tiny
        IDENTITY   -1    2    1        0     tiny
-       IDENTITY   -1    2    0        0     tiny
-SCALED_IDENTITY   -1    2    2        0     tiny
-SCALED_IDENTITY   -1    2    1        0     tiny
-SCALED_IDENTITY   -1    2    0        0     tiny
-       DIAGONAL   -1    2    2        0     tiny
-       DIAGONAL   -1    2    1        0     tiny
-       DIAGONAL   -1    2    0        0     tiny
-          DENSE   -1    2    2        0     tiny
-          DENSE   -1    2    1        0     tiny
-          DENSE   -1    2    0        0     tiny
- SPARSE_BY_ROWS   -1    2    2        0     tiny
- SPARSE_BY_ROWS   -1    2    1        0     tiny
- SPARSE_BY_ROWS   -1    2    0        0     tiny
-     COORDINATE   -1    2    2        0     tiny
-     COORDINATE   -1    2    1        0     tiny
-     COORDINATE   -1    2    0        0     tiny
+OMP: Error #250: libgomp cancellation is not currently supported.
 
-        storage prec fact  new   status residual
-       IDENTITY   -2    1    2        0     tiny
-       IDENTITY   -2    1    1        0     tiny
-       IDENTITY   -2    1    0        0     tiny
-SCALED_IDENTITY   -2    1    2        0     tiny
-SCALED_IDENTITY   -2    1    1        0     tiny
-SCALED_IDENTITY   -2    1    0        0     tiny
-       DIAGONAL   -2    1    2        0     tiny
-       DIAGONAL   -2    1    1        0     tiny
-       DIAGONAL   -2    1    0        0     tiny
-          DENSE   -2    1    2        0     tiny
-          DENSE   -2    1    1        0     tiny
-          DENSE   -2    1    0        0     tiny
- SPARSE_BY_ROWS   -2    1    2        0     tiny
- SPARSE_BY_ROWS   -2    1    1        0     tiny
- SPARSE_BY_ROWS   -2    1    0        0     tiny
-     COORDINATE   -2    1    2        0     tiny
-     COORDINATE   -2    1    1        0     tiny
-     COORDINATE   -2    1    0        0     tiny
-       IDENTITY   -2    2    2        0     tiny
-       IDENTITY   -2    2    1        0     tiny
-       IDENTITY   -2    2    0        0     tiny
-SCALED_IDENTITY   -2    2    2        0     tiny
-SCALED_IDENTITY   -2    2    1        0     tiny
-SCALED_IDENTITY   -2    2    0        0     tiny
-       DIAGONAL   -2    2    2        0     tiny
-       DIAGONAL   -2    2    1        0     tiny
-       DIAGONAL   -2    2    0        0     tiny
-          DENSE   -2    2    2        0     tiny
-          DENSE   -2    2    1        0     tiny
-          DENSE   -2    2    0        0     tiny
- SPARSE_BY_ROWS   -2    2    2        0     tiny
- SPARSE_BY_ROWS   -2    2    1        0     tiny
- SPARSE_BY_ROWS   -2    2    0        0     tiny
-     COORDINATE   -2    2    2        0     tiny
-     COORDINATE   -2    2    1        0     tiny
-     COORDINATE   -2    2    0        0     tiny
+Program received signal SIGABRT: Process abort signal.
 
- basic tests of symmetric linear solvers 
-
-    solver   status residual
-      sils        0     tiny
-      ma57        0     tiny
-      ma77        0     tiny
-      ma86        0     tiny
-      sils        0     tiny
-      ma97        0     tiny
-     ssids        0     tiny
-   pardiso       -9
-      wsmp       -9
-
- basic tests of unsymmetric linear solvers 
-
-    solver   status residual
-       gls        0     tiny
-      ma48        0     tiny
-
- basic tests of options 
-
- test   status residual
-    0        0     tiny
-    1        0     tiny
-    2        0     tiny
-    3        0     tiny
-    4        0     tiny
-    5        0     tiny
-    6        0     tiny
-    7        0     tiny
-    8        0     tiny
-    9        0     tiny
-   10        0     tiny
-   11        0     tiny
-   12        0     tiny
-   13        0     tiny
-   14        0     tiny
-   15        0     tiny
-   16        0     tiny
-   17        0     tiny
-   18        0     tiny
-   19        0     tiny
-   20        0     tiny
-   21        0     tiny
-   22        0     tiny
-
- full test of generic problems 
-
- test   status residual
-    1        0     tiny
-    2        0     tiny
-    3        0     tiny
-    4        0     tiny
-
- tests completed
+Backtrace for this error:
+#0  0x147e5de78ea7 in ???
+#1  0x147e5de780dd in ???
+#2  0x147e5ec4503f in ???
+#3  0x147e5ec44fb7 in ???
+#4  0x147e5ec46920 in ???
+#5  0x147e5dbd3a07 in ???
+#6  0x147e5dbd2338 in ???
+#7  0x147e5dc28b0a in ???
+#8  0x55669f3e7f3a in ???
+#9  0x147e5dbef18c in ???
+#10  0x147e5dbf1180 in ???
+#11  0x147e5dbfc8e7 in ???
+#12  0x147e5dbf9a30 in ???
+#13  0x147e5dbf8252 in ???
+#14  0x147e5dbcb2ad in ???
+#15  0x147e5dc23634 in ???
+#16  0x55669f3d3893 in ???
+#17  0x147e5dc23f76 in ???
+#18  0x147e5dc2f8a2 in ???
+#19  0x147e5dbdb7d4 in ???
+#20  0x147e5dbdab58 in ???
+#21  0x147e5dc20722 in ???
+#22  0x147e5e5d96da in ???
+#23  0x147e5ed2771e in ???
+#24  0xffffffffffffffff in ???

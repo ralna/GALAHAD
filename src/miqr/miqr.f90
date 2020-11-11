@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 13/05/2014 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 29/10/2020 AT 08:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ M I Q R    M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -726,11 +726,11 @@
 
       data%control%CONVERT_control%order = .TRUE.
       data%control%CONVERT_control%transpose = data%control%transpose
-      CALL CONVERT_to_column_format( A, data%A_by_cols,                        &
-                                     data%control%CONVERT_control,             &
-                                     inform%CONVERT_inform,                    &
-                                     data%workspace%ind_m, m,                  &
-                                     data%workspace%val_m, m )
+      CALL CONVERT_to_sparse_column_format( A, data%A_by_cols,                 &
+                                            data%control%CONVERT_control,      &
+                                            inform%CONVERT_inform,             &
+                                            data%workspace%ind_m,              &
+                                            data%workspace%val_m )
       IF ( inform%CONVERT_inform%status /= GALAHAD_ok ) THEN
         inform%status = inform%CONVERT_inform%status
         GO TO 900
@@ -1342,8 +1342,9 @@
 !  store A row-wise in A_by_rows
 
         CALL CONVERT_transpose( A%m, A%n, A%ne, A%ptr, A%row, A%val,           &
-                             workspace%A_by_rows%ptr, workspace%A_by_rows%col, &
-                             workspace%A_by_rows%val )
+                                workspace%A_by_rows%ptr,                       &
+                                workspace%A_by_rows%col,                       &
+                                workspace%A_by_rows%val )
 
 !  store the degree of each vertex of the column interesction graph of A,
 !  that is the adjacency graph defined by the nonzero pattern of C

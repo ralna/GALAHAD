@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 29/10/2020 AT 08:30 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E L S T R   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -750,9 +750,9 @@
 
 !  convert to column format
 
-          CALL CONVERT_to_column_format( prob%A, A_by_cols,                    &
-                                         CONVERT_control, CONVERT_inform,      &
-                                         IW, n_total, W, n_total )
+          CALL CONVERT_to_sparse_column_format( prob%A, A_by_cols,             &
+                                                CONVERT_control,               &
+                                                CONVERT_inform, IW, W )
 
 !  if required, record the transpose
 
@@ -842,9 +842,9 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
 
 !  convert to column format
 
-          CALL CONVERT_to_column_format( prob%A, A_by_cols,                    &
-                                         CONVERT_control, CONVERT_inform,      &
-                                         IW, n_total, W, n_total )
+          CALL CONVERT_to_sparse_column_format( prob%A, A_by_cols,             &
+                                                CONVERT_control,               &
+                                                CONVERT_inform, IW, W )
 
 !  if required, record the transpose
 
@@ -1423,5 +1423,3 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
 !  End of module USELSTR_double
 
    END MODULE GALAHAD_USELSTR_double
-
-

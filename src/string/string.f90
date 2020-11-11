@@ -71,6 +71,14 @@
        MODULE PROCEDURE STRING_exponent_single, STRING_exponent_double
      END INTERFACE
 
+     INTERFACE STRING_lower
+       MODULE PROCEDURE STRING_lower_scalar, STRING_lower_component
+     END INTERFACE
+
+     INTERFACE STRING_upper
+       MODULE PROCEDURE STRING_upper_scalar, STRING_upper_component
+     END INTERFACE
+
    CONTAINS
 
 !-*-*-*-  G A L A H A D -  S T R I N G _ p l e u r a l   F U N C T I O N  -*-*-
@@ -320,9 +328,9 @@
 
       END FUNCTION STRING_sign_double
 
-!-*-*-*-*-*-*-*-   S T R I N G _ l o w e r   S U B R O U T I N E  -*-*-*-*-*-*-
+!-*-*-*-  S T R I N G _ l o w e r _ s c a l a r   S U B R O U T I N E  -*-*-*-
 
-     SUBROUTINE STRING_lower( string )
+     SUBROUTINE STRING_lower_scalar( string )
 
 !  Convert a character variable from upper to lower case
 
@@ -356,13 +364,42 @@
 
      RETURN
 
-!  End of subroutine STRING_lower
+!  End of subroutine STRING_lower_scalar
 
-     END SUBROUTINE STRING_lower
+     END SUBROUTINE STRING_lower_scalar
 
-!-*-*-*-*-*-*-*-   S T R I N G _ u p p e r   S U B R O U T I N E  -*-*-*-*-*-*-
+!-*-*-  S T R I N G _ l o w e r _ c o m p o n e n t  S U B R O U T I N E  -*-*-
 
-     SUBROUTINE STRING_upper( string )
+     SUBROUTINE STRING_lower_component( string )
+
+!  Convert a character variable from upper to lower case
+
+!--------------------------------
+!   D u m m y   A r g u m e n t
+!--------------------------------
+
+     CHARACTER, INTENT( INOUT ), DIMENSION( 1 ) :: string
+
+!  Local variables
+
+     CHARACTER :: string_scalar
+
+!  See if the current letter is lower case. If so replace it by its
+!  lower case counterpart
+
+     string_scalar = string( 1 )
+     CALL STRING_lower_scalar( string_scalar )
+     string( 1 ) = string_scalar
+
+     RETURN
+
+!  End of subroutine STRING_lower_component
+
+     END SUBROUTINE STRING_lower_component
+
+!-*-*-*-*-  S T R I N G _ u p p e r _ s c a l a r  S U B R O U T I N E  -*-*-*-
+
+     SUBROUTINE STRING_upper_scalar( string )
 
 !  Convert a character variable from lower to upper case
 
@@ -396,9 +433,38 @@
 
      RETURN
 
-!  End of subroutine STRING_upper
+!  End of subroutine STRING_upper_scalar
 
-     END SUBROUTINE STRING_upper
+     END SUBROUTINE STRING_upper_scalar
+
+!-*-*-  S T R I N G _ u p p e r _ c o m p o n e n t  S U B R O U T I N E  -*-*-
+
+     SUBROUTINE STRING_upper_component( string )
+
+!  Convert a character variable from lower to upper case
+
+!--------------------------------
+!   D u m m y   A r g u m e n t
+!--------------------------------
+
+     CHARACTER, INTENT( INOUT ), DIMENSION( 1 ) :: string
+
+!  Local variables
+
+     CHARACTER :: string_scalar
+
+!  See if the current letter is lower case. If so replace it by its
+!  upper case counterpart
+
+     string_scalar = string( 1 )
+     CALL STRING_upper_scalar( string_scalar )
+     string( 1 ) = string_scalar
+
+     RETURN
+
+!  End of subroutine STRING_upper_component
+
+     END SUBROUTINE STRING_upper_component
 
 !-*-*-*-*-   S T R I N G _ l o w e r  _ w o r d   S U B R O U T I N E  -*-*-*-*-
 
@@ -410,7 +476,7 @@
 !   D u m m y   A r g u m e n t
 !--------------------------------
 
-     CHARACTER (LEN = * ), INTENT( INOUT ) :: word
+     CHARACTER ( LEN = * ), INTENT( INOUT ) :: word
 
 !  Local variables
 
@@ -438,7 +504,7 @@
 !   D u m m y   A r g u m e n t
 !--------------------------------
 
-     CHARACTER (LEN = * ), INTENT( INOUT ) :: word
+     CHARACTER ( LEN = * ), INTENT( INOUT ) :: word
 
 !  Local variables
 

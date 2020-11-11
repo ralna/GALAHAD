@@ -2068,7 +2068,7 @@
 
 !  given a real array x of length n and an associated integer array ix,
 !  reorder the arrays so that the first less components in the new ordering
-!  of x <= x_division, and the remainder are > x_division
+!  of x < x_division, and the remainder are >= x_division
 
 !  dummy arguments
 
@@ -2087,60 +2087,35 @@
 
 !  march forward through x until a component violates x <= x_division
 
-      IF ( PRESENT( ix ) ) THEN
-        DO
-          x_less = X( less + 1 )
-          IF ( x_less <= x_division ) THEN
-            less = less + 1
-            CYCLE
-          END IF
-          less = less + 1 ; ix_less = IX( less )
+      DO
+        x_less = X( less + 1 )
+!       write(6,"( 'less ', I6, 2ES12.4 )" ) less + 1, x_less, x_division
+        IF ( x_less < x_division ) THEN
+          less = less + 1
+          IF ( less >= n ) EXIT
+          CYCLE
+        END IF
 
 !  march backwards through x until a component violates x > x_division
 
-          DO
-            IF ( less + 1 == more ) RETURN
-            x_more = X( more - 1 )
-            IF ( x_more <= x_division ) EXIT
-            more = more - 1
-          END DO
+        DO
+          IF ( less + 1 == more - 1 ) RETURN
+          x_more = X( more - 1 )
+!         write(6,"( 'more ', I6, 2ES12.4 )" ) more - 1, x_more, x_division
+          IF ( x_more < x_division ) EXIT
+          more = more - 1
+        END DO
 
 !  swap the two violated x, and their attendant ix, components
 
-          more = more - 1 ; ix_more = IX( more )
-          X( less ) = x_more ; IX( less ) = ix_more
-          X( more ) = x_less ; IX( more ) = ix_less
-          IF ( less + 1 == more ) EXIT
-        END DO
-
-!  march forward through x until a component violates x <= x_division
-
-      ELSE
-        DO
-          x_less = X( less + 1 )
-          IF ( x_less <= x_division ) THEN
-            less = less + 1
-            CYCLE
-          END IF
-          less = less + 1
-
-!  march backwards through x until a component violates x > x_division
-
-          DO
-            IF ( less + 1 == more ) RETURN
-            x_more = X( more - 1 )
-            IF ( x_more <= x_division ) EXIT
-            more = more - 1
-          END DO
-
-!  swap the two violated x
-
-          more = more - 1
-          X( less ) = x_more
-          X( more ) = x_less
-          IF ( less + 1 == more ) EXIT
-        END DO
-      END IF
+        write(6,*) ' swapping ', less, more
+        less = less + 1 ; more = more - 1
+        X( less ) = x_more ; X( more ) = x_less
+        IF ( PRESENT( ix ) ) THEN
+          ix_less = IX( less ) ; IX( less ) = IX( more ) ; IX( more ) = ix_less
+        END IF
+        IF ( less + 1 == more ) EXIT
+      END DO
 
       RETURN
 
@@ -2174,60 +2149,35 @@
 
 !  march forward through x until a component violates x <= x_division
 
-      IF ( PRESENT( ix ) ) THEN
-        DO
-          x_less = X( less + 1 )
-          IF ( x_less <= x_division ) THEN
-            less = less + 1
-            CYCLE
-          END IF
-          less = less + 1 ; ix_less = IX( less )
+      DO
+        x_less = X( less + 1 )
+!       write(6,"( 'less ', I6, 2ES12.4 )" ) less + 1, x_less, x_division
+        IF ( x_less < x_division ) THEN
+          less = less + 1
+          IF ( less >= n ) EXIT
+          CYCLE
+        END IF
 
 !  march backwards through x until a component violates x > x_division
 
-          DO
-            IF ( less + 1 == more ) RETURN
-            x_more = X( more - 1 )
-            IF ( x_more <= x_division ) EXIT
-            more = more - 1
-          END DO
+        DO
+          IF ( less + 1 == more - 1 ) RETURN
+          x_more = X( more - 1 )
+!         write(6,"( 'more ', I6, 2ES12.4 )" ) more - 1, x_more, x_division
+          IF ( x_more < x_division ) EXIT
+          more = more - 1
+        END DO
 
 !  swap the two violated x, and their attendant ix, components
 
-          more = more - 1 ; ix_more = IX( more )
-          X( less ) = x_more ; IX( less ) = ix_more
-          X( more ) = x_less ; IX( more ) = ix_less
-          IF ( less + 1 == more ) EXIT
-        END DO
-
-!  march forward through x until a component violates x <= x_division
-
-      ELSE
-        DO
-          x_less = X( less + 1 )
-          IF ( x_less <= x_division ) THEN
-            less = less + 1
-            CYCLE
-          END IF
-          less = less + 1
-
-!  march backwards through x until a component violates x > x_division
-
-          DO
-            IF ( less + 1 == more ) RETURN
-            x_more = X( more - 1 )
-            IF ( x_more <= x_division ) EXIT
-            more = more - 1
-          END DO
-
-!  swap the two violated x
-
-          more = more - 1
-          X( less ) = x_more
-          X( more ) = x_less
-          IF ( less + 1 == more ) EXIT
-        END DO
-      END IF
+!       write(6,*) ' swapping ', less, more
+        less = less + 1 ; more = more - 1
+        X( less ) = x_more ; X( more ) = x_less
+        IF ( PRESENT( ix ) ) THEN
+          ix_less = IX( less ) ; IX( less ) = IX( more ) ; IX( more ) = ix_less
+        END IF
+        IF ( less + 1 == more ) EXIT
+      END DO
 
       RETURN
 

@@ -36,7 +36,7 @@
 !
 !  Usual Input -
 !    A: the symmetric matrix A
-!    b a column vector b or matrix of right-hand sides B
+!    b: a column vector b or matrix of right-hand sides B
 !
 !  Optional Input -
 !    control, a structure containing control parameters.
@@ -147,7 +147,6 @@
             c_arg = 3
             x_arg = 1
             i_arg = 2
-!         ELSE IF ( TRIM( mode ) == 'all' ) THEN
           ELSE
             a_arg = 2
             b_arg = 3
@@ -176,8 +175,7 @@
 
 !  Initialize the internal structures for sils
 
-      IF ( TRIM( mode ) == 'initial' .OR.    &
-           TRIM( mode ) == 'all' ) THEN
+      IF ( TRIM( mode ) == 'initial' .OR. TRIM( mode ) == 'all' ) THEN
         initial_set = .TRUE.
         CALL SILS_INITIALIZE( FACTORS, CONTROL )
         IF ( TRIM( mode ) == 'initial' ) THEN
@@ -276,7 +274,7 @@
             CALL mexErrMsgTxt( ' There must be a matrix A ' )
           CALL MATLAB_transfer_matrix( a_in, A, col_ptr, .TRUE. )
 
-        IF ( ALLOCATED( col_ptr ) ) DEALLOCATE( col_ptr, STAT = info )
+          IF ( ALLOCATED( col_ptr ) ) DEALLOCATE( col_ptr, STAT = info )
 
 !  Analyse
 

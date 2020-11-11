@@ -1,7 +1,7 @@
 % test galahad_sbls
 % Nick Gould for GALAHAD productions 15/February/2010
 
-clear A H C SA SH SC control inform
+clear A H C SA SH SC b d control inform
 
 m = 4 ;
 n = 10 ;

@@ -1,0 +1,2 @@
+s/GALAHAD_SMT/HSL_ZD11/g
+s/SMT/ZD11/g

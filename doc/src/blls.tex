@@ -87,11 +87,19 @@ must be renamed on one of the {\tt USE} statements.
 When it is explicitly available,
 the coefficient matrix $\bmA$ may be stored in a variety of input formats.
 
-\subsubsection{Dense storage format}\label{dense}
-The matrix $\bmA$ is stored as a compact
-dense matrix by rows, that is, the values of the entries of each row in turn are
+\subsubsection{Dense row-wise storage format}\label{dense-row}
+The matrix $\bmA$ is stored as a compact dense matrix by rows,
+that is, the values of the entries of each row in turn are
 stored in order within an appropriate real one-dimensional array.
 Component $n \ast (i-1) + j$ of the storage array {\tt
+  A\%val} will hold the value $\bmA_{i,j}$ for $i = 1, \ldots , m$, $j =
+1, \ldots , n$.
+
+\subsubsection{Dense column-wise storage format}\label{dense-column}
+The matrix $\bmA$ is stored as a compact
+dense matrix by columns, that is, the values of the entries of each column
+in turn are stored in order within an appropriate real one-dimensional array.
+Component $m \ast (j-1) + i$ of the storage array {\tt
   A\%val} will hold the value $\bmA_{i,j}$ for $i = 1, \ldots , m$, $j =
 1, \ldots , n$.
 
@@ -199,10 +207,13 @@ The following components are used here:
 
 \itt{A\%type} is an allocatable array of rank one and type default
 \character, that
-is used to indicate the storage scheme used. If the dense storage scheme
-(see Section~\ref{dense}) is used,
-the first five components of {\tt A\%type} must contain the
-string {\tt DENSE}.
+is used to indicate the storage scheme used. If the dense row-wise
+storage scheme (see Section~\ref{dense-row}) is used,
+the first thirteen components of {\tt A\%type} must contain the
+string {\tt DENSE\_BY\_ROW}, while if the column-wise scheme
+(see Section~\ref{dense-column}) is used,
+the sixteen components of {\tt A\%type} must contain the
+string {\tt DENSE\_BY\_COLUMN}.
 For the sparse co-ordinate scheme (see Section~\ref{coordinate}),
 the first ten components of {\tt A\%type} must contain the
 string {\tt COORDINATE},
@@ -210,7 +221,7 @@ for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
 the first fourteen components of {\tt A\%type} must contain the
 string {\tt SPARSE\_BY\_ROWS}.
 and for the sparse column-wise storage scheme (see Section~\ref{columnwise}),
-the first fourteen components of {\tt A\%type} must contain the
+the first seventeen components of {\tt A\%type} must contain the
 string {\tt SPARSE\_BY\_COLUMNS}.
 
 For convenience, the procedure {\tt SMT\_put}
@@ -914,8 +925,8 @@ The routine must be specified as
 
 \def\baselinestretch{0.8}
 {\tt \begin{verbatim}
-       SUBROUTINE eval_ASPROD( status, userdata, V, P[, NZ_v, nz_v_start, nz_v_end,     &
-                               NZ_p, nz_p_end] )
+       SUBROUTINE eval_ASPROD( status, userdata, V, P[, NZ_in, nz_in_start, nz_in_end,     &
+                               NZ_out, nz_out_end] )
 \end{verbatim} }
 \def\baselinestretch{1.0}
 \noindent whose arguments are as follows:
@@ -934,54 +945,54 @@ subroutine (see Section~\ref{typeuserdata}).
 \ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmv$.
 If components
-{\tt nz\_v\_start},
-{\tt nz\_v\_end}
+{\tt nz\_in\_start},
+{\tt nz\_in\_end}
 and
-{\tt NZ\_v}
+{\tt NZ\_in}
 (see below) are \present,
-only components {\tt NZ\_v(nz\_v\_start:nz\_v\_end)} of {\tt V}
+only components {\tt NZ\_in(nz\_in\_start:nz\_in\_end)} of {\tt V}
 will be nonzero and the remaining components of {\tt V} should be
 ignored. Otherwise, all components of {\tt V} should be presumed to be nonzero.
 
 \ittf{P} is a rank-one \intentout\ array argument of type default \realdp\
 whose components on output contain the required components of $\bmA \bmv$.
 If components
-{\tt nz\_p\_end}
+{\tt nz\_out\_end}
 and
-{\tt NZ\_p}
+{\tt NZ\_out}
 (see below) are \present,
-only the nonzero components {\tt NZ\_p(1:nz\_p\_end)} of {\tt P}
+only the nonzero components {\tt NZ\_out(1:nz\_out\_end)} of {\tt P}
 need be assigned.
 Otherwise, all components of {\tt P} must be set.
 
-\itt{nz\_v\_start} is an \optional\ scalar variable of type default \integer,
-that, if \present, holds the starting position in {\tt NZ\_v}
+\itt{nz\_in\_start} is an \optional\ scalar variable of type default \integer,
+that, if \present, holds the starting position in {\tt NZ\_in}
 of the list of indices of nonzero components of $\bmv$.
 
-\itt{nz\_v\_end} is an \optional\ scalar variable of type default \integer,
-that, if \present, holds the finishing position in {\tt NZ\_v}
+\itt{nz\_in\_end} is an \optional\ scalar variable of type default \integer,
+that, if \present, holds the finishing position in {\tt NZ\_in}
 of the list of indices of nonzero components of $\bmv$.
 
-\itt{NZ\_v} is an \optional\  rank-one allocatable array of dimension $n$
+\itt{NZ\_in} is an \optional\  rank-one allocatable array of dimension $n$
 and type default \integer that, if \present, holds the indices of the
 nonzero components of $\bmv$. If any of
-{\tt nz\_v\_start},
-{\tt nz\_v\_end}
+{\tt nz\_in\_start},
+{\tt nz\_in\_end}
 and
-{\tt NZ\_v}
+{\tt NZ\_in}
 are absent, all components of {\tt V} are assumed to be nonzero.
 
-\itt{nz\_p\_end} is an \optional\ scalar variable of type default \integer
+\itt{nz\_out\_end} is an \optional\ scalar variable of type default \integer
 that, if \present, must be set to record the number of non-zeros in
 $\bmA \bmv$.
 
-\itt{NZ\_p} is an \optional\ rank-one allocatable array of dimension $m$
+\itt{NZ\_out} is an \optional\ rank-one allocatable array of dimension $m$
 and type default \integer that, if \present must be set to record the list of
 indices of nonzero components of $\bmA \bmv$.
 If either of
-{\tt nz\_p\_end}
+{\tt nz\_out\_end}
 and
-{\tt NZ\_p}
+{\tt NZ\_out}
 are absent, all components of {\tt P} should be set even if they are zero.
 
 
@@ -1024,13 +1035,13 @@ Possible values of {\tt inform\%status} and the information required are
      matrix-vector product $\bmA \bmv$
      using the vector $\bmv$ whose nonzero components are stored in
      positions
-     {\tt reverse\%NZ\_v(reverse\%nz\_v\_start:reverse\%nz\_v\_end)}
+     {\tt reverse\%NZ\_in(reverse\%nz\_in\_start:reverse\%nz\_in\_end)}
      of \linebreak {\tt reverse\%V}. The remaining components of
      {\tt reverse\%V}
      should be ignored. The nonzero components must occupy positions
-     {\tt reverse\%NZ\_p(1:reverse\%nz\_p\_end)} of {\tt reverse\%P},
+     {\tt reverse\%NZ\_out(1:reverse\%nz\_out\_end)} of {\tt reverse\%P},
      and the components \linebreak
-     {\tt reverse\%NZ\_p} and {\tt reverse\%nz\_p\_end} must be set.
+     {\tt reverse\%NZ\_out} and {\tt reverse\%nz\_out\_end} must be set.
      This return can only happen if {\tt control\%exact\_gcp} is \true.
 
 \end{description}

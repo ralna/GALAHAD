@@ -81,6 +81,10 @@
           INACTIVE            => GALAHAD_INACTIVE,                            &
           ELIMINATED          => GALAHAD_ELIMINATED
 
+!     string funtions
+
+      USE GALAHAD_STRING, ONLY: STRING_upper
+
 !     Exit codes
 
       USE GALAHAD_SYMBOLS,                                                    &
@@ -239,7 +243,7 @@
 !  Convert the string to upper case
 
      DO i = 1, SIZE( array )
-       CALL QPT_upper( array( i : i ) )
+       CALL STRING_upper( array( i : i ) )
      END DO
 
 !  Check to see if the string is an appropriate keyword
@@ -319,7 +323,7 @@
 !  Convert the string to upper case
 
      DO i = 1, SIZE( array )
-       CALL QPT_upper( array( i : i ) )
+       CALL STRING_upper( array( i : i ) )
      END DO
 
 !  Check to see if the string is an appropriate keyword
@@ -334,7 +338,7 @@
 
      END SUBROUTINE QPT_put_A
 
-!-*-*-*-*-*-*-*-*-   Q P T _ k e y w o r d _ A   F U N C T I O N  -*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-   Q P T _ k e y w o r d _ A   F U N C T I O N  -*-*-*-*-*-*-
 
      FUNCTION QPT_keyword_A( array )
      LOGICAL :: QPT_keyword_A
@@ -349,7 +353,8 @@
 
 !  Keyword known
 
-     CASE( 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' )
+     CASE( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',                       &
+           'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS', 'COORDINATE' )
        QPT_keyword_A = .TRUE.
 
 !  Keyword unknown
@@ -363,44 +368,6 @@
 !  End of QPT_keyword_A
 
      END FUNCTION QPT_keyword_A
-
-!-*-*-*-*-*-*-*-*-   Q P T _ u p p e r   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
-
-     SUBROUTINE QPT_upper( string )
-
-!  Convert a character variable from lower to upper case
-
-!  Dummy arguments
-
-     CHARACTER, INTENT( INOUT ), DIMENSION( 1 ) :: string
-
-!  Local variables
-
-     INTEGER :: letter
-     CHARACTER, DIMENSION( 26 ) :: LOWER, UPPER
-
-     DATA LOWER / 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',          &
-                  'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',          &
-                  'u', 'v', 'w', 'x', 'y', 'z' /
-     DATA UPPER / 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',          &
-                  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',          &
-                  'U', 'V', 'W', 'X', 'Y', 'Z' /
-
-!  See if the current letter is lower case. If so replace it by its
-!  upper case counterpart
-
-     DO letter = 1, 26
-       IF ( string( 1 ) == LOWER( letter ) ) THEN
-         string( 1 ) = UPPER( letter )
-         EXIT
-       END IF
-     END DO
-
-     RETURN
-
-!  End of subroutine QPT_upper
-
-     END SUBROUTINE QPT_upper
 
 !===============================================================================
 

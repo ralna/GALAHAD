@@ -1025,6 +1025,7 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\galerrspral}{-72}
 \newcommand{\galerrrepeated}{-73}
 \newcommand{\galerreval}{-78}
+\newcommand{\galerroptional}{-79}
 \newcommand{\galerralive}{-82}
 
 \endinput

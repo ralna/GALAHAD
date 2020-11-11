@@ -184,9 +184,9 @@ specfile:
 sort:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             sort.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
-ssids_dum:
-	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ssids_dum_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+#ssids_dum:
+#	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+#            ssids_dum_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 sils:
 	( cd ../sils ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             sils_silent PRECIS=$(PRECIS) PWD=$(PWD)/../sils )

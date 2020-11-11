@@ -836,9 +836,9 @@ test_lstr_nocutest_double: lstrdt
 lsrt_cutest_silent: lsrt_cutest_$(PRECIS)
 lsrt_cutest: lsrt_cutest_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: LSRT ($(PRECIS) $(SUCC_CUTEST)"
-lsrt_cutest_single: $(SLSRT)
+lsrt_cutest_single: $(LSRTOBJECTSS_CUTEST)
 	$(RANLIB) $(LGS)
-lsrt_cutest_double: $(DLSRT)
+lsrt_cutest_double: $(LSRTOBJECTSD_CUTEST)
 	$(RANLIB) $(LGD)
 
 lsrt_silent: lsrt_silent_$(PRECIS)
@@ -887,9 +887,9 @@ test_lsrt_nocutest_double: lsrtdt
 l2rt_cutest_silent: l2rt_cutest_$(PRECIS)
 l2rt_cutest: l2rt_cutest_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: L2RT ($(PRECIS) $(SUCC_CUTEST)"
-l2rt_cutest_single: $(SL2RT)
+l2rt_cutest_single: $(L2RTOBJECTSS_CUTEST)
 	$(RANLIB) $(LGS)
-l2rt_cutest_double: $(DL2RT)
+l2rt_cutest_double: $(L2RTOBJECTSD_CUTEST)
 	$(RANLIB) $(LGD)
 
 l2rt_silent: l2rt_silent_$(PRECIS)
@@ -1972,6 +1972,7 @@ $(OBJ)/runglrt_sif.o: ../glrt/runglrt_sif.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "runglrt_sif"
 	$(SED) -f $(SEDS) ../glrt/runglrt_sif.f90 > $(OBJ)/runglrt_sif.f90
 	cd $(OBJ); $(FORTRAN) -o runglrt_sif.o $(FFLAGSS) runglrt_sif.f90
+	cd $(OBJ); ls -l runglrt_sif.o
 	rm $(OBJ)/runglrt_sif.f90
 	@printf '[ OK ]\n'
 
