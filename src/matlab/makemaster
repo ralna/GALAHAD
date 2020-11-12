@@ -1207,7 +1207,8 @@ $(MLG)(galahad_wcp_matlab_types.o): galahad_wcp_matlab_types.F90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning generated mex files"
-	$(RM) $(MLG) ./*.mexglx ./*.mexa64
+	$(RM) $(MLG) ./*.mexglx ./*.mexa64 $(OBJ)/libgalahad_matlab.a \
+          $(MOD)/*matlab*
 	@printf '[ OK ]\n'
 
 cleanall:

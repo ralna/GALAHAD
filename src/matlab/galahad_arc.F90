@@ -130,7 +130,6 @@
       LOGICAL :: mxIsChar, mxIsStruct
       mwSize :: mxGetString, mxIsNumeric
       mwPointer :: mxGetPr, mxGetM, mxGetN, mxCreateDoubleMatrix
-      mwPointer :: mxGetDimensions
       INTEGER :: mexCallMATLABWithTrap
 
       INTEGER ::  mexPrintf
@@ -142,23 +141,24 @@
 
       INTEGER :: i, info
       INTEGER * 4 :: i4, n, alloc_stat
+      INTEGER, PARAMETER :: int4 = KIND( i4 )
+
       mwSize :: x0_arg, ef_arg, eg_arg, eh_arg, pat_arg, con_arg, c_arg
       mwSize :: x_arg, i_arg, s_len
 
-      mwPointer :: x0_in, ef_in, eg_in, eh_in, pat_in, con_in
-      mwPointer :: x0_pr, ef_pr, eg_pr, eh_pr, pat_pr, con_pr
+      mwPointer :: x0_in, pat_in, con_in, x0_pr, pat_pr
 
       mwPointer input_x( 1 ), output_f( 2 ), output_g( 2 ), output_h( 2 )
       mwPointer :: x_pr, s_in, s_pr, f_in, f_pr, g_in, g_pr, h_in, h_pr
       mwSize :: status
-      mwSize :: m_mwsize, n_mwsize, nn
+      mwSize :: m_mwsize, n_mwsize
 
       CHARACTER ( len = 80 ) :: output_unit, filename
-      CHARACTER ( len = 80 ) :: debug = REPEAT( ' ', 80 )
+!     CHARACTER ( len = 80 ) :: debug = REPEAT( ' ', 80 )
       CHARACTER ( len = 80 ) :: eval_f = REPEAT( ' ', 80 )
       CHARACTER ( len = 80 ) :: eval_g = REPEAT( ' ', 80 )
       CHARACTER ( len = 80 ) :: eval_h = REPEAT( ' ', 80 )
-      LOGICAL :: filexx, opened, file_exists, initial_set = .FALSE.
+      LOGICAL :: opened, file_exists, initial_set = .FALSE.
       INTEGER :: iores
       CHARACTER ( len = 8 ) :: mode
       TYPE ( ARC_pointer_type ) :: ARC_pointer
@@ -323,7 +323,7 @@
 !  find the number of variables
 
         x0_in = prhs( x0_arg )
-        n = mxGetN( x0_in ) ; nlp%n = n
+        n = INT( mxGetN( x0_in ), KIND = int4 ) ; nlp%n = n
 
 !  allocate space for the solution
 
@@ -339,7 +339,7 @@
 
         IF ( pat_arg > 0 ) THEN
           pat_in = prhs( pat_arg )
-          nlp%H%ne = mxGetM( pat_in )
+          nlp%H%ne = INT( mxGetM( pat_in ), KIND = int4 )
           IF ( mxIsNumeric( pat_in ) == 0 )                                    &
             CALL mexErrMsgTxt( ' There must be a matrix H ' )
 
@@ -357,8 +357,8 @@
           ALLOCATE( nlp%H%row( nlp%H%ne ), nlp%H%col( nlp%H%ne ),              &
                     STAT = alloc_stat )
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
-          nlp%H%row( : nlp%H%ne ) = INT( IW( : nlp%H%ne ) )
-          nlp%H%col( : nlp%H%ne ) = INT( IW( nlp%H%ne + 1 : ) )
+          nlp%H%row( : nlp%H%ne ) = INT( IW( : nlp%H%ne ), KIND = int4 ) 
+          nlp%H%col( : nlp%H%ne ) = INT( IW( nlp%H%ne + 1 : ), KIND = int4 ) 
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' deallocation failure ' )
           ALLOCATE( nlp%H%val( nlp%H%ne ), STAT = alloc_stat )
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
@@ -366,7 +366,7 @@
 !  the Hessian is dense
 
         ELSE
-          nlp%H%ne = ( n * ( n + 1 ) ) / 2
+          nlp%H%ne = INT( ( n * ( n + 1 ) ) / 2, KIND = int4 )
           CALL SMT_put( nlp%H%type, 'DENSE', alloc_stat )
           ALLOCATE( nlp%H%val( nlp%H%ne ), STAT = alloc_stat )
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )

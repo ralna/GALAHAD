@@ -28,17 +28,39 @@ end
 %H = H + 1.1 * eye(10);
 
 [ control ] = galahad_qp( 'initial' );
+%control.print_level = 1;
+%control.quadratic_programming_solver = 'qpb';
 %control.QPC_control.QPB_control.SBLS_control.preconditioner = 5 ;
 %control.QPB_control.SBLS_control.preconditioner = 5 ;
 
-fprintf('solve dense example \n')
+fprintf('solve dense nonconvex example \n')
 [ x, inform, aux ] = galahad_qp( H, g, f, A, c_l, c_u, x_l, x_u, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - qp: optimal f =', inform.obj, '- status =', inform.status ) )
 
-fprintf('solve sparse example \n')
+fprintf('solve sparse nonconvex example \n')
 SH = sparse(H) ;
 SA = sparse(A) ;
 [ x, inform, aux ] = galahad_qp( SH, g, f, SA, c_l, c_u, x_l, x_u, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - qp: optimal f =', inform.obj, '- status =', inform.status ) )
+
+for i = 1:n
+ H(i,i) = i ;
+end
+
+control.quadratic_programming_solver = 'ccqp';
+%control.QPC_control.QPB_control.SBLS_control.preconditioner = 5 ;
+%control.QPB_control.SBLS_control.preconditioner = 5 ;
+
+fprintf('solve dense convex example \n')
+[ x, inform, aux ] = galahad_qp( H, g, f, A, c_l, c_u, x_l, x_u, control ) ;
+disp( sprintf( '%s %13.6e %s %2.0f', ...
+  ' - qp: optimal f =', inform.obj, '- status =', inform.status ) )
+
+fprintf('solve sparse convex example \n')
+SH = sparse(H) ;
+SA = sparse(A) ;
+[ x, inform, aux ] = galahad_qp( SH, g, f, SA, c_l, c_u, x_l, x_u, control ) ;
+disp( sprintf( '%s %13.6e %s %2.0f', ...
+  ' - qp: optimal f =', inform.obj, '- status =', inform.status ) )

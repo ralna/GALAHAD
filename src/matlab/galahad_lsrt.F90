@@ -112,7 +112,7 @@
       mwPointer :: x_pr, obj_pr, b_pr, p_pr, sigma_pr
 
       CHARACTER ( len = 80 ) :: output_unit, filename
-      LOGICAL :: filexx, opened, initial_set = .FALSE.
+      LOGICAL :: opened, initial_set = .FALSE.
       LOGICAL * 4 :: true = .TRUE.
       INTEGER :: iores
 

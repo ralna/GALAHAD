@@ -18,10 +18,10 @@ A(1,1:n) = 1.0 ;
 fprintf('solve dense example \n')
 [ x, inform ] = galahad_sils( A, b, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - |||Ax-b|| =', norm(A*x - b), '- status =', inform.flag ) )
+  ' - sils: ||Ax-b|| =', norm(A*x - b), '- status =', inform.flag ) )
 
 fprintf('solve sparse example \n')
 SA = sparse(A) ;
 [ x, inform ] = galahad_sils( SA, b, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - |||Ax-b|| =', norm(A*x - b), '- status =', inform.flag ) )
+  ' - sils: ||Ax-b|| =', norm(A*x - b), '- status =', inform.flag ) )

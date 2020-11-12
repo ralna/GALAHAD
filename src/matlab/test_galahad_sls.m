@@ -18,13 +18,13 @@ A(1,1:n) = 1.0 ;
 fprintf('solve dense example \n')
 [ x, inform ] = galahad_sls( A, b, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - |||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
+  ' - sls: ||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
 
 fprintf('solve sparse example \n')
 SA = sparse(A) ;
 [ x, inform ] = galahad_sls( SA, b, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - |||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
+  ' - sls: ||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
 
 fprintf('sophisticated calls \n')
 
@@ -34,14 +34,14 @@ fprintf('sophisticated calls \n')
 [ inform ] = galahad_sls( 'final' ) ;
 
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - |||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
+  ' - sls: ||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
 
 %fprintf('different solver \n')
 %[ x, inform ] = galahad_sls( A, b, control, 'ma57' ) ;
 %control.ordering=0;
 %[ x, inform ] = galahad_sls( A, b, control, 'ma97' ) ;
 %disp( sprintf( '%s %13.6e %s %2.0f', ...
-%  ' - |||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
+%  ' - sls: ||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
 
 %fprintf('different solver - ma57\n')
 
@@ -51,7 +51,7 @@ disp( sprintf( '%s %13.6e %s %2.0f', ...
 %[ inform ] = galahad_sls( 'final' ) ;
 
 %disp( sprintf( '%s %13.6e %s %2.0f', ...
-%  ' - |||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
+%  ' - sls: ||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
 
 %fprintf('different solver - ma97\n')
 
@@ -61,5 +61,5 @@ disp( sprintf( '%s %13.6e %s %2.0f', ...
 %[ inform ] = galahad_sls( 'final' ) ;
 
 %disp( sprintf( '%s %13.6e %s %2.0f', ...
-%  ' - |||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
-fprintf('end of test \n')
+%  ' - sls: ||Ax-b|| =', norm(A*x - b), '- status =', inform.status ) )
+%fprintf('end of test \n')

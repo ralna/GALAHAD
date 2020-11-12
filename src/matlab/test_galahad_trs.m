@@ -24,10 +24,10 @@ end
 fprintf('solve dense examples \n')
 [ x, inform ] = galahad_trs( H, c, f, radius, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - trs: optimal f =', inform.obj, '- status =', inform.status ) )
 [ x, inform ] = galahad_trs( H, c, f, radius, control, M ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - trs: optimal f =', inform.obj, '- status =', inform.status ) )
 
 m = 2 ;
 for i = 1:m
@@ -37,7 +37,7 @@ for i = 1:m
 end
 [ x, inform ] = galahad_trs( H, c, f, radius, control, M, A ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - trs: optimal f =', inform.obj, '- status =', inform.status ) )
 
 fprintf('solve sparse examples \n')
 SH = sparse(H) ;
@@ -45,11 +45,11 @@ SA = sparse(A) ;
 SM = sparse(M) ;
 [ x, inform ] = galahad_trs( SH, c, f, radius, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - trs: optimal f =', inform.obj, '- status =', inform.status ) )
 [ x, inform ] = galahad_trs( SH, c, f, radius, control, SM ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - trs: optimal f =', inform.obj, '- status =', inform.status ) )
 
 [ x, inform ] = galahad_trs( SH, c, f, radius, control, SM, SA ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - trs: optimal f =', inform.obj, '- status =', inform.status ) )

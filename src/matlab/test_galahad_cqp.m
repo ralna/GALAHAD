@@ -36,7 +36,7 @@ control.out = 6 ;
 [ x, inform, aux ] = galahad_cqp( H, g, f, A, c_l, c_u, x_l, x_u, ...
                                   control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - cqp: optimal f =', inform.obj, '- status =', inform.status ) )
 
 %  solve the sparse system
 
@@ -50,5 +50,5 @@ control.print_level = 0 ;
 [ x, inform, aux ] = galahad_cqp( 'existing', H, g, f, A, c_l, c_u, ...
                                   x_l, x_u, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - cqp: optimal f =', inform.obj, '- status =', inform.status ) )
 galahad_cqp( 'final' )

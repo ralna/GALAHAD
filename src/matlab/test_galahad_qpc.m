@@ -30,7 +30,7 @@ fprintf('solve dense example \n')
 [ x, inform, aux ] = galahad_qpc( H, g, f, A, c_l, c_u, x_l, x_u, ...
                                   control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - qpc: optimal f =', inform.obj, '- status =', inform.status ) )
 galahad_qpc( 'final' )
 
 fprintf('solve sparse example \n')
@@ -41,5 +41,5 @@ control.QPB_control.print_level = 0;
 [ x, inform, aux ] = galahad_qpc( SH, g, f, SA, c_l, c_u, x_l, x_u, ...
                                   control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - qpc: optimal f =', inform.obj, '- status =', inform.status ) )
 galahad_qpc( 'final' )

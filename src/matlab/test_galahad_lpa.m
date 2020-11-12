@@ -1,5 +1,5 @@
-% test galahad_lpb
-% Nick Gould for GALAHAD productions 09/August/2018
+% test galahad_lpa
+% Nick Gould for GALAHAD productions 12/November/2020
 
 clear A SA control inform
 
@@ -22,25 +22,25 @@ for i = 1:n
  x_u(i) =  inf;
 end
 
-[ control ] = galahad_lpb( 'initial' ) ;
+[ control ] = galahad_lpa( 'initial' ) ;
 
 %control
 
-control.SBLS_control.definite_linear_solver = 'ma57' ;
+%control.SBLS_control.definite_linear_solver = 'ma57' ;
 %control.SBLS_control.out = 6 ;
 %control.SBLS_control.print_level = 1 ;
 control.out = 6 ;
 control.print_level = 0 ;
 
 fprintf('solve dense example \n')
-[ x, inform, aux ] = galahad_lpb( g, f, A, c_l, c_u, x_l, x_u, control ) ;
+[ x, inform, aux ] = galahad_lpa( g, f, A, c_l, c_u, x_l, x_u, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - lpb: optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - lpa: optimal f =', inform.obj, '- status =', inform.status ) )
 
 fprintf('solve sparse example \n')
 SA = sparse(A) ;
-[ x, inform, aux ] = galahad_lpb( g, f, SA, c_l, c_u, x_l, x_u, control ) ;
+[ x, inform, aux ] = galahad_lpa( g, f, SA, c_l, c_u, x_l, x_u, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - lpb: optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - lpa: optimal f =', inform.obj, '- status =', inform.status ) )
 
 galahad_lpa( 'final' )

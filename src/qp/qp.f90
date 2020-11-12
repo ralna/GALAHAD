@@ -151,7 +151,7 @@
 !   qpa, qpb, qpc, cqp, dqp, ccqp
 
         CHARACTER ( LEN = 30 ) :: quadratic_programming_solver =               &
-           "ccqp" // REPEAT( ' ', 26 )
+           "qpc" // REPEAT( ' ', 27 )
 
 !  name of generated SIF file containing input problem
 

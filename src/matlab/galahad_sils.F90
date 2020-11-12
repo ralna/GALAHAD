@@ -87,7 +87,7 @@
       INTEGER * 4 :: nlhs, nrhs
       mwPointer :: plhs( * ), prhs( * )
 
-      INTEGER, PARAMETER :: slen = 30
+!     INTEGER, PARAMETER :: slen = 30
       LOGICAL :: mxIsStruct, mxIsChar
       mwSize :: mxGetString
       mwSize :: mxGetM, mxGetN
@@ -101,10 +101,10 @@
 
 !  local variables
 
-      INTEGER * 4 :: n, nb, info, i4
+      INTEGER * 4 :: n, nb, info
       mwSize :: a_arg, b_arg, c_arg, x_arg, i_arg, k
       mwPointer :: a_in, b_in, c_in, rhs_in, x_pr
-      mwSize :: s_len
+!     mwSize :: s_len
 
       CHARACTER ( len = 80 ) :: output_unit, filename
       LOGICAL :: filexx, opened, initial_set = .FALSE.
@@ -133,7 +133,7 @@
 
       IF ( mxIsChar( prhs( 1 ) ) ) THEN
         k = 7
-        info = mxGetString( prhs( 1 ), mode, k )
+        info = INT( mxGetString( prhs( 1 ), mode, k ), KIND = KIND( info ) )
         IF ( .NOT. ( TRIM( mode ) == 'initial' .OR.                            &
                      TRIM( mode ) == 'final' ) ) THEN
           IF ( nrhs < 2 )                                                      &
@@ -200,12 +200,13 @@
 
 !  If the third argument is present, extract the input control data
 
-        s_len = slen
+!       s_len = slen
         IF ( nrhs == c_arg ) THEN
           c_in = prhs( c_arg )
           IF ( .NOT. mxIsStruct( c_in ) )                                      &
             CALL mexErrMsgTxt( ' last input argument must be a structure' )
-          CALL SILS_matlab_control_set( c_in, control, s_len )
+!         CALL SILS_matlab_control_set( c_in, control, s_len )
+          CALL SILS_matlab_control_set( c_in, control )
         END IF
 
 !  Open i/o units
@@ -320,11 +321,11 @@
 
  !  Allocate space for the right-hand side and solution
 
-          n = mxGetM( b_in )
+          n = INT( mxGetM( b_in ), KIND = KIND( n ) )
           IF ( A%n /= n )                                                      &
             CALL mexErrMsgTxt( ' A and b/B must have compatible dimensions ' )
 
-          nb = mxGetN( b_in )
+          nb = INT( mxGetN( b_in ), KIND = KIND( nb ) )
           rhs_in = mxGetPr( b_in )
 
 !  one right-hand side
@@ -365,7 +366,8 @@
            REWIND( control%mp, err = 500 )
             DO
               READ( control%mp, "( A )", end = 500 ) str
-              info = mexPrintf( TRIM( str ) // ACHAR( 10 ) )
+              info = INT( mexPrintf( TRIM( str ) // ACHAR( 10 ) ),             &
+                          KIND = KIND( info ) )
             END DO
           END IF
    500   CONTINUE

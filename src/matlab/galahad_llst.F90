@@ -115,7 +115,7 @@
       mwPointer :: x_pr, obj_pr, b_pr, radius_pr
 
       CHARACTER ( len = 80 ) :: output_unit, filename
-      LOGICAL :: filexx, opened, initial_set = .FALSE.
+      LOGICAL :: opened, initial_set = .FALSE.
       INTEGER :: iores
 
       CHARACTER ( len = 8 ) :: mode

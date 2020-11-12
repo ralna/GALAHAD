@@ -27,10 +27,10 @@ control.IR_control.acceptable_residual_absolute = 0.9 ;
 fprintf('solve dense examples \n')
 [ x, inform ] = galahad_rqs( H, c, f, p, sigma, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - rqs: optimal f =', inform.obj, '- status =', inform.status ) )
 [ x, inform ] = galahad_rqs( H, c, f, p, sigma, control, M ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - rqs: optimal f =', inform.obj, '- status =', inform.status ) )
 
 m = 2 ;
 for i = 1:m
@@ -42,7 +42,7 @@ end
 control.print_level = 0;
 [ x, inform ] = galahad_rqs( H, c, f, p, sigma, control, M, A ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - rqs: optimal f =', inform.obj, '- status =', inform.status ) )
 
 fprintf('solve sparse examples \n')
 SH = sparse(H) ;
@@ -51,12 +51,12 @@ SM = sparse(M) ;
 %control.print_level = 0;
 [ x, inform ] = galahad_rqs( SH, c, f, p, sigma, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - rqs: optimal f =', inform.obj, '- status =', inform.status ) )
 [ x, inform ] = galahad_rqs( SH, c, f, p, sigma, control, SM ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - rqs: optimal f =', inform.obj, '- status =', inform.status ) )
 
 control.print_level = 0;
 [ x, inform ] = galahad_rqs( SH, c, f, p, sigma, control, SM, SA ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - rqs: optimal f =', inform.obj, '- status =', inform.status ) )

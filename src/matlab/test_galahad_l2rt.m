@@ -24,10 +24,10 @@ control.out = 0 ;
 fprintf('solve dense example \n')
 [ x, obj, inform ] = galahad_l2rt( A, b, p, sigma, mu, control );
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', obj, '- status =', inform.status ) )
+  ' - l2rt: optimal f =', obj, '- status =', inform.status ) )
 
 fprintf('solve sparse example \n')
 SA = sparse(A) ;
 [ x, obj, inform ] = galahad_l2rt( SA, b, p, sigma, mu, control );
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', obj, '- status =', inform.status ) )
+  ' - l2rt: optimal f =', obj, '- status =', inform.status ) )

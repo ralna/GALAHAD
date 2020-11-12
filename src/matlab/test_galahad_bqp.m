@@ -21,10 +21,10 @@ control.print_level = 0 ;
 fprintf('solve dense example \n')
 [ x, inform, aux ] = galahad_bqp( H, g, f, x_l, x_u, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - bqp: optimal f =', inform.obj, '- status =', inform.status ) )
 
 fprintf('solve sparse example \n')
 SH = sparse(H) ;
 [ x, inform, aux ] = galahad_bqp( SH, g, f, x_l, x_u, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - bqp: optimal f =', inform.obj, '- status =', inform.status ) )

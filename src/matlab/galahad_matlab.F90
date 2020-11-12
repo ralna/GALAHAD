@@ -71,7 +71,7 @@
       INTEGER * 2 :: dummy_int2__
       INTEGER * 4 :: dummy_int4__
       INTEGER * 8 :: dummy_int8__
-      INTEGER :: dummy_default_integer__
+!     INTEGER :: dummy_default_integer__
       INTEGER, PARAMETER, PUBLIC :: int1_ = KIND( dummy_int1__ )
       INTEGER, PARAMETER, PUBLIC :: int2_ = KIND( dummy_int2__ )
       INTEGER, PARAMETER, PUBLIC :: int4_ = KIND( dummy_int4__ )
@@ -818,7 +818,8 @@
       REAL ( KIND = wp ) :: mxGetScalar
 
       pc = mxGetField( ps, 1_mwi_, name )
-      value = INT( mxGetScalar( pc ) )
+!     value = INT( mxGetScalar( pc ) )
+      value = INT( mxGetScalar( pc ), KIND = KIND( value ) )
 
       RETURN
       END SUBROUTINE galmxGetInteger
@@ -948,7 +949,8 @@
       INTEGER( KIND = int4_ ) :: i
 
       pc = mxGetField( ps, 1_mwi_, name )
-      i = mxGetString( pc, value, len )
+!     i = mxGetString( pc, value, len )
+      i = INT( mxGetString( pc, value, len ), KIND = int4_ )
 
       RETURN
       END SUBROUTINE galmxGetCharacter
@@ -1053,7 +1055,7 @@
       INTEGER :: alloc_stat
       mwIndex, DIMENSION(:), ALLOCATABLE :: temp_mwi
 
-      CHARACTER ( len = 80 ) :: debug = REPEAT( ' ', 80 )
+!     CHARACTER ( len = 80 ) :: debug = REPEAT( ' ', 80 )
 !     CALL mexWarnMsgTxt( ' 44 ' )
 
       nn = n
@@ -1074,7 +1076,8 @@
           CASE default
             CALL mxCopyPtrToInteger4( px, temp_mwi, nn )
           END SELECT
-          Y( : n ) = temp_mwi( : n )
+!         Y( : n ) = temp_mwi( : n )
+          Y( : n ) = INT( temp_mwi( : n ), KIND = KIND( Y ) )
           DEALLOCATE( temp_mwi, STAT = alloc_stat )
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' deallocation failure ' )
         END SELECT
@@ -1208,7 +1211,8 @@
           CASE default
             CALL mxCopyPtrToInteger4( px, temp_mwi, nn )
           END SELECT
-          Y( : n ) = temp_mwi( : n )
+!         Y( : n ) = temp_mwi( : n )
+          Y( : n ) = INT( temp_mwi( : n ), KIND = KIND( Y ) )
           DEALLOCATE( temp_mwi, STAT = alloc_stat )
           IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' deallocation failure ' )
         END SELECT

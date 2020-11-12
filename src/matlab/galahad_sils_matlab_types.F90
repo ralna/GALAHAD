@@ -56,7 +56,8 @@
 
 !-*-*  S I L S _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   *-*-
 
-      SUBROUTINE SILS_matlab_control_set( ps, SILS_contro1, len )
+!     SUBROUTINE SILS_matlab_control_set( ps, SILS_contro1, len )
+      SUBROUTINE SILS_matlab_control_set( ps, SILS_contro1 )
 
 !  --------------------------------------------------------------
 
@@ -71,7 +72,7 @@
 !  --------------------------------------------------------------
 
       mwPointer :: ps
-      mwSize :: len
+!     mwSize :: len
       TYPE ( SILS_control_type ) :: SILS_contro1
 
 !  local variables

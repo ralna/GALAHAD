@@ -141,7 +141,7 @@
       mwPointer :: aux_c_pr, aux_y_pr, aux_z_pr, aux_c_stat_pr, aux_b_stat_pr
 
       CHARACTER ( len = 80 ) :: output_unit, filename
-      LOGICAL :: filexx, opened, solve_lp, initial_set = .FALSE.
+      LOGICAL :: opened, solve_lp, initial_set = .FALSE.
       INTEGER :: iores
 
       CHARACTER ( len = 8 ) :: mode

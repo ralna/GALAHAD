@@ -114,7 +114,7 @@
       mwPointer :: x_pr, y_pr, aux_y_pr
 
       CHARACTER ( len = 80 ) :: output_unit, filename
-      LOGICAL :: filexx, opened, initial_set = .FALSE.
+      LOGICAL :: opened, initial_set = .FALSE.
       INTEGER :: iores
 
       CHARACTER ( len = 20 ) :: message

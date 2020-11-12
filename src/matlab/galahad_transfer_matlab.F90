@@ -30,6 +30,8 @@
 
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
       INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
+      INTEGER * 4, PARAMETER :: i4_1 = 1
+      INTEGER, PARAMETER :: int4 = KIND( i4_1 )
 
     CONTAINS
 
@@ -74,8 +76,8 @@
 
 !  Get the row and column dimensions
 
-      A%m = mxGetM( a_in )
-      A%n = mxGetN( a_in )
+      A%m = INT( mxGetM( a_in ), KIND = int4 )
+      A%n = INT( mxGetN( a_in ), KIND = int4 )
 
       IF ( symmetric .AND. A%m /= A%n )                                        &
         CALL mexErrMsgTxt( ' The matrix must be square ' )
@@ -83,7 +85,7 @@
 !  Set up the structure to hold A in co-ordinate form
 
       IF ( mxIsSparse( a_in ) ) THEN
-        A%ne = mxGetNzmax( a_in )
+        A%ne = INT( mxGetNzmax( a_in ), KIND = int4 )
       ELSE
         A%ne = A%m * A%n
       END IF
@@ -102,7 +104,7 @@
 
 !  allocate temporary workspace
 
-        np1 = A%n + 1
+        np1 = A%n + i4_1
         IF ( ALLOCATED( col_ptr ) ) THEN
           IF ( SIZE( col_ptr ) < np1 ) THEN
             DEALLOCATE( col_ptr, STAT = info )
@@ -139,7 +141,7 @@
         CALL galmxCopyPtrToInteger84( a_cpr_pr, col_ptr, np1, .TRUE. )
 
         col_ptr = col_ptr + 1
-        A%row = A%row + 1
+        A%row = A%row + i4_1
 
 !WRITE(88, "(' n ', I0 )" ) A%n
 !WRITE(88, "(' a_row ', /, 6( 1X,  I11 ) )" ) A%row( :  A%ne )
@@ -156,10 +158,10 @@
 
         DO i = 1, A%n
           DO j = col_ptr( i ), col_ptr( i + 1 ) - 1
-            A%col( j ) = i
+            A%col( j ) = INT( i, KIND = int4 )
           END DO
         END DO
-        A%ne = col_ptr( A%n + 1 ) - 1
+        A%ne = INT( col_ptr( A%n + 1 ) - 1, KIND = int4 )
 
 !  Set the row and column indices if the matrix is dense
 
@@ -168,11 +170,11 @@
         DO j = 1, A%n
           DO i = 1, A%m
             l = l + 1
-            A%row( l ) = i
-            A%col( l ) = j
+            A%row( l ) = INT( i, KIND = int4 )
+            A%col( l ) = INT( j, KIND = int4 )
           END DO
         END DO
-        A%ne = l
+        A%ne = INT( l, KIND = int4 )
       END IF
 
 !  copy the real components of A
@@ -189,12 +191,12 @@
           j = A%col( k )
           IF ( i <= j ) THEN
             l = l + 1
-            A%row( l ) = i
-            A%col( l ) = j
+            A%row( l ) = INT( i, KIND = int4 )
+            A%col( l ) = INT( j, KIND = int4 )
             A%val( l ) = A%val( k )
           END IF
         END DO
-        A%ne = l
+        A%ne = INT( l, KIND = int4 )
       END IF
 
 !  remove zeros
@@ -208,7 +210,7 @@
           A%val( l ) = A%val( k )
         END IF
       END DO
-      A%ne = l
+      A%ne = INT( l, KIND = int4 )
 
 !-------------- more print---------------
 !BACKSPACE(88)

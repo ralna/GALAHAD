@@ -35,7 +35,7 @@ fprintf('solve dense example \n')
 [ x, inform, aux ] = galahad_qpb( H, g, f, A, c_l, c_u, x_l, x_u, ...
                                   control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - qpb: optimal f =', inform.obj, '- status =', inform.status ) )
 galahad_qpb( 'final' )
 
 
@@ -48,5 +48,5 @@ SA = sparse(A) ;
 [ x, inform, aux ] = galahad_qpb( SH, g, f, SA, c_l, c_u, x_l, x_u, ...
                                   control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - qpb: optimal f =', inform.obj, '- status =', inform.status ) )
 galahad_qpb( 'final' )

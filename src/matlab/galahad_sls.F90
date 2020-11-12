@@ -117,17 +117,15 @@
 !  local variables
 
       INTEGER :: i, info
-      INTEGER * 4 :: n, nb, i4, status, alloc_status
+      INTEGER * 4 :: n, nb, status, alloc_status
       mwSize :: s_len
-      mwSize :: h_arg, a_arg, c_arg, b_arg, d_arg, s_arg, co_arg, con_arg
-      mwSize :: x_arg, y_arg, i_arg
+      mwSize :: a_arg, c_arg, s_arg, b_arg, x_arg, i_arg
 
-      mwPointer :: h_in, a_in, c_in, b_in, rhs_in, d_in, s_in
-      mwPointer :: x_pr, y_pr, b_pr, d_pr
+      mwPointer :: a_in, b_in, c_in, rhs_in, x_pr
 
       INTEGER, PARAMETER :: history_max = 100
       CHARACTER ( len = 80 ) :: output_unit, filename
-      LOGICAL :: filexx, opened, initial_set = .FALSE., factorized = .FALSE.
+      LOGICAL :: opened, initial_set = .FALSE., factorized = .FALSE.
       INTEGER :: iores
       CHARACTER ( len = 7 ) :: mode, solver
       TYPE ( SLS_pointer_type ) :: SLS_pointer
@@ -355,11 +353,11 @@
 
  ! allocate space for the right-hand side and solution
 
-        n = mxGetM( b_in )
+        n = INT( mxGetM( b_in ), KIND = KIND( n ) )
         IF ( A%n /= n )                                                        &
           CALL mexErrMsgTxt( ' A and b/B must have compatible dimensions ' )
 
-        nb = mxGetN( b_in )
+        nb = INT( mxGetN( b_in ), KIND = KIND( n ) )
         rhs_in = mxGetPr( b_in )
 
 !  one right-hand side

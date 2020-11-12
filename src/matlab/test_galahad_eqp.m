@@ -28,11 +28,11 @@ control.print_level = 0 ;
 fprintf('solve dense example \n')
 [ x, inform, aux ] = galahad_eqp( H, g, f, A, c, control );
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - eqp: optimal f =', inform.obj, '- status =', inform.status ) )
 
 fprintf('solve sparse example \n')
 SH = sparse(H) ;
 SA = sparse(A) ;
 [ x, inform, aux ] = galahad_eqp( SH, g, f, SA, c, control );
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - eqp: optimal f =', inform.obj, '- status =', inform.status ) )

@@ -37,18 +37,18 @@ control.print_level = 0 ;
 fprintf('solve dense examples \n')
 [ x, inform, aux ] = galahad_lsqp( g, f, A, c_l, c_u, x_l, x_u, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - lsqp: optimal f =', inform.obj, '- status =', inform.status ) )
 [ x, inform, aux ] = galahad_lsqp( g, f, A, c_l, c_u, x_l, x_u, ...
                                    w, x0, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - lsqp: optimal f =', inform.obj, '- status =', inform.status ) )
 
 fprintf('solve sparse examples \n')
 SA = sparse(A) ;
 [ x, inform, aux ] = galahad_lsqp( g, f, SA, c_l, c_u, x_l, x_u, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - lsqp; optimal f =', inform.obj, '- status =', inform.status ) )
 [ x, inform, aux ] = galahad_lsqp( g, f, SA, c_l, c_u, x_l, x_u, ...
                                    w, x0, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', inform.obj, '- status =', inform.status ) )
+  ' - lsqp: optimal f =', inform.obj, '- status =', inform.status ) )

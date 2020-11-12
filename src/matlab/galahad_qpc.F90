@@ -132,7 +132,7 @@
       mwPointer :: aux_c_pr, aux_y_pr, aux_z_pr, aux_c_stat_pr, aux_b_stat_pr
 
       CHARACTER ( len = 80 ) :: output_unit, filename
-      LOGICAL :: filexx, opened, initial_set = .FALSE.
+      LOGICAL :: opened, initial_set = .FALSE.
       INTEGER :: iores
 
       CHARACTER ( len = 8 ) :: mode
@@ -421,7 +421,8 @@
 
         IF ( inform%status < 0 ) THEN
           WRITE( str, "( ' qpc exit status = ', I0 )" ) inform%status
-          i4 = mexPrintf( TRIM( str ) // achar( 10 ) )
+          i4 = INT( mexPrintf( TRIM( str ) // achar( 10 ) ),                   &
+                    KIND = KIND( i4 ) )
           CALL mexErrMsgTxt( ' Call to QPC_solve failed ' )
         END IF
       END IF

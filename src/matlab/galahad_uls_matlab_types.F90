@@ -371,9 +371,9 @@
       TYPE ( ULS_inform_type ) :: ULS_inform
       TYPE ( ULS_pointer_type ) :: ULS_pointer
 
-     INTEGER ::  mexPrintf
-     integer*4 out
-     CHARACTER ( LEN = 200 ) :: str
+!    INTEGER ::  mexPrintf
+!    integer*4 out
+!    CHARACTER ( LEN = 200 ) :: str
 
 !  local variables
 

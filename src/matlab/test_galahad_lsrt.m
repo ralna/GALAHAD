@@ -21,10 +21,10 @@ end
 fprintf('solve dense example \n')
 [ x, obj, inform ] = galahad_lsrt( A, b, p, sigma, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', obj, '- status =', inform.status ) )
+  ' - lsrt: optimal f =', obj, '- status =', inform.status ) )
 
 fprintf('solve sparse example \n')
 SA = sparse(A) ;
 [ x, obj, inform ] = galahad_lsrt( SA, b, p, sigma, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', obj, '- status =', inform.status ) )
+  ' - lsrt: optimal f =', obj, '- status =', inform.status ) )

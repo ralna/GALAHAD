@@ -118,7 +118,7 @@
 
       INTEGER, PARAMETER :: history_max = 100
       CHARACTER ( len = 80 ) :: output_unit, filename
-      LOGICAL :: filexx, opened, initial_set = .FALSE.
+      LOGICAL :: opened, initial_set = .FALSE.
       INTEGER :: iores
       CHARACTER ( len = 8 ) :: mode
       TYPE ( RQS_pointer_type ) :: RQS_pointer

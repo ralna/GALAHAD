@@ -72,9 +72,8 @@
 !  local variables
 
       INTEGER :: j, nfields
-      mwPointer :: pc, mxGetField
+      mwPointer :: pc
       mwSize :: mxGetNumberOfFields
-      LOGICAL :: mxIsStruct
       CHARACTER ( LEN = slen ) :: name, mxGetFieldNameByNumber
 
       nfields = mxGetNumberOfFields( ps )

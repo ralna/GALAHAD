@@ -179,9 +179,9 @@
 
       INTEGER, PARAMETER :: slen = 30
       LOGICAL :: mxIsChar, mxIsStruct
-      mwSize :: mxGetString, mxIsNumeric
-      mwPointer :: mxGetPr, mxGetM, mxGetN, mxCreateDoubleMatrix
-      mwPointer :: mxGetDimensions, mxGetField, mxGetNumberOfElements
+      mwSize :: mxGetString
+      mwPointer :: mxGetPr, mxGetN, mxCreateDoubleMatrix
+      mwPointer :: mxGetField, mxGetNumberOfElements
       INTEGER :: mexCallMATLABWithTrap
       REAL( KIND = wp ) :: mxGetScalar
 
@@ -194,15 +194,15 @@
 
       INTEGER :: i, j, l, info
       INTEGER * 4 :: i4, m, n, nz, nz_col, alloc_stat
+      INTEGER, PARAMETER :: int4 = KIND( i4 )
 
-      mwSize :: status, m_mwsize, n_mwsize, nn
+      mwSize :: status, m_mwsize, n_mwsize
       mwSize :: pat_arg, x0_arg, er_arg, ej_arg, eh_arg, ep_arg, con_arg, c_arg
       mwSize :: x_arg, i_arg, s_len
 
-      mwPointer :: pat_in, x0_in, er_in, ej_in, eh_in, ep_in, con_in
-      mwPointer :: pat_pr, x0_pr, er_pr, ej_pr, eh_pr, ep_pr, con_pr
+      mwPointer :: pat_in, x0_in, con_in, x0_pr
       mwPointer :: m_in, row_in, col_in, w_in
-      mwPointer :: m_pr, nz_pr, w_pr, row_pr, col_pr
+      mwPointer :: w_pr, row_pr, col_pr
 
       mwPointer input_x( 2 )
       mwPointer output_r( 2 ), output_j( 2 ), output_h( 2 ),output_p( 2 )
@@ -216,8 +216,8 @@
       CHARACTER ( len = 80 ) :: eval_j = REPEAT( ' ', 80 )
       CHARACTER ( len = 80 ) :: eval_h = REPEAT( ' ', 80 )
       CHARACTER ( len = 80 ) :: eval_p = REPEAT( ' ', 80 )
-      LOGICAL :: filexx, opened, file_exists, initial_set = .FALSE.
-      LOGICAL :: sparse_j, sparse_h, sparse_p
+      LOGICAL :: opened, file_exists, initial_set = .FALSE.
+      LOGICAL :: sparse_j
       LOGICAL :: debug = .FALSE.
 !     LOGICAL :: debug = .TRUE.
       REAL( KIND = wp ) :: val
@@ -434,7 +434,7 @@
 !  find the number of variables
 
         x0_in = prhs( x0_arg )
-        n = mxGetN( x0_in ) ; nlp%n = n
+        n = INT( mxGetN( x0_in ), KIND = int4 ) ; nlp%n = n
 
 !  allocate space for the solution
 
@@ -452,7 +452,7 @@
         m_in = mxGetField( pat_in, 1, 'm' )
         IF ( m_in /= 0 ) THEN
           val = mxGetScalar( m_in )
-          m = INT( val ) ; nlp%m = m
+          m = INT( val, KIND = int4 ) ; nlp%m = m
         ELSE
           CALL mexErrMsgTxt( ' pattern.m not set on input to galahad_nls')
         END IF
@@ -467,7 +467,7 @@
         w_in = 0
         w_in = mxGetField( pat_in, 1, 'w' )
         IF ( w_in /= 0 ) THEN
-          nz = mxGetNumberOfElements( w_in )
+          nz = INT( mxGetNumberOfElements( w_in ), KIND = int4 )
           IF ( nz < m ) CALL mexErrMsgTxt(                                     &
             ' length of pattern.w must be at least patter.m' //                &
             ' on input to galahad_nls' )
@@ -487,13 +487,13 @@
 
         row_in = mxGetField( pat_in, 1, 'j_row' )
         IF ( row_in /= 0 ) THEN
-          nz = mxGetNumberOfElements( row_in )
+          nz = INT( mxGetNumberOfElements( row_in ), KIND = int4 )
         ELSE
           nz = 0
         END IF
         col_in = mxGetField( pat_in, 1, 'j_col' )
         IF ( col_in /= 0 ) THEN
-          nz_col = mxGetNumberOfElements( col_in )
+          nz_col = INT( mxGetNumberOfElements( col_in ), KIND = int4 )
         ELSE
           nz_col = 0
         END IF
@@ -513,11 +513,11 @@
 
           row_pr = mxGetPr( row_in )
           CALL MATLAB_copy_from_ptr( row_pr, IW, nz )
-          nlp%J%row( : nlp%J%ne ) = INT( IW( : nlp%J%ne ) )
+          nlp%J%row( : nlp%J%ne ) = INT( IW( : nlp%J%ne ), KIND = int4 )
 
           col_pr = mxGetPr( col_in )
           CALL MATLAB_copy_from_ptr( col_pr, IW, nz )
-          nlp%J%col( : nlp%J%ne ) = INT( IW( : nlp%J%ne ) )
+          nlp%J%col( : nlp%J%ne ) = INT( IW( : nlp%J%ne ), KIND = int4 )
 
 !  the Jacobian is dense
 
@@ -534,13 +534,13 @@
         IF ( eh_arg > 0 ) THEN
           row_in = mxGetField( pat_in, 1, 'h_row' )
           IF ( row_in /= 0 ) THEN
-            nz = mxGetNumberOfElements( row_in )
+            nz = INT( mxGetNumberOfElements( row_in ), KIND = int4 )
           ELSE
             nz = 0
           END IF
           col_in = mxGetField( pat_in, 1, 'h_col' )
           IF ( col_in /= 0 ) THEN
-            nz_col = mxGetNumberOfElements( col_in )
+            nz_col = INT( mxGetNumberOfElements( col_in ), KIND = int4 )
           ELSE
             nz_col = 0
           END IF
@@ -562,16 +562,16 @@
 
             row_pr = mxGetPr( row_in )
             CALL MATLAB_copy_from_ptr( row_pr, IW, nz )
-            nlp%H%row( : nlp%H%ne ) = INT( IW( : nlp%H%ne ) )
+            nlp%H%row( : nlp%H%ne ) = INT( IW( : nlp%H%ne ), KIND = int4 )
 
             col_pr = mxGetPr( col_in )
             CALL MATLAB_copy_from_ptr( col_pr, IW, nz )
-            nlp%H%col( : nlp%H%ne ) = INT( IW( : nlp%H%ne ) )
+            nlp%H%col( : nlp%H%ne ) = INT( IW( : nlp%H%ne ), KIND = int4 )
 
 !  the Hessian is dense
 
           ELSE
-            nlp%H%ne = ( n * ( n + 1 ) ) / 2
+            nlp%H%ne = INT( ( n * ( n + 1 ) ) / 2, KIND = int4 )
             CALL SMT_put( nlp%H%type, 'DENSE', alloc_stat )
           END IF
           ALLOCATE( nlp%H%val( nlp%H%ne ), STAT = alloc_stat )
@@ -584,13 +584,13 @@
         IF ( ep_arg > 0 ) THEN
           row_in = mxGetField( pat_in, 1, 'p_row' )
           IF ( row_in /= 0 ) THEN
-            nz = mxGetNumberOfElements( row_in )
+            nz = INT( mxGetNumberOfElements( row_in ), KIND = int4 )
           ELSE
             nz = 0
           END IF
           col_in = mxGetField( pat_in, 1, 'p_col' )
           IF ( col_in /= 0 ) THEN
-            nz_col = mxGetNumberOfElements( col_in )
+            nz_col = INT( mxGetNumberOfElements( col_in ), KIND = int4 )
           ELSE
             nz_col = 0
           END IF
@@ -616,19 +616,19 @@
             DO l = 1, nlp%P%ne
               j = INT( IW( l ) )
               IF ( j > i ) THEN
-                nlp%P%ptr( i + 1 : j ) = l
+                nlp%P%ptr( i + 1 : j ) = INT( l, KIND = int4 )
                 i = j
               ELSE IF ( j < i ) THEN
                 CALL mexErrMsgTxt( '  pattern.p_col not in increasing order' )
               END IF
             END DO
-            nlp%P%ptr( i + 1 : m + 1 ) = nz + 1
+            nlp%P%ptr( i + 1 : m + 1 ) = INT( nz + 1, KIND = int4 )
 
             ALLOCATE( nlp%P%row( nlp%P%ne ), STAT = alloc_stat )
             IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
             row_pr = mxGetPr( row_in )
             CALL MATLAB_copy_from_ptr( row_pr, IW, nz )
-            nlp%P%row( : nlp%P%ne ) = INT( IW( : nlp%P%ne ) )
+            nlp%P%row( : nlp%P%ne ) = INT( IW( : nlp%P%ne ), KIND = int4 )
 
 !  the product matrix is dense
 
@@ -639,11 +639,11 @@
             IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
             l = 0
             DO j = 1, m
-              nlp%P%ptr( j ) = l + 1
-              nlp%P%row( l + 1 : l + n ) = j
+              nlp%P%ptr( j ) = INT( l + 1, KIND = int4 )
+              nlp%P%row( l + 1 : l + n ) = INT( j, KIND = int4 )
               l = l + n
             END DO
-            nlp%P%ptr( m + 1 ) = l + 1
+            nlp%P%ptr( m + 1 ) = INT( l + 1, KIND = int4 )
             CALL SMT_put( nlp%P%type, 'DENSE_BY_COLUMNS', alloc_stat )
           END IF
           ALLOCATE( nlp%P%val( nlp%P%ne ), STAT = alloc_stat )

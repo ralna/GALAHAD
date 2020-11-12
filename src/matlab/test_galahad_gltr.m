@@ -26,12 +26,12 @@ control.print_level = 0 ;
 fprintf('solve dense examples \n')
 [ x, obj, inform ] = galahad_gltr( H, c, f, radius, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', obj, '- status =', inform.status ) )
+  ' - gltr: optimal f =', obj, '- status =', inform.status ) )
 galahad_gltr( 'final' )
 control.unitm = 0 ;
 [ x, obj, inform ] = galahad_gltr( H, c, f, radius, control, M ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', obj, '- status =', inform.status ) )
+  ' - gltr: optimal f =', obj, '- status =', inform.status ) )
 galahad_gltr( 'final' )
 
 fprintf('solve sparse examples \n')
@@ -40,10 +40,10 @@ SM = sparse(M) ;
 control.unitm = 1 ;
 [ x, obj, inform ] = galahad_gltr( SH, c, f, radius, control ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', obj, '- status =', inform.status ) )
+  ' - gltr: optimal f =', obj, '- status =', inform.status ) )
 galahad_gltr( 'final' )
 control.unitm = 0 ;
 [ x, obj, inform ] = galahad_gltr( SH, c, f, radius, control, SM ) ;
 disp( sprintf( '%s %13.6e %s %2.0f', ...
-  ' - optimal f =', obj, '- status =', inform.status ) )
+  ' - gltr: optimal f =', obj, '- status =', inform.status ) )
 galahad_gltr( 'final' )

@@ -105,7 +105,6 @@
 
       INTEGER :: j
       mwPointer :: pc, mxGetField
-      mwSize :: mxGetNumberOfFields
       LOGICAL :: mxIsStruct
       CHARACTER ( LEN = slen ) :: name, mxGetFieldNameByNumber
 
@@ -301,7 +300,7 @@
 
 !  local variables
 
-      INTEGER :: j, nfields
+      INTEGER :: nfields
       mwPointer :: pc, mxGetField
       mwSize :: mxGetNumberOfFields
       LOGICAL :: mxIsStruct
@@ -511,7 +510,6 @@
       mwPointer :: struct
       TYPE ( NLS_control_type ) :: NLS_control
       CHARACTER ( len = * ), OPTIONAL :: name
-      INTEGER :: out
 
 !  local variables
 
@@ -724,8 +722,6 @@
       CHARACTER ( len = * ), OPTIONAL :: name
 
 !  local variables
-
-      mwPointer :: mxCreateStructMatrix
 
       INTEGER * 4, PARAMETER :: ninform = 25
       INTEGER * 4, PARAMETER :: ninformm1 = ninform - 1
