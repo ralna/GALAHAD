@@ -286,9 +286,14 @@ default \realdp, that holds the constant term $\bmb$ in the residuals.
 The $i$-th component of {\tt B}, $i = 1, \ldots, m$, contains $\bmb_{i}$.
 
 \ittf{C} is a rank-one allocatable array of dimension {\tt m} and type
-default \realdp, that holds the residuals $\bmc(\bmx)$
+default \realdp, that holds the residuals, $\bmc(\bmx) = \bmA \bmx - \bmb$,
 at the point $\bmx$. The $i$-th component of
 {\tt C}, $i = 1, \ldots, m$, contains $\bmc_{i}(\bmx)$.
+
+\ittf{G} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp, that holds the gradient of the objective
+ $\bmg(\bmx) = \bmA^T \bmc(\bmx)$, at the point $\bmx$. The $j$-th component of
+{\tt G}, $j = 1, \ldots, n$, contains $\bmg_{j}(\bmx)$.
 
 \ittf{X\_l} is a rank-one allocatable array of dimension {\tt n} and type
 default \realdp, that holds
@@ -713,29 +718,37 @@ eval\_APROD, eval\_ASPROD] )}
 {\tt QPT\_problem\_type}
 (see Section~\ref{typeprob}).
 It is used to hold data about the problem being solved.
-The user must allocate all the array components,
-and set values for all components, except perhaps {\tt prob\%A};
+The user must allocate and set values for the array components,
+and set values for the components 
+{\tt prob\%B}, {\tt prob\%X\_l}, {\tt prob\%X\_u} and {\tt prob\%X}.
+Additionally, the user can provide $\bmA$ by allocating the
+relevant array components and setting values for {\tt prob\%A}
+using whichever
+of the matrix formats described in Section~\ref{galmatrix}
+is appropriate for the user's application;
 if the effect of $\bmA$ and its transpose are only available to form products
 via reverse communication (see {\tt reverse} below)
 or with a pair of user-supplied subroutines (see {\tt eval\_APROD}
-and {\tt eval\_SAPROD} below)
-{\tt prob\%A} and it is not needed, but otherwise {\tt prob\%A} should be
-set using whichever
-of the matrix formats described in Section~\ref{galmatrix}
-is appropriate for $\bmA$ for the user's application.
+and {\tt eval\_ASPROD} below), {\tt prob\%A} is not needed.
 
-The components {\tt prob\%X} and {\tt prob\%Z}
+The components {\tt prob\%X} 
+%and {\tt prob\%Z}
 must be set to initial estimates of the primal variables,
-$\bmx$ and dual variables for the bound constraints, $\bmz$, respectively.
+$\bmx$.
+% and dual variables for the bound constraints, $\bmz$, respectively.
 Inappropriate initial values will be altered, so the user should
 not be overly concerned if suitable values are not apparent, and may be
-content with merely setting {\tt prob\%X=0.0}
-and {\tt prob\%Z=0.0}.
-%The component {\tt prob\%C} need not be set on entry.
+content with merely setting {\tt prob\%X=0.0}.
+%and {\tt prob\%Z=0.0}.
+The components {\tt prob\%C} and {\tt prob\%G} 
+need not be set or allocated on entry.
 
 On exit, the components {\tt prob\%X} and {\tt prob\%Z}
 will contain the best estimates of the primal variables $\bmx$,
 and dual variables for the bound constraints $\bmz$, respectively.
+The components {\tt prob\%C} and {\tt prob\%G}
+will contain the residuals $\bmc(\bmx)$
+and gradients $\bmg(\bmx)$ at $\bmx$, respectively.
 \restrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $> 0$
               and (if $\bmA$ is provided) {\tt prob\%A\%ne} $\geq -2$.
 {\tt prob\%A\_type} $\in \{${\tt 'DENSE'},
@@ -900,16 +913,16 @@ to communicate user-supplied data to and from the subroutines
 
 \itt{transpose} is a scalar \intentin\ array argument of type
 default that will be set \true\ if the product involves the transpose
-of the Jacobian $\bmJ^T(\bmx)$ and \false\ if the product involves
-the Jacobian $\bmJ(\bmx)$ itself.
+of the Jacobian $\bmA^T$ and \false\ if the product involves
+the Jacobian $\bmA$ itself.
 
 \ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmv$.
 
 \ittf{P} is a rank-one \intentinout\ array argument of type default \realdp\
 whose components on input contain the vector $\bmp$ and on output the
-sum $\bmp + \bmJ(\bmx) \bmv$ when {\tt \%transpose} is \false\ or
-$\bmp + \bmJ^T(\bmx) \bmv$ when {\tt \%transpose} is \true.
+sum $\bmp + \bmA \bmv$ when {\tt \%transpose} is \false\ or
+$\bmp + \bmA \bmv$ when {\tt \%transpose} is \true.
 
 \end{description}
 
