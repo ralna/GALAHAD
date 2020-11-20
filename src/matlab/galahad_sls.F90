@@ -92,6 +92,7 @@
       USE GALAHAD_SLS_MATLAB_TYPES
       USE GALAHAD_SPACE_double
       USE GALAHAD_SLS_double
+      USE GALAHAD_SMT_double
       IMPLICIT NONE
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
