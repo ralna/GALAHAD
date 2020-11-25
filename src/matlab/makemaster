@@ -18,9 +18,8 @@ FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(MATLABINC)
 MFFLAGS   = $(MBASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES)
 MFLAGS    = CC='$(CC)' FC='$(FORTRAN)' FFLAGS='$(MFFLAGS) $(OPENMP)' \
             LD='$(FORTRAN) $(MFFLAGS) $(OPENMP)' \
-            -g -largeArrayDims $(MATLABINC) -lgomp
-#            -g -largeArrayDims -compatibleArrayDims $(MATLABINC) -lgomp
-#            -g $(MATLABINC) -lgomp
+            -largeArrayDims $(MATLABINC) $(MOMP)
+#            -g -largeArrayDims -compatibleArrayDims $(MATLABINC) $(MOMP)
 
 #  names of random libraries
 

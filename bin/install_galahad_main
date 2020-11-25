@@ -488,6 +488,7 @@ echo 'OPTIMIZATION = '$OPTIMIZATION                                >> $MAKEFILE
 echo 'NOOPTIMIZATION = '$NOOPTIMIZATION                            >> $MAKEFILE
 echo 'DEBUG = '$DEBUG                                              >> $MAKEFILE
 echo 'OPENMP = '$OPENMP                                            >> $MAKEFILE
+echo 'MOMP = '$MOMP                                                >> $MAKEFILE
 echo 'F77 = '$F77                                                  >> $MAKEFILE
 echo 'F90 = '$F90                                                  >> $MAKEFILE
 echo 'F95 = '$F95                                                  >> $MAKEFILE
