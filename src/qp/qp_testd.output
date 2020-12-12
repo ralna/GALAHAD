@@ -2,23 +2,23 @@
  error exit tests 
 
  3: QP_solve exit status =     -3
- 4: QP_solve exit status =    -83
- 5: QP_solve exit status =    -83
-18: QP_solve exit status =    -83
-19: QP_solve exit status =    -83
-23: QP_solve exit status =    -83
- 7: QP_solve exit status =    -83
+ 4: QP_solve+solver exit status =    -65    -4
+ 5: QP_solve+solver exit status =    -65    -5
+18: QP_solve+solver exit status =    -65   -18
+19: QP_solve+solver exit status =    -65   -19
+23: QP_solve+solver exit status =    -65   -23
+ 7: QP_solve+solver exit status =    -65    -7
 
  basic tests of storage formats 
 
-I1: QP_solve exit status =    -83
-I2: QP_solve exit status =    -83
-D1: QP_solve exit status =    -83
-D2: QP_solve exit status =    -83
-R1: QP_solve exit status =    -83
-R2: QP_solve exit status =    -83
-C1: QP_solve exit status =    -83
-C2: QP_solve exit status =    -83
+I1: optimal objective value =    4.0 status =      0
+I2: optimal objective value =    4.0 status =      0
+D1: optimal objective value =    5.4 status =      0
+D2: optimal objective value =    5.4 status =      0
+R1: optimal objective value =    5.4 status =      0
+R2: optimal objective value =    5.4 status =      0
+C1: optimal objective value =    5.4 status =      0
+C2: optimal objective value =    5.4 status =      0
 
  basic tests of options 
 
@@ -42,23 +42,11 @@ C2: QP_solve exit status =    -83
 17: optimal objective value =    0.3 status =      0
 18: optimal objective value =    0.3 status =      0
 19: optimal objective value =    0.3 status =      0
-
- problem dimensions before preprocessing: 
- n =        2 m =        1 a_ne =        2 h_ne =        2
- problem dimensions after preprocessing: 
- n =        0 m =        0 a_ne =        0 h_ne =        0
-
-    =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-    =                          CCQP total time                        =
-    =                                0.00                             =
-    =    preprocess    analyse    factorize     solve     crossover   =
-    =        0.00        0.00        0.00        0.00        0.00     =
-    =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 20: optimal objective value =    0.3 status =      0
 
  full test of generic problems 
 
- 1: QP_solve exit status =    -83
+ 1: optimal objective value =   80.7 status =      0
  2: optimal objective value =   44.3 status =      0
  3: optimal objective value =   44.3 status =      0
  4: optimal objective value =   28.1 status =      0

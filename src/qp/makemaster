@@ -508,9 +508,11 @@ RRPDST = $(OBJS)/rpdt.o -L$(OBJS) $(LIBS)
 
 BLLSDS = $(BASICS) $(BLLS_double) $(OBJD)/bllss.o
 BLLSDS2 = $(BASICS) $(BLLS_double) $(OBJD)/bllss2.o
+BLLSDS3 = $(BASICS) $(BLLS_double) $(OBJD)/bllss3.o
 BLLSDT = $(BASICS) $(BLLS_double) $(OBJD)/bllst.o
 BLLSSS = $(BASICS) $(BLLS_single) $(OBJS)/bllss.o
 BLLSSS2 = $(BASICS) $(BLLS_single) $(OBJS)/bllss2.o
+BLLSSS3 = $(BASICS) $(BLLS_single) $(OBJS)/bllss3.o
 BLLSST = $(BASICS) $(BLLS_single) $(OBJS)/bllst.o
 
 RBLLSDS = $(OBJD)/bllss.o -L$(OBJD) $(LIBS)
@@ -2515,6 +2517,20 @@ bllsds: $(BLLSDS)
 	cat ../blls/bllsds.output
 	rm ../blls/run_blls
 
+bllsds2: $(BLLSDS2)
+	cd ../blls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_blls $(RBLLSDS2)
+	cd ../blls ; $(RMOOC)
+	- ../blls/run_blls >& ../blls/bllsds2.output
+	cat ../blls/bllsds2.output
+	rm ../blls/run_blls
+
+bllsds3: $(BLLSDS3)
+	cd ../blls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_blls $(RBLLSDS3)
+	cd ../blls ; $(RMOOC)
+	- ../blls/run_blls >& ../blls/bllsds3.output
+	cat ../blls/bllsds3.output
+	rm ../blls/run_blls
+
 bllsds4: $(BLLSDS2)
 	cd ../blls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_blls $(RBLLSDS2)
 	cd ../blls ; $(RMOOC)
@@ -2528,6 +2544,14 @@ blls_debug: $(BASICS) $(BLLS_double)
               debug_blls.f90 -L$(OBJD) $(LIBS)
 	- ../blls/debug_blls
 	rm ../blls/debug_blls
+
+bllsdt: $(BLLSDT)
+	cd ../blls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_blls $(RBLLSDT)
+	cd ../blls ; $(RMOOC)
+	- ../blls/run_blls
+#	- ../blls/run_blls >& ../blls/bllsdt.output
+#	cat ../blls/bllsdt.output
+	rm ../blls/run_blls
 
 bqpds: $(BQPDS)
 	cd ../bqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bqp $(RBQPDS)
@@ -3483,6 +3507,7 @@ $(LG)(blls.o): ../blls/blls.f90
 	$(RMOBFILE) galahad_ampl.o
 	$(RMOBFILE) bllss.o
 	$(RMOBFILE) bllss2.o
+	$(RMOBFILE) bllss3.o
 	$(RMOBFILE) bllst.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
@@ -4639,6 +4664,26 @@ $(OBJ)/bllss2.o: ../blls/bllss2.f90
 	$(SED) -f $(SEDS) ../blls/bllss2.f90 > $(OBJ)/bllss21.f90
 	$(SED) -f $(LSEDS) $(OBJ)/bllss21.f90 > $(OBJ)/bllss2.f90
 	cd $(OBJ) ; $(FORTRAN) -o bllss2.o $(FFLAGS) bllss2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+bllss3.o: $(OBJ)/bllss3.o
+
+$(OBJ)/bllss3.o: ../blls/bllss3.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bllss3  "
+	$(SED) -f $(SEDS) ../blls/bllss3.f90 > $(OBJ)/bllss31.f90
+	$(SED) -f $(LSEDS) $(OBJ)/bllss31.f90 > $(OBJ)/bllss3.f90
+	cd $(OBJ) ; $(FORTRAN) -o bllss3.o $(FFLAGS) bllss3.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+bllst.o: $(OBJ)/bllst.o
+
+$(OBJ)/bllst.o: ../blls/bllst.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "bllst  "
+	$(SED) -f $(SEDS) ../blls/bllst.f90 > $(OBJ)/bllst1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/bllst1.f90 > $(OBJ)/bllst.f90
+	cd $(OBJ) ; $(FORTRAN) -o bllst.o $(FFLAGS) bllst.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 

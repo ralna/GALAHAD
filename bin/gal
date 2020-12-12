@@ -982,6 +982,14 @@ elif [[ $2 == 'glrt' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec glrt update
   [[ ! -e RUNGLRT.SPC ]] && ln -s ~/.galahad/specs/RUNGLRT.SPC RUNGLRT.SPC
 
+# blls
+
+elif [[ $2 == 'blls' ]]; then
+  RUNMAIN=$GALOBJ/runblls_sif.o
+  [[ ! -e ~/.galahad/specs/RUNBLLS.SPC ]] && $GALOBJ/buildspec blls
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec blls update
+  [[ ! -e RUNBLLS.SPC ]] && ln -s ~/.galahad/specs/RUNBLLS.SPC RUNBLLS.SPC
+
 #  lancelot_steering
 
 elif [[ $2 == 'lancelot_steering' ]]; then

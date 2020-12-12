@@ -700,7 +700,7 @@
 !  A is a sparse matrix stored by columns
 
         CASE ( 'SPARSE_BY_COLUMNS' )
-          CALL CONVERT_transpose( A%m, A%n, A%ne, A%ptr, A%row, A%val,         &
+          CALL CONVERT_transpose( A%m, A%n, ne, A%ptr, A%row, A%val,           &
                                   A_out%ptr, A_out%row, A_out%val )
 
 !  A is a sparse matrix stored by its co-ordinates
@@ -774,7 +774,7 @@
 !  A is a sparse matrix stored by rows
 
         CASE ( 'SPARSE_BY_ROWS' )
-          CALL CONVERT_transpose( A%n, A%m, A%ne, A%ptr, A%col, A%val,         &
+          CALL CONVERT_transpose( A%n, A%m, ne, A%ptr, A%col, A%val,           &
                                   A_out%ptr, A_out%row, A_out%val )
 
 !  A is a sparse matrix stored by columns
@@ -1125,7 +1125,7 @@
 !  A is a sparse matrix stored by rows
 
         CASE ( 'SPARSE_BY_ROWS' )
-          CALL CONVERT_transpose( A%n, A%m, A%ne, A%ptr, A%col, A%val,         &
+          CALL CONVERT_transpose( A%n, A%m, ne, A%ptr, A%col, A%val,           &
                                   A_out%ptr, A_out%col, A_out%val )
 
 !  A is a sparse matrix stored by columns
@@ -1213,7 +1213,7 @@
 !  A is a sparse matrix stored by columns
 
         CASE ( 'SPARSE_BY_COLUMNS' )
-          CALL CONVERT_transpose( A%m, A%n, A%ne, A%ptr, A%row, A%val,         &
+          CALL CONVERT_transpose( A%m, A%n, ne, A%ptr, A%row, A%val,           &
                                   A_out%ptr, A_out%col, A_out%val )
 
 !  A is a sparse matrix stored by its co-ordinates

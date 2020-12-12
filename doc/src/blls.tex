@@ -38,7 +38,7 @@ or from a user-provided subroutine.
 {\tt GALAHAD\_SBLS},
 {\tt GALAHAD\_QPT},
 {\tt GALAHAD\_SPECFILE}.
-\galdate November 2009.
+\galdate December 2020.
 \galorigin N. I. M. Gould, Rutherford Appleton Laboratory.
 \gallanguage Fortran~95 + TR 15581 or Fortran~2003.
 
@@ -386,10 +386,36 @@ The default is {\tt print\_gap = 1}.
 maximum number of iterations which will be allowed in \solver.
 The default is {\tt maxit = 1000}.
 
+\itt{cold\_start} is a scalar variable of type default \integer, that
+should be set to 0 if a warm start is required (with variables
+assigned according to {\tt X\_stat}, see below), and to any other value if the
+values given in {\tt prob\%X} suffice.
+The default is {\tt cold\_start = 1}.
+
+\itt{preconditioner} is a scalar variable of type default \integer, that
+specifies the type of preconditioner (scaling) used when computing the
+search direction. Currently this can
+be {\tt 0} (no preconditioner) or {\tt 1} (a diagonal preconditioner
+that normalises the rows of $\bmA$), although other values may be introduced
+in future. The default is {\tt preconditioner = 1}.
+
+\itt{change\_max} is a scalar variable of type default \integer, that
+specifies the maximum number of per-iteration changes in the working set
+permitted when allowing subspace solution rather than steepest descent
+(see \S\ref{galmethod}).
+The default is {\tt change\_max = 2}.
+
 \itt{cg\_maxit} is a scalar variable of type default \integer, that holds the
 maximum number of conjugate-gradient iterations which will be allowed
 per main iteration in \solver.
-The default is {\tt cg\_maxit = 1000}.
+The default is {\tt cg\_maxit = 1000}, and any negative value will
+be interpreted as $n$ + 1.
+
+\itt{arcsearch\_max\_steps} is a scalar variable of type default \integer,
+that specifies the maximum number of steps allowed in an individual
+piecewise arc search.
+The default is {\tt arcsearch\_max\_steps = 1000}, and a negative value
+removes the limit.
 
 \itt{infinity} is a scalar variable of type default \realdp, that is used to
 specify which constraint bounds are infinite.
@@ -437,24 +463,49 @@ and \sloppy {\tt stop\_cg\_absolute =} $\sqrt{u}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
-\itt{zero\_curvature} is a scalar variable of type default \realdp
-that specifies the threshold below which any constraint curvature
-encountered is regarded as zero.
-The default is {\tt zero\_curvature =} $10 u$,
-where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
-{\tt \fullpackagename\_double}).
+\itt{alpha\_max} is a scalar variable of type default \realdp that specifies
+The default is {\tt alpha\_max =} $10^{20}$.
+
+\itt{alpha\_initial} is a scalar variable of type default \realdp that
+specifies the initial arc length during the inexact piecewise arc search.
+The default is {\tt alpha\_initial = 1.0}.
+
+\itt{alpha\_reduction} is a scalar variable of type default \realdp that
+specifies the arc length reduction factor for the inexact piecewise arc search.
+The default is {\tt alpha\_reduction = 0.5}.
+
+\itt{arcsearch\_acceptance\_tol} is a scalar variable of type default \realdp
+that specifies the required relative reduction during the inexact arc search
+The default is {\tt arcsearch\_acceptance\_tol = 0.01}.
+
+\itt{regularization\_weight} is a scalar variable of type default \realdp
+that specifies the regularization weight added to the search-direction
+subproblem to stabilise the computation.
+The default is {\tt regularization\_weight =} $10^{-12}$.
 
 \itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
 that is used to specify the maximum permitted CPU time. Any negative
 value indicates no limit will be imposed. The default is
 {\tt cpu\_time\_limit = - 1.0}.
 
-\itt{exact\_gcp} is a scalar variable of type default \logical, that should
-be set \true\ if the exact generalized Cauchy point,
-the first estimate of the minimizer of the objective in the
-Cauchy direction within
-the feasible box, is required, and \false\ if an approximation suffices.
-The default is {\tt exact\_gcp = \true}.
+\itt{direct\_subproblem\_solve} is a scalar variable of type default \logical,
+that should be set \true\ if the search over a promising subspace is
+carried out using matrix factorization, and \false\ if the conjugate-gradient
+least-squares (CGLS) method is to be preferred. The former is generally
+more effective so long as the cost of factorization isn't exorbitant.
+The default is {\tt direct\_subproblem\_solve = \true}, but the
+package will override this if the Jacobian is not explicitly available.
+
+\itt{exact\_arc\_search} is a scalar variable of type default \logical,
+that should be set \true\ if the exact minimizer along the search arc is
+required, and \false\ if an approximation found by backtracking or
+advancing suffices.
+The default is {\tt exact\_arc\_search = \true}.
+
+\itt{advance} is a scalar variable of type default \logical, that should
+be set \true\ if the approximate arch search is allowed to advance as
+well as backtrack.and \false\ if only backtracking is permitted.
+The default is {\tt advance = \true}.
 
 \itt{space\_critical} is a scalar variable of type default \logical,
 that must be set \true\ if space is critical when allocating arrays
@@ -710,7 +761,7 @@ reverse, %eval\_APROD, eval\_ASPROD] )}
 
 \hspace{37mm}
 {\tt
-eval\_APROD, eval\_ASPROD] )}
+eval\_APROD, eval\_ASPROD, eval\_AFPROD] )}
 
 \vspace*{-3mm}
 \begin{description}
@@ -719,7 +770,7 @@ eval\_APROD, eval\_ASPROD] )}
 (see Section~\ref{typeprob}).
 It is used to hold data about the problem being solved.
 The user must allocate and set values for the array components,
-and set values for the components 
+and set values for the components
 {\tt prob\%B}, {\tt prob\%X\_l}, {\tt prob\%X\_u} and {\tt prob\%X}.
 Additionally, the user can provide $\bmA$ by allocating the
 relevant array components and setting values for {\tt prob\%A}
@@ -731,16 +782,12 @@ via reverse communication (see {\tt reverse} below)
 or with a pair of user-supplied subroutines (see {\tt eval\_APROD}
 and {\tt eval\_ASPROD} below), {\tt prob\%A} is not needed.
 
-The components {\tt prob\%X} 
-%and {\tt prob\%Z}
-must be set to initial estimates of the primal variables,
-$\bmx$.
-% and dual variables for the bound constraints, $\bmz$, respectively.
+The components {\tt prob\%X}
+must be set to initial estimates of the primal variables, $\bmx$.
 Inappropriate initial values will be altered, so the user should
 not be overly concerned if suitable values are not apparent, and may be
 content with merely setting {\tt prob\%X=0.0}.
-%and {\tt prob\%Z=0.0}.
-The components {\tt prob\%C} and {\tt prob\%G} 
+The components {\tt prob\%C}, {\tt prob\%G} and {\tt prob\%Z}
 need not be set or allocated on entry.
 
 On exit, the components {\tt prob\%X} and {\tt prob\%Z}
@@ -752,7 +799,8 @@ and gradients $\bmg(\bmx)$ at $\bmx$, respectively.
 \restrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $> 0$
               and (if $\bmA$ is provided) {\tt prob\%A\%ne} $\geq -2$.
 {\tt prob\%A\_type} $\in \{${\tt 'DENSE'},
- {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'} $\}$.
+ {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'}, {\tt SPARSE\_BY\_COLUMNS}
+$\}$.
 
 \itt{X\_stat} is a rank-one \intentinout\ array argument of dimension {\tt prob\%n}
 and type default \integer, that indicates which of the simple bound
@@ -828,13 +876,28 @@ user-supplied subroutine whose purpose is to evaluate the value of the
 product $\bmA \bmv$  involving the Jacobian and a given {\em sparse}
 vector $\bmv$.
 See Section~\ref{jvps} for details.
-If {\tt eval\_APROD} is present,
+If {\tt eval\_ASPROD} is present,
 it must be declared {\tt EXTERNAL} in the calling program.
-If {\tt eval\_APROD} is absent, \solver\ will use reverse communication
+If {\tt eval\_ASPROD} is absent, \solver\ will use reverse communication
 (see Section~\ref{reverse})
 to obtain Jacobian-sparse-vector products if {\tt reverse} is \present\ or
 otherwise require that the user has provided all relevant
 components of {\tt prob\%A}.
+
+\itt{eval\_AFPROD} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the value of the
+product $\bmA \bmv$ or $\bmA^T v$ involving the Jacobian (and its transpose)
+and a given vector $\bmv$ in which either only some components of $\bmv$ or
+the resulting product are set/required.
+See Section~\ref{jvsp} for details.
+If {\tt eval\_AFPROD} is present,
+it must be declared {\tt EXTERNAL} in the calling program.
+If {\tt eval\_AFPROD} is absent, \solver\ will use reverse communication
+(see Section~\ref{reverse})
+to obtain Jacobian-sparse-vector products if {\tt reverse} is \present\ or
+otherwise require that the user has provided all relevant
+components of {\tt prob\%A}.
+
 
 \end{description}
 
@@ -922,12 +985,12 @@ whose components contain the vector $\bmv$.
 \ittf{P} is a rank-one \intentinout\ array argument of type default \realdp\
 whose components on input contain the vector $\bmp$ and on output the
 sum $\bmp + \bmA \bmv$ when {\tt \%transpose} is \false\ or
-$\bmp + \bmA \bmv$ when {\tt \%transpose} is \true.
+$\bmp + \bmA^T \bmv$ when {\tt \%transpose} is \true.
 
 \end{description}
 
 
-%%%%%%%%%%%%%%%%%%%%%% Hessian-vector products %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% Jacobian-vector products %%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Jacobian-sparse-vector products via internal evaluation\label{jvps}}
 
@@ -986,8 +1049,8 @@ of the list of indices of nonzero components of $\bmv$.
 that, if \present, holds the finishing position in {\tt NZ\_in}
 of the list of indices of nonzero components of $\bmv$.
 
-\itt{NZ\_in} is an \optional\  rank-one allocatable array of dimension $n$
-and type default \integer that, if \present, holds the indices of the
+\itt{NZ\_in} is an \optional\  rank-one array of dimension $n$
+and type default \integer\ that, if \present, holds the indices of the
 nonzero components of $\bmv$. If any of
 {\tt nz\_in\_start},
 {\tt nz\_in\_end}
@@ -995,11 +1058,11 @@ and
 {\tt NZ\_in}
 are absent, all components of {\tt V} are assumed to be nonzero.
 
-\itt{nz\_out\_end} is an \optional\ scalar variable of type default \integer
+\itt{nz\_out\_end} is an \optional\ scalar variable of type default \integer\
 that, if \present, must be set to record the number of non-zeros in
 $\bmA \bmv$.
 
-\itt{NZ\_out} is an \optional\ rank-one allocatable array of dimension $m$
+\itt{NZ\_out} is an \optional\ rank-one array of dimension $m$
 and type default \integer that, if \present must be set to record the list of
 indices of nonzero components of $\bmA \bmv$.
 If either of
@@ -1008,6 +1071,66 @@ and
 {\tt NZ\_out}
 are absent, all components of {\tt P} should be set even if they are zero.
 
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Jacobian-vector products %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Jacobian-vector sub-products via internal evaluation\label{jvsp}}
+
+If the argument {\tt eval\_AFPROD} is present when calling \solver, the
+user is expected to provide a subroutine of that name to evaluate the
+product of the Jacobian $\bmA$, or its transpose, with a given vector $\bmv$.
+Here, either only a subset of the components of the vector $\bmv$ are nonzero,
+or only a subset of the components product $\bmA^T \bmv$ are to required.
+The routine must be specified as
+
+\def\baselinestretch{0.8}
+{\tt \begin{verbatim}
+       SUBROUTINE eval_AFPROD( status, userdata, transpose, V, P, FREE, n_free )
+\end{verbatim} }
+\def\baselinestretch{1.0}
+\noindent whose arguments are as follows:
+
+\begin{description}
+\itt{status} is a scalar \intentout\ argument of type default \integer,
+that should be set to 0 if the routine has been able to evaluate the
+sum $\bmA \bmv$ or $\bmA^T\bmv$
+and to a non-zero value if the evaluation has not been possible.
+
+\itt{userdata} is a scalar \intentinout\ argument of type
+{\tt NLPT\_userdata\_type} whose components may be used
+to communicate user-supplied data to and from the subroutines
+{\tt eval\_APROD}
+(see Section~\ref{typeuserdata}).
+
+\itt{transpose} is a scalar \intentin\ array argument of type
+default that will be set \true\ if the product involves the transpose
+of the Jacobian $\bmA^T$ and \false\ if the product involves
+the Jacobian $\bmA$ itself.
+
+\ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
+whose components contain the vector $\bmv$. If {\tt transpose} is \false\
+only those components whose indices {\tt FREE(:n\_free)} (see below)
+will by set, and the remainder will be presumed to be zero.
+
+\ittf{P} is a rank-one \intentout\ array argument of type default \realdp\
+whose components on output must be set to the
+product $\bmA \bmv$ when {\tt \%transpose} is \false. If
+{\tt \%transpose} is \true, components with indices {\tt FREE(:n\_free)}
+(see below) should be set to the corresponding components of the
+product $\bmA^T \bmv$, and the remaining components ignored.
+
+\itt{FREE} is a rank-one \intentin\ array argument of
+type default \integer\ that flags the input components of $\bmv$ that are set
+(when {\tt transpose} is \false) or output components of $\bmA^T \bmv$ that
+are required (when {\tt transpose} is \true). Specifically, only indices
+{\tt FREE(:n\_free)} of the relevant vector is set or required, and the
+remainder should be treated as zero (if {\tt transpose} is \false)
+or ignored  (if {\tt transpose} is \true).
+
+\itt{n\_free} is a scalar \intentin\ argument of type default \integer,
+that specifies the number of components of {\tt FREE} that need be considered.
 
 \end{description}
 
@@ -1028,35 +1151,60 @@ mentioned below) unchanged.
 Possible values of {\tt inform\%status} and the information required are
 \begin{description}
 
-\ittf{1.} The user should compute ones of the sums $\bmp + \bmA \bmv$
-     or $\bmp + \bmA^T \bmv$ involving the product of the residual
-     Jacobian $\bmA$ or its transpose
+\ittf{2.} The user should compute the product $\bmA \bmv$
+     involving the product of the residual Jacobian, $\bmA$,
      with a given vector $\bmv$.
-     The vectors $\bmp$ and $\bmv$ are given in {\tt data\%P}
-     and {\tt data\%V} respectively.
-     If {\tt data\%transpose} is \false, the resulting
-     vector $\bmp + \bmA \bmv$ should overwrite {\tt data\%P}
-     and  {\tt data\%eval\_status} should be set to 0.
-     Conversely if {\tt data\%transpose} is \true, the resulting
-     vector $\bmp + \bmA^T \bmv$ should overwrite {\tt data\%P}
-     and {\tt data\%eval\_status} set to 0. If the user is
-     unable to evaluate the sum,
-     the user need not set {\tt data\%P}, but
-     should then set {\tt data\%eval\_status} to a non-zero value.
+     The vector $\bmv$ is given in {\tt reverse\%V}, and the
+     product $\bmA \bmv$ should be written to {\tt reverse\%P},
+     and  {\tt reverse\%eval\_status} should be set to 0.
+     If the user is unable to evaluate the product,
+     the user need not set {\tt reverse\%P}, but
+     should then set {\tt reverse\%eval\_status} to a non-zero value.
 
-\ittf{2.} The user should compute the nonzero components of the
-     matrix-vector product $\bmA \bmv$
-     using the vector $\bmv$ whose nonzero components are stored in
-     positions
+\ittf{3.} The user should compute the product $\bmA^T \bmv$
+     involving the product of the transpose of the residual
+     Jacobian, $\bmA$,  with a given vector $\bmv$.
+     The vector $\bmv$ is given in {\tt reverse\%V}, and the
+     product $\bmA^T \bmv$ should be written to {\tt reverse\%P},
+     and  {\tt reverse\%eval\_status} should be set to 0.
+     If the user is unable to evaluate the product,
+     the user need not set {\tt reverse\%P}, but
+     should then set {\tt reverse\%eval\_status} to a non-zero value.
+
+\ittf{4.} The user should compute the matrix-vector product $\bmA \bmv$
+     using the vector $\bmv$ whose nonzero components are stored in positions
+     {\tt reverse\%NZ\_in(reverse\%nz\_in\_start:reverse\%nz\_in\_end)}
+     of {\tt reverse\%V}. The remaining components of
+     {\tt reverse\%V}.
+     The component {\tt reverse\%eval\_status} should set to 0 unless the
+     user is unable to evaluate the product, in which case
+     {\tt reverse\%eval\_status} should be set to a non-zero value, and the
+     remaining components left unaltered.
+
+\ittf{5.} The user should compute the nonzero components of the
+     matrix-vector product $\bmA \bmv$ using the vector $\bmv$ whose
+     nonzero components are stored in positions
      {\tt reverse\%NZ\_in(reverse\%nz\_in\_start:reverse\%nz\_in\_end)}
      of \linebreak {\tt reverse\%V}. The remaining components of
-     {\tt reverse\%V}
-     should be ignored. The nonzero components must occupy positions
+     {\tt reverse\%V} should be ignored. The nonzero components must
+     occupy positions
      {\tt reverse\%NZ\_out(1:reverse\%nz\_out\_end)} of {\tt reverse\%P},
-     and the components \linebreak
+     and the components
      {\tt reverse\%NZ\_out} and {\tt reverse\%nz\_out\_end} must be set.
-     This return can only happen if {\tt control\%exact\_gcp} is \true.
+     The component {\tt reverse\%eval\_status} should set to 0 unless the
+     user is unable to evaluate the product, in which case
+     {\tt reverse\%eval\_status} should be set to a non-zero value, and the
+      remaining components left unaltered.
 
+\ittf{6.} The user should compute the matrix-vector product $\bmA^T \bmv$
+     using the vector $\bmv$ given in {\tt reverse\%V}. The components
+     $(\bmA^T \bmv)_j$ of the product $\bmA^T \bmv$, for
+     {\tt j = reverse\%NZ\_in(reverse\%nz\_in\_start:reverse\%nz\_in\_end)},
+     should be written to {\tt reverse\%P(j)}.
+     The component {\tt reverse\%eval\_status} should set to 0 unless the
+     user is unable to evaluate the product, in which case
+     {\tt reverse\%eval\_status} should be set to a non-zero value, and the
+      remaining components left unaltered.
 \end{description}
 
 
@@ -1092,7 +1240,8 @@ and {\tt inform\%bad\_alloc} respectively.
  {\tt prob\%m} $> 0$
     or the requirement that
     {\tt prob\%A\_type} contain its relevant string
-    {\tt 'DENSE'}, {\tt 'COORDINATE'} or {\tt 'SPARSE\_BY\_ROWS'}
+    {\tt 'DENSE'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}
+    or {\tt SPARSE\_BY\_COLUMNS},
     when $\bmA$ is available,  has been violated.
 
 %\itt{-3.} At least one of the arrays
@@ -1102,8 +1251,8 @@ and {\tt inform\%bad\_alloc} respectively.
 
 \itt{\galerrbadbounds.} The bound constraints are inconsistent.
 
-\itt{\galerrunbounded.} The objective function appears to be unbounded
-  from below on the feasible set.
+%\itt{\galerrunbounded.} The objective function appears to be unbounded
+%  from below on the feasible set.
 
 \itt{\galerranalysis.} The analysis phase of the factorization failed;
   the return status from the factorization
@@ -1113,10 +1262,10 @@ and {\tt inform\%bad\_alloc} respectively.
   from the factorization
     package is given in the component {\tt inform\%fac\-t\-or\_status}.
 
-\itt{\galerrillconditioned.} The problem is so ill-conditioned that
- further progress is impossible.
+%\itt{\galerrillconditioned.} The problem is so ill-conditioned that
+% further progress is impossible.
 
-\itt{\galerrtinystep.} The step is too small to make further impact.
+%\itt{\galerrtinystep.} The step is too small to make further impact.
 
 \itt{\galerrmaxiterations.} Too many iterations have been performed.
    This may happen if
@@ -1252,8 +1401,14 @@ that each affects are given in Table~\ref{specfile}.
   {\tt stop-print} & {\tt \%stop\_print} & integer \\
   {\tt iterations-between-printing} & {\tt \%print\_gap} & integer \\
   {\tt maximum-number-of-iterations} & {\tt \%maxit} & integer \\
+  {\tt cold-start} & {\tt \%cold\_start} & integer \\
+  {\tt preconditioner} & {\tt \%preconditioner } & integer \\
+  {\tt max-change-to-working-set-for-subspace-solution} & {\tt \%change\_max }
+                                                        & integer \\
   {\tt maximum-number-of-cg-iterations-per-iteration} & {\tt \%cg\_maxit}
                                                       & integer \\
+  {\tt maximum-number-of-arcsearch-steps} & {\tt \%arcsearch\_max\_steps}
+                                          & integer \\
   {\tt infinity-value} & {\tt \%infinity} & real \\
   {\tt primal-accuracy-required} & {\tt \%stop\_p} & real \\
   {\tt dual-accuracy-required} & {\tt \%stop\_d} & real \\
@@ -1261,9 +1416,17 @@ that each affects are given in Table~\ref{specfile}.
   {\tt identical-bounds-tolerance} & {\tt \%identical\_bounds\_tol} & real \\
   {\tt cg-relative-accuracy-required} & {\tt \%stop\_cg\_relative} & real \\
   {\tt cg-absolute-accuracy-required} & {\tt \%stop\_cg\_absolute} & real \\
-  {\tt zero-curvature-threshold} & {\tt \%zero\_curvature} & real \\
+
+  {\tt maximum-arcsearch-stepsize} & {\tt \%alpha\_max} & real \\
+  {\tt initial-arcsearch-stepsize} & {\tt \%alpha\_initial} & real \\
+  {\tt arcsearch-reduction-factor} & {\tt \%alpha\_reduction} & real \\
+  {\tt arcsearch-acceptance-tolerance} & {\tt \%arcsearch\_acceptance\_tol}
+                                       & real \\
+  {\tt regularization-weight} & {\tt \%regularization\_weight} & real \\
   {\tt maximum-cpu-time-limit} & {\tt \%cpu\_time\_limit} & real \\
-  {\tt exact-GCP-used} & {\tt \%exact\_gcp} & logical \\
+  {\tt direct-subproblem-solve} & {\tt \%direct\_subproblem\_solve} & logical \\
+  {\tt exact-arc-search-used} & {\tt \%exact\_arc\_search } & logical \\
+  {\tt inexact-arc-search-can-advance} & {\tt \%advance} & logical \\
   {\tt space-critical}   & {\tt \%space\_critical} & logical \\
   {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
   {\tt output-line-prefix} & {\tt \%prefix} & {\tt character} \\
@@ -1330,7 +1493,8 @@ variables and Lagrange multipliers.
  {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
 \galrestrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $> 0$,
 {\tt prob\%A\_type} $\in \{${\tt 'DENSE'},
- {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'} $\}$
+ {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'},
+ {\tt SPARSE\_BY\_COLUMNS} $\}$
 (if $\bmA$ is explicit).
 \galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
 The package is thread-safe.
@@ -1368,12 +1532,25 @@ primal and dual infeasibility, and the violation of complementary slackness,
 respectively.
 
 The method is iterative. Each iteration proceeds in two stages.
-Firstly, the so-called generalized Cauchy point for the least-squares
-objective is found.  (The purpose of this point is to ensure that the
-algorithm converges and that the set of bounds which are satisfied as
-equations at the solution is rapidly identified.)  Thereafter an
-improvement to the objective is sought using either a
-direct-matrix or truncated conjugate-gradient algorithm.
+Firstly, a search direction $\bms$ from the current estimate of the solution
+$\bmx$ is computed. This may be in a scaled steepest-descent direction, or,
+if the working set of variables on bounds has not changed dramatically,
+in a direction that provides an approximate minimizer of the objective
+over a subspace comprising the currently free-variables. The latter is
+computed either using an appropriate sparse factorization by the
+package {\tt GALAHAD\_SBLS}, or by the
+conjugate-gradient least-squares (CGLS) method; tt may be necessary to
+regularize the subproblem very slightly to avoid a ill-posedness.
+Thereafter, a piecewise linesearch (arc search) is carried out along
+the arc $\bmx(\alpha) = P( \bmx + \alpha \bms)$ for $\alpha > 0$,
+where the projection operator
+is defined component-wise at any feasible point $v$ to be
+\disp{P_j(\bmv) = \min( \max( \bmx_j, \bmx_j^{l}), \bmx_j^{u});}
+thus this arc bends the search direction into the feasible region.
+The arc search is performed either exactly, by passing through a set
+of increasing breakpoints at which it changes direction, or inexactly,
+by evaluating a sequence of different $\alpha$  on the arc.
+All computation is designed to exploit sparsity in $\bmA$.
 
 \vspace*{1mm}
 
@@ -1381,34 +1558,37 @@ direct-matrix or truncated conjugate-gradient algorithm.
 \vspace*{1mm}
 
 \noindent
-This is a specialised version of the method presented in
+Full details are provided in
 \vspace*{1mm}
 
 \noindent
-A. R. Conn, N. I. M. Gould and Ph. L. Toint (1988).
-Global convergence of a class of trust region algorithms
-for optimization with simple bounds.
-SIAM Journal on Numerical Analysis {\bf 25} 433-460,
+N. I. M. Gould (2011).
+Numerical methods for solving bound-constrained
+linear least squares problems.
+In preparation.
 
 %%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galexample
 Suppose we wish to minimize
-$\half x_1^2 + x_2^2 + x_2 x_3 + \threehalves x_3^2 + 2 x_2 + 1$
+\disp{
+\half \left\| \vect{x_1 \\ x_1 + x_2 - 2 \\ x_3 - 1 \\ x_3 - 2} \right\|_2^2}
 subject to the simple bounds
-$-1  \leq  x_{1}  \leq  1$ and $x_{3}  \leq  2$.
+$-1  \leq  x_{1}$,
+$x_{2} \leq 1$
+and $0 \leq x_{3}  \leq  2$.
 Then, on writing the data for this problem as
-\disp{\bmH = \mat{ccc}{1 & & \\ & 2 & 1 \\ &  1 & 3}, \;\;
- \bmg = \vect{ 0 \\ 2 \\ 0 }, \;\;
-\bmx^{l} = \vect{ -1 \\ - \infty \\ - \infty } \tim{and}
-\bmx^{u} = \vect{ 1 \\ \infty \\ 2 }}
+\disp{\bmA = \mat{ccc}{1 & & \\ 1 & 1 &   \\ &  & 1 \\ &  & 1}, \;\;
+ \bmb = \vect{ 0 \\ 2 \\ 1  \\ 2}, \;\;
+\bmx^{l} = \vect{ -1 \\ - \infty \\ 0 } \tim{and}
+\bmx^{u} = \vect{ \infty \\ 1 \\ 2 }}
 in sparse co-ordinate format, we may use the following code:
 
 {\tt \small
 \VerbatimInput{\packageexample}
 }
 \noindent
-This produces the following output:
+This produces the following output: \vspace*{-2mm}
 {\tt \small
 \VerbatimInput{\packageresults}
 }
@@ -1427,12 +1607,11 @@ by
 {\tt \small
 \begin{verbatim}
 ! sparse row-wise storage format
-   CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', s )  ! Specify sparse-by-row
-   ALLOCATE( p%H%val( h_ne ), p%H%col( h_ne ), p%H%ptr( n + 1 ) )
+   CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )  ! Specify sparse-by-row
    ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( m + 1 ) )
-   p%H%val = (/ 1.0_wp, 2.0_wp, 1.0_wp, 3.0_wp /) ! Hessian H
-   p%H%col = (/ 1, 2, 3, 3 /)                     ! NB lower triangular
-   p%H%ptr = (/ 1, 2, 3, 5 /)                     ! Set row pointers
+   p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
+   p%A%col = (/ 1, 1, 2, 3, 3 /)                          ! Column indices
+   p%A%ptr = (/ 1, 3, 4, 6 /)                             ! Set row pointers
 ! problem data complete
 \end{verbatim}
 }
@@ -1441,28 +1620,15 @@ or using a dense storage format with the replacement lines
 {\tt \small
 \begin{verbatim}
 ! dense storage format
-   CALL SMT_put( p%H%type, 'DENSE', s )  ! Specify dense
-   ALLOCATE( p%H%val( n * ( n + 1 ) / 2 ) )
-   p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp, 3.0_wp /) ! Hessian
+   CALL SMT_put( p%A%type, 'DENSE', s )  ! Specify dense
+   ALLOCATE( p%A%val( m * n  )
+   p%A%val = (/ 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, &
+                0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
 ! problem data complete
 \end{verbatim}
 }
 \noindent
 respectively.
-
-If instead $\bmH$ had been the diagonal matrix
-\disp{\bmH = \mat{ccc}{1 & &   \\ & 2 & \\  &  & 3}}
-but the other data is as before, the diagonal storage scheme
-might be used for $\bmH$, and in this case we would instead
-{\tt \small
-\begin{verbatim}
-   CALL SMT_put( prob%H%type, 'DIAGONAL', s )  ! Specify dense storage for H
-   ALLOCATE( p%H%val( n ) )
-   p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp /) ! Hessian values
-\end{verbatim}
-}
-\noindent
-%Notice here that zero diagonal entries are stored.
 
 The same problem may be solved using reverse communication with the
 following code:
@@ -1471,13 +1637,13 @@ following code:
 \VerbatimInput{\packageexampleb}
 }
 \noindent
-Notice that storage for the Hessian is now not needed.
-This produces the same output.
-%This produces the following output:
-%{\tt \small
-%\VerbatimInput{\packageresultsb}
-%}
-%\noindent
+%Notice that storage for the Hessian is now not needed.
+%This produces the same output.
+This produces the following output: \vspace*{-2mm}
+{\tt \small
+\VerbatimInput{\packageresultsb}
+}
+\noindent
 
 The same problem may also be solved by user-provided matrix-vector
 products as follows:
@@ -1486,8 +1652,9 @@ products as follows:
 \VerbatimInput{\packageexamplec}
 }
 \noindent
-Now notice how the matrix $\bmH$ is passed to the matrix-vector product
-evaluation routine via the {\tt integer} and
+This produces the same output.
+Now notice how the matrix $\bmA$ is passed to the matrix-vector product
+evaluation routines via the {\tt integer} and
 {\tt real} components of the derived type {\tt userdata}.
 
 %This produces the following output:

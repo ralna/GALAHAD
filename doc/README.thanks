@@ -16,9 +16,9 @@ Specific thanks to N. Shamsundar (Houston) for his line-by-line
 analysis of LANCELOT, and his numerous suggestions on how to
 avoid difficulties we had overlooked.
 
-Bug reports and fixes by many folk, including Bill Hager, Philip Gill,
+Bug reports, fixes and testing by many folk, including Bill Hager, Philip Gill,
 Elizabeth Wong,  Peter Aptaker, Tobias Kasper, Alex Jacobson,
-Alexi Rozanov & Felix Lieder ... sorry if we inadvertently forgot
+Alexi Rozanov & Felix Lieder, Jari Fowkes ... sorry if we inadvertently forgot
 others!
 
 And of course to our friend, the late Andy Conn, without whom LANCELOT would

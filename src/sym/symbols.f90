@@ -130,6 +130,7 @@
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_h_not_diagonal    = - 86
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_h_not_permitted   = - 87
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_unsuitable_option       = - 88
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_inner_its     = - 89
 
 !     General integers
 
@@ -616,6 +617,10 @@
      CASE( GALAHAD_error_max_evaluations )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   the evaluation limit has been exceeded' )" )                 &
+         prefix, routine, prefix
+     CASE( GALAHAD_error_max_inner_its )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   an inner iteration limit has been exceeded' )" )             &
          prefix, routine, prefix
      CASE DEFAULT
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &

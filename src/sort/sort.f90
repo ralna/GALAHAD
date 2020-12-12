@@ -2084,6 +2084,9 @@
       REAL ( KIND = WP ) :: x_less, x_more
 
       less = 0 ; more = n + 1
+!     write(6,*) ' n ', n
+!     write(6,*) ' X', X
+!      write(6,*) ' x_division ', x_division
 
 !  march forward through x until a component violates x <= x_division
 
@@ -2092,7 +2095,7 @@
 !       write(6,"( 'less ', I6, 2ES12.4 )" ) less + 1, x_less, x_division
         IF ( x_less < x_division ) THEN
           less = less + 1
-          IF ( less >= n ) EXIT
+          IF ( less >= more - 1 ) EXIT
           CYCLE
         END IF
 
@@ -2108,8 +2111,8 @@
 
 !  swap the two violated x, and their attendant ix, components
 
-        write(6,*) ' swapping ', less, more
         less = less + 1 ; more = more - 1
+!       write(6,*) ' swapping ', less, more
         X( less ) = x_more ; X( more ) = x_less
         IF ( PRESENT( ix ) ) THEN
           ix_less = IX( less ) ; IX( less ) = IX( more ) ; IX( more ) = ix_less
@@ -2154,7 +2157,7 @@
 !       write(6,"( 'less ', I6, 2ES12.4 )" ) less + 1, x_less, x_division
         IF ( x_less < x_division ) THEN
           less = less + 1
-          IF ( less >= n ) EXIT
+          IF ( less >= more - 1 ) EXIT
           CYCLE
         END IF
 
@@ -2170,8 +2173,8 @@
 
 !  swap the two violated x, and their attendant ix, components
 
-!       write(6,*) ' swapping ', less, more
         less = less + 1 ; more = more - 1
+!       write(6,*) ' swapping ', less, more
         X( less ) = x_more ; X( more ) = x_less
         IF ( PRESENT( ix ) ) THEN
           ix_less = IX( less ) ; IX( less ) = IX( more ) ; IX( more ) = ix_less
