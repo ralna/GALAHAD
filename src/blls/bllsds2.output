@@ -1,0 +1,13 @@
+
+         S=steepest descent, F=factorization used
+
+  #its   #cg            f           proj gr     step    #free change   time
+     0     -  4.50000000000000E+00 2.000E+00      -         -      -    0.0
+     1     S  3.00000000000000E+00 3.000E+00 2.000E+00      1      -    0.0
+     2     S  8.75000000000000E-01 5.000E-01 1.500E+00      3      2    0.0
+     3     2  7.50000000000000E-01 1.000E+00 5.000E-01      2      1    0.0
+     4     1  5.00000000000000E-01 1.110E-16 5.000E-01      2      0    0.0
+
+ BLLS: 4 iterations  
+ Optimal objective value =  5.0000E-01
+ Optimal solution =   5.0000E-01  1.0000E+00  1.5000E+00
