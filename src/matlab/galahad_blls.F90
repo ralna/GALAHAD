@@ -347,6 +347,8 @@
         IF ( ALLOCATED( p%A%col ) ) DEALLOCATE( p%A%col, STAT = info )
         IF ( ALLOCATED( p%A%val ) ) DEALLOCATE( p%A%val, STAT = info )
         IF ( ALLOCATED( p%B ) ) DEALLOCATE( p%B, STAT = info )
+        IF ( ALLOCATED( p%G ) ) DEALLOCATE( p%G, STAT = info )
+        IF ( ALLOCATED( p%C ) ) DEALLOCATE( p%C, STAT = info )
         IF ( ALLOCATED( p%X_l ) ) DEALLOCATE( p%X_l, STAT = info )
         IF ( ALLOCATED( p%X_u ) ) DEALLOCATE( p%X_u, STAT = info )
         IF ( ALLOCATED( p%X ) ) DEALLOCATE( p%X, STAT = info )
