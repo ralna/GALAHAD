@@ -107,7 +107,7 @@ all: all_$(PRECIS)
 #	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 all_single:
 	@printf ' %-21s\n' "$(PRECIS) $(NO_MATLAB)"
-all_double: basics_double sils sls bqp blls lpa lpb cqp dqp eqp \
+all_double: basics_double sils sls bqp bqpb blls lpa lpb cqp dqp eqp \
             glrt gltr llst lsqp lsrt lstr l2rt qpa qpb qpc qp \
             rqs sbls trs wcp tru arc nls
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
