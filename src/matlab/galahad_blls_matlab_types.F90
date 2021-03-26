@@ -159,9 +159,9 @@
         CASE( 'arcsearch_acceptance_tol' )                                     
           CALL MATLAB_get_value( ps, 'arcsearch_acceptance_tol',               &
                                  pc, BLLS_control%arcsearch_acceptance_tol )
-        CASE( 'regularization_weight' )                                         
-          CALL MATLAB_get_value( ps, 'regularization_weight',                  &
-                                 pc, BLLS_control%regularization_weight )
+        CASE( 'stabilisation_weight' )                                         
+          CALL MATLAB_get_value( ps, 'stabilisation_weight',                   &
+                                 pc, BLLS_control%stabilisation_weight )
         CASE( 'cpu_time_limit' )                                               
           CALL MATLAB_get_value( ps, 'cpu_time_limit',                         &
                                  pc, BLLS_control%cpu_time_limit )
@@ -235,7 +235,7 @@
          'identical_bounds_tol           ', 'stop_cg_relative               ', &
          'stop_cg_absolute               ', 'alpha_max                      ', &
          'alpha_initial                  ', 'alpha_reduction                ', &
-         'arcsearch_acceptance_tol       ', 'regularization_weight          ', &
+         'arcsearch_acceptance_tol       ', 'stabilisation_weight           ', &
          'cpu_time_limit                 ', 'direct_subproblem_solve        ', &
          'exact_arc_search               ', 'advance                        ', &
          'space_critical                 ', 'deallocate_error_fatal         ', &
@@ -299,8 +299,8 @@
                                   BLLS_control%alpha_reduction )
       CALL MATLAB_fill_component( pointer, 'arcsearch_acceptance_tol',         &
                                   BLLS_control%arcsearch_acceptance_tol )
-      CALL MATLAB_fill_component( pointer, 'regularization_weight',            &
-                                  BLLS_control%regularization_weight )
+      CALL MATLAB_fill_component( pointer, 'stabilisation_weight',             &
+                                  BLLS_control%stabilisation_weight )
       CALL MATLAB_fill_component( pointer, 'cpu_time_limit',                   &
                                   BLLS_control%cpu_time_limit )
       CALL MATLAB_fill_component( pointer, 'direct_subproblem_solve',          &

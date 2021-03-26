@@ -1111,7 +1111,7 @@ $(LG)(mkl_pardiso_interface.o): ../mkl/mkl_pardiso_interface.f90
 mkl_pardiso.o: $(MPLG)(mkl_pardiso.o)
 
 $(MPLG)(mkl_pardiso.o): ../dum/mkl_pardiso.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardiso  "
+	@printf ' %-9s %-15s\t' "Compiling" "mkl_pardiso  "
 	$(CP) ../dum/mkl_pardiso.f90 $(OBJ)/mkl_pardiso.f90
 	cd $(OBJ); $(FORTRAN) -o mkl_pardiso.o $(FFLAGS) mkl_pardiso.f90
 	cd $(OBJ); $(MPARR) mkl_pardiso.o ; \
