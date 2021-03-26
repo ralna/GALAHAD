@@ -24,6 +24,10 @@ BLG  = $(OBJ)/libgalahad_blas.a
 BLGS = $(OBJS)/libgalahad_blas.a
 BLGD = $(OBJD)/libgalahad_blas.a
 
+CLG  = $(OBJ)/libgalahad_problem.a
+CLGS = $(OBJS)/libgalahad_problem.a
+CLGD = $(OBJD)/libgalahad_problem.a
+
 DLG  = $(OBJ)/libgalahad_dummy.a
 DLGS = $(OBJS)/libgalahad_dummy.a
 DLGD = $(OBJD)/libgalahad_dummy.a
@@ -44,13 +48,13 @@ RLG  = $(OBJ)/libgalahad_spral.a
 RLGS = $(OBJS)/libgalahad_spral.a
 RLGD = $(OBJD)/libgalahad_spral.a
 
-SLG  = $(OBJ)/libgalahad_pardiso.a
-SLGS = $(OBJS)/libgalahad_pardiso.a
-SLGD = $(OBJD)/libgalahad_pardiso.a
+PLG  = $(OBJ)/libgalahad_pardiso.a
+PLGS = $(OBJS)/libgalahad_pardiso.a
+PLGD = $(OBJD)/libgalahad_pardiso.a
 
-PLG  = $(OBJ)/libgalahad_problem.a
-PLGS = $(OBJS)/libgalahad_problem.a
-PLGD = $(OBJD)/libgalahad_problem.a
+MPLG  = $(OBJ)/libgalahad_mkl_pardiso.a
+MPLGS = $(OBJS)/libgalahad_mkl_pardiso.a
+MPLGD = $(OBJD)/libgalahad_mkl_pardiso.a
 
 WLG  = $(OBJ)/libgalahad_wsmp.a
 WLGS = $(OBJS)/libgalahad_wsmp.a
@@ -58,40 +62,27 @@ WLGD = $(OBJD)/libgalahad_wsmp.a
 
 #  Libraries used
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
+                 $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
 
 #  Archive manipulation strings
 
 ARR = $(AR) $(ARREPFLAGS) $(LG)
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+CARR = $(AR) $(ARREPFLAGS) $(CLG)
+DARR = $(AR) $(ARREPFLAGS) $(DLG)
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+PARR = $(AR) $(ARREPFLAGS) $(PLG)
+MPARR = $(AR) $(ARREPFLAGS) $(MPLG)
+RARR = $(AR) $(ARREPFLAGS) $(RLG)
+WARR = $(AR) $(ARREPFLAGS) $(WLG)
+
 RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
 RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-DARR = $(AR) $(ARREPFLAGS) $(DLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
-
-PARR = $(AR) $(ARREPFLAGS) $(PLG)
-PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PLG)
-
-RARR = $(AR) $(ARREPFLAGS) $(RLG)
-RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(RLG)
-
-SARR = $(AR) $(ARREPFLAGS) $(SLG)
-SRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(SLG)
-
-WARR = $(AR) $(ARREPFLAGS) $(WLG)
-WRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(WLG)
+CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
 
 #  sed scripts
 
@@ -114,13 +105,14 @@ glss = ma33 $(LGS)(smt.o) $(LGS)(gls.o)
 glsd = ma33 $(LGD)(smt.o) $(LGD)(gls.o)
 ma48v3s = ma48v3
 ma48v3d = ma48v3
-cutest_functionss = $(SMTS) $(LGS)(space.o) nlpt $(PLGS)(cutest_functions.o)
-cutest_functionsd = $(SMTD) $(LGD)(space.o) nlpt $(PLGD)(cutest_functions.o)
-problems = $(SMTS) nlpt $(PLGS)(problem.o)
-problemd = $(SMTD) nlpt $(PLGD)(problem.o)
+cutest_functionss = $(SMTS) $(LGS)(space.o) nlpt $(CLGS)(cutest_functions.o)
+cutest_functionsd = $(SMTD) $(LGD)(space.o) nlpt $(CLGD)(cutest_functions.o)
+problems = $(SMTS) nlpt $(CLGS)(problem.o)
+problemd = $(SMTD) nlpt $(CLGD)(problem.o)
 
 BASICZ = $(LG)(cputim.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
-         $(LG)(symbols.o) $(SLG)(pardiso.o) $(MLG)(metis.o) $(WLG)(wsmp.o) \
+         $(LG)(symbols.o) $(PLG)(pardiso.o) $(LG)(mkl_pardiso_interface.o) \
+         $(MPLG)(mkl_pardiso.o) $(MLG)(metis.o) $(WLG)(wsmp.o) \
          $(DLG)(dummy.o) $(LG)(blas_interface.o) $(LG)(lapack_interface.o) \
          minpack
 
@@ -145,8 +137,13 @@ BASICD = $(ROOTSD) $(LGD)(rand.o) $(LGD)(oldscale.o) $(LGD)(tools.o) qpt \
 SSIDSS = $(LG)(symbols.o) $(RLGS)(ssidss.o)
 SSIDSD = $(LG)(symbols.o) $(RLGD)(ssidsd.o)
 
-PARDISOS = $(LG)(symbols.o) $(SLGS)(pardiso.o)
-PARDISOD = $(LG)(symbols.o) $(SLGD)(pardiso.o)
+PARDISOS = $(LG)(symbols.o) $(PLGS)(pardiso.o)
+PARDISOD = $(LG)(symbols.o) $(PLGD)(pardiso.o)
+
+MKL_PARDISOS = $(LG)(symbols.o) $(LG)(mkl_pardiso_interface.o) \
+               $(MPLG)(mkl_pardiso.o) 
+MKL_PARDISOD = $(LG)(symbols.o) $(LG)(mkl_pardiso_interface.o) \
+               $(MPLG)(mkl_pardiso.o) 
 
 METISS = $(LG)(symbols.o) $(MLGS)(metis.o)
 METISD = $(LG)(symbols.o) $(MLGD)(metis.o)
@@ -253,6 +250,12 @@ FILTERDT = $(BASICD) $(OBJD)/filtert.o
 FILTERSS = $(BASICS) $(OBJS)/filters.o
 FILTERST = $(BASICS) $(OBJS)/filtert.o
 
+MKL_PARDISODT = $(MKL_PARDISOD) $(OBJD)/mkl_pardisot.o
+MKL_PARDISOST = $(MKL_PARDISOS) $(OBJS)/mkl_pardisot.o
+
+RMKL_PARDISODT = $(OBJD)/mkl_pardisot.o -L$(OBJD) -lgalahad $(MKL_PARDISO)
+RMKL_PARDISOST = $(OBJS)/mkl_pardisot.o -L$(OBJS) -lgalahad $(MKL_PARDISO)
+
 SUCC = precision version) compiled successfully
 SUCC_CUTEST = precision version) for CUTEst compiled successfully
 
@@ -264,17 +267,17 @@ cutest_functions_silent: cutest_functions_$(PRECIS)
 cutest_functions: cutest_functions_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: cutest_functions package ($(PRECIS) $(SUCC)"
 cutest_functions_single: $(cutest_functionss)
-	$(RANLIB) $(PLGS)
+	$(RANLIB) $(CLGS)
 cutest_functions_double: $(cutest_functionsd)
-	$(RANLIB) $(PLGD)
+	$(RANLIB) $(CLGD)
 
 problem_silent: problem_$(PRECIS)
 problem: problem_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: basic packages ($(PRECIS) $(SUCC)"
 problem_single: $(problems)
-	$(RANLIB) $(PLGS)
+	$(RANLIB) $(CLGS)
 problem_double: $(problemd)
-	$(RANLIB) $(PLGD)
+	$(RANLIB) $(CLGD)
 
 #  basic packages
 
@@ -346,9 +349,19 @@ pardiso_silent: pardiso_$(PRECIS)
 pardiso: pardiso_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PARDISO) ($(PRECIS) $(SUCC)"
 pardiso_single: $(PARDISOS)
-	$(RANLIB) $(SLGS)
+	$(RANLIB) $(PLGS)
 pardiso_double: $(PARDISOD)
-	$(RANLIB) $(SLGD)
+	$(RANLIB) $(PLGD)
+
+#  mkl_pardiso
+
+mkl_pardiso_silent: mkl_pardiso_$(PRECIS)
+mkl_pardiso: mkl_pardiso_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(MKL_PARDISO) ($(PRECIS) $(SUCC)"
+mkl_pardiso_single: $(MKL_PARDISOS)
+	$(RANLIB) $(MPLGS)
+mkl_pardiso_double: $(MKL_PARDISOD)
+	$(RANLIB) $(MPLGD)
 
 #  wsmp
 
@@ -549,7 +562,7 @@ minpack:
 	( cd ../non-free/minpack ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             minpack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/minpack )
 
-# run spec-sheet example tests
+# run spec-sheet example and exhaustive tests
 
 smtds: $(SMTDS)
 	cd ../smt ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_smt $(RSMTDS)
@@ -766,85 +779,114 @@ scust: $(SCUST)
 	rm ../scu/run_scu
 
 rootsds: $(ROOTSDS)
-	cd ../roots ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_roots $(RROOTSDS)
+	cd ../roots ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_roots \
+                        $(RROOTSDS)
 	- ../roots/run_roots >& ../roots/rootsds.output
 	cat ../roots/rootsds.output
 	rm ../roots/run_roots
 
 rootsdt: $(ROOTSDT)
 	echo " Exhaustive test of subroutine interface to roots"
-	cd ../roots ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_roots $(RROOTSDT)
+	cd ../roots ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_roots \
+                        $(RROOTSDT)
 	- ../roots/run_roots >& ../roots/rootsdt.output
 	cat ../roots/rootsdt.output
 #	- ../roots/run_roots
 	rm ../roots/run_roots
 
 rootsss: $(ROOTSSS)
-	cd ../roots ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_roots $(RROOTSSS)
+	cd ../roots ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_roots \
+                        $(RROOTSSS)
 	- ../roots/run_roots >& ../roots/rootss.output
 	cat ../roots/rootss.output
 	rm ../roots/run_roots
 
 rootsst: $(ROOTSST)
 	echo " Exhaustive test of subroutine interface to roots"
-	cd ../roots ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_roots $(RROOTSST)
+	cd ../roots ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_roots \
+                        $(RROOTSST)
 	- ../roots/run_roots >& ../roots/rootst.output
 	cat ../roots/rootst.output
 	rm ../roots/run_roots
 
 convertds: $(CONVERTDS)
-	cd ../convert ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_convert $(RCONVERTDS)
+	cd ../convert ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_convert \
+                          $(RCONVERTDS)
 	- ../convert/run_convert >& ../convert/convertds.output
 	cat ../convert/convertds.output
 	rm ../convert/run_convert
 
 convertdt: $(CONVERTDT)
 	echo " Exhaustive test of subroutine interface to convert"
-	cd ../convert ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_convert $(RCONVERTDT)
+	cd ../convert ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_convert \
+                          $(RCONVERTDT)
 	- ../convert/run_convert >& ../convert/convertdt.output
 	cat ../convert/convertdt.output
 #	- ../convert/run_convert
 	rm ../convert/run_convert
 
 convertss: $(CONVERTSS)
-	cd ../convert ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_convert $(RCONVERTSS)
+	cd ../convert ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_convert \
+                          $(RCONVERTSS)
 	- ../convert/run_convert >& ../convert/converts.output
 	cat ../convert/converts.output
 	rm ../convert/run_convert
 
 convertst: $(CONVERTST)
 	echo " Exhaustive test of subroutine interface to convert"
-	cd ../convert ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_convert $(RCONVERTST)
+	cd ../convert ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_convert \
+                          $(RCONVERTST)
 	- ../convert/run_convert >& ../convert/convertt.output
 	cat ../convert/convertt.output
 	rm ../convert/run_convert
 
 filterds: $(FILTERDS)
-	cd ../filter ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_filter $(RFILTERDS)
+	cd ../filter ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_filter \
+                         $(RFILTERDS)
 	- ../filter/run_filter >& ../filter/filterds.output
 	cat ../filter/filterds.output
 	rm ../filter/run_filter
 
 filterdt: $(FILTERDT)
 	echo " Exhaustive test of subroutine interface to filter"
-	cd ../filter ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_filter $(RFILTERDT)
+	cd ../filter ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_filter \
+                         $(RFILTERDT)
 	- ../filter/run_filter >& ../filter/filterdt.output
 	cat ../filter/filterdt.output
 #	- ../filter/run_filter
 	rm ../filter/run_filter
 
 filterss: $(FILTERSS)
-	cd ../filter ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_filter $(RFILTERSS)
+	cd ../filter ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_filter \
+                         $(RFILTERSS)
 	- ../filter/run_filter >& ../filter/filters.output
 	cat ../filter/filters.output
 	rm ../filter/run_filter
 
 filterst: $(FILTERST)
 	echo " Exhaustive test of subroutine interface to filter"
-	cd ../filter ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_filter $(RFILTERST)
+	cd ../filter ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_filter \
+                         $(RFILTERST)
 	- ../filter/run_filter >& ../filter/filtert.output
 	cat ../filter/filtert.output
 	rm ../filter/run_filter
+
+mkl_pardisodt: $(MKL_PARDISODT)
+	echo " Exhaustive test of subroutine interface to mkl_pardiso"
+	cd ../mkl ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_mkl_pardiso \
+                         $(RMKL_PARDISODT)
+#	- ../mkl/run_mkl_pardiso >& ../mkl/mkl_pardisodt.output
+#	cat ../mkl/mkl_pardisodt.output
+	- ../mkl/run_mkl_pardiso
+	rm ../mkl/run_mkl_pardiso
+
+mkl_pardisost: $(MKL_PARDISOST)
+	echo " Exhaustive test of subroutine interface to mkl_pardiso"
+	cd ../mkl ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_mkl_pardiso \
+                         $(RMKL_PARDISOST)
+	- ../mkl/run_mkl_pardiso >& ../mkl_pardiso/mkl_pardisot.output
+	cat ../mkl/mkl_pardisot.output
+	rm ../mkl/run_mkl_pardiso
 
 #  individual compilations
 
@@ -949,7 +991,6 @@ $(BLG)(blas.o): ../lapack/blas.f
 
 dummy.o: $(DLG)(dummy.o)
 
-
 $(DLG)(dummy.o): ../dum/dummy.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy"
 	$(CP) ../dum/dummy.f $(OBJ)/dummy.f90
@@ -959,7 +1000,6 @@ $(DLG)(dummy.o): ../dum/dummy.f
 	@printf '[ OK ]\n'
 
 lapack.o: $(LLG)(lapack.o)
-
 
 $(LLG)(lapack.o): ../lapack/lapack.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "lapack"
@@ -971,7 +1011,6 @@ $(LLG)(lapack.o): ../lapack/lapack.f
 	@printf '[ OK ]\n'
 
 blas_interface.o: $(LG)(blas_interface.o)
-
 
 $(LG)(blas_interface.o): ../lapack/blas_interface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "blas_interface"
@@ -1048,17 +1087,39 @@ $(RLG)(ssidsd.o): ../dum/ssidsd.f90
 	$(RANLIB) $(RLG)
 	@printf '[ OK ]\n'
 
-pardiso.o: $(SLG)(pardiso.o)
+pardiso.o: $(PLG)(pardiso.o)
 
-$(SLG)(pardiso.o): ../dum/pardiso.f
+$(PLG)(pardiso.o): ../dum/pardiso.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "pardiso  "
 	$(SED) -f $(SEDS) ../dum/pardiso.f > $(OBJ)/pardiso.f90
 	cd $(OBJ); $(FORTRAN) -o pardiso.o $(FFLAGS) pardiso.f90
-	cd $(OBJ); $(SARR) pardiso.o ; $(RM) pardiso.f90 pardiso.o
-	$(RANLIB) $(SLG)
+	cd $(OBJ); $(PARR) pardiso.o ; $(RM) pardiso.f90 pardiso.o
+	$(RANLIB) $(PLG)
 	@printf '[ OK ]\n'
 
-wsmp.o: $(SLG)(wsmp.o)
+mkl_pardiso_interface.o: $(LG)(mkl_pardiso_interface.o)
+
+$(LG)(mkl_pardiso_interface.o): ../mkl/mkl_pardiso_interface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardiso_interface  "
+	$(CP) ../mkl/mkl_pardiso_interface.f90 $(OBJ)/mkl_pardiso_interface.f90
+	cd $(OBJ); $(FORTRAN) -o mkl_pardiso_interface.o $(FFLAGS) \
+                      mkl_pardiso_interface.f90
+	cd $(OBJ); $(ARR) mkl_pardiso_interface.o ; \
+          $(RM) mkl_pardiso_interface.f90 mkl_pardiso_interface.o
+	@printf '[ OK ]\n'
+
+mkl_pardiso.o: $(MPLG)(mkl_pardiso.o)
+
+$(MPLG)(mkl_pardiso.o): ../dum/mkl_pardiso.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardiso  "
+	$(CP) ../dum/mkl_pardiso.f90 $(OBJ)/mkl_pardiso.f90
+	cd $(OBJ); $(FORTRAN) -o mkl_pardiso.o $(FFLAGS) mkl_pardiso.f90
+	cd $(OBJ); $(MPARR) mkl_pardiso.o ; \
+          $(RM) mkl_pardiso.f90 mkl_pardiso.o
+	$(RANLIB) $(MPLG)
+	@printf '[ OK ]\n'
+
+wsmp.o: $(WLG)(wsmp.o)
 
 $(WLG)(wsmp.o): ../dum/wsmp.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "wsmp  "
@@ -1121,7 +1182,7 @@ $(LG)(smt.o): ../smt/smt.f90
 	$(RMARFILE) space.o
 	$(RMARFILE) nlpt.o
 	$(RMARFILE) mop.o
-	$(PRMARFILE) cutest_functions.o
+	$(CRMARFILE) cutest_functions.o
 	$(RMARFILE) qpt.o
 	$(RMARFILE) sils.o
 	$(RMARFILE) gls.o
@@ -1266,7 +1327,7 @@ $(LG)(space.o): ../space/space.f90
 	$(RMARFILE) gltr.o
 	$(RMARFILE) qpc.o
 	$(RMARFILE) wcp.o
-	$(PRMARFILE) cutest_functions.o
+	$(CRMARFILE) cutest_functions.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -1373,21 +1434,21 @@ $(LG)(roots.o): ../roots/roots.f90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-problem.o: $(PLG)(problem.o)
+problem.o: $(CLG)(problem.o)
 
-$(PLG)(problem.o): ../auxiliary/problem.f90
+$(CLG)(problem.o): ../auxiliary/problem.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "problem   "
 	$(SED) -f $(SEDS) ../auxiliary/problem.f90 > $(OBJ)/problem1.f90
 	$(SED) -f $(LSEDS) $(OBJ)/problem1.f90 > $(OBJ)/problem.f90
 	cd $(OBJ); $(FORTRAN) -o problem.o $(FFLAGSS) problem.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o problem.o $(FFLAGSN) problem.f90 )
-	cd $(OBJ); $(PARR) problem.o ; $(RM) problem.f90 probblem1.f90 problem.o
+	cd $(OBJ); $(CARR) problem.o ; $(RM) problem.f90 probblem1.f90 problem.o
 	@printf '[ OK ]\n'
 
-cutest_functions.o: $(PLG)(cutest_functions.o)
+cutest_functions.o: $(CLG)(cutest_functions.o)
 
-$(PLG)(cutest_functions.o): ../auxiliary/cutest_functions.f90
+$(CLG)(cutest_functions.o): ../auxiliary/cutest_functions.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cutest_functions   "
 	$(SED) -f $(SEDS) ../auxiliary/cutest_functions.f90 > \
           $(OBJ)/cutest_functions1.f90
@@ -1397,7 +1458,7 @@ $(PLG)(cutest_functions.o): ../auxiliary/cutest_functions.f90
           $(FORTRAN) -o cutest_functions.o $(FFLAGSS) cutest_functions.f90 \
               || ( printf ' %-26s' "=> Disabling optimization " ; \
               $(FORTRAN) -o cutest_functions.o $(FFLAGSN) cutest_functions.f90 )
-	cd $(OBJ); $(PARR) cutest_functions.o ; $(RM) cutest_functions.f90 \
+	cd $(OBJ); $(CARR) cutest_functions.o ; $(RM) cutest_functions.f90 \
           cutest_functions1.f90 cutest_functions.o
 	$(RMARFILE) usefisqp.o
 	$(RMARFILE) usefastr.o
@@ -1616,6 +1677,24 @@ $(OBJ)/filtert.o: ../filter/filtert.f90
 	cd $(OBJ) ; $(FORTRAN) -o filtert.o $(FFLAGSS) filtert.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
+
+mkl_pardisos.o: $(OBJ)/mkl_pardisos.o
+
+$(OBJ)/mkl_pardisos.o: ../mkl/mkl_pardisos.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardisos  "
+	$(SED) -f $(SEDS) ../mkl/mkl_pardisos.f90 > $(OBJ)/mkl_pardisos.f90
+	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisos.o $(FFLAGS) mkl_pardisos.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+mkl_pardisot.o: $(OBJ)/mkl_pardisot.o
+
+$(OBJ)/mkl_pardisot.o: ../mkl/mkl_pardisot.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardisot  "
+	$(SED) -f $(SEDS) ../mkl/mkl_pardisot.f90 > $(OBJ)/mkl_pardisot.f90
+	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisot.o $(FFLAGSS) mkl_pardisot.f90
+	@printf '[ OK ]\n'
+	$(RMARFILE)  mkl_pardiso.o
 
 #  generate HSL codes from GALAHAD ones
 

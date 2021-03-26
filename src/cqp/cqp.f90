@@ -3256,8 +3256,8 @@
 
 !  move to argument list
 
-!     IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
-      IF ( control%out > 0 .AND. control%print_level >= 1 ) THEN
+      IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
+!     IF ( control%out > 0 .AND. control%print_level >= 1 ) THEN
         WRITE( control%out, "( /, A, ' n = ', I0, ', m = ', I0, ', f =',       &
        &                       ES24.16 )" ) prefix, n, m, f
         IF ( gradient_kind == 0 ) THEN

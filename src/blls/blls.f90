@@ -17,7 +17,7 @@
 !        |                                                              |
 !        | Solve the bound-constrained linear-least-squares problem     |
 !        |                                                              |
-!        |    minimize     1/2 || A x - b ||_2^2                        |
+!        |    minimize   1/2 || A x - b ||_2^2 + weight / 2 || x ||^2   |
 !        |    subject to     x_l <= x <= x_u                            |
 !        |                                                              |
 !        | using a preconditioned projected conjugate-gradient approach |
@@ -145,6 +145,10 @@
 
        INTEGER :: sif_file_device = 52
 
+!  the objective function will be regularized by adding weight / 2 ||x||^2
+
+       REAL ( KIND = wp ) :: weight = zero
+
 !  any bound larger than infinity in modulus will be regarded as infinite
 
        REAL ( KIND = wp ) :: infinity = ten ** 19
@@ -189,9 +193,9 @@
 
        REAL ( KIND = wp ) :: arcsearch_acceptance_tol = ten ** ( - 2 )
 
-!  the regularization weight added to the search-direction subproblem
+!  the stabilisation weight added to the search-direction subproblem
 
-       REAL ( KIND = wp ) :: regularization_weight = ten ** ( - 12 )
+       REAL ( KIND = wp ) :: stabilisation_weight = ten ** ( - 12 )
 
 !  the maximum CPU time allowed (-ve = no limit)
 
@@ -338,8 +342,9 @@
        REAL ( KIND = wp ) :: f_alpha_dash, f_alpha_dashdash, stop_cg
        REAL ( KIND = wp ) :: alpha_i, alpha_next, delta_alpha, alpha, target
        REAL ( KIND = wp ) :: f_s, f_c, f_i, f_l, f_q, gamma, gamma_a, gamma_f
+       REAL ( KIND = wp ) :: rho_c, rho_i, rho_l, rho_q, mu_a, mu_f
        LOGICAL :: printp, printw, printd, printdd, recompute, debug
-       LOGICAL :: present_a, present_asprod, reverse_asprod
+       LOGICAL :: regularized, present_a, present_asprod, reverse_asprod
        LOGICAL :: present_afprod, reverse_afprod, preconditioned
        CHARACTER ( LEN = 1 ) :: direction
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: FREE, NZ_d, NZ_out, P_used
@@ -373,7 +378,7 @@
        REAL :: time_start
        REAL ( KIND = wp ) :: norm_step, step, stop_cg, old_gnrmsq, pnrmsq
        REAL ( KIND = wp ) :: alpha_0, alpha_max, alpha_new, f_new
-       REAL ( KIND = wp ) :: regularization_weight
+       REAL ( KIND = wp ) :: weight, stabilisation_weight
        LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
        LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe
        LOGICAL :: reverse, explicit_a, use_aprod, header
@@ -459,6 +464,7 @@
 !  maximum-number-of-cg-iterations-per-iteration     1000
 !  maximum-number-of-arcsearch-steps                -1
 !  sif-file-device                                   52
+!  regularization-weight                             0.0D+0
 !  infinity-value                                    1.0D+19
 !  primal-accuracy-required                          1.0D-5
 !  dual-accuracy-required                            1.0D-5
@@ -470,7 +476,7 @@
 !  initial-arcsearch-stepsize                       1.0
 !  arcsearch-reduction-factor                       5.0D-1
 !  arcsearch-acceptance-tolerance                   1.0D-2
-!  regularization-weight                             0.0
+!  stabilisation-weight                             0.0
 !  maximum-cpu-time-limit                            -1.0
 !  direct-subproblem-solve                           F
 !  exact-arc-search-used                             T
@@ -506,7 +512,8 @@
      INTEGER, PARAMETER :: change_max = ratio_cg_vs_sd + 1
      INTEGER, PARAMETER :: cg_maxit = change_max + 1
      INTEGER, PARAMETER :: arcsearch_max_steps = cg_maxit + 1
-     INTEGER, PARAMETER :: infinity = arcsearch_max_steps + 1
+     INTEGER, PARAMETER :: weight = arcsearch_max_steps + 1
+     INTEGER, PARAMETER :: infinity = weight + 1
      INTEGER, PARAMETER :: stop_p = infinity + 1
      INTEGER, PARAMETER :: stop_d = stop_p + 1
      INTEGER, PARAMETER :: stop_c = stop_d + 1
@@ -517,8 +524,8 @@
      INTEGER, PARAMETER :: alpha_initial = alpha_max + 1
      INTEGER, PARAMETER :: alpha_reduction = alpha_initial + 1
      INTEGER, PARAMETER :: arcsearch_acceptance_tol = alpha_reduction + 1
-     INTEGER, PARAMETER :: regularization_weight = arcsearch_acceptance_tol + 1
-     INTEGER, PARAMETER :: cpu_time_limit = regularization_weight + 1
+     INTEGER, PARAMETER :: stabilisation_weight = arcsearch_acceptance_tol + 1
+     INTEGER, PARAMETER :: cpu_time_limit = stabilisation_weight + 1
      INTEGER, PARAMETER :: direct_subproblem_solve = cpu_time_limit + 1
      INTEGER, PARAMETER :: exact_arc_search = direct_subproblem_solve + 1
      INTEGER, PARAMETER :: advance = exact_arc_search + 1
@@ -556,6 +563,7 @@
 
 !  real key-words
 
+     spec( weight )%keyword = 'regularization-weight'
      spec( infinity )%keyword = 'infinity-value'
      spec( stop_p )%keyword = 'primal-accuracy-required'
      spec( stop_d )%keyword = 'dual-accuracy-required'
@@ -567,7 +575,7 @@
      spec( alpha_reduction )%keyword = 'arcsearch-reduction-factor'
      spec( arcsearch_acceptance_tol )%keyword =                                &
        'arcsearch-acceptance-tolerance'
-     spec( regularization_weight )%keyword = 'regularization-weight'
+     spec( stabilisation_weight )%keyword = 'stabilisation-weight'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
 
 !  logical key-words
@@ -641,6 +649,9 @@
 
 !  set real value
 
+     CALL SPECFILE_assign_value( spec( weight ),                               &
+                                 control%weight,                               &
+                                 control%error )
      CALL SPECFILE_assign_value( spec( infinity ),                             &
                                  control%infinity,                             &
                                  control%error )
@@ -674,8 +685,8 @@
      CALL SPECFILE_assign_value( spec( arcsearch_acceptance_tol ),             &
                                  control%arcsearch_acceptance_tol,             &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( regularization_weight ),                &
-                                 control%regularization_weight,                &
+     CALL SPECFILE_assign_value( spec( stabilisation_weight ),                &
+                                 control%stabilisation_weight,                &
                                  control%error )
      CALL SPECFILE_assign_value( spec( cpu_time_limit ),                       &
                                  control%cpu_time_limit,                       &
@@ -733,7 +744,7 @@
 !
 !  Solve the linear least-squares problem
 !
-!     minimize     q(x) = 1/2 || A x - b ||_2^2
+!     minimize     q(x) = 1/2 || A x - b ||_2^2 + weight / 2 || x ||^2
 !
 !     subject to   (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
 !
@@ -1175,6 +1186,7 @@
      data%direct_subproblem_solve = data%explicit_a .AND.                      &
                                     control%direct_subproblem_solve
      data%header = .TRUE.
+     data%weight = MAX( control%weight, zero )
 
      IF ( control%maxit < 0 ) THEN
        data%maxit = HUGE( 1 ) - 1
@@ -1534,8 +1546,8 @@
 
 !  regularized case
 
-       data%regularization_weight = MAX( control%regularization_weight, zero )
-       IF ( data%regularization_weight > zero ) THEN
+       data%stabilisation_weight = MAX( control%stabilisation_weight, zero )
+       IF ( data%stabilisation_weight > zero ) THEN
          CALL SMT_put( data%C_sbls%type, 'SCALED_IDENTITY', inform%alloc_status)
          IF ( inform%alloc_status /= 0 ) THEN
            inform%status = GALAHAD_error_allocate
@@ -1549,7 +1561,7 @@
                 exact_size = control%space_critical,                           &
                 bad_alloc = inform%bad_alloc, out = control%error )
          IF ( inform%status /= GALAHAD_ok ) GO TO 910
-         data%C_sbls%val( 1 ) = control%regularization_weight
+         data%C_sbls%val( 1 ) = control%stabilisation_weight
 
 !  unregularized case
 
@@ -1785,7 +1797,7 @@
 !  include components of the right-hand side vector
 
              data%SBLS_sol( prob%m + data%n_free ) =                           &
-               data%regularization_weight * prob%X( j )
+               data%stabilisation_weight * prob%X( j )
            END IF
          END DO
          data%AT_sbls%ptr( data%n_free + 1 ) = nap + 1
@@ -1989,7 +2001,8 @@
 !  ... using the available Jacobian ...
 
            IF (  data%explicit_a ) THEN
-             CALL BLLS_exact_arc_search( prob%m, prob%n, prob%X_l, prob%X_u,   &
+             CALL BLLS_exact_arc_search( prob%m, prob%n, data%weight,          &
+                                         prob%X_l, prob%X_u,                   &
                                          control%infinity, prob%X, prob%C,     &
                                          data%S, data%X_status,                &
                                          control%identical_bounds_tol,         &
@@ -2009,7 +2022,8 @@
 !  ... or products via the user's subroutine or reverse communication ...
 
            ELSE
-             CALL BLLS_exact_arc_search( prob%m, prob%n, prob%X_l, prob%X_u,   &
+             CALL BLLS_exact_arc_search( prob%m, prob%n, data%weight,          &
+                                         prob%X_l, prob%X_u,                   &
                                          control%infinity, prob%X, prob%C,     &
                                          data%S, data%X_status,                &
                                          control%identical_bounds_tol,         &
@@ -2033,7 +2047,8 @@
 !  ... using the available Jacobian ...
 
            IF (  data%explicit_a ) THEN
-             CALL BLLS_inexact_arc_search( prob%m, prob%n, prob%X_l, prob%X_u, &
+             CALL BLLS_inexact_arc_search( prob%m, prob%n, data%weight,        &
+                                           prob%X_l, prob%X_u,                 &
                                            control%infinity,                   &
                                            prob%X, prob%C, data%S,             &
                                            data%X_status, fixed_tol,           &
@@ -2058,7 +2073,8 @@
 !  ... or products via the user's subroutine or reverse communication
 
            ELSE
-             CALL BLLS_inexact_arc_search( prob%m, prob%n, prob%X_l, prob%X_u, &
+             CALL BLLS_inexact_arc_search( prob%m, prob%n, data%weight,        &
+                                           prob%X_l, prob%X_u,                 &
                                            control%infinity,                   &
                                            prob%X, prob%C, data%S,             &
                                            data%X_status, fixed_tol,           &
@@ -2627,7 +2643,7 @@
 
 ! -*-*-  B L L S _ E X A C T _ A R C _ S E A R C H   S U B R O U T I N E  -*-*-
 
-      SUBROUTINE BLLS_exact_arc_search( m, n, X_l, X_u, bnd_inf,               &
+      SUBROUTINE BLLS_exact_arc_search( m, n, weight, X_l, X_u, bnd_inf,       &
                                         X_s, R_s, D_s, X_status,               &
                                         feas_tol, alpha_max, max_segments,     &
                                         out, print_level, prefix,              &
@@ -2640,7 +2656,7 @@
 !  Find the arc minimizer in the direction d_s from x_s of the least-squares
 !  objective function
 
-!    f(x) =  1/2 || A x - b ||_2^2
+!    f(x) =  1/2 || A x - b ||_2^2 + 1/2 weight || x ||^2
 
 !  within the feasible "box" x_l <= x <= x_u
 
@@ -2668,15 +2684,16 @@
 !
 !  INPUT arguments that are not altered by the subroutine
 !
-!  m      (INTEGER) the number of rows of A.
+!  m      (INTEGER) the number of rows of A
 !  n      (INTEGER) the number of columns of A = number of independent variables
+!  weight (REAL) the non-negative regularization weight
 !  X_l, X_u (REAL arrays) the lower and upper bounds on the variables
 !  bnd_inf (REAL) any BND larger than bnd_inf in modulus is infinite
 !          ** this variable is not altered by the subroutine
 !  X_s     (REAL array of length at least n) the point x_s from which
 !           the search arc commences
 !  R_s     (REAL array of length at least m) the residual A x_s - b
-!  D_s     (REAL array of length at least n) the arc vector d_s.
+!  D_s     (REAL array of length at least n) the arc vector d_s
 !  feas_tol (REAL) a tolerance on allowed infeasibility of x_s
 !  alpha_max (REAL) the largest arc length permitted
 !  max_segments  (INTEGER) the maximum number of segments to be investigated
@@ -2770,7 +2787,7 @@
       INTEGER, INTENT( IN ):: m, n, max_segments, out, print_level
       INTEGER, INTENT( INOUT ) :: segment, status
       INTEGER, INTENT( OUT ) :: alloc_status
-      REAL ( KIND = wp ), INTENT( IN ):: alpha_max, feas_tol, bnd_inf
+      REAL ( KIND = wp ), INTENT( IN ):: weight, alpha_max, feas_tol, bnd_inf
       REAL ( KIND = wp ), INTENT( INOUT ):: f_alpha, alpha
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       CHARACTER ( LEN = 80 ), INTENT( OUT ) :: bad_alloc
@@ -2861,6 +2878,10 @@
       IF ( data%reverse_asprod .AND. .NOT. PRESENT( reverse ) ) THEN
         status = GALAHAD_error_optional ; GO TO 900
       END IF
+
+!  check if regularization is necessary
+
+      data%regularized = weight > zero
 
 !  set printing controls
 
@@ -3322,6 +3343,7 @@
             data%P( i ) = zero
           END DO
         ELSE
+write(6,*) ' alpha_current ', alpha_current
           data%U( : m ) = alpha_current * data%P( : m )
           data%P( : m ) = zero
         END IF
@@ -3602,7 +3624,7 @@
 
 ! -*-  B L L S _ I N E X A C T _ A R C _ S E A R C H   S U B R O U T I N E  -*-
 
-      SUBROUTINE BLLS_inexact_arc_search( m, n, X_l, X_u, bnd_inf,             &
+      SUBROUTINE BLLS_inexact_arc_search( m, n, weight, X_l, X_u, bnd_inf,     &
                                           X_s, R_s, D_s, X_status,             &
                                           feas_tol, alpha_max, alpha_0,        &
                                           beta, eta, max_steps, advance,       &
@@ -3617,7 +3639,7 @@
 !  Find an approximation to the arc minimizer in the direction d_s from x_s
 !  of the least-squares objective function
 
-!       f(x) =  1/2 || A x - b ||_2^2
+!       f(x) =  1/2 || A x - b ||_2^2 + 1/2 weight || x ||^2
 
 !  within the feasible "box" x_l <= x <= x_u
 
@@ -3671,14 +3693,15 @@
 !
 !  INPUT arguments that are not altered by the subroutine
 !
-!  m           (INTEGER) the number of rows of A.
+!  m           (INTEGER) the number of rows of A
 !  n           (INTEGER) the number of columns of A=# of independent variables
+!  weight (REAL) the non-negative regularization weight
 !  X_l, X_u    (REAL arrays) the lower and upper bounds on the variables
 !  bnd_inf     (REAL) any BND larger than bnd_inf in modulus is infinite
 !  X_s         (REAL array of length at least n) the point x_s from which
 !                the search arc commences
 !  R_s         (REAL array of length at least m) the residual A x_s - b
-!  D_s         (REAL array of length at least n) the arc vector d_s.
+!  D_s         (REAL array of length at least n) the arc vector d_s
 !  feas_tol    (REAL) a tolerance on allowed infeasibility of x_s
 !  alpha_0     (REAL) initial arc length
 !  alpha_max   (REAL) the largest arc length permitted (alpha_max >= alpha_0)
@@ -3772,7 +3795,7 @@
       INTEGER, INTENT( IN ):: m, n, out, print_level, max_steps
       INTEGER, INTENT( INOUT ) :: status
       INTEGER, INTENT( OUT ) :: alloc_status, steps
-      REAL ( KIND = wp ), INTENT( IN ):: alpha_0, alpha_max, eta, beta
+      REAL ( KIND = wp ), INTENT( IN ):: weight, alpha_0, alpha_max, eta, beta
       REAL ( KIND = wp ), INTENT( IN ):: feas_tol, bnd_inf
       REAL ( KIND = wp ), INTENT( INOUT ):: f_alpha, alpha
       LOGICAL, INTENT( IN ) :: advance
@@ -3874,6 +3897,10 @@
       END IF
 
       data%debug = PRESENT( B )
+
+!  check if regularization is necessary
+
+      data%regularized = weight > zero
 
 !  set printing controls
 

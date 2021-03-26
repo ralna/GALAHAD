@@ -43,7 +43,8 @@ MLGD = $(OBJD)/libgalahad_metis.a
 
 #  Libraries used
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(MKL_PARDISO) $(WSMP) $(METIS) \
+                 $(LAPACK) $(BLAS)
 
 #  remove out-of-core direct-access files
 
@@ -2309,7 +2310,7 @@ qpbncov: $(QPBDT)
 	ncov -o out ./run_qpb
 	rm ./run_qpb
 
-# run spec-sheet example tests
+# run spec-sheet example and exhaustive tests
 
 crods: $(CRODS)
 	cd ../cro ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_cro $(RCRODS)

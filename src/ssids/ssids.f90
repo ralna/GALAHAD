@@ -180,6 +180,7 @@ contains
     type(ssids_inform) :: inform_default
 
     ! Initialise
+
     context = 'ssids_analyse'
     inform = inform_default
     call ssids_free(akeep, free_flag)
@@ -306,10 +307,12 @@ contains
        if (check) then
           call metis_order(n, akeep%ptr, akeep%row, order2, akeep%invp, &
                flag, inform%stat)
+          if (flag .lt. 0) go to 490
           call expand_pattern(n, nz, akeep%ptr, akeep%row, ptr2, row2)
        else
           call metis_order(n, ptr, row, order2, akeep%invp, &
                flag, inform%stat)
+          if (flag .lt. 0) go to 490
           call expand_pattern(n, nz, ptr, row, ptr2, row2)
        end if
        if (flag .lt. 0) go to 490
@@ -1420,7 +1423,9 @@ contains
     implicit none
     type(omp_settings), intent(out) :: user_settings
     integer, intent(inout) :: flag
-
+!   CHARACTER( LEN = 255 ) :: OMP_CANCELLATION_VAR
+!   CALL get_environment_variable( "OMP_CANCELLATION", OMP_CANCELLATION_VAR )
+!   WRITE (*,*) 'OMP_CANCELLATION = ', TRIM( OMP_CANCELLATION_VAR )
     ! Dummy, for now.
     user_settings%nested = .true.
     user_settings%max_active_levels = huge(user_settings%max_active_levels)

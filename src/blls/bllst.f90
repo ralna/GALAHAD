@@ -12,7 +12,7 @@
    TYPE ( BLLS_reverse_type ) :: reverse
    TYPE ( NLPT_userdata_type ) :: userdata
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
-   INTEGER :: i, j, k, l, nf, mode, s, status
+   INTEGER :: i, j, k, l, nf, mode, exact_arc_search, s, status
    REAL ( KIND = wp ) :: val
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr, A_ptr_row, FLAG
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val
@@ -45,170 +45,179 @@
 
 !  generic runs to test each mode
 
-   DO mode = 1, 3
-     CALL BLLS_initialize( data, control, inform )
-     control%infinity = infinity                   ! Set infinity
-!    control%print_level = 1                       ! print one line/iteration
-     control%exact_arc_search = .FALSE.
-!    control%exact_arc_search = .FALSE.
-     p%X = 0.0_wp ! start from zero
-     SELECT CASE ( mode )
-     CASE ( 1 ) ! A expllicitly available
-       CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
-       ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
-       p%A%m = m ; p%A%n = n
-       p%A%val( : a_ne ) = A_val( : a_ne )
-       p%A%row( : a_ne ) = A_row( : a_ne )
-       p%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
-       inform%status = 1
-       CALL BLLS_solve( p, X_stat, data, control, inform, userdata )
-       WRITE( 6, "( ' BLLS_solve argument mode=', I0, ', status = ', I0,       &
-      &  ', objective = ', F6.4 ) " ) mode, inform%status, inform%obj
-       DEALLOCATE( p%A%val, p%A%row, p%A%ptr, p%A%type )
-     CASE ( 2 ) ! A available by matrix-vector products
-       ALLOCATE( FLAG( n ) )
-       nf = 0 ; FLAG = 0
-       inform%status = 1
-       DO ! Solve problem - reverse commmunication loop
-         CALL BLLS_solve( p, X_stat, data, control, inform, userdata, reverse )
-         SELECT CASE ( inform%status )
-         CASE ( : 0 ) !  termination return
-           WRITE( 6, "( ' BLLS_solve argument mode=', I0, ', status = ', I0,   &
-          &  ', objective = ', F6.4 ) " ) mode, inform%status, inform%obj
-           EXIT
-         CASE ( 2 ) ! compute A * v
-           reverse%P( : m ) = 0.0_wp
-           DO j = 1, n
-             val = reverse%V( j )
-             DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-               i = A_row( k )
-               reverse%P( i ) = reverse%P( i ) + A_val( k ) * val
-             END DO
-           END DO
-         CASE ( 3 ) ! compute A^T * v
-           reverse%P( : n ) = 0.0_wp
-           DO j = 1, n
-             val = 0.0_wp
-             DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-               val = val + A_val( k ) * reverse%V( A_row( k ) )
-             END DO
-             reverse%P( j ) = val
-           END DO
-         CASE ( 4 ) ! compute A * sparse v
-           reverse%P( : m ) = 0.0_wp
-           DO l = reverse%nz_in_start, reverse%nz_in_end
-             j = reverse%NZ_in( l )
-             val = reverse%V( j )
-             DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-               i = A_row( k )
-               reverse%P( i ) = reverse%P( i ) + A_val( k ) * val
-             END DO
-           END DO
-         CASE ( 5 ) ! compute sparse( A * sparse v )
-           nf = nf + 1
-           reverse%nz_out_end = 0
-           DO l = reverse%nz_in_start, reverse%nz_in_end
-             j = reverse%NZ_in( l )
-             val = reverse%V( j )
-             DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-               i = A_row( k )
-               IF ( FLAG( i ) < nf ) THEN
-                 FLAG( i ) = nf
-                 reverse%P( i ) = A_val( k ) * val
-                 reverse%nz_out_end = reverse%nz_out_end + 1
-                 reverse%NZ_out( reverse%nz_out_end ) = i
-               ELSE
+   DO exact_arc_search = 0, 1
+     DO mode = 1, 3
+       CALL BLLS_initialize( data, control, inform )
+       control%infinity = infinity                   ! Set infinity
+!      control%print_level = 1                       ! print one line/iteration
+       control%exact_arc_search = exact_arc_search == 1
+!      control%exact_arc_search = .FALSE.
+       p%X = 0.0_wp ! start from zero
+       SELECT CASE ( mode )
+       CASE ( 1 ) ! A expllicitly available
+         CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
+         ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
+         p%A%m = m ; p%A%n = n
+         p%A%val( : a_ne ) = A_val( : a_ne )
+         p%A%row( : a_ne ) = A_row( : a_ne )
+         p%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
+         inform%status = 1
+         CALL BLLS_solve( p, X_stat, data, control, inform, userdata )
+         WRITE( 6, "( ' BLLS_solve argument mode =', I0, ', search = ', I0,    &
+        &  ', status = ', I0,', objective = ', F6.4 ) " )                      &
+            mode, exact_arc_search, inform%status, inform%obj
+         DEALLOCATE( p%A%val, p%A%row, p%A%ptr, p%A%type )
+       CASE ( 2 ) ! A available by matrix-vector products
+         ALLOCATE( FLAG( n ) )
+         nf = 0 ; FLAG = 0
+         inform%status = 1
+         DO ! Solve problem - reverse commmunication loop
+           CALL BLLS_solve( p, X_stat, data, control, inform, userdata,        &
+                            reverse )
+           SELECT CASE ( inform%status )
+           CASE ( : 0 ) !  termination return
+             WRITE( 6, "( ' BLLS_solve argument mode =', I0, ', search = ',    &
+            &  I0, ', status = ', I0,', objective = ', F6.4 ) " )              &
+                mode, exact_arc_search, inform%status, inform%obj
+             EXIT
+           CASE ( 2 ) ! compute A * v
+             reverse%P( : m ) = 0.0_wp
+             DO j = 1, n
+               val = reverse%V( j )
+               DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
+                 i = A_row( k )
                  reverse%P( i ) = reverse%P( i ) + A_val( k ) * val
-               END IF
+               END DO
              END DO
-           END DO
-         CASE ( 6 ) ! compute sparse( A^T * v )
-           reverse%P( : n ) = 0.0_wp
-           DO l = reverse%nz_in_start, reverse%nz_in_end
-             j = reverse%NZ_in( l )
-             val = 0.0_wp
-             DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
-               val = val + A_val( k ) * reverse%V( A_row( k ) )
+           CASE ( 3 ) ! compute A^T * v
+             reverse%P( : n ) = 0.0_wp
+             DO j = 1, n
+               val = 0.0_wp
+               DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
+                 val = val + A_val( k ) * reverse%V( A_row( k ) )
+               END DO
+               reverse%P( j ) = val
              END DO
-             reverse%P( j ) = val
-           END DO
-         END SELECT
-       END DO
-     CASE ( 3 ) ! A available by external subroutines
-       ALLOCATE( userdata%integer( len_integer ), userdata%real( len_real ) )
-       userdata%integer( 1 ) = m   ! load Jacobian data into userdata
-       userdata%integer( 2 ) = n
-       userdata%integer( st_ptr + 1 : st_ptr + n + 1 ) = A_ptr( : n + 1 )
-       userdata%integer( st_row + 1 : st_row + a_ne ) = A_row( : a_ne )
-       userdata%real( st_val + 1 : st_val + a_ne ) = A_val( : a_ne )
-       userdata%integer( nflag ) = 0
-       userdata%integer( st_flag + 1 : st_flag + n ) = 0
-       inform%status = 1
-       CALL BLLS_solve( p, X_stat, data, control, inform, userdata,            &
-                        eval_APROD = APROD, eval_ASPROD = ASPROD,              &
-                        eval_AFPROD = AFPROD )
+           CASE ( 4 ) ! compute A * sparse v
+             reverse%P( : m ) = 0.0_wp
+             DO l = reverse%nz_in_start, reverse%nz_in_end
+               j = reverse%NZ_in( l )
+               val = reverse%V( j )
+               DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
+                 i = A_row( k )
+                 reverse%P( i ) = reverse%P( i ) + A_val( k ) * val
+               END DO
+             END DO
+           CASE ( 5 ) ! compute sparse( A * sparse v )
+             nf = nf + 1
+             reverse%nz_out_end = 0
+             DO l = reverse%nz_in_start, reverse%nz_in_end
+               j = reverse%NZ_in( l )
+               val = reverse%V( j )
+               DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
+                 i = A_row( k )
+                 IF ( FLAG( i ) < nf ) THEN
+                   FLAG( i ) = nf
+                   reverse%P( i ) = A_val( k ) * val
+                   reverse%nz_out_end = reverse%nz_out_end + 1
+                   reverse%NZ_out( reverse%nz_out_end ) = i
+                 ELSE
+                   reverse%P( i ) = reverse%P( i ) + A_val( k ) * val
+                 END IF
+               END DO
+             END DO
+           CASE ( 6 ) ! compute sparse( A^T * v )
+             reverse%P( : n ) = 0.0_wp
+             DO l = reverse%nz_in_start, reverse%nz_in_end
+               j = reverse%NZ_in( l )
+               val = 0.0_wp
+               DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
+                 val = val + A_val( k ) * reverse%V( A_row( k ) )
+               END DO
+               reverse%P( j ) = val
+             END DO
+           END SELECT
+         END DO
+       CASE ( 3 ) ! A available by external subroutines
+         ALLOCATE( userdata%integer( len_integer ), userdata%real( len_real ) )
+         userdata%integer( 1 ) = m   ! load Jacobian data into userdata
+         userdata%integer( 2 ) = n
+         userdata%integer( st_ptr + 1 : st_ptr + n + 1 ) = A_ptr( : n + 1 )
+         userdata%integer( st_row + 1 : st_row + a_ne ) = A_row( : a_ne )
+         userdata%real( st_val + 1 : st_val + a_ne ) = A_val( : a_ne )
+         userdata%integer( nflag ) = 0
+         userdata%integer( st_flag + 1 : st_flag + n ) = 0
+         inform%status = 1
+         CALL BLLS_solve( p, X_stat, data, control, inform, userdata,          &
+                          eval_APROD = APROD, eval_ASPROD = ASPROD,            &
+                          eval_AFPROD = AFPROD )
 
-       WRITE( 6, "( ' BLLS_solve argument mode=', I0, ', status = ', I0,       &
-      &  ', objective = ', F6.4 ) " ) mode, inform%status, inform%obj
-       DEALLOCATE( userdata%integer, userdata%real, FLAG )
-     END SELECT
-     CALL BLLS_terminate( data, control, inform )  !  delete workspace
+         WRITE( 6, "( ' BLLS_solve argument mode =', I0, ', search = ', I0,    &
+        &  ', status = ', I0,', objective = ', F6.4 ) " )                      &
+            mode, exact_arc_search, inform%status, inform%obj
+         DEALLOCATE( userdata%integer, userdata%real, FLAG )
+       END SELECT
+       CALL BLLS_terminate( data, control, inform )  !  delete workspace
+     END DO
    END DO
 
 !  generic runs to test each storage mode
 
-   DO mode = 1, 4
-     CALL BLLS_initialize( data, control, inform )
-     control%infinity = infinity                   ! Set infinity
-!    control%print_level = 1                       ! print one line/iteration
-     control%exact_arc_search = .FALSE.
-!    control%exact_arc_search = .FALSE.
-     p%X = 0.0_wp ! start from zero
-     SELECT CASE ( mode )
-     CASE ( 1 ) ! A by columns
-       CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
-       ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
-       p%A%m = m ; p%A%n = n
-       p%A%val( : a_ne ) = A_val( : a_ne )
-       p%A%row( : a_ne ) = A_row( : a_ne )
-       p%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
-     CASE ( 2 ) ! A by rows
-       CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )
-       ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( m + 1 ) )
-       p%A%m = m ; p%A%n = n
-       p%A%val( : a_ne ) = A_val( : a_ne )
-       p%A%col( : a_ne ) = A_col( : a_ne )
-       p%A%ptr( : m + 1 ) = A_ptr_row( : m + 1 )
-     CASE ( 3 ) ! A coordinate
-       CALL SMT_put( p%A%type, 'COORDINATE', s )
-       ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
-       p%A%m = m ; p%A%n = n ; p%A%ne = a_ne
-       p%A%val( : a_ne ) = A_val( : a_ne )
-       p%A%row( : a_ne ) = A_row( : a_ne )
-       p%A%col( : a_ne ) = A_col( : a_ne )
-     CASE ( 4 ) ! A dense
-       CALL SMT_put( p%A%type, 'DENSE', s )
-       ALLOCATE( p%A%val( m * n ) )
-       p%A%m = m ; p%A%n = n
-       p%A%val( : m * n ) = (/ 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp,                 &
-                              0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp,                  &
-                              0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
-     END SELECT
-     inform%status = 1
-     CALL BLLS_solve( p, X_stat, data, control, inform, userdata )
-     WRITE( 6, "( ' BLLS_solve argument storage=', I0, ', status = ', I0,      &
-    &  ', objective = ', F6.4 ) " ) mode, inform%status, inform%obj
-     SELECT CASE ( mode )
-     CASE ( 1 ) ! A by columns
-       DEALLOCATE( p%A%val, p%A%row, p%A%ptr, p%A%type )
-     CASE ( 2 ) ! A by rows
-       DEALLOCATE( p%A%val, p%A%col, p%A%ptr, p%A%type )
-     CASE ( 3 ) ! A coordinate
-       DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type )
-     CASE ( 4 ) ! A dense
-       DEALLOCATE( p%A%val, p%A%type )
-     END SELECT
-     CALL BLLS_terminate( data, control, inform )  !  delete workspace
+   DO exact_arc_search = 0, 1
+     DO mode = 1, 4
+       CALL BLLS_initialize( data, control, inform )
+       control%infinity = infinity                   ! Set infinity
+!      control%print_level = 1                       ! print one line/iteration
+       control%exact_arc_search = exact_arc_search == 1
+!      control%exact_arc_search = .FALSE.
+       p%X = 0.0_wp ! start from zero
+       SELECT CASE ( mode )
+       CASE ( 1 ) ! A by columns
+         CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
+         ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
+         p%A%m = m ; p%A%n = n
+         p%A%val( : a_ne ) = A_val( : a_ne )
+         p%A%row( : a_ne ) = A_row( : a_ne )
+         p%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
+       CASE ( 2 ) ! A by rows
+         CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )
+         ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( m + 1 ) )
+         p%A%m = m ; p%A%n = n
+         p%A%val( : a_ne ) = A_val( : a_ne )
+         p%A%col( : a_ne ) = A_col( : a_ne )
+         p%A%ptr( : m + 1 ) = A_ptr_row( : m + 1 )
+       CASE ( 3 ) ! A coordinate
+         CALL SMT_put( p%A%type, 'COORDINATE', s )
+         ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
+         p%A%m = m ; p%A%n = n ; p%A%ne = a_ne
+         p%A%val( : a_ne ) = A_val( : a_ne )
+         p%A%row( : a_ne ) = A_row( : a_ne )
+         p%A%col( : a_ne ) = A_col( : a_ne )
+       CASE ( 4 ) ! A dense
+         CALL SMT_put( p%A%type, 'DENSE', s )
+         ALLOCATE( p%A%val( m * n ) )
+         p%A%m = m ; p%A%n = n
+         p%A%val( : m * n ) = (/ 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp,               &
+                                0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp,                &
+                                0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
+       END SELECT
+       inform%status = 1
+       CALL BLLS_solve( p, X_stat, data, control, inform, userdata )
+       WRITE( 6, "( ' BLLS_solve argument storage =', I0, ', search = ', I0,   &
+      &  ', status = ', I0, ', objective = ', F6.4 ) " )                       &
+         mode, exact_arc_search, inform%status, inform%obj
+       SELECT CASE ( mode )
+       CASE ( 1 ) ! A by columns
+         DEALLOCATE( p%A%val, p%A%row, p%A%ptr, p%A%type )
+       CASE ( 2 ) ! A by rows
+         DEALLOCATE( p%A%val, p%A%col, p%A%ptr, p%A%type )
+       CASE ( 3 ) ! A coordinate
+         DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type )
+       CASE ( 4 ) ! A dense
+         DEALLOCATE( p%A%val, p%A%type )
+       END SELECT
+       CALL BLLS_terminate( data, control, inform )  !  delete workspace
+     END DO
    END DO
    DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, X_stat )
 

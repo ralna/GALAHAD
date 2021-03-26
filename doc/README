@@ -186,10 +186,11 @@ In order to get GALAHAD working, here is what you need to do.
 
 9. You may also optionally provide binary code for a number of external
    packages that might make GALAHAD run faster. These include the
-   BLAS ((basic linear algebra subprograms), LAPACK, METIS, PARDISO and WSMP.
-   Don't worry if you cannot provide thses; GALAHAD will compile non-optimised
-   versions of the necessary ones (BLAS, LAPACK) and provide dummy versions
-   of the others. See ./galahad/doc/README.external for more details.
+   BLAS ((basic linear algebra subprograms), LAPACK, METIS, PARDISO,
+   MKL PARDISO, and WSMP.  Don't worry if you cannot provide thses; GALAHAD 
+   will compile non-optimised versions of the necessary ones (BLAS, LAPACK) 
+   and provide dummy versions of the others. See 
+   ./galahad/doc/README.external for more details.
 
 10. If you plan to use the (limited) Matlab interfaces, make sure that
    the MATLAB environment variable points to your system Matlab directory,
@@ -299,11 +300,20 @@ In order to get GALAHAD working, here is what you need to do.
 
      make -f $GALAHAD/makefiles/# filtrane
 
+16. Both the makefiles and the run scripts use default values for a
+    variety of variables. If you wish to use non-default values, you
+    should edit the appropiate files 
+     $GALAHAD/makefiles/#
+    and
+     $GALAHAD/bin/sys/#
+
+    Consult the file  $GALAHAD/doc/README.non-defaults for some suggestions
+
     =========
     EXECUTION
     =========
 
-16. To run the QP codes qpa/qpb/qpc on the CUTEst example EXAMPLE.SIF
+17. To run the QP codes qpa/qpb/qpc on the CUTEst example EXAMPLE.SIF
    issue the command
 
      sdgal # qpa [other options] EXAMPLE[.SIF]
@@ -328,7 +338,7 @@ In order to get GALAHAD working, here is what you need to do.
 
    See README.SIF for more details.
 
-17. To run/rerun LANCELOT B on the CUTE example EXAMPLE.SIF
+18. To run/rerun LANCELOT B on the CUTE example EXAMPLE.SIF
    issue the command
 
      sdgal # lancelot [other options] EXAMPLE[.SIF]
@@ -341,7 +351,7 @@ In order to get GALAHAD working, here is what you need to do.
 
    See README.SIF for more details.
 
-18. To run/rerun FILTRANE on the CUTE example EXAMPLE.SIF
+19. To run/rerun FILTRANE on the CUTE example EXAMPLE.SIF
    issue the command
 
      sdgal # filtrane [other options] EXAMPLE[.SIF]
@@ -358,7 +368,7 @@ In order to get GALAHAD working, here is what you need to do.
     TESTING
     =======
 
-19. To test that the installation of GALAHAD has been successful, you can
+20. To test that the installation of GALAHAD has been successful, you can
     move into the directory
 
       $GALAHAD/src
@@ -376,7 +386,7 @@ In order to get GALAHAD working, here is what you need to do.
     $GALAHAD/src/qp , and to test FILTRANE, do the same in the directory
     $GALAHAD/src/filtrane .
 
-20. If you are not using CUTEst, the GALAHAD link library for the
+21. If you are not using CUTEst, the GALAHAD link library for the
     precision you compiled with is in $GALAHAD/objects/#/(precision)/
     where (precision) is double or single, and # is as above.
     You should add this to your LIBPATH environment variable,
@@ -390,12 +400,12 @@ In order to get GALAHAD working, here is what you need to do.
     DOCUMENTATION
     =============
 
-21. Postscript documentation for each package is available in the
+22. Postscript documentation for each package is available in the
     directory $GALAHAD/doc . Man pages for sdgal and gal are in
     $GALAHAD/man/man1 . You may wish to add $GALAHAD/man to your
     MANPATH environment variable.
 
-22. If you like using graphical user-interfaces, why not try the GALAHAD
+23. If you like using graphical user-interfaces, why not try the GALAHAD
      python GUI(see $GAHALAD/doc/README.gui for details). This has not
      been kept fully up to date, so is probably of limited use.
 
@@ -403,7 +413,7 @@ In order to get GALAHAD working, here is what you need to do.
     NEWS
     ====
 
-23. Refer to the GALAHAD WWW page
+24. Refer to the GALAHAD WWW page
 
       http://galahad.rl.ac.uk/galahad-www/
 

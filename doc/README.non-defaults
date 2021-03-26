@@ -1,0 +1,67 @@
+                NON-DEFAULT MAKE AND RUN VARIABLES
+                ==================================
+
+Here is a list of appropriate non-default values that 
+we have applied to the relevant makefile deafult files
+in $GALAHAD/makefiles/* . Simply replace the provided
+definition(s) with those below as required. You can
+make the obvious analogous changes to run flags in
+$GALAHAD/bin/sys/*
+
+If you have any further suggestions, improvements, etc,
+please let us know.
+
+Gfortran
+--------
+
+** debug flag **
+
+DEBUG = -g -Wall -Wno-uninitialized -fcheck=all,no-recursion -fbacktrace -finit-integer=-32767 -finit-real=nan
+
+** BLAS, LAPACK and MKL **
+
+BLAS = -lblas
+LAPACK = -llapack
+
+or
+
+BLAS = -lgalahad_dummy
+LAPACK = -lopenblas
+
+or
+
+LAPACK = -lgalahad_dummy
+BLAS = -L/opt/intel/mkl/lib/intel64 -Wl,--no-as-needed -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -lgomp -lpthread -lm -ldl
+
+or
+
+MKL_PARDISO = -L/opt/intel/mkl/lib/intel64 -Wl,--no-as-needed -lmkl_gf_lp64 -lmkl_sequential -lmkl_core -lpthread -lm -ldl
+
+Intel ifort
+-----------
+
+** debug flag **
+
+DEBUG = -debug -g -traceback
+
+** BLAS, LAPACK and MKL **
+
+LAPACK = -L/opt/intel/mkl/lib/intel64 -mkl
+MKL_PARDISO = -L/opt/intel/mkl/lib/intel64 -mkl
+
+NAG nagfor
+----------
+
+** debug flag **
+
+DEBUG = -C=all -gline -nan -g -u
+
+Nick Gould
+Dominique Orban
+Philippe Toint
+
+===========================
+
+For GALAHAD productions
+25 April 2002
+This version: 25 March 2021

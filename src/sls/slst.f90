@@ -17,11 +17,12 @@
    INTEGER, PARAMETER :: ma87 = 5
    INTEGER, PARAMETER :: ma97 = 6
    INTEGER, PARAMETER :: pardiso = 7
-   INTEGER, PARAMETER :: wsmp = 8
-   INTEGER, PARAMETER :: potr = 9
-   INTEGER, PARAMETER :: sytr = 10
-   INTEGER, PARAMETER :: pbtr = 11
-   INTEGER, PARAMETER :: ssids = 12
+   INTEGER, PARAMETER :: mkl_pardiso = 8
+   INTEGER, PARAMETER :: wsmp = 9
+   INTEGER, PARAMETER :: potr = 10
+   INTEGER, PARAMETER :: sytr = 11
+   INTEGER, PARAMETER :: pbtr = 12
+   INTEGER, PARAMETER :: ssids = 13
    INTEGER :: ORDER( n )
    REAL ( KIND = wp ) :: B( n ), X( n ), B2( n, 2 ), X2( n, 2 )
    REAL ( KIND = wp ) :: D( 2, n )
@@ -57,8 +58,8 @@
 
 ! Read matrix order and number of entries
 !  DO type = 1, 0   ! none
-   DO type = 1, 3   ! all
-!  DO type = 1, 1   ! coordinate
+!  DO type = 1, 3   ! all
+   DO type = 1, 1   ! coordinate
 !  DO type = 2, 2   ! row-wise
 !  DO type = 3, 3   ! dense
 ! Allocate arrays of appropriate sizes
@@ -85,8 +86,8 @@
 !  test external ordering strategies
 
 !    DO ordering = 1, 0 ! none
-     DO ordering = 1, 3 ! all orderings
-!    DO ordering = 1, 1 ! default ordering
+!    DO ordering = 1, 3 ! all orderings
+     DO ordering = 1, 1 ! default ordering
 !    DO ordering = 2, 2 ! computed ordering
 !    DO ordering = 3, 3 ! provided ordering
        IF ( ordering == 1 ) THEN
@@ -97,26 +98,27 @@
          write(6,"( '  provided ordering' )" )
        END IF
        WRITE( 6,                                                               &
-          "( '   solver  1 RHS  1 refine  >1 RHS    >1 refine  partial')" )
-       DO l = 1, 12   ! all
+          "( '       solver  1 RHS  1 refine  >1 RHS    >1 refine  partial')" )
+!      DO l = 1, 13   ! all
 !      DO l = 7, 12   ! all hsl
 !      DO l = 2, 4    ! all lapack
-!      DO l = 12, 12  ! sils
-!      DO l = 11, 11  ! ma57
-!      DO l = 10, 10    ! ma77
-!      DO l = 9, 9    ! ma86
-!      DO l = 8, 8    ! ma87
-!      DO l = 7, 7    ! ma97
-!      DO l = 6, 6    ! pardiso
+!      DO l = 13, 13  ! sils
+!      DO l = 12, 12  ! ma57
+!      DO l = 11, 11  ! ma77
+!      DO l = 10, 10  ! ma86
+!      DO l = 9, 9    ! ma87
+!      DO l = 8, 8    ! ma97
+!      DO l = 7, 7    ! pardiso
+!      DO l = 6, 6    ! mkl_pardiso
 !      DO l = 5, 5    ! wsmp
 !      DO l = 4, 4    ! potr
 !      DO l = 3, 3    ! sytr
 !      DO l = 2, 2    ! pbtr
-!      DO l = 1, 1    ! ssids
-        solver = 13 - l
+       DO l = 1, 1    ! ssids
+        solver = 14 - l
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
-         CASE ( sils, ma57, ma77, ma86, ma97, pardiso,                         &
+         CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
                 wsmp, sytr, ssids ) ! indefinite
 ! assign the matrix and right-hand side
            SELECT CASE( type )
@@ -155,40 +157,43 @@
          END SELECT
 ! Initialize the structures
          IF ( solver == sils ) THEN
-           WRITE( 6, "( '     sils ' )", advance = 'no' )
+           WRITE( 6, "( '         sils ' )", advance = 'no' )
            CALL SLS_initialize( 'sils', data, control, inform )
          ELSE IF ( solver == ma57 ) THEN
-           WRITE( 6, "( '     ma57 ' )", advance = 'no' )
+           WRITE( 6, "( '         ma57 ' )", advance = 'no' )
            CALL SLS_initialize( 'ma57', data, control, inform )
         ELSE IF ( solver == ma77 ) THEN
-           WRITE( 6, "( '     ma77 ' )", advance = 'no' )
+           WRITE( 6, "( '         ma77 ' )", advance = 'no' )
            CALL SLS_initialize( 'ma77', data, control, inform )
          ELSE IF ( solver == ma86 ) THEN
-           WRITE( 6, "( '     ma86 ' )", advance = 'no' )
+           WRITE( 6, "( '         ma86 ' )", advance = 'no' )
            CALL SLS_initialize( 'ma86', data, control, inform )
          ELSE IF ( solver == ma87 ) THEN
-           WRITE( 6, "( '     ma87 ' )", advance = 'no' )
+           WRITE( 6, "( '         ma87 ' )", advance = 'no' )
            CALL SLS_initialize( 'ma87', data, control, inform )
          ELSE IF ( solver == ma97 ) THEN
-           WRITE( 6, "( '     ma97 ' )", advance = 'no' )
+           WRITE( 6, "( '         ma97 ' )", advance = 'no' )
            CALL SLS_initialize( 'ma97', data, control, inform )
          ELSE IF ( solver == pardiso ) THEN
-           WRITE( 6, "( '  pardiso ' )", advance = 'no' )
+           WRITE( 6, "( '      pardiso ' )", advance = 'no' )
            CALL SLS_initialize( 'pardiso', data, control, inform )
+         ELSE IF ( solver == mkl_pardiso ) THEN
+           WRITE( 6, "( '  mkl_pardiso ' )", advance = 'no' )
+           CALL SLS_initialize( 'mkl_pardiso', data, control, inform )
          ELSE IF ( solver == wsmp ) THEN
-           WRITE( 6, "( '     wsmp ' )", advance = 'no' )
+           WRITE( 6, "( '         wsmp ' )", advance = 'no' )
            CALL SLS_initialize( 'wsmp', data, control, inform )
          ELSE IF ( solver == potr ) THEN
-           WRITE( 6, "( '     potr ' )", advance = 'no' )
+           WRITE( 6, "( '         potr ' )", advance = 'no' )
            CALL SLS_initialize( 'potr', data, control, inform )
          ELSE IF ( solver == sytr ) THEN
-           WRITE( 6, "( '     sytr ' )", advance = 'no' )
+           WRITE( 6, "( '         sytr ' )", advance = 'no' )
            CALL SLS_initialize( 'sytr', data, control, inform )
          ELSE IF ( solver == pbtr ) THEN
-           WRITE( 6, "( '     pbtr ' )", advance = 'no' )
+           WRITE( 6, "( '         pbtr ' )", advance = 'no' )
            CALL SLS_initialize( 'pbtr', data, control, inform )
          ELSE IF ( solver == ssids ) THEN
-           WRITE( 6, "( '    ssids ' )", advance = 'no' )
+           WRITE( 6, "( '        ssids ' )", advance = 'no' )
            CALL SLS_initialize( 'ssids', data, control, inform )
          END IF
          control%scaling = 0
@@ -230,6 +235,7 @@
 ! Factorize
 !write(6,*) ' factorize '
          CALL SLS_factorize( matrix, data, control, inform )
+!write(6,*) ' status - ', inform%status
          IF ( inform%status == GALAHAD_error_unknown_solver ) THEN
            WRITE( 6, "( '  none ' )", advance = 'no' )
            WRITE( 6, "( '' )" )
@@ -248,8 +254,9 @@
 ! Solve without refinement
          control%max_iterative_refinements = 0
          X = B
-!write(6,*) ' solve '
+!write(6,*) ' solve 1 RHS'
          CALL SLS_solve( matrix, X, data, control, inform )
+!write(6,*) ' status - ', inform%status
          IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                        &
                  <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
            WRITE( 6, "( '   ok  ' )", advance = 'no' )
@@ -269,8 +276,10 @@
 ! Solve multiple RHS without refinement
          B2( : , 1 ) = B ; B2( : , 2 ) = B
          X2 = B2
+!write(6,*) ' solve multiple RHS'
          control%max_iterative_refinements = 0
          CALL SLS_solve( matrix, X2, data, control, inform )
+!write(6,*) ' status - ', inform%status
          IF ( MAXVAL( ABS( X2( 1 : n, 1 ) - SOL( 1 : n ) ) )                   &
                  <= EPSILON( 1.0_wp ) ** 0.5 .AND.                             &
               MAXVAL( ABS( X2( 1 : n, 2 ) - SOL( 1 : n ) ) )                   &
@@ -321,14 +330,15 @@
          CALL SLS_alter_d( data, D, inform )
 !write(6,*) ' terminate '
          CALL SLS_terminate( data, control, inform )
+!write(6,*) ' end terminate '
          WRITE( 6, "( '' )" )
        END DO
      END DO
 
 !  test external scaling strategies
 
-!    DO scaling = 1, 0  ! none
-     DO scaling = 1, 3  ! all
+     DO scaling = 1, 0  ! none
+!    DO scaling = 1, 3  ! all
 !    DO scaling = 1, 1  ! mc64
 !    DO scaling = 2, 2  ! mc77 1-norm
 !    DO scaling = 3, 3  ! mc77 inf-norm
@@ -341,26 +351,27 @@
          write(6,"( '  MC77 infinity-norm scaling' )" )
        END IF
        WRITE( 6,                                                               &
-          "( '   solver  1 RHS  1 refine  >1 RHS    >1 refine  partial')" )
-       DO l = 1, 12   ! all
+          "( '       solver  1 RHS  1 refine  >1 RHS    >1 refine  partial')" )
+       DO l = 1, 13   ! all
 !      DO l = 7, 12   ! all hsl
 !      DO l = 2, 4    ! all lapack
-!      DO l = 12, 12  ! sils
-!      DO l = 11, 11  ! ma57
-!      DO l = 10, 10    ! ma77
-!      DO l = 9, 9    ! ma86
-!      DO l = 8, 8    ! ma87
-!      DO l = 7, 7    ! ma97
-!      DO l = 6, 6    ! pardiso
+!      DO l = 13, 13  ! sils
+!      DO l = 12, 12  ! ma57
+!      DO l = 11, 11  ! ma77
+!      DO l = 10, 10  ! ma86
+!      DO l = 9, 9    ! ma87
+!      DO l = 8, 8    ! ma97
+!      DO l = 7, 7    ! pardiso
+!      DO l = 6, 6    ! mkl_pardiso
 !      DO l = 5, 5    ! wsmp
 !      DO l = 4, 4    ! potr
 !      DO l = 3, 3    ! sytr
 !      DO l = 2, 2    ! pbtr
 !      DO l = 1, 1    ! ssids
-        solver = 13 - l
+        solver = 14 - l
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
-         CASE ( sils, ma57, ma77, ma86, ma97, pardiso,                         &
+         CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
                 wsmp, sytr, ssids ) ! indefinite
 ! assign the matrix and right-hand side
            SELECT CASE( type )
@@ -399,40 +410,43 @@
          END SELECT
 ! Initialize the structures
          IF ( solver == sils ) THEN
-           WRITE( 6, "( '     sils ' )", advance = 'no' )
+           WRITE( 6, "( '         sils ' )", advance = 'no' )
            CALL SLS_initialize( 'sils', data, control, inform )
          ELSE IF ( solver == ma57 ) THEN
-           WRITE( 6, "( '     ma57 ' )", advance = 'no' )
+           WRITE( 6, "( '         ma57 ' )", advance = 'no' )
            CALL SLS_initialize( 'ma57', data, control, inform )
         ELSE IF ( solver == ma77 ) THEN
-           WRITE( 6, "( '     ma77 ' )", advance = 'no' )
+           WRITE( 6, "( '         ma77 ' )", advance = 'no' )
            CALL SLS_initialize( 'ma77', data, control, inform )
          ELSE IF ( solver == ma86 ) THEN
-           WRITE( 6, "( '     ma86 ' )", advance = 'no' )
+           WRITE( 6, "( '         ma86 ' )", advance = 'no' )
            CALL SLS_initialize( 'ma86', data, control, inform )
          ELSE IF ( solver == ma87 ) THEN
-           WRITE( 6, "( '     ma87 ' )", advance = 'no' )
+           WRITE( 6, "( '         ma87 ' )", advance = 'no' )
            CALL SLS_initialize( 'ma87', data, control, inform )
          ELSE IF ( solver == ma97 ) THEN
-           WRITE( 6, "( '     ma97 ' )", advance = 'no' )
+           WRITE( 6, "( '         ma97 ' )", advance = 'no' )
            CALL SLS_initialize( 'ma97', data, control, inform )
          ELSE IF ( solver == pardiso ) THEN
-           WRITE( 6, "( '  pardiso ' )", advance = 'no' )
+           WRITE( 6, "( '      pardiso ' )", advance = 'no' )
            CALL SLS_initialize( 'pardiso', data, control, inform )
+         ELSE IF ( solver == mkl_pardiso ) THEN
+           WRITE( 6, "( '  mkl_pardiso ' )", advance = 'no' )
+           CALL SLS_initialize( 'mkl_pardiso', data, control, inform )
          ELSE IF ( solver == wsmp ) THEN
-           WRITE( 6, "( '     wsmp ' )", advance = 'no' )
+           WRITE( 6, "( '         wsmp ' )", advance = 'no' )
            CALL SLS_initialize( 'wsmp', data, control, inform )
          ELSE IF ( solver == potr ) THEN
-           WRITE( 6, "( '     potr ' )", advance = 'no' )
+           WRITE( 6, "( '         potr ' )", advance = 'no' )
            CALL SLS_initialize( 'potr', data, control, inform )
          ELSE IF ( solver == sytr ) THEN
-           WRITE( 6, "( '     sytr ' )", advance = 'no' )
+           WRITE( 6, "( '         sytr ' )", advance = 'no' )
            CALL SLS_initialize( 'sytr', data, control, inform )
          ELSE IF ( solver == pbtr ) THEN
-           WRITE( 6, "( '     pbtr ' )", advance = 'no' )
+           WRITE( 6, "( '         pbtr ' )", advance = 'no' )
            CALL SLS_initialize( 'pbtr', data, control, inform )
          ELSE IF ( solver == ssids ) THEN
-           WRITE( 6, "( '    ssids ' )", advance = 'no' )
+           WRITE( 6, "( '        ssids ' )", advance = 'no' )
            CALL SLS_initialize( 'ssids', data, control, inform )
          END IF
          control%ordering = 0
@@ -558,63 +572,68 @@
 ! stop
 ! Test error returns
    WRITE( 6, "( ' error tests' )" )
-   WRITE( 6, "( '   solver     -3   -20   -31   -26')" )
+   WRITE( 6, "( '       solver     -3   -20   -31   -26')" )
 !  DO l = 1, 0    ! none
-   DO l = 1, 12   ! all
+!  DO l = 2, 13   ! all
+   DO l = 1, 13   ! all
 !  DO l = 7, 12   ! all hsl
 !  DO l = 2, 4    ! all lapack
-!  DO l = 12, 12  ! sils
-!  DO l = 11, 11  ! ma57
-!  DO l = 10, 10  ! ma77
-!  DO l = 9, 9    ! ma86
-!  DO l = 8, 8    ! ma87
-!  DO l = 7, 7    ! ma97
-!  DO l = 6, 6    ! pardiso
+!  DO l = 13, 13  ! sils
+!  DO l = 12, 12  ! ma57
+!  DO l = 11, 11  ! ma77
+!  DO l = 10, 10  ! ma86
+!  DO l = 9, 9    ! ma87
+!  DO l = 8, 8    ! ma97
+!  DO l = 7, 7    ! pardiso
+!  DO l = 6, 6    ! mkl_pardiso
 !  DO l = 5, 5    ! wsmp
 !  DO l = 4, 4    ! potr
 !  DO l = 3, 3    ! sytr
 !  DO l = 2, 2    ! pbtr
 !  DO l = 1, 1    ! ssids
-!    solver = 13 - l
-     solver = l
+     solver = 14 - l
+!    solver = l
 ! Initialize the structures
 
 ! test for error = GALAHAD_error_restrictions
 
      IF ( solver == sils ) THEN
-       WRITE( 6, "( '     sils ' )", advance = 'no' )
+       WRITE( 6, "( '         sils ' )", advance = 'no' )
        CALL SLS_initialize( 'sils', data, control, inform )
      ELSE IF ( solver == ma57 ) THEN
-       WRITE( 6, "( '     ma57 ' )", advance = 'no')
+       WRITE( 6, "( '         ma57 ' )", advance = 'no')
        CALL SLS_initialize( 'ma57', data, control, inform )
      ELSE IF ( solver == ma77 ) THEN
-       WRITE( 6, "( '     ma77 ' )", advance = 'no')
+       WRITE( 6, "( '         ma77 ' )", advance = 'no')
        CALL SLS_initialize( 'ma77', data, control, inform )
      ELSE IF ( solver == ma86 ) THEN
-       WRITE( 6, "( '     ma86 ' )", advance = 'no' )
+       WRITE( 6, "( '         ma86 ' )", advance = 'no' )
        CALL SLS_initialize( 'ma86', data, control, inform )
      ELSE IF ( solver == ma87 ) THEN
-       WRITE( 6, "( '     ma87 ' )", advance = 'no' )
+       WRITE( 6, "( '         ma87 ' )", advance = 'no' )
      ELSE IF ( solver == ma97 ) THEN
-       WRITE( 6, "( '     ma97 ' )", advance = 'no' )
+       WRITE( 6, "( '         ma97 ' )", advance = 'no' )
        CALL SLS_initialize( 'ma87', data, control, inform )
      ELSE IF ( solver == pardiso ) THEN
-       WRITE( 6, "( '  pardiso ' )", advance = 'no' )
+       WRITE( 6, "( '      pardiso ' )", advance = 'no' )
        CALL SLS_initialize( 'pardiso', data, control, inform )
+     ELSE IF ( solver == mkl_pardiso ) THEN
+       WRITE( 6, "( '  mkl_pardiso ' )", advance = 'no' )
+       CALL SLS_initialize( 'mkl_pardiso', data, control, inform )
      ELSE IF ( solver == wsmp ) THEN
-       WRITE( 6, "( '     wsmp ' )", advance = 'no' )
+       WRITE( 6, "( '         wsmp ' )", advance = 'no' )
        CALL SLS_initialize( 'wsmp', data, control, inform )
      ELSE IF ( solver == potr ) THEN
-       WRITE( 6, "( '     potr ' )", advance = 'no' )
+       WRITE( 6, "( '         potr ' )", advance = 'no' )
        CALL SLS_initialize( 'potr', data, control, inform )
      ELSE IF ( solver == sytr ) THEN
-       WRITE( 6, "( '     sytr ' )", advance = 'no' )
+       WRITE( 6, "( '         sytr ' )", advance = 'no' )
        CALL SLS_initialize( 'sytr', data, control, inform )
      ELSE IF ( solver == pbtr ) THEN
-       WRITE( 6, "( '     pbtr ' )", advance = 'no' )
+       WRITE( 6, "( '         pbtr ' )", advance = 'no' )
        CALL SLS_initialize( 'pbtr', data, control, inform )
      ELSE IF ( solver == ssids ) THEN
-       WRITE( 6, "( '    ssids ' )", advance = 'no' )
+       WRITE( 6, "( '        ssids ' )", advance = 'no' )
        CALL SLS_initialize( 'ssids', data, control, inform )
      END IF
      control%error = - 1 ; control%warning = - 1
@@ -644,6 +663,8 @@
        CALL SLS_initialize( 'ma97', data, control, inform )
      ELSE IF ( solver == pardiso ) THEN
        CALL SLS_initialize( 'pardiso', data, control, inform )
+     ELSE IF ( solver == mkl_pardiso ) THEN
+       CALL SLS_initialize( 'mkl_pardiso', data, control, inform )
      ELSE IF ( solver == wsmp ) THEN
        CALL SLS_initialize( 'wsmp', data, control, inform )
      ELSE IF ( solver == potr ) THEN
@@ -677,14 +698,17 @@
      ELSE
        control%pivot_control = 2
      END IF
+     control%ordering = 0
 !write(6,*) ' analyse '
      CALL SLS_analyse( matrix, data, control, inform )
+!write(6,*) ' status - ', inform%status
      IF ( inform%status < 0 ) THEN
        WRITE( 6, "( I6 )", advance = 'no' ) inform%status
      ELSE
 ! Factorize
 !write(6,*) ' factorize '
        CALL SLS_factorize( matrix, data, control, inform )
+!write(6,*) ' status - ', inform%status
        WRITE( 6, "( I6 )", advance = 'no' ) inform%status
      END IF
 !write(6,*) ' terminate '
@@ -706,7 +730,7 @@
      CALL SLS_terminate( data, control, inform )
      DEALLOCATE( matrix%val, matrix%row, matrix%col )
    END DO
-   WRITE( 6, "( '  unknown ' )", advance = 'no' )
+   WRITE( 6, "( '      unknown ' )", advance = 'no' )
    CALL SLS_initialize( 'unknown_solver', data, control, inform )
    WRITE( 6, "( 18X, I6 )" ) inform%status
    CALL SLS_terminate( data, control, inform )

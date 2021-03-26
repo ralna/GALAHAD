@@ -21,12 +21,14 @@ that will have been created during the installation process.
 The variables in the former are "Makefile" variables
 and by default are set as
 
-BLAS = 
-LAPACK = 
-HSL = 
-METIS = 
-PARDISO = 
-WSMP = 
+BLAS = -lgalahad_blas
+LAPACK = -lgalahad_lapack
+HSL = -lgalahad_hsl
+SPRAL = -lgalahad_spral
+METIS = -lgalahad_metis
+PARDISO = -lgalahad_pardiso
+MKL_PARDISO = -lgalahad_mkl_pardiso
+WSMP = -lgalahad_wsmp
 
 These may be overridden as for eaxmple,
 
@@ -37,12 +39,14 @@ Note that spaces are not critical here.
 The variables in ./galahad/bin/sys are Unix Bourne/bash-shell variables and 
 by default are
 
-BLAS=""
-LAPACK=""
-HSL=""
-METIS=""
-PARDISO=""
-WSMP=""
+BLAS="-lgalahad_blas"
+LAPACK="-lgalahad_lapack"
+HSL="-lgalahad_hsl"
+SPRAL="-lgalahad_spral"
+METIS="-lgalahad_metis"
+PARDISO="-lgalahad_pardiso"
+MKL_PARDISO="-lgalahad_mkl_pardiso"
+WSMP="-lgalahad_wsmp"
 
 and are now overridden for example as
 
@@ -113,6 +117,22 @@ PARDISO
  also point to the full path to the library. For example, if libpardiso.so
  is in the directory /mylibrary, PARDISO should be set to 
  "-L/mylibrary -lpardiso" 
+ N.B. PARDISO is only optionally required but may improve performance.
+
+-----------
+MKL PARDISO
+-----------
+
+ If there is a compiled, library version of the MKL version of the PARDISO 
+ sparse factorization package (http://www.pardiso-project.org/) , set
+ MKL_PARDISO to -lx, where the object library libx.so contains PARDISO. For
+ instance if PARDISO is contained in the object library libmkl_intel_lp64.a
+ MKL_PARDISO should be set to "-lmkl_intel_lp64". If the library is in a 
+ "non-standard place", MKL_PARDISO should also point to the full path to the
+ library. For example, if libmkl_intel_lp64.a is in the directory /mylibrary,
+ MKL_PARDISO should be set to "-L/mylibrary -lmkl_intel_lp64"
+ f a compiled version of the MKL version of PARDISO is unavailable,
+ MKL_PARDISO should be set to "-lgalahad_mkl_pardiso".
  N.B. PARDISO is only optionally required but may improve performance.
 
 ----

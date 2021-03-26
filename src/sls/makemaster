@@ -55,7 +55,8 @@ WLGD = $(OBJD)/libgalahad_wsmp.a
 
 #  Libraries used
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
+                 $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
 
 #  remove out-of-core direct-access files
@@ -95,9 +96,11 @@ MA86SED = $(GALAHAD)/seds/$(MA86_VERSION).sed
 #  compilation agenda
 
 SLSS = basics ma57v4 sils mc61 mc64 mc68 mc77 ma77 ma86 ma87 ma97 ssids_dum \
-       pardiso wsmp metis symbols space string specfile sort $(LGS)(sls.o)
+       mkl_pardiso pardiso wsmp metis symbols space string specfile sort \
+       $(LGS)(sls.o)
 SLSD = basics ma57v4 sils mc61 mc64 mc68 mc77 ma77 ma86 ma87 ma97 $(SSIDS) \
-       pardiso wsmp metis symbols space string specfile sort $(LGD)(sls.o)
+       mkl_pardiso pardiso wsmp metis symbols space string specfile sort \
+       $(LGD)(sls.o)
 
 SRUNSLS = copyright $(LGS)(usesls.o) $(OBJS)/runsls_sif.o
 DRUNSLS = copyright $(LGD)(usesls.o) $(OBJD)/runsls_sif.o
@@ -194,7 +197,7 @@ copyright:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 
-#  hsl packages
+#  hsl and related packages
 
 ma57v4:
 	( cd ../non-free/ma57 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -236,9 +239,15 @@ $(SSIDS):
 	( cd ../dum ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             $(SSIDS)_silent PRECIS=$(PRECIS) PWD=$(PWD)/../dum )
 
+#  dummy versions of external packages
+
 pardiso:
 	( cd ../dum ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             pardiso_silent PRECIS=$(PRECIS) PWD=$(PWD)/../dum )
+
+mkl_pardiso:
+	( cd ../dum ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+           mkl_pardiso_silent PRECIS=$(PRECIS) PWD=$(PWD)/../dum )
 
 wsmp:
 	( cd ../dum ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \

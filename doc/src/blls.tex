@@ -15,12 +15,13 @@
 
 \galsummary
 This package uses a preconditioned, projected-gradient method
-to solve the {\bf bound-constrained linear least-squares problem}
-\disp{\mbox{minimize}\;\; q(\bmx) = \half \| \bmA \bmx - \bmb\|_2^2}
+to solve the {\bf bound-constrained regularized linear least-squares problem}
+\disp{\mbox{minimize}\;\; q(\bmx) = \half \| \bmA \bmx - \bmb\|_2^2
++ \half \sigma \|\bmx\|^2}
 subject to the simple bound constraints
 \disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
-where the $m$ by $n$ real matrix $\bmA$, and the
-vectors $\bmb$, $\bmx^{l}$, $\bmx^{u}$ are given.
+where the $m$ by $n$ real matrix $\bmA$, the vectors 
+$\bmb$, $\bmx^{l}$, $\bmx^{u}$ and the non-negative weight $\sigma$ are given.
 Any of the constraint bounds $x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
 Full advantage is taken of any zero coefficients of the Jacobian matrix $\bmA$
 of the {\bf residuals} $\bmc(\bmx) = \bmA \bmx - \bmb$;
@@ -417,6 +418,11 @@ piecewise arc search.
 The default is {\tt arcsearch\_max\_steps = 1000}, and a negative value
 removes the limit.
 
+\itt{weight} is a scalar variable of type default \realdp, that is used to
+specify the weight $\sigma$ that controls regularization of the objective 
+function. Any value smaller than $0$ will be regarded as zero.
+The default is {\tt weight =} $0.0$.
+
 \itt{infinity} is a scalar variable of type default \realdp, that is used to
 specify which constraint bounds are infinite.
 Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
@@ -463,25 +469,25 @@ and \sloppy {\tt stop\_cg\_absolute =} $\sqrt{u}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
-\itt{alpha\_max} is a scalar variable of type default \realdp that specifies
+\itt{alpha\_max} is a scalar variable of type default \realdp, that specifies
 The default is {\tt alpha\_max =} $10^{20}$.
 
-\itt{alpha\_initial} is a scalar variable of type default \realdp that
+\itt{alpha\_initial} is a scalar variable of type default \realdp, that
 specifies the initial arc length during the inexact piecewise arc search.
 The default is {\tt alpha\_initial = 1.0}.
 
-\itt{alpha\_reduction} is a scalar variable of type default \realdp that
+\itt{alpha\_reduction} is a scalar variable of type default \realdp, that
 specifies the arc length reduction factor for the inexact piecewise arc search.
 The default is {\tt alpha\_reduction = 0.5}.
 
-\itt{arcsearch\_acceptance\_tol} is a scalar variable of type default \realdp
+\itt{arcsearch\_acceptance\_tol} is a scalar variable of type default \realdp,
 that specifies the required relative reduction during the inexact arc search
 The default is {\tt arcsearch\_acceptance\_tol = 0.01}.
 
-\itt{regularization\_weight} is a scalar variable of type default \realdp
-that specifies the regularization weight added to the search-direction
-subproblem to stabilise the computation.
-The default is {\tt regularization\_weight =} $10^{-12}$.
+\itt{stabilisation\_weight} is a scalar variable of type default \realdp,
+that specifies the weight added to the search-direction subproblem to 
+stabilise the computation.
+The default is {\tt stabilisation\_weight =} $10^{-12}$.
 
 \itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
 that is used to specify the maximum permitted CPU time. Any negative

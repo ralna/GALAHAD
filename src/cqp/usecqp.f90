@@ -1316,6 +1316,7 @@
           WRITE( rfiledevice, "( A10, ES16.8, 3ES9.1, bn, I9, F12.2, I6 )" )   &
             pname, qfval, res_c, res_k, max_cs, - iter, - clockt, status
         END IF
+        CLOSE( rfiledevice )
       END IF
 
 !  Print the first and last few components of the solution.

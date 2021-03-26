@@ -283,6 +283,20 @@ SPRAL=""
 
 PARDISO=""
 
+#  If there is a compiled, library version of the MKL version of the PARDISO 
+#  sparse factorization package (http://www.pardiso-project.org/) , set
+#  MKL_PARDISO to -lx, where the object library libx.so contains PARDISO. For
+#  instance if PARDISO is contained in the object library libmkl_intel_lp64.a
+#  MKL_PARDISO should be set to "-lmkl_intel_lp64". If the library is in a 
+#  "non-standard place", MKL_PARDISO should also point to the full path to the
+#  library. For example, if libmkl_intel_lp64.a is in the directory /mylibrary,
+#  MKL_PARDISO should be set to "-L/mylibrary -lmkl_intel_lp64"
+# If a compiled version of the MKL version of PARDISO is unavailable,
+#  MKL_PARDISO should be set to "-lgalahad_mkl_pardiso".
+#  N.B. MKL PARDISO is only optionally required but may improve performance.
+
+MKL_PARDISO=""
+
 #  If there is a compiled, library version of the WSMP sparse factorization
 #  package (http://www.wsmp-project.org/) , set WSMP to -lx,
 #  where the object library libx.so contains WSMP.  For instance if WSMP
@@ -304,7 +318,6 @@ WSMP=""
 #  N.B. PLPLOT is only optionally required.
 
 PLPLOT=""
-
 
 #  ----------------------------------------------------------------------------
 #  -*- end of default values that may be overridden in $GALAHAD/bin/sys/$1 -*-
@@ -394,7 +407,8 @@ else
 fi
 PROBLIB=""
 
-#  libraries for BLAS, LAPACK, HSL, METIS, SPRAL, PARDISO, WSMP and SUITESPARSE
+#  libraries for BLAS, LAPACK, HSL, METIS, SPRAL, PARDISO, MKL_PARDISO, 
+#  WSMP and SUITESPARSE
 
 if [[ "$BLAS" == "" ]]; then
   BLASLIB="-lgalahad_blas"
@@ -430,6 +444,12 @@ if [[ "$PARDISO" == "" ]]; then
   PARDISOLIB="-lgalahad_pardiso"
 else
   PARDISOLIB="$PARDISO"
+fi
+
+if [[ "$MKL_PARDISO" == "" ]]; then
+  MKL_PARDISOLIB="-lgalahad_mkl_pardiso"
+else
+  MKL_PARDISOLIB="$PARDISO"
 fi
 
 if [[ "$WSMP" == "" ]]; then
@@ -1042,13 +1062,13 @@ fi
 
 #EXECUTABLE="$FORTRAN $FFLAGS -o $galmin $RUNMAIN $NSUB\
 # -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad\
-# $HSLLIB $SPRALLIB $PARDISOLIB $WSMPLIB $SUITESPARSELIB $METISLIB $LAPACKLIB\
-# $BLASLIB $PLPLOT"
+# $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMPLIB $SUITESPARSELIB\
+# $METISLIB $LAPACKLIB $BLASLIB $PLPLOT"
 
 EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN $NSUB\
  -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad\
- $HSLLIB $SPRALLIB $PARDISOLIB $WSMPLIB $SUITESPARSELIB $METISLIB $LAPACKLIB\
- $BLASLIB $PLPLOT $CUDALIBS"
+ $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMPLIB $SUITESPARSELIB\
+ $METISLIB $LAPACKLIB $BLASLIB $PLPLOT $CUDALIBS"
 
 if [[ $OUTPUT == "1" ]]; then
   echo " $EXECUTABLE"

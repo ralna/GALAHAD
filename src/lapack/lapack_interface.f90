@@ -190,7 +190,7 @@
        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
        INTEGER, INTENT( IN ) :: n, lda
        INTEGER, INTENT( OUT ) :: info
-       REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
+       REAL, INTENT( INOUT ), DIMENSION( lda, * ) :: A
        END SUBROUTINE SPOTRF
 
        SUBROUTINE DPOTRF( uplo, n, A, lda, info )

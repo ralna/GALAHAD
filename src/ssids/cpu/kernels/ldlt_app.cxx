@@ -1299,7 +1299,7 @@ private:
          }*/
 
          // Factor diagonal: depend on perm[blk*block_size] as we init npass
-         #pragma omp task default(none)                           \
+         #pragma omp task                            \
             firstprivate(blk)                                     \
             shared(a, abort, perm, backup, cdata, next_elim, d,   \
                    options, work, alloc, flag)                    \
@@ -1363,7 +1363,7 @@ private:
          
          // Loop over off-diagonal blocks applying pivot
          for(int jblk = 0; jblk < blk; jblk++) {
-            #pragma omp task default(none)                            \
+            #pragma omp task                             \
                firstprivate(blk, jblk)                                \
                shared(a, abort, backup, cdata, options)               \
                depend(in: a[blk*block_size*lda+blk*block_size:1])     \
@@ -1396,7 +1396,7 @@ private:
             } } /* task/abort */
          }
          for (int iblk = blk + 1; iblk < mblk; iblk++) {
-            #pragma omp task default(none)                            \
+            #pragma omp task                             \
                firstprivate(blk, iblk)                                \
                shared(a, abort, backup, cdata, options)               \
                depend(in: a[blk*block_size*lda+blk*block_size:1])     \
@@ -1431,7 +1431,7 @@ private:
 
          // Adjust column once all applys have finished and we know final
          // number of passed columns.
-         #pragma omp task default(none)           \
+         #pragma omp task            \
             firstprivate(blk)                     \
             shared(abort, cdata, next_elim)       \
             depend(inout: perm[blk*block_size:1])
@@ -1458,7 +1458,7 @@ private:
                // (we only work with lower half of matrix)
                int adep_idx = (blk < iblk) ? blk*block_size*lda + iblk*block_size
                                            : iblk*block_size*lda + blk*block_size;
-               #pragma omp task default(none)                             \
+               #pragma omp task                              \
                   firstprivate(blk, iblk, jblk)                           \
                   shared(a, abort, cdata, backup, work)                   \
                   depend(inout: a[jblk*block_size*lda+iblk*block_size:1]) \
@@ -1495,7 +1495,7 @@ private:
          }
          for(int jblk = blk; jblk < nblk; jblk++) {
             for(int iblk = jblk; iblk < mblk; iblk++) {
-               #pragma omp task default(none)                             \
+               #pragma omp task                              \
                   firstprivate(blk, iblk, jblk)                           \
                   shared(a, abort, cdata, backup, work, upd)              \
                   depend(inout: a[jblk*block_size*lda+iblk*block_size:1]) \
@@ -1535,7 +1535,7 @@ private:
             for(int jblk = nblk; jblk < mblk; ++jblk)
               for(int iblk = jblk; iblk < mblk; ++iblk) {
                 T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd + (iblk-nblk)*block_size];
-                #pragma omp task default(none)                        \
+                #pragma omp task                         \
                   firstprivate(iblk, jblk, blk, upd_ij)               \
                   shared(a, abort, upd2, cdata, work)                 \
                   depend(inout: upd_ij[0:1])                          \
@@ -1756,7 +1756,7 @@ private:
          }*/
 
          // Factor diagonal
-         #pragma omp task default(none)                         \
+         #pragma omp task                          \
             firstprivate(blk)                                   \
             shared(a, abort, perm, backup, cdata, next_elim, d, \
                    options, work, alloc, up_to_date, flag)      \
@@ -1821,7 +1821,7 @@ private:
          
          // Loop over off-diagonal blocks applying pivot
          for (int jblk = 0; jblk < blk; jblk++) {
-            #pragma omp task default(none)                                \
+            #pragma omp task                                 \
                firstprivate(blk, jblk)                                    \
                shared(a, abort, backup, cdata, options, work, up_to_date) \
                depend(in: a[blk*block_size*lda+blk*block_size:1])         \
@@ -1851,7 +1851,7 @@ private:
             } } /* task/abort */
          }
          for (int iblk = blk+1; iblk < mblk; iblk++) {
-            #pragma omp task default(none)                                \
+            #pragma omp task                                 \
                firstprivate(blk, iblk)                                    \
                shared(a, abort, backup, cdata, options, work, up_to_date) \
                depend(in: a[blk*block_size*lda+blk*block_size:1])         \
@@ -1899,7 +1899,7 @@ private:
          int jsa = (upd) ? blk : blk + 1;
          for(int jblk = jsa; jblk < nblk; jblk++) {
             for(int iblk = jblk; iblk < mblk; iblk++) {
-               #pragma omp task default(none)                             \
+               #pragma omp task                              \
                   firstprivate(blk, iblk, jblk)                           \
                   shared(a, abort, cdata, backup, work, upd, up_to_date)  \
                   depend(inout: a[jblk*block_size*lda+iblk*block_size:1]) \
@@ -1939,7 +1939,7 @@ private:
             for(int jblk = nblk; jblk < mblk; ++jblk)
               for(int iblk = jblk; iblk < mblk; ++iblk) {
                 T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd + (iblk-nblk)*block_size];
-                #pragma omp task default(none)                        \
+                #pragma omp task                         \
                   firstprivate(iblk, jblk, blk, upd_ij)               \
                   shared(a, abort, upd2, cdata, work, up_to_date)     \
                   depend(inout: upd_ij[0:1])                          \
@@ -2151,7 +2151,7 @@ private:
          for(int iblk=nelim_blk; iblk<nblk; ++iblk) {
             int progress = up_to_date[jblk*mblk+iblk];
             if(progress >= nelim_blk) {
-               #pragma omp task default(none) \
+               #pragma omp task  \
                   firstprivate(iblk, jblk) \
                   shared(a, cdata, work) \
                   depend(inout: a[jblk*block_size*lda+iblk*block_size:1])
@@ -2169,7 +2169,7 @@ private:
             int progress = up_to_date[jblk*mblk+iblk];
             if(progress >= nelim_blk) {
                // Bad updates applied, needs reset and full recalculation
-               #pragma omp task default(none) \
+               #pragma omp task  \
                   firstprivate(iblk, jblk) \
                   shared(a, backup, cdata) \
                   depend(inout: a[jblk*block_size*lda+iblk*block_size:1])
@@ -2181,7 +2181,7 @@ private:
             }
             // Apply any missing updates to a
             for(int kblk=progress+1; kblk<nelim_blk; ++kblk) {
-               #pragma omp task default(none) \
+               #pragma omp task  \
                   firstprivate(iblk, jblk, kblk) \
                   shared(a, upd, cdata, work) \
                   depend(inout: a[jblk*block_size*lda+iblk*block_size:1]) \
@@ -2209,7 +2209,7 @@ private:
                               (iblk-nblk)*block_size];
             for(int kblk=progress+1; kblk<nelim_blk; ++kblk) {
                // NB: no need for isrc or jsrc dep as must be good already
-               #pragma omp task default(none) \
+               #pragma omp task  \
                   firstprivate(iblk, jblk, kblk, upd_ij) \
                   shared(a, cdata, work) \
                   depend(inout: upd_ij[0:1])

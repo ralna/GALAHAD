@@ -12,6 +12,7 @@
 !  maximum-number-of-cg-iterations-per-iteration     1000
 !  maximum-number-of-arcsearch-steps                 -1
 !  sif-file-device                                   52
+!  regularization-weight                             0.0D+0
 !  infinity-value                                    1.0D+19
 !  primal-accuracy-required                          1.0D-5
 !  dual-accuracy-required                            1.0D-5
@@ -23,7 +24,7 @@
 !  initial-arcsearch-stepsize                        1.0
 !  arcsearch-reduction-factor                        0.5
 !  arcsearch-acceptance-tolerance                    0.01
-!  regularization-weight                             0.0
+!  stabilisation-weight                              0.0
 !  maximum-cpu-time-limit                            -1.0
 !  direct-subproblem-solve                           F
 !  exact-arc-search-used                             T

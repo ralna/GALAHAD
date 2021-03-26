@@ -1,4 +1,4 @@
-# THIS VERSION: GALAHAD 3.1 - 07/10/2018 AT 12:45 GMT.
+# THIS VERSION: GALAHAD 3.3 - 06/01/2021 AT 09:00 GMT.
 
 # Updates 12/Nov/2004 to allow for MA57, version 2
 #         29/Mar/2005 to allow for MA57, version 3
@@ -24,6 +24,7 @@
 #         08/Feb/2018 to reintroduce MA61 as this is not in the HSL Archive,
 #                     and to allow for the HSL Archive
 #         07/Oct/2018 to allow for LA04
+#         06/Jan/2021 to allow for MKL Pardiso
 
 # Set directories for optional packages
 # Change these to override provided defaults containing dummy routines
@@ -303,6 +304,16 @@ MI35 = $(GALAHAD)/../hsl-galahad/hsl_mi35
 
 #LA04 = $(GALAHAD)/src/dum
 LA04 = $(GALAHAD)/../hsl-galahad/la04
+
+# -------------------- MKLPARDISO environment variable ----------------------
+
+#  MKLPARDISO is the actual source directory for the fortran 90 header file
+#  for the Intel MKL version of PARDISO (www.intel.com)
+#  This directory must contain the file
+#    ./mkl_pardiso.f90
+
+MKLPARDISO = $(GALAHAD)/src/dum
+#MKLPARDISO = /opt/intel/mkl/include
 
 # -------------------- ICFS environment variable ------------------------
 

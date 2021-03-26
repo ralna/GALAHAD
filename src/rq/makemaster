@@ -48,8 +48,9 @@ MLGD = $(OBJD)/libgalahad_metis.a
 
 #  Libraries used
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS)
-MLIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(WSMP) $(METIS) \
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
+                 $(LAPACK) $(BLAS)
+MLIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
         -lgalahad_minpack $(LAPACK) $(BLAS)
 
 #  Archive manipulation strings

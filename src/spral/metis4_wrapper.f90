@@ -15,6 +15,8 @@ module spral_metis_wrapper
   integer, parameter :: ERROR_ALLOC = -1
   integer, parameter :: ERROR_N_OOR = -2
   integer, parameter :: ERROR_NE_OOR = -3
+! nimg added 2021-03-24
+  integer, parameter :: ERROR_NO_METIS = -4
 
   interface metis_order
      module procedure metis_order32, metis_order64
@@ -80,6 +82,11 @@ contains
    ! Carry out ordering
     metis_opts(1) = 0 ! MeTiS defaults
     call metis_nodend(n,ptr2,row2,1,metis_opts,invp,perm)
+! nimg added 2021-03-24
+    if (perm(1)<0) then
+      flag = ERROR_NO_METIS
+      return
+    end if    
   end subroutine metis_order32
 
   !
@@ -145,6 +152,11 @@ contains
     ! Carry out ordering
     metis_opts(1) = 0 ! MeTiS defaults
     call metis_nodend(n,ptr2,row2,1,metis_opts,invp,perm)
+! nimg added 2021-03-24
+    if (perm(1)<0) then
+      flag = ERROR_NO_METIS
+      return
+    end if    
   end subroutine metis_order64
 
   ! Convert a matrix in half storage to one in full storage.

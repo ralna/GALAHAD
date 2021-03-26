@@ -27,7 +27,7 @@ solvers from HSL and elsewhere. Currently supported solvers include
 {\tt MA27/SILS}, {\tt HSL\_MA57}, {\tt HSL\_MA77} , {\tt HSL\_MA86},
 {\tt HSL\_MA87} and {\tt HSL\_MA97} from {HSL},
 {\tt SSIDS} from {SPRAL},
-{\tt PARDISO} from the Pardiso Project
+{\tt PARDISO} both from the Pardiso Project and Intel's MKL
 and {\tt WSMP} from the IBM alpha Works, as
 well as {\tt POTR}, {\tt SYTR} and {\tt SBTR} from LAPACK.
 Note that
@@ -163,6 +163,7 @@ are provided in the references cited in \S\ref{galmethod}.
 {\tt HSL\_MA97} & multifrontal & yes & no & OpenMP core \\
 {\tt SSIDS} & multifrontal & yes & no & CUDA core \\
 {\tt PARDISO} & left-right-looking & yes & no & OpenMP fully \\
+{\tt MKL\_PARDISO} & left-right-looking & yes & optionally & OpenMP fully \\
 {\tt WSMP} & left-right-looking & yes & no & OpenMP fully \\
 {\tt POTR} & dense & no & no & with parallel LAPACK \\
 {\tt SYTR} & dense & yes & no & with parallel LAPACK \\
@@ -1084,7 +1085,7 @@ details.
 \itt{PARDISO\_dparm} is an array of size 64 and type \realdp,
 whose components correspond to those in the output array {\tt DPARM}
 from {\tt PARDISO}. See the documentation for {\tt PARDISO} for further
-details.
+details. This is only available for the Pardiso Project version of the package.
 
 \itt{WSMP\_error} is a scalar variable of type \integer,
 that corresponds to the output value {\tt error}
@@ -1176,6 +1177,9 @@ in double precision.
 
 \itt{pardiso} if the Pardiso Project solver {\tt PARDISO} (version 4.0.0
 or above) is desired. Again parallel solution is offered with this choice.
+
+\itt{mkl\_pardiso} if the Intel MKL solver {\tt PARDISO} that forked from the
+Pardiso Project version in 2006, and supports parallel solution.
 
 \itt{wsmp} if the IBM alpha Works solver {\tt WSMP} (version 10.9
 or above) is desired. Parallel solution is also offered with this choice.
@@ -1523,6 +1527,8 @@ is summarised in Table~\ref{options}.
  & $\surd$ & $\times^1$ & $\times$ \\
 {\tt PARDISO}   & $\times$ & $\times$ & $\times$ & $\times$ & $\times$
  & $\surd$ & $\times^1$ & $\times$ \\
+{\tt MKL\_PARDISO}   & $\times$ & $\times$ & $\times$ & $\times$ & $\times$
+ & $\surd$ & $\times^1$ & $\times$ \\
 {\tt WSMP} & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\surd$
 & $\times^1$ & $\times$ \\
 {\tt POTR} & $\times$ & $\times$ & $\surd$ & $\times$ & $\surd$  & $\surd$
@@ -1687,7 +1693,7 @@ in the right-hand side.
 
 \ittf{B} is an  \intentin\ rank-one assumed-shape array argument of
 length at least $n$ and of type \realdp.
-If {\tt INDEX\_b(i)}$=${\tt k}, {\tt B(k)} must hold the {\tt k-}th
+If {\tt INDEX\_b(i)}$=${\tt k}, {\tt B(k)} must hold the {\tt i-}th
 nonzero component of the right-hand side; other entries of {\tt B}
 are not accessed.
 
@@ -1701,7 +1707,7 @@ size {\tt nnz\_x} (that is at most {\tt n}). On exit, the first
 \ittf{X} is an  \intentinout\ rank-one assumed-shape array argument of
 length at least $n$ and of type \realdp.
 On entry, its first $n$ entries must be set by the user to zero.
-On exit, if {\tt INDEX\_x(i)}$=${\tt k}, {\tt X(k)} holds the {\tt k-}th
+On exit, if {\tt INDEX\_x(i)}$=${\tt k}, {\tt X(k)} holds the {\tt i-}th
 nonzero component of the solution; all other entries of {\tt X} are zero.
 
 \itt{data{\rm ,} control {\rm and} inform{\rm :}} see Section~\ref{solve}.
@@ -1975,6 +1981,13 @@ To obtain {\tt PARDISO}, see
 {\tt http://www.pardiso-project.org/ }.
 
 \noindent
+The solver {\tt MKL PARDISO} is available as part of Intel's oneAPI Math Kernel
+Library (oneMKL).
+To obtain this version of {\tt PARDISO}, see
+
+{\tt https://software.intel.com/content/www/us/en/develop/tools/oneapi.html }.
+
+\noindent
 The solver {\tt WSMP} is available from the IBM alpha Works;
 version 10.9 or above is required.
 To obtain {\tt WSMP}, see
@@ -2021,23 +2034,23 @@ HSL 2011, A collection of {F}ortran codes for large-scale scientific
 and papers
 
 \noindent
-O. Schenk and K. G\"{a}rtner (2004).
+O. Schenk and K. G\"{a}rtner,
 ``Solving Unsymmetric Sparse Systems of Linear Equations with PARDISO''.
-Journal of Future Generation Computer Systems \bf, 20(3) \rm 475--487, 2004,
+Journal of Future Generation Computer Systems \bf, 20(3) \rm (2004) 475--487, 
 
 \noindent
-O. Schenk and K. G\"{a}rtner (2006).
+O. Schenk and K. G\"{a}rtner,
 ``On fast factorization pivoting methods for symmetric indefinite systems''.
 Electronic Transactions on Numerical Analysis
-{\bf 23} 158--179,
+{\bf 23} (2006) 158--179,
 and
 
 \noindent
-A. Gupta (2010)
+A. Gupta,
 ``WSMP: Watson Sparse Matrix Package Part I - direct
 solution of symmetric sparse systems''.
 IBM Research Report RC 21886, IBM T.\ J.\ Watson Research Center,
-NY 10598, USA.
+NY 10598, USA (2010).
 
 
 %%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%

@@ -389,6 +389,9 @@ fi
 if [[ "$PARDISO" == "" ]]; then
   PARDISO="-lgalahad_pardiso"
 fi
+if [[ "$MKL_PARDISO" == "" ]]; then
+  MKL_PARDISO="-lgalahad_pardiso"
+fi
 if [[ "$WSMP" == "" ]]; then
   WSMP="-lgalahad_wsmp"
 fi
@@ -425,6 +428,7 @@ echo 'HSL="'$HSL'"'                                                >> $SYSFILE
 echo 'SPRAL="'$SPRAL'"'                                            >> $SYSFILE
 echo 'METIS="'$METIS'"'                                            >> $SYSFILE
 echo 'PARDISO="'$PARDISO'"'                                        >> $SYSFILE
+echo 'MKL_PARDISO="'$MKL_PARDISO'"'                                >> $SYSFILE
 echo 'WSMP="'$WSMP'"'                                              >> $SYSFILE
 echo 'PLPLOT="'$PLPLOT'"'                                          >> $SYSFILE
 
@@ -488,6 +492,7 @@ echo 'OPTIMIZATION = '$OPTIMIZATION                                >> $MAKEFILE
 echo 'NOOPTIMIZATION = '$NOOPTIMIZATION                            >> $MAKEFILE
 echo 'DEBUG = '$DEBUG                                              >> $MAKEFILE
 echo 'OPENMP = '$OPENMP                                            >> $MAKEFILE
+echo 'SOMP = '$SOMP                                                >> $MAKEFILE
 echo 'MOMP = '$MOMP                                                >> $MAKEFILE
 echo 'F77 = '$F77                                                  >> $MAKEFILE
 echo 'F90 = '$F90                                                  >> $MAKEFILE
@@ -542,6 +547,7 @@ echo 'HSL = '$HSL                                                  >> $MAKEFILE
 echo 'SPRAL = '$SPRAL                                              >> $MAKEFILE
 echo 'METIS = '$METIS                                              >> $MAKEFILE
 echo 'PARDISO = '$PARDISO                                          >> $MAKEFILE
+echo 'MKL_PARDISO = '$MKL_PARDISO                                  >> $MAKEFILE
 echo 'WSMP = '$WSMP                                                >> $MAKEFILE
 echo 'PLPLOT = '$PLPLOT                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
