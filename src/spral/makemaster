@@ -158,8 +158,8 @@ ssids_double: $(SSIDSD)
 ssidsds: $(SSIDSDS)
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_ssids $(RSSIDSDS)
-	- ../ssids//run_ssids < ../ssids/ssidss.data
-#	- ../ssids//run_ssids < ../ssids/ssidss.data >& ../ssids/ssidsds.output
+#	- ../ssids//run_ssids < ../ssids/ssidss.data
+	- ../ssids//run_ssids < ../ssids/ssidss.data >& ../ssids/ssidsds.output
 	cat ../ssids/ssidsds.output
 	rm ../ssids/run_ssids
 
