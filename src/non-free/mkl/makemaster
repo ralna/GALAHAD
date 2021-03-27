@@ -1,0 +1,190 @@
+#  Main body of the installation makefile for the MKL stub
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 27 III 2021
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+DLG  = $(OBJ)/libgalahad_dummy.a
+DLGS = $(OBJS)/libgalahad_dummy.a
+DLGD = $(OBJD)/libgalahad_dummy.a
+
+MPLG  = $(OBJ)/libgalahad_mkl_pardiso.a
+MPLGS = $(OBJS)/libgalahad_mkl_pardiso.a
+MPLGD = $(OBJD)/libgalahad_mkl_pardiso.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(MKL_PARDISO) $(LAPACK) $(BLAS)
+PLIBS = $(LIBS) -lgalahad_problem
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+MPARR = $(AR) $(ARREPFLAGS) $(MPLG)
+
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
+
+#  compilation agenda
+
+BASICZ = blas lapack symbols dummy blas_interface lapack_interface
+
+MKL_PARDISO_INTERFACE = $(BASICZ) $(LG)(mkl_pardiso_interface.o)
+
+MKL_PARDISOS = $(MKL_PARDISO_INTERFACE) $(MPLG)(mkl_pardiso.o) 
+MKL_PARDISOD = $(MKL_PARDISO_INTERFACE) $(MPLG)(mkl_pardiso.o) 
+
+MKL_PARDISODT = $(MKL_PARDISOD) $(OBJD)/mkl_pardisot.o
+MKL_PARDISOST = $(MKL_PARDISOS) $(OBJS)/mkl_pardisot.o
+
+RMKL_PARDISODT = $(OBJD)/mkl_pardisot.o -L$(OBJD) -lgalahad $(MKL_PARDISO)
+RMKL_PARDISOST = $(OBJS)/mkl_pardisot.o -L$(OBJS) -lgalahad $(MKL_PARDISO)
+
+SUCC = precision version) compiled successfully
+
+#  mkl_pardiso
+
+mkl_pardiso_silent: mkl_pardiso_$(PRECIS)
+mkl_pardiso: mkl_pardiso_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(MKL_PARDISO) ($(PRECIS) $(SUCC)"
+mkl_pardiso_single: $(MKL_PARDISOS)
+	$(RANLIB) $(MPLGS)
+mkl_pardiso_double: $(MKL_PARDISOD)
+	$(RANLIB) $(MPLGD)
+
+#  mkl_pardiso_interface
+
+mkl_pardiso_interface_silent: $(MKL_PARDISO_INTERFACE)
+mkl_pardiso_interface: $(MKL_PARDISO_INTERFACE)
+	@printf ' %-21s\n' "GALAHAD: MKL_PARDISO_interface ($(PRECIS) $(SUCC)"
+
+#  tests
+
+mkl_pardisodt: $(MKL_PARDISODT)
+	echo " Exhaustive test of subroutine interface to mkl_pardiso"
+	cd ../mkl ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_mkl_pardiso \
+                         $(RMKL_PARDISODT)
+#	- ../mkl/run_mkl_pardiso >& ../mkl/mkl_pardisodt.output
+#	cat ../mkl/mkl_pardisodt.output
+	- ../mkl/run_mkl_pardiso
+	rm ../mkl/run_mkl_pardiso
+
+mkl_pardisost: $(MKL_PARDISOST)
+	echo " Exhaustive test of subroutine interface to mkl_pardiso"
+	cd ../mkl ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_mkl_pardiso \
+                         $(RMKL_PARDISOST)
+	- ../mkl/run_mkl_pardiso >& ../mkl_pardiso/mkl_pardisot.output
+	cat ../mkl/mkl_pardisot.output
+	rm ../mkl/run_mkl_pardiso
+
+#  blas and lapack generic packages and interfaces
+
+blas:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+symbols:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+dummy:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+blas_interface:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack_interface:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+#  individual compilations
+
+mkl_pardiso_interface.o: $(LG)(mkl_pardiso_interface.o)
+
+$(LG)(mkl_pardiso_interface.o): ../mkl/mkl_pardiso_interface.f90
+	@printf ' %-9s %-15s\t' "Compiling" "mkl_pardiso_interface  "
+	$(CP) ../mkl/mkl_pardiso_interface.f90 $(OBJ)/mkl_pardiso_interface.f90
+	cd $(OBJ); $(FORTRAN) -o mkl_pardiso_interface.o $(FFLAGS) \
+                      mkl_pardiso_interface.f90
+	cd $(OBJ); $(ARR) mkl_pardiso_interface.o ; \
+          $(RM) mkl_pardiso_interface.f90 mkl_pardiso_interface.o
+	@printf '[ OK ]\n'
+
+mkl_pardiso.o: $(MPLG)(mkl_pardiso.o)
+
+$(MPLG)(mkl_pardiso.o): ../../dum/mkl_pardiso.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardiso  "
+	$(CP) ../../dum/mkl_pardiso.f90 $(OBJ)/mkl_pardiso.f90
+	cd $(OBJ); $(FORTRAN) -o mkl_pardiso.o $(FFLAGS) mkl_pardiso.f90
+	cd $(OBJ); $(MPARR) mkl_pardiso.o ; \
+          $(RM) mkl_pardiso.f90 mkl_pardiso.o
+	$(RANLIB) $(MPLG)
+	@printf '[ OK ]\n'
+
+mkl_pardisos.o: $(OBJ)/mkl_pardisos.o
+
+$(OBJ)/mkl_pardisos.o: ../mkl/mkl_pardisos.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardisos  "
+	$(SED) -f $(SEDS) ../mkl/mkl_pardisos.f90 > $(OBJ)/mkl_pardisos.f90
+	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisos.o $(FFLAGS) mkl_pardisos.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  test programs
+
+mkl_pardisot.o: $(OBJ)/mkl_pardisot.o
+
+$(OBJ)/mkl_pardisot.o: ../mkl/mkl_pardisot.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardisot  "
+	$(SED) -f $(SEDS) ../mkl/mkl_pardisot.f90 > $(OBJ)/mkl_pardisot.f90
+	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisot.o $(FFLAGSS) mkl_pardisot.f90
+	@printf '[ OK ]\n'
+	$(RMARFILE)  mkl_pardiso.o
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LGS) $(LGD) $(OBJ)/qpbdt.o $(OBJ)/qpbs.o $(OBJ)/qpbt.o $(OBJ)/qpbst.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmgls:
+	@printf ' %-9s %-15s\t\t' "Removing" "gls from archive "
+	$(RMARFILE) gls.o
+	@printf '[ OK ]\n'
