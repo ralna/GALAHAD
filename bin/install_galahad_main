@@ -543,29 +543,35 @@ echo '#  Libraries'                                                >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'PLPLOT = '$PLPLOT                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
-echo '#  -- BLAS and LAPACK'                                       >> $MAKEFILE
+echo '#  -- BLAS --'                                               >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'BLAS = '$BLAS                                                >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- LAPACK --'                                             >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
 echo 'LAPACK = '$LAPACK                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
-echo '#  -- HSL and SPRAL'                                         >> $MAKEFILE
+echo '#  -- HSL --'                                                >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'HSL = '$HSL                                                  >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- SPRAL --'                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
 echo 'SPRAL = '$SPRAL                                              >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
-echo '#  -- Metis'                                                 >> $MAKEFILE
+echo '#  -- Metis --'                                              >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'METIS = '$METIS                                              >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
-echo '#  -- Pardiso'                                               >> $MAKEFILE
+echo '#  -- Pardiso --'                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'PARDISO = '$PARDISO                                          >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
-echo '#  -- MKL Pardiso'                                           >> $MAKEFILE
+echo '#  -- MKL Pardiso --'                                        >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'MKL_PARDISO = '$MKL_PARDISO                                  >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
-echo '#  -- WSMP'                                                  >> $MAKEFILE
+echo '#  -- WSMP --'                                               >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'WSMP = '$WSMP                                                >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE

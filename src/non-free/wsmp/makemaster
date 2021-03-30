@@ -46,8 +46,6 @@ PLIBS = $(LIBS) -lgalahad_problem
 
 WARR = $(AR) $(ARREPFLAGS) $(WLG)
 
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-
 #  compilation agenda
 
 BASICZ = blas lapack symbols dummy blas_interface lapack_interface
@@ -148,7 +146,6 @@ $(OBJ)/wsmpt.o: ../wsmp/wsmpt.f90
 	$(SED) -f $(SEDS) ../wsmp/wsmpt.f90 > $(OBJ)/wsmpt.f90
 	cd $(OBJ) ; $(FORTRAN) -o wsmpt.o $(FFLAGSS) wsmpt.f90
 	@printf '[ OK ]\n'
-	$(RMARFILE) wsmp.o
 
 #  book keeping
 
