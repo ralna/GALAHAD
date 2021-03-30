@@ -111,8 +111,8 @@ problems = $(SMTS) nlpt $(CLGS)(problem.o)
 problemd = $(SMTD) nlpt $(CLGD)(problem.o)
 
 BASICZ = $(LG)(cputim.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
-         $(LG)(symbols.o) $(PLG)(pardiso.o) mkl_pardiso $(MLG)(metis.o) \
-         $(WLG)(wsmp.o) $(DLG)(dummy.o) $(LG)(blas_interface.o) \
+         $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis.o) wsmp \
+         $(DLG)(dummy.o) $(LG)(blas_interface.o) \
          $(LG)(lapack_interface.o) minpack
 
 ROOTSS = $(BASICZ) $(LGS)(string.o) buildspec_silent \
@@ -333,23 +333,23 @@ ssids_dum_double: $(SSIDSD)
 
 #  pardiso
 
-pardiso_silent: pardiso_$(PRECIS)
-pardiso: pardiso_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(PARDISO) ($(PRECIS) $(SUCC)"
-pardiso_single: $(PARDISOS)
-	$(RANLIB) $(PLGS)
-pardiso_double: $(PARDISOD)
-	$(RANLIB) $(PLGD)
+#pardiso_silent: pardiso_$(PRECIS)
+#pardiso: pardiso_$(PRECIS)
+#	@printf ' %-21s\n' "GALAHAD: $(PARDISO) ($(PRECIS) $(SUCC)"
+#pardiso_single: $(PARDISOS)
+#	$(RANLIB) $(PLGS)
+#pardiso_double: $(PARDISOD)
+#	$(RANLIB) $(PLGD)
 
 #  wsmp
 
-wsmp_silent: wsmp_$(PRECIS)
-wsmp: wsmp_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(WSMP) ($(PRECIS) $(SUCC)"
-wsmp_single: $(WSMPS)
-	$(RANLIB) $(WLGS)
-wsmp_double: $(WSMPD)
-	$(RANLIB) $(WLGD)
+#wsmp_silent: wsmp_$(PRECIS)
+#wsmp: wsmp_$(PRECIS)
+#	@printf ' %-21s\n' "GALAHAD: $(WSMP) ($(PRECIS) $(SUCC)"
+#wsmp_single: $(WSMPS)
+#	$(RANLIB) $(WLGS)
+#wsmp_double: $(WSMPD)
+#	$(RANLIB) $(WLGD)
 
 #  metis
 
@@ -562,12 +562,23 @@ ma48v3:
 
 #  other external packages
 
+pardiso_silent: pardiso
+pardiso:
+	( cd ../non-free/mkl ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) pardiso_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/pardiso )
+
 mkl_pardiso_silent: mkl_pardiso
 mkl_pardiso:
-#	pwd ; ls ../non-free/mkl
 	( cd ../non-free/mkl ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) mkl_pardiso_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mkl )
+
+wsmp_silent: wsmp
+wsmp:
+	( cd ../non-free/mkl ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) wsmp_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/wsmp )
 
 minpack:
 	( cd ../non-free/minpack ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
