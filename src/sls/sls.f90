@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 24/03/2021 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 29/03/2021 AT 08:30 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ S L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -669,8 +669,8 @@
 !  the output scalars and arrays from pardiso
 
        INTEGER :: pardiso_error = 0
-       INTEGER, DIMENSION( 64 ) :: pardiso_iparm = - 1
-       REAL ( KIND = wp ), DIMENSION( 64 ) :: pardiso_dparm = - 1.0_wp
+       INTEGER, DIMENSION( 64 ) :: pardiso_IPARM = - 1
+       REAL ( KIND = wp ), DIMENSION( 64 ) :: pardiso_DPARM = - 1.0_wp
 
 !  the output scalars and arrays from mkl_pardiso
 
@@ -703,7 +703,7 @@
        INTEGER :: set_res = - 1
        INTEGER :: set_res2 = - 1
        LOGICAL :: got_maps_scale = .FALSE.
-       INTEGER, DIMENSION( 64 ) :: pardiso_PT
+       INTEGER ( KIND = long ), DIMENSION( 64 ) :: pardiso_PT
        TYPE ( MKL_PARDISO_HANDLE ), DIMENSION( 64 ) :: mkl_pardiso_PT
        INTEGER, DIMENSION( 1 ) :: idum
        INTEGER, DIMENSION( 64 ) :: pardiso_IPARM = - 1
@@ -725,8 +725,8 @@
        INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: MAP
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: mc64_PERM
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: mc61_IW, mc77_IW
-       REAL ( KIND = wp ), DIMENSION( 64 ) :: pardiso_dparm = 0.0_wp
-       REAL ( KIND = wp ), DIMENSION( 64 ) :: wsmp_dparm = - 1.0_wp
+       REAL ( KIND = wp ), DIMENSION( 64 ) :: pardiso_DPARM = 0.0_wp
+       REAL ( KIND = wp ), DIMENSION( 64 ) :: wsmp_DPARM = - 1.0_wp
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RESIDUALS
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RESIDUALS_zero
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B
@@ -3120,11 +3120,8 @@
          data%pardiso_iparm( 1 ) = 0
          pardiso_solver = 0
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-!v3      CALL PARDISOINIT( data%PARDISO_PT, data%pardiso_mtype,                &
-!                          data%pardiso_iparm )
-
-         CALL PARDISOINIT( data%PARDISO_PT, data%pardiso_mtype, pardiso_solver,&
-                           data%pardiso_iparm, data%pardiso_dparm,             &
+         CALL PARDISOINIT( data%pardiso_PT, data%pardiso_mtype, pardiso_solver,&
+                           data%pardiso_IPARM, data%pardiso_DPARM,             &
                            inform%pardiso_error )
 
          IF ( inform%pardiso_error < 0 ) THEN
@@ -3146,13 +3143,13 @@
            END IF
            GO TO 800
          END IF
-         data%pardiso_iparm( 3 ) = 1
-!$       data%pardiso_iparm( 3 ) = OMP_GET_NUM_THREADS( )
+         data%pardiso_IPARM( 3 ) = 1
+!$       data%pardiso_IPARM( 3 ) = OMP_GET_NUM_THREADS( )
          IF ( control%ordering > 0 .OR. PRESENT( PERM ) )                      &
-           data%pardiso_iparm( 5 ) = 1
+           data%pardiso_IPARM( 5 ) = 1
 
          CALL SLS_copy_control_to_pardiso( control, data%pardiso_iparm )
-         CALL PARDISO( data%PARDISO_PT( 1 : 64 ), 1, 1, data%pardiso_mtype,    &
+         CALL PARDISO( data%pardiso_PT( 1 : 64 ), 1, 1, data%pardiso_mtype,    &
                        11, data%matrix%n, data%matrix%VAL( 1 : data%ne ),      &
                        data%matrix%PTR( 1 : data%matrix%n + 1 ),               &
                        data%matrix%COL( 1 : data%ne ),                         &
@@ -3162,10 +3159,9 @@
                        data%B2( 1 : matrix%n, 1 : 1 ),                         &
                        data%X2( 1 : matrix%n, 1 : 1 ), inform%pardiso_error,   &
                        data%pardiso_dparm( 1 : 64 ) )
-!v3                    data%X2( 1 : matrix%n, 1 : 1 ), inform%pardiso_error )
 
-         inform%pardiso_iparm = data%pardiso_iparm
-         inform%pardiso_dparm = data%pardiso_dparm
+         inform%pardiso_IPARM = data%pardiso_IPARM
+         inform%pardiso_DPARM = data%pardiso_DPARM
 
          IF ( inform%pardiso_error < 0 .AND. control%print_level > 0 .AND.     &
               control%out > 0 ) WRITE( control%out,                            &
@@ -3182,8 +3178,8 @@
          CASE DEFAULT
            inform%status = GALAHAD_ok
          END SELECT
-         IF ( data%pardiso_iparm( 18 ) > 0 )                                   &
-           inform%entries_in_factors = INT( data%pardiso_iparm( 18 ), long )
+         IF ( data%pardiso_IPARM( 18 ) > 0 )                                   &
+           inform%entries_in_factors = INT( data%pardiso_IPARM( 18 ), long )
 
 !  = MKL PARDISO =
 
@@ -3268,8 +3264,8 @@
                      data%ORDER( 1 : data%matrix%n ),                          &
                      data%INVP( 1 : data%matrix%n ),                           &
                      data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1,    &
-                     data%wsmp_aux, 0, data%MRP( 1 : data%matrix%n ),          &
-                     data%wsmp_iparm, data%wsmp_dparm )
+                     data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),          &
+                     data%wsmp_IPARM, data%wsmp_DPARM )
          inform%wsmp_error = data%wsmp_iparm( 64 )
          IF ( inform%wsmp_error < 0 ) THEN
            IF ( control%print_level > 0 .AND. control%out > 0 ) THEN
@@ -3290,8 +3286,8 @@
            GO TO 800
          END IF
 
-         CALL SLS_copy_control_to_wsmp( control, data%wsmp_iparm,              &
-                                        data%wsmp_dparm )
+         CALL SLS_copy_control_to_wsmp( control, data%wsmp_IPARM,              &
+                                        data%wsmp_DPARM )
 !$       CALL wsetmaxthrds( OMP_GET_NUM_THREADS( ) )
 
          data%wsmp_iparm( 2 ) = 1
@@ -3303,11 +3299,11 @@
                      data%ORDER( 1 : data%matrix%n ),                          &
                      data%INVP( 1 : data%matrix%n ),                           &
                      data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1,    &
-                     data%wsmp_aux, 0, data%MRP( 1 : data%matrix%n ),          &
-                     data%wsmp_iparm, data%wsmp_dparm )
-         inform%wsmp_iparm = data%wsmp_iparm
-         inform%wsmp_dparm = data%wsmp_dparm
-         inform%wsmp_error = data%wsmp_iparm( 64 )
+                     data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),          &
+                     data%wsmp_iparm, data%wsmp_DPARM )
+         inform%wsmp_IPARM = data%wsmp_IPARM
+         inform%wsmp_DPARM = data%wsmp_DPARM
+         inform%wsmp_error = data%wsmp_IPARM( 64 )
 
          IF ( inform%wsmp_error < 0 .AND. control%print_level > 0 .AND.        &
               control%out > 0 ) WRITE( control%out,                            &
@@ -3322,10 +3318,10 @@
            inform%status = GALAHAD_error_wsmp
          END SELECT
 
-         IF ( data%wsmp_iparm( 23 ) >= 0 )                                     &
-           inform%real_size_factors = 1000 * INT( data%wsmp_iparm( 23 ), long )
-         IF ( data%wsmp_iparm( 24 ) >= 0 )                                     &
-           inform%entries_in_factors = 1000 * INT( data%wsmp_iparm( 24 ), long )
+         IF ( data%wsmp_IPARM( 23 ) >= 0 )                                     &
+           inform%real_size_factors = 1000 * INT( data%wsmp_IPARM( 23 ), long )
+         IF ( data%wsmp_IPARM( 24 ) >= 0 )                                     &
+           inform%entries_in_factors = 1000 * INT( data%wsmp_IPARM( 24 ), long )
        END SELECT
 
 !  = POTR or SYTR =
@@ -4255,21 +4251,20 @@
 !  = PARDISO =
 
        CASE ( 'pardiso' )
-         CALL SLS_copy_control_to_pardiso( control, data%pardiso_iparm )
+         CALL SLS_copy_control_to_pardiso( control, data%pardiso_IPARM )
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-         CALL PARDISO( data%PARDISO_PT, 1, 1, data%pardiso_mtype, 22,          &
+         CALL PARDISO( data%pardiso_PT, 1, 1, data%pardiso_mtype, 22,          &
                        data%matrix%n, data%matrix%VAL( : data%ne ),            &
                        data%matrix%PTR( : data%matrix%n + 1 ),                 &
                        data%matrix%COL( : data%ne ),                           &
                        data%ORDER( : data%matrix%n ), 1,                       &
-                       data%pardiso_iparm( : 64 ),                             &
+                       data%pardiso_IPARM( : 64 ),                             &
                        control%print_level_solver, data%B2( : matrix%n, : 1 ), &
                        data%X2( : matrix%n, : 1 ), inform%pardiso_error,       &
-                       data%pardiso_dparm( 1 : 64 ) )
-!v3                    data%X2( : matrix%n, : 1 ), inform%pardiso_error )
+                       data%pardiso_DPARM( 1 : 64 ) )
 
-         inform%pardiso_iparm = data%pardiso_iparm
-         inform%pardiso_dparm = data%pardiso_dparm
+         inform%pardiso_IPARM = data%pardiso_IPARM
+         inform%pardiso_DPARM = data%pardiso_DPARM
 
          IF ( inform%pardiso_error < 0 .AND. control%print_level > 0 .AND.     &
               control%out > 0 ) WRITE( control%out,                            &
@@ -4286,10 +4281,10 @@
          CASE DEFAULT
            inform%status = GALAHAD_ok
          END SELECT
-         IF ( data%pardiso_iparm( 18 ) > 0 )                                   &
-           inform%entries_in_factors = INT( data%pardiso_iparm( 18 ), long )
-         inform%negative_eigenvalues = data%pardiso_iparm( 23 )
-         inform%rank = data%pardiso_iparm( 22 ) + data%pardiso_iparm( 23 )
+         IF ( data%pardiso_IPARM( 18 ) > 0 )                                   &
+           inform%entries_in_factors = INT( data%pardiso_IPARM( 18 ), long )
+         inform%negative_eigenvalues = data%pardiso_IPARM( 23 )
+         inform%rank = data%pardiso_IPARM( 22 ) + data%pardiso_IPARM( 23 )
          IF ( data%must_be_definite .AND. inform%negative_eigenvalues > 0 )    &
            inform%status = GALAHAD_error_inertia
 
@@ -4340,10 +4335,10 @@
 !       do l = 1, data%matrix%PTR( data%matrix%n + 1 ) - 1
 !         write( 71, * ) data%matrix%COL( l ), data%matrix%VAL( l )
 !       end do
-         CALL SLS_copy_control_to_wsmp( control, data%wsmp_iparm,              &
-                                        data%wsmp_dparm )
-         data%wsmp_iparm( 2 ) = 3
-         data%wsmp_iparm( 3 ) = 3
+         CALL SLS_copy_control_to_wsmp( control, data%wsmp_IPARM,              &
+                                        data%wsmp_DPARM )
+         data%wsmp_IPARM( 2 ) = 3
+         data%wsmp_IPARM( 3 ) = 3
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          CALL wssmp( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),  &
                      data%matrix%COL( 1 : data%ne ),                           &
@@ -4352,11 +4347,11 @@
                      data%ORDER( 1 : data%matrix%n ),                          &
                      data%INVP( 1 : data%matrix%n ),                           &
                      data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1,    &
-                     data%wsmp_aux, 0, data%MRP( 1 : data%matrix%n ),          &
-                     data%wsmp_iparm, data%wsmp_dparm )
-         inform%wsmp_iparm = data%wsmp_iparm
-         inform%wsmp_dparm = data%wsmp_dparm
-         inform%wsmp_error = data%wsmp_iparm( 64 )
+                     data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),          &
+                     data%wsmp_IPARM, data%wsmp_DPARM )
+         inform%wsmp_IPARM = data%wsmp_IPARM
+         inform%wsmp_DPARM = data%wsmp_DPARM
+         inform%wsmp_error = data%wsmp_IPARM( 64 )
          IF ( inform%wsmp_error < 0 .AND. control%print_level > 0 .AND.        &
               control%out > 0 ) WRITE( control%out,                            &
             "( A, ' wsmp error code = ', I0 )" ) prefix, inform%wsmp_error
@@ -4370,12 +4365,12 @@
            inform%status = GALAHAD_error_wsmp
          END SELECT
 
-         IF ( data%wsmp_iparm( 23 ) > 0 )                                      &
-           inform%real_size_factors = 1000 * INT( data%wsmp_iparm( 23 ), long )
-         IF ( data%wsmp_iparm( 24 ) > 0 )                                      &
-           inform%entries_in_factors = 1000 * INT( data%wsmp_iparm( 24 ), long )
-         inform%negative_eigenvalues = data%wsmp_iparm( 22 )
-         inform%rank = data%matrix%n - data%wsmp_iparm( 21 )
+         IF ( data%wsmp_IPARM( 23 ) > 0 )                                      &
+           inform%real_size_factors = 1000 * INT( data%wsmp_IPARM( 23 ), long )
+         IF ( data%wsmp_IPARM( 24 ) > 0 )                                      &
+           inform%entries_in_factors = 1000 * INT( data%wsmp_IPARM( 24 ), long )
+         inform%negative_eigenvalues = data%wsmp_IPARM( 22 )
+         inform%rank = data%matrix%n - data%wsmp_IPARM( 21 )
          IF ( data%must_be_definite .AND. inform%negative_eigenvalues > 0 )    &
            inform%status = GALAHAD_error_inertia
          IF ( data%must_be_definite .AND.inform%wsmp_error > 0 )               &
@@ -5366,22 +5361,21 @@
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
        data%X2( : data%n, 1 ) = X( : data%n )
 
-       CALL SLS_copy_control_to_pardiso( control, data%pardiso_iparm )
-       data%pardiso_iparm( 6 ) = 1
+       CALL SLS_copy_control_to_pardiso( control, data%pardiso_IPARM )
+       data%pardiso_IPARM( 6 ) = 1
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL PARDISO( data%PARDISO_PT, 1, 1, data%pardiso_mtype, 33,            &
+       CALL PARDISO( data%pardiso_PT, 1, 1, data%pardiso_mtype, 33,            &
                      data%matrix%n, data%matrix%VAL( : data%ne ),              &
                      data%matrix%PTR( : data%matrix%n + 1 ),                   &
                      data%matrix%COL( : data%ne ),                             &
                      data%ORDER( : data%matrix%n ), 1,                         &
-                     data%pardiso_iparm( : 64 ),                               &
+                     data%pardiso_IPARM( : 64 ),                               &
                      control%print_level_solver,                               &
                      data%X2( : data%matrix%n, : 1 ),                          &
                      data%B2( : data%matrix%n, : 1 ), inform%pardiso_error,    &
-                     data%pardiso_dparm( 1 : 64 ) )
-!v3                  data%B2( : data%matrix%n, : 1 ), inform%pardiso_error )
-       inform%pardiso_iparm = data%pardiso_iparm
-       inform%pardiso_dparm = data%pardiso_dparm
+                     data%pardiso_DPARM( 1 : 64 ) )
+       inform%pardiso_IPARM = data%pardiso_IPARM
+       inform%pardiso_DPARM = data%pardiso_DPARM
 
        SELECT CASE( inform%pardiso_error )
        CASE ( - 1 )
@@ -5393,7 +5387,7 @@
          inform%status = GALAHAD_error_pardiso
        CASE DEFAULT
          inform%status = GALAHAD_ok
-         inform%iterative_refinements = data%pardiso_iparm( 7 )
+         inform%iterative_refinements = data%pardiso_IPARM( 7 )
        END SELECT
        IF ( inform%status == GALAHAD_ok ) X( : data%n ) = data%X2( : data%n, 1 )
 
@@ -5442,8 +5436,8 @@
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
        data%B2( : data%n, 1 ) = X( : data%n )
 
-       CALL SLS_copy_control_to_wsmp( control, data%wsmp_iparm,                &
-                                      data%wsmp_dparm )
+       CALL SLS_copy_control_to_wsmp( control, data%wsmp_IPARM,                &
+                                      data%wsmp_DPARM )
        data%wsmp_iparm( 2 ) = 4
        data%wsmp_iparm( 3 ) = 5
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
@@ -5454,12 +5448,12 @@
                    data%ORDER( 1 : data%matrix%n ),                            &
                    data%INVP( 1 : data%matrix%n ),                             &
                    data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1,      &
-                   data%wsmp_aux, 0, data%MRP( 1 : data%matrix%n ),            &
-                   data%wsmp_iparm, data%wsmp_dparm )
+                   data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),            &
+                   data%wsmp_IPARM, data%wsmp_DPARM )
 !write(6,*) ' solv threads used = ', data%wsmp_iparm( 33 )
-       inform%wsmp_iparm = data%wsmp_iparm
-       inform%wsmp_dparm = data%wsmp_dparm
-       inform%wsmp_error = data%wsmp_iparm( 64 )
+       inform%wsmp_IPARM = data%wsmp_IPARM
+       inform%wsmp_DPARM = data%wsmp_DPARM
+       inform%wsmp_error = data%wsmp_IPARM( 64 )
 
        SELECT CASE( inform%wsmp_error )
        CASE ( 0 )
@@ -5665,21 +5659,20 @@
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
-       CALL SLS_copy_control_to_pardiso( control, data%pardiso_iparm )
-       data%pardiso_iparm( 6 ) = 1
+       CALL SLS_copy_control_to_pardiso( control, data%pardiso_IPARM )
+       data%pardiso_IPARM( 6 ) = 1
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL PARDISO( data%PARDISO_PT, 1, 1, data%pardiso_mtype, 33,            &
+       CALL PARDISO( data%pardiso_PT, 1, 1, data%pardiso_mtype, 33,            &
                      data%matrix%n, data%matrix%VAL( : data%ne ),              &
                      data%matrix%PTR( : data%matrix%n + 1 ),                   &
                      data%matrix%COL( : data%ne ),                             &
                      data%ORDER( : data%matrix%n ), nrhs,                      &
-                     data%pardiso_iparm( : 64 ),                               &
+                     data%pardiso_IPARM( : 64 ),                               &
                      control%print_level_solver,                               &
                      X( : data%matrix%n, : nrhs ),                             &
                      data%B2( : data%matrix%n, : nrhs ), inform%pardiso_error, &
-                     data%pardiso_dparm( 1 : 64 ) )
-!v3                  data%B2( : data%matrix%n, : nrhs ), inform%pardiso_error )
-       inform%pardiso_iparm = data%pardiso_iparm
+                     data%pardiso_DPARM( 1 : 64 ) )
+       inform%pardiso_IPARM = data%pardiso_IPARM
        SELECT CASE( inform%pardiso_error )
        CASE ( - 1 )
          inform%status = GALAHAD_error_restrictions
@@ -5690,7 +5683,7 @@
          inform%status = GALAHAD_error_pardiso
        CASE DEFAULT
          inform%status = GALAHAD_ok
-         inform%iterative_refinements = data%pardiso_iparm( 7 )
+         inform%iterative_refinements = data%pardiso_IPARM( 7 )
        END SELECT
 
 !  = MKL PARDISO =
@@ -5734,10 +5727,10 @@
      CASE ( 'wsmp' )
 
        nrhs = SIZE( X, 2 )
-       CALL SLS_copy_control_to_wsmp( control, data%wsmp_iparm,                &
-                                      data%wsmp_dparm )
-       data%wsmp_iparm( 2 ) = 4
-       data%wsmp_iparm( 3 ) = 5
+       CALL SLS_copy_control_to_wsmp( control, data%wsmp_IPARM,                &
+                                      data%wsmp_DPARM )
+       data%wsmp_IPARM( 2 ) = 4
+       data%wsmp_IPARM( 3 ) = 5
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        CALL wssmp( data%matrix%n, data%matrix%PTR( 1 : data%matrix%n + 1 ),    &
                    data%matrix%COL( 1 : data%ne ),                             &
@@ -5746,17 +5739,17 @@
                    data%ORDER( 1 : data%matrix%n ),                            &
                    data%INVP( 1 : data%matrix%n ),                             &
                    X( : data%matrix%n, : nrhs ), matrix%n, nrhs,               &
-                   data%wsmp_aux, 0, data%MRP( 1 : data%matrix%n ),            &
-                   data%wsmp_iparm, data%wsmp_dparm )
+                   data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),            &
+                   data%wsmp_IPARM, data%wsmp_DPARM )
 
-       inform%wsmp_iparm = data%wsmp_iparm
-       inform%wsmp_dparm = data%wsmp_dparm
-       inform%wsmp_error = data%wsmp_iparm( 64 )
+       inform%wsmp_IPARM = data%wsmp_IPARM
+       inform%wsmp_DPARM = data%wsmp_DPARM
+       inform%wsmp_error = data%wsmp_IPARM( 64 )
 
        SELECT CASE( inform%wsmp_error )
        CASE ( 0 )
          inform%status = GALAHAD_ok
-         inform%iterative_refinements = data%wsmp_iparm( 6 )
+         inform%iterative_refinements = data%wsmp_IPARM( 6 )
        CASE ( - 102 )
          inform%status = GALAHAD_error_allocate
        CASE DEFAULT
@@ -5937,18 +5930,17 @@
 
      CASE ( 'pardiso' )
        IF ( data%n > 0 ) THEN
-         CALL PARDISO( data%PARDISO_PT, 1, 1, data%pardiso_mtype, - 1,         &
+         CALL PARDISO( data%pardiso_PT, 1, 1, data%pardiso_mtype, - 1,         &
                        data%matrix%n, data%matrix%VAL( : data%ne ),            &
                        data%matrix%PTR( : data%matrix%n + 1 ),                 &
                        data%matrix%COL( : data%ne ),                           &
                        data%ORDER( : data%matrix%n ), 1,                       &
-                       data%pardiso_iparm( : 64 ),                             &
+                       data%pardiso_IPARM( : 64 ),                             &
                        control%print_level_solver,                             &
                        data%B2( : data%matrix%n, : 1 ),                        &
                        data%X2( : data%matrix%n, : 1 ), inform%pardiso_error,  &
-                       data%pardiso_dparm( 1 : 64 ) )
-!v3                    data%X2( : data%matrix%n, : 1 ), inform%pardiso_error )
-         inform%pardiso_iparm = data%pardiso_iparm
+                       data%pardiso_DPARM( 1 : 64 ) )
+         inform%pardiso_IPARM = data%pardiso_IPARM
 
          SELECT CASE( inform%pardiso_error )
          CASE ( - 1 )
@@ -5999,8 +5991,7 @@
 
      CASE ( 'wsmp' )
        CALL wsmp_clear( )
-       CALL wsffree( )
-       CALL wsafree( )
+       CALL wssfree( )
 
 !  = POTR =
 
@@ -6852,7 +6843,7 @@
 !  = PARDISO =
 
      CASE ( 'pardiso' )
-       IF ( part == 'D' ) THEN
+       IF ( part == 'S' ) THEN
          inform%status = 0
          GO TO 900
        END IF
@@ -6864,27 +6855,29 @@
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
-       data%X2( : data%n, 1 ) = X( : data%n )
+       data%B2( : data%n, 1 ) = X( : data%n )
 
-       CALL SLS_copy_control_to_pardiso( control, data%pardiso_iparm )
-       data%pardiso_iparm( 6 ) = 1
-       IF ( part == 'L' .OR. part == 'S') THEN
-         data%pardiso_iparm( 26 ) = 1
-       ELSE
-         data%pardiso_iparm( 26 ) = 2
+       CALL SLS_copy_control_to_pardiso( control, data%pardiso_IPARM )
+       data%pardiso_IPARM( 6 ) = 0
+       IF ( part == 'L' ) THEN
+         data%pardiso_IPARM( 26 ) = - 1
+       ELSE IF ( part == 'D' ) THEN
+         data%pardiso_IPARM( 26 ) = - 2
+       ELSE IF ( part == 'U' ) THEN
+         data%pardiso_IPARM( 26 ) = - 3
        END IF
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL PARDISO( data%PARDISO_PT, 1, 1, data%pardiso_mtype, 33,            &
+       CALL PARDISO( data%pardiso_PT, 1, 1, data%pardiso_mtype, 33,            &
                      data%matrix%n, data%matrix%VAL( : data%ne ),              &
                      data%matrix%PTR( : data%matrix%n + 1 ),                   &
                      data%matrix%COL( : data%ne ),                             &
                      data%ORDER( : data%matrix%n ), 1,                         &
-                     data%pardiso_iparm( : 64 ),                               &
+                     data%pardiso_IPARM( : 64 ),                               &
                      control%print_level_solver,                               &
                      data%X2( : data%matrix%n, : 1 ),                          &
                      data%B2( : data%matrix%n, : 1 ), inform%pardiso_error,    &
-                     data%pardiso_dparm( 1 : 64 ) )
-       inform%pardiso_iparm = data%pardiso_iparm
+                     data%pardiso_DPARM( 1 : 64 ) )
+       inform%pardiso_IPARM = data%pardiso_IPARM
        SELECT CASE( inform%pardiso_error )
        CASE ( - 1 )
          inform%status = GALAHAD_error_restrictions
@@ -6895,7 +6888,7 @@
          inform%status = GALAHAD_error_pardiso
        CASE DEFAULT
          inform%status = GALAHAD_ok
-         inform%iterative_refinements =  data%pardiso_iparm( 7 )
+         inform%iterative_refinements =  data%pardiso_IPARM( 7 )
        END SELECT
        IF ( inform%status == GALAHAD_ok ) X( : data%n ) = data%X2( : data%n, 1 )
 
@@ -6948,30 +6941,30 @@
 !  = WSMP =
 
      CASE ( 'wsmp' )
-       CALL SLS_copy_control_to_wsmp( control, data%wsmp_iparm,                &
-                                      data%wsmp_dparm )
-       IF ( data%wsmp_iparm( 31 ) == 0 .OR. data%wsmp_iparm( 31 ) == 5 ) THEN
+       CALL SLS_copy_control_to_wsmp( control, data%wsmp_IPARM,                &
+                                      data%wsmp_DPARM )
+       IF ( data%wsmp_IPARM( 31 ) == 0 .OR. data%wsmp_IPARM( 31 ) == 5 ) THEN
          IF ( part == 'D' ) THEN
            inform%status = 0
            GO TO 900
          ELSE IF ( part == 'L' .OR. part == 'S') THEN
-           data%wsmp_iparm( 30 ) = 1
+           data%wsmp_IPARM( 30 ) = 1
          ELSE
-           data%wsmp_iparm( 30 ) = 2
+           data%wsmp_IPARM( 30 ) = 2
          END IF
        ELSE
          IF ( part == 'D' ) THEN
-           data%wsmp_iparm( 30 ) = 3
+           data%wsmp_IPARM( 30 ) = 3
          ELSE IF ( part == 'L' ) THEN
-           data%wsmp_iparm( 30 ) = 1
+           data%wsmp_IPARM( 30 ) = 1
          ELSE IF ( part == 'U' ) THEN
-           data%wsmp_iparm( 30 ) = 2
+           data%wsmp_IPARM( 30 ) = 2
          ELSE
            inform%status = GALAHAD_error_inertia ; GO TO 900
          END IF
        END IF
-       data%wsmp_iparm( 2 ) = 4
-       data%wsmp_iparm( 3 ) = 4
+       data%wsmp_IPARM( 2 ) = 4
+       data%wsmp_IPARM( 3 ) = 4
 
        CALL SPACE_resize_array( data%n, 1, data%B2, inform%status,             &
                inform%alloc_status )
@@ -6987,17 +6980,17 @@
                    data%ORDER( 1 : data%matrix%n ),                            &
                    data%INVP( 1 : data%matrix%n ),                             &
                    data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1,      &
-                   data%wsmp_aux, 0, data%MRP( 1 : data%matrix%n ),            &
-                   data%wsmp_iparm, data%wsmp_dparm )
+                   data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),            &
+                   data%wsmp_IPARM, data%wsmp_DPARM )
 
-       inform%wsmp_iparm = data%wsmp_iparm
-       inform%wsmp_dparm = data%wsmp_dparm
-       inform%wsmp_error = data%wsmp_iparm( 64 )
+       inform%wsmp_IPARM = data%wsmp_IPARM
+       inform%wsmp_DPARM = data%wsmp_DPARM
+       inform%wsmp_error = data%wsmp_IPARM( 64 )
 
        SELECT CASE( inform%wsmp_error )
        CASE ( 0 )
          inform%status = GALAHAD_ok
-         inform%iterative_refinements = data%wsmp_iparm( 6 )
+         inform%iterative_refinements = data%wsmp_IPARM( 6 )
        CASE ( - 102 )
          inform%status = GALAHAD_error_allocate
        CASE DEFAULT
@@ -7469,21 +7462,21 @@
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
        data%X2( : data%n, 1 ) = X( : data%n )
-       CALL SLS_copy_control_to_pardiso( control, data%pardiso_iparm )
-       data%pardiso_iparm( 6 ) = 1
-       data%pardiso_iparm( 26 ) = 1
+       CALL SLS_copy_control_to_pardiso( control, data%pardiso_IPARM )
+       data%pardiso_IPARM( 6 ) = 1
+       data%pardiso_IPARM( 26 ) = 1
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-       CALL PARDISO( data%PARDISO_PT, 1, 1, data%pardiso_mtype, 33,            &
+       CALL PARDISO( data%pardiso_PT, 1, 1, data%pardiso_mtype, 33,            &
                      data%matrix%n, data%matrix%VAL( : data%ne ),              &
                      data%matrix%PTR( : data%matrix%n + 1 ),                   &
                      data%matrix%COL( : data%ne ),                             &
                      data%ORDER( : data%matrix%n ), 1,                         &
-                     data%pardiso_iparm( : 64 ),                               &
+                     data%pardiso_IPARM( : 64 ),                               &
                      control%print_level_solver,                               &
                      data%X2( : data%matrix%n, : 1 ),                          &
                      data%B2( : data%matrix%n, : 1 ), inform%pardiso_error,    &
-                     data%pardiso_dparm( 1 : 64 ) )
-       inform%pardiso_iparm = data%pardiso_iparm
+                     data%pardiso_DPARM( 1 : 64 ) )
+       inform%pardiso_iparm = data%pardiso_IPARM
        SELECT CASE( inform%pardiso_error )
        CASE ( - 1 )
          inform%status = GALAHAD_error_restrictions
@@ -7494,7 +7487,7 @@
          inform%status = GALAHAD_error_pardiso
        CASE DEFAULT
          inform%status = GALAHAD_ok
-         inform%iterative_refinements =  data%pardiso_iparm( 7 )
+         inform%iterative_refinements =  data%pardiso_IPARM( 7 )
        END SELECT
        IF ( inform%status == GALAHAD_ok ) X( : data%n ) = data%X2( : data%n, 1 )
 
@@ -7553,15 +7546,15 @@
 !  = WSMP =
 
      CASE ( 'wsmp' )
-       CALL SLS_copy_control_to_wsmp( control, data%wsmp_iparm,                &
-                                      data%wsmp_dparm )
-       IF ( data%wsmp_iparm( 31 ) == 0 .OR. data%wsmp_iparm( 31 ) == 5 ) THEN
-         data%wsmp_iparm( 30 ) = 1
+       CALL SLS_copy_control_to_wsmp( control, data%wsmp_IPARM,                &
+                                      data%wsmp_DPARM )
+       IF ( data%wsmp_IPARM( 31 ) == 0 .OR. data%wsmp_IPARM( 31 ) == 5 ) THEN
+         data%wsmp_IPARM( 30 ) = 1
        ELSE
          inform%status = GALAHAD_error_inertia ; GO TO 900
        END IF
-       data%wsmp_iparm( 2 ) = 4
-       data%wsmp_iparm( 3 ) = 4
+       data%wsmp_IPARM( 2 ) = 4
+       data%wsmp_IPARM( 3 ) = 4
 
        CALL SPACE_resize_array( data%n, 1, data%B2, inform%status,             &
                inform%alloc_status )
@@ -7577,17 +7570,17 @@
                    data%ORDER( 1 : data%matrix%n ),                            &
                    data%INVP( 1 : data%matrix%n ),                             &
                    data%B2( 1 : data%matrix%n, 1 : 1 ), data%matrix%n, 1,      &
-                   data%wsmp_aux, 0, data%MRP( 1 : data%matrix%n ),            &
-                   data%wsmp_iparm, data%wsmp_dparm )
+                   data%wsmp_AUX, 0, data%MRP( 1 : data%matrix%n ),            &
+                   data%wsmp_IPARM, data%wsmp_DPARM )
 
-       inform%wsmp_iparm = data%wsmp_iparm
-       inform%wsmp_dparm = data%wsmp_dparm
-       inform%wsmp_error = data%wsmp_iparm( 64 )
+       inform%wsmp_IPARM = data%wsmp_IPARM
+       inform%wsmp_DPARM = data%wsmp_DPARM
+       inform%wsmp_error = data%wsmp_IPARM( 64 )
 
        SELECT CASE( inform%wsmp_error )
        CASE ( 0 )
          inform%status = GALAHAD_ok
-         inform%iterative_refinements = data%wsmp_iparm( 6 )
+         inform%iterative_refinements = data%wsmp_IPARM( 6 )
        CASE ( - 102 )
          inform%status = GALAHAD_error_allocate
        CASE DEFAULT

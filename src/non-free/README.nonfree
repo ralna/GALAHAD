@@ -8,9 +8,12 @@ of the HSL archive,
 
   http://www.hsl.rl.ac.uk/archive/
 
-while others form part of the main HSL
+others form part of the main HSL
 
   http://www.hsl.rl.ac.uk/
+
+amd yet others are avilable elsewhere subject to appropriate 
+licencing conditions
 
 Although software stubs are provided for these packages to allow
 the compilation of GALAHAD, the software itself must be downloaded
@@ -26,8 +29,8 @@ use from
 They should *not* be altered and then redistributed.
 
 We recommend that all users obtain at least the HSL Archive packages.
-The other HSL packages are not crucial to run GALAHAD, but providing
-them will often lead to significantly improved performance.
+The other HSL and external packages are not crucial to run GALAHAD, 
+but providing them will often lead to significantly improved performance.
 
 Separate licencing conditions may apply for commercial incorporation
 and redistribution. See
@@ -46,7 +49,17 @@ packages
 
 In addition, both icfs (http://www.mcs.anl.gov/~more/icfs/) and
 minpack (ftp://ftp.mcs.anl.gov/pub/MINPACK-2/gqt) are useful
-but must be downloaded separately.
+but must be downloaded separately. The packages MKL, Pardiso
+and WSMP are availble as binary files from
+
+ https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onemkl.html
+ https://www.pardiso-project.org/
+
+and
+
+ https://researcher.watson.ibm.com/researcher/view_group.php?id=1426
+
+respectively.
 
 See $GALAHAD/src/makedefs/packages for more details about downloads
-and installation.
+and installation of non-binary packages.

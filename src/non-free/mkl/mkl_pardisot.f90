@@ -163,8 +163,8 @@ PROGRAM TEST_PARDISO
     WRITE( 6, * ) ' solve completed ... '
   END IF
 
-  WRITE( 6, * ) ' the solution of the system is '
-  WRITE( 6, "( ' X = ', /, ( 4ES12.4 ) )" ) X( : n )
+  WRITE( 6, "( ' the solution of the system is X =' )" )
+  WRITE( 6, "( ( 4ES12.4 ) )" ) X( : n )
 
 !  termination and release of memory
 

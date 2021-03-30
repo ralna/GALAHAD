@@ -45,10 +45,7 @@ PLIBS = $(LIBS) -lgalahad_problem
 
 ARR = $(AR) $(ARREPFLAGS) $(LG)
 MPARR = $(AR) $(ARREPFLAGS) $(MPLG)
-
 RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
 
 #  compilation agenda
 
@@ -170,13 +167,13 @@ $(OBJ)/mkl_pardisot.o: ../mkl/mkl_pardisot.f90
 	$(SED) -f $(SEDS) ../mkl/mkl_pardisot.f90 > $(OBJ)/mkl_pardisot.f90
 	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisot.o $(FFLAGSS) mkl_pardisot.f90
 	@printf '[ OK ]\n'
-	$(RMARFILE)  mkl_pardiso.o
 
 #  book keeping
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(LGS) $(LGD) $(OBJ)/qpbdt.o $(OBJ)/qpbs.o $(OBJ)/qpbt.o $(OBJ)/qpbst.o
+	$(RM) $(MPLG) $(OBJ)/mkl_pardisos.o $(OBJ)/mkl_pardisot.o 
+	$(RMARFILE)  mkl_pardiso_inter.o
 	@printf '[ OK ]\n'
 
 cleanall:
@@ -184,7 +181,3 @@ cleanall:
 	$(RM) $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
 
-rmgls:
-	@printf ' %-9s %-15s\t\t' "Removing" "gls from archive "
-	$(RMARFILE) gls.o
-	@printf '[ OK ]\n'

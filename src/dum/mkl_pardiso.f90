@@ -1,3 +1,7 @@
+! THIS VERSION: 28/03/2021 AT 15:00:00 GMT.
+
+!-*-*-*-  G A L A H A D  -  D U M M Y   P A R D I S O  R O U T I N E S  -*-*-*-
+
   SUBROUTINE PARDISO_S( PT, MAXFCT, MNUM, MTYPE, PHASE, N, A, IA, JA,          &
                         PERM, NRHS, IPARM, MSGLVL, B, X, ERROR )
   USE MKL_PARDISO_PRIVATE

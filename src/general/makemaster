@@ -111,10 +111,9 @@ problems = $(SMTS) nlpt $(CLGS)(problem.o)
 problemd = $(SMTD) nlpt $(CLGD)(problem.o)
 
 BASICZ = $(LG)(cputim.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
-         $(LG)(symbols.o) $(PLG)(pardiso.o) $(LG)(mkl_pardiso_interface.o) \
-         $(MPLG)(mkl_pardiso.o) $(MLG)(metis.o) $(WLG)(wsmp.o) \
-         $(DLG)(dummy.o) $(LG)(blas_interface.o) $(LG)(lapack_interface.o) \
-         minpack
+         $(LG)(symbols.o) $(PLG)(pardiso.o) mkl_pardiso $(MLG)(metis.o) \
+         $(WLG)(wsmp.o) $(DLG)(dummy.o) $(LG)(blas_interface.o) \
+         $(LG)(lapack_interface.o) minpack
 
 ROOTSS = $(BASICZ) $(LGS)(string.o) buildspec_silent \
          $(LGS)(symbols.o) $(LGS)(specfile.o) \
@@ -139,11 +138,6 @@ SSIDSD = $(LG)(symbols.o) $(RLGD)(ssidsd.o)
 
 PARDISOS = $(LG)(symbols.o) $(PLGS)(pardiso.o)
 PARDISOD = $(LG)(symbols.o) $(PLGD)(pardiso.o)
-
-MKL_PARDISOS = $(LG)(symbols.o) $(LG)(mkl_pardiso_interface.o) \
-               $(MPLG)(mkl_pardiso.o) 
-MKL_PARDISOD = $(LG)(symbols.o) $(LG)(mkl_pardiso_interface.o) \
-               $(MPLG)(mkl_pardiso.o) 
 
 METISS = $(LG)(symbols.o) $(MLGS)(metis.o)
 METISD = $(LG)(symbols.o) $(MLGD)(metis.o)
@@ -250,12 +244,6 @@ FILTERDT = $(BASICD) $(OBJD)/filtert.o
 FILTERSS = $(BASICS) $(OBJS)/filters.o
 FILTERST = $(BASICS) $(OBJS)/filtert.o
 
-MKL_PARDISODT = $(MKL_PARDISOD) $(OBJD)/mkl_pardisot.o
-MKL_PARDISOST = $(MKL_PARDISOS) $(OBJS)/mkl_pardisot.o
-
-RMKL_PARDISODT = $(OBJD)/mkl_pardisot.o -L$(OBJD) -lgalahad $(MKL_PARDISO)
-RMKL_PARDISOST = $(OBJS)/mkl_pardisot.o -L$(OBJS) -lgalahad $(MKL_PARDISO)
-
 SUCC = precision version) compiled successfully
 SUCC_CUTEST = precision version) for CUTEst compiled successfully
 
@@ -353,16 +341,6 @@ pardiso_single: $(PARDISOS)
 pardiso_double: $(PARDISOD)
 	$(RANLIB) $(PLGD)
 
-#  mkl_pardiso
-
-mkl_pardiso_silent: mkl_pardiso_$(PRECIS)
-mkl_pardiso: mkl_pardiso_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(MKL_PARDISO) ($(PRECIS) $(SUCC)"
-mkl_pardiso_single: $(MKL_PARDISOS)
-	$(RANLIB) $(MPLGS)
-mkl_pardiso_double: $(MKL_PARDISOD)
-	$(RANLIB) $(MPLGD)
-
 #  wsmp
 
 wsmp_silent: wsmp_$(PRECIS)
@@ -394,6 +372,30 @@ blas: $(BLG)(blas.o)
 lapack_silent: $(LLG)(lapack.o)
 lapack: $(LLG)(lapack.o)
 	@printf ' %-21s\n' "GALAHAD: LAPACK compiled successfully"
+
+# dummy
+
+dummy_silent: $(DLG)(dummy.o)
+dummy: $(DLG)(dummy.o)
+	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
+
+#  blas_interface
+
+blas_interface_silent: $(LG)(blas_interface.o)
+blas_interface: $(LG)(blas_interface.o)
+	@printf ' %-21s\n' "GALAHAD: BLAS_interface compiled successfully"
+
+# lapack_interface
+
+lapack_interface_silent: $(LG)(lapack_interface.o)
+lapack_interface: $(LG)(lapack_interface.o)
+	@printf ' %-21s\n' "GALAHAD: LAPACK_interface compiled successfully"
+
+# symbols
+
+symbols_silent: $(LG)(symbols.o)
+symbols: $(LG)(symbols.o)
+	@printf ' %-21s\n' "GALAHAD: SYMBOLS compiled successfully"
 
 # smt
 
@@ -557,6 +559,15 @@ mi20:
 ma48v3:
 	( cd ../non-free/ma48 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             ma48v3_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma48 )
+
+#  other external packages
+
+mkl_pardiso_silent: mkl_pardiso
+mkl_pardiso:
+#	pwd ; ls ../non-free/mkl
+	( cd ../non-free/mkl ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) mkl_pardiso_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mkl )
 
 minpack:
 	( cd ../non-free/minpack ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -871,23 +882,6 @@ filterst: $(FILTERST)
 	cat ../filter/filtert.output
 	rm ../filter/run_filter
 
-mkl_pardisodt: $(MKL_PARDISODT)
-	echo " Exhaustive test of subroutine interface to mkl_pardiso"
-	cd ../mkl ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_mkl_pardiso \
-                         $(RMKL_PARDISODT)
-#	- ../mkl/run_mkl_pardiso >& ../mkl/mkl_pardisodt.output
-#	cat ../mkl/mkl_pardisodt.output
-	- ../mkl/run_mkl_pardiso
-	rm ../mkl/run_mkl_pardiso
-
-mkl_pardisost: $(MKL_PARDISOST)
-	echo " Exhaustive test of subroutine interface to mkl_pardiso"
-	cd ../mkl ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_mkl_pardiso \
-                         $(RMKL_PARDISOST)
-	- ../mkl/run_mkl_pardiso >& ../mkl_pardiso/mkl_pardisot.output
-	cat ../mkl/mkl_pardisot.output
-	rm ../mkl/run_mkl_pardiso
-
 #  individual compilations
 
 cputim.o: $(LG)(cputim.o)
@@ -1033,7 +1027,6 @@ $(LG)(blas_interface.o): ../lapack/blas_interface.f90
 
 lapack_interface.o: $(LG)(lapack_interface.o)
 
-
 $(LG)(lapack_interface.o): ../lapack/lapack_interface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lapack_interface"
 	$(CP) ../lapack/lapack_interface.f90 $(OBJ)/lapack_interface.f90
@@ -1095,28 +1088,6 @@ $(PLG)(pardiso.o): ../dum/pardiso.f
 	cd $(OBJ); $(FORTRAN) -o pardiso.o $(FFLAGS) pardiso.f90
 	cd $(OBJ); $(PARR) pardiso.o ; $(RM) pardiso.f90 pardiso.o
 	$(RANLIB) $(PLG)
-	@printf '[ OK ]\n'
-
-mkl_pardiso_interface.o: $(LG)(mkl_pardiso_interface.o)
-
-$(LG)(mkl_pardiso_interface.o): ../mkl/mkl_pardiso_interface.f90
-	@printf ' %-9s %-15s\t' "Compiling" "mkl_pardiso_interface  "
-	$(CP) ../mkl/mkl_pardiso_interface.f90 $(OBJ)/mkl_pardiso_interface.f90
-	cd $(OBJ); $(FORTRAN) -o mkl_pardiso_interface.o $(FFLAGS) \
-                      mkl_pardiso_interface.f90
-	cd $(OBJ); $(ARR) mkl_pardiso_interface.o ; \
-          $(RM) mkl_pardiso_interface.f90 mkl_pardiso_interface.o
-	@printf '[ OK ]\n'
-
-mkl_pardiso.o: $(MPLG)(mkl_pardiso.o)
-
-$(MPLG)(mkl_pardiso.o): ../dum/mkl_pardiso.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardiso  "
-	$(CP) ../dum/mkl_pardiso.f90 $(OBJ)/mkl_pardiso.f90
-	cd $(OBJ); $(FORTRAN) -o mkl_pardiso.o $(FFLAGS) mkl_pardiso.f90
-	cd $(OBJ); $(MPARR) mkl_pardiso.o ; \
-          $(RM) mkl_pardiso.f90 mkl_pardiso.o
-	$(RANLIB) $(MPLG)
 	@printf '[ OK ]\n'
 
 wsmp.o: $(WLG)(wsmp.o)
@@ -1677,24 +1648,6 @@ $(OBJ)/filtert.o: ../filter/filtert.f90
 	cd $(OBJ) ; $(FORTRAN) -o filtert.o $(FFLAGSS) filtert.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
-
-mkl_pardisos.o: $(OBJ)/mkl_pardisos.o
-
-$(OBJ)/mkl_pardisos.o: ../mkl/mkl_pardisos.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardisos  "
-	$(SED) -f $(SEDS) ../mkl/mkl_pardisos.f90 > $(OBJ)/mkl_pardisos.f90
-	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisos.o $(FFLAGS) mkl_pardisos.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-mkl_pardisot.o: $(OBJ)/mkl_pardisot.o
-
-$(OBJ)/mkl_pardisot.o: ../mkl/mkl_pardisot.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardisot  "
-	$(SED) -f $(SEDS) ../mkl/mkl_pardisot.f90 > $(OBJ)/mkl_pardisot.f90
-	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisot.o $(FFLAGSS) mkl_pardisot.f90
-	@printf '[ OK ]\n'
-	$(RMARFILE)  mkl_pardiso.o
 
 #  generate HSL codes from GALAHAD ones
 

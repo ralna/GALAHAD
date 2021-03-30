@@ -58,8 +58,8 @@
 
 ! Read matrix order and number of entries
 !  DO type = 1, 0   ! none
-!  DO type = 1, 3   ! all
-   DO type = 1, 1   ! coordinate
+   DO type = 1, 3   ! all
+!  DO type = 1, 1   ! coordinate
 !  DO type = 2, 2   ! row-wise
 !  DO type = 3, 3   ! dense
 ! Allocate arrays of appropriate sizes
@@ -86,8 +86,8 @@
 !  test external ordering strategies
 
 !    DO ordering = 1, 0 ! none
-!    DO ordering = 1, 3 ! all orderings
-     DO ordering = 1, 1 ! default ordering
+     DO ordering = 1, 3 ! all orderings
+!    DO ordering = 1, 1 ! default ordering
 !    DO ordering = 2, 2 ! computed ordering
 !    DO ordering = 3, 3 ! provided ordering
        IF ( ordering == 1 ) THEN
@@ -99,7 +99,7 @@
        END IF
        WRITE( 6,                                                               &
           "( '       solver  1 RHS  1 refine  >1 RHS    >1 refine  partial')" )
-!      DO l = 1, 13   ! all
+       DO l = 1, 13   ! all
 !      DO l = 7, 12   ! all hsl
 !      DO l = 2, 4    ! all lapack
 !      DO l = 13, 13  ! sils
@@ -114,8 +114,9 @@
 !      DO l = 4, 4    ! potr
 !      DO l = 3, 3    ! sytr
 !      DO l = 2, 2    ! pbtr
-       DO l = 1, 1    ! ssids
-        solver = 14 - l
+!      DO l = 1, 1    ! ssids
+        solver = l
+!       solver = 14 - l
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
@@ -337,8 +338,8 @@
 
 !  test external scaling strategies
 
-     DO scaling = 1, 0  ! none
-!    DO scaling = 1, 3  ! all
+!    DO scaling = 1, 0  ! none
+     DO scaling = 1, 3  ! all
 !    DO scaling = 1, 1  ! mc64
 !    DO scaling = 2, 2  ! mc77 1-norm
 !    DO scaling = 3, 3  ! mc77 inf-norm
@@ -368,7 +369,8 @@
 !      DO l = 3, 3    ! sytr
 !      DO l = 2, 2    ! pbtr
 !      DO l = 1, 1    ! ssids
-        solver = 14 - l
+        solver = l
+!       solver = 14 - l
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
@@ -574,7 +576,6 @@
    WRITE( 6, "( ' error tests' )" )
    WRITE( 6, "( '       solver     -3   -20   -31   -26')" )
 !  DO l = 1, 0    ! none
-!  DO l = 2, 13   ! all
    DO l = 1, 13   ! all
 !  DO l = 7, 12   ! all hsl
 !  DO l = 2, 4    ! all lapack
@@ -591,8 +592,8 @@
 !  DO l = 3, 3    ! sytr
 !  DO l = 2, 2    ! pbtr
 !  DO l = 1, 1    ! ssids
-     solver = 14 - l
-!    solver = l
+!    solver = 14 - l
+     solver = l
 ! Initialize the structures
 
 ! test for error = GALAHAD_error_restrictions
