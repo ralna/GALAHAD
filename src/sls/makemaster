@@ -55,7 +55,7 @@ WLGD = $(OBJD)/libgalahad_wsmp.a
 
 #  Libraries used
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(MKL_PARDISO) $(WSMP) $(METIS) \
                  $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
 
