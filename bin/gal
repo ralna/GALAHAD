@@ -449,7 +449,7 @@ fi
 if [[ "$MKL_PARDISO" == "" ]]; then
   MKL_PARDISOLIB="-lgalahad_mkl_pardiso"
 else
-  MKL_PARDISOLIB="$PARDISO"
+  MKL_PARDISOLIB="$MKL_PARDISO"
 fi
 
 if [[ "$WSMP" == "" ]]; then
