@@ -126,18 +126,15 @@
         CASE( 'arcsearch_max_steps' )                                         
           CALL MATLAB_get_value( ps, 'arcsearch_max_steps',                    &
                                  pc, BLLS_control%arcsearch_max_steps )
+        CASE( 'weight' )                                                     
+          CALL MATLAB_get_value( ps, 'weight',                                 &
+                                 pc, BLLS_control%weight )
         CASE( 'infinity' )                                                     
           CALL MATLAB_get_value( ps, 'infinity',                               &
                                  pc, BLLS_control%infinity )
-        CASE( 'stop_p' )
-          CALL MATLAB_get_value( ps, 'stop_p',                                 &
-                                 pc, BLLS_control%stop_p )
         CASE( 'stop_d' )                                                        
           CALL MATLAB_get_value( ps, 'stop_d',                                 &
                                  pc, BLLS_control%stop_d )
-        CASE( 'stop_c' )                                                        
-          CALL MATLAB_get_value( ps, 'stop_c',                                 &
-                                 pc, BLLS_control%stop_c )
         CASE( 'identical_bounds_tol' )                                         
           CALL MATLAB_get_value( ps, 'identical_bounds_tol',                   &
                                  pc, BLLS_control%identical_bounds_tol )
@@ -222,7 +219,7 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 32
+      INTEGER * 4, PARAMETER :: ninform = 31
       CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
          'error                          ', 'out                            ', &
          'print_level                    ', 'start_print                    ', &
@@ -230,8 +227,8 @@
          'maxit                          ', 'cold_start                     ', &
          'preconditioner                 ', 'change_max                     ', &
          'cg_maxit                       ', 'arcsearch_max_steps            ', &
-         'infinity                       ', 'stop_p                         ', &
-         'stop_d                         ', 'stop_c                         ', &
+         'weight                         ',                                    &
+         'infinity                       ', 'stop_d                         ', &
          'identical_bounds_tol           ', 'stop_cg_relative               ', &
          'stop_cg_absolute               ', 'alpha_max                      ', &
          'alpha_initial                  ', 'alpha_reduction                ', &
@@ -277,14 +274,12 @@
                                   BLLS_control%cg_maxit )
       CALL MATLAB_fill_component( pointer, 'arcsearch_max_steps',              &
                                   BLLS_control%arcsearch_max_steps )
+      CALL MATLAB_fill_component( pointer, 'weight',                           &
+                                  BLLS_control%weight )
       CALL MATLAB_fill_component( pointer, 'infinity',                         &
                                   BLLS_control%infinity )
-      CALL MATLAB_fill_component( pointer, 'stop_p',                           &
-                                  BLLS_control%stop_p )
       CALL MATLAB_fill_component( pointer, 'stop_d',                           &
                                   BLLS_control%stop_d )
-      CALL MATLAB_fill_component( pointer, 'stop_c',                           &
-                                  BLLS_control%stop_c )
       CALL MATLAB_fill_component( pointer, 'identical_bounds_tol',             &
                                   BLLS_control%identical_bounds_tol )
       CALL MATLAB_fill_component( pointer, 'stop_cg_relative',                 &

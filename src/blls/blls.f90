@@ -153,17 +153,9 @@
 
        REAL ( KIND = wp ) :: infinity = ten ** 19
 
-!  the required accuracy for the primal infeasibility
-
-       REAL ( KIND = wp ) :: stop_p = ten ** ( - 6 )
-
 !  the required accuracy for the dual infeasibility
 
        REAL ( KIND = wp ) :: stop_d = ten ** ( - 6 )
-
-!  the required accuracy for the complementary slackness
-
-       REAL ( KIND = wp ) :: stop_c = ten ** ( - 6 )
 
 !  any pair of constraint bounds (x_l,x_u) that are closer than
 !   identical_bounds_tol will be reset to the average of their values
@@ -432,9 +424,7 @@
 
 !  added here to prevent for compiler bugs
 
-     control%stop_p = epsmch ** 0.33_wp
      control%stop_d = epsmch ** 0.33_wp
-     control%stop_c = epsmch ** 0.33_wp
      control%stop_cg_absolute = SQRT( epsmch )
 
      RETURN
@@ -470,7 +460,6 @@
 !  sif-file-device                                   52
 !  regularization-weight                             0.0D+0
 !  infinity-value                                    1.0D+19
-!  primal-accuracy-required                          1.0D-5
 !  dual-accuracy-required                            1.0D-5
 !  complementary-slackness-accuracy-required         1.0D-5
 !  identical-bounds-tolerance                        1.0D-15
@@ -518,10 +507,8 @@
      INTEGER, PARAMETER :: arcsearch_max_steps = cg_maxit + 1
      INTEGER, PARAMETER :: weight = arcsearch_max_steps + 1
      INTEGER, PARAMETER :: infinity = weight + 1
-     INTEGER, PARAMETER :: stop_p = infinity + 1
-     INTEGER, PARAMETER :: stop_d = stop_p + 1
-     INTEGER, PARAMETER :: stop_c = stop_d + 1
-     INTEGER, PARAMETER :: identical_bounds_tol = stop_c + 1
+     INTEGER, PARAMETER :: stop_d = infinity + 1
+     INTEGER, PARAMETER :: identical_bounds_tol = stop_d + 1
      INTEGER, PARAMETER :: stop_cg_relative = identical_bounds_tol + 1
      INTEGER, PARAMETER :: stop_cg_absolute = stop_cg_relative + 1
      INTEGER, PARAMETER :: alpha_max = stop_cg_absolute + 1
@@ -569,9 +556,7 @@
 
      spec( weight )%keyword = 'regularization-weight'
      spec( infinity )%keyword = 'infinity-value'
-     spec( stop_p )%keyword = 'primal-accuracy-required'
      spec( stop_d )%keyword = 'dual-accuracy-required'
-     spec( stop_c )%keyword = 'complementary-slackness-accuracy-required'
      spec( identical_bounds_tol )%keyword = 'identical-bounds-tolerance'
      spec( stop_cg_relative )%keyword = 'cg-relative-accuracy-required'
      spec( alpha_max )%keyword = 'maximum-arcsearch-stepsize'
@@ -659,14 +644,8 @@
      CALL SPECFILE_assign_value( spec( infinity ),                             &
                                  control%infinity,                             &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( stop_p ),                               &
-                                 control%stop_p,                               &
-                                 control%error )
      CALL SPECFILE_assign_value( spec( stop_d ),                               &
                                  control%stop_d,                               &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( stop_c ),                               &
-                                 control%stop_c,                               &
                                  control%error )
      CALL SPECFILE_assign_value( spec( identical_bounds_tol ),                 &
                                  control%identical_bounds_tol,                 &

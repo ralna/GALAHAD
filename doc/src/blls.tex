@@ -428,24 +428,10 @@ specify which constraint bounds are infinite.
 Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
 The default is {\tt infinity =} $10^{19}$.
 
-\itt{stop\_p} is a scalar variable of type default \realdp, that holds the
-required accuracy for the primal infeasibility (see Section~\ref{galmethod}).
-The default is {\tt stop\_p =} $u^{1/3}$,
-where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
-{\tt \fullpackagename\_double}).
-
 \itt{stop\_d} is a scalar variable of type default
 \realdp, that holds the
 required accuracy for the dual infeasibility (see Section~\ref{galmethod}).
 The default is {\tt stop\_d =} $u^{1/3}$,
-where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
-{\tt \fullpackagename\_double}).
-
-\itt{stop\_c} is a scalar variable of type default
-\realdp, that holds the
-required accuracy for the violation of complementarity slackness
-(see Section~\ref{galmethod}).
-The default is {\tt stop\_c =} $u^{1/3}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
