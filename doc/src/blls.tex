@@ -104,7 +104,7 @@ Component $m \ast (j-1) + i$ of the storage array {\tt
   A\%val} will hold the value $\bmA_{i,j}$ for $i = 1, \ldots , m$, $j =
 1, \ldots , n$.
 
-\subsubsection{Sparse co-ordinate storage format}\label{coordinate}
+\subsubsection{Sparse coordinate storage format}\label{coordinate}
 Only the nonzero entries of the matrices are stored. For the $l$-th
 entry of $\bmA$, its row index $i$, column index $j$ and value
 $\bmA_{ij}$ are stored in the $l$-th components of the integer arrays
@@ -166,7 +166,7 @@ content depends on the type of matrix to be stored (see \S\ref{typeprob}).
 \ittf{val} is a rank-one allocatable array of type default \realdp\,
 and dimension at least {\tt ne}, that holds the values of the entries.
 Any duplicated entries that appear in the sparse
-co-ordinate or row-wise schemes will be summed.
+coordinate or row-wise schemes will be summed.
 
 \ittf{row} is a rank-one allocatable array of type default \integer,
 and dimension at least {\tt ne}, that may hold the row indices of the entries.
@@ -210,12 +210,12 @@ The following components are used here:
 \character, that
 is used to indicate the storage scheme used. If the dense row-wise
 storage scheme (see Section~\ref{dense-row}) is used,
-the first thirteen components of {\tt A\%type} must contain the
-string {\tt DENSE\_BY\_ROW}, while if the column-wise scheme
+the first twelve components of {\tt A\%type} must contain the
+string {\tt DENSE\_BY\_ROWS}, while if the column-wise scheme
 (see Section~\ref{dense-column}) is used,
-the sixteen components of {\tt A\%type} must contain the
-string {\tt DENSE\_BY\_COLUMN}.
-For the sparse co-ordinate scheme (see Section~\ref{coordinate}),
+the fifteen components of {\tt A\%type} must contain the
+string {\tt DENSE\_BY\_COLUMNS}.
+For the sparse coordinate scheme (see Section~\ref{coordinate}),
 the first ten components of {\tt A\%type} must contain the
 string {\tt COORDINATE},
 for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
@@ -229,7 +229,7 @@ For convenience, the procedure {\tt SMT\_put}
 may be used to allocate sufficient space and insert the required keyword
 into {\tt A\%type}.
 For example, if {\tt nlp} is of derived type {\tt \packagename\_problem\_type}
-and involves a Jacobian we wish to store using the co-ordinate scheme,
+and involves a Jacobian we wish to store using the coordinate scheme,
 we may simply
 %\vspace*{-2mm}
 {\tt
@@ -244,7 +244,7 @@ for further details on the use of {\tt SMT\_put}.
 
 \itt{A\%ne} is a scalar variable of type default \integer, that
 holds the number of entries in $\bmJ$
-in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
+in the sparse coordinate storage scheme (see Section~\ref{coordinate}).
 It need not be set for any of the other three schemes.
 
 \itt{A\%val} is a rank-one allocatable array of type default \realdp, that holds
@@ -252,18 +252,18 @@ the values of the entries of the Jacobian matrix $\bmA$ in any of the
 storage schemes discussed in Section~\ref{galmatrix}.
 
 \itt{A\%row} is a rank-one allocatable array of type default \integer,
-that holds the row indices of $\bmA$ in the sparse co-ordinate storage
+that holds the row indices of $\bmA$ in the sparse coordinate storage
 scheme (see Section~\ref{coordinate}).
 It need not be allocated for any of the other three schemes.
 
 \itt{A\%col} is a rank-one allocatable array variable of type default \integer,
-that holds the column indices of $\bmA$ in either the sparse co-ordinate
+that holds the column indices of $\bmA$ in either the sparse coordinate
 (see Section~\ref{coordinate}), or the sparse row-wise
 (see Section~\ref{rowwise}) storage scheme.
 It need not be allocated when the dense or column-wise storage schemes are used.
 
 \itt{A\%row} is a rank-one allocatable array variable of type default \integer,
-that holds the row indices of $\bmA$ in either the sparse co-ordinate
+that holds the row indices of $\bmA$ in either the sparse coordinate
 (see Section~\ref{coordinate}), or the sparse column-wise
 (see Section~\ref{columnwise}) storage scheme.
 It need not be allocated when the dense or row-wise storage schemes are used.
@@ -804,7 +804,7 @@ will contain the residuals $\bmc(\bmx)$
 and gradients $\bmg(\bmx)$ at $\bmx$, respectively.
 \restrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $> 0$
               and (if $\bmA$ is provided) {\tt prob\%A\%ne} $\geq -2$.
-{\tt prob\%A\_type} $\in \{${\tt 'DENSE'},
+{\tt prob\%A\_type} $\in \{${\tt 'DENSE\_BY\_ROWS'}, {\tt 'DENSE\_BY\_COLUMNS'},
  {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'}, {\tt SPARSE\_BY\_COLUMNS}
 $\}$.
 
@@ -1246,7 +1246,8 @@ and {\tt inform\%bad\_alloc} respectively.
  {\tt prob\%m} $> 0$
     or the requirement that
     {\tt prob\%A\_type} contain its relevant string
-    {\tt 'DENSE'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}
+    {\tt 'DENSE\_BY\_ROWS'}, 
+    {\tt 'DENSE\_BY\_COLUMNS'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}
     or {\tt SPARSE\_BY\_COLUMNS},
     when $\bmA$ is available,  has been violated.
 
@@ -1498,7 +1499,7 @@ variables and Lagrange multipliers.
 \galio Output is under control of the arguments
  {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
 \galrestrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $> 0$,
-{\tt prob\%A\_type} $\in \{${\tt 'DENSE'},
+{\tt prob\%A\_type} $\in \{${\tt 'DENSE\_BY\_ROWS'}, {\tt 'DENSE\_BY\_COLUMNS'},
  {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'},
  {\tt SPARSE\_BY\_COLUMNS} $\}$
 (if $\bmA$ is explicit).
@@ -1588,7 +1589,7 @@ Then, on writing the data for this problem as
  \bmb = \vect{ 0 \\ 2 \\ 1  \\ 2}, \;\;
 \bmx^{l} = \vect{ -1 \\ - \infty \\ 0 } \tim{and}
 \bmx^{u} = \vect{ \infty \\ 1 \\ 2 }}
-in sparse co-ordinate format, we may use the following code:
+in sparse coordinate format, we may use the following code:
 
 {\tt \small
 \VerbatimInput{\packageexample}
@@ -1603,7 +1604,7 @@ The same problem may be solved holding the data in
 a sparse row-wise storage format by replacing the lines
 {\tt \small
 \begin{verbatim}
-!  sparse co-ordinate storage format
+!  sparse coordinate storage format
 ...
 ! problem data complete
 \end{verbatim}
@@ -1613,20 +1614,45 @@ by
 {\tt \small
 \begin{verbatim}
 ! sparse row-wise storage format
-   CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )  ! Specify sparse-by-row
+   CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )  ! Specify sparse-by-rows
    ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( m + 1 ) )
    p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
    p%A%col = (/ 1, 1, 2, 3, 3 /)                          ! Column indices
-   p%A%ptr = (/ 1, 3, 4, 6 /)                             ! Set row pointers
+   p%A%ptr = (/ 1, 2, 4, 5, 6 /)                          ! Set row pointers
 ! problem data complete
 \end{verbatim}
 }
 \noindent
-or using a dense storage format with the replacement lines
+a sparse column-wise storage format by replacing the lines
+{\tt \small
+\begin{verbatim}
+! sparse column-wise storage format
+   CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )  ! Specify sparse-by-columns
+   ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
+   p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
+   p%A%row = (/ 1, 2, 2, 3, 4 /)                          ! Row indices
+   p%A%ptr = (/ 1, 3, 4, 6 /)                             ! Set column pointers
+! problem data complete
+\end{verbatim}
+}
+\noindent
+a dense-by-rows storage format with the replacement lines
 {\tt \small
 \begin{verbatim}
 ! dense storage format
-   CALL SMT_put( p%A%type, 'DENSE', s )  ! Specify dense
+   CALL SMT_put( p%A%type, 'DENSE_BY_ROWS', s )  ! Specify dense-by-rows
+   ALLOCATE( p%A%val( m * n  )
+   p%A%val = (/ 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, &
+                1.0_wp, 0.0_wp, 01.0_wp, 1.0_wp /)
+! problem data complete
+\end{verbatim}
+}
+\noindent
+or a dense-by-columns storage format using the replacement
+{\tt \small
+\begin{verbatim}
+! dense storage format
+   CALL SMT_put( p%A%type, 'DENSE_BY_COLUMS', s )  ! Specify dense-by-columns
    ALLOCATE( p%A%val( m * n  )
    p%A%val = (/ 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, &
                 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)

@@ -12,18 +12,19 @@
    TYPE ( BLLS_reverse_type ) :: reverse
    TYPE ( NLPT_userdata_type ) :: userdata
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
-   INTEGER :: i, j, k, l, nf, mode, exact_arc_search, s, status
+   INTEGER :: i, j, k, l, nf, weight, mode, exact_arc_search, s, status
    REAL ( KIND = wp ) :: val
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr, A_ptr_row, FLAG
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val
    INTEGER, PARAMETER :: n = 3, m = 4, a_ne = 5
 ! partition userdata%integer so that it holds
-!   m n nflag  flag       a_ptr          a_row
-!  |1|2|  3  |4 to n+3 |n+4 to 2n+4|2n+5 to 2n+4+a_ne|
+!   m n nflag  flag          a_ptr          a_row
+!  |1|2|  3  |4 to mn+3 |mn+4 to mn+n+4|mn+n+5 to mn+n+4+a_ne|, with mn=max(m,n)
 ! partition userdata%real so that it holds
 !     a_val
 !  |1 to a_ne|
-   INTEGER, PARAMETER :: nflag = 3, st_flag = 3, st_ptr = st_flag + n
+   INTEGER, PARAMETER :: mn = MAX( m, n )
+   INTEGER, PARAMETER :: nflag = 3, st_flag = 3, st_ptr = st_flag + mn
    INTEGER, PARAMETER :: st_row = st_ptr + n + 1, st_val = 0
    INTEGER, PARAMETER :: len_integer = st_row + a_ne + 1, len_real = a_ne
    EXTERNAL :: APROD, ASPROD, AFPROD
@@ -41,34 +42,49 @@
    A_col = (/ 1, 1, 2, 3, 3 /)                     ! column indices
    A_ptr = (/ 1, 3, 4, 6 /)                        ! pointers to column starts
    A_ptr_row = (/ 1, 2, 4, 5, 6 /)                 ! pointers to row starts
+
 ! problem data complete
 
-!  generic runs to test each mode
+! generic runs to test each mode
 
-   DO exact_arc_search = 0, 1
-     DO mode = 1, 3
+!  DO weight = 0, 0
+!  DO weight = 1, 1
+   DO weight = 0, 1
+
+   WRITE( 6, "( /, ' run tests (weight = ', I0, ')', / )" ) weight
+
+!  DO exact_arc_search = 0, -1 ! inexact, exact
+!  DO exact_arc_search = 0, 0
+   DO exact_arc_search = 0, 1 ! inexact, exact
+!    DO mode = 1, 1
+!    DO mode = 2, 2
+!    DO mode = 3, 4
+!    DO mode = 4, 4
+     DO mode = 1, 4
        CALL BLLS_initialize( data, control, inform )
        control%infinity = infinity                   ! Set infinity
 !      control%print_level = 1                       ! print one line/iteration
        control%exact_arc_search = exact_arc_search == 1
 !      control%exact_arc_search = .FALSE.
+       control%weight = REAL( weight, KIND = wp )
        p%X = 0.0_wp ! start from zero
-       SELECT CASE ( mode )
-       CASE ( 1 ) ! A expllicitly available
+       SELECT CASE ( mode ) ! matrix access 
+       CASE ( 1, 2 ) ! A expllicitly available
          CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
          p%A%m = m ; p%A%n = n
          p%A%val( : a_ne ) = A_val( : a_ne )
          p%A%row( : a_ne ) = A_row( : a_ne )
          p%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
+         control%direct_subproblem_solve = mode == 2
          inform%status = 1
          CALL BLLS_solve( p, X_stat, data, control, inform, userdata )
-         WRITE( 6, "( ' BLLS_solve argument mode =', I0, ', search = ', I0,    &
+         WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ', I0,   &
         &  ', status = ', I0,', objective = ', F6.4 ) " )                      &
             mode, exact_arc_search, inform%status, inform%obj
          DEALLOCATE( p%A%val, p%A%row, p%A%ptr, p%A%type )
-       CASE ( 2 ) ! A available by matrix-vector products
-         ALLOCATE( FLAG( n ) )
+       CASE ( 3 ) ! A available by matrix-vector products
+         ALLOCATE( FLAG( MAX( m, n ) ) )
          nf = 0 ; FLAG = 0
          inform%status = 1
          DO ! Solve problem - reverse commmunication loop
@@ -76,7 +92,7 @@
                             reverse )
            SELECT CASE ( inform%status )
            CASE ( : 0 ) !  termination return
-             WRITE( 6, "( ' BLLS_solve argument mode =', I0, ', search = ',    &
+             WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ',   &
             &  I0, ', status = ', I0,', objective = ', F6.4 ) " )              &
                 mode, exact_arc_search, inform%status, inform%obj
              EXIT
@@ -138,7 +154,9 @@
              END DO
            END SELECT
          END DO
-       CASE ( 3 ) ! A available by external subroutines
+         DEALLOCATE( FLAG )
+       CASE ( 4 ) ! A available by external subroutines
+         ALLOCATE( FLAG( MAX( m, n ) ) )
          ALLOCATE( userdata%integer( len_integer ), userdata%real( len_real ) )
          userdata%integer( 1 ) = m   ! load Jacobian data into userdata
          userdata%integer( 2 ) = n
@@ -146,30 +164,36 @@
          userdata%integer( st_row + 1 : st_row + a_ne ) = A_row( : a_ne )
          userdata%real( st_val + 1 : st_val + a_ne ) = A_val( : a_ne )
          userdata%integer( nflag ) = 0
-         userdata%integer( st_flag + 1 : st_flag + n ) = 0
+         userdata%integer( st_flag + 1 : st_flag + mn ) = 0
          inform%status = 1
          CALL BLLS_solve( p, X_stat, data, control, inform, userdata,          &
                           eval_APROD = APROD, eval_ASPROD = ASPROD,            &
                           eval_AFPROD = AFPROD )
 
-         WRITE( 6, "( ' BLLS_solve argument mode =', I0, ', search = ', I0,    &
+         WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ', I0,   &
         &  ', status = ', I0,', objective = ', F6.4 ) " )                      &
             mode, exact_arc_search, inform%status, inform%obj
-         DEALLOCATE( userdata%integer, userdata%real, FLAG )
+         DEALLOCATE( userdata%integer, userdata%real )
+         DEALLOCATE( FLAG )
        END SELECT
        CALL BLLS_terminate( data, control, inform )  !  delete workspace
      END DO
    END DO
 
-!  generic runs to test each storage mode
+! generic runs to test each storage mode
 
+   WRITE( 6, "( '')" )
+!  DO exact_arc_search = 1, 1
    DO exact_arc_search = 0, 1
-     DO mode = 1, 4
+!    DO mode = 3, 5
+!    DO mode = 1, 0
+     DO mode = 1, 5
        CALL BLLS_initialize( data, control, inform )
        control%infinity = infinity                   ! Set infinity
 !      control%print_level = 1                       ! print one line/iteration
        control%exact_arc_search = exact_arc_search == 1
 !      control%exact_arc_search = .FALSE.
+       control%weight = REAL( weight, KIND = wp )
        p%X = 0.0_wp ! start from zero
        SELECT CASE ( mode )
        CASE ( 1 ) ! A by columns
@@ -193,17 +217,25 @@
          p%A%val( : a_ne ) = A_val( : a_ne )
          p%A%row( : a_ne ) = A_row( : a_ne )
          p%A%col( : a_ne ) = A_col( : a_ne )
-       CASE ( 4 ) ! A dense
-         CALL SMT_put( p%A%type, 'DENSE', s )
+       CASE ( 4 ) ! A dense by columns
+         CALL SMT_put( p%A%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( p%A%val( m * n ) )
          p%A%m = m ; p%A%n = n
          p%A%val( : m * n ) = (/ 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp,               &
-                                0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp,                &
-                                0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
+                                 0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp,               &
+                                 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
+       CASE ( 5 ) ! A dense by rows
+         CALL SMT_put( p%A%type, 'DENSE_BY_ROWS', s )
+         ALLOCATE( p%A%val( m * n ) )
+         p%A%m = m ; p%A%n = n
+         p%A%val( : m * n ) = (/ 1.0_wp, 0.0_wp, 0.0_wp,                       &
+                                 1.0_wp, 1.0_wp, 0.0_wp,                       &
+                                 0.0_wp, 0.0_wp, 1.0_wp,                       &
+                                 0.0_wp, 0.0_wp, 1.0_wp /)
        END SELECT
        inform%status = 1
        CALL BLLS_solve( p, X_stat, data, control, inform, userdata )
-       WRITE( 6, "( ' BLLS_solve argument storage =', I0, ', search = ', I0,   &
+       WRITE( 6, "( ' BLLS_solve argument storage = ', I0, ', search = ', I0,  &
       &  ', status = ', I0, ', objective = ', F6.4 ) " )                       &
          mode, exact_arc_search, inform%status, inform%obj
        SELECT CASE ( mode )
@@ -213,12 +245,13 @@
          DEALLOCATE( p%A%val, p%A%col, p%A%ptr, p%A%type )
        CASE ( 3 ) ! A coordinate
          DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type )
-       CASE ( 4 ) ! A dense
+       CASE ( 4, 5 ) ! A dense_by_rows or A dense_by_columns
          DEALLOCATE( p%A%val, p%A%type )
        END SELECT
        CALL BLLS_terminate( data, control, inform )  !  delete workspace
      END DO
    END DO
+   END DO ! end of weight loop
    DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, X_stat )
 
 !  ================
@@ -305,7 +338,7 @@
    userdata%integer( st_row + 1 : st_row + a_ne ) = A_row( : a_ne )
    userdata%real( st_val + 1 : st_val + a_ne ) = A_val( : a_ne )
    userdata%integer( nflag ) = 0
-   userdata%integer( st_flag + 1 : st_flag + n ) = 0
+   userdata%integer( st_flag + 1 : st_flag + mn ) = 0
 
    p%X = 0.0_wp
    inform%status = 1
@@ -351,7 +384,7 @@
    n = userdata%integer( 2 )
    nflag = 3
    st_flag = 3
-   st_ptr = st_flag + n
+   st_ptr = st_flag + MAX( m, n )
    st_row = st_ptr + n + 1
    st_val = 0
    IF ( transpose ) THEN
@@ -392,50 +425,86 @@
    REAL ( KIND = wp ) :: val
 !  recover problem data from userdata
    INTEGER :: m, n, nflag, st_flag, st_ptr, st_row, st_val
-   IF ( .NOT. ( PRESENT( NZ_in ) .AND. PRESENT( nz_in_start ) .AND.            &
-                PRESENT( nz_in_end ) ) ) THEN
-     status = - 1 ; RETURN
+   IF ( PRESENT( NZ_in ) ) THEN
+     IF ( .NOT. ( PRESENT( nz_in_start ) .AND. PRESENT( nz_in_end ) ) ) THEN
+         status = - 1 ; RETURN
+     END IF
    END IF
    m = userdata%integer( 1 )
    n = userdata%integer( 2 )
    nflag = 3
    st_flag = 3
-   st_ptr = st_flag + n
+   st_ptr = st_flag + MAX( m, n )
    st_row = st_ptr + n + 1
    st_val = 0
-   IF ( PRESENT( NZ_out ) ) THEN
-     IF ( .NOT. PRESENT( nz_out_end ) ) THEN
-       status = - 1 ; RETURN
-     END IF
-     userdata%integer( nflag ) = userdata%integer( nflag ) + 1
-     nz_out_end = 0
-     DO l = nz_in_start, nz_in_end
-       j = NZ_in( l )
-       val = V( j )
-       DO k = userdata%integer( st_ptr + j ),                                  &
-              userdata%integer( st_ptr + j + 1 ) - 1
-         i = userdata%integer( st_row + k )
-         IF ( userdata%integer( st_flag + i ) < nflag ) THEN
-           userdata%integer( st_flag + i ) = userdata%integer( nflag )
-           P( i ) = userdata%real( st_val + k ) * val
-           nz_out_end = nz_out_end + 1
-           NZ_out( nz_out_end ) = i
-         ELSE
+   IF ( PRESENT( NZ_in ) ) THEN
+     IF ( PRESENT( NZ_out ) ) THEN
+       IF ( .NOT. PRESENT( nz_out_end ) ) THEN
+         status = - 1 ; RETURN
+       END IF
+       userdata%integer( nflag ) = userdata%integer( nflag ) + 1
+       nz_out_end = 0
+       DO l = nz_in_start, nz_in_end
+         j = NZ_in( l )
+         val = V( j )
+         DO k = userdata%integer( st_ptr + j ),                                &
+                userdata%integer( st_ptr + j + 1 ) - 1
+           i = userdata%integer( st_row + k )
+           IF ( userdata%integer( st_flag + i ) < nflag ) THEN
+             userdata%integer( st_flag + i ) = userdata%integer( nflag )
+             P( i ) = userdata%real( st_val + k ) * val
+             nz_out_end = nz_out_end + 1
+             NZ_out( nz_out_end ) = i
+           ELSE
+             P( i ) = P( i ) + userdata%real( st_val + k ) * val
+           END IF
+         END DO
+       END DO
+     ELSE
+       P( : m ) = 0.0_wp
+       DO l = nz_in_start, nz_in_end
+         j = NZ_in( l )
+         val = V( j )
+         DO k = userdata%integer( st_ptr + j ),                                &
+                userdata%integer( st_ptr + j + 1 ) - 1
+           i = userdata%integer( st_row + k )
            P( i ) = P( i ) + userdata%real( st_val + k ) * val
-         END IF
+         END DO
        END DO
-     END DO
+     END IF
    ELSE
-     P( : m ) = 0.0_wp
-     DO l = nz_in_start, nz_in_end
-       j = NZ_in( l )
-       val = V( j )
-       DO k = userdata%integer( st_ptr + j ),                                  &
-              userdata%integer( st_ptr + j + 1 ) - 1
-         i = userdata%integer( st_row + k )
-         P( i ) = P( i ) + userdata%real( st_val + k ) * val
+     IF ( PRESENT( NZ_out ) ) THEN
+       IF ( .NOT. PRESENT( nz_out_end ) ) THEN
+         status = - 1 ; RETURN
+       END IF
+       userdata%integer( nflag ) = userdata%integer( nflag ) + 1
+       nz_out_end = 0
+       DO j = 1, n
+         val = V( j )
+         DO k = userdata%integer( st_ptr + j ),                                &
+                userdata%integer( st_ptr + j + 1 ) - 1
+           i = userdata%integer( st_row + k )
+           IF ( userdata%integer( st_flag + i ) < nflag ) THEN
+             userdata%integer( st_flag + i ) = userdata%integer( nflag )
+             P( i ) = userdata%real( st_val + k ) * val
+             nz_out_end = nz_out_end + 1
+             NZ_out( nz_out_end ) = i
+           ELSE
+             P( i ) = P( i ) + userdata%real( st_val + k ) * val
+           END IF
+         END DO
        END DO
-     END DO
+     ELSE
+       P( : m ) = 0.0_wp
+       DO j = 1, n
+         val = V( j )
+         DO k = userdata%integer( st_ptr + j ),                                &
+                userdata%integer( st_ptr + j + 1 ) - 1
+           i = userdata%integer( st_row + k )
+           P( i ) = P( i ) + userdata%real( st_val + k ) * val
+         END DO
+       END DO
+     END IF
    END IF
    status = 0
    RETURN
@@ -459,7 +528,7 @@
    n = userdata%integer( 2 )
    nflag = 3
    st_flag = 3
-   st_ptr = st_flag + n
+   st_ptr = st_flag + MAX( m, n )
    st_row = st_ptr + n + 1
    st_val = 0
    IF ( transpose ) THEN
@@ -489,16 +558,6 @@
    RETURN
    END SUBROUTINE AFPROD
 
-
-
-
-
-
-
-
-
-
-
    SUBROUTINE APROD_broken( status, userdata, transpose, V, P )
    USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -507,8 +566,6 @@
    LOGICAL, INTENT( IN ) :: transpose
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P
-   INTEGER :: i, j, k
-   REAL ( KIND = wp ) :: val
    status = - 1
    RETURN
    END SUBROUTINE APROD_broken
@@ -525,10 +582,6 @@
    INTEGER, OPTIONAL, INTENT( INOUT ) :: nz_out_end
    INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
    INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_out
-   INTEGER :: i, j, k, l
-   REAL ( KIND = wp ) :: val
-!  recover problem data from userdata
-   INTEGER :: m, n, nflag, st_flag, st_ptr, st_row, st_val
    P( 1 ) = 0.0_wp
    status = - 1
    RETURN

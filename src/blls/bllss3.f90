@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 12/12/2020 AT 06:50 GMT.
+! THIS VERSION: GALAHAD 3.3 - 07/04/2021 AT 06:50 GMT.
    PROGRAM GALAHAD_BLLS_THIRD_EXAMPLE ! subroutine evaluation interface
    USE GALAHAD_BLLS_double            ! double precision version
    IMPLICIT NONE
@@ -17,7 +17,8 @@
 ! partition userdata%real so that it holds
 !     a_val
 !  |1 to a_ne|
-   INTEGER, PARAMETER :: nflag = 3, st_flag = 3, st_ptr = st_flag + n
+   INTEGER, PARAMETER :: mn = MAX( m, n )
+   INTEGER, PARAMETER :: nflag = 3, st_flag = 3, st_ptr = st_flag + mn
    INTEGER, PARAMETER :: st_row = st_ptr + n + 1, st_val = 0
    INTEGER, PARAMETER :: len_integer = st_row + a_ne + 1, len_real = a_ne
    EXTERNAL :: APROD, ASPROD, AFPROD
@@ -43,7 +44,7 @@
    control%exact_arc_search = .FALSE.
 !  load workspace into userdata
    userdata%integer( nflag ) = 0
-   userdata%integer( st_flag + 1 : st_flag + n ) = 0
+   userdata%integer( st_flag + 1 : st_flag + mn ) = 0
    inform%status = 1
    CALL BLLS_solve( p, X_stat, data, control, inform, userdata,                &
                     eval_APROD = APROD, eval_ASPROD = ASPROD,                  &
@@ -77,7 +78,7 @@
    n = userdata%integer( 2 )
    nflag = 3
    st_flag = 3
-   st_ptr = st_flag + n
+   st_ptr = st_flag + MAX( m, n )
    st_row = st_ptr + n + 1
    st_val = 0
    IF ( transpose ) THEN
@@ -118,50 +119,86 @@
    REAL ( KIND = wp ) :: val
 !  recover problem data from userdata
    INTEGER :: m, n, nflag, st_flag, st_ptr, st_row, st_val
-   IF ( .NOT. ( PRESENT( NZ_in ) .AND. PRESENT( nz_in_start ) .AND.            &
-                PRESENT( nz_in_end ) ) ) THEN
-     status = - 1 ; RETURN
+   IF ( PRESENT( NZ_in ) ) THEN
+     IF ( .NOT. ( PRESENT( nz_in_start ) .AND. PRESENT( nz_in_end ) ) ) THEN
+         status = - 1 ; RETURN
+     END IF
    END IF
    m = userdata%integer( 1 )
    n = userdata%integer( 2 )
    nflag = 3
    st_flag = 3
-   st_ptr = st_flag + n
+   st_ptr = st_flag + MAX( m, n )
    st_row = st_ptr + n + 1
    st_val = 0
-   IF ( PRESENT( NZ_out ) ) THEN
-     IF ( .NOT. PRESENT( nz_out_end ) ) THEN
-       status = - 1 ; RETURN
-     END IF
-     userdata%integer( nflag ) = userdata%integer( nflag ) + 1
-     nz_out_end = 0
-     DO l = nz_in_start, nz_in_end
-       j = NZ_in( l )
-       val = V( j )
-       DO k = userdata%integer( st_ptr + j ),                                  &
-              userdata%integer( st_ptr + j + 1 ) - 1
-         i = userdata%integer( st_row + k )
-         IF ( userdata%integer( st_flag + i ) < nflag ) THEN
-           userdata%integer( st_flag + i ) = userdata%integer( nflag )
-           P( i ) = userdata%real( st_val + k ) * val
-           nz_out_end = nz_out_end + 1
-           NZ_out( nz_out_end ) = i
-         ELSE
+   IF ( PRESENT( NZ_in ) ) THEN
+     IF ( PRESENT( NZ_out ) ) THEN
+       IF ( .NOT. PRESENT( nz_out_end ) ) THEN
+         status = - 1 ; RETURN
+       END IF
+       userdata%integer( nflag ) = userdata%integer( nflag ) + 1
+       nz_out_end = 0
+       DO l = nz_in_start, nz_in_end
+         j = NZ_in( l )
+         val = V( j )
+         DO k = userdata%integer( st_ptr + j ),                                &
+                userdata%integer( st_ptr + j + 1 ) - 1
+           i = userdata%integer( st_row + k )
+           IF ( userdata%integer( st_flag + i ) < nflag ) THEN
+             userdata%integer( st_flag + i ) = userdata%integer( nflag )
+             P( i ) = userdata%real( st_val + k ) * val
+             nz_out_end = nz_out_end + 1
+             NZ_out( nz_out_end ) = i
+           ELSE
+             P( i ) = P( i ) + userdata%real( st_val + k ) * val
+           END IF
+         END DO
+       END DO
+     ELSE
+       P( : m ) = 0.0_wp
+       DO l = nz_in_start, nz_in_end
+         j = NZ_in( l )
+         val = V( j )
+         DO k = userdata%integer( st_ptr + j ),                                &
+                userdata%integer( st_ptr + j + 1 ) - 1
+           i = userdata%integer( st_row + k )
            P( i ) = P( i ) + userdata%real( st_val + k ) * val
-         END IF
+         END DO
        END DO
-     END DO
+     END IF
    ELSE
-     P( : m ) = 0.0_wp
-     DO l = nz_in_start, nz_in_end
-       j = NZ_in( l )
-       val = V( j )
-       DO k = userdata%integer( st_ptr + j ),                                  &
-              userdata%integer( st_ptr + j + 1 ) - 1
-         i = userdata%integer( st_row + k )
-         P( i ) = P( i ) + userdata%real( st_val + k ) * val
+     IF ( PRESENT( NZ_out ) ) THEN
+       IF ( .NOT. PRESENT( nz_out_end ) ) THEN
+         status = - 1 ; RETURN
+       END IF
+       userdata%integer( nflag ) = userdata%integer( nflag ) + 1
+       nz_out_end = 0
+       DO j = 1, n
+         val = V( j )
+         DO k = userdata%integer( st_ptr + j ),                                &
+                userdata%integer( st_ptr + j + 1 ) - 1
+           i = userdata%integer( st_row + k )
+           IF ( userdata%integer( st_flag + i ) < nflag ) THEN
+             userdata%integer( st_flag + i ) = userdata%integer( nflag )
+             P( i ) = userdata%real( st_val + k ) * val
+             nz_out_end = nz_out_end + 1
+             NZ_out( nz_out_end ) = i
+           ELSE
+             P( i ) = P( i ) + userdata%real( st_val + k ) * val
+           END IF
+         END DO
        END DO
-     END DO
+     ELSE
+       P( : m ) = 0.0_wp
+       DO j = 1, n
+         val = V( j )
+         DO k = userdata%integer( st_ptr + j ),                                &
+                userdata%integer( st_ptr + j + 1 ) - 1
+           i = userdata%integer( st_row + k )
+           P( i ) = P( i ) + userdata%real( st_val + k ) * val
+         END DO
+       END DO
+     END IF
    END IF
    status = 0
    RETURN
@@ -185,7 +222,7 @@
    n = userdata%integer( 2 )
    nflag = 3
    st_flag = 3
-   st_ptr = st_flag + n
+   st_ptr = st_flag + MAX( m, n )
    st_row = st_ptr + n + 1
    st_val = 0
    IF ( transpose ) THEN
