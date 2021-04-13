@@ -311,6 +311,7 @@ LA04 = $(GALAHAD)/src/dum
 
 MKLPARDISO = $(GALAHAD)/src/dum
 #MKLPARDISO = /opt/intel/mkl/include
+#MKLPARDISO = /opt/intel/oneapi/mkl/latest/include
 
 # -------------------- ICFS environment variable ------------------------
 

@@ -15,7 +15,7 @@
 \galsummary
 Given a sequence of vectors $\{\bms_k\}$ and $\{\bmy_k\}$ and scale factors
 $\delta_k$, {\bf obtain the product of a limited-memory secant approximation
-$H_k$ (or its inverse) with a given vector}, using one of a variety of
+$\bmH_k$ (or its inverse) with a given vector}, using one of a variety of
 well-established formulae.
 
 %%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
@@ -863,7 +863,7 @@ Different ways of quantifying ``small'' distinguish different methods,
 but the crucial
 observation is that it is possible to construct $\bmH_k$ quickly from
 $\{\bms_k\}$ and $\{\bmy_k\}$ and $\delta_k$, and to apply it and its inverse
-to a given vector $v$. It is also possible to apply similar formulae
+to a given vector $\bmv$. It is also possible to apply similar formulae
 to the ``shifted'' matrix $\bmH_k + \lambda_k \bmI$ that occurs in
 trust-region methods.
 

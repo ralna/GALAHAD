@@ -40,7 +40,7 @@
 %      the derived type BLLS_CONTROL as described in the
 %      manual for the fortran 90 package GALAHAD_BLLS.
 %      In particular if the weight sigma is nonzero, it 
-%      should be set in control.weight.
+%      should be passed via control.weight.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/blls.pdf
 %
 %  Usual Output -

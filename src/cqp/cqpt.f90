@@ -324,6 +324,8 @@
        DO i = 1, p%n + 2
          S = 1.0_wp
          S( 1 ) = REAL( MOD( i, p%n ) + 1, KIND = wp )
+!        S( 2 ) = REAL( MOD( i + 1, p%n ) + 1, KIND = wp )
+!        write(6,"('S=',5ES12.4)") S
          Y = S
          delta = 1.0_wp / S( 1 )
 !        S = 0.0_wp
@@ -331,7 +333,14 @@
 !        Y = S
 !        delta = REAL( MOD( i, 3 ) + 1, KIND = wp )
          CALL LMS_form( S, Y, delta, p%H_lm, LMS_control, LMS_inform )
-!write(6,*) ' delta ', delta
+!        write(6,*) ' delta ', delta
+!        control%out = 6 ; control%print_level = 1
+!        control%SBLS_control%print_level = 2
+!        control%SBLS_control%SLS_control%print_level = 4
+!        control%SBLS_control%SLS_control%print_level_solver = 2
+!        control%SBLS_control%unsymmetric_linear_solver = 'ma48'
+!        control%SBLS_control%symmetric_linear_solver = 'ma57'
+!        control%SBLS_control%definite_linear_solver = 'ma57'
        END DO
 
 !      DO i = 1, p%n
@@ -346,8 +355,8 @@
 
 !  test with new and existing data
 
-     DO i = 1, 2
 !    DO i = 1, 1
+     DO i = 1, 2
        IF ( data_storage_type == 0 ) THEN          ! sparse co-ordinate storage
          p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
          p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)

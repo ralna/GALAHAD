@@ -11,7 +11,7 @@
 !  Given a symmetric n by n matrix H, an m by n matrix A, an n-vector
 !  g, a constant f, and n-vectors x_l <= x_u, find a local mimimizer
 !  of the BOUND_CONSTRAINED LINER LEAST-SQUARES problem
-!    minimize 0.5 || A x - b ||^2
+!    minimize 0.5 || A x - b ||^2 + 0.5 sigma ||x||^2
 !    subject to x_l <= x <= x_u
 !  using a projection method.
 !  Advantage is taken of sparse A.
@@ -47,6 +47,8 @@
 !      value is the name of the corresponding component of
 !      the derived type BLLS_CONTROL as described in the
 !      manual for the fortran 90 package GALAHAD_BLLS.
+!      In particular if the weight sigma is nonzero, it 
+!      should be passed via control.weight.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/blls.pdf
 !
 !  Usual Output -

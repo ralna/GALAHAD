@@ -4596,7 +4596,7 @@
                SBLS_control%preconditioner == 5 .OR.                           &
                SBLS_control%preconditioner >= 9 .OR.                           &
                SBLS_control%preconditioner <= 0 )                              &
-            SBLS_control%preconditioner = 6
+            SBLS_control%preconditioner = 8
         ELSE
           IF ( SBLS_control%preconditioner == 6 .OR.                           &
                SBLS_control%preconditioner == 7 .OR.                           &
@@ -4629,7 +4629,8 @@
        &  ' ......... factorization of KKT matrix ............... ' )" ) prefix
         IF ( lbfgs ) THEN
           CALL SBLS_form_and_factorize( A_sbls%n, A_sbls%m, H_sbls, A_sbls,    &
-            C_sbls, SBLS_data, SBLS_control, inform%SBLS_inform, H_lm = H_lm )
+            C_sbls, SBLS_data, SBLS_control, inform%SBLS_inform,               &
+            D = H_sbls%val, H_lm = H_lm )
         ELSE
           CALL SBLS_form_and_factorize( A_sbls%n, A_sbls%m, H_sbls, A_sbls,    &
             C_sbls, SBLS_data, SBLS_control, inform%SBLS_inform )
