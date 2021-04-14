@@ -302,11 +302,11 @@ fi ;
 if [[ -f ./src/arc/RUNARC.SPC ]]; then
   rm ./src/arc/RUNARC.SPC; ln -s RUNARC.current ./src/arc/RUNARC.SPC
 fi ;
-if [[ -f ./src/qpe/RUNQPE.SPC ]]; then
-  rm ./src/qpe/RUNQPE.SPC; ln -s RUNQPE.current ./src/qpe/RUNQPE.SPC
+if [[ -f ./src/pdqp/RUNPDQP.SPC ]]; then
+  rm ./src/pdqp/RUNPDQP.SPC; ln -s RUNPDQP.current ./src/pdqp/RUNPDQP.SPC
 fi ;
-if [[ -f ./src/qpe/makemaster ]]; then
-  rm ./src/qpe/makemaster; ln -s ../qp/makemaster ./src/qpe/makemaster
+if [[ -f ./src/pdqp/makemaster ]]; then
+  rm ./src/pdqp/makemaster; ln -s ../qp/makemaster ./src/pdqp/makemaster
 fi ;
 if [[ -f ./src/superb/RUNSUPERB.SPC ]]; then
   rm ./src/superb/RUNSUPERB.SPC; ln -s ./RUNSUPERB.current ./src/superb/RUNSUPERB.SPC

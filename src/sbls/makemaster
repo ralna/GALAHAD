@@ -286,7 +286,7 @@ $(LG)(sbls.o): ../sbls/sbls.f90
 	$(RMARFILE) lls.o
 	$(RMARFILE) llst.o
 	$(RMARFILE) qpd.o
-	$(RMARFILE) qpe.o
+	$(RMARFILE) pdqp.o
 	$(RMARFILE) arc.o
 	$(RMARFILE) usesqp.o
 	$(RMARFILE) usesbls.o

@@ -4,6 +4,7 @@ ampl        | ok     | ampl interfaces to QP routines
 arc         | ok     | unconstrained optimization, regularization method
 ats         | beta   | minimize a quadratic within abs value trust region, sls
 auxiliary   | ok     | auxiliary packages (norms, time, cutest interaces ... )
+blls        | ok     | cound-constrained linear least-squares
 bqp         | ok     | bound-constrained QP, proconditioned projected gradients
 bqpb        | beta   | bound-constrained QP, interior point
 bsc         | ok     | assemble the Schur complement
@@ -60,7 +61,7 @@ qpa         | ok     | non-convex QP, active set
 qpb         | ok     | non-convex QP, interior-point
 qpc         | ok     | non-convex QP, crossover interior-point to active set
 qpd         | ok     | QP derived types (no doc)
-qpe         | dead   | convex QP, primal-dual active set
+pdqp        | alpha  | M-convex QP, primal-dual active set
 qpp         | ok     | reorder QP to 'standard form'
 qps         | ok     | scale QP data (no doc)
 qpt         | ok     | QP structure
@@ -118,6 +119,9 @@ mc77        | stub   | HSL diagonal scaling
 minpack     | stub   | MINPACK
 mi20        | stub   | HSL algebraic multigrid
 mi28        | stub   | HSL incomplete Cholesky factorization
+mkl         | stub   | ISML MKL
+pardiso     | stub   | Pardiso sparse matrix package
+wsmp        | stub   | WSMP sparse matrix package
 
 packages that are far from ready but seem promising are in forthcoming/
 
