@@ -41,7 +41,7 @@
 ! just-find-feasible-point                          no
 ! balance-initial-complentarity                     no
 ! get-advanced-dual-variables                       no
-! puiseux-extrapolation                             yes
+! puiseux-series                                    yes
 ! try-every-order-of-series                         yes
 ! move-final-solution-onto-bound                    no
 ! cross-over-solution                               yes
