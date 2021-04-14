@@ -103,8 +103,8 @@ QPC_single = $(QPA_single) $(QPB_single) $(EQP_single) $(CQP_single) \
              $(QPD_single) $(LGS)(qpc.o)
 QPC_double = $(QPA_double) $(QPB_double) $(EQP_double) $(CQP_double) \
              $(QPD_double) $(LGD)(qpc.o)
-QPE_single = sbls $(LGS)(qpe.o)
-QPE_double = sbls $(LGD)(qpe.o)
+PDQP_single = sbls $(LGS)(pdqp.o)
+PDQP_double = sbls $(LGD)(pdqp.o)
 BLLS_single = $(QPD_single) $(LGS)(blls.o)
 BLLS_double = $(QPD_double) $(LGD)(blls.o)
 BLLS_old_double = $(QPD_double) $(LGD)(blls_old.o)
@@ -143,8 +143,8 @@ QPC_OBJECTS_single = $(BASICS) $(CRO_single) $(QPA_single) \
                      $(QPB_single) $(QPC_single)
 QPC_OBJECTS_double = $(BASICS) $(CRO_double) $(QPA_double) \
                      $(QPB_double) $(QPC_double)
-QPE_OBJECTS_single = $(BASICS) $(QPE_single)
-QPE_OBJECTS_double = $(BASICS) $(QPE_double)
+PDQP_OBJECTS_single = $(BASICS) $(PDQP_single)
+PDQP_OBJECTS_double = $(BASICS) $(PDQP_double)
 LSQP_OBJECTS_single = $(BASICS) $(LSQP_single)
 LSQP_OBJECTS_double = $(BASICS) $(LSQP_double)
 BLLS_OBJECTS_single = $(BASICS) $(BLLS_single)
@@ -249,8 +249,8 @@ QPC_RUN_single = $(LGS)(presolve.o) copyright $(LGS)(useqpc.o) \
                  $(OBJS)/runqpc_sif.o
 QPC_RUN_double = $(LGD)(presolve.o) copyright $(LGD)(useqpc.o) \
                  $(OBJD)/runqpc_sif.o
-QPE_RUN_single = $(LGS)(useqpe.o) $(OBJS)/runqpe_sif.o
-QPE_RUN_double = $(LGD)(useqpe.o) $(OBJD)/runqpe_sif.o
+PDQP_RUN_single = $(LGS)(usepdqp.o) $(OBJS)/runpdqp_sif.o
+PDQP_RUN_double = $(LGD)(usepdqp.o) $(OBJD)/runpdqp_sif.o
 CQP_RUN_single = $(LGS)(presolve.o) copyright $(LGS)(usecqp.o) \
                  $(OBJS)/runcqp_sif.o
 CQP_RUN_double = $(LGD)(presolve.o) copyright $(LGD)(usecqp.o) \
@@ -313,8 +313,10 @@ QPB_CUTEST_single = $(QPB_OBJECTS_single) $(QPB_RUN_single)
 QPB_CUTEST_double = $(QPB_OBJECTS_double) $(QPB_RUN_double)
 QPC_CUTEST_single = $(QPC_OBJECTS_single) $(QPC_RUN_single)
 QPC_CUTEST_double = $(QPC_OBJECTS_double) $(QPC_RUN_double)
-QPE_CUTEST_single = $(QPE_OBJECTS_single) $(LGS)(presolve.o) $(QPE_RUN_single)
-QPE_CUTEST_double = $(QPE_OBJECTS_double) $(LGD)(presolve.o) $(QPE_RUN_double)
+PDQP_CUTEST_single = $(PDQP_OBJECTS_single) $(LGS)(presolve.o) \
+                     $(PDQP_RUN_single)
+PDQP_CUTEST_double = $(PDQP_OBJECTS_double) $(LGD)(presolve.o) \
+                     $(PDQP_RUN_double)
 QP_CUTEST_single = $(QP_OBJECTS_single) $(QP_RUN_single)
 QP_CUTEST_double = $(QP_OBJECTS_double) $(QP_RUN_double)
 BLLS_CUTEST_single = $(BLLS_OBJECTS_single) $(BLLS_RUN_single)
@@ -453,17 +455,17 @@ RQPCDT = $(OBJD)/qpct.o -L$(OBJD) $(LIBS)
 RQPCSS = $(OBJS)/qpcs.o -L$(OBJS) $(LIBS)
 RQPCST = $(OBJS)/qpct.o -L$(OBJS) $(LIBS)
 
-QPEDS = $(BASICS) $(QPE_double) $(OBJD)/qpes.o
-QPEDS2 = $(BASICS) $(QPE_double) $(OBJD)/qpes2.o
-QPEDT = $(BASICS) $(QPE_double) $(OBJD)/qpet.o
-QPESS = $(BASICS) $(QPE_single) $(OBJS)/qpes.o
-QPEST = $(BASICS) $(QPE_single) $(OBJS)/qpet.o
+PDQPDS = $(BASICS) $(PDQP_double) $(OBJD)/pdqps.o
+PDQPDS2 = $(BASICS) $(PDQP_double) $(OBJD)/pdqps2.o
+PDQPDT = $(BASICS) $(PDQP_double) $(OBJD)/pdqpt.o
+PDQPSS = $(BASICS) $(PDQP_single) $(OBJS)/pdqps.o
+PDQPST = $(BASICS) $(PDQP_single) $(OBJS)/pdqpt.o
 
-RQPEDS = $(OBJD)/qpes.o -L$(OBJD) $(LIBS)
-RQPEDS2 = $(OBJD)/qpes2.o -L$(OBJD) $(LIBS)
-RQPEDT = $(OBJD)/qpet.o -L$(OBJD) $(LIBS)
-RQPESS = $(OBJS)/qpes.o -L$(OBJS) $(LIBS)
-RQPEST = $(OBJS)/qpet.o -L$(OBJS) $(LIBS)
+RPDQPDS = $(OBJD)/pdqps.o -L$(OBJD) $(LIBS)
+RPDQPDS2 = $(OBJD)/pdqps2.o -L$(OBJD) $(LIBS)
+RPDQPDT = $(OBJD)/pdqpt.o -L$(OBJD) $(LIBS)
+RPDQPSS = $(OBJS)/pdqps.o -L$(OBJS) $(LIBS)
+RPDQPST = $(OBJS)/pdqpt.o -L$(OBJS) $(LIBS)
 
 QPDS = $(BASICS) $(QP_double) $(OBJD)/qp_spec.o
 QPDS2 = $(BASICS) $(QP_double) $(OBJD)/qp_spec2.o
@@ -1093,68 +1095,68 @@ test_spec_qpc_double: qpcds
 	echo ""
 	echo " Tests for qpc complete"
 
-# qpe
+# pdqp
 
-qpe_cutest: qpe_cutest_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: QPE ($(PRECIS) $(SUCC_CUTEST)"
-qpe_cutest_single: $(QPE_CUTEST_single)
+pdqp_cutest: pdqp_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: PDQP ($(PRECIS) $(SUCC_CUTEST)"
+pdqp_cutest_single: $(PDQP_CUTEST_single)
 	$(RANLIB) $(LGS)
-qpe_cutest_double: $(QPE_CUTEST_double)
+pdqp_cutest_double: $(PDQP_CUTEST_double)
 	$(RANLIB) $(LGD)
 
-qpe_silent: qpe_silent_$(PRECIS)
-qpe_silent_single: $(QPE_OBJECTS_single)
-qpe_silent_double: $(QPE_OBJECTS_double)
+pdqp_silent: pdqp_silent_$(PRECIS)
+pdqp_silent_single: $(PDQP_OBJECTS_single)
+pdqp_silent_double: $(PDQP_OBJECTS_double)
 
-qpe: qpe_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: QPE ($(PRECIS) $(SUCC)"
-qpe_single: $(QPE_OBJECTS_single)
+pdqp: pdqp_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: PDQP ($(PRECIS) $(SUCC)"
+pdqp_single: $(PDQP_OBJECTS_single)
 	$(RANLIB) $(LGS)
-qpe_double: $(QPE_OBJECTS_double)
+pdqp_double: $(PDQP_OBJECTS_double)
 	$(RANLIB) $(LGD)
 
-qpes: qpe_cutest_single
-qped: qpe_cutest_double
+pdqps: pdqp_cutest_single
+pdqpd: pdqp_cutest_double
 
-qpesrunall: qpess qpest
-qpedrunall: qpeds qpedt
-qperunall: qpedrunall qpesrunall
+pdqpsrunall: pdqpss pdqpst
+pdqpdrunall: pdqpds pdqpdt
+pdqprunall: pdqpdrunall pdqpsrunall
 
-test_qpe: test_qpe_$(PRECIS)
+test_pdqp: test_pdqp_$(PRECIS)
 
-test_qpe_single: qpest $(QPE_RUN_single)
+test_pdqp_single: pdqpst $(PDQP_RUN_single)
 	echo ""
-	echo " Testing CUTEst interface to qpe"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) qpe -s QPBAND
+	echo " Testing CUTEst interface to pdqp"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) pdqp -s QPBAND
 	echo ""
-	echo " Tests for qpe complete"
+	echo " Tests for pdqp complete"
 
-test_qpe_double: qpedt $(QPE_RUN_double)
+test_pdqp_double: pdqpdt $(PDQP_RUN_double)
 	echo ""
-	echo " Testing CUTEst interface to qpe"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) qpe QPBAND
+	echo " Testing CUTEst interface to pdqp"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) pdqp QPBAND
 	echo ""
-	echo " Tests for qpe complete"
+	echo " Tests for pdqp complete"
 
-test_qpe_nocutest: test_qpe_nocutest_$(PRECIS)
+test_pdqp_nocutest: test_pdqp_nocutest_$(PRECIS)
 
-test_qpe_nocutest_single: qpest
+test_pdqp_nocutest_single: pdqpst
 	echo ""
-	echo " Tests for qpe complete"
+	echo " Tests for pdqp complete"
 
-test_qpe_nocutest_double: qpedt
+test_pdqp_nocutest_double: pdqpdt
 	echo ""
-	echo " Tests for qpe complete"
+	echo " Tests for pdqp complete"
 
-test_spec_qpe: test_spec_qpe_$(PRECIS)
+test_spec_pdqp: test_spec_pdqp_$(PRECIS)
 
-test_spec_qpe_single: qpess
+test_spec_pdqp_single: pdqpss
 	echo ""
-	echo " Tests for qpe complete"
+	echo " Tests for pdqp complete"
 
-test_spec_qpe_double: qpeds
+test_spec_pdqp_double: pdqpds
 	echo ""
-	echo " Tests for qpe complete"
+	echo " Tests for pdqp complete"
 
 # blls
 
@@ -2439,41 +2441,41 @@ qpcst: $(QPCST)
 	cat ../qpc/qpcst.output
 	rm ../qpc/run_qpc
 
-qpeds: $(QPEDS)
-	cd ../qpe ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_qpe $(RQPEDS)
-	cd ../qpe ; $(RMOOC)
-	- ../qpe/run_qpe >& ../qpe/qpeds.output
-	cat ../qpe/qpeds.output
-	rm ../qpe/run_qpe
+pdqpds: $(PDQPDS)
+	cd ../pdqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pdqp $(RPDQPDS)
+	cd ../pdqp ; $(RMOOC)
+	- ../pdqp/run_pdqp >& ../pdqp/pdqpds.output
+	cat ../pdqp/pdqpds.output
+	rm ../pdqp/run_pdqp
 
-qpeds2: $(QPEDS2)
-	cd ../qpe ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_qpe $(RQPEDS2)
-	cd ../qpe ; $(RMOOC)
-	- ../qpe/run_qpe
-	rm ../qpe/run_qpe
+pdqpds2: $(PDQPDS2)
+	cd ../pdqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pdqp $(RPDQPDS2)
+	cd ../pdqp ; $(RMOOC)
+	- ../pdqp/run_pdqp
+	rm ../pdqp/run_pdqp
 
-qpedt: $(QPEDT)
-	echo " Exhaustive test of subroutine interface to qpe"
-	cd ../qpe ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_qpe $(RQPEDT)
-	cd ../qpe ; $(RMOOC)
-	- ../qpe/run_qpe >& ../qpe/qpedt.output
-	cat ../qpe/qpedt.output
-	rm ../qpe/run_qpe
+pdqpdt: $(PDQPDT)
+	echo " Exhaustive test of subroutine interface to pdqp"
+	cd ../pdqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pdqp $(RPDQPDT)
+	cd ../pdqp ; $(RMOOC)
+	- ../pdqp/run_pdqp >& ../pdqp/pdqpdt.output
+	cat ../pdqp/pdqpdt.output
+	rm ../pdqp/run_pdqp
 
-qpess: $(QPESS)
-	cd ../qpe ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_qpe $(RQPESS)
-	cd ../qpe ; $(RMOOC)
-	- ../qpe/run_qpe >& ../qpe/qpess.output
-	cat ../qpe/qpess.output
-	rm ../qpe/run_qpe
+pdqpss: $(PDQPSS)
+	cd ../pdqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pdqp $(RPDQPSS)
+	cd ../pdqp ; $(RMOOC)
+	- ../pdqp/run_pdqp >& ../pdqp/pdqpss.output
+	cat ../pdqp/pdqpss.output
+	rm ../pdqp/run_pdqp
 
-qpest: $(QPEST)
-	echo " Exhaustive test of subroutine interface to qpe"
-	cd ../qpe ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_qpe $(RQPEST)
-	cd ../qpe ; $(RMOOC)
-	- ../qpe/run_qpe >& ../qpe/qpest.output
-	cat ../qpe/qpest.output
-	rm ../qpe/run_qpe
+pdqpst: $(PDQPST)
+	echo " Exhaustive test of subroutine interface to pdqp"
+	cd ../pdqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pdqp $(RPDQPST)
+	cd ../pdqp ; $(RMOOC)
+	- ../pdqp/run_pdqp >& ../pdqp/pdqpst.output
+	cat ../pdqp/pdqpst.output
+	rm ../pdqp/run_pdqp
 
 qpds: $(QPDS)
 	cd ../qp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_qp $(RQPDS)
@@ -3485,22 +3487,22 @@ $(LG)(qpd.o): ../qpd/qpd.f90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-qpe.o: $(LG)(qpe.o)
+pdqp.o: $(LG)(pdqp.o)
 
-$(LG)(qpe.o): ../qpe/qpe.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "qpe   "
-	$(SED) -f $(SEDS) ../qpe/qpe.f90 > $(OBJ)/qpe1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/qpe1.f90 > $(OBJ)/qpe2.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/qpe2.f90 > $(OBJ)/qpe.f90
-	cd $(OBJ); $(FORTRAN) -o qpe.o $(FFLAGSS) qpe.f90 \
+$(LG)(pdqp.o): ../pdqp/pdqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pdqp   "
+	$(SED) -f $(SEDS) ../pdqp/pdqp.f90 > $(OBJ)/pdqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/pdqp1.f90 > $(OBJ)/pdqp2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/pdqp2.f90 > $(OBJ)/pdqp.f90
+	cd $(OBJ); $(FORTRAN) -o pdqp.o $(FFLAGSS) pdqp.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o qpe.o $(FFLAGSN) qpe.f90 )
-	cd $(OBJ); $(ARR) qpe.o ; $(RM) qpe.f90 qpe1.f90 qpe2.f90 qpe.o
-	$(RMARFILE) useqpe.o
-	$(RMOBFILE) inqpe.o
+                   $(FORTRAN) -o pdqp.o $(FFLAGSN) pdqp.f90 )
+	cd $(OBJ); $(ARR) pdqp.o ; $(RM) pdqp.f90 pdqp1.f90 pdqp2.f90 pdqp.o
+	$(RMARFILE) usepdqp.o
+	$(RMOBFILE) inpdqp.o
 	$(RMOBFILE) galahad_ampl.o
-	$(RMOBFILE) qpes.o
-	$(RMOBFILE) qpet.o
+	$(RMOBFILE) pdqps.o
+	$(RMOBFILE) pdqpt.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -3835,7 +3837,7 @@ $(LG)(rpd.o): ../rpd/rpd.f90
 	$(RMOBFILE) inqpa.o
 	$(RMOBFILE) inqpb.o
 	$(RMOBFILE) inqpc.o
-	$(RMOBFILE) inqpe.o
+	$(RMOBFILE) inpdqp.o
 	$(RMOBFILE) ineqp.o
 	$(RMOBFILE) inbqp.o
 	$(RMOBFILE) inbqpb.o
@@ -3898,19 +3900,19 @@ $(LG)(useqpc.o): ../qpc/useqpc.f90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-useqpe.o: $(LG)(useqpe.o)
+usepdqp.o: $(LG)(usepdqp.o)
 
-$(LG)(useqpe.o): ../qpe/useqpe.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "useqpe   "
-	$(SED) -f $(SEDS) ../qpe/useqpe.f90 > $(OBJ)/useqpe1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/useqpe1.f90 > $(OBJ)/useqpe2.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/useqpe2.f90 > $(OBJ)/useqpe.f90
-	cd $(OBJ); $(FORTRAN) -o useqpe.o $(FFLAGSS) useqpe.f90 \
+$(LG)(usepdqp.o): ../pdqp/usepdqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usepdqp   "
+	$(SED) -f $(SEDS) ../pdqp/usepdqp.f90 > $(OBJ)/usepdqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usepdqp1.f90 > $(OBJ)/usepdqp2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usepdqp2.f90 > $(OBJ)/usepdqp.f90
+	cd $(OBJ); $(FORTRAN) -o usepdqp.o $(FFLAGSS) usepdqp.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o useqpe.o $(FFLAGSN) useqpe.f90 )
-	cd $(OBJ); $(ARR) useqpe.o ; $(RM) useqpe.f90 useqpe1.f90 \
-                                           useqpe2.f90 useqpe.o
-	$(RMOBFILE) runqpe_sif.o
+                   $(FORTRAN) -o usepdqp.o $(FFLAGSN) usepdqp.f90 )
+	cd $(OBJ); $(ARR) usepdqp.o ; $(RM) usepdqp.f90 usepdqp1.f90 \
+                                           usepdqp2.f90 usepdqp.o
+	$(RMOBFILE) runpdqp_sif.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -4201,13 +4203,13 @@ $(OBJ)/runqpc_sif.o: ../qpc/runqpc_sif.f90
 	rm $(OBJ)/runqpc_sif.f90
 	@printf '[ OK ]\n'
 
-runqpe_sif.o: $(OBJ)/runqpe_sif.o
+runpdqp_sif.o: $(OBJ)/runpdqp_sif.o
 
-$(OBJ)/runqpe_sif.o: ../qpe/runqpe_sif.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "runqpe_sif"
-	$(SED) -f $(SEDS) ../qpe/runqpe_sif.f90 > $(OBJ)/runqpe_sif.f90
-	cd $(OBJ); $(FORTRAN) -o runqpe_sif.o $(FFLAGSS) runqpe_sif.f90
-	rm $(OBJ)/runqpe_sif.f90
+$(OBJ)/runpdqp_sif.o: ../pdqp/runpdqp_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runpdqp_sif"
+	$(SED) -f $(SEDS) ../pdqp/runpdqp_sif.f90 > $(OBJ)/runpdqp_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runpdqp_sif.o $(FFLAGSS) runpdqp_sif.f90
+	rm $(OBJ)/runpdqp_sif.f90
 	@printf '[ OK ]\n'
 
 runqp_sif.o: $(OBJ)/runqp_sif.o
@@ -4391,14 +4393,14 @@ $(OBJ)/inqpc.o: ../qpc/inqpc.f90
 	rm $(OBJ)/inqpc.f90 $(OBJ)/inqpc1.f90
 	@printf '[ OK ]\n'
 
-inqpe.o: $(OBJ)/inqpe.o
+inpdqp.o: $(OBJ)/inpdqp.o
 
-$(OBJ)/inqpe.o: ../qpe/inqpe.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "inqpe"
-	$(SED) -f $(SEDS) ../qpe/inqpe.f90 > $(OBJ)/inqpe1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/inqpe1.f90 > $(OBJ)/inqpe.f90
-	cd $(OBJ); $(FORTRAN) -o inqpe.o $(FFLAGSOMP) inqpe.f90
-	rm $(OBJ)/inqpe.f90 $(OBJ)/inqpe1.f90
+$(OBJ)/inpdqp.o: ../pdqp/inpdqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "inpdqp"
+	$(SED) -f $(SEDS) ../pdqp/inpdqp.f90 > $(OBJ)/inpdqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/inpdqp1.f90 > $(OBJ)/inpdqp.f90
+	cd $(OBJ); $(FORTRAN) -o inpdqp.o $(FFLAGSOMP) inpdqp.f90
+	rm $(OBJ)/inpdqp.f90 $(OBJ)/inpdqp1.f90
 	@printf '[ OK ]\n'
 
 inqp.o: $(OBJ)/inqp.o
@@ -4623,33 +4625,33 @@ $(OBJ)/qpct.o: ../qpc/qpct.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
-qpes.o: $(OBJ)/qpes.o
+pdqps.o: $(OBJ)/pdqps.o
 
-$(OBJ)/qpes.o: ../qpe/qpes.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "qpes  "
-	$(SED) -f $(SEDS) ../qpe/qpes.f90 > $(OBJ)/qpes1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/qpes1.f90 > $(OBJ)/qpes.f90
-	cd $(OBJ) ; $(FORTRAN) -o qpes.o $(FFLAGS) qpes.f90
+$(OBJ)/pdqps.o: ../pdqp/pdqps.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pdqps  "
+	$(SED) -f $(SEDS) ../pdqp/pdqps.f90 > $(OBJ)/pdqps1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/pdqps1.f90 > $(OBJ)/pdqps.f90
+	cd $(OBJ) ; $(FORTRAN) -o pdqps.o $(FFLAGS) pdqps.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
-qpes2.o: $(OBJ)/qpes2.o
+pdqps2.o: $(OBJ)/pdqps2.o
 
-$(OBJ)/qpes2.o: ../qpe/qpes2.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "qpes2  "
-	$(SED) -f $(SEDS) ../qpe/qpes2.f90 > $(OBJ)/qpes21.f90
-	$(SED) -f $(LSEDS) $(OBJ)/qpes21.f90 > $(OBJ)/qpes2.f90
-	cd $(OBJ) ; $(FORTRAN) -o qpes2.o $(FFLAGS) qpes2.f90
+$(OBJ)/pdqps2.o: ../pdqp/pdqps2.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pdqps2  "
+	$(SED) -f $(SEDS) ../pdqp/pdqps2.f90 > $(OBJ)/pdqps21.f90
+	$(SED) -f $(LSEDS) $(OBJ)/pdqps21.f90 > $(OBJ)/pdqps2.f90
+	cd $(OBJ) ; $(FORTRAN) -o pdqps2.o $(FFLAGS) pdqps2.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
-qpet.o: $(OBJ)/qpet.o
+pdqpt.o: $(OBJ)/pdqpt.o
 
-$(OBJ)/qpet.o: ../qpe/qpet.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "qpet  "
-	$(SED) -f $(SEDS) ../qpe/qpet.f90 > $(OBJ)/qpet1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/qpet1.f90 > $(OBJ)/qpet.f90
-	cd $(OBJ) ; $(FORTRAN) -o qpet.o $(FFLAGSS) qpet.f90
+$(OBJ)/pdqpt.o: ../pdqp/pdqpt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pdqpt  "
+	$(SED) -f $(SEDS) ../pdqp/pdqpt.f90 > $(OBJ)/pdqpt1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/pdqpt1.f90 > $(OBJ)/pdqpt.f90
+	cd $(OBJ) ; $(FORTRAN) -o pdqpt.o $(FFLAGSS) pdqpt.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
@@ -5339,9 +5341,9 @@ rmqpd:
 	$(RMARFILE) qpd.o
 	@printf '[ OK ]\n'
 
-rmqpe:
-	@printf ' %-9s %-15s\t\t' "Removing" "qpe from archive "
-	$(RMARFILE) qpe.o
+rmpdqp:
+	@printf ' %-9s %-15s\t\t' "Removing" "pdqp from archive "
+	$(RMARFILE) pdqp.o
 	@printf '[ OK ]\n'
 
 rmqp:

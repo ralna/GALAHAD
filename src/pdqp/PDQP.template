@@ -1,0 +1,7 @@
+! error-printout-device                             6
+! printout-device                                   6
+! print-level                                       1
+! maximum-number-of-iterations                      100
+! infinity-value                                    1.0D+19
+! deallocate-error-fatal                            no
+! output-line-prefix                                ""
