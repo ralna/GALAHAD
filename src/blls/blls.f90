@@ -120,7 +120,7 @@
 
        INTEGER :: cold_start = 1
 
-!  the preconditioner (scaling) used (1=diagonal,anything else=none)
+!  the preconditioner (scaling) used (0=none,1=diagonal,anything else=user)
 
        INTEGER :: preconditioner = 1
 
@@ -329,7 +329,7 @@
 !  - - - - - - - - - - - - - - -
 
      TYPE :: BLLS_subproblem_data_type
-       INTEGER :: branch, n_break, n_free, n_fixed, n_a0
+       INTEGER :: branch, n_break, n_free, n_fixed, n_a0, preconditioner
        INTEGER :: nz_d_start, nz_d_end, nz_out_end, base_free, step
        REAL ( KIND = wp ) :: f_alpha_dash, f_alpha_dashdash, stop_cg
        REAL ( KIND = wp ) :: rho_alpha, rho_alpha_dash, rho_alpha_dashdash
@@ -338,9 +338,10 @@
        REAL ( KIND = wp ) :: f_s, f_c, f_i, f_l, f_q, gamma, gamma_a, gamma_f
        REAL ( KIND = wp ) :: rho_c, rho_i, rho_l, rho_q, phi_s, phi_i
        REAL ( KIND = wp ) :: mu, mu_a, mu_f
-       LOGICAL :: printp, printw, printd, printdd, recompute, debug
+       LOGICAL :: printp, printw, printd, printdd, debug
        LOGICAL :: present_a, present_asprod, reverse_asprod, present_afprod
-       LOGICAL :: reverse_afprod, preconditioned, regularization
+       LOGICAL :: reverse_afprod, reverse_prec, present_prec, present_dprec
+       LOGICAL :: recompute, regularization, preconditioned
        CHARACTER ( LEN = 1 ) :: direction
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: FREE, NZ_d, NZ_out, P_used
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G, P, Q, R, S, U, W
@@ -368,7 +369,7 @@
      TYPE :: BLLS_data_type
        INTEGER :: out, error, print_level, start_print, stop_print, print_gap
        INTEGER :: arc_search_status, cgls_status, change_status
-       INTEGER :: n_free, branch, cg_iter
+       INTEGER :: n_free, branch, cg_iter, preconditioner
        INTEGER :: nz_in_start, nz_in_end, nz_out_end, maxit, cg_maxit
        INTEGER :: segments, max_segments, steps, max_steps, eval_status
        REAL :: time_start
@@ -377,7 +378,7 @@
        REAL ( KIND = wp ) :: weight, stabilisation_weight, regularization_weight
        LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
        LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe
-       LOGICAL :: reverse, explicit_a, use_aprod, header
+       LOGICAL :: reverse, reverse_prod, explicit_a, use_aprod, header
        LOGICAL :: direct_subproblem_solve, steepest_descent
        CHARACTER ( LEN = 6 ) :: string_cg_iter
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status, OLD_status
@@ -721,7 +722,8 @@
 !-*-*-*-*-*-*-*-   B L L S _ S O L V E  S U B R O U T I N E   -*-*-*-*-*-*-*-*-
 
      SUBROUTINE BLLS_solve( prob, X_stat, data, control, inform, userdata,     &
-                            reverse, eval_APROD, eval_ASPROD, eval_AFPROD )
+                            reverse, eval_APROD, eval_ASPROD, eval_AFPROD,     &
+                            eval_PREC )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -735,7 +737,9 @@
 !  A is an m by n matrix, and any of the bounds (x_l)_i, (x_u)_i may be
 !  infinite, using a preconditioned projected CG method.
 !
-!  The subroutine is particularly appropriate when A is sparse
+!  The subroutine is particularly appropriate when A is sparse, or if it
+!  not availble explicitly (but its action may be found by subroutine call 
+!  or reverse communication)
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -751,7 +755,7 @@
 !   %m is an INTEGER variable, which must be set by the user to the
 !    number of residuals, m. RESTRICTION: %m >= 1
 !
-!   %A is a structure of type SMT_type used to hold A.
+!   %A is a structure of type SMT_type used to hold A if available).
 !    Five storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -910,6 +914,16 @@
 !       reverse%eval_status should be set to zero unless the product cannot
 !       be formed, in which case a nonzero value should be returned.
 !
+!     7 The product P^-1 * v involving the preconditioner P with a specified 
+!       vector v is required from the user. Here P should be a symmtric, 
+!       postive-definite approximation of A^T A. The vector v will be provided 
+!       in reverse%V and the required product must be returned in reverse%P. 
+!       BLLS_solve must then be re-entered with reverse%eval_status set to 0, 
+!       and any remaining arguments unchanged. Should the user be unable
+!       to form the product, this should be flagged by setting 
+!       reverse%eval_status to a nonzero value. This return can only happen 
+!       when control%preciditioner is not 0 or 1.
+!
 !    -1 An allocation error occured; the status is given in the component
 !       alloc_status.
 !
@@ -990,10 +1004,11 @@
 !  reverse is an OPTIONAL structure of type BLLS_reverse_type which is used to
 !   pass intermediate data to and from BLLS_solve. This will only be necessary
 !   if reverse-communication is to be used to form matrix-vector products
-!   of the form H * v or preconditioning steps of the form P * v. If
-!   reverse is present (and eval_APROD is absent), reverse communication
-!   will be used and the user must monitor the value of inform%status
-!   (see above) to await instructions about required matrix-vector products.
+!   of the form H * v or preconditioning steps of the form P^{-1} * v. If
+!   reverse is present (and eval_APROD or eval_PREC is absent), reverse 
+!   communication will be used and the user must monitor the value of 
+!   inform%status(see above) to await instructions about required 
+!   matrix-vector products.
 !
 !  eval_APROD is an OPTIONAL subroutine which if present must have the
 !   arguments given below (see the interface blocks). The sum p + A * v
@@ -1035,12 +1050,13 @@
 !   product directly from user-provided %A.
 !
 !  eval_PREC is an OPTIONAL subroutine which if present must have the arguments
-!   given below (see the interface blocks). The product P * v of the given
-!   preconditioner P and vector v stored in V must be returned in PV.
-!   The status variable should be set to 0 unless the product is impossible
-!   in which case status should be set to a nonzero value. If eval_PREC
-!   is not present, BLLS_solve will return to the user each time an evaluation
-!   is required. (**not used at present**)
+!   given below (see the interface blocks). The product P^{-1} * v of the given
+!   preconditioner P and vector v stored in V must be returned in P. 
+!   The intention is that P is an approximation to A^T A. The status variable 
+!   should be set to 0 unless the product is impossible in which case status 
+!   should be set to a nonzero value. If eval_PREC is not present, BLLS_solve 
+!   will return to the user each time a preconditioning operation is required 
+!   (see reverse above) when control%preconditioner is not 0 or 1.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -1053,7 +1069,7 @@
      TYPE ( BLLS_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
-     OPTIONAL :: eval_APROD, eval_ASPROD, eval_AFPROD
+     OPTIONAL :: eval_APROD, eval_ASPROD, eval_AFPROD, eval_PREC
 
 !  interface blocks
 
@@ -1099,16 +1115,16 @@
        END SUBROUTINE eval_AFPROD
      END INTERFACE
 
-!    INTERFACE
-!      SUBROUTINE eval_PREC( status, userdata, V, PV )
-!      USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-!      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-!      INTEGER, INTENT( OUT ) :: status
-!      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-!      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-!      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PV
-!      END SUBROUTINE eval_PREC
-!    END INTERFACE
+     INTERFACE
+       SUBROUTINE eval_PREC( status, userdata, V, P )
+       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+       INTEGER, INTENT( OUT ) :: status
+       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
+       END SUBROUTINE eval_PREC
+     END INTERFACE
 
 !  local variables
 
@@ -1162,14 +1178,45 @@
      inform%time%total = 0.0 ; inform%time%analyse = 0.0
      inform%time%factorize = 0.0 ; inform%time%solve = 0.0
 
+!  check that optional arguments are consistent -
+
+!  operations with A
+
      data%use_aprod = PRESENT( eval_APROD ) .AND. PRESENT( eval_ASPROD ) .AND. &
                       PRESENT( eval_AFPROD )
-     data%reverse = PRESENT( reverse ) .AND. .NOT. data%use_aprod
-     data%explicit_a = .NOT. ( data%use_aprod .OR. data%reverse )
-     data%direct_subproblem_solve = data%explicit_a .AND.                      &
-                                    control%direct_subproblem_solve
-     data%header = .TRUE.
-     data%weight = MAX( control%weight, zero )
+     data%reverse = PRESENT( reverse )
+     data%explicit_a = ALLOCATED( prob%A%type )
+     data%reverse_prod = .NOT. ( data%explicit_a .OR. data%use_aprod )
+     IF ( data%reverse_prod .AND. .NOT. data%reverse ) THEN
+       inform%status = GALAHAD_error_optional ; GO TO 910
+     END IF
+
+!  operations with a preconditioner
+
+     IF ( control%preconditioner == 0 ) THEN
+       data%preconditioner = 0
+     ELSE IF ( control%preconditioner == 1 ) THEN
+       IF ( .NOT. data%use_aprod ) THEN
+         data%preconditioner = 1
+       ELSE
+         data%preconditioner = 0
+       END IF
+     ELSE
+       IF ( PRESENT( eval_PREC ) ) THEN
+         data%preconditioner = 2
+       ELSE IF ( PRESENT( reverse ) ) THEN
+         data%preconditioner = 2
+       ELSE IF ( .NOT. data%use_aprod ) THEN
+         data%preconditioner = 1
+       ELSE
+         data%preconditioner = 0
+       END IF
+     END IF
+
+     IF ( data%preconditioner == 2  .AND. .NOT. PRESENT( eval_prec ) .AND.     &
+          .NOT. data%reverse ) THEN
+       inform%status = GALAHAD_error_optional ; GO TO 900
+     END IF
 
      IF ( control%maxit < 0 ) THEN
        data%maxit = HUGE( 1 ) - 1
@@ -1182,7 +1229,13 @@
      ELSE
        data%cg_maxit = control%cg_maxit
      END IF
+
      data%steepest_descent = .TRUE.
+     data%direct_subproblem_solve = data%explicit_a .AND.                      &
+                                    control%direct_subproblem_solve
+     data%header = .TRUE.
+     data%weight = MAX( control%weight, zero )
+
      inform%iter = - 1
 
 !  ===========================
@@ -1363,7 +1416,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
-     IF ( control%preconditioner == 1 ) THEN
+     IF ( data%preconditioner /= 0 ) THEN
        array_name = 'blls: data%DIAG'
        CALL SPACE_resize_array( prob%n, data%DIAG, inform%status,              &
               inform%alloc_status, array_name = array_name,                    &
@@ -1462,7 +1515,7 @@
 
 !  compute the diagonal preconditioner if required
 
-     IF ( control%preconditioner == 1 ) THEN
+     IF ( data%preconditioner /= 0 ) THEN
        IF ( data%explicit_a ) THEN
          DO j = 1, prob%n
            val = zero
@@ -1474,9 +1527,9 @@
        ELSE
          data%DIAG( : prob%n ) = one
        END IF
-
        IF ( control%weight > zero ) data%DIAG( : prob%n ) =                    &
           data%DIAG( : prob%n ) + control%weight
+!write(6,"( ' diag ', 4ES12.4 )" )  data%DIAG( : prob%n )
        IF ( data%set_printm ) WRITE( data%out,                                 &
          "( /, A, ' diagonal preconditioner, min, max =', 2ES11.4 )" ) prefix, &
            MINVAL( data%DIAG( : prob%n ) ), MAXVAL( data%DIAG( : prob%n ) )
@@ -1641,6 +1694,7 @@
            END DO
            prob%G( j ) = g_j
          END DO
+!write(6,"(' g', 4ES12.4)" ) prob%G( : prob%n )
        ELSE IF ( data%use_aprod ) THEN
          prob%G( : prob%n ) = zero
          CALL eval_APROD( data%eval_status, userdata, .TRUE., prob%C, prob%G )
@@ -1658,7 +1712,7 @@
 !  re-entry point after the Jacobian-transpose vector product
 
  220   CONTINUE
-       IF ( data%reverse ) prob%G( : prob%n ) = reverse%P( : prob%n )
+       IF ( data%reverse_prod ) prob%G( : prob%n ) = reverse%P( : prob%n )
 
 !  compute the objective function
 
@@ -1672,6 +1726,7 @@
          prob%G( : prob%n )                                                    &
            = prob%G( : prob%n ) + control%weight * prob%X( : prob%n )
        END IF
+!write(6,"(' g', 4ES12.4)" ) prob%G( : prob%n )
 
 !  record the dual variables
 
@@ -1746,7 +1801,7 @@
 
 !  assign the search direction
 
-         IF ( control%preconditioner == 1 ) THEN
+         IF ( data%preconditioner /= 0 ) THEN
            data%S( : prob%n ) =                                                &
              - prob%G( : prob%n ) / SQRT( data%DIAG( : prob%n ) )
          ELSE
@@ -1763,7 +1818,6 @@
              data%X_status( i ) = 0
            END IF
          END DO
-
          GO TO 310
        END IF
 
@@ -1887,19 +1941,7 @@
 !  ... using the available Jacobian ...
 
          IF (  data%explicit_a ) THEN
-           IF ( control%preconditioner == 1 ) THEN
-             CALL BLLS_cgls( prob%m, prob%n, data%weight,                      &
-                             data%f_new, data%X_new, data%R,                   &
-                             data%X_status, control%stop_cg_relative,          &
-                             control%stop_cg_absolute, data%cg_iter,           &
-                             control%cg_maxit, control%out,                    &
-                             control%print_level, prefix,                      &
-                             data%subproblem_data, userdata,                   &
-                             data%cgls_status, inform%alloc_status,            &
-                             inform%bad_alloc, A_ptr = data%A%ptr,             &
-                             A_row = data%A%row, A_val = data%A%val,           &
-                             PREC = data%DIAG )
-           ELSE
+           IF ( data%preconditioner == 0 ) THEN
              CALL BLLS_cgls( prob%m, prob%n, data%weight,                      &
                              data%f_new, data%X_new, data%R,                   &
                              data%X_status, control%stop_cg_relative,          &
@@ -1910,23 +1952,38 @@
                              data%cgls_status, inform%alloc_status,            &
                              inform%bad_alloc, A_ptr = data%A%ptr,             &
                              A_row = data%A%row, A_val = data%A%val )
-           END IF
-
-!  ... or products via the user's subroutine or reverse communication ...
-
-         ELSE
-           IF ( control%preconditioner == 1 ) THEN
+           ELSE IF ( data%preconditioner == 1 ) THEN
              CALL BLLS_cgls( prob%m, prob%n, data%weight,                      &
-                             data%f_new, data%X_new, data%R,   &
+                             data%f_new, data%X_new, data%R,                   &
                              data%X_status, control%stop_cg_relative,          &
                              control%stop_cg_absolute, data%cg_iter,           &
                              control%cg_maxit, control%out,                    &
                              control%print_level, prefix,                      &
                              data%subproblem_data, userdata,                   &
                              data%cgls_status, inform%alloc_status,            &
-                             inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
-                             reverse = reverse, PREC = data%DIAG )
+                             inform%bad_alloc, A_ptr = data%A%ptr,             &
+                             A_row = data%A%row, A_val = data%A%val,           &
+                             preconditioned = .TRUE.,                          &
+                             DPREC = data%DIAG )
            ELSE
+             CALL BLLS_cgls( prob%m, prob%n, data%weight,                      &
+                             data%f_new, data%X_new, data%R,                   &
+                             data%X_status, control%stop_cg_relative,          &
+                             control%stop_cg_absolute, data%cg_iter,           &
+                             control%cg_maxit, control%out,                    &
+                             control%print_level, prefix,                      &
+                             data%subproblem_data, userdata,                   &
+                             data%cgls_status, inform%alloc_status,            &
+                             inform%bad_alloc, A_ptr = data%A%ptr,             &
+                             A_row = data%A%row, A_val = data%A%val,           &
+                             reverse = reverse, preconditioned = .TRUE.,       &
+                             eval_PREC = eval_PREC )
+           END IF
+
+!  ... or products via the user's subroutine or reverse communication ...
+
+         ELSE
+           IF ( data%preconditioner == 0 ) THEN
              CALL BLLS_cgls( prob%m, prob%n, data%weight,                      &
                              data%f_new, data%X_new, data%R,                   &
                              data%X_status, control%stop_cg_relative,          &
@@ -1937,6 +1994,30 @@
                              data%cgls_status, inform%alloc_status,            &
                              inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
                              reverse = reverse )
+           ELSE IF ( data%preconditioner == 1 ) THEN
+             CALL BLLS_cgls( prob%m, prob%n, data%weight,                      &
+                             data%f_new, data%X_new, data%R,                   &
+                             data%X_status, control%stop_cg_relative,          &
+                             control%stop_cg_absolute, data%cg_iter,           &
+                             control%cg_maxit, control%out,                    &
+                             control%print_level, prefix,                      &
+                             data%subproblem_data, userdata,                   &
+                             data%cgls_status, inform%alloc_status,            &
+                             inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
+                             reverse = reverse, preconditioned = .TRUE.,       &
+                             DPREC = data%DIAG )
+           ELSE
+             CALL BLLS_cgls( prob%m, prob%n, data%weight,                      &
+                             data%f_new, data%X_new, data%R,                   &
+                             data%X_status, control%stop_cg_relative,          &
+                             control%stop_cg_absolute, data%cg_iter,           &
+                             control%cg_maxit, control%out,                    &
+                             control%print_level, prefix,                      &
+                             data%subproblem_data, userdata,                   &
+                             data%cgls_status, inform%alloc_status,            &
+                             inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
+                             reverse = reverse, preconditioned = .TRUE.,       &
+                             eval_PREC = eval_PREC )
            END IF
          END IF
 
@@ -1964,6 +2045,10 @@
          CASE ( 3 )
            data%branch = 300 ; inform%status = 6 ; RETURN
 
+!  form the preconditioned product P^-1 * v
+
+         CASE ( 4 )
+           data%branch = 300 ; inform%status = 7 ; RETURN
 
 !  error exit without the new point
 
@@ -5272,7 +5357,8 @@
                             stop_cg_relative, stop_cg_absolute,                &
                             iter, maxit, out, print_level, prefix,             &
                             data, userdata, status, alloc_status, bad_alloc,   &
-                            A_ptr, A_row, A_val, eval_AFPROD, reverse, PREC, B )
+                            A_ptr, A_row, A_val, eval_AFPROD, eval_PREC,       &
+                            DPREC, reverse, preconditioned, B )
 
 !  Find the minimizer of the constrained (regularized) least-squares 
 !  objective function
@@ -5332,17 +5418,24 @@
 !              The requested information must be provided in the variable
 !              reverse (see below) and the subroutine re-entered with
 !              other variables unchanged, Requirements are
-!            1 [Sparse in, dense out] The components of the product p = A * v,
+!            2 [Sparse in, dense out] The components of the product p = A * v,
 !              where the i-th component of v is stored in reverse%V(i)
 !              if FIXED(i)=0 and zero if FIXED(i)/=0, should be returned
 !              in reverse%P. The argument reverse%eval_status should be set to
 !              0 if the calculation succeeds, and to a nonzero value otherwise.
-!            2 [Dense in, sparse out] The components of the product
+!            3 [Dense in, sparse out] The components of the product
 !              p = A^T * v, where v is stored in reverse%V, should be
 !              returned in reverse%P. Only components p_i whose for
 !              which FIXED(i)=0 need be assigned, the remainder will be
 !              ignored. The argument reverse%eval_status should be set to 0
 !              if the calculation succeeds, and to a nonzero value otherwise.
+!            4 the product p = P^-1 v between the inverse of the preconditionr
+!              P and the vector v, where v is stored in reverse%V, should be
+!              returned in reverse%P. Only the components of v with indices i
+!              for which FIXED(i)/=0 are nonzero, and only the components of
+!              p with indices i for which FIXED(i)/=0 are needed. The argument 
+!              reverse%eval_status should  be set to 0 if the calculation 
+!              succeeds, and to a nonzero value otherwise.
 !          < 0 an error exit
 !
 !  WORKSPACE
@@ -5362,10 +5455,13 @@
 !  weight  (REAL) the positive regularization weight (absent = zero)
 !  eval_AFPROD subroutine that performs products with A, see the argument
 !           list for BLLS_solve
-!  reverse (structure of type BLLS_reverse_type) used to communicate
-!           reverse communication data to and from the subroutine.
-!  PREC    (REAL array of length n) the values of a diagonal preconditioner
+!  eval_PREC subroutine that performs the preconditioning operation p = P v
+!            see the argument list for BLLS_solve
+!  DPREC   (REAL array of length n) the values of a diagonal preconditioner
 !           that aims to approximate A^T A
+!  preconditioned (LOGICAL) prsent and set true is there a preconditioner
+!  reverse (structure of type BLLS_reverse_type) used to communicate
+!           reverse communication data to and from the subroutine
 
 !  ------------------ end of dummy arguments --------------------------
 
@@ -5388,10 +5484,11 @@
       INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
       INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
       REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_val
-      OPTIONAL :: eval_AFPROD
-      TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: PREC
+      OPTIONAL :: eval_AFPROD, eval_PREC
+      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: DPREC
       REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: B
+      LOGICAL, OPTIONAL, INTENT( IN ) :: preconditioned
+      TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
 
 !  interface blocks
 
@@ -5408,6 +5505,17 @@
         REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
         REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
         END SUBROUTINE eval_AFPROD
+      END INTERFACE
+
+      INTERFACE
+        SUBROUTINE eval_PREC( status, userdata, V, P )
+        USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+        INTEGER, INTENT( OUT ) :: status
+        TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
+        END SUBROUTINE eval_PREC
       END INTERFACE
 
 !  INITIALIZATION:
@@ -5435,8 +5543,10 @@
       SELECT CASE ( data%branch )
       CASE ( 10 ) ; GO TO 10       ! status = 1
       CASE ( 20 ) ; GO TO 20       ! status = 3
+      CASE ( 90 ) ; GO TO 90       ! status = 4
       CASE ( 110 ) ; GO TO 110     ! status = 2
       CASE ( 120 ) ; GO TO 120     ! status = 3
+      CASE ( 140 ) ; GO TO 140     ! status = 4
       END SELECT
 
 !  initial entry
@@ -5458,10 +5568,24 @@
         status = GALAHAD_error_optional ; GO TO 900
       END IF
 
+!  check for the means of preconditioning, if any
+
+      IF ( PRESENT( preconditioned ) ) THEN
+        data%preconditioned = preconditioned
+      ELSE
+        data%preconditioned = .FALSE.
+      END IF
+      data%present_prec = PRESENT( eval_prec )
+      data%present_dprec = PRESENT( DPREC )
+      data%reverse_prec = .NOT. ( data%present_dprec .OR. data%present_prec )
+      IF ( data%preconditioned .AND.  data%reverse_prec .AND.                  &
+           .NOT. PRESENT( reverse ) ) THEN
+        status = GALAHAD_error_optional ; GO TO 900
+      END IF
+
 !  check for other optional arguments
 
       data%debug = PRESENT( B )
-      data%preconditioned = PRESENT( PREC )
 
 !  check if regularization is necessary
 
@@ -5592,17 +5716,57 @@
         f = f + half * weight * TWO_NORM( X ) ** 2
       END IF
 
-!  set the initial preconditioned search direction
+!  set the initial preconditioned gradient
+
+!  a) evaluation via preconditioner-inverse-vector product call
 
       IF ( data%preconditioned ) THEN
+!write(6,"(' g', 4ES12.4)" ) data%G( : n )
+        IF ( data%present_dprec ) THEN
+          IF ( data%n_free < n ) THEN
+            data%S( data%FREE( : data%n_free ) )                               &
+              = data%G( data%FREE( : data%n_free ) )                           &
+                  / DPREC( data%FREE( : data%n_free ) )
+          ELSE
+            data%S( : n ) = data%G( : n ) / DPREC( : n )
+          END IF
+
+!  b) evaluation via preconditioner-inverse-vector product call
+
+        ELSE IF ( data%present_prec ) THEN
+          CALL eval_PREC( status, userdata, V = data%G, P = data%S )
+          IF ( status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; GO TO 900
+          END IF
+
+!  c) evaluation via reverse communication
+
+        ELSE
+          reverse%V( : n ) = data%G( : n )
+          data%branch = 90 ; status = 4
+          RETURN
+        END IF
+      END IF
+
+!  return from reverse communication
+
+   90 CONTINUE
+
+!  set the initial preconditioned search direction from the preconditioned
+!  gradient
+
+      IF ( data%preconditioned ) THEN
+        IF (  data%reverse_prec ) THEN
+          IF ( reverse%eval_status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; GO TO 900
+          END IF
+          data%S( : n ) = reverse%P( : n )
+        END IF
+!write(6,"(' s', 4ES12.4)" ) data%S( : n )
         IF ( data%n_free < n ) THEN
-          data%S( data%FREE( : data%n_free ) )                                 &
-            = data%G( data%FREE( : data%n_free ) )                             &
-                / PREC( data%FREE( : data%n_free ) )
           data%P( data%FREE( : data%n_free ) )                                 &
             = - data%S( data%FREE( : data%n_free ) )
         ELSE
-          data%S( : n ) = data%G( : n ) / PREC( : n )
           data%P( : n ) = - data%S( : n )
         END IF
 
@@ -5794,19 +5958,49 @@
 
 !  compute the preconditioned gradient
 
-        gamma_old = data%gamma
+!  a) evaluation via preconditioner-inverse-vector product call
 
         IF ( data%preconditioned ) THEN
-          IF ( data%n_free < n ) THEN
-            data%S( data%FREE( : data%n_free ) )                               &
-              = data%G( data%FREE( : data%n_free ) )                           &
-                  / PREC( data%FREE( : data%n_free ) )
+          IF ( data%present_dprec ) THEN
+            IF ( data%n_free < n ) THEN
+              data%S( data%FREE( : data%n_free ) )                             &
+                = data%G( data%FREE( : data%n_free ) )                         &
+                    / DPREC( data%FREE( : data%n_free ) )
+            ELSE
+              data%S( : n ) = data%G( : n ) / DPREC( : n )
+            END IF
+
+!  b) evaluation via preconditioner-inverse-vector product call
+
+          ELSE IF ( data%present_prec ) THEN
+            CALL eval_PREC( status, userdata, V = data%G, P = data%S )
+            IF ( status /= GALAHAD_ok ) THEN
+              status = GALAHAD_error_evaluation ; GO TO 900
+            END IF
+
+!  c) evaluation via reverse communication
+
           ELSE
-            data%S( : n ) = data%G( : n ) / PREC( : n )
+            reverse%V( : n ) = data%G( : n )
+            data%branch = 140 ; status = 4
+            RETURN
           END IF
+        END IF
 
-!  and compute its length
+!  return from reverse communication
 
+  140   CONTINUE
+        gamma_old = data%gamma
+
+ !  compute the length of the preconditioned gradient
+
+        IF ( data%preconditioned ) THEN
+          IF ( data%reverse_prec ) THEN
+            IF ( reverse%eval_status /= GALAHAD_ok ) THEN
+              status = GALAHAD_error_evaluation ; GO TO 900
+            END IF
+            data%S( : n ) = reverse%P( : n )
+          END IF
           IF ( data%n_free < n ) THEN
             data%gamma = DOT_PRODUCT( data%G( data%FREE( : data%n_free ) ),    &
                                       data%S( data%FREE( : data%n_free ) ) )

@@ -242,6 +242,11 @@ we may simply
 See the documentation for the \galahad\ package {\tt SMT}
 for further details on the use of {\tt SMT\_put}.
 
+\noindent
+{\tt A\%type} should {\bf not} be allocated if $\bmA$ is unavailable
+(and access provided to  $\bmA$ provided by other means, see later sections), 
+and in this case the remaining components of {\tt A} need not be set.
+
 \itt{A\%ne} is a scalar variable of type default \integer, that
 holds the number of entries in $\bmJ$
 in the sparse coordinate storage scheme (see Section~\ref{coordinate}).
@@ -395,9 +400,13 @@ The default is {\tt cold\_start = 1}.
 
 \itt{preconditioner} is a scalar variable of type default \integer, that
 specifies the type of preconditioner (scaling) used when computing the
-search direction. Currently this can
-be {\tt 0} (no preconditioner) or {\tt 1} (a diagonal preconditioner
-that normalises the rows of $\bmA$), although other values may be introduced
+search direction. Currently this can be 
+{\tt 0} (no preconditioner), 
+{\tt 1} (a diagonal preconditioner that normalises the rows of $\bmA$) or
+{\tt 2} (a preconditioner supplied by the user either via a subroutine
+call of {\tt eval\_PREC}, see \S\ref{prec}, or via reverse communication, 
+see \S\ref{reverse}),
+although other values may be introduced
 in future. The default is {\tt preconditioner = 1}.
 
 \itt{change\_max} is a scalar variable of type default \integer, that
@@ -753,7 +762,7 @@ reverse, %eval\_APROD, eval\_ASPROD] )}
 
 \hspace{37mm}
 {\tt
-eval\_APROD, eval\_ASPROD, eval\_AFPROD] )}
+eval\_APROD, eval\_ASPROD, eval\_AFPROD, eval\_PREC] )}
 
 \vspace*{-3mm}
 \begin{description}
@@ -890,6 +899,17 @@ to obtain Jacobian-sparse-vector products if {\tt reverse} is \present\ or
 otherwise require that the user has provided all relevant
 components of {\tt prob\%A}.
 
+\itt{eval\_PREC} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the value of the
+product $\bmP^{-1} \bmv$ involving a symmetric, positive definite 
+preconditioner $\bmP$ and a given vector $\bmv$.
+See Section~\ref{prec} for details.
+If {\tt eval\_PREC} is present,
+it must be declared {\tt EXTERNAL} in the calling program.
+If {\tt eval\_PREC} is absent, \solver\ will use reverse communication
+(see Section~\ref{reverse})
+to obtain preconditioning products so long as {\tt reverse} is \present;
+if {\tt reverse} is not \present, no preconditioning will be performed.
 
 \end{description}
 
@@ -1126,6 +1146,50 @@ that specifies the number of components of {\tt FREE} that need be considered.
 
 \end{description}
 
+%%%%%%%%%%%%%%%%%%%%%% Preconditioning products %%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Application of a preconditioner via internal evaluation
+\label{prec}}
+
+If the argument {\tt eval\_PREC} is present when calling \solver, the
+user is expected to provide a subroutine of that name to evaluate the
+product $\bmP^{-1} \bmv$ involving a symmetric, positive definite 
+preconditioner $\bmP$ and a given $n$-vector $\bmv$.
+Ideally the $n$ by $n$ matrix $\bmP$ should be chosen so that the
+of the product is inexpensive to compute, but also so that $\bmP$ is
+a good approximation of $\bmA^T \bmA$ in the sense that the eigenvalues
+of $\bmP^{-1} \bmA^T \bmA$ are clustered around a small number of values
+(preferably all around 1.0). The routine must be specified as
+
+\def\baselinestretch{0.8}
+{\tt
+\begin{verbatim}
+       SUBROUTINE eval_PREC( status, userdata, V, P )
+\end{verbatim} }
+\def\baselinestretch{1.0}
+\noindent whose arguments are as follows:
+
+\begin{description}
+\itt{status} is a scalar \intentout\ argument of type default \integer,
+that should be set to 0 if the routine has been able to evaluate the
+product $\bmP^{-1} \bmv$, 
+and to a non-zero value if the evaluation has not been possible.
+
+\itt{userdata} is a scalar \intentinout\ argument of type
+{\tt NLPT\_userdata\_type} whose components may be used
+to communicate user-supplied data to and from the subroutines
+{\tt eval\_APROD}
+(see Section~\ref{typeuserdata}).
+
+\ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
+whose components contain the vector $\bmv$.
+
+\ittf{P} is a rank-one \intentinout\ array argument of type default \realdp\
+whose components on output contain the vector $\bmp = \bmP^{-1} \bmv$.
+
+\end{description}
+
+
 %%%%%%%%%%%%%%%%%%%%%% Reverse communication %%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{\label{reverse}Reverse Communication Information}
@@ -1197,6 +1261,19 @@ Possible values of {\tt inform\%status} and the information required are
      user is unable to evaluate the product, in which case
      {\tt reverse\%eval\_status} should be set to a non-zero value, and the
       remaining components left unaltered.
+
+\ittf{7.} The user should compute the product $\bmP^{-1} \bmv$
+     involving a symmetric, positive definite preconditioner $\bmP$ 
+     and a given vector $\bmv$
+     The vector $\bmv$ is given in {\tt reverse\%V}, and the
+     product $\bmP^{-1} \bmv$ should be written to {\tt reverse\%P},
+     and  {\tt reverse\%eval\_status} should be set to 0.
+     If the user is unable to evaluate the product,
+     the user need not set {\tt reverse\%P}, but
+     should then set {\tt reverse\%eval\_status} to a non-zero value.
+     This value of {\tt inform\%status} can only occur if the user 
+     has set {\tt control\%preconditioner = 2}.
+
 \end{description}
 
 

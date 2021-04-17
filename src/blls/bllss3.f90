@@ -144,7 +144,8 @@
          DO k = userdata%integer( st_ptr + j ),                                &
                 userdata%integer( st_ptr + j + 1 ) - 1
            i = userdata%integer( st_row + k )
-           IF ( userdata%integer( st_flag + i ) < nflag ) THEN
+           IF ( userdata%integer( st_flag + i ) <                              &
+                userdata%integer( nflag )  ) THEN
              userdata%integer( st_flag + i ) = userdata%integer( nflag )
              P( i ) = userdata%real( st_val + k ) * val
              nz_out_end = nz_out_end + 1
@@ -178,7 +179,8 @@
          DO k = userdata%integer( st_ptr + j ),                                &
                 userdata%integer( st_ptr + j + 1 ) - 1
            i = userdata%integer( st_row + k )
-           IF ( userdata%integer( st_flag + i ) < nflag ) THEN
+           IF ( userdata%integer( st_flag + i ) <                              &
+                userdata%integer( nflag )  ) THEN
              userdata%integer( st_flag + i ) = userdata%integer( nflag )
              P( i ) = userdata%real( st_val + k ) * val
              nz_out_end = nz_out_end + 1

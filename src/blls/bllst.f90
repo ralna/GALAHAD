@@ -15,7 +15,7 @@
    INTEGER :: i, j, k, l, nf, weight, mode, exact_arc_search, s, status
    REAL ( KIND = wp ) :: val
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr, A_ptr_row, FLAG
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val
+   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val, DIAG
    INTEGER, PARAMETER :: n = 3, m = 4, a_ne = 5
 ! partition userdata%integer so that it holds
 !   m n nflag  flag          a_ptr          a_row
@@ -27,7 +27,7 @@
    INTEGER, PARAMETER :: nflag = 3, st_flag = 3, st_ptr = st_flag + mn
    INTEGER, PARAMETER :: st_row = st_ptr + n + 1, st_val = 0
    INTEGER, PARAMETER :: len_integer = st_row + a_ne + 1, len_real = a_ne
-   EXTERNAL :: APROD, ASPROD, AFPROD
+   EXTERNAL :: APROD, ASPROD, AFPROD, PREC
    EXTERNAL :: APROD_broken, ASPROD_broken, AFPROD_broken
 ! set up problem data
    ALLOCATE( p%B( m ), p%X_l( n ), p%X_u( n ), p%X( n ), X_stat( n ) )
@@ -45,7 +45,18 @@
 
 ! problem data complete
 
+   ALLOCATE( DIAG( n ) )
+   DO j = 1, n
+     val = 0.0_wp
+     DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
+       val = val + A_val( k ) ** 2
+     END DO
+     DIAG( j ) = val
+   END DO
+
 ! generic runs to test each mode
+
+! weight (0 = no weight, 1 = weight of one)
 
 !  DO weight = 0, 0
 !  DO weight = 1, 1
@@ -53,14 +64,21 @@
 
    WRITE( 6, "( /, ' run tests (weight = ', I0, ')', / )" ) weight
 
+! search used (0 = inexat, 1 = exact)
+
 !  DO exact_arc_search = 0, -1 ! inexact, exact
 !  DO exact_arc_search = 0, 0
    DO exact_arc_search = 0, 1 ! inexact, exact
+
+! mode (1 = A explicit, iterative subproblem, 2 = A explicit, direct subproblem,
+!       3 = A products via subroutine, 4 = A products via reverse communication,
+!       5 = preconditioner via subroutine, 6 = preconditioner via reverse com.)
 !    DO mode = 1, 1
 !    DO mode = 2, 2
 !    DO mode = 3, 4
 !    DO mode = 4, 4
-     DO mode = 1, 4
+!    DO mode = 5, 6
+     DO mode = 1, 6
        CALL BLLS_initialize( data, control, inform )
        control%infinity = infinity                   ! Set infinity
 !      control%print_level = 1                       ! print one line/iteration
@@ -69,7 +87,7 @@
        control%weight = REAL( weight, KIND = wp )
        p%X = 0.0_wp ! start from zero
        SELECT CASE ( mode ) ! matrix access 
-       CASE ( 1, 2 ) ! A expllicitly available
+       CASE ( 1, 2 ) ! A explicitly available (iterative and direct solves)
          CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
          p%A%m = m ; p%A%n = n
@@ -83,13 +101,31 @@
         &  ', status = ', I0,', objective = ', F6.4 ) " )                      &
             mode, exact_arc_search, inform%status, inform%obj
          DEALLOCATE( p%A%val, p%A%row, p%A%ptr, p%A%type )
-       CASE ( 3 ) ! A available by matrix-vector products
+       CASE ( 3 ) ! A available by external subroutines
+         ALLOCATE( userdata%integer( len_integer ), userdata%real( len_real ) )
+         userdata%integer( 1 ) = m   ! load Jacobian data into userdata
+         userdata%integer( 2 ) = n
+         userdata%integer( st_ptr + 1 : st_ptr + n + 1 ) = A_ptr( : n + 1 )
+         userdata%integer( st_row + 1 : st_row + a_ne ) = A_row( : a_ne )
+         userdata%real( st_val + 1 : st_val + a_ne ) = A_val( : a_ne )
+         userdata%integer( nflag ) = 0
+         userdata%integer( st_flag + 1 : st_flag + mn ) = 0
+         inform%status = 1
+         CALL BLLS_solve( p, X_stat, data, control, inform, userdata,          &
+                          eval_APROD = APROD, eval_ASPROD = ASPROD,            &
+                          eval_AFPROD = AFPROD )
+
+         WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ', I0,   &
+        &  ', status = ', I0,', objective = ', F6.4 ) " )                      &
+            mode, exact_arc_search, inform%status, inform%obj
+         DEALLOCATE( userdata%integer, userdata%real )
+       CASE ( 4 ) ! A available by reverse matrix-vector products
          ALLOCATE( FLAG( MAX( m, n ) ) )
          nf = 0 ; FLAG = 0
          inform%status = 1
          DO ! Solve problem - reverse commmunication loop
            CALL BLLS_solve( p, X_stat, data, control, inform, userdata,        &
-                            reverse )
+                            reverse = reverse )
            SELECT CASE ( inform%status )
            CASE ( : 0 ) !  termination return
              WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ',   &
@@ -155,31 +191,53 @@
            END SELECT
          END DO
          DEALLOCATE( FLAG )
-       CASE ( 4 ) ! A available by external subroutines
-         ALLOCATE( FLAG( MAX( m, n ) ) )
-         ALLOCATE( userdata%integer( len_integer ), userdata%real( len_real ) )
-         userdata%integer( 1 ) = m   ! load Jacobian data into userdata
-         userdata%integer( 2 ) = n
-         userdata%integer( st_ptr + 1 : st_ptr + n + 1 ) = A_ptr( : n + 1 )
-         userdata%integer( st_row + 1 : st_row + a_ne ) = A_row( : a_ne )
-         userdata%real( st_val + 1 : st_val + a_ne ) = A_val( : a_ne )
-         userdata%integer( nflag ) = 0
-         userdata%integer( st_flag + 1 : st_flag + mn ) = 0
+       CASE ( 5 ) ! preconditioner explicitly available
+         CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
+         ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
+         p%A%m = m ; p%A%n = n
+         p%A%val( : a_ne ) = A_val( : a_ne )
+         p%A%row( : a_ne ) = A_row( : a_ne )
+         p%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
+         ALLOCATE( userdata%integer( 1 ), userdata%real( n ) )
+         userdata%integer( 1 ) = n   ! load preconditioner data into userdata
+         userdata%real(  : n ) = DIAG( : n )
+!        control%print_level = 1
+         control%preconditioner = 2
+         control%direct_subproblem_solve = .FALSE.
          inform%status = 1
          CALL BLLS_solve( p, X_stat, data, control, inform, userdata,          &
-                          eval_APROD = APROD, eval_ASPROD = ASPROD,            &
-                          eval_AFPROD = AFPROD )
-
+                          eval_PREC = PREC )
          WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ', I0,   &
         &  ', status = ', I0,', objective = ', F6.4 ) " )                      &
             mode, exact_arc_search, inform%status, inform%obj
          DEALLOCATE( userdata%integer, userdata%real )
+       CASE ( 6 ) ! preconditioner available by reverse communication
+         ALLOCATE( FLAG( MAX( m, n ) ) )
+         nf = 0 ; FLAG = 0
+!        control%print_level = 1
+         control%preconditioner = 2
+         control%direct_subproblem_solve = .FALSE.
+         inform%status = 1
+         DO ! Solve problem - reverse commmunication loop
+           CALL BLLS_solve( p, X_stat, data, control, inform, userdata,        &
+                            reverse = reverse )
+           SELECT CASE ( inform%status )
+           CASE ( : 0 ) !  termination return
+             WRITE( 6, "( ' BLLS_solve argument mode = ', I0, ', search = ',   &
+            &  I0, ', status = ', I0,', objective = ', F6.4 ) " )              &
+                mode, exact_arc_search, inform%status, inform%obj
+             EXIT
+           CASE ( 7 ) ! 
+             reverse%P( : n ) = reverse%V( : n ) / DIAG( : n )
+           END SELECT
+         END DO
+         DEALLOCATE( p%A%val, p%A%row, p%A%ptr, p%A%type )
          DEALLOCATE( FLAG )
        END SELECT
        CALL BLLS_terminate( data, control, inform )  !  delete workspace
      END DO
    END DO
-
+!stop
 ! generic runs to test each storage mode
 
    WRITE( 6, "( '')" )
@@ -330,6 +388,7 @@
      END SELECT
      CALL BLLS_terminate( data, control, inform )  !  delete workspace
    END DO
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type )
 
    ALLOCATE( userdata%integer( len_integer ), userdata%real( len_real ) )
    userdata%integer( 1 ) = m   ! load Jacobian data into userdata
@@ -364,7 +423,6 @@
 
 
    DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, X_stat )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type )
 
    END PROGRAM GALAHAD_BLLS_TEST_PROGRAM
 
@@ -450,7 +508,8 @@
          DO k = userdata%integer( st_ptr + j ),                                &
                 userdata%integer( st_ptr + j + 1 ) - 1
            i = userdata%integer( st_row + k )
-           IF ( userdata%integer( st_flag + i ) < nflag ) THEN
+           IF ( userdata%integer( st_flag + i ) <                              &
+                userdata%integer( nflag ) ) THEN
              userdata%integer( st_flag + i ) = userdata%integer( nflag )
              P( i ) = userdata%real( st_val + k ) * val
              nz_out_end = nz_out_end + 1
@@ -484,7 +543,8 @@
          DO k = userdata%integer( st_ptr + j ),                                &
                 userdata%integer( st_ptr + j + 1 ) - 1
            i = userdata%integer( st_row + k )
-           IF ( userdata%integer( st_flag + i ) < nflag ) THEN
+           IF ( userdata%integer( st_flag + i ) <                              &
+                userdata%integer( nflag ) ) THEN
              userdata%integer( st_flag + i ) = userdata%integer( nflag )
              P( i ) = userdata%real( st_val + k ) * val
              nz_out_end = nz_out_end + 1
@@ -601,3 +661,20 @@
    status = - 1
    RETURN
    END SUBROUTINE AFPROD_broken
+
+   SUBROUTINE PREC( status, userdata, V, P )
+   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+   INTEGER, INTENT( OUT ) :: status
+   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+   REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P
+   INTEGER :: i, j, k
+   REAL ( KIND = wp ) :: val
+!  recover problem data from userdata
+   INTEGER :: n
+   n = userdata%integer( 1 )
+   P( : n ) = V( : n ) / userdata%real( : n )
+   status = 0
+   RETURN
+   END SUBROUTINE PREC
