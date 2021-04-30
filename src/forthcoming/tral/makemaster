@@ -1,360 +1,42 @@
 #  Main body of the installation makefile for the GALAHAD TRAL package
 
-#  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 27 X 2008
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-04-29
 
-SHELL = /bin/$(BINSHELL)
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
 
-#  compiler flags
+#  package name
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-            $(OPENMP)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
-#RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES) -L/usr/lib -llapack
-RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+package = tral
+PACKAGE = TRAL
 
-#  names of random libraries
+#  auxililiary packages that current package depends on (prepend with make_)
 
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
+DEPENDENCIES = make_basics make_gltr make_psls make_trs make_cauchy make_cg \
+               make_sha make_lms
 
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
+#  other packages that depend on package
 
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
+DEPENDS = bgo
 
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
+#  auxililiary packages that are needed for tests (prepend with make_)
 
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
+TESTDEPS = make_copyright make_cutest_functions
 
-#  Libraries used
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
-                 $(LAPACK) $(BLAS)
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
 
-#  Archive manipulation strings
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries
 
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MLG)
-
-#  sed scripts
-
-LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
-LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
-
-#  compilation agenda
-
-STRAL = basics cutest_functions gltr psls trs cauchy cg $(LGS)(tral.o)
-DTRAL = basics cutest_functions gltr psls trs cauchy cg $(LGD)(tral.o)
-
-SRUNTRAL = copyright $(LGS)(usetral.o) $(OBJS)/runtral_sif.o
-DRUNTRAL = copyright $(LGD)(usetral.o) $(OBJD)/runtral_sif.o
-
-TRALOBJECTSS = $(STRAL)
-TRALOBJECTSD = $(DTRAL)
-TRALOBJECTSS_CUTEST = $(STRAL) $(SRUNTRAL)
-TRALOBJECTSD_CUTEST = $(DTRAL) $(DRUNTRAL)
-
-OBJECTSS_CUTEST = $(TRALOBJECTSS_CUTEST)
-OBJECTSD_CUTEST = $(TRALOBJECTSD_CUTEST)
-
-TRALDS = $(DTRAL) $(OBJD)/trals.o
-TRALDS2 = $(DTRAL) $(OBJD)/trals2.o
-TRALDS3 = $(DTRAL) $(OBJD)/trals3.o
-TRALDT = $(DTRAL) $(OBJD)/tralt.o
-TRALSS = $(STRAL) $(OBJS)/trals.o
-TRALSS2 = $(STRAL) $(OBJS)/trals2.o
-TRALSS3 = $(STRAL) $(OBJS)/trals3.o
-TRALST = $(STRAL) $(OBJS)/tralt.o
-
-RTRALDS = $(OBJD)/trals.o -L$(OBJD) $(LIBS)
-RTRALDS2 = $(OBJD)/trals2.o -L$(OBJD) $(LIBS)
-RTRALDS3 = $(OBJD)/trals3.o -L$(OBJD) $(LIBS)
-RTRALDT = $(OBJD)/tralt.o -L$(OBJD) $(LIBS)
-RTRALSS = $(OBJS)/trals.o -L$(OBJS) $(LIBS)
-RTRALSS2 = $(OBJS)/trals2.o -L$(OBJS) $(LIBS)
-RTRALSS3 = $(OBJS)/trals3.o -L$(OBJS) $(LIBS)
-RTRALST = $(OBJS)/tralt.o -L$(OBJS) $(LIBS)
-
-SUCC = precision version) compiled successfully
-SUCC_CUTEST = precision version) for CUTEst compiled successfully
-
-#  main compilations and runs
-
-all: tral_cutest
-all_tral: tral_cutest
-test: test_tral
-test_nocutest: test_tral_nocutest
-
-# tral
-
-tral_cutest: tral_cutest_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: TRAL ($(PRECIS) $(SUCC_CUTEST)"
-tral_cutest_single: $(TRALOBJECTSS_CUTEST)
-	$(RANLIB) $(LGS)
-tral_cutest_double: $(TRALOBJECTSD_CUTEST)
-	$(RANLIB) $(LGD)
-
-tral_silent: tral_silent_$(PRECIS)
-tral_silent_single: $(TRALOBJECTSS)
-tral_silent_double: $(TRALOBJECTSD)
-
-tral: tral_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: TRAL ($(PRECIS) $(SUCC)"
-tral_single: $(TRALOBJECTSS)
-	$(RANLIB) $(LGS)
-tral_double: $(TRALOBJECTSD)
-	$(RANLIB) $(LGD)
-
-tralsrunall: tralss tralss2 tralss3 tralds tralds2 tralds3
-traldrunall: tralds traldt
-tralrunall: traldrunall tralsrunall
-
-test_tral: test_tral_$(PRECIS)
-
-test_tral_single: tralst $(SRUNTRAL)
-	echo ""
-	echo " Testing CUTEst interface to tral"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) tral -s QPBAND
-	echo ""
-	echo " Tests for tral complete"
-
-test_tral_double: traldt $(DRUNTRAL)
-	echo ""
-	echo " Testing CUTEst interface to tral"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) tral QPBAND
-	echo ""
-	echo " Tests for tral complete"
-
-test_tral_nocutest: test_tral_nocutest_$(PRECIS)
-
-test_tral_nocutest_single: tralst
-	echo ""
-	echo " Tests for tral complete"
-
-test_tral_nocutest_double: traldt
-	echo ""
-	echo " Tests for tral complete"
-
-#  basic packages
-
-basics:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-linearsolver:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-gltr:
-	( cd ../../gltr ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            gltr_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../gltr )
-cauchy:
-	( cd ../../lanb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            cauchy.o PRECIS=$(PRECIS) PWD=$(PWD)/../../lanb )
-cg:
-	( cd ../../lanb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            cg.o PRECIS=$(PRECIS) PWD=$(PWD)/../../lanb )
-trs:
-	( cd ../../trs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            trs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../trs )
-psls:
-	( cd ../../psls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            psls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../psls )
-mop:
-	( cd ../../mop ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            mop.o PRECIS=$(PRECIS) PWD=$(PWD)/../../mop )
-cutest_functions:
-	( cd ../../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            cutest_functions_silent PRECIS=$(PRECIS) \
-            PWD=$(PWD)/../../auxiliary )
-copyright:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-
-# run spec-sheet example tests
-
-tralss: $(TRALSS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tral $(RTRALSS)
-	- ./run_tral >& trals.output
-	cat trals.output
-	rm ./run_tral
-
-tralss2: $(TRALSS2)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tral $(RTRALSS2)
-	- ./run_tral >& trals2.output
-	cat trals2.output
-	rm ./run_tral
-
-tralss3: $(TRALSS3)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tral $(RTRALSS3)
-	- ./run_tral >& trals3.output
-	cat trals3.output
-	rm ./run_tral
-
-tralst: $(TRALST)
-	echo " Exhaustive test of subroutine interface to tral"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tral $(RTRALST)
-	- ./run_tral >& tralt.output
-	cat tralt.output
-	rm ./run_tral
-
-tralds: $(TRALDS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tral $(RTRALDS)
-	- ./run_tral >& tralds.output
-	cat tralds.output
-	rm ./run_tral
-
-tralds2: $(TRALDS2)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tral $(RTRALDS2)
-	- ./run_tral >& tralds2.output
-	cat tralds2.output
-	rm ./run_tral
-
-tralds3: $(TRALDS3)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tral $(RTRALDS3)
-	- ./run_tral >& tralds3.output
-	cat tralds3.output
-	rm ./run_tral
-
-traldt: $(TRALDT)
-	echo " Exhaustive test of subroutine interface to tral"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tral $(RTRALDT)
-	- ./run_tral >& traldt.output
-	cat traldt.output
-	rm ./run_tral
-
-#  Substantial GALAHAD packages
-
-tral.o: $(LG)(tral.o)
-
-$(LG)(tral.o): ../tral/tral.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "tral   "
-	$(SED) -f $(SEDS) ../tral/tral.f90 > $(OBJ)/tral1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/tral1.f90 > $(OBJ)/tral2.f90
-	$(SED) -f $(LPSEDS) $(OBJ)/tral2.f90 > $(OBJ)/tral3.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/tral3.f90 > $(OBJ)/tral.f90
-	cd $(OBJ); $(FORTRAN) -o tral.o $(FFLAGSS) tral.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o tral.o $(FFLAGSN) tral.f90 )
-	cd $(OBJ); $(ARR) tral.o ; $(RM) tral.f90 tral1.f90 tral2.f90 \
-                                          tral3.f90 tral.o
-	$(RMARFILE) ism.o
-	$(RMARFILE) usetral.o
-	$(RMOBFILE) trals.o
-	$(RMOBFILE) tralt.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-# CUTEst/AMPL interfaces
-
-usetral.o: $(LG)(usetral.o)
-
-$(LG)(usetral.o): ../tral/usetral.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "usetral   "
-	$(SED) -f $(SEDS) ../tral/usetral.f90 > $(OBJ)/usetral1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/usetral1.f90 > $(OBJ)/usetral2.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usetral2.f90 > $(OBJ)/usetral.f90
-	cd $(OBJ); $(FORTRAN) -o usetral.o $(FFLAGSOMP) usetral.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o usetral.o $(FFLAGSN) usetral.f90 )
-	cd $(OBJ); $(ARR) usetral.o ; $(RM) usetral.f90 usetral1.f90 \
-                                       usetral2.f90 usetral.o
-	$(RMOBFILE) runtral_sif.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-#  main programs
-
-runtral_sif.o: $(OBJ)/runtral_sif.o
-
-$(OBJ)/runtral_sif.o: ../tral/runtral_sif.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "runtral_sif"
-	$(SED) -f $(SEDS) ../tral/runtral_sif.f90 > $(OBJ)/runtral_sif.f90
-	cd $(OBJ); $(FORTRAN) -o runtral_sif.o $(FFLAGSS) runtral_sif.f90
-	rm $(OBJ)/runtral_sif.f90
-	@printf '[ OK ]\n'
-
-#  test decks
-
-trals.o: $(OBJ)/trals.o
-
-$(OBJ)/trals.o: ../tral/trals.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "trals  "
-	$(SED) -f $(SEDS) ../tral/trals.f90 > $(OBJ)/trals1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/trals1.f90 > $(OBJ)/trals.f90
-	cd $(OBJ) ; $(FORTRAN) -o trals.o $(FFLAGS) trals.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-trals2.o: $(OBJ)/trals2.o
-
-$(OBJ)/trals2.o: ../tral/trals2.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "trals2  "
-	$(SED) -f $(SEDS) ../tral/trals2.f90 > $(OBJ)/trals1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/trals1.f90 > $(OBJ)/trals2.f90
-	cd $(OBJ) ; $(FORTRAN) -o trals2.o $(FFLAGS) trals2.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-trals3.o: $(OBJ)/trals3.o
-
-$(OBJ)/trals3.o: ../tral/trals3.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "trals3  "
-	$(SED) -f $(SEDS) ../tral/trals3.f90 > $(OBJ)/trals1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/trals1.f90 > $(OBJ)/trals3.f90
-	cd $(OBJ) ; $(FORTRAN) -o trals3.o $(FFLAGS) trals3.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-tralt.o: $(OBJ)/tralt.o
-
-$(OBJ)/tralt.o: ../tral/tralt.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "tralt  "
-	$(SED) -f $(SEDS) ../tral/tralt.f90 > $(OBJ)/tralt1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/tralt1.f90 > $(OBJ)/tralt.f90
-	cd $(OBJ) ; $(FORTRAN) -o tralt.o $(FFLAGSS) tralt.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-#  book keeping
-
-clean:
-	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(LG) $(OBJ)/tralt.o $(OBJ)/trals.o
-	@printf '[ OK ]\n'
-
-cleanall:
-	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
-	$(RM) $(OBJ)/* $(MOD)/*
-	@printf '[ OK ]\n'
-
-rmtral:
-	@printf ' %-9s %-15s\t\t' "Removing" "tral from archive "
-	$(RMARFILE) tral.o
-	@printf '[ OK ]\n'
-
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions

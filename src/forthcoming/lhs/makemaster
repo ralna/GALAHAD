@@ -1,227 +1,41 @@
-#  Main body of the installation makefile for the GALAHAD lhs package
+#  Main body of the installation makefile for the GALAHAD LHS package
 
-#  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 16 VII 2012
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-04-28
 
-SHELL = /bin/$(BINSHELL)
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
 
-#  compiler flags
+#  package name
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-            $(OPENMP)
-FFLAGSNOMP = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(OPENMP)
-RUNFFLAGS  =         $(OPTIMIZATION) $(DEBUG) $(MODULES)
-RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+package = lhs
+PACKAGE = LHS
 
-#  names of random libraries
+#  auxililiary packages that current package depends on (prepend with make_)
 
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
+DEPENDENCIES = make_basics
 
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
+#  other packages that depend on package
 
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
+DEPENDS = bgo
 
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
+#  auxililiary packages that are needed for tests (prepend with make_)
 
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
+TESTDEPS = make_copyright
 
-#  Libraries used
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
-                 $(LAPACK) $(BLAS)
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
 
-#  Archive manipulation strings
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries
 
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
-
-#  sed scripts
-
-LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
-LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
-
-#  compilation agenda
-
-SLHS =  basics $(LGS)(lhs.o)
-DLHS =  basics $(LGD)(lhs.o)
-
-SRUNLHS = copyright $(LGS)(uselhs.o) $(OBJS)/runlhs_sif.o
-DRUNLHS = copyright $(LGD)(uselhs.o) $(OBJD)/runlhs_sif.o
-
-LHSDS = $(DLHS) $(OBJD)/lhss.o
-LHSDT = $(DLHS) $(OBJD)/lhst.o
-LHSSS = $(SLHS) $(OBJS)/lhss.o
-LHSST = $(SLHS) $(OBJS)/lhst.o
-
-RLHSDS = $(OBJD)/lhss.o -L$(OBJD) $(LIBS)
-RLHSDT = $(OBJD)/lhst.o -L$(OBJD) $(LIBS)
-RLHSSS = $(OBJS)/lhss.o -L$(OBJS) $(LIBS)
-RLHSST = $(OBJS)/lhst.o -L$(OBJS) $(LIBS)
-
-SUCC = precision version) compiled successfully
-
-#  main compilations and runs
-
-lhs: lhs.o
-all: lhs.o
-test: test_lhs
-
-# lhs
-
-lhs_silent: lhs_$(PRECIS)
-lhs: lhs_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: LHS ($(PRECIS) $(SUCC)"
-lhs_single: $(SLHS)
-	$(RANLIB) $(LGS)
-lhs_double: $(DLHS)
-	$(RANLIB) $(LGD)
-
-lhssrunall: lhsss lhsst
-lhsdrunall: lhsds lhsdt
-lhsrunall: lhsdrunall lhssrunall
-
-#  basic packages
-
-basics:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-	( cd ../../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            qpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../../qp )
-copyright:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-
-# run spec-sheet example tests
-
-lhsds: $(LHSDS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_lhs $(RLHSDS)
-	- ./run_lhs >& lhsds.output
-	cat lhsds.output
-	rm ./run_lhs
-
-lhsdt: $(LHSDT)
-	echo " Exhaustive test of subroutine interface to lhs"
-	echo $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_lhs $(RLHSDT)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_lhs $(RLHSDT)
-	- ./run_lhs >& lhsdt.output
-	cat lhsdt.output
-	rm ./run_lhs
-
-lhsss: $(LHSSS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_lhs $(RLHSSS)
-	- ./run_lhs >& lhss.output
-	cat lhss.output
-	rm ./run_lhs
-
-lhsst: $(LHSST)
-	echo " Exhaustive test of subroutine interface to lhs"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_lhs $(RLHSST)
-	- ./run_lhs >& lhst.output
-	cat lhst.output
-	rm ./run_lhs
-
-#  Substantial GALAHAD packages
-
-lhs.o: $(LG)(lhs.o)
-
-$(LG)(lhs.o):  ../lhs/lhs.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "lhs  "
-	$(SED) -f $(SEDS)  ../lhs/lhs.f90 > $(OBJ)/lhs1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/lhs1.f90 > $(OBJ)/lhs2.f90
-	$(SED) -f $(LPSEDS) $(OBJ)/lhs2.f90 > $(OBJ)/lhs3.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/lhs3.f90 > $(OBJ)/lhs.f90
-	cd $(OBJ); $(FORTRAN) -o lhs.o $(FFLAGSS) lhs.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o lhs.o $(FFLAGSN) lhs.f90 )
-	cd $(OBJ); $(ARR) lhs.o ; $(RM) lhs.f90 lhs1.f90 lhs2.f90 \
-                                         lhs3.f90 lhs.o
-	$(RMARFILE) uselhs.o
-	$(RMOBFILE) lhss.o
-	$(RMOBFILE) lhss2.o
-	$(RMOBFILE) lhst.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-#  test decks
-
-lhss.o: $(OBJ)/lhss.o
-
-$(OBJ)/lhss.o: ../lhs/lhss.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "lhss  "
-	$(SED) -f $(SEDS) ../lhs/lhss.f90 > $(OBJ)/lhss1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/lhss1.f90 > $(OBJ)/lhss.f90
-	cd $(OBJ) ; $(FORTRAN) -o lhss.o $(FFLAGS) lhss.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-lhss.o: $(OBJ)/lhss.o
-
-$(OBJ)/lhss2.o: ../lhs/lhss2.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "lhss2  "
-	$(SED) -f $(SEDS) ../lhs/lhss2.f90 > $(OBJ)/lhss1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/lhss1.f90 > $(OBJ)/lhss2.f90
-	cd $(OBJ) ; $(FORTRAN) -o lhss2.o $(FFLAGS) lhss2.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-lhst.o: $(OBJ)/lhst.o
-
-$(OBJ)/lhst.o: ../lhs/lhst.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "lhst  "
-	$(SED) -f $(SEDS) ../lhs/lhst.f90 > $(OBJ)/lhst1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/lhst1.f90 > $(OBJ)/lhst.f90
-	cd $(OBJ) ; $(FORTRAN) -o lhst.o $(FFLAGSS) lhst.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-#  generate HSL codes from GALAHAD ones
-
-hslgen:
-	$(SED) -f ../hsl/gal2hsl ../eqp/lhs.f90 > ../hsl/hsl_ve16/ve16d.f90
-	$(SED) -f ../hsl/gal2hsl ../sbls/sbls.f90 > ../hsl/hsl_mi14/mi14d.f90
-
-#  book keeping
-
-clean:
-	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(LGS) $(LGD) $(LG) $(OBJ)/lhss.o $(OBJ)/lhst.o
-	@printf '[ OK ]\n'
-
-cleanall:
-	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
-	$(RM) $(OBJ)/* $(MOD)/*
-	@printf '[ OK ]\n'
-
-rmlhs:
-	@printf ' %-9s %-15s\t\t' "Removing" "lhs from archive "
-	$(RMARFILE) lhs.o
-	@printf '[ OK ]\n'
-
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions

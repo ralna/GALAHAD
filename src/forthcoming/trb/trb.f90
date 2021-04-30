@@ -38,6 +38,7 @@
      USE GALAHAD_MOP_double, ONLY: mop_Ax
      USE GALAHAD_NORMS_double, ONLY: TWO_NORM, INFINITY_NORM
      USE GALAHAD_STRING, ONLY: STRING_integer_6
+     USE GALAHAD_BLAS_interface, ONLY: SWAP
      USE GALAHAD_LAPACK_interface, ONLY : GESVD
 !    USE SPDSOL
 !    USE HSL_MI13
@@ -1825,6 +1826,7 @@
      ELSE
        IF ( data%control%norm >= 0 ) data%control%norm = identity_preconditioner
        data%hessian_used = .FALSE.
+       data%control%hessian_available = .FALSE.
        data%reverse_h = .FALSE.
        data%reverse_hprod = .FALSE.
        data%reverse_shprod = .FALSE.
@@ -1839,7 +1841,6 @@
          data%control%GLTR_control%steihaug_toint = .TRUE.
      END IF
      data%reverse_prec = .NOT. PRESENT( eval_PREC )
-
      data%nprec = data%control%norm
      data%control%GLTR_control%unitm = data%nprec == - 1
      data%control%PSLS_control%preconditioner = data%nprec
@@ -2008,187 +2009,191 @@
 
 !  record the number of nonzeos in the upper triangle of the Hessian
 
-     SELECT CASE ( SMT_get( nlp%H%type ) )
-     CASE ( 'COORDINATE' )
-       data%h_ne = nlp%H%ne
-     CASE ( 'SPARSE_BY_ROWS' )
-       data%h_ne = nlp%H%PTR( nlp%H%n + 1 ) - 1
-     CASE ( 'DENSE' )
-       data%h_ne = nlp%H%n * ( nlp%H%n + 1 ) / 2
-     CASE DEFAULT
-       data%h_ne = nlp%H%n
-     END SELECT
+     IF ( data%control%hessian_available ) THEN
+       SELECT CASE ( SMT_get( nlp%H%type ) )
+       CASE ( 'COORDINATE' )
+         data%h_ne = nlp%H%ne
+       CASE ( 'SPARSE_BY_ROWS' )
+         data%h_ne = nlp%H%PTR( nlp%H%n + 1 ) - 1
+       CASE ( 'DENSE' )
+         data%h_ne = nlp%H%n * ( nlp%H%n + 1 ) / 2
+       CASE DEFAULT
+         data%h_ne = nlp%H%n
+       END SELECT
 
 !  set up storage to hold the complete columns (both triangles) of the Hessian
 !  in increasing order
 
-     data%H_by_cols%ne = data%h_ne
-     IF ( SMT_get( nlp%H%type ) /= 'DIAGONAL' ) THEN
-       array_name = 'trb: data%MAP'
-       CALL SPACE_resize_array( data%h_ne, 2, data%MAP,                        &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-     END IF
+       data%H_by_cols%ne = data%h_ne
+       IF ( SMT_get( nlp%H%type ) /= 'DIAGONAL' ) THEN
+         array_name = 'trb: data%MAP'
+         CALL SPACE_resize_array( data%h_ne, 2, data%MAP,                      &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+       END IF
 
-     array_name = 'trb: data%H_by_cols%PTR'
-     CALL SPACE_resize_array( nlp%H%n + 1, data%H_by_cols%PTR,                 &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
-
-     SELECT CASE ( SMT_get( nlp%H%type ) )
-     CASE ( 'COORDINATE' )
-       CALL SLS_coord_to_extended_csr( nlp%H%n, nlp%H%ne, nlp%H%ROW,           &
-                                       nlp%H%COL, data%MAP,                    &
-                                       data%H_by_cols%PTR, duplicates,         &
-                                       out_of_range, upper, missing_diagonals )
-     CASE ( 'SPARSE_BY_ROWS' )
-       CALL SMT_put( data%H_by_cols%type, 'SPARSE_BY_ROWS',                    &
-                     inform%alloc_status )
-
-       array_name = 'trb: data%H_by_cols%ROW'
-       CALL SPACE_resize_array( data%H_by_cols%ne, data%H_by_cols%ROW,         &
+       array_name = 'trb: data%H_by_cols%PTR'
+       CALL SPACE_resize_array( nlp%H%n + 1, data%H_by_cols%PTR,               &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= 0 ) GO TO 980
 
-       DO i = 1, nlp%H%n
-         data%H_by_cols%ROW( nlp%H%PTR( i ) : nlp%H%PTR( i + 1 ) - 1 ) = i
-       END DO
-       CALL SLS_coord_to_extended_csr( nlp%H%n, data%H_by_cols%ne,             &
-                                       data%H_by_cols%ROW,                     &
-                                       nlp%H%COL, data%MAP,                    &
-                                       data%H_by_cols%PTR, duplicates,         &
-                                       out_of_range, upper, missing_diagonals )
-     CASE ( 'DENSE' )
-       CALL SMT_put( data%H_by_cols%type, 'DENSE', inform%alloc_status )
+       SELECT CASE ( SMT_get( nlp%H%type ) )
+       CASE ( 'COORDINATE' )
+         CALL SLS_coord_to_extended_csr( nlp%H%n, nlp%H%ne, nlp%H%ROW,         &
+                                         nlp%H%COL, data%MAP,                  &
+                                         data%H_by_cols%PTR, duplicates,       &
+                                         out_of_range, upper, missing_diagonals)
+       CASE ( 'SPARSE_BY_ROWS' )
+         CALL SMT_put( data%H_by_cols%type, 'SPARSE_BY_ROWS',                  &
+                       inform%alloc_status )
 
-       array_name = 'trb: data%H_by_cols%ROW'
-       CALL SPACE_resize_array( data%H_by_cols%ne, data%H_by_cols%ROW,         &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+         array_name = 'trb: data%H_by_cols%ROW'
+         CALL SPACE_resize_array( data%H_by_cols%ne, data%H_by_cols%ROW,       &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= 0 ) GO TO 980
 
-       array_name = 'trb: data%H_by_cols%COL'
-       CALL SPACE_resize_array( data%H_by_cols%ne, data%H_by_cols%COL,         &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) GO TO 980
-
-       l = 0
-       DO i = 1, nlp%H%n
-         DO j = 1, i
-           l = l + 1
-           data%H_by_cols%ROW( l ) = i ; data%H_by_cols%COL( l ) = j
+         DO i = 1, nlp%H%n
+           data%H_by_cols%ROW( nlp%H%PTR( i ) : nlp%H%PTR( i + 1 ) - 1 ) = i
          END DO
-       END DO
-       CALL SLS_coord_to_extended_csr( nlp%H%n, data%H_by_cols%ne,             &
-                                       data%H_by_cols%ROW,                     &
-                                       data%H_by_cols%COL, data%MAP,           &
-                                       data%H_by_cols%PTR, duplicates,         &
-                                       out_of_range, upper, missing_diagonals )
-     CASE DEFAULT
-       DO i = 1, nlp%H%n + 1
-         data%H_by_cols%PTR( i ) = i
-       END DO
-     END SELECT
+         CALL SLS_coord_to_extended_csr( nlp%H%n, data%H_by_cols%ne,           &
+                                         data%H_by_cols%ROW,                   &
+                                         nlp%H%COL, data%MAP,                  &
+                                         data%H_by_cols%PTR, duplicates,       &
+                                         out_of_range, upper, missing_diagonals)
+       CASE ( 'DENSE' )
+         CALL SMT_put( data%H_by_cols%type, 'DENSE', inform%alloc_status )
+
+         array_name = 'trb: data%H_by_cols%ROW'
+         CALL SPACE_resize_array( data%H_by_cols%ne, data%H_by_cols%ROW,       &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         array_name = 'trb: data%H_by_cols%COL'
+         CALL SPACE_resize_array( data%H_by_cols%ne, data%H_by_cols%COL,       &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= 0 ) GO TO 980
+
+         l = 0
+         DO i = 1, nlp%H%n
+           DO j = 1, i
+             l = l + 1
+             data%H_by_cols%ROW( l ) = i ; data%H_by_cols%COL( l ) = j
+           END DO
+         END DO
+         CALL SLS_coord_to_extended_csr( nlp%H%n, data%H_by_cols%ne,           &
+                                         data%H_by_cols%ROW,                   &
+                                         data%H_by_cols%COL, data%MAP,         &
+                                         data%H_by_cols%PTR, duplicates,       &
+                                         out_of_range, upper, missing_diagonals)
+       CASE DEFAULT
+         DO i = 1, nlp%H%n + 1
+           data%H_by_cols%PTR( i ) = i
+         END DO
+       END SELECT
 
 !  extend the column data
 
-     data%H_by_cols%n = nlp%H%n
-     data%H_by_cols%ne = data%H_by_cols%PTR( nlp%H%n + 1 ) - 1
+       data%H_by_cols%n = nlp%H%n
+       data%H_by_cols%ne = data%H_by_cols%PTR( nlp%H%n + 1 ) - 1
 
-     array_name = 'trb: data%H_by_cols%ROW'
-     CALL SPACE_resize_array( data%H_by_cols%ne, data%H_by_cols%ROW,           &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
+       array_name = 'trb: data%H_by_cols%ROW'
+       CALL SPACE_resize_array( data%H_by_cols%ne, data%H_by_cols%ROW,         &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+       IF ( inform%status /= 0 ) GO TO 980
 
-     array_name = 'trb: data%H_by_cols%VAL'
-     CALL SPACE_resize_array( data%H_by_cols%ne, data%H_by_cols%VAL,           &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) GO TO 980
+       array_name = 'trb: data%H_by_cols%VAL'
+       CALL SPACE_resize_array( data%H_by_cols%ne, data%H_by_cols%VAL,         &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+       IF ( inform%status /= 0 ) GO TO 980
 
-     SELECT CASE ( SMT_get( nlp%H%type ) )
-     CASE ( 'COORDINATE' )
-       DO l = 1, nlp%H%ne
-         k = data%MAP( l, 1 )
-         IF ( k > 0 ) data%H_by_cols%ROW( k ) = nlp%H%COL( l )
-         k = data%MAP( l, 2 )
-         IF ( k > 0 ) data%H_by_cols%ROW( k ) = nlp%H%ROW( l )
-       END DO
-     CASE ( 'SPARSE_BY_ROWS' )
-       DO i = 1, nlp%H%n
-         DO l = nlp%H%PTR( i ), nlp%H%PTR( i + 1 ) - 1
+       SELECT CASE ( SMT_get( nlp%H%type ) )
+       CASE ( 'COORDINATE' )
+         DO l = 1, nlp%H%ne
            k = data%MAP( l, 1 )
            IF ( k > 0 ) data%H_by_cols%ROW( k ) = nlp%H%COL( l )
            k = data%MAP( l, 2 )
-           IF ( k > 0 ) data%H_by_cols%ROW( k ) = i
+           IF ( k > 0 ) data%H_by_cols%ROW( k ) = nlp%H%ROW( l )
          END DO
-       END DO
-     CASE ( 'DENSE' )
-       l = 0
-       DO i = 1, nlp%H%n
-         DO j = 1, i
-           l = l + 1
-           k = data%MAP( l, 1 )
-           IF ( k > 0 ) data%H_by_cols%ROW( k ) = j
-           k = data%MAP( l, 2 )
-           IF ( k > 0 ) data%H_by_cols%ROW( k ) = i
+       CASE ( 'SPARSE_BY_ROWS' )
+         DO i = 1, nlp%H%n
+           DO l = nlp%H%PTR( i ), nlp%H%PTR( i + 1 ) - 1
+             k = data%MAP( l, 1 )
+             IF ( k > 0 ) data%H_by_cols%ROW( k ) = nlp%H%COL( l )
+             k = data%MAP( l, 2 )
+             IF ( k > 0 ) data%H_by_cols%ROW( k ) = i
+           END DO
          END DO
-       END DO
-     CASE DEFAULT
-       DO i = 1, nlp%H%n
-         data%H_by_cols%ROW( i ) = i
-       END DO
-     END SELECT
+       CASE ( 'DENSE' )
+         l = 0
+         DO i = 1, nlp%H%n
+           DO j = 1, i
+             l = l + 1
+             k = data%MAP( l, 1 )
+             IF ( k > 0 ) data%H_by_cols%ROW( k ) = j
+             k = data%MAP( l, 2 )
+             IF ( k > 0 ) data%H_by_cols%ROW( k ) = i
+           END DO
+         END DO
+       CASE DEFAULT
+         DO i = 1, nlp%H%n
+           data%H_by_cols%ROW( i ) = i
+         END DO
+       END SELECT
 
 !  if the preconditioner is diagonal, record the positions of the diagonal
 !  entris in POSITION_diagonal; if there is no diagonal, flag it as 0
 
-     data%diagonal_preconditioner = data%control%norm == 1
-     IF ( data%diagonal_preconditioner ) THEN
-       array_name = 'trb: data%POSITION_diagonal'
-       CALL SPACE_resize_array( nlp%n, data%POSITION_diagonal, inform%status,  &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+       data%diagonal_preconditioner = data%control%norm == 1
+       IF ( data%diagonal_preconditioner ) THEN
+         array_name = 'trb: data%POSITION_diagonal'
+         CALL SPACE_resize_array( nlp%n, data%POSITION_diagonal,               &
+                inform%status, inform%alloc_status, array_name = array_name,   &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= 0 ) GO TO 980
 
-       array_name = 'trb: data%H_diagonal'
-       CALL SPACE_resize_array( nlp%n, data%H_diagonal, inform%status,         &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) GO TO 980
+         array_name = 'trb: data%H_diagonal'
+         CALL SPACE_resize_array( nlp%n, data%H_diagonal, inform%status,       &
+                inform%alloc_status, array_name = array_name,                  &
+                deallocate_error_fatal = control%deallocate_error_fatal,       &
+                exact_size = control%space_critical,                           &
+                bad_alloc = inform%bad_alloc, out = control%error )
+         IF ( inform%status /= 0 ) GO TO 980
 
-       DO j = 1, nlp%n
-         data%POSITION_diagonal( j ) = 0
-         DO k = data%H_by_cols%PTR( j ), data%H_by_cols%PTR( j + 1 ) - 1
-           IF ( j == data%H_by_cols%ROW( k ) ) THEN
-             data%POSITION_diagonal( j ) = k
-             EXIT
-           END IF
+         DO j = 1, nlp%n
+           data%POSITION_diagonal( j ) = 0
+           DO k = data%H_by_cols%PTR( j ), data%H_by_cols%PTR( j + 1 ) - 1
+             IF ( j == data%H_by_cols%ROW( k ) ) THEN
+               data%POSITION_diagonal( j ) = k
+               EXIT
+             END IF
+           END DO
          END DO
-       END DO
+       END IF
+     ELSE
+       data%diagonal_preconditioner = .FALSE.
      END IF
 
 !  ensure that the initial point is feasible
@@ -2202,6 +2207,7 @@
 !  find the initial active set
 
      DO i = 1, nlp%n
+      data%X_status( i ) = 0
       IF ( nlp%X( i ) <=                                                       &
             nlp%X_l( i ) * ( one + SIGN( epsmch, nlp%X_l( i ) ) ) )            &
         data%X_status( i ) = 1
@@ -2408,7 +2414,7 @@
      data%stop_pg = MAX( control%stop_pg_absolute,                             &
                          control%stop_pg_relative * inform%norm_pg )
 
-!    data%new_h = data%hessian_used
+!    data%new_h = data%control%hessian_available
      data%new_h = .TRUE.
 
      IF ( data%printi ) WRITE( data%out, "( A, '  Problem: ', A,               &
@@ -2523,7 +2529,7 @@
 
 !  stop if the gradient is swamped by the Hessian
 
-       IF ( data%hessian_used .AND. inform%iter > 0 ) THEN
+       IF ( data%control%hessian_available .AND. inform%iter > 0 ) THEN
          IF ( inform%norm_pg <= MIN( one,                                      &
                 MAXVAL( ABS( nlp%H%val( : nlp%H%ne ) ) ) * epsmch ) ) THEN
            inform%status = GALAHAD_error_ill_conditioned ; GO TO 900
@@ -2582,7 +2588,7 @@
 
        data%perturb = ' '
        IF ( data%new_h ) data%nskip_prec = data%nskip_prec + 1
-       IF ( data%new_h .AND. data%hessian_used ) THEN
+       IF ( data%new_h .AND. data%control%hessian_available ) THEN
          data%got_h = .FALSE.
 
 !  form the Hessian (or a preconditioner based on the Hessian)
@@ -2600,53 +2606,55 @@
 !  return from reverse communication to obtain the Hessian
 
  110   CONTINUE
-       IF ( data%new_h .AND. data%hessian_used ) THEN
-         IF ( data%nskip_prec > nskip_prec_max ) THEN
-           inform%h_eval = inform%h_eval + 1
-           data%got_h = .TRUE.
+       IF ( data%new_h ) THEN
+         IF ( data%control%hessian_available ) THEN
+           IF ( data%nskip_prec > nskip_prec_max ) THEN
+             inform%h_eval = inform%h_eval + 1
+             data%got_h = .TRUE.
 
 !  debug printing for H
 
-           IF ( data%printd ) THEN
-             WRITE( data%out, "( A, ' Hessian ' )" ) prefix
-             DO l = 1, nlp%H%ne
-               WRITE( data%out, "( A, 2I7, ES24.16 )" ) prefix,                &
-                 nlp%H%row( l ), nlp%H%col( l ), nlp%H%val( l )
-             END DO
+             IF ( data%printd ) THEN
+               WRITE( data%out, "( A, ' Hessian ' )" ) prefix
+               DO l = 1, nlp%H%ne
+                 WRITE( data%out, "( A, 2I7, ES24.16 )" ) prefix,              &
+                   nlp%H%row( l ), nlp%H%col( l ), nlp%H%val( l )
+               END DO
+             END IF
            END IF
-         END IF
 
 !  extend the Hessian data
 
-         IF ( SMT_get( nlp%H%type ) /= 'DIAGONAL' ) THEN
-           DO j = 1, 2
-             DO l = 1, data%h_ne
-               k = data%MAP( l, j )
-               IF ( k > 0 ) THEN
-                 data%H_by_cols%VAL( k ) = nlp%H%VAL( l )
-               ELSE IF ( k < 0 ) THEN
-                 data%H_by_cols%VAL( - k ) =                                   &
-                   data%H_by_cols%VAL( - k ) + nlp%H%VAL( l )
-               END IF
+           IF ( SMT_get( nlp%H%type ) /= 'DIAGONAL' ) THEN
+             DO j = 1, 2
+               DO l = 1, data%h_ne
+                 k = data%MAP( l, j )
+                 IF ( k > 0 ) THEN
+                   data%H_by_cols%VAL( k ) = nlp%H%VAL( l )
+                 ELSE IF ( k < 0 ) THEN
+                   data%H_by_cols%VAL( - k ) =                                 &
+                     data%H_by_cols%VAL( - k ) + nlp%H%VAL( l )
+                 END IF
+               END DO
              END DO
-           END DO
 
 !  if needed, recod the diagonal
 
-           IF ( data%diagonal_preconditioner ) THEN
-             DO j = 1, nlp%n
-               k = data%POSITION_diagonal( j )
-               IF ( k /= 0 ) THEN
-                 data%H_diagonal( j ) = data%H_by_cols%VAL( k )
-               ELSE
-                 data%H_diagonal( j ) = zero
-               END IF
-             END DO
+             IF ( data%diagonal_preconditioner ) THEN
+               DO j = 1, nlp%n
+                 k = data%POSITION_diagonal( j )
+                 IF ( k /= 0 ) THEN
+                   data%H_diagonal( j ) = data%H_by_cols%VAL( k )
+                 ELSE
+                   data%H_diagonal( j ) = zero
+                 END IF
+               END DO
+             END IF
+           ELSE
+             data%H_by_cols%VAL( : nlp%n ) = nlp%H%VAL( : nlp%n )
+             IF ( data%diagonal_preconditioner )                               &
+               data%H_diagonal( : nlp%n ) = data%H_by_cols%VAL( : nlp%n )
            END IF
-         ELSE
-           data%H_by_cols%VAL( : nlp%n ) = nlp%H%VAL( : nlp%n )
-           IF ( data%diagonal_preconditioner )                                 &
-             data%H_diagonal( : nlp%n ) = data%H_by_cols%VAL( : nlp%n )
          END IF
        END IF
 
@@ -2655,7 +2663,7 @@
        IF ( data%unconstrained .AND. .NOT. data%control%subproblem_direct ) THEN
          IF ( data%new_h ) THEN
            IF ( data%nskip_prec > nskip_prec_max ) THEN
-             IF ( data%nprec > 0 .AND. data%hessian_used ) THEN
+             IF ( data%nprec > 0 .AND. data%control%hessian_available ) THEN
 
 !  form and factorize the preconditioner
 
@@ -2881,7 +2889,7 @@
 
 !  if the Hessian has been calculated, form the product directly
 
-               IF ( data%hessian_used ) THEN
+               IF ( data%control%hessian_available ) THEN
                  DO l = 1, nlp%H%ne
                    i = nlp%H%row( l ) ; j = nlp%H%col( l )
                    val = nlp%H%val( l )
@@ -3080,7 +3088,7 @@
 
 !  if the Hessian has been calculated, form the product directly
 
-               IF ( data%hessian_used ) THEN
+               IF ( data%control%hessian_available ) THEN
                  data%V( : nlp%n ) = data%U( : nlp%n )
                  CALL mop_Ax( one, nlp%H,  data%V( : nlp%n ), zero,            &
                               data%U( : nlp%n ), data%out, data%control%error, &
@@ -3136,7 +3144,7 @@
 !  or preconditioned vector
 
   310      CONTINUE
-           IF ( .NOT. data%hessian_used ) THEN
+           IF ( .NOT. data%control%hessian_available ) THEN
              IF ( inform%GLTR_inform%status == 3 .OR.                          &
                   inform%GLTR_inform%status == 7 ) THEN
                inform%h_eval = inform%h_eval + 1 ; data%got_h = .TRUE.
@@ -3327,6 +3335,20 @@
 !  ------------------- start of generalized Cauchy point loop -----------------
 
   340    CONTINUE
+
+!  if required, print a list of the nonzeros of P and HP
+
+         IF ( data%jumpto == 3 .AND. data%printd ) THEN
+           WRITE( data%out, "( /, A, ' The vector in the matrix-vector ',      &
+          &  'product has components ', /, ( '    ', 12I6 ) )" )               &
+              prefix, data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u )
+           WRITE( data%out, "( A, ' and the result of the matrix-vector ',     &
+          &  'product has components ', /, ( '    ', 12I6 ) )" )               &
+              prefix, data%INDEX_nz_hp( : data%nnz_hp )
+write(6,*) ' p ', data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) )
+write(6,*) ' hp ', data%HP( data%INDEX_nz_hp( : data%nnz_hp ) )
+         END IF
+
          CALL CPU_time( data%time_record )
          CALL CLOCK_time( data%clock_record )
 
@@ -3377,20 +3399,23 @@
 
            CASE ( identity_hessian_model )
              data%nnz_hp = data%nnz_p_u - data%nnz_p_l + 1
-             data%INDEX_used_hp( : data%nnz_hp )                               &
+             data%INDEX_nz_hp( : data%nnz_hp )                                 &
                = data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u )
-             data%HP( data%INDEX_used_hp( : data%nnz_hp ) )                    &
+             data%HP( data%INDEX_nz_hp( : data%nnz_hp ) )                      &
                = data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) )
 
 !  quadratic model with true or sparsity-based Hessian
 
            CASE ( second_order_model, sparsity_hessian_model )
-             data%dense_p = data%jumpto == 2 .OR.                              &
-                          ( data%jumpto == 4 .AND. data%control%exact_gcp )
+!write(6,*) ' jummpto ', data%jumpto
+!write(6,*) ' nvar1,2 ', data%nnz_p_l, data%nnz_p_u
+!            data%dense_p = data%jumpto == 2 .OR.                              &
+!                         ( data%jumpto == 4 .AND. data%control%exact_gcp )
+             data%dense_p = data%jumpto == 2
 
 !  if the Hessian has been calculated, form the product directly
 
-             IF ( data%hessian_used ) THEN
+             IF ( data%control%hessian_available ) THEN
                CALL TRB_hessian_times_vector( nlp%n,                           &
                         data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ),        &
                         data%nnz_p_u - data%nnz_p_l + 1, data%INDEX_nz_hp,     &
@@ -3403,25 +3428,28 @@
                IF ( data%dense_p ) THEN
                  data%HP( : nlp%n ) = zero
                  IF ( data%reverse_hprod ) THEN
-                   data%V( : : nlp%n ) = data%P( : : nlp%n )
-                   data%branch = 340 ; inform%status = 5 ; RETURN
-                 ELSE
-                   CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ),        &
-                                    userdata, data%P( : nlp%n ),               &
-                                    data%HP( : nlp%n ), got_h = data%got_h )
-                   data%got_h = .TRUE.
-                 END IF
-               ELSE
-                 IF ( data%reverse_shprod ) THEN
-                   data%V( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) ) =  &
-                     data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u) )
+!                  data%V( : : nlp%n ) = data%P( : : nlp%n )
                    data%branch = 340 ; inform%status = 7 ; RETURN
                  ELSE
+                   CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ),        &
+                                    userdata, data%HP( : nlp%n ),              &
+                                    data%P( : nlp%n ), got_h = data%got_h )
+                   data%got_h = .TRUE.
+                 END IF
+!write(6,*) ' hp ', data%HP( : nlp%n )
+               ELSE
+                 IF ( data%reverse_shprod ) THEN
+!                  data%V( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) ) =  &
+!                    data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u) )
+                   data%branch = 340 ; inform%status = 7 ; RETURN
+                 ELSE
+!write(6,*) ' ================'
                    CALL eval_SHPROD( data%eval_status, nlp%X( : nlp%n ),       &
                               userdata, data%nnz_p_u - data%nnz_p_l + 1,       &
                               data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ),  &
                               data%P, data%nnz_hp, data%INDEX_nz_hp, data%HP,  &
                               got_h = data%got_h )
+!write(6,*)  data%nnz_hp, ' index ', data%INDEX_nz_hp( :  data%nnz_hp )
                     data%got_h = .TRUE.
                  END IF
                END IF
@@ -3442,12 +3470,6 @@
 !              prefix, data%INDEX_nz_hp( : data%nnz_hp )
            CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
 !          data%tmv = data%tmv + data%time_now - data%time_record
-
-!  if required, print a list of the nonzeros of P
-
-           IF ( data%jumpto == 3 .AND. data%printd )                           &
-             WRITE( data%out, 2260 ) prefix, data%n_prods,                     &
-               data%INDEX_used_hp( : data%nnz_hp )
 
 !  ------------------ end of generalized Cauchy point loop --------------------
 
@@ -3795,7 +3817,7 @@
 
 !  if the Hessian has been calculated, form the product directly
 
-             IF ( data%hessian_used ) THEN
+             IF ( data%control%hessian_available ) THEN
                data%dense_p = .TRUE.
                CALL TRB_hessian_times_vector( nlp%n,                           &
                         data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ),        &
@@ -3807,8 +3829,8 @@
 
              ELSE
                IF ( data%reverse_shprod ) THEN
-                 data%V( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) ) =    &
-                   data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u) )
+!                data%V( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) ) =    &
+!                  data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u) )
                  data%branch = 380 ; inform%status = 7 ; RETURN
                ELSE
                  CALL eval_SHPROD( data%eval_status, nlp%X( : nlp%n ),         &
@@ -3835,6 +3857,7 @@
 
   380    CONTINUE
          IF ( data%jumpto == 1 .OR. data%jumpto == 3 ) THEN
+
            CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
 !            data%tmv = data%tmv + data%time_now - data%time_record
 !write(6,*)  ' p ', data%P
@@ -3843,12 +3866,14 @@
 !  if required, print a list of the nonzeros of P
 
            IF ( data%printd )                                                  &
-             WRITE( data%out, 2260 ) prefix, data%n_prods,                     &
+             WRITE( data%out, "( /, A, ' The matrix-vector product involved ', &
+            &  'indices marked ', I0, ' in the following list ', /,            &
+            & ( '    ', 12I6 ) )" ) prefix, data%n_prods,                      &
                data%INDEX_used_hp( : data%nnz_hp )
-             IF ( data%jumpto == 1 ) THEN
 
 !  if required, print the step taken
 
+           IF ( data%jumpto == 1 ) THEN
              IF ( data%out > 0 .AND. data%print_level >= 20 )                  &
                WRITE( data%out, 2250 ) prefix, data%P( : nlp%n )
 
@@ -3876,38 +3901,11 @@
 !  preconditioner, return to the calling program
 
          ELSE IF ( data%jumpto == 2 ) THEN
-!            IF ( data%control%norm == - 3 ) THEN
-!              inform%status = - 9 ; GO TO 800
-!            ELSE
 
 !  if required, use a preconditioner
 
            CALL CPU_time( data%time_record )
            CALL CLOCK_time( data%clock_record )
-!            CALL PRECN_use_preconditioner(                                    &
-!              data%ifactr, data%munks, data%use_band, data%seprec,            &
-!              data%icfs, nlp%n, ng, nel, data%ntotel, data%nnza,              &
-!              data%maxsel, data%nadd, data%nvargp, data%nfreef,               &
-!              data%nfixed, control%io_buffer, data%refact, data%nnz_p_u,      &
-!              data%INDEX_nz_p, ISTADH, ICNA, ISTADA, INTVAR, IELVAR,          &
-!              data%nvrels, IELING, ISTADG, ISTAEV, IFREE,  A, FUVALS,         &
-!              data%lnguvl, FUVALS, data%lnhuvl, GVALS( : , 2 ),               &
-!              GVALS( : , 3 ), data%P , data%HP, GSCALE_used, ESCALE,          &
-!              GXEQX_used , INTREP, RANGE , data%icfact,                       &
-!              inform%ciccg, inform%nsemib, inform%ratio,                      &
-!              data%print_level, data%error, data%out, data%infor,             &
-!              alloc_status, bad_alloc,                                        &
-!              ITYPEE, DIAG, OFFDIA, IW, IKEEP, IW1, IVUSE,                    &
-!              H_col_ptr, L_col_ptr, W, W1, RHS, RHS2, P2,                     &
-!              G, ISTAGV, ISVGRP,                                              &
-!              lirnh, ljcnh, lh, lirnh_min, ljcnh_min, lh_min,                 &
-!              LINK_col, POS_in_H, llink, lpos,                                &
-!              IW_asmbl, W_ws, W_el, W_in, H_el, H_in,                         &
-!              matrix, SILS_data, control%SILS_cntl,                           &
-!              inform%SILS_infoa, inform%SILS_infof, inform%SILS_infos,        &
-!              data%PRECN, SCU_matrix, SCU_data, inform%SCU_info,              &
-!              data%ASMBL, data%skipg, KNDOFG )
-!              data%ifactr = 0
 
 !  if necessary, form and factorize the preconditioner
 
@@ -3953,7 +3951,10 @@
 
 !  apply the preconditioner
 
-           data%HP = data%WK
+           data%HP = zero
+           DO i = 1, inform%n_free
+             data%HP( data%INDEX_nz_p( i ) ) = data%WK( i )
+           END DO
            CALL PSLS_solve( data%HP, data%PSLS_data,                           &
                             data%control%PSLS_control, inform%PSLS_inform )
            CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
@@ -3991,6 +3992,14 @@
          END IF
          CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
 !        data%tls = data%tls + data%time_now - data%time_record
+
+!  check that the preconditioner is positive definite
+
+         IF ( inform%status == 15 ) THEN
+           inform%status = GALAHAD_error_preconditioner ; GO TO 900
+         END IF
+
+!  if the CG solve has terminated, compute the norm of the step taken
 
          IF ( data%jumpto == 0 .OR. data%jumpto == 4 .OR.                      &
               data%jumpto == 5 ) THEN
@@ -4127,7 +4136,7 @@
 
 !  if the Hessian has been calculated, form the product directly
 
-             IF ( data%hessian_used ) THEN
+             IF ( data%control%hessian_available ) THEN
                data%dense_p = .TRUE.
                CALL TRB_hessian_times_vector( nlp%n,                           &
                       data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ),          &
@@ -4139,8 +4148,8 @@
 
              ELSE
                IF ( data%reverse_shprod ) THEN
-                 data%V( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) ) =    &
-                   data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u) )
+!                data%V( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) ) =    &
+!                  data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u) )
                  data%branch = 391 ; inform%status = 7 ; RETURN
                ELSE
                  CALL eval_SHPROD( data%eval_status, nlp%X( : nlp%n ),         &
@@ -4162,9 +4171,7 @@
              DO i = 1, data%nnz_hp ; data%INDEX_nz_hp( i ) = i ; END DO
            END SELECT
 
-
-           data%HP = zero
-
+!          data%HP = zero
 
 !  if required, print the step taken
 
@@ -4247,7 +4254,7 @@
 
 !  if the Hessian has been calculated, form the product directly
 
-               IF ( data%hessian_used ) THEN
+               IF ( data%control%hessian_available ) THEN
                  data%dense_p = .TRUE.
                  CALL TRB_hessian_times_vector( nlp%n,                         &
                         data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ),        &
@@ -4360,7 +4367,7 @@
 
 !  if the Hessian has been calculated, form the product directly
 
-             IF ( data%hessian_used ) THEN
+             IF ( data%control%hessian_available ) THEN
                data%dense_p = .TRUE.
                CALL TRB_hessian_times_vector( nlp%n,                           &
                       data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ),          &
@@ -4562,7 +4569,7 @@
              ared = prered
            data%ratio = ared / prered
            IF ( data%printm ) WRITE( data%out, "( /, A, ' actual, predicted',  &
-          & ' reductions = ', 2ES12.4 )" ) prefix, ared, prered
+          & ' reductions = ', 2ES22.14 )" ) prefix, ared, prered
 
 !  compute radius adjustment factors
 
@@ -4740,8 +4747,8 @@
        IF ( ABS( ared ) < teneps .AND. ABS( inform%obj ) > teneps )            &
          ared = prered
        data%ratio = ared / prered
-       IF ( data%printm ) WRITE( data%out, "( /, A, ' acutual, predicted',     &
-      &   ' reductions = ', 2ES12.4 )" ) prefix, ared, prered
+       IF ( data%printm ) WRITE( data%out, "( /, A, ' actual, predicted',      &
+      &   ' reductions = ', 2ES22.14 )" ) prefix, ared, prered
 
 !  compute the ratio of actual to predicted reduction over the recent history
 
@@ -4767,34 +4774,70 @@
 
 !  compute the gradient of the model at the new point; store in U
 
-         data%U( : nlp%n ) = nlp%G( : nlp%n )
-         IF ( data%hessian_used ) THEN
-           DO l = 1, nlp%H%ne
-             i = nlp%H%row( l ) ; j = nlp%H%col( l ) ; val = nlp%H%val( l )
-             data%U( i ) = data%U( i ) + val * data%S( j )
-             IF ( i /= j )                                                     &
-               data%U( j ) = data%U( j ) + val * data%S( i )
-           END DO
+         SELECT CASE( data%control%model )
+
+!  linear model
+
+         CASE ( first_order_model )
+           data%U( : nlp%n ) = nlp%G( : nlp%n )
+
+!  quadratic model with true or sparsity-based Hessian
+
+         CASE ( second_order_model, sparsity_hessian_model )
+           data%U( : nlp%n ) = nlp%G( : nlp%n )
+           IF ( data%control%hessian_available ) THEN
+             CALL mop_Ax( one, nlp%H, data%S( : nlp%n ), one,                  &
+                          data%U( : nlp%n ), data%out, data%control%error,     &
+                          0, symmetric = .TRUE. )
 
 !  if necessary, return to the user to obtain the model Hessian product with s
 
-         ELSE
-           IF ( data%reverse_hprod ) THEN
-             data%V( : nlp%n ) = data%S( : nlp%n )
-             data%branch = 440 ; inform%status = 5 ; RETURN
            ELSE
-             CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ), userdata,    &
-                              data%U( : nlp%n ), data%S( : nlp%n ),            &
-                              got_h = data%got_h )
-             data%got_h = .TRUE.
+             IF ( data%reverse_hprod ) THEN
+               data%V( : nlp%n ) = data%S( : nlp%n )
+               CALL SWAP( nlp%n, nlp%X( : nlp%n ), 1,                          &
+                          data%X_current( : nlp%n ), 1 ) ! evaluate at current x
+               data%branch = 440 ; inform%status = 5 ; RETURN
+             ELSE
+               CALL eval_HPROD( data%eval_status, data%X_current( : nlp%n ),   &
+                                userdata, data%U( : nlp%n ), data%S( : nlp%n ),&
+                                got_h = data%got_h )
+               data%got_h = .TRUE.
+             END IF
            END IF
-         END IF
+
+!  quadratic model with identity Hessian
+
+         CASE ( identity_hessian_model )
+           data%U( : nlp%n ) = nlp%G( : nlp%n ) + data%S( : nlp%n )
+
+!  quadratic model with limited-memory Hessian
+
+         CASE ( l_bfgs_hessian_model, l_sr1_hessian_model )
+           CALL LMS_apply( data%S( : nlp%n ), data%U( : nlp%n ),               &
+                           data%LMS_data, data%control%LMS_control,            &
+                           inform%LMS_inform )
+           data%U( : nlp%n ) = data%U( : nlp%n ) + nlp%G( : nlp%n )
+
+!  quadratic model with secant-approximation Hessian
+
+!        CASE ( bfgs_hessian_model, sr1_hessian_model )
+!          data%U( : nlp%n ) = nlp%G( : nlp%n )
+!          CALL mop_Ax( one, nlp%H, data%S( : nlp%n ), one,                    &
+!                       data%U( : nlp%n ), data%out, data%control%error,       &
+!                       0, symmetric = .TRUE. )
+         END SELECT
        END IF
 
 !  the new point is acceptable
 
  440   CONTINUE
        IF ( data%ratio >= data%control%eta_successful ) THEN
+         IF ( ABS( data%ratio - one ) <= rho_quad .AND.                        &
+              data%control%model == second_order_model .AND.                   &
+             .NOT. data%control%hessian_available .AND.                        &
+             data%reverse_hprod ) CALL SWAP( nlp%n, nlp%X( : nlp%n ), 1,       &
+                                             data%X_current( : nlp%n ), 1 )
          data%poor_model = .FALSE.
          inform%obj = data%f_trial
 
@@ -4805,6 +4848,8 @@
          ELSE
            CALL eval_G( data%eval_status, nlp%X( : nlp%n ),                    &
                         userdata, nlp%G( : nlp%n ) )
+!write(6,*) ' x ', nlp%X( : nlp%n )
+!write(6,*) ' g ', nlp%G( : nlp%n )
          END IF
        ELSE
          data%poor_model = .TRUE.
@@ -4818,8 +4863,12 @@
 !  compute rho_g, the relative difference in model and true gradients
 
        IF ( ABS( data%ratio - one ) <= rho_quad ) THEN
-         data%rho_g =                                                          &
-           MAXVAL( ABS( data%U - nlp%G ) ) / MAXVAL( ABS( nlp%G  ) )
+         val = MAXVAL( ABS( nlp%G ) )
+         IF ( val > zero ) THEN
+           data%rho_g = MAXVAL( ABS( data%U - nlp%G ) ) / val
+         ELSE
+           data%rho_g = one
+         END IF
        ELSE
          data%rho_g = - one
        END IF
@@ -5064,7 +5113,8 @@
      CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
-     IF ( data%printi ) THEN
+!    IF ( data%printi ) THEN
+     IF ( control%error > 0 ) THEN
        CALL SYMBOLS_status( inform%status, data%out, prefix, 'TRB_solve' )
        WRITE( data%out, "( ' ' )" )
      END IF
@@ -5098,8 +5148,6 @@
  2230 FORMAT(  A, 1X, I10, 4ES12.4 )
  2240 FORMAT( A, ' .          ........... ...........' )
  2250 FORMAT( /, A, ' Change in X = ', / ( '    ', 6ES12.4 ) )
- 2260 FORMAT( /, A, ' The matrix-vector product involved indices marked ', I0, &
-              ' in the following list ', /, ( '    ', 12I6 ) )
 
  !  End of subroutine TRB_solve
 
@@ -5388,7 +5436,7 @@
                                           n_prods, P, HP, H_by_cols, dense_p )
 
 !  Evaluate HP, the product of the Hessian, stored in extended
-!  (both lower and upper triangules) column format, with the vector P
+!  (both lower and upper triangles) column format, with the vector P
 
 !  The nonzero components of P have indices INDEX_nz_p( i ),
 !    i = 1, ..., nnz_p.

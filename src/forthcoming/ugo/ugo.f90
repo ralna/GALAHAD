@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 28/04/2021 AT 14:30 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ U G O   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -445,6 +445,8 @@
      spec( small_g_for_newton )%keyword = 'try-newton-tolerence'
      spec( small_g )%keyword = 'sufficient-gradient-tolerence'
      spec( obj_sufficient )%keyword = 'sufficient-objective-value'
+     spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
+     spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
 
 !  Logical key-words
 
@@ -534,7 +536,12 @@
      CALL SPECFILE_assign_value( spec( obj_sufficient ),                       &
                                  control%obj_sufficient,                       &
                                  control%error )
-
+     CALL SPECFILE_assign_value( spec( cpu_time_limit ),                       &
+                                 control%cpu_time_limit,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( clock_time_limit ),                     &
+                                 control%clock_time_limit,                     &
+                                 control%error )
 !  Set logical values
 
      CALL SPECFILE_assign_value( spec( space_critical ),                       &
@@ -1279,6 +1286,7 @@
          vi = data%V( i ) ; hi = ABS( data%H( i ) )
          ip = data%NEXT( i ) ; xip = data%X( ip ) ;
          vip = data%V( ip ) ; hip = ABS( data%H( ip ) )
+         vim = zero
 
          IF ( inform%iter >= 4 ) THEN
            data%G_lips( i ) = control%reliability_parameter *                  &
@@ -1459,15 +1467,21 @@
 
                IF ( ABS( gi ) <= control%small_g_for_newton ) THEN
                  IF ( ABS( gip ) <= ABS( gi ) ) THEN
-                   x_newton = xip - gip / data%H( ip )
-                   IF ( x_newton > xi .AND. x_newton < xip ) x_new = x_newton
+                   IF ( ABS( data%H( ip ) ) /= zero ) THEN
+                     x_newton = xip - gip / data%H( ip )
+                     IF ( x_newton > xi .AND. x_newton < xip ) x_new = x_newton
+                   END IF
                  ELSE
-                   x_newton = xi - gi / data%H( i )
-                   IF ( x_newton > xi .AND. x_newton < xip ) x_new = x_newton
+                   IF ( ABS( data%H( i ) ) /= zero ) THEN
+                     x_newton = xi - gi / data%H( i )
+                     IF ( x_newton > xi .AND. x_newton < xip ) x_new = x_newton
+                   END IF
                  END IF
                ELSE IF ( ABS( gip ) <= control%small_g_for_newton ) THEN
-                 x_newton = xip - gip / data%H( ip )
-                 IF ( x_newton > xi .AND. x_newton < xip ) x_new = x_newton
+                 IF ( ABS( data%H( ip ) ) /= zero ) THEN
+                   x_newton = xip - gip / data%H( ip )
+                   IF ( x_newton > xi .AND. x_newton < xip ) x_new = x_newton
+                 END IF
                END IF
              END IF
            END IF

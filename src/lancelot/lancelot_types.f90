@@ -136,9 +136,9 @@
        CHARACTER ( LEN = 1 ) :: cgend1, lisend1
        REAL ( KIND = KIND( 1.0E0 ) ) :: t, time, tmv, tca, tls, tup
        INTEGER, DIMENSION( 5 ) :: ISYS
-       CHARACTER ( LEN = 6 ), DIMENSION( 5 ) :: CGENDS
+       CHARACTER ( LEN = 6 ), DIMENSION( 6 ) :: CGENDS
        CHARACTER ( LEN = 6 ), DIMENSION( 5 ) :: LSENDS
-       CHARACTER ( LEN = 1 ), DIMENSION( 5 ) :: CGENDS1
+       CHARACTER ( LEN = 1 ), DIMENSION( 6 ) :: CGENDS1
        CHARACTER ( LEN = 1 ), DIMENSION( 5 ) :: LSENDS1
 
 !  the old CAUCH saved variables

@@ -1,0 +1,61 @@
+#  GALAHAD makefile dependencies
+
+#  Nick Gould
+#  This version: 2021-04-26
+
+#  basic packages
+
+basics:
+	( cd $(GALAHAD)/src/general ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) basics_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
+
+linearsolver:
+	( cd $(GALAHAD)/src/general ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) linearsolver_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
+
+gltr:
+	( cd $(GALAHAD)/src/gltr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) gltr_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/gltr )
+
+cauchy:
+	( cd $(GALAHAD)/src/lancelot ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cauchy.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lancelot )
+
+cg:
+	( cd $(GALAHAD)/src/lancelot ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cg.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lancelot )
+
+trs:
+	( cd $(GALAHAD)/src/trs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trs_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trs )
+
+psls:
+	( cd $(GALAHAD)/src/psls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) psls_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/psls )
+
+sha:
+	( cd $(GALAHAD)/src/sha ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sha_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sha )
+
+mop:
+	( cd $(GALAHAD)/src/mop ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mop.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/mop )
+
+cutest_functions:
+	( cd $(GALAHAD)/src/auxiliary ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cutest_functions_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/auxiliary )
+
+copyright:
+	( cd $(GALAHAD)/src/general ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) copyright.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )

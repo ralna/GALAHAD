@@ -698,9 +698,10 @@
 
        data%S%STATE = (/ ' FREE', 'LOWER', 'UPPER', 'FIXED', 'DEGEN' /)
        data%S%ISYS = (/ 0, 0, 0, 0, 0 /)
-!      data%S%CGENDS = (/ ' CONVR', ' MAXIT', ' BOUND', ' -CURV', ' S<EPS' /)
+!      data%S%CGENDS = (/ ' CONVR', ' MAXIT', ' BOUND', ' -CURV', ' S<EPS',    &
+!                         ' BADPR'  /)
 !      data%S%LSENDS = (/ ' PSDEF', ' INDEF', ' SINGC', ' SINGI', ' PRTRB' /)
-       data%S%CGENDS1 = (/ 'C', 'M', 'B', 'N', 'T' /)
+       data%S%CGENDS1 = (/ 'C', 'M', 'B', 'N', 'T', 'P' /)
        data%S%LSENDS1 = (/ 'P', 'I', 'C', 'S', 'M' /)
 
 !  Initialize floating-point parameters

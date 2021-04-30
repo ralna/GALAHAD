@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 02/06/2015 AT 15:50 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/04/2021 AT 14:30 GMT.
    PROGRAM GALAHAD_ARC_test_deck
    USE GALAHAD_ARC_double                       ! double precision version
    USE GALAHAD_SYMBOLS
@@ -27,12 +27,13 @@
 !  error exit tests
 !  ================
 
-   WRITE( 6, "( /, ' error exit tests ', / )" )
+   WRITE( 6, "( /, ' error exit tests' )" )
 
 !  tests for s = - 1 ... - 40
 
    DO s = 1, 40
 
+     IF ( s > 24 .AND. s <= 40 ) CYCLE
      IF ( s == - GALAHAD_error_allocate ) CYCLE
      IF ( s == - GALAHAD_error_deallocate ) CYCLE
 !    IF ( s == - GALAHAD_error_restrictions ) CYCLE
@@ -57,7 +58,6 @@
      IF ( s == - GALAHAD_error_io ) CYCLE
      IF ( s == - GALAHAD_error_upper_entry ) CYCLE
      IF ( s == - GALAHAD_error_sort ) CYCLE
-     IF ( s > 24 .AND. s < 40 ) CYCLE
      CALL ARC_initialize( data, control,inform ) ! Initialize control parameters
 !     control%print_level = 4
 !     control%RQS_control%print_level = 4
@@ -146,7 +146,7 @@
    ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
    userdata%real( 1 ) = p                     ! Record parameter, p
 
-   WRITE( 6, "( /, ' test of availible options ', / )" )
+   WRITE( 6, "( /, ' test of availible options', / )" )
 
    DO i = 1, 7
      CALL ARC_initialize( data, control, inform )! Initialize control parameters
@@ -246,7 +246,7 @@
    ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
    userdata%real( 1 ) = p                     ! Record parameter, p
 
-   WRITE( 6, "( /, ' full test of generic problems ', / )" )
+   WRITE( 6, "( /, ' full test of generic problems', / )" )
 
    DO i = 1, 6
      CALL ARC_initialize( data, control, inform )! Initialize control parameters

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 03/06/2015 AT 07:50 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/04/2021 AT 14:30 GMT.
    PROGRAM GALAHAD_TRU_test_deck
    USE GALAHAD_TRU_double                       ! double precision version
    USE GALAHAD_SYMBOLS
@@ -27,12 +27,13 @@
 !  error exit tests
 !  ================
 
-   WRITE( 6, "( /, ' error exit tests ', / )" )
+   WRITE( 6, "( /, ' error exit tests' )" )
 
 !  tests for s = - 1 ... - 40
 
    DO s = 1, 40
 
+     IF ( s > 24 .AND. s <= 40 ) CYCLE
      IF ( s == - GALAHAD_error_allocate ) CYCLE
      IF ( s == - GALAHAD_error_deallocate ) CYCLE
 !    IF ( s == - GALAHAD_error_restrictions ) CYCLE
@@ -57,7 +58,6 @@
      IF ( s == - GALAHAD_error_io ) CYCLE
      IF ( s == - GALAHAD_error_upper_entry ) CYCLE
      IF ( s == - GALAHAD_error_sort ) CYCLE
-     IF ( s > 24 .AND. s < 40 ) CYCLE
      CALL TRU_initialize( data, control,inform ) ! Initialize control parameters
 !     control%print_level = 4
 !     control%TRS_control%print_level = 4
@@ -69,10 +69,10 @@
 
      IF ( s == - GALAHAD_error_restrictions ) THEN
        nlp%n = 0
-     ELSE IF ( s == - GALAHAD_error_preconditioner ) THEN
-       control%norm = - 3               ! User's preconditioner
      ELSE IF ( s == - GALAHAD_error_unbounded ) THEN
        control%obj_unbounded = - ( 10.0_wp ) ** 10
+     ELSE IF ( s == - GALAHAD_error_preconditioner ) THEN
+       control%norm = - 3               ! User's preconditioner
      ELSE IF ( s == - GALAHAD_error_max_iterations ) THEN
        control%maxit = 0
      ELSE IF ( s == - GALAHAD_error_cpu_limit ) THEN
@@ -146,7 +146,7 @@
    ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
    userdata%real( 1 ) = p                     ! Record parameter, p
 
-   WRITE( 6, "( /, ' test of availible options ', / )" )
+   WRITE( 6, "( /, ' test of availible options', / )" )
 
    DO i = 1, 7
      CALL TRU_initialize( data, control, inform )! Initialize control parameters
@@ -156,7 +156,7 @@
 
      IF ( i == 1 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
-       nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 1 ) = 'X2' ; nlp%VNAMES( 1 ) = 'X3'
+       nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 2 ) = 'X2' ; nlp%VNAMES( 3 ) = 'X3'
        control%out = scratch_out
        control%error = scratch_out
        control%print_level = 101
@@ -245,7 +245,7 @@
    ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
    userdata%real( 1 ) = p                     ! Record parameter, p
 
-   WRITE( 6, "( /, ' full test of generic problems ', / )" )
+   WRITE( 6, "( /, ' full test of generic problems', / )" )
 
    DO i = 1, 6
      CALL TRU_initialize( data, control, inform )! Initialize control parameters

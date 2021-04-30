@@ -1,360 +1,42 @@
 #  Main body of the installation makefile for the GALAHAD TRACE package
 
-#  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 23 X 2014
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-04-29
 
-SHELL = /bin/$(BINSHELL)
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
 
-#  compiler flags
+#  package name
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-            $(OPENMP)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
-#RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES) -L/usr/lib -llapack
-RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+package = trace
+PACKAGE = TRACE
 
-#  names of random libraries
+#  auxililiary packages that current package depends on (prepend with make_)
 
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
+DEPENDENCIES = make_basics make_gltr make_psls make_trs make_cauchy make_cg \
+               make_sha make_lms
 
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
+#  other packages that depend on package
 
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
+DEPENDS =
 
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
+#  auxililiary packages that are needed for tests (prepend with make_)
 
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
+TESTDEPS = make_copyright make_cutest_functions
 
-#  Libraries used
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
-                 $(LAPACK) $(BLAS)
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
 
-#  Archive manipulation strings
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries
 
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MLG)
-
-#  sed scripts
-
-LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
-LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
-
-#  compilation agenda
-
-STRACE = basics cutest_functions gltr psls trs lms sha $(LGS)(trace.o)
-DTRACE = basics cutest_functions gltr psls trs lms sha $(LGD)(trace.o)
-
-SRUNTRACE = copyright $(LGS)(usetrace.o) $(OBJS)/runtrace_sif.o
-DRUNTRACE = copyright $(LGD)(usetrace.o) $(OBJD)/runtrace_sif.o
-
-TRACEOBJECTSS = $(STRACE)
-TRACEOBJECTSD = $(DTRACE)
-TRACEOBJECTSS_CUTEST = $(STRACE) $(SRUNTRACE)
-TRACEOBJECTSD_CUTEST = $(DTRACE) $(DRUNTRACE)
-
-OBJECTSS_CUTEST = $(TRACEOBJECTSS_CUTEST)
-OBJECTSD_CUTEST = $(TRACEOBJECTSD_CUTEST)
-
-TRACEDS = $(DTRACE) $(OBJD)/traces.o
-TRACEDS2 = $(DTRACE) $(OBJD)/traces2.o
-TRACEDS3 = $(DTRACE) $(OBJD)/traces3.o
-TRACEDT = $(DTRACE) $(OBJD)/tracet.o
-TRACESS = $(STRACE) $(OBJS)/traces.o
-TRACESS2 = $(STRACE) $(OBJS)/traces2.o
-TRACESS3 = $(STRACE) $(OBJS)/traces3.o
-TRACEST = $(STRACE) $(OBJS)/tracet.o
-
-RTRACEDS = $(OBJD)/traces.o -L$(OBJD) $(LIBS)
-RTRACEDS2 = $(OBJD)/traces2.o -L$(OBJD) $(LIBS)
-RTRACEDS3 = $(OBJD)/traces3.o -L$(OBJD) $(LIBS)
-RTRACEDT = $(OBJD)/tracet.o -L$(OBJD) $(LIBS)
-RTRACESS = $(OBJS)/traces.o -L$(OBJS) $(LIBS)
-RTRACESS2 = $(OBJS)/traces2.o -L$(OBJS) $(LIBS)
-RTRACESS3 = $(OBJS)/traces3.o -L$(OBJS) $(LIBS)
-RTRACEST = $(OBJS)/tracet.o -L$(OBJS) $(LIBS)
-
-SUCC = precision version) compiled successfully
-SUCC_CUTEST = precision version) for CUTEst compiled successfully
-
-#  main compilations and runs
-
-all: trace_cutest
-all_trace: trace_cutest
-test: test_trace
-test_nocutest: test_trace_nocutest
-
-# trace
-
-trace_cutest: trace_cutest_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: TRACE ($(PRECIS) $(SUCC_CUTEST)"
-trace_cutest_single: $(TRACEOBJECTSS_CUTEST)
-	$(RANLIB) $(LGS)
-trace_cutest_double: $(TRACEOBJECTSD_CUTEST)
-	$(RANLIB) $(LGD)
-
-trace_silent: trace_silent_$(PRECIS)
-trace_silent_single: $(TRACEOBJECTSS)
-trace_silent_double: $(TRACEOBJECTSD)
-
-trace: trace_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: TRACE ($(PRECIS) $(SUCC)"
-trace_single: $(TRACEOBJECTSS)
-	$(RANLIB) $(LGS)
-trace_double: $(TRACEOBJECTSD)
-	$(RANLIB) $(LGD)
-
-tracesrunall: tracess tracess2 tracess3 traceds traceds2 traceds3
-tracedrunall: traceds tracedt
-tracerunall: tracedrunall tracesrunall
-
-test_trace: test_trace_$(PRECIS)
-
-test_trace_single: tracest $(SRUNTRACE)
-	echo ""
-	echo " Testing CUTEst interface to trace"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) trace -s QPBAND
-	echo ""
-	echo " Tests for trace complete"
-
-test_trace_double: tracedt $(DRUNTRACE)
-	echo ""
-	echo " Testing CUTEst interface to trace"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) trace QPBAND
-	echo ""
-	echo " Tests for trace complete"
-
-test_trace_nocutest: test_trace_nocutest_$(PRECIS)
-
-test_trace_nocutest_single: tracest
-	echo ""
-	echo " Tests for trace complete"
-
-test_trace_nocutest_double: tracedt
-	echo ""
-	echo " Tests for trace complete"
-
-#  basic packages
-
-basics:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-linearsolver:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-gltr:
-	( cd ../../gltr ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            gltr_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../gltr )
-trs:
-	( cd ../../trs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            trs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../trs )
-psls:
-	( cd ../../psls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            psls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../psls )
-lms:
-	( cd ../../lms ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            lms_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../lms )
-sha:
-	( cd ../../sha ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            sha_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../sha )
-mop:
-	( cd ../../mop ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            mop.o PRECIS=$(PRECIS) PWD=$(PWD)/../../mop )
-cutest_functions:
-	( cd ../../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            cutest_functions_silent PRECIS=$(PRECIS) \
-            PWD=$(PWD)/../../auxiliary )
-copyright:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-
-# run spec-sheet example tests
-
-tracess: $(TRACESS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trace $(RTRACESS)
-	- ./run_trace >& traces.output
-	cat traces.output
-	rm ./run_trace
-
-tracess2: $(TRACESS2)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trace $(RTRACESS2)
-	- ./run_trace >& traces2.output
-	cat traces2.output
-	rm ./run_trace
-
-tracess3: $(TRACESS3)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trace $(RTRACESS3)
-	- ./run_trace >& traces3.output
-	cat traces3.output
-	rm ./run_trace
-
-tracest: $(TRACEST)
-	echo " Exhaustive test of subroutine interface to trace"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trace $(RTRACEST)
-	- ./run_trace >& tracet.output
-	cat tracet.output
-	rm ./run_trace
-
-traceds: $(TRACEDS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trace $(RTRACEDS)
-	- ./run_trace >& traceds.output
-	cat traceds.output
-	rm ./run_trace
-
-traceds2: $(TRACEDS2)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trace $(RTRACEDS2)
-	- ./run_trace >& traceds2.output
-	cat traceds2.output
-	rm ./run_trace
-
-traceds3: $(TRACEDS3)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trace $(RTRACEDS3)
-	- ./run_trace >& traceds3.output
-	cat traceds3.output
-	rm ./run_trace
-
-tracedt: $(TRACEDT)
-	echo " Exhaustive test of subroutine interface to trace"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_trace $(RTRACEDT)
-	- ./run_trace >& tracedt.output
-	cat tracedt.output
-	rm ./run_trace
-
-#  Substantial GALAHAD packages
-
-trace.o: $(LG)(trace.o)
-
-$(LG)(trace.o): ../trace/trace.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "trace   "
-	$(SED) -f $(SEDS) ../trace/trace.f90 > $(OBJ)/trace1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/trace1.f90 > $(OBJ)/trace2.f90
-	$(SED) -f $(LPSEDS) $(OBJ)/trace2.f90 > $(OBJ)/trace3.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/trace3.f90 > $(OBJ)/trace.f90
-	cd $(OBJ); $(FORTRAN) -o trace.o $(FFLAGSS) trace.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o trace.o $(FFLAGSN) trace.f90 )
-	cd $(OBJ); $(ARR) trace.o ; $(RM) trace.f90 trace1.f90 trace2.f90 \
-                                        trace3.f90 trace.o
-	$(RMARFILE) ism.o
-	$(RMARFILE) usetrace.o
-	$(RMOBFILE) traces.o
-	$(RMOBFILE) tracet.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-# CUTEst/AMPL interfaces
-
-usetrace.o: $(LG)(usetrace.o)
-
-$(LG)(usetrace.o): ../trace/usetrace.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "usetrace   "
-	$(SED) -f $(SEDS) ../trace/usetrace.f90 > $(OBJ)/usetrace1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/usetrace1.f90 > $(OBJ)/usetrace2.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usetrace2.f90 > $(OBJ)/usetrace.f90
-	cd $(OBJ); $(FORTRAN) -o usetrace.o $(FFLAGSOMP) usetrace.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o usetrace.o $(FFLAGSN) usetrace.f90 )
-	cd $(OBJ); $(ARR) usetrace.o ; $(RM) usetrace.f90 usetrace1.f90 \
-                                       usetrace2.f90 usetrace.o
-	$(RMOBFILE) runtrace_sif.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-#  main programs
-
-runtrace_sif.o: $(OBJ)/runtrace_sif.o
-
-$(OBJ)/runtrace_sif.o: ../trace/runtrace_sif.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "runtrace_sif"
-	$(SED) -f $(SEDS) ../trace/runtrace_sif.f90 > $(OBJ)/runtrace_sif.f90
-	cd $(OBJ); $(FORTRAN) -o runtrace_sif.o $(FFLAGSS) runtrace_sif.f90
-	rm $(OBJ)/runtrace_sif.f90
-	@printf '[ OK ]\n'
-
-#  test decks
-
-traces.o: $(OBJ)/traces.o
-
-$(OBJ)/traces.o: ../trace/traces.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "traces  "
-	$(SED) -f $(SEDS) ../trace/traces.f90 > $(OBJ)/traces1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/traces1.f90 > $(OBJ)/traces.f90
-	cd $(OBJ) ; $(FORTRAN) -o traces.o $(FFLAGS) traces.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-traces2.o: $(OBJ)/traces2.o
-
-$(OBJ)/traces2.o: ../trace/traces2.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "traces2  "
-	$(SED) -f $(SEDS) ../trace/traces2.f90 > $(OBJ)/traces1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/traces1.f90 > $(OBJ)/traces2.f90
-	cd $(OBJ) ; $(FORTRAN) -o traces2.o $(FFLAGS) traces2.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-traces3.o: $(OBJ)/traces3.o
-
-$(OBJ)/traces3.o: ../trace/traces3.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "traces3  "
-	$(SED) -f $(SEDS) ../trace/traces3.f90 > $(OBJ)/traces1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/traces1.f90 > $(OBJ)/traces3.f90
-	cd $(OBJ) ; $(FORTRAN) -o traces3.o $(FFLAGS) traces3.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-tracet.o: $(OBJ)/tracet.o
-
-$(OBJ)/tracet.o: ../trace/tracet.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "tracet  "
-	$(SED) -f $(SEDS) ../trace/tracet.f90 > $(OBJ)/tracet1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/tracet1.f90 > $(OBJ)/tracet.f90
-	cd $(OBJ) ; $(FORTRAN) -o tracet.o $(FFLAGSS) tracet.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-#  book keeping
-
-clean:
-	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(LG) $(OBJ)/tracet.o $(OBJ)/traces.o
-	@printf '[ OK ]\n'
-
-cleanall:
-	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
-	$(RM) $(OBJ)/* $(MOD)/*
-	@printf '[ OK ]\n'
-
-rmtrace:
-	@printf ' %-9s %-15s\t\t' "Removing" "trace from archive "
-	$(RMARFILE) trace.o
-	@printf '[ OK ]\n'
-
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions

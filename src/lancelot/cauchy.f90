@@ -148,7 +148,7 @@
 !  NNONNZ (INTEGER) the number of nonzero components of Q on a JUMPTO=3 entry.
 !          NNONNZ need not be set on other entries
 !  INONNZ (INTEGER array of length at least NNONNZ) on JUMPTO = 3 entries,
-!          INONN(I), I = 1,....,NNONNZ, must give the indices of the nonzero
+!          INONNZ(I), I = 1,....,NNONNZ, must give the indices of the nonzero
 !          components of Q. On other entries, INONNZ need not be set
 !  IOUT   (INTEGER) the fortran output channel number to be used
 !  JUMPTO (INTEGER) controls flow through the subroutine.

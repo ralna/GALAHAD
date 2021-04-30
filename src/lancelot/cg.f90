@@ -181,6 +181,9 @@
 !          If status = 14, the last step taken is so small that further
 !                          progress is unlikely. The best estimate of the
 !                          solution is given in XT
+!          If status = 15, the preconditioner does not appear to be 
+!                          positive definite. The best estimate of the
+!                          solution is given in XT
 !  P      (REAL array of length at least n) contains the values of the
 !          components of the vector P. On an initial entry (jumpto=1),
 !          the components of P must be set to zero. On a non optimal exit
@@ -190,7 +193,7 @@
 !          of P (see, IVAR, nvar)
 !  Q      (REAL array of length at least n) on the initial entry (jumpto=1),
 !          Q must contain the product B * ( XT - X0 ). Q must contain the
-!          vector W ** (-1) *  P (jumpto=2) or B * P (jumpto=3), on a non
+!          vector W ** (-1) * GRAD (jumpto=2) or B * P (jumpto=3), on a non
 !          initial entry. For non initial entries, only the components with
 !          indices IVAR(i) i=1,..,nvar need be set (the other components are
 !          not used)
@@ -378,10 +381,8 @@
  200  CONTINUE
 !     gnrmsq =  DOT_PRODUCT( Q( IVAR( : nvar ) ), GRAD( : nvar ) )
       gnrmsq =  zero
-!write(6,*) ' nvar ', nvar
       DO i = 1, nvar
         gnrmsq = gnrmsq + Q( IVAR( i ) ) * GRAD( i )
-!write(6,*)  IVAR( i  ), Q( IVAR( i ) ), GRAD( i )
       END DO
       IF ( idebug >= 100 ) THEN
         DO i = 1, nvar
@@ -393,6 +394,11 @@
           END IF
         END DO
       END IF
+
+!  flag if the preconditioner appears to indefinite
+
+      IF ( gnrmsq < - epsgrd ) write(6,*) ' nor, tol ', gnrmsq, - epsgrd
+      IF ( gnrmsq < - epsgrd ) status = 15
 
 !  If the preconditioned gradient is sufficiently small, evaluate the norm of
 !  the true gradient of the quadratic model

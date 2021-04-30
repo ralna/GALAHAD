@@ -26,15 +26,19 @@
 !    |        phi(x,c) = f(x) + y^T(c(x)-c) + 0.5 rho ||c(x)-c)||_2^2    |
 !    |        subject to x_l <= x <= x_u and c_l <= c(x) <= c_u          |
 !    |                                                                   |
-!    |  for a suitable sequence of y and rho                             |
+!    |  for a suitable sequence of y and rho. Note                       |
 !    |                                                                   |
-!    |  Note: grad phi = ( g(x) +J^T(x) y(x,rho) )                       |
-!    |                   (       - y(x,rho)      )                       |
-!    |   Hess phi = ( H(x,y(x,rho)) + rho J^T(x) J(x)  - rho J^T(x) )    |
-!    |              (    - rho J(x)                      rho I      )    |
+!    |    grad phi = ( g(x) +J^T(x) y(x,rho) )                           |
+!    |               (       - y(x,rho)      )                           |
+!    |                                                                   |
+!    |    Hess phi = ( H(x,y(x,rho)) + rho J^T(x) J(x)  - rho J^T(x) )   |
+!    |               (    - rho J(x)                      rho I      )   |
+!    |                                                                   |
 !    |   and                                                             |
-!    |   Hess phi (p) = ( H(x,y(x,rho) p + J^T(x) r )                    |
-!    |            (q)   (          - r              )                    |
+!    |                                                                   |
+!    |    Hess phi (p) = ( H(x,y(x,rho) p + J^T(x) r )                   |
+!    |             (q)   (          - r              )                   |
+!    |                                                                   |
 !    |   where y(x,rho) = y + rho (c(x)-c), H(x,y) = Hess Lagrangian     |
 !    |   and r = rho [ J(x) p - q )                                      |
 !    |                                                                   |
@@ -231,7 +235,7 @@
 
 !  The initial value of the penalty parameter
 
-     control%initial_rho = ten
+       REAL ( KIND = wp ) :: initial_rho = ten
 
 !   required relative reduction in the resuiduals from CG
 
@@ -1669,7 +1673,7 @@
      IF ( inform%status /= 0 ) GO TO 980
 
      array_name = 'TRAL: data%G_current'
-     CALL SPACE_resize_array( daat%n_phi, data%G_current, inform%status,       &
+     CALL SPACE_resize_array( data%n_phi, data%G_current, inform%status,       &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -2351,7 +2355,7 @@
 
 !  record y + rho * ( c(x) - c )
 
-         data%Y( i ) =  nlp%Y( i ) + inform%row * c_diff
+         data%Y( i ) =  nlp%Y( i ) + inform%rho * c_diff
        END DO
        data%phi = data%phi + half * inform%rho * c_norm
 
@@ -2419,13 +2423,13 @@
 !  compute the norm of the projected gradient
 
      data%WK( : nlp%n ) =                                                      &
-       TRAL_projection( nlp%n, data%V_phi( : nlp%n ) - nlp%G_phi( : nlp%n ),   &
+       TRAL_projection( nlp%n, data%V_phi( : nlp%n ) - data%G_phi( : nlp%n ),  &
                         nlp%X_l, nlp%X_u )
-     data%WK( nlp%n + 1 : data%n_all ) =                                       &
-       TRAL_projection( nlp%m, data%V_phi( nlp%n + 1 : data%n_all )            &
-                        - nlp%G_phi( nlp%n + 1 : data%n_all ), nlp%Cl, nlp%C_u )
-     inform%norm_pg = TWO_NORM( data%V_phi( : data%n_all ) -                   &
-                                data%WK( : data%n_all )
+     data%WK( nlp%n + 1 : data%n_phi ) =                                       &
+       TRAL_projection( nlp%m, data%V_phi( nlp%n + 1 : data%n_phi ) -          &
+                        data%G_phi( nlp%n + 1 : data%n_phi ), nlp%C_l, nlp%C_u )
+     inform%norm_pg = TWO_NORM( data%V_phi( : data%n_phi ) -                   &
+                                data%WK( : data%n_phi ) )
 
 !  compute the stopping tolerance
 
@@ -3332,14 +3336,15 @@
 
            data%dense_p = data%jumpto == 2 .OR.                                &
                         ( data%jumpto == 4 .AND. data%control%exact_gcp ) 
-           CALL TRAL_hessian_times_vector( nlp%n, data%INDEX_nz_p, data%nnz_p_l,&
-                                          data%nnz_p_u, data%INDEX_nz_hp,      &
-                                          data%nnz_hp, data%INDEX_used_hp,     &
-                                          data%n_prods, data%P, data%HP,       &
-                                          data%H_by_cols, data%dense_p )
+           CALL TRAL_hessian_times_vector( nlp%n,                              &
+                                           data%INDEX_nz_p, data%nnz_p_l,      &
+                                           data%nnz_p_u, data%INDEX_nz_hp,     &
+                                           data%nnz_hp, data%INDEX_used_hp,    &
+                                           data%n_prods, data%P, data%HP,      &
+                                           data%H_by_cols, data%dense_p )
            IF ( data%printd .AND. data%jumpto == 3 ) WRITE( data%out, "( A,    &
-          & ' Nonzeros of Hessian * P are in positions', /, ( '    ', 10I7 ) )"&
-               prefix, data%INDEX_nz_hp( : data%nnz_hp )
+          & ' Nonzeros of Hessian * P are in positions', /,                    &
+          & ( '    ', 10I7 ) )" ) prefix, data%INDEX_nz_hp( : data%nnz_hp )
            CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
 !          data%tmv = data%tmv + data%time_now - data%time_record
 
@@ -4212,7 +4217,7 @@
 !  form the trial point
 
  510   CONTINUE
-       daat%V_phi( : data%n_phi )                                              &
+       data%V_phi( : data%n_phi )                                              &
          = data%V_current( : data%n_phi ) + data%S( : data%n_phi )
        
 !  evaluate the objective function at the trial point
@@ -4554,6 +4559,7 @@
            ELSE
              CALL eval_G( data%eval_status, nlp%X( : nlp%n ),                  &
                           userdata, nlp%G( : nlp%n ) )
+           END IF
          END IF
        ELSE
          data%poor_model = .TRUE.
@@ -4587,13 +4593,13 @@
 
          data%WK( : nlp%n ) =                                                  &
            TRAL_projection( nlp%n, data%V_phi( : nlp%n ) -                     &
-                            nlp%G_phi( : nlp%n ), nlp%X_l, nlp%X_u )
-         data%WK( nlp%n + 1 : data%n_all ) =                                   &
-           TRAL_projection( nlp%m, data%V_phi( nlp%n + 1 : data%n_all ) -      &
-                            nlp%G_phi( nlp%n + 1 : data%n_all ),               &
-                            nlp%Cl, nlp%C_u )
-         inform%norm_pg = TWO_NORM( data%V_phi( : data%n_all ) -               &
-                                    data%WK( : data%n_all )
+                            data%G_phi( : nlp%n ), nlp%X_l, nlp%X_u )
+         data%WK( nlp%n + 1 : data%n_phi ) =                                   &
+           TRAL_projection( nlp%m, data%V_phi( nlp%n + 1 : data%n_phi ) -      &
+                            data%G_phi( nlp%n + 1 : data%n_phi ),              &
+                            nlp%C_l, nlp%C_u )
+         inform%norm_pg = TWO_NORM( data%V_phi( : data%n_phi ) -               &
+                                    data%WK( : data%n_phi ) )
 
          data%new_h = .TRUE.
 
@@ -4995,12 +5001,6 @@
 
      array_name = 'TRAL: data%DMO_hist'
      CALL SPACE_dealloc_array( data%DMO_hist,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'TRAL: data%F_hist'
-     CALL SPACE_dealloc_array( data%F_hist,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

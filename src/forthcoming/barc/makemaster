@@ -1,283 +1,41 @@
 #  Main body of the installation makefile for the GALAHAD BARC package
 
-#  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 8 II 2008
+#  Nick Gould, for GALAHAD productions
+#  This version: 2021-04-29
 
-SHELL = /bin/$(BINSHELL)
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
 
-#  compiler flags
+#  package name
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+package = barc
+PACKAGE = BARC
 
-#  names of random libraries
+#  auxililiary packages that current package depends on (prepend with make_)
 
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
+DEPENDENCIES = make_basics make_glrt make_sbls
 
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
+#  other packages that depend on package
 
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
+DEPENDS =
 
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
+#  auxililiary packages that are needed for tests (prepend with make_)
 
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
+TESTDEPS = make_copyright make_cutest_functions
 
-#  Libraries used
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
-                 $(LAPACK) $(BLAS)
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
 
-#  Archive manipulation strings
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries
 
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
-
-#  sed scripts
-
-LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
-LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
-
-#  compilation agenda
-
-SBARC = nlpt cutest_functions glrt $(LGS)(barc.o)
-DBARC = nlpt cutest_functions glrt $(LGD)(barc.o)
-
-SRUNBARC = copyright $(LGS)(usebarc.o) $(OBJS)/runbarc_sif.o
-DRUNBARC = copyright $(LGD)(usebarc.o) $(OBJD)/runbarc_sif.o
-
-BARCOBJECTSS_CUTEST = $(SBARC) $(SRUNBARC)
-BARCOBJECTSD_CUTEST = $(DBARC) $(DRUNBARC)
-
-OBJECTSS_CUTEST = $(BARCOBJECTSS_CUTEST)
-OBJECTSD_CUTEST = $(BARCOBJECTSD_CUTEST)
-
-BARCDS = $(DBARC) $(OBJD)/barcs.o
-BARCDT = $(DBARC) $(OBJD)/barct.o
-BARCSS = $(SBARC) $(OBJS)/barcs.o
-BARCST = $(SBARC) $(OBJS)/barct.o
-
-RBARCDS = $(OBJD)/barcs.o -L$(OBJD) $(LIBS)
-RBARCDT = $(OBJD)/barct.o -L$(OBJD) $(LIBS)
-RBARCSS = $(OBJS)/barcs.o -L$(OBJS) $(LIBS)
-RBARCST = $(OBJS)/barct.o -L$(OBJS) $(LIBS)
-
-SUCC = precision version) compiled successfully
-SUCC_CUTEST = precision version) for CUTEst compiled successfully
-
-#  main compilations and runs
-
-all: barc_cutest
-all_barc: barc_cutest
-test: test_barc
-test_nocutest: test_barc_nocutest
-
-# barc
-
-barc_cutest: barc_cutest_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: BARC ($(PRECIS) $(SUCC_CUTEST)"
-barc_cutest_single: $(BARCOBJECTSS_CUTEST)
-	$(RANLIB) $(LGS)
-barc_cutest_double: $(BARCOBJECTSD_CUTEST)
-	$(RANLIB) $(LGD)
-
-barc_silent: barc_silent_$(PRECIS)
-barc_silent_single: $(BARCOBJECTSS)
-barc_silent_double: $(BARCOBJECTSD)
-
-barc: barc_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: BARC ($(PRECIS) $(SUCC)"
-barc_single: $(BARCOBJECTSS)
-	$(RANLIB) $(LGS)
-barc_double: $(BARCOBJECTSD)
-	$(RANLIB) $(LGD)
-
-barcsrunall: barcss barcst
-barcdrunall: barcds barcdt
-barcrunall: barcdrunall barcsrunall
-
-test_barc: test_barc_$(PRECIS)
-
-test_barc_single: barcst $(SRUNBARC)
-	echo ""
-	echo " Testing CUTEst interface to barc"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) barc -s QPBAND
-	echo ""
-	echo " Tests for barc complete"
-
-test_barc_double: barcdt $(DRUNBARC)
-	echo ""
-	echo " Testing CUTEst interface to barc"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) barc QPBAND
-	echo ""
-	echo " Tests for barc complete"
-
-test_barc_nocutest: test_barc_nocutest_$(PRECIS)
-
-test_barc_nocutest_single: barcst
-	echo ""
-	echo " Tests for barc complete"
-
-test_barc_nocutest_double: barcdt
-	echo ""
-	echo " Tests for barc complete"
-
-#  basic packages
-
-glrt:
-	( cd ../../glrt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            glrt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../glrt )
-nlpt:
-	( cd ../../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../../filtrane )
-cutest_functions:
-	( cd ../../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            cutest_functions_silent PRECIS=$(PRECIS) \
-            PWD=$(PWD)/../../auxiliary )
-copyright:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-
-# run spec-sheet example tests
-
-barcss: $(BARCSS)
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_barc $(RBARCSS)
-	- ./run_barc >& barcs.output
-	cat barcs.output
-	rm ./run_barc
-
-barcst: $(BARCST)
-	echo " Exhaustive test of subroutine interface to barc"
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_barc $(RBARCST)
-	- ./run_barc >& barct.output
-	cat barct.output
-	rm ./run_barc
-
-barcds: $(BARCDS)
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_barc $(RBARCDS)
-	- ./run_barc >& barcds.output
-	cat barcds.output
-	rm ./run_barc
-
-barcdt: $(BARCDT)
-	echo " Exhaustive test of subroutine interface to barc"
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_barc $(RBARCDT)
-	- ./run_barc >& barcdt.output
-	cat barcdt.output
-	rm ./run_barc
-
-#  Substantial GALAHAD packages
-
-barc.o: $(LG)(barc.o)
-
-$(LG)(barc.o): ../barc/barc.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "barc   "
-	$(SED) -f $(SEDS) ../barc/barc.f90 > $(OBJ)/barc1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/barc1.f90 > $(OBJ)/barc2.f90
-	$(SED) -f $(LPSEDS) $(OBJ)/barc2.f90 > $(OBJ)/barc3.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/barc3.f90 > $(OBJ)/barc.f90
-	cd $(OBJ); $(FORTRAN) -o barc.o $(FFLAGSS) barc.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o barc.o $(FFLAGSN) barc.f90 )
-	cd $(OBJ); $(ARR) barc.o ; $(RM) barc.f90 barc1.f90 barc2.f90 \
-                                          barc3.f90 barc.o
-	$(RMARFILE) usebarc.o
-	$(RMOBFILE) barcs.o
-	$(RMOBFILE) barct.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-# CUTEst/AMPL interfaces
-
-usebarc.o: $(LG)(usebarc.o)
-
-$(LG)(usebarc.o): ../barc/usebarc.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "usebarc   "
-	$(SED) -f $(SEDS) ../barc/usebarc.f90 > $(OBJ)/usebarc1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/usebarc1.f90 > $(OBJ)/usebarc2.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usebarc2.f90 > $(OBJ)/usebarc.f90
-	cd $(OBJ); $(FORTRAN) -o usebarc.o $(FFLAGSS) usebarc.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o usebarc.o $(FFLAGSN) usebarc.f90 )
-	cd $(OBJ); $(ARR) usebarc.o ; $(RM) usebarc.f90 usebarc1.f90 \
-                                       usebarc2.f90 usebarc.o
-	$(RMOBFILE) runbarc_sif.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-#  main programs
-
-runbarc_sif.o: $(OBJ)/runbarc_sif.o
-
-$(OBJ)/runbarc_sif.o: ../barc/runbarc_sif.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "runbarc_sif"
-	$(SED) -f $(SEDS) ../barc/runbarc_sif.f90 > $(OBJ)/runbarc_sif.f90
-	cd $(OBJ); $(FORTRAN) -o runbarc_sif.o $(FFLAGSS) runbarc_sif.f90
-	rm $(OBJ)/runbarc_sif.f90
-	@printf '[ OK ]\n'
-
-#  test decks
-
-barcs.o: $(OBJ)/barcs.o
-
-$(OBJ)/barcs.o: ../barc/barcs.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "barcs  "
-	$(SED) -f $(SEDS) ../barc/barcs.f90 > $(OBJ)/barcs1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/barcs1.f90 > $(OBJ)/barcs.f90
-	cd $(OBJ) ; $(FORTRAN) -o barcs.o $(FFLAGS) barcs.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-barct.o: $(OBJ)/barct.o
-
-$(OBJ)/barct.o: ../barc/barct.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "barct  "
-	$(SED) -f $(SEDS) ../barc/barct.f90 > $(OBJ)/barct1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/barct1.f90 > $(OBJ)/barct.f90
-	cd $(OBJ) ; $(FORTRAN) -o barct.o $(FFLAGSS) barct.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-#  book keeping
-
-clean:
-	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(LG) $(OBJ)/barct.o
-	@printf '[ OK ]\n'
-
-cleanall:
-	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
-	$(RM) $(OBJ)/* $(MOD)/*
-	@printf '[ OK ]\n'
-
-rmbarc:
-	@printf ' %-9s %-15s\t\t' "Removing" "barc from archive "
-	$(RMARFILE) barc.o
-	@printf '[ OK ]\n'
-
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions

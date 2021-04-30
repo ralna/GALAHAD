@@ -1,40 +1,7 @@
-#  Main body of the installation makefile for the GALAHAD UGO package
+#  Standard GALAHAD compilation and run instructions
 
-#  Nick Gould, for GALAHAD productions 
-#  This version: 2021-04-28
-
-#  ===========================================================================
-#  ====================  package-dependent parts  ============================
-#  ===========================================================================
-
-#  package name
-
-package = ugo
-PACKAGE = UGO
-
-#  auxililiary packages that current package depends on (prepend with make_)
-
-DEPENDENCIES = make_basics
-
-#  other packages that depend on package
-
-DEPENDS = bgo
-
-#  auxililiary packages that are needed for tests  (prepend with make_)
-
-TESTDEPS = make_copyright make_cutest_functions
-
-#  ===========================================================================
-#  =================  end of package-dependent parts  ========================
-#  ===========================================================================
-
-#  include standard GALAHAD makefile definitions
- 
-include $(GALAHAD)/src/makedefs/definitions
-
-#  include required package intermediaries
- 
-include $(GALAHAD)/src/makedefs/intermediaries
+#  Nick Gould, for GALAHAD production
+#  This version: 2021-04-29
 
 #  compilation agenda for package
 
@@ -65,16 +32,20 @@ OBJECTSD_CUTEST = $($(PACKAGE)OBJECTSD_CUTEST)
 
 $(PACKAGE)DS = $(D$(PACKAGE)) $(OBJD)/$(package)s.o
 $(PACKAGE)DS2 = $(D$(PACKAGE)) $(OBJD)/$(package)s2.o
+$(PACKAGE)DS3 = $(D$(PACKAGE)) $(OBJD)/$(package)s3.o
 $(PACKAGE)DT = $(D$(PACKAGE)) $(OBJD)/$(package)t.o
 $(PACKAGE)SS = $(S$(PACKAGE)) $(OBJS)/$(package)s.o
 $(PACKAGE)SS2 = $(S$(PACKAGE)) $(OBJS)/$(package)s2.o
+$(PACKAGE)SS3 = $(S$(PACKAGE)) $(OBJS)/$(package)s3.o
 $(PACKAGE)ST = $(S$(PACKAGE)) $(OBJS)/$(package)t.o
 
 R$(PACKAGE)DS = $(OBJD)/$(package)s.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS2 = $(OBJD)/$(package)s2.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS3 = $(OBJD)/$(package)s3.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DT = $(OBJD)/$(package)t.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)SS = $(OBJS)/$(package)s.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS2 = $(OBJS)/$(package)s2.o -L$(OBJS) $(LIBS)
+R$(PACKAGE)SS3 = $(OBJS)/$(package)s3.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)ST = $(OBJS)/$(package)t.o -L$(OBJS) $(LIBS)
 
 #  =========================================================================
@@ -114,8 +85,8 @@ $(package)_double: $($(PACKAGE)OBJECTSD)
 
 #  run package
 
-$(package)srunall: $(package)ss $(package)ss2 $(package)st
-$(package)drunall: $(package)ds $(package)ds2 $(package)dt
+$(package)srunall: $(package)ss $(package)ss2 $(package)ss3 $(package)st
+$(package)drunall: $(package)ds $(package)ds2 $(package)ds3 $(package)dt
 $(package)runall: $(package)drunall $(package)srunall
 
 #  test package
@@ -162,6 +133,13 @@ $(package)ss2: $($(PACKAGE)SS2)
 	cat $(package)s2.output
 	rm ./run_$(package)
 
+$(package)ss3: $($(PACKAGE)SS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)SS3)
+	- ./run_$(package) >& $(package)s3.output
+	cat $(package)s3.output
+	rm ./run_$(package)
+
 $(package)ds: $($(PACKAGE)DS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DS)
@@ -174,6 +152,13 @@ $(package)ds2: $($(PACKAGE)DS2)
                                                      $(R$(PACKAGE)DS2)
 	- ./run_$(package) >& $(package)ds2.output
 	cat $(package)ds2.output
+	rm ./run_$(package)
+
+$(package)ds3: $($(PACKAGE)DS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)DS3)
+	- ./run_$(package) >& $(package)ds3.output
+	cat $(package)ds3.output
 	rm ./run_$(package)
 
 #  run comprehensive example tests
@@ -215,6 +200,7 @@ $(LG)($(package).o): ../$(package)/$(package).f90
 	$(RMARFILE) use$(package).o
 	$(RMOBFILE) $(package)s.o
 	$(RMOBFILE) $(package)s2.o
+	$(RMOBFILE) $(package)s3.o
 	$(RMOBFILE) $(package)t.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
@@ -275,6 +261,17 @@ $(OBJ)/$(package)s2.o: ../$(package)/$(package)s2.f90
            ../$(package)/$(package)s2.f90 > $(OBJ)/$(package)s1.f90
 	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s2.f90
 	cd $(OBJ) ; $(FORTRAN) -o $(package)s2.o $(FFLAGS) $(package)s2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+$(package)s3.o: $(OBJ)/$(package)s3.o
+
+$(OBJ)/$(package)s3.o: ../$(package)/$(package)s3.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s3  "
+	$(SED) -f $(SEDS) \
+            ../$(package)/$(package)s3.f90 > $(OBJ)/$(package)s1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s3.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)s3.o $(FFLAGS) $(package)s3.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 

@@ -1333,9 +1333,9 @@ $(LG)(string.o): ../string/string.f90
 
 symbols.o: $(LG)(symbols.o)
 
-$(LG)(symbols.o): ../sym/symbols.f90
+$(LG)(symbols.o): ../symbols/symbols.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "symbols"
-	$(SED) -f $(SEDS) ../sym/symbols.f90 > $(OBJ)/symbols.f90
+	$(SED) -f $(SEDS) ../symbols/symbols.f90 > $(OBJ)/symbols.f90
 	cd $(OBJ); $(FORTRAN) -o symbols.o $(FFLAGSS) symbols.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o symbols.o $(FFLAGSN) symbols.f90 )

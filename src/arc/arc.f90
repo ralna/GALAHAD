@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/04/2021 AT 14:30 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ A R C   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -1448,26 +1448,26 @@
        CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
        GO TO 990
      END IF
-     IF ( inform%status == 1 ) data%branch = 1
+     IF ( inform%status == 1 ) data%branch = 10
 
      SELECT CASE ( data%branch )
-     CASE ( 1 )  ! initialization
+     CASE ( 10 )  ! initialization
        GO TO 10
-     CASE ( 2 )  ! initial objective evaluation
+     CASE ( 20 )  ! initial objective evaluation
        GO TO 20
-     CASE ( 3 )  ! initial gradient evaluation
+     CASE ( 30 )  ! initial gradient evaluation
        GO TO 30
-     CASE ( 4 )  ! Hessian evaluation
+     CASE ( 110 )  ! Hessian evaluation
        GO TO 110
-!    CASE ( 5 )  ! Hessian-vector product
+!    CASE ( 210 )  ! Hessian-vector product
 !      GO TO 210
-     CASE ( 6 )  ! Hessian-vector or preconditioner product
+     CASE ( 310 )  ! Hessian-vector or preconditioner product
        GO TO 310
-     CASE ( 7 )  ! objective evaluation
+     CASE ( 420 )  ! objective evaluation
        GO TO 420
-     CASE ( 8 )  ! Hessian-vector product
+     CASE ( 440 )  ! Hessian-vector product
        GO TO 440
-     CASE ( 9 )  ! gradient evaluation
+     CASE ( 450 )  ! gradient evaluation
        GO TO 450
      END SELECT
 
@@ -1763,7 +1763,7 @@
 ! evaluate the objective function at the initial point
 
      IF ( data%reverse_f ) THEN
-       data%branch = 2 ; inform%status = 2 ; RETURN
+       data%branch = 20 ; inform%status = 2 ; RETURN
      ELSE
        CALL eval_F( data%eval_status, nlp%X( : nlp%n ), userdata, inform%obj )
      END IF
@@ -1798,7 +1798,7 @@
 !  evaluate the gradient of the objective function
 
      IF ( data%reverse_g ) THEN
-       data%branch = 3 ; inform%status = 3 ; RETURN
+       data%branch = 30 ; inform%status = 3 ; RETURN
      ELSE
        CALL eval_G( data%eval_status, nlp%X( : nlp%n ), userdata,              &
                     nlp%G( : nlp%n ) )
@@ -2144,7 +2144,7 @@
 
          IF ( data%nskip_prec > nskip_prec_max ) THEN
            IF ( data%reverse_h ) THEN
-             data%branch = 4 ; inform%status = 4 ; RETURN
+             data%branch = 110 ; inform%status = 4 ; RETURN
            ELSE
              CALL eval_H( data%eval_status, nlp%X( : nlp%n ),                  &
                           userdata, nlp%H%val( : nlp%H%ne ) )
@@ -2687,7 +2687,7 @@
              data%V( : nlp%n ) = data%U( : nlp%n )
            ELSE IF ( data%nprec == user_preconditioner ) THEN
              IF ( data%reverse_prec ) THEN
-               data%branch = 6 ; inform%status = 6 ; RETURN
+               data%branch = 310 ; inform%status = 6 ; RETURN
              ELSE
                CALL eval_PREC( data%eval_status, nlp%X( : nlp%n ), userdata,   &
                                data%U( : nlp%n ), data%V( : nlp%n ) )
@@ -2728,7 +2728,7 @@
              ELSE
                data%U( : nlp%n ) = zero
                IF ( data%reverse_hprod ) THEN
-                 data%branch = 6 ; inform%status = 5 ; RETURN
+                 data%branch = 310 ; inform%status = 5 ; RETURN
                ELSE
                  CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ),          &
                                   userdata, data%U( : nlp%n ),                 &
@@ -2876,7 +2876,7 @@
 !  evaluate the objective function at the trial point
 
        IF ( data%reverse_f ) THEN
-         data%branch = 7 ; inform%status = 2 ; RETURN
+         data%branch = 420 ; inform%status = 2 ; RETURN
        ELSE
          CALL eval_F( data%eval_status, nlp%X( : nlp%n ), userdata,            &
                       data%f_trial )
@@ -3230,7 +3230,7 @@
                data%V( : nlp%n ) = data%S( : nlp%n )
                CALL SWAP( nlp%n, nlp%X( : nlp%n ), 1,                          &
                           data%X_current( : nlp%n ), 1 ) ! evaluate at current x
-               data%branch = 8 ; inform%status = 5 ; RETURN
+               data%branch = 440 ; inform%status = 5 ; RETURN
              ELSE
                CALL eval_HPROD( data%eval_status, data%X_current( : nlp%n ),   &
                                 userdata, data%U( : nlp%n ), data%S( : nlp%n ),&
@@ -3265,7 +3265,7 @@
 !  evaluate the gradient of the objective function
 
          IF ( data%reverse_g ) THEN
-            data%branch = 9 ; inform%status = 3 ; RETURN
+            data%branch = 450 ; inform%status = 3 ; RETURN
          ELSE
            CALL eval_G( data%eval_status, nlp%X( : nlp%n ),                    &
                         userdata, nlp%G( : nlp%n ) )
