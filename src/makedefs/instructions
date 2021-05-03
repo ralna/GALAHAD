@@ -205,6 +205,33 @@ $(LG)($(package).o): ../$(package)/$(package).f90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
+#  package coverage compilation
+
+$(package)_gcov: ../$(package)/$(package).f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
+	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > $(package)1.f90
+	$(SED) -f $(LSEDS) $(package)1.f90 > $(package)2.f90
+	$(SED) -f $(LPSEDS) $(package)2.f90 > $(package)3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(package)3.f90 > $(package)_cov.f90
+	$(RM) ./$(package)1.f90 ./$(package)2.f90 ./$(package)3.f90
+	$(FORTRAN) -o $(package)_cov.o $(FFLAGSS) $(COVERAGE) \
+            $(package)_cov.f90 \
+          || ( printf ' %-26s' "=> Disabling optimization " ; \
+            $(FORTRAN) -o $(package)_cov.o $(FFLAGSN) $(COVERAGE) \
+              $(package)_cov.f90 )
+	$(SED) -f $(SEDS) $(package)t.f90 > $(package)t_cov1.f90
+	$(SED) -f $(LSEDS) $(package)t_gcov1.f90 > $(package)t_cov.f90
+	$(RM) ./$(package)t_cov1.f90
+	$(FORTRAN) -g $(BASIC) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
+          $(package)t_cov.f90
+	$(FORTRAN) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
+          -o ./$(package)_cov $(package)_cov.o $(package)t_cov.o \
+           -L$(OBJ) $(LIBS)
+	./$(package)_gcov
+	gcov ./$(package)_gcov
+	$(MV) ./$(package)_cov.f90.cov ./$(package)_coverage
+	$(RM) ./$(package)*cov* ./galahad_$(package)_*.mod
+
 #  CUTEst/AMPL interfaces
 
 use$(package).o: $(LG)(use$(package).o)

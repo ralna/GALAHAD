@@ -1215,6 +1215,7 @@ $(LG)(trans.o): ../trans/trans.f90
                    $(FORTRAN) -o trans.o $(FFLAGSN) trans.f90 )
 	cd $(OBJ); $(ARR) trans.o ; $(RM) trans.f90 f90 trans.o
 	$(RMARFILE) ptrans.o
+	$(RMARFILE) qtrans.o
 	$(RMARFILE) scale.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
@@ -1231,6 +1232,19 @@ $(LG)(ptrans.o): ../ptrans/ptrans.f90
 	cd $(OBJ); $(ARR) ptrans.o ; $(RM) ptrans.f90 ptrans1.f90 ptrans.o
 	$(RMARFILE) superb.o
 	$(RMARFILE) trtn.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+qtrans.o: $(LG)(qtrans.o)
+
+$(LG)(qtrans.o): ../qtrans/qtrans.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "qtrans   "
+	$(SED) -f $(SEDS) ../qtrans/qtrans.f90 > $(OBJ)/qtrans1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/qtrans1.f90 > $(OBJ)/qtrans.f90
+	cd $(OBJ); $(FORTRAN) -o qtrans.o $(FFLAGSS) qtrans.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o qtrans.o $(FFLAGSN) qtrans.f90 )
+	cd $(OBJ); $(ARR) qtrans.o ; $(RM) qtrans.f90 qtrans1.f90 qtrans.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

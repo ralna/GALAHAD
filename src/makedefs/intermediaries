@@ -35,6 +35,26 @@ make_cutest_functions:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cutest_functions_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/auxiliary )
 
+make_eqp:
+	( cd $(GALAHAD)/src/eqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) eqp_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+
+make_fdc:
+	( cd $(GALAHAD)/src/fdc ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) fdc_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/fdc )
+
+make_filter:
+	( cd $(GALAHAD)/src/filter ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) filter_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/filter )
+
+make_fit:
+	( cd $(GALAHAD)/src/fit ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) fit_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/fit )
+
 make_glrt:
 	( cd $(GALAHAD)/src/glrt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) glrt_silent \
@@ -44,6 +64,16 @@ make_gltr:
 	( cd $(GALAHAD)/src/gltr ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) gltr_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/gltr )
+
+make_ir:
+	( cd $(GALAHAD)/src/ir ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ir_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ir )
+
+make_l1qp:
+	( cd $(GALAHAD)/src/l1qp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l1qp_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
 
 make_linearsolver:
 	( cd $(GALAHAD)/src/general ; \
@@ -55,15 +85,35 @@ make_lhs:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lhs.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/lhs )
 
+make_lpqp:
+	( cd $(GALAHAD)/src/forthcoming/lpqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpqp.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/lpqp )
+
 make_lms:
 	( cd $(GALAHAD)/src/lms ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lms.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lms )
 
+make_lmt:
+	( cd $(GALAHAD)/src/lmt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lmt.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lmt )
+
 make_mop:
 	( cd $(GALAHAD)/src/mop ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mop.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/mop )
+
+make_nlpt:
+	( cd $(GALAHAD)/src/nlpt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nlpt.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nlpt )
+
+make_norms:
+	( cd $(GALAHAD)/src/auxiliary ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/auxiliary )
 
 make_psls:
 	( cd $(GALAHAD)/src/psls ; \
@@ -74,6 +124,11 @@ make_sbls:
 	( cd $(GALAHAD)/src/sbls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sbls_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sbls )
+
+make_sls:
+	( cd $(GALAHAD)/src/sls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sls_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sls )
 
 make_sha:
 	( cd $(GALAHAD)/src/sha ; \
@@ -95,3 +150,14 @@ make_ugo:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ugo.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ugo )
 
+make_uls:
+	( cd $(GALAHAD)/src/uls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) uls_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/uls )
+
+#  non-free packages
+
+make_la04:
+	( cd $(GALAHAD)/src//non-free/la04 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) la04_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/la04 )
