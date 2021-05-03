@@ -38,6 +38,7 @@
 
       USE GALAHAD_NORMS_double
       USE GALAHAD_SMT_double
+      USE GALAHAD_USERDATA_double, NLPT_USERDATA_type => GALAHAD_userdata_type
       USE GALAHAD_TOOLS
       USE GALAHAD_SYMBOLS,                                                     &
           SILENT              => GALAHAD_SILENT,                               &
@@ -61,7 +62,7 @@
       PUBLIC :: NLPT_write_variables, NLPT_write_stats,                        &
                 NLPT_write_constraints, NLPT_write_problem,                    &
                 NLPT_J_perm_from_C_to_Srow, NLPT_J_perm_from_C_to_Scol,        &
-                NLPT_cleanup, SMT_type, SMT_put, SMT_get
+                NLPT_cleanup, SMT_type, SMT_put, SMT_get, NLPT_userdata_type
 
 !--------------------
 !   P r e c i s i o n
@@ -255,24 +256,6 @@
         REAL ( KIND = wp ) :: infinity
 
       END TYPE
-
-!  ===================================
-!  The NLPT_userdata_type derived type
-!  ===================================
-
-      TYPE, PUBLIC :: NLPT_userdata_type
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: integer
-         REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: real
-         COMPLEX ( KIND = wcp ), ALLOCATABLE, DIMENSION( : ) :: complex
-         CHARACTER, ALLOCATABLE, DIMENSION( : ) :: character
-         LOGICAL, ALLOCATABLE, DIMENSION( : ) :: logical
-         INTEGER, POINTER, DIMENSION( : ) :: integer_pointer => null( )
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: real_pointer => null( )
-         COMPLEX ( KIND = wcp ), POINTER,                                      &
-           DIMENSION( : ) :: complex_pointer => null( )
-         CHARACTER, POINTER, DIMENSION( : ) :: character_pointer => null( )
-         LOGICAL, POINTER, DIMENSION( : ) :: logical_pointer => null( )
-      END TYPE NLPT_userdata_type
 
 !  ----------------
 !  Other parameters

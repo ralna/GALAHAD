@@ -1,0 +1,79 @@
+#  Standard GALAHAD makefile definitions
+
+#  Nick Gould, for GALAHAD production
+#  This version: 2021-04-29
+
+#  makefile shell
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(OPENMP)
+
+#  coverage flags
+
+COVERAGE = -fprofile-arcs -ftest-coverage
+
+#  linking and run flags
+
+RUNFFLAGS =    $(OPTIMIZATION) $(DEBUG) $(MODULES)
+#RUNFFLAGS =   $(OPTIMIZATION) $(DEBUG) $(MODULES) -L/usr/lib -llapack
+RUNFFLAGSOMP = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  strings
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully

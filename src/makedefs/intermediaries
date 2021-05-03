@@ -10,6 +10,11 @@ make_basics:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) basics_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
+make_basicz:
+	( cd $(GALAHAD)/src/general ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) basicz_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
+
 make_bgo:
 	( cd $(GALAHAD)/src/forthcoming/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo.o \
@@ -154,6 +159,11 @@ make_uls:
 	( cd $(GALAHAD)/src/uls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) uls_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/uls )
+
+make_userdata:
+	( cd $(GALAHAD)/src/userdata ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) userdata_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/userdata )
 
 #  non-free packages
 

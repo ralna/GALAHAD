@@ -9,7 +9,7 @@
    TYPE ( BQP_data_type ) :: data
    TYPE ( BQP_control_type ) :: control        
    TYPE ( BQP_inform_type ) :: inform
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER, PARAMETER :: n = 3, h_ne = 4, h_all = 5
    INTEGER, PARAMETER :: len_integer = 2 * n + 3 + h_all, len_real = h_all
    INTEGER, PARAMETER :: nflag = 2, st_flag = 2, st_ptr = st_flag + n
@@ -33,7 +33,7 @@
    userdata%real( st_val + 1 : st_val + h_all )                                &
      = (/ 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp, 3.0_wp /)
 ! problem data complete   
-   CALL BQP_initialize( data, control )       ! Initialize control parameters
+   CALL BQP_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = infinity                ! Set infinity
 !  control%print_level = 3                    ! print one line/iteration
    control%print_level = 1                    ! print one line/iteration
@@ -62,10 +62,10 @@
      SUBROUTINE HPROD( status, userdata, V, PROD, NZ_v, nz_v_start, nz_v_end,  &
                        NZ_prod, nz_prod_end )
 ! compute the matrix-vector product H * v
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
      INTEGER, OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end

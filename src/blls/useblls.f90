@@ -139,7 +139,7 @@
       TYPE ( BLLS_data_type ) :: data
       TYPE ( BLLS_control_type ) :: BLLS_control
       TYPE ( BLLS_inform_type ) :: BLLS_inform
-      TYPE ( NLPT_userdata_type ) :: userdata
+      TYPE ( GALAHAD_userdata_type ) :: userdata
       TYPE ( QPT_problem_type ) :: prob
 
 !  Allocatable arrays

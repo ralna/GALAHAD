@@ -35,8 +35,8 @@
      USE GALAHAD_QPT_double
      USE GALAHAD_QPP_double
      USE GALAHAD_QPD_double, ONLY: QPD_SIF
+     USE GALAHAD_USERDATA_double
      USE GALAHAD_SPECFILE_double
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
      USE GALAHAD_CONVERT_double, ONLY: CONVERT_control_type,                   &
                                        CONVERT_inform_type,                    &
                                        CONVERT_to_sparse_column_format
@@ -47,7 +47,8 @@
                BLLS_terminate,  BLLS_reverse_type, BLLS_data_type,             &
                BLLS_subproblem_data_type,                                      &
                BLLS_exact_arc_search, BLLS_inexact_arc_search,                 &
-               NLPT_userdata_type, QPT_problem_type, SMT_type, SMT_put, SMT_get
+               GALAHAD_userdata_type, QPT_problem_type,                        &
+               SMT_type, SMT_put, SMT_get
 
 !--------------------
 !   P r e c i s i o n
@@ -986,7 +987,7 @@
 !     time%factorize = the time spent factorizing the required matrices.
 !     time%solve = the time spent computing the search direction.
 !
-!  userdata is a scalar variable of type NLPT_userdata_type which may be used
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -1067,7 +1068,7 @@
      TYPE ( BLLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( BLLS_control_type ), INTENT( IN ) :: control
      TYPE ( BLLS_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
      OPTIONAL :: eval_APROD, eval_ASPROD, eval_AFPROD, eval_PREC
 
@@ -1075,10 +1076,10 @@
 
      INTERFACE
        SUBROUTINE eval_APROD( status, userdata, transpose, V, P )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       USE GALAHAD_USERDATA_double
        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: status
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, INTENT( IN ) :: transpose
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P
@@ -1088,10 +1089,10 @@
      INTERFACE
        SUBROUTINE eval_ASPROD( status, userdata, V, P, NZ_in, nz_in_start,     &
                                nz_in_end, NZ_out, nz_out_end )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       USE GALAHAD_USERDATA_double
        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: status
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
        INTEGER, OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
@@ -1103,10 +1104,10 @@
 
      INTERFACE
        SUBROUTINE eval_AFPROD( status, userdata, transpose, V, P, FREE, n_free )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       USE GALAHAD_USERDATA_double
        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: status
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, INTENT( IN ) :: transpose
        INTEGER, INTENT( IN ) :: n_free
        INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
@@ -1117,10 +1118,10 @@
 
      INTERFACE
        SUBROUTINE eval_PREC( status, userdata, V, P )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       USE GALAHAD_USERDATA_double
        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: status
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
        END SUBROUTINE eval_PREC
@@ -2837,7 +2838,7 @@
 !          If X_status( i ) = 3, 4, the i-th variable is fixed at X_alpha(i)
 !          ** this variable is not altered by the subroutine.
 !  segment (INTEGER) the number of segments investigated
-!  userdata (structure of type NLPT_userdata_type) that may be used to pass
+!  userdata (structure of type GALAHAD_userdata_type) that may be used to pass
 !          data to and from the optional eval_* subroutines
 !  alloc_status  (INTEGER) status of the most recent array (de)allocation
 !  bad_alloc (CHARACTER string of length 80) that provides information
@@ -2912,7 +2913,7 @@
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: R_s
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: X_alpha
       TYPE ( BLLS_subproblem_data_type ), INTENT( INOUT ) :: data
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
       INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
       INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
@@ -2925,10 +2926,10 @@
       INTERFACE
         SUBROUTINE eval_ASPROD( status, userdata, V, P, NZ_in, nz_in_start,    &
                                 nz_in_end, NZ_out, nz_out_end )
-        USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+        USE GALAHAD_USERDATA_double
         INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
         INTEGER, INTENT( OUT ) :: status
-        TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
         REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
         REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
         INTEGER, OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
@@ -3979,7 +3980,7 @@
 !              = 2, the i-th variable is on its upper bound
 !              = 3, 4, the i-th variable is fixed at X_alpha(i)
 !  steps       (INTEGER) the number of steps taken
-!  userdata (structure of type NLPT_userdata_type) that may be used to pass
+!  userdata (structure of type GALAHAD_userdata_type) that may be used to pass
 !          data to and from the optional eval_* subroutines
 !  alloc_status  (INTEGER) status of the most recent array (de)allocation
 !  bad_alloc (CHARACTER string of length 80) that provides information
@@ -4057,7 +4058,7 @@
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: R_s
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: X_alpha
       TYPE ( BLLS_subproblem_data_type ), INTENT( INOUT ) :: data
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
       INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
       INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
@@ -4071,10 +4072,10 @@
       INTERFACE
         SUBROUTINE eval_ASPROD( status, userdata, V, P, NZ_in, nz_in_start,    &
                                 nz_in_end, NZ_out, nz_out_end )
-        USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+        USE GALAHAD_USERDATA_double
         INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
         INTEGER, INTENT( OUT ) :: status
-        TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
         REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
         REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
         INTEGER, OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
@@ -5394,7 +5395,7 @@
 !  OUTPUT arguments that need not be set on entry to the subroutine
 !
 !  iter   (INTEGER) the number of iterations performed
-!  userdata (structure of type NLPT_userdata_type) that may be used to pass
+!  userdata (structure of type GALAHAD_userdata_type) that may be used to pass
 !          data to and from the optional eval_* subroutines
 !  alloc_status  (INTEGER) status of the most recent array (de)allocation
 !  bad_alloc (CHARACTER string of length 80) that provides information
@@ -5479,7 +5480,7 @@
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: R
       TYPE ( BLLS_subproblem_data_type ), INTENT( INOUT ) :: data
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
       INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
       INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
@@ -5495,10 +5496,10 @@
       INTERFACE
         SUBROUTINE eval_AFPROD( status, userdata, transpose, V, P,             &
                                 FREE, n_free )
-        USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+        USE GALAHAD_USERDATA_double
         INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
         INTEGER, INTENT( OUT ) :: status
-        TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
         LOGICAL, INTENT( IN ) :: transpose
         INTEGER, INTENT( IN ) :: n_free
         INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
@@ -5509,10 +5510,10 @@
 
       INTERFACE
         SUBROUTINE eval_PREC( status, userdata, V, P )
-        USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+        USE GALAHAD_USERDATA_double
         INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
         INTEGER, INTENT( OUT ) :: status
-        TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
         REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
         REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
         END SUBROUTINE eval_PREC

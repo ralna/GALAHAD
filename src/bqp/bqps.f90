@@ -9,7 +9,7 @@
    TYPE ( BQP_data_type ) :: data
    TYPE ( BQP_control_type ) :: control        
    TYPE ( BQP_inform_type ) :: inform
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: s
    REAL ( KIND = wp ) :: t1, t2
    INTEGER, PARAMETER :: n = 3, h_ne = 4

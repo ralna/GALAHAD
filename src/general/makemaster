@@ -123,11 +123,11 @@ ROOTSD = $(BASICZ) $(LGD)(string.o) buildspec_silent \
          $(LGD)(symbols.o) $(LGD)(specfile.o) \
          $(LGD)(sort.o) zd11 $(LGD)(smt.o) $(LGD)(space.o) $(LGD)(roots.o)
 
-BASICS = $(ROOTSS) $(LGS)(rand.o) $(LGS)(oldscale.o) $(LGS)(tools.o) qpt \
+BASICS = $(ROOTSS) $(LGS)(rand.o) $(LGS)(oldscale.o) $(LGS)(tools.o) lmt qpt \
          $(LGS)(trans.o) $(LGS)(scale.o) $(LGS)(norms.o) \
          $(LGS)(checkpoint.o) $(LGS)(opt.o) $(LGS)(convert.o)
 
-BASICD = $(ROOTSD) $(LGD)(rand.o) $(LGD)(oldscale.o) $(LGD)(tools.o) qpt \
+BASICD = $(ROOTSD) $(LGD)(rand.o) $(LGD)(oldscale.o) $(LGD)(tools.o) lmt qpt \
          $(LGD)(trans.o) $(LGD)(scale.o) $(LGD)(norms.o) \
          $(LGD)(checkpoint.o) $(LGD)(opt.o) $(LGD)(convert.o)
 
@@ -525,6 +525,10 @@ filterrunall: filterdrunall filtersrunall
 nlpt:
 	( cd ../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../filtrane )
+
+lmt:
+	( cd ../lmt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lmt.o PRECIS=$(PRECIS) PWD=$(PWD)/../lmt )
 
 qpt:
 	( cd ../qpt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \

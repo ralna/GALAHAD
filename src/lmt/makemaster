@@ -14,7 +14,7 @@ PACKAGE = LMT
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basics 
+DEPENDENCIES = make_basicz
 
 #  other packages that depend on package
 

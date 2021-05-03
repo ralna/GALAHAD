@@ -87,9 +87,9 @@ PRESOLVE_single = $(QPT_single) $(LGS)(presolve.o)
 PRESOLVE_double = $(QPT_double) $(LGD)(presolve.o)
 CRO_single = basics scu sbls uls lms ir mop $(LGS)(cro.o)
 CRO_double = basics scu sbls uls lms ir mop $(LGD)(cro.o)
-QPD_single = $(CRO_single) sbls gltr nlpt $(QPP_single) fdc fit lpqp \
+QPD_single = $(CRO_single) sbls gltr userdata nlpt $(QPP_single) fdc fit lpqp \
              $(PRESOLVE_single) $(LGS)(qpd.o)
-QPD_double = $(CRO_double) sbls gltr nlpt $(QPP_double) fdc fit lpqp \
+QPD_double = $(CRO_double) sbls gltr userdata nlpt $(QPP_double) fdc fit lpqp \
              $(PRESOLVE_double) $(LGD)(qpd.o)
 EQP_single = $(QPD_single) $(LGS)(eqp.o)
 EQP_double = $(QPD_double) $(LGD)(eqp.o)
@@ -2249,6 +2249,9 @@ ir:
 gltr:
 	( cd ../gltr ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             gltr_silent PRECIS=$(PRECIS) PWD=$(PWD)/../gltr )
+userdata:
+	( cd ../userdata ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            userdata_silent PRECIS=$(PRECIS) PWD=$(PWD)/../userdata )
 nlpt:
 	( cd ../nlpt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             nlpt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../nlpt )
@@ -2574,6 +2577,20 @@ bqpds: $(BQPDS)
 	cd ../bqp ; $(RMOOC)
 	- ../bqp/run_bqp >& ../bqp/bqpds.output
 	cat ../bqp/bqpds.output
+	rm ../bqp/run_bqp
+
+bqpds2: $(BQPDS2)
+	cd ../bqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bqp $(RBQPDS2)
+	cd ../bqp ; $(RMOOC)
+	- ../bqp/run_bqp >& ../bqp/bqpds2.output
+	cat ../bqp/bqpds2.output
+	rm ../bqp/run_bqp
+
+bqpds3: $(BQPDS3)
+	cd ../bqp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_bqp $(RBQPDS3)
+	cd ../bqp ; $(RMOOC)
+	- ../bqp/run_bqp >& ../bqp/bqpds3.output
+	cat ../bqp/bqpds3.output
 	rm ../bqp/run_bqp
 
 bqpds4: $(BQPDS4)

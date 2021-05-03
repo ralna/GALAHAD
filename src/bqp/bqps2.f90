@@ -9,7 +9,7 @@
    TYPE ( BQP_data_type ) :: data
    TYPE ( BQP_control_type ) :: control        
    TYPE ( BQP_inform_type ) :: inform
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: nflag, i, j, k, l
    REAL ( KIND = wp ) :: v_j
    INTEGER, PARAMETER :: n = 3, h_ne = 4, h_all = 5
@@ -31,7 +31,7 @@
    ROW = (/ 1, 2, 1, 2, 3 /)                   ! for matrix-vector products
    VAL = (/ 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp, 3.0_wp /)
 ! problem data complete   
-   CALL BQP_initialize( data, control )       ! Initialize control parameters
+   CALL BQP_initialize( data, control, inform )  ! Initialize control parameters
    control%infinity = infinity                ! Set infinity
 !  control%print_level = 3                    ! print one line/iteration
    control%print_level = 1                    ! print one line/iteration

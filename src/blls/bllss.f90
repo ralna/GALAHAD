@@ -8,7 +8,7 @@
    TYPE ( BLLS_data_type ) :: data
    TYPE ( BLLS_control_type ) :: control
    TYPE ( BLLS_inform_type ) :: inform
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, m = 4, a_ne = 5

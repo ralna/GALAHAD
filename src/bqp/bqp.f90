@@ -32,14 +32,14 @@
      USE GALAHAD_QPT_double
      USE GALAHAD_QPP_double
      USE GALAHAD_QPD_double, ONLY: QPD_SIF
+     USE GALAHAD_USERDATA_double
      USE GALAHAD_SPECFILE_double
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
 
      IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: BQP_initialize, BQP_read_specfile, BQP_solve, BQP_terminate,    &
-               BQP_reverse_type, BQP_data_type, NLPT_userdata_type,            &
+               BQP_reverse_type, BQP_data_type, GALAHAD_userdata_type,         &
                QPT_problem_type, SMT_type, SMT_put, SMT_get,                   &
                BQP_arcsearch_data_type
 
@@ -823,8 +823,8 @@
 !     time%factorize = the time spent factorizing the required matrices.
 !     time%solve = the time spent computing the search direction.
 !
-!  userdata is a scalar variable of type NLPT_userdata_type which may be used
-!   to pass user data to and from the eval_* subroutines (see below)
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be 
+!   used to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
 !    integer is a rank-one allocatable array of type default integer.
@@ -878,7 +878,7 @@
      TYPE ( BQP_data_type ), INTENT( INOUT ) :: data
      TYPE ( BQP_control_type ), INTENT( IN ) :: control
      TYPE ( BQP_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      TYPE ( BQP_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
      OPTIONAL :: eval_HPROD
 !    OPTIONAL :: eval_HPROD, eval_PREC
@@ -888,10 +888,10 @@
      INTERFACE
        SUBROUTINE eval_HPROD( status, userdata, V, PROD, NZ_v, nz_v_start,     &
                               nz_v_end, NZ_prod, nz_prod_end )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: status
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
        INTEGER, OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
@@ -903,10 +903,10 @@
 
 !    INTERFACE
 !      SUBROUTINE eval_PREC( status, userdata, V, PV )
-!      USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+!      USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
 !      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 !      INTEGER, INTENT( OUT ) :: status
-!      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+!      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 !      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
 !      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PV
 !      END SUBROUTINE eval_PREC
@@ -2315,7 +2315,7 @@ end do
 !  n_free (INTEGER) the number of free variables at the initial point
 !  data   (BQP_arcsearch_data_type) private data that must be preserved between
 !          calls
-!  userdata (NLPT_userdata_type) user provided data for use in eval_HPROD
+!  userdata (GALAHAD_userdata_type) user provided data for use in eval_HPROD
 !  H      (SMT_type) optionaly, the whole of H stored by rows
 !  H_PROD subroutine, optionally, compute H * vector products
 
@@ -2338,7 +2338,7 @@ end do
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X_t
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: P, HP
      TYPE ( BQP_arcsearch_data_type ), INTENT( INOUT ) :: data
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      TYPE ( SMT_type ), OPTIONAL, INTENT( IN ) :: H
      OPTIONAL :: eval_HPROD
 
@@ -2347,10 +2347,10 @@ end do
      INTERFACE
        SUBROUTINE eval_HPROD( status, userdata, V, PROD, NZ_v, nz_v_start,     &
                               nz_v_end, NZ_prod, nz_prod_end )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: status
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
        INTEGER, OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
@@ -3005,7 +3005,7 @@ end do
 !  n_free  (INTEGER) the number of free variables at the initial point
 !  data   (BQP_arcsearch_data_type) private data that must be preserved between
 !          calls
-!  userdata (NLPT_userdata_type) user provided data for use in eval_HPROD
+!  userdata (GALAHAD_userdata_type) user provided data for use in eval_HPROD
 !  H      (SMT_type) optionaly, the whole of H stored by rows
 !  H_PROD subroutine, optionally, compute H * vector products
 
@@ -3028,7 +3028,7 @@ end do
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X_t
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: P, HP
      TYPE ( BQP_arcsearch_data_type ), INTENT( INOUT ) :: data
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      TYPE ( SMT_type ), OPTIONAL, INTENT( IN ) :: H
      OPTIONAL :: eval_HPROD
 
@@ -3037,10 +3037,10 @@ end do
      INTERFACE
        SUBROUTINE eval_HPROD( status, userdata, V, PROD, NZ_v, nz_v_start,     &
                               nz_v_end, NZ_prod, nz_prod_end )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: status
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
        INTEGER, OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end

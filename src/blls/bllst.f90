@@ -10,7 +10,7 @@
    TYPE ( BLLS_control_type ) :: control
    TYPE ( BLLS_inform_type ) :: inform
    TYPE ( BLLS_reverse_type ) :: reverse
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
    INTEGER :: i, j, k, l, nf, weight, mode, exact_arc_search, s, status
    REAL ( KIND = wp ) :: val
@@ -427,10 +427,10 @@
    END PROGRAM GALAHAD_BLLS_TEST_PROGRAM
 
    SUBROUTINE APROD( status, userdata, transpose, V, P )
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   USE GALAHAD_USERDATA_double
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    LOGICAL, INTENT( IN ) :: transpose
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P
@@ -469,10 +469,10 @@
 
    SUBROUTINE ASPROD( status, userdata, V, P, NZ_in, nz_in_start, nz_in_end,   &
                       NZ_out, nz_out_end )
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   USE GALAHAD_USERDATA_double
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
    INTEGER, OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
@@ -571,10 +571,10 @@
    END SUBROUTINE ASPROD
 
    SUBROUTINE AFPROD( status, userdata, transpose, V, P, FREE, n_free )
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   USE GALAHAD_USERDATA_double
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    LOGICAL, INTENT( IN ) :: transpose
    INTEGER, INTENT( IN ) :: n_free
    INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
@@ -619,10 +619,10 @@
    END SUBROUTINE AFPROD
 
    SUBROUTINE APROD_broken( status, userdata, transpose, V, P )
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   USE GALAHAD_USERDATA_double
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    LOGICAL, INTENT( IN ) :: transpose
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P
@@ -632,10 +632,10 @@
 
    SUBROUTINE ASPROD_broken( status, userdata, V, P, NZ_in, nz_in_start,       &
                              nz_in_end, NZ_out, nz_out_end )
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   USE GALAHAD_USERDATA_double
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
    INTEGER, OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
@@ -648,10 +648,10 @@
    END SUBROUTINE ASPROD_broken
 
    SUBROUTINE AFPROD_broken( status, userdata, transpose, V, P, FREE, n_free )
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   USE GALAHAD_USERDATA_double
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    LOGICAL, INTENT( IN ) :: transpose
    INTEGER, INTENT( IN ) :: n_free
    INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
@@ -663,10 +663,10 @@
    END SUBROUTINE AFPROD_broken
 
    SUBROUTINE PREC( status, userdata, V, P )
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   USE GALAHAD_USERDATA_double
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P
    INTEGER :: i, j, k

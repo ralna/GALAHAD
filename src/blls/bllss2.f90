@@ -9,7 +9,7 @@
    TYPE ( BLLS_control_type ) :: control
    TYPE ( BLLS_inform_type ) :: inform
    TYPE ( BLLS_reverse_type ) :: reverse
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
    INTEGER :: i, j, k, l, nflag
    REAL ( KIND = wp ) :: val
