@@ -1,0 +1,477 @@
+#  Main body of the installation makefile for the GALAHAD NLS package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 27 X 2015
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(OPENMP)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+#RUNFFLAGS =         $(OPTIMIZATION) $(DEBUG) $(MODULES) -L/usr/lib -llapack
+RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
+                 $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+#SNLS = basics glrt psls rqs arc bsc nlpt $(LGS)(nls.o)
+#DNLS = basics glrt psls rqs arc bsc nlpt $(LGD)(nls.o)
+
+#SNLS = arc bsc $(LGS)(nls.o)
+#DNLS = arc bsc $(LGD)(nls.o)
+
+SNLS = basics glrt psls rqs bsc nlpt $(LGS)(nls.o)
+DNLS = basics glrt psls rqs bsc nlpt $(LGD)(nls.o)
+
+SRUNNLS = cutest_functions copyright $(LGS)(usenls.o) $(OBJS)/runnls_sif.o
+DRUNNLS = cutest_functions copyright $(LGD)(usenls.o) $(OBJD)/runnls_sif.o
+
+SNLSO = arc bsc $(LGS)(nlso.o)
+DNLSO = arc bsc $(LGD)(nlso.o)
+
+SRUNNLSO = cutest_functions copyright $(LGS)(usenlso.o) $(OBJS)/runnlso_sif.o
+DRUNNLSO = cutest_functions copyright $(LGD)(usenlso.o) $(OBJD)/runnlso_sif.o
+
+NLSOBJECTSS = $(SNLS)
+NLSOBJECTSD = $(DNLS)
+NLSOBJECTSS_CUTEST = $(SNLS) $(SRUNNLS)
+NLSOBJECTSD_CUTEST = $(DNLS) $(DRUNNLS)
+
+NLSOOBJECTSS = $(SNLSO)
+NLSOOBJECTSD = $(DNLSO)
+NLSOOBJECTSS_CUTEST = $(SNLSO) $(SRUNNLSO)
+NLSOOBJECTSD_CUTEST = $(DNLSO) $(DRUNNLSO)
+
+OBJECTSS_CUTEST = $(NLSOBJECTSS_CUTEST)
+OBJECTSD_CUTEST = $(NLSOBJECTSD_CUTEST)
+
+OBJECTSSO_CUTEST = $(NLSOOBJECTSS_CUTEST)
+OBJECTSDO_CUTEST = $(NLSOOBJECTSD_CUTEST)
+
+NLSDS = $(DNLS) $(OBJD)/nlss.o
+NLSDS2 = $(DNLS) $(OBJD)/nlss2.o
+NLSDS3 = $(DNLS) $(OBJD)/nlss3.o
+NLSDS4 = $(DNLS) $(OBJD)/nlss4.o
+NLSDS5 = $(DNLS) $(OBJD)/nlss5.o
+NLSDT = $(DNLS) $(OBJD)/nlst.o
+NLSSS = $(SNLS) $(OBJS)/nlss.o
+NLSSS2 = $(SNLS) $(OBJS)/nlss2.o
+NLSSS3 = $(SNLS) $(OBJS)/nlss3.o
+NLSST = $(SNLS) $(OBJS)/nlst.o
+
+RNLSDS = $(OBJD)/nlss.o -L$(OBJD) $(LIBS)
+RNLSDS2 = $(OBJD)/nlss2.o -L$(OBJD) $(LIBS)
+RNLSDS3 = $(OBJD)/nlss3.o -L$(OBJD) $(LIBS)
+RNLSDS4 = $(OBJD)/nlss4.o -L$(OBJD) $(LIBS)
+RNLSDS5 = $(OBJD)/nlss5.o -L$(OBJD) $(LIBS)
+RNLSDT = $(OBJD)/nlst.o -L$(OBJD) $(LIBS)
+RNLSSS = $(OBJS)/nlss.o -L$(OBJS) $(LIBS)
+RNLSSS2 = $(OBJS)/nlss2.o -L$(OBJS) $(LIBS)
+RNLSSS3 = $(OBJS)/nlss3.o -L$(OBJS) $(LIBS)
+RNLSSS4 = $(OBJS)/nlss4.o -L$(OBJS) $(LIBS)
+RNLSSS5 = $(OBJS)/nlss5.o -L$(OBJS) $(LIBS)
+RNLSST = $(OBJS)/nlst.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+all: nls_cutest
+all_nls: nls_cutest
+test: test_nls
+test_nocutest: test_nls_nocutest
+
+# nls
+
+nls_cutest: nls_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: NLS ($(PRECIS) $(SUCC_CUTEST)"
+nls_cutest_single: $(NLSOBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+nls_cutest_double: $(NLSOBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+nlso_cutest: nlso_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: NLSO ($(PRECIS) $(SUCC_CUTEST)"
+nlso_cutest_single: $(NLSOOBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+nlso_cutest_double: $(NLSOOBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+nls_silent: nls_silent_$(PRECIS)
+nls_silent_single: $(NLSOBJECTSS)
+nls_silent_double: $(NLSOBJECTSD)
+
+nls: nls_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: NLS ($(PRECIS) $(SUCC)"
+nls_single: $(NLSOBJECTSS)
+	$(RANLIB) $(LGS)
+nls_double: $(NLSOBJECTSD)
+	$(RANLIB) $(LGD)
+
+nlssrunall: nlsss nlsss2 nlsss3 nlsds nlsds2 nlsds3
+nlsdrunall: nlsds nlsdt
+nlsrunall: nlsdrunall nlssrunall
+
+test_nls: test_nls_$(PRECIS)
+
+test_nls_single: nlsst $(SRUNNLS)
+	echo ""
+	echo " Testing CUTEst interface to nls"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) nls -s QPBAND
+	echo ""
+	echo " Tests for nls complete"
+
+test_nls_double: nlsdt $(DRUNNLS)
+	echo ""
+	echo " Testing CUTEst interface to nls"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) nls QPBAND
+	echo ""
+	echo " Tests for nls complete"
+
+test_nls_nocutest: test_nls_nocutest_$(PRECIS)
+
+test_nls_nocutest_single: nlsst
+	echo ""
+	echo " Tests for nls complete"
+
+test_nls_nocutest_double: nlsdt
+	echo ""
+	echo " Tests for nls complete"
+
+#  basic packages
+
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+linearsolver:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+glrt:
+	( cd ../glrt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            glrt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../glrt )
+rqs:
+	( cd ../rqs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            rqs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../rqs )
+psls:
+	( cd ../psls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            psls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../psls )
+bsc:
+	( cd ../bsc ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            bsc_silent PRECIS=$(PRECIS) PWD=$(PWD)/../bsc )
+nlpt:
+	( cd ../nlpt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            nlpt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../nlpt )
+arc:
+	( cd ../arc ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            arc_silent PRECIS=$(PRECIS) PWD=$(PWD)/../arc )
+cutest_functions:
+	( cd ../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_silent PRECIS=$(PRECIS) PWD=$(PWD)/../auxiliary )
+copyright:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+
+# run spec-sheet example tests
+
+nlsss: $(NLSSS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nls $(RNLSSS)
+	- ./run_nls >& nlss.output
+	cat nlss.output
+	rm ./run_nls
+
+nlsss2: $(NLSSS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nls $(RNLSSS2)
+	- ./run_nls >& nlss2.output
+	cat nlss2.output
+	rm ./run_nls
+
+nlsss3: $(NLSSS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nls $(RNLSSS3)
+	- ./run_nls >& nlss3.output
+	cat nlss3.output
+	rm ./run_nls
+
+nlsss4: $(NLSSS4)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nls $(RNLSSS4)
+	- ./run_nls >& nlss4.output
+	cat nlss4.output
+	rm ./run_nls
+
+nlsss5: $(NLSSS5)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nls $(RNLSSS5)
+	- ./run_nls >& nlss5.output
+	cat nlss5.output
+	rm ./run_nls
+
+nlsst: $(NLSST)
+	echo " Exhaustive test of subroutine interface to nls"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nls $(RNLSST)
+	- ./run_nls >& nlst.output
+	cat nlst.output
+	rm ./run_nls
+
+nlsds: $(NLSDS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nls $(RNLSDS)
+	- ./run_nls >& nlsds.output
+	cat nlsds.output
+	rm ./run_nls
+
+nlsds2: $(NLSDS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nls $(RNLSDS2)
+	- ./run_nls >& nlsds2.output
+	cat nlsds2.output
+	rm ./run_nls
+
+nlsds3: $(NLSDS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nls $(RNLSDS3)
+	- ./run_nls >& nlsds3.output
+	cat nlsds3.output
+	rm ./run_nls
+
+nlsds4: $(NLSDS4)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nls $(RNLSDS4)
+	- ./run_nls >& nlsds4.output
+	cat nlsds4.output
+	rm ./run_nls
+
+nlsds5: $(NLSDS5)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nls $(RNLSDS5)
+	- ./run_nls >& nlsds5.output
+	cat nlsds5.output
+	rm ./run_nls
+
+nlsdt: $(NLSDT)
+	echo " Exhaustive test of subroutine interface to nls"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_nls $(RNLSDT)
+	- ./run_nls
+#	- ./run_nls >& nlsdt.output
+#	cat nlsdt.output
+	rm ./run_nls
+
+#  Substantial GALAHAD packages
+
+nls.o: $(LG)(nls.o)
+
+$(LG)(nls.o): ../nls/nls.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "nls   "
+	$(SED) -f $(SEDS) ../nls/nls.f90 > $(OBJ)/nls1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/nls1.f90 > $(OBJ)/nls2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/nls2.f90 > $(OBJ)/nls3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/nls3.f90 > $(OBJ)/nls.f90
+	cd $(OBJ); $(FORTRAN) -o nls.o $(FFLAGSS) nls.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o nls.o $(FFLAGSN) nls.f90 )
+	cd $(OBJ); $(ARR) nls.o ; $(RM) nls.f90 nls1.f90 nls2.f90 \
+                                        nls3.f90 nls.o
+	$(RMARFILE) usenls.o
+	$(RMOBFILE) nlss.o
+	$(RMOBFILE) nlst.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+nls.o: $(LG)(nls.o)
+
+$(LG)(nlso.o): ../nls/nlso.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "nlso   "
+	$(SED) -f $(SEDS) ../nls/nlso.f90 > $(OBJ)/nlso1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/nlso1.f90 > $(OBJ)/nlso2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/nlso2.f90 > $(OBJ)/nlso3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/nlso3.f90 > $(OBJ)/nlso.f90
+	cd $(OBJ); $(FORTRAN) -o nlso.o $(FFLAGSS) nlso.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o nlso.o $(FFLAGSN) nlso.f90 )
+	cd $(OBJ); $(ARR) nlso.o ; $(RM) nlso.f90 nlso1.f90 nlso2.f90 \
+                                        nlso3.f90 nlso.o
+	$(RMARFILE) usenlso.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usenls.o: $(LG)(usenls.o)
+
+$(LG)(usenls.o): ../nls/usenls.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usenls   "
+	$(SED) -f $(SEDS) ../nls/usenls.f90 > $(OBJ)/usenls1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usenls1.f90 > $(OBJ)/usenls2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usenls2.f90 > $(OBJ)/usenls.f90
+	cd $(OBJ); $(FORTRAN) -o usenls.o $(FFLAGSOMP) usenls.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usenls.o $(FFLAGSN) usenls.f90 )
+	cd $(OBJ); $(ARR) usenls.o ; $(RM) usenls.f90 usenls1.f90 \
+                                       usenls2.f90 usenls.o
+	$(RMOBFILE) runnls_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+usenlso.o: $(LG)(usenlso.o)
+
+$(LG)(usenlso.o): ../nls/usenlso.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usenlso   "
+	$(SED) -f $(SEDS) ../nls/usenlso.f90 > $(OBJ)/usenlso1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usenlso1.f90 > $(OBJ)/usenlso2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usenlso2.f90 > $(OBJ)/usenlso.f90
+	cd $(OBJ); $(FORTRAN) -o usenlso.o $(FFLAGSOMP) usenlso.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usenlso.o $(FFLAGSN) usenlso.f90 )
+	cd $(OBJ); $(ARR) usenlso.o ; $(RM) usenlso.f90 usenlso1.f90 \
+                                       usenlso2.f90 usenlso.o
+	$(RMOBFILE) runnlso_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runnls_sif.o: $(OBJ)/runnls_sif.o
+
+$(OBJ)/runnls_sif.o: ../nls/runnls_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runnls_sif"
+	$(SED) -f $(SEDS) ../nls/runnls_sif.f90 > $(OBJ)/runnls_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runnls_sif.o $(FFLAGSS) runnls_sif.f90
+	rm $(OBJ)/runnls_sif.f90
+	@printf '[ OK ]\n'
+
+runnlso_sif.o: $(OBJ)/runnlso_sif.o
+
+$(OBJ)/runnlso_sif.o: ../nlso/runnlso_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runnlso_sif"
+	$(SED) -f $(SEDS) ../nlso/runnlso_sif.f90 > $(OBJ)/runnlso_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runnlso_sif.o $(FFLAGSS) runnlso_sif.f90
+	rm $(OBJ)/runnlso_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+nlss.o: $(OBJ)/nlss.o
+
+$(OBJ)/nlss.o: ../nls/nlss.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "nlss  "
+	$(SED) -f $(SEDS) ../nls/nlss.f90 > $(OBJ)/nlss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/nlss1.f90 > $(OBJ)/nlss.f90
+	cd $(OBJ) ; $(FORTRAN) -o nlss.o $(FFLAGS) nlss.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+nlss2.o: $(OBJ)/nlss2.o
+
+$(OBJ)/nlss2.o: ../nls/nlss2.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "nlss2  "
+	$(SED) -f $(SEDS) ../nls/nlss2.f90 > $(OBJ)/nlss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/nlss1.f90 > $(OBJ)/nlss2.f90
+	cd $(OBJ) ; $(FORTRAN) -o nlss2.o $(FFLAGS) nlss2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+nlss3.o: $(OBJ)/nlss3.o
+
+$(OBJ)/nlss3.o: ../nls/nlss3.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "nlss3  "
+	$(SED) -f $(SEDS) ../nls/nlss3.f90 > $(OBJ)/nlss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/nlss1.f90 > $(OBJ)/nlss3.f90
+	cd $(OBJ) ; $(FORTRAN) -o nlss3.o $(FFLAGS) nlss3.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+nlss4.o: $(OBJ)/nlss4.o
+
+$(OBJ)/nlss4.o: ../nls/nlss4.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "nlss4  "
+	$(SED) -f $(SEDS) ../nls/nlss4.f90 > $(OBJ)/nlss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/nlss1.f90 > $(OBJ)/nlss4.f90
+	cd $(OBJ) ; $(FORTRAN) -o nlss4.o $(FFLAGS) nlss4.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+nlss5.o: $(OBJ)/nlss5.o
+
+$(OBJ)/nlss5.o: ../nls/nlss5.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "nlss5  "
+	$(SED) -f $(SEDS) ../nls/nlss5.f90 > $(OBJ)/nlss1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/nlss1.f90 > $(OBJ)/nlss5.f90
+	cd $(OBJ) ; $(FORTRAN) -o nlss5.o $(FFLAGS) nlss5.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+nlst.o: $(OBJ)/nlst.o
+
+$(OBJ)/nlst.o: ../nls/nlst.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "nlst  "
+	$(SED) -f $(SEDS) ../nls/nlst.f90 > $(OBJ)/nlst1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/nlst1.f90 > $(OBJ)/nlst.f90
+	cd $(OBJ) ; $(FORTRAN) -o nlst.o $(FFLAGSS) nlst.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LG) $(OBJ)/nlst.o $(OBJ)/nlss.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmnls:
+	@printf ' %-9s %-15s\t\t' "Removing" "nls from archive "
+	$(RMARFILE) nls.o
+	@printf '[ OK ]\n'

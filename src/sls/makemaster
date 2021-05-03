@@ -1,0 +1,439 @@
+#  Main body of the installation makefile for the GALAHAD SLS package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version:  10 I 2014
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS        = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS       = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN       = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77      = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S     = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP     = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+                $(OPENMP)
+FFLAGSNOMP    = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(OPENMP)
+RUNFFLAGS     =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSCUDA =          $(OPTIMIZATION)          $(MODULES)
+RUNFFLAGSOMP  =          $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+PLG  = $(OBJ)/libgalahad_problem.a
+PLGS = $(OBJS)/libgalahad_problem.a
+PLGD = $(OBJD)/libgalahad_problem.a
+
+RLG  = $(OBJ)/libgalahad_spral.a
+RLGS = $(OBJS)/libgalahad_spral.a
+RLGD = $(OBJD)/libgalahad_spral.a
+
+WLG  = $(OBJ)/libgalahad_wsmp.a
+WLGS = $(OBJS)/libgalahad_wsmp.a
+WLGD = $(OBJD)/libgalahad_wsmp.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(PARDISO) $(MKL_PARDISO) $(WSMP) $(METIS) \
+                 $(LAPACK) $(BLAS)
+PLIBS = $(LIBS) -lgalahad_problem
+
+#  remove out-of-core direct-access files
+
+RMOOC = $(RM) factor_integer_ooc* factor_real_ooc* \
+              work_indefinite_ooc work_real_ooc
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
+
+PARR = $(AR) $(ARREPFLAGS) $(PLG)
+PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PLG)
+
+RARR = $(AR) $(ARREPFLAGS) $(RLG)
+RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(RLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+MA86SED = $(GALAHAD)/seds/$(MA86_VERSION).sed
+
+#  compilation agenda
+
+SLSS = basics ma57v4 sils mc61 mc64 mc68 mc77 ma77 ma86 ma87 ma97 ssids_dum \
+       mkl_pardiso pardiso wsmp metis symbols space string specfile sort \
+       $(LGS)(sls.o)
+SLSD = basics ma57v4 sils mc61 mc64 mc68 mc77 ma77 ma86 ma87 ma97 $(SSIDS) \
+       mkl_pardiso pardiso wsmp metis symbols space string specfile sort \
+       $(LGD)(sls.o)
+
+SRUNSLS = copyright $(LGS)(usesls.o) $(OBJS)/runsls_sif.o
+DRUNSLS = copyright $(LGD)(usesls.o) $(OBJD)/runsls_sif.o
+
+SLSOBJECTSS_CUTEST = $(SSLS) $(SRUNSLS)
+SLSOBJECTSD_CUTEST = $(SLSD) $(DRUNSLS)
+
+SLSSS = $(SLSS) $(OBJS)/slss.o
+SLSST = $(SLSS) $(OBJS)/slst.o
+SLSDS = $(SLSD) $(OBJD)/slss.o
+SLSDT = $(SLSD) $(OBJD)/slst.o
+
+RSLSSS = $(OBJS)/slss.o -L$(OBJS) $(SPRAL) $(LIBS)
+RSLSST = $(OBJS)/slst.o -L$(OBJS) $(SPRAL) $(LIBS)
+RSLSDS = $(OBJD)/slss.o -L$(OBJD) $(SPRAL) $(LIBS)
+RSLSDT = $(OBJD)/slst.o -L$(OBJD) $(SPRAL) $(LIBS)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+all: sls
+test: test_sls
+test_nocutest: test_sls
+test_spec: test_sls_spec
+
+# sls
+
+sls_cutest: sls_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SLS ($(PRECIS) $(SUCC_CUTEST)"
+sls_cutest_single: $(SLSOBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+sls_cutest_double: $(SLSOBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+sls_silent: sls_silent_$(PRECIS)
+sls_silent_single: $(SLSS)
+sls_silent_double: $(SLSD)
+
+sls: sls_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SLS ($(PRECIS) $(SUCC)"
+sls_single: $(SLSS)
+	$(RANLIB) $(LGS)
+sls_double: $(SLSD)
+	$(RANLIB) $(LGD)
+
+slssrunall: slsss slsst
+slsdrunall: slsds slsdt
+slsrunall: slsdrunall slssrunall
+
+test_sls: test_sls_$(PRECIS)
+
+test_sls_single: slsst
+	echo " Tests for sls complete"
+
+test_sls_double: slsdt
+	echo " Tests for sls complete"
+
+test_sls_spec: test_sls_spec_$(PRECIS)
+test_sls_spec_single: slsss
+test_sls_spec_double: slsds
+
+#  other galahad packages
+
+basicz:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basicz_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+symbols:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            symbols.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+space:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            space.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+string:
+	( cd ../string ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            string.o PRECIS=$(PRECIS) PWD=$(PWD)/../string )
+specfile:
+	( cd ../spec ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            specfile.o PRECIS=$(PRECIS) PWD=$(PWD)/../spec )
+sort:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            sort.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+#ssids_dum:
+#	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+#            ssids_dum_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+sils:
+	( cd ../sils ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            sils_silent PRECIS=$(PRECIS) PWD=$(PWD)/../sils )
+copyright:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+
+#  hsl and related packages
+
+ma57v4:
+	( cd ../non-free/ma57 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ma57v4_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma57 )
+
+ma77:
+	( cd ../non-free/ma77 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ma77_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma77 )
+
+ma86:
+	( cd ../non-free/ma86 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ma86_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma86 )
+
+ma87:
+	( cd ../non-free/ma87 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ma87_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma87 )
+
+ma97:
+	( cd ../non-free/ma97 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ma97_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma97 )
+
+mc61:
+	( cd ../non-free/mc61 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mc61_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mc61 )
+
+mc64:
+	( cd ../non-free/mc64 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mc64_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mc64 )
+
+mc68:
+	( cd ../non-free/mc68 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mc68_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mc68 )
+
+mc77:
+	( cd ../non-free/mc77 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mc77_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mc77 )
+
+$(SSIDS):
+	( cd ../dum ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            $(SSIDS)_silent PRECIS=$(PRECIS) PWD=$(PWD)/../dum )
+
+#  dummy versions of external packages
+
+pardiso:
+	( cd ../dum ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            pardiso_silent PRECIS=$(PRECIS) PWD=$(PWD)/../dum )
+
+mkl_pardiso:
+	( cd ../dum ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+           mkl_pardiso_silent PRECIS=$(PRECIS) PWD=$(PWD)/../dum )
+
+wsmp:
+	( cd ../dum ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            wsmp_silent PRECIS=$(PRECIS) PWD=$(PWD)/../dum )
+
+metis:
+	( cd ../dum ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            metis_silent PRECIS=$(PRECIS) PWD=$(PWD)/../dum )
+
+# run spec-sheet example tests
+
+slsds: $(SLSDS)
+	cd ../sls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sls $(RSLSDS)
+	cd ../sls ; $(RMOOC)
+#	- ../sls//run_sls < ../sls/slss.data
+	- ../sls//run_sls < ../sls/slss.data >& ../sls/slsds.output
+	cat ../sls/slsds.output
+	rm ../sls/run_sls
+
+slsds_valgrind: $(SLSDS)
+	cd ../sls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sls $(RSLSDS)
+	cd ../sls ; $(RMOOC)
+	- valgrind -v --tool=memcheck --leak-check=yes \
+            --show-reachable=yes ../sls/run_sls < ../sls/slss.data
+	rm ../sls/run_sls
+
+slsds_cuda: $(SLSDS)
+	cd ../sls ; $(CUDACOMP) $(CUDAOPENMP) -o run_sls \
+                      $(RSLSDS) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
+	cd ../sls ; $(RMOOC)
+#	- ../sls//run_sls < ../sls/slss.data
+	- ../sls//run_sls < ../sls/slss.data >& ../sls/slsds.output
+	cat ../sls/slsds.output
+	rm ../sls/run_sls
+
+slsds_cuda_valgrind: $(SLSDS)
+	cd ../sls ; $(RMOOC)
+	cd ../sls ; $(CUDACOMP) $(CUDAOPENMP) -o run_sls \
+                      $(RSLSDS) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
+	- valgrind -v --tool=memcheck --leak-check=yes \
+            --show-reachable=yes ../sls/run_sls < ../sls/slss.data
+	rm ../sls/run_sls
+
+slsdt: $(SLSDT)
+	echo " Exhaustive test of subroutine interface to sls"
+	cd ../sls ; $(RMOOC)
+	cd ../sls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sls $(RSLSDT)
+#	- ../sls/run_sls
+	- ../sls/run_sls  >& ../sls/slsdt.output
+	cat ../sls/slsdt.output
+	rm ../sls/run_sls
+
+slsdt_cuda: $(SLSDT)
+	cd ../sls ; $(CUDACOMP) $(CUDAOPENMP) -o run_sls \
+                      $(RSLSDT) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
+	cd ../sls ; $(RMOOC)
+#	- ../sls//run_sls
+	- ../sls//run_sls >& ../sls/slsdt.output
+	cat ../sls/slsdt.output
+	rm ../sls/run_sls
+
+slsdt_valgrind: $(SLSDT)
+	echo " Exhaustive test of subroutine interface to sls"
+	cd ../sls ; $(RMOOC)
+	cd ../sls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sls $(RSLSDT)
+#	- ../sls/run_sls
+	- valgrind -v --tool=memcheck --leak-check=yes \
+            --show-reachable=yes --track-origins=yes ../sls/run_sls
+	rm ../sls/run_sls
+
+slsdt_cuda_valgrind: $(SLSDT)
+	cd ../sls ; $(RMOOC)
+	cd ../sls ; $(CUDACOMP) $(CUDAOPENMP) -o run_sls \
+                      $(RSLSDT) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
+	- valgrind -v --tool=memcheck --leak-check=yes \
+            --show-reachable=yes ../sls/run_sls
+	rm ../sls/run_sls
+
+slsss: $(SLSSS)
+	cd ../sls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sls $(RSLSSS)
+	cd ../sls ; $(RMOOC)
+#	- ../sls/run_sls < ../sls/slss.data
+	- ../sls/run_sls < ../sls/slss.data >& ../sls/slss.output
+	cat ../sls/slss.output
+	rm ../sls/run_sls
+
+slsst: $(SLSST)
+	echo " Exhaustive test of subroutine interface to sls"
+	cd ../sls ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_sls $(RSLSST)
+	cd ../sls ; $(RMOOC)
+#	- ../sls/run_sls < ../sls/slss.data
+	- ../sls/run_sls >& ../sls/slst.output
+	cat ../sls/slst.output
+	rm ../sls/run_sls
+
+#  individual compilations
+
+sls.o: $(LG)(sls.o)
+
+$(LG)(sls.o): ../sls/sls.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "sls  "
+	$(SED) -f $(SEDS) ../sls/sls.f90 > $(OBJ)/sls1.f90
+	$(SED) -f $(MA86SED) $(OBJ)/sls1.f90 > $(OBJ)/sls2.f90
+	$(SED) "s/^.$(NOT64)/     /" $(OBJ)/sls2.f90 > $(OBJ)/sls.f90
+	cd $(OBJ) ; $(FORTRAN) -o sls.o $(FFLAGSOMP) sls.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o sls.o $(FFLAGSNOMP) sls.f90 )
+	cd $(OBJ) ; cp sls.f90 /tmp/sls.f90
+#	cd $(OBJ) ; $(ARR) sls.o ; $(RM) sls.f90 sls1.f90 sls2.f90 sls.o
+	cd $(OBJ) ; $(ARR) sls.o ; $(RM) sls1.f90 sls2.f90 sls.o
+	$(RMARFILE) psls.o
+	$(RMARFILE) sbls.o
+	$(RMARFILE) cro.o
+	$(RMARFILE) fdc.o
+	$(RMARFILE) rqs.o
+	$(RMARFILE) trs.o
+	$(RMARFILE) usesls.o
+	$(RMOBFILE) slss.o
+	$(RMOBFILE) slst.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# others
+
+#  test decks
+
+slss.o: $(OBJ)/slss.o
+
+$(OBJ)/slss.o: ../sls/slss.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "slss  "
+	$(SED) -f $(SEDS) ../sls/slss.f90 > $(OBJ)/slss.f90
+	cd $(OBJ) ; $(FORTRAN) -o slss.o $(FFLAGS) slss.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+slst.o: $(OBJ)/slst.o
+
+$(OBJ)/slst.o: ../sls/slst.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "slst  "
+	$(SED) -f $(SEDS) ../sls/slst.f90 > $(OBJ)/slst.f90
+	cd $(OBJ) ; $(FORTRAN) -o slst.o $(FFLAGSS) slst.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usesls.o: $(LG)(usesls.o)
+
+$(LG)(usesls.o): ../sls/usesls.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usesls   "
+	$(SED) -f $(SEDS) ../sls/usesls.f90 > $(OBJ)/usesls1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usesls1.f90 > $(OBJ)/usesls2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usesls2.f90 > $(OBJ)/usesls.f90
+	cd $(OBJ); $(FORTRAN) -o usesls.o $(FFLAGSOMP) usesls.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usesls.o $(FFLAGSN) usesls.f90 )
+	cd $(OBJ); $(ARR) usesls.o ; $(RM) usesls.f90 usesls1.f90 \
+                                           usesls2.f90 usesls.o
+	$(RMOBFILE) runsls_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runsls_sif.o: $(OBJ)/runsls_sif.o
+
+$(OBJ)/runsls_sif.o: ../sls/runsls_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runsls_sif"
+	$(SED) -f $(SEDS) ../sls/runsls_sif.f90 > $(OBJ)/runsls_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runsls_sif.o $(FFLAGSS) runsls_sif.f90
+	rm $(OBJ)/runsls_sif.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LGS) $(LGD) $(OBJ)/sls*.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmsls:
+	@printf ' %-9s %-15s\t\t' "Removing" "sls from archive "
+	$(RMARFILE) sls.o
+	@printf '[ OK ]\n'

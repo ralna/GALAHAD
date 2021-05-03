@@ -1,0 +1,330 @@
+#  Main body of the installation makefile for the GALAHAD demo package
+#  This is a sample makemaster!
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 9 IV 2009
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+#RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES) -L/usr/lib -llapack
+
+#  coverage flags
+
+COVERAGE = -fprofile-arcs -ftest-coverage
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
+                 $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+# -- add all dependencies here - "basics linearsolver"
+#  are simply examples, you may have to change or add more, but most
+#  likely you will need at least "basics" --
+
+SDEMO = basics linearsolver $(LGS)(demo.o)
+DDEMO = basics linearsolver $(LGD)(demo.o)
+
+SRUNDEMO = copyright $(LGS)(usedemo.o) $(OBJS)/rundemo_sif.o
+DRUNDEMO = copyright $(LGD)(usedemo.o) $(OBJD)/rundemo_sif.o
+
+DEMODS = $(DDEMO) $(OBJD)/demos.o
+DEMODS2 = $(DDEMO) $(OBJD)/demos2.o
+DEMODS3 = $(DDEMO) $(OBJD)/demos3.o
+DEMODT = $(DDEMO) $(OBJD)/demot.o
+DEMOSS = $(SDEMO) $(OBJS)/demos.o
+DEMOSS2 = $(SDEMO) $(OBJS)/demos2.o
+DEMOSS3 = $(SDEMO) $(OBJS)/demos3.o
+DEMOST = $(SDEMO) $(OBJS)/demot.o
+
+RDEMODS = $(OBJD)/demos.o -L$(OBJD) $(LIBS)
+RDEMODS2 = $(OBJD)/demos2.o -L$(OBJD) $(LIBS)
+RDEMODS3 = $(OBJD)/demos3.o -L$(OBJD) $(LIBS)
+RDEMODT = $(OBJD)/demot.o -L$(OBJD) $(LIBS)
+RDEMOSS = $(OBJS)/demos.o -L$(OBJS) $(LIBS)
+RDEMOSS2 = $(OBJS)/demos2.o -L$(OBJS) $(LIBS)
+RDEMOSS3 = $(OBJS)/demos3.o -L$(OBJS) $(LIBS)
+RDEMOST = $(OBJS)/demot.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+
+#  main compilations and runs
+
+all: demo
+all_demo: demo
+test: test_demo
+
+# demo
+
+demo_silent: demo_$(PRECIS)
+demo: demo_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: DEMO ($(PRECIS) $(SUCC)"
+demo_single: $(DEMOOBJECTSS)
+	$(RANLIB) $(LGS)
+demo_double: $(DEMOOBJECTSD)
+	$(RANLIB) $(LGD)
+
+demosrunall: demoss demoss2 demoss3 demods demods2 demods3
+demodrunall: demods demodt
+demorunall: demodrunall demosrunall
+
+test_demo: test_demo_$(PRECIS)
+
+test_demo_single: demost
+	echo ""
+	echo " Tests for demo complete"
+
+test_demo_double: demodt
+	echo ""
+	echo " Tests for demo complete"
+
+#  basic packages
+
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+linearsolver:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+cutest_functions:
+	( cd ../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_silent PRECIS=$(PRECIS) PWD=$(PWD)/../auxiliary )
+copyright:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+
+# run spec-sheet example tests
+
+demoss: $(DEMOSS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_demo $(RDEMOSS)
+	- ./run_demo >& demos.output
+	cat demos.output
+	rm ./run_demo
+
+demoss2: $(DEMOSS2)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_demo $(RDEMOSS2)
+	- ./run_demo >& demos2.output
+	cat demos2.output
+	rm ./run_demo
+
+demoss3: $(DEMOSS3)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_demo $(RDEMOSS3)
+	- ./run_demo >& demos3.output
+	cat demos3.output
+	rm ./run_demo
+
+demost: $(DEMOST)
+	echo " Exhaustive test of subroutine interface to demo"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_demo $(RDEMOST)
+	- ./run_demo >& demot.output
+	cat demot.output
+	rm ./run_demo
+
+demods: $(DEMODS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_demo $(RDEMODS)
+	- ./run_demo >& demods.output
+	cat demods.output
+	rm ./run_demo
+
+demods2: $(DEMODS2)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_demo $(RDEMODS2)
+	- ./run_demo >& demods2.output
+	cat demods2.output
+	rm ./run_demo
+
+demods3: $(DEMODS3)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_demo $(RDEMODS3)
+	- ./run_demo >& demods3.output
+	cat demods3.output
+	rm ./run_demo
+
+demodt: $(DEMODT)
+	echo " Exhaustive test of subroutine interface to demo"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_demo $(RDEMODT)
+	- ./run_demo >& demodt.output
+	cat demodt.output
+	rm ./run_demo
+
+demot_gcov: $(DIR) mop
+	echo " Exhaustive coverage test of subroutine interface to demo"
+	$(SED) -f $(SEDS) demo.f90 > demo_gcov1.f90
+	$(SED) -f $(LSEDS) demo_gcov1.f90 > demo_gcov2.f90
+	$(SED) -f $(LPSEDS) demo_gcov2.f90 > demo_gcov3.f90
+	$(SED) "s/^.$(NOT95)/     /" demo_gcov3.f90 > demo_gcov.f90
+	$(FORTRAN) -g $(BASIC) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
+          demo_gcov.f90
+	$(SED) -f $(SEDS) demot.f90 > demot_gcov1.f90
+	$(SED) -f $(LSEDS) demot_gcov1.f90 > demot_gcov.f90
+	$(FORTRAN) -g $(BASIC) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
+          demot_gcov.f90
+	$(FORTRAN) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
+          -o ./demo_gcov demo_gcov.o demot_gcov.o -L$(OBJ) $(LIBS)
+	./demo_gcov
+	gcov ./demo_gcov
+	$(MV) ./demo_gcov.f90.gcov ./demo_coverage
+	$(RM) ./demo*gcov* ./galahad_demo_*.mod
+
+#  Substantial GALAHAD packages
+
+demo.o: $(LG)(demo.o)
+
+$(LG)(demo.o): ../demo/demo.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "demo   "
+	$(SED) -f $(SEDS) ../demo/demo.f90 > $(OBJ)/demo1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/demo1.f90 > $(OBJ)/demo2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/demo2.f90 > $(OBJ)/demo3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/demo3.f90 > $(OBJ)/demo.f90
+	cd $(OBJ); $(FORTRAN) -o demo.o $(FFLAGSS) demo.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o demo.o $(FFLAGSN) demo.f90 )
+	cd $(OBJ); $(ARR) demo.o ; $(RM) demo.f90 demo1.f90 demo2.f90 \
+                                          demo3.f90 demo.o
+	$(RMARFILE) usedemo.o
+	$(RMOBFILE) demos.o
+	$(RMOBFILE) demot.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+
+# CUTEst/AMPL interfaces
+
+usedemo.o: $(LG)(usedemo.o)
+
+$(LG)(usedemo.o): ../demo/usedemo.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usedemo   "
+	$(SED) -f $(SEDS) ../demo/usedemo.f90 > $(OBJ)/usedemo1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usedemo1.f90 > $(OBJ)/usedemo2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usedemo2.f90 > $(OBJ)/usedemo.f90
+	cd $(OBJ); $(FORTRAN) -o usedemo.o $(FFLAGSS) usedemo.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usedemo.o $(FFLAGSN) usedemo.f90 )
+	cd $(OBJ); $(ARR) usedemo.o ; $(RM) usedemo.f90 usedemo1.f90 \
+                                       usedemo2.f90 usedemo.o
+	$(RMOBFILE) rundemo_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+rundemo_sif.o: $(OBJ)/rundemo_sif.o
+
+$(OBJ)/rundemo_sif.o: ../demo/rundemo_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "rundemo_sif"
+	$(SED) -f $(SEDS) ../demo/rundemo_sif.f90 > $(OBJ)/rundemo_sif.f90
+	cd $(OBJ); $(FORTRAN) -o rundemo_sif.o $(FFLAGSS) rundemo_sif.f90
+	rm $(OBJ)/rundemo_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+demos.o: $(OBJ)/demos.o
+
+$(OBJ)/demos.o: ../demo/demos.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "demos  "
+	$(SED) -f $(SEDS) ../demo/demos.f90 > $(OBJ)/demos1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/demos1.f90 > $(OBJ)/demos.f90
+	cd $(OBJ) ; $(FORTRAN) -o demos.o $(FFLAGS) demos.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+demos2.o: $(OBJ)/demos2.o
+
+$(OBJ)/demos2.o: ../demo/demos2.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "demos2  "
+	$(SED) -f $(SEDS) ../demo/demos2.f90 > $(OBJ)/demos1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/demos1.f90 > $(OBJ)/demos2.f90
+	cd $(OBJ) ; $(FORTRAN) -o demos2.o $(FFLAGS) demos2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+demos3.o: $(OBJ)/demos3.o
+
+$(OBJ)/demos3.o: ../demo/demos3.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "demos3  "
+	$(SED) -f $(SEDS) ../demo/demos3.f90 > $(OBJ)/demos1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/demos1.f90 > $(OBJ)/demos3.f90
+	cd $(OBJ) ; $(FORTRAN) -o demos3.o $(FFLAGS) demos3.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+demot.o: $(OBJ)/demot.o
+
+$(OBJ)/demot.o: ../demo/demot.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "demot  "
+	$(SED) -f $(SEDS) ../demo/demot.f90 > $(OBJ)/demot1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/demot1.f90 > $(OBJ)/demot.f90
+	cd $(OBJ) ; $(FORTRAN) -o demot.o $(FFLAGSS) demot.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LG) $(OBJ)/demot.o $(OBJ)/demos.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmdemo:
+	@printf ' %-9s %-15s\t\t' "Removing" "demo from archive "
+	$(RMARFILE) demo.o
+	@printf '[ OK ]\n'
+

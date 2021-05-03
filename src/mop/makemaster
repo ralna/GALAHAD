@@ -1,0 +1,186 @@
+#  Main body of the installation makefile for the GALAHAD MOP package
+
+#  N. Gould, D. Orban, D. Robinson and Ph. L. Toint.
+#  This version: 7 XII 2007
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(METIS) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SMOP = smt mop
+DMOP = smt mop
+
+MOPS = smt $(LGS)(mop.o)
+MOPD = smt $(LGD)(mop.o)
+
+MOPSS = $(SMOP) $(OBJS)/mops.o
+MOPDS = $(DMOP) $(OBJD)/mops.o
+MOPST = $(MOPS) $(OBJS)/mopt.o
+MOPDT = $(MOPD) $(OBJD)/mopt.o
+
+RMOPSS = $(OBJD)/mops.o -L$(OBJD) $(LIBS)
+RMOPDS = $(OBJD)/mops.o -L$(OBJD) $(LIBS)
+RMOPST = $(OBJS)/mopt.o -L$(OBJS) $(LIBS)
+RMOPDT = $(OBJD)/mopt.o -L$(OBJD) $(LIBS)
+
+SUCC = precision version) compiled successfully
+
+#  main compilations and runs
+
+all: mop
+
+# mop
+
+mop_silent: mop_$(PRECIS)
+mop: mop_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: MOP ($(PRECIS) $(SUCC)"
+mop_single: $(MOPS)
+	$(RANLIB) $(LGS)
+mop_double: $(MOPD)
+	$(RANLIB) $(LGD)
+
+#  basic packages
+
+smt:
+	( cd ../smt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            smt.o PRECIS=$(PRECIS) PWD=$(PWD)/../smt )
+
+# run spec-sheet example tests
+
+mopst: $(MOPST)
+	echo " Exhaustive test of subroutine interface within mop "
+	cd ../mop ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o dummy_file $(RMOPST)
+#	- ../mop/dummy_file
+#	- valgrind -v --tool=memcheck --leak-check=yes --show-reachable=yes ../qpa/dummy_file >& ../mop/mopst.output
+	- ../mop/dummy_file >& ../mop/mopst.output
+	cat ../mop/mopst.output
+	rm ../mop/dummy_file
+
+mopdt: $(MOPDT)
+	echo " Exhaustive test of subroutine interface within mop "
+	cd ../mop ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o dummy_file $(RMOPDT)
+#	- ../mop/dummy_file
+#	- valgrind -v --tool=memcheck --leak-check=yes --show-reachable=yes ../qpa/dummy_file >& ../mop/mopdt.output
+	- ../mop/dummy_file >& ../mop/mopdt.output
+	cat ../mop/mopdt.output
+	rm ../mop/dummy_file
+
+mopt.o: $(OBJ)/mopt.o
+
+$(OBJ)/mopt.o: ../mop/mopt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mopt  "
+	$(SED) -f $(SEDS) ../mop/mopt.f90 > $(OBJ)/mopt1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/mopt1.f90 > $(OBJ)/mopt.f90
+	cd $(OBJ) ; $(FORTRAN) -o mopt.o $(FFLAGS) mopt.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+mopds: $(MOPDS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o dummy_file $(RMOPDS)
+	- ./dummy_file >& mopds.output
+	cat mopds.output
+	rm ./dummy_file
+
+#  Substantial GALAHAD packages
+
+mop.o: $(LG)(mop.o)
+
+$(LG)(mop.o): ../mop/mop.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mop   "
+	$(SED) -f $(SEDS) ../mop/mop.f90 > $(OBJ)/mop1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/mop1.f90 > $(OBJ)/mop2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/mop2.f90 > $(OBJ)/mop3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/mop3.f90 > $(OBJ)/mop.f90
+	cd $(OBJ); $(FORTRAN) -o mop.o $(FFLAGSS) mop.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o mop.o $(FFLAGSN) mop.f90 )
+	cd $(OBJ); $(ARR) mop.o ; $(RM) mop.f90 mop1.f90 \
+                          mop2.f90 mop3.f90 mop.o
+	$(RMOBFILE) mops.o
+	$(RMOBFILE) mopt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  test decks
+
+mops.o: $(OBJ)/mops.o
+
+$(OBJ)/mops.o: ../mop/mops.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "mops  "
+	$(SED) -f $(SEDS) ../mop/mops.f90 > $(OBJ)/mops1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/mops1.f90 > $(OBJ)/mops.f90
+	cd $(OBJ) ; $(FORTRAN) -o mops.o $(FFLAGS) mops.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LG) $(OBJ)/trimsqpt.o $(OBJ)/trimsqpt.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+

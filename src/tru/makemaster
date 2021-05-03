@@ -1,0 +1,364 @@
+#  Main body of the installation makefile for the GALAHAD TRU package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 27 X 2008
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(OPENMP)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+#RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES) -L/usr/lib -llapack
+RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
+                 $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+STRU = basics gltr psls dps lms sec sha nlpt $(LGS)(tru.o)
+DTRU = basics gltr psls dps lms sec sha nlpt $(LGD)(tru.o)
+
+SRUNTRU = cutest_functions copyright $(LGS)(usetru.o) $(OBJS)/runtru_sif.o
+DRUNTRU = cutest_functions copyright $(LGD)(usetru.o) $(OBJD)/runtru_sif.o
+
+TRUOBJECTSS = $(STRU)
+TRUOBJECTSD = $(DTRU)
+TRUOBJECTSS_CUTEST = $(STRU) $(SRUNTRU)
+TRUOBJECTSD_CUTEST = $(DTRU) $(DRUNTRU)
+
+OBJECTSS_CUTEST = $(TRUOBJECTSS_CUTEST)
+OBJECTSD_CUTEST = $(TRUOBJECTSD_CUTEST)
+
+TRUDS = $(DTRU) $(OBJD)/trus.o
+TRUDS2 = $(DTRU) $(OBJD)/trus2.o
+TRUDS3 = $(DTRU) $(OBJD)/trus3.o
+TRUDT = $(DTRU) $(OBJD)/trut.o
+TRUSS = $(STRU) $(OBJS)/trus.o
+TRUSS2 = $(STRU) $(OBJS)/trus2.o
+TRUSS3 = $(STRU) $(OBJS)/trus3.o
+TRUST = $(STRU) $(OBJS)/trut.o
+
+RTRUDS = $(OBJD)/trus.o -L$(OBJD) $(LIBS)
+RTRUDS2 = $(OBJD)/trus2.o -L$(OBJD) $(LIBS)
+RTRUDS3 = $(OBJD)/trus3.o -L$(OBJD) $(LIBS)
+RTRUDT = $(OBJD)/trut.o -L$(OBJD) $(LIBS)
+RTRUSS = $(OBJS)/trus.o -L$(OBJS) $(LIBS)
+RTRUSS2 = $(OBJS)/trus2.o -L$(OBJS) $(LIBS)
+RTRUSS3 = $(OBJS)/trus3.o -L$(OBJS) $(LIBS)
+RTRUST = $(OBJS)/trut.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+all: tru_cutest
+all_tru: tru_cutest
+test: test_tru
+test_nocutest: test_tru_nocutest
+
+# tru
+
+tru_cutest: tru_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: TRU ($(PRECIS) $(SUCC_CUTEST)"
+tru_cutest_single: $(TRUOBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+tru_cutest_double: $(TRUOBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+tru_silent: tru_silent_$(PRECIS)
+tru_silent_single: $(TRUOBJECTSS)
+tru_silent_double: $(TRUOBJECTSD)
+
+tru: tru_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: TRU ($(PRECIS) $(SUCC)"
+tru_single: $(TRUOBJECTSS)
+	$(RANLIB) $(LGS)
+tru_double: $(TRUOBJECTSD)
+	$(RANLIB) $(LGD)
+
+trusrunall: truss truss2 truss3 truds truds2 truds3
+trudrunall: truds trudt
+trurunall: trudrunall trusrunall
+
+test_tru: test_tru_$(PRECIS)
+
+test_tru_single: trust $(SRUNTRU)
+	echo ""
+	echo " Testing CUTEst interface to tru"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) tru -s QPBAND
+	echo ""
+	echo " Tests for tru complete"
+
+test_tru_double: trudt $(DRUNTRU)
+	echo ""
+	echo " Testing CUTEst interface to tru"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) tru QPBAND
+	echo ""
+	echo " Tests for tru complete"
+
+test_tru_nocutest: test_tru_nocutest_$(PRECIS)
+
+test_tru_nocutest_single: trust
+	echo ""
+	echo " Tests for tru complete"
+
+test_tru_nocutest_double: trudt
+	echo ""
+	echo " Tests for tru complete"
+
+#  basic packages
+
+basics:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+linearsolver:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+gltr:
+	( cd ../gltr ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            gltr_silent PRECIS=$(PRECIS) PWD=$(PWD)/../gltr )
+dps:
+	( cd ../dps ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dps_silent PRECIS=$(PRECIS) PWD=$(PWD)/../dps )
+psls:
+	( cd ../psls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            psls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../psls )
+lms:
+	( cd ../lms ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lms_silent PRECIS=$(PRECIS) PWD=$(PWD)/../lms )
+sec:
+	( cd ../sec ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            sec_silent PRECIS=$(PRECIS) PWD=$(PWD)/../sec )
+sha:
+	( cd ../sha ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            sha_silent PRECIS=$(PRECIS) PWD=$(PWD)/../sha )
+nlpt:
+	( cd ../nlpt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            nlpt_silent PRECIS=$(PRECIS) PWD=$(PWD)/../nlpt )
+mop:
+	( cd ../mop ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mop.o PRECIS=$(PRECIS) PWD=$(PWD)/../mop )
+cutest_functions:
+	( cd ../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_silent PRECIS=$(PRECIS) PWD=$(PWD)/../auxiliary )
+copyright:
+	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+
+# run spec-sheet example tests
+
+truss: $(TRUSS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tru $(RTRUSS)
+	- ./run_tru >& trus.output
+	cat trus.output
+	rm ./run_tru
+
+truss2: $(TRUSS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tru $(RTRUSS2)
+	- ./run_tru >& trus2.output
+	cat trus2.output
+	rm ./run_tru
+
+truss3: $(TRUSS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tru $(RTRUSS3)
+	- ./run_tru >& trus3.output
+	cat trus3.output
+	rm ./run_tru
+
+trust: $(TRUST)
+	echo " Exhaustive test of subroutine interface to tru"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tru $(RTRUST)
+	- ./run_tru >& trut.output
+	cat trut.output
+	rm ./run_tru
+
+truds: $(TRUDS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tru $(RTRUDS)
+	- ./run_tru >& truds.output
+	cat truds.output
+	rm ./run_tru
+
+truds2: $(TRUDS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tru $(RTRUDS2)
+	- ./run_tru >& truds2.output
+	cat truds2.output
+	rm ./run_tru
+
+truds3: $(TRUDS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tru $(RTRUDS3)
+	- ./run_tru >& truds3.output
+	cat truds3.output
+	rm ./run_tru
+
+trudt: $(TRUDT)
+	echo " Exhaustive test of subroutine interface to tru"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_tru $(RTRUDT)
+	- ./run_tru >& trudt.output
+	cat trudt.output
+	rm ./run_tru
+
+#  Substantial GALAHAD packages
+
+tru.o: $(LG)(tru.o)
+
+$(LG)(tru.o): ../tru/tru.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "tru   "
+	$(SED) -f $(SEDS) ../tru/tru.f90 > $(OBJ)/tru1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/tru1.f90 > $(OBJ)/tru2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/tru2.f90 > $(OBJ)/tru3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/tru3.f90 > $(OBJ)/tru.f90
+	cd $(OBJ); $(FORTRAN) -o tru.o $(FFLAGSS) tru.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o tru.o $(FFLAGSN) tru.f90 )
+	cd $(OBJ); $(ARR) tru.o ; $(RM) tru.f90 tru1.f90 tru2.f90 \
+                                        tru3.f90 tru.o
+	$(RMARFILE) ism.o
+	$(RMARFILE) usetru.o
+	$(RMOBFILE) trus.o
+	$(RMOBFILE) trut.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usetru.o: $(LG)(usetru.o)
+
+$(LG)(usetru.o): ../tru/usetru.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usetru   "
+	$(SED) -f $(SEDS) ../tru/usetru.f90 > $(OBJ)/usetru1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usetru1.f90 > $(OBJ)/usetru2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usetru2.f90 > $(OBJ)/usetru.f90
+	cd $(OBJ); $(FORTRAN) -o usetru.o $(FFLAGSOMP) usetru.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usetru.o $(FFLAGSN) usetru.f90 )
+	cd $(OBJ); $(ARR) usetru.o ; $(RM) usetru.f90 usetru1.f90 \
+                                       usetru2.f90 usetru.o
+	$(RMOBFILE) runtru_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runtru_sif.o: $(OBJ)/runtru_sif.o
+
+$(OBJ)/runtru_sif.o: ../tru/runtru_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runtru_sif"
+	$(SED) -f $(SEDS) ../tru/runtru_sif.f90 > $(OBJ)/runtru_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runtru_sif.o $(FFLAGSS) runtru_sif.f90
+	rm $(OBJ)/runtru_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+trus.o: $(OBJ)/trus.o
+
+$(OBJ)/trus.o: ../tru/trus.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "trus  "
+	$(SED) -f $(SEDS) ../tru/trus.f90 > $(OBJ)/trus1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/trus1.f90 > $(OBJ)/trus.f90
+	cd $(OBJ) ; $(FORTRAN) -o trus.o $(FFLAGS) trus.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+trus2.o: $(OBJ)/trus2.o
+
+$(OBJ)/trus2.o: ../tru/trus2.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "trus2  "
+	$(SED) -f $(SEDS) ../tru/trus2.f90 > $(OBJ)/trus1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/trus1.f90 > $(OBJ)/trus2.f90
+	cd $(OBJ) ; $(FORTRAN) -o trus2.o $(FFLAGS) trus2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+trus3.o: $(OBJ)/trus3.o
+
+$(OBJ)/trus3.o: ../tru/trus3.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "trus3  "
+	$(SED) -f $(SEDS) ../tru/trus3.f90 > $(OBJ)/trus1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/trus1.f90 > $(OBJ)/trus3.f90
+	cd $(OBJ) ; $(FORTRAN) -o trus3.o $(FFLAGS) trus3.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+trut.o: $(OBJ)/trut.o
+
+$(OBJ)/trut.o: ../tru/trut.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "trut  "
+	$(SED) -f $(SEDS) ../tru/trut.f90 > $(OBJ)/trut1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/trut1.f90 > $(OBJ)/trut.f90
+	cd $(OBJ) ; $(FORTRAN) -o trut.o $(FFLAGSS) trut.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LG) $(OBJ)/trut.o $(OBJ)/trus.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmtru:
+	@printf ' %-9s %-15s\t\t' "Removing" "tru from archive "
+	$(RMARFILE) tru.o
+	@printf '[ OK ]\n'
