@@ -1,14 +1,22 @@
-! THIS VERSION: GALAHAD 2.5 - 09/02/2013 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
 
-!-*-*-*-*-*-*-*-*-*-  G A L A H A D   L P Q P _ m a i n  *-*-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-  G A L A H A D   U S E C Q P   M O D U L E  -*-*-*-*-*-*-*-*-
 
-!  Nick Gould, for GALAHAD productions
-!  Copyright reserved
-!  July 29th 2002
+!  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+!  Principal authors: Nick Gould and Dominique Orban
 
-      PROGRAM RUNLPQP
+!  History -
+!   originally released with GALAHAD Version 2.4. January 1st 2010
 
-!  Main program for LPQP, a code for assembling an lp_QP for an input QP
+!  For full documentation, see
+!   http://galahad.rl.ac.uk/galahad-www/specs.html
+
+    MODULE GALAHAD_USELPQP_double
+
+!    -------------------------------------------------------------
+!    | CUTEst/AMPL interface to LPQP, a program to               |
+!    | assemble an l_p QP from an input quadratic program        |
+!    -------------------------------------------------------------
 
       USE CUTEst_interface_double
 !NOT95USE GALAHAD_CPU_time
@@ -25,7 +33,14 @@
           ALL_ZEROS             => GALAHAD_ALL_ZEROS
      USE GALAHAD_SMT_double, ONLY: SMT_put, SMT_get
 
-      IMPLICIT NONE
+      PRIVATE
+      PUBLIC :: USE_LPQP
+
+    CONTAINS
+
+!-*-*-*-*-*-*-*-*-*-   U S E _ L P Q P  S U B R O U T I N E   -*-*-*-*-*-*-*-
+
+     SUBROUTINE USE_LPQP( input, close_input )
 
 !  --------------------------------------------------------------------
 !
@@ -37,6 +52,11 @@
 !      using the GALAHAD package LPQP
 !
 !  --------------------------------------------------------------------
+
+!  Dummy argument
+
+      INTEGER, INTENT( IN ) :: input
+      LOGICAL, OPTIONAL, INTENT( IN ) :: close_input
 
 !  Parameters
 
@@ -58,11 +78,6 @@
       REAL :: time, timel1, timel2, times
       REAL ( KIND = wp ) :: obj
       LOGICAL :: filexx, printo, printe
-
-!  Problem input characteristics
-
-      INTEGER, PARAMETER :: input = 55
-      CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Specfile characteristics
 
@@ -108,11 +123,6 @@
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X0, C
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
-
-!  Open the relevant file.
-
-      OPEN( input, FILE = prbdat, FORM = 'FORMATTED', STATUS = 'OLD'  )
-      REWIND input
 
       CALL CPU_TIME( time )
 
@@ -592,14 +602,31 @@
         CLOSE( dfiledevice )
       END IF
 
+      DEALLOCATE( prob%X, prob%X_l, prob%X_u, prob%G, VNAME,                   &
+                  prob%C_l, prob%C_u, prob%Y, prob%Z, CNAME,                   &
+                  VNAME_LPQP, CNAME_LPQP, EQUATN,                              &
+                  prob%C, prob%A%row, prob%A%col, prob%A%val, prob%A%ptr,      &
+                  prob%H%row, prob%H%col, prob%H%val, prob%H%ptr,              &
+                  prob%A%type, prob%H%type, C, STAT = alloc_stat )
+
       CALL LPQP_terminate( lpqp_data, lpqp_control, lpqp_inform )
       CALL CUTEST_cterminate( cutest_status )
-      STOP
+      GO TO 920
 
  910  CONTINUE
       WRITE( out, "( ' CUTEst error, status = ', i0, ', stopping' )" )         &
         cutest_status
-      STOP
+
+!  close the input file if required
+
+ 920  CONTINUE
+      IF ( PRESENT( close_input ) ) THEN
+        IF ( close_input ) THEN
+          CLOSE( input )
+          STOP
+        END IF
+      END IF
+      RETURN
 
 !  Non-executable statements
 
@@ -610,8 +637,10 @@
               ', a_ne = ', I0, ', h_ne = ', I0, /,                             &
               ' formulating time = ', F0.2 )
 
-!  End of program RUNLPQP
+!  End of subroutine USE_LPQP
 
-      END PROGRAM RUNLPQP
+     END SUBROUTINE USE_LPQP
 
+!  End of module USELPQP_double
 
+   END MODULE GALAHAD_USELPQP_double

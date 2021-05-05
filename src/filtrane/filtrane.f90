@@ -8716,7 +8716,7 @@ fpt11:         DO k = 1, s%filter_size
                END IF
             END DO
          END IF
-         WRITE( s%out, 1002 )
+!        WRITE( s%out, 1002 )
       END IF
 
       RETURN
@@ -8724,7 +8724,7 @@ fpt11:         DO k = 1, s%filter_size
 !     Formats
 
 1000  FORMAT(/,1x,'Problem successfully set up.')
-1002  FORMAT(/,14x,'*********************** Bye **********************',/)
+!1002  FORMAT(/,14x,'*********************** Bye **********************',/)
 1003  FORMAT(/,a)
 1004  FORMAT(4x,'GLTR terminated')
 

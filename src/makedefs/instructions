@@ -122,6 +122,7 @@ test_$(package)_nocutest_double: $(package)dt
 $(package)ss: $($(PACKAGE)SS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)SS)
+	$(RMOOC)
 	- ./run_$(package) >& $(package)s.output
 	cat $(package)s.output
 	rm ./run_$(package)
@@ -129,6 +130,7 @@ $(package)ss: $($(PACKAGE)SS)
 $(package)ss2: $($(PACKAGE)SS2)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)SS2)
+	$(RMOOC)
 	- ./run_$(package) >& $(package)s2.output
 	cat $(package)s2.output
 	rm ./run_$(package)
@@ -136,6 +138,7 @@ $(package)ss2: $($(PACKAGE)SS2)
 $(package)ss3: $($(PACKAGE)SS3)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)SS3)
+	$(RMOOC)
 	- ./run_$(package) >& $(package)s3.output
 	cat $(package)s3.output
 	rm ./run_$(package)
@@ -143,6 +146,7 @@ $(package)ss3: $($(PACKAGE)SS3)
 $(package)ds: $($(PACKAGE)DS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DS)
+	$(RMOOC)
 	- ./run_$(package) >& $(package)ds.output
 	cat $(package)ds.output
 	rm ./run_$(package)
@@ -150,6 +154,7 @@ $(package)ds: $($(PACKAGE)DS)
 $(package)ds2: $($(PACKAGE)DS2)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DS2)
+	$(RMOOC)
 	- ./run_$(package) >& $(package)ds2.output
 	cat $(package)ds2.output
 	rm ./run_$(package)
@@ -157,6 +162,7 @@ $(package)ds2: $($(PACKAGE)DS2)
 $(package)ds3: $($(PACKAGE)DS3)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DS3)
+	$(RMOOC)
 	- ./run_$(package) >& $(package)ds3.output
 	cat $(package)ds3.output
 	rm ./run_$(package)
@@ -167,6 +173,7 @@ $(package)st: $($(PACKAGE)ST)
 	echo " Exhaustive test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)ST)
+	$(RMOOC)
 	- ./run_$(package) >& $(package)t.output
 	cat $(package)t.output
 	rm ./run_$(package)
@@ -175,6 +182,7 @@ $(package)dt: $($(PACKAGE)DT)
 	echo " Exhaustive test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DT)
+	$(RMOOC)
 	- ./run_$(package) >& $(package)dt.output
 	cat $(package)dt.output
 	rm ./run_$(package)

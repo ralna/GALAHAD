@@ -399,6 +399,17 @@ symbols: $(LG)(symbols.o)
 
 # smt
 
+smt_silent: smt_silent_$(PRECIS)
+smt_silent_single: $(LGS)(smt.o)
+smt_silent_double: $(LGD)(smt.o)
+
+smt: smt_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SMT ($(PRECIS) $(SUCC)"
+smt_single: $(smts)
+	$(RANLIB) $(LGS)
+smt_double: $(smtd)
+	$(RANLIB) $(LGD)
+
 smtsrunall: smtss smtst
 smtdrunall: smtds smtdt
 smtrunall: smtdrunall smtsrunall
@@ -473,6 +484,17 @@ sortrunall: sortdrunall sortsrunall
 
 # scu
 
+scu_silent: scu_silent_$(PRECIS)
+scu_silent_single: $(LGS)(scu.o)
+scu_silent_double: $(LGD)(scu.o)
+
+scu: scu_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SCU ($(PRECIS) $(SUCC)"
+scu_single: $(SCUS)
+	$(RANLIB) $(LGS)(scu.o)
+scu_double: $(SCUD)
+	$(RANLIB) $(LGD)(scu.o)
+
 scusrunall: scuss scust
 scudrunall: scuds scudt
 scurunall: scudrunall scusrunall
@@ -523,8 +545,8 @@ filterrunall: filterdrunall filtersrunall
 #  other galahad packages
 
 nlpt:
-	( cd ../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../filtrane )
+	( cd ../nlpt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../nlpt )
 
 lmt:
 	( cd ../lmt ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -568,7 +590,7 @@ ma48v3:
 
 pardiso_silent: pardiso
 pardiso:
-	( cd ../non-free/mkl ; $(MAKE) -f \
+	( cd ../non-free/pardiso ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) pardiso_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/pardiso )
 

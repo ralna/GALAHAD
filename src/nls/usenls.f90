@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 05/05/2021 AT 14:15 GMT
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ N L S  -*-*-*-*-*-*-*-*-*-*-
 
@@ -19,7 +19,8 @@
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_double
      USE GALAHAD_CUTEST_FUNCTIONS_double
-USE GALAHAD_STRING
+     USE GALAHAD_STRING
+
      IMPLICIT NONE
 
      PRIVATE
@@ -47,7 +48,7 @@ USE GALAHAD_STRING
      TYPE ( NLS_inform_type ) :: inform
      TYPE ( NLS_data_type ) :: data
      TYPE ( NLPT_problem_type ) :: nlp
-     TYPE ( NLPT_userdata_type ) :: userdata
+     TYPE ( GALAHAD_userdata_type ) :: userdata
      TYPE ( CUTEST_FUNCTIONS_control_type ) :: cutest_control
      TYPE ( CUTEST_FUNCTIONS_inform_type ) :: cutest_inform
 

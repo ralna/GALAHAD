@@ -1,337 +1,41 @@
 #  Main body of the installation makefile for the GALAHAD WCP package
 
-#  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 19 X 2005
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-04-25
 
-SHELL = /bin/$(BINSHELL)
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
 
-#  compiler flags
+#  package name
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-            $(OPENMP)
-FFLAGSNOMP = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(OPENMP)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
-RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+package = wcp
+PACKAGE = WCP
 
-#  names of random libraries
+#  auxililiary packages that current package depends on (prepend with make_)
 
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
+DEPENDENCIES = make_basics make_sbls make_fdc make_qpd
 
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
+#  other packages that depend on package
 
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
+DEPENDS = qpb superb
 
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
+#  auxililiary packages that are needed for tests (prepend with make_)
 
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
+TESTDEPS = make_copyright make_cutest_functions make_presolve
 
-#  Libraries used
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
-                 $(LAPACK) $(BLAS)
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
 
-#  Archive manipulation strings
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries
 
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
-
-#  sed scripts
-
-LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
-LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
-
-#  compilation agenda
-
-SWCP = basics scu sls uls gltr sbls cro fdc fit qpd \
-       $(LGS)(wcp.o)
-DWCP = basics scu sls uls gltr sbls cro fdc fit qpd \
-       $(LGD)(wcp.o)
-
-SRUNWCP = presolve copyright $(LGS)(usewcp.o) $(OBJS)/runwcp_sif.o
-DRUNWCP = presolve copyright $(LGD)(usewcp.o) $(OBJD)/runwcp_sif.o
-
-WCPOBJECTSS_CUTEST = $(SWCP) $(SRUNWCP)
-WCPOBJECTSD_CUTEST = $(DWCP) $(DRUNWCP)
-
-WCPDS = $(DWCP) $(OBJD)/wcps.o
-WCPDT = $(DWCP) $(OBJD)/wcpt.o
-WCPSS = $(SWCP) $(OBJS)/wcps.o
-WCPST = $(SWCP) $(OBJS)/wcpt.o
-
-RWCPDS = $(OBJD)/wcps.o -L$(OBJD) $(LIBS)
-RWCPDT = $(OBJD)/wcpt.o -L$(OBJD) $(LIBS)
-RWCPSS = $(OBJS)/wcps.o -L$(OBJS) $(LIBS)
-RWCPST = $(OBJS)/wcpt.o -L$(OBJS) $(LIBS)
-
-SUCC = precision version) compiled successfully
-SUCC_CUTEST = precision version) for CUTEst compiled successfully
-
-#  main compilations and runs
-
-all: wcp_cutest
-test: test_wcp
-test_nocutest: test_wcp_nocutest
-test_spec: test_spec_wcp
-
-# wcp
-
-wcp_cutest: wcp_cutest_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: WCP ($(PRECIS) $(SUCC_CUTEST)"
-wcp_cutest_single: $(WCPOBJECTSS_CUTEST)
-	$(RANLIB) $(LGS)
-wcp_cutest_double: $(WCPOBJECTSD_CUTEST)
-	$(RANLIB) $(LGD)
-
-wcp_silent: wcp_silent_$(PRECIS)
-wcp_silent_single: $(SWCP)
-wcp_silent_double: $(DWCP)
-
-wcp: wcp_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: WCP ($(PRECIS) $(SUCC)"
-wcp_single: $(SWCP)
-	$(RANLIB) $(LGS)
-wcp_double: $(DWCP)
-	$(RANLIB) $(LGD)
-
-wcpsrunall: wcpss wcpst
-wcpdrunall: wcpds wcpdt
-wcprunall: wcpdrunall wcpsrunall
-
-test_wcp: test_wcp_$(PRECIS)
-
-test_wcp_single: wcpst
-	echo " Tests for wcp complete"
-
-test_wcp_double: wcpdt
-	echo " Tests for wcp complete"
-
-test_spec_wcp: test_spec_wcp_$(PRECIS)
-
-test_spec_wcp_single: wcpss
-	echo " Tests for wcp complete"
-
-test_spec_wcp_double: wcpds
-	echo " Tests for wcp complete"
-
-test_wcp_nocutest: test_wcp_nocutest_$(PRECIS)
-
-test_wcp_nocutest_single: wcpst
-	echo ""
-	echo " Tests for wcp complete"
-
-test_wcp_nocutest_double: wcpdt
-	echo ""
-	echo " Tests for wcp complete"
-
-test_spec_wcp: test_spec_wcp_$(PRECIS)
-
-#  basic packages
-
-sils_smt:
-	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            smt.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
-ma57v4_smt:
-	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            zd11 PRECIS=$(PRECIS) PWD=$(PWD)/../general )
-basics:
-	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
-ma48:
-	( cd $(MA48); $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma48_silent PRECIS=$(PRECIS) PWD=$(MA48) )
-linearsolver:
-	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
-scu:
-	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            scu.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
-gltr:
-	( cd ../gltr ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            gltr_silent PRECIS=$(PRECIS) PWD=$(PWD)/../gltr )
-sls:
-	( cd ../sls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            sls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../sls )
-uls:
-	( cd ../uls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            uls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../uls )
-sbls:
-	( cd ../sbls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            sbls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../sbls )
-cro:
-	( cd ../cro ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            cro_silent PRECIS=$(PRECIS) PWD=$(PWD)/../cro )
-qpd:
-	( cd ../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            qpt.o qpp.o qpd.o PRECIS=$(PRECIS) PWD=$(PWD)/../qp )
-copyright:
-	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
-nlpt:
-	( cd ../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../filtrane )
-presolve:
-	( cd ../presolve ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            presolve.o PRECIS=$(PRECIS) PWD=$(PWD)/../presolve )
-fdc:
-	( cd ../fdc ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            fdc.o PRECIS=$(PRECIS) PWD=$(PWD)/../fdc )
-fit:
-	( cd ../fit ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            fit_silent PRECIS=$(PRECIS) PWD=$(PWD)/../fit )
-
-# run spec-sheet example tests
-
-wcpds: $(WCPDS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_wcp $(RWCPDS)
-	- ./run_wcp >& wcpds.output
-	cat wcpds.output
-	rm ./run_wcp
-
-wcpdt: $(WCPDT)
-	echo " Exhaustive test of subroutine interface to wcp"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_wcp $(RWCPDT)
-#	- valgrind -v --tool=memcheck --leak-check=full --show-reachable=yes--track-origins=yes ./run_wcp
-#	- ./run_wcp
-	- ./run_wcp >& wcpdt.output
-	cat wcpdt.output
-	rm ./run_wcp
-
-wcpss: $(WCPSS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_wcp $(RWCPSS)
-	- ./run_wcp >& wcps.output
-	cat wcps.output
-	rm ./run_wcp
-
-wcpst: $(WCPST)
-	echo " Exhaustive test of subroutine interface to wcp"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_wcp $(RWCPST)
-	- ./run_wcp >& wcpt.output
-	cat wcpt.output
-	rm ./run_wcp
-
-#  Substantial GALAHAD packages
-
-wcp.o: $(LG)(wcp.o)
-
-$(LG)(wcp.o):  ../wcp/wcp.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "wcp  "
-	$(SED) -f $(SEDS)  ../wcp/wcp.f90 > $(OBJ)/wcp1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/wcp1.f90 > $(OBJ)/wcp2.f90
-	$(SED) -f $(LPSEDS) $(OBJ)/wcp2.f90 > $(OBJ)/wcp3.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/wcp3.f90 > $(OBJ)/wcp.f90
-	cd $(OBJ); $(FORTRAN) -o wcp.o $(FFLAGSS) wcp.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o wcp.o $(FFLAGSN) wcp.f90 )
-	cd $(OBJ); $(ARR) wcp.o ; $(RM) wcp.f90 wcp1.f90 wcp2.f90 \
-                                         wcp3.f90 wcp.o
-#	$(RMARFILE) qpb.o
-	$(RMARFILE) superb.o
-#	$(RMOBFILE) galahad_ampl.o
-	$(RMARFILE) usewcp.o
-	$(RMOBFILE) wcps.o
-	$(RMOBFILE) wcpt.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-# CUTEst/AMPL interfaces
-
-usewcp.o: $(LG)(usewcp.o)
-
-$(LG)(usewcp.o): ../wcp/usewcp.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "usewcp   "
-	$(SED) -f $(SEDS) ../wcp/usewcp.f90 > $(OBJ)/usewcp1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/usewcp1.f90 > $(OBJ)/usewcp2.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usewcp2.f90 > $(OBJ)/usewcp.f90
-	cd $(OBJ); $(FORTRAN) -o usewcp.o $(FFLAGSOMP) usewcp.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o usewcp.o $(FFLAGSN) usewcp.f90 )
-	cd $(OBJ); $(ARR) usewcp.o ; $(RM) usewcp.f90 usewcp1.f90 \
-                                           usewcp2.f90 usewcp.o
-	$(RMOBFILE) runwcp_sif.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-#  main programs
-
-runwcp_sif.o: $(OBJ)/runwcp_sif.o
-
-$(OBJ)/runwcp_sif.o: ../wcp/runwcp_sif.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "runwcp_sif"
-	$(SED) -f $(SEDS) ../wcp/runwcp_sif.f90 > $(OBJ)/runwcp_sif.f90
-	cd $(OBJ); $(FORTRAN) -o runwcp_sif.o $(FFLAGSS) runwcp_sif.f90
-	rm $(OBJ)/runwcp_sif.f90
-	@printf '[ OK ]\n'
-
-#  test decks
-
-wcps.o: $(OBJ)/wcps.o
-
-$(OBJ)/wcps.o: ../wcp/wcps.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "wcps  "
-	$(SED) -f $(SEDS) ../wcp/wcps.f90 > $(OBJ)/wcps1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/wcps1.f90 > $(OBJ)/wcps.f90
-	cd $(OBJ) ; $(FORTRAN) -o wcps.o $(FFLAGS) wcps.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-wcpt.o: $(OBJ)/wcpt.o
-
-$(OBJ)/wcpt.o: ../wcp/wcpt.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "wcpt  "
-	$(SED) -f $(SEDS) ../wcp/wcpt.f90 > $(OBJ)/wcpt1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/wcpt1.f90 > $(OBJ)/wcpt.f90
-	cd $(OBJ) ; $(FORTRAN) -o wcpt.o $(FFLAGSS) wcpt.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-#  generate HSL codes from GALAHAD ones
-
-hslgen:
-	$(SED) -f ../hsl/gal2hsl ../eqp/wcp.f90 > ../hsl/hsl_ve16/ve16d.f90
-	$(SED) -f ../hsl/gal2hsl ../sbls/sbls.f90 > ../hsl/hsl_mi14/mi14d.f90
-
-#  book keeping
-
-clean:
-	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(LGS) $(LGD) $(LG) $(OBJ)/wcps.o $(OBJ)/wcpt.o
-	@printf '[ OK ]\n'
-
-cleanall:
-	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
-	$(RM) $(OBJ)/* $(MOD)/*
-	@printf '[ OK ]\n'
-
-rmwcp:
-	@printf ' %-9s %-15s\t\t' "Removing" "wcp from archive "
-	$(RMARFILE) wcp.o
-	@printf '[ OK ]\n'
-
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions

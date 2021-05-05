@@ -58,7 +58,7 @@
 
    m = 6
 ! problem data complete
-   CALL FIT_initialize( data, control )       ! Initialize control parameters
+   CALL FIT_initialize( data, control, inform )  ! Initialize control parameters
 !  CALL FIT_hermite_interpolation( m, ALPHA, F, COEF, data, control, inform )
    CALL FIT_puiseux_interpolation( m, ALPHA, F, COEF, data, control, inform )
    IF ( inform%status == 0 ) THEN               !  Successful return

@@ -45,8 +45,8 @@
        IF ( i /= j ) Y( j, k ) = Y( j, k ) + v * S( i, k )
      END DO
    END DO
-   CALL SHA_estimate( n, nz, ROW, COL, m, RD, n, m, S, n, m, Y, VAL_est,       &
-                      data, control, inform )                 ! approximate H
+   CALL SHA_estimate( n, nz, ROW, COL, m + 1, m, RD, n, m, S, n, m,            &
+                      Y, VAL_est, data, control, inform )     ! approximate H
    IF ( inform%status /= 0 ) THEN             ! Failure
      WRITE( 6, "( ' return with nonzero status ', I0, ' from SHA_estimate' )" )&
        inform%status ; STOP

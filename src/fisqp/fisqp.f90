@@ -35,7 +35,8 @@
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
      USE GALAHAD_SPACE_double
-     USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type, NLPT_userdata_type
+     USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type
+     USE GALAHAD_USERDATA_double
      USE GALAHAD_FILTER_double
      USE GALAHAD_L1QP_double
      USE GALAHAD_EQP_double
@@ -52,7 +53,7 @@
 
      PRIVATE
      PUBLIC :: FISQP_initialize, FISQP_read_specfile, FISQP_solve,             &
-               FISQP_terminate, NLPT_problem_type, NLPT_userdata_type,         &
+               FISQP_terminate, NLPT_problem_type, GALAHAD_userdata_type,      &
                SMT_type, SMT_put
 
 !--------------------
@@ -1462,8 +1463,8 @@
 !
 !  data is a scalar variable of type TRU_data_type used for internal data.
 !
-!  userdata is a scalar variable of type NLPT_userdata_type which may be used
-!   to pass user data to and from the eval_* subroutines (see below)
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be 
+!   used to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
 !    integer is a rank-one allocatable array of type default integer.
@@ -1526,7 +1527,7 @@
      TYPE ( FISQP_control_type ), INTENT( INOUT ) :: control
      TYPE ( FISQP_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( FISQP_data_type ), INTENT( INOUT ) :: data
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_FC, eval_GJ, eval_HL
 
 !----------------------------------
@@ -1535,35 +1536,35 @@
 
      INTERFACE
        SUBROUTINE eval_FC( status, X, userdata, f, C )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       USE GALAHAD_USERDATA_double
        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: status
        REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ) :: f
        REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
        REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FC
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_GJ( status, X, userdata, G, Jval )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       USE GALAHAD_USERDATA_double
        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: status
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
        REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G, Jval
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_GJ
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_HL( status, X, Y, userdata, Hval, no_f )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       USE GALAHAD_USERDATA_double
        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: status
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
        END SUBROUTINE eval_HL
      END INTERFACE

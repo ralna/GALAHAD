@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_NLS_EXAMPLE3  !  GALAHAD 3.2 - 20/04/2019 AT 10:15 GMT
+   PROGRAM GALAHAD_NLS_EXAMPLE3 !  GALAHAD 3.3 - 05/05/2021 AT 14:15 GMT
    USE GALAHAD_NLS_double                     ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -6,7 +6,7 @@
    TYPE ( NLS_control_type ) :: control
    TYPE ( NLS_inform_type ) :: inform
    TYPE ( NLS_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    EXTERNAL :: EVALC, EVALJ, EVALHPROD
    INTEGER :: s
    INTEGER, PARAMETER :: m = 2, n = 3, j_ne = 4, h_ne = 3, p_ne = 3

@@ -2214,6 +2214,12 @@ qptsrunall: qptss qptst
 qptdrunall: qptds qptdt
 qptrunall: qptdrunall qptsrunall
 
+# qpd
+
+qpd_silent: qpd_silent_$(PRECIS)
+qpd_silent_single: $(QPD_single)
+qpd_silent_double: $(QPD_double)
+
 # warm
 
 warm_cutest: warm_cutest_$(PRECIS)

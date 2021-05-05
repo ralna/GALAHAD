@@ -3949,19 +3949,19 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'nlstr: data%P%row'
+     array_name = 'tru: data%P%row'
      CALL SPACE_dealloc_array( data%P%row,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'nlstr: data%P%col'
+     array_name = 'tru: data%P%col'
      CALL SPACE_dealloc_array( data%P%col,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'nlstr: data%P%val'
+     array_name = 'tru: data%P%val'
      CALL SPACE_dealloc_array( data%P%val,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )

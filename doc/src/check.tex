@@ -1104,7 +1104,7 @@ The routine must be specified as
 
 \def\baselinestretch{0.8}
 {\tt \begin{verbatim}
-       SUBROUTINE eval_Jv( status, userdata, transpose, U, V, X ) \end{verbatim} }
+       SUBROUTINE eval_Jv( status, X, userdata, transpose, U, V ) \end{verbatim} }
 \def\baselinestretch{1.0}
 \noindent whose arguments are as follows:
 
@@ -1114,6 +1114,9 @@ The routine must be specified as
 that should be set to 0 if the routine has been able to perform the
 required calculation (see {\tt transpose} below) and to a non-zero
 value if the computation has not been possible.
+
+\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
+whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type 
 {\tt NLPT\_userdata\_type} whose components may be used
@@ -1135,9 +1138,6 @@ either the sum $\bmu + \nabla_x \bmc(\bmx) \bmv$ or $\bmu + \nabla_x \bmc(\bmx)^
 \ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmv$.
 
-\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
-whose components contain the vector $\bmx$.
-
 \end{description}
 
 %%%%%%%%%%%%%%%%%%%%%% Hessian-vector products %%%%%%%%%%%%%%%%%%%%%%
@@ -1154,7 +1154,7 @@ The routine must be specified as
 
 \def\baselinestretch{0.8}
 {\tt \begin{verbatim}
-       SUBROUTINE eval_Hv( status, userdata, U, V, X, Y ) \end{verbatim} }
+       SUBROUTINE eval_Hv( status, X, Y, userdata, U, V ) \end{verbatim} }
 \def\baselinestretch{1.0}
 \noindent whose arguments are as follows:
 
@@ -1164,6 +1164,11 @@ that should be set to 0 if the routine has been able to perform the
 required calculation and to a non-zero value if the computation has not
 been possible. 
 
+\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
+whose components contain the vector $\bmx$.
+
+\ittf{Y} is a rank-one \intentin\ array argument of type default \realdp\
+whose components contain the vector $\bmy$.
 \itt{userdata} is a scalar \intentinout\ argument of type 
 {\tt NLPT\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
@@ -1178,11 +1183,6 @@ sum $\bmu + \nabla_{xx} L(\bmx,\bmy) \bmv$.
 \ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmv$.
 
-\ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
-whose components contain the vector $\bmx$.
-
-\ittf{Y} is a rank-one \intentin\ array argument of type default \realdp\
-whose components contain the vector $\bmy$.
 
 \end{description}
 

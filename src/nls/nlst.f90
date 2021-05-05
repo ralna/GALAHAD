@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.7 - 27/10/2015 AT 13:15 GMT
+! THIS VERSION: GALAHAD 3.3 - 05/05/2021 AT 14:15 GMT
    PROGRAM GALAHAD_NLS_test_deck
    USE GALAHAD_NLS_double                       ! double precision version
    USE GALAHAD_SYMBOLS
@@ -8,7 +8,7 @@
    TYPE ( NLS_control_type ) :: control
    TYPE ( NLS_inform_type ) :: inform
    TYPE ( NLS_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
    REAL ( KIND = wp ), PARAMETER :: p = 1.0_wp
    REAL ( KIND = wp ), PARAMETER :: mult = 1.0_wp
@@ -957,12 +957,12 @@
    CONTAINS
 
      SUBROUTINE RES( status, X, userdata, C )
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
      REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: C
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      C( 1 ) = X( 1 ) ** 2 + userdata%real( 1 )
      C( 2 ) = X( 1 ) + X( 2 ) ** 2
      C( 3 ) = X( 1 ) - X( 2 )
@@ -970,12 +970,12 @@
      END SUBROUTINE RES
 
      SUBROUTINE JAC( status, X, userdata, J_val )
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: J_val
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      J_val( 1 ) = 2.0_wp * X( 1 )
      J_val( 2 ) = 1.0_wp
      J_val( 3 ) = 2.0_wp * X( 2 )
@@ -985,26 +985,26 @@
      END SUBROUTINE JAC
 
      SUBROUTINE HESS( status, X, Y, userdata, H_val )
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      H_val( 1 ) = 2.0_wp * Y( 1 )
      H_val( 2 ) = 2.0_wp * Y( 2 )
      status = 0
      END SUBROUTINE HESS
 
      SUBROUTINE JACPROD( status, X, userdata, transpose, U, V, got_j )
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      LOGICAL, INTENT( IN ) :: transpose
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
      IF ( transpose ) THEN
        U( 1 ) = U( 1 ) + 2.0_wp * X( 1 ) * V( 1 ) + V( 2 ) + V( 3 )
@@ -1018,13 +1018,13 @@
      END SUBROUTINE JACPROD
 
      SUBROUTINE HESSPROD( status, X, Y, userdata, U, V, got_h )
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
      U( 1 ) = U( 1 ) + 2.0_wp * Y( 1 ) * V( 1 )
      U( 2 ) = U( 2 ) + 2.0_wp * Y( 2 ) * V( 2 )
@@ -1032,13 +1032,13 @@
      END SUBROUTINE HESSPROD
 
      SUBROUTINE RHESSPRODS( status, X, V, userdata, P_val, got_h )
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P_val
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
      P_val( 1 ) = 2.0_wp * V( 1 )
      P_val( 2 ) = 2.0_wp * V( 2 )
@@ -1046,12 +1046,12 @@
      END SUBROUTINE RHESSPRODS
 
      SUBROUTINE SCALE( status, X, userdata, U, V )
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, V
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 !     U( 1 ) = 0.5_wp * V( 1 )
 !     U( 2 ) = 0.5_wp * V( 2 )
      U( 1 ) = V( 1 )
@@ -1060,12 +1060,12 @@
      END SUBROUTINE SCALE
 
      SUBROUTINE JAC_dense( status, X, userdata, J_val )
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: J_val
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      J_val( 1 ) = 2.0_wp * X( 1 )
      J_val( 2 ) = 0.0_wp
      J_val( 3 ) = 1.0_wp
@@ -1076,12 +1076,12 @@
      END SUBROUTINE JAC_dense
 
      SUBROUTINE HESS_dense( status, X, Y, userdata, H_val )
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      H_val( 1 ) = 2.0_wp * Y( 1 )
      H_val( 2 ) = 0.0_wp
      H_val( 3 ) = 2.0_wp * Y( 2 )
@@ -1089,13 +1089,13 @@
      END SUBROUTINE HESS_dense
 
      SUBROUTINE RHESSPRODS_dense( status, X, V, userdata, P_val, got_h )
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P_val
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
      P_val( 1 ) = 2.0_wp * V( 1 )
      P_val( 2 ) = 0.0_wp

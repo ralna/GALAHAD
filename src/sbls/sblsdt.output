@@ -522,6 +522,12 @@ SCALED_IDENTITY   -1    1    0        0     tiny
      COORDINATE   -1    1    0        0     tiny
        IDENTITY   -1    2    2        0     tiny
        IDENTITY   -1    2    1        0     tiny
+  ************************************************************************
+
+    CONTAINS Runtime Modules of Watson Sparse Matrix Package V 20.09.18.
+      (C) Copyright IBM Corporation, 1997, 2020.  All Rights Reserved.
+
+  ************************************************************************
        IDENTITY   -1    2    0        0     tiny
 SCALED_IDENTITY   -1    2    2        0     tiny
 SCALED_IDENTITY   -1    2    1        0     tiny
@@ -586,9 +592,9 @@ SCALED_IDENTITY   -2    2    0        0     tiny
       ma86        0     tiny
       sils        0     tiny
       ma97        0     tiny
-     ssids      -26
-   pardiso       -9
-      wsmp       -9
+     ssids        0     tiny
+   pardiso        0     tiny
+      wsmp        0     tiny
 
  basic tests of unsymmetric linear solvers 
 

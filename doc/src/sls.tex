@@ -1968,10 +1968,11 @@ To obtain HSL 2011 packages, see
 {\tt http://hsl.rl.ac.uk/hsl2011/ }.
 
 \noindent
-The solver {\tt SSIDS} is available as part of the SPRAL sparse-matrix package.
-To obtain {\tt SPRAL}, see
-
-{\tt http://ccpforge.cse.rl.ac.uk/gf/project/asearchralna/ }.
+The solver {\tt SSIDS} is from the SPRAL sparse-matrix collection,
+and is available as part of \galahad.
+%To obtain {\tt SPRAL}, see
+%
+%{\tt http://ccpforge.cse.rl.ac.uk/gf/project/asearchralna/ }.
 
 \noindent
 The solver {\tt PARDISO} is available from the Pardiso Project;
@@ -2065,17 +2066,17 @@ single set of equations
                      & 6 & &     & 1 } \bmx =
        \vect{ 8 \\ 45 \\ 31 \\ 15 \\ 17}}
 (Note that this example does not illustrate all the facilities).
-Then, choosing the solver {\tt HSL\_MA57}, we may use the following code:
+Then, choosing the solver {\tt SILS}, we may use the following code:
 
 {\tt \small
 \VerbatimInput{\packageexample}
 }
 \noindent
-with the following data
-{\tt \small
-\VerbatimInput{\packagedata}
-}
-\noindent
+%with the following data
+%{\tt \small
+%\VerbatimInput{\packagedata}
+%}
+%\noindent
 This produces the following output:
 {\tt \small
 \VerbatimInput{\packageresults}

@@ -983,84 +983,18 @@ single set of equations
                      & 6 & &     & 1 } \bmx = 
        \vect{ 8 \\ 45 \\ 31 \\ 15 \\ 17}}
 (Note that this example does not illustrate all the facilities). 
-Then we may use the following code
-{\tt
-\begin{verbatim}
+Then we may use the following code:
 
-   PROGRAM MAIN 
-   USE GALAHAD_SILS_DOUBLE 
-   IMPLICIT NONE 
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   TYPE(SMT_TYPE) MATRIX 
-   TYPE(SILS_CONTROL) CONTROL 
-   TYPE(SILS_AINFO) AINFO 
-   TYPE(SILS_FINFO) FINFO 
-   TYPE(SILS_SINFO) SINFO 
-   TYPE(SILS_FACTORS) FACTORS 
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B, X
-   INTEGER I,INFO,N,NE 
-   READ (5,*) N,NE  ! Read matrix order and number of entries
-   MATRIX%N = N 
-   MATRIX%NE = NE 
-! Allocate arrays of appropriate sizes 
-   ALLOCATE(MATRIX%VAL(NE), MATRIX%ROW(NE), MATRIX%COL(NE)) 
-   ALLOCATE(B(N), X(N)) 
-! Read matrix and right-hand side                                        
-   READ (5,*) (MATRIX%ROW(I),MATRIX%COL(I),MATRIX%VAL(I),I=1,NE)  
-   READ (5,*) B  
-   CALL SILS_INITIALIZE(FACTORS,CONTROL) ! Initialize the structures 
-   CALL SILS_ANALYSE(MATRIX,FACTORS,CONTROL,AINFO) ! Analyse 
-   IF(AINFO%FLAG<0) THEN 
-      WRITE(6,'(A,I2)') & 
-         ' Failure of SILS_ANALYSE with AINFO%FLAG=', AINFO%FLAG 
-      STOP 
-   END IF 
-   CALL SILS_FACTORIZE(MATRIX,FACTORS,CONTROL,FINFO) ! Factorize 
-   IF(FINFO%FLAG<0) THEN 
-      WRITE(6,'(A,I2)') & 
-         ' Failure of SILS_FACTORIZE with FINFO%FLAG=', FINFO%FLAG 
-      STOP 
-   END IF 
-   X = B ! Solve without refinement 
-   CALL SILS_SOLVE(MATRIX,FACTORS,X,CONTROL,SINFO) 
-   IF(SINFO%FLAG==0)WRITE(6,'(A,/,(3F20.16))')  & 
-      ' Solution without refinement is',X 
-   CALL SILS_SOLVE(MATRIX,FACTORS,X,CONTROL,SINFO,B) ! Perform one refinement 
-   IF(SINFO%FLAG==0)WRITE(6,'(A,/,(3F20.16))') & 
-       ' Solution after one refinement is',X 
-   END PROGRAM MAIN                                           
+Then, choosing the solver {\tt SILS}, we may use the following code:
 
-\end{verbatim}
+{\tt \small
+\VerbatimInput{\packageexample}
 }
-with the following data
-{\tt
-\begin{verbatim}
+\noindent
 
- 5 7 
- 1 1 2.0 
- 1 2 3.0 
- 2 3 4.0 
- 2 5 6.0 
- 3 3 1.0 
- 3 4 5.0 
- 5 5 1.0 
- 8. 45. 31. 15. 17. 
-
-\end{verbatim}
-}
 This produces the following output:
-{\tt
-\begin{verbatim}
-
- Solution without refinement is 
-  1.0000000000000000  1.9999999999999998  3.0000000000000000 
-  4.0000000000000008  5.0000000000000017 
- Solution after one refinement is 
-  1.0000000000000000  2.0000000000000000  3.0000000000000000 
-  4.0000000000000000  5.0000000000000000 
-
-\end{verbatim}
+{\tt \small
+\VerbatimInput{\packageresults}
 }
-
 \end{document}
 

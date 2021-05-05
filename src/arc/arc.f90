@@ -3701,19 +3701,19 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tru: data%DX_past'
+     array_name = 'arc: data%DX_past'
      CALL SPACE_dealloc_array( data%DX_past,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tru: data%DG_past'
+     array_name = 'arc: data%DG_past'
      CALL SPACE_dealloc_array( data%DG_past,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tru: data%PAST'
+     array_name = 'arc: data%PAST'
      CALL SPACE_dealloc_array( data%PAST,                                      &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
@@ -3725,55 +3725,55 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tru: data%VAL_est'
+     array_name = 'arc: data%VAL_est'
      CALL SPACE_dealloc_array( data%VAL_est,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tru: data%DX_svd'
+     array_name = 'arc: data%DX_svd'
      CALL SPACE_dealloc_array( data%DX_svd,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tru: data%U_svd'
+     array_name = 'arc: data%U_svd'
      CALL SPACE_dealloc_array( data%U_svd,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tru: data%VT_svd'
+     array_name = 'arc: data%VT_svd'
      CALL SPACE_dealloc_array( data%VT_svd,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tru: data%S_svd'
+     array_name = 'arc: data%S_svd'
      CALL SPACE_dealloc_array( data%S_svd,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'nlstr: data%P%row'
+     array_name = 'arc: data%P%row'
      CALL SPACE_dealloc_array( data%P%row,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'nlstr: data%P%col'
+     array_name = 'arc: data%P%col'
      CALL SPACE_dealloc_array( data%P%col,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'nlstr: data%P%val'
+     array_name = 'arc: data%P%val'
      CALL SPACE_dealloc_array( data%P%val,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'tru: data%WORK_svd'
+     array_name = 'arc: data%WORK_svd'
      CALL SPACE_dealloc_array( data%WORK_svd,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )

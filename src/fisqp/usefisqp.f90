@@ -45,7 +45,7 @@
      TYPE ( FISQP_inform_type ) :: inform
      TYPE ( FISQP_data_type ) :: data
      TYPE ( NLPT_problem_type ) :: nlp
-     TYPE ( NLPT_userdata_type ) :: userdata
+     TYPE ( GALAHAD_userdata_type ) :: userdata
      TYPE ( CUTEST_FUNCTIONS_control_type ) :: cutest_control
      TYPE ( CUTEST_FUNCTIONS_inform_type ) :: cutest_inform
 

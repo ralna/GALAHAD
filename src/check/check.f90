@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 04/05/2021 AT 14:45 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -21,6 +21,7 @@
  !  This module checks the derivatives of problem functions.                  !
  !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
+ USE GALAHAD_USERDATA_double
  USE GALAHAD_NLPT_double
  USE GALAHAD_SMT_double
  USE GALAHAD_MOP_double
@@ -428,7 +429,7 @@
  !            eval_Hv( status, userdata, U, V, X, Y )  where userdata is
  !            of type NLPT_userdata_type: U <-- U + H(X,Y) V.
  !
- !   userdata (optional) is a scalar variable of type NLPT_userdata_type.
+ !   userdata (optional) is a scalar variable of type GALAHAD_userdata_type.
  !            Intended for the sole use of the "user" if needed.
  !
  !-------------------------------------------------------------------------------
@@ -438,72 +439,72 @@
  TYPE( CHECK_control_type ), INTENT( INOUT ) :: control
  TYPE( CHECK_inform_type ), INTENT( OUT ) :: inform
  TYPE( CHECK_data_type ), INTENT( INOUT ) :: data
- TYPE( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+ TYPE( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
  OPTIONAL eval_F, eval_C, eval_G, eval_J, eval_Jv, eval_HL, eval_Hv
  !-------------------------------------------------------------------------------
  ! Interfaces
  !-------------------------------------------------------------------------------
  INTERFACE
     SUBROUTINE eval_F(status, X, userdata, F)
-      USE GALAHAD_NLPT_double
+      USE GALAHAD_USERDATA_double
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
       INTEGER, INTENT( OUT ) :: status
       REAL ( kind = wp ), INTENT( IN ), DIMENSION( : ) :: X
       REAL ( kind = wp ), INTENT( OUT ) :: F
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_F
     SUBROUTINE eval_C(status, X, userdata, C)
-      USE GALAHAD_NLPT_double
+      USE GALAHAD_USERDATA_double
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
       INTEGER, INTENT( OUT ) :: status
       REAL ( kind = wp ), INTENT( IN ), DIMENSION( : ) :: X
       REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) :: C
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_C
     SUBROUTINE eval_G(status, X, userdata, G)
-      USE GALAHAD_NLPT_double
+      USE GALAHAD_USERDATA_double
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
       INTEGER, INTENT( OUT ) :: status
       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_G
    SUBROUTINE eval_J(status, X, userdata, Jval)
-      USE GALAHAD_NLPT_double
+      USE GALAHAD_USERDATA_double
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
       INTEGER, INTENT( OUT ) :: status
       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Jval
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_J
     SUBROUTINE eval_Jv(status, X, userdata, transpose, U, V)
-      USE GALAHAD_NLPT_double
+      USE GALAHAD_USERDATA_double
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
       INTEGER, INTENT( OUT ) :: status
       LOGICAL, INTENT( IN ) :: transpose
       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_Jv
     SUBROUTINE eval_HL(status, X, Y, userdata, Hval,no_f)
-      USE GALAHAD_NLPT_double
+      USE GALAHAD_USERDATA_double
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
       INTEGER, INTENT( OUT ) :: status
       REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: X
       REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: Y
       REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) ::Hval
       LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_HL
     SUBROUTINE eval_Hv(status, X, Y, userdata, U, V )
-      USE GALAHAD_NLPT_double
+      USE GALAHAD_USERDATA_double
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
       INTEGER, INTENT( OUT ) :: status
       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_Hv
  END INTERFACE
  !------------------------------------------------------------------------------

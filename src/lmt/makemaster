@@ -14,11 +14,11 @@ PACKAGE = LMT
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basicz
+DEPENDENCIES =
 
 #  other packages that depend on package
 
-DEPENDS = 
+DEPENDS = lms
 
 #  auxililiary packages that are needed for tests (prepend with make_)
 

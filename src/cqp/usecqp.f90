@@ -13,10 +13,10 @@
 
     MODULE GALAHAD_USECQP_double
 
-!    ------------------------------------------------------------
+!    -------------------------------------------------------------
 !    | CUTEst/AMPL interface to CQP, an interior-point algorithm |
-!    | for convex quadratic & least-distance programming        |
-!    ------------------------------------------------------------
+!    | for convex quadratic & least-distance programming         |
+!    -------------------------------------------------------------
 
 !$    USE omp_lib
       USE CUTEst_interface_double

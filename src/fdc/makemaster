@@ -1,264 +1,41 @@
 #  Main body of the installation makefile for the GALAHAD FDC package
 
-#  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 19 X 2005
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-04-25
 
-SHELL = /bin/$(BINSHELL)
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
 
-#  compiler flags
+#  package name
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-            $(OPENMP)
-FFLAGSNOMP = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(OPENMP)
-RUNFFLAGS  =         $(OPTIMIZATION) $(DEBUG) $(MODULES)
-RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+package = fdc
+PACKAGE = FDC
 
-#  names of random libraries
+#  auxililiary packages that current package depends on (prepend with make_)
 
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
+DEPENDENCIES = make_basics make_sls make_uls
 
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
+#  other packages that depend on package
 
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
+DEPENDS = 
 
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
+#  auxililiary packages that are needed for tests (prepend with make_)
 
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
+TESTDEPS = make_copyright make_cutest_functions make_presolve
 
-#  Libraries used
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
-                 $(LAPACK) $(BLAS)
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
 
-#  Archive manipulation strings
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries
 
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
-
-#  sed scripts
-
-LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
-LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
-
-#  compilation agenda
-
-SFDC =  basics sls uls $(LGS)(fdc.o)
-DFDC =  basics sls uls $(LGD)(fdc.o)
-
-SRUNFDC = presolve copyright $(LGS)(usefdc.o) $(OBJS)/runfdc_sif.o
-DRUNFDC = presolve copyright $(LGD)(usefdc.o) $(OBJD)/runfdc_sif.o
-
-FDCOBJECTSS_CUTEST = $(SFDC) $(SRUNFDC)
-FDCOBJECTSD_CUTEST = $(DFDC) $(DRUNFDC)
-
-FDCDS = $(DFDC) $(OBJD)/fdcs.o
-FDCDT = $(DFDC) $(OBJD)/fdct.o
-FDCSS = $(SFDC) $(OBJS)/fdcs.o
-FDCST = $(SFDC) $(OBJS)/fdct.o
-
-RFDCDS = $(OBJD)/fdcs.o -L$(OBJD) $(LIBS)
-RFDCDT = $(OBJD)/fdct.o -L$(OBJD) $(LIBS)
-RFDCSS = $(OBJS)/fdcs.o -L$(OBJS) $(LIBS)
-RFDCST = $(OBJS)/fdct.o -L$(OBJS) $(LIBS)
-
-SUCC = precision version) compiled successfully
-SUCC_CUTEST = precision version) for CUTEst compiled successfully
-
-#  main compilations and runs
-
-fdc: fdc.o
-all: fdc_cutest
-test: test_fdc
-test_nocutest: test_fdc_nocutest
-
-# fdc
-
-fdc_silent: fdc_$(PRECIS)
-fdc: fdc_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: FDC ($(PRECIS) $(SUCC)"
-fdc_single: $(SFDC)
-	$(RANLIB) $(LGS)
-fdc_double: $(DFDC)
-	$(RANLIB) $(LGD)
-
-fdc_cutest: fdc_cutest_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: FDC ($(PRECIS) $(SUCC_CUTEST)"
-fdc_cutest_single: $(FDCOBJECTSS_CUTEST)
-	$(RANLIB) $(LGS)
-fdc_cutest_double: $(FDCOBJECTSD_CUTEST)
-	$(RANLIB) $(LGD)
-
-fdcsrunall: fdcss fdcst
-fdcdrunall: fdcds fdcdt
-fdcrunall: fdcdrunall fdcsrunall
-
-#  basic packages
-
-basics:
-	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
-	( cd ../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            qpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../qp )
-sls:
-	( cd ../sls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            sls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../sls )
-uls:
-	( cd ../uls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            uls_silent PRECIS=$(PRECIS) PWD=$(PWD)/../uls )
-copyright:
-	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
-
-# run spec-sheet example tests
-
-fdcds: $(FDCDS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_fdc $(RFDCDS)
-	- ./run_fdc >& fdcds.output
-	cat fdcds.output
-	rm ./run_fdc
-
-fdcdt: $(FDCDT)
-	echo " Exhaustive test of subroutine interface to fdc"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_fdc $(RFDCDT)
-	- ./run_fdc >& fdcdt.output
-	cat fdcdt.output
-	rm ./run_fdc
-
-fdcss: $(FDCSS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_fdc $(RFDCSS)
-	- ./run_fdc >& fdcs.output
-	cat fdcs.output
-	rm ./run_fdc
-
-fdcst: $(FDCST)
-	echo " Exhaustive test of subroutine interface to fdc"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_fdc $(RFDCST)
-	- ./run_fdc >& fdct.output
-	cat fdct.output
-	rm ./run_fdc
-
-#  Substantial GALAHAD packages
-
-fdc.o: $(LG)(fdc.o)
-
-$(LG)(fdc.o):  ../fdc/fdc.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "fdc  "
-	$(SED) -f $(SEDS)  ../fdc/fdc.f90 > $(OBJ)/fdc1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/fdc1.f90 > $(OBJ)/fdc2.f90
-	$(SED) -f $(LPSEDS) $(OBJ)/fdc2.f90 > $(OBJ)/fdc3.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/fdc3.f90 > $(OBJ)/fdc.f90
-	cd $(OBJ); $(FORTRAN) -o fdc.o $(FFLAGSS) fdc.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o fdc.o $(FFLAGSN) fdc.f90 )
-	cd $(OBJ); $(ARR) fdc.o ; $(RM) fdc.f90 fdc1.f90 fdc2.f90 \
-                                         fdc3.f90 fdc.o
-	$(RMARFILE) lsqp.o
-	$(RMARFILE) lcf.o
-	$(RMARFILE) wcp.o
-	$(RMOBFILE) fdcs.o
-	$(RMOBFILE) fdct.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-# CUTEst/AMPL interfaces
-
-usefdc.o: $(LG)(usefdc.o)
-
-$(LG)(usefdc.o): ../fdc/usefdc.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "usefdc   "
-	$(SED) -f $(SEDS) ../fdc/usefdc.f90 > $(OBJ)/usefdc1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/usefdc1.f90 > $(OBJ)/usefdc2.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usefdc2.f90 > $(OBJ)/usefdc.f90
-	cd $(OBJ); $(FORTRAN) -o usefdc.o $(FFLAGSS) usefdc.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o usefdc.o $(FFLAGSN) usefdc.f90 )
-	cd $(OBJ); $(ARR) usefdc.o ; $(RM) usefdc.f90 usefdc1.f90 \
-                                           usefdc2.f90 usefdc.o
-	$(RMOBFILE) runfdc_sif.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-#  main programs
-
-runfdc_sif.o: $(OBJ)/runfdc_sif.o
-
-$(OBJ)/runfdc_sif.o: ../fdc/runfdc_sif.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "runfdc_sif"
-	$(SED) -f $(SEDS) ../fdc/runfdc_sif.f90 > $(OBJ)/runfdc_sif.f90
-	cd $(OBJ); $(FORTRAN) -o runfdc_sif.o $(FFLAGSS) runfdc_sif.f90
-	rm $(OBJ)/runfdc_sif.f90
-	@printf '[ OK ]\n'
-
-#  test decks
-
-fdcs.o: $(OBJ)/fdcs.o
-
-$(OBJ)/fdcs.o: ../fdc/fdcs.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "fdcs  "
-	$(SED) -f $(SEDS) ../fdc/fdcs.f90 > $(OBJ)/fdcs1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/fdcs1.f90 > $(OBJ)/fdcs.f90
-	cd $(OBJ) ; $(FORTRAN) -o fdcs.o $(FFLAGS) fdcs.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-fdct.o: $(OBJ)/fdct.o
-
-$(OBJ)/fdct.o: ../fdc/fdct.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "fdct  "
-	$(SED) -f $(SEDS) ../fdc/fdct.f90 > $(OBJ)/fdct1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/fdct1.f90 > $(OBJ)/fdct.f90
-	cd $(OBJ) ; $(FORTRAN) -o fdct.o $(FFLAGSS) fdct.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-#  generate HSL codes from GALAHAD ones
-
-hslgen:
-	$(SED) -f ../hsl/gal2hsl ../eqp/fdc.f90 > ../hsl/hsl_ve16/ve16d.f90
-	$(SED) -f ../hsl/gal2hsl ../sbls/sbls.f90 > ../hsl/hsl_mi14/mi14d.f90
-
-#  book keeping
-
-clean:
-	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(LGS) $(LGD) $(LG) $(OBJ)/fdcs.o $(OBJ)/fdct.o
-	@printf '[ OK ]\n'
-
-cleanall:
-	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
-	$(RM) $(OBJ)/* $(MOD)/*
-	@printf '[ OK ]\n'
-
-rmfdc:
-	@printf ' %-9s %-15s\t\t' "Removing" "fdc from archive "
-	$(RMARFILE) fdc.o
-	@printf '[ OK ]\n'
-
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions
