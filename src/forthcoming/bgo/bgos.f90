@@ -27,8 +27,8 @@
    ALLOCATE( userdata%real( 1 ) )               ! Allocate space for parameter
    userdata%real( 1 ) = p                       ! Record parameter, p
    CALL BGO_initialize( data, control, inform ) ! Initialize control parameters
-   control%subproblem_direct = .FALSE.          ! Use an iterative method
-   control%maxit = 10
+   control%TRB_control%subproblem_direct = .FALSE.  ! Use an iterative method
+   control%TRB_control%maxit = 10
    control%print_level = 1
    inform%status = 1                            ! set for initial entry
    CALL BGO_solve( nlp, control, inform, data, userdata, eval_F = FUN,         &
@@ -37,7 +37,7 @@
      WRITE( 6, "( ' BGO: ', I0, ' iterations -',                               &
     &     ' optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
-     inform%iter, inform%obj, nlp%X
+     inform%TRB_inform%iter, inform%obj, nlp%X
    ELSE                                         ! Error returns
      WRITE( 6, "( ' BGO_solve exit status = ', I6 ) " ) inform%status
    END IF

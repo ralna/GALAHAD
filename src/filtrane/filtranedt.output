@@ -40,7 +40,7 @@
  20)     Correct USER_DEFINED groups
  test = 20 status = 0
  21)     No checkpoint file
- test = 21 status = -2
+ test = 21 status = 0
  22)     Checkpointing after iteration 2 and stop
  test = 22 status = -6
  23)     Restart from checkpoint and use 1 automatic group

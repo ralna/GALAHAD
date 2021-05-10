@@ -1,4 +1,5 @@
 ! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+PROGRAM GALAHAD_NLPT_EXAMPLE
   USE GALAHAD_NLPT_double      ! the problem type
   USE GALAHAD_SYMBOLS
   IMPLICIT NONE
@@ -7,7 +8,7 @@
   REAL( KIND = wp ), PARAMETER      :: INFINITY = (10.0_wp)**19
   TYPE( NLPT_problem_type     )     :: problem 
 ! Set the problem up.
-  problem%pname    = 'NLPT-TEST'
+  problem%pname    = 'EXAMPLE'
   problem%n        = 2
   ALLOCATE( problem%vnames( problem%n ), problem%x( problem%n )  ,             &
             problem%x_l( problem%n )   , problem%x_u( problem%n ),             &
@@ -46,7 +47,6 @@
   problem%H_col    = (/     1    ,     1     ,     2     /)
   problem%H_val    = (/   2.0D0  ,   1.0D0   ,   2.0D0   /)
   problem%infinity = INFINITY
-  NULLIFY( problem%x_status, problem%H_ptr, problem%J_ptr, problem%gL )
   CALL NLPT_write_problem( problem, iout, GALAHAD_DETAILS )
 ! Cleanup the problem.
   CALL NLPT_cleanup( problem )

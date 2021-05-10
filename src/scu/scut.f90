@@ -33,9 +33,6 @@
    RHS2 = (/ 2.0_wp, 4.0_wp, 4.0_wp, 5.0_wp, 7.0_wp, 16.0_wp, 6.0_wp, 13.0_wp /)
    RHS3 = (/ 2.0_wp, 4.0_wp, 4.0_wp, 5.0_wp, 6.0_wp, 5.0_wp, 13.0_wp/)
 
-   NULLIFY( mat2%BD_val, mat2%BD_row, mat2%BD_col_start )
-   NULLIFY( mat2%CD_val, mat2%CD_col, mat2%CD_row_start )
-
    epsqrt = SQRT( EPSILON( 1.0_wp ) )
 
 !  Calls to provoke unsuccessful returns

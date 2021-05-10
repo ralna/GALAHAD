@@ -12,16 +12,16 @@
 package = psls
 PACKAGE = PSLS
 
-#  auxililiary packages that current package depends on (prepend with make_)
+#  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basics make_sls make_scu make_lancelot_psls \
+DEPENDENCIES = make_basic make_sls make_scu make_lancelot_psls \
                make_icfs make_mi28
 
 #  other packages that depend on package
 
 DEPENDS = arc cqps ermo ism nls tru
 
-#  auxililiary packages that are needed for tests (prepend with make_)
+#  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
 
@@ -33,10 +33,14 @@ TESTDEPS = make_copyright make_cutest_functions
  
 include $(GALAHAD)/src/makedefs/definitions
 
-#  include required package intermediaries
- 
-include $(GALAHAD)/src/makedefs/intermediaries
-
 #  include compilation and run instructions
  
 include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

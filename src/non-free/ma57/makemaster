@@ -75,7 +75,7 @@ ma57v4_double: blas ma27 zd11 $(HLGD)(mc71d.o) \
                $(HLGD)(ma57d.o) $(HLGD)(mc21d.o) \
                $(HLGD)(mc34d.o) $(HLGD)(mc47d.o) \
                $(HLGD)(mc59d.o) $(HLGD)(mc64d.o) $(HLGD)(hsl_ma57d.o)
-ma57ds: blas ma27 zd11 $(HLGD)(fd15d.o) $(HLGD)(mc71d.o) \
+ma57ds: blas ma27 zd11 $(HLGD)(mc71d.o) \
                $(HLGD)(ma57d.o) $(HLGD)(mc21d.o) \
                $(HLGD)(mc34d.o) $(HLGD)(mc47d.o) \
                $(HLGD)(mc59d.o) $(HLGD)(mc64d.o) $(HLGD)(hsl_ma57d.o)

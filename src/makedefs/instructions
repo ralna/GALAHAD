@@ -1,4 +1,4 @@
-#  Standard GALAHAD compilation and run instructions
+#  standard GALAHAD compilation and run instructions
 
 #  Nick Gould, for GALAHAD production
 #  This version: 2021-04-29
@@ -17,6 +17,7 @@ DRUN$(PACKAGE) = $(TESTDEPS) $(LGD)(use$(package).o) $(OBJD)/run$(package)_sif.o
 
 LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
                  $(LAPACK) $(BLAS)
+PLIBS = $(LIBS) -lgalahad_problem
 
 #  compilation and run agenda
 
@@ -54,8 +55,8 @@ R$(PACKAGE)ST = $(OBJS)/$(package)t.o -L$(OBJS) $(LIBS)
 
 #  main compilations and runs
 
-all: $(package)_cutest
-all_$(package): $(package)_cutest
+all: $(package)
+all_$(package): all
 test: test_$(package)
 test_nocutest: test_$(package)_nocutest
 
@@ -187,59 +188,6 @@ $(package)dt: $($(PACKAGE)DT)
 	cat $(package)dt.output
 	rm ./run_$(package)
 
-#  package compilation
-
-$(package).o: $(LG)($(package).o)
-
-$(LG)($(package).o): ../$(package)/$(package).f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
-	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > $(OBJ)/$(package)1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/$(package)1.f90 > $(OBJ)/$(package)2.f90
-	$(SED) -f $(LPSEDS) $(OBJ)/$(package)2.f90 > $(OBJ)/$(package)3.f90
-	$(SED) "s/^.$(NOT95)/     /" \
-                $(OBJ)/$(package)3.f90 > $(OBJ)/$(package).f90
-	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).f90 )
-	cd $(OBJ); $(ARR) $(package).o ; \
-                   $(RM) $(package).f90 $(package)1.f90 $(package)2.f90 \
-                         $(package)3.f90 $(package).o
-	$(RMARFILES) $(DEPENDS)
-	$(RMARFILE) use$(package).o
-	$(RMOBFILE) $(package)s.o
-	$(RMOBFILE) $(package)s2.o
-	$(RMOBFILE) $(package)s3.o
-	$(RMOBFILE) $(package)t.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-#  package coverage compilation
-
-$(package)_gcov: ../$(package)/$(package).f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
-	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > $(package)1.f90
-	$(SED) -f $(LSEDS) $(package)1.f90 > $(package)2.f90
-	$(SED) -f $(LPSEDS) $(package)2.f90 > $(package)3.f90
-	$(SED) "s/^.$(NOT95)/     /" $(package)3.f90 > $(package)_cov.f90
-	$(RM) ./$(package)1.f90 ./$(package)2.f90 ./$(package)3.f90
-	$(FORTRAN) -o $(package)_cov.o $(FFLAGSS) $(COVERAGE) \
-            $(package)_cov.f90 \
-          || ( printf ' %-26s' "=> Disabling optimization " ; \
-            $(FORTRAN) -o $(package)_cov.o $(FFLAGSN) $(COVERAGE) \
-              $(package)_cov.f90 )
-	$(SED) -f $(SEDS) $(package)t.f90 > $(package)t_cov1.f90
-	$(SED) -f $(LSEDS) $(package)t_gcov1.f90 > $(package)t_cov.f90
-	$(RM) ./$(package)t_cov1.f90
-	$(FORTRAN) -g $(BASIC) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
-          $(package)t_cov.f90
-	$(FORTRAN) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
-          -o ./$(package)_cov $(package)_cov.o $(package)t_cov.o \
-           -L$(OBJ) $(LIBS)
-	./$(package)_gcov
-	gcov ./$(package)_gcov
-	$(MV) ./$(package)_cov.f90.cov ./$(package)_coverage
-	$(RM) ./$(package)*cov* ./galahad_$(package)_*.mod
-
 #  CUTEst/AMPL interfaces
 
 use$(package).o: $(LG)(use$(package).o)
@@ -273,54 +221,6 @@ $(OBJ)/run$(package)_sif.o: ../$(package)/run$(package)_sif.f90
 	cd $(OBJ); $(FORTRAN) -o run$(package)_sif.o \
                      $(FFLAGSS) run$(package)_sif.f90
 	rm $(OBJ)/run$(package)_sif.f90
-	@printf '[ OK ]\n'
-
-#  test programs for specification document
-
-$(package)s.o: $(OBJ)/$(package)s.o
-
-$(OBJ)/$(package)s.o: ../$(package)/$(package)s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s  "
-	$(SED) -f $(SEDS) \
-           ../$(package)/$(package)s.f90 > $(OBJ)/$(package)s1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s.f90
-	cd $(OBJ) ; $(FORTRAN) -o $(package)s.o $(FFLAGS) $(package)s.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-$(package)s2.o: $(OBJ)/$(package)s2.o
-
-$(OBJ)/$(package)s2.o: ../$(package)/$(package)s2.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s2  "
-	$(SED) -f $(SEDS) \
-           ../$(package)/$(package)s2.f90 > $(OBJ)/$(package)s1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s2.f90
-	cd $(OBJ) ; $(FORTRAN) -o $(package)s2.o $(FFLAGS) $(package)s2.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-$(package)s3.o: $(OBJ)/$(package)s3.o
-
-$(OBJ)/$(package)s3.o: ../$(package)/$(package)s3.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s3  "
-	$(SED) -f $(SEDS) \
-            ../$(package)/$(package)s3.f90 > $(OBJ)/$(package)s1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s3.f90
-	cd $(OBJ) ; $(FORTRAN) -o $(package)s3.o $(FFLAGS) $(package)s3.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-#  comprehensive test programs
-
-$(package)t.o: $(OBJ)/$(package)t.o
-
-$(OBJ)/$(package)t.o: ../$(package)/$(package)t.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)t  "
-	$(SED) -f $(SEDS) \
-           ../$(package)/$(package)t.f90 > $(OBJ)/$(package)t1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/$(package)t1.f90 > $(OBJ)/$(package)t.f90
-	cd $(OBJ) ; $(FORTRAN) -o $(package)t.o $(FFLAGSS) $(package)t.f90
-	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
 #  book keeping

@@ -1,0 +1,49 @@
+\begin{description}
+
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm.
+%See Sections~\ref{galerrors} and \ref{galinfo}
+See Section~\ref{galerrors}
+for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}.
+
+\itt{iter} is a scalar variable of type default \integer, that
+gives the number of iterations performed.
+
+\itt{la04\_job} is a scalar variable of type default \integer, that
+gives the value of the argument {\tt job} returned from {\tt LA04}.
+See the specification sheet,
+{\tt http://www.hsl.rl.ac.uk/specs/la04.pdf},
+for the package {\tt LA04} for details.
+
+\itt{la04\_job\_info} is a scalar variable of type default \integer, that
+gives the value of the argument {\tt RINFO(35)} returned from an
+unsuccessful call to {\tt LA04}.
+See the specification sheet,
+{\tt http://www.hsl.rl.ac.uk/specs/la04.pdf},
+for the package {\tt LA04} for details.
+
+\ittf{obj} is a scalar variable of type default \realdp, that holds the
+value of the objective function at the best estimate of the solution found.
+
+\itt{primal\_infeasibility} is a scalar variable of type default \realdp,
+that holds the norm of the violation of primal optimality
+(see Section~\ref{typetime}) at the best estimate of the solution found.
+
+\itt{feasible} is a scalar variable of type default \logical, that has the
+value \true\ if the output value of $\bmx$ satisfies the constraints,
+and the value \false\ otherwise.
+
+\ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
+whose components are used to hold elapsed CPU and system clock times for the
+various parts of the calculation (see Section~\ref{typetime}).
+
+\end{description}

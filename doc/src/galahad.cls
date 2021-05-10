@@ -737,7 +737,9 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 
 %\includegraphics[totalheight=40pt]{galahad.small.ps}\hfill\includegraphics[totalheight=55pt]{stfc.eps}\hspace{1mm}\includegraphics[totalheight=55pt]{epm.eps}\hspace{2mm}\includegraphics[totalheight=55pt]{unamur.ps}
 
-\includegraphics[totalheight=40pt]{galahad.small.ps}\hfill\includegraphics[totalheight=40pt]{stfc.eps}\hspace{1mm}\includegraphics[totalheight=40pt]{epm.eps}\hspace{2mm}\includegraphics[totalheight=40pt]{unamur.ps}
+%\includegraphics[totalheight=40pt]{galahad.small.ps}\hfill\includegraphics[totalheight=40pt]{stfc.eps}\hspace{1mm}\includegraphics[totalheight=40pt]{epm.eps}\hspace{2mm}\includegraphics[totalheight=40pt]{unamur.ps}
+
+\includegraphics[totalheight=40pt]{galahad.small.ps}\hfill\includegraphics[totalheight=40pt]{ukristfc.eps}\hspace{4mm}\includegraphics[totalheight=40pt]{epm.eps}\hspace{2mm}\includegraphics[totalheight=40pt]{unamur.ps}
 
 \end{figure}
 \vspace*{-4mm}

@@ -110,26 +110,24 @@ cutest_functionsd = $(SMTD) $(LGD)(space.o) nlpt $(CLGD)(cutest_functions.o)
 problems = $(SMTS) nlpt $(CLGS)(problem.o)
 problemd = $(SMTD) nlpt $(CLGD)(problem.o)
 
-BASICZ = $(LG)(cputim.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
+BASIX = $(LG)(cputim.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis.o) wsmp \
          $(DLG)(dummy.o) $(LG)(blas_interface.o) \
          $(LG)(lapack_interface.o) minpack
 
-ROOTSS = $(BASICZ) $(LGS)(string.o) buildspec_silent \
-         $(LGS)(symbols.o) $(LGS)(specfile.o) \
+ROOTSS = $(BASIX) $(LGS)(string.o) buildspec_silent $(LGS)(specfile.o) \
          $(LGS)(sort.o) zd11 $(LGS)(smt.o) $(LGS)(space.o) $(LGS)(roots.o)
 
-ROOTSD = $(BASICZ) $(LGD)(string.o) buildspec_silent \
-         $(LGD)(symbols.o) $(LGD)(specfile.o) \
+ROOTSD = $(BASIX) $(LGD)(string.o) buildspec_silent $(LGD)(specfile.o) \
          $(LGD)(sort.o) zd11 $(LGD)(smt.o) $(LGD)(space.o) $(LGD)(roots.o)
 
 BASICS = $(ROOTSS) $(LGS)(rand.o) $(LGS)(oldscale.o) $(LGS)(tools.o) lmt qpt \
          $(LGS)(trans.o) $(LGS)(scale.o) $(LGS)(norms.o) \
-         $(LGS)(checkpoint.o) $(LGS)(opt.o) $(LGS)(convert.o)
+         $(LGS)(checkpoint.o) $(LGS)(opt.o) # $(LGS)(convert.o)
 
 BASICD = $(ROOTSD) $(LGD)(rand.o) $(LGD)(oldscale.o) $(LGD)(tools.o) lmt qpt \
          $(LGD)(trans.o) $(LGD)(scale.o) $(LGD)(norms.o) \
-         $(LGD)(checkpoint.o) $(LGD)(opt.o) $(LGD)(convert.o)
+         $(LGD)(checkpoint.o) $(LGD)(opt.o) # $(LGD)(convert.o)
 
 #        zd11 $(LGD)(smt.o) qpt $(LGD)(space.o) $(LGD)(string.o) $(LGD)(trans.o)
 
@@ -269,14 +267,13 @@ problem_double: $(problemd)
 
 #  basic packages
 
-basicz_silent: $(BASICZ)
+basic_silent: $(BASIC)
 
 basics_silent: basics_silent_$(PRECIS)
 basics_silent_single: $(BASICS)
 basics_silent_double: $(BASICD)
 
 basics: basics_$(PRECIS)
-#	echo $(BASICZ)
 	@printf ' %-21s\n' "GALAHAD: basic packages ($(PRECIS) $(SUCC)"
 basics_single: $(BASICS)
 	$(RANLIB) $(LGS)
@@ -478,9 +475,46 @@ randrunall: randdrunall randsrunall
 
 # sort
 
+sort_silent: sort_silent_$(PRECIS)
+sort_silent_single: $(LGS)(sort.o)
+sort_silent_double: $(LGD)(sort.o)
+
+sort: sort_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SORT ($(PRECIS) $(SUCC)"
+sort_single: $(SORTS)
+	$(RANLIB) $(LGS)(sort.o)
+sort_double: $(SORTD)
+	$(RANLIB) $(LGD)(sort.o)
+
 sortsrunall: sortss sortst
 sortdrunall: sortds sortdt
 sortrunall: sortdrunall sortsrunall
+
+# space
+
+space_silent: space_silent_$(PRECIS)
+space_silent_single: $(LGS)(space.o)
+space_silent_double: $(LGD)(space.o)
+
+space: space_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SPACE ($(PRECIS) $(SUCC)"
+space_single: $(SPACES)
+	$(RANLIB) $(LGS)(space.o)
+space_double: $(SPACED)
+	$(RANLIB) $(LGD)(space.o)
+
+# spec
+
+spec_silent: spec_silent_$(PRECIS)
+spec_silent_single: $(LGS)(specfile.o)
+spec_silent_double: $(LGD)(specfile.o)
+
+spec: spec_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SPEC ($(PRECIS) $(SUCC)"
+spec_single: $(SPECS)
+	$(RANLIB) $(LGS)(specfile.o)
+spec_double: $(SPECD)
+	$(RANLIB) $(LGD)(specfile.o)
 
 # scu
 
@@ -926,6 +960,9 @@ cputim.o: $(LG)(cputim.o)
 $(LG)(cputim.o): ../auxiliary/cputim.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cputim"
 	$(SED) "s/^.$(TIMER)/     /" ../auxiliary/cputim.f90 > $(OBJ)/cputim.f90
+	echo " ==================================================="
+	echo " $(FFLAGS) "
+	echo " ==================================================="
 	cd $(OBJ); $(FORTRAN) -o cputim.o $(FFLAGS) cputim.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o cputim.o $(FFLAGSN) cputim.f90 )
@@ -1139,9 +1176,9 @@ $(WLG)(wsmp.o): ../dum/wsmp.f
 
 specfile.o: $(LG)(specfile.o)
 
-$(LG)(specfile.o): ../spec/specfile.f90
+$(LG)(specfile.o): ../specfile/specfile.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "specfile"
-	$(SED) -f $(SEDS) ../spec/specfile.f90 > $(OBJ)/specfile.f90
+	$(SED) -f $(SEDS) ../specfile/specfile.f90 > $(OBJ)/specfile.f90
 	cd $(OBJ); $(FORTRAN) -o specfile.o $(FFLAGSS) specfile.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o specfile.o $(FFLAGSN) specfile.f90 )
@@ -1499,9 +1536,9 @@ buildspec_silent: $(OBJ)/buildspec
 buildspec: $(OBJ)/buildspec
 	@printf ' %-21s\n' "GALAHAD: buildspec package ($(PRECIS) $(SUCC)"
 
-$(OBJ)/buildspec: ../spec/buildspec.f90
+$(OBJ)/buildspec: ../buildspec/buildspec.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "buildspec  "
-	$(SED) -f $(SEDS) ../spec/buildspec.f90 > $(OBJ)/buildspec.f90
+	$(SED) -f $(SEDS) ../buildspec/buildspec.f90 > $(OBJ)/buildspec.f90
 	cd $(OBJ) ; $(FORTRAN) -o buildspec $(RUNFFLAGS) buildspec.f90 \
           -lgalahad -L$(OBJ)
 	rm $(OBJ)/*.f90

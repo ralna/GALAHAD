@@ -105,8 +105,8 @@ QPC_double = $(QPA_double) $(QPB_double) $(EQP_double) $(CQP_double) \
              $(QPD_double) $(LGD)(qpc.o)
 PDQP_single = sbls $(LGS)(pdqp.o)
 PDQP_double = sbls $(LGD)(pdqp.o)
-BLLS_single = $(QPD_single) $(LGS)(blls.o)
-BLLS_double = $(QPD_double) $(LGD)(blls.o)
+BLLS_single = $(QPD_single) convert $(LGS)(blls.o)
+BLLS_double = $(QPD_double) convert $(LGD)(blls.o)
 BLLS_old_double = $(QPD_double) $(LGD)(blls_old.o)
 BQP_single = $(QPD_single) $(LGS)(bqp.o)
 BQP_double = $(QPD_double) $(LGD)(bqp.o)
@@ -2234,6 +2234,9 @@ warm_cutest_double: $(WARM_CUTEST_double)
 basics:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+convert:
+	( cd ../convert ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            convert_silent PRECIS=$(PRECIS) PWD=$(PWD)/../convert )
 linearsolver:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )

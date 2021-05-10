@@ -101,12 +101,12 @@ SGMTR =  $(SGLTR) $(LGS)(gmtr.o)
 DGMTR =  $(DGLTR) $(LGD)(gmtr.o)
 #SLSTR =  basics spqr $(LGS)(lstr.o)
 #DLSTR =  basics spqr $(LGD)(lstr.o)
-SLSTR =  basics $(LGS)(lstr.o)
-DLSTR =  basics $(LGD)(lstr.o)
-SLSRT =  $(SLSTR) $(LGS)(lsrt.o)
-DLSRT =  $(DLSTR) $(LGD)(lsrt.o)
-SL2RT =  $(SLSTR) $(LGS)(l2rt.o)
-DL2RT =  $(DLSTR) $(LGD)(l2rt.o)
+SLSTR =  basics convert $(LGS)(lstr.o)
+DLSTR =  basics convert $(LGD)(lstr.o)
+SLSRT =  basics convert $(LGS)(lsrt.o)
+DLSRT =  basics convert $(LGD)(lsrt.o)
+SL2RT =  basics convert $(LGS)(l2rt.o)
+DL2RT =  basics convert $(LGD)(l2rt.o)
 
 IROBJECTSS = $(SIR)
 IROBJECTSD = $(DIR)
@@ -939,6 +939,9 @@ test_l2rt_nocutest_double: l2rtdt
 basics:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )
+convert:
+	( cd ../convert ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            convert_silent PRECIS=$(PRECIS) PWD=$(PWD)/../convert )
 linearsolver:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../general )

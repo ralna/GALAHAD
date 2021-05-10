@@ -1,0 +1,377 @@
+#  Main body of the installation makefile for basic GALAHAD packages
+
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-07
+
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
+
+#  compilation agenda
+
+BASICS = cputime_silent clock_silent symbols_silent dummy_silent \
+         dummy_hsl_silent dummy_spral_silent blas_silent lapack_silent  \
+         blas_interface_silent lapack_interface_silent minpack_silent \
+         pardiso_silent mkl_pardiso_silent metis_silent wsmp_silent \
+         string_silent zd11_silent smt_silent space_silent \
+         specfile_silent buildspec_silent sort_silent 
+
+#  main compilations and runs
+
+all: basic
+
+#  all of the basic packages
+
+basic_silent: $(BASICS)
+
+basic: basic_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: basic packages ($(PRECIS) $(SUCC)"
+basic_single: $(BASICS)
+	$(RANLIB) $(LGS)
+basic_double: $(BASICS)
+	$(RANLIB) $(LGD)
+
+#  cputime package
+
+cputime_silent:
+	( cd $(GALAHAD)/src/cputime ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cputime_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cputime )
+
+#  clock package
+
+clock_silent:
+	( cd $(GALAHAD)/src/clock ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clock_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clock )
+
+#  symbols package
+
+symbols_silent:
+	( cd $(GALAHAD)/src/symbols ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) symbols_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/symbols )
+
+#  string package
+
+string_silent:
+	( cd $(GALAHAD)/src/string ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) string_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/string )
+
+#  space package
+
+space_silent:
+	( cd $(GALAHAD)/src/space ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) space_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/space )
+
+#  specfile package
+
+specfile_silent:
+	( cd $(GALAHAD)/src/specfile ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) specfile_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/specfile )
+
+#  buildspec package
+
+buildspec_silent:
+	( cd $(GALAHAD)/src/buildspec ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) buildspec_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/buildspec )
+
+#  sort package
+
+sort_silent:
+	( cd $(GALAHAD)/src/sort ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sort_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sort )
+
+#  zd11 package
+
+zd11_silent:
+	( cd $(GALAHAD)/src/zd11 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) zd11_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
+
+#  smt package
+
+smt_silent:
+	( cd $(GALAHAD)/src/smt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) smt_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/smt )
+
+#  blas packages
+
+blas_silent: $(BLG)(blas.o)
+blas: $(BLG)(blas.o)
+	@printf ' %-21s\n' "GALAHAD: BLAS compiled successfully"
+
+blas.o: $(BLG)(blas.o)
+
+$(BLG)(blas.o): ../lapack/blas.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "blas  "
+	$(CP) ../lapack/blas.f $(OBJ)/blas.f90
+	cd $(OBJ); $(FORTRAN) -o blas.o $(FFLAGS77) blas.f90
+	cd $(OBJ); $(BARR) blas.o ; $(RM) blas.f90 blas.o
+	$(RANLIB) $(BLG)
+	@printf '[ OK ]\n'
+
+#  lapack packages
+
+lapack_silent: $(LLG)(lapack.o)
+lapack: $(LLG)(lapack.o)
+	@printf ' %-21s\n' "GALAHAD: LAPACK compiled successfully"
+
+lapack.o: $(LLG)(lapack.o)
+
+$(LLG)(lapack.o): ../lapack/lapack.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "lapack"
+	$(CAT) ../lapack/lapack.f ../lapack/$(IEEECK)ieeeck.f > \
+          $(OBJ)/lapack.f90
+	cd $(OBJ); $(FORTRAN) -o lapack.o $(FFLAGS77) lapack.f90
+	cd $(OBJ); $(LARR) lapack.o ; $(RM) lapack.f90 lapack.o
+	$(RANLIB) $(LLG)
+	@printf '[ OK ]\n'
+
+#  dummy package
+
+dummy_silent: $(DLG)(dummy.o)
+dummy: $(DLG)(dummy.o)
+	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
+
+dummy.o: $(DLG)(dummy.o)
+
+$(DLG)(dummy.o): ../dum/dummy.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy"
+	$(CP) ../dum/dummy.f $(OBJ)/dummy.f90
+	cd $(OBJ); $(FORTRAN) -o dummy.o $(FFLAGS77) dummy.f90
+	cd $(OBJ); $(DARR) dummy.o ; $(RM) dummy.f90 dummy.o
+	$(RANLIB) $(DLG)
+	@printf '[ OK ]\n'
+
+#  dummy_hsl package
+
+dummy_hsl_silent: $(HLG)(dummy_hsl.o)
+dummy_hsl: $(HLG)(dummy_hsl.o)
+	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
+
+dummy_hsl.o: $(HLG)(dummy_hsl.o)
+
+$(HLG)(dummy_hsl.o): ../dum/dummy_hsl.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_hsl"
+	$(CP) ../dum/dummy_hsl.f90 $(OBJ)/dummy_hsl.f90
+	cd $(OBJ); $(FORTRAN) -o dummy_hsl.o $(FFLAGSS) dummy_hsl.f90
+	cd $(OBJ); $(HARR) dummy_hsl.o ; $(RM) dummy_hsl.f90 dummy_hsl.o
+	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+#  dummy_spral package
+
+dummy_spral_silent: $(RLG)(dummy_spral.o)
+dummy_spral: $(RLG)(dummy_spral.o)
+	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
+
+dummy_spral.o: $(RLG)(dummy_spral.o)
+
+$(RLG)(dummy_spral.o): ../dum/dummy_spral.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_spral"
+	$(CP) ../dum/dummy_spral.f90 $(OBJ)/dummy_spral.f90
+	cd $(OBJ); $(FORTRAN) -o dummy_spral.o $(FFLAGSS) dummy_spral.f90
+	cd $(OBJ); $(RARR) dummy_spral.o ; $(RM) dummy_spral.f90 dummy_spral.o
+	$(RANLIB) $(RLG)
+	@printf '[ OK ]\n'
+
+#  blas_interface package
+
+blas_interface_silent: $(LG)(blas_interface.o)
+blas_interface: $(LG)(blas_interface.o)
+	@printf ' %-21s\n' "GALAHAD: BLAS_interface compiled successfully"
+
+blas_interface.o: $(LG)(blas_interface.o)
+
+$(LG)(blas_interface.o): ../lapack/blas_interface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "blas_interface"
+	$(CP) ../lapack/blas_interface.f90 $(OBJ)/blas_interface.f90
+	cd $(OBJ); $(FORTRAN) -o blas_interface.o $(FFLAGSS) \
+           blas_interface.f90 || \
+         ( printf ' %-26s' "=> Disabling optimization " ; \
+            $(FORTRAN) -o blas_interface.o $(FFLAGSN) blas_interface.f90 )
+	cd $(OBJ); $(ARR) blas_interface.o ; $(RM) blas_interface.f90 \
+          blas_interface.o
+	$(RANLIB) $(LG)
+	$(RMARFILES) norms scu lstr lsrt l2rt sls sha
+	@printf '[ OK ]\n'
+
+#  lapack_interface package
+
+lapack_interface_silent: $(LG)(lapack_interface.o)
+lapack_interface: $(LG)(lapack_interface.o)
+	@printf ' %-21s\n' "GALAHAD: LAPACK_interface compiled successfully"
+
+lapack_interface.o: $(LG)(lapack_interface.o)
+
+$(LG)(lapack_interface.o): ../lapack/lapack_interface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "lapack_interface"
+	$(CP) ../lapack/lapack_interface.f90 $(OBJ)/lapack_interface.f90
+	cd $(OBJ); $(FORTRAN) -o lapack_interface.o $(FFLAGSS) \
+           lapack_interface.f90 || \
+         ( printf ' %-26s' "=> Disabling optimization " ; \
+            $(FORTRAN) -o lapack_interface.o $(FFLAGSN) lapack_interface.f90 )
+	cd $(OBJ); $(ARR) lapack_interface.o ; $(RM) lapack_interface.f90 \
+          lapack_interface.o
+	$(RANLIB) $(LG)
+	$(RMARFILES) gltr glrt sls trs rqs sha
+	@printf '[ OK ]\n'
+
+#  dummy metis package
+
+metis_silent: metis_$(PRECIS)
+metis: metis_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(METIS) ($(PRECIS) $(SUCC)"
+metis_single: symbols_silent $(MLGS)(metis.o)
+	$(RANLIB) $(MLGS)
+metis_double: symbols_silent $(MLGD)(metis.o)
+	$(RANLIB) $(MLGD)
+
+metis.o: $(MLG)(metis.o)
+
+$(MLG)(metis.o): ../dum/metis.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "metis  "
+	$(CP) ../dum/metis.f $(OBJ)/metis.f90
+	cd $(OBJ); $(FORTRAN) -o metis.o $(FFLAGS77) metis.f90
+	cd $(OBJ); $(MARR) metis.o ; $(RM) metis.f90 metis.o
+	$(RANLIB) $(MLG)
+	@printf '[ OK ]\n'
+
+#  pardiso package
+
+pardiso_silent:
+	( cd ../non-free/pardiso ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) pardiso_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/pardiso )
+
+#  mkl pardiso package
+
+mkl_pardiso_silent:
+	( cd ../non-free/mkl ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) mkl_pardiso_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mkl )
+
+#  wsmp package
+
+wsmp_silent:
+	( cd ../non-free/wsmp ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) wsmp_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/wsmp )
+
+#  minpack package
+
+minpack_silent:
+	( cd ../non-free/minpack ; $(MAKE) -f \
+          $(GALAHAD)/makefiles/$(VERSION) minpack_silent \
+          PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/minpack )
+
+# ** unused material **
+
+#  symmetric linear solver
+
+linearsolver_silent: linearsolver_silent_$(PRECIS)
+linearsolver_silent_single: $($(LINEARSOLVERS))
+linearsolver_silent_double: $($(LINEARSOLVERD))
+
+linearsolver: linearsolver_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(LINEARSOLVER) ($(PRECIS) $(SUCC)"
+linearsolver_single: $($(LINEARSOLVERS))
+	$(RANLIB) $(LGS)
+linearsolver_double: $($(LINEARSOLVERD))
+	$(RANLIB) $(LGD)
+
+#  unsymmetric linear solver
+
+ulinearsolver_silent: ulinearsolver_silent_$(PRECIS)
+ulinearsolver_silent_single: $($(ULINEARSOLVERS))
+ulinearsolver_silent_double: $($(ULINEARSOLVERD))
+
+ulinearsolver: ulinearsolver_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(ULINEARSOLVER) ($(PRECIS) $(SUCC)"
+ulinearsolver_single: $($(ULINEARSOLVERS))
+	$(RANLIB) $(LGS)
+ulinearsolver_double: $($(ULINEARSOLVERD))
+	$(RANLIB) $(LGD)
+
+SSIDSS = symbols $(RLGS)(ssidss.o)
+SSIDSD = symbols $(RLGD)(ssidsd.o)
+
+PARDISOS = symbols $(PLGS)(pardiso.o)
+PARDISOD = symbols $(PLGD)(pardiso.o)
+
+METISS = symbols $(MLGS)(metis.o)
+METISD = symbols $(MLGD)(metis.o)
+
+WSMPS = symbols $(WLGS)(wsmp.o)
+WSMPD = symbols $(WLGD)(wsmp.o)
+
+#  ssids
+
+ssids_dum_silent: ssids_dum_silent_$(PRECIS)
+ssids_dum_silent_single: $(SSIDSS)
+	$(RANLIB) $(RLGS)
+ssids_dum_silent_double: $(SSIDSD)
+	$(RANLIB) $(RLGD)
+
+ssids_dum: ssids_dum_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(SSIDS) ($(PRECIS) $(SUCC)"
+ssids_dum_single: $(SSIDSS)
+	$(RANLIB) $(RLGS)
+ssids_dum_double: $(SSIDSD)
+	$(RANLIB) $(RLGD)
+
+ssids_silent:
+	( cd ../ssids ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ssids_silent PRECIS=$(PRECIS) PWD=$(PWD)/../ssids )
+ssids:
+	( cd ../ssids ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ssids PRECIS=$(PRECIS) PWD=$(PWD)/../ssids )
+
+#  book keeping
+
+clean:
+	( cd $(GALAHAD)/src/cputime ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cputime )
+	( cd $(GALAHAD)/src/clock ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clock )
+	( cd $(GALAHAD)/src/symbols ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/symbols )
+	( cd $(GALAHAD)/src/string ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/string )
+	( cd $(GALAHAD)/src/space ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/space )
+	( cd $(GALAHAD)/src/specfile ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/specfile )
+	( cd $(GALAHAD)/src/buildspec ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/buildspec )
+	( cd $(GALAHAD)/src/sort ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sort )
+	( cd $(GALAHAD)/src/zd11 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
+	( cd $(GALAHAD)/src/smt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/smt  )
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' \
+          "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+

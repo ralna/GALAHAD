@@ -12,9 +12,9 @@
 package = sls
 PACKAGE = SLS
 
-#  auxililiary packages that current package depends on (prepend with make_)
+#  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basics make_ma57v4 make_sils make_mc61 make_mc64 \
+DEPENDENCIES = make_basic make_ma57v4 make_sils make_mc61 make_mc64 \
                make_mc68 make_mc77 make_ma77 make_ma86 make_ma87 \
                make_ma97 make_$(SSIDS)
 
@@ -22,7 +22,7 @@ DEPENDENCIES = make_basics make_ma57v4 make_sils make_mc61 make_mc64 \
 
 DEPENDS = psls sbls cro fdc rqs trs 
 
-#  auxililiary packages that are needed for tests (prepend with make_)
+#  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
 
@@ -39,10 +39,14 @@ RMOOC = $(RM) factor_integer_ooc* factor_real_ooc* \
  
 include $(GALAHAD)/src/makedefs/definitions
 
-#  include required package intermediaries
- 
-include $(GALAHAD)/src/makedefs/intermediaries
-
 #  include compilation and run instructions
  
 include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

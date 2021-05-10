@@ -1,70 +1,55 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
-   PROGRAM GALAHAD_GLS_example
+   PROGRAM GALAHAD_GLS_example  ! GALAHAD 3.3 - 06/05/2021 AT 10:15 GMT.
    USE GALAHAD_GLS_DOUBLE
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
-   INTEGER :: i, info, m, n, ne, rank
-   TYPE ( SMT_TYPE ) :: MATRIX
-   TYPE ( GLS_CONTROL ) :: CONTROL
-   TYPE ( GLS_AINFO ) :: AINFO
-   TYPE ( GLS_FINFO ) :: FINFO
-   TYPE ( GLS_SINFO ) :: SINFO
-   TYPE ( GLS_FACTORS ) :: FACTORS
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROWS, COLS
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B, X
-
-!  Read matrix order and number of entries
-
-   READ( 5, * ) m, n, ne
-   MATRIX%m = m ; MATRIX%n = n ; MATRIX%ne = ne
-
-!  Allocate arrays of appropriate sizes
-
-   ALLOCATE( MATRIX%VAL( ne ),  MATRIX%ROW( ne ),  MATRIX%COL( ne ) )
-   ALLOCATE( B( m ), X( n ), ROWS( m ), COLS( n ) )
-
-!  Read matrix
-
-   READ( 5, * ) ( MATRIX%ROW( i ), MATRIX%COL( i ), MATRIX%VAL( i ), i = 1, ne )
-
-!  Initialize the structures
-
-   CALL GLS_initialize( FACTORS, CONTROL )
-
-!  Analyse and factorize
-
-   CALL GLS_analyse( MATRIX, FACTORS, CONTROL, AINFO, FINFO )
+   INTEGER :: i, info, rank
+   INTEGER, PARAMETER :: m = 3
+   INTEGER, PARAMETER :: n = 3
+   INTEGER, PARAMETER :: ne = 7
+   TYPE ( SMT_TYPE ) :: matrix
+   TYPE ( GLS_CONTROL ) :: control
+   TYPE ( GLS_AINFO ) :: ainfo
+   TYPE ( GLS_FINFO ) :: finfo
+   TYPE ( GLS_SINFO ) :: sinfo
+   TYPE ( GLS_FACTORS ) :: factors
+   INTEGER :: ROWS( m ), COLS( n )
+   REAL ( KIND = wp ) :: X( n ), B( m )
+! record matrix order and number of entries
+   matrix%m = m ; matrix%n = n ; matrix%ne = ne
+! allocate and set matrix
+!  CALL SMT_put( matrix%type, 'COORDINATE', info )   ! Specify co-ordinate
+   ALLOCATE( matrix%val( ne ),  matrix%row( ne ),  matrix%col( ne ) )
+   matrix%row( : ne ) = (/ 1, 2, 3, 2, 1, 3, 2 /)
+   matrix%col( : ne ) = (/ 1, 3, 3, 1, 2, 2, 2 /)
+   matrix%val( : ne ) = (/ 11.0_wp, 23.0_wp, 33.0_wp, 21.0_wp, 12.0_wp,        &
+                           32.0_wp, 22.0_wp /)
+! initialize structures
+   CALL GLS_initialize( factors, control )
+! analyse and factorize
+   CALL GLS_analyse( matrix, factors, control, ainfo, finfo )
    IF ( AINFO%flag < 0 ) THEN
-     WRITE( 6, '( A, I0 )' )                                                   &
-       ' Failure of GLS_ANALYSE with AINFO%flag = ',  AINFO%flag
+     WRITE( 6, "( ' Failure of GLS_ANALYSE with AINFO%flag = ',  I0 )" )       &
+       AINFO%flag
      STOP
    END IF
-
-!  Write row and column reorderings
-
-   CALL GLS_special_rows_and_cols( FACTORS, rank, ROWS, COLS, info )
-   WRITE( 6, "( A, /, ( 10I5 ) )" ) ' row orderings:', ROWS( : rank )
-   WRITE( 6, "( A, /, ( 10I5 ) )" ) ' column orderings:', COLS( : rank )
-
-!  Read right-hand side and solve system
-
-   READ( 5, * ) B( : m )
-
-   CALL GLS_solve( MATRIX, FACTORS, B, X, CONTROL, SINFO )
-   IF ( SINFO%flag == 0 ) WRITE( 6, '( A, /,( 6ES11.3 ) )' )                   &
-     ' Solution of set of equations without refinement is', X
-
-!  Now solve the transposed system
-
-!  READ( 5, * ) B( : m )
-
-!   CALL GLS_solve( MATRIX, FACTORS, B, X, CONTROL, SINFO, trans = 1 )
-!   IF ( SINFO%flag == 0 ) WRITE( 6, '( A, /,( 6ES11.3 ) )' )                  &
-!     ' Solution of set of transposed equations without refinement is', X
-
-!  Clean up
-
-   DEALLOCATE( MATRIX%VAL, MATRIX%ROW, MATRIX%COL )
-   CALL GLS_FINALIZE( FACTORS, CONTROL, INFO )
-
+! write row and column reorderings
+   CALL GLS_special_rows_and_cols( factors, rank, ROWS, COLS, info )
+   WRITE( 6, "( ' row orderings:', /, ( 10I5 ) )" ) ROWS( : rank )
+   WRITE( 6, "( ' column orderings:', /, ( 10I5 ) )" ) COLS( : rank )
+! set right-hand side and solve system
+   B = (/ 23.0_wp, 66.0_wp, 65.0_wp /)
+   CALL GLS_solve( matrix, factors, B, X, control, sinfo )
+   IF ( SINFO%flag == 0 ) WRITE( 6,                                            &
+     "( ' Solution of set of equations without refinement is', /,              &
+        & ( 6ES11.3 ) )" ) X
+! now solve the transposed system
+   B = (/ 32.0_wp, 66.0_wp, 56.0_wp /)
+   CALL GLS_solve( matrix, factors, B, X, control, sinfo, trans = 1 )
+   IF ( SINFO%flag == 0 ) WRITE( 6,                                            &
+     "( ' Solution of set of transposed equations without refinement is', /,   &
+        & ( 6ES11.3 ) )" ) X
+! clean up
+   CALL GLS_FINALIZE( factors, control, info )
+   DEALLOCATE( matrix%val, matrix%row, matrix%col )
+   STOP
    END PROGRAM GALAHAD_GLS_example

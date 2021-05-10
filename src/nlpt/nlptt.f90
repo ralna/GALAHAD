@@ -1,4 +1,5 @@
 ! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+PROGRAM GALAHAD_NLPT_EXAMPLE
   USE GALAHAD_NLPT_double      ! the problem type
   USE GALAHAD_SYMBOLS
   IMPLICIT NONE
@@ -50,7 +51,6 @@
   problem%H_col    = (/     1    ,     1     ,     2     /)
   problem%H_val    = (/   2.0D0  ,   1.0D0   ,   2.0D0   /)
   problem%infinity = INFINITY
-  NULLIFY( problem%x_status, problem%H_ptr, problem%J_ptr, problem%gL )
 ! Select the next test case.
   test = 0
   DO

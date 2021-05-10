@@ -1,0 +1,57 @@
+
+ The vector x is
+ -5.0   -7.0    2.0    9.0    0.0   -3.0    3.0    5.0   -2.0   -6.0
+  8.0    7.0   -1.0   -8.0   10.0   -4.0    6.0   -9.0    1.0    4.0
+
+ The permutation is
+   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20
+
+ Sort x in ascending order
+
+ The vector x is now
+ -9.0   -8.0   -7.0   -6.0   -5.0   -4.0   -3.0   -2.0   -1.0    0.0
+  1.0    2.0    3.0    4.0    5.0    6.0    7.0    8.0    9.0   10.0
+
+ The permutation is now
+  18  14   2  10   1  16   6   9  13   5  19   3   7  20   8  17  12  11   4  15
+
+ Apply the permutation to x
+
+ The vector x is now
+ -5.0   -7.0    2.0    9.0    0.0   -3.0    3.0    5.0   -2.0   -6.0
+  8.0    7.0   -1.0   -8.0   10.0   -4.0    6.0   -9.0    1.0    4.0
+
+ Restore the identity permutation by sorting
+
+ The permutation is now
+   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20
+
+ Get the 12 smallest components of x
+
+ The  1-th(-st) smallest value, x(18) is  -9.0
+ The  2-th(-st) smallest value, x(14) is  -8.0
+ The  3-th(-st) smallest value, x( 2) is  -7.0
+ The  4-th(-st) smallest value, x(10) is  -6.0
+ The  5-th(-st) smallest value, x( 1) is  -5.0
+ The  6-th(-st) smallest value, x(16) is  -4.0
+ The  7-th(-st) smallest value, x( 6) is  -3.0
+ The  8-th(-st) smallest value, x( 9) is  -2.0
+ The  9-th(-st) smallest value, x(13) is  -1.0
+ The 10-th(-st) smallest value, x( 5) is   0.0
+ The 11-th(-st) smallest value, x(19) is   1.0
+ The 12-th(-st) smallest value, x( 3) is   2.0
+
+ The permutation is now
+   7  20  12  17   8   4  11  15   3  19   5  13   9   6  16   1  10   2  14  18
+
+ Compute the inverse of this permutation
+
+ The permutation is now
+  16  18   9   6  11  14   1   5  13  17   7   3  12  19   8  15   4  20  10   2
+
+ Apply the resulting permutation to x
+
+ The final vector is
+ -5.0   -7.0    2.0    9.0    0.0   -3.0    3.0    5.0   -2.0   -6.0
+  8.0    7.0   -1.0   -8.0   10.0   -4.0    6.0   -9.0    1.0    4.0
+

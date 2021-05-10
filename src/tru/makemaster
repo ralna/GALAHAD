@@ -14,7 +14,7 @@ PACKAGE = TRU
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basics make_gltr make_psls make_dps make_lms \
+DEPENDENCIES = make_gltr make_psls make_dps make_lms \
                make_sec make_sha make_userdata make_nlpt
 
 #  other packages that depend on package
@@ -33,10 +33,14 @@ TESTDEPS = make_copyright make_cutest_functions
  
 include $(GALAHAD)/src/makedefs/definitions
 
-#  include required package intermediaries
- 
-include $(GALAHAD)/src/makedefs/intermediaries
-
 #  include compilation and run instructions
  
 include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

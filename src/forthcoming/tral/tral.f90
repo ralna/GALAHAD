@@ -2937,7 +2937,8 @@
 !  problem without bounds
 !  ======================
 
-       IF ( data%no_bounds ) THEN
+!      IF ( data%no_bounds ) THEN
+       IF ( .NOT. data%no_bounds ) GO TO 498
          data%control%GLTR_control%stop_relative                               &
            = MIN( data%control%GLTR_control%stop_relative,                     &
                   inform%norm_pg ** 0.1 )
@@ -3142,12 +3143,15 @@
 
          IF ( data%nprec == - 2 )                                              &
            data%G_current( : data%n_phi ) = data%G_phi( : data%n_phi )
+          
+         GO TO 499
 
 !  ===================
 !  problems with bound
 !  ===================
 
-       ELSE
+   498 CONTINUE
+!      ELSE
 
 !  =====================================
 !  3. Compute a Generalized Cauchy Point
@@ -4136,7 +4140,7 @@
             END IF
          END IF
          inform%cg_iter = inform%cg_iter + data%itercg
-       END IF
+!      END IF
 
 
 
@@ -4173,7 +4177,7 @@
 
 
 
-
+ 499 CONTINUE
 
 !  ========================================
 !  5. check for acceptance of the new point

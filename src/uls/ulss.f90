@@ -2,7 +2,7 @@
    USE GALAHAD_ULS_DOUBLE
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER :: i, s
+   INTEGER :: i, info
    INTEGER, PARAMETER :: m = 3
    INTEGER, PARAMETER :: n = 3
    INTEGER, PARAMETER :: ne = 7
@@ -10,19 +10,17 @@
    TYPE ( ULS_data_type ) :: data
    TYPE ( ULS_control_type ) control
    TYPE ( ULS_inform_type ) :: inform
-   INTEGER :: ROWS( m )
-   INTEGER :: COLS( n )
-   REAL ( KIND = wp ) :: X( n )
-   REAL ( KIND = wp ) :: B( m )
-!  Read matrix order and number of entries
+   INTEGER :: ROWS( m ), COLS( n )
+   REAL ( KIND = wp ) :: X( n ), B( m )
+!  Record matrix order and number of entries
    matrix%m = m ; matrix%n = n ; matrix%ne = ne
 ! Allocate and set matrix
+   CALL SMT_put( matrix%type, 'COORDINATE', info )   ! Specify co-ordinate
    ALLOCATE( matrix%val( ne ),  matrix%row( ne ),  matrix%col( ne ) )
    matrix%row( : ne ) = (/ 1, 2, 3, 2, 1, 3, 2 /)
    matrix%col( : ne ) = (/ 1, 3, 3, 1, 2, 2, 2 /)
    matrix%val( : ne ) = (/ 11.0_wp, 23.0_wp, 33.0_wp, 21.0_wp, 12.0_wp,        &
                            32.0_wp, 22.0_wp /)
-   CALL SMT_put( matrix%type, 'COORDINATE', s )     ! Specify co-ordinate
 ! Specify the solver (in this case gls)
    CALL ULS_initialize( 'gls', data, control, inform )
 ! Factorize the matrix

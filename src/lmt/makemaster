@@ -12,7 +12,7 @@
 package = lmt
 PACKAGE = LMT
 
-#  auxililiary packages that current package depends on (prepend with make_)
+#  auxiliary packages that current package depends on (prepend with make_)
 
 DEPENDENCIES =
 
@@ -20,7 +20,7 @@ DEPENDENCIES =
 
 DEPENDS = lms
 
-#  auxililiary packages that are needed for tests (prepend with make_)
+#  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
 
@@ -32,10 +32,14 @@ TESTDEPS = make_copyright make_cutest_functions
  
 include $(GALAHAD)/src/makedefs/definitions
 
-#  include required package intermediaries
- 
-include $(GALAHAD)/src/makedefs/intermediaries
-
 #  include compilation and run instructions
  
 include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

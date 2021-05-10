@@ -15,7 +15,7 @@
 
    CALL ROOTS_initialize( data, control, inform )
    control%tol = EPSILON( one ) ** 0.75
-! GO TO 10
+   GO TO 10
 
    A( 0 ) = 5.002677833377567e+05
    A( 1 ) = -2.501338916688782e+05
@@ -29,7 +29,7 @@
    IF ( nroots /= 0 ) WRITE( 6, "( ' value: ', 4ES12.4 )")                     &
      ( ROOTS_polynomial_value( ROOTS( i ), A( 0 : 3 ) ),  i = 1, nroots )
 
-  STOP
+!  STOP
 
    A( 0 ) = 3.0_wp / 16.0_wp
    A( 1 ) = - 1.0_wp

@@ -13,6 +13,6 @@
    DO i = 1, A%ne 
       WRITE( 6, "( I3, 1X, I3, ES9.1 )" ) A%row( i ), A%col( i ), A%val( i ) 
    END DO 
-   DEALLOCATE( A%id, A%row, A%col, A%val, A%type )
+   DEALLOCATE( A%id, A%row, A%col, A%val )
    END PROGRAM GALAHAD_SMT_example
 

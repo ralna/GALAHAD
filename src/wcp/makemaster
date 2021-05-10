@@ -14,7 +14,7 @@ PACKAGE = WCP
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basics make_sbls make_fdc make_qpd
+DEPENDENCIES = make_qpd 
 
 #  other packages that depend on package
 
@@ -32,10 +32,14 @@ TESTDEPS = make_copyright make_cutest_functions make_presolve
  
 include $(GALAHAD)/src/makedefs/definitions
 
-#  include required package intermediaries
- 
-include $(GALAHAD)/src/makedefs/intermediaries
-
 #  include compilation and run instructions
  
 include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

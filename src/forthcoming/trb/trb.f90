@@ -3345,8 +3345,8 @@
            WRITE( data%out, "( A, ' and the result of the matrix-vector ',     &
           &  'product has components ', /, ( '    ', 12I6 ) )" )               &
               prefix, data%INDEX_nz_hp( : data%nnz_hp )
-write(6,*) ' p ', data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) )
-write(6,*) ' hp ', data%HP( data%INDEX_nz_hp( : data%nnz_hp ) )
+!write(6,*) ' p ', data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ) )
+!write(6,*) ' hp ', data%HP( data%INDEX_nz_hp( : data%nnz_hp ) )
          END IF
 
          CALL CPU_time( data%time_record )

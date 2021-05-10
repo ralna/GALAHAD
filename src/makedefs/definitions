@@ -37,6 +37,17 @@ BLG  = $(OBJ)/libgalahad_blas.a
 BLGS = $(OBJS)/libgalahad_blas.a
 BLGD = $(OBJD)/libgalahad_blas.a
 
+CLG  = $(OBJ)/libgalahad_problem.a
+CLGS = $(OBJS)/libgalahad_problem.a
+CLGD = $(OBJD)/libgalahad_problem.a
+
+DLG  = $(OBJ)/libgalahad_dummy.a
+DLGS = $(OBJS)/libgalahad_dummy.a
+DLGD = $(OBJD)/libgalahad_dummy.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
 LLG  = $(OBJ)/libgalahad_lapack.a
 LLGS = $(OBJS)/libgalahad_lapack.a
 LLGD = $(OBJD)/libgalahad_lapack.a
@@ -49,6 +60,22 @@ MLG  = $(OBJ)/libgalahad_metis.a
 MLGS = $(OBJS)/libgalahad_metis.a
 MLGD = $(OBJD)/libgalahad_metis.a
 
+MPLG  = $(OBJ)/libgalahad_mkl_pardiso.a
+MPLGS = $(OBJS)/libgalahad_mkl_pardiso.a
+MPLGD = $(OBJD)/libgalahad_mkl_pardiso.a
+
+PLG  = $(OBJ)/libgalahad_pardiso.a
+PLGS = $(OBJS)/libgalahad_pardiso.a
+PLGD = $(OBJD)/libgalahad_pardiso.a
+
+RLG  = $(OBJ)/libgalahad_spral.a
+RLGS = $(OBJS)/libgalahad_spral.a
+RLGD = $(OBJD)/libgalahad_spral.a
+
+WLG  = $(OBJ)/libgalahad_wsmp.a
+WLGS = $(OBJS)/libgalahad_wsmp.a
+WLGD = $(OBJD)/libgalahad_wsmp.a
+
 #  archive manipulation strings
 
 ARR = $(AR) $(ARREPFLAGS) $(LG)
@@ -59,6 +86,15 @@ RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
 BARR = $(AR) $(ARREPFLAGS) $(BLG)
 BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
 
+CARR = $(AR) $(ARREPFLAGS) $(CLG)
+CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
+
+DARR = $(AR) $(ARREPFLAGS) $(DLG)
+DRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(DLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
 LARR = $(AR) $(ARREPFLAGS) $(LLG)
 LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
 
@@ -67,6 +103,27 @@ HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
 
 MARR = $(AR) $(ARREPFLAGS) $(MLG)
 MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MLG)
+
+MPARR = $(AR) $(ARREPFLAGS) $(MPLG)
+MPRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MPLG)
+
+PARR = $(AR) $(ARREPFLAGS) $(PLG)
+PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $PLG)
+
+RARR = $(AR) $(ARREPFLAGS) $(RLG)
+RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $RLG)
+
+WARR = $(AR) $(ARREPFLAGS) $(WLG)
+WRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $WLG)
+
+#  linear solver choices
+
+SMTS = $(LINEARSOLVER)_smts
+SMTD = $(LINEARSOLVER)_smtd
+LINEARSOLVERS = $(LINEARSOLVER)s
+LINEARSOLVERD = $(LINEARSOLVER)d
+ULINEARSOLVERS = $(ULINEARSOLVER)s
+ULINEARSOLVERD = $(ULINEARSOLVER)d
 
 #  sed scripts
 

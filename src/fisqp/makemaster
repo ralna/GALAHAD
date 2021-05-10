@@ -12,16 +12,16 @@
 package = fisqp
 PACKAGE = FISQP
 
-#  auxililiary packages that current package depends on (prepend with make_)
+#  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basics make_sls make_l1qp make_eqp make_mop make_lms \
+DEPENDENCIES = make_sls make_l1qp make_eqp make_mop make_lms \
                make_filter make_userdata make_nlpt
 
 #  other packages that depend on package
 
 DEPENDS = 
 
-#  auxililiary packages that are needed for tests (prepend with make_)
+#  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
 
@@ -33,10 +33,14 @@ TESTDEPS = make_copyright make_cutest_functions
  
 include $(GALAHAD)/src/makedefs/definitions
 
-#  include required package intermediaries
- 
-include $(GALAHAD)/src/makedefs/intermediaries
-
 #  include compilation and run instructions
  
 include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

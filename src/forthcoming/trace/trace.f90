@@ -1964,7 +1964,7 @@
 
        IF ( data%control%subproblem_direct .AND. scale ) THEN
          ALLOCATE( data%H%row( nlp%H%ne ), data%H%col( nlp%H%ne ),             &
-                   data%H%val( nlp%H%ne ), data%G( nlp%n ) )
+                   data%H%val( nlp%H%ne ), data%G( nlp%n ), STAT = i )
          data%H%n = nlp%H%n ; data%H%ne = nlp%H%ne
          CALL SMT_put( data%H%type, 'COORDINATE', i )
          data%H%row( : nlp%H%ne ) = nlp%H%row( : nlp%H%ne )

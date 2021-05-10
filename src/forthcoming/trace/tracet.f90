@@ -59,7 +59,7 @@
      IF ( s == - GALAHAD_error_upper_entry ) CYCLE
      IF ( s == - GALAHAD_error_sort ) CYCLE
      IF ( s > 24 .AND. s < 40 ) CYCLE
-     CALL TRACE_initialize( data, control )      ! Initialize control parameters
+     CALL TRACE_initialize( data, control, inform )  ! Initialize control params
 !    control%print_level = 1
      inform%status = 1                           ! set for initial entry
      nlp%n = 1
@@ -69,7 +69,7 @@
      IF ( s == - GALAHAD_error_restrictions ) THEN
        nlp%n = 0
      ELSE IF ( s == - GALAHAD_error_preconditioner ) THEN
-       control%preconditioner = - 3              ! User's preconditioner
+       control%PSLS_control%preconditioner = - 3        ! User's preconditioner
      ELSE IF ( s == - GALAHAD_error_unbounded ) THEN
      ELSE IF ( s == - GALAHAD_error_max_iterations ) THEN
        control%maxit = 0
@@ -81,7 +81,7 @@
        SELECT CASE ( inform%status )             ! reverse communication
        CASE ( 2 )                                ! Obtain the objective
          nlp%f = - nlp%X( 1 ) ** 2
-         data%eval_stat = 0                      ! record successful evaluation
+         data%eval_status = 0                    ! record successful evaluation
          IF ( control%alive_unit > 0 .AND. s == 40 ) THEN
            INQUIRE( FILE = control%alive_file, EXIST = alive )
            IF ( alive .AND. control%alive_unit > 0 ) THEN
@@ -100,10 +100,10 @@
          END IF
        CASE ( 3 )                                 ! Obtain the gradient
          nlp%G( 1 ) = - 2.0_wp * nlp%X( 1 )
-         data%eval_stat = 0                       ! record successful evaluation
+         data%eval_status = 0                     ! record successful evaluation
        CASE ( 5 )                                 ! Obtain Hessian-vector prod
          data%U( 1 ) = data%U( 1 ) - 2.0_wp * data%V( 1 )
-         data%eval_stat = 0                       ! record successful evaluation
+         data%eval_status = 0                     ! record successful evaluation
        CASE ( 6 )                                 ! Apply the preconditioner
          data%U( 1 ) = - data%V( 1 )
        CASE DEFAULT                               ! Terminal exit from loop
@@ -148,7 +148,7 @@
    WRITE( 6, "( /, ' test of availible options ', / )" )
 
    DO i = 1, 7
-     CALL TRACE_initialize( data, control )   ! Initialize control parameters
+     CALL TRACE_initialize( data, control, inform )  ! Initialize control params
 !    control%print_level = 1
      inform%status = 1                        ! set for initial entry
      nlp%X = 1.0_wp                           ! start from one
@@ -156,9 +156,10 @@
      IF ( i == 1 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 1 ) = 'X2' ; nlp%VNAMES( 1 ) = 'X3'
-       control%out = scratch_out
+      control%out = scratch_out
        control%error = scratch_out
        control%print_level = 101
+!      control%print_level = 5
        control%print_gap = 2
        control%stop_print = 5
        control%psls_control%out = scratch_out
@@ -170,11 +171,11 @@
        OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
-                       eval_F = FUN, eval_G = GRAD, eval_H = HESS )
+                         eval_F = FUN, eval_G = GRAD, eval_H = HESS )
        CLOSE( UNIT = scratch_out )
        DEALLOCATE( nlp%VNAMES )
      ELSE IF ( i == 2 ) THEN
-       control%preconditioner = 2
+       control%PSLS_control%preconditioner = 2
        control%out = scratch_out
        control%error = scratch_out
        control%print_level = 101
@@ -191,15 +192,15 @@
                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 3 ) THEN
-       control%preconditioner = 3
+       control%PSLS_control%preconditioner = 3
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 4 ) THEN
-       control%preconditioner = 5
+       control%PSLS_control%preconditioner = 5
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 5 ) THEN
-       control%preconditioner = - 2
+       control%PSLS_control%preconditioner = - 2
        CALL TRACE_solve( nlp, control, inform, data, userdata,                 &
                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 6 ) THEN
@@ -246,7 +247,7 @@
    WRITE( 6, "( /, ' full test of generic problems ', / )" )
 
    DO i = 1, 6
-     CALL TRACE_initialize( data, control )     ! Initialize control parameters
+     CALL TRACE_initialize( data, control, inform )  ! Initialize control params
 !    control%print_level = 1
      inform%status = 1                          ! set for initial entry
      nlp%X = 1.0_wp                             ! start from one
@@ -261,7 +262,7 @@
                        eval_F = FUN, eval_G = GRAD,  eval_HPROD = HESSPROD )
      ELSE IF ( i == 3 ) THEN
        control%hessian_available = .FALSE.      ! Hessian products will be used
-       control%preconditioner = - 3             ! User's preconditioner
+       control%PSLS_control%preconditioner = - 3        ! User's preconditioner
        CALL TRACE_solve( nlp, control, inform, data, userdata, eval_F = FUN,   &
               eval_G = GRAD, eval_HPROD = HESSPROD, eval_PREC = PREC )
      ELSE IF ( i == 4 .OR. i == 5 .OR. i == 6 ) THEN
@@ -270,40 +271,40 @@
        ELSE
          control%hessian_available = .FALSE.      ! Hessian prods will be used
        END IF
-       IF ( i == 6 ) control%preconditioner = - 3 ! User's preconditioner
+       IF ( i == 6 ) control%PSLS_control%preconditioner = - 3 ! User's prec
        DO                                         ! Loop to solve problem
          CALL TRACE_solve( nlp, control, inform, data, userdata )
          SELECT CASE ( inform%status )            ! reverse communication
          CASE ( 2 )                               ! Obtain the objective
            nlp%f = ( nlp%X( 1 ) + nlp%X( 3 ) + p ) ** 2 +                      &
                    ( nlp%X( 2 ) + nlp%X( 3 ) ) ** 2 + COS( nlp%X( 1 ) )
-           data%eval_stat = 0                     ! record successful evaluation
+           data%eval_status = 0                   ! record successful evaluation
          CASE ( 3 )                               ! Obtain the gradient
            nlp%G( 1 ) = 2.0_wp * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) -             &
                         SIN( nlp%X( 1 ) )
            nlp%G( 2 ) = 2.0_wp * ( nlp%X( 2 ) + nlp%X( 3 ) )
            nlp%G( 3 ) = 2.0_wp * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) +             &
                         2.0_wp * ( nlp%X( 2 ) + nlp%X( 3 ) )
-           data%eval_stat = 0                     ! record successful evaluation
+           data%eval_status = 0                   ! record successful evaluation
          CASE ( 4 )                               ! Obtain the Hessian
            nlp%H%val( 1 ) = 2.0_wp - COS( nlp%X( 1 ) )
            nlp%H%val( 2 ) = 2.0_wp
            nlp%H%val( 3 ) = 2.0_wp
            nlp%H%val( 4 ) = 2.0_wp
            nlp%H%val( 5 ) = 4.0_wp
-           data%eval_stat = 0                     ! record successful evaluation
+           data%eval_status = 0                   ! record successful evaluation
          CASE ( 5 )                               ! Obtain Hessian-vector prod
            data%U( 1 ) = data%U( 1 ) + 2.0_wp * ( data%V( 1 ) + data%V( 3 ) )  &
                          - COS( nlp%X( 1 ) ) * data%V( 1 )
            data%U( 2 ) = data%U( 2 ) + 2.0_wp * ( data%V( 2 ) + data%V( 3 ) )
            data%U( 3 ) = data%U( 3 ) + 2.0_wp * ( data%V( 1 ) + data%V( 2 ) +  &
                          2.0_wp * data%V( 3 ) )
-           data%eval_stat = 0                     ! record successful evaluation
+           data%eval_status = 0                   ! record successful evaluation
          CASE ( 6 )                               ! Apply the preconditioner
            data%U( 1 ) = 0.5_wp * data%V( 1 )
            data%U( 2 ) = 0.5_wp * data%V( 2 )
            data%U( 3 ) = 0.25_wp * data%V( 3 )
-           data%eval_stat = 0                     ! record successful evaluation
+           data%eval_status = 0                   ! record successful evaluation
          CASE DEFAULT                             ! Terminal exit from loop
            EXIT
          END SELECT
@@ -322,6 +323,7 @@
      CALL TRACE_terminate( data, control, inform )  ! delete internal workspace
    END DO
    DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+write(6,*) ' This package needs much more work!!'
    END PROGRAM GALAHAD_TRACE_test_deck
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
