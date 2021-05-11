@@ -14,7 +14,7 @@ BASICS = cputime_silent clock_silent symbols_silent dummy_silent \
          blas_interface_silent lapack_interface_silent minpack_silent \
          pardiso_silent mkl_pardiso_silent metis_silent wsmp_silent \
          string_silent zd11_silent smt_silent space_silent \
-         specfile_silent buildspec_silent sort_silent 
+         specfile_silent buildspec_silent sort_silent norms_silent
 
 #  main compilations and runs
 
@@ -86,6 +86,13 @@ sort_silent:
 	( cd $(GALAHAD)/src/sort ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sort_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sort )
+
+#  norms package
+
+norms_silent:
+	( cd $(GALAHAD)/src/norms ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/norms )
 
 #  zd11 package
 
@@ -361,6 +368,9 @@ clean:
 	( cd $(GALAHAD)/src/sort ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sort )
+	( cd $(GALAHAD)/src/norms ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/norms )
 	( cd $(GALAHAD)/src/zd11 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )

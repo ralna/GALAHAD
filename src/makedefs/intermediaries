@@ -150,6 +150,26 @@ make_lmt:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lmt_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lmt )
 
+make_l2rt:
+	( cd $(GALAHAD)/src/l2rt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l2rt_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
+
+make_lsrt:
+	( cd $(GALAHAD)/src/lsrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lsrt_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsrt )
+
+make_lstr:
+	( cd $(GALAHAD)/src/lstr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lstr_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lstr )
+
+make_miqr:
+	( cd $(GALAHAD)/src/miqr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) miqr_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/miqr )
+
 make_mop:
 	( cd $(GALAHAD)/src/mop ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mop_silent \
@@ -185,10 +205,15 @@ make_qpt:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpt_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpt )
 
+make_rand:
+	( cd $(GALAHAD)/src/rand ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) rand_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rand )
+
 make_roots:
-	( cd $(GALAHAD)/src/general ; \
+	( cd $(GALAHAD)/src/roots ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) roots_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/roots )
 
 make_rqs:
 	( cd $(GALAHAD)/src/rqs ; \
@@ -381,6 +406,11 @@ make_mi28:
 	( cd $(GALAHAD)/src/non-free/mi28 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi28_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi28 )
+
+make_mi35:
+	( cd $(GALAHAD)/src/non-free/mi35 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi35_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi35 )
 
 #  lancelot packages
 

@@ -23,12 +23,15 @@
     H%row( n + i ) = i + 1 ; H%col( n + i ) = i ; H%val( n + i ) = 1.0_wp 
    END DO
    CALL SMT_put( A%type, 'DENSE', s )           ! Specify 1 by n matrix A
-   ALLOCATE( A%val( n ) ) ; A%val = 1.0_wp ; A%m = 1
+   ALLOCATE( A%val( n ) ) ; A%val = 1.0_wp ; A%m = 1 ; A%n = n
+   DO i = 1, n
+    A%val( i ) = REAL( i, KIND = wp )
+   END DO
    CALL RQS_initialize( data, control, inform )  ! Initialize control parameters
-   CALL RQS_solve( n, p, sigma, f, C, H, X, data, control, inform, A = A ) ! Solve
+   CALL RQS_solve( n, p, sigma, f, C, H, X, data, control, inform, A = A ) 
    IF ( inform%status == 0 ) THEN !  Successful return
-    WRITE( 6, "( 1X, I0, ' factorizations. Objective and Lagrange multiplier =',&
-   &    2ES12.4 )" ) inform%factorizations, inform%obj, inform%multiplier
+    WRITE( 6, "( 1X, I0, ' factorizations. Objective and Lagrange multiplier',&
+   &  ' =',  2ES12.4 )" ) inform%factorizations, inform%obj, inform%multiplier
    ELSE  !  Error returns
     WRITE( 6, "( ' RQS_solve exit status = ', I0 ) " ) inform%status
    END IF

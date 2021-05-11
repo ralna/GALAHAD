@@ -14,7 +14,7 @@ PACKAGE = SBLS
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basic make_sls make_uls make_lmt
+DEPENDENCIES = make_sls make_uls make_lmt make_roots
 
 #  other packages that depend on package
 

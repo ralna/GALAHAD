@@ -13,7 +13,7 @@
    TYPE ( GLTR_info_type ) :: info
    CALL GLTR_initialize( data, control, info )  ! Initialize control parameters
    control%f_0 = 4.731884325266608D+0
-   control%print_level = 3
+!  control%print_level = 3
    control%out = 6
    control%unitm = .TRUE.                 ! M is the identity matrix
    R = (/ -4.637816414622023D+0, -1.222067920715109D-1 /)
@@ -42,5 +42,5 @@
          EXIT
       END SELECT
    END DO
-   write(6,*) ' x ', X
+!  write(6,*) ' x ', X
    END PROGRAM GALAHAD_GLTR_EXAMPLE2

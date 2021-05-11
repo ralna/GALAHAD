@@ -14,7 +14,7 @@ PACKAGE = SLS
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basic make_ma57v4 make_sils make_mc61 make_mc64 \
+DEPENDENCIES = make_sils make_ma57v4 make_mc61 make_mc64 \
                make_mc68 make_mc77 make_ma77 make_ma86 make_ma87 \
                make_ma97 make_$(SSIDS)
 

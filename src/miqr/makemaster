@@ -14,7 +14,7 @@ PACKAGE = MIQR
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basic make_norms make_convert
+DEPENDENCIES = make_basic make_convert
 
 #  other packages that depend on package
 

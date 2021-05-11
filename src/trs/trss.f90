@@ -26,8 +26,8 @@
    CALL TRS_initialize( data, control, inform ) ! Initialize control parameters
    CALL TRS_solve( n, radius, f, C, H, X, data, control, inform, M = M ) ! Solve
    IF ( inform%status == 0 ) THEN !  Successful return
-    WRITE( 6, "( 1X, I0, ' factorizations. Objective and Lagrange multiplier =',&
-   &    2ES12.4 )" ) inform%factorizations, inform%obj, inform%multiplier
+    WRITE( 6, "( 1X, I0, ' factorizations. Objective and Lagrange multiplier', &
+   &    ' =', 2ES12.4 )" ) inform%factorizations, inform%obj, inform%multiplier
    ELSE  !  Error returns
     WRITE( 6, "( ' TRS_solve exit status = ', I0 ) " ) inform%status
    END IF

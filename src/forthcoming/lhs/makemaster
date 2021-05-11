@@ -14,7 +14,7 @@ PACKAGE = LHS
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basic make_norms
+DEPENDENCIES = make_basic
 
 #  other packages that depend on package
 
