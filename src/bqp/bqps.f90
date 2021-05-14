@@ -33,7 +33,7 @@
 ! problem data complete   
    CALL BQP_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = infinity                  ! Set infinity
-   control%print_level = 1                      ! print one line/iteration
+!  control%print_level = 1                      ! print one line/iteration
    inform%status = 1
    CALL BQP_solve( p,  B_stat, data, control, inform, userdata )  
    IF ( inform%status == 0 ) THEN             !  Successful return

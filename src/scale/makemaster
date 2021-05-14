@@ -14,7 +14,7 @@ PACKAGE = SCALE
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basics 
+DEPENDENCIES = make_qpt make_trans
 
 #  other packages that depend on package
 
@@ -32,10 +32,15 @@ TESTDEPS = make_copyright make_cutest_functions
  
 include $(GALAHAD)/src/makedefs/definitions
 
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
 #  include required package intermediaries
  
 include $(GALAHAD)/src/makedefs/intermediaries
 
-#  include compilation and run instructions
- 
-include $(GALAHAD)/src/makedefs/instructions

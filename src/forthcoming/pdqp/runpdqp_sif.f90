@@ -12,7 +12,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   PROGRAM RUNQPE_SIF
+   PROGRAM RUNPDQP_SIF
 
 !    -----------------------------------------------------
 !    | Main program for the SIF/CUTEr interface to QPE,  |
@@ -20,7 +20,7 @@
 !    | quadratic programming                             |
 !    -----------------------------------------------------
 
-   USE GALAHAD_USEQPE_double
+   USE GALAHAD_USEPDQP_double
 
 !  Problem input characteristics
 
@@ -34,7 +34,7 @@
 
 !  Call the CUTEr interface
 
-   CALL USE_QPE( input )
+   CALL USE_PDQP( input )
 
 !  Close the data input file 
 
@@ -43,4 +43,4 @@
 
 !  End of RUNQPE_SIF
 
-   END PROGRAM RUNQPE_SIF
+   END PROGRAM RUNPDQP_SIF

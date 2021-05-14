@@ -12,6 +12,8 @@ D$(PACKAGE) = $(DEPENDENCIES) $(LGD)($(package).o)
 
 SRUN$(PACKAGE) = $(TESTDEPS) $(LGS)(use$(package).o) $(OBJS)/run$(package)_sif.o
 DRUN$(PACKAGE) = $(TESTDEPS) $(LGD)(use$(package).o) $(OBJD)/run$(package)_sif.o
+SQPLIB$(PACKAGE) = $(TESTDEPS) $(OBJS)/in$(package).o
+DQPLIB$(PACKAGE) = $(TESTDEPS) $(OBJD)/in$(package).o
 
 #  libraries used when linking for tests
 
@@ -25,6 +27,8 @@ $(PACKAGE)OBJECTSS = $(S$(PACKAGE))
 $(PACKAGE)OBJECTSD = $(D$(PACKAGE))
 $(PACKAGE)OBJECTSS_CUTEST = $(S$(PACKAGE)) $(SRUN$(PACKAGE))
 $(PACKAGE)OBJECTSD_CUTEST = $(D$(PACKAGE)) $(DRUN$(PACKAGE))
+$(PACKAGE)OBJECTSS_QPLIB = $(S$(PACKAGE)) $(SQPLIB$(PACKAGE))
+$(PACKAGE)OBJECTSD_QPLIB = $(D$(PACKAGE)) $(DQPLIB$(PACKAGE))
 
 OBJECTSS_CUTEST = $($(PACKAGE)OBJECTSS_CUTEST)
 OBJECTSD_CUTEST = $($(PACKAGE)OBJECTSD_CUTEST)
@@ -69,6 +73,15 @@ $(package)_cutest_single: $($(PACKAGE)OBJECTSS_CUTEST)
 $(package)_cutest_double: $($(PACKAGE)OBJECTSD_CUTEST)
 	$(RANLIB) $(LGD)
 
+# package for qplib
+
+$(package)_qplib: $(package)_qplib_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_QPLIB)"
+$(package)_qplib_single: $($(PACKAGE)OBJECTSS_QPLIB)
+	$(RANLIB) $(LGS)
+$(package)_qplib_double: $($(PACKAGE)OBJECTSD_QPLIB)
+	$(RANLIB) $(LGD)
+
 #  silent package
 
 $(package)_silent: $(package)_silent_$(PRECIS)
@@ -89,6 +102,15 @@ $(package)_double: $($(PACKAGE)OBJECTSD)
 $(package)srunall: $(package)ss $(package)ss2 $(package)ss3 $(package)st
 $(package)drunall: $(package)ds $(package)ds2 $(package)ds3 $(package)dt
 $(package)runall: $(package)drunall $(package)srunall
+
+#  run qp data format package
+
+in$(package): in$(package)_$(PRECIS)
+	
+in$(package)_single: $($(PACKAGE)OBJECTSS) $(OBJS)/in$(package).o
+	
+in$(package)_double: $($(PACKAGE)OBJECTSD) $(OBJD)/in$(package).o
+	
 
 #  test package
 
@@ -221,6 +243,19 @@ $(OBJ)/run$(package)_sif.o: ../$(package)/run$(package)_sif.f90
 	cd $(OBJ); $(FORTRAN) -o run$(package)_sif.o \
                      $(FFLAGSS) run$(package)_sif.f90
 	rm $(OBJ)/run$(package)_sif.f90
+	@printf '[ OK ]\n'
+
+# main progarms for data-file interface
+
+in$(package).o: $(OBJ)/in$(package).o
+
+$(OBJ)/in$(package).o: ../$(package)/in$(package).f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "in$(package)"
+	$(SED) -f $(SEDS) ../$(package)/in$(package).f90 \
+           > $(OBJ)/in$(package)1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/in$(package)1.f90 > $(OBJ)/in$(package).f90
+	cd $(OBJ); $(FORTRAN) -o in$(package).o $(FFLAGSOMP) in$(package).f90
+	rm $(OBJ)/in$(package).f90 $(OBJ)/in$(package)1.f90
 	@printf '[ OK ]\n'
 
 #  book keeping

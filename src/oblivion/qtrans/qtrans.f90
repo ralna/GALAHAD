@@ -70,7 +70,7 @@
        QTRANS_untrans => TRANS_untrans,                                        &
        QTRANS_v_trans_inplace => TRANS_v_trans_inplace,                        &
        QTRANS_v_untrans_inplace => TRANS_v_untrans_inplace
-     USE CUTEr_interface_double
+     USE CUTEst_interface_double
 
      IMPLICIT NONE     
 

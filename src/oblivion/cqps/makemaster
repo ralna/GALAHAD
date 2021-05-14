@@ -1,4 +1,4 @@
-#  Main body of the installation makefile for the GALAHAD DLP package
+#  Main body of the installation makefile for the GALAHAD CQPS package
 
 #  Nick Gould, for GALAHAD productions 
 #  This version: 2021-05-11
@@ -9,16 +9,16 @@
 
 #  package name
 
-package = dlp
-PACKAGE = DLP
+package = cqps
+PACKAGE = CQPS
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_dqp
+DEPENDENCIES = make_bqpb make_psls
 
 #  other packages that depend on package
 
-DEPENDS = l1qp
+DEPENDS = 
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

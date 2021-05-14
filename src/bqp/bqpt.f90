@@ -302,32 +302,6 @@
        control%QPB_control%primal = .TRUE.       
      ELSE IF ( i == 15 ) THEN
        control%QPB_control%feasol = .FALSE.
-
-
-     ELSE IF ( i == 16 ) THEN
-       control%QPA_control%cold_start = 0
-       B_stat = 0 ; B_stat( 1 ) = - 1
-     ELSE IF ( i == 17 ) THEN
-       control%QPA_control%cold_start = 0
-       B_stat = 0
-     ELSE IF ( i == 18 ) THEN
-       control%QPA_control%cold_start = 2
-     ELSE IF ( i == 19 ) THEN
-       control%QPA_control%cold_start = 3
-     ELSE IF ( i == 20 ) THEN
-       control%QPA_control%cold_start = 4
-     ELSE IF ( i == 21 ) THEN
-       control%QPA_control%cold_start = 1
-       control%QPA_control%deletion_strategy = 1
-     ELSE IF ( i == 22 ) THEN
-       control%QPA_control%deletion_strategy = 2
-     ELSE IF ( i == 23 ) THEN
-       control%QPA_control%solve_within_bounds = .FALSE.
-!      control%feasol = .FALSE.
-     ELSE IF ( i == 24 ) THEN
-       control%no_qpa = .TRUE.
-     ELSE IF ( i == 25 ) THEN
-       control%no_qpb = .TRUE.
      END IF
 
      p%H%val = (/ 1.0_wp, 1.0_wp /)

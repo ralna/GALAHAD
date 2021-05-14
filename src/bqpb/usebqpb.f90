@@ -144,7 +144,7 @@
       TYPE ( BQPB_data_type ) :: data
       TYPE ( BQPB_control_type ) :: BQPB_control        
       TYPE ( BQPB_inform_type ) :: BQPB_inform
-      TYPE ( NLPT_userdata_type ) :: userdata
+      TYPE ( GALAHAD_userdata_type ) :: userdata
       TYPE ( QPT_problem_type ) :: prob
 
 !  Allocatable arrays

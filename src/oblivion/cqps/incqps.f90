@@ -195,11 +195,11 @@
       TYPE ( CQPS_control_type ) :: CQPS_control        
       TYPE ( CQPS_inform_type ) :: CQPS_inform
       TYPE ( QPT_problem_type ) :: prob
-      TYPE ( NLPT_userdata_type ) :: userdata
+      TYPE ( GALAHAD_userdata_type ) :: userdata
       TYPE ( PRESOLVE_control_type ) :: PRE_control
       TYPE ( PRESOLVE_inform_type )  :: PRE_inform
       TYPE ( PRESOLVE_data_type )    :: PRE_data
-      TYPE ( SCALE_trans_type ) :: SCALE_tt
+      TYPE ( SCALE_trans_type ) :: SCALE_trans
       TYPE ( SCALE_data_type ) :: SCALE_data
       TYPE ( SCALE_control_type ) :: SCALE_control
       TYPE ( SCALE_inform_type ) :: SCALE_inform

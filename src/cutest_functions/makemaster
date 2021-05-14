@@ -1,7 +1,8 @@
-#  Main body of the installation makefile for the GALAHAD RQ packages
+#  Main body of the installation makefile for the GALAHAD CUTEST_FUNCTIONS 
+#  package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-14
+#  This version: 2021-04-25
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -9,25 +10,20 @@
 
 #  package name
 
-package = rq
-PACKAGE = RQ
+package = cutest_functions
+PACKAGE = CUTEST_FUNCTIONS
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_ir make_trs make_rqs make_dps make_gltr make_glrt \
-               make_lstr make_lsrt make_l2rt
+DEPENDENCIES = make_basic make_nlpt
 
 #  other packages that depend on package
 
-DEPENDS =
+DEPENDS = usefisqp usefastr usefunnel usetrimsqp usetru usearc usebarc usenls
 
 #  auxililiary packages that are needed for tests (prepend with make_)
 
 TESTDEPS =
-
-#  all packages in the RQ section
-
-PACKAGES = ir trs rqs dps gltr glrt lstr lsrt l2rt
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================
@@ -51,29 +47,43 @@ $(PACKAGE)OBJECTSD = $(D$(PACKAGE))
 #  ========================== makefile stanza ==============================
 #  =========================================================================
 
-#  main compilations and runs
-
-all: $(package)
-
 #  silent package
 
 $(package)_silent: $(package)_silent_$(PRECIS)
-$(package)_silent_single: $(DEPENDENCIES)
-$(package)_silent_double: $(DEPENDENCIES)
+$(package)_silent_single: $($(PACKAGE)OBJECTSS)
+$(package)_silent_double: $($(PACKAGE)OBJECTSD)
 
 #  package
 
 $(package): $(package)_$(PRECIS)
-$(package)_single: $(DEPENDENCIES)
-	$(RANLIB) $(LGS)
-$(package)_double: $(DEPENDENCIES)
-	$(RANLIB) $(LGD)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
+$(package)_single: $($(PACKAGE)OBJECTSS)
+	$(RANLIB) $(CLGS)
+$(package)_double: $($(PACKAGE)OBJECTSD)
+	$(RANLIB) $(CLGD)
+
+#  non-standard package compilation instructions
+
+$(package).o: $(CLG)($(package).o)
+
+$(CLG)($(package).o): ../$(package)/$(package).f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
+	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > \
+          $(OBJ)/$(package)1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)1.f90 > $(OBJ)/$(package).f90
+	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).f90 \
+              || ( printf ' %-26s' "=> Disabling optimization " ; \
+              $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).f90 )
+	cd $(OBJ); $(CARR) $(package).o ; $(RM) $(package).f90 \
+          $(package)1.f90 $(package).o
+	$(RMARFILES) $(DEPENDS)
+	@printf '[ OK ]\n'
 
 #  book keeping
 
 clean:
 	@printf ' %-9s\t\t' "Removing $(package) files"
-	$(RMARFILES) $(PACKAGES)
+	$(CRMARFILE) $(package).o
 	@printf '[ OK ]\n'
 
 cleanall:
@@ -85,4 +95,3 @@ cleanall:
 #  include required package intermediaries
  
 include $(GALAHAD)/src/makedefs/intermediaries
-

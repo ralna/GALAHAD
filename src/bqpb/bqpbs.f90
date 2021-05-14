@@ -8,7 +8,7 @@
    TYPE ( BQPB_data_type ) :: data
    TYPE ( BQPB_control_type ) :: control        
    TYPE ( BQPB_inform_type ) :: inform
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, h_ne = 4
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_stat
@@ -31,8 +31,7 @@
 ! problem data complete   
    CALL BQPB_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = infinity                ! Set infinity
-   control%print_level = 3                    ! print one line/iteration
-!  control%print_level = 4                    ! print one line/iteration
+!  control%print_level = 1                    ! print one line/iteration
    control%maxit = 4000                         ! limit the # iterations
 !  control%print_gap = 100                    ! print every 100 terations
 !  control%exact_gcp = .FALSE.

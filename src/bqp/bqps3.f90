@@ -35,8 +35,7 @@
 ! problem data complete   
    CALL BQP_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = infinity                ! Set infinity
-!  control%print_level = 3                    ! print one line/iteration
-   control%print_level = 1                    ! print one line/iteration
+!  control%print_level = 1                    ! print one line/iteration
    control%maxit = 40                         ! limit the # iterations
 !  control%print_gap = 100                    ! print every 100 terations
 !  control%exact_gcp = .FALSE.

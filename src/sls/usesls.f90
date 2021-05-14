@@ -425,7 +425,7 @@
 !         K%col( A_ne + H_ne + i ) = n + i
 !         K%val( A_ne + H_ne + i ) = K22
 !       END DO
-        write(6,*) ' nnz(A,H) = ', A_ne, H_ne
+        WRITE( 6, "( ' nnz(A,H) = ', I0, 1X, I0 )" ) A_ne, H_ne
       ELSE
         K%n = n ; K%ne = H_ne
         ALLOCATE( K%val( K%ne ), K%row( K%ne ), K%col( K%ne ) )
@@ -433,7 +433,7 @@
         K%row( : H_ne ) = prob%H%row( : H_ne )
         K%col( : H_ne ) = prob%H%col( : H_ne )
         K%val( : H_ne ) = prob%H%val( : H_ne )
-        write(6,*) ' nnz(H) = ', H_ne
+        WRITE( 6, "( ' nnz(H) = ', I0 )" ) H_ne
       END IF
 
 !     WRITE( 6, "( /, 'K', /, ( 3( 2I6, ES12.4 ) ) )" )                        &
@@ -453,6 +453,8 @@
 !  ------------------- problem set-up complete ----------------------
 
       CALL CPU_TIME( times ) ; CALL CLOCK_time( clocks )
+      times = times - time ; clocks = clocks - clock
+
 
 !  If required, print out the (raw) problem data
 
@@ -516,11 +518,11 @@
      &       ', a_ne = ', I0, ', h_ne = ', I0 )" ) n, m, A_ne, H_ne
 
       IF ( printo ) CALL COPYRIGHT( out, '2011' )
+      CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
 
 !  Call the solver
 
       IF ( prob%n > 0 ) THEN
-        CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
 
 !  =================
 !  solve the problem
@@ -563,9 +565,6 @@
         END IF
         IF ( printo ) WRITE( out, " ( /, ' ** SLS solver used ** ' ) " )
 
-        CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
-        timet = timet - timeo ; clockt = clockt - clocko
-
         WRITE( 6, "( ' nullity, # -ve eigenvalues = ', I0, ', ', I0 )" )       &
               K%n - SLS_inform%rank, SLS_inform%negative_eigenvalues
 
@@ -576,6 +575,9 @@
       ELSE
         status = 0
       END IF
+      CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
+      timet = timet - timeo ; clockt = clockt - clocko
+
       WRITE( out, "( /, ' Solver: ', A, ' with ordering = ', I0 )" )           &
         TRIM( solver ), SLS_control%ordering
       WRITE( out, "(  ' Stopping with inform%status = ', I0 )" ) status
@@ -606,7 +608,8 @@
             i = prob%A%row( l ) ; j = prob%A%col( l )
             AY( i ) = AY( i ) +  prob%A%val( l ) * prob%X( j )
           END DO
-          res_c = MAX( zero, MAXVAL( AY + K22 * prob%Y( : prob%m ) ) )
+!         res_c = MAX( zero, MAXVAL( AY + K22 * prob%Y( : prob%m ) ) )
+          res_c = MAXVAL( ABS( AY ) )
           DEALLOCATE( AY )
 
 !  Compute maximum KKT residual
@@ -724,10 +727,11 @@
         END IF
       END IF
 
-      times = times - time ; timet = timet - timeo
-      clocks = clocks - clock ; clockt = clockt - clocko
       WRITE( out, "( /, ' Total time, clock = ', F0.2, ', ', F0.2 )" )         &
         times + timet, clocks + clockt
+      WRITE( out, "( /, ' Solver: ', A, ' with ordering = ', I0 )" )           &
+        TRIM( solver ), SLS_control%ordering
+      WRITE( out, "(  ' Stopping with inform%status = ', I0 )" ) status
 !$    WRITE( out, "( ' number of threads = ', I0 )" ) OMP_GET_MAX_THREADS( )
       WRITE( out, "( /, ' Problem: ', A10, //,                                 &
      &                  '          < ------ time ----- > ',                    &
@@ -740,7 +744,7 @@
 !  Compare the variants used so far
 
       WRITE( out, "( 1X, I6, 0P, 6F8.2 )" )                                    &
-        status, times, timet, times + timet , clocks, clockt, clocks + clockt
+        status, times, timet, times + timet, clocks, clockt, clocks + clockt
 
       DEALLOCATE( VNAME, CNAME, K%row, K%col, K%val )
       IF ( is_specfile ) CLOSE( input_specfile )

@@ -23,6 +23,7 @@ $(LG)($(package).o): ../$(package)/$(package).f90
 	cd $(OBJ); $(ARR) $(package).o
 	$(RMARFILES) $(DEPENDS)
 	$(RMARFILE) use$(package).o
+	$(RMOBFILE) in$(package).o
 	$(RMOBFILE) $(package)s.o
 	$(RMOBFILE) $(package)s2.o
 	$(RMOBFILE) $(package)s3.o

@@ -41,10 +41,10 @@ D32:     6 iterations. Value =    3.5
  7:     1 iterations. Optimal objective value =    3.2 status =      0
  8:     1 iterations. Optimal objective value =    4.3 status =      0
  9:     1 iterations. Optimal objective value =    3.0 status =      0
-10:    -1 iterations. Optimal objective value =   -1.0 status =      0
+10:    -1 iterations. Optimal objective value =    3.2 status =      0
 
  full test of generic problems 
 
- 1:     8 iterations. Optimal objective value =   12.5 status =      0
+ 1:     9 iterations. Optimal objective value =   12.5 status =      0
  2:    17 iterations. Optimal objective value =   24.5 status =      0
- 3:    16 iterations. Optimal objective value =   12.5 status =      0
+ 3:    17 iterations. Optimal objective value =   12.5 status =      0

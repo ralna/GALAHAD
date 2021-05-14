@@ -9,7 +9,7 @@
    TYPE ( BQPB_data_type ) :: data
    TYPE ( BQPB_control_type ) :: control        
    TYPE ( BQPB_inform_type ) :: inform
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER, PARAMETER :: n = 3, h_ne = 4, h_all = 5
    INTEGER, PARAMETER :: len_integer = 2 * n + 3 + h_all, len_real = h_all
    INTEGER, PARAMETER :: nflag = 2, st_flag = 2, st_ptr = st_flag + n
@@ -33,9 +33,8 @@
    userdata%real( st_val + 1 : st_val + h_all )                                &
      = (/ 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp, 3.0_wp /)
 ! problem data complete   
-   CALL BQPB_initialize( data, control )       ! Initialize control parameters
+   CALL BQPB_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = infinity                ! Set infinity
-!  control%print_level = 3                    ! print one line/iteration
    control%print_level = 1                    ! print one line/iteration
    control%maxit = 40                         ! limit the # iterations
 !  control%print_gap = 100                    ! print every 100 terations

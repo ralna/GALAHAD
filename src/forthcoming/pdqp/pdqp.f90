@@ -192,7 +192,8 @@
 
 !  initialize SBLS
 
-       CALL SBLS_initialize( data%sbls_data, control%sbls_control )
+       CALL SBLS_initialize( data%sbls_data, control%sbls_control,             &
+                             inform%sbls_inform )
 
 !  End of PDQP_initialize
 

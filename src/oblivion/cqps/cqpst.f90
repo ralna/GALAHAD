@@ -1,5 +1,5 @@
 ! THIS VERSION: GALAHAD 2.4 - 08/04/2010 AT 08:00 GMT.
-   PROGRAM GALAHAD_CQPS_EXAMPLE
+   PROGRAM GALAHAD_CQPS_TEST
    USE GALAHAD_CQPS_double                            ! double precision version
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
@@ -8,7 +8,8 @@
    TYPE ( QPT_problem_type ) :: p
    TYPE ( CQPS_data_type ) :: data
    TYPE ( CQPS_control_type ) :: control        
-   TYPE ( CQPS_inform_type ) :: info
+   TYPE ( CQPS_inform_type ) :: inform
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: n, m, h_ne, a_ne, tests, smt_stat
    INTEGER :: data_storage_type, i, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
@@ -58,7 +59,6 @@
 
      CALL CQPS_initialize( data, control, inform )
      control%infinity = infty
-     control%restore_problem = 1
 
      p%new_problem_structure = .TRUE.
      p%n = n ; p%m = m ; p%f = 1.0_wp
@@ -92,10 +92,8 @@
        p%X_u = (/ 1.0_wp, infty, 2.0_wp /)
      ELSE IF ( status == - GALAHAD_error_tiny_step ) THEN
 !      control%print_level = 1
-       control%QPB_control%initial_radius = EPSILON( 1.0_wp ) ** 2
-       control%no_qpa = .TRUE.
      ELSE IF ( status == - GALAHAD_error_max_iterations ) THEN
-       control%QPA_control%maxit = 1 ; control%QPB_control%maxit = 1
+       control%BQP_control%maxit = 1 ; control%BQPB_control%maxit = 1
 !      control%print_level = 1
      ELSE IF ( status == - GALAHAD_error_cpu_limit ) THEN
        control%cpu_time_limit = 0.0
@@ -106,22 +104,22 @@
      END IF
 
 !    control%out = 6 ; control%print_level = 1
-     CALL CQPS_solve( p, C_stat, B_stat, data, control, info )
-     IF ( info%status == 0 ) THEN
+     CALL CQPS_solve( p, C_stat, B_stat, data, control, inform, userdata )
+     IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &      F6.1, ' status = ', I6 )" ) status, info%QPA_inform%iter,          &
-              info%QPB_inform%iter, info%obj, info%status
+     &      F6.1, ' status = ', I6 )" ) status, inform%BQP_inform%iter,          &
+              inform%BQPB_inform%iter, inform%obj, inform%status
      ELSE
-       WRITE( 6, "(I2, ': CQPS_solve exit status = ', I6 )") status, info%status
+       WRITE( 6, "(I2, ': CQPS_solve exit status = ', I6 )") status, inform%status
      END IF
      DEALLOCATE( p%H%val, p%H%row, p%H%col )
      DEALLOCATE( p%A%val, p%A%row, p%A%col )
-     CALL CQPS_terminate( data, control, info )
+     CALL CQPS_terminate( data, control, inform )
 !    IF ( status == - GALAHAD_error_max_iterations ) STOP
 !    IF ( status == - GALAHAD_error_primal_infeasible ) STOP
 
    END DO
-   CALL CQPS_terminate( data, control, info )
+   CALL CQPS_terminate( data, control, inform )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
    DEALLOCATE( p%H%ptr, p%A%ptr )
@@ -152,18 +150,18 @@
    p%H%col = (/ 1 /)
    CALL CQPS_initialize( data, control, inform )
    control%infinity = infty
-   control%restore_problem = 1
 !  control%print_level = 1
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-   CALL CQPS_solve( p, C_stat, B_stat, data, control, info )
-   IF ( info%status == 0 ) THEN
+   CALL CQPS_solve( p, C_stat, B_stat, data, control, inform, userdata )
+   IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &          F6.1, ' status = ', I6 )" ) status, info%QPA_inform%iter,      &
-                  info%QPB_inform%iter, info%obj, info%status
+     &          F6.1, ' status = ', I6 )" ) status, inform%BQP_inform%iter,    &
+                  inform%BQPB_inform%iter, inform%obj, inform%status
      ELSE
-       WRITE( 6, "(I2, ': CQPS_solve exit status = ', I6 )") status, info%status
+       WRITE( 6, "(I2, ': CQPS_solve exit status = ', I6 )") status,           &
+         inform%status
    END IF
-   CALL CQPS_terminate( data, control, info )
+   CALL CQPS_terminate( data, control, inform )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
@@ -193,7 +191,6 @@
    DO data_storage_type = -3, 0
      CALL CQPS_initialize( data, control, inform )
      control%infinity = infty
-     control%restore_problem = 2
 !    control%out = 6 ; control%print_level = 11
      p%new_problem_structure = .TRUE.
      IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
@@ -255,18 +252,18 @@
          p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
        END IF
        p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-       CALL CQPS_solve( p, C_stat, B_stat, data, control, info )
+       CALL CQPS_solve( p, C_stat, B_stat, data, control, inform, userdata )
 
-      IF ( info%status == 0 ) THEN
+      IF ( inform%status == 0 ) THEN
          WRITE( 6, "( A1,I1,':', 2I6,' iterations. Optimal objective value = ',&
-     &            F6.1, ' status = ', I6 )" ) st, i, info%QPA_inform%iter,     &
-                  info%QPB_inform%iter, info%obj, info%status
+     &            F6.1, ' status = ', I6 )" ) st, i, inform%BQP_inform%iter,   &
+                  inform%BQPB_inform%iter, inform%obj, inform%status
        ELSE
          WRITE( 6, "( A1, I1,': CQPS_solve exit status = ', I6 ) " )           &
-           st, i, info%status
+           st, i, inform%status
        END IF
      END DO
-     CALL CQPS_terminate( data, control, info )
+     CALL CQPS_terminate( data, control, inform )
      DEALLOCATE( p%H%val, p%H%row, p%H%col )
      DEALLOCATE( p%A%val, p%A%row, p%A%col )
 !    STOP
@@ -308,90 +305,45 @@
    p%A%ptr = (/ 1, 3 /)
    CALL CQPS_initialize( data, control, inform )
    control%infinity = infty
-   control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 1
    
 !  test with new and existing data
 
-   tests = 25
-   DO i = 0, tests
-     IF ( i == 0 ) THEN
-       control%QPB_control%precon = 0
-     ELSE IF ( i == 1 ) THEN
-       control%QPB_control%precon = 1
-     ELSE IF ( i == 2 ) THEN
-       control%QPB_control%precon = 2
-     ELSE IF ( i == 3 ) THEN
-       control%QPB_control%precon = 3
-     ELSE IF ( i == 4 ) THEN
-       control%QPB_control%precon = 5
-     ELSE IF ( i == 5 ) THEN     
-       control%QPB_control%factor = - 1
-     ELSE IF ( i == 6 ) THEN     
-       control%QPB_control%factor = 1
-     ELSE IF ( i == 7 ) THEN     
-       control%QPB_control%max_col = 0
-     ELSE IF ( i == 8 ) THEN     
-       control%QPB_control%factor = 2
-       control%QPB_control%precon = 0
-     ELSE IF ( i == 9 ) THEN
-!      control%print_level = 2
-       control%QPB_control%precon = 1
-     ELSE IF ( i == 10 ) THEN
-       control%QPB_control%precon = 2
-     ELSE IF ( i == 11 ) THEN
-       control%QPB_control%precon = 3
-     ELSE IF ( i == 12 ) THEN
-       control%QPB_control%precon = 5
-     ELSE IF ( i == 13 ) THEN
-       control%QPB_control%center = .FALSE.
-     ELSE IF ( i == 14 ) THEN
-       control%QPB_control%primal = .TRUE.       
-     ELSE IF ( i == 15 ) THEN
-       control%QPB_control%feasol = .FALSE.
-
-
-     ELSE IF ( i == 16 ) THEN
-       control%QPA_control%cold_start = 0
+   tests = 22
+   DO i = 16, tests
+     IF ( i == 16 ) THEN
+       control%BQP_control%cold_start = 0
        B_stat = 0 ; C_stat = 0 ; B_stat( 1 ) = - 1
      ELSE IF ( i == 17 ) THEN
-       control%QPA_control%cold_start = 0
+       control%BQP_control%cold_start = 0
        B_stat = 0 ; C_stat = 0 ; C_stat( 1 ) = - 1
      ELSE IF ( i == 18 ) THEN
-       control%QPA_control%cold_start = 2
+       control%BQP_control%cold_start = 2
      ELSE IF ( i == 19 ) THEN
-       control%QPA_control%cold_start = 3
+       control%BQP_control%cold_start = 3
      ELSE IF ( i == 20 ) THEN
-       control%QPA_control%cold_start = 4
+       control%BQP_control%cold_start = 4
      ELSE IF ( i == 21 ) THEN
-       control%QPA_control%cold_start = 1
-       control%QPA_control%deletion_strategy = 1
+       control%BQP_control%cold_start = 1
      ELSE IF ( i == 22 ) THEN
-       control%QPA_control%deletion_strategy = 2
-     ELSE IF ( i == 23 ) THEN
-       control%QPA_control%solve_within_bounds = .FALSE.
 !      control%feasol = .FALSE.
-     ELSE IF ( i == 24 ) THEN
-       control%no_qpa = .TRUE.
-     ELSE IF ( i == 25 ) THEN
-       control%no_qpb = .TRUE.
      END IF
 
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%A%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 4
-     CALL CQPS_solve( p, C_stat, B_stat, data, control, info )
+     CALL CQPS_solve( p, C_stat, B_stat, data, control, inform, userdata )
 !    write(6,"('x=', 2ES12.4)") p%X
-     IF ( info%status == 0 ) THEN
+     IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) i, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+     &                F6.1, ' status = ', I6 )" ) i, inform%BQP_inform%iter,   &
+                      inform%BQPB_inform%iter, inform%obj, inform%status
      ELSE
-       WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) i, info%status
+       WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) i, inform%status
      END IF
    END DO
-   CALL CQPS_terminate( data, control, info )
+   CALL CQPS_terminate( data, control, inform )
 
 !  case when there are no bounded variables
 
@@ -408,7 +360,6 @@
    p%A%ptr = (/ 1, 3 /)
    CALL CQPS_initialize( data, control, inform )
    control%infinity = infty
-   control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 1
 !  control%EQP_control%print_level = 21
 !  control%print_level = 4
@@ -416,17 +367,17 @@
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%A%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-     CALL CQPS_solve( p, C_stat, B_stat, data, control, info )
+     CALL CQPS_solve( p, C_stat, B_stat, data, control, inform, userdata )
 !    write(6,"('x=', 2ES12.4)") p%X
-     IF ( info%status == 0 ) THEN
+     IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) i, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+     &                F6.1, ' status = ', I6 )" ) i, inform%BQP_inform%iter,   &
+                      inform%BQPB_inform%iter, inform%obj, inform%status
      ELSE
-       WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) i, info%status
+       WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) i, inform%status
      END IF
    END DO
-   CALL CQPS_terminate( data, control, info )
+   CALL CQPS_terminate( data, control, inform )
 
 !  case when there are no free variables
 
@@ -444,24 +395,23 @@
    CALL CQPS_initialize( data, control, inform )
 !  control%print_level = 1
    control%infinity = infty
-   control%restore_problem = 2
    DO i = tests + 2, tests + 2
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%A%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 1
-     CALL CQPS_solve( p, C_stat, B_stat, data, control, info )
+     CALL CQPS_solve( p, C_stat, B_stat, data, control, inform, userdata )
 !    write(6,"('x=', 2ES12.4)") p%X
-     IF ( info%status == 0 ) THEN
+     IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) i, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
-!      write(6,*) info%obj
+     &                F6.1, ' status = ', I6 )" ) i, inform%BQP_inform%iter,   &
+                      inform%BQPB_inform%iter, inform%obj, inform%status
+!      write(6,*) inform%obj
      ELSE
-       WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) i, info%status
+       WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) i, inform%status
      END IF
    END DO
-   CALL CQPS_terminate( data, control, info )
+   CALL CQPS_terminate( data, control, inform )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
@@ -526,25 +476,23 @@
 
    CALL CQPS_initialize( data, control, inform )
    control%infinity = infty
-   control%restore_problem = 1
    control%print_level = 101
-   control%QPA_control%itref_max = 3 ; control%QPB_control%itref_max = 3
    control%out = scratch_out
    control%error = scratch_out
 !  control%out = 6
 !  control%error = 6
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-   CALL CQPS_solve( p, C_stat, B_stat, data, control, info )
+   CALL CQPS_solve( p, C_stat, B_stat, data, control, inform, userdata )
    CLOSE( UNIT = scratch_out )
-   IF ( info%status == 0 ) THEN
+   IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) 1, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+     &                F6.1, ' status = ', I6 )" ) 1, inform%BQP_inform%iter,   &
+                      inform%BQPB_inform%iter, inform%obj, inform%status
    ELSE
-     WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) 1, info%status
+     WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) 1, inform%status
    END IF
-   CALL CQPS_terminate( data, control, info )
+   CALL CQPS_terminate( data, control, inform )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
@@ -605,18 +553,16 @@
 
    CALL CQPS_initialize( data, control, inform )
    control%infinity = infty
-   control%restore_problem = 0
-   control%treat_zero_bounds_as_general = .TRUE.
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-   CALL CQPS_solve( p, C_stat, B_stat, data, control, info )
-   IF ( info%status == 0 ) THEN
+   CALL CQPS_solve( p, C_stat, B_stat, data, control, inform, userdata )
+   IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) 2, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+     &                F6.1, ' status = ', I6 )" ) 2, inform%BQP_inform%iter,   &
+                      inform%BQPB_inform%iter, inform%obj, inform%status
    ELSE
-     WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) 2, info%status
+     WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) 2, inform%status
    END IF
-   CALL CQPS_terminate( data, control, info )
+   CALL CQPS_terminate( data, control, inform )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
@@ -677,9 +623,7 @@
 
    CALL CQPS_initialize( data, control, inform )
    control%infinity = infty
-   control%restore_problem = 0
-   control%treat_zero_bounds_as_general = .TRUE.
-   control%QPA_control%cold_start = 0
+   control%BQP_control%cold_start = 0
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
    B_stat = 0 ; C_stat = 0
    B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
@@ -688,15 +632,15 @@
 !  C_stat( 12 ) = 1 ; C_stat( 13 ) = 1
 !  C_stat( 14 ) = 1 ; C_stat( 15 ) = 1
 !  C_stat( 16 ) = 1 ; C_stat( 17 ) = 1
-   CALL CQPS_solve( p, C_stat, B_stat, data, control, info )
-   IF ( info%status == 0 ) THEN
+   CALL CQPS_solve( p, C_stat, B_stat, data, control, inform, userdata )
+   IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) 3, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+     &                F6.1, ' status = ', I6 )" ) 3, inform%BQP_inform%iter,   &
+                      inform%BQPB_inform%iter, inform%obj, inform%status
    ELSE
-     WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) 2, info%status
+     WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) 2, inform%status
    END IF
-   CALL CQPS_terminate( data, control, info )
+   CALL CQPS_terminate( data, control, inform )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%A%type, p%H%type )
@@ -749,20 +693,18 @@
 
    CALL CQPS_initialize( data, control, inform )
    control%infinity = infty
-   control%restore_problem = 0
-   control%treat_zero_bounds_as_general = .TRUE.
-   control%QPA_control%cold_start = 0
+   control%BQP_control%cold_start = 0
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
    B_stat = 0 ; C_stat = 0
    B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
    C_stat( 8 ) = - 1 ; C_stat( 9 ) = - 1
-   CALL CQPS_solve( p, C_stat, B_stat, data, control, info )
-   IF ( info%status == 0 ) THEN
+   CALL CQPS_solve( p, C_stat, B_stat, data, control, inform, userdata )
+   IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) 4, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+     &                F6.1, ' status = ', I6 )" ) 4, inform%BQP_inform%iter,   &
+                      inform%BQPB_inform%iter, inform%obj, inform%status
    ELSE
-     WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) 2, info%status
+     WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) 2, inform%status
    END IF
 
 !  control%out = 6 ; control%print_level = 1
@@ -773,16 +715,16 @@
    B_stat = 0 ; C_stat = 0
    B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
    C_stat( 8 ) = - 1 ; C_stat( 9 ) = - 1
-   CALL CQPS_solve( p, C_stat, B_stat, data, control, info )
-   IF ( info%status == 0 ) THEN
+   CALL CQPS_solve( p, C_stat, B_stat, data, control, inform, userdata )
+   IF ( inform%status == 0 ) THEN
        WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) 5, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+     &                F6.1, ' status = ', I6 )" ) 5, inform%BQP_inform%iter,   &
+                      inform%BQPB_inform%iter, inform%obj, inform%status
    ELSE
-     WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) 2, info%status
+     WRITE( 6, "( I2, ': CQPS_solve exit status = ', I6 ) " ) 2, inform%status
    END IF
 
-   CALL CQPS_terminate( data, control, info )
+   CALL CQPS_terminate( data, control, inform )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%A%type, p%H%type )
@@ -790,4 +732,4 @@
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
    DEALLOCATE( p%H%ptr, p%A%ptr )
 
-   END PROGRAM GALAHAD_CQPS_EXAMPLE
+   END PROGRAM GALAHAD_CQPS_TEST

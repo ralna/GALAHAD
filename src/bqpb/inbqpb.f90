@@ -180,7 +180,7 @@
       TYPE ( BQPB_control_type ) :: BQPB_control
       TYPE ( BQPB_inform_type ) :: BQPB_inform
       TYPE ( QPT_problem_type ) :: prob
-      TYPE ( NLPT_userdata_type ) :: userdata
+      TYPE ( GALAHAD_userdata_type ) :: userdata
 
 !  Allocatable arrays
 

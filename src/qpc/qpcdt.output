@@ -54,7 +54,7 @@ C2:    -1    19 iterations. Optimal objective value =    5.4 status =      0
 
  full test of generic problems 
 
- 1:    -1    25 iterations. Optimal objective value = -137.7 status =      0
+ 1:     7    25 iterations. Optimal objective value = -137.7 status =      0
  2:    -1    10 iterations. Optimal objective value =   44.3 status =      0
  3:    -1    10 iterations. Optimal objective value =   44.3 status =      0
  4:    -1    -1 iterations. Optimal objective value =   28.1 status =      0

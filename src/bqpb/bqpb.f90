@@ -33,14 +33,14 @@
      USE GALAHAD_QPD_double, ONLY: QPD_SIF
      USE GALAHAD_ROOTS_double
      USE GALAHAD_SPECFILE_double
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
 
      IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: BQPB_initialize, BQPB_read_specfile, BQPB_solve,                &
                BQPB_terminate, BQPB_reverse_type, BQPB_data_type,              &
-               NLPT_userdata_type, QPT_problem_type,                           &
+               GALAHAD_userdata_type, QPT_problem_type,                        &
                SMT_type, SMT_put, SMT_get
 
 !--------------------
@@ -839,7 +839,7 @@
 !     time%factorize = the time spent factorizing the required matrices.
 !     time%solve = the time spent computing the search direction.
 !
-!  userdata is a scalar variable of type NLPT_userdata_type which may be used
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -888,7 +888,7 @@
      TYPE ( BQPB_data_type ), INTENT( INOUT ) :: data
      TYPE ( BQPB_control_type ), INTENT( IN ) :: control
      TYPE ( BQPB_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      TYPE ( BQPB_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
      OPTIONAL :: eval_HPROD
 !    OPTIONAL :: eval_HPROD, eval_PREC
@@ -897,10 +897,10 @@
 
      INTERFACE
        SUBROUTINE eval_HPROD( status, userdata, V, PROD )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       USE GALAHAD_USERDATA_double
        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: status
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
        END SUBROUTINE eval_HPROD
@@ -908,10 +908,10 @@
 
 !    INTERFACE
 !      SUBROUTINE eval_PREC( status, userdata, V, PREC )
-!      USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+!      USE GALAHAD_USERDATA_double
 !      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 !      INTEGER, INTENT( OUT ) :: status
-!      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+!      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 !      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
 !      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PREC
 !      END SUBROUTINE eval_PREC

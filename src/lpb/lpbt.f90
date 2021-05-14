@@ -299,7 +299,7 @@
    p%X_u = (/ 2.0_wp, 3.0_wp /)
 
    p%new_problem_structure = .TRUE.
-   ALLOCATE( p%A%val( a_ne ), p%A%row( 0 ), p%A%col( a_ne ) )
+   ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ) )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
    p%A%col = (/ 1, 2 /)
@@ -433,7 +433,7 @@
      END IF
    END DO
    CALL LPB_terminate( data, control, info )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
+   DEALLOCATE( p%A%val, p%A%ptr, p%A%col )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
 

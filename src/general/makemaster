@@ -110,7 +110,7 @@ cutest_functionsd = $(SMTD) $(LGD)(space.o) nlpt $(CLGD)(cutest_functions.o)
 problems = $(SMTS) nlpt $(CLGS)(problem.o)
 problemd = $(SMTD) nlpt $(CLGD)(problem.o)
 
-BASIX = $(LG)(cputim.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
+BASIX = $(LG)(cputime.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis.o) wsmp \
          $(DLG)(dummy.o) $(LG)(blas_interface.o) \
          $(LG)(lapack_interface.o) minpack
@@ -267,7 +267,7 @@ problem_double: $(problemd)
 
 #  basic packages
 
-basic_silent: $(BASIC)
+basic_silent: $(BASIX)
 
 basics_silent: basics_silent_$(PRECIS)
 basics_silent_single: $(BASICS)
@@ -955,18 +955,18 @@ filterst: $(FILTERST)
 
 #  individual compilations
 
-cputim.o: $(LG)(cputim.o)
+cputime.o: $(LG)(cputime.o)
 
-$(LG)(cputim.o): ../auxiliary/cputim.f90
+$(LG)(cputime.o): ../cputime/cputime.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cputim"
-	$(SED) "s/^.$(TIMER)/     /" ../auxiliary/cputim.f90 > $(OBJ)/cputim.f90
+	$(SED) "s/^.$(TIMER)/     /" ../cputime/cputime.f90 > $(OBJ)/cputime.f90
 	echo " ==================================================="
 	echo " $(FFLAGS) "
 	echo " ==================================================="
-	cd $(OBJ); $(FORTRAN) -o cputim.o $(FFLAGS) cputim.f90 \
+	cd $(OBJ); $(FORTRAN) -o cputime.o $(FFLAGS) cputime.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o cputim.o $(FFLAGSN) cputim.f90 )
-	cd $(OBJ); $(ARR) cputim.o; $(RM) cputim.f90 cputim.o
+                   $(FORTRAN) -o cputime.o $(FFLAGSN) cputime.f90 )
+	cd $(OBJ); $(ARR) cputime.o; $(RM) cputime.f90 cputime.o
 	$(RMARFILE) precn.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
@@ -986,9 +986,9 @@ $(LG)(clock.o): ../clock/clock.f90
 
 copyright.o: $(LG)(copyright.o)
 
-$(LG)(copyright.o): ../auxiliary/copyright.f90
+$(LG)(copyright.o): ../copyright/copyright.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "copyright"
-	$(CP) ../auxiliary/copyright.f90 $(OBJ)/copyright.f90
+	$(CP) ../copyright/copyright.f90 $(OBJ)/copyright.f90
 	cd $(OBJ); $(FORTRAN) -o copyright.o $(FFLAGS) copyright.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o copyright.o $(FFLAGSN) copyright.f90 )
@@ -1005,9 +1005,9 @@ $(LG)(copyright.o): ../auxiliary/copyright.f90
 
 norms.o: $(LG)(norms.o)
 
-$(LG)(norms.o): ../auxiliary/norms.f90
+$(LG)(norms.o): ../norms/norms.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "norms"
-	$(SED) -f $(SEDS) ../auxiliary/norms.f90 > $(OBJ)/norms.f90
+	$(SED) -f $(SEDS) ../norms/norms.f90 > $(OBJ)/norms.f90
 	cd $(OBJ); $(FORTRAN) -o norms.o $(FFLAGS) norms.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o norms.o $(FFLAGSN) norms.f90 )
@@ -1022,9 +1022,9 @@ $(LG)(norms.o): ../auxiliary/norms.f90
 
 checkpoint.o: $(LG)(checkpoint.o)
 
-$(LG)(checkpoint.o): ../auxiliary/checkpoint.f90
+$(LG)(checkpoint.o): ../checkpoint/checkpoint.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "checkpoint"
-	$(SED) -f $(SEDS) ../auxiliary/checkpoint.f90 > $(OBJ)/checkpoint.f90
+	$(SED) -f $(SEDS) ../checkpoint/checkpoint.f90 > $(OBJ)/checkpoint.f90
 	cd $(OBJ); $(FORTRAN) -o checkpoint.o $(FFLAGS) checkpoint.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o checkpoint.o $(FFLAGSN) checkpoint.f90 )
@@ -1495,9 +1495,9 @@ $(LG)(roots.o): ../roots/roots.f90
 
 problem.o: $(CLG)(problem.o)
 
-$(CLG)(problem.o): ../auxiliary/problem.f90
+$(CLG)(problem.o): ../problem/problem.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "problem   "
-	$(SED) -f $(SEDS) ../auxiliary/problem.f90 > $(OBJ)/problem1.f90
+	$(SED) -f $(SEDS) ../problem/problem.f90 > $(OBJ)/problem1.f90
 	$(SED) -f $(LSEDS) $(OBJ)/problem1.f90 > $(OBJ)/problem.f90
 	cd $(OBJ); $(FORTRAN) -o problem.o $(FFLAGSS) problem.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
@@ -1507,9 +1507,9 @@ $(CLG)(problem.o): ../auxiliary/problem.f90
 
 cutest_functions.o: $(CLG)(cutest_functions.o)
 
-$(CLG)(cutest_functions.o): ../auxiliary/cutest_functions.f90
+$(CLG)(cutest_functions.o): ../cutest_functions/cutest_functions.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cutest_functions   "
-	$(SED) -f $(SEDS) ../auxiliary/cutest_functions.f90 > \
+	$(SED) -f $(SEDS) ../cutest_functions/cutest_functions.f90 > \
           $(OBJ)/cutest_functions1.f90
 	$(SED) -f $(LSEDS) $(OBJ)/cutest_functions1.f90 > \
           $(OBJ)/cutest_functions.f90
