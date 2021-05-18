@@ -1,6 +1,6 @@
 #  Main body of the installation makefile for the GALAHAD QPP package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-11
 
 #  ===========================================================================
@@ -14,12 +14,12 @@ PACKAGE = QPP
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_qpt
+DEPENDENCIES = make_qpt make_lms
 
 #  other packages that depend on package
 
 DEPENDS = blls bqp bqpb ccqp cqp dlp dqp l1qp lpb lsqp pqp lcf \
-          qpa qpb qpc qpd wcp 
+          qpa qpb qpc qpd wcp
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -30,11 +30,11 @@ TESTDEPS = make_copyright make_cutest_functions
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -42,6 +42,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
-include $(GALAHAD)/src/makedefs/intermediaries
 
+include $(GALAHAD)/src/makedefs/intermediaries

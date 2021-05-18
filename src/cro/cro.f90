@@ -44,7 +44,6 @@
       USE GALAHAD_SPECFILE_double
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_ies
       USE GALAHAD_LMS_double, ONLY: LMS_data_type, LMS_apply_lbfgs
-
       USE GALAHAD_MOP_double
 
       IMPLICIT NONE

@@ -1,6 +1,6 @@
 #  Main body of the installation makefile for the GALAHAD SLS package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-04-25
 
 #  ===========================================================================
@@ -20,7 +20,7 @@ DEPENDENCIES = make_sils make_ma57v4 make_mc61 make_mc64 \
 
 #  other packages that depend on package
 
-DEPENDS = psls sbls cro fdc rqs trs 
+DEPENDS = psls sbls cro fdc rqs trs
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -36,17 +36,86 @@ RMOOC = $(RM) factor_integer_ooc* factor_real_ooc* \
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
-#  include standard package compilation instructions
+#  non-standard package compilation instructions
 
-include $(GALAHAD)/src/makedefs/compile
+$(package).o: $(LG)($(package).o)
+
+$(LG)($(package).o): ../$(package)/$(package).f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
+	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > $(OBJ)/$(package)1.f90
+	$(SED) "s/^.$(NOT95)/     /" \
+                $(OBJ)/$(package)1.f90 > $(OBJ)/$(package).f90
+	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).f90 )
+	cd $(OBJ); $(ARR) $(package).o ; \
+                  $(RM) $(package).f90 $(package)1.f90 $(package).o
+	$(RMARFILES) $(DEPENDS)
+	$(RMARFILE) use$(package).o
+	$(RMOBFILE) in$(package).o
+	$(RMOBFILE) $(package)s.o
+	$(RMOBFILE) $(package)t.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  package coverage compilation
+
+$(package)_gcov: ../$(package)/$(package).f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
+	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > $(package)1.f90
+	$(SED) "s/^.$(NOT95)/     /" $(package)1.f90 > $(package)_cov.f90
+	$(RM) ./$(package)1.f90
+	$(FORTRAN) -o $(package)_cov.o $(FFLAGSS) $(COVERAGE) \
+            $(package)_cov.f90 \
+          || ( printf ' %-26s' "=> Disabling optimization " ; \
+            $(FORTRAN) -o $(package)_cov.o $(FFLAGSN) $(COVERAGE) \
+              $(package)_cov.f90 )
+	$(SED) -f $(SEDS) $(package)t.f90 > $(package)t_cov1.f90
+	$(SED) -f $(LSEDS) $(package)t_gcov1.f90 > $(package)t_cov.f90
+	$(RM) ./$(package)t_cov1.f90
+	$(FORTRAN) -g $(BASIC) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
+          $(package)t_cov.f90
+	$(FORTRAN) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
+          -o ./$(package)_cov $(package)_cov.o $(package)t_cov.o \
+           -L$(OBJ) $(LIBS)
+	./$(package)_gcov
+	gcov ./$(package)_gcov
+	$(MV) ./$(package)_cov.f90.cov ./$(package)_coverage
+	$(RM) ./$(package)*cov* ./galahad_$(package)_*.mod
+
+#  test programs for specification document
+
+$(package)s.o: $(OBJ)/$(package)s.o
+
+$(OBJ)/$(package)s.o: ../$(package)/$(package)s.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s  "
+	$(SED) -f $(SEDS) \
+           ../$(package)/$(package)s.f90 > $(OBJ)/$(package)s1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)s.o $(FFLAGS) $(package)s.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  comprehensive test programs
+
+$(package)t.o: $(OBJ)/$(package)t.o
+
+$(OBJ)/$(package)t.o: ../$(package)/$(package)t.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)t  "
+	$(SED) -f $(SEDS) \
+           ../$(package)/$(package)t.f90 > $(OBJ)/$(package)t1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)t1.f90 > $(OBJ)/$(package)t.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)t.o $(FFLAGSS) $(package)t.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

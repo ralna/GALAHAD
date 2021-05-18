@@ -18,11 +18,12 @@
 
       PRIVATE
 
---------------------
+!--------------------
 !   P r e c i s i o n
 !--------------------
 
       INTEGER, PRIVATE, PARAMETER :: wp = KIND( 1.0D+0 )
+      INTEGER, PARAMETER :: wcp = KIND( ( 1.0D+0, 1.0D+0 ) )
 
 !  ======================================
 !  The GALAHAD_userdata_type derived type

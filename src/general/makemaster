@@ -958,7 +958,7 @@ filterst: $(FILTERST)
 cputime.o: $(LG)(cputime.o)
 
 $(LG)(cputime.o): ../cputime/cputime.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "cputim"
+	@printf ' %-9s %-15s\t\t' "Compiling" "cputime"
 	$(SED) "s/^.$(TIMER)/     /" ../cputime/cputime.f90 > $(OBJ)/cputime.f90
 	cd $(OBJ); $(FORTRAN) -o cputime.o $(FFLAGS) cputime.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
