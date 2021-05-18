@@ -960,9 +960,6 @@ cputime.o: $(LG)(cputime.o)
 $(LG)(cputime.o): ../cputime/cputime.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cputim"
 	$(SED) "s/^.$(TIMER)/     /" ../cputime/cputime.f90 > $(OBJ)/cputime.f90
-	echo " ==================================================="
-	echo " $(FFLAGS) "
-	echo " ==================================================="
 	cd $(OBJ); $(FORTRAN) -o cputime.o $(FFLAGS) cputime.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o cputime.o $(FFLAGSN) cputime.f90 )

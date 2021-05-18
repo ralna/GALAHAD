@@ -44,17 +44,11 @@ fi ;
 if [[ -f ./src/s2qp/RUNS2QP.SPC ]]; then
   rm ./src/s2qp/RUNS2QP.SPC; ln -s RUNS2QP.current ./src/s2qp/RUNS2QP.SPC
 fi ;
-if [[ -f ./src/smt/makemaster ]]; then
-  rm ./src/smt/makemaster; ln -s ../general/makemaster ./src/smt/makemaster
-fi ;
 if [[ -f ./src/auxiliary/makemaster ]]; then
   rm ./src/auxiliary/makemaster; ln -s ../general/makemaster ./src/auxiliary/makemaster
 fi ;
 if [[ -f ./src/lpqpb/RUNLPQPB.SPC ]]; then
   rm ./src/lpqpb/RUNLPQPB.SPC; ln -s ./RUNLPQPB.current ./src/lpqpb/RUNLPQPB.SPC
-fi ;
-if [[ -f ./src/lpqpb/makemaster ]]; then
-  rm ./src/lpqpb/makemaster; ln -s ../lpsqp/makemaster ./src/lpqpb/makemaster
 fi ;
 if [[ -f ./src/fastr/RUNFASTR.SPC ]]; then
   rm ./src/fastr/RUNFASTR.SPC; ln -s ./RUNFASTR.current ./src/fastr/RUNFASTR.SPC
@@ -65,41 +59,17 @@ fi ;
 if [[ -f ./src/check/RUNCHECK.SPC ]]; then
   rm ./src/check/RUNCHECK.SPC; ln -s RUNCHECK.current ./src/check/RUNCHECK.SPC
 fi ;
-if [[ -f ./src/ir/makemaster ]]; then
-  rm ./src/ir/makemaster; ln -s ../rq/makemaster ./src/ir/makemaster
-fi ;
-if [[ -f ./src/lls/makemaster ]]; then
-  rm ./src/lls/makemaster; ln -s ../eqp/makemaster ./src/lls/makemaster
-fi ;
 if [[ -f ./src/lls/RUNLLS.SPC ]]; then
   rm ./src/lls/RUNLLS.SPC; ln -s ./RUNLLS.current ./src/lls/RUNLLS.SPC
-fi ;
-if [[ -f ./src/rand/makemaster ]]; then
-  rm ./src/rand/makemaster; ln -s ../general/makemaster ./src/rand/makemaster
 fi ;
 if [[ -f ./src/lpqpa/RUNLPQPA.SPC ]]; then
   rm ./src/lpqpa/RUNLPQPA.SPC; ln -s ./RUNLPQPA.current ./src/lpqpa/RUNLPQPA.SPC
 fi ;
-if [[ -f ./src/lpqpa/makemaster ]]; then
-  rm ./src/lpqpa/makemaster; ln -s ../lpsqp/makemaster ./src/lpqpa/makemaster
-fi ;
-if [[ -f ./src/lsrt/makemaster ]]; then
-  rm ./src/lsrt/makemaster; ln -s ../rq/makemaster ./src/lsrt/makemaster
-fi ;
 if [[ -f ./src/lsrt/RUNLSRT.SPC ]]; then
   rm ./src/lsrt/RUNLSRT.SPC; ln -s ./RUNLSRT.current ./src/lsrt/RUNLSRT.SPC
 fi ;
-if [[ -f ./src/dum/makemaster ]]; then
-  rm ./src/dum/makemaster; ln -s ../general/makemaster ./src/dum/makemaster
-fi ;
-if [[ -f ./src/l2rt/makemaster ]]; then
-  rm ./src/l2rt/makemaster; ln -s ../rq/makemaster ./src/l2rt/makemaster
-fi ;
 if [[ -f ./src/l2rt/RUNL2RT.SPC ]]; then
   rm ./src/l2rt/RUNL2RT.SPC; ln -s ./RUNL2RT.current ./src/l2rt/RUNL2RT.SPC
-fi ;
-if [[ -f ./src/gls/makemaster ]]; then
-  rm ./src/gls/makemaster; ln -s ../general/makemaster ./src/gls/makemaster
 fi ;
 if [[ -f ./src/ermo/RUNERMO.SPC ]]; then
   rm ./src/ermo/RUNERMO.SPC; ln -s RUNERMO.current ./src/ermo/RUNERMO.SPC
@@ -122,32 +92,11 @@ fi ;
 if [[ -f ./src/sqp/RUNSQP.SPC ]]; then
   rm ./src/sqp/RUNSQP.SPC; ln -s ./RUNSQP.current ./src/sqp/RUNSQP.SPC
 fi ;
-if [[ -f ./src/lsqp/makemaster ]]; then
-  rm ./src/lsqp/makemaster; ln -s ../qp/makemaster ./src/lsqp/makemaster
-fi ;
 if [[ -f ./src/lsqp/RUNLSQP.SPC ]]; then
   rm ./src/lsqp/RUNLSQP.SPC; ln -s ./RUNLSQP.current ./src/lsqp/RUNLSQP.SPC
 fi ;
 if [[ -f ./src/funnel/RUNFUNNEL.SPC ]]; then
   rm ./src/funnel/RUNFUNNEL.SPC; ln -s RUNFUNNEL.current ./src/funnel/RUNFUNNEL.SPC
-fi ;
-if [[ -f ./src/cro/makemaster ]]; then
-  rm ./src/cro/makemaster; ln -s ../qp/makemaster ./src/cro/makemaster
-fi ;
-if [[ -f ./src/llst/makemaster ]]; then
-  rm ./src/llst/makemaster; ln -s ../rq/makemaster ./src/llst/makemaster
-fi ;
-if [[ -f ./src/cqp/makemaster ]]; then
-  rm ./src/cqp/makemaster; ln -s ../qp/makemaster ./src/cqp/makemaster
-fi ;
-if [[ -f ./src/dqp/makemaster ]]; then
-  rm ./src/dqp/makemaster; ln -s ../qp/makemaster ./src/dqp/makemaster
-fi ;
-if [[ -f ./src/cqp/RUNCQP.SPC ]]; then
-  rm ./src/cqp/RUNCQP.SPC; ln -s RUNCQP.current ./src/cqp/RUNCQP.SPC
-fi ;
-if [[ -f ./src/qpa/makemaster ]]; then
-  rm ./src/qpa/makemaster; ln -s ../qp/makemaster ./src/qpa/makemaster
 fi ;
 if [[ -f ./src/qpa/RUNQPA.SPC ]]; then
   rm ./src/qpa/RUNQPA.SPC; ln -s ./RUNQPA.current ./src/qpa/RUNQPA.SPC
@@ -155,23 +104,11 @@ fi ;
 if [[ -f ./src/ism/RUNISM.SPC ]]; then
   rm ./src/ism/RUNISM.SPC; ln -s RUNISM.current ./src/ism/RUNISM.SPC
 fi ;
-if [[ -f ./src/trs/makemaster ]]; then
-  rm ./src/trs/makemaster; ln -s ../rq/makemaster ./src/trs/makemaster
-fi ;
 if [[ -f ./src/trs/RUNTRS.SPC ]]; then
   rm ./src/trs/RUNTRS.SPC; ln -s RUNTRS.current ./src/trs/RUNTRS.SPC
 fi ;
-if [[ -f ./src/ptrans/makemaster ]]; then
-  rm ./src/ptrans/makemaster; ln -s ../general/makemaster ./src/ptrans/makemaster
-fi ;
-if [[ -f ./src/eqp/makemaster ]]; then
-  rm ./src/eqp/makemaster; ln -s ../qp/makemaster ./src/eqp/makemaster
-fi ;
 if [[ -f ./src/eqp/RUNEQP.SPC ]]; then
   rm ./src/eqp/RUNEQP.SPC; ln -s ./RUNEQP.current ./src/eqp/RUNEQP.SPC
-fi ;
-if [[ -f ./src/qpp/makemaster ]]; then
-  rm ./src/qpp/makemaster; ln -s ../qp/makemaster ./src/qpp/makemaster
 fi ;
 if [[ -f ./src/qp/RUNQP.SPC ]]; then
   rm ./src/qp/RUNQP.SPC; ln -s ./RUNQP.current ./src/qp/RUNQP.SPC
@@ -179,92 +116,29 @@ fi ;
 if [[ -f ./src/bqpb/RUNBQPB.SPC ]]; then
   rm ./src/bqpb/RUNBQPB.SPC; ln -s ./RUNBQPB.current ./src/bqpb/RUNBQPB.SPC
 fi ;
-if [[ -f ./src/bqpb/makemaster ]]; then
-  rm ./src/bqpb/makemaster; ln -s ../qp/makemaster ./src/bqpb/makemaster
-fi ;
-if [[ -f ./src/sym/makemaster ]]; then
-  rm ./src/sym/makemaster; ln -s ../general/makemaster ./src/sym/makemaster
-fi ;
 if [[ -f ./src/tru/RUNTRU.SPC ]]; then
   rm ./src/tru/RUNTRU.SPC; ln -s RUNTRU.current ./src/tru/RUNTRU.SPC
-fi ;
-if [[ -f ./src/rqs/makemaster ]]; then
-  rm ./src/rqs/makemaster; ln -s ../rq/makemaster ./src/rqs/makemaster
 fi ;
 if [[ -f ./src/rqs/RUNRQS.SPC ]]; then
   rm ./src/rqs/RUNRQS.SPC; ln -s RUNRQS.current ./src/rqs/RUNRQS.SPC
 fi ;
-if [[ -f ./src/rpd/makemaster ]]; then
-  rm ./src/rpd/makemaster; ln -s ../qp/makemaster ./src/rpd/makemaster
-fi ;
-if [[ -f ./src/nlpt/makemaster ]]; then
-  rm ./src/nlpt/makemaster; ln -s ../filtrane/makemaster ./src/nlpt/makemaster
-fi ;
-if [[ -f ./src/spec/makemaster ]]; then
-  rm ./src/spec/makemaster; ln -s ../general/makemaster ./src/spec/makemaster
-fi ;
-if [[ -f ./src/fit/RUNFIT.SPC ]]; then
-  rm ./src/fit/RUNFIT.SPC; ln -s ./RUNFIT.current ./src/fit/RUNFIT.SPC
-fi ;
-if [[ -f ./src/space/makemaster ]]; then
-  rm ./src/space/makemaster; ln -s ../general/makemaster ./src/space/makemaster
-fi ;
-if [[ -f ./src/tools/makemaster ]]; then
-  rm ./src/tools/makemaster; ln -s ../general/makemaster ./src/tools/makemaster
-fi ;
-if [[ -f ./src/trans/makemaster ]]; then
-  rm ./src/trans/makemaster; ln -s ../general/makemaster ./src/trans/makemaster
-fi ;
 if [[ -f ./src/pre/RUNPRE.SPC ]]; then
   rm ./src/pre/RUNPRE.SPC; ln -s ./RUNPRE.current ./src/pre/RUNPRE.SPC
-fi ;
-if [[ -f ./src/pre/makemaster ]]; then
-  rm ./src/pre/makemaster; ln -s ../qp/makemaster ./src/pre/makemaster
-fi ;
-if [[ -f ./src/rlls/makemaster ]]; then
-  rm ./src/rlls/makemaster; ln -s ../rq/makemaster ./src/rlls/makemaster
-fi ;
-if [[ -f ./src/qpd/makemaster ]]; then
-  rm ./src/qpd/makemaster; ln -s ../qp/makemaster ./src/qpd/makemaster
 fi ;
 if [[ -f ./src/ma48/ma48ds.data ]]; then
   rm ./src/ma48/ma48ds.data; ln -s ../uls/ulss.data ./src/ma48/ma48ds.data
 fi ;
-if [[ -f ./src/cqps/makemaster ]]; then
-  rm ./src/cqps/makemaster; ln -s ../qp/makemaster ./src/cqps/makemaster
-fi ;
 if [[ -f ./src/cqps/RUNCQPS.SPC ]]; then
   rm ./src/cqps/RUNCQPS.SPC; ln -s ./RUNCQPS.current ./src/cqps/RUNCQPS.SPC
-fi ;
-if [[ -f ./src/lstr/makemaster ]]; then
-  rm ./src/lstr/makemaster; ln -s ../rq/makemaster ./src/lstr/makemaster
 fi ;
 if [[ -f ./src/lstr/RUNLSTR.SPC ]]; then
   rm ./src/lstr/RUNLSTR.SPC; ln -s ./RUNLSTR.current ./src/lstr/RUNLSTR.SPC
 fi ;
-if [[ -f ./src/sils/makemaster ]]; then
-  rm ./src/sils/makemaster; ln -s ../general/makemaster ./src/sils/makemaster
-fi ;
-if [[ -f ./src/qpc/makemaster ]]; then
-  rm ./src/qpc/makemaster; ln -s ../qp/makemaster ./src/qpc/makemaster
-fi ;
 if [[ -f ./src/qpc/RUNQPC.SPC ]]; then
   rm ./src/qpc/RUNQPC.SPC; ln -s ./RUNQPC.current ./src/qpc/RUNQPC.SPC
 fi ;
-if [[ -f ./src/scale/makemaster ]]; then
-  rm ./src/scale/makemaster; ln -s ../general/makemaster ./src/scale/makemaster
-fi ;
 if [[ -f ./src/scale/RUNSCALE.SPC ]]; then
   rm ./src/scale/RUNSCALE.SPC; ln -s ./RUNSCALE.current ./src/scale/RUNSCALE.SPC
-fi ;
-if [[ -f ./src/lapack/makemaster ]]; then
-  rm ./src/lapack/makemaster; ln -s ../general/makemaster ./src/lapack/makemaster
-fi ;
-if [[ -f ./src/string/makemaster ]]; then
-  rm ./src/string/makemaster; ln -s ../general/makemaster ./src/string/makemaster
-fi ;
-if [[ -f ./src/gltr/makemaster ]]; then
-  rm ./src/gltr/makemaster; ln -s ../rq/makemaster ./src/gltr/makemaster
 fi ;
 if [[ -f ./src/gltr/RUNGLTR.SPC ]]; then
   rm ./src/gltr/RUNGLTR.SPC; ln -s ./RUNGLTR.current ./src/gltr/RUNGLTR.SPC
@@ -272,20 +146,11 @@ fi ;
 if [[ -f ./src/fdc/RUNFDC.SPC ]]; then
   rm ./src/fdc/RUNFDC.SPC; ln -s ./RUNFDC.current ./src/fdc/RUNFDC.SPC
 fi ;
-if [[ -f ./src/roots/makemaster ]]; then
-  rm ./src/roots/makemaster; ln -s ../general/makemaster ./src/roots/makemaster
-fi ;
 if [[ -f ./src/roots/RUNROOTS.SPC ]]; then
   rm ./src/roots/RUNROOTS.SPC; ln -s RUNROOTS.current ./src/roots/RUNROOTS.SPC
 fi ;
-if [[ -f ./src/clock/makemaster ]]; then
-  rm ./src/clock/makemaster; ln -s ../general/makemaster ./src/clock/makemaster
-fi ;
 if [[ -f ./src/trimsqp/RUNTRIMSQP.SPC ]]; then
   rm ./src/trimsqp/RUNTRIMSQP.SPC; ln -s RUNTRIMSQP.current ./src/trimsqp/RUNTRIMSQP.SPC
-fi ;
-if [[ -f ./src/lpb/makemaster ]]; then
-  rm ./src/lpb/makemaster; ln -s ../qp/makemaster ./src/lpb/makemaster
 fi ;
 if [[ -f ./src/lpb/RUNLPB.SPC ]]; then
   rm ./src/lpb/RUNLPB.SPC; ln -s RUNLPB.current ./src/lpb/RUNLPB.SPC
@@ -305,17 +170,8 @@ fi ;
 if [[ -f ./src/pdqp/RUNPDQP.SPC ]]; then
   rm ./src/pdqp/RUNPDQP.SPC; ln -s RUNPDQP.current ./src/pdqp/RUNPDQP.SPC
 fi ;
-if [[ -f ./src/pdqp/makemaster ]]; then
-  rm ./src/pdqp/makemaster; ln -s ../qp/makemaster ./src/pdqp/makemaster
-fi ;
 if [[ -f ./src/superb/RUNSUPERB.SPC ]]; then
   rm ./src/superb/RUNSUPERB.SPC; ln -s ./RUNSUPERB.current ./src/superb/RUNSUPERB.SPC
-fi ;
-if [[ -f ./src/sort/makemaster ]]; then
-  rm ./src/sort/makemaster; ln -s ../general/makemaster ./src/sort/makemaster
-fi ;
-if [[ -f ./src/qpb/makemaster ]]; then
-  rm ./src/qpb/makemaster; ln -s ../qp/makemaster ./src/qpb/makemaster
 fi ;
 if [[ -f ./src/qpb/RUNQPB.SPC ]]; then
   rm ./src/qpb/RUNQPB.SPC; ln -s ./RUNQPB.current ./src/qpb/RUNQPB.SPC
@@ -323,26 +179,11 @@ fi ;
 if [[ -f ./src/wcp/RUNWCP.SPC ]]; then
   rm ./src/wcp/RUNWCP.SPC; ln -s ./RUNWCP.current ./src/wcp/RUNWCP.SPC
 fi ;
-if [[ -f ./src/qpt/makemaster ]]; then
-  rm ./src/qpt/makemaster; ln -s ../qp/makemaster ./src/qpt/makemaster
-fi ;
-if [[ -f ./src/glrt/makemaster ]]; then
-  rm ./src/glrt/makemaster; ln -s ../rq/makemaster ./src/glrt/makemaster
-fi ;
 if [[ -f ./src/glrt/RUNGLRT.SPC ]]; then
   rm ./src/glrt/RUNGLRT.SPC; ln -s ./RUNGLRT.current ./src/glrt/RUNGLRT.SPC
 fi ;
-if [[ -f ./src/pqp/makemaster ]]; then
-  rm ./src/pqp/makemaster; ln -s ../fastr/makemaster ./src/pqp/makemaster
-fi ;
-if [[ -f ./src/scu/makemaster ]]; then
-  rm ./src/scu/makemaster; ln -s ../general/makemaster ./src/scu/makemaster
-fi ;
 if [[ -f ./src/bqp/RUNBQP.SPC ]]; then
   rm ./src/bqp/RUNBQP.SPC; ln -s RUNBQP.current ./src/bqp/RUNBQP.SPC
-fi ;
-if [[ -f ./src/bqp/makemaster ]]; then
-  rm ./src/bqp/makemaster; ln -s ../qp/makemaster ./src/bqp/makemaster
 fi ;
 if [[ -f ./src/lanb_simple/makemaster ]]; then
   rm ./src/lanb_simple/makemaster; ln -s ../lanb/makemaster ./src/lanb_simple/makemaster
@@ -376,19 +217,4 @@ if [[ -f ./uninstall_galahad ]]; then
 fi ;
 if [[ -f ./README.matlab ]]; then
   rm ./README.matlab; ln -s doc/README.matlab ./README.matlab
-fi ;
-if [[ -f ./src/opt/makemaster ]]; then
-  rm ./src/opt/makemaster; ln -s ../general/makemaster ./src/opt/makemaster
-fi ;
-if [[ -f ./src/lmt/makemaster ]]; then
-  rm ./src/lmt/makemaster; ln -s ../lms/makemaster ./src/lmt/makemaster
-fi ;
-if [[ -f ./src/lpa/makemaster ]]; then
-  rm ./src/lpa/makemaster; ln -s ../qp/makemaster ./src/lpa/makemaster
-fi ;
-if [[ -f ./src/lpb/makemaster ]]; then
-  rm ./src/lpb/makemaster; ln -s ../qp/makemaster ./src/lpb/makemaster
-fi ;
-if [[ -f ./src/dlp/makemaster ]]; then
-  rm ./src/dlp/makemaster; ln -s ../qp/makemaster ./src/dlp/makemaster
 fi ;
