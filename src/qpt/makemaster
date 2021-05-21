@@ -1,0 +1,50 @@
+#  Main body of the installation makefile for the GALAHAD QPT package
+
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-11
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = qpt
+PACKAGE = QPT
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_basic make_smt make_lmt
+
+#  other packages that depend on package
+
+DEPENDS = blls bqp bqpb bsc ccqp cqp cqps dlp dqp eqp ir l1qp lls \
+          lpa lpb lpqp lsqp trtn lpqpb qps lpqpa pqp s2qp superb \
+          trimsqp lcf pdqp presolve psls qp qpa qpb qpc qpp rpd \
+          sbls scale wcp wcp 
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS = make_copyright make_cutest_functions
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries
+
+

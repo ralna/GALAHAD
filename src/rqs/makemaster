@@ -1,0 +1,45 @@
+#  Main body of the installation makefile for the GALAHAD RQS package
+
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-11
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = rqs
+PACKAGE = RQS
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_ir make_roots make_mop make_rand
+
+#  other packages that depend on package
+
+DEPENDS = arc dps nls
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS = make_copyright make_cutest_functions
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

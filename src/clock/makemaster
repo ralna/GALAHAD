@@ -1,0 +1,57 @@
+#  Main body of the installation makefile for the GALAHAD CLOCK package
+
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-10
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = clock
+PACKAGE = CLOCK
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES =
+
+#  other packages that depend on package
+
+DEPENDS = 
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS = make_copyright
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions
+
+#  non-standard package compilation
+
+$(package).o: $(LG)($(package).o)
+
+$(LG)($(package).o): ../$(package)/$(package).f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)"
+	$(SED) "s/^.$(TIMER)/     /" \
+          ../$(package)/$(package).f90 > $(OBJ)/$(package).f90
+	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGS) $(package).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).f90 )
+	cd $(OBJ); $(ARR) $(package).o; $(RM) $(package).f90 $(package).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries
+
