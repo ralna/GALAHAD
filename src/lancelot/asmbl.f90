@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 23/06/2013 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 10:30 GMT.
 
 !-*-*-*-*-*-  L A N C E L O T  -B-  ASMBL  M O D U L E  *-*-*-*-*-*-*-*
 
@@ -10,7 +10,7 @@
 
      USE GALAHAD_SYMBOLS
      USE GALAHAD_SPACE_double
-     USE LANCELOT_EXTEND_double, ONLY: EXTEND_arrays
+     USE GALAHAD_EXTEND_double, ONLY: EXTEND_arrays
      IMPLICIT NONE
 
      PRIVATE

@@ -327,6 +327,11 @@ make_scale:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scale_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scale )
 
+make_scaling:
+	( cd $(GALAHAD)/src/scaling ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scaling_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scaling )
+
 make_scu:
 	( cd $(GALAHAD)/src/scu ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scu_silent \
@@ -844,6 +849,11 @@ make_alone_scale:
 	( cd $(GALAHAD)/src/scale ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scale.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scale )
+
+make_alone_scaling:
+	( cd $(GALAHAD)/src/scaling ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scaling.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scaling )
 
 make_alone_scu:
 	( cd $(GALAHAD)/src/scu ; \

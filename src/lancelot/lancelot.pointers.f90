@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 09/04/2010 AT 07:45 GMT.
+! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 10:30 GMT.
 
 !  |--------------------------------------------------------------------|
 !  |                                                                    |
@@ -44,7 +44,7 @@
      USE GALAHAD_SCU_double, ONLY : SCU_matrix_type, SCU_data_type,            &
        SCU_info_type, SCU_factorize, SCU_terminate
      USE LANCELOT_ASMBL_double, ONLY : ASMBL_save_type
-     USE LANCELOT_EXTEND_double, ONLY : EXTEND_save_type
+     USE GALAHAD_EXTEND_double, ONLY : EXTEND_save_type
 
      IMPLICIT NONE
 

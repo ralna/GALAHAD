@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 12/03/2014 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 10:30 GMT.
 
 !-*-*-  L A N C E L O T  -B-  L A N C E L O T _ T Y P E S _  M O D U L E  -*-*-
 
@@ -19,8 +19,8 @@
 !  |                                                       |
 !  |-------------------------------------------------------|
 
+     USE GALAHAD_EXTEND_double, ONLY: EXTEND_save_type
      USE LANCELOT_ASMBL_double, ONLY: ASMBL_save_type
-     USE LANCELOT_EXTEND_double, ONLY: EXTEND_save_type
      USE LANCELOT_CAUCHY_double, ONLY: CAUCHY_save_type
      USE LANCELOT_CG_double, ONLY: CG_save_type
      USE LANCELOT_OTHERS_double, ONLY: OTHERS_fdgrad_save_type

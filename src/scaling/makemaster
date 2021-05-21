@@ -1,7 +1,7 @@
-#  Main body of the installation makefile for the GALAHAD DLP package
+#  Main body of the installation makefile for the GALAHAD SCALING package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-11
+#  This version: 2021-05-20
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -9,20 +9,20 @@
 
 #  package name
 
-package = dlp
-PACKAGE = DLP
+package = scaling
+PACKAGE = SCALING
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_dqp
+DEPENDENCIES = 
 
 #  other packages that depend on package
 
-DEPENDS = l1qp
+DEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_cutest_functions
+TESTDEPS =
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

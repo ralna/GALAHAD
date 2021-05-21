@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 09/02/2013 AT 18:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 11:00 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E B Q P   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -26,7 +26,7 @@
       USE GALAHAD_BQP_double
       USE GALAHAD_SPECFILE_double 
       USE GALAHAD_COPYRIGHT
-      USE SCALING
+      USE GALAHAD_SCALING_double
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
           TRACE                 => GALAHAD_TRACE,                              &

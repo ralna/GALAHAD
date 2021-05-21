@@ -18,7 +18,7 @@ DEPENDENCIES = make_qpd
 
 #  other packages that depend on package
 
-DEPENDS = qpb superb
+DEPENDS = superb
 
 #  auxililiary packages that are needed for tests (prepend with make_)
 

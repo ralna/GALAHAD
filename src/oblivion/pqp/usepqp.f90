@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 08/02/2013 AT 16:05 GMT.
+! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 11:00 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   U S E P Q P  _ m a i n  *-*-*-*-*-*-*-*-
 
@@ -19,7 +19,7 @@
       USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
       USE GALAHAD_SPECFILE_double 
       USE GALAHAD_COPYRIGHT
-      USE SCALING
+      USE GALAHAD_SCALING_double
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
           GENERAL               => GALAHAD_GENERAL,                            &

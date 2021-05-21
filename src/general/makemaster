@@ -121,11 +121,11 @@ ROOTSS = $(BASIX) $(LGS)(string.o) buildspec_silent $(LGS)(specfile.o) \
 ROOTSD = $(BASIX) $(LGD)(string.o) buildspec_silent $(LGD)(specfile.o) \
          $(LGD)(sort.o) zd11 $(LGD)(smt.o) $(LGD)(space.o) $(LGD)(roots.o)
 
-BASICS = $(ROOTSS) $(LGS)(rand.o) $(LGS)(oldscale.o) $(LGS)(tools.o) lmt qpt \
+BASICS = $(ROOTSS) $(LGS)(rand.o) $(LGS)(scaling.o) $(LGS)(tools.o) lmt qpt \
          $(LGS)(trans.o) $(LGS)(scale.o) $(LGS)(norms.o) \
          $(LGS)(checkpoint.o) $(LGS)(opt.o) # $(LGS)(convert.o)
 
-BASICD = $(ROOTSD) $(LGD)(rand.o) $(LGD)(oldscale.o) $(LGD)(tools.o) lmt qpt \
+BASICD = $(ROOTSD) $(LGD)(rand.o) $(LGD)(scaling.o) $(LGD)(tools.o) lmt qpt \
          $(LGD)(trans.o) $(LGD)(scale.o) $(LGD)(norms.o) \
          $(LGD)(checkpoint.o) $(LGD)(opt.o) # $(LGD)(convert.o)
 
@@ -1195,15 +1195,15 @@ $(LG)(specfile.o): ../specfile/specfile.f90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-oldscale.o: $(LG)(oldscale.o)
+scaling.o: $(LG)(scaling.o)
 
-$(LG)(oldscale.o): ../auxiliary/oldscale.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "oldscale"
-	$(SED) -f $(SEDS) ../auxiliary/oldscale.f90 > $(OBJ)/oldscale.f90
-	cd $(OBJ); $(FORTRAN) -o oldscale.o $(FFLAGSS) oldscale.f90 \
+$(LG)(scaling.o): ../scaling/scaling.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "scaling"
+	$(SED) -f $(SEDS) ../scaling/scaling.f90 > $(OBJ)/scaling.f90
+	cd $(OBJ); $(FORTRAN) -o scaling.o $(FFLAGSS) scaling.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o oldscale.o $(FFLAGSN) oldscale.f90 )
-	cd $(OBJ); $(ARR) oldscale.o ; $(RM) oldscale.f90 oldscale.o
+                   $(FORTRAN) -o scaling.o $(FFLAGSN) scaling.f90 )
+	cd $(OBJ); $(ARR) scaling.o ; $(RM) scaling.f90 scaling.o
 	$(RMARFILE) useqpa.o
 	$(RMARFILE) useqpb.o
 	$(RMARFILE) useqpc.o

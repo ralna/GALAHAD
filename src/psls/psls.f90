@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 27/05/2015 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 10:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ P S L S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -32,7 +32,7 @@
       USE GALAHAD_SCU_double, ONLY : SCU_matrix_type, SCU_data_type,           &
         SCU_info_type, SCU_factorize, SCU_solve, SCU_append, SCU_terminate
       USE GALAHAD_SORT_double, ONLY : SORT_reorder_by_cols
-      USE LANCELOT_EXTEND_double, ONLY : EXTEND_arrays
+      USE GALAHAD_EXTEND_double, ONLY : EXTEND_arrays
       USE LANCELOT_BAND_double
       USE HSL_MI28_double
       USE GALAHAD_SPECFILE_double

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 09/02/2013 AT 16:10 GMT.
+! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 11:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   R U N L P Q P A   *-*-*-*-*-*-*-*-*-*-*-
 
@@ -18,7 +18,7 @@
       USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
       USE GALAHAD_PRESOLVE_double
       USE GALAHAD_SPECFILE_double 
-      USE SCALING
+      USE GALAHAD_SCALING_double
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
           DEBUG                 => GALAHAD_DEBUG,                              &

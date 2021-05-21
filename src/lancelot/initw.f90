@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 10:30 GMT.
 
 !-*-*-*-*-*-  L A N C E L O T  -B-  INITW  M O D U L E  *-*-*-*-*-*-*-*
 
@@ -8,7 +8,7 @@
 
      MODULE LANCELOT_INITW_double
   
-       USE LANCELOT_EXTEND_double, ONLY: EXTEND_arrays
+       USE GALAHAD_EXTEND_double, ONLY: EXTEND_arrays
        USE LANCELOT_OTHERS_double
        IMPLICIT NONE
        

@@ -59,7 +59,7 @@ LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
 
 #  compilation agenda
 
-OBJECTSBASICS=$(LGS)(extend.o) basics      $(LGS)(bndsl.o)  $(LGS)(others.o) \
+OBJECTSBASICS = extend basics $(LGS)(bndsl.o)  $(LGS)(others.o) \
          icfs ma61 linearsolver ma57v4 sils ad02 \
          $(LGS)(cauchy.o) $(LGS)(cg.o)     $(LGS)(hslint.o) $(LGS)(asmbl.o) \
          $(LGS)(hsprd.o)  $(LGS)(initw.o)  $(LGS)(mdchl.o)  $(LGS)(precn.o) \
@@ -68,7 +68,7 @@ OBJECTSBASICS=$(LGS)(extend.o) basics      $(LGS)(bndsl.o)  $(LGS)(others.o) \
 OBJECTSS=$(OBJECTSBASICS) $(LGS)(lancelot.o) $(LGS)(lancelot_simple.o)
 OBJECTSSTEERINGS=$(OBJECTSBASICS) $(LGS)(lancelot_steering.o)
 
-OBJECTSPSLSS=$(LGS)(extend.o) $(LGS)(bndsl.o) ma61 $(LGS)(hslint.o) \
+OBJECTSPSLSS=extend $(LGS)(bndsl.o) ma61 $(LGS)(hslint.o) \
              $(LGS)(mdchl.o)
 
 USEOBJECTSS=$(OBJECTSS)   $(LGS)(scaln.o)  $(LGS)(drchg.o) \
@@ -76,7 +76,7 @@ USEOBJECTSS=$(OBJECTSS)   $(LGS)(scaln.o)  $(LGS)(drchg.o) \
 USEOBJECTSSTEERINGS=$(OBJECTSSTEERINGS)    $(LGS)(scaln.o) $(LGS)(drchg.o) \
          $(LGS)(drche.o) rand copyright    $(LGS)(uselancelot_steering.o)
 
-OBJECTSBASICD=$(LGD)(extend.o) basics      $(LGD)(bndsl.o)  $(LGD)(others.o) \
+OBJECTSBASICD = extend basics $(LGD)(bndsl.o)  $(LGD)(others.o) \
          icfs ma61 linearsolver ma57v4 sils ad02 \
          $(LGD)(cauchy.o) $(LGD)(cg.o)     $(LGD)(hslint.o) $(LGD)(asmbl.o) \
          $(LGD)(hsprd.o)  $(LGD)(initw.o)  $(LGD)(mdchl.o)  $(LGD)(precn.o) \
@@ -85,7 +85,7 @@ OBJECTSBASICD=$(LGD)(extend.o) basics      $(LGD)(bndsl.o)  $(LGD)(others.o) \
 OBJECTSD=$(OBJECTSBASICD) $(LGD)(lancelot.o) $(LGD)(lancelot_simple.o)
 OBJECTSSTEERINGD=$(OBJECTSBASICD) $(LGD)(lancelot_steering.o)
 
-OBJECTSPSLSD=$(LGD)(extend.o)  $(LGD)(bndsl.o) ma61 $(LGD)(hslint.o) \
+OBJECTSPSLSD = extend $(LGD)(bndsl.o) ma61 $(LGD)(hslint.o) \
              $(LGD)(mdchl.o)
 
 USEOBJECTSD=$(OBJECTSD) $(LGD)(scaln.o) $(LGD)(drchg.o) \
@@ -309,6 +309,9 @@ lancelot_simpledt: $(OBJECTSD) $(OBJD)/lancelot_simplet.o
 
 #  basic packages
 
+extend:
+	( cd ../extend ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            extend_silent PRECIS=$(PRECIS) PWD=$(PWD)/../extend )
 basics:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             basics_silent scu.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
@@ -338,22 +341,6 @@ icfs:
             icfs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/icfs )
 
 #  constituent packages
-
-extend.o: $(LG)(extend.o)
-
-$(LG)(extend.o): ../lancelot/extend.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "extend"
-	$(SED) -f $(SEDS) ../lancelot/extend.f90 > $(OBJ)/extend.f90
-	cd $(OBJ); $(FORTRAN) -o extend.o $(FFLAGSS) extend.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o extend.o $(FFLAGSN) extend.f90 )
-	cd $(OBJ); $(ARR) extend.o; $(RM) extend.f90 extend.o
-	$(RMARFILE) asmbl.o
-	$(RMARFILE) hsprd.o
-	$(RMARFILE) initw.o
-	$(RMARFILE) psls.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
 
 bndsl.o: $(LG)(bndsl.o)
 
