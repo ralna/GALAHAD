@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD CHECKPOINT package
 
-#  Nick Gould, for GALAHAD productions
-#  This version: 2021-04-25
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-11
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -18,7 +18,7 @@ DEPENDENCIES =
 
 #  other packages that depend on package
 
-DEPENDS = smt
+DEPENDS = cqp dqp lpb
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -29,11 +29,11 @@ TESTDEPS = make_copyright make_cutest_functions
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
-
+ 
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
-
+ 
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -41,5 +41,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
-
+ 
 include $(GALAHAD)/src/makedefs/intermediaries

@@ -7,7 +7,7 @@
 #  ====================  package-dependent parts  ============================
 #  ===========================================================================
 
-#  package name
+#  package section name
 
 package = rq
 PACKAGE = RQ

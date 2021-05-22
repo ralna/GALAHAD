@@ -237,7 +237,6 @@
    ELSE
      WRITE( out, "( /, ' unsuccessful test of package FDH' )" )
    END IF
-write(6,"(ES24.16)") 4.0_wp * ATAN( 1.0_wp )
    END PROGRAM GALAHAD_FDH_test_deck
 
 ! internal subroutine to evaluate the gradient of the objective

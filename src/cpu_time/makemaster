@@ -1,7 +1,7 @@
-#  Main body of the installation makefile for the GALAHAD USERDATA package
+#  Main body of the installation makefile for the GALAHAD CPU_TIME package
 
-#  Nick Gould, for GALAHAD productions
-#  This version: 2021-04-25
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-22
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -9,8 +9,8 @@
 
 #  package name
 
-package = userdata
-PACKAGE = USERDATA
+package = cpu_time
+PACKAGE = CPU_TIME
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
@@ -18,28 +18,40 @@ DEPENDENCIES =
 
 #  other packages that depend on package
 
-DEPENDS =
+DEPENDS = 
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS =
+TESTDEPS = make_copyright
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
-
+ 
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
-
+ 
 include $(GALAHAD)/src/makedefs/instructions
 
-#  include standard package compilation instructions
+#  non-standard package compilation
 
-include $(GALAHAD)/src/makedefs/compile
+$(package).o: $(LG)($(package).o)
+
+$(LG)($(package).o): ../$(package)/$(package).f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)"
+	$(SED) "s/^.$(TIMER)/     /" \
+          ../$(package)/$(package).f90 > $(OBJ)/$(package).f90
+	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGS) $(package).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).f90 )
+	cd $(OBJ); $(ARR) $(package).o; $(RM) $(package).f90 $(package).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
 
 #  include required package intermediaries
-
+ 
 include $(GALAHAD)/src/makedefs/intermediaries
+

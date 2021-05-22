@@ -245,7 +245,6 @@
 !    control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
 !    control%SBLS_control%definite_linear_solver = definite_linear_solver
      p%new_problem_structure = .TRUE.
-write(6,*) ' data_storage_type ', data_storage_type 
      IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
        st = 'C'
        ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )

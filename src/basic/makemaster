@@ -9,7 +9,7 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda
 
-BASICS = cputime_silent clock_silent symbols_silent dummy_silent \
+BASICS = cpu_time_silent clock_silent symbols_silent dummy_silent \
          dummy_hsl_silent dummy_spral_silent blas_silent lapack_silent  \
          blas_interface_silent lapack_interface_silent minpack_silent \
          pardiso_silent mkl_pardiso_silent metis_silent wsmp_silent \
@@ -31,12 +31,12 @@ basic_single: $(BASICS)
 basic_double: $(BASICS)
 	$(RANLIB) $(LGD)
 
-#  cputime package
+#  cpu_time package
 
-cputime_silent:
-	( cd $(GALAHAD)/src/cputime ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cputime_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cputime )
+cpu_time_silent:
+	( cd $(GALAHAD)/src/cpu_time ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cpu_time_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cpu_time )
 
 #  clock package
 
@@ -344,9 +344,9 @@ ssids:
 #  book keeping
 
 clean:
-	( cd $(GALAHAD)/src/cputime ; \
+	( cd $(GALAHAD)/src/cpu_time ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cputime )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cpu_time )
 	( cd $(GALAHAD)/src/clock ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clock )
