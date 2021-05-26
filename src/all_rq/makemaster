@@ -1,0 +1,143 @@
+#  Main body of the installation makefile for all the GALAHAD RQ packages
+
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-26
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package section name
+
+package = all_rq
+PACKAGE = ALL_RQ
+
+#  auxililiary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
+               make_lmt make_qpt make_rand make_gltr make_glrt \
+               make_lstr make_lsrt make_l2rt make_ir make_mop \
+               make_ir make_trs make_rqs make_dps 
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS = make_copyright make_scaling make_convert make_miqr make_mi35
+
+#  packages that are needed for CUTEst interfaces (prepend with make_)
+
+CUTESTDEPS = $(TESTDEPS) \
+             make_trs_cutest make_rqs_cutest make_dps_cutest \
+             make_gltr_cutest make_glrt_cutest make_lstr_cutest \
+             make_lsrt_cutest make_l2rt_cutest
+
+#  all packages in the RQ section
+
+PACKAGES = ir trs rqs dps gltr glrt lstr lsrt l2rt
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
+
+#  =========================================================================
+#  ========================== makefile stanza ==============================
+#  =========================================================================
+
+#  main compilations and runs
+
+all: $(package)
+all_cutest: $(package)_cutest
+
+#  silent packages
+
+$(package)_silent: $(package)_silent_$(PRECIS)
+$(package)_silent_single: $(DEPENDENCIES)
+$(package)_silent_double: $(DEPENDENCIES)
+
+#  packages
+
+$(package): $(package)_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
+$(package)_single: $(DEPENDENCIES)
+	$(RANLIB) $(LGS)
+$(package)_double: $(DEPENDENCIES)
+	$(RANLIB) $(LGD)
+
+#  silent CUTEst packages
+
+$(package)_cutest_silent: $(package)_silent_$(PRECIS)
+$(package)_cutest_silent_single: $(DEPENDENCIES) $(CUTESTDEPS)
+$(package)_cutest_silent_double: $(DEPENDENCIES) $(CUTESTDEPS)
+
+#  CUTEst packages
+
+$(package)_cutest: $(package)_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_CUTEST)"
+$(package)_cutest_single: $(DEPENDENCIES) $(CUTESTDEPS)
+	$(RANLIB) $(LGS)
+$(package)_cutest_double: $(DEPENDENCIES) $(CUTESTDEPS)
+	$(RANLIB) $(LGD)
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Removing $(package) files"
+	$(RMARFILES) $(PACKAGES)
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' \
+          "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries
+
+#  CUTEst specific interfaces
+
+make_trs_cutest:
+	( cd $(GALAHAD)/src/trs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trs_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trs )
+
+make_rqs_cutest:
+	( cd $(GALAHAD)/src/rqs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) rqs_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rqs )
+
+make_dps_cutest:
+	( cd $(GALAHAD)/src/dps ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dps_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dps )
+
+make_gltr_cutest:
+	( cd $(GALAHAD)/src/gltr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) gltr_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/gltr )
+
+make_glrt_cutest:
+	( cd $(GALAHAD)/src/glrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) glrt_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/glrt )
+
+make_lstr_cutest:
+	( cd $(GALAHAD)/src/lstr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lstr_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lstr )
+
+make_lsrt_cutest:
+	( cd $(GALAHAD)/src/lsrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lsrt_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsrt )
+
+make_l2rt_cutest:
+	( cd $(GALAHAD)/src/l2rt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l2rt_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
+
+

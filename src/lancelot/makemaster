@@ -68,8 +68,8 @@ OBJECTSBASICS = extend basics $(LGS)(bndsl.o)  $(LGS)(others.o) \
 OBJECTSS=$(OBJECTSBASICS) $(LGS)(lancelot.o) $(LGS)(lancelot_simple.o)
 OBJECTSSTEERINGS=$(OBJECTSBASICS) $(LGS)(lancelot_steering.o)
 
-OBJECTSPSLSS=extend $(LGS)(bndsl.o) ma61 $(LGS)(hslint.o) \
-             $(LGS)(mdchl.o)
+OBJECTSFILTRANES = extend $(LGS)(bndsl.o)
+OBJECTSPSLSS = $(OBJECTSFILTRANES) ma61 $(LGS)(hslint.o) $(LGS)(mdchl.o)
 
 USEOBJECTSS=$(OBJECTSS)   $(LGS)(scaln.o)  $(LGS)(drchg.o) \
          $(LGS)(drche.o) rand copyright    $(LGS)(uselancelot.o)
@@ -85,8 +85,8 @@ OBJECTSBASICD = extend basics $(LGD)(bndsl.o)  $(LGD)(others.o) \
 OBJECTSD=$(OBJECTSBASICD) $(LGD)(lancelot.o) $(LGD)(lancelot_simple.o)
 OBJECTSSTEERINGD=$(OBJECTSBASICD) $(LGD)(lancelot_steering.o)
 
-OBJECTSPSLSD = extend $(LGD)(bndsl.o) ma61 $(LGD)(hslint.o) \
-             $(LGD)(mdchl.o)
+OBJECTSFILTRANED = extend $(LGD)(bndsl.o)
+OBJECTSPSLSD = $(OBJECTSFILTRANED) ma61 $(LGD)(hslint.o) $(LGD)(mdchl.o)
 
 USEOBJECTSD=$(OBJECTSD) $(LGD)(scaln.o) $(LGD)(drchg.o) \
          $(LGD)(drche.o) rand copyright $(LGD)(uselancelot.o)
@@ -173,6 +173,17 @@ lancelotb_psls: lancelotb_psls_$(PRECIS)
 lancelotb_psls_single: $(OBJECTSPSLSS)
 	$(RANLIB) $(LGS)
 lancelotb_psls_double: $(OBJECTSPSLSD)
+	$(RANLIB) $(LGD)
+
+lancelotb_filtrane_silent: lancelotb_silent_filtrane_$(PRECIS)
+lancelotb_silent_filtrane_single: $(OBJECTSFILTRANES)
+lancelotb_silent_filtrane_double: $(OBJECTSFILTRANED)
+
+lancelotb_filtrane: lancelotb_filtrane_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: LANCELOT B ($(PRECIS) $(SUCC)"
+lancelotb_filtrane_single: $(OBJECTSFILTRANES)
+	$(RANLIB) $(LGS)
+lancelotb_filtrane_double: $(OBJECTSFILTRANED)
 	$(RANLIB) $(LGD)
 
 tests: lancelotss lancelotst lancelotds lancelotdt

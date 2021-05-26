@@ -38,8 +38,6 @@
                                    SCU_data_type
      USE GALAHAD_LMS_double, ONLY: LMS_control_type, LMS_inform_type,          &
                                    LMS_apply_lbfgs
-!    USE GALAHAD_LMT_double, LMS_control_type => LMT_control_type,             &
-!                            LMS_inform_type => LMT_inform_type
      USE GALAHAD_QPP_double, QPD_dims_type => QPP_dims_type
      USE GALAHAD_SCALE_double, ONLY: SCALE_trans_type, SCALE_data_type
      USE GALAHAD_PRESOLVE_double, ONLY: PRESOLVE_data_type,                    &

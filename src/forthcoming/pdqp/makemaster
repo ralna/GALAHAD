@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD PDQP package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-11
+#  This version: 2021-05-24
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,7 +14,7 @@ PACKAGE = PDQP
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_sbls make_qpt
+DEPENDENCIES = make_sbls_deps make_sbls
 
 #  other packages that depend on package
 
@@ -23,6 +23,10 @@ DEPENDS =
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = QPBAND.SIF
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

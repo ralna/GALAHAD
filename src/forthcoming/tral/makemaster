@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD TRAL package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-04-29
+#  This version: 2021-05-24
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,8 +14,11 @@ PACKAGE = TRAL
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_gltr make_psls make_trs make_cauchy make_cg \
-               make_sha make_lms
+DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
+               make_lmt make_qpt make_rand make_gltr \
+               make_tools make_scu make_mi28 make_ir \
+               make_mop make_trs make_userdata make_nlpt \
+               make_lancelot_psls make_psls make_cauchy make_cg
 
 #  other packages that depend on package
 
@@ -24,6 +27,10 @@ DEPENDS = bgo
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = ALLINITC.SIF
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

@@ -135,3 +135,8 @@ LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
 SUCC = precision version) compiled successfully
 SUCC_CUTEST = precision version) for CUTEst compiled successfully
 SUCC_QPLIB = precision version) for QPLIB compiled successfully
+
+#  remove out-of-core direct-access files
+
+RMOOC = $(RM) factor_integer_ooc* factor_real_ooc* \
+              work_indefinite_ooc work_real_ooc

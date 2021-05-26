@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD CQPS package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-11
+#  This version: 2021-05-24
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,7 +14,12 @@ PACKAGE = CQPS
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_bqpb make_psls
+DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
+               make_gltr make_lpqp make_fdc make_fit \
+               make_qpp make_trans make_scale make_scu \
+               make_ir make_mop make_cro make_presolve \
+               make_qpd make_userdata make_bqp make_bqpb \
+               make_mi28 make_lancelot_psls make_psls
 
 #  other packages that depend on package
 
@@ -23,6 +28,10 @@ DEPENDS =
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = QPBAND.SIF
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

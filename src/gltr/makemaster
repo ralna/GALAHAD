@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD GLTR package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-11
+#  This version: 2021-05-24
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,7 +14,8 @@ PACKAGE = GLTR
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basic make_roots
+DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 \
+               make_smt make_space make_roots make_norms make_rand
 
 #  other packages that depend on package
 
@@ -24,6 +25,10 @@ DEPENDS = ccqp dlp dqp eqp filtrane tral trace trb glrt l1qp lls trtn \
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = BQPBAND.SIF
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

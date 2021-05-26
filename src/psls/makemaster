@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD PSLS package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-04-25
+#  This version: 2021-05-24
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,8 +14,8 @@ PACKAGE = PSLS
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basic make_sls make_scu make_lancelot_psls \
-               make_icfs make_mi28
+DEPENDENCIES = make_sls_deps make_sls make_norms make_lmt \
+               make_qpt make_scu make_mi28 make_lancelot_psls
 
 #  other packages that depend on package
 
@@ -24,6 +24,10 @@ DEPENDS = arc cqps ermo ism nls tru
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE =
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

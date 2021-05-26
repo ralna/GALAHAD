@@ -11,10 +11,10 @@ NAME          LPBAND
 *   SIF input: Nick Gould, June 2018.
 
 *IE N                   2
- IE N                   10
+ IE N                   5
+*IE N                   10
 *IE N                   1000
 *IE N                   10000
- IE N                   5
 
 
  IE 1                   1

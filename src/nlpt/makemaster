@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD NLPT package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-04-25
+#  This version: 2021-05-24
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,7 +14,8 @@ PACKAGE = NLPT
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_smt make_symbols make_userdata make_tools make_norms
+DEPENDENCIES = make_dummy make_zd11 make_smt make_norms \
+               make_tools make_userdata
 
 #  other packages that depend on package
 
@@ -23,6 +24,10 @@ DEPENDS = filtrane fdh check arc tru nls fisqp
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE =
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

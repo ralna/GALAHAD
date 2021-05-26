@@ -833,6 +833,14 @@ elif [[ $2 == 'sls' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec sls update
   [[ ! -e RUNSLS.SPC ]] && ln -s ~/.galahad/specs/RUNSLS.SPC RUNSLS.SPC
 
+# sils
+
+elif [[ $2 == 'sils' ]]; then
+  RUNMAIN=$GALOBJ/runsils_sif.o
+  [[ ! -e ~/.galahad/specs/RUNSILS.SPC ]] && $GALOBJ/buildspec sils
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec sils update
+  [[ ! -e RUNSILS.SPC ]] && ln -s ~/.galahad/specs/RUNSILS.SPC RUNSILS.SPC
+
 # ermo
 
 elif [[ $2 == 'ermo' ]]; then

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD SCALE package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-04-25
+#  This version: 2021-05-25
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,7 +14,8 @@ PACKAGE = SCALE
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_qpt make_trans
+DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 \
+               make_smt make_space make_lmt make_qpt make_trans
 
 #  other packages that depend on package
 
@@ -23,6 +24,10 @@ DEPENDS =
 #  auxililiary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE =
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

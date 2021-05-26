@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD FISQP package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-04-25
+#  This version: 2021-05-24
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,8 +14,14 @@ PACKAGE = FISQP
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_sls make_l1qp make_eqp make_mop make_lms \
-               make_filter make_userdata make_nlpt
+DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
+               make_gltr make_lpqp make_fdc make_fit \
+               make_qpp make_tools make_trans make_scale \
+               make_checkpoint make_opt make_scu make_ir \
+               make_mop make_cro make_presolve make_qpd \
+               make_eqp make_rpd make_cqp make_dqp make_dlp \
+               make_l1qp make_dlp make_userdata make_nlpt \
+               make_filter
 
 #  other packages that depend on package
 
@@ -24,6 +30,10 @@ DEPENDS =
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = ALLINITC.SIF
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

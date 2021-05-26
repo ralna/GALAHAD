@@ -1,7 +1,7 @@
-#  Main body of the installation makefile for basic GALAHAD packages
+#  Main body of the installation makefile for dummy and basic GALAHAD packages
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-07
+#  This version: 2021-05-23
 
 #  include standard GALAHAD makefile definitions
  
@@ -9,12 +9,15 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda
 
-BASICS = cpu_time_silent clock_silent symbols_silent dummy_silent \
-         dummy_hsl_silent dummy_spral_silent blas_silent lapack_silent  \
-         blas_interface_silent lapack_interface_silent minpack_silent \
-         pardiso_silent mkl_pardiso_silent metis_silent wsmp_silent \
-         string_silent zd11_silent smt_silent space_silent \
-         specfile_silent buildspec_silent sort_silent norms_silent
+DUMMYS = cpu_time_silent clock_silent extend_silent symbols_silent \
+         dummy_silent dummy_hsl_silent dummy_spral_silent \
+         blas_silent lapack_silent blas_interface_silent \
+         lapack_interface_silent metis_silent minpack_silent \
+         pardiso_silent mkl_pardiso_silent wsmp_silent \
+         string_silent buildspec_silent
+
+BASICS = $(DUMMYS) zd11_silent smt_silent space_silent \
+         specfile_silent sort_silent norms_silent
 
 #  main compilations and runs
 
@@ -31,6 +34,15 @@ basic_single: $(BASICS)
 basic_double: $(BASICS)
 	$(RANLIB) $(LGD)
 
+dummys_silent: $(DUMMYS)
+
+dummys: dummy_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: dummy packages ($(PRECIS) $(SUCC)"
+dummys_single: $(DUMMYS)
+	$(RANLIB) $(LGS)
+dummys_double: $(DUMMYS)
+	$(RANLIB) $(LGD)
+
 #  cpu_time package
 
 cpu_time_silent:
@@ -44,6 +56,13 @@ clock_silent:
 	( cd $(GALAHAD)/src/clock ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clock_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clock )
+
+#  extend package
+
+extend_silent:
+	( cd $(GALAHAD)/src/extend ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) extend_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/extend )
 
 #  symbols package
 
@@ -191,11 +210,11 @@ $(RLG)(dummy_spral.o): ../dum/dummy_spral.f90
 
 #  blas_interface package
 
-blas_interface_silent: $(LG)(blas_interface.o)
-blas_interface: $(LG)(blas_interface.o)
+blas_interface_silent: $(BLG)(blas.o) $(LG)(blas_interface.o)
+blas_interface: $(BLG)(blas.o) $(LG)(blas_interface.o)
 	@printf ' %-21s\n' "GALAHAD: BLAS_interface compiled successfully"
 
-blas_interface.o: $(LG)(blas_interface.o)
+blas_interface.o: $(BLG)(blas.o) $(LG)(blas_interface.o)
 
 $(LG)(blas_interface.o): ../lapack/blas_interface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "blas_interface"
@@ -212,11 +231,11 @@ $(LG)(blas_interface.o): ../lapack/blas_interface.f90
 
 #  lapack_interface package
 
-lapack_interface_silent: $(LG)(lapack_interface.o)
-lapack_interface: $(LG)(lapack_interface.o)
+lapack_interface_silent: $(LLG)(lapack.o) $(LG)(lapack_interface.o)
+lapack_interface: $(LLG)(lapack.o) $(LG)(lapack_interface.o)
 	@printf ' %-21s\n' "GALAHAD: LAPACK_interface compiled successfully"
 
-lapack_interface.o: $(LG)(lapack_interface.o)
+lapack_interface.o: $(LLG)(lapack.o) $(LG)(lapack_interface.o)
 
 $(LG)(lapack_interface.o): ../lapack/lapack_interface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lapack_interface"

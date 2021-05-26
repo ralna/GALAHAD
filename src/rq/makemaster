@@ -1,7 +1,7 @@
-#  Main body of the installation makefile for the GALAHAD RQ packages
+#  Main body of the installation makefile for all the GALAHAD RQ packages
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-14
+#  This version: 2021-05-25
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -9,13 +9,15 @@
 
 #  package section name
 
-package = rq
-PACKAGE = RQ
+package = all_rq
+PACKAGE = ALL_RQ
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_ir make_trs make_rqs make_dps make_gltr make_glrt \
-               make_lstr make_lsrt make_l2rt
+DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
+               make_lmt make_qpt make_rand make_gltr \
+               make_glrt make_lstr make_lsrt make_l2rt \
+               make_ir make_mop make_ir make_trs make_rqs make_dps 
 
 #  other packages that depend on package
 

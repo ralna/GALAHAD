@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD RQS package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-11
+#  This version: 2021-05-25
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,7 +14,8 @@ PACKAGE = RQS
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_ir make_roots make_mop make_rand
+DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
+               make_lmt make_qpt make_rand make_ir make_mop
 
 #  other packages that depend on package
 
@@ -23,6 +24,10 @@ DEPENDS = arc dps nls
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = BQPBAND.SIF
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD BARC package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2021-04-29
+#  This version: 2021-05-24
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,7 +14,8 @@ PACKAGE = BARC
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_glrt make_sbls
+DEPENDENCIES = make_sbls_deps make_sbls make_rand make_gltr \
+               make_glrt make_tools make_userdata make_nlpt
 
 #  other packages that depend on package
 
@@ -23,6 +24,10 @@ DEPENDS =
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = ALLINIT.SIF
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

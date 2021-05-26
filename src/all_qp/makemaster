@@ -1,0 +1,318 @@
+#  Main body of the installation makefile for all the GALAHAD QP packages
+
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-26
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package section name
+
+package = all_qp
+PACKAGE = ALL_QP
+
+#  auxililiary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
+               make_gltr make_convert make_lpqp make_fdc \
+               make_fit make_qpp make_trans make_scale \
+               make_checkpoint make_scu make_mi28 make_ir \
+               make_mop make_cro make_lls make_presolve \
+               make_qpd make_qpa make_lsqp make_qpb make_eqp \
+               make_rpd make_cqp make_qpc make_dqp \
+               make_ccqp make_dlp make_l1qp make_userdata \
+               make_qp make_blls make_bqp make_bqpb make_lpa \
+               make_lpb make_lancelot_psls make_psls make_pdqp
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS = make_copyright make_scaling
+
+#  packages that are needed for CUTEst interfaces (prepend with make_)
+
+CUTESTDEPS = $(TESTDEPS) \
+             make_eqp_cutest make_qpa_cutest make_qpb_cutest \
+             make_qpc_cutest make_blls_cutest make_bqp_cutest \
+             make_bqpb_cutest make_cqp_cutest make_dqp_cutest \
+             make_ccqp_cutest make_qp_cutest make_dlp_cutest \
+             make_lpa_cutest make_lpb_cutest make_lls_cutest \
+             make_l1qp_cutest
+
+#  packages that are needed for QPLIB interfaces (prepend with make_)
+
+QPLIBDEPS = $(TESTDEPS) \
+            make_qpa_qplib make_qpb_qplib \
+            make_qpc_qplib make_bqp_qplib \
+            make_bqpb_qplib make_cqp_qplib make_dqp_qplib \
+            make_ccqp_qplib make_qp_qplib make_dlp_qplib \
+            make_lpa_qplib make_lpb_qplib make_l1qp_qplib
+
+#  all packages in the QP section
+
+PACKAGES = eqp qpa lsqp qpb qpc blls bqp bqpb cqp dqp ccqp qp \
+           dlp lpa lpb lls rpd l1qp pdqp cqps
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
+
+#  =========================================================================
+#  ========================== makefile stanza ==============================
+#  =========================================================================
+
+#  main compilations and runs
+
+all: $(package)
+all_cutest: $(package)_cutest
+all_qplib: $(package)_qplib
+
+#  silent packages
+
+$(package)_silent: $(package)_silent_$(PRECIS)
+$(package)_silent_single: $(DEPENDENCIES)
+$(package)_silent_double: $(DEPENDENCIES)
+
+#  packages
+
+$(package): $(package)_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
+$(package)_single: $(DEPENDENCIES)
+	$(RANLIB) $(LGS)
+$(package)_double: $(DEPENDENCIES)
+	$(RANLIB) $(LGD)
+
+#  silent CUTEst packages
+
+$(package)_cutest_silent: $(package)_silent_$(PRECIS)
+$(package)_cutest_silent_single: $(DEPENDENCIES) $(CUTESTDEPS)
+$(package)_cutest_silent_double: $(DEPENDENCIES) $(CUTESTDEPS)
+
+#  CUTEst packages
+
+$(package)_cutest: $(package)_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_CUTEST)"
+$(package)_cutest_single: $(DEPENDENCIES) $(CUTESTDEPS)
+	$(RANLIB) $(LGS)
+$(package)_cutest_double: $(DEPENDENCIES) $(CUTESTDEPS)
+	$(RANLIB) $(LGD)
+
+#  silent QPLIB packages
+
+$(package)_qplib_silent: $(package)_silent_$(PRECIS)
+$(package)_qplib_silent_single: $(DEPENDENCIES) $(QPLIBDEPS)
+$(package)_qplib_silent_double: $(DEPENDENCIES) $(QPLIBDEPS)
+
+#  QPLIB packages
+
+$(package)_qplib: $(package)_qplib_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_QPLIB)"
+$(package)_qplib_single: $(DEPENDENCIES) $(QPLIBDEPS)
+	$(RANLIB) $(LGS)
+$(package)_qplib_double: $(DEPENDENCIES) $(QPLIBDEPS)
+	$(RANLIB) $(LGD)
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Removing $(package) files"
+	$(RMARFILES) $(PACKAGES)
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' \
+          "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries
+
+#  CUTEst specific interfaces
+
+make_blls_cutest:
+	( cd $(GALAHAD)/src/blls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blls_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+
+make_bqp_cutest:
+	( cd $(GALAHAD)/src/bqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqp_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+
+make_bqpb_cutest:
+	( cd $(GALAHAD)/src/bqpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpb_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+
+make_ccqp_cutest:
+	( cd $(GALAHAD)/src/ccqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ccqp_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
+
+make_cqp_cutest:
+	( cd $(GALAHAD)/src/cqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqp_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+
+make_cqps_cutest:
+	( cd $(GALAHAD)/src/cqps ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqps_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqps )
+
+make_dlp_cutest:
+	( cd $(GALAHAD)/src/dlp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dlp_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+
+make_dqp_cutest:
+	( cd $(GALAHAD)/src/dqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dqp_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+
+make_eqp_cutest:
+	( cd $(GALAHAD)/src/eqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) eqp_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+
+make_l1qp_cutest:
+	( cd $(GALAHAD)/src/l1qp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l1qp_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+
+make_lls_cutest:
+	( cd $(GALAHAD)/src/lls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lls_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+
+make_lpa_cutest:
+	( cd $(GALAHAD)/src/lpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpa_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+
+make_lpb_cutest:
+	( cd $(GALAHAD)/src/lpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpb_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+
+make_qp_cutest:
+	( cd $(GALAHAD)/src/qp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qp_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+
+make_qpa_cutest:
+	( cd $(GALAHAD)/src/qpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpa_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+
+make_qpb_cutest:
+	( cd $(GALAHAD)/src/qpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpb_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+
+make_qpc_cutest:
+	( cd $(GALAHAD)/src/qpc ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpc_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+
+make_pdqp_cutest:
+	( cd $(GALAHAD)/src/pdqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/pdqp )
+
+#  QPLIB specific interfaces
+
+make_blls_qplib:
+	( cd $(GALAHAD)/src/blls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blls_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+
+make_bqp_qplib:
+	( cd $(GALAHAD)/src/bqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqp_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+
+make_bqpb_qplib:
+	( cd $(GALAHAD)/src/bqpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpb_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+
+make_ccqp_qplib:
+	( cd $(GALAHAD)/src/ccqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ccqp_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
+
+make_cqp_qplib:
+	( cd $(GALAHAD)/src/cqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqp_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+
+make_cqps_qplib:
+	( cd $(GALAHAD)/src/cqps ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqps_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqps )
+
+make_dlp_qplib:
+	( cd $(GALAHAD)/src/dlp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dlp_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+
+make_dqp_qplib:
+	( cd $(GALAHAD)/src/dqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dqp_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+
+make_eqp_qplib:
+	( cd $(GALAHAD)/src/eqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) eqp_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+
+make_l1qp_qplib:
+	( cd $(GALAHAD)/src/l1qp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l1qp_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+
+make_lls_qplib:
+	( cd $(GALAHAD)/src/lls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lls_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+
+make_lpa_qplib:
+	( cd $(GALAHAD)/src/lpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpa_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+
+make_lpb_qplib:
+	( cd $(GALAHAD)/src/lpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpb_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+
+make_qp_qplib:
+	( cd $(GALAHAD)/src/qp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qp_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+
+make_qpa_qplib:
+	( cd $(GALAHAD)/src/qpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpa_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+
+make_qpb_qplib:
+	( cd $(GALAHAD)/src/qpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpb_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+
+make_qpc_qplib:
+	( cd $(GALAHAD)/src/qpc ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpc_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+
+make_pdqp_qplib:
+	( cd $(GALAHAD)/src/pdqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/pdqp )

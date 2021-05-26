@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD ARC package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-04-25
+#  This version: 2021-05-25
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,8 +14,12 @@ PACKAGE = ARC
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_glrt make_psls make_dps make_lms \
-               make_sha make_userdata make_nlpt
+DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
+               make_lmt make_qpt make_lms make_rand \
+               make_gltr make_glrt make_tools make_scu \
+               make_mi28 make_ir make_mop make_trs \
+               make_rqs make_userdata make_nlpt make_dps \
+               make_lancelot_psls make_psls make_sha
 
 #  other packages that depend on package
 
@@ -24,6 +28,10 @@ DEPENDS =
 #  auxililiary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = ALLINITU.SIF
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

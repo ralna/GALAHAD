@@ -27,7 +27,7 @@
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_SPACE_double
      USE GALAHAD_STRING, ONLY: STRING_integer_6
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
 
      IMPLICIT NONE
 
@@ -660,7 +660,7 @@
 !
 !  data is a scalar variable of type UGO_data_type used for internal data.
 !
-!  userdata is a scalar variable of type NLPT_userdata_type which may be used
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -710,7 +710,7 @@
      TYPE ( UGO_control_type ), INTENT( IN ) :: control
      TYPE ( UGO_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( UGO_data_type ), INTENT( INOUT ) :: data
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_FGH
 !    OPTIONAL :: eval_F, eval_FG, eval_FGH
      REAL ( KIND = wp ), INTENT( IN ), OPTIONAL :: x_extra
@@ -721,34 +721,34 @@
 
 !     INTERFACE
 !       SUBROUTINE eval_F( status, x, userdata, f )
-!       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+!       USE GALAHAD_USERDATA_double
 !       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 !       INTEGER, INTENT( OUT ) :: status
 !       REAL ( KIND = wp ), INTENT( OUT ) :: f
 !       REAL ( KIND = wp ), INTENT( IN ) :: x
-!       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+!       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 !       END SUBROUTINE eval_F
 !     END INTERFACE
 
 !    INTERFACE
 !      SUBROUTINE eval_FG( status, x, userdata, f, g )
-!      USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-!       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-!       INTEGER, INTENT( OUT ) :: status
-!       REAL ( KIND = wp ), INTENT( OUT ) :: f, g
-!       REAL ( KIND = wp ), INTENT( IN ) :: x
-!       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-!       END SUBROUTINE eval_FG
+!      USE GALAHAD_USERDATA_double
+!      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+!      INTEGER, INTENT( OUT ) :: status
+!      REAL ( KIND = wp ), INTENT( OUT ) :: f, g
+!      REAL ( KIND = wp ), INTENT( IN ) :: x
+!      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+!      END SUBROUTINE eval_FG
 !     END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_FGH( status, x, userdata, f, g, h )
-       USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+       USE GALAHAD_USERDATA_double
        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
        INTEGER, INTENT( OUT ) :: status
        REAL ( KIND = wp ), INTENT( OUT ) :: f, g, h
        REAL ( KIND = wp ), INTENT( IN ) :: x
-       TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FGH
      END INTERFACE
 

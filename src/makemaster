@@ -16,10 +16,10 @@ all_cutest: all_cutest_$(PRECIS)
 all_cutest_single:
 	( cd lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      lancelotb_sif PRECIS=single PWD=$(PWD)/lancelot )
-	( cd qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     qp_cutest PRECIS=single PWD=$(PWD)/qp )
-	( cd rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     rq PRECIS=single PWD=$(PWD)/rq )
+	( cd all_qp  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_cutest all_qplib PRECIS=single PWD=$(PWD)/all_qp )
+	( cd all_rq ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_cutest PRECIS=single PWD=$(PWD)/all_rq )
 	( cd filtrane  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      filtrane_cutest PRECIS=single PWD=$(PWD)/filtrane )
 	( cd wcp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -38,11 +38,11 @@ all_cutest_single:
 all_cutest_double:
 	( cd lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      lancelotb_sif PRECIS=double PWD=$(PWD)/lancelot )
-	( cd qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     qp_cutest PRECIS=double PWD=$(PWD)/qp )
-	( cd rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     rq PRECIS=double PWD=$(PWD)/rq )
-	( cd filtrane   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+	( cd all_qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_cutest all_qplib PRECIS=double PWD=$(PWD)/all_qp )
+	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_cutest PRECIS=double PWD=$(PWD)/all_rq )
+	( cd filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      filtrane_cutest PRECIS=double PWD=$(PWD)/filtrane )
 	( cd wcp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      wcp_cutest PRECIS=double PWD=$(PWD)/wcp )
@@ -102,10 +102,10 @@ all_standalone: all_standalone_$(PRECIS)
 all_standalone_single:
 	( cd lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      lancelotb PRECIS=single PWD=$(PWD)/lancelot )
-	( cd qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     qp_standalone PRECIS=single PWD=$(PWD)/qp )
-	( cd rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     rq PRECIS=single PWD=$(PWD)/rq )
+	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all PRECIS=single PWD=$(PWD)/all_qp )
+	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all PRECIS=single PWD=$(PWD)/all_rq )
 	( cd filtrane  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      filtrane PRECIS=single PWD=$(PWD)/filtrane )
 	( cd wcp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -124,10 +124,10 @@ all_standalone_single:
 all_standalone_double:
 	( cd lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      lancelotb PRECIS=double PWD=$(PWD)/lancelot )
-	( cd qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     qp_standalone PRECIS=double PWD=$(PWD)/qp )
-	( cd rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     rq PRECIS=double PWD=$(PWD)/rq )
+	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all PRECIS=double PWD=$(PWD)/all_qp )
+	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all PRECIS=double PWD=$(PWD)/all_rq )
 	( cd filtrane   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      filtrane PRECIS=double PWD=$(PWD)/filtrane )
 	( cd wcp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -291,10 +291,10 @@ test: test_$(PRECIS)
 test_single:
 	( cd lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
                       PRECIS=single PWD=$(PWD)/lancelot )
-	( cd qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-                      PRECIS=single PWD=$(PWD)/qp )
-	( cd rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-                      PRECIS=single PWD=$(PWD)/rq )
+	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+                      PRECIS=single PWD=$(PWD)/all_qp )
+	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+                      PRECIS=single PWD=$(PWD)/all_rq )
 	( cd filtrane   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
                       PRECIS=single PWD=$(PWD)/filtrane )
 	( cd wcp  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
@@ -319,10 +319,10 @@ test_single:
 test_double:
 	( cd lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
                       PRECIS=double PWD=$(PWD)/lancelot )
-	( cd qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-                      PRECIS=double PWD=$(PWD)/qp )
-	( cd rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
-                      PRECIS=double PWD=$(PWD)/rq )
+	( cd all_qp  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+                      PRECIS=double PWD=$(PWD)/all_qp )
+	( cd all_rq  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+                      PRECIS=double PWD=$(PWD)/all_rq )
 	( cd filtrane  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
                       PRECIS=double PWD=$(PWD)/filtrane )
 	( cd wcp  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \

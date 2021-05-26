@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD SLS package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2021-04-25
+#  This version: 2021-05-25
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,9 +14,7 @@ PACKAGE = SLS
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_sils make_ma57v4 make_mc61 make_mc64 \
-               make_mc68 make_mc77 make_ma77 make_ma86 make_ma87 \
-               make_ma97 make_$(SSIDS)
+DEPENDENCIES = make_sls_deps
 
 #  other packages that depend on package
 
@@ -24,12 +22,12 @@ DEPENDS = psls sbls cro fdc rqs trs
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_cutest_functions
+TESTDEPS = make_copyright make_norms make_tools make_userdata make_nlpt \
+           make_space make_cutest_functions make_sort make_lmt make_qpt
 
-#  remove out-of-core direct-access files
+#  CUTEst example for tests
 
-RMOOC = $(RM) factor_integer_ooc* factor_real_ooc* \
-              work_indefinite_ooc work_real_ooc
+CUTEST_EXAMPLE = QPBAND.SIF
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================
@@ -114,6 +112,28 @@ $(OBJ)/$(package)t.o: ../$(package)/$(package)t.f90
 	$(SED) -f $(LSEDS) $(OBJ)/$(package)t1.f90 > $(OBJ)/$(package)t.f90
 	cd $(OBJ) ; $(FORTRAN) -o $(package)t.o $(FFLAGSS) $(package)t.f90
 	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  CUTEst/AMPL interfaces
+
+use$(package).o: $(LG)(use$(package).o)
+
+$(LG)(use$(package).o): ../$(package)/use$(package).f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "use$(package)   "
+	$(SED) -f $(SEDS) \
+           ../$(package)/use$(package).f90 > $(OBJ)/use$(package)1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/use$(package)1.f90 > $(OBJ)/use$(package)2.f90
+	$(SED) "s/^.$(NOT95)/     /" \
+          $(OBJ)/use$(package)2.f90 > $(OBJ)/use$(package).f90
+	cd $(OBJ); \
+          $(FORTRAN) -o use$(package).o $(FFLAGSOMP) use$(package).f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o use$(package).o $(FFLAGSN) use$(package).f90 )
+	cd $(OBJ); $(ARR) use$(package).o ; \
+                   $(RM) use$(package).f90 use$(package)1.f90 \
+                                       use$(package)2.f90 use$(package).o
+	$(RMOBFILE) run$(package)_sif.o
+	$(MVMODS)
 	@printf '[ OK ]\n'
 
 #  include required package intermediaries

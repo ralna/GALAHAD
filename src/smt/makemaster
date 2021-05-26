@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD SMT package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-10
+#  This version: 2021-05-25
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,7 +14,7 @@ PACKAGE = SMT
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES =
+DEPENDENCIES = make_dummy make_zd11
 
 #  other packages that depend on package
 
@@ -23,6 +23,10 @@ DEPENDS =
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE =
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

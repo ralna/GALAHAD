@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD QP package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-11
+#  This version: 2021-05-24
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,7 +14,13 @@ PACKAGE = QP
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_qpc make_ccqp make_lms
+DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
+               make_gltr make_lpqp make_fdc make_fit \
+               make_qpp make_trans make_scale make_checkpoint \
+               make_scu make_ir make_mop make_cro \
+               make_presolve make_qpd make_qpa make_lsqp \
+               make_qpb make_eqp make_rpd make_cqp \
+               make_qpc make_dqp make_ccqp
 
 #  other packages that depend on package
 
@@ -22,7 +28,11 @@ DEPENDS = warm
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_cutest_functions
+TESTDEPS = make_copyright make_userdata make_nlpt make_cutest_functions
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = QPBAND.SIF
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

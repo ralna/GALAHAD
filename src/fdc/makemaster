@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD FDC package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-04-25
+#  This version: 2021-05-24
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,7 +14,8 @@ PACKAGE = FDC
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basic make_sls make_uls
+DEPENDENCIES = make_sls_deps make_sls make_ma33 make_gls \
+               make_ma48 make_uls make_roots
 
 #  other packages that depend on package
 
@@ -23,6 +24,10 @@ DEPENDS =
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright make_cutest_functions make_presolve
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE =
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

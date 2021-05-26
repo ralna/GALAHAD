@@ -64,7 +64,22 @@ all_$(package): all
 test: test_$(package)
 test_nocutest: test_$(package)_nocutest
 
-# package for cutest
+#  package
+
+$(package): $(package)_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
+$(package)_single: $($(PACKAGE)OBJECTSS)
+	$(RANLIB) $(LGS)
+$(package)_double: $($(PACKAGE)OBJECTSD)
+	$(RANLIB) $(LGD)
+
+#  silent package
+
+$(package)_silent: $(package)_silent_$(PRECIS)
+$(package)_silent_single: $($(PACKAGE)OBJECTSS)
+$(package)_silent_double: $($(PACKAGE)OBJECTSD)
+
+# package for CUTEst
 
 $(package)_cutest: $(package)_cutest_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_CUTEST)"
@@ -72,6 +87,20 @@ $(package)_cutest_single: $($(PACKAGE)OBJECTSS_CUTEST)
 	$(RANLIB) $(LGS)
 $(package)_cutest_double: $($(PACKAGE)OBJECTSD_CUTEST)
 	$(RANLIB) $(LGD)
+
+#  silent package for CUTEst
+
+$(package)_cutest_silent: $(package)_cutest_silent_$(PRECIS)
+$(package)_cutest_silent_single: $($(PACKAGE)OBJECTSS_CUTEST)
+$(package)_cutest_silent_double: $($(PACKAGE)OBJECTSD_CUTEST)
+
+#  package add-ons for CUTEst
+
+$(package)_cutest_addon: $(package)_cutest_addon_$(PRECIS)
+$(package)_cutest_addon_single: $(LGS)(use$(package).o) \
+                                $(OBJS)/run$(package)_sif.o
+$(package)_cutest_addon_double: $(LGD)(use$(package).o) \
+                                $(OBJD)/run$(package)_sif.o
 
 # package for qplib
 
@@ -82,20 +111,17 @@ $(package)_qplib_single: $($(PACKAGE)OBJECTSS_QPLIB)
 $(package)_qplib_double: $($(PACKAGE)OBJECTSD_QPLIB)
 	$(RANLIB) $(LGD)
 
-#  silent package
+#  silent package for qplib
 
-$(package)_silent: $(package)_silent_$(PRECIS)
-$(package)_silent_single: $($(PACKAGE)OBJECTSS)
-$(package)_silent_double: $($(PACKAGE)OBJECTSD)
+$(package)_qplib_silent: $(package)_qplib_silent_$(PRECIS)
+$(package)_qplib_silent_single: $($(PACKAGE)OBJECTSS_QPLIB)
+$(package)_qplib_silent_double: $($(PACKAGE)OBJECTSD_QPLIB)
 
-#  package
+#  package add-ons for qplib
 
-$(package): $(package)_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
-$(package)_single: $($(PACKAGE)OBJECTSS)
-	$(RANLIB) $(LGS)
-$(package)_double: $($(PACKAGE)OBJECTSD)
-	$(RANLIB) $(LGD)
+$(package)_qplib_addon: $(package)_qplib_addon_$(PRECIS)
+$(package)_qplib_addon_single: $(OBJS)/in$(package).o
+$(package)_qplib_addon_double: $(OBJD)/in$(package).o
 
 #  run package
 
@@ -112,33 +138,38 @@ in$(package)_single: $($(PACKAGE)OBJECTSS) $(OBJS)/in$(package).o
 in$(package)_double: $($(PACKAGE)OBJECTSD) $(OBJD)/in$(package).o
 	
 
-#  test package
+#  test package with and without CUTEst
 
 test_$(package): test_$(package)_$(PRECIS)
 
-test_$(package)_single: $(package)st $(SRUN$(PACKAGE))
-	echo ""
-	echo " Testing CUTEst interface to $(package)"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) $(package) -s QPBAND
+test_$(package)_single: $(package)st test_$(package)_cutest_single
 	echo ""
 	echo " Tests for $(package) complete"
 
-test_$(package)_double: $(package)dt $(DRUN$(PACKAGE))
-	echo ""
-	echo " Testing CUTEst interface to $(package)"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) $(package) QPBAND
+test_$(package)_double: $(package)dt test_$(package)_cutest_double
 	echo ""
 	echo " Tests for $(package) complete"
+
+#  test package without CUTEst
 
 test_$(package)_nocutest: test_$(package)_nocutest_$(PRECIS)
-
 test_$(package)_nocutest_single: $(package)st
-	echo ""
-	echo " Tests for $(package) complete"
-
 test_$(package)_nocutest_double: $(package)dt
+
+#  test package with CUTEst
+
+test_$(package)_cutest: test_$(package)_cutest_$(PRECIS)
+test_$(package)_cutest_single: $($(PACKAGE)OBJECTSS_CUTEST)
 	echo ""
-	echo " Tests for $(package) complete"
+	echo " Testing CUTEst interface to $(package)"
+	cd $(GALAHAD)/examples ; \
+          sdgal $(VERSION) $(package) -s $(CUTEST_EXAMPLE)
+
+test_$(package)_cutest_double: $($(PACKAGE)OBJECTSD_CUTEST)
+	echo ""
+	echo " Testing CUTEst interface to $(package)"
+	cd $(GALAHAD)/examples ; \
+          sdgal $(VERSION) $(package) $(CUTEST_EXAMPLE)
 
 #  run specification document example tests
 
@@ -209,28 +240,6 @@ $(package)dt: $($(PACKAGE)DT)
 	- ./run_$(package) >& $(package)dt.output
 	cat $(package)dt.output
 	rm ./run_$(package)
-
-#  CUTEst/AMPL interfaces
-
-use$(package).o: $(LG)(use$(package).o)
-
-$(LG)(use$(package).o): ../$(package)/use$(package).f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "use$(package)   "
-	$(SED) -f $(SEDS) \
-           ../$(package)/use$(package).f90 > $(OBJ)/use$(package)1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/use$(package)1.f90 > $(OBJ)/use$(package)2.f90
-	$(SED) "s/^.$(NOT95)/     /" \
-          $(OBJ)/use$(package)2.f90 > $(OBJ)/use$(package).f90
-	cd $(OBJ); \
-          $(FORTRAN) -o use$(package).o $(FFLAGSOMP) use$(package).f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o use$(package).o $(FFLAGSN) use$(package).f90 )
-	cd $(OBJ); $(ARR) use$(package).o ; \
-                   $(RM) use$(package).f90 use$(package)1.f90 \
-                                       use$(package)2.f90 use$(package).o
-	$(RMOBFILE) run$(package)_sif.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
 
 #  main program
 

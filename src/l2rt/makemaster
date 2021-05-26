@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD L2RT package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-11
+#  This version: 2021-05-24
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,7 +14,8 @@ PACKAGE = L2RT
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_basic make_lstr
+DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 \
+               make_smt make_space make_roots make_norms make_lstr
 
 #  other packages that depend on package
 
@@ -22,7 +23,13 @@ DEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_cutest_functions make_miqr make_mi35
+TESTDEPS = make_copyright make_userdata make_tools make_nlpt \
+           make_cutest_functions make_convert make_miqr \
+           make_mc64 make_mc68 make_mi35 make_lmt make_qpt
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = MGH09.SIF
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

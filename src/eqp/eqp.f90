@@ -32,7 +32,6 @@
       USE GALAHAD_SYMBOLS
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural
       USE GALAHAD_SPACE_double
-!     USE GALAHAD_SMT_double
       USE GALAHAD_QPD_double, ONLY : QPD_SIF, EQP_data_type => QPD_data_type
       USE GALAHAD_QPT_double
       USE GALAHAD_SBLS_double
