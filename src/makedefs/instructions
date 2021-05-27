@@ -62,9 +62,9 @@ R$(PACKAGE)ST = $(OBJS)/$(package)t.o -L$(OBJS) $(LIBS)
 all: $(package)
 all_$(package): all
 test: test_$(package)
-test_nocutest: test_$(package)_nocutest
+test_full: test_$(package)_full
 
-#  package
+#  process package
 
 $(package): $(package)_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
@@ -73,13 +73,13 @@ $(package)_single: $($(PACKAGE)OBJECTSS)
 $(package)_double: $($(PACKAGE)OBJECTSD)
 	$(RANLIB) $(LGD)
 
-#  silent package
+#  process package silently
 
 $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $($(PACKAGE)OBJECTSS)
 $(package)_silent_double: $($(PACKAGE)OBJECTSD)
 
-# package for CUTEst
+# process package for CUTEst
 
 $(package)_cutest: $(package)_cutest_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_CUTEST)"
@@ -88,13 +88,13 @@ $(package)_cutest_single: $($(PACKAGE)OBJECTSS_CUTEST)
 $(package)_cutest_double: $($(PACKAGE)OBJECTSD_CUTEST)
 	$(RANLIB) $(LGD)
 
-#  silent package for CUTEst
+#  process package for CUTEst silently
 
 $(package)_cutest_silent: $(package)_cutest_silent_$(PRECIS)
 $(package)_cutest_silent_single: $($(PACKAGE)OBJECTSS_CUTEST)
 $(package)_cutest_silent_double: $($(PACKAGE)OBJECTSD_CUTEST)
 
-#  package add-ons for CUTEst
+#  process package add-ons for CUTEst
 
 $(package)_cutest_addon: $(package)_cutest_addon_$(PRECIS)
 $(package)_cutest_addon_single: $(LGS)(use$(package).o) \
@@ -102,7 +102,7 @@ $(package)_cutest_addon_single: $(LGS)(use$(package).o) \
 $(package)_cutest_addon_double: $(LGD)(use$(package).o) \
                                 $(OBJD)/run$(package)_sif.o
 
-# package for qplib
+#  process package for QPLIB
 
 $(package)_qplib: $(package)_qplib_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_QPLIB)"
@@ -111,19 +111,19 @@ $(package)_qplib_single: $($(PACKAGE)OBJECTSS_QPLIB)
 $(package)_qplib_double: $($(PACKAGE)OBJECTSD_QPLIB)
 	$(RANLIB) $(LGD)
 
-#  silent package for qplib
+#  process package for QPLIB silently
 
 $(package)_qplib_silent: $(package)_qplib_silent_$(PRECIS)
 $(package)_qplib_silent_single: $($(PACKAGE)OBJECTSS_QPLIB)
 $(package)_qplib_silent_double: $($(PACKAGE)OBJECTSD_QPLIB)
 
-#  package add-ons for qplib
+#  process package add-ons for QPLIB
 
 $(package)_qplib_addon: $(package)_qplib_addon_$(PRECIS)
 $(package)_qplib_addon_single: $(OBJS)/in$(package).o
 $(package)_qplib_addon_double: $(OBJD)/in$(package).o
 
-#  run package
+#  run independent package tests
 
 $(package)srunall: $(package)ss $(package)ss2 $(package)ss3 $(package)st
 $(package)drunall: $(package)ds $(package)ds2 $(package)ds3 $(package)dt
@@ -132,13 +132,10 @@ $(package)runall: $(package)drunall $(package)srunall
 #  run qp data format package
 
 in$(package): in$(package)_$(PRECIS)
-	
 in$(package)_single: $($(PACKAGE)OBJECTSS) $(OBJS)/in$(package).o
-	
 in$(package)_double: $($(PACKAGE)OBJECTSD) $(OBJD)/in$(package).o
-	
 
-#  test package with and without CUTEst
+#  test package both fullly and with CUTEst
 
 test_$(package): test_$(package)_$(PRECIS)
 
@@ -150,11 +147,17 @@ test_$(package)_double: $(package)dt test_$(package)_cutest_double
 	echo ""
 	echo " Tests for $(package) complete"
 
-#  test package without CUTEst
+#  package example for specification document
 
-test_$(package)_nocutest: test_$(package)_nocutest_$(PRECIS)
-test_$(package)_nocutest_single: $(package)st
-test_$(package)_nocutest_double: $(package)dt
+test_$(package)_spec: test_$(package)_spec_$(PRECIS)
+test_$(package)_spec_single: $(package)ss
+test_$(package)_spec_double: $(package)ds
+
+#  full test package without CUTEst
+
+test_$(package)_full: test_$(package)_full_$(PRECIS)
+test_$(package)_full_single: $(package)st
+test_$(package)_full_double: $(package)dt
 
 #  test package with CUTEst
 
@@ -170,6 +173,21 @@ test_$(package)_cutest_double: $($(PACKAGE)OBJECTSD_CUTEST)
 	echo " Testing CUTEst interface to $(package)"
 	cd $(GALAHAD)/examples ; \
           sdgal $(VERSION) $(package) $(CUTEST_EXAMPLE)
+
+#  test package with QPLIB
+
+test_$(package)_qplib: test_$(package)_qplib_$(PRECIS)
+test_$(package)_qplib_single: $($(PACKAGE)OBJECTSS_QPLIB)
+	echo ""
+	echo " Testing QPLIB interface to $(package)"
+	cd $(GALAHAD)/examples ; \
+          dgal $(VERSION) $(package) -s $(QPLIB_EXAMPLE)
+
+test_$(package)_qplib_double: $($(PACKAGE)OBJECTSD_QPLIB)
+	echo ""
+	echo " Testing QPLIB interface to $(package)"
+	cd $(GALAHAD)/examples ; \
+          dgal $(VERSION) $(package) $(QPLIB_EXAMPLE)
 
 #  run specification document example tests
 
@@ -221,7 +239,7 @@ $(package)ds3: $($(PACKAGE)DS3)
 	cat $(package)ds3.output
 	rm ./run_$(package)
 
-#  run comprehensive example tests
+#  run full (comprehensive) example tests
 
 $(package)st: $($(PACKAGE)ST)
 	echo " Exhaustive test of subroutine interface to $(package)"

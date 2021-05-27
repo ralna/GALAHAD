@@ -1,0 +1,14 @@
+#  standard GALAHAD makefile defaults applied before package-specifics
+
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-27
+
+#  CUTEst example for tests
+
+#CUTEST_EXAMPLE = QPBAND.SIF
+CUTEST_EXAMPLE =
+
+#  QPLIB example for tests
+
+#QPLIB_EXAMPLE = QPBAND.qplib
+QPLIB_EXAMPLE =

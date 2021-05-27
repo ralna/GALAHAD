@@ -140,3 +140,7 @@ SUCC_QPLIB = precision version) for QPLIB compiled successfully
 
 RMOOC = $(RM) factor_integer_ooc* factor_real_ooc* \
               work_indefinite_ooc work_real_ooc
+
+#  default QPLIB test example
+
+QPLIB_EXAMPLE = QPBAND.qplib

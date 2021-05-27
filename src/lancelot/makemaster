@@ -208,13 +208,13 @@ test_double: lancelotdt $(USEOBJECTSD) $(OBJD)/runlancelot_sif.o
 	echo ""
 	echo " Tests for LANCELOT B complete"
 
-test_nosif: test_nosif_$(PRECIS)
+test_comprehensive: test_comprehensive_$(PRECIS)
 
-test_nosif_single: lancelotst
+test_comprehensive_single: lancelotst
 	echo ""
 	echo " Tests for LANCELOT B complete"
 
-test_nosif_double: lancelotdt
+test_comprehensive_double: lancelotdt
 	echo ""
 	echo " Tests for LANCELOT B complete"
 
