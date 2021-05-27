@@ -1,0 +1,194 @@
+#  Main body of the installation makefile for the GALAHAD SUPERB package
+
+#  N. Gould and Ph. L. Toint.
+#  This version: 20 VII 2005
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
+                 $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SSUPERB = basics linearsolver gltr ptrans wcp $(LGS)(superb.o)
+DSUPERB = basics linearsolver gltr ptrans wcp $(LGD)(superb.o)
+
+SUSEGALAHAD  = $(SSUPERB) $(LGS)(usesuperb.o)
+DUSEGALAHAD  = $(DSUPERB) $(LGD)(usesuperb.o)
+SGALAHADMAIN = $(SUSEGALAHAD) $(OBJS)/runsuperb_sif.o
+DGALAHADMAIN = $(DUSEGALAHAD) $(OBJD)/runsuperb_sif.o
+OBJECTSS_CUTEST = $(OBJECTSS) $(SGALAHADMAIN)
+OBJECTSD_CUTEST = $(OBJECTSD) $(DGALAHADMAIN)
+
+SRUNSUPERB = copyright $(LGS)(usesuperb.o) $(OBJS)/runsuperb_sif.o
+DRUNSUPERB = copyright $(LGD)(usesuperb.o) $(OBJD)/runsuperb_sif.o
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+all: superb_cutest
+
+superb_cutest: superb_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SUPERB ($(PRECIS) $(SUCC_CUTEST)"
+superb_cutest_single: $(OBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+superb_cutest_double: $(OBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+superb_silent: superb_silent_$(PRECIS)
+superb_silent_single: $(OBJECTSS)
+superb_silent_double: $(OBJECTSD)
+
+superb: superb_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SUPERB ($(PRECIS) $(SUCC)"
+superb_single: $(OBJECTSS)
+	$(RANLIB) $(LGS)
+superb_double: $(OBJECTSD)
+	$(RANLIB) $(LGD)
+
+#  basic packages
+
+basics:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+	( cd ../../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            qpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../../qp )
+linearsolver:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+gltr:
+	( cd ../../rq ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            gltr.o PRECIS=$(PRECIS) PWD=$(PWD)/../../rq )
+ptrans:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            trans.o ptrans.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+wcp:
+	( cd ../../wcp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            wcp_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../wcp )
+copyright:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+superb.o: $(LG)(superb.o)
+
+$(LG)(superb.o): ../superb/superb.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "superb   "
+	$(SED) -f $(SEDS) ../superb/superb.f90 > $(OBJ)/superb1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/superb1.f90 > $(OBJ)/superb2.f90
+	$(SED) -f $(LSEDS) $(OBJ)/superb2.f90 > $(OBJ)/superb3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/superb3.f90 > $(OBJ)/superb.f90
+	cd $(OBJ); $(FORTRAN) -o superb.o $(FFLAGSS) superb.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o superb.o $(FFLAGSN) superb.f90 )
+	cd $(OBJ); $(ARR) superb.o ; $(RM) superb.f90 superb1.f90 \
+                                           superb2.f90 superb3.f90 superb.o
+	$(RMARFILE) usesuperb.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usesuperb.o: $(LG)(usesuperb.o)
+
+$(LG)(usesuperb.o): ../superb/usesuperb.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usesuperb   "
+	$(SED) -f $(SEDS) ../superb/usesuperb.f90 > $(OBJ)/usesuperb1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usesuperb1.f90 > $(OBJ)/usesuperb.f90
+	cd $(OBJ); $(FORTRAN) -o usesuperb.o $(FFLAGSS) usesuperb.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usesuperb.o $(FFLAGSN) usesuperb.f90 )
+	cd $(OBJ); $(ARR) usesuperb.o ; $(RM) usesuperb.f90 usesuperb1.f90 \
+                                              usesuperb.o
+	$(RMOBFILE) runsuperb_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runsuperb_sif.o: $(OBJ)/runsuperb_sif.o
+
+$(OBJ)/runsuperb_sif.o: ../superb/runsuperb_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runsuperb_sif"
+	$(SED) -f $(SEDS) ../superb/runsuperb_sif.f90 > $(OBJ)/runsuperb_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runsuperb_sif.o $(FFLAGSS) runsuperb_sif.f90
+	rm $(OBJ)/runsuperb_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LGS) $(LGD) $(QPBDS) $(OBJ)/qpbdt.o $(QPBSS) $(OBJ)/qpbst.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmsuperb:
+	@printf ' %-9s %-15s\t\t' "Removing" "superb from archive "
+	$(RMARFILE) superb.o
+	@printf '[ OK ]\n'
+
+

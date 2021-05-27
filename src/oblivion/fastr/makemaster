@@ -1,0 +1,374 @@
+#  Main body of the installation makefile for the GALAHAD FASTR package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 19 X 2005
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES) $(PLPLOT)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
+                 $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+PLPLOTSEDS = $(GALAHAD)/seds/plplot_$(PLPLOTUSED).sed
+
+#  compilation agenda
+
+SFASTR = basics filter eqp cqp nlpt cutest_functions $(LGS)(fastr.o)
+DFASTR = basics filter eqp cqp nlpt cutest_functions $(LGD)(fastr.o)
+
+SPQP = qpa $(LGS)(pqp.o)
+DPQP = qpa $(LGD)(pqp.o)
+
+SRUNFASTR = copyright $(LGS)(usefastr.o) $(OBJS)/runfastr_sif.o
+DRUNFASTR = copyright $(LGD)(usefastr.o) $(OBJD)/runfastr_sif.o
+
+SRUNPQP = copyright $(LGS)(usepqp.o) $(OBJS)/runpqp_sif.o
+DRUNPQP = copyright $(LGD)(usepqp.o) $(OBJD)/runpqp_sif.o
+
+FASTROBJECTSS_CUTEST = $(SFASTR) $(SRUNFASTR)
+FASTROBJECTSD_CUTEST = $(DFASTR) $(DRUNFASTR)
+
+OBJECTSS_CUTEST = $(FASTROBJECTSS_CUTEST)
+OBJECTSD_CUTEST = $(FASTROBJECTSD_CUTEST)
+
+PQPS = qpa $(LGS)(pqp.o) $(SRUNPQP)
+PQPD = qpa $(LGD)(pqp.o) $(DRUNPQP)
+
+FASTRDS = $(DFASTR) $(OBJD)/fastrs.o
+FASTRDT = $(DFASTR) $(OBJD)/fastrt.o
+FASTRSS = $(SFASTR) $(OBJS)/fastrs.o
+FASTRST = $(SFASTR) $(OBJS)/fastrt.o
+
+RFASTRDS = $(OBJD)/fastrs.o -L$(OBJD) $(LIBS)
+RFASTRDT = $(OBJD)/fastrt.o -L$(OBJD) $(LIBS)
+RFASTRSS = $(OBJS)/fastrs.o -L$(OBJS) $(LIBS)
+RFASTRST = $(OBJS)/fastrt.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+all: fastr_cutest
+all_fastr: fastr_cutest
+test: test_fastr
+test_nocutest: test_fastr_nocutest
+
+# fastr
+
+fastr_cutest: fastr_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: FASTR ($(PRECIS) $(SUCC_CUTEST)"
+fastr_cutest_single: $(FASTROBJECTSS_CUTEST)
+	$(RANLIB) $(LGS)
+fastr_cutest_double: $(FASTROBJECTSD_CUTEST)
+	$(RANLIB) $(LGD)
+
+fastr_silent: fastr_silent_$(PRECIS)
+fastr_silent_single: $(FASTROBJECTSS)
+fastr_silent_double: $(FASTROBJECTSD)
+
+fastr: fastr_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: FASTR ($(PRECIS) $(SUCC)"
+fastr_single: $(FASTROBJECTSS)
+	$(RANLIB) $(LGS)
+fastr_double: $(FASTROBJECTSD)
+	$(RANLIB) $(LGD)
+
+fastrsrunall: fastrss fastrst
+fastrdrunall: fastrds fastrdt
+fastrrunall: fastrdrunall fastrsrunall
+
+test_fastr: test_fastr_$(PRECIS)
+
+test_fastr_single: fastrst $(SRUNFASTR)
+	echo ""
+	echo " Testing CUTEst interface to fastr"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) fastr -s QPBAND
+	echo ""
+	echo " Tests for fastr complete"
+
+test_fastr_double: fastrdt $(DRUNFASTR)
+	echo ""
+	echo " Testing CUTEst interface to fastr"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) fastr QPBAND
+	echo ""
+	echo " Tests for fastr complete"
+
+test_fastr_nocutest: test_fastr_nocutest_$(PRECIS)
+
+test_fastr_nocutest_single: fastrst
+	echo ""
+	echo " Tests for fastr complete"
+
+test_fastr_nocutest_double: fastrdt
+	echo ""
+	echo " Tests for fastr complete"
+
+# pqp
+
+pqp_cutest: pqp_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: PQP ($(PRECIS) $(SUCC_CUTEST)"
+pqp_cutest_single: $(PQPS)
+	$(RANLIB) $(LGS)
+pqp_cutest_double: $(PQPD)
+	$(RANLIB) $(LGD)
+
+pqp_silent: pqp_silent_$(PRECIS)
+pqp_silent_single: $(PQPS)
+pqp_silent_double: $(PQPD)
+
+pqp: pqp_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: PQP ($(PRECIS) $(SUCC)"
+pqp_single: $(PQPS)
+	$(RANLIB) $(LGS)
+pqp_double: $(PQPD)
+	$(RANLIB) $(LGD)
+
+#  basic packages
+
+basics:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+filter:
+	( cd ../../filter ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            filter_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../filter )
+eqp:
+	( cd ../../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            eqp_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../qp )
+cqp:
+	( cd ../../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+             cqp_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../qp )
+nlpt:
+	( cd ../../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../../filtrane )
+cutest_functions:
+	( cd ../../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_silent PRECIS=$(PRECIS) \
+            PWD=$(PWD)/../../auxiliary )
+copyright:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+
+# run spec-sheet example tests
+
+fastrds: $(FASTRDS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_fastr $(RFASTRDS)
+	- ./run_fastr >& fastrds.output
+	cat fastrds.output
+	rm ./run_fastr
+
+fastrdt: $(FASTRDT)
+	echo " Exhaustive test of subroutine interface to fastr"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_fastr $(RFASTRDT)
+	- ./run_fastr >& fastrdt.output
+	cat fastrdt.output
+	rm ./run_fastr
+
+fastrss: $(FASTRSS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_fastr $(RFASTRSS)
+	- ./run_fastr >& fastrs.output
+	cat fastrs.output
+	rm ./run_fastr
+
+fastrst: $(FASTRST)
+	echo " Exhaustive test of subroutine interface to fastr"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_fastr $(RFASTRST)
+	- ./run_fastr >& fastrt.output
+	cat fastrt.output
+	rm ./run_fastr
+
+#  Substantial GALAHAD packages
+
+fastr.o: $(LG)(fastr.o)
+
+$(LG)(fastr.o): ../fastr/fastr.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "fastr   "
+	$(SED) -f $(SEDS) ../fastr/fastr.f90 > $(OBJ)/fastr1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/fastr1.f90 > $(OBJ)/fastr2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/fastr2.f90 > $(OBJ)/fastr3.f90
+	$(SED) -f $(PLPLOTSEDS) $(OBJ)/fastr3.f90 > $(OBJ)/fastr4.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/fastr4.f90 > $(OBJ)/fastr.f90
+	cd $(OBJ); $(FORTRAN) -o fastr.o $(FFLAGSS) $(PLPLOT) fastr.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o fastr.o $(FFLAGSN) fastr.f90 )
+	cd $(OBJ); $(ARR) fastr.o ; $(RM) fastr.f90 fastr1.f90 fastr2.f90 \
+                                    fastr3.f90 fastr4.f90 fastr.o
+	$(RMARFILE) usefastr.o
+	$(RMOBFILE) fastrs.o
+	$(RMOBFILE) fastrt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+pqp.o: $(LG)(pqp.o)
+
+$(LG)(pqp.o): ../pqp/pqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pqp   "
+	$(SED) -f $(SEDS) ../pqp/pqp.f90 > $(OBJ)/pqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/pqp1.f90 > $(OBJ)/pqp2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/pqp2.f90 > $(OBJ)/pqp3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/pqp3.f90 > $(OBJ)/pqp.f90
+	cd $(OBJ); $(FORTRAN) -o pqp.o $(FFLAGSS) pqp.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o pqp.o $(FFLAGSN) pqp.f90 )
+	cd $(OBJ); $(ARR) pqp.o ; $(RM) pqp.f90 pqp1.f90 pqp2.f90 \
+                                             pqp3.f90 pqp.o
+	$(RMARFILE) usepqp.o
+	$(RMOBFILE) pqps.o
+	$(RMOBFILE) pqpt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usefastr.o: $(LG)(usefastr.o)
+
+$(LG)(usefastr.o): ../fastr/usefastr.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usefastr   "
+	$(SED) -f $(SEDS) ../fastr/usefastr.f90 > $(OBJ)/usefastr1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/usefastr1.f90 > $(OBJ)/usefastr2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/usefastr2.f90 > $(OBJ)/usefastr.f90
+	cd $(OBJ); $(FORTRAN) -o usefastr.o $(FFLAGSS) usefastr.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usefastr.o $(FFLAGSN) usefastr.f90 )
+	cd $(OBJ); $(ARR) usefastr.o ; $(RM) usefastr.f90 usefastr1.f90 \
+                                       usefastr2.f90 usefastr.o
+	$(RMOBFILE) runfastr_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+usepqp.o: $(LG)(usepqp.o)
+
+$(LG)(usepqp.o): ../pqp/usepqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usepqp   "
+	$(SED) -f $(SEDS) ../pqp/usepqp.f90 > $(OBJ)/useqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/useqp1.f90 > $(OBJ)/useqp2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/useqp2.f90 > $(OBJ)/usepqp.f90
+	cd $(OBJ); $(FORTRAN) -o usepqp.o $(FFLAGSS) usepqp.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usepqp.o $(FFLAGSN) usepqp.f90 )
+	cd $(OBJ); $(ARR) usepqp.o ; $(RM) usepqp.f90 useqp1.f90 \
+                                           useqp2.f90 usepqp.o
+	$(RMOBFILE) runpqp_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runfastr_sif.o: $(OBJ)/runfastr_sif.o
+
+$(OBJ)/runfastr_sif.o: ../fastr/runfastr_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runfastr_sif"
+	$(SED) -f $(SEDS) ../fastr/runfastr_sif.f90 > $(OBJ)/runfastr_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runfastr_sif.o $(FFLAGSS) runfastr_sif.f90
+	rm $(OBJ)/runfastr_sif.f90
+	@printf '[ OK ]\n'
+
+runpqp_sif.o: $(OBJ)/runpqp_sif.o
+
+$(OBJ)/runpqp_sif.o: ../pqp/runpqp_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runpqp_sif"
+	$(SED) -f $(SEDS) ../pqp/runpqp_sif.f90 \
+                > $(OBJ)/runpqp_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runpqp_sif.o $(FFLAGSS) runpqp_sif.f90
+	rm $(OBJ)/runpqp_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+fastrs.o: $(OBJ)/fastrs.o
+
+$(OBJ)/fastrs.o: ../fastr/fastrs.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "fastrs  "
+	$(SED) -f $(SEDS) ../fastr/fastrs.f90 > $(OBJ)/fastrs1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/fastrs1.f90 > $(OBJ)/fastrs.f90
+	cd $(OBJ) ; $(FORTRAN) -o fastrs.o $(FFLAGS) fastrs.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+fastrt.o: $(OBJ)/fastrt.o
+
+$(OBJ)/fastrt.o: ../fastr/fastrt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "fastrt  "
+	$(SED) -f $(SEDS) ../fastr/fastrt.f90 > $(OBJ)/fastrt1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/fastrt1.f90 > $(OBJ)/fastrt.f90
+	cd $(OBJ) ; $(FORTRAN) -o fastrt.o $(FFLAGSS) fastrt.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LG) $(OBJ)/fastrt.o $(OBJ)/fastrt.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmfastr:
+	@printf ' %-9s %-15s\t\t' "Removing" "fastr from archive "
+	$(RMARFILE) fastr.o
+	@printf '[ OK ]\n'
+
+rmpqp:
+	@printf ' %-9s %-15s\t\t' "Removing" "pqp from archive "
+	$(RMARFILE) pqp.o
+	@printf '[ OK ]\n'
+

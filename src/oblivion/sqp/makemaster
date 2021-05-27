@@ -1,0 +1,261 @@
+#  Main body of the installation makefile for the GALAHAD SQP package
+
+#  N. Gould, D. Orban, D. Robinson and Ph. L. Toint.
+#  This version: 7 XII 2007
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MLG  = $(OBJ)/libgalahad_metis.a
+MLGS = $(OBJS)/libgalahad_metis.a
+MLGD = $(OBJD)/libgalahad_metis.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
+                 $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+#  sed scripts
+
+LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+
+#  compilation agenda
+
+SSQP = eqp qpc
+DSQP = eqp qpc
+
+SRUNSQP = copyright $(LGS)(usesqp.o) $(OBJS)/runsqp_sif.o
+DRUNSQP = copyright $(LGD)(usesqp.o) $(OBJD)/runsqp_sif.o
+
+SQPS = eqp qpc nlpt $(SRUNSQP)
+SQPD = eqp qpc nlpt $(DRUNSQP)
+
+SUCC = precision version) compiled successfully
+SUCC_CUTEST = precision version) for CUTEst compiled successfully
+
+#  main compilations and runs
+
+all: sqp_cutest
+test: test_sqp
+test_nocutest: test_sqp_nocutest
+
+# sqp
+
+sqp_cutest: sqp_cutest_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SQP ($(PRECIS) $(SUCC_CUTEST)"
+sqp_cutest_single: $(SQPS)
+	$(RANLIB) $(LGS)
+sqp_cutest_double: $(SQPD)
+	$(RANLIB) $(LGD)
+
+sqp: sqp_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SQP ($(PRECIS) $(SUCC)"
+sqp_single: $(SQPS)
+	$(RANLIB) $(LGS)
+sqp_double: $(SQPD)
+	$(RANLIB) $(LGD)
+
+test_sqp_single: sqpst $(SRUNSQP)
+	echo ""
+	echo " Testing CUTEst interface to sqp"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) sqp -s QPBAND
+	echo ""
+	echo " Tests for sqp complete"
+
+test_sqp_double: sqpdt $(DRUNSQP)
+	echo ""
+	echo " Testing CUTEst interface to sqp"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) sqp QPBAND
+	echo ""
+	echo " Tests for sqp complete"
+
+test_sqp_nocutest: test_sqp_nocutest_$(PRECIS)
+
+test_sqp_nocutest_single: sqpst
+	echo ""
+	echo " Tests for sqp complete"
+
+test_sqp_nocutest_double: sqpdt
+	echo ""
+	echo " Tests for sqp complete"
+
+#  basic packages
+
+qpa:
+	( cd ../../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            qpa_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../qp )
+qpc:
+	( cd ../../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+             qpc_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../qp )
+eqp:
+	( cd ../../eqp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            eqp_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../eqp )
+nlpt:
+	( cd ../../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../../filtrane )
+copyright:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+
+# run spec-sheet example tests
+
+sqpds: $(SQPDS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sqp $(RSQPDS)
+	- ./run_sqp >& sqpds.output
+	cat sqpds.output
+	rm ./run_sqp
+
+sqpdt: $(SQPDT)
+	echo " Exhaustive test of subroutine interface to sqp"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sqp $(RSQPDT)
+	- ./run_sqp >& sqpdt.output
+	cat sqpdt.output
+	rm ./run_sqp
+
+sqpss: $(SQPSS)
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sqp $(RSQPSS)
+	- ./run_sqp >& sqps.output
+	cat sqps.output
+	rm ./run_sqp
+
+sqpst: $(SQPST)
+	echo " Exhaustive test of subroutine interface to sqp"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sqp $(RSQPST)
+	- ./run_sqp >& sqpt.output
+	cat sqpt.output
+	rm ./run_sqp
+
+#  Substantial GALAHAD packages
+
+$(LG)(sqp.o): ../sqp/sqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "sqp   "
+	$(SED) -f $(SEDS) ../sqp/sqp.f90 > $(OBJ)/sqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/sqp1.f90 > $(OBJ)/sqp2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/sqp2.f90 > $(OBJ)/sqp3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/sqp3.f90 > $(OBJ)/sqp.f90
+	cd $(OBJ); $(FORTRAN) -o sqp.o $(FFLAGSS) sqp.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o sqp.o $(FFLAGSN) sqp.f90 )
+	cd $(OBJ); $(ARR) sqp.o ; $(RM) sqp.f90 sqp1.f90 sqp2.f90 \
+                                             sqp3.f90 sqp.o
+	$(RMARFILE) usesqp.o
+	$(RMOBFILE) sqps.o
+	$(RMOBFILE) sqpt.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# CUTEst/AMPL interfaces
+
+usesqp.o: $(LG)(usesqp.o)
+
+$(LG)(usesqp.o): ../sqp/usesqp.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "usesqp   "
+	$(SED) -f $(SEDS) ../sqp/usesqp.f90 > $(OBJ)/useqp1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/useqp1.f90 > $(OBJ)/useqp2.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/useqp2.f90 > $(OBJ)/usesqp.f90
+	cd $(OBJ); $(FORTRAN) -o usesqp.o $(FFLAGSS) usesqp.f90 \
+                || ( printf ' %-26s' "=> Disabling optimization " ; \
+                   $(FORTRAN) -o usesqp.o $(FFLAGSN) usesqp.f90 )
+	cd $(OBJ); $(ARR) usesqp.o ; $(RM) usesqp.f90 useqp1.f90 \
+                                           useqp2.f90 usesqp.o
+	$(RMOBFILE) runsqp_sif.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  main programs
+
+runsqp_sif.o: $(OBJ)/runsqp_sif.o
+
+$(OBJ)/runsqp_sif.o: ../sqp/runsqp_sif.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "runsqp_sif"
+	$(SED) -f $(SEDS) ../sqp/runsqp_sif.f90 \
+                > $(OBJ)/runsqp_sif.f90
+	cd $(OBJ); $(FORTRAN) -o runsqp_sif.o $(FFLAGSS) runsqp_sif.f90
+	rm $(OBJ)/runsqp_sif.f90
+	@printf '[ OK ]\n'
+
+#  test decks
+
+sqps.o: $(OBJ)/sqps.o
+
+$(OBJ)/sqps.o: ../sqp/sqps.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "sqps  "
+	$(SED) -f $(SEDS) ../sqp/sqps.f90 > $(OBJ)/sqps1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/sqps1.f90 > $(OBJ)/sqps.f90
+	cd $(OBJ) ; $(FORTRAN) -o sqps.o $(FFLAGS) sqps.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+sqpt.o: $(OBJ)/sqpt.o
+
+$(OBJ)/sqpt.o: ../sqp/sqpt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "sqpt  "
+	$(SED) -f $(SEDS) ../sqp/sqpt.f90 > $(OBJ)/sqpt1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/sqpt1.f90 > $(OBJ)/sqpt.f90
+	cd $(OBJ) ; $(FORTRAN) -o sqpt.o $(FFLAGSS) sqpt.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(LG) $(OBJ)/sqpt.o $(OBJ)/sqpt.o
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+rmsqp:
+	@printf ' %-9s %-15s\t\t' "Removing" "sqp from archive "
+	$(RMARFILE) sqp.o
+	@printf '[ OK ]\n'
+
