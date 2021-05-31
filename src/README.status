@@ -1,0 +1,156 @@
+** CURRENT STATUS OF PACKAGES 2021-05-31 **
+
+CONVERSION TO NEW MAKEMASTERS & C INTERFACES   
+--------------------------------------------
+
+M = makemaster done, C = C interface done
+
+ampl
+arc                       M  
+basic                     M
+blls                      M
+bqp                       M (bqpt broken)
+bqpb                      M (bqpbs2/3 & bqpbt broken)
+bsc                       M
+ccqp                      M (issues with ccqpt)
+check                     M (build cutest interface?)
+checkpoint                M
+clock                     M
+convert                   M
+copyright                 M
+cqp                       M
+cpu_time                  M
+cro                       M
+cutest_functions          M
+demo                      M
+dlp                       M
+dps                       M
+dqp                       M (check dqpt options 9 & 10)
+dum
+eqp                       M
+fdc                       M
+fdh                       M (need to adapt fdhs2, error in test)
+filter                    M
+filtrane                  M
+fisqp                     M
+fit                       M
+general
+glrt                      M
+gls                       M
+gltr                      M
+hsl
+ir                        M
+l1qp                      M (l1qpt broken)
+l2rt                      M
+lancelot                  M
+lancelot_simple           M
+lapack
+lls                       M
+llst                      M
+lms                       M
+lmt                       M
+lpa                       M (bug in basic test of storage formats)
+lpb                       M
+lpqp                      M
+lsqp                      M
+lsrt                      M
+lstr                      M
+miqr                      M
+mop                       M
+nlpt                      M
+nls                       M
+norms                     M
+opt                       M
+pdqp                      M
+presolve                  M
+problem                   M
+psls                      M (needs spec and test examples)
+ptrans                    M
+qp                        M
+qpa                       M
+qpb                       M
+qpc                       M
+qpd                       M
+qpp                       M
+qpt                       M
+rand                      M
+roots                     M
+rpd                       M
+rqs                       M
+sbls                      M
+scale                     M
+scaling                   M
+scu                       M
+sec                       M
+sha                       M
+sils                      M
+sls                       M
+smt                       M
+sort                      M
+space                     M
+specfile                  M
+spral
+ssids
+string                    M
+symbols                   M
+tools                     M
+trans                     M
+trs                       M
+tru                       M
+uls                       M
+userdata                  M
+warm                      M
+wcp                       M
+zd11                      M
+
+forthcoming: 
+
+barc                      M
+bgo                       M (bug is bgos)
+lhs                       M
+trace                     M (but buggy)
+tral                      M (broken)
+trb                       M
+ugo                       M
+
+oblivion:
+
+cqps                      M (cqps & cqpt broken)
+ermo                      M (cutest doesn't return)
+fastr                     M (cutest doesn't work)
+funnel                    M (cutest doesn't converge)
+funnel_equality           M
+ism                       M
+lcf                       M
+lpqpa                     M (needs proper use/run)
+lpqpb                     M (needs proper use/run)
+lpsqp                     M (needs proper use/run)
+nllsrt                    M (no interfaces)
+pqp                       (broken)
+qps                       (broken)
+s2qp                      M (but fails)
+sqp                       (broken)
+superb                    M
+trtn                      M
+
+Specific issues:
+
+bgo:
+Runtime Error: space.f90, line 3397: Dangling pointer POINT used as argument to intrinsic function ASSOCIATED
+Target was DEALLOCATEd at line 3398 of space.f90
+Program terminated by fatal error
+space.f90, line 3397: Error occurred in GALAHAD_SPACE_DOUBLE:SPACE_DEALLOC_REAL_POINTER
+bgo.f90, line 2450: Called by GALAHAD_BGO_DOUBLE:BGO_TERMINATE
+bgos.f90, line 44: Called by GALAHAD_BGO_EXAMPLE
+ data%P associated 
+  pass       #d             f                g          #f      #g        time
+     1        0 -7.5896562424494007E-01 6.2412E-12       6       6        0.00
+ BGO_solve exit status =      5
+
+lpa:
+
+ LA04 error return: JX is faulty for variable I =     5
+ JX(I) =      0 BND(:,I) =   0.0E+00  1.0E+00
+  solution not found after 1 iterations, job value is -12
+ ** Error return from -LPA_solve- status = -3
+DPW: LPA_solve exit status =   -3

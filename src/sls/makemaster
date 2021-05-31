@@ -102,8 +102,8 @@ $(package)s.o: $(OBJ)/$(package)s.o
 $(OBJ)/$(package)s.o: ../$(package)/$(package)s.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s  "
 	$(SED) -f $(SEDS) \
-           ../$(package)/$(package)s.f90 > $(OBJ)/$(package)s1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s.f90
+           ../$(package)/$(package)s.f90 > $(OBJ)/$(package)s.f90
+#	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s.f90
 	cd $(OBJ) ; $(FORTRAN) -o $(package)s.o $(FFLAGS) $(package)s.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
@@ -115,8 +115,8 @@ $(package)t.o: $(OBJ)/$(package)t.o
 $(OBJ)/$(package)t.o: ../$(package)/$(package)t.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)t  "
 	$(SED) -f $(SEDS) \
-           ../$(package)/$(package)t.f90 > $(OBJ)/$(package)t1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/$(package)t1.f90 > $(OBJ)/$(package)t.f90
+           ../$(package)/$(package)t.f90 > $(OBJ)/$(package)t.f90
+#	$(SED) -f $(LSEDS) $(OBJ)/$(package)t1.f90 > $(OBJ)/$(package)t.f90
 	cd $(OBJ) ; $(FORTRAN) -o $(package)t.o $(FFLAGSS) $(package)t.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
@@ -129,9 +129,9 @@ $(LG)(use$(package).o): ../$(package)/use$(package).f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "use$(package)   "
 	$(SED) -f $(SEDS) \
            ../$(package)/use$(package).f90 > $(OBJ)/use$(package)1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/use$(package)1.f90 > $(OBJ)/use$(package)2.f90
+#	$(SED) -f $(LSEDS) $(OBJ)/use$(package)1.f90 > $(OBJ)/use$(package)2.f90
 	$(SED) "s/^.$(NOT95)/     /" \
-          $(OBJ)/use$(package)2.f90 > $(OBJ)/use$(package).f90
+          $(OBJ)/use$(package)1.f90 > $(OBJ)/use$(package).f90
 	cd $(OBJ); \
           $(FORTRAN) -o use$(package).o $(FFLAGSOMP) use$(package).f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \

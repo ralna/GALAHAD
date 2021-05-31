@@ -488,7 +488,7 @@ fi
 [[ -e EXTER.o && $RECOMPILE == '0' ]] && $RM EXTER.o
 
 NSUB=( "ELFUN.o GROUP.o RANGE.o" )
-[[ -s EXTER.f ]] && NSUB=( "$NSUB EXTER.o" )
+q[[ -s EXTER.f ]] && NSUB=( "$NSUB EXTER.o" )
 
 for i  in  $NSUB; do
   if [[ ! -e $i ]]; then
