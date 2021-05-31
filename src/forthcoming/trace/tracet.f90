@@ -323,7 +323,7 @@
      CALL TRACE_terminate( data, control, inform )  ! delete internal workspace
    END DO
    DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
-write(6,*) ' This package needs much more work!!'
+   WRITE( 6, "( /, ' ***  This package needs much more work!!' )" )
    END PROGRAM GALAHAD_TRACE_test_deck
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function

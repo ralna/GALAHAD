@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD LHS package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-24
+#  This version: 2021-05-28
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -25,9 +29,9 @@ DEPENDS = bgo
 
 TESTDEPS = make_copyright
 
-#  CUTEst example for tests
+#  tests to be performed (preprend with test)
 
-CUTEST_EXAMPLE =
+TESTS = test_full
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

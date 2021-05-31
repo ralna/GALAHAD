@@ -117,7 +117,8 @@
 
      INQUIRE( FILE = runspec, EXIST = is_specfile )
      IF ( is_specfile ) THEN
-        OPEN( input_specfile, FILE = runspec, FORM = 'FORMATTED', STATUS = 'OLD' )
+        OPEN( input_specfile, FILE = runspec, FORM = 'FORMATTED',              &
+              STATUS = 'OLD' )
 
 !   Define the keywords
 
@@ -183,7 +184,8 @@
        CALL SPECFILE_assign_string ( spec( 25 ), wfilename, errout )
        CALL SPECFILE_assign_integer( spec( 26 ), wfiledevice, errout )
        CALL SPECFILE_assign_integer( spec( 27 ), istore, errout )
-       CALL SPECFILE_assign_logical( spec( 28 ), separate_linear_constraints, errout )
+       CALL SPECFILE_assign_logical( spec( 28 ), separate_linear_constraints,  &
+                                     errout )
      END IF
 
      !IF ( dechk .OR. testal ) THEN ; dechke = .TRUE. ; dechkg = .TRUE. ; END IF
@@ -231,7 +233,8 @@
            checkH = .TRUE.; nlp%H%m = nlp%n; nlp%H%n = nlp%n
         END IF
 
-        CALL CHECK_initialize( CHECK_data, CHECK_control )
+!       CALL CHECK_initialize( CHECK_data, CHECK_control, CHECK_inform )
+        CALL CHECK_initialize( CHECK_control )
 
         CHECK_control%checkG       = checkG
         CHECK_control%checkJ       = checkJ
@@ -241,10 +244,10 @@
         CHECK_control%verify_level = check_verify_level
         CHECK_control%print_level  = check_print_level
 
-        CALL CHECK_verify( nlp, CHECK_data, CHECK_control, CHECK_inform,  &
-                           eval_FC=CUTEST_eval_FC, eval_G=CUTEST_eval_G,    &
-                           eval_J=CUTEST_eval_J, eval_H=CUTEST_eval_HL,  &
-                           userdata=userdata )
+        CALL CHECK_verify( nlp, CHECK_data, CHECK_control, CHECK_inform,       &
+                           eval_F=CUTEST_eval_F, eval_C=CUTEST_eval_C,         &
+                           eval_G=CUTEST_eval_G, eval_J=CUTEST_eval_J,         &
+                           eval_HL=CUTEST_eval_HL, userdata=userdata )
 
         CALL CHECK_terminate( CHECK_data, CHECK_control, CHECK_inform )
 
@@ -252,7 +255,7 @@
 
 !  Set up data for next problem
 
-     CALL TRIMSQP_initialize( data, control )
+     CALL TRIMSQP_initialize( data, control, inform )
 
      IF ( is_specfile ) CALL TRIMSQP_read_specfile( control, input_specfile )
 
@@ -267,10 +270,10 @@
 
      !IF ( nlp%m > 0 ) THEN
 
-     CALL TRIMSQP_solve( nlp, control, inform, data,                      &
-                            eval_FC=CUTEST_eval_FC, eval_G=CUTEST_eval_G,   &
-                            eval_J=CUTEST_eval_J, eval_H=CUTEST_eval_HL,    &
-                            userdata=userdata )
+     CALL TRIMSQP_solve( nlp, control, inform, data,                           &
+                            eval_FC = CUTEST_eval_FC, eval_G = CUTEST_eval_G,  &
+                            eval_J = CUTEST_eval_J, eval_HL = CUTEST_eval_HL,  &
+                            userdata = userdata )
 
      !ELSE
 

@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD WCP package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-25
+#  This version: 2021-05-28
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -26,11 +30,19 @@ DEPENDS = superb
 
 #  auxililiary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_cutest_functions make_presolve
+TESTDEPS = make_presolve
+
+#  tests to be performed (preprend with test_)
+
+TESTS = test_full test_cutest
 
 #  CUTEst example for tests
 
-CUTEST_EXAMPLE = LPBAND.SIF
+CUTEST_EXAMPLE = QPBAND.SIF
+
+#  QPLIB example for tests
+
+QPLIB_EXAMPLE = QPBAND.qplib
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

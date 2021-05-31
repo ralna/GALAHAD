@@ -1,12 +1,12 @@
    PROGRAM GALAHAD_UGO_TEST_PROGRAM  !  GALAHAD 2.8 - 20/06/2016 AT 14:25 GMT
    USE GALAHAD_UGO_double                       ! double precision version
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   USE GALAHAD_USERDATA_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
    TYPE ( UGO_control_type ) :: control
    TYPE ( UGO_inform_type ) :: inform
    TYPE ( UGO_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    EXTERNAL :: FGH
    INTEGER :: prob
    REAL ( KIND = wp ) :: x_l, x_u, x, f, g, h, f_min, x_min
@@ -190,12 +190,12 @@
    END PROGRAM GALAHAD_UGO_TEST_PROGRAM
 
      SUBROUTINE FGH( status, x, userdata, f, g, h )
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+     USE GALAHAD_USERDATA_double
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), INTENT( IN ) :: x
      REAL ( KIND = wp ), INTENT( OUT ) :: f, g, h
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
      INTEGER :: k
      REAL ( KIND = wp ) :: a, b, c, ca, c2, c3, c4, c5, c6, e, rk, rkp1, s, sa

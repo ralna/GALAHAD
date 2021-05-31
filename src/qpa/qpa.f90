@@ -1106,7 +1106,8 @@
       INTEGER :: hd_start, hd_end, hnd_start, hnd_end, type, n_pcg
       REAL ( KIND = wp ) :: a_x, a_norms
       REAL :: time_start, time_record, time_now, time_inner_start
-      REAL ( KIND = WP ) :: clock_start, clock_record, clock_now, clock_inner_start
+      REAL ( KIND = WP ) :: clock_start, clock_record
+      REAL ( KIND = WP ) :: clock_now, clock_inner_start
       LOGICAL :: printi
       CHARACTER ( LEN = 80 ) :: array_name
 

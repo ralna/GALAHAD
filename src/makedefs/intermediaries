@@ -7,6 +7,11 @@
 #  basic packages alone
 ########################
 
+make_arc:
+	( cd $(GALAHAD)/src/forthcoming/arc ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/arc )
+
 make_basic:
 	( cd $(GALAHAD)/src/basic ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) basic.o \
@@ -71,6 +76,11 @@ make_cg:
 	( cd $(GALAHAD)/src/lancelot ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cg.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lancelot )
+
+make_check:
+	( cd $(GALAHAD)/src/check ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) check.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/check )
 
 make_clock:
 	( cd $(GALAHAD)/src/clock ; \
@@ -152,6 +162,16 @@ make_filter:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) filter.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/filter )
 
+make_funnel:
+	( cd $(GALAHAD)/src/oblivion/funnel ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) funnel.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/oblivion/funnel )
+
+make_funnel_equality:
+	( cd $(GALAHAD)/src/oblivion/funnel_equality ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) funnel_equality.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/oblivion/funnel_equality )
+
 make_fit:
 	( cd $(GALAHAD)/src/fit ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) fit.o \
@@ -217,6 +237,11 @@ make_lls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lls.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
 
+make_llst:
+	( cd $(GALAHAD)/src/llst ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) llst.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/llst )
+
 make_lmt:
 	( cd $(GALAHAD)/src/lmt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lmt.o \
@@ -236,6 +261,16 @@ make_lpqp:
 	( cd $(GALAHAD)/src/lpqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpqp.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpqp )
+
+make_lpqpa:
+	( cd $(GALAHAD)/src/oblivion/lpqpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpqpa.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/oblivion/lpqpa )
+
+make_lpqpb:
+	( cd $(GALAHAD)/src/oblivion/lpqpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpqpb.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/oblivion/lpqpb )
 
 make_lsqp:
 	( cd $(GALAHAD)/src/lsqp ; \
@@ -291,6 +326,11 @@ make_psls:
 	( cd $(GALAHAD)/src/psls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) psls.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/psls )
+
+make_ptrans:
+	( cd $(GALAHAD)/src/ptrans ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ptrans.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ptrans )
 
 make_qp:
 	( cd $(GALAHAD)/src/qp ; \
@@ -445,6 +485,11 @@ make_trs:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trs.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trs )
 
+make_tru:
+	( cd $(GALAHAD)/src/tru ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tru.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/tru )
+
 make_ugo:
 	( cd $(GALAHAD)/src/forthcoming/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ugo.o \
@@ -479,7 +524,7 @@ make_zd11:
 
 make_icfs:
 	( cd $(GALAHAD)/src/non-free/icfs ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) icfs.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) icfs_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/icfs )
 
 make_la04:
@@ -547,6 +592,11 @@ make_mc77:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc77_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc77 )
 
+make_mi20:
+	( cd $(GALAHAD)/src/non-free/mi20 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi20_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi20 )
+
 make_mi28:
 	( cd $(GALAHAD)/src/non-free/mi28 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi28_silent \
@@ -577,6 +627,11 @@ make_all_basic:
 	( cd $(GALAHAD)/src/basic ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) basic_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+
+make_all_arc:
+	( cd $(GALAHAD)/src/forthcoming/arc ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/arc )
 
 make_all_bgo:
 	( cd $(GALAHAD)/src/forthcoming/bgo ; \
@@ -843,6 +898,11 @@ make_all_psls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) psls_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/psls )
 
+make_all_ptrans:
+	( cd $(GALAHAD)/src/ptrans ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ptrans_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ptrans )
+
 make_all_qp:
 	( cd $(GALAHAD)/src/qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qp_silent \
@@ -988,6 +1048,11 @@ make_all_trs:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trs_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trs )
 
+make_all_tru:
+	( cd $(GALAHAD)/src/tru ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tru_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/tru )
+
 make_all_ugo:
 	( cd $(GALAHAD)/src/forthcoming/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ugo_silent \
@@ -1089,6 +1154,11 @@ make_all_mc77:
 	( cd $(GALAHAD)/src/non-free/mc77 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc77_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc77 )
+
+make_all_mi20:
+	( cd $(GALAHAD)/src/non-free/mi20 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi20_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi20 )
 
 make_all_mi28:
 	( cd $(GALAHAD)/src/non-free/mi28 ; \

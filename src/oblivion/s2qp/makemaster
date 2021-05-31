@@ -1,309 +1,65 @@
 #  Main body of the installation makefile for the GALAHAD S2QP package
 
-#  N. Gould, D. Orban, D. Robinson and Ph. L. Toint.
-#  This version: 7 XII 2007
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-30
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
-#  compiler flags
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+#  package name
 
-#  names of random libraries
+package = s2qp
+PACKAGE = S2QP
 
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
+#  auxiliary packages that current package depends on (prepend with make_)
 
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
+DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
+               make_gltr make_lpqp make_fdc make_fit \
+               make_qpp make_tools make_trans make_scale \
+               make_checkpoint make_scu make_ir make_mop \
+               make_cro make_presolve make_qpd make_qpa \
+               make_lsqp make_qpb make_eqp make_rpd \
+               make_cqp make_qpc make_userdata make_nlpt \
+               make_check
 
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
+#  other packages that depend on package
 
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
+DEPENDS = 
 
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
+#  auxiliary packages that are needed for tests (prepend with make_)
 
-#  Libraries used
+TESTDEPS =
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
-                 $(LAPACK) $(BLAS)
+#  tests to be performed (preprend with test_)
 
-#  Archive manipulation strings
+TESTS = test_full test_cutest
 
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+#  CUTEst example for tests
 
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+#CUTEST_EXAMPLE = ALLINITC.SIF
+CUTEST_EXAMPLE = S2QPTOY.SIF
 
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
 
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
 
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions
 
-#  sed scripts
+#  include standard package compilation instructions
 
-LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
-LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
-
-#  compilation agenda
-
-SRUNS2QP = copyright $(LGS)(uses2qp.o) $(OBJS)/runs2qp_sif.o
-DRUNS2QP = copyright $(LGD)(uses2qp.o) $(OBJD)/runs2qp_sif.o
+include $(GALAHAD)/src/makedefs/compile
 
-SS2QP = qpc nlpt mop cutest_functions s2qp
-DS2QP = qpc nlpt mop cutest_functions s2qp
-
-S2QPS = qpc nlpt mop check cutest_functions copyright $(LGS)(s2qp.o) $(SRUNS2QP)
-S2QPD = qpc nlpt mop check cutest_functions copyright $(LGD)(s2qp.o) $(DRUNS2QP)
-
-S2QPSS = $(SS2QP) $(OBJS)/s2qps.o
-S2QPDS = $(DS2QP) $(OBJD)/s2qps.o
-
-S2QPST = $(S2QPS) $(OBJS)/s2qpt.o
-S2QPDT = $(S2QPD) $(OBJD)/s2qpt.o
-
-RS2QPSS = $(OBJS)/s2qps.o -L$(OBJS) $(LIBS)
-RS2QPDS = $(OBJD)/s2qps.o -L$(OBJD) $(LIBS)
-RS2QPST = $(OBJS)/s2qpt.o -L$(OBJS) $(LIBS)
-RS2QPDT = $(OBJD)/s2qpt.o -L$(OBJD) $(LIBS)
-
-SUCC = precision version) compiled successfully
-SUCC_CUTEST = precision version) for CUTEst compiled successfully
-
-#  main compilations and runs
-
-all: s2qp_cutest
-test: test_s2qp
-test_nocutest: test_s2qp_nocutest
-
-# s2qp
-
-s2qp_cutest: s2qp_cutest_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: S2QP ($(PRECIS) $(SUCC_CUTEST)"
-s2qp_cutest_single: $(S2QPS)
-	$(RANLIB) $(LGS)
-s2qp_cutest_double: $(S2QPD)
-	$(RANLIB) $(LGD)
-
-s2qp_silent: s2qp_silent_$(PRECIS)
-s2qp_silent_single: $(S2QPS)
-s2qp_silent_double: $(S2QPD)
-
-s2qp: s2qp_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: S2QP ($(PRECIS) $(SUCC)"
-s2qp_single: $(S2QPS)
-	$(RANLIB) $(LGS)
-s2qp_double: $(S2QPD)
-	$(RANLIB) $(LGD)
-
-test_s2qp_single: s2qpst $(SRUNS2QP)
-	echo ""
-	echo " Testing CUTEst interface to s2qp"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) s2qp -s QPBAND
-	echo ""
-	echo " Tests for s2qp complete"
-
-test_s2qp_double: s2qpdt $(DRUNS2QP)
-	echo ""
-	echo " Testing CUTEst interface to s2qp"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) s2qp QPBAND
-	echo ""
-	echo " Tests for s2qp complete"
-
-test_s2qp_nocutest: test_s2qp_nocutest_$(PRECIS)
-
-test_s2qp_nocutest_single: s2qpst
-	echo ""
-	echo " Tests for s2qp complete"
-
-test_s2qp_nocutest_double: s2qpdt
-	echo ""
-	echo " Tests for s2qp complete"
-
-#  basic packages
-
-qpc:
-	( cd ../../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-             qpc_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../qp )
-eqp:
-	( cd ../../eqp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-             eqp.o PRECIS=$(PRECIS) PWD=$(PWD)/../../eqp )
-nlpt:
-	( cd ../../filtrane ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            nlpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../../filtrane )
-check:
-	( cd ../../check ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            check.o PRECIS=$(PRECIS) PWD=$(PWD)/../../check )
-cutest_functions:
-	( cd ../../auxiliary ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            cutest_functions_silent PRECIS=$(PRECIS) \
-            PWD=$(PWD)/../../auxiliary )
-mop:
-	( cd ../../mop ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            mop.o PRECIS=$(PRECIS) PWD=$(PWD)/../../mop )
-sils:
-	( cd ../../sils ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            sils.o PRECIS=$(PRECIS) PWD=$(PWD)/../../sils )
-copyright:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-
-
-# run spec-sheet example tests
-
-s2qpds: $(S2QPDS)
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o dummy_file $(RS2QPDS)
-	- ./dummy_file >& s2qpds.output
-	cat s2qpds.output
-	rm ./dummy_file
-
-s2qpdt: $(S2QPDT)
-	echo " Exhaustive test of subroutine interface to s2qp"
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o dummy_file $(RS2QPDT)
-	- ./dummy_file >& s2qpdt.output
-	cat s2qpdt.output
-	rm ./dummy_file
-
-s2qpss: $(S2QPSS)
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o dummy_file $(RS2QPSS)
-	- ./dummy_file >& s2qps.output
-	cat s2qps.output
-	rm ./dummy_file
-
-s2qpst: $(S2QPST)
-	echo " Exhaustive test of subroutine interface to s2qp"
-	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o dummy_file $(RS2QPST)
-	- ./dummy_file >& s2qpt.output
-	cat s2qpt.output
-	rm ./dummy_file
-
-#  Substantial GALAHAD packages
-
-$(LG)(s2qp.o): ../s2qp/s2qp.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "s2qp   "
-	$(SED) -f $(SEDS) ../s2qp/s2qp.f90 > $(OBJ)/s2qp1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/s2qp1.f90 > $(OBJ)/s2qp2.f90
-	$(SED) -f $(LPSEDS) $(OBJ)/s2qp2.f90 > $(OBJ)/s2qp3.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/s2qp3.f90 > $(OBJ)/s2qp.f90
-	cd $(OBJ); $(FORTRAN) -o s2qp.o $(FFLAGSS) s2qp.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o s2qp.o $(FFLAGSN) s2qp.f90 )
-	cd $(OBJ); $(ARR) s2qp.o ; $(RM) s2qp.f90 s2qp1.f90 \
-                          s2qp2.f90 s2qp3.f90 s2qp.o
-	$(RMARFILE) uses2qp.o
-	$(RMOBFILE) s2qps.o
-	$(RMOBFILE) s2qpt.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-# CUTEst/AMPL interfaces
-
-uses2qp.o: $(LG)(uses2qp.o)
-
-$(LG)(uses2qp.o): ../s2qp/uses2qp.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "uses2qp   "
-	$(SED) -f $(SEDS) ../s2qp/uses2qp.f90 > $(OBJ)/useqp1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/useqp1.f90 > $(OBJ)/useqp2.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/useqp2.f90 > $(OBJ)/uses2qp.f90
-	cd $(OBJ); $(FORTRAN) -o uses2qp.o $(FFLAGSS) uses2qp.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o uses2qp.o $(FFLAGSN) uses2qp.f90 )
-	cd $(OBJ); $(ARR) uses2qp.o ; $(RM) uses2qp.f90 useqp1.f90 \
-                                           useqp2.f90 uses2qp.o
-	$(RMOBFILE) runs2qp_sif.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
-#  main programs
-
-runs2qp_sif.o: $(OBJ)/runs2qp_sif.o
-
-$(OBJ)/runs2qp_sif.o: ../s2qp/runs2qp_sif.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "runs2qp_sif"
-	$(SED) -f $(SEDS) ../s2qp/runs2qp_sif.f90 \
-                > $(OBJ)/runs2qp_sif.f90
-	cd $(OBJ); $(FORTRAN) -o runs2qp_sif.o $(FFLAGSS) runs2qp_sif.f90
-	rm $(OBJ)/runs2qp_sif.f90
-	@printf '[ OK ]\n'
-
-#  test decks
-
-s2qps.o: $(OBJ)/s2qps.o
-
-$(OBJ)/s2qps.o: ../s2qp/s2qps.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "s2qps  "
-	$(SED) -f $(SEDS) ../s2qp/s2qps.f90 > $(OBJ)/s2qps1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/s2qps1.f90 > $(OBJ)/s2qps.f90
-	cd $(OBJ) ; $(FORTRAN) -o s2qps.o $(FFLAGS) s2qps.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-s2qpt.o: $(OBJ)/s2qpt.o
-
-$(OBJ)/s2qpt.o: ../s2qp/s2qpt.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "s2qpt  "
-	$(SED) -f $(SEDS) ../s2qp/s2qpt.f90 > $(OBJ)/s2qpt1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/s2qpt1.f90 > $(OBJ)/s2qpt.f90
-	cd $(OBJ) ; $(FORTRAN) -o s2qpt.o $(FFLAGSS) s2qpt.f90
-	rm $(OBJ)/*.f90
-	@printf '[ OK ]\n'
-
-# #  test problems
-
-# ctoy1: $(S2QPD)
-# 	@printf ' %-9s %-15s\t\t' "Compiling" "toy1  "
-# 	$(SED) -f $(SEDS) ../s2qp/toy1.f90 > $(OBJ)/toy1x.f90
-# 	$(SED) -f $(LSEDS) $(OBJ)/toy1x.f90 > $(OBJ)/toy1.f90
-# 	cd $(OBJ) ; $(FORTRAN) -o toy1.o $(FFLAGSS) toy1.f90
-# 	rm $(OBJ)/toy1x.f90
-# 	@printf '[ OK ]\n'
-
-# xtoy1: $(S2QPD)
-# 	@printf ' %-9s %-15s\t\t' "Creating executable" "toy1  "
-# 	$(FORTRAN) -o toy1 $(RUNFFLAGS) $(OBJ)/toy1.o -L$(OBJD) $(LIBS)
-# 	@printf '[ OK ]\n'
-
-# cxtoy1: $(S2QPD)
-# 	@printf ' %-9s %-15s\t\t' "Compiling and forming executable:" "toy1  "
-# 	$(SED) -f $(SEDS) ../s2qp/toy1.f90 > $(OBJ)/toy1x.f90
-# 	$(SED) -f $(LSEDS) $(OBJ)/toy1x.f90 > $(OBJ)/toy1.f90
-# 	cd $(OBJ) ; $(FORTRAN) -o toy1 $(FFLAGSS) toy1.f90
-# 	rm $(OBJ)/toy1x.f90
-# 	@printf '[ OK ]\n'
-
-#  book keeping
-
-clean:
-	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(LG) $(OBJ)/s2qpt.o $(OBJ)/s2qpt.o
-	@printf '[ OK ]\n'
-
-cleanall:
-	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
-	$(RM) $(OBJ)/* $(MOD)/*
-	@printf '[ OK ]\n'
-
-rms2qp:
-	@printf ' %-9s %-15s\t\t' "Removing" "s2qp from archive "
-	$(RMARFILE) s2qp.o
-	@printf '[ OK ]\n'
-
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

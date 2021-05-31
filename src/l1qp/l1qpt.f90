@@ -74,9 +74,9 @@
 ! control%print_level = 1
 
 !control%print_level = 3
-!control%maxit = 2
-!control%SBLS_control%print_level = 3
-!control%SBLS_control%preconditioner = 3
+!control%CQP_control%maxit = 2
+!control%CQP_control%SBLS_control%print_level = 3
+!control%CQP_control%SBLS_control%preconditioner = 3
 
      p%new_problem_structure = .TRUE.
      p%n = n ; p%m = m ; p%f = 1.0_wp
@@ -115,13 +115,13 @@
 !      p%X_l = (/ - 1.0_wp, 8.0_wp, - infty /)
 !      p%X_u = (/ 1.0_wp, infty, 2.0_wp /)
      ELSE IF ( status == - GALAHAD_error_max_iterations ) THEN
-       control%maxit = 0
+       control%CQP_control%maxit = 0
 !      control%print_level = 1
      ELSE IF ( status == - GALAHAD_error_cpu_limit ) THEN
        control%cpu_time_limit = 0.0
        p%X( 2 ) = 100000000.0_wp
 !      control%print_level = 1
-!      control%maxit = 1
+!      control%CQP_control%maxit = 1
      ELSE IF ( status == - GALAHAD_error_upper_entry ) THEN 
        p%H%col( 1 ) = 2
      ELSE
@@ -132,7 +132,7 @@
      CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &      F6.1, ' status = ', I6 )" ) status, info%iter,                     &
+     &      F6.1, ' status = ', I6 )" ) status, info%CQP_inform%iter,                     &
               info%obj, info%status
      ELSE
        WRITE( 6, "(I2, ': L1QP_solve exit status = ', I6 )") status, info%status
@@ -180,9 +180,9 @@
 !  control%print_level = 1
 !  control%print_level = 4
 !  control%stop_d = EPSILON( 1.0_wp ) 
-!  control%SBLS_control%print_level = 4
+!  control%CQP_control%SBLS_control%print_level = 4
 
-!   control%maxit = 3
+!  control%CQP_control%maxit = 3
 !  control%puiseux = .TRUE.
 !  control%puiseux = .FALSE.
 !  control%series_order = 2
@@ -192,7 +192,7 @@
    CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &          F6.1, ' status = ', I6 )" ) status, info%iter,                 &
+     &          F6.1, ' status = ', I6 )" ) status, info%CQP_inform%iter,                 &
                   info%obj, info%status
      ELSE
        WRITE( 6, "(I2, ': L1QP_solve exit status = ', I6 )") status, info%status
@@ -233,14 +233,14 @@
      control%infinity = infty
      control%restore_problem = 2
 !    control%out = 6 ; control%print_level = 1
-!    control%SBLS_control%print_level = 4
-!    control%SBLS_control%SLS_control%print_level = 3
-!    control%SBLS_control%SLS_control%print_level_solver = 2
-! control%SBLS_control%preconditioner = 3
-!  control%SBLS_control%factorization = 2
-! control%SBLS_control%itref_max = 2
-     control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-     control%SBLS_control%definite_linear_solver = definite_linear_solver
+!    control%CQP_control%SBLS_control%print_level = 4
+!    control%CQP_control%SBLS_control%SLS_control%print_level = 3
+!    control%CQP_control%SBLS_control%SLS_control%print_level_solver = 2
+! control%CQP_control%SBLS_control%preconditioner = 3
+!  control%CQP_control%SBLS_control%factorization = 2
+! control%CQP_control%SBLS_control%itref_max = 2
+     control%CQP_control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+     control%CQP_control%SBLS_control%definite_linear_solver = definite_linear_solver
      p%new_problem_structure = .TRUE.
      IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
        st = 'C'
@@ -364,10 +364,10 @@
 
        IF ( info%status == 0 ) THEN
          WRITE( 6, "( A1,I1,':', I6,' iterations. Optimal objective value = ', &
-     &            F6.1, ' status = ', I6 )" ) st, i, info%iter,                &
+     &            F6.1, ' status = ', I6 )" ) st, i, info%CQP_inform%iter,     &
                   info%obj, info%status
        ELSE
-         WRITE( 6, "( A1, I1,': L1QP_solve exit status = ', I6 ) " )            &
+         WRITE( 6, "( A1, I1,': L1QP_solve exit status = ', I6 ) " )           &
            st, i, info%status
        END IF
 !      STOP
@@ -420,9 +420,9 @@
    control%infinity = infty
    control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 1
-!  control%sbls_control%print_level = 1
-   control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-   control%SBLS_control%definite_linear_solver = definite_linear_solver
+!  control%CQP_control%SBLS_control%print_level = 1
+   control%CQP_control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+   control%CQP_control%SBLS_control%definite_linear_solver = definite_linear_solver
    
 !  test with new and existing data
 
@@ -439,13 +439,13 @@
      ELSE IF ( i == 4 ) THEN
 !      control%precon = 5
      ELSE IF ( i == 5 ) THEN     
-       control%SBLS_control%factorization = - 1
+       control%CQP_control%SBLS_control%factorization = - 1
      ELSE IF ( i == 6 ) THEN     
-       control%SBLS_control%factorization = 1
+       control%CQP_control%SBLS_control%factorization = 1
      ELSE IF ( i == 7 ) THEN     
-       control%SBLS_control%max_col = 0
+       control%CQP_control%SBLS_control%max_col = 0
      ELSE IF ( i == 8 ) THEN     
-       control%SBLS_control%factorization = 2
+       control%CQP_control%SBLS_control%factorization = 2
 !      control%precon = 0
      ELSE IF ( i == 9 ) THEN
 !      control%print_level = 2
@@ -459,7 +459,7 @@
      ELSE IF ( i == 13 ) THEN
      ELSE IF ( i == 14 ) THEN
      ELSE IF ( i == 15 ) THEN
-       control%feasol = .FALSE.
+       control%CQP_control%feasol = .FALSE.
      ELSE IF ( i == 16 ) THEN
        X_stat = 0 ; C_stat = 0 ; X_stat( 1 ) = - 1
      ELSE IF ( i == 17 ) THEN
@@ -474,7 +474,7 @@
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) i, info%iter,                &
+     &                F6.1, ' status = ', I6 )" ) i, info%CQP_inform%iter,     &
                       info%obj, info%status
      ELSE
        WRITE( 6, "( I2, ': L1QP_solve exit status = ', I6 ) " ) i, info%status
@@ -501,8 +501,8 @@
 !  control%out = 6 ; control%print_level = 11
 !  control%EQP_control%print_level = 21
 !  control%print_level = 4
-   control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-   control%SBLS_control%definite_linear_solver = definite_linear_solver
+   control%CQP_control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+   control%CQP_control%SBLS_control%definite_linear_solver = definite_linear_solver
    DO i = tests + 1, tests + 1
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%A%val = (/ 1.0_wp, 1.0_wp /)
@@ -511,7 +511,7 @@
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) i, info%iter,                &
+     &                F6.1, ' status = ', I6 )" ) i, info%CQP_inform%iter,     &
                       info%obj, info%status
      ELSE
        WRITE( 6, "( I2, ': L1QP_solve exit status = ', I6 ) " ) i, info%status
@@ -537,8 +537,8 @@
 !  control%print_level = 4
    control%infinity = infty
    control%restore_problem = 2
-   control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-   control%SBLS_control%definite_linear_solver = definite_linear_solver
+   control%CQP_control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+   control%CQP_control%SBLS_control%definite_linear_solver = definite_linear_solver
    DO i = tests + 2, tests + 2
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%A%val = (/ 1.0_wp, 1.0_wp /)
@@ -548,7 +548,7 @@
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) i, info%iter,                &
+     &                F6.1, ' status = ', I6 )" ) i, info%CQP_inform%iter,     &
                       info%obj, info%status
 !      write(6,*) info%obj
      ELSE
@@ -622,8 +622,8 @@
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
    CALL L1QP_initialize( data, control, info )
-   control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-   control%SBLS_control%definite_linear_solver = definite_linear_solver
+   control%CQP_control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+   control%CQP_control%SBLS_control%definite_linear_solver = definite_linear_solver
    control%infinity = infty
    control%restore_problem = 1
    control%print_level = 101
@@ -637,7 +637,7 @@
    CLOSE( UNIT = scratch_out )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) 1, info%iter,                &
+     &                F6.1, ' status = ', I6 )" ) 1, info%CQP_inform%iter,     &
                       info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': L1QP_solve exit status = ', I6 ) " ) 1, info%status
@@ -705,13 +705,13 @@
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
-   control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-   control%SBLS_control%definite_linear_solver = definite_linear_solver
+   control%CQP_control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+   control%CQP_control%SBLS_control%definite_linear_solver = definite_linear_solver
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
    CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) 2, info%iter,                &
+     &                F6.1, ' status = ', I6 )" ) 2, info%CQP_inform%iter,     &
                       info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': L1QP_solve exit status = ', I6 ) " ) 2, info%status
@@ -779,8 +779,8 @@
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
-   control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-   control%SBLS_control%definite_linear_solver = definite_linear_solver
+   control%CQP_control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+   control%CQP_control%SBLS_control%definite_linear_solver = definite_linear_solver
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
    X_stat = 0 ; C_stat = 0
    X_stat( 2 ) = - 1 ; X_stat( 9 ) = - 1
@@ -792,7 +792,7 @@
    CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) 3, info%iter,                &
+     &                F6.1, ' status = ', I6 )" ) 3, info%CQP_inform%iter,     &
                       info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': L1QP_solve exit status = ', I6 ) " ) 3, info%status
@@ -852,8 +852,8 @@
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
-   control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
-   control%SBLS_control%definite_linear_solver = definite_linear_solver
+   control%CQP_control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
+   control%CQP_control%SBLS_control%definite_linear_solver = definite_linear_solver
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
    X_stat = 0 ; C_stat = 0
    X_stat( 2 ) = - 1 ; X_stat( 9 ) = - 1
@@ -861,7 +861,7 @@
    CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) 4, info%iter,                &
+     &                F6.1, ' status = ', I6 )" ) 4, info%CQP_inform%iter,     &
                       info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': L1QP_solve exit status = ', I6 ) " ) 4, info%status
@@ -878,7 +878,7 @@
    CALL L1QP_solve( p, data, control, info, C_stat, X_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &                F6.1, ' status = ', I6 )" ) 5, info%iter,                &
+     &                F6.1, ' status = ', I6 )" ) 5, info%CQP_inform%iter,     &
                       info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': L1QP_solve exit status = ', I6 ) " ) 5, info%status

@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD RAND package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-25
+#  This version: 2021-05-29
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -14,19 +18,19 @@ PACKAGE = RAND
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES =
+DEPENDENCIES = make_dummy
 
 #  other packages that depend on package
 
-DEPENDS = barc bgo glrt gltr pqp qpd rqs sha trs
+DEPENDS = barc bgo glrt gltr pqp qpd rqs trs
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_cutest_functions
+TESTDEPS =
 
-#  CUTEst example for tests
+#  tests to be performed (preprend with test_)
 
-CUTEST_EXAMPLE =
+TESTS = test_full
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

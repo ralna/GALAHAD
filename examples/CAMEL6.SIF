@@ -1,0 +1,116 @@
+***************************
+* SET UP THE INITIAL DATA *
+***************************
+
+NAME          CAMEL6
+
+*   Problem :
+*   *********
+
+*   Source: Six hump camel in
+*   L. C. W. Dixon and G. P. Szego (Eds.)
+*   Towards Global Optimization
+*   North Holland, 1975.
+
+*   SIF input: A.R. Conn May 1995
+
+*   classification OBR2-AN-2-0
+
+VARIABLES
+
+    X1
+    X2
+
+GROUPS
+
+ N  OBJ
+
+
+CONSTANTS
+
+
+BOUNDS
+
+ UP CAMEL6    X1        3.0
+ LO CAMEL6    X1        -3.0
+ UP CAMEL6    X2        1.5
+ LO CAMEL6    X2        -1.5
+
+START POINT
+
+ XV CAMEL6    X1        1.1
+ XV CAMEL6    X2        1.1
+
+ELEMENT TYPE
+
+ EV SQ        V1
+ EV 2PROD     V1                       V2
+ EV SIXPW     V1
+ EV FORPW     V1
+
+ELEMENT USES
+
+ T  E1        SQ
+ V  E1        V1                       X1
+
+ T  E2        FORPW
+ V  E2        V1                       X1
+
+ T  E3        SIXPW
+ V  E3        V1                       X1
+
+ T  E4        2PROD
+ V  E4        V1                       X1
+ V  E4        V2                       X2
+
+ T  E5        SQ
+ V  E5        V1                       X2
+
+ T  E6        FORPW
+ V  E6        V1                       X2
+
+GROUP USES
+
+ E  OBJ       E1        4.0            E2        -2.1
+ E  OBJ       E3        0.333333333333 E4
+ E  OBJ       E5        -4.0           E6        4.0
+
+OBJECT BOUND
+
+*   Solution
+
+*LO SOLTN               -1.031628
+
+ENDATA
+
+***********************
+* SET UP THE FUNCTION *
+* AND RANGE ROUTINES  *
+***********************
+
+ELEMENTS      CAMEL6
+
+INDIVIDUALS
+
+ T  2PROD
+ F                      V1 * V2
+ G  V1                  V2
+ G  V2                  V1
+ H  V1        V2        1.0
+
+ T  SQ
+ F                      V1 * V1
+ G  V1                  2.0 * V1
+ H  V1        V1        2.0
+
+ T  FORPW
+ F                      V1 ** 4.0
+ G  V1                  4.0 * V1**3.0
+ H  V1        V1        12.0 * V1 * V1
+
+ T  SIXPW
+ F                      V1 ** 6.0
+ G  V1                  6.0 * V1**5.0
+ H  V1        V1        30.0 * V1**4.0
+
+ENDATA

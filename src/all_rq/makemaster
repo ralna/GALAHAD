@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for all the GALAHAD RQ packages
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-26
+#  This version: 2021-05-31
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -25,10 +25,22 @@ TESTDEPS = make_copyright make_scaling make_convert make_miqr make_mi35
 
 #  packages that are needed for CUTEst interfaces (prepend with make_)
 
-CUTESTDEPS = $(TESTDEPS) \
+CUTESTDEPS = $(CUTEST_TESTS) $(TESTDEPS) \
              make_trs_cutest make_rqs_cutest make_dps_cutest \
              make_gltr_cutest make_glrt_cutest make_lstr_cutest \
              make_lsrt_cutest make_l2rt_cutest
+
+#  comprehensive and CUTEst tests to be performed (prepend with make_)
+
+TESTS = make_trs_tests make_rqs_tests make_dps_tests \
+        make_gltr_tests make_glrt_tests make_lstr_tests \
+        make_lsrt_tests make_l2rt_tests
+
+#  comprehensive tests to be performed (prepend with make_)
+
+TEST_FULL = make_trs_test_full make_rqs_test_full make_dps_test_full \
+            make_gltr_test_full make_glrt_test_full make_lstr_test_full \
+            make_lsrt_test_full make_l2rt_test_full
 
 #  all packages in the RQ section
 
@@ -50,6 +62,8 @@ include $(GALAHAD)/src/makedefs/definitions
 
 all: $(package)
 all_cutest: $(package)_cutest
+tests: all $(TESTS)
+test_full: all $(TEST_FULL)
 
 #  silent packages
 
@@ -138,6 +152,90 @@ make_lsrt_cutest:
 make_l2rt_cutest:
 	( cd $(GALAHAD)/src/l2rt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l2rt_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
+
+#  comprehensive and CUTEst tests
+
+make_trs_tests:
+	( cd $(GALAHAD)/src/trs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trs )
+
+make_rqs_tests:
+	( cd $(GALAHAD)/src/rqs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rqs )
+
+make_dps_tests:
+	( cd $(GALAHAD)/src/dps ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dps )
+
+make_gltr_tests:
+	( cd $(GALAHAD)/src/gltr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/gltr )
+
+make_glrt_tests:
+	( cd $(GALAHAD)/src/glrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/glrt )
+
+make_lstr_tests:
+	( cd $(GALAHAD)/src/lstr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lstr )
+
+make_lsrt_tests:
+	( cd $(GALAHAD)/src/lsrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsrt )
+
+make_l2rt_tests:
+	( cd $(GALAHAD)/src/l2rt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
+
+#  comprehensive tests
+
+make_trs_test_full:
+	( cd $(GALAHAD)/src/trs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trs )
+
+make_rqs_test_full:
+	( cd $(GALAHAD)/src/rqs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rqs )
+
+make_dps_test_full:
+	( cd $(GALAHAD)/src/dps ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dps )
+
+make_gltr_test_full:
+	( cd $(GALAHAD)/src/gltr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/gltr )
+
+make_glrt_test_full:
+	( cd $(GALAHAD)/src/glrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/glrt )
+
+make_lstr_test_full:
+	( cd $(GALAHAD)/src/lstr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lstr )
+
+make_lsrt_test_full:
+	( cd $(GALAHAD)/src/lsrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsrt )
+
+make_l2rt_test_full:
+	( cd $(GALAHAD)/src/l2rt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
 
 

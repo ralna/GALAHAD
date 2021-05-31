@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD TRACE package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-24
+#  This version: 2021-05-29
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -18,8 +22,8 @@ DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
                make_lmt make_qpt make_lms make_rand \
                make_gltr make_tools make_scu make_mi28 \
                make_ir make_mop make_trs make_userdata \
-               make_nlpt make_lancelot_psls make_psls \
-               make_sha make_cauchy make_cg
+               make_nlpt make_icfs make_lancelot_psls \
+               make_psls make_sha make_cauchy make_cg
 
 #  other packages that depend on package
 
@@ -27,11 +31,16 @@ DEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_cutest_functions
+TESTDEPS =
+
+#  tests to be performed (preprend with test)
+
+TESTS = test_full test_cutest
 
 #  CUTEst example for tests
 
 CUTEST_EXAMPLE = ALLINITC.SIF
+#CUTEST_EXAMPLE = S2QPTOY.SIF
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

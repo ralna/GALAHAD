@@ -115,6 +115,7 @@
 !     USE GALAHAD_TRANSFER_MATLAB
       USE GALAHAD_TRU_MATLAB_TYPES
       USE GALAHAD_TRU_double
+      USE GALAHAD_USERDATA_double
       IMPLICIT NONE
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
@@ -167,7 +168,7 @@
 !  arguments for TRU
 
       TYPE ( NLPT_problem_type ) :: nlp
-      TYPE ( NLPT_userdata_type ) :: userdata
+      TYPE ( GALAHAD_userdata_type ) :: userdata
       TYPE ( TRU_data_type ), SAVE :: data
       TYPE ( TRU_control_type ), SAVE :: control
       TYPE ( TRU_inform_type ) :: inform

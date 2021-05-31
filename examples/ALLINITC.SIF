@@ -56,6 +56,13 @@ BOUNDS
  UP ALLINITC  X3        1.0
  FX ALLINITC  X4        2.0
 
+START POINT
+
+ V  ALLINITC  X1        1.0 
+ V  ALLINITC  X2        2.0 
+ V  ALLINITC  X3        3.0 
+ V  ALLINITC  X4        4.0 
+
 ELEMENT TYPE
 
  EV SQR       X

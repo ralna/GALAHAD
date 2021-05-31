@@ -310,6 +310,10 @@ MKL_PARDISO=""
 
 WSMP=""
 
+#  place-holder for future SuitSparse codes
+
+SUITESPARSE=""
+
 #  If the PLplot graphics library is available, some packages optionally
 #  produce grapical output for debugging purposes. The precise list of
 #  link options required may be obtained by executing the command
@@ -555,6 +559,14 @@ elif [[ $2 == 'cqp' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec cqp update
   [[ ! -e RUNCQP.SPC ]] && ln -s ~/.galahad/specs/RUNCQP.SPC RUNCQP.SPC
 
+# cqps
+
+elif [[ $2 == 'cqps' ]]; then
+  RUNMAIN=$GALOBJ/runcqps_sif.o
+  [[ ! -e ~/.galahad/specs/RUNCQPS.SPC ]] && $GALOBJ/buildspec cqps
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec cqps update
+  [[ ! -e RUNCQPS.SPC ]] && ln -s ~/.galahad/specs/RUNCQPS.SPC RUNCQPS.SPC
+
 # dqp
 
 elif [[ $2 == 'dqp' ]]; then
@@ -630,10 +642,34 @@ elif [[ $2 == 'dlp' ]]; then
 # lpqp
 
 elif [[ $2 == 'lpqp' ]]; then
-  RUNMAIN=$GALOBJ/runlpqp.o
+  RUNMAIN=$GALOBJ/runlpqp_sif.o
   [[ ! -e ~/.galahad/specs/RUNLPQP.SPC ]] && $GALOBJ/buildspec lpqp
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpqp update
   [[ ! -e RUNLPQP.SPC ]] && ln -s ~/.galahad/specs/RUNLPQP.SPC RUNLPQP.SPC
+
+# lpqpa
+
+elif [[ $2 == 'lpqpa' ]]; then
+  RUNMAIN=$GALOBJ/runlpqpa_sif.o
+  [[ ! -e ~/.galahad/specs/RUNLPQPA.SPC ]] && $GALOBJ/buildspec lpqpa
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpqpa update
+  [[ ! -e RUNLPQPA.SPC ]] && ln -s ~/.galahad/specs/RUNLPQPA.SPC RUNLPQPA.SPC
+
+# lpqpb
+
+elif [[ $2 == 'lpqpb' ]]; then
+  RUNMAIN=$GALOBJ/runlpqpb_sif.o
+  [[ ! -e ~/.galahad/specs/RUNLPQPB.SPC ]] && $GALOBJ/buildspec lpqpb
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpqpb update
+  [[ ! -e RUNLPQPB.SPC ]] && ln -s ~/.galahad/specs/RUNLPQPB.SPC RUNLPQPB.SPC
+
+# lpsqp
+
+elif [[ $2 == 'lpsqp' ]]; then
+  RUNMAIN=$GALOBJ/runlpsqp_sif.o
+  [[ ! -e ~/.galahad/specs/RUNLPSQP.SPC ]] && $GALOBJ/buildspec lpsqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpsqp update
+  [[ ! -e RUNLPSQP.SPC ]] && ln -s ~/.galahad/specs/RUNLPSQP.SPC RUNLPSQP.SPC
 
 # eqp
 
@@ -650,6 +686,14 @@ elif [[ $2 == 'lls' ]]; then
   [[ ! -e ~/.galahad/specs/RUNLLS.SPC ]] && $GALOBJ/buildspec lls
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lls update
   [[ ! -e RUNLLS.SPC ]] && ln -s ~/.galahad/specs/RUNLLS.SPC RUNLLS.SPC
+
+# pqp
+
+elif [[ $2 == 'pqp' ]]; then
+  RUNMAIN=$GALOBJ/runpqp_sif.o
+  [[ ! -e ~/.galahad/specs/RUNPQP.SPC ]] && $GALOBJ/buildspec pqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec pqp update
+  [[ ! -e RUNPQP.SPC ]] && ln -s ~/.galahad/specs/RUNPQP.SPC RUNPQP.SPC
 
 # warm
 
@@ -728,7 +772,7 @@ elif [[ $2 == 'nllstr_sparse_fix' ]]; then
 elif [[ $2 == 'nllsrt' ]]; then
   RUNMAIN=$GALOBJ/nllsrtma.o
 
-# filt
+# filtrane
 
 elif [[ $2 == 'filtrane' ]]; then
   RUNMAIN=$GALOBJ/runfiltrane_sif.o
@@ -736,6 +780,15 @@ elif [[ $2 == 'filtrane' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec filtrane update
   [[ ! -e RUNFILTRANE.SPC ]] && \
     ln -s ~/.galahad/specs/RUNFILTRANE.SPC RUNFILTRANE.SPC
+
+# presolve
+
+elif [[ $2 == 'presolve' ]]; then
+  RUNMAIN=$GALOBJ/runpresolve_sif.o
+  [[ ! -e ~/.galahad/specs/RUNPRESOLVE.SPC ]] && $GALOBJ/buildspec presolve
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec presolve update
+  [[ ! -e RUNPRESOLVE.SPC ]] && \
+    ln -s ~/.galahad/specs/RUNPRESOLVE.SPC RUNPRESOLVE.SPC
 
 # superb
 
@@ -780,6 +833,15 @@ elif [[ $2 == 'bgo' ]]; then
   [[ ! -e ~/.galahad/specs/RUNBGO.SPC ]] && $GALOBJ/buildspec bgo
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec bgo update
   [[ ! -e RUNBGO.SPC ]] && ln -s ~/.galahad/specs/RUNBGO.SPC RUNBGO.SPC
+
+# tral
+
+elif [[ $2 == 'tral' ]]; then
+  RUNMAIN=$GALOBJ/runtral_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNTRAL.SPC ]] && $GALOBJ/buildspec tral
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec tral update
+  [[ ! -e RUNTRAL.SPC ]] && ln -s ~/.galahad/specs/RUNTRAL.SPC RUNTRAL.SPC
 
 # trb
 
@@ -903,6 +965,17 @@ elif [[ $2 == 'funnel' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec funnel update
   [[ ! -e RUNFUNNEL.SPC ]] && ln -s ~/.galahad/specs/RUNFUNNEL.SPC RUNFUNNEL.SPC
 
+# funnel_equality
+
+elif [[ $2 == 'funnel_equality' ]]; then
+  RUNMAIN=$GALOBJ/runfunnel_equality_sif.o
+  PROBLIB="-lgalahad_problem"
+  [[ ! -e ~/.galahad/specs/RUNFUNNEL_EQUALITY.SPC ]] && \
+      $GALOBJ/buildspec funnel_equality
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec funnel_equality update
+  [[ ! -e RUNFUNNEL_EQUALITY.SPC ]] && \
+     ln -s ~/.galahad/specs/RUNFUNNEL_EQUALITY.SPC RUNFUNNEL_EQUALITY.SPC
+
 # sqp
 
 elif [[ $2 == 'sqp' ]]; then
@@ -1017,6 +1090,14 @@ elif [[ $2 == 'blls' ]]; then
   [[ ! -e ~/.galahad/specs/RUNBLLS.SPC ]] && $GALOBJ/buildspec blls
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec blls update
   [[ ! -e RUNBLLS.SPC ]] && ln -s ~/.galahad/specs/RUNBLLS.SPC RUNBLLS.SPC
+
+# demo
+
+elif [[ $2 == 'demo' ]]; then
+  RUNMAIN=$GALOBJ/rundemo_sif.o
+  [[ ! -e ~/.galahad/specs/RUNDEMO.SPC ]] && $GALOBJ/buildspec demo
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec demo update
+  [[ ! -e RUNDEMO.SPC ]] && ln -s ~/.galahad/specs/RUNDEMO.SPC RUNDEMO.SPC
 
 #  lancelot_steering
 

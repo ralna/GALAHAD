@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD LSTR package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-24
+#  This version: 2021-05-29
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -23,9 +27,12 @@ DEPENDS = lsrt
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_userdata make_tools make_nlpt \
-           make_cutest_functions make_convert make_miqr \
-           make_mc64 make_mc68 make_mi35 make_lmt make_qpt
+TESTDEPS = make_lmt make_qpt make_convert make_mc64 make_mc68 \
+           make_mi35 make_miqr
+
+#  tests to be performed (preprend with test)
+
+TESTS = test_cutest
 
 #  CUTEst example for tests
 

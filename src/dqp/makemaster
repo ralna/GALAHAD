@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD DQP package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-24
+#  This version: 2021-05-28
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================

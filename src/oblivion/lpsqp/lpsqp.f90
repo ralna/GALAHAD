@@ -13,7 +13,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
 !A MODULE GALAHAD_LPSQPA_double
-!B MODULE GALAHAD_LPSQP_double
+   MODULE GALAHAD_LPSQP_double
 
 !      --------------------------------------------------
 !     |                                                  |
@@ -27,7 +27,7 @@
 !NOT95USE GALAHAD_CPU_time
      USE GALAHAD_SPECFILE_double
 !A   USE GALAHAD_QPA_double
-!B   USE GALAHAD_LPQPB_double
+     USE GALAHAD_LPQPB_double
      USE GALAHAD_SMT_double, ONLY: SMT_put
 
      IMPLICIT NONE     
@@ -57,7 +57,7 @@
 
      TYPE, PUBLIC :: LPSQP_data_type
 !A     TYPE ( QPA_data_type ) :: QPA_data
-!B     TYPE ( LPQPB_data_type ) :: LPQPB_data
+       TYPE ( LPQPB_data_type ) :: LPQPB_data
        TYPE ( QPT_problem_type ) :: prob
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_stat, C_stat
     END TYPE LPSQP_data_type
@@ -81,7 +81,7 @@
        LOGICAL :: accurate_bqp, structured_tr, print_max
        CHARACTER ( LEN = 30 ) :: alive_file
 !A     TYPE ( QPA_control_type ) :: QPA_control
-!B     TYPE ( LPQPB_control_type ) :: LPQPB_control
+       TYPE ( LPQPB_control_type ) :: LPQPB_control
      END TYPE LPSQP_control_type
 
 !  =====================================
@@ -96,7 +96,7 @@
        LOGICAL :: newsol
        CHARACTER ( LEN = 24 ) :: bad_alloc
 !A     TYPE ( QPA_inform_type ) :: QPA_inform
-!B     TYPE ( LPQPB_inform_type ) :: LPQPB_inform
+       TYPE ( LPQPB_inform_type ) :: LPQPB_inform
      END TYPE LPSQP_inform_type
    CONTAINS
 
@@ -304,8 +304,8 @@
 
 !A   CALL QPA_initialize( data%QPA_data, control%QPA_control,                  &
 !A                        inform%QPA_inform )
-!B   CALL LPQPB_initialize( data%LPQPB_data, control%LPQPB_control,            &
-!B                          inform%LPQPB_inform )
+     CALL LPQPB_initialize( data%LPQPB_data, control%LPQPB_control,            &
+                            inform%LPQPB_inform )
 
      RETURN
 
@@ -552,11 +552,11 @@
      IF ( PRESENT( alt_specname ) ) THEN
 !A     CALL QPA_read_specfile( control%QPA_control, device,                    &
 !A                             alt_specname = TRIM( alt_specname ) // '-QPA' )
-!B     CALL LPQPB_read_specfile( control%LPQPB_control, device,                &
-!B                             alt_specname = TRIM( alt_specname ) // '-LPQPB')
+       CALL LPQPB_read_specfile( control%LPQPB_control, device,                &
+                               alt_specname = TRIM( alt_specname ) // '-LPQPB')
      ELSE
 !A     CALL QPA_read_specfile( control%QPA_control, device )
-!B     CALL LPQPB_read_specfile( control%LPQPB_control, device )
+       CALL LPQPB_read_specfile( control%LPQPB_control, device )
      END IF
 
      RETURN
@@ -638,7 +638,7 @@
      out = 6
 
 !A   print_level_lpqps = control%QPA_control%print_level
-!B   print_level_lpqps = control%LPQPB_control%print_level
+     print_level_lpqps = control%LPQPB_control%print_level
 
      IF ( control%start_print < 0 ) THEN
        start_print = 0
@@ -655,13 +655,13 @@
      IF ( inform%iter >= start_print .AND. inform%iter < stop_print ) THEN
        print_level = control%print_level
 !A     control%QPA_control%print_level = print_level_lpqps
-!B     control%LPQPB_control%print_level = print_level_lpqps
-!B     control%LPQPB_control%QPB_control%print_level = print_level_lpqps
+       control%LPQPB_control%print_level = print_level_lpqps
+       control%LPQPB_control%QPB_control%print_level = print_level_lpqps
      ELSE
        print_level = 0
 !A     control%QPA_control%print_level = 0
-!B     control%LPQPB_control%print_level = 0
-!B     control%LPQPB_control%QPB_control%print_level = 0
+       control%LPQPB_control%print_level = 0
+       control%LPQPB_control%QPB_control%print_level = 0
      END IF
 
 !  Discover how many variables and constraints are involved in the problem
@@ -890,7 +890,7 @@
      successful = .TRUE.
      new_inner = .TRUE.
 !A   maxit_qp = control%QPA_control%maxit
-!B   maxit_qp = control%LPQPB_control%QPB_control%maxit
+     maxit_qp = control%LPQPB_control%QPB_control%maxit
 
 !A   data%prob%rho_g = rho
 !A   data%prob%rho_b = ten ** 6
@@ -981,9 +981,9 @@
 !        WRITE(out,"( ' KKT violation ', ES12.4 )" ) inform%du_feas
 !        IF ( inform%du_feas < step_tiny ) GO TO 800
          
-!B       control%LPQPB_control%reformulate = .TRUE.
+         control%LPQPB_control%reformulate = .TRUE.
        ELSE
-!B       control%LPQPB_control%reformulate = .FALSE.
+         control%LPQPB_control%reformulate = .FALSE.
        END IF
 
 !  Print a summary of the last iteration
@@ -991,7 +991,7 @@
        IF ( control%out > 0 .AND. print_level > 0 ) THEN
          IF ( inform%iter > 0 ) THEN
 !A         IF ( control%QPA_control%print_level > 0 .OR.                       &
-!B         IF ( control%LPQPB_control%print_level > 0 .OR.                     &
+           IF ( control%LPQPB_control%print_level > 0 .OR.                     &
                 print_level > 1 ) WRITE( control%out, 2030 )
            IF ( new_inner ) THEN
              WRITE( control%out,                                               &
@@ -1024,13 +1024,13 @@
        IF ( inform%iter >= start_print .AND. inform%iter < stop_print ) THEN
          print_level = control%print_level
 !A       control%QPA_control%print_level = print_level_lpqps
-!B       control%LPQPB_control%print_level = print_level_lpqps
-!B       control%LPQPB_control%QPB_control%print_level = print_level_lpqps
+         control%LPQPB_control%print_level = print_level_lpqps
+         control%LPQPB_control%QPB_control%print_level = print_level_lpqps
        ELSE
          print_level = 0
 !A       control%QPA_control%print_level = 0
-!B       control%LPQPB_control%print_level = 0
-!B       control%LPQPB_control%QPB_control%print_level = 0
+         control%LPQPB_control%print_level = 0
+         control%LPQPB_control%QPB_control%print_level = 0
        END IF
 
        new_inner = .FALSE.
@@ -1093,11 +1093,11 @@
    110 CONTINUE
 !A     CALL QPA_solve( data%prob, data%C_stat, data%B_stat,                    &
 !A                     data%QPA_data, control%QPA_control, inform%QPA_inform )
-!B     CALL LPQPB_solve( data%prob, rho, one_norm, data%LPQPB_data,            &
-!B                       control%LPQPB_control, inform%LPQPB_inform )
+       CALL LPQPB_solve( data%prob, rho, one_norm, data%LPQPB_data,            &
+                         control%LPQPB_control, inform%LPQPB_inform )
 
 !A     nfacts = inform%QPA_inform%nfacts
-!B     nfacts = inform%LPQPB_inform%QPB_inform%nfacts
+       nfacts = inform%LPQPB_inform%QPB_inform%nfacts
 
 !A     IF ( inform%QPA_inform%status /= 0 .AND.                                &
 !A       inform%QPA_inform%status /= GALAHAD_error_max_iterations  .AND.       &
@@ -1105,12 +1105,12 @@
 !A       inform%status = inform%QPA_inform%status
 !A       WRITE( control%out, "( ' On exit from QPA_solve, status = ', I6 )" )  &
 !A         inform%QPA_inform%status
-!B     IF ( inform%LPQPB_inform%status /= 0 .AND.                              &
-!B       inform%LPQPB_inform%status /= GALAHAD_error_max_iterations  .AND.     &
-!B       inform%LPQPB_inform%status /= GALAHAD_error_tiny_step ) THEN
-!B       inform%status = inform%LPQPB_inform%status
-!B       WRITE( control%out, "( ' On exit from LPQPB_solve, status = ', I6 )" )&
-!B         inform%LPQPB_inform%status
+       IF ( inform%LPQPB_inform%status /= 0 .AND.                              &
+         inform%LPQPB_inform%status /= GALAHAD_error_max_iterations  .AND.     &
+         inform%LPQPB_inform%status /= GALAHAD_error_tiny_step ) THEN
+         inform%status = inform%LPQPB_inform%status
+         WRITE( control%out, "( ' On exit from LPQPB_solve, status = ', I6 )" )&
+           inform%LPQPB_inform%status
          RETURN
        END IF
 
@@ -1118,15 +1118,15 @@
 
 !A     IF ( step < step_tiny .AND.                                             &
 !A          inform%QPA_inform%status == GALAHAD_error_max_iterations  ) THEN
-!B     IF ( step < step_tiny .AND.                                             &
-!B          inform%LPQPB_inform%status == GALAHAD_error_max_iterations  ) THEN
+       IF ( step < step_tiny .AND.                                             &
+            inform%LPQPB_inform%status == GALAHAD_error_max_iterations  ) THEN
 !A       control%QPA_control%maxit = control%QPA_control%maxit                 &
-!B       control%LPQPB_control%QPB_control%maxit =                             &
-!B         control%LPQPB_control%QPB_control%maxit                             &
+         control%LPQPB_control%QPB_control%maxit =                             &
+           control%LPQPB_control%QPB_control%maxit                             &
            + maxit_qp
          WRITE( out, "( ' doubling maxit ' )" )
 !A       control%QPA_control%cold_start = 0
-!B       control%LPQPB_control%reformulate = .FALSE.
+         control%LPQPB_control%reformulate = .FALSE.
          GO TO 110
        END IF
 
@@ -1156,7 +1156,7 @@
                                   violation_trial )
 
 !A     model = inform%QPA_inform%merit
-!B     model = inform%LPQPB_inform%QPB_inform%obj
+       model = inform%LPQPB_inform%QPB_inform%obj
        ared = merit - merit_trial
        pred = merit - model
        IF ( ared == zero .AND. pred == zero ) GO TO 800
@@ -1171,8 +1171,8 @@
        END IF
 
 !!A    write(out,"(3ES12.4)") merit, inform%QPA_inform%merit, merit_trial
-!!B    write(out,"(3ES12.4)") merit, inform%LPQPB_inform%QPB_inform%obj,       &
-!!B       merit_trial
+!      write(out,"(3ES12.4)") merit, inform%LPQPB_inform%QPB_inform%obj,       &
+!         merit_trial
 !      write(out,"( ES16.8 )" ) ratio
 
 !  Adjust ratio in the non-monotone case
@@ -1203,7 +1203,7 @@
            Y = data%prob%Y( : data%prob%m )
            successful = .TRUE.
 !A         control%QPA_control%maxit = maxit_qp
-!B         control%LPQPB_control%QPB_control%maxit = maxit_qp
+           control%LPQPB_control%QPB_control%maxit = maxit_qp
 !A         control%QPA_control%cold_start = 0
          ELSE
 !A         control%QPA_control%cold_start = 1
@@ -1249,7 +1249,7 @@
 
          successful = .TRUE.
 !A       control%QPA_control%maxit = maxit_qp
-!B       control%LPQPB_control%QPB_control%maxit = maxit_qp
+         control%LPQPB_control%QPB_control%maxit = maxit_qp
 !A       control%QPA_control%cold_start = 0
 !        IF ( .NOT. set_first_radius ) THEN
 !          set_first_radius = .TRUE.
@@ -1287,7 +1287,7 @@
 
      IF ( control%out > 0 .AND. print_level > 0 ) THEN
 !A     IF ( control%QPA_control%print_level > 0 .OR.                           &
-!B     IF ( control%LPQPB_control%print_level > 0 .OR.                         &
+       IF ( control%LPQPB_control%print_level > 0 .OR.                         &
          print_level > 1 ) WRITE( control%out, 2030 )
        WRITE( control%out, "( I6, ES12.4, 4ES9.2, ES10.2, I8 )" )              &
          inform%iter, merit, inform%pr_feas, inform%du_feas,                   &
@@ -1361,7 +1361,7 @@
      CALL CPU_TIME( time_new ) ; time = time_new - time
 
 !A   WRITE( out, "( /, ' Solver:        LPSQPA', /, ' Problem: ', 6X, A10, /,  &
-!B   WRITE( out, "( /, ' Solver:        LPSQP',  /, ' Problem: ', 6X, A10, /,  &
+     WRITE( out, "( /, ' Solver:        LPSQP',  /, ' Problem: ', 6X, A10, /,  &
     &   ' Objective  = ', ES16.8, /, ' Violation  = ', ES12.4, /,              &
     &  ' Iterations = ', bn, I12, /, ' Time       = ', F12.2 )" )              &
       pname, data%prob%f, inform%pr_feas, inform%iter, time
@@ -1512,4 +1512,4 @@
 !  End of module LPSQP
 
 !A END MODULE GALAHAD_LPSQPA_double
-!B END MODULE GALAHAD_LPSQP_double
+   END MODULE GALAHAD_LPSQP_double

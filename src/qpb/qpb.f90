@@ -122,6 +122,47 @@
 
         INTEGER :: maxit = 1000
 
+!   the maximum number of iterative refinements allowed               (OBSOLETE)
+
+        INTEGER :: itref_max = 1
+
+!   the maximum number of CG iterations allowed. If cg_maxit < 0,
+!     this number will be reset to the dimension of the system + 1
+!
+        INTEGER :: cg_maxit = 200
+
+!   specifies the type of indicator function used. Pssible values are
+
+!     1 primal indicator: constraint active <=> distance to nearest bound
+!         <= %indicator_p_tol
+!     2 primal-dual indicator: constraint active <=> distance to nearest bound
+!        <= %indicator_tol_pd * size of corresponding multiplier
+!     3 primal-dual indicator: constraint active <=> distance to nearest bound
+!        <= %indicator_tol_tapia * distance to same bound at previous iteration
+
+        INTEGER :: indicator_type = 3
+
+!   indicate whether and how much of the input problem
+!    should be restored on output. Possible values are
+
+!      0 nothing restored
+!      1 scalar and vector parameters
+!      2 all parameters
+
+        INTEGER :: restore_problem = 2
+
+!   should extrapolation be used to track the central path? Possible values are
+
+!     0 never
+!     1 after the final major iteration
+!     2 at each major iteration
+
+        INTEGER :: extrapolate = 2
+
+!    the maximum number of previous path points to use when fitting the data
+
+        INTEGER :: path_history = 1
+
 !   the factorization to be used. Possible values are
 
 !      0  automatic
@@ -143,20 +184,11 @@
 
         INTEGER :: valmin = 1000
 
-!   the maximum number of iterative refinements allowed               (OBSOLETE)
-
-        INTEGER :: itref_max = 1
-
 !   the number of iterations for which the overall infeasibility
 !     of the problem is not reduced by at least a factor %reduce_infeas
 !     before the problem is flagged as infeasible (see reduce_infeas)
 
         INTEGER :: infeas_max = 200
-
-!   the maximum number of CG iterations allowed. If cg_maxit < 0,
-!     this number will be reset to the dimension of the system + 1
-!
-        INTEGER :: cg_maxit = 200
 
 !   the preconditioner to be used for the CG is defined by precon.
 !    Possible values are
@@ -172,38 +204,6 @@
 !   the semi-bandwidth of a band preconditioner, if appropriate       (OBSOLETE)
 
         INTEGER :: nsemib = 5
-
-!   indicate whether and how much of the input problem
-!    should be restored on output. Possible values are
-
-!      0 nothing restored
-!      1 scalar and vector parameters
-!      2 all parameters
-
-        INTEGER :: restore_problem = 2
-
-!   specifies the type of indicator function used. Pssible values are
-
-!     1 primal indicator: constraint active <=> distance to nearest bound
-!         <= %indicator_p_tol
-!     2 primal-dual indicator: constraint active <=> distance to nearest bound
-!        <= %indicator_tol_pd * size of corresponding multiplier
-!     3 primal-dual indicator: constraint active <=> distance to nearest bound
-!        <= %indicator_tol_tapia * distance to same bound at previous iteration
-
-        INTEGER :: indicator_type = 3
-
-!   should extrapolation be used to track the central path? Possible values are
-
-!     0 never
-!     1 after the final major iteration
-!     2 at each major iteration
-
-        INTEGER :: extrapolate = 2
-
-!    the maximum number of previous path points to use when fitting the data
-
-        INTEGER :: path_history = 1
 
 !    the maximum order of path derivative to use
 !

@@ -68,7 +68,7 @@
 
 !  Solve the problem
 
-     CALL DEMO_solve( n, control, inform, data )
+     CALL DEMO_main( n, control, inform, data )
 
 !  Remove temporary storage
 

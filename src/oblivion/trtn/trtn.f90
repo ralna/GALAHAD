@@ -22,7 +22,8 @@
 !  |                                                           |
 !   -----------------------------------------------------------
 
-     USE CUTEr_interface_double
+!    USE CUTEst_interface_double
+     USE GALAHAD_CUTEST_FUNCTIONS_double
      USE GALAHAD_NORMS_double
      USE GALAHAD_SYMBOLS
      USE GALAHAD_SMT_double
@@ -143,7 +144,7 @@
 
 !-*-*-*-*  G A L A H A D -  TRTN_initialize  S U B R O U T I N E -*-*-*-*
 
-     SUBROUTINE TRTN_initialize( data, control )
+     SUBROUTINE TRTN_initialize( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -156,6 +157,7 @@
 !-----------------------------------------------
 
      TYPE ( TRTN_data_type ), INTENT( OUT ) :: data
+     TYPE ( TRTN_inform_type ), INTENT( OUT ) :: inform
      TYPE ( TRTN_control_type ), INTENT( OUT ) :: control
 
 !  Initalize SILS components
@@ -165,7 +167,8 @@
 
 !  Intialize GLTR data
 
-     CALL GLTR_initialize( data%gltr_data, control%gltr_control )
+     CALL GLTR_initialize( data%gltr_data, control%gltr_control,               &
+                           inform%gltr_inform )
 
 !  Error and ordinary output unit numbers
 
@@ -300,9 +303,9 @@
 
 !  Ensure that the private data arrays have the correct initial status
 
-     NULLIFY( data%FREE, data%G, data%G_m, data%S, data%X_trial, data%VECTOR )
-     NULLIFY( data%SOL, data%RES, data%RHS, data%BEST, data%P_pert )
-     NULLIFY( data%Y, data%X_grad, data%X_hess, data%G_wrty, data%X_name )
+!     NULLIFY( data%FREE, data%G, data%G_m, data%S, data%X_trial, data%VECTOR )
+!     NULLIFY( data%SOL, data%RES, data%RHS, data%BEST, data%P_pert )
+!     NULLIFY( data%Y, data%X_grad, data%X_hess, data%G_wrty, data%X_name )
 
      RETURN
 
@@ -526,7 +529,7 @@
 
      INTEGER :: out, error, nnzh, nnzp, print_level, cg_iter, nsemib, itref_max 
      INTEGER :: start_print, stop_print, print_gap, precon
-     INTEGER :: i, ir, ic, j, l, n_free
+     INTEGER :: i, ir, ic, j, l, n_free, cutest_status
      REAL :: dum, time, time_new, time_total
      REAL ( KIND = wp ) :: ratio, old_radius, initial_radius, step, teneps
      REAL ( KIND = wp ) :: pred, ared, f_trial, res_norm, model
@@ -599,7 +602,7 @@
 !  Record the problem name
 
      ALLOCATE( data%X_name( n ) )
-     CALL UNAMES( n, inform%pname, data%X_name )
+     CALL CUTEST_unames( cutest_status, n, inform%pname, data%X_name )
 
 !  See if the problem is unconstrained or bound constrained
 
@@ -633,13 +636,13 @@
 
 !  Evaluate the objective function value
    
-     CALL UFN( n, X, inform%obj )
+     CALL CUTEST_ufn( cutest_status, n, X, inform%obj )
      inform%f_eval = inform%f_eval + 1
 
 !  Allocate space to store the gradient and Hessian
 
      ALLOCATE( data%G( n ) )
-     CALL UDIMSH( nnzh )
+     CALL CUTEST_udimsh( cutest_status, nnzh )
      ALLOCATE( data%H%row( nnzh ), data%H%col( nnzh ), data%H%val( nnzh ) )
 
 !  Allocate space to store workspace
@@ -697,7 +700,7 @@ main:DO
 
 !  Evaluate the gradient
 
-       CALL UGR( n, X, data%G )     
+       CALL CUTEST_ugr( cutest_status, n, X, data%G )     
        inform%g_eval = inform%g_eval + 1
 
 !  Compute the derivatives of the transformation wrt the transformed variables
@@ -745,7 +748,8 @@ main:DO
 !  Evaluate the Hessian
 
        IF ( precon > 1 ) THEN
-         CALL USH( n, X, data%H%ne, nnzh, data%H%val, data%H%row, data%H%col )
+         CALL CUTEST_ush( cutest_status, n, X, data%H%ne, nnzh,               &
+                          data%H%val, data%H%row, data%H%col )
          goth = .TRUE.         
 
 !  Analyse the preconditioner
@@ -1055,11 +1059,13 @@ main:DO
 
            IF ( xney ) THEN
              data%RES =  data%VECTOR * data%X_grad        
-             CALL UPROD( n, goth, X, data%RES, data%SOL )
+             CALL CUTEST_uhprod( cutest_status, n, goth, X, data%RES,         &
+                                 data%SOL )
              data%SOL                                                         &
                = data%SOL * data%X_grad + data%G * data%X_hess * data%VECTOR
            ELSE
-             CALL UPROD( n, goth, X, data%VECTOR, data%SOL )
+             CALL CUTEST_uhprod( cutest_status, n, goth, X, data%VECTOR,      &
+                                 data%SOL )
            END IF
            goth = .TRUE.         
 
@@ -1129,7 +1135,7 @@ main:DO
 !  Compute the trial step
 
        IF ( xney ) THEN
-         CALL TRTN_transform( n, data%Y + data%S, X_l, X_u, control%infinity,   &
+         CALL TRTN_transform( n, data%Y + data%S, X_l, X_u, control%infinity,  &
                               X_value = data%X_trial )
 
        ELSE
@@ -1138,7 +1144,7 @@ main:DO
 
 !  Evaluate the objective function value
    
-       CALL UFN( n, data%X_trial, f_trial )
+       CALL CUTEST_ufn( cutest_status, n, data%X_trial, f_trial )
        inform%f_eval = inform%f_eval + 1
 
 !  Compute the actual and predicted reduction
@@ -1170,7 +1176,7 @@ main:DO
 
          X = data%X_trial
          IF ( xney ) data%Y = data%Y + data%S
-         WRITE(6,"( 'Y', ( 4ES22.14 ) )" ) data%Y
+!        WRITE(6,"( 'Y', ( 4ES22.14 ) )" ) data%Y
          inform%obj = f_trial
 
 !  ----------------------------------------------------------------------------

@@ -1,0 +1,43 @@
+MAIN
+! write-problem-data                                no
+! problem-data-file-name                            FUNNEL.data
+! problem-data-file-device                          26
+! write-solution                                    no
+! solution-file-name                                FUNNELSOL.d
+! solution-file-device                              62
+! write-solution-vector                             NO
+! solution-vector-file-name                         FUNNELSOLVEC.d
+! solution-vector-file-device                       63
+! write-result-summary                              yes
+! result-summary-file-name                          FUNNELRES.d
+! result-summary-file-device                        47
+! check-all-derivatives                             no
+! check-derivatives                                 yes
+! check-element-derivatives                         yes
+! check-group-derivatives                           yes
+! ignore-derivative-bugs                            no
+! ignore-element-derivative-bugs                    no
+! ignore-group-derivative-bugs                      no
+! get-scaling-factors                               no
+! scaling-print-level                               1
+! use-scaling-factors                               no
+! use-constraint-scaling-factors                    no
+! use-variable-scaling-factors                      no
+! maximizer-sought                                  no
+! restart-from-previous-point                       no
+! restart-data-file-name                            FUNNELSAVE.d
+! restart-data-file-device                          59
+! save-data-for-restart-every                       0
+! use-equality-funnel                               no
+
+INCLUDE FUNNEL
+
+INCLUDE LLS
+
+INCLUDE LLST
+
+INCLUDE EQP
+
+INCLUDE SBLS
+
+INCLUDE GLTR

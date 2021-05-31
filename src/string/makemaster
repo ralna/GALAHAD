@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD STRING package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-25
+#  This version: 2021-05-29
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -22,11 +26,11 @@ DEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright
+TESTDEPS =
 
-#  CUTEst example for tests
+#  tests to be performed (preprend with test_)
 
-CUTEST_EXAMPLE =
+TESTS =
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

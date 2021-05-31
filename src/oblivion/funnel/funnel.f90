@@ -5516,7 +5516,7 @@
          SELECT CASE ( C_bound_type( i ) )
          CASE ( lower )
 !write(6,*) ' lower ', i, C( i ),  V( j )
-           IF ( C( i ) > V( j ) ) write(6,*) ' slack reset'
+!          IF ( C( i ) > V( j ) ) write(6,*) ' slack reset'
            IF ( C( i ) > V( j ) ) V( j ) = C( i )
          CASE ( upper )
            IF ( C( i ) < V( j ) ) V( j ) = C( i )

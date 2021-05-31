@@ -1,7 +1,8 @@
-! THIS VERSION: GALAHAD 2.4 - 08/04/2010 AT 08:15 GMT.
+! THIS VERSION: GALAHAD 3.3 - 28/05/2021 AT 11:45 GMT.
    PROGRAM GALAHAD_BQP_EXAMPLE
    USE GALAHAD_BQP_double                            ! double precision version
    USE GALAHAD_SYMBOLS
+   USE GALAHAD_USERDATA_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    REAL ( KIND = wp ), PARAMETER :: infty = 10.0_wp ** 20
@@ -9,6 +10,7 @@
    TYPE ( BQP_data_type ) :: data
    TYPE ( BQP_control_type ) :: control        
    TYPE ( BQP_inform_type ) :: info
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: n, m, h_ne, a_ne, tests, smt_stat
    INTEGER :: data_storage_type, i, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
@@ -55,9 +57,8 @@
 !    IF ( status == - GALAHAD_error_upper_entry ) CYCLE
      IF ( status == - GALAHAD_error_sort ) CYCLE
 
-     CALL BQP_initialize( data, control, inform )
+     CALL BQP_initialize( data, control, info )
      control%infinity = infty
-     control%restore_problem = 1
 
      p%new_problem_structure = .TRUE.
      p%n = n ; p%m = m ; p%f = 1.0_wp
@@ -83,10 +84,7 @@
        p%X_u = (/ 1.0_wp, infty, 2.0_wp /)
      ELSE IF ( status == - GALAHAD_error_tiny_step ) THEN
 !      control%print_level = 1
-       control%QPB_control%initial_radius = EPSILON( 1.0_wp ) ** 2
-       control%no_qpa = .TRUE.
      ELSE IF ( status == - GALAHAD_error_max_iterations ) THEN
-       control%QPA_control%maxit = 1 ; control%QPB_control%maxit = 1
 !      control%print_level = 1
      ELSE IF ( status == - GALAHAD_error_cpu_limit ) THEN
        control%cpu_time_limit = 0.0
@@ -97,11 +95,11 @@
      END IF
 
 !    control%out = 6 ; control%print_level = 1
-     CALL BQP_solve( p, B_stat, data, control, info )
+     CALL BQP_solve( p, B_stat, data, control, info, userdata )
      IF ( info%status == 0 ) THEN
-       WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &      F6.1, ' status = ', I6 )" ) status, info%QPA_inform%iter,          &
-              info%QPB_inform%iter, info%obj, info%status
+       WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',   &
+     &      F6.1, ' status = ', I6 )" ) status, info%iter,                    &
+              info%obj, info%status
      ELSE
        WRITE( 6, "(I2, ': BQP_solve exit status = ', I6 )") status, info%status
      END IF
@@ -136,16 +134,15 @@
    p%H%val = (/ - 1.0_wp /)
    p%H%row = (/ 1 /)
    p%H%col = (/ 1 /)
-   CALL BQP_initialize( data, control, inform )
+   CALL BQP_initialize( data, control, info )
    control%infinity = infty
-   control%restore_problem = 1
 !  control%print_level = 1
    p%X = 0.0_wp ; p%Z = 0.0_wp
-   CALL BQP_solve( p, B_stat, data, control, info )
+   CALL BQP_solve( p, B_stat, data, control, info, userdata )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
-     &          F6.1, ' status = ', I6 )" ) status, info%QPA_inform%iter,      &
-                  info%QPB_inform%iter, info%obj, info%status
+     &          F6.1, ' status = ', I6 )" ) status, info%iter,                 &
+                  info%obj, info%status
      ELSE
        WRITE( 6, "(I2, ': BQP_solve exit status = ', I6 )") status, info%status
    END IF
@@ -173,9 +170,8 @@
    p%X_u = (/ 1.0_wp, infty, 2.0_wp /)
 
    DO data_storage_type = -3, 0
-     CALL BQP_initialize( data, control, inform )
+     CALL BQP_initialize( data, control, info )
      control%infinity = infty
-     control%restore_problem = 2
 !    control%out = 6 ; control%print_level = 11
      p%new_problem_structure = .TRUE.
      IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
@@ -217,12 +213,12 @@
          p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp /)
        END IF
        p%X = 0.0_wp ; p%Z = 0.0_wp
-       CALL BQP_solve( p, B_stat, data, control, info )
+       CALL BQP_solve( p, B_stat, data, control, info, userdata )
 
       IF ( info%status == 0 ) THEN
-         WRITE( 6, "( A1,I1,':', 2I6,' iterations. Optimal objective value = ',&
-     &            F6.1, ' status = ', I6 )" ) st, i, info%QPA_inform%iter,     &
-                  info%QPB_inform%iter, info%obj, info%status
+         WRITE( 6, "( A1,I1,':', I6,' iterations. Optimal objective value = ',&
+     &            F6.1, ' status = ', I6 )" ) st, i, info%iter,               &
+                  info%obj, info%status
        ELSE
          WRITE( 6, "( A1, I1,': BQP_solve exit status = ', I6 ) " )           &
            st, i, info%status
@@ -259,9 +255,8 @@
    CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
    p%H%col = (/ 1, 2 /)
    p%H%ptr = (/ 1, 2, 3 /)
-   CALL BQP_initialize( data, control, inform )
+   CALL BQP_initialize( data, control, info )
    control%infinity = infty
-   control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 1
    
 !  test with new and existing data
@@ -269,50 +264,68 @@
    tests = 25
    DO i = 0, tests
      IF ( i == 0 ) THEN
-       control%QPB_control%precon = 0
+       CYCLE
      ELSE IF ( i == 1 ) THEN
-       control%QPB_control%precon = 1
+       CYCLE
      ELSE IF ( i == 2 ) THEN
-       control%QPB_control%precon = 2
+       CYCLE
      ELSE IF ( i == 3 ) THEN
-       control%QPB_control%precon = 3
+       CYCLE
      ELSE IF ( i == 4 ) THEN
-       control%QPB_control%precon = 5
+       CYCLE
      ELSE IF ( i == 5 ) THEN     
-       control%QPB_control%factor = - 1
+       CYCLE
      ELSE IF ( i == 6 ) THEN     
-       control%QPB_control%factor = 1
+       CYCLE
      ELSE IF ( i == 7 ) THEN     
-       control%QPB_control%max_col = 0
+       CYCLE
      ELSE IF ( i == 8 ) THEN     
-       control%QPB_control%factor = 2
-       control%QPB_control%precon = 0
+       CYCLE
      ELSE IF ( i == 9 ) THEN
 !      control%print_level = 2
-       control%QPB_control%precon = 1
      ELSE IF ( i == 10 ) THEN
-       control%QPB_control%precon = 2
+       CYCLE
      ELSE IF ( i == 11 ) THEN
-       control%QPB_control%precon = 3
+       CYCLE
      ELSE IF ( i == 12 ) THEN
-       control%QPB_control%precon = 5
+       CYCLE
      ELSE IF ( i == 13 ) THEN
-       control%QPB_control%center = .FALSE.
+       CYCLE
      ELSE IF ( i == 14 ) THEN
-       control%QPB_control%primal = .TRUE.       
+       CYCLE
      ELSE IF ( i == 15 ) THEN
-       control%QPB_control%feasol = .FALSE.
+       CYCLE
+     ELSE IF ( i == 16 ) THEN
+       B_stat = 0 ; B_stat( 1 ) = - 1
+     ELSE IF ( i == 17 ) THEN
+       B_stat = 0
+     ELSE IF ( i == 18 ) THEN
+       CYCLE
+     ELSE IF ( i == 19 ) THEN
+       CYCLE
+     ELSE IF ( i == 20 ) THEN
+       CYCLE
+     ELSE IF ( i == 21 ) THEN
+       CYCLE
+     ELSE IF ( i == 22 ) THEN
+       CYCLE
+     ELSE IF ( i == 23 ) THEN
+!      control%feasol = .FALSE.
+     ELSE IF ( i == 24 ) THEN
+       CYCLE
+     ELSE IF ( i == 25 ) THEN
+       CYCLE
      END IF
 
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 4
-     CALL BQP_solve( p, B_stat, data, control, info )
+     CALL BQP_solve( p, B_stat, data, control, info, userdata )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
-       WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) i, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+       WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
+     &                F6.1, ' status = ', I6 )" ) i, info%iter,                &
+                      info%obj, info%status
      ELSE
        WRITE( 6, "( I2, ': BQP_solve exit status = ', I6 ) " ) i, info%status
      END IF
@@ -328,21 +341,20 @@
    CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
    p%H%col = (/ 1, 2 /)
    p%H%ptr = (/ 1, 2, 3 /)
-   CALL BQP_initialize( data, control, inform )
+   CALL BQP_initialize( data, control, info )
    control%infinity = infty
-   control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 1
 !  control%EQP_control%print_level = 21
 !  control%print_level = 4
    DO i = tests + 1, tests + 1
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Z = 0.0_wp
-     CALL BQP_solve( p, B_stat, data, control, info )
+     CALL BQP_solve( p, B_stat, data, control, info, userdata )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
-       WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) i, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+       WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
+     &                F6.1, ' status = ', I6 )" ) i, info%iter,                &
+                      info%obj, info%status
      ELSE
        WRITE( 6, "( I2, ': BQP_solve exit status = ', I6 ) " ) i, info%status
      END IF
@@ -358,20 +370,19 @@
    CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
    p%H%col = (/ 1, 2 /)
    p%H%ptr = (/ 1, 2, 3 /)
-   CALL BQP_initialize( data, control, inform )
+   CALL BQP_initialize( data, control, info )
 !  control%print_level = 1
    control%infinity = infty
-   control%restore_problem = 2
    DO i = tests + 2, tests + 2
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 1
-     CALL BQP_solve( p, B_stat, data, control, info )
+     CALL BQP_solve( p, B_stat, data, control, info, userdata )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
-       WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) i, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+       WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
+     &                F6.1, ' status = ', I6 )" ) i, info%iter,                &
+                      info%obj, info%status
 !      write(6,*) info%obj
      ELSE
        WRITE( 6, "( I2, ': BQP_solve exit status = ', I6 ) " ) i, info%status
@@ -412,23 +423,21 @@
    p%H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    p%H%col = (/ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7 /)
 
-   CALL BQP_initialize( data, control, inform )
+   CALL BQP_initialize( data, control, info )
    control%infinity = infty
-   control%restore_problem = 1
    control%print_level = 101
-   control%QPA_control%itref_max = 3 ; control%QPB_control%itref_max = 3
    control%out = scratch_out
    control%error = scratch_out
 !  control%out = 6
 !  control%error = 6
    p%X = 0.0_wp ; p%Z = 0.0_wp
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-   CALL BQP_solve( p, B_stat, data, control, info )
+   CALL BQP_solve( p, B_stat, data, control, info, userdata )
    CLOSE( UNIT = scratch_out )
    IF ( info%status == 0 ) THEN
-       WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) 1, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+       WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
+     &                F6.1, ' status = ', I6 )" ) 1, info%iter,                &
+                      info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': BQP_solve exit status = ', I6 ) " ) 1, info%status
    END IF
@@ -463,16 +472,14 @@
    p%H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    p%H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
-   CALL BQP_initialize( data, control, inform )
+   CALL BQP_initialize( data, control, info )
    control%infinity = infty
-   control%restore_problem = 0
-   control%treat_zero_bounds_as_general = .TRUE.
    p%X = 0.0_wp ; p%Z = 0.0_wp
-   CALL BQP_solve( p, B_stat, data, control, info )
+   CALL BQP_solve( p, B_stat, data, control, info, userdata )
    IF ( info%status == 0 ) THEN
-       WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) 2, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+       WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
+     &                F6.1, ' status = ', I6 )" ) 2, info%iter,                &
+                      info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': BQP_solve exit status = ', I6 ) " ) 2, info%status
    END IF
@@ -507,19 +514,16 @@
    p%H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    p%H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
-   CALL BQP_initialize( data, control, inform )
+   CALL BQP_initialize( data, control, info )
    control%infinity = infty
-   control%restore_problem = 0
-   control%treat_zero_bounds_as_general = .TRUE.
-   control%QPA_control%cold_start = 0
    p%X = 0.0_wp ; p%Z = 0.0_wp
    B_stat = 0
    B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
-   CALL BQP_solve( p, B_stat, data, control, info )
+   CALL BQP_solve( p, B_stat, data, control, info, userdata )
    IF ( info%status == 0 ) THEN
-       WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) 3, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+       WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
+     &                F6.1, ' status = ', I6 )" ) 3, info%iter,                &
+                      info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': BQP_solve exit status = ', I6 ) " ) 2, info%status
    END IF
@@ -554,19 +558,16 @@
    p%H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    p%H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
-   CALL BQP_initialize( data, control, inform )
+   CALL BQP_initialize( data, control, info )
    control%infinity = infty
-   control%restore_problem = 0
-   control%treat_zero_bounds_as_general = .TRUE.
-   control%QPA_control%cold_start = 0
    p%X = 0.0_wp ; p%Z = 0.0_wp
    B_stat = 0
    B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
-   CALL BQP_solve( p, B_stat, data, control, info )
+   CALL BQP_solve( p, B_stat, data, control, info, userdata )
    IF ( info%status == 0 ) THEN
-       WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) 4, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+       WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
+     &                F6.1, ' status = ', I6 )" ) 4, info%iter,                &
+                      info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': BQP_solve exit status = ', I6 ) " ) 2, info%status
    END IF
@@ -578,11 +579,11 @@
    p%X = 0.0_wp ; p%Z = 0.0_wp
    B_stat = 0
    B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
-   CALL BQP_solve( p, B_stat, data, control, info )
+   CALL BQP_solve( p, B_stat, data, control, info, userdata )
    IF ( info%status == 0 ) THEN
-       WRITE( 6, "( I2, ':', 2I6, ' iterations. Optimal objective value = ',   &
-     &                F6.1, ' status = ', I6 )" ) 5, info%QPA_inform%iter,     &
-                      info%QPB_inform%iter, info%obj, info%status
+       WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
+     &                F6.1, ' status = ', I6 )" ) 5, info%iter,                &
+                      info%obj, info%status
    ELSE
      WRITE( 6, "( I2, ': BQP_solve exit status = ', I6 ) " ) 2, info%status
    END IF

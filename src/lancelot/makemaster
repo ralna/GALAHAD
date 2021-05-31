@@ -1,7 +1,7 @@
 #  Main body of the LANCELOT B installation makefile under GALAHAD
 
 #  N. Gould and Ph. L. Toint.
-#  This version: 12 III 2014
+#  This version: 2021-05-31
 
 SHELL = /bin/$(BINSHELL)
 
@@ -186,7 +186,9 @@ lancelotb_filtrane_single: $(OBJECTSFILTRANES)
 lancelotb_filtrane_double: $(OBJECTSFILTRANED)
 	$(RANLIB) $(LGD)
 
-tests: lancelotss lancelotst lancelotds lancelotdt
+tests: test_full test_cutest
+
+tests_all: lancelotss lancelotst lancelotds lancelotdt
 tests_steering: lancelot_steeringss lancelot_steeringst \
                 lancelot_steeringds lancelot_steeringdt
 tests_simple: lancelot_simpless lancelot_simplest \
@@ -208,13 +210,25 @@ test_double: lancelotdt $(USEOBJECTSD) $(OBJD)/runlancelot_sif.o
 	echo ""
 	echo " Tests for LANCELOT B complete"
 
-test_comprehensive: test_comprehensive_$(PRECIS)
-
-test_comprehensive_single: lancelotst
+test_cutest: test_cutest_$(PRECIS)
+test_cutest_single: $(USEOBJECTSS) $(OBJS)/runlancelot_sif.o
+	echo ""
+	echo " Testing SIF interface to LANCELOT B"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) lancelot -s ALLINITC
+	echo ""
+	echo " Tests for LANCELOT B complete"
+test_cutest_double: $(USEOBJECTSD) $(OBJD)/runlancelot_sif.o
+	echo ""
+	echo " Testing SIF interface to LANCELOT B"
+	cd $(GALAHAD)/examples ; sdgal $(VERSION) lancelot ALLINITC
 	echo ""
 	echo " Tests for LANCELOT B complete"
 
-test_comprehensive_double: lancelotdt
+test_full: test_full_$(PRECIS)
+test_full_single: lancelotst
+	echo ""
+	echo " Tests for LANCELOT B complete"
+test_full_double: lancelotdt
 	echo ""
 	echo " Tests for LANCELOT B complete"
 

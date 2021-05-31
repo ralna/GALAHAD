@@ -50,6 +50,13 @@ BOUNDS
 
  FR ALLINITU  'DEFAULT'
 
+START POINT
+
+ V  ALLINITU  X1        1.0 
+ V  ALLINITU  X2        2.0 
+ V  ALLINITU  X3        3.0 
+ V  ALLINITU  X4        4.0 
+
 ELEMENT TYPE
 
  EV SQR       X

@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD QPP package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2021-05-24
+#  This version: 2021-05-29
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -15,7 +19,7 @@ PACKAGE = QPP
 #  auxiliary packages that current package depends on (prepend with make_)
 
 DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 \
-               make_smt make_space make_lmt make_qpt make_lms
+               make_smt make_space make_lmt make_qpt make_lms \
 
 #  other packages that depend on package
 
@@ -24,11 +28,11 @@ DEPENDS = blls bqp bqpb ccqp cqp dlp dqp l1qp lpb lsqp pqp lcf \
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_cutest_functions
+TESTDEPS =
 
-#  CUTEst example for tests
+#  tests to be performed (preprend with test_)
 
-CUTEST_EXAMPLE = QPBAND.SIF
+TESTS = test_full
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

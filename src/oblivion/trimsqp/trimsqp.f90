@@ -147,7 +147,8 @@ MODULE GALAHAD_TRIMSQP_double
      LOGICAL :: space_critical, deallocate_error_fatal
      LOGICAL :: use_steering, use_seqp, use_siqp
      CHARACTER ( LEN = 30 ) :: alive_file
-     TYPE ( QPC_control_type ) :: QPpred_control, QPsiqp_control, QPsteer_control
+     TYPE ( QPC_control_type ) :: QPpred_control, QPsiqp_control
+     TYPE ( QPC_control_type ) :: QPsteer_control
      TYPE ( EQP_control_type ) :: QPseqp_control
      TYPE ( LSQP_control_type ) :: QPfeas_control!, QPsteer_control
   END TYPE TRIMSQP_control_type
@@ -177,7 +178,7 @@ MODULE GALAHAD_TRIMSQP_double
      TYPE ( TRIMSQP_time_type ) :: time
      TYPE ( QPC_inform_type )   :: QPpred_inform, QPsiqp_inform, QPsteer_inform
      TYPE ( EQP_inform_type )   :: QPseqp_inform
-     TYPE ( LSQP_inform_type )  :: QPfeas_inform !, QPsteer_inform
+     TYPE ( LSQP_inform_type )  :: QPfeas_inform
   END TYPE TRIMSQP_inform_type
 
 !  =====================================
@@ -218,11 +219,11 @@ MODULE GALAHAD_TRIMSQP_double
   TYPE, PUBLIC :: TRIMSQP_data_type
      REAL ( KIND = wp ) :: penalty, penalty_new, merit, merit_new, ratio
      REAL ( KIND = wp ) :: penalty_pre_steer, merit_pre_steer
-     REAL ( KIND = wp ) :: TRpred, TRsqp, alpha, alpha_c, alpha_feas, F_new, f_cauchy
-     REAL ( KIND = wp ) :: TRpred_expand, TRpred_contract
-     REAL ( KIND = wp ) :: inf_norm_Y_p, inf_norm_Y_c, inf_norm_Y_s, inf_norm_Y_steer
+     REAL ( KIND = wp ) :: TRpred, TRsqp, alpha, alpha_c, alpha_feas, F_new
+     REAL ( KIND = wp ) :: TRpred_expand, TRpred_contract, f_cauchy
+     REAL ( KIND = wp ) :: inf_norm_Y_p, inf_norm_Y_c, inf_norm_Y_s
      REAL ( KIND = wp ) :: min_TRpred, min_TRsqp, TR_reset_value
-     REAL ( KIND = wp ) :: primal_vl, dual_vl, comp_vl
+     REAL ( KIND = wp ) :: primal_vl, dual_vl, comp_vl, inf_norm_Y_steer
      REAL ( KIND = wp ) :: primal_vl2, dual_vl2, comp_vl2
      REAL ( KIND = wp ) :: primal_vl3, dual_vl3, comp_vl3
      REAL ( KIND = wp ) :: sub_primal_vl, sub_dual_vl, eta, eta_contract
@@ -323,7 +324,7 @@ CONTAINS
 
 !-*-*-*-*  G A L A H A D -  TRIMSQP_initialize  S U B R O U T I N E -*-*-*-*
 
-  SUBROUTINE TRIMSQP_initialize( data, control )
+  SUBROUTINE TRIMSQP_initialize( data, control, inform )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -337,36 +338,42 @@ CONTAINS
 
     TYPE ( TRIMSQP_data_type ), INTENT( OUT ) :: data
     TYPE ( TRIMSQP_control_type ), INTENT( OUT ) :: control
+    TYPE ( TRIMSQP_inform_type ), INTENT( INOUT ) :: inform
 
 !  Intialize LSQP data for feasible point subproblem.
 
-    CALL LSQP_initialize( data%QPfeas_data, control%QPfeas_control )
+    CALL LSQP_initialize( data%QPfeas_data, control%QPfeas_control,            &
+                          inform%QPfeas_inform )
     !CALL LSQP_initialize( data%QPsteer_data, control%QPsteer_control )
 
 !  Initialize QPC data for steering LP subproblem.
 
-    CALL QPC_initialize( data%QPsteer_data, control%QPsteer_control )
+    CALL QPC_initialize( data%QPsteer_data, control%QPsteer_control,           &
+                         inform%QPsteer_inform )
     control%QPsteer_control%prefix = '" - QPC-(steering):"         '
     control%QPsteer_control%QPA_control%prefix = '" -- QPA-(steering):"        '
     control%QPsteer_control%QPB_control%prefix = '" -- QPB-(steering):"        '
 
 !  Intialize QPC data for predictor QP subproblem.
 
-    CALL QPC_initialize( data%QPpred_data, control%QPpred_control )
+    CALL QPC_initialize( data%QPpred_data, control%QPpred_control,             &
+                         inform%QPpred_inform )
     control%QPpred_control%prefix = '" - QPC-(predictor):"         '
     control%QPpred_control%QPA_control%prefix = '" -- QPA-(predictor):"        '
     control%QPpred_control%QPB_control%prefix = '" -- QPB-(predictor):"        '
 
 !  Intialize QPC data for SIQP correction QP subproblem.
 
-    CALL QPC_initialize( data%QPsiqp_data, control%QPsiqp_control )
+    CALL QPC_initialize( data%QPsiqp_data, control%QPsiqp_control,             &
+                         inform%QPsiqp_inform )
     control%QPsiqp_control%prefix = '" - QPC-(siqp-corrector):"     '
-    control%QPsiqp_control%QPA_control%prefix = '" -- QPA-(sqp-corrector):"     '
-    control%QPsiqp_control%QPB_control%prefix = '" -- QPB-(sqp-corrector):"     '
+    control%QPsiqp_control%QPA_control%prefix ='" -- QPA-(sqp-corrector):"     '
+    control%QPsiqp_control%QPB_control%prefix ='" -- QPB-(sqp-corrector):"     '
 
 !  Intialize EQP data for SEQP correction QP subproblem.
 
-    CALL EQP_initialize( data%QPseqp_data, control%QPseqp_control )
+    CALL EQP_initialize( data%QPseqp_data, control%QPseqp_control,             &
+                         inform% QPseqp_inform )
     control%QPsiqp_control%prefix = '" - QPC-(seqp-corrector):"     '
 
 !  Error and ordinary output unit numbers
@@ -805,7 +812,7 @@ CONTAINS
 !-*-*-*  G A L A H A D -  T R I M S Q P _ s o l v e  S U B R O U T I N E  -*-*-*
 
   SUBROUTINE TRIMSQP_solve( nlp, control, inform, data, eval_FC, eval_G,       &
-                            eval_J, eval_GJ, eval_H, eval_Jv, eval_Hv, userdata)
+                            eval_J, eval_HL, userdata )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -830,21 +837,21 @@ CONTAINS
     TYPE ( TRIMSQP_control_type ), INTENT( INOUT ) :: control
     TYPE ( TRIMSQP_inform_type ), INTENT( INOUT ) :: inform
     TYPE ( TRIMSQP_data_type ), INTENT( INOUT ) :: data
-    OPTIONAL eval_FC, eval_G, eval_J, eval_GJ, eval_H, eval_Jv, eval_Hv
+    OPTIONAL eval_FC, eval_G, eval_J, eval_HL
 
     INTERFACE
 
-       SUBROUTINE eval_FC(status, F, C, X, userdata)
+       SUBROUTINE eval_FC( status, X, userdata, F, C )
          USE GALAHAD_NLPT_double
          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
          INTEGER, INTENT( OUT ) :: status
          REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: X
-         REAL ( kind = wp ), INTENT( OUT ) :: F
-         REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) :: C
+         REAL ( kind = wp ), OPTIONAL, INTENT( OUT ) :: F
+         REAL ( kind = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
          TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FC
 
-       SUBROUTINE eval_G(status, G, X, userdata)
+       SUBROUTINE eval_G( status, X, userdata, G )
          USE GALAHAD_NLPT_double
          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
          INTEGER, INTENT( OUT ) :: status
@@ -853,7 +860,7 @@ CONTAINS
          TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_G
 
-       SUBROUTINE eval_J(status, J_val, X, userdata)
+       SUBROUTINE eval_J( status, X, userdata, J_val )
          USE GALAHAD_NLPT_double
          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
          INTEGER, INTENT( OUT ) :: status
@@ -862,43 +869,15 @@ CONTAINS
          TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_J
 
-       SUBROUTINE eval_GJ(status, G, J_val, X, userdata)
-         USE GALAHAD_NLPT_double
-         INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-         INTEGER, INTENT( OUT ) :: status
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: J_val
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-         TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_GJ
-
-       SUBROUTINE eval_H(status, Hval, X, Y, userdata)
+       SUBROUTINE eval_HL(status, X, Y, userdata, Hval, no_f )
          USE GALAHAD_NLPT_double
          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
          INTEGER, INTENT( OUT ) :: status
          REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) ::Hval
+         REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
          TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_H
-
-       SUBROUTINE eval_Jv(status, U, V, X, transpose, userdata)
-         USE GALAHAD_NLPT_double
-         INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-         INTEGER, INTENT( OUT ) :: status
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, V
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-         LOGICAL :: transpose
-         TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_Jv
-
-       SUBROUTINE eval_Hv(status, U, V, X, userdata)
-         USE GALAHAD_NLPT_double
-         INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-         INTEGER, INTENT( OUT ) :: status
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, V
-         REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-         TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-       END SUBROUTINE eval_Hv
+         LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
+       END SUBROUTINE eval_HL
 
     END INTERFACE
 
@@ -1544,19 +1523,19 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
   ! Evaluate functions
   ! ******************
 
-  call eval_FC( inform%status, nlp%f, nlp%c, nlp%X, userdata )
+  call eval_FC( inform%status, nlp%X, userdata, nlp%f, nlp%c )
   if ( inform%status /= GALAHAD_ok ) write( out, 1002 ) 'eval_FC'
 
   inform%num_f_eval = inform%num_f_eval + 1
 
-  call eval_G( inform%status, nlp%G, nlp%X, userdata )
+  call eval_G( inform%status, nlp%X, userdata, nlp%G )
   if ( inform%status /= GALAHAD_ok ) write( out, 1002 ) 'eval_G'
 
   inform%num_g_eval = inform%num_g_eval + 1
 
   if ( nlp%m > 0 ) then
 
-     call eval_J( inform%status, nlp%J%val, nlp%X, userdata )
+     call eval_J( inform%status, nlp%X, userdata, nlp%J%val )
      if ( inform%status /= GALAHAD_ok ) write( out, 1002 ) 'eval_J'
 
      CALL SPACE_resize_array( nlp%J%ne, data%J_cauchy, inform%status, inform%alloc_status )
@@ -2559,8 +2538,9 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
      end do
 
      if ( dummy_real < data%dual_vl ) then
-        call eval_H( inform%status, nlp%H%val, nlp%X, data%QPpred%Y(:m), userdata )
-        if ( inform%status /= GALAHAD_OK ) write(out,1002) 'eval_H'
+        call eval_HL( inform%status, nlp%X, data%QPpred%Y(:m), userdata,       &
+                      nlp%H%val )
+        if ( inform%status /= GALAHAD_OK ) write(out,1002) 'eval_HL'
         inform%num_H_eval = inform%num_H_eval + 1
 
         if ( data%control%print_level >= GALAHAD_DEBUG ) then
@@ -2568,8 +2548,8 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
            call print_SMT( nlp%H, 'H', data%control%error, out, inform%status )
         end if
      else
-        call eval_H( inform%status, nlp%H%val, nlp%X, nlp%Y, userdata )
-        if ( inform%status /= GALAHAD_OK ) write(out,1002) 'eval_H'
+        call eval_HL( inform%status, nlp%X, nlp%Y, userdata, nlp%H%val )
+        if ( inform%status /= GALAHAD_OK ) write(out,1002) 'eval_HL'
         inform%num_H_eval = inform%num_H_eval + 1
 
         if ( data%control%print_level >= GALAHAD_DEBUG ) then
@@ -3108,8 +3088,9 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         ! Evaluate functions and constraint violation at new point.
 
-        call eval_FC( inform%status, data%F_new, data%C_new,  &
-                      nlp%X + data%s_f, userdata )
+        call eval_FC( inform%status, nlp%X + data%s_f, userdata,               &
+                      data%F_new, data%C_new )
+                      
         if (inform%status /= GALAHAD_ok) write(out,1002) 'eval_FC'
 
         inform%num_f_eval = inform%num_f_eval + 1
@@ -3160,8 +3141,9 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         ! Evaluate functions and constraint violatoin at new point.
 
-        call eval_FC( inform%status, data%F_new, data%C_new,  &
-                      nlp%X + data%s_c, userdata )
+        call eval_FC( inform%status, nlp%X + data%s_c, userdata,               &
+                      data%F_new, data%C_new )
+                      
         if (inform%status /= GALAHAD_ok) write(out,1002) 'eval_FC'
 
         inform%num_f_eval = inform%num_f_eval + 1
@@ -3350,7 +3332,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
            nlp%C = data%C_new ;    data%norm_c = data%norm_c_new
 
-           call eval_J( inform%status, nlp%J%val, nlp%X, userdata )
+           call eval_J( inform%status, nlp%X, userdata, nlp%J%val )
            if ( inform%status /= 0 ) write( out, 1002 ) 'eval_J'
 
            inform%num_J_eval = inform%num_J_eval + 1
@@ -3365,7 +3347,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
                         out, control%error, transpose=.false. )
         end if
 
-        call eval_G( inform%status, nlp%G, nlp%X, userdata )
+        call eval_G( inform%status, nlp%X, userdata, nlp%G  )
         if ( inform%status /= 0 ) write( out, 1002 ) 'eval_G'
 
         inform%num_g_eval = inform%num_g_eval + 1
@@ -10313,7 +10295,7 @@ end do
                         data%inf_norm_Y_steer
     end if
 
-    write(data%control%out, 3001), data%penalty, data%TRpred
+    write(data%control%out, 3001) data%penalty, data%TRpred
 
     return
 

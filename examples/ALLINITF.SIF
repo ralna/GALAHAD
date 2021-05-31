@@ -1,0 +1,206 @@
+***************************
+* SET UP THE INITIAL DATA *
+***************************
+
+NAME          ALLINIT
+
+*   Problem :
+*   *********
+
+*   A problem with "all in it". Intended to verify that changes
+*   to LANCELOT are safe.
+
+*   Source:
+*   N. Gould, private communication.
+
+*   SIF input: Nick Gould, June 1990.
+
+*   classification OBR2-AY-4-0
+
+VARIABLES
+
+    X1
+    X2
+    X3
+    X4
+
+GROUPS
+
+  N FT1
+  N FT2       X3        1.0
+  N FT3
+  N FT4
+  N FT5       X4        1.0
+  N FT6
+  N FNT1
+  N FNT2      X4        1.0
+  N FNT3
+  N FNT4
+  N FNT5      X1        1.0
+  N FNT6
+
+CONSTANTS
+
+    ALLINIT   FT2       1.0
+    ALLINIT   FT5       3.0
+    ALLINIT   FNT2      1.0
+    ALLINIT   FNT5      4.0
+
+BOUNDS
+
+ LO ALLINIT   'DEFAULT' 0.0
+ UP ALLINIT   'DEFAULT' 2.0
+
+START POINT
+
+ V  ALLINIT   X1        1.0 
+ V  ALLINIT   X2        2.0 
+ V  ALLINIT   X3        1.0 
+ V  ALLINIT   X4        2.0 
+
+ELEMENT TYPE
+
+ EV SQR       X
+ EV SQR2      Y                        Z
+ IV SQR2      X
+ EV SINSQR    X
+ EV PRODSQR   X                        Y
+
+ELEMENT USES
+
+ T  'DEFAULT' SQR
+
+ V  FT3E1     X                        X1
+
+ V  FT4E1     X                        X2
+
+ T  FT4E2     SQR2
+ V  FT4E2     Y                        X3
+ V  FT4E2     Z                        X4
+
+ T  FT56E1    SINSQR
+ V  FT56E1    X                        X3
+
+ T  FT5E2     PRODSQR
+ V  FT5E2     X                        X1
+ V  FT5E2     Y                        X2
+
+ V  FNT3E1    X                        X2
+
+ V  FNT4E1    X                        X3
+
+ T  FNT4E2    SQR2
+ V  FNT4E2    Y                        X4
+ V  FNT4E2    Z                        X1
+
+ T  FNT56E1   SINSQR
+ V  FNT56E1   X                        X4
+
+ T  FNT5E2    PRODSQR
+ V  FNT5E2    X                        X2
+ V  FNT5E2    Y                        X3
+
+GROUP TYPE
+
+ GV TRIVIAL   GVAR
+ GV L2        GVAR
+
+GROUP USES
+
+ T  'DEFAULT' L2
+
+ T  FT1       TRIVIAL
+ T  FT2       TRIVIAL
+ T  FT3       TRIVIAL
+ E  FT3       FT3E1
+ T  FT4       TRIVIAL
+ E  FT4       FT4E1                    FT4E2
+ T  FT5       TRIVIAL
+ E  FT5       FT56E1                   FT5E2
+ T  FT6       TRIVIAL
+ E  FT6       FT56E1
+
+ E  FNT3      FNT3E1
+ E  FNT4      FNT4E1                   FNT4E2
+ E  FNT5      FNT56E1                  FNT5E2
+ E  FNT6      FNT56E1
+
+ENDATA
+
+***********************
+* SET UP THE FUNCTION *
+* AND RANGE ROUTINES  *
+***********************
+
+ELEMENTS      ALLINIT
+
+TEMPORARIES
+
+ R  SINX
+ R  COSX
+ R  XX
+ R  YY
+ M  SIN
+ M  COS
+
+INDIVIDUALS
+
+*  square of x
+
+ T  SQR
+ F                      X * X
+ G  X                   X + X
+ H  X         X         2.0
+
+*  square of x = y + z
+
+ T  SQR2
+ R  X         Y         1.0            Z         1.0
+ F                      X * X
+ G  X                   X + X
+ H  X         X         2.0
+
+*  square of sin x
+
+ T  SINSQR
+ A  SINX                SIN( X )
+ A  COSX                COS( X )
+ F                      SINX * SINX
+ G  X                   2.0 * SINX * COSX
+ H  X         X         2.0 * ( COSX * COSX - SINX * SINX )
+
+*  square of x times y
+
+ T  PRODSQR
+ A  XX                  X * X
+ A  YY                  Y * Y
+ F                      XX * YY
+ G  X                   2.0 * X * YY
+ G  Y                   2.0 * XX * Y
+ H  X         X         2.0 * YY
+ H  X         Y         4.0 * X * Y
+ H  Y         Y         2.0 * XX
+
+
+ENDATA
+
+*********************
+* SET UP THE GROUPS *
+* ROUTINE           *
+*********************
+
+GROUPS        ALLINIT
+
+INDIVIDUALS
+
+ T  TRIVIAL
+ F                      GVAR
+ G                      1.0
+ H                      0.0
+
+ T  L2
+ F                      GVAR * GVAR
+ G                      GVAR + GVAR
+ H                      2.0
+
+ENDATA

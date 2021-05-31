@@ -9,3 +9,13 @@ propoer documentation.
 
 Nick Gould (for the GALAHAD team)
 October 2016
+
+NB. Packages know to be broken:
+
+ PQP
+
+No proper interface
+
+ NLSSRT
+
+May 2021

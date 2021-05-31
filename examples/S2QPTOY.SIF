@@ -1,0 +1,103 @@
+***************************
+* SET UP THE INITIAL DATA *
+***************************
+
+NAME          S2QPTOY
+
+*   Problem :
+*   *********
+
+*   Source: test example for GALAHAD S2QP module by Daniel Robinson
+
+*   SIF input: Nick Gould, May 2021
+
+*   classification QQR2-AN-4-3
+
+VARIABLES
+
+    X1
+    X2
+    X3
+    X4
+
+GROUPS
+
+ N  OBJ       X3        3.0            X4        5.0
+ E  C1        X3        1.0
+ E  C2        X4        1.0
+ G  C3        X1        2.0            X2        4.0
+
+CONSTANTS
+
+    S2QPTOY   C1        2.0
+    S2QPTOY   C2        4.0
+
+BOUNDS
+
+ XL BOUNDS    'DEFAULT' -2.0
+ XU BOUNDS    'DEFAULT' 2.0
+
+START POINT
+
+ XV S2QPTOY   X1        0.1
+ XV S2QPTOY   X2        0.125
+ XV S2QPTOY   X3        0.666666
+ XV S2QPTOY   X4        0.142857
+
+ELEMENT TYPE
+
+ EV SQR       X
+ EV SSQR      X1
+ EV SSQR      X2
+ EV SSQR      X3
+ IV SSQR      X
+
+ELEMENT USES
+
+ T  S         SSQR
+ V  S         X1                       X1
+ V  S         X2                       X2
+ V  S         X3                       X3
+
+ T  S1        SQR
+ V  S1        X                        X1
+
+ T  S2        SQR
+ V  S2        X                        X2
+
+GROUP USES
+
+ E  OBJ       S
+ E  C1        S1                       S2
+ E  C2        S2
+
+OBJECT BOUND
+
+*   Solution
+
+*LO SOLTN               6299.842428
+
+ENDATA
+
+***********************
+* SET UP THE FUNCTION *
+* AND RANGE ROUTINES  *
+***********************
+
+ELEMENTS      S2QPTOY
+
+INDIVIDUALS
+
+ T  SQR
+ F                      X * X
+ G  X                   X + X
+ H  X         X         2.0
+
+ T  SSQR
+ R  X         X1        1.0            X2        1.0
+ R  X         X3        1.0
+ F                      X * X
+ G  X                   X + X
+ H  X         X         2.0
+
+ENDATA

@@ -3023,7 +3023,7 @@
 
            data%QP_pred%H%n = nlp%n ; data%QP_pred%H%ne = data%H_ne
            data%QP_pred%H%val( : data%H_ne ) = nlp%H%val( : data%H_ne )
-write(6,*)  'h ', data%QP_pred%H%val( : data%H_ne )
+!write(6,*)  'h ', data%QP_pred%H%val( : data%H_ne )
 !write(6,*)  'det ', data%QP_pred%H%val( 1 ) * data%QP_pred%H%val( 3 ) - data%QP_pred%H%val( 2 ) ** 2
 !write(6,*)' pivot_control ',   data%control%SLS_control%pivot_control
            CALL SLS_factorize( data%QP_pred%H, data%SLS_data,                  &

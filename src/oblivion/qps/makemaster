@@ -1,0 +1,53 @@
+#  Main body of the installation makefile for the GALAHAD QPS package
+
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-30
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = qps
+PACKAGE = QPS
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_dummy make_sort make_zd11 make_smt make_lmt make_qpt
+
+#  other packages that depend on package
+
+DEPENDS = 
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test_)
+
+TESTS =
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

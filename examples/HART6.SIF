@@ -1,0 +1,202 @@
+***************************
+* SET UP THE INITIAL DATA *
+***************************
+
+NAME          HART6
+
+*   Problem :
+*   *********
+
+*   Source: Hartman problem 6 in
+*   L. C. W. Dixon and G. P. Szego (Eds.)
+*   Towards Global Optimization
+*   North Holland, 1975.
+*   Paper 9, page 163.
+
+*   SIF input: A.R. Conn May 1995
+
+*   classification OBR2-AN-6-0
+
+*   Number of variables - constraints
+
+ IE N                   6
+
+*   Other useful parameters
+
+ IE 1                   1
+ IE ONE                 1
+ IE NN                  6
+ IE L                   4
+
+*   Problem data
+
+ RE C1                  1.0
+ RE C2                  1.2
+ RE C3                  3.0
+ RE C4                  3.2
+
+ RE A1,1                10.0
+ RE A2,1                0.05
+ RE A3,1                3.0
+ RE A4,1                17.0
+
+ RE A1,2                0.05
+ RE A2,2                10.0
+ RE A3,2                3.5
+ RE A4,2                8.0
+
+ RE A1,3                17.0
+ RE A2,3                17.0
+ RE A3,3                1.7
+ RE A4,3                0.05
+
+ RE A1,4                3.5
+ RE A2,4                0.1
+ RE A3,4                10.0
+ RE A4,4                10.0
+
+ RE A1,5                1.7
+ RE A2,5                8.0
+ RE A3,5                17.0
+ RE A4,5                0.1
+
+ RE A1,6                8.0
+ RE A2,6                14.0
+ RE A3,6                8.0
+ RE A4,6                14.0
+
+ RE P1,1                0.1312
+ RE P2,1                0.2329
+ RE P3,1                0.2348
+ RE P4,1                0.4047
+
+ RE P1,2                0.1696
+ RE P2,2                0.4135
+ RE P3,2                0.1451
+ RE P4,2                0.8828
+
+ RE P1,3                0.5569
+ RE P2,3                0.8307
+ RE P3,3                0.3522
+ RE P4,3                0.8732
+
+ RE P1,4                0.0124
+ RE P2,4                0.3736
+ RE P3,4                0.2883
+ RE P4,4                0.5743
+
+ RE P1,5                0.8283
+ RE P2,5                0.1004
+ RE P3,5                0.3047
+ RE P4,5                0.1091
+
+ RE P1,6                0.5886
+ RE P2,6                0.9991
+ RE P3,6                0.6650
+ RE P4,6                0.0381
+
+VARIABLES
+
+ DO I         1                        N
+ X  X(I)
+ ND
+
+GROUPS
+
+ DO I         1                        L
+ XN OBJ(I)
+ XN OBJ(I)    'SCALE'    -1.0
+ ND
+
+BOUNDS
+
+ XL HART6     'DEFAULT'  0.0
+ XU HART6     'DEFAULT'  1.0
+
+START POINT
+
+ XV HART6     'DEFAULT'  0.2
+*XV HART6     X1         0.201661
+*XV HART6     X2         0.149985
+*XV HART6     X3         0.476919
+*XV HART6     X4         0.275317
+*XV HART6     X5         0.311688
+*XV HART6     X6         0.657283
+*XV HART6     X1         0.4046
+*XV HART6     X2         0.8824
+*XV HART6     X3         0.7943
+*XV HART6     X4         0.5738
+*XV HART6     X5         0.1483
+*XV HART6     X6         0.0387
+
+
+ELEMENT TYPE
+
+ EV SQ        V1
+ EP SQ        PIJ
+
+ELEMENT USES
+
+ DO I         1                        L
+ DO J         1                        NN
+ XT E(I,J)    SQ
+ ZV E(I,J)    V1                       X(J)
+ ZP E(I,J)    PIJ                      P(I,J)
+ ND
+
+GROUP TYPE
+
+ GV NEXP      ALPHA
+ GP NEXP      CI
+
+GROUP USES
+
+ DO I         1                        L
+ XT OBJ(I)    NEXP
+ DO J         1                        NN
+ ZE OBJ(I)    E(I,J)                   A(I,J)
+ OD
+ ZP OBJ(I)    CI                       C(I)
+ OD
+
+OBJECT BOUND
+
+*   Solution
+
+*LO SOLTN               -3.32288689158
+
+ENDATA
+
+***********************
+* SET UP THE FUNCTION *
+* AND RANGE ROUTINES  *
+***********************
+
+
+ELEMENTS      HART6
+
+INDIVIDUALS
+
+ T  SQ
+ F                      (V1 - PIJ)*(V1 - PIJ)
+ G  V1                  2.0*(V1 - PIJ)
+ H  V1        V1        2.0
+
+ENDATA
+
+GROUPS        HART6
+
+TEMPORARIES
+
+ M  EXP
+
+INDIVIDUALS
+
+*   group type nexp
+
+ T  NEXP
+ F                      CI*EXP( -ALPHA )
+ G                      - CI*EXP( -ALPHA )
+ H                      CI*EXP( -ALPHA )
+
+ENDATA

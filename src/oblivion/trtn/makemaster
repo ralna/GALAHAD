@@ -1,156 +1,151 @@
-#  Main body of the trtn installation makefile
+#  Main body of the installation makefile for the GALAHAD TRTN package
 
-#  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 22 VII 2005
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-30
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
-#  compiler flags
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+#  package name
 
-#  names of random libraries
+package = trtn
+PACKAGE = TRTN
 
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
+#  auxiliary packages that current package depends on (prepend with make_)
 
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
+DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 \
+               make_smt make_space  make_ma27 make_sils make_roots \
+               make_norms make_lmt make_qpt make_rand make_gltr \
+               make_tools make_userdata make_nlpt make_cutest_functions
 
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
+#  other packages that depend on package
 
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
+DEPENDS = 
 
-#  Libraries used
+#  auxiliary packages that are needed for tests (prepend with make_)
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
-                 $(LAPACK) $(BLAS)
+TESTDEPS = make_copyright 
 
-#  Archive manipulation strings
+#  tests to be performed (preprend with test_)
 
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+TESTS = test_cutest
 
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+#  CUTEst example for tests
 
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+CUTEST_EXAMPLE = ALLINIT.SIF
 
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
 
-#  sed scripts
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
 
-LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
+#  include compilation and run instructions
 
-#  compilation agenda
+include $(GALAHAD)/src/makedefs/instructions
 
-STRTN = gltr $(LGS)(trtn.o)
-DTRTN = gltr $(LGD)(trtn.o)
+#  non-standard package compilation instructions
 
-OBJECTSS_TRTN = basics linearsolver $(STRTN)
-OBJECTSD_TRTN = basics linearsolver $(DTRTN)
-OBJECTSS_TRTN_CUTER = $(OBJECTSS_TRTN) $(LGS)(usetrtn.o) $(OBJS)/runtrtn_sif.o
-OBJECTSD_TRTN_CUTER = $(OBJECTSD_TRTN) $(LGD)(usetrtn.o) $(OBJD)/runtrtn_sif.o
+$(package).o: $(LG)($(package).o)
 
-SUCC = precision version) compiled successfully
-SUCC_CUTER = precision version) for CUTEr compiled successfully
-
-#  main compilations and runs
-
-all: trtn_cuter
-trtn_cuter_double: $(OBJECTSD_TRTN_CUTER)
-	@printf ' %-21s\n' "GALAHAD: TRTN routines ($(PRECIS) $(SUCC_CUTER)"
-	$(RANLIB) $(LGD)
-
-#  basic packages
-
-basics:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            basics_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-	( cd ../../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            qpt.o PRECIS=$(PRECIS) PWD=$(PWD)/../../qp )
-linearsolver:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            linearsolver_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-gltr:
-	( cd ../../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            roots.o gltr.o PRECIS=$(PRECIS) PWD=$(PWD)/../../qp )
-copyright:
-	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
-
-#  Substantial GALAHAD packages
-
-trtn.o: $(LG)(trtn.o)
-
-$(LG)(trtn.o): ../trtn/trtn.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "trtn   "
-	$(SED) -f $(SEDS) ../trtn/trtn.f90 > $(OBJ)/trtn1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/trtn1.f90 > $(OBJ)/trtn2.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/trtn2.f90 > $(OBJ)/trtn.f90
-	cd $(OBJ); $(FORTRAN) -o trtn.o $(FFLAGSS) trtn.f90 \
+$(LG)($(package).o): ../$(package)/$(package).f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
+	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > $(OBJ)/$(package)1.f90
+	$(SED) "s/^.$(NOT95)/     /" \
+                $(OBJ)/$(package)1.f90 > $(OBJ)/$(package).f90
+	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o trtn.o $(FFLAGSN) trtn.f90 )
-	cd $(OBJ); $(ARR) trtn.o ; $(RM) trtn.f90 trtn1.f90 \
-                                           trtn2.f90 trtn.o
-	$(RMARFILE) usetrtn.o
+                   $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).f90 )
+	cd $(OBJ); $(ARR) $(package).o ; \
+                  $(RM) $(package).f90 $(package)1.f90 $(package).o
+	$(RMARFILES) $(DEPENDS)
+	$(RMARFILE) use$(package).o
+	$(RMOBFILE) in$(package).o
+	$(RMOBFILE) $(package)s.o
+	$(RMOBFILE) $(package)t.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-# CUTEr/AMPL interfaces
+#  package coverage compilation
 
-usetrtn.o: $(LG)(usetrtn.o)
+$(package)_gcov: ../$(package)/$(package).f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
+	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > $(package)1.f90
+	$(SED) "s/^.$(NOT95)/     /" $(package)1.f90 > $(package)_cov.f90
+	$(RM) ./$(package)1.f90
+	$(FORTRAN) -o $(package)_cov.o $(FFLAGSS) $(COVERAGE) \
+            $(package)_cov.f90 \
+          || ( printf ' %-26s' "=> Disabling optimization " ; \
+            $(FORTRAN) -o $(package)_cov.o $(FFLAGSN) $(COVERAGE) \
+              $(package)_cov.f90 )
+	$(SED) -f $(SEDS) $(package)t.f90 > $(package)t_cov1.f90
+	$(SED) -f $(LSEDS) $(package)t_gcov1.f90 > $(package)t_cov.f90
+	$(RM) ./$(package)t_cov1.f90
+	$(FORTRAN) -g $(BASIC) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
+          $(package)t_cov.f90
+	$(FORTRAN) $(NOOPTIMIZATION) $(MODULES) $(COVERAGE) \
+          -o ./$(package)_cov $(package)_cov.o $(package)t_cov.o \
+           -L$(OBJ) $(LIBS)
+	./$(package)_gcov
+	gcov ./$(package)_gcov
+	$(MV) ./$(package)_cov.f90.cov ./$(package)_coverage
+	$(RM) ./$(package)*cov* ./galahad_$(package)_*.mod
 
-$(LG)(usetrtn.o): ../trtn/usetrtn.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "usetrtn   "
-	$(SED) -f $(SEDS) ../trtn/usetrtn.f90 > $(OBJ)/usetrtn1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/usetrtn1.f90 > $(OBJ)/usetrtn.f90
-	cd $(OBJ); $(FORTRAN) -o usetrtn.o $(FFLAGSS) usetrtn.f90 \
+#  test programs for specification document
+
+$(package)s.o: $(OBJ)/$(package)s.o
+
+$(OBJ)/$(package)s.o: ../$(package)/$(package)s.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s  "
+	$(SED) -f $(SEDS) \
+           ../$(package)/$(package)s.f90 > $(OBJ)/$(package)s1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)s.o $(FFLAGS) $(package)s.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  comprehensive test programs
+
+$(package)t.o: $(OBJ)/$(package)t.o
+
+$(OBJ)/$(package)t.o: ../$(package)/$(package)t.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)t  "
+	$(SED) -f $(SEDS) \
+           ../$(package)/$(package)t.f90 > $(OBJ)/$(package)t1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)t1.f90 > $(OBJ)/$(package)t.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)t.o $(FFLAGSS) $(package)t.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  CUTEst/AMPL interfaces
+
+use$(package).o: $(LG)(use$(package).o)
+
+$(LG)(use$(package).o): ../$(package)/use$(package).f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "use$(package)   "
+	$(SED) -f $(SEDS) \
+           ../$(package)/use$(package).f90 > $(OBJ)/use$(package)1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/use$(package)1.f90 > $(OBJ)/use$(package)2.f90
+	$(SED) "s/^.$(NOT95)/     /" \
+          $(OBJ)/use$(package)2.f90 > $(OBJ)/use$(package).f90
+	cd $(OBJ); \
+          $(FORTRAN) -o use$(package).o $(FFLAGSOMP) use$(package).f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o usetrtn.o $(FFLAGSN) usetrtn.f90 )
-	cd $(OBJ); $(ARR) usetrtn.o ; $(RM) usetrtn.f90 usetrtn1.f90 usetrtn.o
-	$(RMOBFILE) runtrtn_sif.o
+                   $(FORTRAN) -o use$(package).o $(FFLAGSN) use$(package).f90 )
+	cd $(OBJ); $(ARR) use$(package).o ; \
+                   $(RM) use$(package).f90 use$(package)1.f90 \
+                                       use$(package)2.f90 use$(package).o
+	$(RMOBFILE) run$(package)_sif.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-#  main programs
-
-runtrtn_sif.o: $(OBJ)/runtrtn_sif.o
-
-$(OBJ)/runtrtn_sif.o: ../trtn/runtrtn_sif.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "runtrtn_sif"
-	$(SED) -f $(SEDS) ../trtn/runtrtn_sif.f90 > $(OBJ)/runtrtn_sif.f90
-	cd $(OBJ); $(FORTRAN) -o runtrtn_sif.o $(FFLAGSS) runtrtn_sif.f90
-	rm $(OBJ)/runtrtn_sif.f90
-	@printf '[ OK ]\n'
-
-#  book keeping
-
-clean:
-	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(LGS) $(LGD) $(QPBDS) $(OBJ)/qpbdt.o $(QPBSS) $(OBJ)/qpbst.o
-	@printf '[ OK ]\n'
-
-cleanall:
-	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
-	$(RM) $(OBJ)/* $(MOD)/*
-	@printf '[ OK ]\n'
-
-rmtrtn:
-	@printf ' %-9s %-15s\t\t' "Removing" "trtn from archive "
-	$(RMARFILE) trtn.o
-	@printf '[ OK ]\n'
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

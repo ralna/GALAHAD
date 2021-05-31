@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD QTRANS package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-24
+#  This version: 2021-05-30
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -22,11 +22,11 @@ DEPENDS =
 
 #  auxililiary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_cutest_functions
+TESTDEPS =
 
-#  CUTEst example for tests
+#  tests to be performed (preprend with test_)
 
-CUTEST_EXAMPLE =
+TESTS =
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

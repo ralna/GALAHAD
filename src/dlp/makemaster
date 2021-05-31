@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD DLP package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-24
+#  This version: 2021-05-28
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -28,9 +32,17 @@ DEPENDS = l1qp
 
 TESTDEPS = make_copyright make_cutest_functions
 
+#  tests to be performed (preprend with test_)
+
+TESTS = test_full test_cutest test_qplib
+
 #  CUTEst example for tests
 
 CUTEST_EXAMPLE = LPBAND.SIF
+
+#  QPLIB example for tests
+
+QPLIB_EXAMPLE = LPBAND.qplib
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

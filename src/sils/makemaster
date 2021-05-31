@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD SILS package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-04-25
+#  This version: 2021-04-29
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -22,9 +26,11 @@ DEPENDS = ir sls psls mdchl lancelot_types qpd fdc superb
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_norms make_tools make_userdata make_nlpt \
-           make_space make_cutest_functions make_sort make_lmt make_qpt \
-           make_specfile
+TESTDEPS = make_sort make_lmt make_qpt make_space make_specfile 
+
+#  tests to be performed (preprend with test_)
+
+TESTS = test_full test_cutest
 
 #  CUTEst example for tests
 

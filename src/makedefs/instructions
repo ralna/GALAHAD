@@ -10,10 +10,12 @@ D$(PACKAGE) = $(DEPENDENCIES) $(LGD)($(package).o)
 
 #  additional run agenda
 
-SRUN$(PACKAGE) = $(TESTDEPS) $(LGS)(use$(package).o) $(OBJS)/run$(package)_sif.o
-DRUN$(PACKAGE) = $(TESTDEPS) $(LGD)(use$(package).o) $(OBJD)/run$(package)_sif.o
-SQPLIB$(PACKAGE) = $(TESTDEPS) $(OBJS)/in$(package).o
-DQPLIB$(PACKAGE) = $(TESTDEPS) $(OBJD)/in$(package).o
+SRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(LGS)(use$(package).o) \
+                 $(OBJS)/run$(package)_sif.o
+DRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(LGD)(use$(package).o) \
+                 $(OBJD)/run$(package)_sif.o
+SQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) $(OBJS)/in$(package).o
+DQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) $(OBJD)/in$(package).o
 
 #  libraries used when linking for tests
 
@@ -38,11 +40,11 @@ OBJECTSD_CUTEST = $($(PACKAGE)OBJECTSD_CUTEST)
 $(PACKAGE)DS = $(D$(PACKAGE)) $(OBJD)/$(package)s.o
 $(PACKAGE)DS2 = $(D$(PACKAGE)) $(OBJD)/$(package)s2.o
 $(PACKAGE)DS3 = $(D$(PACKAGE)) $(OBJD)/$(package)s3.o
-$(PACKAGE)DT = $(D$(PACKAGE)) $(OBJD)/$(package)t.o
+$(PACKAGE)DT = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t.o
 $(PACKAGE)SS = $(S$(PACKAGE)) $(OBJS)/$(package)s.o
 $(PACKAGE)SS2 = $(S$(PACKAGE)) $(OBJS)/$(package)s2.o
 $(PACKAGE)SS3 = $(S$(PACKAGE)) $(OBJS)/$(package)s3.o
-$(PACKAGE)ST = $(S$(PACKAGE)) $(OBJS)/$(package)t.o
+$(PACKAGE)ST = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t.o
 
 R$(PACKAGE)DS = $(OBJD)/$(package)s.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS2 = $(OBJD)/$(package)s2.o -L$(OBJD) $(LIBS)
@@ -61,8 +63,14 @@ R$(PACKAGE)ST = $(OBJS)/$(package)t.o -L$(OBJS) $(LIBS)
 
 all: $(package)
 all_$(package): all
+
+tests: $(TESTS)
+
 test: test_$(package)
+test_spec: test_$(package)_spec
 test_full: test_$(package)_full
+test_cutest: test_$(package)_cutest
+test_qplib: test_$(package)_qplib
 
 #  process package
 

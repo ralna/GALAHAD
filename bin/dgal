@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # dgal: generic script to run GALAHAD package on architecture on the
-#       data input in a problem-data file
+#       data input in a QPLIB problem-data file
 
 #  * version for Bourne/bash shell
 
@@ -22,8 +22,8 @@
 #                -l : limit the cputime used to secs seconds
 #                     (Default: 99999999 seconds)
 #
-#       probname      probname[.qplib] is the name of the file containing
-#                     the data for the problem of interest.
+#       probname      probname[.qplib] is the name of the file in QPLIB
+#                     format containing the data for the problem of interest.
 
 #  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 #  Principal authors: Nick Gould, Dominique Orban and Philippe Toint
@@ -263,6 +263,20 @@ SPRAL=""
 
 PARDISO=""
 
+#  If there is a compiled, library version of the MKL version of the PARDISO 
+#  sparse factorization package (http://www.pardiso-project.org/) , set
+#  MKL_PARDISO to -lx, where the object library libx.so contains PARDISO. For
+#  instance if PARDISO is contained in the object library libmkl_intel_lp64.a
+#  MKL_PARDISO should be set to "-lmkl_intel_lp64". If the library is in a 
+#  "non-standard place", MKL_PARDISO should also point to the full path to the
+#  library. For example, if libmkl_intel_lp64.a is in the directory /mylibrary,
+#  MKL_PARDISO should be set to "-L/mylibrary -lmkl_intel_lp64"
+# If a compiled version of the MKL version of PARDISO is unavailable,
+#  MKL_PARDISO should be set to "-lgalahad_mkl_pardiso".
+#  N.B. MKL PARDISO is only optionally required but may improve performance.
+
+MKL_PARDISO=""
+
 #  If there is a compiled, library version of the WSMP sparse factorization
 #  package (http://www.wsmp-project.org/) , set WSMP to -lx,
 #  where the object library libx.so contains WSMP.  For instance if WSMP
@@ -275,6 +289,10 @@ PARDISO=""
 #  N.B. WSMP is only optionally required but may improve performance.
 
 WSMP=""
+
+#  place-holder for future SuitSparse codes
+
+SUITESPARSE=""
 
 #  If the PLplot graphics library is available, some packages optionally
 #  produce grapical output for debugging purposes. The precise list of
@@ -313,7 +331,7 @@ eval "`cat $GALAHAD/bin/sys/$1`"
 
 GALOBJ=$GALAHAD/objects/$1/$PRECIS
 
-#  libraries for BLAS, LAPACK, HSL, METIS, SPRAL, PARDISO and WSMP
+#  libraries for BLAS, LAPACK, HSL, METIS, SPRAL, PARDISO, MKL_PARDISO and WSMP
 
 if [[ "$BLAS" == "" ]]; then
   BLASLIB="-lgalahad_blas"
@@ -349,6 +367,12 @@ if [[ "$PARDISO" == "" ]]; then
   PARDISOLIB="-lgalahad_pardiso"
 else
   PARDISOLIB="$PARDISO"
+fi
+
+if [[ "$MKL_PARDISO" == "" ]]; then
+  MKL_PARDISOLIB="-lgalahad_mkl_pardiso"
+else
+  MKL_PARDISOLIB="$MKL_PARDISO"
 fi
 
 if [[ "$WSMP" == "" ]]; then
@@ -414,6 +438,14 @@ elif [[ $2 == 'cqp' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec cqp update
   [[ ! -e RUNCQP.SPC ]] && ln -s ~/.galahad/specs/RUNCQP.SPC RUNCQP.SPC
 
+# cqps
+
+elif [[ $2 == 'cqps' ]]; then
+  RUNMAIN=$GALOBJ/incqps.o
+  [[ ! -e ~/.galahad/specs/RUNCQPS.SPC ]] && $GALOBJ/buildspec cqps
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec cqps update
+  [[ ! -e RUNCQPS.SPC ]] && ln -s ~/.galahad/specs/RUNCQPS.SPC RUNCQPS.SPC
+
 # dqp
 
 elif [[ $2 == 'dqp' ]]; then
@@ -470,6 +502,14 @@ elif [[ $2 == 'pdqp' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec pdqp update
   [[ ! -e RUNPDQP.SPC ]] && ln -s ~/.galahad/specs/RUNPDQP.SPC RUNPDQP.SPC
 
+# lpa
+
+elif [[ $2 == 'lpa' ]]; then
+  RUNMAIN=$GALOBJ/inlpa.o
+  [[ ! -e ~/.galahad/specs/RUNLPA.SPC ]] && $GALOBJ/buildspec lpa
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpa update
+  [[ ! -e RUNLPA.SPC ]] && ln -s ~/.galahad/specs/RUNLPA.SPC RUNLPA.SPC
+
 # lpb
 
 elif [[ $2 == 'lpb' ]]; then
@@ -513,15 +553,15 @@ fi
 #         $HSLLIB $METISLIB $LAPACKLIB $BLASLIB
 
 #EXECUTABLE="$FORTRAN $FFLAGS -o $galmin $RUNMAIN \
-#         -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad \
-#         $HSLLIB $SPRALLIB $PARDISOLIB $WSMP $METISLIB $LAPACKLIB \
-#         $BLASLIB $PLPLOT"
+#  -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad \
+#  $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMP $SUITESPARSELIB \
+#  $METISLIB $LAPACKLIB $BLASLIB $PLPLOT"
 
 EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN \
-         -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad \
-         $HSLLIB $SPRALLIB $PARDISOLIB $WSMP $METISLIB $LAPACKLIB \
-         $BLASLIB $PLPLOT $CUDALIBS"
-echo $EXECUTABLE
+   -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad \
+   $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMP $SUITESPARSELIB \
+   $METISLIB $LAPACKLIB $BLASLIB $PLPLOT $CUDALIBS"
+#echo $EXECUTABLE
 
 if [[ $OUTPUT == "1" ]]; then
   echo " $EXECUTABLE"

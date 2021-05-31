@@ -383,6 +383,15 @@
 
   END IF
 
+  IF ( inform%status == GALAHAD_ok ) THEN
+    WRITE( 6, "( /, ' SQP successful termination, objective =', ES12.4 )" )    &
+      inform%obj
+  ELSE
+    WRITE( 6, "( /, ' SQP unsuccessful termination, status = ', I0 )" )        &
+      inform%status
+  END IF
+
+
   !  Close any opened files
 
   IF ( is_specfile ) CLOSE( input_specfile )

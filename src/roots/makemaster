@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD ROOTS package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-25
+#  This version: 2021-05-29
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -24,11 +28,11 @@ DEPENDS = arc fdc fisqp tracs glrt gltr l1qp lsrt lstr nls funnel lcf \
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_cutest_functions
+TESTDEPS =
 
-#  CUTEst example for tests
+#  tests to be performed (preprend with test_)
 
-CUTEST_EXAMPLE =
+TESTS = test_full
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

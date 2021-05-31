@@ -115,6 +115,7 @@
 !     USE GALAHAD_TRANSFER_MATLAB
       USE GALAHAD_ARC_MATLAB_TYPES
       USE GALAHAD_ARC_double
+      USE GALAHAD_USERDATA_double
       IMPLICIT NONE
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
@@ -167,7 +168,7 @@
 !  arguments for ARC
 
       TYPE ( NLPT_problem_type ) :: nlp
-      TYPE ( NLPT_userdata_type ) :: userdata
+      TYPE ( GALAHAD_userdata_type ) :: userdata
       TYPE ( ARC_data_type ), SAVE :: data
       TYPE ( ARC_control_type ), SAVE :: control
       TYPE ( ARC_inform_type ) :: inform

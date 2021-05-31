@@ -141,6 +141,11 @@ SUCC_QPLIB = precision version) for QPLIB compiled successfully
 RMOOC = $(RM) factor_integer_ooc* factor_real_ooc* \
               work_indefinite_ooc work_real_ooc
 
-#  default QPLIB test example
+#  packages that are needed for CUTEst tests
 
-QPLIB_EXAMPLE = QPBAND.qplib
+CUTEST_TESTS = make_copyright make_userdata make_tools make_norms \
+               make_nlpt make_cutest_functions
+
+#  packages that are needed for QPLIB tests
+
+QPLIB_TESTS = make_copyright make_scaling make_rpd

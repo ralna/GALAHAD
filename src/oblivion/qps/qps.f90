@@ -47,7 +47,8 @@
 
       TYPE, PUBLIC :: QPS_scale_type
          REAL ( KIND = wp ) :: col_scale_rhs
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: row_scale, col_scale_x 
+         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: row_scale
+         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: col_scale_x 
          REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: col_scale_c
          REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: shift_x, shift_c
       END TYPE
@@ -56,6 +57,7 @@
 !   P a r a m e t e r s
 !----------------------
 
+      INTEGER, PARAMETER :: max_cycle = 10
       REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
       REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
       REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
@@ -79,6 +81,11 @@
       TYPE ( QPS_scale_type ), INTENT( IN ) :: scale
       TYPE ( QPS_control_type ), INTENT( IN ) :: control
       TYPE ( QPS_inform_type ), INTENT( OUT ) :: inform
+
+      INTEGER :: cycle, i, k, n_slacks
+      REAL ( KIND = wp ) :: row_norm
+      INTEGER, DIMENSION( prob%m ) :: SLACKS
+      REAL ( KIND = wp ), DIMENSION( prob%m ) :: RHS
 
       n_slacks = 0
 
@@ -118,35 +125,35 @@
           SLACKS( n_slacks ) = i
         END IF
         RHS( i ) = scale%shift_c( i )
-        DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
-          RHS( i ) = RHS( i ) - A_val( k ) * scale%shift_x( A_col( k ) )
+        DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
+          RHS( i ) =                                                           &
+            RHS( i ) - prob%A%val( k ) * scale%shift_x( prob%A%col( k ) )
         END DO
       END DO
 
 !  Now scale ( A : - I : rhs ) in a cycle of alternate row and column
 !  equilibrations. First, set the scale factors to 1.0
 
-      row_scale = one
-      col_scale_x = one ; col_scale_c = one ; col_scale_rhs = one
+      scale%row_scale = one
+      scale%col_scale_x = one ; scale%col_scale_c = one
+      scale%col_scale_rhs = one
       
       DO cycle = 1, max_cycle
-
-
-
         DO i = 1, prob%m
 
 !  Compute row norms
 
-          row_norm = ( col_scale_rhs * RHS( i ) ) ** 2
-          DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
+          row_norm = ( scale%col_scale_rhs * RHS( i ) ) ** 2
+          DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
             row_norm = row_norm +                                              &
-              ( col_scale_x( A_col( k ) ) * A_val( k ) ) ** 2
+              ( scale%col_scale_x( prob%A%col( k ) ) * prob%A%val( k ) ) ** 2
           END DO
-          row_norm = ABS( row_scale( i ) ) * SQRT( row_norm )
+          row_norm = ABS( scale%row_scale( i ) ) * SQRT( row_norm )
 
 !  Divide the scale factors by the row norms
 
-          IF ( row_norm /= zero ) row_scale( i ) = row_scale( i ) / row_norm
+          IF ( row_norm /= zero )                                              &
+            scale%row_scale( i ) = scale%row_scale( i ) / row_norm
         END DO
 
         DO i = 1, prob%m
@@ -155,32 +162,23 @@
 
 !!!! finish this !!!
 
-          row_norm = ( col_scale_rhs * RHS( i ) ) ** 2
-          DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
+          row_norm = ( scale%col_scale_rhs * RHS( i ) ) ** 2
+          DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
             row_norm = row_norm +                                              &
-              ( col_scale_x( A_col( k ) ) * A_val( k ) ) ** 2
+              ( scale%col_scale_x( prob%A%col( k ) ) * prob%A%val( k ) ) ** 2
           END DO
-          row_norm( i ) = ABS( row_scale( i ) ) * SQRT( row_norm( i ) )
+          row_norm( i ) = ABS( scale%row_scale( i ) ) * SQRT( row_norm( i ) )
 
 !  Divide the scale factors by the column norms
 
-
-
           IF ( row_norm( i ) /= zero )                                         &
-            row_scale( i ) = row_scale( i ) / row_norm
+            scale%row_scale( i ) = scale%row_scale( i ) / row_norm
         END DO
-
-
-
       END DO
 
 !  Compute row norms
 
-     
-
       END DO
-
-
 
 !  End of subroutine QPS_apply
 

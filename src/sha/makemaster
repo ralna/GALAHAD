@@ -3,6 +3,10 @@
 #  Nick Gould, for GALAHAD productions 
 #  This version: 2021-05-25
 
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
+
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
 #  ===========================================================================
@@ -22,7 +26,11 @@ DEPENDS = arc trace trb tru
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_cutest_functions make_userdata
+TESTDEPS = make_rand
+
+#  tests to be performed (preprend with test_)
+
+TESTS = test_full test_cutest
 
 #  CUTEst example for tests
 

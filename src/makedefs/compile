@@ -17,10 +17,10 @@ $(LG)($(package).o): ../$(package)/$(package).f90
 	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).f90 )
-#	cd $(OBJ); $(ARR) $(package).o ; \
-#                   $(RM) $(package).f90 $(package)1.f90 $(package)2.f90 \
-#                         $(package)3.f90 $(package).o
-	cd $(OBJ); $(ARR) $(package).o
+#	cd $(OBJ); $(ARR) $(package).o
+	cd $(OBJ); $(ARR) $(package).o ; \
+                    $(RM) $(package).f90 $(package)1.f90 $(package)2.f90 \
+                          $(package)3.f90 $(package).o
 	$(RMARFILES) $(DEPENDS)
 	$(RMARFILE) use$(package).o
 	$(RMOBFILE) in$(package).o

@@ -112,6 +112,11 @@ all_double: basics_double sils sls bqp bqpb blls lpa lpb cqp dqp eqp \
             rqs sbls trs wcp tru arc nls
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 
+#broken lpb cqp llst qpc qp rqs trs
+#failed qpb
+#missing dicfs (glrt gltr)
+
+
 #  everything including current developments
 
 all_current: all_current_$(PRECIS)
@@ -402,7 +407,7 @@ qpc: $(MAT_QPC) galahad_qpc.F90
 
 qp: $(MAT_QP) galahad_qp.F90
 	( cd ../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     qp_standalone_silent PRECIS=double PWD=$(PWD)/../qp )
+                     qp_silent PRECIS=double PWD=$(PWD)/../qp )
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_qp"
 	$(SED) -f $(LSEDS) galahad_qp.F90 > galahad_qp1.F90
 	$(MEX) galahad_qp1.F90 -output galahad_qp \
@@ -1030,7 +1035,7 @@ galahad_qp_matlab_types.o: $(MLG)(galahad_qp_matlab_types.o)
 
 $(MLG)(galahad_qp_matlab_types.o): galahad_qp_matlab_types.F90
 	( cd ../qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     qp_standalone_silent PRECIS=double PWD=$(PWD)/../qp )
+                     qp_silent PRECIS=double PWD=$(PWD)/../qp )
 	@printf ' %-9s %-15s\t' "Compiling" "galahad_qp_matlab_types"
 	$(CP) galahad_qp_matlab_types.F90 $(OBJ)/galahad_qp_matlab_types.F90
 	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_qp_matlab_types.F90

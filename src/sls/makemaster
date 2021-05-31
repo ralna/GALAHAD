@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD SLS package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2021-05-25
+#  This version: 2021-05-29
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -22,8 +26,11 @@ DEPENDS = psls sbls cro fdc rqs trs
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = make_copyright make_norms make_tools make_userdata make_nlpt \
-           make_space make_cutest_functions make_sort make_lmt make_qpt
+TESTDEPS = make_lmt make_qpt
+
+#  tests to be performed (preprend with test_)
+
+TESTS = test_full test_cutest
 
 #  CUTEst example for tests
 

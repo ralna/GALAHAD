@@ -1,7 +1,11 @@
 #  Main body of the installation makefile for the GALAHAD TRANS package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-25
+#  This version: 2021-05-29
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -24,9 +28,9 @@ DEPENDS = ptrans
 
 TESTDEPS =
 
-#  CUTEst example for tests
+#  tests to be performed (preprend with test_)
 
-CUTEST_EXAMPLE =
+TESTS =
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================

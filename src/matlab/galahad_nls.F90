@@ -165,6 +165,7 @@
       USE GALAHAD_MATLAB
 !     USE GALAHAD_TRANSFER_MATLAB
       USE GALAHAD_NLS_MATLAB_TYPES
+      USE GALAHAD_USERDATA_double
       USE GALAHAD_NLS_double
       IMPLICIT NONE
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -228,7 +229,7 @@
 !  arguments for NLS
 
       TYPE ( NLPT_problem_type ) :: nlp
-      TYPE ( NLPT_userdata_type ) :: userdata
+      TYPE ( GALAHAD_userdata_type ) :: userdata
       TYPE ( NLS_data_type ), SAVE :: data
       TYPE ( NLS_control_type ), SAVE :: control
       TYPE ( NLS_inform_type ) :: inform

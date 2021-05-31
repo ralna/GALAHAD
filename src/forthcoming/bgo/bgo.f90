@@ -1540,7 +1540,7 @@
        data%X_best = nlp%X
        data%G_best = nlp%G
        data%P => data%TRB_data%P
-write(6,*) ' data%P associated '
+!write(6,*) ' data%P associated '
        IF ( inform%TRB_inform%status < 0 .AND. data%printe ) THEN
          IF ( inform%TRB_inform%status /= GALAHAD_error_max_iterations )       &
            WRITE( data%error, "( ' Help! exit from TRB status = ', I0 )" )     &

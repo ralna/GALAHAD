@@ -59,7 +59,7 @@
      IF ( s == - GALAHAD_error_upper_entry ) CYCLE
      IF ( s == - GALAHAD_error_sort ) CYCLE
      IF ( s > 24 .AND. s < 40 ) CYCLE
-     CALL TRAL_initialize( data, control )        ! Initialize control parameters
+     CALL TRAL_initialize( data, control, inform )  ! Initialize controls
 !    control%print_level = 1
      inform%status = 1                           ! set for initial entry
      nlp%n = 1
@@ -81,7 +81,7 @@
        SELECT CASE ( inform%status )              ! reverse communication
        CASE ( 2 )                                 ! Obtain the objective
          nlp%f = - nlp%X( 1 ) ** 2
-         data%eval_stat = 0                       ! record successful evaluation
+         data%eval_status = 0                     ! record successful evaluation
          IF ( control%alive_unit > 0 .AND. s == 40 ) THEN
            INQUIRE( FILE = control%alive_file, EXIST = alive )
            IF ( alive .AND. control%alive_unit > 0 ) THEN
@@ -100,10 +100,10 @@
          END IF
        CASE ( 3 )                                 ! Obtain the gradient
          nlp%G( 1 ) = - 2.0_wp * nlp%X( 1 )
-         data%eval_stat = 0                       ! record successful evaluation
+         data%eval_status = 0                     ! record successful evaluation
        CASE ( 5 )                                 ! Obtain Hessian-vector prod
          data%U( 1 ) = data%U( 1 ) - 2.0_wp * data%V( 1 )
-         data%eval_stat = 0                       ! record successful evaluation
+         data%eval_status = 0                     ! record successful evaluation
        CASE ( 6 )                                 ! Apply the preconditioner
          data%U( 1 ) = - data%V( 1 )
        CASE DEFAULT                               ! Terminal exit from loop
@@ -121,7 +121,7 @@
    END DO
 
    control%subproblem_direct = .TRUE.         ! Use a direct method
-   CALL TRAL_solve( nlp, control, inform, data, userdata,                       &
+   CALL TRAL_solve( nlp, control, inform, data, userdata,                      &
                    eval_F = FUN, eval_G = GRAD, eval_H = HESS )
 
    DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col )
@@ -146,7 +146,7 @@
    WRITE( 6, "( /, ' test of availible options ', / )" )
 
    DO i = 1, 7
-     CALL TRAL_initialize( data, control )     ! Initialize control parameters
+     CALL TRAL_initialize( data, control, inform )     ! Initialize controls
 !    control%print_level = 1
      inform%status = 1                        ! set for initial entry
      nlp%X = 1.0_wp                           ! start from one
@@ -167,7 +167,7 @@
        control%trs_control%print_level = 1
        OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.         ! Use a direct method
-       CALL TRAL_solve( nlp, control, inform, data, userdata,                   &
+       CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
        CLOSE( UNIT = scratch_out )
        DEALLOCATE( nlp%VNAMES )
@@ -185,30 +185,30 @@
        control%trs_control%error = scratch_out
        control%trs_control%print_level = 1
        OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-       CALL TRAL_solve( nlp, control, inform, data, userdata,                   &
+       CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 3 ) THEN
        control%preconditioner = 3
-       CALL TRAL_solve( nlp, control, inform, data, userdata,                   &
+       CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 4 ) THEN
        control%preconditioner = 5
-       CALL TRAL_solve( nlp, control, inform, data, userdata,                   &
+       CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 5 ) THEN
        control%preconditioner = - 2
-       CALL TRAL_solve( nlp, control, inform, data, userdata,                   &
+       CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 6 ) THEN
        control%model = 1
        control%maxit = 1000
-       CALL TRAL_solve( nlp, control, inform, data, userdata,                   &
+       CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
                        eval_F = FUN, eval_G = GRAD )
      ELSE IF ( i == 7 ) THEN
        control%model = 3
        control%maxit = 1000
-       CALL TRAL_solve( nlp, control, inform, data, userdata,                   &
+       CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
                        eval_F = FUN, eval_G = GRAD )
      END IF
      IF ( inform%status == 0 ) THEN
@@ -242,23 +242,23 @@
    WRITE( 6, "( /, ' full test of generic problems ', / )" )
 
    DO i = 1, 6
-     CALL TRAL_initialize( data, control )     ! Initialize control parameters
+     CALL TRAL_initialize( data, control, inform )     ! Initialize controls
 !    control%print_level = 1
      inform%status = 1                          ! set for initial entry
      nlp%X = 1.0_wp                             ! start from one
 
      IF ( i == 1 ) THEN
        control%subproblem_direct = .TRUE.       ! Use a direct method
-       CALL TRAL_solve( nlp, control, inform, data, userdata,                   &
+       CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 2 ) THEN
        control%hessian_available = .FALSE.      ! Hessian products will be used
-       CALL TRAL_solve( nlp, control, inform, data, userdata,                   &
+       CALL TRAL_solve( nlp, control, inform, data, userdata,                  &
                        eval_F = FUN, eval_G = GRAD,  eval_HPROD = HESSPROD )
      ELSE IF ( i == 3 ) THEN
        control%hessian_available = .FALSE.      ! Hessian products will be used
        control%preconditioner = - 3             ! User's preconditioner
-       CALL TRAL_solve( nlp, control, inform, data, userdata, eval_F = FUN,     &
+       CALL TRAL_solve( nlp, control, inform, data, userdata, eval_F = FUN,    &
               eval_G = GRAD, eval_HPROD = HESSPROD, eval_PREC = PREC )
      ELSE IF ( i == 4 .OR. i == 5 .OR. i == 6 ) THEN
        IF ( i == 4 ) THEN
@@ -273,33 +273,33 @@
          CASE ( 2 )                                 ! Obtain the objective
            nlp%f = ( nlp%X( 1 ) + nlp%X( 3 ) + p ) ** 2 +                      &
                    ( nlp%X( 2 ) + nlp%X( 3 ) ) ** 2 + COS( nlp%X( 1 ) )
-           data%eval_stat = 0                     ! record successful evaluation
+           data%eval_status = 0                   ! record successful evaluation
          CASE ( 3 )                               ! Obtain the gradient
            nlp%G( 1 ) = 2.0_wp * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) -             &
                         SIN( nlp%X( 1 ) )
            nlp%G( 2 ) = 2.0_wp * ( nlp%X( 2 ) + nlp%X( 3 ) )
            nlp%G( 3 ) = 2.0_wp * ( nlp%X( 1 ) + nlp%X( 3 ) + p ) +             &
                         2.0_wp * ( nlp%X( 2 ) + nlp%X( 3 ) )
-           data%eval_stat = 0                     ! record successful evaluation
+           data%eval_status = 0                   ! record successful evaluation
          CASE ( 4 )                               ! Obtain the Hessian
            nlp%H%val( 1 ) = 2.0_wp - COS( nlp%X( 1 ) )
            nlp%H%val( 2 ) = 2.0_wp
            nlp%H%val( 3 ) = 2.0_wp
            nlp%H%val( 4 ) = 2.0_wp
            nlp%H%val( 5 ) = 4.0_wp
-           data%eval_stat = 0                    ! record successful evaluation
+           data%eval_status = 0                  ! record successful evaluation
          CASE ( 5 )                              ! Obtain Hessian-vector prod
            data%U( 1 ) = data%U( 1 ) + 2.0_wp * ( data%V( 1 ) + data%V( 3 ) )  &
                            - COS( nlp%X( 1 ) ) * data%V( 1 )
            data%U( 2 ) = data%U( 2 ) + 2.0_wp * ( data%V( 2 ) + data%V( 3 ) )
            data%U( 3 ) = data%U( 3 ) + 2.0_wp * ( data%V( 1 ) + data%V( 2 ) +  &
                          2.0_wp * data%V( 3 ) )
-           data%eval_stat = 0                    ! record successful evaluation
+           data%eval_status = 0                  ! record successful evaluation
          CASE ( 6 )                              ! Apply the preconditioner
            data%U( 1 ) = 0.5_wp * data%V( 1 )
            data%U( 2 ) = 0.5_wp * data%V( 2 )
            data%U( 3 ) = 0.25_wp * data%V( 3 )
-           data%eval_stat = 0                    ! record successful evaluation
+           data%eval_status = 0                  ! record successful evaluation
          CASE DEFAULT                            ! Terminal exit from loop
            EXIT
          END SELECT
@@ -316,6 +316,7 @@
      CALL TRAL_terminate( data, control, inform )  ! delete internal workspace
    END DO
    DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+   WRITE( 6, "( /, ' ***  This package needs much more work!!' )" )
    END PROGRAM GALAHAD_TRAL_test_deck
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function

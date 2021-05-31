@@ -12,7 +12,7 @@
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
-     USE CUTEst_interface_double
+     USE GALAHAD_CUTEST_FUNCTIONS_double
      USE GALAHAD_TRTN_double
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_COPYRIGHT
@@ -47,7 +47,7 @@
 !   L o c a l   P a r a m e t e r s
 !-----------------------------------------------
 
-     INTEGER :: n, cutest_statu
+     INTEGER :: n, cutest_status
      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u
      LOGICAL :: is_specfile
 
@@ -99,7 +99,7 @@
 
 !  Set up data for the problem
 
-     CALL TRTN_initialize( data, control )
+     CALL TRTN_initialize( data, control, inform )
 
 !  Read any specfiles
 
