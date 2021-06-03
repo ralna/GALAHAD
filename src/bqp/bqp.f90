@@ -1101,10 +1101,10 @@
          reset_bnd = .TRUE.
        ELSE IF ( control%cold_start == 0 ) THEN
          IF ( B_stat( i ) < 0 ) THEN
-            prob%X_l( i ) =  prob%X_l( i )
+           prob%X_l( i ) = prob%X_l( i )
            reset_bnd = .TRUE.
          ELSE IF ( B_stat( i ) > 0 ) THEN
-            prob%X_l( i ) =  prob%X_u( i )
+           prob%X_l( i ) = prob%X_u( i )
            reset_bnd = .TRUE.
          END IF
        END IF
@@ -1112,6 +1112,10 @@
      IF ( reset_bnd .AND. data%printi ) WRITE( control%out,                    &
        "( ' ', /, A, '   **  Warning: one or more variable bounds reset ' )" ) &
          prefix
+
+!  project the initial point into the feasible region
+
+     prob%X = MAX( MIN( prob%X, prob%X_u ), prob%X_l )
 
 !  allocate workspace arrays
 
@@ -1722,12 +1726,12 @@ end do
              END IF
              GO TO 410
            ELSE
-do i = 1, data%n_free
+!do i = 1, data%n_free
 !write(6,"( ' p, hp ', 2ES12.4 )" ) data%P_free( i ), data%HP_free( i )
-end do
+!end do
 !write(6,*) ' curvature ', data%curvature
 !stop
-           inform%status = GALAHAD_error_inertia
+             inform%status = GALAHAD_error_inertia
              GO TO 900
            END IF
 
@@ -1905,6 +1909,7 @@ end do
          CASE ( : - 1 )
            IF ( data%printe ) WRITE( control%error, 2010 )                     &
              prefix, data%arcsearch_status, 'BQP_(in)exact_arcsearch'
+           inform%status = GALAHAD_error_inertia   
            GO TO 900
 
 !  form the matrix-vector product H * v
@@ -2312,6 +2317,7 @@ end do
 !          If status = 0, the minimizer has been found
 !          If status = 1, an initial entry has been made
 !          If status = 2 or 3, the vector HP = H * P is required
+!          If status < 0, the objective function is not convex
 !  n_free (INTEGER) the number of free variables at the initial point
 !  data   (BQP_arcsearch_data_type) private data that must be preserved between
 !          calls
@@ -2540,6 +2546,12 @@ end do
        data%gxt = data%gxt + G( NZ_p( i ) ) * P( NZ_p( i ) )
        data%hxt = data%hxt + HP( NZ_p( i ) ) * P( NZ_p( i ) )
      END DO
+
+!  exit if negative curvature is found
+
+     IF ( data%hxt < zero ) THEN
+       status = - 1 ;  RETURN
+     END IF
 
      IF ( data%explicit_h ) THEN
        data%arcsearch_iter = 0 ; data%USED = 0
@@ -2851,6 +2863,12 @@ end do
          END IF
        END IF
 
+!  exit if negative curvature is found
+
+     IF ( data%hxt < zero ) THEN
+       status = - 1 ;  RETURN
+     END IF
+
 !  End of the main loop. Jump back to calculate the next breakpoint
 
      GO TO 210
@@ -3002,6 +3020,7 @@ end do
 !          If status = 0, the minimizer has been found
 !          If status = 1, an initial entry has been made
 !          If status = 2, the vector HP = H * P is required
+!          If status < 0, the objective function is not convex
 !  n_free  (INTEGER) the number of free variables at the initial point
 !  data   (BQP_arcsearch_data_type) private data that must be preserved between
 !          calls
@@ -3253,8 +3272,12 @@ end do
 !  an approximate arc minimizer is found
 
        data%t = MIN( data%tamax, tbmax )
+
+!  exit if negative curvature is found
+
      ELSE
        data%t = tbmax
+       status = - 1 ;  RETURN
      END IF
 
 !  Calculate p, the difference between the projection of the point

@@ -1931,8 +1931,8 @@
            END IF
            GO TO 410
          ELSE
-write(6,*) ' curvature ', data%curvature
-         inform%status = GALAHAD_error_inertia
+!          write(6,*) ' curvature ', data%curvature
+           inform%status = GALAHAD_error_inertia
            GO TO 900
          END IF
 
