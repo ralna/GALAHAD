@@ -82,25 +82,27 @@ ma33_double: $(ma33d)
 
 test_ma33s: $(ma33s) $(OBJS)/ma33tests.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o ./run_ma33 $(RMA33S)
-	- ./run_ma33 < ./ma33tests.data >& ma33ds.output
+	- ./run_ma33 < ./ma33tests.data > ma33ds.output 2>&1
 	cat ma33ds.output
 	rm ./run_ma33
 
 test_ma33d: $(ma33d) $(OBJD)/ma33testd.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o ./run_ma33 $(RMA33D)
-	- ./run_ma33 < ./ma33testd.data2 >& ma33dd.output
+	- ./run_ma33 < ./ma33testd.data2 > ma33dd.output 2>&1
 	cat ma33dd.output
 	rm ./run_ma33
 
 test_new_hsl_ma33s: $(new_hsl_ma33s) $(OBJS)/new_hsl_ma33tests.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_new_hsl_ma33 $(RHSLMA33S)
-	- ./run_new_hsl_ma33 < ./new_hsl_ma33tests.data >& new_hsl_ma33ds.output
+	- ./run_new_hsl_ma33 < ./new_hsl_ma33tests.data \
+                             > new_hsl_ma33ds.output 2>&1
 	cat new_hsl_ma33ds.output
 	rm ./run_new_hsl_ma33
 
 test_new_hsl_ma33d: $(new_hsl_ma33d) $(OBJD)/new_hsl_ma33testd.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_new_hsl_ma33 $(RHSLMA33D)
-	- ./run_new_hsl_ma33 < ./new_hsl_ma33testd.data >& new_hsl_ma33dd.output
+	- ./run_new_hsl_ma33 < ./new_hsl_ma33testd.data \
+                             > new_hsl_ma33dd.output 2>&1
 	cat new_hsl_ma33dd.output
 	rm ./run_new_hsl_ma33
 

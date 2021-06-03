@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 03/06/2021 AT 091:45 GMT.
+! THIS VERSION: GALAHAD 3.3 - 03/06/2021 AT 09:45 GMT.
    PROGRAM GALAHAD_BQPB_EXAMPLE
    USE GALAHAD_BQPB_double                            ! double precision version
    USE GALAHAD_SYMBOLS
@@ -362,12 +362,12 @@
               1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty /)
    p%X_u = (/ 1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty,             &
               1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty /)
-!  p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 2.0_wp, 3.0_wp, 3.0_wp, 4.0_wp,        &
-!               4.0_wp, 5.0_wp, 5.0_wp, 6.0_wp, 6.0_wp, 7.0_wp, 7.0_wp,        &
-!               8.0_wp, 9.0_wp, 10.0_wp, 11.0_wp, 12.0_wp, 13.0_wp, 14.0_wp /)
-   p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 3.0_wp, 0.0_wp, 4.0_wp,        &
-                0.0_wp, 5.0_wp, 0.0_wp, 6.0_wp, 0.0_wp, 7.0_wp, 0.0_wp,        &
+   p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 2.0_wp, 3.0_wp, 3.0_wp, 4.0_wp,        &
+                4.0_wp, 5.0_wp, 5.0_wp, 6.0_wp, 6.0_wp, 7.0_wp, 7.0_wp,        &
                 8.0_wp, 9.0_wp, 10.0_wp, 11.0_wp, 12.0_wp, 13.0_wp, 14.0_wp /)
+!  p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 3.0_wp, 0.0_wp, 4.0_wp,        &
+!               0.0_wp, 5.0_wp, 0.0_wp, 6.0_wp, 0.0_wp, 7.0_wp, 0.0_wp,        &
+!               8.0_wp, 9.0_wp, 10.0_wp, 11.0_wp, 12.0_wp, 13.0_wp, 14.0_wp /)
    p%H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14,                 &
                 8, 9, 10, 11, 12, 13, 14 /)
    p%H%col = (/ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7,                      &
@@ -376,10 +376,10 @@
    CALL BQPB_initialize( data, control, info )
    control%infinity = infty
    control%print_level = 101
-!  control%out = scratch_out
-!  control%error = scratch_out
-   control%out = 6
-   control%error = 6
+   control%out = scratch_out
+   control%error = scratch_out
+!  control%out = 6
+!  control%error = 6
    p%X = 0.0_wp ; p%Z = 0.0_wp
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
    CALL BQPB_solve( p, B_stat, data, control, info, userdata )
@@ -396,7 +396,7 @@
    DEALLOCATE( p%G, p%X_l, p%X_u )
    DEALLOCATE( p%X, p%Z, B_stat )
    DEALLOCATE( p%H%ptr )
-stop
+
 !  Second problem
 
    n = 14 ; h_ne = 14

@@ -245,14 +245,14 @@ test_spec_double: lancelotds
 lancelotss: $(OBJECTSS) $(OBJS)/lancelots.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot $(OBJS)/lancelots.o \
             -L$(OBJS) $(LIBS)
-	- ./run_lancelot >& lancelotss.output
+	- ./run_lancelot > lancelotss.output 2>&1
 	cat lancelotss.output
 	rm ./run_lancelot
 
 lancelotds: $(OBJECTSD) $(OBJD)/lancelots.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot $(OBJD)/lancelots.o \
             -L$(OBJD) $(LIBS)
-	- ./run_lancelot >& lancelotds.output
+	- ./run_lancelot > lancelotds.output 2>&1
 	cat lancelotds.output
 	rm ./run_lancelot
 
@@ -260,7 +260,7 @@ lancelotst: $(OBJECTSS) $(OBJS)/lancelott.o
 	echo " Exhaustive test of subroutine interface to LANCELOT B"
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot $(OBJS)/lancelott.o \
            -L$(OBJS) $(LIBS)
-	- ./run_lancelot >& lancelotst.output
+	- ./run_lancelot > lancelotst.output 2>&1
 	cat lancelotst.output
 	rm ./run_lancelot
 
@@ -268,21 +268,21 @@ lancelotdt: $(OBJECTSD) $(OBJD)/lancelott.o
 	echo " Exhaustive test of subroutine interface to LANCELOT B"
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot $(OBJD)/lancelott.o \
             -L$(OBJD) $(LIBS)
-	- ./run_lancelot >& lancelotdt.output
+	- ./run_lancelot > lancelotdt.output 2>&1
 	cat lancelotdt.output
 	rm ./run_lancelot
 
 lancelot_steeringss: $(OBJECTSSTEERINGS) $(OBJS)/lancelot_steerings.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_steering \
             $(OBJS)/lancelot_steerings.o -L$(OBJS) $(LIBS)
-	- ./run_lancelot_steering >& lancelot_steeringss.output
+	- ./run_lancelot_steering > lancelot_steeringss.output 2>&1
 	cat lancelot_steeringss.output
 	rm ./run_lancelot_steering
 
 lancelot_steeringds: $(OBJECTSSTEERINGD) $(OBJD)/lancelot_steerings.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_steering \
           $(OBJD)/lancelot_steerings.o -L$(OBJD) $(LIBS)
-	- ./run_lancelot_steering >& lancelot_steeringds.output
+	- ./run_lancelot_steering > lancelot_steeringds.output 2>&1
 	cat lancelot_steeringds.output
 	rm ./run_lancelot_steering
 
@@ -290,7 +290,7 @@ lancelot_steeringst: $(OBJECTSSTEERINGS) $(OBJS)/lancelot_steeringt.o
 	echo " Exhaustive test of subroutine interface to LANCELOT B"
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_steering \
           $(OBJS)/lancelot_steeringt.o -L$(OBJS) $(LIBS)
-	- ./run_lancelot_steering >& lancelot_steeringst.output
+	- ./run_lancelot_steering > lancelot_steeringst.output 2>&1
 	cat lancelot_steeringst.output
 	rm ./run_lancelot_steering
 
@@ -298,21 +298,21 @@ lancelot_steeringdt: $(OBJECTSSTEERINGD) $(OBJD)/lancelot_steeringt.o
 	echo " Exhaustive test of subroutine interface to LANCELOT B"
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_steering \
           $(OBJD)/lancelot_steeringt.o -L$(OBJD) $(LIBS)
-	- ./run_lancelot_steering >& lancelot_steeringdt.output
+	- ./run_lancelot_steering > lancelot_steeringdt.output 2>&1
 	cat lancelot_steeringdt.output
 	rm ./run_lancelot_steering
 
 lancelot_simpless: $(OBJECTSS) $(OBJS)/lancelot_simples.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_simple \
            $(OBJS)/lancelot_simples.o -L$(OBJS) $(LIBS)
-	- ./run_lancelot_simple >& lancelot_simpless.output
+	- ./run_lancelot_simple > lancelot_simpless.output 2>&1
 	cat lancelot_simpless.output
 	rm ./run_lancelot_simple
 
 lancelot_simpleds: $(OBJECTSD) $(OBJD)/lancelot_simples.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_simple \
            $(OBJD)/lancelot_simples.o -L$(OBJD) $(LIBS)
-	- ./run_lancelot_simple >& lancelot_simpleds.output
+	- ./run_lancelot_simple > lancelot_simpleds.output 2>&1
 	cat lancelot_simpleds.output
 	rm ./run_lancelot_simple
 
@@ -320,7 +320,7 @@ lancelot_simplest: $(OBJECTSS) $(OBJS)/lancelot_simplet.o
 	echo " Exhaustive test of subroutine interface to LANCELOT B"
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_simple \
            $(OBJS)/lancelot_simplet.o -L$(OBJS) $(LIBS)
-	- ./run_lancelot_simple >& lancelot_simplest.output
+	- ./run_lancelot_simple > lancelot_simplest.output 2>&1
 	cat lancelot_simplest.output
 	rm ./run_lancelot_simple
 
@@ -328,7 +328,7 @@ lancelot_simpledt: $(OBJECTSD) $(OBJD)/lancelot_simplet.o
 	echo " Exhaustive test of subroutine interface to LANCELOT B"
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_simple \
             $(OBJD)/lancelot_simplet.o -L$(OBJD) $(LIBS)
-	- ./run_lancelot_simple >& lancelot_simpledt.output
+	- ./run_lancelot_simple > lancelot_simpledt.output 2>&1
 	cat lancelot_simpledt.output
 	rm ./run_lancelot_simple
 

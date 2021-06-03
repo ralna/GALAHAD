@@ -375,7 +375,7 @@ In order to get GALAHAD working, here is what you need to do.
 
     and issue the command
 
-      make -f $GALAHAD/makefiles/# test
+      make -f $GALAHAD/makefiles/# tests
 
     where # is as 14 above - for a single precision installation, the command is
 
@@ -427,4 +427,4 @@ Philippe Toint
 
 For GALAHAD productions
 25 April 2002
-This version: 30 October 2018
+This version: 3 June 2021

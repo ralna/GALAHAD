@@ -25,7 +25,7 @@
 !        ----------------------------------------------------------------
 
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_STRING, ONLY: STRING_integer_6, STRING_real_7
+     USE GALAHAD_STRING, ONLY: STRING_integer_right_6, STRING_real_7
      USE GALAHAD_SPACE_double
      USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build, SORT_heapsort_smallest
      USE GALAHAD_SBLS_double
@@ -1487,23 +1487,23 @@
        IF ( data%printi ) THEN
          IF ( inform%iter > 1 ) THEN
            WRITE( data%out, "( A, 2A6, ES22.14, 2ES10.3, 2A6, A7 )" )          &
-             prefix, STRING_integer_6( inform%iter ),                          &
-             STRING_integer_6( data%cg_iter ),                                 &
+             prefix, STRING_integer_right_6( inform%iter ),                    &
+             STRING_integer_right_6( data%cg_iter ),                           &
              inform%obj, inform%norm_pg, data%norm_step,                       &
-             STRING_integer_6( data%n_free ),                                  &
-             STRING_integer_6( data%change_status ),                           &
+             STRING_integer_right_6( data%n_free ),                            &
+             STRING_integer_right_6( data%change_status ),                     &
              STRING_real_7( inform%time%total )
          ELSE IF ( inform%iter == 1 ) THEN
            WRITE( data%out, "( A, 2A6, ES22.14, 2ES10.3, A6, 5X, '-',  A7 )" ) &
-             prefix, STRING_integer_6( inform%iter ),                          &
-             STRING_integer_6( data%cg_iter ),                                 &
+             prefix, STRING_integer_right_6( inform%iter ),                    &
+             STRING_integer_right_6( data%cg_iter ),                           &
              inform%obj, inform%norm_pg, data%norm_step,                       &
-             STRING_integer_6( data%n_free ),                                  &
+             STRING_integer_right_6( data%n_free ),                            &
              STRING_real_7( inform%time%total )
          ELSE
            WRITE( data%out, "( A, A6, '     -', ES22.14, ES10.3,               &
           & '      -        -     -', A7 )" )                                  &
-             prefix, STRING_integer_6( inform%iter ),                          &
+             prefix, STRING_integer_right_6( inform%iter ),                    &
              inform%obj, inform%norm_pg,                                       &
              STRING_real_7( inform%time%total )
          END IF
@@ -1710,9 +1710,9 @@
 !  otherwise, the objective is unbounded ....
 
            ELSE IF ( curvature >= - control%zero_curvature * data%pnrmsq ) THEN
-do i = 1, data%n_free
+!do i = 1, data%n_free
 !write(6,"( ' p, hp ', 2ES12.4 )" ) data%P_free( i ), data%HP_free( i )
-end do
+!end do
 !stop
 !write(6,*) ' curvature ', data%curvature
              IF ( data% reverse ) THEN

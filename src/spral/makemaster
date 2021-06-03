@@ -158,8 +158,9 @@ ssids_double: $(SSIDSD)
 ssidsds: $(SSIDSDS)
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_ssids $(RSSIDSDS)
-#	- ../ssids//run_ssids < ../ssids/ssidss.data
-	- ../ssids//run_ssids < ../ssids/ssidss.data >& ../ssids/ssidsds.output
+#	- ../ssids/run_ssids < ../ssids/ssidss.data
+	- ../ssids/run_ssids < ../ssids/ssidss.data \
+                             > ../ssids/ssidsds.output 2>&1
 	cat ../ssids/ssidsds.output
 	rm ../ssids/run_ssids
 
@@ -173,8 +174,9 @@ ssidsds_valgrind: $(SSIDSDS)
 ssidsds_cuda: $(SSIDSDS)
 	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
                       $(RSSIDSDS) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
-#	- ../ssids//run_ssids < ../ssids/ssidss.data
-	- ../ssids//run_ssids < ../ssids/ssidss.data >& ../ssids/ssidsds.output
+#	- ../ssids/run_ssids < ../ssids/ssidss.data
+	- ../ssids/run_ssids < ../ssids/ssidss.data \
+                             > ../ssids/ssidsds.output 2>&1
 	cat ../ssids/ssidsds.output
 	rm ../ssids/run_ssids
 
@@ -190,15 +192,15 @@ ssidsdt: $(SSIDSDT)
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_ssids $(RSSIDSDT)
 #	- ../ssids/run_ssids
-	- ../ssids/run_ssids  >& ../ssids/ssidsdt.output
+	- ../ssids/run_ssids  > ../ssids/ssidsdt.output 2>&1
 	cat ../ssids/ssidsdt.output
 	rm ../ssids/run_ssids
 
 ssidsdt_cuda: $(SSIDSDT)
 	cd ../ssids ; $(CUDACOMP) $(CUDAOPENMP) -o run_ssids \
                       $(RSSIDSDT) $(CUDALIBS) $(RUNFFLAGSCUDA) $(SPECIAL)
-#	- ../ssids//run_ssids
-	- ../ssids//run_ssids >& ../ssids/ssidsdt.output
+#	- ../ssids/run_ssids
+	- ../ssids/run_ssids > ../ssids/ssidsdt.output 2>&1
 	cat ../ssids/ssidsdt.output
 	rm ../ssids/run_ssids
 
@@ -222,7 +224,8 @@ ssidsss: $(SSIDSSS)
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_ssids $(RSSIDSSS)
 #	- ../ssids/run_ssids < ../ssids/ssidss.data
-	- ../ssids/run_ssids < ../ssids/ssidss.data >& ../ssids/ssidss.output
+	- ../ssids/run_ssids < ../ssids/ssidss.data \
+                             > ../ssids/ssidss.output 2>&1
 	cat ../ssids/ssidss.output
 	rm ../ssids/run_ssids
 
@@ -231,7 +234,7 @@ ssidsst: $(SSIDSST)
 	cd ../ssids ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
           -o run_ssids $(RSSIDSST)
 #	- ../ssids/run_ssids < ../ssids/ssidss.data
-	- ../ssids/run_ssids >& ../ssids/ssidst.output
+	- ../ssids/run_ssids > ../ssids/ssidst.output 2>&1
 	cat ../ssids/ssidst.output
 	rm ../ssids/run_ssids
 

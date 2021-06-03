@@ -179,11 +179,11 @@
        ALLOCATE( p%H%val( h_ne ), p%H%row( 0 ), p%H%col( h_ne ) )
        IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
        CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
-       p%H%col = (/ 1, 2, 2, 3 /)
-       p%H%ptr = (/ 1, 3, 4, 5 /)
+       p%H%col = (/ 1, 1, 2, 3 /)
+       p%H%ptr = (/ 1, 2, 4, 5 /)
      ELSE IF ( data_storage_type == - 2 ) THEN      ! dense storage
        st = 'D'
-       ALLOCATE( p%H%val(n*(n+1)/2), p%H%row(0), p%H%col(n*(n+1)/2))
+       ALLOCATE( p%H%val(n*(n+1)/2), p%H%row(0), p%H%col(0))
        IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
        CALL SMT_put( p%H%type, 'DENSE', smt_stat )
      ELSE IF ( data_storage_type == - 3 ) THEN      ! diagonal H, dense A

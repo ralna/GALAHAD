@@ -81,7 +81,7 @@ ma57ds: blas ma27 zd11 $(HLGD)(mc71d.o) \
                $(HLGD)(mc59d.o) $(HLGD)(mc64d.o) $(HLGD)(hsl_ma57d.o)
 	cd $(MA57) ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) \
             -o run_ma57 ma57ds.f90 -L$(OBJD) $(LIBS)
-	$(MA57)//run_ma57 < $(MA57)/ma57s.data >& $(MA57)/ma57ds.output
+	$(MA57)//run_ma57 < $(MA57)/ma57s.data > $(MA57)/ma57ds.output 2>&1
 	cat $(MA57)/ma57ds.output
 	rm $(MA57)/run_ma57
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 03/05/2021 AT 11:50 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ B Q P B   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -25,7 +25,7 @@
 !     ---------------------------------------------------------------------
 
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_STRING, ONLY: STRING_integer_6, STRING_real_7
+     USE GALAHAD_STRING, ONLY: STRING_integer_right_6, STRING_real_7
      USE GALAHAD_SPACE_double
      USE GALAHAD_SBLS_double
      USE GALAHAD_QPT_double
@@ -1123,6 +1123,10 @@
        "( ' ', /, A, '   **  Warning: one or more variable bounds reset ' )" ) &
          prefix
 
+!  project the initial point into the feasible region
+
+     prob%X = MAX( MIN( prob%X, prob%X_u ), prob%X_l )
+
 !  allocate workspace arrays
 
      array_name = 'bqpb: data%FREE'
@@ -1555,20 +1559,20 @@
        IF ( data%printi ) THEN
          IF ( inform%iter > 1 ) THEN
            WRITE( data%out, "( A, 2A6, ES22.14, 3ES10.3, ES8.1, A7 )" )        &
-             prefix, STRING_integer_6( inform%iter ),                          &
-             STRING_integer_6( data%cg_iter ),                                 &
+             prefix, STRING_integer_right_6( inform%iter ),                    &
+             STRING_integer_right_6( data%cg_iter ),                           &
              inform%obj, inform%norm_pg, inform%slknes, data%alpha, data%mu,   &
              STRING_real_7( inform%time%total )
          ELSE IF ( inform%iter == 1 ) THEN
            WRITE( data%out, "( A, 2A6, ES22.14, 3ES10.3, ES8.1, A7 )" )        &
-             prefix, STRING_integer_6( inform%iter ),                          &
-             STRING_integer_6( data%cg_iter ),                                 &
+             prefix, STRING_integer_right_6( inform%iter ),                    &
+             STRING_integer_right_6( data%cg_iter ),                           &
              inform%obj, inform%norm_pg, inform%slknes, data%alpha, data%mu,   &
              STRING_real_7( inform%time%total )
          ELSE
            WRITE( data%out, "( A, A6, '     -', ES22.14, 2ES10.3,              &
           & '      -   ', ES8.1, A7 )" )                                       &
-             prefix, STRING_integer_6( inform%iter ),                          &
+             prefix, STRING_integer_right_6( inform%iter ),                    &
              inform%obj, inform%norm_pg, inform%slknes, data%mu,               &
              STRING_real_7( inform%time%total )
          END IF
@@ -1874,7 +1878,7 @@
 
          ELSE
            reverse%V( : prob%n ) = data%P_cg( :  prob%n )
-           data%branch = 400 ; inform%status = 3 ; RETURN
+           data%branch = 400 ; inform%status = 2 ; RETURN
          END IF
 
 !  record the free components of H * p

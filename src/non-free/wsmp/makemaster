@@ -77,7 +77,7 @@ wsmpdt: $(WSMPDT)
 	echo " Exhaustive test of subroutine interface to wsmp"
 	cd ../wsmp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_wsmp \
                          $(RWSMPDT)
-#	- ../wsmp/run_wsmp >& ../wsmp/wsmpdt.output
+#	- ../wsmp/run_wsmp > ../wsmp/wsmpdt.output 2>&1
 #	cat ../wsmp/wsmpdt.output
 	- ../wsmp/run_wsmp
 	rm ../wsmp/run_wsmp
@@ -86,7 +86,7 @@ wsmpst: $(WSMPST)
 	echo " Exhaustive test of subroutine interface to wsmp"
 	cd ../wsmp ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_wsmp \
                          $(RWSMPST)
-	- ../wsmp/run_wsmp >& ../wsmp/wsmpt.output
+	- ../wsmp/run_wsmp > ../wsmp/wsmpt.output 2>&1
 	cat ../wsmp/wsmpt.output
 	rm ../wsmp/run_wsmp
 

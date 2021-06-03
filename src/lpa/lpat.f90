@@ -193,6 +193,7 @@
 
    DO data_storage_type = - 2, - 2
 !  DO data_storage_type = - 1, - 1
+!  DO data_storage_type = 0, 0
 !  DO data_storage_type = - 2, 0
      CALL LPA_initialize( data, control, inform )
      control%infinity = 0.1_wp * infty
@@ -216,7 +217,7 @@
        p%A%ptr = (/ 1, 3, 5, 7, 9, 11, 13, 15 /)
      ELSE IF ( data_storage_type == - 2 ) THEN    ! dense storage
        st = 'D'
-       ALLOCATE( p%A%val( n * m ) )
+       ALLOCATE( p%A%val( m * n ) )
        p%A%val = (/ 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,    &
                     1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,    &
                     0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,    &

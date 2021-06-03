@@ -586,7 +586,7 @@ SCALED_IDENTITY   -2    2    0        0     tiny
       ma86        0     tiny
       sils        0     tiny
       ma97        0     tiny
-     ssids        0     huge
+     ssids      -10
    pardiso       -9
       wsmp       -9
 

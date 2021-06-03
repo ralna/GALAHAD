@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 18/01/2010 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 03/06/2021 AT 11:45 GMT.
    PROGRAM GALAHAD_BQPB_SECOND_EXAMPLE
    USE GALAHAD_BQPB_double         ! double precision version
    IMPLICIT NONE
@@ -31,10 +31,10 @@
    ROW = (/ 1, 2, 1, 2, 3 /)                   ! for matrix-vector products
    VAL = (/ 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp, 3.0_wp /)
 ! problem data complete   
-   CALL BQPB_initialize( data, control )       ! Initialize control parameters
-   control%infinity = infinity                ! Set infinity
-!  control%print_level = 1                    ! print one line/iteration
-   control%maxit = 40                         ! limit the # iterations
+   CALL BQPB_initialize( data, control, inform )  ! Initialize controls
+   control%infinity = 0.1_wp * infinity           ! Set infinity
+   control%print_level = 1                    ! print one line/iteration
+   control%maxit = 100                        ! limit the # iterations
 !  control%print_gap = 100                    ! print every 100 terations
 !  control%exact_gcp = .FALSE.
    nflag = 0 ; FLAG = 0
@@ -54,34 +54,6 @@
          DO k = PTR( j ), PTR( j + 1 ) - 1
            i = ROW( k )
            reverse%PROD( i ) = reverse%PROD( i ) + VAL( k ) * v_j
-         END DO
-       END DO
-       GO TO 10
-     CASE ( 3 )          ! compute H * v for sparse v
-       reverse%PROD = 0.0_wp
-       DO l = reverse%nz_v_start, reverse%nz_v_end
-         j = reverse%NZ_v( l ) ; v_j = reverse%V( j )
-         DO k = PTR( j ), PTR( j + 1 ) - 1
-           i = ROW( k )
-           reverse%PROD( i ) = reverse%PROD( i ) + VAL( k ) * v_j
-         END DO
-       END DO
-       GO TO 10
-     CASE ( 4 )          ! compute H * v for very sparse v and record nonzeros
-       nflag = nflag + 1
-       reverse%nz_prod = 0
-       DO l = reverse%nz_v_start, reverse%nz_v_end
-         j = reverse%NZ_v( l ) ; v_j = reverse%V( j )
-         DO k = PTR( j ), PTR( j + 1 ) - 1
-           i = ROW( k )
-           IF ( FLAG( i ) < nflag ) THEN
-             FLAG( i ) = nflag
-             reverse%PROD( i ) = VAL( k ) * v_j
-             reverse%nz_prod_end = reverse%nz_prod_end + 1
-             reverse%NZ_prod( reverse%nz_prod_end ) = i
-           ELSE
-             reverse%PROD( i ) = reverse%PROD( i ) + VAL( k ) * v_j
-           END IF
          END DO
        END DO
        GO TO 10

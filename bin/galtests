@@ -92,7 +92,7 @@ echo "testing package $2"
 for prob in `cat $3`; do
    if [ -e $prob ] || [ -e $prob.SIF ] ; then
 #  echo "the next test example is $prob"
-    ( eval sdgal $1 $2 $prob > res$2/$prob.out ) >& /tmp/warnings_prob
+    ( eval sdgal $1 $2 $prob > res$2/$prob.out ) > /tmp/warnings_prob 2>&1
     tail -n -$lines $results
     tail -n -$lines $results >> /tmp/$2.temp_out
     if [ -s /tmp/warnings_prob ] ; then

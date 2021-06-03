@@ -584,7 +584,7 @@ if [[ $PROFILE == "1" ]]; then
 #  which pixie > /dev/null 2>&1
   which gprof > /dev/null 2>&1
   if [[ $? == "0" ]]; then
-#   atom $EXEC/$galmin -tool pixie -w0 -toolargs="-quiet" >  2>&1/dev/null
+#   atom $EXEC/$galmin -tool pixie -w0 -toolargs="-quiet" >  2>1/dev/null
 #    pixie -quiet $EXEC/$galmin > /dev/null 2>&1
 #    $EXEC/$galmin.pixie < $probname
 #    prof -pixie -lines $EXEC/$galmin > $EXEC/$galmin.pixie.out
@@ -615,6 +615,6 @@ fi
 
 #  tidy up the current directory, deleting all junk if required
 
-#if [[ $KEEP == "0" ]]; then
-#  $RM $EXEC/$galmin
-#fi
+if [[ $KEEP == "0" ]]; then
+  $RM $EXEC/$galmin
+fi

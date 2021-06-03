@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 18/01/2010 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 03/06/2021 AT 11:45 GMT.
    PROGRAM GALAHAD_BQPB_EXAMPLE
    USE GALAHAD_BQPB_double         ! double precision version
    IMPLICIT NONE
@@ -30,9 +30,9 @@
    p%H%col = (/ 1, 2, 1, 3 /) ; p%H%ne = h_ne
 ! problem data complete   
    CALL BQPB_initialize( data, control, inform ) ! Initialize control parameters
-   control%infinity = infinity                ! Set infinity
-!  control%print_level = 1                    ! print one line/iteration
-   control%maxit = 4000                         ! limit the # iterations
+   control%infinity = 0.1_wp * infinity       ! Set infinity
+   control%print_level = 1                    ! print one line/iteration
+   control%maxit = 100                        ! limit the # iterations
 !  control%print_gap = 100                    ! print every 100 terations
 !  control%exact_gcp = .FALSE.
 !  control%prefix = '" - BQPB:"                     '

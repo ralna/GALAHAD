@@ -408,7 +408,7 @@ where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
 \itt{zero\_curvature} is a scalar variable of type default \realdp
-that specifies the threshold below which any constraint curvature
+that specifies the threshold below which any objective-function curvature
 encountered is regarded as zero.
 The default is {\tt zero\_curvature =} $10 u$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in 
@@ -997,9 +997,6 @@ and {\tt inform\%bad\_alloc} respectively.
 
 \itt{\galerrbadbounds.} The bound constraints are inconsistent.
 
-\itt{\galerrunbounded.} The objective function appears to be unbounded 
-  from below on the feasible set.
-
 \itt{\galerranalysis.} The analysis phase of the factorization failed; 
   the return status from the factorization
     package is given in the component {\tt inform\%fac\-t\-or\_status}.
@@ -1021,6 +1018,9 @@ and {\tt inform\%bad\_alloc} respectively.
 \itt{\galerrcpulimit.} The CPU time limit has been reached. This may happen if
     {\tt control\%cpu\_time\_limit} is too small, but may also be symptomatic 
     of a badly scaled problem.
+
+\itt{\galerrinertia.} The Hessian matrix $\bmH$ of the objective function 
+  appears to be indefinite.
 
 \itt{\galerrupperentry.} An entry from the strict upper triangle of $\bmH$ 
  has been specified.
@@ -1289,11 +1289,11 @@ SIAM Journal on Numerical Analysis {\bf 25} 433-460,
 
 \galexample
 Suppose we wish to minimize
-$\half x_1^2 + x_2^2 + x_2 x_3 + \threehalves x_3^2 + 2 x_2 + 1$
+$\half x_1^2 + x_2^2 + x_1 x_2 + \threehalves x_3^2 + 2 x_2 + 1$
 subject to the simple bounds
 $-1  \leq  x_{1}  \leq  1$ and $x_{3}  \leq  2$.
 Then, on writing the data for this problem as
-\disp{\bmH = \mat{ccc}{1 & & \\ & 2 & 1 \\ &  1 & 3}, \;\;
+\disp{\bmH = \mat{ccc}{1 & 1 & \\ 1 & 2 & \\ & & 3}, \;\;
  \bmg = \vect{ 0 \\ 2 \\ 0 }, \;\;
 \bmx^{l} = \vect{ -1 \\ - \infty \\ - \infty } \tim{and}
 \bmx^{u} = \vect{ 1 \\ \infty \\ 2 }}

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 03/06/2021 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ S T R I N G   M O D U L E  *-*-*-*-*-*-*-*-*
 
@@ -26,7 +26,8 @@
      PUBLIC :: STRING_pleural, STRING_verb_pleural, STRING_are, STRING_have,   &
                STRING_ies, STRING_their, STRING_sign, STRING_choice,           &
                STRING_lower, STRING_upper, STRING_lower_word,                  &
-               STRING_upper_word, STRING_put, STRING_get, STRING_integer_6,    &
+               STRING_upper_word, STRING_put, STRING_get,                      &
+               STRING_integer_6, STRING_integer_right_6,                       &
                STRING_real_7, STRING_real_12, STRING_trim_real_24,             &
                STRING_trim_integer_16, STRING_es, STRING_es12,                 &
                STRING_exponent, STRING_ordinal
@@ -651,6 +652,50 @@
 !  End of STRING_integer_6
 
      END FUNCTION STRING_integer_6
+
+!-*-  G A L A H A D -  S T R I N G _ i n t e g e r _ 6   F U N C T I O N  -*-*-
+
+     FUNCTION STRING_integer_right_6( i )
+
+     CHARACTER ( LEN = 6 ) :: STRING_integer_right_6
+
+!  Obtain a 6 character representation of the integer i.
+!  Extracted from LANCELOT module OTHERS
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     INTEGER, INTENT( IN ) :: i
+
+!  Local variables
+
+     INTEGER :: ik, im, ig
+     CHARACTER :: ci * 6
+
+     string_integer_right_6( 1 : 6 ) = '       '
+     ik = i / 1000
+     im = ik / 1000
+     ig = im / 1000
+     IF ( i <= 999999 ) THEN
+       WRITE( UNIT = ci, FMT = "( I6 )" ) i
+       string_integer_right_6 = ci
+     ELSE IF ( ik <= 99999 ) THEN
+       WRITE( UNIT = ci( 1 : 5 ), FMT = "( I5 )" ) ik
+       string_integer_right_6 = ci( 1 : 5 ) // 'k'
+     ELSE IF ( im <= 99999 ) THEN
+       WRITE( UNIT = ci( 1 : 5 ), FMT = "( I5 )" ) im
+       string_integer_right_6 = ci( 1 : 5 ) // 'm'
+     ELSE
+       WRITE( UNIT = ci( 1 : 5 ), FMT = "( I5 )" ) ig
+       string_integer_right_6 = ci( 1 : 5 ) // 'g'
+     END IF
+
+     RETURN
+
+!  End of string_integer_right_6
+
+     END FUNCTION string_integer_right_6
 
 !-  G A L A H A D -  S T R I N G _ r e a l _ 7 _ s i n g l e  F U N C T I O N -
 

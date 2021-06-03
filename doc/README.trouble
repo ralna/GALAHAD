@@ -42,6 +42,26 @@ Check (and edit if necessary) the generated script header in the file in
 
 that corresponds to the system you installed.
 
+If you encounter the message
+
+ /bin/sh: 1: Syntax error: Bad fd number
+
+when trying to run a GALAHAD script, this is likely beacuse the standard
+Bourne-shell /bin/sh is symbolicaly linked to the rather poor /bin/dash
+implementation on some Linux systems. This can be avoided by
+
+(a) issuing the commands
+
+  sudo mv /bin/sh /bin/sh.orig
+  sudo ln -s /bin/bash /bin/sh
+
+to make the much better bash implementation the default, or 
+
+(b) executing the command 
+
+  dpkg-reconfigure dash
+
+and say "no" to making dash (rather than bash) the default.
 
 4. KNOWN PROBLEMS WITH SPECIFIC SYSTEMS
 ---------------------------------------

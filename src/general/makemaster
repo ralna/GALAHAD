@@ -648,33 +648,33 @@ minpack:
 
 smtds: $(SMTDS)
 	cd ../smt ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_smt $(RSMTDS)
-	- ../smt/run_smt >& ../smt/smtds.output
+	- ../smt/run_smt > ../smt/smtds.output 2>&1
 	cat ../smt/smtds.output
 	rm ../smt/run_smt
 
 smtdt: $(SMTDT)
 	echo " Exhaustive test of subroutine interface to smt"
 	cd ../smt ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_smt $(RSMTDT)
-	- ../smt/run_smt >& ../smt/smtdt.output
+	- ../smt/run_smt > ../smt/smtdt.output 2>&1
 	cat ../smt/smtdt.output
 	rm ../smt/run_smt
 
 smtss: $(SMTSS)
 	cd ../smt ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_smt $(RSMTSS)
-	- ../smt/run_smt >& ../smt/smts.output
+	- ../smt/run_smt > ../smt/smts.output 2>&1
 	cat ../smt/smts.output
 	rm ../smt/run_smt
 
 smtst: $(SMTST)
 	echo " Exhaustive test of subroutine interface to smt"
 	cd ../smt ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_smt $(RSMTST)
-	- ../smt/run_smt >& ../smt/smtt.output
+	- ../smt/run_smt > ../smt/smtt.output 2>&1
 	cat ../smt/smtt.output
 	rm ../smt/run_smt
 
 silsds: $(SILSDS)
 	cd ../sils ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sils $(RSILSDS)
-	- ../sils//run_sils < ../sils/silss.data >& ../sils/silsds.output
+	- ../sils//run_sils < ../sils/silss.data > ../sils/silsds.output 2>&1
 	cat ../sils/silsds.output
 	rm ../sils/run_sils
 
@@ -682,13 +682,13 @@ silsdt: $(SILSDT)
 	echo " Exhaustive test of subroutine interface to sils"
 	cd ../sils ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sils \
                        $(RSILSDT) ym01ad.f fa04ad.f
-	- ../sils/run_sils  < ../sils/silst.data >& ../sils/silsdt.output
+	- ../sils/run_sils  < ../sils/silst.data > ../sils/silsdt.output 2>&1
 	cat ../sils/silsdt.output
 	rm ../sils/run_sils
 
 silsss: $(SILSSS)
 	cd ../sils ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sils $(RSILSSS)
-	- ../sils/run_sils < ../sils/silss.data >& ../sils/silss.output
+	- ../sils/run_sils < ../sils/silss.data > ../sils/silss.output 2>&1
 	cat ../sils/silss.output
 	rm ../sils/run_sils
 
@@ -696,13 +696,13 @@ silsst: $(SILSST)
 	echo " Exhaustive test of subroutine interface to sils"
 	cd ../sils ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sils \
                        $(RSILSST) ym01a.f fa04a.f
-	- ../sils/run_sils < ../sils/silst.data >& ../sils/silst.output
+	- ../sils/run_sils < ../sils/silst.data > ../sils/silst.output 2>&1
 	cat ../sils/silst.output
 	rm ../sils/run_sils
 
 glsdsbig: $(GLSDSBIG)
 	cd ../gls ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_gls $(RGLSDSBIG)
-#	- ../gls//run_gls < ../gls/glssbig.data >& ../gls/glsdsbig.output
+#	- ../gls//run_gls < ../gls/glssbig.data > ../gls/glsdsbig.output 2>&1
 #	cat ../gls/glsdsbig.output
 	- ../gls//run_gls < ../gls/glssbig.data
 	rm ../gls/run_gls
@@ -710,7 +710,7 @@ glsdsbig: $(GLSDSBIG)
 glsds: $(GLSDS)
 	echo "$(GLSDS)"
 	cd ../gls ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_gls $(RGLSDS)
-	- ../gls//run_gls < ../gls/glss.data >& ../gls/glsds.output
+	- ../gls//run_gls < ../gls/glss.data > ../gls/glsds.output 2>&1
 	cat ../gls/glsds.output
 	rm ../gls/run_gls
 
@@ -718,7 +718,7 @@ glsds_rectangular: $(GLSDS)
 	echo "$(GLSDS)"
 	cd ../gls ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_gls $(RGLSDS)
 	- ../gls//run_gls < ../gls/glss.data.rectangular \
-          >& ../gls/glsds.output.rectangular
+                          > ../gls/glsds.output.rectangular 2>&1
 	cat ../gls/glsds.output.rectangular
 	rm ../gls/run_gls
 
@@ -726,7 +726,7 @@ glsds_rectangular2: $(GLSDS)
 	echo "$(GLSDS)"
 	cd ../gls ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_gls $(RGLSDS)
 	- ../gls//run_gls < ../gls/glss.data.rectangular2 \
-          >& ../gls/glsds.output.rectangular2
+                          > ../gls/glsds.output.rectangular2 2>&1
 	cat ../gls/glsds.output.rectangular2
 	rm ../gls/run_gls
 
@@ -734,13 +734,13 @@ glsdt: $(GLSDT)
 	echo " Exhaustive test of subroutine interface to gls"
 	cd ../gls ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_gls \
                        $(RGLSDT) ym01ad.f fa04ad.f
-	- ../gls/run_gls  < ../gls/glst.data >& ../gls/glsdt.output
+	- ../gls/run_gls  < ../gls/glst.data > ../gls/glsdt.output 2>&1
 	cat ../gls/glsdt.output
 	rm ../gls/run_gls
 
 glsss: $(GLSSS)
 	cd ../gls ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_gls $(RGLSSS)
-	- ../gls/run_gls < ../gls/glss.data >& ../gls/glss.output
+	- ../gls/run_gls < ../gls/glss.data > ../gls/glss.output 2>&1
 	cat ../gls/glss.output
 	rm ../gls/run_gls
 
@@ -748,66 +748,66 @@ glsst: $(GLSST)
 	echo " Exhaustive test of subroutine interface to gls"
 	cd ../gls ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_gls \
                        $(RGLSST) ym01a.f fa04a.f
-	- ../gls/run_gls < ../gls/glst.data >& ../gls/glst.output
+	- ../gls/run_gls < ../gls/glst.data > ../gls/glst.output 2>&1
 	cat ../gls/glst.output
 	rm ../gls/run_gls
 
 randds: $(RANDDS)
 	cd ../rand ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_rand $(RRANDDS)
-	- ../rand/run_rand >& ../rand/randds.output
+	- ../rand/run_rand > ../rand/randds.output 2>&1
 	cat ../rand/randds.output
 	rm ../rand/run_rand
 
 randdt: $(RANDDT)
 	echo " Exhaustive test of subroutine interface to rand"
 	cd ../rand ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_rand $(RRANDDT)
-	- ../rand/run_rand >& ../rand/randdt.output
+	- ../rand/run_rand > ../rand/randdt.output 2>&1
 	cat ../rand/randdt.output
 	rm ../rand/run_rand
 
 randss: $(RANDSS)
 	cd ../rand ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_rand $(RRANDSS)
-	- ../rand/run_rand >& ../rand/rands.output
+	- ../rand/run_rand > ../rand/rands.output 2>&1
 	cat ../rand/rands.output
 	rm ../rand/run_rand
 
 randst: $(RANDST)
 	echo " Exhaustive test of subroutine interface to rand"
 	cd ../rand ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_rand $(RRANDST)
-	- ../rand/run_rand >& ../rand/randt.output
+	- ../rand/run_rand > ../rand/randt.output 2>&1
 	cat ../rand/randt.output
 	rm ../rand/run_rand
 
 sortds: $(SORTDS)
 	cd ../sort ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sort $(RSORTDS)
-	- ../sort/run_sort >& ../sort/sortds.output
+	- ../sort/run_sort > ../sort/sortds.output 2>&1
 	cat ../sort/sortds.output
 	rm ../sort/run_sort
 
 sortdt: $(SORTDT)
 	echo " Exhaustive test of subroutine interface to sort"
 	cd ../sort ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sort $(RSORTDT)
-	- ../sort/run_sort >& ../sort/sortdt.output
+	- ../sort/run_sort > ../sort/sortdt.output 2>&1
 	cat ../sort/sortdt.output
 	rm ../sort/run_sort
 
 sortss: $(SORTSS)
 	cd ../sort ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sort $(RSORTSS)
-	- ../sort/run_sort >& ../sort/sorts.output
+	- ../sort/run_sort > ../sort/sorts.output 2>&1
 	cat ../sort/sorts.output
 	rm ../sort/run_sort
 
 sortst: $(SORTST)
 	echo " Exhaustive test of subroutine interface to sort"
 	cd ../sort ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_sort $(RSORTST)
-	- ../sort/run_sort >& ../sort/sortt.output
+	- ../sort/run_sort > ../sort/sortt.output 2>&1
 	cat ../sort/sortt.output
 	rm ../sort/run_sort
 
 scaleds: $(SCALEDS)
 	cd ../scale ; \
           $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_scale $(RSCALEDS)
-	- ../scale/run_scale >& ../scale/scale_specd.output
+	- ../scale/run_scale > ../scale/scale_specd.output 2>&1
 	cat ../scale/scale_specd.output
 	rm ../scale/run_scale
 
@@ -815,14 +815,14 @@ scaledt: $(SCALEDT)
 	echo " Exhaustive test of subroutine interface to scale"
 	cd ../scale ; \
           $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_scale $(RSCALEDT)
-	- ../scale/run_scale >& ../scale/scale_testd.output
+	- ../scale/run_scale > ../scale/scale_testd.output 2>&1
 	cat ../scale/scale_testd.output
 	rm ../scale/run_scale
 
 scaless: $(SCALESS)
 	cd ../scale ; \
           $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_scale $(RSCALESS)
-	- ../scale/run_scale >& ../scale/scale_specs.output
+	- ../scale/run_scale > ../scale/scale_specs.output 2>&1
 	cat ../scale/scale_spces.output
 	rm ../scale/run_scale
 
@@ -830,40 +830,40 @@ scalest: $(SCALEST)
 	echo " Exhaustive test of subroutine interface to scale"
 	cd ../scale ; \
           $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_scale $(RSCALEST)
-	- ../scale/run_scale >& ../scale/scale_tests.output
+	- ../scale/run_scale > ../scale/scale_tests.output 2>&1
 	cat ../scale/scale_tests.output
 	rm ../scale/run_scale
 
 scuds: $(SCUDS)
 	cd ../scu ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_scu $(RSCUDS)
-	- ../scu/run_scu >& ../scu/scuds.output
+	- ../scu/run_scu > ../scu/scuds.output 2>&1
 	cat ../scu/scuds.output
 	rm ../scu/run_scu
 
 scudt: $(SCUDT)
 	echo " Exhaustive test of subroutine interface to scu"
 	cd ../scu ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_scu $(RSCUDT)
-	- ../scu/run_scu >& ../scu/scudt.output
+	- ../scu/run_scu > ../scu/scudt.output 2>&1
 	cat ../scu/scudt.output
 	rm ../scu/run_scu
 
 scuss: $(SCUSS)
 	cd ../scu ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_scu $(RSCUSS)
-	- ../scu/run_scu >& ../scu/scus.output
+	- ../scu/run_scu > ../scu/scus.output 2>&1
 	cat ../scu/scus.output
 	rm ../scu/run_scu
 
 scust: $(SCUST)
 	echo " Exhaustive test of subroutine interface to scu"
 	cd ../scu ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_scu $(RSCUST)
-	- ../scu/run_scu >& ../scu/scut.output
+	- ../scu/run_scu > ../scu/scut.output 2>&1
 	cat ../scu/scut.output
 	rm ../scu/run_scu
 
 rootsds: $(ROOTSDS)
 	cd ../roots ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_roots \
                         $(RROOTSDS)
-	- ../roots/run_roots >& ../roots/rootsds.output
+	- ../roots/run_roots > ../roots/rootsds.output 2>&1
 	cat ../roots/rootsds.output
 	rm ../roots/run_roots
 
@@ -871,7 +871,7 @@ rootsdt: $(ROOTSDT)
 	echo " Exhaustive test of subroutine interface to roots"
 	cd ../roots ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_roots \
                         $(RROOTSDT)
-	- ../roots/run_roots >& ../roots/rootsdt.output
+	- ../roots/run_roots > ../roots/rootsdt.output 2>&1
 	cat ../roots/rootsdt.output
 #	- ../roots/run_roots
 	rm ../roots/run_roots
@@ -879,7 +879,7 @@ rootsdt: $(ROOTSDT)
 rootsss: $(ROOTSSS)
 	cd ../roots ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_roots \
                         $(RROOTSSS)
-	- ../roots/run_roots >& ../roots/rootss.output
+	- ../roots/run_roots > ../roots/rootss.output 2>&1
 	cat ../roots/rootss.output
 	rm ../roots/run_roots
 
@@ -887,14 +887,14 @@ rootsst: $(ROOTSST)
 	echo " Exhaustive test of subroutine interface to roots"
 	cd ../roots ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_roots \
                         $(RROOTSST)
-	- ../roots/run_roots >& ../roots/rootst.output
+	- ../roots/run_roots > ../roots/rootst.output 2>&1
 	cat ../roots/rootst.output
 	rm ../roots/run_roots
 
 convertds: $(CONVERTDS)
 	cd ../convert ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_convert \
                           $(RCONVERTDS)
-	- ../convert/run_convert >& ../convert/convertds.output
+	- ../convert/run_convert > ../convert/convertds.output 2>&1
 	cat ../convert/convertds.output
 	rm ../convert/run_convert
 
@@ -902,7 +902,7 @@ convertdt: $(CONVERTDT)
 	echo " Exhaustive test of subroutine interface to convert"
 	cd ../convert ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_convert \
                           $(RCONVERTDT)
-	- ../convert/run_convert >& ../convert/convertdt.output
+	- ../convert/run_convert > ../convert/convertdt.output 2>&1
 	cat ../convert/convertdt.output
 #	- ../convert/run_convert
 	rm ../convert/run_convert
@@ -910,7 +910,7 @@ convertdt: $(CONVERTDT)
 convertss: $(CONVERTSS)
 	cd ../convert ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_convert \
                           $(RCONVERTSS)
-	- ../convert/run_convert >& ../convert/converts.output
+	- ../convert/run_convert > ../convert/converts.output 2>&1
 	cat ../convert/converts.output
 	rm ../convert/run_convert
 
@@ -918,14 +918,14 @@ convertst: $(CONVERTST)
 	echo " Exhaustive test of subroutine interface to convert"
 	cd ../convert ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_convert \
                           $(RCONVERTST)
-	- ../convert/run_convert >& ../convert/convertt.output
+	- ../convert/run_convert > ../convert/convertt.output 2>&1
 	cat ../convert/convertt.output
 	rm ../convert/run_convert
 
 filterds: $(FILTERDS)
 	cd ../filter ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_filter \
                          $(RFILTERDS)
-	- ../filter/run_filter >& ../filter/filterds.output
+	- ../filter/run_filter > ../filter/filterds.output 2>&1
 	cat ../filter/filterds.output
 	rm ../filter/run_filter
 
@@ -933,7 +933,7 @@ filterdt: $(FILTERDT)
 	echo " Exhaustive test of subroutine interface to filter"
 	cd ../filter ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_filter \
                          $(RFILTERDT)
-	- ../filter/run_filter >& ../filter/filterdt.output
+	- ../filter/run_filter > ../filter/filterdt.output 2>&1
 	cat ../filter/filterdt.output
 #	- ../filter/run_filter
 	rm ../filter/run_filter
@@ -941,7 +941,7 @@ filterdt: $(FILTERDT)
 filterss: $(FILTERSS)
 	cd ../filter ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_filter \
                          $(RFILTERSS)
-	- ../filter/run_filter >& ../filter/filters.output
+	- ../filter/run_filter > ../filter/filters.output 2>&1
 	cat ../filter/filters.output
 	rm ../filter/run_filter
 
@@ -949,7 +949,7 @@ filterst: $(FILTERST)
 	echo " Exhaustive test of subroutine interface to filter"
 	cd ../filter ; $(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_filter \
                          $(RFILTERST)
-	- ../filter/run_filter >& ../filter/filtert.output
+	- ../filter/run_filter > ../filter/filtert.output 2>&1
 	cat ../filter/filtert.output
 	rm ../filter/run_filter
 

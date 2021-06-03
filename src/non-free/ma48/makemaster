@@ -100,13 +100,13 @@ ma48v3_double: $(hsl_ma48d)
 
 ma48ss: $(ma48s) $(OBJS)/ma48ss.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o ./run_ma48 $(RMA48S)
-	- ./run_ma48 < ./ma48s.data >& ma48s.output
+	- ./run_ma48 < ./ma48s.data > ma48s.output 2>&1
 	cat ma48s.output
 	rm ./run_ma48
 
 ma48ds: $(ma48d) $(OBJD)/ma48ds.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o ./run_ma48 $(RMA48D)
-	- ./run_ma48 < ./ma48s.data >& ma48s.output
+	- ./run_ma48 < ./ma48s.data > ma48s.output 2>&1
 	cat ma48s.output
 	rm ./run_ma48
 

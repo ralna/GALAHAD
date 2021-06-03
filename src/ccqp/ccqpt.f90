@@ -251,8 +251,8 @@
        ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
        IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
        CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
-       p%H%row = (/ 1, 2, 3, 3 /)
-       p%H%col = (/ 1, 2, 3, 1 /) ; p%H%ne = h_ne
+       p%H%row = (/ 1, 2, 2, 3 /)
+       p%H%col = (/ 1, 1, 2, 3 /) ; p%H%ne = h_ne
        IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
        CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
        p%A%row = (/ 1, 1, 2, 2 /)
@@ -263,8 +263,8 @@
        ALLOCATE( p%A%val( a_ne ), p%A%row( 0 ), p%A%col( a_ne ) )
        IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
        CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
-       p%H%col = (/ 1, 2, 3, 1 /)
-       p%H%ptr = (/ 1, 2, 3, 5 /)
+       p%H%col = (/ 1, 1, 2, 3 /)
+       p%H%ptr = (/ 1, 2, 4, 5 /)
        IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
        CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
        p%A%col = (/ 1, 2, 2, 3 /)
@@ -341,16 +341,16 @@
      DO i = 1, 2
 !    DO i = 1, 1
        IF ( data_storage_type == 0 ) THEN          ! sparse co-ordinate storage
-         p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
+         p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 3.0_wp /)
          p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
        ELSE IF ( data_storage_type == - 1 ) THEN    !  sparse row-wise storage
-         p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
+         p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 3.0_wp /)
          p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
        ELSE IF ( data_storage_type == - 2 ) THEN    !  dense storage
-         p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 4.0_wp, 0.0_wp, 3.0_wp /)
+         p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 3.0_wp /)
          p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
        ELSE IF ( data_storage_type == - 3 ) THEN    !  diagonal/dense storage
-         p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp /)
+         p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp /)
          p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
        ELSE IF ( data_storage_type == - 4 ) THEN    ! scaled I/dense storage
          p%H%val( 1 ) = 2.0_wp
@@ -569,10 +569,9 @@
               1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty /)
    p%X_u = (/ 1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty,             &
               1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty /)
-   p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 2.0_wp, 3.0_wp, 3.0_wp,                &
-                4.0_wp, 4.0_wp, 5.0_wp, 5.0_wp, 6.0_wp, 6.0_wp,                &
-                7.0_wp, 7.0_wp, 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp,                &
-                5.0_wp, 6.0_wp, 7.0_wp /)
+   p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 2.0_wp, 3.0_wp, 3.0_wp, 4.0_wp,        &
+                4.0_wp, 5.0_wp, 5.0_wp, 6.0_wp, 6.0_wp, 7.0_wp, 7.0_wp,        &
+                8.0_wp, 9.0_wp, 10.0_wp, 11.0_wp, 12.0_wp, 13.0_wp, 14.0_wp /)
    p%H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14,                 &
                 8, 9, 10, 11, 12, 13, 14  /)
    p%H%col = (/ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7,                      &

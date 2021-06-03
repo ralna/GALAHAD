@@ -488,7 +488,7 @@ fi
 [[ -e EXTER.o && $RECOMPILE == '0' ]] && $RM EXTER.o
 
 NSUB=( "ELFUN.o GROUP.o RANGE.o" )
-q[[ -s EXTER.f ]] && NSUB=( "$NSUB EXTER.o" )
+[[ -s EXTER.f ]] && NSUB=( "$NSUB EXTER.o" )
 
 for i  in  $NSUB; do
   if [[ ! -e $i ]]; then
@@ -1181,7 +1181,7 @@ if [[ $PROFILE == "1" ]]; then
 #  which pixie > /dev/null 2>&1
   which gprof > /dev/null 2>&1
   if [[ $? == "0" ]]; then
-#   atom $EXEC/$galmin -tool pixie -w0 -toolargs="-quiet" >  2>&1/dev/null
+#   atom $EXEC/$galmin -tool pixie -w0 -toolargs="-quiet" >  2>1/dev/null 2>&1
 #    pixie -quiet $EXEC/$galmin > /dev/null 2>&1
 #    $EXEC/$galmin.pixie
 #    prof -pixie -lines $EXEC/$galmin > $EXEC/$galmin.pixie.out

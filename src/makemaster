@@ -287,6 +287,7 @@ all_matlab_double:
 #  ---------------
 
 tests: tests_$(PRECIS)
+test: tests
 
 tests_single:
 	( cd lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \

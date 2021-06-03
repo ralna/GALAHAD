@@ -77,7 +77,7 @@ pardisodt: $(PARDISODT)
 	echo " Exhaustive test of subroutine interface to pardiso"
 	cd ../pardiso ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pardiso \
                          $(RPARDISODT)
-#	- ../pardiso/run_pardiso >& ../pardiso/pardisodt.output
+#	- ../pardiso/run_pardiso > ../pardiso/pardisodt.output 2>&1
 #	cat ../pardiso/pardisodt.output
 	- ../pardiso/run_pardiso
 	rm ../pardiso/run_pardiso
@@ -86,7 +86,7 @@ pardisost: $(PARDISOST)
 	echo " Exhaustive test of subroutine interface to pardiso"
 	cd ../pardiso ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pardiso \
                          $(RPARDISOST)
-	- ../pardiso/run_pardiso >& ../pardiso/pardisot.output
+	- ../pardiso/run_pardiso > ../pardiso/pardisot.output 2>&1
 	cat ../pardiso/pardisot.output
 	rm ../pardiso/run_pardiso
 
