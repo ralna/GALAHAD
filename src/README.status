@@ -1,4 +1,4 @@
-** CURRENT STATUS OF PACKAGES 2021-05-31 **
+** CURRENT STATUS OF PACKAGES 2021-06-05 **
 
 CONVERSION TO NEW MAKEMASTERS & C INTERFACES   
 --------------------------------------------
@@ -9,10 +9,10 @@ ampl
 arc                       M  
 basic                     M
 blls                      M
-bqp                       M (bqpt broken)
-bqpb                      M (bqpbs2/3 & bqpbt broken)
+bqp                       M
+bqpb                      M (replace with specialised cqp?)
 bsc                       M
-ccqp                      M (issues with ccqpt)
+ccqp                      M
 check                     M (build cutest interface?)
 checkpoint                M
 clock                     M
@@ -25,7 +25,7 @@ cutest_functions          M
 demo                      M
 dlp                       M
 dps                       M
-dqp                       M (check dqpt options 9 & 10)
+dqp                       M
 dum
 eqp                       M
 fdc                       M
@@ -40,7 +40,7 @@ gls                       M
 gltr                      M
 hsl
 ir                        M
-l1qp                      M (l1qpt broken)
+l1qp                      M
 l2rt                      M
 lancelot                  M
 lancelot_simple           M
@@ -49,7 +49,7 @@ lls                       M
 llst                      M
 lms                       M
 lmt                       M
-lpa                       M (bug in basic test of storage formats)
+lpa                       M
 lpb                       M
 lpqp                      M
 lsqp                      M
@@ -146,11 +146,3 @@ bgos.f90, line 44: Called by GALAHAD_BGO_EXAMPLE
   pass       #d             f                g          #f      #g        time
      1        0 -7.5896562424494007E-01 6.2412E-12       6       6        0.00
  BGO_solve exit status =      5
-
-lpa:
-
- LA04 error return: JX is faulty for variable I =     5
- JX(I) =      0 BND(:,I) =   0.0E+00  1.0E+00
-  solution not found after 1 iterations, job value is -12
- ** Error return from -LPA_solve- status = -3
-DPW: LPA_solve exit status =   -3

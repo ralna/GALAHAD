@@ -191,10 +191,10 @@
    p%C_l = (/ 1.0_wp, 1.0_wp, 1.0_wp, - infty, - infty, - infty, - infty /)
    p%C_u = (/ 1.0_wp, infty, 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
 
-   DO data_storage_type = - 2, - 2
+!  DO data_storage_type = - 2, - 2
 !  DO data_storage_type = - 1, - 1
 !  DO data_storage_type = 0, 0
-!  DO data_storage_type = - 2, 0
+   DO data_storage_type = - 2, 0
      CALL LPA_initialize( data, control, inform )
      control%infinity = 0.1_wp * infty
      p%new_problem_structure = .TRUE.
@@ -258,7 +258,7 @@
            control%warm_start = .TRUE.
            wa = 'W'
          END IF
-         control%print_level = 1
+!        control%print_level = 1
          CALL LPA_solve( p, data, control, inform, C_stat, X_stat )
          IF ( inform%status == 0 ) THEN
            WRITE( 6, "( 3A1, ':', I6,' iterations. Optimal objective value',   &
@@ -268,6 +268,8 @@
            WRITE( 6, "( 3A1, ': LPA_solve exit status = ', I4 ) " )            &
              st, du, wa, inform%status
          END IF
+!write(6,"( ' xstat ', 15I3 )" ) x_stat
+!write(6,"( ' cstat ', 15I3 )" ) c_stat
        END DO
 !      STOP
      END DO
@@ -283,7 +285,7 @@
    END DO
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, X_stat, C_stat )
-stop
+!stop
 !  =============================
 !  basic test of various options
 !  =============================

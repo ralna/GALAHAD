@@ -264,6 +264,7 @@ $(package)dt: $($(PACKAGE)DT)
                                                      $(R$(PACKAGE)DT)
 	$(RMOOC)
 	- ./run_$(package) > $(package)dt.output 2>&1
+#	- ./run_$(package)
 	cat $(package)dt.output
 	rm ./run_$(package)
 

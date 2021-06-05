@@ -2278,7 +2278,6 @@
       r1 = b1 + nonneg + nonpos
       s1 = r1 + 1
       n = r1 + c_lower + c_upper
-
 !  allocate space for the reordered problem
 
       array_name = 'lpa: A_ptr'
@@ -2630,9 +2629,11 @@
                 basic = basic + 1
                 IF ( jj <= kb ) JX( jj ) = - 1
                 IX( basic ) = jj
-!write(6,*) ' basic ', jj, j,  prob%X_l(j), prob%X(j), prob%X_u(j)
+!write(6, "( ' basic         ', 2I7, 3ES12.4 )" ) &
+!  jj, j,  prob%X_l(j), prob%X(j), prob%X_u(j)
               ELSE
-!write(6,*) ' free nonbasic ', jj, j,  prob%X_l(j), prob%X(j), prob%X_u(j)
+!write(6, "( ' free nonbasic ', 2I7, 3ES12.4 )" ) &
+!  jj, j,  prob%X_l(j), prob%X(j), prob%X_u(j)
                 IF ( jj <= kb ) JX( jj ) = 0
               END IF
             END IF
@@ -2791,7 +2792,7 @@
         l = 0
         DO i = 1, prob%m
           prob%C( i ) =                                                        &
-            DOT_PRODUCT( prob%A%val( i + 1 : i + prob%n ), prob%X( : prob%n ) )
+            DOT_PRODUCT( prob%A%val( l + 1 : l + prob%n ), prob%X( : prob%n ) )
           yi = prob%Y( i )
           prob%Z( : prob%n ) = prob%Z( : prob%n ) -                            &
             prob%A%val( i + 1 : i + prob%n ) * yi

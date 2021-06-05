@@ -1088,9 +1088,9 @@
 !   set on exit to indicate the likely ultimate status of the constraints.
 !   Possible values are
 !   C_stat( i ) < 0, the i-th constraint is likely in the active set,
-!                    on its lower bound,
+!                    on its lower bound (-1 on bound, < -1 violated below bound)
 !               > 0, the i-th constraint is likely in the active set
-!                    on its upper bound, and
+!                    on its upper bound (1 on bound, > 1 violated above bound)
 !               = 0, the i-th constraint is likely not in the active set
 !
 !  X_stat is an optional INTEGER array of length n, which if present will be
@@ -1597,7 +1597,77 @@
         CALL L1QP_AX( prob%m, prob%C( : prob%m ), prob%m,                      &
                       prob%A%ptr( prob%m + 1 ) - 1, prob%A%val,                &
                       prob%A%col, prob%A%ptr, prob%n, prob%X, '+ ')
-        GO TO 700
+
+!  restore the original L1QP formulation from the preprocessed version
+
+        data%trans = data%trans - 1
+        IF ( data%trans == 0 ) THEN
+          CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
+
+!  full restore
+
+          IF ( control%restore_problem >= 2 ) THEN
+            CALL QPP_restore( data%QPP_map, data%QPP_inform, prob,             &
+                              get_all = .TRUE. )
+
+!  restore vectors and scalars
+
+          ELSE IF ( control%restore_problem == 1 ) THEN
+            CALL QPP_restore( data%QPP_map, data%QPP_inform, prob,             &
+                              get_f = .TRUE., get_g = .TRUE.,                  &
+                              get_x = .TRUE., get_x_bounds = .TRUE.,           &
+                              get_y = .TRUE., get_z = .TRUE.,                  &
+                              get_c = .TRUE., get_c_bounds = .TRUE. )
+
+!  recover solution
+
+          ELSE
+            CALL QPP_restore( data%QPP_map, data%QPP_inform, prob,             &
+                              get_x = .TRUE., get_y = .TRUE.,                  &
+                              get_z = .TRUE., get_c = .TRUE. )
+          END IF
+
+          CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
+          inform%time%preprocess =                                             &
+            inform%time%preprocess + REAL( time_now - time_record, wp )
+          inform%time%clock_preprocess =                                       &
+            inform%time%clock_preprocess + clock_now - clock_record
+          prob%new_problem_structure = data%new_problem_structure
+          data%save_structure = .TRUE.
+        END IF
+
+!  assign the output status if required 
+
+        IF ( stat_required ) THEN
+          DO i = 1, prob%n
+            IF ( prob%X( i ) < prob%X_l( i ) - control%stop_abs_p ) THEN
+              X_stat( i ) = - 2
+            ELSE IF ( prob%X( i ) > prob%X_u( i ) + control%stop_abs_p ) THEN
+               X_stat( i ) = 2
+            ELSE IF ( prob%X( i ) < prob%X_l( i ) + control%stop_abs_p ) THEN
+               X_stat( i ) = - 1
+            ELSE IF ( prob%X( i ) > prob%X_u( i ) - control%stop_abs_p ) THEN
+               X_stat( i ) = 1
+            ELSE
+               X_stat( i ) = 0
+            END IF
+          END DO
+
+          DO i = 1, prob%m
+            IF ( prob%C( i ) < prob%C_l( i ) - control%stop_abs_p ) THEN
+              C_stat( i ) = - 2
+            ELSE IF ( prob%C( i ) > prob%C_u( i ) + control%stop_abs_p ) THEN
+               C_stat( i ) = 2
+            ELSE IF ( prob%C( i ) < prob%C_l( i ) + control%stop_abs_p ) THEN
+               C_stat( i ) = - 1
+            ELSE IF ( prob%C( i ) > prob%C_u( i ) - control%stop_abs_p ) THEN
+               C_stat( i ) = 1
+            ELSE
+               C_stat( i ) = 0
+            END IF
+          END DO
+        END IF
+        GO TO 800
       END IF
 
 !  compute the dimension of the KKT system
@@ -1655,7 +1725,7 @@
 !  allocate integer workspace
 
       array_name = 'l1qp: data%X_stat'
-      CALL SPACE_resize_array( prob%n, data%X_stat,                            &
+      CALL SPACE_resize_array( data%QPP_map%n, data%X_stat,                    &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -1663,7 +1733,7 @@
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
       array_name = 'l1qp: data%C_stat'
-      CALL SPACE_resize_array( prob%m, data%C_stat,                            &
+      CALL SPACE_resize_array( data%QPP_map%m, data%C_stat,                    &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
              exact_size = control%space_critical,                              &
@@ -2278,7 +2348,7 @@
 !  restore the original problem and solution from the L1QP formulation
 
       IF ( control%rho > zero ) CALL LPQP_restore( prob, data%LPQP_data,       &
-                                                     C_stat = data%C_stat )
+                                                   C_stat = data%C_stat )
 
 !  ==============================================================
 !  refine solution by applying a dual gradient projection method
@@ -3097,7 +3167,6 @@ H_loop: DO i = 1, prob%n
 
 !  retore the problem to its original form
 
-  700 CONTINUE
       data%trans = data%trans - 1
       IF ( data%trans == 0 ) THEN
 !       data%IW( : prob%n + 1 ) = 0
