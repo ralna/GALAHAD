@@ -2434,18 +2434,21 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     data%P => NULL( )
      array_name = 'bgo: data%P'
      CALL SPACE_dealloc_pointer( data%P,                                       &
         inform%status, inform%alloc_status, point_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     data%U => NULL( )
      array_name = 'bgo: data%U'
      CALL SPACE_dealloc_pointer( data%U,                                       &
         inform%status, inform%alloc_status, point_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     data%V => NULL( )
      array_name = 'bgo: data%V'
      CALL SPACE_dealloc_pointer( data%V,                                       &
         inform%status, inform%alloc_status, point_name = array_name,           &

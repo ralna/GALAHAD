@@ -7,7 +7,7 @@
    TYPE ( BGO_inform_type ) :: inform
    TYPE ( BGO_data_type ) :: data
    TYPE ( NLPT_userdata_type ) :: userdata
-   EXTERNAL :: FUN, GRAD, HESS
+   EXTERNAL :: FUN, GRAD, HESS, HPROD
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, h_ne = 5
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
@@ -28,11 +28,14 @@
    userdata%real( 1 ) = p                       ! Record parameter, p
    CALL BGO_initialize( data, control, inform ) ! Initialize control parameters
    control%TRB_control%subproblem_direct = .FALSE.  ! Use an iterative method
+   control%attempts_max = 1000
+   control%max_eval = 1000
    control%TRB_control%maxit = 10
    control%print_level = 1
+! Solve the problem
    inform%status = 1                            ! set for initial entry
    CALL BGO_solve( nlp, control, inform, data, userdata, eval_F = FUN,         &
-                   eval_G = GRAD, eval_H = HESS )  ! Solve problem
+                   eval_G = GRAD, eval_H = HESS, eval_HPROD = HPROD )
    IF ( inform%status == 0 ) THEN               ! Successful return
      WRITE( 6, "( ' BGO: ', I0, ' iterations -',                               &
     &     ' optimal objective value =',                                        &
@@ -88,3 +91,19 @@
    status = 0
    RETURN
    END SUBROUTINE HESS
+
+   SUBROUTINE HPROD( status, X, userdata, U, V, got_h ) ! Hessian-vector product
+   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+   INTEGER, INTENT( OUT ) :: status
+   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
+   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
+   U( 1 ) = U( 1 ) + ( 2.0_wp - COS( X( 1 ) ) ) * V( 1 ) + 2.0_wp * V( 3 )
+   U( 2 ) = U( 2 ) + 2.0_wp * V( 2 ) + 2.0_wp * V( 3 )
+   U( 3 ) = U( 3 ) + 2.0_wp * V( 1 ) + 2.0_wp * V( 2 ) + 4.0_wp * V( 3 )
+   status = 0
+   RETURN
+   END SUBROUTINE HPROD

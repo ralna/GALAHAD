@@ -3394,7 +3394,7 @@
 
      status = GALAHAD_ok ; alloc_status = 0
      IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
-     IF ( ASSOCIATED( point) ) THEN
+     IF ( ASSOCIATED( point ) ) THEN
        DEALLOCATE( point, STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN
          status = GALAHAD_error_deallocate
@@ -3437,7 +3437,7 @@
 
      status = GALAHAD_ok ; alloc_status = 0
      IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
-     IF ( ASSOCIATED( point) ) THEN
+     IF ( ASSOCIATED( point ) ) THEN
        DEALLOCATE( point, STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN
          status = GALAHAD_error_deallocate
@@ -3480,7 +3480,7 @@
 
      status = GALAHAD_ok ; alloc_status = 0
      IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
-     IF ( ASSOCIATED( point) ) THEN
+     IF ( ASSOCIATED( point ) ) THEN
        DEALLOCATE( point, STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN
          status = GALAHAD_error_deallocate
@@ -3523,7 +3523,7 @@
 
      status = GALAHAD_ok ; alloc_status = 0
      IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
-     IF ( ASSOCIATED( point) ) THEN
+     IF ( ASSOCIATED( point ) ) THEN
        DEALLOCATE( point, STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN
          status = GALAHAD_error_deallocate
@@ -3566,7 +3566,7 @@
 
      status = GALAHAD_ok ; alloc_status = 0
      IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
-     IF ( ASSOCIATED( point) ) THEN
+     IF ( ASSOCIATED( point ) ) THEN
        DEALLOCATE( point, STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN
          status = GALAHAD_error_deallocate
@@ -3609,7 +3609,7 @@
 
      status = GALAHAD_ok ; alloc_status = 0
      IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
-     IF ( ASSOCIATED( point) ) THEN
+     IF ( ASSOCIATED( point ) ) THEN
        DEALLOCATE( point, STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN
          status = GALAHAD_error_deallocate
