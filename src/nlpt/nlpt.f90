@@ -263,27 +263,6 @@
 
       REAL ( KIND = wp ), PRIVATE, PARAMETER :: ZERO = 0.0_wp
 
-!  ----------------------------------------------------------------------------
-!  Interface blocks for the single and double precision BLAS routines
-!  giving the two-norm.
-!  ----------------------------------------------------------------------------
-
-!     INTERFACE TWO_NORM
-!
-!        FUNCTION SNRM2( n, x, incx )
-!          REAL  :: SNRM2
-!          INTEGER, INTENT( IN ) :: n, incx
-!          REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
-!        END FUNCTION SNRM2
-!
-!        FUNCTION DNRM2( n, x, incx )
-!          DOUBLE PRECISION  :: DNRM2
-!          INTEGER, INTENT( IN ) :: n, incx
-!          DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
-!        END FUNCTION DNRM2
-!
-!     END INTERFACE
-
    CONTAINS
 
 !===============================================================================

@@ -48,7 +48,23 @@
      PRIVATE
      PUBLIC :: TRB_initialize, TRB_read_specfile, TRB_solve,                   &
                TRB_projection, TRB_terminate, NLPT_problem_type,               &
-               NLPT_userdata_type, SMT_type, SMT_put
+               NLPT_userdata_type, SMT_type, SMT_put,                          &
+               TRB_import_h_coordinate, TRB_import_h_sparse_by_rows,           &
+               TRB_import_h_dense, TRB_import_h_diagonal,                      &
+               TRB_import_h_by_products, TRB_solve_with_h, TRB_solve_without_h,&
+               TRB_solve_reverse_with_h, TRB_solve_reverse_without_h
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+      INTERFACE TRB_initialize
+        MODULE PROCEDURE TRB_initialize, TRB_full_initialize
+      END INTERFACE TRB_initialize
+
+      INTERFACE TRB_terminate
+        MODULE PROCEDURE TRB_terminate, TRB_full_terminate
+      END INTERFACE TRB_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -645,6 +661,12 @@
        TYPE ( SHA_data_type ) :: SHA_data
      END TYPE TRB_data_type
 
+     TYPE, PUBLIC :: TRB_full_data_type
+       TYPE ( TRB_data_type ) :: trb_data
+       TYPE ( NLPT_problem_type ) :: nlp
+       TYPE ( NLPT_userdata_type ) :: userdata
+     END TYPE TRB_full_data_type
+
    CONTAINS
 
 !-*-*-  G A L A H A D -  T R B _ I N I T I A L I Z E  S U B R O U T I N E  -*-
@@ -704,6 +726,38 @@
 !  End of subroutine TRB_initialize
 
      END SUBROUTINE TRB_initialize
+
+!- G A L A H A D -  T R B _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE TRB_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for TRB controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TRB_control_type ), INTENT( OUT ) :: control
+     TYPE ( TRB_inform_type ), INTENT( OUT ) :: inform
+
+     CALL TRB_initialize( data%trb_data, control, inform )
+
+     RETURN
+
+!  End of subroutine TRB_full_initialize
+
+     END SUBROUTINE TRB_full_initialize
 
 !-*-*-*-*-   T R B _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-*-*-*-
 
@@ -5429,6 +5483,32 @@
 
      END SUBROUTINE TRB_terminate
 
+!-  G A L A H A D -  T R B _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE TRB_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TRB_control_type ), INTENT( IN ) :: control
+     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+
+     CALL TRB_terminate( data%trb_data, control, inform )
+
+     RETURN
+
+!  End of subroutine TRB_full_terminate
+
+     END SUBROUTINE TRB_full_terminate
+
 !-*-  T R B _ h e s s i a n _ t i m e s _ v e c t o r  S U B R O U T I N E  -*-
 
      SUBROUTINE TRB_hessian_times_vector( n, INDEX_nz_p, nnz_p,                &
@@ -5614,6 +5694,551 @@
 !  End of TRB_active
 
      END FUNCTION TRB_active
+
+! -----------------------------------------------------------------------------
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! -----------------------------------------------------------------------------
+
+!-*-  G A L A H A D -  T R B _ import _ H _ coordinate  S U B R O U T I N E -*-
+
+     SUBROUTINE TRB_import_h_coordinate( control, inform, data, n, X_l, X_u,   &
+                                         ne, H_row, H_col )
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_control_type ), INTENT( IN ) :: control
+     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n, ne
+     INTEGER, DIMENSION( ne ), INTENT( IN ) :: H_row, H_col
+     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( n ) :: X_l, X_u
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  allocate space if required
+
+     array_name = 'trb: data%nlp%X_l'
+     CALL SPACE_resize_array( n, data%nlp%X_l,                                 &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%X_u'
+     CALL SPACE_resize_array( n, data%nlp%X_u,                                 &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%H%row'
+     CALL SPACE_resize_array( ne, data%nlp%H%row,                              &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%H%col'
+     CALL SPACE_resize_array( ne, data%nlp%H%col,                              &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%H%val'
+     CALL SPACE_resize_array( ne, data%nlp%H%val,                              &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+!  put data into the required components of the nlpt storage type
+
+     data%nlp%n = n
+     data%nlp%X_l( : n ) = X_l( : n )
+     data%nlp%X_u( : n ) = X_u( : n )
+     CALL SMT_put( data%nlp%H%type, 'COORDINATE', inform%alloc_status )
+     data%nlp%H%n = n
+     data%nlp%H%ne = ne
+     data%nlp%H%row( : ne ) = H_row( : ne )
+     data%nlp%H%col( : ne ) = H_col( : ne )
+
+     RETURN
+
+!  End of subroutine TRB_import_h_coordinate
+
+     END SUBROUTINE TRB_import_h_coordinate
+
+!-  G A L A H A D -  T R B _ import _ H _ sparse_by_rows  S U B R O U T I N E -
+
+     SUBROUTINE TRB_import_h_sparse_by_rows( control, inform, data, n,         &
+                                             X_l, X_u, H_ptr, H_col )
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_control_type ), INTENT( IN ) :: control
+     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n
+     INTEGER, DIMENSION( n + 1 ), INTENT( IN ) :: H_ptr
+     INTEGER, DIMENSION( H_ptr( n + 1 ) - 1 ), INTENT( IN ) :: H_col
+     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( n ) :: X_l, X_u
+
+     INTEGER :: ne
+     CHARACTER ( LEN = 80 ) :: array_name
+
+     ne = H_ptr( n + 1 ) - 1
+
+!  allocate space if required
+
+     array_name = 'trb: data%nlp%X_l'
+     CALL SPACE_resize_array( n, data%nlp%X_l,                                 &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%X_u'
+     CALL SPACE_resize_array( n, data%nlp%X_u,                                 &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%H%ptr'
+     CALL SPACE_resize_array( n + 1, data%nlp%H%ptr,                           &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%H%col'
+     CALL SPACE_resize_array( ne, data%nlp%H%col,                              &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%H%val'
+     CALL SPACE_resize_array( ne, data%nlp%H%val,                              &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+!  put data into the required components of the nlpt storage type
+
+     data%nlp%n = n
+     data%nlp%X_l( : n ) = X_l( : n )
+     data%nlp%X_u( : n ) = X_u( : n )
+     CALL SMT_put( data%nlp%H%type, 'SPARSE_BY_ROWS', inform%alloc_status )
+     data%nlp%H%n = n
+     data%nlp%H%ne = ne
+     data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+     data%nlp%H%col( : ne ) = H_col( : ne )
+
+     RETURN
+
+!  End of subroutine TRB_import_h_sparse_by_rows
+
+     END SUBROUTINE TRB_import_h_sparse_by_rows
+
+!-*-  G A L A H A D -  T R B _ import _ H _ dense  S U B R O U T I N E -*-
+
+     SUBROUTINE TRB_import_h_dense( control, inform, data, n, X_l, X_u )
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_control_type ), INTENT( IN ) :: control
+     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n
+     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( n ) :: X_l, X_u
+
+     INTEGER :: ne
+     CHARACTER ( LEN = 80 ) :: array_name
+
+     ne = n * ( n + 1 ) / 2
+
+!  allocate space if required
+
+     array_name = 'trb: data%nlp%X_l'
+     CALL SPACE_resize_array( n, data%nlp%X_l,                                 &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%X_u'
+     CALL SPACE_resize_array( n, data%nlp%X_u,                                 &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%H%val'
+     CALL SPACE_resize_array( ne, data%nlp%H%val,                              &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+!  put data into the required components of the nlpt storage type
+
+     data%nlp%n = n
+     data%nlp%X_l( : n ) = X_l( : n )
+     data%nlp%X_u( : n ) = X_u( : n )
+     CALL SMT_put( data%nlp%H%type, 'DENSE', inform%alloc_status )
+     data%nlp%H%n = n
+     data%nlp%H%ne = ne
+
+     RETURN
+
+!  End of subroutine TRB_import_h_dense
+
+     END SUBROUTINE TRB_import_h_dense
+
+!-*-  G A L A H A D -  T R B _ import _ H _ diagonal  S U B R O U T I N E -*-
+
+     SUBROUTINE TRB_import_h_diagonal( control, inform, data, n, X_l, X_u )
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_control_type ), INTENT( IN ) :: control
+     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n
+     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( n ) :: X_l, X_u
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  allocate space if required
+
+     array_name = 'trb: data%nlp%X_l'
+     CALL SPACE_resize_array( n, data%nlp%X_l,                                 &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%X_u'
+     CALL SPACE_resize_array( n, data%nlp%X_u,                                 &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%H%val'
+     CALL SPACE_resize_array( n, data%nlp%H%val,                               &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+!  put data into the required components of the nlpt storage type
+
+     data%nlp%n = n
+     data%nlp%X_l( : n ) = X_l( : n )
+     data%nlp%X_u( : n ) = X_u( : n )
+     CALL SMT_put( data%nlp%H%type, 'DIAGONAL', inform%alloc_status )
+     data%nlp%H%n = n
+     data%nlp%H%ne = n
+
+     RETURN
+
+!  End of subroutine TRB_import_h_diagonal
+
+     END SUBROUTINE TRB_import_h_diagonal
+
+!-*-  G A L A H A D -  T R B _ import _ H _ by_products  S U B R O U T I N E -*-
+
+     SUBROUTINE TRB_import_h_by_products( control, inform, data, n, X_l, X_u )
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_control_type ), INTENT( IN ) :: control
+     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n
+     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( n ) :: X_l, X_u
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  allocate space if required
+
+     array_name = 'trb: data%nlp%X_l'
+     CALL SPACE_resize_array( n, data%nlp%X_l,                                 &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%X_u'
+     CALL SPACE_resize_array( n, data%nlp%X_u,                                 &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+!  put data into the required components of the nlpt storage type
+
+     data%nlp%n = n
+     data%nlp%X_l( : n ) = X_l( : n )
+     data%nlp%X_u( : n ) = X_u( : n )
+
+     RETURN
+
+!  End of subroutine TRB_import_h_by_products
+
+     END SUBROUTINE TRB_import_h_by_products
+
+!-  G A L A H A D -  T R B _ s o l v e _ w i t ht _ h   S U B R O U T I N E 
+
+     SUBROUTINE TRB_solve_with_h( control, inform, data, userdata, X, G,       &
+                                  eval_F, eval_G, eval_H, eval_PREC )
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_control_type ), INTENT( IN ) :: control
+     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
+     EXTERNAL :: eval_F, eval_G, eval_H, eval_PREC
+
+     IF ( inform%status == 1 ) data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+
+!  call the solver
+
+     CALL TRB_solve( data%nlp, control, inform, data%trb_data, data%userdata,  &
+                     eval_F = eval_F, eval_G = eval_G, eval_H = eval_H,        &
+                     eval_PREC = eval_PREC )
+
+     X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
+     IF ( inform%status == GALAHAD_ok )                                        &
+       G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+
+     RETURN
+
+     END SUBROUTINE TRB_solve_with_h
+
+! - G A L A H A D -  T R B _ s o l v e _ w i t h o u t _h  S U B R O U T I N E -
+
+     SUBROUTINE TRB_solve_without_h( control, inform, data, userdata, X, G,    &
+                                     eval_F, eval_G, eval_HPROD,               &
+                                     eval_SHPROD, eval_PREC )
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_control_type ), INTENT( IN ) :: control
+     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
+     EXTERNAL :: eval_F, eval_G, eval_HPROD, eval_SHPROD, eval_PREC
+
+     IF ( inform%status == 1 ) data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+
+!  call the solver
+
+     CALL TRB_solve( data%nlp, control, inform, data%trb_data, data%userdata,  &
+                     eval_F = eval_F, eval_G = eval_G,                         &
+                     eval_HPROD = eval_HPROD, eval_SHPROD = eval_SHPROD,       &
+                     eval_PREC = eval_PREC )
+
+     X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
+     IF ( inform%status == GALAHAD_ok )                                        &
+       G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+
+     RETURN
+
+     END SUBROUTINE TRB_solve_without_h
+
+!-*-  G A L A H A D -  T R B _ s o l v e _ reverse _ h  S U B R O U T I N E  -*-
+
+     SUBROUTINE TRB_solve_reverse_with_h( control, inform, data, eval_status,  &
+                                          X, f, G, H, U, V )
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_control_type ), INTENT( IN ) :: control
+     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( INOUT ) :: eval_status
+     REAL ( KIND = wp ), INTENT( IN ) :: f
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: G
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: H
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: U
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: V
+
+!  recover data from reverse communication
+
+     SELECT CASE ( inform%status )
+     CASE ( 1 )
+       data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+     CASE ( 2 )
+       data%trb_data%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%nlp%f = f
+     CASE( 3 ) 
+       data%trb_data%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
+     CASE( 4 ) 
+       data%trb_data%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%nlp%H%val( : data%trb_data%h_ne ) = H( : data%trb_data%h_ne )
+     CASE( 6 )
+       data%trb_data%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%trb_data%U( : data%nlp%n ) = U( : data%nlp%n )
+     END SELECT
+
+!  call the solver
+
+     CALL TRB_solve( data%nlp, control, inform, data%trb_data, data%userdata )
+
+!  collect data for reverse communication
+
+     X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
+     SELECT CASE ( inform%status )
+     CASE( 0 )
+       G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+     CASE( 6 )
+       V( : data%nlp%n ) = data%trb_data%V( : data%nlp%n )
+     CASE( 5, 7 ) 
+       WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
+         inform%status
+     END SELECT
+
+     RETURN
+
+     END SUBROUTINE TRB_solve_reverse_with_h
+
+!-  G A L A H A D -  T R B _ s o l v e _ reverse _ no _h  S U B R O U T I N E  -
+
+     SUBROUTINE TRB_solve_reverse_without_h( control, inform, data,            &
+                                             eval_status, X, f, G, U, V,       &
+                                             INDEX_nz_v, nnz_v,                &
+                                             INDEX_nz_u, nnz_u )
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_control_type ), INTENT( IN ) :: control
+     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: nnz_v
+     INTEGER, INTENT( INOUT ) :: eval_status
+     INTEGER, INTENT( IN ) :: nnz_u
+     REAL ( KIND = wp ), INTENT( IN ) :: f
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_v
+     INTEGER, DIMENSION( : ), INTENT( IN ) :: INDEX_nz_u 
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: G
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: V
+
+!  recover data from reverse communication
+
+     SELECT CASE ( inform%status )
+     CASE ( 1 )
+       data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+     CASE ( 2 )
+       data%trb_data%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%nlp%f = f
+     CASE( 3 ) 
+       data%trb_data%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
+     CASE( 5 ) 
+       data%trb_data%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+          data%trb_data%U( : data%nlp%n ) = U( : data%nlp%n )
+     CASE( 6 )
+       data%trb_data%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%trb_data%U( : data%nlp%n ) = U( : data%nlp%n )
+     CASE( 7 ) 
+       data%trb_data%eval_status = eval_status
+       IF ( eval_status == 0 ) THEN
+         data%trb_data%nnz_hp = nnz_u
+         data%trb_data%INDEX_nz_hp( : nnz_u ) = INDEX_nz_u( : nnz_u )
+         data%trb_data%HP( INDEX_nz_u( 1 : nnz_u ) )                           &
+            = U( INDEX_nz_u( 1 : nnz_u ) ) 
+       END IF
+     END SELECT
+
+!  call the solver
+
+     CALL TRB_solve( data%nlp, control, inform, data%trb_data, data%userdata )
+
+!  collect data for reverse communication
+
+     X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
+     SELECT CASE ( inform%status )
+     CASE( 0 )
+       G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+     CASE( 2, 3 ) 
+     CASE( 4 ) 
+       WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
+         inform%status
+     CASE( 5 )
+       U( : data%nlp%n ) = data%trb_data%U( : data%nlp%n )
+       V( : data%nlp%n ) = data%trb_data%V( : data%nlp%n )
+     CASE( 6 )
+       V( : data%nlp%n ) = data%trb_data%V( : data%nlp%n )
+     CASE( 7 )
+       nnz_v = data%trb_data%nnz_p_u
+       INDEX_nz_v( : nnz_v ) = data%trb_data%INDEX_nz_hp( : nnz_v )
+       V( INDEX_nz_v( 1 : nnz_v ) )                                            &
+          = data%trb_data%P( INDEX_nz_v( 1 : nnz_v ) )
+     END SELECT
+
+     RETURN
+
+     END SUBROUTINE TRB_solve_reverse_without_h
 
 !  End of module GALAHAD_TRB
 

@@ -173,7 +173,7 @@
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C, AY, HX
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
+      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, X_stat
 
       CALL CPU_TIME( time )
 
@@ -185,7 +185,7 @@
 !  Allocate suitable arrays
 
       ALLOCATE( prob%X( n ), prob%X_l( n ), prob%X_u( n ),                     &
-                prob%G( n ), VNAME( n ), B_stat( n ), STAT = alloc_stat )
+                prob%G( n ), VNAME( n ), X_stat( n ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
         WRITE( out, 2150 ) 'X', alloc_stat ; STOP
       END IF
@@ -590,7 +590,7 @@
 
       IF ( printo ) CALL COPYRIGHT( out, '2002' )
 
-      C_stat = 0 ; B_stat = 0
+      C_stat = 0 ; X_stat = 0
 
 !  If required, scale the problem
 
@@ -728,10 +728,9 @@
         CALL CPU_TIME( timeo )
 
         IF ( .not. do_presolve ) THEN
-           prob%m = m
-           prob%n = n
+          prob%m = m
+          prob%n = n
         END IF
-
 
         DEALLOCATE( prob%X0 )
 
@@ -744,7 +743,8 @@
 
         solv = ' PDQP'
         IF ( printo ) WRITE( out, " ( ' ** PDQP solver used ** ' ) " )
-        CALL PDQP_solve( prob, data, PDQP_control, PDQP_inform )
+        CALL PDQP_solve( prob, data, PDQP_control, PDQP_inform,                &
+                         X_stat = X_stat, C_stat = C_stat )
 
         IF ( printo ) WRITE( out, " ( /, ' ** PDQP solver used ** ' ) " )
         qfval = PDQP_inform%obj
@@ -891,6 +891,8 @@
 !     WRITE(6,"( ' G ', /, ( 5ES12.4 ) )" ) prob%G( : n )
       res_k = MAXVAL( ABS( HX( : n ) - prob%Z( : n ) + AY( : n ) ) )
 
+      stopr = ten ** ( - 15 )
+
 !  Print details of the solution obtained
 
       WRITE( out, 2010 ) status
@@ -914,9 +916,9 @@
           END IF
           DO i = ir, ic
             state = ' FREE'
-            IF ( ABS( prob%X  ( i ) - prob%X_l( i ) ) < ten * stopr )          &
+            IF ( ABS( prob%X( i ) - prob%X_l( i ) ) < ten * stopr )          &
               state = 'LOWER'
-            IF ( ABS( prob%X  ( i ) - prob%X_u( i ) ) < ten * stopr )          &
+            IF ( ABS( prob%X( i ) - prob%X_u( i ) ) < ten * stopr )          &
               state = 'UPPER'
             IF ( ABS( prob%X_l( i ) - prob%X_u( i ) ) <     1.0D-10 )          &
               state = 'FIXED'
@@ -1099,7 +1101,7 @@
                  ' Maximum constraint violation    ', ES22.14, /,              &
                  ' Maximum dual infeasibility      ', ES22.14, /,              &
                  ' Maximum complementary slackness ', ES22.14, //,             &
-                 ' Number of iterations = ', I6 )
+                 ' Number of iterations = ', I0 )
  2040 FORMAT( /, ' Constraints : ', /, '                             ',        &
                  '        <------ Bounds ------> ', /                          &
                  '      # name       state    value   ',                       &
@@ -1113,11 +1115,11 @@
                  '        <------ Bounds ------> ', /                          &
                  '      # name       state    value   ',                       &
                  '    Lower       Upper       Dual ' )
- 2100 FORMAT( /, ' Of the ', I7, ' variables, ', 2X, I7,                       &
-              ' are on bounds &', I7, ' are dual degenerate' )
- 2110 FORMAT( ' Of the ', I7, ' constraints, ', I7,' are equations &', I7,     &
+ 2100 FORMAT( /, ' Of the ', I0, ' variables, ', I0,                        &
+              ' are on bounds & ', I0, ' are dual degenerate' )
+ 2110 FORMAT( ' Of the ', I0, ' constraints, ', I0,' are equations & ', I0,    &
               ' are degenerate' )
- 2120 FORMAT( ' Of the inequality constraints ', I6, ' are on bounds' )
+ 2120 FORMAT( ' Of the inequality constraints ', I0, ' are on bounds' )
  2130 FORMAT( I7, 1X, A10, A6, 4ES12.4 )
  2140 FORMAT( /, ' *** Problem will be scaled based on ', A1, ' *** ' )
  2150 FORMAT( ' Allocation error, variable ', A8, ' status = ', I6 )
@@ -1125,10 +1127,10 @@
  2170 FORMAT( /, ' *** Further scaling applied to A *** ' )
  2180 FORMAT( A10 )
  2190 FORMAT( A10, 2I7, I6, ES13.4, I6, 0P, F8.2 )
- 2200 FORMAT( /, ' problem dimensions:  n = ', I7, ' m = ', I7,                &
-              ' a_ne = ', I9, ' h_ne = ', I9 )
- 2300 FORMAT( ' updated dimensions:  n = ', I7, ' m = ', I7,                   &
-              ' a_ne = ', I9, ' h_ne = ', I9, /,                               &
+ 2200 FORMAT( /, ' problem dimensions:  n = ', I0, ' m = ', I0,                &
+              ' a_ne = ', I0, ' h_ne = ', I0 )
+ 2300 FORMAT( ' updated dimensions:  n = ', I0, ' m = ', I0,                   &
+              ' a_ne = ', I0, ' h_ne = ', I0, /,                               &
               ' preprocessing time     =', F9.2,                               &
               '        number of transformations =', I10 )
  2210 FORMAT( ' postprocessing time    =', F9.2,                              &

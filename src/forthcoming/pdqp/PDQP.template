@@ -2,6 +2,8 @@
 ! printout-device                                   6
 ! print-level                                       1
 ! maximum-number-of-iterations                      100
+! maximum-number-of-initially-free-variables        -1
 ! infinity-value                                    1.0D+19
+! initial-status-provided                           no
 ! deallocate-error-fatal                            no
 ! output-line-prefix                                ""

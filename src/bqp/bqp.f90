@@ -1415,7 +1415,7 @@
        data%H%ptr( 1 ) = 1
      END IF
 
-     data%change_status = prob%n
+     data%change_status = 0
 
 !  ------------------------
 !  Start the main iteration
@@ -1477,6 +1477,13 @@
 
        inform%norm_pg = MAXVAL( ABS( MAX( MIN( prob%X - data%G, prob%X_u ),    &
                                           prob%X_l ) - prob%X ) )
+!write(6,*) ' pg '
+!do i = 1, prob%n
+!val = MAX( MIN( prob%X(i) - data%G(i), prob%X_u(i) ),    &
+!                                          prob%X_l(i) ) - prob%X(i) 
+!if(val /= zero ) write(6,"(I3, 5ES12.4)" ) i, val,  prob%X_l(i), prob%X(i), &
+! prob%X_u(i), data%G(i)
+!end do
 
 !  print details of the current iteration
 
@@ -1537,7 +1544,8 @@
 !  compute the search direction as the steepest-descent direction
 
        IF ( MOD( inform%iter, control%ratio_cg_vs_sd + 1 ) == 0                &
-            .AND. data%change_status /= 0 ) THEN
+            .OR. data%change_status == 0 ) THEN
+!write(6,*) ' ---------------- steepest descent '
          IF ( data% reverse ) THEN
            reverse%V = - data%G
          ELSE
@@ -1558,218 +1566,221 @@
 
 !  compute the search direction as the CG direction
 
-!      ELSE
+!write(6,*) ' ---------------- cg '
 
 !  perform CG from x in the space of free variables: variables
 !  reverse%nz_v(:data%n_free) or data%nz_v(:data%n_free) are free
 
 !  compute g_free, the gradient in the free variables
 
-         IF ( data% reverse ) THEN
-           data%G_free( : data%n_free ) = data%G( reverse%nz_v( : data%n_free) )
-         ELSE
-           data%G_free( : data%n_free ) = data%G( data%nz_v( : data%n_free ) )
-         END IF
+       IF ( data% reverse ) THEN
+         data%G_free( : data%n_free ) = data%G( reverse%nz_v( : data%n_free) )
+       ELSE
+!write(6,*) ' rg '
+!do j = 1, data%n_free
+! i = data%nz_v( j )
+! write(6,"(I3, ES12.4)" ) i, data%G( i )
+!end do
+         data%G_free( : data%n_free ) = data%G( data%nz_v( : data%n_free ) )
+       END IF
 
 !  start from s_free = 0
 
-         data%S_free( : data%n_free ) = zero
-         data%pnrmsq = zero
-         data%q_t = inform%obj
+       data%S_free( : data%n_free ) = zero
+       data%pnrmsq = zero
+       data%q_t = inform%obj
 
 !  - - - - - - - - - -
 !  Start the CG loop
 !  - - - - - - - - - -
 
- 210     CONTINUE
+ 210   CONTINUE
 
 !  obtain the preconditioned gradient pg_free = P(inverse) g_free
 
-           data%PG_free( : data%n_free ) = data%G_free( : data%n_free )
- 300       CONTINUE
-           gnrmsq =  DOT_PRODUCT( data%PG_free( : data%n_free ),               &
-                                  data%G_free( : data%n_free ) )
+         data%PG_free( : data%n_free ) = data%G_free( : data%n_free )
+ 300     CONTINUE
+         gnrmsq =  DOT_PRODUCT( data%PG_free( : data%n_free ),                 &
+                                data%G_free( : data%n_free ) )
 
 !  compute the CG stopping tolerance
 
-           IF (  data%cg_iter == 0 ) THEN
-             IF ( data%change_status == 0 ) THEN
-               data%stop_cg =                                                  &
-                 MAX( SQRT( ABS( gnrmsq ) ) * SQRT( epsmch ),                  &
-                                              control%stop_cg_absolute )
-             ELSE
-               data%stop_cg =                                                  &
-                 MAX( SQRT( ABS( gnrmsq ) ) * control%stop_cg_relative,        &
-                                              control%stop_cg_absolute )
-             END IF
+         IF (  data%cg_iter == 0 ) THEN
+           IF ( data%change_status == 0 ) THEN
+             data%stop_cg =                                                    &
+               MAX( SQRT( ABS( gnrmsq ) ) * SQRT( epsmch ),                    &
+                                            control%stop_cg_absolute )
+           ELSE
+             data%stop_cg =                                                    &
+               MAX( SQRT( ABS( gnrmsq ) ) * control%stop_cg_relative,          &
+                                            control%stop_cg_absolute )
            END IF
+         END IF
 
 !  print details of the current iteration
 
-           IF ( data%printm ) THEN
-             IF ( data%cg_iter == 0 ) THEN
-               WRITE( control%out, "( /, A, ' ** CG entered ** ',              &
-              &    /, A, '    required gradient =', ES8.1, /, A,               &
-              &    '    iter     model    proj grad    curvature     step')" ) &
-               prefix, prefix, data%stop_cg, prefix
-               WRITE( control%out,                                             &
-                 "( A, 1X, I7, 2ES12.4, '      -            -     ' )" )       &
-                 prefix, data%cg_iter, data%q_t, SQRT( ABS( gnrmsq ) )
-             ELSE
-               WRITE( control%out, "( A, 1X, I7, 4ES12.4 )" )                  &
-                prefix, data%cg_iter, data%q_t, SQRT( ABS( gnrmsq ) ),         &
-                data%curvature, data%step
-             END IF
+         IF ( data%printm ) THEN
+           IF ( data%cg_iter == 0 ) THEN
+             WRITE( control%out, "( /, A, ' ** CG entered ** ', I0,  ' free',  &
+            &   ' variables', /, A, '    required gradient =', ES8.1, /, A,    &
+            &    '    iter     model    proj grad    curvature     step')" )   &
+             prefix, data%n_free, prefix, data%stop_cg, prefix
+             WRITE( control%out,                                               &
+               "( A, 1X, I7, 2ES12.4, '      -            -     ' )" )         &
+               prefix, data%cg_iter, data%q_t, SQRT( ABS( gnrmsq ) )
+           ELSE
+             WRITE( control%out, "( A, 1X, I7, 4ES12.4 )" )                    &
+              prefix, data%cg_iter, data%q_t, SQRT( ABS( gnrmsq ) ),           &
+              data%curvature, data%step
            END IF
+         END IF
 
 !  if the gradient of the model is sufficiently small or if the CG iteration
 !  limit is exceeded, exit; record the CG direction
 
-           IF ( SQRT( ABS( gnrmsq ) ) <= data%stop_cg .OR.                     &
-                data%cg_iter + 1 > data%cg_maxit ) THEN
-             IF ( data% reverse ) THEN
-               reverse%V = zero
-               reverse%V( reverse%nz_v( : data%n_free) ) =                     &
-                 data%S_free( : data%n_free )
-             ELSE
-               data%V = zero
-               data%V( data%nz_v( : data%n_free ) ) =                          &
-                 data%S_free( : data%n_free )
-             END IF
-             GO TO 410
+         IF ( SQRT( ABS( gnrmsq ) ) <= data%stop_cg .OR.                       &
+              data%cg_iter + 1 > data%cg_maxit ) THEN
+           IF ( data% reverse ) THEN
+             reverse%V = zero
+             reverse%V( reverse%nz_v( : data%n_free) ) =                       &
+               data%S_free( : data%n_free )
+           ELSE
+             data%V = zero
+             data%V( data%nz_v( : data%n_free ) ) =                            &
+               data%S_free( : data%n_free )
            END IF
+           GO TO 410
+         END IF
 
 !  compute the search direction, p_free, and the square of its length
 
-           data%cg_iter = data%cg_iter + 1
-           IF ( data%cg_iter > 1 ) THEN
-             beta = gnrmsq / data%old_gnrmsq
-             data%P_free( : data%n_free ) = - data%PG_free( : data%n_free )    &
-                + beta * data%P_free( : data%n_free )
-             data%pnrmsq = gnrmsq + data%pnrmsq * beta ** 2
-           ELSE
-             data%P_free( : data%n_free ) = - data%PG_free( : data%n_free )
-             data%pnrmsq = gnrmsq
-           END IF
+         data%cg_iter = data%cg_iter + 1
+         IF ( data%cg_iter > 1 ) THEN
+           beta = gnrmsq / data%old_gnrmsq
+           data%P_free( : data%n_free ) = - data%PG_free( : data%n_free )      &
+              + beta * data%P_free( : data%n_free )
+           data%pnrmsq = gnrmsq + data%pnrmsq * beta ** 2
+         ELSE
+           data%P_free( : data%n_free ) = - data%PG_free( : data%n_free )
+           data%pnrmsq = gnrmsq
+         END IF
 
 !  save the norm of the preconditioned gradient
 
-           data%old_gnrmsq = gnrmsq
+         data%old_gnrmsq = gnrmsq
 
 !  compute PROD = H * p ...
 
-           IF ( data%explicit_h ) THEN
-             data%PROD = zero
-             DO l = 1, data%n_free
-               i = data%NZ_v( l ) ; p_i = data%P_free( l )
-               DO k = data%H%ptr( i ), data%H%ptr( i + 1 ) - 1
-                 data%PROD( data%H%col( k ) )                                  &
-                   = data%PROD( data%H%col( k ) ) + data%H%val( k ) * p_i
-               END DO
+         IF ( data%explicit_h ) THEN
+           data%PROD = zero
+           DO l = 1, data%n_free
+             i = data%NZ_v( l ) ; p_i = data%P_free( l )
+             DO k = data%H%ptr( i ), data%H%ptr( i + 1 ) - 1
+               data%PROD( data%H%col( k ) )                                    &
+                 = data%PROD( data%H%col( k ) ) + data%H%val( k ) * p_i
              END DO
+           END DO
 
 !  ... or obtain the product from a user-provided subroutine ...
 
-           ELSE IF ( data%use_hprod ) THEN
-             data%V( data%nz_v( : data%n_free) )                               &
-               = data%P_free( :  data%n_free )
-             CALL eval_HPROD( i, userdata, data%V, data%PROD, NZ_v = data%NZ_v,&
-                        nz_v_start = data%nz_v_start, nz_v_end = data%nz_v_end )
+         ELSE IF ( data%use_hprod ) THEN
+           data%V( data%nz_v( : data%n_free) )                                 &
+             = data%P_free( :  data%n_free )
+           CALL eval_HPROD( i, userdata, data%V, data%PROD, NZ_v = data%NZ_v,  &
+                      nz_v_start = data%nz_v_start, nz_v_end = data%nz_v_end )
 
 !  ... or return to the calling program to calculate PROD = H * p
 
-           ELSE
-             reverse%V( reverse%nz_v( : data%n_free) )                         &
-               = data%P_free( :  data%n_free )
-             data%branch = 400 ; inform%status = 3 ; RETURN
-           END IF
+         ELSE
+           reverse%V( reverse%nz_v( : data%n_free) )                           &
+             = data%P_free( :  data%n_free )
+           data%branch = 400 ; inform%status = 3 ; RETURN
+         END IF
 
 !  record the free components of H * p
 
- 400       CONTINUE
-           IF ( data% reverse ) THEN
-             data%HP_free( : data%n_free )                                     &
-               = reverse%PROD( reverse%nz_v( : data%n_free) )
-           ELSE
-             data%HP_free( : data%n_free ) =                                   &
-               data%PROD( data%nz_v( : data%n_free) )
-           END IF
+ 400     CONTINUE
+         IF ( data% reverse ) THEN
+           data%HP_free( : data%n_free )                                       &
+             = reverse%PROD( reverse%nz_v( : data%n_free) )
+         ELSE
+           data%HP_free( : data%n_free ) =                                     &
+             data%PROD( data%nz_v( : data%n_free) )
+         END IF
 
 !  compute the curvature p^T H p along the search direction
 
-           curvature = DOT_PRODUCT( data%HP_free( : data%n_free ),             &
-                                    data%P_free( : data%n_free ) )
-           data%curvature = curvature / data%pnrmsq
+         curvature = DOT_PRODUCT( data%HP_free( : data%n_free ),               &
+                                  data%P_free( : data%n_free ) )
+         data%curvature = curvature / data%pnrmsq
 
 !  if the curvature is positive, compute the step to the minimizer of
 !  the objective along the search direction
 
-           IF ( curvature > control%zero_curvature * data%pnrmsq ) THEN
-             data%step = data%old_gnrmsq / curvature
+         IF ( curvature > control%zero_curvature * data%pnrmsq ) THEN
+           data%step = data%old_gnrmsq / curvature
 
 !  otherwise, the objective is unbounded ....
 
-           ELSE IF ( curvature >= - control%zero_curvature * data%pnrmsq ) THEN
+         ELSE IF ( curvature >= - control%zero_curvature * data%pnrmsq ) THEN
 !do i = 1, data%n_free
 !write(6,"( ' p, hp ', 2ES12.4 )" ) data%P_free( i ), data%HP_free( i )
 !end do
 !stop
 !write(6,*) ' curvature ', data%curvature
-             IF ( data% reverse ) THEN
-               reverse%V = zero
-               reverse%V( reverse%nz_v( : data%n_free) ) =                     &
-                 data%P_free( : data%n_free )
-             ELSE
-               data%V = zero
-               data%V( data%nz_v( : data%n_free ) ) =                          &
-                 data%P_free( : data%n_free )
-             END IF
-             GO TO 410
+           IF ( data% reverse ) THEN
+             reverse%V = zero
+             reverse%V( reverse%nz_v( : data%n_free) ) =                       &
+               data%P_free( : data%n_free )
            ELSE
+             data%V = zero
+             data%V( data%nz_v( : data%n_free ) ) =                            &
+               data%P_free( : data%n_free )
+           END IF
+           GO TO 410
+         ELSE
 !do i = 1, data%n_free
 !write(6,"( ' p, hp ', 2ES12.4 )" ) data%P_free( i ), data%HP_free( i )
 !end do
 !write(6,*) ' curvature ', data%curvature
 !stop
-             inform%status = GALAHAD_error_inertia
-             GO TO 900
-           END IF
+           inform%status = GALAHAD_error_inertia
+           GO TO 900
+         END IF
 
 !  update the objective value
 
-           data%q_t = data%q_t + data%step                                     &
-             * ( - data%old_gnrmsq + half * data%step * curvature )
+         data%q_t = data%q_t + data%step                                       &
+           * ( - data%old_gnrmsq + half * data%step * curvature )
 
 !  update the estimate of the solution
 
-           data%S_free( : data%n_free ) = data%S_free( : data%n_free )         &
-             + data%step * data%P_free( : data%n_free )
+         data%S_free( : data%n_free ) = data%S_free( : data%n_free )           &
+           + data%step * data%P_free( : data%n_free )
 
 !  update the gradient at the estimate of the solution
 
-           data%G_free( : data%n_free ) = data%G_free( : data%n_free )         &
-             + data%step * data%HP_free( : data%n_free )
-           GO TO 210
+         data%G_free( : data%n_free ) = data%G_free( : data%n_free )           &
+           + data%step * data%HP_free( : data%n_free )
+         GO TO 210
 
 !  - - - - - - - - -
 !  End the CG loop
 !  - - - - - - - - -
 
- 410     CONTINUE
-         inform%cg_iter = inform%cg_iter + data%cg_iter
+ 410   CONTINUE
+       inform%cg_iter = inform%cg_iter + data%cg_iter
 
-!         DO i = 1, prob%n
-!           IF ( prob%X_l( i ) == prob%X( i ) .OR.                             &
-!                prob%X_u( i ) == prob%X( i ) ) data%VARIABLE_status( i ) = 4
-!         END DO
-
-!      END IF
+!       DO i = 1, prob%n
+!         IF ( prob%X_l( i ) == prob%X( i ) .OR.                               &
+!              prob%X_u( i ) == prob%X( i ) ) data%VARIABLE_status( i ) = 4
+!       END DO
 
 !  - - - - - - - - - -
 !  Start stepsize loop
 !  - - - - - - - - - -
 
- 490     CONTINUE
+ 490   CONTINUE
        data%arcsearch_status = 1
        IF ( data%explicit_h ) THEN
          data%arcsearch_data%arcsearch_iter = 0 ; data%arcsearch_data%USED = 0
@@ -2484,8 +2495,8 @@
 
 !  If all of the variables are fixed, exit
 
-     IF ( data%pronel ) WRITE( out, "( A, '  ', I0,' vars. freed, ', I0,       &
-    &  ' vars. remain fixed' )" ) prefix, n_freed, n - data%nbreak
+     IF ( data%pronel ) WRITE( out, "( A, '  ', I0,' variables freed, ', I0,   &
+    &  ' variables. remain fixed' )" ) prefix, n_freed, n - data%nbreak
      IF ( data%prnter ) WRITE( out, "( A, I0, ' variables freed from',         &
     &  ' their bounds ', /, A, I0, ' variables remain fixed ',/ )" )           &
           prefix, n_freed, prefix, n - data%nbreak
