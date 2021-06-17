@@ -131,6 +131,7 @@
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_h_not_permitted   = - 87
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_unsuitable_option       = - 88
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_inner_its     = - 89
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unknown_storage   = - 90
 
 !     General integers
 

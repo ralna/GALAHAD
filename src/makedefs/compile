@@ -106,6 +106,17 @@ $(OBJ)/$(package)t.o: ../$(package)/$(package)t.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
+$(package)t2.o: $(OBJ)/$(package)t2.o
+
+$(OBJ)/$(package)t2.o: ../$(package)/$(package)t2.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)t2  "
+	$(SED) -f $(SEDS) \
+           ../$(package)/$(package)t2.f90 > $(OBJ)/$(package)t1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)t1.f90 > $(OBJ)/$(package)t2.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)t2.o $(FFLAGSS) $(package)t2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
 #  CUTEst/AMPL interfaces
 
 use$(package).o: $(LG)(use$(package).o)

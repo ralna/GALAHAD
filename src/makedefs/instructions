@@ -41,19 +41,23 @@ $(PACKAGE)DS = $(D$(PACKAGE)) $(OBJD)/$(package)s.o
 $(PACKAGE)DS2 = $(D$(PACKAGE)) $(OBJD)/$(package)s2.o
 $(PACKAGE)DS3 = $(D$(PACKAGE)) $(OBJD)/$(package)s3.o
 $(PACKAGE)DT = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t.o
+$(PACKAGE)DT2 = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t2.o
 $(PACKAGE)SS = $(S$(PACKAGE)) $(OBJS)/$(package)s.o
 $(PACKAGE)SS2 = $(S$(PACKAGE)) $(OBJS)/$(package)s2.o
 $(PACKAGE)SS3 = $(S$(PACKAGE)) $(OBJS)/$(package)s3.o
 $(PACKAGE)ST = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t.o
+$(PACKAGE)ST2 = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t2.o
 
 R$(PACKAGE)DS = $(OBJD)/$(package)s.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS2 = $(OBJD)/$(package)s2.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS3 = $(OBJD)/$(package)s3.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DT = $(OBJD)/$(package)t.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DT2 = $(OBJD)/$(package)t2.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)SS = $(OBJS)/$(package)s.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS2 = $(OBJS)/$(package)s2.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS3 = $(OBJS)/$(package)s3.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)ST = $(OBJS)/$(package)t.o -L$(OBJS) $(LIBS)
+R$(PACKAGE)ST2 = $(OBJS)/$(package)t2.o -L$(OBJS) $(LIBS)
 
 #  =========================================================================
 #  ========================== makefile stanza ==============================
@@ -266,6 +270,15 @@ $(package)dt: $($(PACKAGE)DT)
 	- ./run_$(package) > $(package)dt.output 2>&1
 #	- ./run_$(package)
 	cat $(package)dt.output
+	rm ./run_$(package)
+
+$(package)dt2: $($(PACKAGE)DT2)
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)DT2)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dt2.output 2>&1
+	cat $(package)dt2.output
 	rm ./run_$(package)
 
 #  main program
