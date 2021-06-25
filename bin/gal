@@ -551,6 +551,14 @@ elif [[ $2 == 'qpc' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpc update
   [[ ! -e RUNQPC.SPC ]] && ln -s ~/.galahad/specs/RUNQPC.SPC RUNQPC.SPC
 
+# qpe
+
+elif [[ $2 == 'qpe' ]]; then
+  RUNMAIN=$GALOBJ/runqpe_sif.o
+  [[ ! -e ~/.galahad/specs/RUNQPE.SPC ]] && $GALOBJ/buildspec qpe
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpe update
+  [[ ! -e RUNQPE.SPC ]] && ln -s ~/.galahad/specs/RUNQPE.SPC RUNQPE.SPC
+
 # cqp
 
 elif [[ $2 == 'cqp' ]]; then

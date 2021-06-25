@@ -87,6 +87,11 @@
 
         REAL ( KIND = wp ) :: infinity = ten ** 19
 
+!  primal violations and dual variable that smaller in absolute value than 
+!  var_small will be set to zero
+
+        REAL ( KIND = wp ) :: var_small = ten ** ( - 15 )
+
 !  use the initial status provided in X_stat and C_stat if they are present
 
         LOGICAL :: initial_status_provided = .FALSE.
@@ -183,24 +188,9 @@
       TYPE ( PDQP_control_type ), INTENT( INOUT ) :: control
       TYPE ( PDQP_inform_type ), INTENT( OUT ) :: inform
 
-!  Set control parameters
+     inform%status = GALAHAD_ok
 
-!  Integer parameters
-
-      control%error  = 6
-      control%out  = 6
-      control%print_level = 0
-!     control%maxit = - 1
-
-!  Real parameters
-
-      control%infinity = ten ** 19
-
-!  Logical parameters
-
-      control%deallocate_error_fatal  = .FALSE.
-
-!  initialize SBLS
+!  initialize control parameters for SBLS (see GALAHAD_SBLS for details)
 
        CALL SBLS_initialize( data%sbls_data, control%sbls_control,             &
                              inform%sbls_inform )
@@ -226,6 +216,7 @@
 !  maximum-number-of-iterations                      100
 !  maximum-number-of-initially-free-variables        -1
 !  infinity-value                                    1.0D+19
+!  small-variable-tolerance                          1.0D-15
 !  initial-status-provided                           F
 !  deallocate-error-fatal                            F
 !  output-line-prefix                                ""
@@ -247,7 +238,8 @@
       INTEGER, PARAMETER :: maxit = print_level + 1
       INTEGER, PARAMETER :: temporarily_fixed = maxit + 1
       INTEGER, PARAMETER :: infinity = temporarily_fixed + 1
-      INTEGER, PARAMETER :: initial_status_provided = infinity + 1
+      INTEGER, PARAMETER :: var_small = infinity + 1
+      INTEGER, PARAMETER :: initial_status_provided = var_small + 1
       INTEGER, PARAMETER :: deallocate_error_fatal = initial_status_provided + 1
       INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
       INTEGER, PARAMETER :: lspec = prefix
@@ -268,6 +260,7 @@
 !  Real key-words
 
       spec( infinity )%keyword = 'infinity-value'
+      spec( var_small )%keyword = 'small-variable-tolerance'
 
 !  Logical key-words
 
@@ -310,6 +303,9 @@
 
       CALL SPECFILE_assign_real( spec( infinity ),                             &
                                  control%infinity,                             &
+                                 control%error )
+      CALL SPECFILE_assign_real( spec( var_small ),                            &
+                                 control%var_small,                            &
                                  control%error )
 
 !  Set logical values
@@ -568,11 +564,12 @@
 !  Local variables
 
       INTEGER :: m, n, a_ne, h_ne, i, j, l, ll, ii, jj, alloc_status, n_infeas
-      INTEGER :: m_orig, n_orig, a_ne_orig, h_ne_orig, n_free, n_low, n_up
+      INTEGER :: n_orig, a_ne_orig, h_ne_orig, n_free, n_low, n_up
       INTEGER :: n_fixed, temporarily_fixed
       REAL :: time_start, time
       REAL ( KIND = wp ) :: cl, cu, x, xl, xu, z, val, infinity, rho
       LOGICAL :: stats
+      CHARACTER ( LEN =  6 ) :: st
       CHARACTER ( LEN = 20 ) :: bad_alloc
       
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
@@ -658,7 +655,6 @@
       ELSE
         m = prob%m
       END IF
-      m_orig = m
 
 !  record the input array types
 
@@ -718,6 +714,7 @@
           END IF
         END IF
       END DO
+!write(6,*) ' n_orig, n, m ', n_orig, n, m
 
 !  record problem dimensions
 
@@ -741,88 +738,115 @@
 !  allocate space
 
       CALL SMT_put( data%A%type, 'COORDINATE', alloc_status )
+      CALL SMT_put( data%H%type, 'COORDINATE', alloc_status )
+      CALL SMT_put( data%A_free%type, 'COORDINATE', alloc_status )
+      CALL SMT_put( data%H_free%type, 'COORDINATE', alloc_status )
+      CALL SMT_put( data%C_null%type, 'COORDINATE', alloc_status )
+
       CALL SPACE_resize_array( a_ne, data%A%ROW,                               &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( a_ne, data%A%COL,                               &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( a_ne, data%A%VAL,                               &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
-      CALL SMT_put( data%H%type, 'COORDINATE', alloc_status )
+
       CALL SPACE_resize_array( h_ne, data%H%ROW,                               &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( h_ne, data%H%COL,                               &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( h_ne, data%H%VAL,                               &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
-      CALL SMT_put( data%A_free%type, 'COORDINATE', alloc_status )
+
       CALL SPACE_resize_array( a_ne, data%A_free%ROW,                          &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( a_ne, data%A_free%COL,                          &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( a_ne, data%A_free%VAL,                          &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
-      CALL SMT_put( data%H_free%type, 'COORDINATE', alloc_status )
+
       CALL SPACE_resize_array( h_ne, data%H_free%ROW,                          &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( h_ne, data%H_free%COL,                          &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( h_ne, data%H_free%VAL,                          &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
-      CALL SMT_put( data%C_null%type, 'COORDINATE', alloc_status )
+
       CALL SPACE_resize_array( 0, data%C_null%ROW,                             &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( 0, data%C_null%COL,                             &
                                inform%status,inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( 0, data%C_null%VAL,                             &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( n, data%X,                                      &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( n, data%X_l,                                    &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( n, data%X_u,                                    &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( n, data%Z,                                      &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( n, data%C,                                      &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( n, data%C_free,                                 &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( m, data%B,                                      &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( m, data%B_free,                                 &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( m, data%Y,                                      &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( n + m, data%SOL,                                &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( n, data%STATE,                                  &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
+
       CALL SPACE_resize_array( n, data%STATE_old,                              &
                                inform%status, inform%alloc_status )
       IF ( inform%status /= GALAHAD_ok ) RETURN
@@ -868,7 +892,7 @@
         data%A%COL( : a_ne_orig ) = prob%A%COL( : a_ne_orig )
         data%A%VAL( : a_ne_orig ) = prob%A%VAL( : a_ne_orig )
       CASE ( 'SPARSE_BY_ROWS' )
-        DO i = 1, m_orig
+        DO i = 1, m
           DO l = prob%A%PTR( i ), prob%A%PTR( i + 1 ) - 1
             data%A%ROW( l ) = i
             data%A%COL( l ) = prob%A%COL( l )
@@ -877,7 +901,7 @@
         END DO
       CASE ( 'DENSE' ) 
         l = 0
-        DO i = 1, m_orig
+        DO i = 1, m
           DO j = 1, n_orig
             l = l + 1
             data%A%ROW( l ) = i
@@ -895,7 +919,6 @@
                               MAX( prob%X( : n_orig ), prob%X_l( : n_orig ) ) )
       data%C( : n_orig ) = prob%G( : n_orig )
       data%C( n_orig + 1 : n ) = zero
-      data%Z( : n ) = zero
 
 !  continue by assigning slack variables and their bounds
 
@@ -952,6 +975,8 @@
 
       stats = PRESENT( X_stat ) .AND. PRESENT( C_stat )
       IF ( stats .AND. control%initial_status_provided ) THEN
+        IF ( control%out > 0 .AND. control%print_level >= 1 )                  &
+          WRITE( control%out, "( ' using provided initial status ' )" )
 
 !  deal with the variable bounds
 
@@ -969,7 +994,16 @@
           END IF
         END DO
 
-!  and with the constraint bounds
+!  compute the value of the constraints
+
+        data%Y = zero
+        DO l = 1, a_ne_orig
+          i = data%A%ROW( l )
+          data%Y( i ) =                                                        &
+            data%Y( i ) + data%A%val( l ) * data%X( data%A%col( l ) )
+        END DO
+
+!  deal with the constraint bounds
 
         n = n_orig
         DO i = 1, m
@@ -980,9 +1014,9 @@
             IF ( cu < control%infinity ) THEN !  bounded on both sides
               IF ( C_stat( i ) == 0 ) THEN
                 n_free = n_free + 1
-                data%X( n ) = half * ( cl + cu )
+                data%X( n ) = MAX( cl, MIN( cu, data%Y( i ) ) )
                 data%C_free( n_free ) = zero
-              ELSE IF ( X_stat( i ) < 0 ) THEN
+              ELSE IF ( C_stat( i ) < 0 ) THEN
                 data%X( n ) = cl
               ELSE
                 data%X( n ) = cu
@@ -990,7 +1024,7 @@
             ELSE !  bounded from below
               IF ( C_stat( i ) == 0 ) THEN
                 n_free = n_free + 1
-                data%X( n ) = cl 
+                data%X( n ) = MAX( cl, data%Y( i ) )
                 data%C_free( n_free ) = zero
               ELSE
                 data%X( n ) = cl
@@ -1001,7 +1035,7 @@
               n = n + 1
               IF ( C_stat( i ) == 0 ) THEN
                 n_free = n_free + 1
-                data%X( n ) = cu
+                data%X( n ) = MIN( cu, data%Y( i ) )
                 data%C_free( n_free ) = zero
               ELSE
                 data%X( n ) = cu
@@ -1011,10 +1045,8 @@
         END DO
       ELSE
 
-!  decide on the inital active set: 
-!   state of variable i =
-!    -2 => fixed between bounds
-!     k > 0 => kth free variable
+!  set the inital active set so that free variables are significantly away
+!  from their bounds
 
         IF ( control%out > 0 .AND. control%print_level > 2 )                   &
           WRITE( control%out,                                                  &
@@ -1025,23 +1057,20 @@
             DO j = i, n
               n_free = n_free + 1
               data%C_free( n_free ) = data%C( j )
-              data%STATE( j ) = n_free
             END DO
             EXIT
           END IF
-          x = prob%X( i )
-          xl = prob%X_l( i ) ; xu = prob%X_u( i )
+          xl = data%X_l( i ) ; xu = data%X_u( i ) ; x = data%X( i )
           IF ( control%out > 0 .AND. control%print_level > 2 )                 &
             WRITE( control%out, "( I6, 4ES12.4 )" )  i, xl, x, xu, z
           IF ( xu == xl ) THEN      !  fixed variable
-            data%STATE( i ) = 0
             CYCLE
           END IF
           IF ( xl > - control%infinity ) THEN
             IF ( xu < control%infinity ) THEN !  variable bounded on both sides
               data%X( i )  = half * ( xl + xu )
             ELSE  !  variable bounded from below
-              prob%X( i ) = xl + one
+              data%X( i ) = xl + one
             END IF
           ELSE
             IF ( xu < control%infinity ) THEN !  variable bounded from above
@@ -1050,17 +1079,20 @@
               data%X( i ) = zero
             END IF
           END IF
-          data%STATE( i ) = - 2
           n_fixed = n_fixed + 1
         END DO
       END IF
+
+!  initialize the dual variables
+
+      data%Y( : m ) = - prob%Y( : m )
 
 !  the problem is complete. Now start the iteration
 
       inform%iter = 0
       IF ( control%out > 0 .AND. control%print_level > 0 )                     &
-        WRITE( control%out, "( /, '  iter    #low     #up   #free     obj ',   &
-       & '       #infeas' )" )
+        WRITE( control%out, "( /, '  iter    #low     #up   #free      ',      &
+       & '   obj             #infeas' )" )
 
       rho = 100.0_wp
 !     rho = 0.01_wp
@@ -1075,23 +1107,67 @@
           inform%status = GALAHAD_error_max_iterations ; GO TO 800
         END IF
 
-!  compute z = c + H x + A(trans) y and the objective value
+!  compute z = c + H x + A(trans) y and the value of the objective function
 
-       data%Z = data%C
-       DO l = 1, data%H%ne
-         i = data%H%ROW( l ) ; j = data%H%COL( l )
-         val = data%H%val( l )
-         data%Z( i ) = data%Z( i ) + val * data%X( j )
-         IF ( i /= j ) data%Z( j ) = data%Z( j ) + val * data%X( i )
-       END DO
+        data%Z = data%C
+        DO l = 1, data%H%ne
+          i = data%H%ROW( l ) ; j = data%H%COL( l )
+          val = data%H%val( l )
+          data%Z( i ) = data%Z( i ) + val * data%X( j )
+          IF ( i /= j ) data%Z( j ) = data%Z( j ) + val * data%X( i )
+        END DO
   
-       inform%obj = DOT_PRODUCT( 0.5_wp * (data%Z + data%C), data%X ) + prob%f
+!       inform%obj = DOT_PRODUCT( 0.5_wp * (data%Z + data%C), data%X ) + prob%f
+        inform%obj = 0.5_wp * DOT_PRODUCT( data%Z + data%C, data%X ) + prob%f
 
-       DO l = 1, data%A%ne
-         i = data%A%ROW( l ) ; j = data%A%COL( l )
-         data%Z( j ) = data%Z( j ) + data%A%val( l ) * data%Y( i )
-       END DO
+!write(6,*) ' y ', data%Y( : m )
+        DO l = 1, data%A%ne
+          i = data%A%ROW( l ) ; j = data%A%COL( l )
+          data%Z( j ) = data%Z( j ) + data%A%val( l ) * data%Y( i )
+        END DO
 !write(6,*) ' z ', data%X( : n_orig )
+
+!  reset variables that are close to bounds to the bound values 
+
+        DO i = 1, n
+          IF ( ABS( data%X( i ) - data%X_l( i ) ) <= control%var_small )       &
+            data%X( i ) = data%X_l( i )
+          IF ( ABS( data%X( i ) - data%X_u( i ) ) <= control%var_small )       &
+            data%X( i ) = data%X_u( i )
+          IF ( ABS( data%Z( i ) ) <= control%var_small )                       &
+            data%Z( i ) = zero
+        END DO
+
+!  print details of the primal and dual variables
+
+!       IF ( inform%iter == 1 ) THEN
+        IF ( .FALSE. ) THEN
+!       IF ( .TRUE. ) THEN
+          WRITE( control%out, "( /, 28X, '<------ Bounds ------>', /           &
+         &         '      #  state    value   ',                               &
+         &         '    Lower       Upper       Dual ' )" )
+          DO i = 1, n
+            st = '  FREE'
+            IF ( ABS( data%X( i ) - data%X_l( i ) ) < ten ** ( - 5 ) ) THEN
+              IF ( ABS( data%Z( i ) ) < ten ** ( - 5 ) ) THEN
+                st = 'LDEGEN'
+              ELSE
+                st = ' LOWER'
+              END IF
+            END IF
+            IF ( ABS( data%X( i ) - data%X_u( i ) ) < ten ** ( - 5 ) ) THEN
+              IF ( ABS( data%Z( i ) ) < ten ** ( - 5 ) ) THEN
+                st = 'UDEGEN'
+              ELSE
+                st = ' UPPER'
+              END IF
+            END IF
+            IF ( ABS( data%X_l( i ) - data%X_u( i ) ) < ten ** ( - 10 ) )      &
+              st = ' FIXED'
+            WRITE( control%out, "( I7, A7, 4ES12.4 )" ) i,                     &
+              st, data%X( i ), data%X_l( i ), data%X_u( i ), data%Z( i )
+          END DO
+        END IF
 
 !  decide on the new active set: 
 !   state of variable i =
@@ -1101,25 +1177,24 @@
 
         n_free = 0
         n_low = 0 ; n_up = 0 ; n_infeas = 0
+!       IF ( inform%iter == control%maxit )                                    &
         IF ( control%out > 0 .AND. control%print_level > 2 )                   &
           WRITE( control%out,                                                  &
-            "( '     i     xl          x           xu          z' )" )
+            "( '     i     xl          x           xu          z     state' )" )
         DO i = 1, n
           x = data%X( i ) ; z = data%Z( i )
           xl = data%X_l( i ) ; xu = data%X_u( i )
-          IF ( control%out > 0 .AND. control%print_level > 2 )                 &
-            WRITE( control%out, "( I6, 4ES12.4 )" )  i, xl, x, xu, z
           IF ( x < xl .OR. x > xu ) n_infeas = n_infeas + 1
           IF ( xu == xl ) THEN      !  fixed variable
             data%STATE( i ) = 0
-            n_up = n_up  + 1
+            n_up = n_up + 1
           ELSE IF ( xl > - control%infinity ) THEN
             IF ( xu < control%infinity ) THEN !  variable bounded on both sides
               IF ( x - z / rho <= xl ) THEN
                 data%STATE( i ) =  - 1
-                n_low = n_low  + 1
+                n_low = n_low + 1
                 IF ( n_low + n_up > n - m ) THEN
-                  n_up = n_up - 1
+                  n_low = n_low - 1
                   DO j = i, n
                     n_free = n_free + 1
                     data%STATE( j ) = n_free
@@ -1128,7 +1203,7 @@
                 END IF
               ELSE IF ( x - z / rho >= xu ) THEN
                 data%STATE( i ) =  0
-                n_up = n_up  + 1
+                n_up = n_up + 1
                 IF ( n_low + n_up > n - m ) THEN
                   n_up = n_up - 1
                   DO j = i, n
@@ -1145,9 +1220,9 @@
             ELSE                    !  variable bounded from below
               IF ( x - z / rho <= xl ) THEN
                 data%STATE( i ) =  - 1
-                n_low = n_low  + 1
+                n_low = n_low + 1
                 IF ( n_low + n_up > n - m ) THEN
-                  n_up = n_up - 1
+                  n_low = n_low - 1
                   DO j = i, n
                     n_free = n_free + 1
                     data%STATE( j ) = n_free
@@ -1163,7 +1238,7 @@
           ELSE
             IF ( xu < control%infinity ) THEN !  variable bounded from above
               IF ( x - z / rho >= xu ) THEN
-                n_up = n_up  + 1
+                n_up = n_up + 1
                 IF ( n_low + n_up > n - m ) THEN
                   n_up = n_up - 1
                   DO j = i, n
@@ -1184,10 +1259,14 @@
               data%C_free( n_free ) = data%C( i )
             END IF
           END IF
+!         IF ( inform%iter == control%maxit )                                  &
+          IF ( control%out > 0 .AND. control%print_level > 2 )                 &
+            WRITE( control%out, "( I6, 4ES12.4, I6 )" )                        &
+              i, xl, x, xu, z, data%STATE( i )
         END DO
 
         IF ( control%out > 0 .AND. control%print_level > 0 )                   &
-          WRITE( control%out, "( I6, 3I8, ES12.4, I10 )" )                     &
+          WRITE( control%out, "( I6, 3I8, ES22.14, I10 )" )                    &
            inform%iter, n_low, n_up, n_free, inform%obj, n_infeas
 
 !  Check to see if the state of the variables has changed
@@ -1198,7 +1277,7 @@
         IF ( COUNT( data%STATE_old( : n ) /= data%STATE( : n ) ) == 0 ) THEN
           prob%X( : n_orig ) = data%X( : n_orig )
           prob%Z( : n_orig ) = data%Z( : n_orig )
-          prob%Y( : m_orig ) = - data%Y( : m_orig )
+          prob%Y( : m ) = - data%Y( : m )
           prob%C( : m ) = zero
           DO l = 1, a_ne_orig
             i = data%A%ROW( l ) ; j = data%A%COL( l )
@@ -1299,13 +1378,15 @@
           END IF
         END DO
         data%Y( : m ) = data%SOL( n_free + 1 : n_free + m )
-        prob%C( : m ) = zero
-        DO l = 1, a_ne_orig
-          i = data%A%ROW( l ) ; j = data%A%COL( l )
-          prob%C( i ) = prob%C( i ) + data%A%val( l ) * data%X( j )
-        END DO
+
         IF ( control%out > 0 .AND. control%print_level > 1 ) THEN
-           WRITE( control%out, "( /, ' state ',  60A1, /, ( 7X, 60A1 ) )" )    &
+          prob%C( : m ) = zero
+          DO l = 1, a_ne_orig
+            i = data%A%ROW( l ) ; j = data%A%COL( l )
+            prob%C( i ) = prob%C( i ) + data%A%val( l ) * data%X( j )
+          END DO
+
+          WRITE( control%out, "( /, ' state ',  60A1, /, ( 7X, 60A1 ) )" )     &
              ( STATE( data%STATE( i ) ), i = 1, n )
           WRITE( control%out, "( ' X  ', 6ES12.4, ( 4X, 6ES12.4 ) )" )         &
             data%X( : n_orig )

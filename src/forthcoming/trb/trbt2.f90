@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 15/06/2021 AT 15:10 GMT.
+! THIS VERSION: GALAHAD 3.3 - 23/06/2021 AT 15:10 GMT.
    PROGRAM GALAHAD_TRB_interface_test
    USE GALAHAD_TRB_double                       ! double precision version
    USE GALAHAD_SYMBOLS
@@ -42,57 +42,6 @@
    userdata%real( 1 ) = p                     ! Record parameter, p
 
    WRITE( 6, "( /, ' basic tests of storage formats ', / )" )
-
-   DO data_storage_type = 1, 5
-     CALL TRB_initialize( data, control, inform )
-!    control%print_level = 1
-     X = 1.5_wp  ! start from 1.5
-     SELECT CASE ( data_storage_type )
-     CASE ( 1 ) ! sparse co-ordinate storage
-       st = 'C'
-       CALL TRB_import_h_coordinate( control, inform, data, n, X_l, X_u,       &
-                                     ne, H_row, H_col )
-       inform%status = 1 ! set for initial entry
-       CALL TRB_solve_with_h( control, inform, data, userdata, X, G,           &
-                              FUN, GRAD, HESS, PREC )
-     CASE ( 2 ) ! sparse by rows  
-       st = 'R'
-       CALL TRB_import_h_sparse_by_rows( control, inform, data, n,             &
-                                         X_l, X_u, H_ptr, H_col )
-       inform%status = 1 ! set for initial entry
-       CALL TRB_solve_with_h( control, inform, data, userdata, X, G,           &
-                              FUN, GRAD, HESS, PREC )
-     CASE ( 3 ) ! dense
-       st = 'D'
-       CALL TRB_import_h_dense( control, inform, data, n, X_l, X_u )
-       inform%status = 1 ! set for initial entry
-       CALL TRB_solve_with_h( control, inform, data, userdata, X, G,           &
-                              FUN, GRAD, HESS_dense, PREC )
-     CASE ( 4 ) ! diagonal
-       st = 'I'
-       CALL TRB_import_h_diagonal( control, inform, data, n, X_l, X_u )
-       inform%status = 1 ! set for initial entry
-       CALL TRB_solve_with_h( control, inform, data, userdata, X, G,           &
-                              FUN_diag, GRAD_diag, HESS_diag, PREC )
-     CASE ( 5 ) ! access by products
-       st = 'P'
-       CALL TRB_import_h_by_products( control, inform, data, n, X_l, X_u )
-       inform%status = 1 ! set for initial entry
-       CALL TRB_solve_without_h( control, inform, data, userdata, X, G,        &
-                                 FUN, GRAD, HESSPROD, SHESSPROD, PREC )
-     END SELECT
-     IF ( inform%status == 0 ) THEN
-       WRITE( 6, "( A1, ':', I6, ' iterations. Optimal objective value = ',    &
-     &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
-     ELSE
-       WRITE( 6, "( A1, ': TRB_solve exit status = ', I0 ) " ) st, inform%status
-     END IF
-!    WRITE( 6, "( ' X ', 3ES12.5 )" ) X
-!    WRITE( 6, "( ' G ', 3ES12.5 )" ) G
-     CALL TRB_terminate( data, control, inform )  ! delete internal workspace
-   END DO
-
-   WRITE( 6, "( /, ' tests options for all-in-one storage format ', / )" )
 
    DO data_storage_type = 1, 5
      CALL TRB_initialize( data, control, inform )

@@ -616,8 +616,8 @@
       &       '   function evaluation error: check its return status' )" )     &
          prefix, routine, prefix
      CASE( GALAHAD_error_max_evaluations )
-       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
-      &       '   the evaluation limit has been exceeded' )" )                 &
+       WRITE( out, "( /, A,  ' Warning return from ', A, ' -', /, A,           &
+      &       '   the evaluation limit has been reached' )" )                  &
          prefix, routine, prefix
      CASE( GALAHAD_error_max_inner_its )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &

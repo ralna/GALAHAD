@@ -52,6 +52,7 @@
      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
 
      INTEGER, PARAMETER :: header_interval = 50
      REAL ( KIND = wp ), PARAMETER :: midxdg_min = ten * epsmch
@@ -109,7 +110,7 @@
 
 !   the maximum number of iterations allowed
 
-       INTEGER :: maxit = 100000
+       INTEGER :: maxit = 100
 
 !   the number of initial (uniformly-spaced) evaluation points (<2 reset to 2)
 
@@ -125,7 +126,7 @@
 
 !   what sort of Lipschitz constant estimate will be used:
 !     1 = global contant provided, 2 = global contant estimated,
-!     3 = local costants estimated
+!     3 = local constants estimated
 
        INTEGER :: lipschitz_estimate_used = 3
 
@@ -964,6 +965,9 @@
 !                            INITIAL POINT LOOP
 !   ----------------------------------------------------------------------------
 
+     IF ( data%printi ) WRITE( control%out,                                    &
+        "( 10X, 10( '-' ), ' initial point loop ', 10( '-' ) )" )
+
 !  The initial trials are performed at the points
 !     x_k = x_l + (i-1)/(p-1) (x_u-x_l), k = 1,...,p
 
@@ -1042,6 +1046,7 @@
 !  check to see if the iteration limit has been achieved
 
        IF ( inform%iter >= control%maxit ) THEN
+         x = data%x_best ; f = data%f_best ; g = data%g_best ; h = data%h_best
          inform%status = GALAHAD_error_max_iterations ; GO TO 990
        END IF
 
@@ -1073,10 +1078,11 @@
 !                            MAIN ITERATION LOOP
 !   ----------------------------------------------------------------------------
 
-!  The point x_k+1, k ≥ 2, of the current (k+1)th iteration is chosen as follows
-
      IF ( data%printi ) WRITE( control%out,                                    &
         "( 10X, 12( '-' ), ' main iteration ', 12( '-' ) )" )
+
+!  The point x_k+1, k ≥ 2, of the current (k+1)th iteration is chosen as follows
+
  200 CONTINUE
 
 !  check whether to continue printing
@@ -1256,19 +1262,20 @@
 
        CASE ( local_lipschitz_estimated )
          mi = control%lipschitz_lower_bound
-         x_max = zero
+         x_max = zero ; v_max = - infinity
          i = 1
          xi = data%X( i ) ; fi = data%F( i ) ;  gi = data%G( i )
 
 !  compute v_i and update x_max
 
-         DO l = 1, inform%iter - 1  !loop through intervals in increasing order
+         DO l = 1, inform%iter - 1 ! loop through intervals in increasing order
            ip = data%NEXT( i ) !  consider the i-th interval
            xip = data%X( ip ) ; fip = data%F( ip ) ; gip = data%G( ip )
            dx = xip - xi
            term = ABS( two * ( fi - fip ) + ( gi + gip ) * dx )
            di = SQRT( term ** 2 + ( ( gip - gi ) * dx ) ** 2 )
            data%V( i ) = ( term + di ) / dx ** 2
+           v_max = MAX( v_max, data%V( i ) ) ! nick added
            x_max = MAX( x_max, dx )
            IF ( l < inform%iter - 1 ) THEN !  prepare for the next interval
              i = ip ; xi = xip ; fi = fip ; gi = gip
@@ -1277,7 +1284,7 @@
 
 !  compute v_max
 
-         v_max = MAXVAL( data%V( 1 : inform%iter - 1 ) )
+!        v_max = MAXVAL( data%V( 1 : inform%iter - 1 ) ) ! nick removed
          vox = v_max / x_max
 
 !  compute the local estimates of the gradient Lipschitz constants
@@ -1313,7 +1320,7 @@
          ELSE IF ( inform%iter == 2 ) THEN
            data%G_lips( i ) = control%reliability_parameter *                  &
              MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),           &
-             vi, hi, hip )
+                  vi, hi, hip )
          END IF
        END SELECT
 
@@ -1345,7 +1352,7 @@
 !  t indicates the interval with the smallest value of psi, psi_best;
 !  initialize with hopeless values
 
-       t = 0 ; psi_best = fi + one ; new_point = .FALSE.
+       t = 0 ; psi_best = fi + one ; dx_best = infinity ; new_point = .FALSE.
 
        DO l = 1, inform%iter - 1 !loop through the intervals in increasing order
          mi = data%G_lips( i )
@@ -1531,7 +1538,6 @@
 
 !  flag=NOTFLAG(flag)
 
-
        CASE ( interval_local_improvement )
 
        END SELECT
@@ -1552,7 +1558,7 @@
 !  if the best value of psi is in a tiny interval, or if every interval has
 !  been fathomed, exit with an estimate of the global minimizer
 
-       IF ( dx_best <= control%stop_length .OR. t == 0) THEN
+       IF ( dx_best <= control%stop_length .OR. t == 0 ) THEN
          x = data%x_best ; f = data%f_best ; g = data%g_best ; h = data%h_best
          GO TO 300
 
@@ -1697,8 +1703,9 @@
 !  if desired, illustrate the intervals
 
      IF ( data%printi ) THEN
-       WRITE(6,"( /, '   int      x           f           g           h  ',    &
-      &              '   fathomed      L' )" )
+       WRITE( control%out, "( /, 10X, 8( '-' ), ' illustrated intervals ',    &
+      &  8( '-' ), /, ' intvl      x           f           g           h',    &
+      &  '     fathomed      L' )" )
        i = 1
        DO l = 1, data%intervals - 1
          WRITE(6,"( I6, 4ES12.4, 1X, L1, I6, ES12.4 )" ) l, data%X( i ),       &

@@ -1749,6 +1749,11 @@ clean:
 	$(RM) $(LGS) $(LGD) $(OBJ)/qpbdt.o $(OBJ)/qpbs.o $(OBJ)/qpbt.o $(OBJ)/qpbst.o
 	@printf '[ OK ]\n'
 
+clean_spral:
+	@printf ' %-9s\t\t' "Removing spral"
+	$(RM) $(LGS) $(LGD) $(OBJ)/libgalahad_spral.a $(MOD)/spral*
+	@printf '[ OK ]\n'
+
 cleanall:
 	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
 	$(RM) $(OBJ)/* $(MOD)/*
@@ -1757,4 +1762,4 @@ cleanall:
 rmgls:
 	@printf ' %-9s %-15s\t\t' "Removing" "gls from archive "
 	$(RMARFILE) gls.o
-	@printf '[ OK ]\n'
+	@printf '[ OK ]

@@ -4,6 +4,7 @@
 ! maximum-number-of-iterations                      100
 ! maximum-number-of-initially-free-variables        -1
 ! infinity-value                                    1.0D+19
+! small-variable-tolerance                          1.0D-15
 ! initial-status-provided                           no
 ! deallocate-error-fatal                            no
 ! output-line-prefix                                ""
