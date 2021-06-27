@@ -106,11 +106,11 @@ zd11                      M
 forthcoming: 
 
 barc                      M
-bgo                       M
-lhs                       M
+bgo                       M C
+lhs                       M C
 trace                     M (but buggy)
 tral                      M (broken)
-trb                       M
+trb                       M C
 ugo                       M
 
 oblivion:
