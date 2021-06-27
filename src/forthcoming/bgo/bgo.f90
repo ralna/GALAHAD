@@ -2380,6 +2380,14 @@
 
  900 CONTINUE
 
+!  since the algorithm is only designed to stop when it reaches its 
+!  evaluation limit, flag this as a successful conclusion
+
+     IF ( inform%status == GALAHAD_error_max_evaluations .OR.                  &
+          inform%status == GALAHAD_error_max_iterations ) THEN
+       inform%status = GALAHAD_ok
+     END IF
+
 !  print details of solution
 
      CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
