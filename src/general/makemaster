@@ -24,9 +24,9 @@ BLG  = $(OBJ)/libgalahad_blas.a
 BLGS = $(OBJS)/libgalahad_blas.a
 BLGD = $(OBJD)/libgalahad_blas.a
 
-CLG  = $(OBJ)/libgalahad_problem.a
-CLGS = $(OBJS)/libgalahad_problem.a
-CLGD = $(OBJD)/libgalahad_problem.a
+PRLG  = $(OBJ)/libgalahad_problem.a
+PRLGS = $(OBJS)/libgalahad_problem.a
+PRLGD = $(OBJD)/libgalahad_problem.a
 
 DLG  = $(OBJ)/libgalahad_dummy.a
 DLGS = $(OBJS)/libgalahad_dummy.a
@@ -70,7 +70,7 @@ PLIBS = $(LIBS) -lgalahad_problem
 
 ARR = $(AR) $(ARREPFLAGS) $(LG)
 BARR = $(AR) $(ARREPFLAGS) $(BLG)
-CARR = $(AR) $(ARREPFLAGS) $(CLG)
+PRARR = $(AR) $(ARREPFLAGS) $(PRLG)
 DARR = $(AR) $(ARREPFLAGS) $(DLG)
 HARR = $(AR) $(ARREPFLAGS) $(HLG)
 LARR = $(AR) $(ARREPFLAGS) $(LLG)
@@ -82,7 +82,7 @@ WARR = $(AR) $(ARREPFLAGS) $(WLG)
 
 RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
 RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
+PRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PRLG)
 
 #  sed scripts
 
@@ -105,10 +105,10 @@ glss = ma33 $(LGS)(smt.o) $(LGS)(gls.o)
 glsd = ma33 $(LGD)(smt.o) $(LGD)(gls.o)
 ma48v3s = ma48v3
 ma48v3d = ma48v3
-cutest_functionss = $(SMTS) $(LGS)(space.o) nlpt $(CLGS)(cutest_functions.o)
-cutest_functionsd = $(SMTD) $(LGD)(space.o) nlpt $(CLGD)(cutest_functions.o)
-problems = $(SMTS) nlpt $(CLGS)(problem.o)
-problemd = $(SMTD) nlpt $(CLGD)(problem.o)
+cutest_functionss = $(SMTS) $(LGS)(space.o) nlpt $(PRLGS)(cutest_functions.o)
+cutest_functionsd = $(SMTD) $(LGD)(space.o) nlpt $(PRLGD)(cutest_functions.o)
+problems = $(SMTS) nlpt $(PRLGS)(problem.o)
+problemd = $(SMTD) nlpt $(PRLGD)(problem.o)
 
 BASIX = $(LG)(cpu_time.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis.o) wsmp \
@@ -253,17 +253,17 @@ cutest_functions_silent: cutest_functions_$(PRECIS)
 cutest_functions: cutest_functions_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: cutest_functions package ($(PRECIS) $(SUCC)"
 cutest_functions_single: $(cutest_functionss)
-	$(RANLIB) $(CLGS)
+	$(RANLIB) $(PRLGS)
 cutest_functions_double: $(cutest_functionsd)
-	$(RANLIB) $(CLGD)
+	$(RANLIB) $(PRLGD)
 
 problem_silent: problem_$(PRECIS)
 problem: problem_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: basic packages ($(PRECIS) $(SUCC)"
 problem_single: $(problems)
-	$(RANLIB) $(CLGS)
+	$(RANLIB) $(PRLGS)
 problem_double: $(problemd)
-	$(RANLIB) $(CLGD)
+	$(RANLIB) $(PRLGD)
 
 #  basic packages
 
@@ -1225,7 +1225,7 @@ $(LG)(smt.o): ../smt/smt.f90
 	$(RMARFILE) space.o
 	$(RMARFILE) nlpt.o
 	$(RMARFILE) mop.o
-	$(CRMARFILE) cutest_functions.o
+	$(PRRMARFILE) cutest_functions.o
 	$(RMARFILE) qpt.o
 	$(RMARFILE) sils.o
 	$(RMARFILE) gls.o
@@ -1384,7 +1384,7 @@ $(LG)(space.o): ../space/space.f90
 	$(RMARFILE) gltr.o
 	$(RMARFILE) qpc.o
 	$(RMARFILE) wcp.o
-	$(CRMARFILE) cutest_functions.o
+	$(PRRMARFILE) cutest_functions.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -1491,21 +1491,21 @@ $(LG)(roots.o): ../roots/roots.f90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-problem.o: $(CLG)(problem.o)
+problem.o: $(PRLG)(problem.o)
 
-$(CLG)(problem.o): ../problem/problem.f90
+$(PRLG)(problem.o): ../problem/problem.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "problem   "
 	$(SED) -f $(SEDS) ../problem/problem.f90 > $(OBJ)/problem1.f90
 	$(SED) -f $(LSEDS) $(OBJ)/problem1.f90 > $(OBJ)/problem.f90
 	cd $(OBJ); $(FORTRAN) -o problem.o $(FFLAGSS) problem.f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o problem.o $(FFLAGSN) problem.f90 )
-	cd $(OBJ); $(CARR) problem.o ; $(RM) problem.f90 probblem1.f90 problem.o
+	cd $(OBJ); $(PRARR) problem.o ; $(RM) problem.f90 probblem1.f90 problem.o
 	@printf '[ OK ]\n'
 
-cutest_functions.o: $(CLG)(cutest_functions.o)
+cutest_functions.o: $(PRLG)(cutest_functions.o)
 
-$(CLG)(cutest_functions.o): ../cutest_functions/cutest_functions.f90
+$(PRLG)(cutest_functions.o): ../cutest_functions/cutest_functions.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cutest_functions   "
 	$(SED) -f $(SEDS) ../cutest_functions/cutest_functions.f90 > \
           $(OBJ)/cutest_functions1.f90
@@ -1515,7 +1515,7 @@ $(CLG)(cutest_functions.o): ../cutest_functions/cutest_functions.f90
           $(FORTRAN) -o cutest_functions.o $(FFLAGSS) cutest_functions.f90 \
               || ( printf ' %-26s' "=> Disabling optimization " ; \
               $(FORTRAN) -o cutest_functions.o $(FFLAGSN) cutest_functions.f90 )
-	cd $(OBJ); $(CARR) cutest_functions.o ; $(RM) cutest_functions.f90 \
+	cd $(OBJ); $(PRARR) cutest_functions.o ; $(RM) cutest_functions.f90 \
           cutest_functions1.f90 cutest_functions.o
 	$(RMARFILE) usefisqp.o
 	$(RMARFILE) usefastr.o

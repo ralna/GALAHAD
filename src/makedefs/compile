@@ -1,7 +1,7 @@
 #  standard GALAHAD package compilation
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2021-04-29
+#  This version: 2021-06-28
 
 #  package compilation
 
@@ -28,6 +28,23 @@ $(LG)($(package).o): ../$(package)/$(package).f90
 	$(RMOBFILE) $(package)s2.o
 	$(RMOBFILE) $(package)s3.o
 	$(RMOBFILE) $(package)t.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  package C interface compilation
+
+$(package)_ciface.o: $(CLG)($(package)_ciface.o)
+
+$(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_ciface"
+	$(SED) -f $(CISEDS) ../$(package)/C/$(package)_ciface.f90 \
+           > $(OBJ)/$(package)_ciface.f90
+	cd $(OBJ); $(FORTRAN) -o $(package)_ciface.o $(FFLAGSS) \
+           $(package)_ciface.f90 \
+            || ( printf ' %-26s' "=> Disabling optimization " ; \
+           $(FORTRAN) -o $(package)_ciface.o $(FFLAGSN) $(package)_ciface.f90 )
+	cd $(OBJ); $(CARR) $(package)_ciface.o
+	cd $(OBJ); $(RM) $(package)_ciface.f90 $(package)_ciface.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -93,6 +110,44 @@ $(OBJ)/$(package)s3.o: ../$(package)/$(package)s3.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
+#  test programs for C specification document
+
+$(package)cs.o: $(OBJ)/$(package)cs.o
+
+$(OBJ)/$(package)cs.o: ../$(package)/C/$(package)s.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)cs  "
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package)s.c > $(OBJ)/$(package)cs.c
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package).h > $(OBJ)/$(package).h
+	cd $(OBJ) ; $(CC) -o $(package)cs.o $(CFLAGS) $(package)cs.c
+	rm $(OBJ)/*.c $(OBJ)/*.h
+	@printf '[ OK ]\n'
+
+$(package)cs2.o: $(OBJ)/$(package)cs2.o
+
+$(OBJ)/$(package)cs2.o: ../$(package)/C/$(package)s2.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)cs2  "
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package)s2.c > $(OBJ)/$(package)cs2.c
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package).h > $(OBJ)/$(package).h
+	cd $(OBJ) ; $(CC) -o $(package)cs.o $(CFLAGS) $(package)cs2.c
+	rm $(OBJ)/*.c $(OBJ)/*.h
+	@printf '[ OK ]\n'
+
+$(package)c3s.o: $(OBJ)/$(package)cs3.o
+
+$(OBJ)/$(package)c3s.o: ../$(package)/C/$(package)s3.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)cs3  "
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package)s3.c > $(OBJ)/$(package)cs3.c
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package).h > $(OBJ)/$(package).h
+	cd $(OBJ) ; $(CC) -o $(package)cs.o $(CFLAGS) $(package)cs3.c
+	rm $(OBJ)/*.c $(OBJ)/*.h
+	@printf '[ OK ]\n'
+
 #  comprehensive test programs
 
 $(package)t.o: $(OBJ)/$(package)t.o
@@ -115,6 +170,32 @@ $(OBJ)/$(package)t2.o: ../$(package)/$(package)t2.f90
 	$(SED) -f $(LSEDS) $(OBJ)/$(package)t1.f90 > $(OBJ)/$(package)t2.f90
 	cd $(OBJ) ; $(FORTRAN) -o $(package)t2.o $(FFLAGSS) $(package)t2.f90
 	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  comprehensive test programs for C interfaces
+
+$(package)ct.o: $(OBJ)/$(package)ct.o
+
+$(OBJ)/$(package)ct.o: ../$(package)/C/$(package)ct.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)ct  "
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package)t.c > $(OBJ)/$(package)ct.c
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package).h > $(OBJ)/$(package).h
+	cd $(OBJ) ; $(CC) -o $(package)ct.o $(CFLAGS) $(package)ct.c
+	rm $(OBJ)/*.c $(OBJ)/*.h
+	@printf '[ OK ]\n'
+
+$(package)ct2.o: $(OBJ)/$(package)ct2.o
+
+$(OBJ)/$(package)ct2.o: ../$(package)/C/$(package)ct2.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)ct2  "
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package)t2.c > $(OBJ)/$(package)ct2.c
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package).h > $(OBJ)/$(package).h
+	cd $(OBJ) ; $(CC) -o $(package)ct2.o $(CFLAGS) $(package)ct2.c
+	rm $(OBJ)/*.c $(OBJ)/*.h
 	@printf '[ OK ]\n'
 
 #  CUTEst/AMPL interfaces

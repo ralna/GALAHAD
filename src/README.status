@@ -3,41 +3,41 @@
 CONVERSION TO NEW MAKEMASTERS & C INTERFACES   
 --------------------------------------------
 
-M = makemaster done, C = C interface done
+M = makemaster done, C = C interface planned, C+ = C interface done
 
 ampl
-arc                       M  
+arc                       M C
 basic                     M
-blls                      M
-bqp                       M
-bqpb                      M (replace with specialised cqp?)
+blls                      M C
+bqp                       M C
+bqpb                      M (replace with specialised cqp?) C
 bsc                       M
-ccqp                      M
+ccqp                      M C
 check                     M (build cutest interface?)
 checkpoint                M
 clock                     M
 convert                   M
 copyright                 M
-cqp                       M
+cqp                       M C
 cpu_time                  M
 cro                       M
 cutest_functions          M
 demo                      M
-dlp                       M
+dlp                       M C
 dps                       M
-dqp                       M
+dqp                       M C
 dum
-eqp                       M
+eqp                       M C
 fdc                       M
 fdh                       M (need to adapt fdhs2, error in test)
 filter                    M
-filtrane                  M
-fisqp                     M
+filtrane                  M C
+fisqp                     M C
 fit                       M
 general
-glrt                      M
+glrt                      M C
 gls                       M
-gltr                      M
+gltr                      M C
 hsl
 ir                        M
 l1qp                      M
@@ -49,42 +49,42 @@ lls                       M
 llst                      M
 lms                       M
 lmt                       M
-lpa                       M
-lpb                       M
-lpqp                      M
-lsqp                      M
-lsrt                      M
-lstr                      M
+lpa                       M C
+lpb                       M C
+lpqp                      M 
+lsqp                      M C
+lsrt                      M C
+lstr                      M C
 miqr                      M
 mop                       M
 nlpt                      M
-nls                       M
+nls                       M C
 norms                     M
 opt                       M
-pdqp                      M
-presolve                  M
+pdqp                      M C
+presolve                  M C
 problem                   M
 psls                      M (needs spec and test examples)
 ptrans                    M
-qp                        M
-qpa                       M
-qpb                       M
-qpc                       M
+qp                        M C
+qpa                       M C
+qpb                       M C
+qpc                       M C
 qpd                       M
 qpp                       M
 qpt                       M
 rand                      M
 roots                     M
 rpd                       M
-rqs                       M
-sbls                      M
+rqs                       M C
+sbls                      M C
 scale                     M
 scaling                   M
 scu                       M
 sec                       M
 sha                       M
 sils                      M
-sls                       M
+sls                       M C
 smt                       M
 sort                      M
 space                     M
@@ -95,23 +95,23 @@ string                    M
 symbols                   M
 tools                     M
 trans                     M
-trs                       M
-tru                       M
-uls                       M
+trs                       M C
+tru                       M C
+uls                       M C
 userdata                  M
 warm                      M
-wcp                       M
+wcp                       M C
 zd11                      M
 
 forthcoming: 
 
-barc                      M
+barc                      M C
 bgo                       M C
-lhs                       M C
+lhs                       M C+
 trace                     M (but buggy)
 tral                      M (broken)
-trb                       M C
-ugo                       M
+trb                       M C+
+ugo                       M C+
 
 oblivion:
 

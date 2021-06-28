@@ -1,7 +1,7 @@
 #  Standard GALAHAD makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2021-04-29
+#  This version: 2021-06-28
 
 #  makefile shell
 
@@ -16,6 +16,8 @@ FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
 FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
 FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
             $(OPENMP)
+CFLAGS    = $(CCBASIC) $(OPTIMIZATION) $(CCDEBUG)
+CFLAGSN   = $(CCBASIC) $(NOOPTIMIZATION) $(CCDEBUG)
 
 #  coverage flags
 
@@ -37,9 +39,9 @@ BLG  = $(OBJ)/libgalahad_blas.a
 BLGS = $(OBJS)/libgalahad_blas.a
 BLGD = $(OBJD)/libgalahad_blas.a
 
-CLG  = $(OBJ)/libgalahad_problem.a
-CLGS = $(OBJS)/libgalahad_problem.a
-CLGD = $(OBJD)/libgalahad_problem.a
+CLG  = $(OBJ)/libgalahad_c.a
+CLGS = $(OBJS)/libgalahad_c.a
+CLGD = $(OBJD)/libgalahad_c.a
 
 DLG  = $(OBJ)/libgalahad_dummy.a
 DLGS = $(OBJS)/libgalahad_dummy.a
@@ -67,6 +69,10 @@ MPLGD = $(OBJD)/libgalahad_mkl_pardiso.a
 PLG  = $(OBJ)/libgalahad_pardiso.a
 PLGS = $(OBJS)/libgalahad_pardiso.a
 PLGD = $(OBJD)/libgalahad_pardiso.a
+
+PRLG  = $(OBJ)/libgalahad_problem.a
+PRLGS = $(OBJS)/libgalahad_problem.a
+PRLGD = $(OBJD)/libgalahad_problem.a
 
 RLG  = $(OBJ)/libgalahad_spral.a
 RLGS = $(OBJS)/libgalahad_spral.a
@@ -110,6 +116,9 @@ MPRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MPLG)
 PARR = $(AR) $(ARREPFLAGS) $(PLG)
 PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $PLG)
 
+PRARR = $(AR) $(ARREPFLAGS) $(PRLG)
+PRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PRLG)
+
 RARR = $(AR) $(ARREPFLAGS) $(RLG)
 RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $RLG)
 
@@ -127,6 +136,8 @@ ULINEARSOLVERD = $(ULINEARSOLVER)d
 
 #  sed scripts
 
+CSEDS = $(GALAHAD)/seds/c_$(PRECIS).sed
+CISEDS = $(GALAHAD)/seds/ciface_$(PRECIS).sed
 LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
 LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
 

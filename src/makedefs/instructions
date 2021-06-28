@@ -1,12 +1,17 @@
 #  standard GALAHAD compilation and run instructions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2021-04-29
+#  This version: 2021-06-28
 
 #  compilation agenda for package
 
 S$(PACKAGE) = $(DEPENDENCIES) $(LGS)($(package).o)
 D$(PACKAGE) = $(DEPENDENCIES) $(LGD)($(package).o)
+
+#  compilation agenda for package with C interface
+
+S$(PACKAGE)C = $(S$(PACKAGE)) $(CLGS)($(package)_ciface.o)
+D$(PACKAGE)C = $(D$(PACKAGE)) $(CLGD)($(package)_ciface.o)
 
 #  additional run agenda
 
@@ -22,11 +27,14 @@ DQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) $(OBJD)/in$(package).o
 LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
                  $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
+CLIBS = -lgalahad_c $(LIBS) 
 
 #  compilation and run agenda
 
 $(PACKAGE)OBJECTSS = $(S$(PACKAGE))
 $(PACKAGE)OBJECTSD = $(D$(PACKAGE))
+$(PACKAGE)OBJECTSCS = $(S$(PACKAGE)C)
+$(PACKAGE)OBJECTSCD = $(D$(PACKAGE)C)
 $(PACKAGE)OBJECTSS_CUTEST = $(S$(PACKAGE)) $(SRUN$(PACKAGE))
 $(PACKAGE)OBJECTSD_CUTEST = $(D$(PACKAGE)) $(DRUN$(PACKAGE))
 $(PACKAGE)OBJECTSS_QPLIB = $(S$(PACKAGE)) $(SQPLIB$(PACKAGE))
@@ -59,6 +67,30 @@ R$(PACKAGE)SS3 = $(OBJS)/$(package)s3.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)ST = $(OBJS)/$(package)t.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)ST2 = $(OBJS)/$(package)t2.o -L$(OBJS) $(LIBS)
 
+#  test agenda for C interfaces
+
+$(PACKAGE)CDS = $(D$(PACKAGE)C) $(OBJD)/$(package)cs.o
+$(PACKAGE)CDS2 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs2.o
+$(PACKAGE)CDS3 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs3.o
+$(PACKAGE)CDT = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct.o
+$(PACKAGE)CDT2 = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct2.o
+$(PACKAGE)CSS = $(S$(PACKAGE)C) $(OBJS)/$(package)cs.o
+$(PACKAGE)CSS2 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs2.o
+$(PACKAGE)CSS3 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs3.o
+$(PACKAGE)CST = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ct.o
+$(PACKAGE)CST2 = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ct2.o
+
+R$(PACKAGE)CDS = $(OBJD)/$(package)cs.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDS2 = $(OBJD)/$(package)cs2.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDS3 = $(OBJD)/$(package)cs3.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDT = $(OBJD)/$(package)ct.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDT2 = $(OBJD)/$(package)ct2.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CSS = $(OBJS)/$(package)cs.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSS2 = $(OBJS)/$(package)cs2.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CSS3 = $(OBJS)/$(package)cs3.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CST = $(OBJS)/$(package)ct.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CT2 = $(OBJS)/$(package)ct2.o -L$(OBJS) $(CLIBS)
+
 #  =========================================================================
 #  ========================== makefile stanza ==============================
 #  =========================================================================
@@ -90,6 +122,23 @@ $(package)_double: $($(PACKAGE)OBJECTSD)
 $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $($(PACKAGE)OBJECTSS)
 $(package)_silent_double: $($(PACKAGE)OBJECTSD)
+
+#  process C interface to package
+
+$(package)c: $(package)c_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
+$(package)c_single: $($(PACKAGE)OBJECTSCS)
+	$(RANLIB) $(LGS)
+	$(RANLIB) $(CLGS)
+$(package)c_double: $($(PACKAGE)OBJECTSCD)
+	$(RANLIB) $(LGD)
+	$(RANLIB) $(CLGD)
+
+#  process C interface to package silently
+
+$(package)c_silent: $(package)c_silent_$(PRECIS)
+$(package)c_silent_single: $($(PACKAGE)OBJECTSCS)
+$(package)c_silent_double: $($(PACKAGE)OBJECTSCD)
 
 # process package for CUTEst
 
@@ -251,6 +300,56 @@ $(package)ds3: $($(PACKAGE)DS3)
 	cat $(package)ds3.output
 	rm ./run_$(package)
 
+#  run C specification document example tests
+
+$(package)css: $($(PACKAGE)CSS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)CSS)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs.output 2>&1
+	cat $(package)cs.output
+	rm ./run_$(package)
+
+$(package)css2: $($(PACKAGE)CSS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)CSS2)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs2.output 2>&1
+	cat $(package)cs2.output
+	rm ./run_$(package)
+
+$(package)css3: $($(PACKAGE)CSS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)CSS3)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs3.output 2>&1
+	cat $(package)cs3.output
+	rm ./run_$(package)
+
+$(package)cds: $($(PACKAGE)CDS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)CDS)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds.output 2>&1
+	cat $(package)cds.output
+	rm ./run_$(package)
+
+$(package)cds2: $($(PACKAGE)CDS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)CDS2)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds2.output 2>&1
+	cat $(package)cds2.output
+	rm ./run_$(package)
+
+$(package)cds3: $($(PACKAGE)CDS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)CDS3)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds3.output 2>&1
+	cat $(package)cds3.output
+	rm ./run_$(package)
+
 #  run full (comprehensive) example tests
 
 $(package)st: $($(PACKAGE)ST)
@@ -258,8 +357,17 @@ $(package)st: $($(PACKAGE)ST)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)ST)
 	$(RMOOC)
-	- ./run_$(package) > $(package)t.output 2>&1
-	cat $(package)t.output
+	- ./run_$(package) > $(package)st.output 2>&1
+	cat $(package)st.output
+	rm ./run_$(package)
+
+$(package)st2: $($(PACKAGE)ST2)
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)ST2)
+	$(RMOOC)
+	- ./run_$(package) > $(package)st2.output 2>&1
+	cat $(package)st2.output
 	rm ./run_$(package)
 
 $(package)dt: $($(PACKAGE)DT)
@@ -276,6 +384,45 @@ $(package)dt2: $($(PACKAGE)DT2)
 	echo " Exhaustive test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DT2)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dt2.output 2>&1
+	cat $(package)dt2.output
+	rm ./run_$(package)
+
+#  run full (comprehensive) C example tests
+
+$(package)cst: $($(PACKAGE)CST)
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)CST)
+	$(RMOOC)
+	- ./run_$(package) > $(package)st.output 2>&1
+	cat $(package)st.output
+	rm ./run_$(package)
+
+$(package)cst2: $($(PACKAGE)CST2)
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)CST2)
+	$(RMOOC)
+	- ./run_$(package) > $(package)st2.output 2>&1
+	cat $(package)st2.output
+	rm ./run_$(package)
+
+$(package)cdt: $($(PACKAGE)CDT)
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)CDT)
+	$(RMOOC)
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)dt.output 2>&1
+	cat $(package)dt.output
+	rm ./run_$(package)
+
+$(package)cdt2: $($(PACKAGE)CDT2)
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)CDT2)
 	$(RMOOC)
 	- ./run_$(package) > $(package)dt2.output 2>&1
 	cat $(package)dt2.output
