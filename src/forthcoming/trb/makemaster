@@ -25,6 +25,11 @@ DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
                make_nlpt make_icfs make_lancelot_psls \
                make_psls make_sha make_cauchy make_cg
 
+#  auxiliary packages that the C interface to the current package depends 
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = 
+
 #  other packages that depend on package
 
 DEPENDS = bgo

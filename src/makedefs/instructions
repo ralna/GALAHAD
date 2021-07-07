@@ -469,7 +469,7 @@ cleanall:
 	@printf '[ OK ]\n'
 
 cleanallc:
-	@printf ' %-30s\t\t' \
+	@printf ' %-9s\t' \
           "Removing all $(PRECIS) precision C-interface object and module files"
 	$(RM) $(OBJ)/libgalahad_c.a $(MOD)/*ciface.mod
 	@printf '[ OK ]\n'

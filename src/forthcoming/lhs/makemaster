@@ -21,6 +21,11 @@ PACKAGE = LHS
 DEPENDENCIES = make_dummy make_specfile make_zd11 make_smt \
                make_space make_norms
 
+#  auxiliary packages that the C interface to the current package depends 
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES =
+
 #  other packages that depend on package
 
 DEPENDS = bgo
