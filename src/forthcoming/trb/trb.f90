@@ -2590,8 +2590,7 @@
        IF ( data%control%alive_unit > 0 ) THEN
          INQUIRE( FILE = data%control%alive_file, EXIST = alive )
          IF ( .NOT. alive ) THEN
-           inform%status = - 40
-           RETURN
+           inform%status = GALAHAD_error_alive ; GO TO 900
          END IF
        END IF
 

@@ -1,0 +1,62 @@
+
+ initial insertion
+
+ word ALPHA      inserted  in table position  42
+ word BETA       inserted  in table position  65
+ word GAMMA      inserted  in table position  60
+ word DELTA      inserted  in table position  56
+ word X111111111 inserted  in table position  68
+ word X111111112 inserted  in table position  32
+ word X111111111 already   in table position  68
+ word X111111114 inserted  in table position  57
+ word ALPHA      found     in table position  42
+ word BETA       found     in table position  65
+ word GAMMA      found     in table position  60
+ word DELTA      found     in table position  56
+ word EPSILON    absent  from table
+ word X11111112  absent  from table
+ word X111111113 absent  from table
+ word X111111114 found     in table position  57
+ word X111111111 found     in table position  68
+ word OMEGA      absent  from table
+
+ word removal
+
+ word BETA       removed from table position  65
+ word X111111112 removed from table position  32
+ word OMEGA      absent  from table
+ word ALPHA      found     in table position  42
+ word BETA       absent  from table
+ word GAMMA      found     in table position  60
+ word DELTA      found     in table position  56
+ word EPSILON    absent  from table
+ word X11111112  absent  from table
+ word X111111113 absent  from table
+ word X111111114 found     in table position  57
+ word X111111111 found     in table position  68
+ word OMEGA      absent  from table
+
+ increase table size
+
+ table entry in position  42 moved to position 157
+ table entry in position  56 moved to position 130
+ table entry in position  57 moved to position  86
+ table entry in position  60 moved to position  43
+ table entry in position  68 moved to position  90
+
+ further insertion
+
+ word   OMEGA      inserted  in table position  57
+ word   A111111111 inserted  in table position   7
+ word   P110111111 inserted  in table position 194
+ word   ALPHA      found     in table position 157
+ word   BETA       absent  from table
+ word   GAMMA      found     in table position  43
+ word   DELTA      found     in table position 130
+ word   EPSILON    absent  from table
+ word   X111111112 absent  from table
+ word   X111111113 absent  from table
+ word   X111111114 found     in table position  86
+ word   X111111111 found     in table position  90
+ word   OMEGA      found     in table position  57
+ word   X1111 1111 absent  from table

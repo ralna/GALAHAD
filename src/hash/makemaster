@@ -1,7 +1,7 @@
-#  Main body of the installation makefile for the GALAHAD UGO package
+#  Main body of the installation makefile for the GALAHAD HASH package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-29
+#  This version: 2021-07-03
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -13,34 +13,24 @@ include $(GALAHAD)/src/makedefs/defaults
 
 #  package name
 
-package = ugo
-PACKAGE = UGO
+package = hash
+PACKAGE = HASH
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_dummy make_specfile make_zd11 make_smt \
-               make_space make_userdata
-
-#  auxiliary packages that the C interface to the current package depends 
-#  on (prepend with make_ciface_)
-
-CDEPENDENCIES = 
+DEPENDENCIES = make_dummy make_space make_specfile
 
 #  other packages that depend on package
 
-DEPENDS = bgo
+DEPENDS = dgo
 
-#  auxiliary packages that are needed for tests  (prepend with make_)
+#  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS =
 
-#  tests to be performed (preprend with test)
+#  tests to be performed (preprend with test_)
 
-TESTS = test_full test_cutest
-
-#  CUTEst example for tests
-
-CUTEST_EXAMPLE = ALLINIT.SIF
+TESTS = test_full
 
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================
@@ -61,3 +51,4 @@ include $(GALAHAD)/src/makedefs/compile
 #  include required package intermediaries
  
 include $(GALAHAD)/src/makedefs/intermediaries
+

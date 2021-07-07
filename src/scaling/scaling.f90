@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 11:00 GMT.
 
-!-*-*-*-*-*-*-*-*-*-*-*-  SCALING  M O D U L E  *-*-*-*-*-*-*-*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*- G A L A H A D _ S C A L I N G   M O D U L E  *-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould

@@ -10,18 +10,18 @@
 
    MODULE GALAHAD_SCALE_double
 
-!  -------------------------------------------------------------------------
-!  | Compute and apply suitable shifts (x_s,f_s) and scale factors         |
-!  | (X_s,F_s,C_s) for the [possibly parametric] quadratic program (QP)    !
-!  |                                                                       |
-!  |   minimize   1/2 x^T H x + x^T g + f  [+ theta x^T dg + f + theta df] |
-!  |   subjec to  c_l [+ theta dc_l] <= A x <= c_u [+ theta dc_u],         |
-!  |   and        x_l [+ theta dx_l] <=  x  <= x_u [+ theta dx_u]          |
-!  |                                                                       |
-!  |   so that  x_t = X_s^-1 ( x - x_s )                                   |
-!  |            f_t( x_t ) = F_s^-1 ( q( x ) - f_s )                       |
-!  |   and      A_t x_t = C_s^-1 ( A x - c_s )                             |
-!  -------------------------------------------------------------------------
+!   ------------------------------------------------------------------------
+!  | Compute and apply suitable shifts (x_s,f_s) and scale factors          |
+!  | (X_s,F_s,C_s) for the [possibly parametric] quadratic program (QP)     !
+!  |                                                                        |
+!  |   minimize    1/2 x^T H x + x^T g + f  [+ theta x^T dg + f + theta df] |
+!  |   subject to  c_l [+ theta dc_l] <= A x <= c_u [+ theta dc_u],         |
+!  |   and         x_l [+ theta dx_l] <=  x  <= x_u [+ theta dx_u]          |
+!  |                                                                        |
+!  |   so that  x_t = X_s^-1 ( x - x_s )                                    |
+!  |            f_t( x_t ) = F_s^-1 ( q( x ) - f_s )                        |
+!  |   and      A_t x_t = C_s^-1 ( A x - c_s )                              |
+!   ------------------------------------------------------------------------
 
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_double
@@ -589,6 +589,9 @@
 !     5  normalize rows of K (cf 2) then normalize rows of A (cf 4)
 !     6  normalize rows & columns of A (cf 3) then normalize rows of A (cf 4)
 !     7  normalize rows & columns using Sinkhorn-Knopp equilibration
+!     8  normalize rows of A so that each has one-norm close to 1 (cf 4)
+!        and scale the objective so that the largest component of H and g
+!        (in absolute value) is close to 1
 !    >7 (currently) no scaling
 !
 !  trans is a structure of type SCALE_trans_type that holds the shift and 
@@ -648,6 +651,7 @@
 !  local variables
 
       INTEGER :: out
+      REAL ( KIND = wp ) :: gmax, hmax
       LOGICAL :: printi
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -663,36 +667,34 @@
       IF ( out > 0 .AND. control%print_level >= 5 )                            &
         WRITE( out, "( A, ' entering SCALE_get')") prefix
 
-      SELECT CASE( scale )
-      CASE ( 1 )
-        data%scale = scale
+      trans%f_scale = one
+      data%scale = scale
+      SELECT CASE( data%scale )
 
 !  use shift and scale
 
+      CASE ( 1 )
         IF ( printi ) WRITE( out, 2010 ) prefix
         CALL SCALE_get_shift_and_scale( prob%n, prob%m, prob%A, prob%G,        &
 !                                       prob%f,                                &
                                         prob%X, prob%X_l, prob%X_u,            &
                                         prob%C, prob%C_l, prob%C_u,            &
                                         trans, control, inform )
-      CASE ( 2 )
-        data%scale = scale
-
 !  scale using K
 
+      CASE ( 2 )
         IF ( printi ) WRITE( out, 2000 ) prefix, 'K'
         CALL SCALE_get_factors_from_K( prob%n, prob%m, prob%H, prob%A,         &
                                        trans, data, control, inform )
-      CASE ( 3 )
-        data%scale = scale
-
 !  scale using A
 
+      CASE ( 3 )
         IF ( printi ) WRITE( out, 2000 ) prefix, 'A'
         CALL SCALE_get_factors_from_A( prob%n, prob%m, prob%A,                 &
                                        trans, data, control, inform )
-      CASE ( 4 )
-        data%scale = scale
+!  scale to equilibrate rows of A
+
+      CASE ( 4, 8 )
 
 !  allocate space for scale factors
 
@@ -718,50 +720,99 @@
         trans%X_scale( : prob%n ) = one ; trans%C_scale( : prob%m ) = one
         CALL SCALE_normalize_rows_of_A( prob%n, prob%m, prob%A,                &
                                         trans, data, control, inform )
+
+!  if required, equilibrate the objective function
+
+        IF ( data%scale == 8 ) THEN
+
+!  compute the largest entry (in abolute value) in the gradient ...
+
+          IF ( prob%gradient_kind == 1 ) THEN
+            gmax = one
+          ELSE IF ( prob%gradient_kind /= 0 ) THEN
+            gmax = MAXVAL( ABS( prob%G( : prob%n ) ) )
+          ELSE
+            gmax = zero
+          END IF
+
+!  ... and in the Hessian
+
+          IF ( prob%hessian_kind < 0 ) THEN
+            SELECT CASE ( SMT_get( prob%H%type ) )
+            CASE ( 'NONE', 'ZERO' )
+              hmax = zero
+            CASE ( 'IDENTITY' )
+              hmax = one
+            CASE ( 'SCALED_IDENTITY' )
+              hmax = ABS( prob%H%val( 1 ) )
+            CASE ( 'DIAGONAL' )
+              hmax = MAXVAL( ABS( prob%H%val( : prob%H%n ) ) )
+            CASE ( 'DENSE' ) 
+              hmax =                                                           &
+                MAXVAL( ABS( prob%H%val( : prob%n * ( prob%n + 1 ) ) / 2 ) )
+            CASE ( 'SPARSE_BY_ROWS' )
+              hmax =                                                           &
+                MAXVAL( ABS( prob%H%val( : prob%H%ptr( prob%n + 1 ) - 1 ) ) )
+            CASE ( 'COORDINATE' )
+              hmax = MAXVAL( ABS( prob%H%val( : prob%H%ne ) ) )
+            CASE ( 'LBFGS' )
+              hmax = ABS( prob%H_lm%delta )
+            END SELECT
+          ELSE IF ( prob%hessian_kind == 2 ) THEN
+            hmax = MAXVAL( ABS( prob%WEIGHT( : prob%n ) ) )
+          ELSE IF ( prob%hessian_kind == 1 ) THEN
+            hmax = one
+          ELSE
+            hmax = zero
+          END IF
+
+!  record the objective scaling 
+
+          trans%f_scale = MAX( gmax, hmax )
+!write(6,*) ' f scale = ', trans%f_scale
+        END IF
+
+!  scale using K ...
+
       CASE ( 5 )
-        data%scale = scale
-
-!  scale using K
-
         IF ( printi ) WRITE( out, 2000 ) prefix, 'K'
         CALL SCALE_get_factors_from_K( prob%n, prob%m, prob%H, prob%A,         &
                                        trans, data, control, inform )
         IF ( inform%status /= GALAHAD_ok ) RETURN
 
-!  rescale to equilibrate A
+!  ... and then rescale to equilibrate A
 
         IF ( printi ) WRITE( out, 2010 ) prefix
         CALL SCALE_normalize_rows_of_A( prob%n, prob%m, prob%A,                &
                                         trans, data, control, inform )
+!  scale using A ...
+
       CASE ( 6 )
-        data%scale = scale
-
-!  scale using A
-
         IF ( printi ) WRITE( out, 2000 ) prefix, 'A'
         CALL SCALE_get_factors_from_A( prob%n, prob%m, prob%A,                 &
                                        trans, data, control, inform )
         IF ( inform%status /= GALAHAD_ok ) RETURN
 
-!  rescale to equilibrate A
+!  ... and then rescale to equilibrate A
 
         IF ( printi ) WRITE( out, 2010 ) prefix
         CALL SCALE_normalize_rows_of_A( prob%n, prob%m, prob%A,                &
                                         trans, data, control, inform )
+
+!  scale using A using Sinkhorn-Knopp  equilibration
+
       CASE ( 7 )
-        data%scale = scale
-
-!  scale using A
-
         IF ( printi ) WRITE( out, "( /, A,  ' problem will be scaled',         &
        &     ' using Sinkhorn-Knopp equilibration' )" ) prefix
         CALL SCALE_get_sinkhorn_knopp( prob%n, prob%m, prob%H, prob%A,         &
                                        trans, data, control, inform )
         IF ( inform%status /= GALAHAD_ok ) RETURN
-      CASE DEFAULT
+
 
 !  ignore anything else
 
+      CASE DEFAULT
+        data%scale = 0
       END SELECT
 
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
@@ -824,7 +875,7 @@
 !  where H_t = X_s^T H X_s / F_s
 !        g_t = X_s ( H x_s + g ) / F_s
 !        dg_t = X_s dg / F_s
-!        f_t = 1/2 x_s^T H x_s + x_s^T g + f - f_s ) / F_s
+!        f_t = ( 1/2 x_s^T H x_s + x_s^T g + f - f_s ) / F_s
 !        df_t = x_s^T dg / F_s
 !        A_t = C_s^-1 A X_s
 !        c_s = A x_s
@@ -896,15 +947,16 @@
 
       ELSE IF ( data%scale > 1 ) THEN
         IF ( ALLOCATED( prob%DG ) ) THEN
-          CALL SCALE_apply_factors( prob%n, prob%m, prob%H, prob%A,            &
+          CALL SCALE_apply_factors( prob%n, prob%m, prob%H, prob%A, prob%f,    &
                                     prob%G, prob%X, prob%X_l, prob%X_u,        &
                                     prob%C, prob%C_l, prob%C_u,                &
                                     prob%Y, prob%Z, .TRUE., trans, control,    &
+                                    df = prob%df,                              &
                                     DG = prob%DG, DX_l = prob%DX_l,            &
                                     DX_u = prob%DX_u, DC_l = prob%DC_l,        &
                                     DC_u = prob%DC_u )
         ELSE
-          CALL SCALE_apply_factors( prob%n, prob%m, prob%H, prob%A,            &
+          CALL SCALE_apply_factors( prob%n, prob%m, prob%H, prob%A, prob%f,    &
                                     prob%G, prob%X, prob%X_l, prob%X_u,        &
                                     prob%C, prob%C_l, prob%C_u,                &
                                     prob%Y, prob%Z, .TRUE., trans, control )
@@ -998,15 +1050,16 @@
 
       ELSE IF ( data%scale > 1 ) THEN
         IF ( ALLOCATED( prob%DG ) ) THEN
-          CALL SCALE_apply_factors( prob%n, prob%m, prob%H, prob%A,            &
+          CALL SCALE_apply_factors( prob%n, prob%m, prob%H, prob%A, prob%f,    &
                                     prob%G, prob%X, prob%X_l, prob%X_u,        &
                                     prob%C, prob%C_l, prob%C_u,                &
                                     prob%Y, prob%Z, .FALSE., trans, control,   &
+                                    df = prob%df,                              &
                                     DG = prob%DG, DX_l = prob%DX_l,            &
                                     DX_u = prob%DX_u, DC_l = prob%DC_l,        &
                                     DC_u = prob%DC_u )
         ELSE
-          CALL SCALE_apply_factors( prob%n, prob%m, prob%H, prob%A,            &
+          CALL SCALE_apply_factors( prob%n, prob%m, prob%H, prob%A, prob%f,    &
                                     prob%G, prob%X, prob%X_l, prob%X_u,        &
                                     prob%C, prob%C_l, prob%C_u,                &
                                     prob%Y, prob%Z, .FALSE., trans, control )
@@ -2027,10 +2080,9 @@
 !  A See SMT
 !  trans%C_scale is an array that must be set on entry to the current row 
 !                scaling factors C_scale. On exit, trans%C_scale may have been 
-!                altered to reflect  the rescaling
+!                altered to reflect the rescaling
 !  trans%X_scale is an array that must be set on entry to the current column 
 !                scaling factors X_scale. It is unaltered on exit
-!
 !
 !  ---------------------------------------------------------------------------
 
@@ -2119,7 +2171,7 @@
         IF ( data%ROW_val( i ) /= zero ) trans%C_scale( i ) =                  &
           trans%C_scale( i ) / two ** ANINT( LOG( data%ROW_val( i ) ) / log2 )
       END DO
-      trans%C_scale( : m ) = two ** ANINT( trans%C_scale( : m ) )
+!     trans%C_scale( : m ) = two ** ANINT( trans%C_scale( : m ) )
       s_max = MAXVAL( trans%C_scale( : m ) ) 
       s_min = MINVAL( trans%C_scale( : m ) )
       IF ( control%print_level > 0 .AND. control%out > 0 )                     &
@@ -2516,9 +2568,9 @@
 
 !-*-*-*-*-*-*-*-*-*-   S C A L E _ a p p l y _ f a c t o r s  -*-*-*-*-*-*-*-
 
-      SUBROUTINE SCALE_apply_factors( n, m, H, A, G, X, X_l, X_u, C, C_l,      &
+      SUBROUTINE SCALE_apply_factors( n, m, H, A, f, G, X, X_l, X_u, C, C_l,   &
                                       C_u, Y, Z, apply, trans, control,        &
-                                      DG, DX_l, DX_u, DC_l, DC_u )
+                                      df, DG, DX_l, DX_u, DC_l, DC_u )
 
 !  -------------------------------------------------------------------
 !
@@ -2571,8 +2623,10 @@
 
       INTEGER, INTENT( IN ) :: n, m
       LOGICAL, INTENT( IN ) :: apply
+      REAL ( KIND = wp ), INTENT( INOUT ) :: f
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: G, X, X_l, X_u, Z
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C, C_l, C_u, Y
+      REAL ( KIND = wp ), OPTIONAL :: df
       REAL ( KIND = wp ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
       REAL ( KIND = wp ), OPTIONAL, DIMENSION( m ) :: DC_l, DC_u
       TYPE ( SMT_type ), INTENT( INOUT ) :: H, A
@@ -2595,7 +2649,7 @@
         SELECT CASE ( SMT_get( H%type ) )
         CASE ( 'DIAGONAL' ) 
           DO i = 1, n
-            val = H%val( i )
+            val = H%val( i ) / trans%f_scale
             IF ( val /= zero )                                                 &
               H%val( i ) = val * trans%X_scale( i ) * trans%X_scale( i )
           END DO
@@ -2604,7 +2658,7 @@
           DO i = 1, n
             DO j = 1, i
               l = l + 1
-              val = H%val( l )
+              val = H%val( l ) / trans%f_scale
               IF ( val /= zero )                                               &
                 H%val( l ) = val * trans%X_scale( i ) * trans%X_scale( j )
             END DO
@@ -2612,7 +2666,7 @@
         CASE ( 'SPARSE_BY_ROWS' )
           DO i = 1, n
             DO l = H%ptr( i ), H%ptr( i + 1 ) - 1
-              val = H%val( l )
+              val = H%val( l ) / trans%f_scale
               IF ( val /= zero ) THEN
                 j = H%col( l )
                 IF ( j >= 1 .AND. j <= n )                                     &
@@ -2622,7 +2676,7 @@
           END DO
         CASE ( 'COORDINATE' )
           DO l = 1, H%ne
-            val = H%val( l )
+            val = H%val( l ) / trans%f_scale
             IF ( val /= zero ) THEN
               i = H%row( l ) ; j = H%col( l )
               IF ( MIN( i, j ) >= 1 .AND. MAX( i, j ) <= n )                   &
@@ -2668,8 +2722,10 @@
 
 !  scale X and G
 
-        X = X / trans%X_scale ; G = G * trans%X_scale
-        IF ( PRESENT( DG ) ) DG = DG * trans%X_scale
+        X = X / trans%X_scale ; G = G * trans%X_scale / trans%f_scale
+        IF ( PRESENT( DG ) ) DG = DG * trans%X_scale / trans%f_scale
+        f = f / trans%f_scale
+        IF ( PRESENT( df ) ) df = df / trans%f_scale
         C = C * trans%C_scale
 
 !  Scale the bounds on X and the associated dual variables
@@ -2690,7 +2746,7 @@
           END IF
         END DO
 
-        Z = Z * trans%X_scale
+        Z = Z * trans%X_scale  / trans%f_scale
 
 !  Scale the bounds on Ax and the associated Lagrange multipliers
 
@@ -2710,7 +2766,7 @@
           END IF
         END DO
 
-        Y = Y / trans%C_scale
+        Y = Y / ( trans%C_scale * trans%f_scale )
         
 ! ==================
 !  Unscale the data
@@ -2723,7 +2779,7 @@
         SELECT CASE ( SMT_get( H%type ) )
         CASE ( 'DIAGONAL' ) 
           DO i = 1, n
-            val = H%val( i )
+            val = H%val( i ) * trans%f_scale
             IF ( val /= zero )                                                 &
               H%val( i ) = val / ( trans%X_scale( i ) * trans%X_scale( i ) )
           END DO
@@ -2732,7 +2788,7 @@
           DO i = 1, n
             DO j = 1, i
               l = l + 1
-              val = H%val( l )
+              val = H%val( l ) * trans%f_scale
               IF ( val /= zero )                                               &
                 H%val( l ) = val / ( trans%X_scale( i ) * trans%X_scale( j ) )
             END DO
@@ -2740,7 +2796,7 @@
         CASE ( 'SPARSE_BY_ROWS' )
           DO i = 1, n
             DO l = H%ptr( i ), H%ptr( i + 1 ) - 1
-              val = H%val( l )
+              val = H%val( l ) * trans%f_scale
               IF ( val /= zero ) THEN
                 j = H%col( l )
                 IF ( j >= 1 .AND. j <= n )                                     &
@@ -2750,7 +2806,7 @@
           END DO
         CASE ( 'COORDINATE' )
           DO l = 1, H%ne
-            val = H%val( l )
+            val = H%val( l ) * trans%f_scale
             IF ( val /= zero ) THEN
               i = H%row( l ) ; j = H%col( l )
               IF ( MIN( i, j ) >= 1 .AND. MAX( i, j ) <= n )                   &
@@ -2796,8 +2852,10 @@
 
 !  Unscale X and G
 
-        X = X * trans%X_scale ; G = G / trans%X_scale
-        IF ( PRESENT( DG ) ) DG = DG / trans%X_scale
+        X = X * trans%X_scale ; G = G * trans%f_scale / trans%X_scale
+        IF ( PRESENT( DG ) ) DG = DG * trans%f_scale / trans%X_scale
+        f = f * trans%f_scale
+        IF ( PRESENT( df ) ) df = df * trans%f_scale
         C = C / trans%C_scale
 
 !  Unscale the bounds on X and the associated dual variables
@@ -2818,7 +2876,7 @@
           END IF
         END DO
 
-        Z = Z / trans%X_scale
+        Z = trans%f_scale * Z / trans%X_scale
 
 !  Unscale the bounds on Ax and the associated Lagrange multipliers
 
@@ -2838,7 +2896,7 @@
           END IF
         END DO
 
-        Y = Y * trans%C_scale
+        Y = trans%f_scale * Y * trans%C_scale
 
       END IF
       RETURN

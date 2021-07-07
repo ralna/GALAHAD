@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.8 - 20/06/2016 AT 15:15 GMT.
+! THIS VERSION: GALAHAD 3.3 - 07/07/2021 AT 09:45 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ B G O   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -1852,6 +1852,15 @@
 
        IF ( data%attempts > data%control%attempts_max ) THEN
          inform%status = GALAHAD_error_max_iterations ; GO TO 900
+       END IF
+
+!  check to see if we are still "alive"
+
+       IF ( data%control%alive_unit > 0 ) THEN
+         INQUIRE( FILE = data%control%alive_file, EXIST = alive )
+         IF ( .NOT. alive ) THEN
+           inform%status = GALAHAD_error_alive ; GO TO 900
+         END IF
        END IF
 
        data%pass = data%pass + 1

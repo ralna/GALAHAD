@@ -978,6 +978,7 @@
 !  If the problem was scaled, unscale it
 
         IF ( scale > 0 ) THEN
+qfval = qfval * SCALE_trans%f_scale
           CALL SCALE_recover( prob, SCALE_trans, SCALE_data,                   &
                               SCALE_control, SCALE_inform )
           IF ( SCALE_inform%status < 0 ) THEN

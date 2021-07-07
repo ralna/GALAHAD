@@ -38,6 +38,7 @@
 ! maximum-clock-time-limit                          -1.0
 ! remove-linear-dependencies                        yes
 ! treat-zero-bounds-as-general                      no
+! treat-separable-as-general                        no
 ! just-find-feasible-point                          no
 ! balance-initial-complentarity                     no
 ! get-advanced-dual-variables                       no

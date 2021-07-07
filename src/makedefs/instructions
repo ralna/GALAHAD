@@ -10,8 +10,8 @@ D$(PACKAGE) = $(DEPENDENCIES) $(LGD)($(package).o)
 
 #  compilation agenda for package with C interface
 
-S$(PACKAGE)C = $(S$(PACKAGE)) $(CLGS)($(package)_ciface.o)
-D$(PACKAGE)C = $(D$(PACKAGE)) $(CLGD)($(package)_ciface.o)
+S$(PACKAGE)C = $(S$(PACKAGE)) $(CDEPENDENCIES) $(CLGS)($(package)_ciface.o)
+D$(PACKAGE)C = $(D$(PACKAGE)) $(CDEPENDENCIES) $(CLGD)($(package)_ciface.o)
 
 #  additional run agenda
 
@@ -466,4 +466,10 @@ cleanall:
 	@printf ' %-14s\t\t' \
           "Removing all $(PRECIS) precision object and module files"
 	$(RM) $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+
+cleanallc:
+	@printf ' %-30s\t\t' \
+          "Removing all $(PRECIS) precision C-interface object and module files"
+	$(RM) $(OBJ)/libgalahad_c.a $(MOD)/*ciface.mod
 	@printf '[ OK ]\n'

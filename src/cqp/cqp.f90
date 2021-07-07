@@ -181,6 +181,8 @@
 !     2 the Zhao-Sun quadratic residual trajectory
 !     3 the Zhang arc ultimately switching to the Zhao-Sun residual trajectory
 !     4 the mixed linear-quadratic residual trajectory
+!     5 the Zhang arc ultimately switching to the mixed linear-quadratic 
+!       residual trajectory
 
         INTEGER :: arc = 1
 
@@ -313,6 +315,11 @@
 !   if %just_feasible is true, the algorithm will stop as soon as a feasible
 !     point is found. Otherwise, the optimal solution to the problem will be
 !     found
+
+        LOGICAL :: treat_separable_as_general = .FALSE.
+
+!   if %treat_separable_as_general, is true, any separability in the
+!    problem structure will be ignored
 
         LOGICAL :: just_feasible  = .FALSE.
 
@@ -709,6 +716,7 @@
 !  maximum-clock-time-limit                          -1.0
 !  remove-linear-dependencies                        T
 !  treat-zero-bounds-as-general                      F
+!  treat-separable-as-general                        F
 !  just-find-feasible-point                          F
 !  balance-initial-complentarity                     F
 !  get-advanced-dual-variables                       F
@@ -777,7 +785,9 @@
       INTEGER, PARAMETER :: remove_dependencies = clock_time_limit + 1
       INTEGER, PARAMETER :: treat_zero_bounds_as_general =                     &
                               remove_dependencies + 1
-      INTEGER, PARAMETER :: just_feasible = treat_zero_bounds_as_general + 1
+      INTEGER, PARAMETER :: treat_separable_as_general =                       &
+                              treat_zero_bounds_as_general + 1
+      INTEGER, PARAMETER :: just_feasible = treat_separable_as_general + 1
       INTEGER, PARAMETER :: getdua = just_feasible + 1
       INTEGER, PARAMETER :: puiseux = getdua + 1
       INTEGER, PARAMETER :: every_order = puiseux + 1
@@ -846,6 +856,7 @@
       spec( remove_dependencies )%keyword = 'remove-linear-dependencies'
       spec( treat_zero_bounds_as_general )%keyword =                           &
         'treat-zero-bounds-as-general'
+      spec( treat_separable_as_general )%keyword = 'treat-separable-as-general'
       spec( just_feasible )%keyword = 'just-find-feasible-point'
       spec( getdua )%keyword = 'get-advanced-dual-variables'
       spec( puiseux )%keyword = 'puiseux-series'
@@ -1007,6 +1018,9 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( just_feasible ),                        &
                                  control%just_feasible,                        &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( treat_separable_as_general ),           &
+                                 control%treat_separable_as_general,           &
                                  control%error )
      CALL SPECFILE_assign_value( spec( getdua ),                               &
                                  control%getdua,                               &
@@ -1643,6 +1657,7 @@
 
 !  the problem is a separable bound-constrained QP. Solve it explicitly
 
+        IF ( control%treat_separable_as_general ) separable_bqp = .FALSE.
         IF ( separable_bqp ) THEN
           IF ( printi ) WRITE( control%out,                                    &
             "( /, A, ' Solving separable bound-constrained QP -' )" ) prefix
@@ -3206,8 +3221,8 @@
       REAL ( KIND = wp ) :: time_analyse, time_factorize
       REAL ( KIND = wp ) :: clock_record, clock_start, clock_now, clock_solve
       REAL ( KIND = wp ) :: clock_analyse, clock_factorize
-      REAL ( KIND = wp ) :: pjgnrm, mu, amax, hmax, gamma_f, bik, slope, comp
-      REAL ( KIND = wp ) :: cs, slknes, slkmin, reduce_infeas, tau
+      REAL ( KIND = wp ) :: pjgnrm, mu, amax, gmax, hmax, gamma_f, bik, slope
+      REAL ( KIND = wp ) :: cs, slknes, slkmin, reduce_infeas, tau, comp
       REAL ( KIND = wp ) :: slknes_x, slknes_c, slkmax_x, slkmax_c, res_cs
       REAL ( KIND = wp ) :: slkmin_x, slkmin_c, res_primal, res_primal_dual
       REAL ( KIND = wp ) :: merit, merit_trial, merit_best, merit_model
@@ -3888,10 +3903,16 @@
         inform%obj = f + half * curv
       END IF
 
+!  also compute the largest component of g
+
       IF ( gradient_kind == 1 ) THEN
         inform%obj = inform%obj + SUM( X )
+        gmax = one
       ELSE IF ( gradient_kind /= 0 ) THEN
         inform%obj = inform%obj + DOT_PRODUCT( G, X )
+        gmax = MAXVAL( ABS( G( : n ) ) )
+      ELSE
+        gmax = zero
       END IF
 
 !  find the largest components of A and H
@@ -3919,8 +3940,10 @@
       END IF
 
       IF ( printi ) WRITE( out, "( /, A, '  maximum element of A =', ES11.4,   &
-    &                              /, A, '  maximum element of H =', ES11.4 )")&
-        prefix, amax, prefix, hmax
+    &                              /, A, '  maximum element of H =', ES11.4,   &
+    &                              /, A, '  maximum element of G =', ES11.4 )")&
+        prefix, amax, prefix, hmax, prefix, gmax
+
 
 !  test to see if we are feasible
 
@@ -4219,7 +4242,8 @@
         IF ( control%arc == 2 .OR.                                             &
              ( control%arc == 3 .AND. mu <= tenm4 ) ) THEN
           arc = 'ZS'
-        ELSE IF ( control%arc == 4 ) THEN
+        ELSE IF ( control%arc == 4 .OR.                                        &
+             ( control%arc == 5 .AND. mu <= tenm10 ) ) THEN
           arc = 'ZP'
           puiseux = .TRUE.
         ELSE
@@ -7227,6 +7251,9 @@ END DO
             ELSE IF ( control%arc == 4 ) THEN
               WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
            &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 5 ) THEN
+              WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
+           &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
             ELSE
               WRITE( control%out, "( A, '  Maximum order ', I0, ' Puiseux',    &
            &   ' fit to the Zhang-Zhao-Sun arc is used' )" ) prefix, order
@@ -7239,6 +7266,9 @@ END DO
               WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
            &   ' fit to the Zhao-Sun arc is used' )" ) prefix, order
             ELSE IF ( control%arc == 4 ) THEN
+              WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
+           &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
+            ELSE IF ( control%arc == 5 ) THEN
               WRITE( control%out, "( A, '  Order ', I0, ' Puiseux',            &
            &   ' fit to the Zhang-Puiseux arc is used' )" ) prefix, order
             ELSE
