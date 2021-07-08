@@ -132,6 +132,7 @@
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_unsuitable_option       = - 88
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_inner_its     = - 89
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unknown_storage   = - 90
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_storage       = - 91
 
 !     General integers
 
@@ -342,7 +343,8 @@
 
      SELECT CASE ( status )
      CASE( GALAHAD_ok )
-
+       WRITE( out, "( /, A,  ' Successful return from ', A )" )               &
+         prefix, routine
      CASE( GALAHAD_error_allocate )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   allocation error' )" )                                       &
@@ -622,6 +624,18 @@
      CASE( GALAHAD_error_max_inner_its )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   an inner iteration limit has been exceeded' )" )             &
+         prefix, routine, prefix
+      CASE ( GALAHAD_error_unknown_storage )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   the storage type is not recognised' )" )                     &
+         prefix, routine, prefix
+      CASE ( GALAHAD_error_max_storage )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   the storage limit has been exceeded' )" )                    &
+         prefix, routine, prefix
+     CASE( 1 : )
+       WRITE( out, "( /, A,  ' Intermediate return from ', A, /, A,            &
+      &       '   awaiting user interaction (see package documentation)' )" )  &
          prefix, routine, prefix
      CASE DEFAULT
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &

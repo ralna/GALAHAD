@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# galahad_code: script to explain GALAHAD error code
+
+# Use: gal galahad_code code
+#                               [-u] [-o i] [-l secs]
+
+# where: code is a (negative) GALAHAD error code
+
+#  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+#  Principal authors: Nick Gould
+
+#  History -
+#   originally released GALAHAD Version 3.3. July 8th 2021
+
+cd $GALAHAD/src/symbols
+
+echo $1 > code_file_xxxxxxxxxxxxxxxx
+
+make -s -f $GALAHAD/makefiles/$MYARCH galahad_error < code_file_xxxxxxxxxxxxxxxx
+
+rm code_file_xxxxxxxxxxxxxxxx
