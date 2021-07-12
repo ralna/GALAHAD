@@ -68,6 +68,22 @@ contains
         end do
     end function cstr_to_fchar
 
+    subroutine copy_inform_in(cinform, finform)
+        type(lhs_inform_type), intent(in) :: cinform
+        type(f_lhs_inform_type), intent(out) :: finform
+        integer :: i
+
+        ! Integers
+        finform%status = cinform%status
+        finform%alloc_status = cinform%alloc_status
+
+        ! Strings
+        do i = 1, 81
+            if (cinform%bad_alloc(i) == C_NULL_CHAR) exit
+            finform%bad_alloc(i:i) = cinform%bad_alloc(i)
+        end do
+    end subroutine copy_inform_in
+
     subroutine copy_inform_out(finform, cinform) 
         type(f_lhs_inform_type), intent(in) :: finform
         type(lhs_inform_type), intent(out) :: cinform

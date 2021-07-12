@@ -1,7 +1,7 @@
 /*
  * THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
  *
- *-*-*-*-*-*-*-*-*-  GALAHAD_TRB C INTERFACE  *-*-*-*-*-*-*-*-*-*-
+ *-*-*-*-*-*-*-*-*-  GALAHAD_BGO C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
  *  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
  *  Principal author: Jaroslav Fowkes
@@ -19,52 +19,45 @@ extern "C" {
 #include <stdbool.h>
 #endif
 
+// required packages
+#include "trb.h"
+#include "ugo.h"
+#include "lhs.h"
+
 // include guard
-#ifndef GALAHAD_TRB_H 
-#define GALAHAD_TRB_H
+#ifndef GALAHAD_BGO_H 
+#define GALAHAD_BGO_H
 
 /* 
  * time derived type as a C struct 
  */
-struct trb_time_type {
+struct bgo_time_type {
 
     // the total CPU time spent in the package
     float total;
 
-    // the CPU time spent preprocessing the problem
-    float preprocess;
+    // the CPU time spent performing univariate global optimization
+    float univariate_global;
 
-    // the CPU time spent analysing the required matrices prior to factorization
-    float analyse;
-
-    // the CPU time spent factorizing the required matrices
-    float factorize;
-
-    // the CPU time spent computing the search direction
-    float solve;
+    // the CPU time spent performing multivariate local optimization
+    float multivariate_local;
 
     // the total clock time spent in the package
     double clock_total;
 
-    // the clock time spent preprocessing the problem
-    double clock_preprocess;
+    // the clock time spent performing univariate global optimization
+    double clock_univariate_global;
 
-    // the clock time spent analysing the required matrices prior to factorization
-    double clock_analyse;
-
-    // the clock time spent factorizing the required matrices
-    double clock_factorize;
-
-    // the clock time spent computing the search direction
-    double clock_solve;
+    // the clock time spent performing multivariate local optimization
+    double clock_multivariate_local;
 };
 
 /*
  * inform derived type as a C struct
  */
-struct trb_inform_type {
+struct bgo_inform_type {
 
-    // return status. See TRB_solve for details
+    // return status. See BGO_solve for details
     int status;
 
     // the status of the last attempted allocation/deallocation
@@ -72,15 +65,6 @@ struct trb_inform_type {
 
     // the name of the array for which an allocation/deallocation error ocurred
     char bad_alloc[81];
-
-    // the total number of iterations performed
-    int iter;
-
-    // the total number of CG iterations performed
-    int cg_iter;
-
-    // the maximum number of CG iterations allowed per iteration
-    int cg_maxit;
 
     // the total number of evaluations of the objection function
     int f_eval;
@@ -91,62 +75,31 @@ struct trb_inform_type {
     // the total number of evaluations of the Hessian of the objection function
     int h_eval;
 
-    // the number of free variables
-    int n_free;
-
-    // the maximum number of factorizations in a sub-problem solve
-    int factorization_max;
-
-    // the return status from the factorization
-    int factorization_status;
-
-    // the maximum number of entries in the factors
-    long int max_entries_factors;
-
-    // the total integer workspace required for the factorization
-    int factorization_integer;
-
-    // the total real workspace required for the factorization
-    int factorization_real;
-
-    // the average number of factorizations per sub-problem solve
-    double factorization_average;
-
     // the value of the objective function at the best estimate of the solution
-    // determined by TRB_solve
+    // determined by BGO_solve
     double obj;
 
     // the norm of the projected gradient of the objective function at the best
-    // estimate of the solution determined by TRB_solve
+    // estimate of the solution determined by BGO_solve
     double norm_pg;
 
-    // the current value of the trust-region radius
-    double radius;
-
     // timings (see above)
-    struct trb_time_type time;
+    struct bgo_time_type time;
 
-    // inform parameters for TRS
-    //struct trs_inform_type trs_inform;
+    // inform parameters for TRB
+    struct trb_inform_type trb_inform;
 
-    // inform parameters for GLTR
-    //struct gltr_info_type gltr_inform;
+    // inform parameters for UGO
+    struct ugo_inform_type ugo_inform;
 
-    // inform parameters for PSLS
-    //struct psls_inform_type psls_inform;
-
-    // inform parameters for LMS
-    //struct lms_inform_type lms_inform;
-    //struct lms_inform_type lms_inform_prec;
-
-    // inform parameters for SHA
-    //struct sha_inform_type sha_inform;
+    // inform parameters for LHS
+    struct lhs_inform_type lhs_inform;
 };
 
 /*
  * control derived type as a C struct
  */
-struct trb_control_type { 
+struct bgo_control_type { 
 
     // use C or Fortran sparse matrix indexing
     bool f_indexing;
@@ -162,130 +115,24 @@ struct trb_control_type {
     // for each iteration, >= 3 gives increasingly verbose (debugging) output      
     int print_level; 
 
-    // any printing will start on this iteration
-    int start_print;
+    // the maximum number of random searches from the best point found so far
+    int attempts_max;
 
-    // any printing will stop on this iteration
-    int stop_print;
+    // the maximum number of function evaluations made
+    int max_evals;
 
-    // the number of iterations between printing
-    int print_gap;
+    // sampling strategy used, 1=uniform,2=Latin hyper-cube,3=2+1
+    int sampling_strategy;
 
-    // the maximum number of iterations allowed
-    int maxit;
+    // hyper-cube discretization (for sampling stategies 2 and 3)
+    int hypercube_discretization;
 
     // removal of the file alive_file from unit alive_unit terminates execution
     int alive_unit;
     char alive_file[31];
 
-    // more_toraldo >= 1 gives the number of More'-Toraldo projected searches
-    // to be used to improve upon the Cauchy point, anything else is for the
-    // standard add-one-at-a-time CG search
-    int more_toraldo;
-
-    // non-monotone <= 0 monotone strategy used, anything else non-monotone
-    // strategy with this history length used
-    int non_monotone;
-
-    // specify the model used. Possible values are
-    //
-    //   0  dynamic (*not yet implemented*)
-    //   1  first-order (no Hessian)
-    //   2  second-order (exact Hessian)
-    //   3  barely second-order (identity Hessian)
-    //   4  secant second-order (sparsity-based)
-    //   5  secant second-order (limited-memory BFGS, with %lbfgs_vectors history)
-    //   6  secant second-order (limited-memory SR1, with %lbfgs_vectors history)
-    int model;
-
-    // specify the norm used. The norm is defined via ||v||^2 = v^T P v,
-    // and will define the preconditioner used for iterative methods.
-    // Possible values for P are
-    //
-    //   -3  users own preconditioner
-    //   -2  P = limited-memory BFGS matrix (with %lbfgs_vectors history)
-    //   -1  identity (= Euclidan two-norm)
-    //    0  automatic (*not yet implemented*)
-    //    1  diagonal, P = diag( max( Hessian, %min_diagonal ) )
-    //    2  banded, P = band( Hessian ) with semi-bandwidth %semi_bandwidth
-    //    3  re-ordered band, P=band(order(A)) with semi-bandwidth %semi_bandwidth
-    //    4  full factorization, P = Hessian, Schnabel-Eskow modification
-    //    5  full factorization, P = Hessian, GMPS modification (*not yet *)
-    //    6  incomplete factorization of Hessian, Lin-More'
-    //    7  incomplete factorization of Hessian, HSL_MI28
-    //    8  incomplete factorization of Hessian, Munskgaard (*not yet *)
-    //    9  expanding band of Hessian (*not yet implemented*)
-    int norm;
-
-    // specify the semi-bandwidth of the band matrix P if required
-    int semi_bandwidth;
-
-    // number of vectors used by the L-BFGS matrix P if required
-    int lbfgs_vectors;
-
-    // number of vectors used by the sparsity-based secant Hessian if required
-    int max_dxg;
-
-    // number of vectors used by the Lin-More' incomplete factorization
-    // matrix P if required
-    int icfs_vectors;
-
-    // the maximum number of fill entries within each column of the incomplete
-    // factor L computed by HSL_MI28. In general, increasing mi28_lsize improves
-    // the quality of the preconditioner but increases the time to compute
-    // and then apply the preconditioner. Values less than 0 are treated as 0
-    int mi28_lsize;
-
-    // the maximum number of entries within each column of the strictly lower
-    // triangular matrix R used in the computation of the preconditioner by
-    // HSL_MI28.  Rank-1 arrays of size mi28_rsize *  n are allocated internally
-    // to hold R. Thus the amount of memory used, as well as the amount of work
-    // involved in computing the preconditioner, depends on mi28_rsize. Setting
-    // mi28_rsize > 0 generally leads to a higher quality preconditioner than
-    // using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally
-    // recommended
-    int mi28_rsize;
-
-    // overall convergence tolerances. The iteration will terminate when the
-    // norm of the gradient of the objective function is smaller than
-    // MAX( %stop_pg_absolute, %stop_pg_relative * norm of the initial gradient
-    // or if the step is less than %stop_s
-    double stop_pg_absolute;
-    double stop_pg_relative;
-    double stop_s;
-
-    // try to pick a good initial trust-region radius using %advanced_start
-    // iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1803
-    int advanced_start;
-
     // any bound larger than infinity in modulus will be regarded as infinite
     double infinity;
-
-    // initial value for the trust-region radius
-    double initial_radius;
-
-    // maximum permitted trust-region radius
-    double maximum_radius;
-
-    // required relative reduction in the resuiduals from CG
-    double stop_rel_cg;
-
-    // a potential iterate will only be accepted if the actual decrease
-    // f - f(x_new) is larger than %eta_successful times that predicted
-    // by a quadratic model of the decrease. The trust-region radius will be
-    // increased if this relative decrease is greater than %eta_very_successful
-    // but smaller than %eta_too_successful
-    double eta_successful;
-    double eta_very_successful;
-    double eta_too_successful;
-
-    // on very successful iterations, the trust-region radius will be increased by
-    // the factor %radius_increase, while if the iteration is unsucceful, the
-    // radius will be decreased by a factor %radius_reduce but no more than
-    // %radius_reduce_max
-    double radius_increase;
-    double radius_reduce;
-    double radius_reduce_max;
 
     // the smallest value the objective function may take before the problem
     // is marked as unbounded
@@ -297,30 +144,12 @@ struct trb_control_type {
     // the maximum elapsed clock time allowed (-ve means infinite)
     double clock_time_limit;
 
+    // perform random-multistart as opposed to local minimize and probe
+    bool random_multistart;
+
     // is the Hessian matrix of second derivatives available or is access only
     // via matrix-vector products?
     bool hessian_available;
-
-    // use a direct (factorization) or (preconditioned) iterative method to
-    // find the search direction
-    bool subproblem_direct;
-
-    // is a retrospective strategy to be used to update the trust-region radius?
-    bool retrospective_trust_region;
-
-    // should the radius be renormalized to account for a change in preconditioner?
-    bool renormalize_radius;
-
-    // should an ellipsoidal trust-region be used rather than an infinity norm one?
-    bool two_norm_tr;
-
-    // is the exact Cauchy point required rather than an approximation?
-    bool exact_gcp;
-
-    // should the minimizer of the quadratic model within the intersection of the
-    // trust-region and feasible box be found (to a prescribed accuracy) rather
-    // than a (much) cheaper approximation?
-    bool accurate_bqp;
 
     // if %space_critical true, every effort will be made to use as little
     // space as possible. This may result in longer computation time
@@ -335,25 +164,18 @@ struct trb_control_type {
     // quotes, e.g. "string" or 'string'
     char prefix[31];
 
-    // control parameters for TRS
-    //struct trs_control_type trs_control;
+    // control parameters for TRB
+    struct trb_control_type trb_control;
 
-    // control parameters for GLTR
-    //struct gltr_control_type gltr_control;
+    // control parameters for UGO
+    struct ugo_control_type ugo_control;
 
-    // control parameters for PSLS
-    //struct psls_control_type psls_control;
-
-    // control parameters for LMS
-    //struct lms_control_type lms_control;
-    //struct lms_control_type lms_control_prec;
-
-    // control parameters for SHA
-    //struct sha_control_type sha_control;
+    // control parameters for LHS
+    struct lhs_control_type lhs_control;
 };
 
 /*
- * Provide default values for TRB controls
+ * Provide default values for BGO controls
  *
  *   Arguments:
  *
@@ -361,20 +183,20 @@ struct trb_control_type {
  *   control  a struct containing control information
  *   inform   a struct containing output information
  */
-void trb_initialize(void **data, struct trb_control_type *control, struct trb_inform_type *inform);
+void bgo_initialize(void **data, struct bgo_control_type *control, struct bgo_inform_type *inform);
 
 /*
  * Read the content of a specification file, and perform the assignment of
  * values associated with given keywords to the corresponding control parameters
  */
-void trb_read_specfile(struct trb_control_type *control, const char specfile[]);
+void bgo_read_specfile(struct bgo_control_type *control, const char specfile[]);
 
 /*
  *  Import problem data into internal storage prior to solution. 
  *  Arguments are as follows:
  *
  *  control and inform are structs whose members are described in 
- *   the leading comments to trb_solve
+ *   the leading comments to bgo_solve
  *
  *  data is used for internal data
  *
@@ -415,24 +237,24 @@ void trb_read_specfile(struct trb_control_type *control, const char specfile[]);
  *   in the sparse row-wise storage scheme. It need not be set when the
  *   other schemes are used, and in this case can be NULL
  */
-void trb_import(struct trb_control_type *control, struct trb_inform_type *inform, void **data,
+void bgo_import(struct bgo_control_type *control, struct bgo_inform_type *inform, void **data,
                   int n, const double x_l[], const double x_u[], const char H_type[],
                   int ne, const int H_row[], const int H_col[], const int H_ptr[]);
 
 /*
- * trb_solve_with_h, a trust-region method for finding a local minimizer of a
+ * bgo_solve_with_h, a trust-region method for finding a local minimizer of a
  *    given function where the variables are constrained to lie in a "box"
  *
  *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
- *  For full details see the specification sheet for GALAHAD_TRB.
+ *  For full details see the specification sheet for GALAHAD_BGO.
  *
  *  ** NB. default real/complex means double precision real/complex in
- *  ** GALAHAD_TRB_double
+ *  ** GALAHAD_BGO_double
  *
- *  control is a struct of type trb_control_type. See trb_initialize for details
+ *  control is a struct of type bgo_control_type. See bgo_initialize for details
  *
- *  inform is a struct of type trb_inform_type. On initial entry, inform.status 
+ *  inform is a struct of type bgo_inform_type. On initial entry, inform.status 
  *   should be set to 1. On exit, the following components will have been set:
  *
  *   status is a scalar variable of type default integer, that gives
@@ -516,6 +338,16 @@ void trb_import(struct trb_control_type *control, struct trb_inform_type *inform
  *   and the function return value set to 0. If the evaluation is impossible at
  *   x, return should be set to a nonzero value.
  *
+ *  eval_hprod is a function that must have the signature given below:
+ * 
+ *     int eval_hprod(int n, const double x[], double u[], const double v[], bool got_h, const void *userdata)
+ * 
+ *   The sum u + nabla_xx f(x) v of the product of the Hessian nabla_xx f(x) of
+ *   the objective function evaluated at x with the vector v and the vector u
+ *   must be returned in u, and the function return value set to 0. If the
+ *   evaluation is impossible at x, return should be set to a nonzero value.
+ *   The Hessian has already been evaluated or used at x if got_h is true.
+ * 
  *  eval_prec is an optional function that may be NULL. If non-NULL, it must have
  *  the signature given below:
  *
@@ -526,27 +358,28 @@ void trb_import(struct trb_control_type *control, struct trb_inform_type *inform
  *   return value set to 0. If the evaluation is impossible at x, return should
  *   be set to a nonzero value.
  */ 
-void trb_solve_with_h(const struct trb_control_type *control, struct trb_inform_type *inform, void **data,
+void bgo_solve_with_h(const struct bgo_control_type *control, struct bgo_inform_type *inform, void **data,
                       void *userdata, int n, double x[], double g[], int ne,
                       int (*eval_f)(int, const double[], double*, const void *), 
                       int (*eval_g)(int, const double[], double[], const void *), 
-                      int (*eval_h)(int, int, const double[], double[], const void *), 
+                      int (*eval_h)(int, int, const double[], double[], const void *),
+                      int (*eval_hprod)(int, const double[], double[], const double[], bool, const void *),
                       int (*eval_prec)(int, const double[], double[], const double[], const void *));
 
 /*
- * trb_solve_without_h, a trust-region method for finding a local minimizer of
+ * bgo_solve_without_h, a trust-region method for finding a local minimizer of
  *    a given function where the variables are constrained to lie in a "box"
  *
  *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
- *  For full details see the specification sheet for GALAHAD_TRB.
+ *  For full details see the specification sheet for GALAHAD_BGO.
  *
  *  ** NB. default real/complex means double precision real/complex in
- *  ** GALAHAD_TRB_double
+ *  ** GALAHAD_BGO_double
  *
- *  control is a struct of type trb_control_type. See trb_initialize for details
+ *  control is a struct of type bgo_control_type. See bgo_initialize for details
  *
- *  inform is a struct of type trb_inform_type. On initial entry, inform.status 
+ *  inform is a struct of type bgo_inform_type. On initial entry, inform.status 
  *   should be set to 1. On exit, the following components will have been set:
  *
  *   status is a scalar variable of type default integer, that gives
@@ -653,7 +486,7 @@ void trb_solve_with_h(const struct trb_control_type *control, struct trb_inform_
  *   return value set to 0. If the evaluation is impossible at x, return should
  *   be set to a nonzero value.
  */  
-void trb_solve_without_h(const struct trb_control_type *control, struct trb_inform_type *inform, void **data,
+void bgo_solve_without_h(const struct bgo_control_type *control, struct bgo_inform_type *inform, void **data,
                          void *userdata, int n, double x[], double g[], 
                          int (*eval_f)(int, const double[], double*, const void *), 
                          int (*eval_g)(int, const double[], double[], const void *), 
@@ -662,19 +495,19 @@ void trb_solve_without_h(const struct trb_control_type *control, struct trb_info
                          int (*eval_prec)(int, const double[], double[], const double[], const void *));
 
 /*
- * trb_solve_reverse_with_h, a trust-region method for finding a local minimizer
+ * bgo_solve_reverse_with_h, a trust-region method for finding a local minimizer
  *    of a given function where the variables are constrained to lie in a "box"
  *
  *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
- *  For full details see the specification sheet for GALAHAD_TRB.
+ *  For full details see the specification sheet for GALAHAD_BGO.
  *
  *  ** NB. default real/complex means double precision real/complex in
- *  ** GALAHAD_TRB_double
+ *  ** GALAHAD_BGO_double
  *
- *  control is a struct of type trb_control_type. See trb_initialize for details
+ *  control is a struct of type bgo_control_type. See bgo_initialize for details
  *
- *  inform is a struct of type trb_inform_type. On initial entry, inform.status 
+ *  inform is a struct of type bgo_inform_type. On initial entry, inform.status 
  *   should be set to 1. On exit, the following components will have been set:
  *
  *   status is a scalar variable of type default integer, that gives
@@ -735,6 +568,15 @@ void trb_solve_without_h(const struct trb_control_type *control, struct trb_info
  *        unable to evaluate a component of nabla_xx f(x) - for instance, if a
  *        component of the Hessian is undefined at x - the user need not set
  *        H_val, but should then set eval_status to a non-zero value.
+ *     5. The user should compute the product nabla_xx f(x)v of the Hessian of
+ *        the objective function nabla_xx f(x) at the point x indicated in x
+ *        with the vector v and add the result to the vector u and then
+ *        re-enter the function. The vectors u and v are given in u and v
+ *        respectively, the resulting vector u + nabla_xx f(x)v should be set
+ *        in u and eval_status should be set to 0. If the user is unable to
+ *        evaluate the product - for instance, if a component of the Hessian is
+ *        undefined at x - the user need not alter u, but should then set
+ *        eval_status to a non-zero value.
  *     6. The user should compute the product u = P(x)v of their preconditioner
  *        P(x) at the point x indicated in x with the vector v and then
  *        re-enter the function. The vectors v is given in v, the resulting
@@ -742,6 +584,14 @@ void trb_solve_without_h(const struct trb_control_type *control, struct trb_info
  *        0. If the user is unable to evaluate the product - for instance, if
  *        a component of the preconditioner is undefined at x - the user need
  *        not set u, but should then set eval_status to a non-zero value.
+ *    23. The user should follow the instructions for 2 AND 3 above before
+ *        returning.
+ *    25. The user should follow the instructions for 2 AND 5 above before
+ *        returning.
+ *    35. The user should follow the instructions for 3 AND 5 above before
+ *        returning.
+ *   235. The user should follow the instructions for 2, 3 AND 5 above before
+ *        returning.
  *
  *  data is used for internal data.
  * 
@@ -776,24 +626,24 @@ void trb_solve_without_h(const struct trb_control_type *control, struct trb_info
  *   the vector v for which the product u = P(x)v of the preconditioner P(x)
  *   at the point x indicated in x is computed (see above for details)
  */ 
-void trb_solve_reverse_with_h(const struct trb_control_type *control, struct trb_inform_type *inform, void **data,
+void bgo_solve_reverse_with_h(const struct bgo_control_type *control, struct bgo_inform_type *inform, void **data,
                               int *eval_status, int n, double x[], double f, double g[], 
-                              int ne, double H_val[], const double u[], double v[]);
+                              int ne, double H_val[], double u[], double v[]);
 
 /*
- * trb_solve_reverse_without_h, a trust-region method for finding a local minimizer
+ * bgo_solve_reverse_without_h, a trust-region method for finding a local minimizer
  *    of a given function where the variables are constrained to lie in a "box"
  *
  *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
- *  For full details see the specification sheet for GALAHAD_TRB.
+ *  For full details see the specification sheet for GALAHAD_BGO.
  *
  *  ** NB. default real/complex means double precision real/complex in
- *  ** GALAHAD_TRB_double
+ *  ** GALAHAD_BGO_double
  *
- *  control is a struct of type trb_control_type. See trb_initialize for details
+ *  control is a struct of type bgo_control_type. See bgo_initialize for details
  *
- *  inform is a struct of type trb_inform_type. On initial entry, inform.status 
+ *  inform is a struct of type bgo_inform_type. On initial entry, inform.status 
  *   should be set to 1. On exit, the following components will have been set:
  *
  *   status is a scalar variable of type default integer, that gives
@@ -873,6 +723,14 @@ void trb_solve_reverse_with_h(const struct trb_control_type *control, struct trb
  *        eval_status to 0. If the user is unable to evaluate the product - for
  *        instance, if a component of the Hessian is undefined at x - the user
  *        need not alter u, but should then set eval_status to a non-zero value.
+ *    23. The user should follow the instructions for 2 AND 3 above before
+ *        returning.
+ *    25. The user should follow the instructions for 2 AND 5 above before
+ *        returning.
+ *    35. The user should follow the instructions for 3 AND 5 above before
+ *        returning.
+ *   235. The user should follow the instructions for 2, 3 AND 5 above before
+ *        returning.
  *
  *  data is used for internal data.
  * 
@@ -910,19 +768,14 @@ void trb_solve_reverse_with_h(const struct trb_control_type *control, struct trb
  *  nnz_u is a scalar variable of type int, that is used for reverse
  *   communication (see above for details)
  */  
-void trb_solve_reverse_without_h(const struct trb_control_type *control, struct trb_inform_type *inform, void **data,
+void bgo_solve_reverse_without_h(const struct bgo_control_type *control, struct bgo_inform_type *inform, void **data,
                                 int *eval_status, int n, double x[], double f, double g[], double u[], double v[],
                                 int index_nz_v[], int *nnz_v, const int index_nz_u[], int nnz_u);
 
 /*
  * Deallocate all private storage
  */
-void trb_terminate(void **data, struct trb_control_type *control, struct trb_inform_type *inform);
-
-/*
- * Compute the projection of c into the set x_l <= x <= x_u
- */
-void trb_projection(int n, const double x[], const double x_l[], const double x_u[], double projection[]);
+void bgo_terminate(void **data, struct bgo_control_type *control, struct bgo_inform_type *inform);
 
 // end include guard
 #endif

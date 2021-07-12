@@ -23,8 +23,8 @@
       IMPLICIT NONE
 
       PRIVATE
-      PUBLIC :: HASH_initialize, HASH_insert, HASH_search, HASH_remove,        &
-                HASH_rebuild, HASH_terminate
+      PUBLIC :: HASH_initialize, HASH_read_specfile, HASH_insert,              &
+                HASH_search, HASH_remove, HASH_rebuild, HASH_terminate
 
 !--------------------
 !   P r e c i s i o n

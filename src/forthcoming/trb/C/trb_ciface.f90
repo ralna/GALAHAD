@@ -17,12 +17,10 @@ module GALAHAD_TRB_double_ciface
         f_trb_time_type               => TRB_time_type,               &
         f_trb_inform_type             => TRB_inform_type,             &
         f_trb_control_type            => TRB_control_type,            &
-        f_trb_data_type               => TRB_data_type,               &
         f_trb_full_data_type          => TRB_full_data_type,          &
         f_trb_initialize              => TRB_initialize,              &
         f_trb_read_specfile           => TRB_read_specfile,           &
-        f_trb_import                  => TRB_import,                  &    
-        f_trb_solve                   => TRB_solve,                   &
+        f_trb_import                  => TRB_import,                  &
         f_trb_solve_with_h            => TRB_solve_with_h,            &
         f_trb_solve_without_h         => TRB_solve_without_h,         &
         f_trb_solve_reverse_with_h    => TRB_solve_reverse_with_h,    &
@@ -52,7 +50,6 @@ module GALAHAD_TRB_double_ciface
 
     type, bind(C) :: trb_inform_type
         integer(C_INT) :: status
-        integer(C_INT) :: eval_status
         integer(C_INT) :: alloc_status
         character(C_CHAR), dimension(81) :: bad_alloc
         integer(C_INT) :: iter
@@ -381,11 +378,11 @@ contains
     subroutine copy_control_in(ccontrol, fcontrol, f_indexing) 
         type(trb_control_type), intent(in) :: ccontrol
         type(f_trb_control_type), intent(out) :: fcontrol
-        logical, intent(out) :: f_indexing
+        logical, optional, intent(out) :: f_indexing
         integer :: i
         
         ! C or Fortran sparse matrix indexing
-        f_indexing = ccontrol%f_indexing
+        if(present(f_indexing)) f_indexing = ccontrol%f_indexing
 
         ! Integers
         fcontrol%error = ccontrol%error
@@ -438,12 +435,12 @@ contains
         fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
 
         ! Derived types
-        !copy_trs_control_in(cinform%trs_control,finform%trs_control)
-        !copy_gltr_control_in(cinform%gltr_control,finform%gltr_control)
-        !copy_psls_control_in(cinform%psls_control,finform%psls_control)
-        !copy_lms_control_in(cinform%lms_control,finform%lms_control)
-        !copy_lms_control_prec_in(cinform%lms_control_prec,finform%lms_control_prec)
-        !copy_sha_control_in(cinform%sha_control,finform%sha_control)
+        !call copy_trs_control_in(ccontrol%trs_control,fcontrol%trs_control)
+        !call copy_gltr_control_in(ccontrol%gltr_control,fcontrol%gltr_control)
+        !call copy_psls_control_in(ccontrol%psls_control,fcontrol%psls_control)
+        !call copy_lms_control_in(ccontrol%lms_control,fcontrol%lms_control)
+        !call copy_lms_control_prec_in(ccontrol%lms_control_prec,fcontrol%lms_control_prec)
+        !call copy_sha_control_in(ccontrol%sha_control,fcontrol%sha_control)
 
         ! Strings
         do i = 1, 31
@@ -459,11 +456,11 @@ contains
     subroutine copy_control_out(fcontrol, ccontrol, f_indexing)
         type(f_trb_control_type), intent(in) :: fcontrol
         type(trb_control_type), intent(out) :: ccontrol
-        logical, intent(in) :: f_indexing
+        logical, optional, intent(in) :: f_indexing
         integer :: i
         
         ! C or Fortran sparse matrix indexing
-        ccontrol%f_indexing = f_indexing
+        if(present(f_indexing)) ccontrol%f_indexing = f_indexing
 
         ! Integers
         ccontrol%error = fcontrol%error
@@ -516,12 +513,12 @@ contains
         ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
 
         ! Derived types
-        !copy_trs_control_out(finform%trs_control,cinform%trs_control)
-        !copy_gltr_control_out(finform%gltr_control,cinform%gltr_control)
-        !copy_psls_control_out(finform%psls_control,cinform%psls_control)
-        !copy_lms_control_out(finform%lms_control,cinform%lms_control)
-        !copy_lms_control_prec_out(finform%lms_control_prec,cinform%lms_control_prec)
-        !copy_sha_control_out(finform%sha_control,cinform%sha_control)
+        !call copy_trs_control_out(fcontrol%trs_control,ccontrol%trs_control)
+        !call copy_gltr_control_out(fcontrol%gltr_control,ccontrol%gltr_control)
+        !call copy_psls_control_out(fcontrol%psls_control,ccontrol%psls_control)
+        !call copy_lms_control_out(fcontrol%lms_control,ccontrol%lms_control)
+        !call copy_lms_control_prec_out(fcontrol%lms_control_prec,ccontrol%lms_control_prec)
+        !call copy_sha_control_out(fcontrol%sha_control,ccontrol%sha_control)
 
         ! Strings
         do i = 1,len(fcontrol%alive_file)
@@ -553,10 +550,7 @@ subroutine trb_initialize(cdata, ccontrol, cinform) bind(C)
     allocate(fdata); cdata = C_LOC(fdata)
 
     ! Call TRB_initialize
-    call f_trb_initialize(fdata, fcontrol, finform) 
-
-    ! Initialize eval_status (for reverse communication interface)
-    cinform%eval_status = 0
+    call f_trb_initialize(fdata, fcontrol, finform)
 
     ! C sparse matrix indexing by default
     f_indexing = .false.

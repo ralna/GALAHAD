@@ -375,9 +375,9 @@ $(package)dt: $($(PACKAGE)DT)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DT)
 	$(RMOOC)
-#	- ./run_$(package)
-	- ./run_$(package) > $(package)dt.output 2>&1
-	cat $(package)dt.output
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)dt.output 2>&1
+#	cat $(package)dt.output
 	rm ./run_$(package)
 
 $(package)dt2: $($(PACKAGE)DT2)

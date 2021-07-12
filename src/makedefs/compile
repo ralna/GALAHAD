@@ -120,7 +120,8 @@ $(OBJ)/$(package)cs.o: ../$(package)/C/$(package)s.c
            ../$(package)/C/$(package)s.c > $(OBJ)/$(package)cs.c
 	$(SED) -f $(CSEDS) \
            ../$(package)/C/$(package).h > $(OBJ)/$(package).h
-	cd $(OBJ) ; $(CC) -o $(package)cs.o $(CFLAGS) $(package)cs.c
+	cd $(OBJ) ; $(CC) -o $(package)cs.o $(CFLAGS) $(package)cs.c \
+                     -I $(GALAHAD)/include
 	rm $(OBJ)/*.c $(OBJ)/*.h
 	@printf '[ OK ]\n'
 
@@ -132,7 +133,8 @@ $(OBJ)/$(package)cs2.o: ../$(package)/C/$(package)s2.c
            ../$(package)/C/$(package)s2.c > $(OBJ)/$(package)cs2.c
 	$(SED) -f $(CSEDS) \
            ../$(package)/C/$(package).h > $(OBJ)/$(package).h
-	cd $(OBJ) ; $(CC) -o $(package)cs.o $(CFLAGS) $(package)cs2.c
+	cd $(OBJ) ; $(CC) -o $(package)cs.o $(CFLAGS) $(package)cs2.c \
+                     -I $(GALAHAD)/include
 	rm $(OBJ)/*.c $(OBJ)/*.h
 	@printf '[ OK ]\n'
 
@@ -144,7 +146,8 @@ $(OBJ)/$(package)c3s.o: ../$(package)/C/$(package)s3.c
            ../$(package)/C/$(package)s3.c > $(OBJ)/$(package)cs3.c
 	$(SED) -f $(CSEDS) \
            ../$(package)/C/$(package).h > $(OBJ)/$(package).h
-	cd $(OBJ) ; $(CC) -o $(package)cs.o $(CFLAGS) $(package)cs3.c
+	cd $(OBJ) ; $(CC) -o $(package)cs.o $(CFLAGS) $(package)cs3.c \
+                     -I $(GALAHAD)/include
 	rm $(OBJ)/*.c $(OBJ)/*.h
 	@printf '[ OK ]\n'
 
