@@ -72,11 +72,13 @@ R$(PACKAGE)ST2 = $(OBJS)/$(package)t2.o -L$(OBJS) $(LIBS)
 $(PACKAGE)CDS = $(D$(PACKAGE)C) $(OBJD)/$(package)cs.o
 $(PACKAGE)CDS2 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs2.o
 $(PACKAGE)CDS3 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs3.o
+$(PACKAGE)CDS4 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs4.o
 $(PACKAGE)CDT = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct.o
 $(PACKAGE)CDT2 = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct2.o
 $(PACKAGE)CSS = $(S$(PACKAGE)C) $(OBJS)/$(package)cs.o
 $(PACKAGE)CSS2 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs2.o
 $(PACKAGE)CSS3 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs3.o
+$(PACKAGE)CSS4 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs4.o
 $(PACKAGE)CST = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ct.o
 $(PACKAGE)CST2 = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ct2.o
 
@@ -326,6 +328,14 @@ $(package)css3: $($(PACKAGE)CSS3)
 	cat $(package)cs3.output
 	rm ./run_$(package)
 
+$(package)css4: $($(PACKAGE)CSS4)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)CSS4)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs4.output 2>&1
+	cat $(package)cs4.output
+	rm ./run_$(package)
+
 $(package)cds: $($(PACKAGE)CDS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)CDS)
@@ -348,6 +358,14 @@ $(package)cds3: $($(PACKAGE)CDS3)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cds3.output 2>&1
 	cat $(package)cds3.output
+	rm ./run_$(package)
+
+$(package)cds4: $($(PACKAGE)CDS4)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)CDS4)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds4.output 2>&1
+	cat $(package)cds4.output
 	rm ./run_$(package)
 
 #  run full (comprehensive) example tests
