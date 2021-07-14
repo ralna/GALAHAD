@@ -188,7 +188,7 @@ $(OBJ)/$(package)t2.o: ../$(package)/$(package)t2.f90
 
 $(package)ct.o: $(OBJ)/$(package)ct.o
 
-$(OBJ)/$(package)ct.o: ../$(package)/C/$(package)ct.c
+$(OBJ)/$(package)ct.o: ../$(package)/C/$(package)t.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)ct  "
 	$(SED) -f $(CSEDS) \
            ../$(package)/C/$(package)t.c > $(OBJ)/$(package)ct.c
@@ -201,7 +201,7 @@ $(OBJ)/$(package)ct.o: ../$(package)/C/$(package)ct.c
 
 $(package)ct2.o: $(OBJ)/$(package)ct2.o
 
-$(OBJ)/$(package)ct2.o: ../$(package)/C/$(package)ct2.c
+$(OBJ)/$(package)ct2.o: ../$(package)/C/$(package)t2.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)ct2  "
 	$(SED) -f $(CSEDS) \
            ../$(package)/C/$(package)t2.c > $(OBJ)/$(package)ct2.c
