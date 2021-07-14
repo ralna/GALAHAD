@@ -23,40 +23,43 @@ extern "C" {
 #ifndef GALAHAD_TRB_H 
 #define GALAHAD_TRB_H
 
+// precision
+#include "galahad_precision.h"
+
 /* 
  * time derived type as a C struct 
  */
 struct trb_time_type {
 
     // the total CPU time spent in the package
-    float total;
+    real_sp_ total;
 
     // the CPU time spent preprocessing the problem
-    float preprocess;
+    real_sp_ preprocess;
 
     // the CPU time spent analysing the required matrices prior to factorization
-    float analyse;
+    real_sp_ analyse;
 
     // the CPU time spent factorizing the required matrices
-    float factorize;
+    real_sp_ factorize;
 
     // the CPU time spent computing the search direction
-    float solve;
+    real_sp_ solve;
 
     // the total clock time spent in the package
-    double clock_total;
+    real_wp_ clock_total;
 
     // the clock time spent preprocessing the problem
-    double clock_preprocess;
+    real_wp_ clock_preprocess;
 
     // the clock time spent analysing the required matrices prior to factorization
-    double clock_analyse;
+    real_wp_ clock_analyse;
 
     // the clock time spent factorizing the required matrices
-    double clock_factorize;
+    real_wp_ clock_factorize;
 
     // the clock time spent computing the search direction
-    double clock_solve;
+    real_wp_ clock_solve;
 };
 
 /*
@@ -110,18 +113,18 @@ struct trb_inform_type {
     int factorization_real;
 
     // the average number of factorizations per sub-problem solve
-    double factorization_average;
+    real_wp_ factorization_average;
 
     // the value of the objective function at the best estimate of the solution
     // determined by TRB_solve
-    double obj;
+    real_wp_ obj;
 
     // the norm of the projected gradient of the objective function at the best
     // estimate of the solution determined by TRB_solve
-    double norm_pg;
+    real_wp_ norm_pg;
 
     // the current value of the trust-region radius
-    double radius;
+    real_wp_ radius;
 
     // timings (see above)
     struct trb_time_type time;
@@ -250,52 +253,52 @@ struct trb_control_type {
     // norm of the gradient of the objective function is smaller than
     // MAX( %stop_pg_absolute, %stop_pg_relative * norm of the initial gradient
     // or if the step is less than %stop_s
-    double stop_pg_absolute;
-    double stop_pg_relative;
-    double stop_s;
+    real_wp_ stop_pg_absolute;
+    real_wp_ stop_pg_relative;
+    real_wp_ stop_s;
 
     // try to pick a good initial trust-region radius using %advanced_start
     // iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1803
     int advanced_start;
 
     // any bound larger than infinity in modulus will be regarded as infinite
-    double infinity;
+    real_wp_ infinity;
 
     // initial value for the trust-region radius
-    double initial_radius;
+    real_wp_ initial_radius;
 
     // maximum permitted trust-region radius
-    double maximum_radius;
+    real_wp_ maximum_radius;
 
     // required relative reduction in the resuiduals from CG
-    double stop_rel_cg;
+    real_wp_ stop_rel_cg;
 
     // a potential iterate will only be accepted if the actual decrease
     // f - f(x_new) is larger than %eta_successful times that predicted
     // by a quadratic model of the decrease. The trust-region radius will be
     // increased if this relative decrease is greater than %eta_very_successful
     // but smaller than %eta_too_successful
-    double eta_successful;
-    double eta_very_successful;
-    double eta_too_successful;
+    real_wp_ eta_successful;
+    real_wp_ eta_very_successful;
+    real_wp_ eta_too_successful;
 
     // on very successful iterations, the trust-region radius will be increased by
     // the factor %radius_increase, while if the iteration is unsucceful, the
     // radius will be decreased by a factor %radius_reduce but no more than
     // %radius_reduce_max
-    double radius_increase;
-    double radius_reduce;
-    double radius_reduce_max;
+    real_wp_ radius_increase;
+    real_wp_ radius_reduce;
+    real_wp_ radius_reduce_max;
 
     // the smallest value the objective function may take before the problem
     // is marked as unbounded
-    double obj_unbounded;
+    real_wp_ obj_unbounded;
 
     // the maximum CPU time allowed (-ve means infinite)
-    double cpu_time_limit;
+    real_wp_ cpu_time_limit;
 
     // the maximum elapsed clock time allowed (-ve means infinite)
-    double clock_time_limit;
+    real_wp_ clock_time_limit;
 
     // is the Hessian matrix of second derivatives available or is access only
     // via matrix-vector products?
@@ -416,7 +419,7 @@ void trb_read_specfile(struct trb_control_type *control, const char specfile[]);
  *   other schemes are used, and in this case can be NULL
  */
 void trb_import(struct trb_control_type *control, struct trb_inform_type *inform, void **data,
-                  int n, const double x_l[], const double x_u[], const char H_type[],
+                  int n, const real_wp_ x_l[], const real_wp_ x_u[], const char H_type[],
                   int ne, const int H_row[], const int H_col[], const int H_ptr[]);
 
 /*
@@ -527,11 +530,11 @@ void trb_import(struct trb_control_type *control, struct trb_inform_type *inform
  *   be set to a nonzero value.
  */ 
 void trb_solve_with_h(const struct trb_control_type *control, struct trb_inform_type *inform, void **data,
-                      void *userdata, int n, double x[], double g[], int ne,
-                      int (*eval_f)(int, const double[], double*, const void *), 
-                      int (*eval_g)(int, const double[], double[], const void *), 
-                      int (*eval_h)(int, int, const double[], double[], const void *), 
-                      int (*eval_prec)(int, const double[], double[], const double[], const void *));
+                      void *userdata, int n, real_wp_ x[], real_wp_ g[], int ne,
+                      int (*eval_f)(int, const real_wp_[], real_wp_*, const void *), 
+                      int (*eval_g)(int, const real_wp_[], real_wp_[], const void *), 
+                      int (*eval_h)(int, int, const real_wp_[], real_wp_[], const void *), 
+                      int (*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *));
 
 /*
  * trb_solve_without_h, a trust-region method for finding a local minimizer of
@@ -654,12 +657,12 @@ void trb_solve_with_h(const struct trb_control_type *control, struct trb_inform_
  *   be set to a nonzero value.
  */  
 void trb_solve_without_h(const struct trb_control_type *control, struct trb_inform_type *inform, void **data,
-                         void *userdata, int n, double x[], double g[], 
-                         int (*eval_f)(int, const double[], double*, const void *), 
-                         int (*eval_g)(int, const double[], double[], const void *), 
-                         int (*eval_hprod)(int, const double[], double[], const double[], bool, const void *), 
-                         int (*eval_shprod)(int, const double[], int, const int[], const double[], int*, int[], double[], bool, const void *), 
-                         int (*eval_prec)(int, const double[], double[], const double[], const void *));
+                         void *userdata, int n, real_wp_ x[], real_wp_ g[], 
+                         int (*eval_f)(int, const real_wp_[], real_wp_*, const void *), 
+                         int (*eval_g)(int, const real_wp_[], real_wp_[], const void *), 
+                         int (*eval_hprod)(int, const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), 
+                         int (*eval_shprod)(int, const real_wp_[], int, const int[], const real_wp_[], int*, int[], real_wp_[], bool, const void *), 
+                         int (*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *));
 
 /*
  * trb_solve_reverse_with_h, a trust-region method for finding a local minimizer
@@ -777,8 +780,8 @@ void trb_solve_without_h(const struct trb_control_type *control, struct trb_info
  *   at the point x indicated in x is computed (see above for details)
  */ 
 void trb_solve_reverse_with_h(const struct trb_control_type *control, struct trb_inform_type *inform, void **data,
-                              int *eval_status, int n, double x[], double f, double g[], 
-                              int ne, double H_val[], const double u[], double v[]);
+                              int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], 
+                              int ne, real_wp_ H_val[], const real_wp_ u[], real_wp_ v[]);
 
 /*
  * trb_solve_reverse_without_h, a trust-region method for finding a local minimizer
@@ -911,7 +914,7 @@ void trb_solve_reverse_with_h(const struct trb_control_type *control, struct trb
  *   communication (see above for details)
  */  
 void trb_solve_reverse_without_h(const struct trb_control_type *control, struct trb_inform_type *inform, void **data,
-                                int *eval_status, int n, double x[], double f, double g[], double u[], double v[],
+                                int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], real_wp_ u[], real_wp_ v[],
                                 int index_nz_v[], int *nnz_v, const int index_nz_u[], int nnz_u);
 
 /*
@@ -922,7 +925,7 @@ void trb_terminate(void **data, struct trb_control_type *control, struct trb_inf
 /*
  * Compute the projection of c into the set x_l <= x <= x_u
  */
-void trb_projection(int n, const double x[], const double x_l[], const double x_u[], double projection[]);
+void trb_projection(int n, const real_wp_ x[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ projection[]);
 
 // end include guard
 #endif

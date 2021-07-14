@@ -23,6 +23,9 @@ extern "C" {
 #ifndef GALAHAD_LHS_H 
 #define GALAHAD_LHS_H
 
+// precision
+#include "galahad_precision.h"
+
 /* 
  * inform derived type as a C struct
  */

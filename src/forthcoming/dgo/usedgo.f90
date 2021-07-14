@@ -1,19 +1,20 @@
-! THIS VERSION: GALAHAD 2.5 - 25/06/2011 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 03/07/2021 AT 15:15 GMT.
 
-!-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ T R B  -*-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ D G O  -*-*-*-*-*-*-*-*-*-*-
 
 !  Nick Gould, for GALAHAD productions
 !  Copyright reserved
-!  June 25th 2012
+!  July 3rd 2021
 
-   MODULE GALAHAD_USETRB_double
+   MODULE GALAHAD_USEDGO_double
 
-!  This is the driver program for running TRB for a variety of computing
+!  This is the driver program for running DGO for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
 !    USE GALAHAD_CLOCK
-     USE GALAHAD_TRB_double
+     USE GALAHAD_DGO_double
+     USE GALAHAD_SYMBOLS
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_double
@@ -21,13 +22,13 @@
      IMPLICIT NONE
 
      PRIVATE
-     PUBLIC :: USE_TRB
+     PUBLIC :: USE_DGO
 
    CONTAINS
 
-!-*-*-*-*-*-*-*-*-*-  U S E _ T R B   S U B R O U T I N E  -*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-  U S E _ D G O   S U B R O U T I N E  -*-*-*-*-*-*-*-
 
-     SUBROUTINE USE_TRB( input )
+     SUBROUTINE USE_DGO( input )
 
 !  Dummy argument
 
@@ -41,9 +42,9 @@
 !   D e r i v e d   T y p e s
 !-------------------------------
 
-     TYPE ( TRB_control_type ) :: control
-     TYPE ( TRB_inform_type ) :: inform
-     TYPE ( TRB_data_type ) :: data
+     TYPE ( DGO_control_type ) :: control
+     TYPE ( DGO_inform_type ) :: inform
+     TYPE ( DGO_data_type ) :: data
      TYPE ( NLPT_problem_type ) :: nlp
      TYPE ( NLPT_userdata_type ) :: userdata
      TYPE ( CUTEST_FUNCTIONS_control_type ) :: cutest_control
@@ -59,6 +60,7 @@
      LOGICAL :: filexx, is_specfile
 !    REAL :: timeo, timet
 !    REAL ( KIND = wp ) :: clocko, clockt
+     CHARACTER ( LEN = 10 ) :: name
 
 !  Functions
 
@@ -68,9 +70,9 @@
 
      INTEGER, PARAMETER :: input_specfile = 34
      INTEGER, PARAMETER :: lspec = 29
-     CHARACTER ( LEN = 16 ) :: specname = 'RUNTRB'
+     CHARACTER ( LEN = 16 ) :: specname = 'RUNDGO'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
-     CHARACTER ( LEN = 16 ) :: runspec = 'RUNTRB.SPC'
+     CHARACTER ( LEN = 16 ) :: runspec = 'RUNDGO.SPC'
 
 !  Default values for specfile-defined parameters
 
@@ -83,10 +85,10 @@
      LOGICAL :: write_solution       = .FALSE.
 !    LOGICAL :: write_result_summary = .FALSE.
      LOGICAL :: write_result_summary = .TRUE.
-     CHARACTER ( LEN = 30 ) :: dfilename = 'TRB.data'
-     CHARACTER ( LEN = 30 ) :: rfilename = 'TRBRES.d'
-     CHARACTER ( LEN = 30 ) :: sfilename = 'TRBSOL.d'
-     CHARACTER ( LEN = 30 ) :: wfilename = 'TRBSAVE.d'
+     CHARACTER ( LEN = 30 ) :: dfilename = 'DGO.data'
+     CHARACTER ( LEN = 30 ) :: rfilename = 'DGORES.d'
+     CHARACTER ( LEN = 30 ) :: sfilename = 'DGOSOL.d'
+     CHARACTER ( LEN = 30 ) :: wfilename = 'DGOSAVE.d'
      LOGICAL :: testal = .FALSE.
      LOGICAL :: dechk  = .FALSE.
      LOGICAL :: dechke = .FALSE.
@@ -102,15 +104,14 @@
      LOGICAL :: get_max = .FALSE.
      LOGICAL :: warm_start = .FALSE.
      INTEGER :: istore = 0
-!    LOGICAL :: one_norm = .TRUE.
 
 !  Output file characteristics
 
      INTEGER :: out  = 6
      INTEGER :: errout = 6
-     CHARACTER ( LEN =  6 ) :: solv = 'TRB   '
+     CHARACTER ( LEN =  6 ) :: solv = 'DGO   '
 
-!  ------------------ Open the specfile for trb ----------------
+!  ------------------ Open the specfile for dgo ----------------
 
      INQUIRE( FILE = runspec, EXIST = is_specfile )
      IF ( is_specfile ) THEN
@@ -209,23 +210,65 @@
 
 !  Set copyright
 
-     IF ( out > 0 ) CALL COPYRIGHT( out, '2012' )
+     IF ( out > 0 ) CALL COPYRIGHT( out, '2021' )
 
 !  Set up control parameters prior to the next solution
 
-     CALL TRB_initialize( data, control, inform )
-     IF ( is_specfile ) CALL TRB_read_specfile( control, input_specfile )
+     CALL DGO_initialize( data, control, inform )
+     IF ( is_specfile ) CALL DGO_read_specfile( control, input_specfile )
 
 !  Initialize the problem data
 
      cutest_control%input = input ; cutest_control%error = control%error
      CALL CUTEST_initialize( nlp, cutest_control, cutest_inform, userdata )
 
+!  Read a previous solution file for a re-entry
+
+     IF ( warm_start .AND. wfiledevice > 0 ) THEN
+       OPEN( wfiledevice, FILE = wfilename, FORM = 'FORMATTED',                &
+             STATUS = 'OLD', IOSTAT = iores )
+       IF ( iores /= 0 ) THEN
+         WRITE( out, 2030 ) iores, wfilename
+         STOP
+       END IF
+
+       REWIND( wfiledevice )
+       READ( wfiledevice, "( A10 )" ) name
+       IF ( name /= nlp%pname ) THEN
+         WRITE( out, "( /, ' *** Exit from usedgo: re-entry requested with',   &
+        &         ' data for problem ', A10, /,                                &
+        &         '     but the most recently decoded problem is ', A10 )" )   &
+          name, nlp%pname
+         STOP
+       END IF
+       READ( wfiledevice, "( I8 )" )i
+       IF ( i /= nlp%n ) THEN
+         WRITE( out, "( /, ' *** Exit from usedgo: number of variables'      , &
+        &        ' changed from ', I0,' to ', I0,' on re-entry ' )" ) nlp%n, i
+         STOP
+       END IF
+       READ( wfiledevice, "( I8 )" )i
+       IF ( i /= nlp%m ) THEN
+         WRITE( out, "( /, ' *** Exit from usedgo: number of residuals',       &
+        &        ' changed from ', I0, ' to ', I0, ' on re-entry ' )" ) nlp%m, i
+         STOP
+       END IF
+       DO i = 1, nlp%n
+         READ( wfiledevice, "( ES24.16, 2X, A10 )" ) nlp%X( i ), name
+         IF ( name /= nlp%VNAMES( i ) ) THEN
+           WRITE( out, "( /, ' *** Exit from usedgo: variable named ',         &
+          &  A, ' out of order on re-entry ' )" ) TRIM( name )
+           STOP
+         END IF
+       END DO
+       CLOSE( wfiledevice )
+     END IF
+
 !  Solve the problem
 
      inform%status = 1
 !    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
-     CALL TRB_solve( nlp, control, inform, data, userdata,                     &
+     CALL DGO_solve( nlp, control, inform, data, userdata,                     &
                      eval_F = CUTEST_eval_F, eval_G = CUTEST_eval_G,           &
                      eval_H = CUTEST_eval_H, eval_HPROD = CUTEST_eval_HPROD,   &
                      eval_SHPROD = CUTEST_eval_SHPROD )
@@ -237,28 +280,14 @@
 
       IF ( write_result_summary ) THEN
         BACKSPACE( rfiledevice )
-        IF ( control%subproblem_direct ) THEN
-          IF ( inform%status == 0 ) THEN
-            WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
-              inform%norm_pg, inform%iter, inform%g_eval,                      &
-              inform%factorization_average, inform%factorization_max,          &
-              inform%time%clock_total, inform%status
-          ELSE
-            WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
-              inform%norm_pg, - inform%iter, - inform%g_eval,                  &
-              inform%factorization_average, inform%factorization_max,          &
-              - inform%time%clock_total, inform%status
-          END IF
+        IF ( inform%status == 0 ) THEN
+          WRITE( rfiledevice, 2050 ) nlp%pname, nlp%n, inform%obj,             &
+            inform%norm_pg, inform%f_eval, inform%g_eval,                      &
+            inform%time%clock_total, inform%status
         ELSE
-          IF ( inform%status == 0 ) THEN
-            WRITE( rfiledevice, 2050 ) nlp%pname, nlp%n, inform%obj,           &
-              inform%norm_pg, inform%iter, inform%g_eval, inform%cg_iter,      &
-              inform%time%clock_total, inform%status
-          ELSE
-            WRITE( rfiledevice, 2050 ) nlp%pname, nlp%n, inform%obj,           &
-              inform%norm_pg, - inform%iter, - inform%g_eval, inform%cg_iter,  &
-              - inform%time%clock_total, inform%status
-          END IF
+          WRITE( rfiledevice, 2050 ) nlp%pname, nlp%n, inform%obj,             &
+            inform%norm_pg, - inform%f_eval, - inform%g_eval,                  &
+            - inform%time%clock_total, inform%status
         END IF
       END IF
 
@@ -282,31 +311,17 @@
         END DO
       END DO
 
-      IF ( control%subproblem_direct ) THEN
         WRITE( errout, "( /, 'name           n  f               du-feas ',     &
-       &  '   its     #g   av fac     time stat' )" )
-        IF ( inform%status == 0 ) THEN
-          WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj, inform%norm_pg,  &
-            inform%iter, inform%g_eval, inform%factorization_average,          &
-            inform%factorization_max, inform%time%clock_total, inform%status
-        ELSE
-          WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj, inform%norm_pg,  &
-            - inform%iter, - inform%g_eval, inform%factorization_average,      &
-            inform%factorization_max, - inform%time%clock_total, inform%status
-        END IF
-      ELSE
-        WRITE( errout, "( /, 'name           n  f               du-feas ',     &
-       &  '   its     #g      #cg       time stat' )" )
+       &  '      #f       #g     time stat' )" )
         IF ( inform%status == 0 ) THEN
           WRITE( errout, 2050 ) nlp%pname, nlp%n, inform%obj,                  &
-            inform%norm_pg, inform%iter, inform%g_eval,                        &
-            inform%cg_iter, inform%time%clock_total, inform%status
+            inform%norm_pg, inform%f_eval, inform%g_eval,                      &
+            inform%time%clock_total, inform%status
         ELSE
           WRITE( errout, 2050 ) nlp%pname, nlp%n, inform%obj,                  &
-            inform%norm_pg, - inform%iter, - inform%g_eval,                    &
-            inform%cg_iter, - inform%time%clock_total, inform%status
+            inform%norm_pg, - inform%f_eval, - inform%g_eval,                  &
+            - inform%time%clock_total, inform%status
         END IF
-      END IF
 
       IF ( write_solution .AND.                                                &
           ( inform%status == 0  .OR. inform%status == - 10 ) ) THEN
@@ -334,9 +349,44 @@
         END DO
 
      END IF
-!do i = 1, nlp%n
-!write(6,*)  nlp%X( i )
-!end do
+
+!  if required, save the solution for a future re-entry
+
+     IF ( wfiledevice > 0 .AND. ( ( istore > 0 .AND.                           &
+            ( inform%status == GALAHAD_ok .OR.                                 &
+              inform%status == GALAHAD_error_ill_conditioned .OR.              &
+              inform%status == GALAHAD_error_tiny_step .OR.                    &
+              inform%status == GALAHAD_error_max_iterations .OR.               &
+              inform%status == GALAHAD_error_time_limit .OR.                   &
+              inform%status == GALAHAD_error_alive ) ) .OR.                    &
+            inform%status == GALAHAD_error_alive ) ) THEN
+       INQUIRE( FILE = wfilename, OPENED = filexx )
+       IF ( .NOT. filexx ) THEN
+         INQUIRE( FILE = wfilename, EXIST = filexx )
+         IF ( filexx ) THEN
+            OPEN( wfiledevice, FILE = wfilename, FORM = 'FORMATTED',           &
+                  STATUS = 'OLD', POSITION = 'APPEND', IOSTAT = iores )
+         ELSE
+            OPEN( wfiledevice, FILE = wfilename, FORM = 'FORMATTED',           &
+                  STATUS = 'NEW', IOSTAT = iores )
+         END IF
+         IF ( iores /= 0 ) THEN
+           WRITE( out, 2030 ) iores, wfilename
+           STOP
+         END IF
+       END IF
+       REWIND( wfiledevice )
+       WRITE( wfiledevice, "( A10, ' problem name ', /,                        &
+      &                       I8,  ' number of variables', /,                  &
+      &                       I8,  ' number of residuals',                     &
+      &                       ' ... and now variables' )" )                    &
+       nlp%pname, nlp%n, nlp%m
+       DO i = 1, nlp%n
+         WRITE( wfiledevice, "( ES24.16, 2X, A10 )" )                          &
+          nlp%X( i ), nlp%VNAMES( i )
+       END DO
+       CLOSE( wfiledevice )
+     END IF
 
 !  Close any opened files and deallocate arrays
 
@@ -353,14 +403,12 @@
  2010 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
- 2040 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I7, F5.1, I4, F9.2, I5 )
- 2050 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I7, I9, ' :', F9.2, I5 )
+ 2050 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I9, F9.2, I5 )
 
+!  End of subroutine USE_DGO
 
-!  End of subroutine USE_TRB
+     END SUBROUTINE USE_DGO
 
-     END SUBROUTINE USE_TRB
+!  End of module USEDGO_double
 
-!  End of module USETRB_double
-
-   END MODULE GALAHAD_USETRB_double
+   END MODULE GALAHAD_USEDGO_double

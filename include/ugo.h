@@ -23,16 +23,19 @@ extern "C" {
 #ifndef GALAHAD_UGO_H 
 #define GALAHAD_UGO_H
 
+// precision
+#include "galahad_precision.h"
+
 /* 
  * time derived type as a C struct
  */
 struct ugo_time_type {
 
     // the total CPU time spent in the package
-    float total;
+    real_sp_ total;
 
     // the total clock time spent in the package
-    double clock_total;
+    real_wp_ clock_total;
 };
 
 /* 
@@ -124,35 +127,35 @@ struct ugo_control_type {
 
     // overall convergence tolerances. The iteration will terminate when
     // the step is less than %stop_length
-    double stop_length;
+    real_wp_ stop_length;
 
     // if the absolute value of the gradient is smaller than small_g_for_newton, the
     // next evaluation point may be at a Newton estimate of a local minimizer
-    double small_g_for_newton;
+    real_wp_ small_g_for_newton;
 
     // if the absolute value of the gradient at the end of the interval search is
     // smaller than small_g, no Newton serach is necessary
-    double small_g;
+    real_wp_ small_g;
 
     // stop if the objective function is smaller than a specified value
-    double obj_sufficient;
+    real_wp_ obj_sufficient;
 
     // the global Lipschitz constant for the gradient (-ve => unknown)
-    double global_lipschitz_constant;
+    real_wp_ global_lipschitz_constant;
 
     // the reliability parameter that is used to boost insufficiently large
     // estimates of the Lipschitz constant
-    double reliability_parameter;
+    real_wp_ reliability_parameter;
 
     // a lower bound on the Lipscitz constant for the gradient (not zero unless
     // the function is constant)
-    double lipschitz_lower_bound;
+    real_wp_ lipschitz_lower_bound;
 
     // the maximum CPU time allowed (-ve means infinite)
-    double cpu_time_limit;
+    real_wp_ cpu_time_limit;
 
     // the maximum elapsed clock time allowed (-ve means infinite)
-    double clock_time_limit;
+    real_wp_ clock_time_limit;
 
     // if %space_critical true, every effort will be made to use as little
     // space as possible. This may result in longer computation time
@@ -290,9 +293,9 @@ void ugo_read_specfile(struct ugo_control_type *control, const char specfile[]);
  *   nonzero value. If eval_fgh is NULL, ugo_solve will return to the
  *   user with inform.status = 4 each time an evaluation is required.
  */
-void ugo_solve(double x_l, double x_u, double *x, double *f, double *g, double *h,
+void ugo_solve(real_wp_ x_l, real_wp_ x_u, real_wp_ *x, real_wp_ *f, real_wp_ *g, real_wp_ *h,
                const struct ugo_control_type *control, struct ugo_inform_type *inform, void **data,
-               void *userdata, int (*eval_fgh)(double, double*, double*, double*, const void *));
+               void *userdata, int (*eval_fgh)(real_wp_, real_wp_*, real_wp_*, real_wp_*, const void *));
 
 /*
  * Deallocate all private storage

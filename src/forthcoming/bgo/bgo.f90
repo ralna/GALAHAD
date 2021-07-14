@@ -1452,7 +1452,7 @@
 !  record details about the critical point found
 
        inform%f_eval = inform%f_eval + inform%TRB_inform%f_eval
-       inform%g_eval = inform%h_eval + inform%TRB_inform%g_eval
+       inform%g_eval = inform%g_eval + inform%TRB_inform%g_eval
        inform%h_eval = inform%h_eval + inform%TRB_inform%h_eval
        inform%obj = inform%TRB_inform%obj
        inform%norm_pg = inform%TRB_inform%norm_pg
@@ -1718,7 +1718,7 @@
            END IF
 
            inform%f_eval = inform%f_eval + inform%UGO_inform%f_eval
-           inform%g_eval = inform%h_eval + inform%UGO_inform%g_eval
+           inform%g_eval = inform%g_eval + inform%UGO_inform%g_eval
            inform%h_eval = inform%h_eval + inform%UGO_inform%h_eval
 
 !   test to see whether a lower point has been found

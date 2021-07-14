@@ -19,14 +19,17 @@ extern "C" {
 #include <stdbool.h>
 #endif
 
+// include guard
+#ifndef GALAHAD_BGO_H 
+#define GALAHAD_BGO_H
+
+// precision
+#include "galahad_precision.h"
+
 // required packages
 #include "trb.h"
 #include "ugo.h"
 #include "lhs.h"
-
-// include guard
-#ifndef GALAHAD_BGO_H 
-#define GALAHAD_BGO_H
 
 /* 
  * time derived type as a C struct 
@@ -34,22 +37,22 @@ extern "C" {
 struct bgo_time_type {
 
     // the total CPU time spent in the package
-    float total;
+    real_sp_ total;
 
     // the CPU time spent performing univariate global optimization
-    float univariate_global;
+    real_sp_ univariate_global;
 
     // the CPU time spent performing multivariate local optimization
-    float multivariate_local;
+    real_sp_ multivariate_local;
 
     // the total clock time spent in the package
-    double clock_total;
+    real_wp_ clock_total;
 
     // the clock time spent performing univariate global optimization
-    double clock_univariate_global;
+    real_wp_ clock_univariate_global;
 
     // the clock time spent performing multivariate local optimization
-    double clock_multivariate_local;
+    real_wp_ clock_multivariate_local;
 };
 
 /*
@@ -77,11 +80,11 @@ struct bgo_inform_type {
 
     // the value of the objective function at the best estimate of the solution
     // determined by BGO_solve
-    double obj;
+    real_wp_ obj;
 
     // the norm of the projected gradient of the objective function at the best
     // estimate of the solution determined by BGO_solve
-    double norm_pg;
+    real_wp_ norm_pg;
 
     // timings (see above)
     struct bgo_time_type time;
@@ -132,17 +135,17 @@ struct bgo_control_type {
     char alive_file[31];
 
     // any bound larger than infinity in modulus will be regarded as infinite
-    double infinity;
+    real_wp_ infinity;
 
     // the smallest value the objective function may take before the problem
     // is marked as unbounded
-    double obj_unbounded;
+    real_wp_ obj_unbounded;
 
     // the maximum CPU time allowed (-ve means infinite)
-    double cpu_time_limit;
+    real_wp_ cpu_time_limit;
 
     // the maximum elapsed clock time allowed (-ve means infinite)
-    double clock_time_limit;
+    real_wp_ clock_time_limit;
 
     // perform random-multistart as opposed to local minimize and probe
     bool random_multistart;
@@ -238,7 +241,7 @@ void bgo_read_specfile(struct bgo_control_type *control, const char specfile[]);
  *   other schemes are used, and in this case can be NULL
  */
 void bgo_import(struct bgo_control_type *control, struct bgo_inform_type *inform, void **data,
-                  int n, const double x_l[], const double x_u[], const char H_type[],
+                  int n, const real_wp_ x_l[], const real_wp_ x_u[], const char H_type[],
                   int ne, const int H_row[], const int H_col[], const int H_ptr[]);
 
 /*
@@ -359,12 +362,12 @@ void bgo_import(struct bgo_control_type *control, struct bgo_inform_type *inform
  *   be set to a nonzero value.
  */ 
 void bgo_solve_with_h(const struct bgo_control_type *control, struct bgo_inform_type *inform, void **data,
-                      void *userdata, int n, double x[], double g[], int ne,
-                      int (*eval_f)(int, const double[], double*, const void *), 
-                      int (*eval_g)(int, const double[], double[], const void *), 
-                      int (*eval_h)(int, int, const double[], double[], const void *),
-                      int (*eval_hprod)(int, const double[], double[], const double[], bool, const void *),
-                      int (*eval_prec)(int, const double[], double[], const double[], const void *));
+                      void *userdata, int n, real_wp_ x[], real_wp_ g[], int ne,
+                      int (*eval_f)(int, const real_wp_[], real_wp_*, const void *), 
+                      int (*eval_g)(int, const real_wp_[], real_wp_[], const void *), 
+                      int (*eval_h)(int, int, const real_wp_[], real_wp_[], const void *),
+                      int (*eval_hprod)(int, const real_wp_[], real_wp_[], const real_wp_[], bool, const void *),
+                      int (*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *));
 
 /*
  * bgo_solve_without_h, a trust-region method for finding a local minimizer of
@@ -487,12 +490,12 @@ void bgo_solve_with_h(const struct bgo_control_type *control, struct bgo_inform_
  *   be set to a nonzero value.
  */  
 void bgo_solve_without_h(const struct bgo_control_type *control, struct bgo_inform_type *inform, void **data,
-                         void *userdata, int n, double x[], double g[], 
-                         int (*eval_f)(int, const double[], double*, const void *), 
-                         int (*eval_g)(int, const double[], double[], const void *), 
-                         int (*eval_hprod)(int, const double[], double[], const double[], bool, const void *), 
-                         int (*eval_shprod)(int, const double[], int, const int[], const double[], int*, int[], double[], bool, const void *), 
-                         int (*eval_prec)(int, const double[], double[], const double[], const void *));
+                         void *userdata, int n, real_wp_ x[], real_wp_ g[], 
+                         int (*eval_f)(int, const real_wp_[], real_wp_*, const void *), 
+                         int (*eval_g)(int, const real_wp_[], real_wp_[], const void *), 
+                         int (*eval_hprod)(int, const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), 
+                         int (*eval_shprod)(int, const real_wp_[], int, const int[], const real_wp_[], int*, int[], real_wp_[], bool, const void *), 
+                         int (*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *));
 
 /*
  * bgo_solve_reverse_with_h, a trust-region method for finding a local minimizer
@@ -627,8 +630,8 @@ void bgo_solve_without_h(const struct bgo_control_type *control, struct bgo_info
  *   at the point x indicated in x is computed (see above for details)
  */ 
 void bgo_solve_reverse_with_h(const struct bgo_control_type *control, struct bgo_inform_type *inform, void **data,
-                              int *eval_status, int n, double x[], double f, double g[], 
-                              int ne, double H_val[], double u[], double v[]);
+                              int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], 
+                              int ne, real_wp_ H_val[], real_wp_ u[], real_wp_ v[]);
 
 /*
  * bgo_solve_reverse_without_h, a trust-region method for finding a local minimizer
@@ -769,7 +772,7 @@ void bgo_solve_reverse_with_h(const struct bgo_control_type *control, struct bgo
  *   communication (see above for details)
  */  
 void bgo_solve_reverse_without_h(const struct bgo_control_type *control, struct bgo_inform_type *inform, void **data,
-                                int *eval_status, int n, double x[], double f, double g[], double u[], double v[],
+                                int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], real_wp_ u[], real_wp_ v[],
                                 int index_nz_v[], int *nnz_v, const int index_nz_u[], int nnz_u);
 
 /*

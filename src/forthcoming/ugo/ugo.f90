@@ -253,6 +253,10 @@
 
        INTEGER :: h_eval = 0
 
+!  the length of the largest remaining search interval
+
+       REAL ( KIND = wp ) :: dx_best = HUGE( one )
+
 !  timings (see above)
 
        TYPE ( UGO_time_type ) :: time
@@ -359,9 +363,9 @@
 !  next-interval-selection-method                  2
 !  refine-with-newton-iterations                   5
 !  global-lipschitz-constant                       -1.0
-!  reliability-parameter                           1.2
+!  lipschitz-reliability-parameter                 1.2
 !  lipschitz-lower-bound                           1.0D-8
-!  max-interval-length-required                    1.0D-5
+!  maximum-interval-length-required                1.0D-5
 !  try-newton-tolerence                            1.0D-3
 !  sufficient-objective-value                      -1.0D+32
 !  maximum-cpu-time-limit                          -1.0
@@ -440,9 +444,9 @@
 !  Real key-words
 
      spec( global_lipschitz_constant )%keyword = 'global-lipschitz-constant'
-     spec( reliability_parameter )%keyword = 'reliability-parameter'
+     spec( reliability_parameter )%keyword = 'lipschitz-reliability-parameter'
      spec( lipschitz_lower_bound )%keyword = 'lipschitz-lower-bound'
-     spec( stop_length )%keyword = 'max-interval-length-required'
+     spec( stop_length )%keyword = 'maximum-interval-length-required'
      spec( small_g_for_newton )%keyword = 'try-newton-tolerence'
      spec( small_g )%keyword = 'sufficient-gradient-tolerence'
      spec( obj_sufficient )%keyword = 'sufficient-objective-value'
@@ -762,7 +766,7 @@
      REAL ( KIND = wp ) :: xi, xip, dg, di, dx, fi, fip, gi, gip, bi, ci
      REAL ( KIND = wp ) :: mi, term, wi, yi, zi, vox, v_max, x_max, x_new
      REAL ( KIND = wp ) :: argmin, argmin_psi, min_psi
-     REAL ( KIND = wp ) :: gpiwi, gpiyi, argmin_pi, min_pi, dx_best, midxdg
+     REAL ( KIND = wp ) :: gpiwi, gpiyi, argmin_pi, min_pi, midxdg
      REAL ( KIND = wp ) :: psi_best, phizi, argmin_fiip, min_fiip
      REAL ( KIND = wp ) :: vi, vim, vip, hi, hip, x_newton
      LOGICAL :: alive, new_point
@@ -1352,7 +1356,8 @@
 !  t indicates the interval with the smallest value of psi, psi_best;
 !  initialize with hopeless values
 
-       t = 0 ; psi_best = fi + one ; dx_best = infinity ; new_point = .FALSE.
+       t = 0 ; psi_best = fi + one ; inform%dx_best = infinity
+       new_point = .FALSE.
 
        DO l = 1, inform%iter - 1 !loop through the intervals in increasing order
          mi = data%G_lips( i )
@@ -1459,7 +1464,7 @@
 
            IF ( data%UNFATHOMED( i ) ) THEN
              IF ( min_psi < psi_best ) THEN
-               t = i ; psi_best = min_psi ; dx_best = dx
+               t = i ; psi_best = min_psi ; inform%dx_best = dx
 
                IF ( argmin == 0 ) THEN
                  x_new = argmin_psi
@@ -1558,8 +1563,9 @@
 !  if the best value of psi is in a tiny interval, or if every interval has
 !  been fathomed, exit with an estimate of the global minimizer
 
-       IF ( dx_best <= control%stop_length .OR. t == 0 ) THEN
+       IF ( inform%dx_best <= control%stop_length .OR. t == 0 ) THEN
          x = data%x_best ; f = data%f_best ; g = data%g_best ; h = data%h_best
+         IF ( t == 0 ) inform%dx_best = zero
          GO TO 300
 
 !  record the next evaluation point
