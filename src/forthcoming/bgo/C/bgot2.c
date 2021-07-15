@@ -44,7 +44,6 @@ int main(void) {
     // Set problem data
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
-    double x[] = {0,0,0}; // Start from 0
     double x_l[] = {-10,-10,-10}; 
     double x_u[] = {0.5,0.5,0.5};
     int H_row[] = {1, 2, 3, 3, 3}; // Hessian H
@@ -69,6 +68,9 @@ int main(void) {
         control.sampling_strategy = 3;
         control.trb_control.maxit = 100;
         //control.print_level = 1;
+
+        // Start from 0
+        double x[] = {0,0,0};
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -141,6 +143,9 @@ int main(void) {
         control.sampling_strategy = 3;
         control.trb_control.maxit = 100;
         //control.print_level = 1;
+
+        // Start from 0
+        double x[] = {0,0,0};
 
         switch(d){
             case 1: // sparse co-ordinate storage
