@@ -2,8 +2,8 @@
 
 % set the package name
 
-\newcommand{\package}{cqp}
-\newcommand{\packagename}{CQP}
+\newcommand{\package}{bqpb}
+\newcommand{\packagename}{BQPB}
 \newcommand{\fullpackagename}{\libraryname\_\packagename}
 \newcommand{\solver}{{\tt \fullpackagename\_solve}}
 
@@ -15,24 +15,22 @@
 
 \galsummary
 This package uses an primal-dual interior-point method
-to solve the {\bf convex quadratic programming problem}
+to solve the {\bf bound-constrained convex quadratic programming problem}
 \eqn{qp}{\mbox{minimize}\;\; q(\bmx) = \half \bmx^T \bmH \bmx + \bmg^T \bmx + f}
-or the {\bf shifted least-distance problem}
+or the {\bf bound-constrained shifted least-distance problem}
 \eqn{lsqp}{\mbox{minimize}\;\;
  \half \sum_{j=1}^n w_j^2 ( x_j^{ } - x_j^0 )^2 + \bmg^T \bmx + f}
-subject to the general linear constraints
-\disp{c_{i}^{l}  \leq  \bma_{i}^{T}\bmx  \leq  c_{i}^{u}, \;\;\;
- i = 1, \ldots , m,}
-and the simple bound constraints
+subject to the simple bound constraints
 \disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
 where the $n$ by $n$ symmetric, positive-semi-definite matrix $\bmH$, the
-vectors $\bmg$, $\bmw$, $\bmx^{0}$,
-$\bma_{i}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$,
+vectors $\bmg$, $\bmw$, $\bmx^{0}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$,
 $\bmx^{u}$ and the scalar $f$ are given.
 Any of the constraint bounds $c_{i}^{l}$, $c_{i}^{u}$,
 $x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
-Full advantage is taken of any zero coefficients in the matrix $\bmH$
-or the matrix $\bmA$ of vectors $\bma_{i}$.
+Full advantage is taken of any zero coefficients in the matrix $\bmH$.
+
+If general linear constraints are present, the package 
+{\tt GALAHAD\_CQP} should be used instead.
 
 %%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -42,19 +40,16 @@ or the matrix $\bmA$ of vectors $\bma_{i}$.
 {\tt GALAHAD\_CLOCK},
 {\tt GALAHAD\_SY\-M\-BOLS},
 {\tt GALAHAD\-\_SPACE},
-{\tt GALAHAD\_TOOLS},
 {\tt GALAHAD\_SPECFILE},
 {\tt GALAHAD\_SMT},
 {\tt GALAHAD\_QPT},
-{\tt GALAHAD\_QPP},
 {\tt GALAHAD\_\-QPD},
-{\tt GALAHAD\_\-FITS},
+{\tt GALAHAD\_\-FIT},
 {\tt GALAHAD\_\-ROOTS},
-{\tt GALAHAD\_\-NORMS},
+{\tt GALAHAD\_\-CQP},
 {\tt GALAHAD\_\-SBLS},
-{\tt GALAHAD\_\-CRO},
-{\tt GALAHAD\_FDC}.
-\galdate November 2010.
+{\tt GALAHAD\_\-CRO}.
+\galdate July 2021.
 \galorigin N. I. M. Gould and D. P. Robinson, Rutherford Appleton Laboratory.
 \gallanguage Fortran~95 + TR 15581 or Fortran~2003.
 \galparallelism Some options may use OpenMP and its runtime library.
@@ -102,17 +97,12 @@ must be renamed on one of the {\tt USE} statements.
 
 \galmatrix
 When they are explicitly available,
-Both the Hessian matrix $\bmH$ and
-the constraint Jacobian $\bmA$, the matrix
-whose rows are the vectors $\bma_{i}^{T}$, $i = 1, \ldots , m$,
-may be stored in a variety of input formats.
+The Hessian matrix $\bmH$ may be stored in a variety of input formats.
 
 \subsubsection{Dense storage format}\label{dense}
-The matrix $\bmA$ is stored as a compact
-dense matrix by rows, that is, the values of the entries of each row in turn are
-stored in order within an appropriate real one-dimensional array.
-Component $n \ast (i-1) + j$ of the storage array {\tt A\%val} will hold the
-value $a_{ij}$ for $i = 1, \ldots , m$, $j = 1, \ldots , n$.
+The matrix $\bmH$ is stored as a compact dense matrix by rows,
+that is the values of the entries of each row in turn are
+stored in order, within an appropriate real one-dimensional array.
 Since $\bmH$ is symmetric, only the lower triangular part (that is the part
 $h_{ij}$ for $1 \leq j \leq i \leq n$) need be held. In this case
 the lower triangle will be stored by rows, that is
@@ -122,31 +112,25 @@ for $1 \leq j \leq i \leq n$.
 
 \subsubsection{Sparse co-ordinate storage format}\label{coordinate}
 Only the nonzero entries of the matrices are stored. For the
-$l$-th entry of $\bmA$, its row index $i$, column index $j$
-and value $a_{ij}$
-are stored in the $l$-th components of the integer arrays {\tt A\%row},
-{\tt A\%col} and real array {\tt A\%val}, respectively.
+$l$-th entry of $\bmH$, its row index $i$, column index $j$
+and value $h_{ij}$
+are stored in the $l$-th components of the integer arrays {\tt H\%row},
+{\tt H\%col} and real array {\tt H\%val}, respectively.
+Only the entries in the lower triangle need be stored.
 The order is unimportant, but the total
-number of entries {\tt A\%ne} is also required.
-The same scheme is applicable to
-$\bmH$ (thus requiring integer arrays {\tt H\%row}, {\tt H\%col}, a real array
-{\tt H\%val} and an integer value {\tt H\%ne}),
-except that only the entries in the lower triangle need be stored.
+number of entries {\tt H\%ne} is also required.
 
 \subsubsection{Sparse row-wise storage format}\label{rowwise}
 Again only the nonzero entries are stored, but this time
 they are ordered so that those in row $i$ appear directly before those
-in row $i+1$. For the $i$-th row of $\bmA$, the $i$-th component of a
-integer array {\tt A\%ptr} holds the position of the first entry in this row,
-while {\tt A\%ptr} $(m+1)$ holds the total number of entries plus one.
+in row $i+1$. For the $i$-th row of $\bmH$, the $i$-th component of a
+integer array {\tt H\%ptr} holds the position of the first entry in this row,
+while {\tt H\%ptr} $(n+1)$ holds the total number of entries plus one.
 The column indices $j$ and values $a_{ij}$ of the entries in the $i$-th row
 are stored in components
-$l =$ {\tt A\%ptr}$(i)$, \ldots ,{\tt A\%ptr} $(i+1)-1$ of the
-integer array {\tt A\%col}, and real array {\tt A\%val}, respectively.
-The same scheme is applicable to
-$\bmH$ (thus requiring integer arrays {\tt H\%ptr}, {\tt H\%col}, and
-a real array {\tt H\%val}),
-except that only the entries in the lower triangle need be stored.
+$l =$ {\tt H\%ptr}$(i)$, \ldots ,{\tt H\%ptr} $(i+1)-1$ of the
+integer array {\tt H\%col}, and real array {\tt H\%val}, respectively.
+Only the entries in the lower triangle need be stored.
 
 For sparse matrices, this scheme almost always requires less storage than
 its predecessor.
@@ -155,14 +139,14 @@ its predecessor.
 If $\bmH$ is diagonal (i.e., $h_{ij} = 0$ for all $1 \leq i \neq j \leq n$)
 only the diagonals entries $h_{ii}$, $1 \leq i \leq n$,  need be stored,
 and the first $n$ components of the array {\tt H\%val} may be used for
-the purpose. There is no sensible equivalent for the non-square $\bmA$.
+the purpose.
 
 \subsubsection{Scaled-identity-matrix storage format}\label{scaled-identity}
 If $\bmH$ is a scalar multiple of the identity matrix
 (i.e., $h_{ii} = h_{11}$  and $h_{ij} = 0$ for all $1 \leq i \neq j \leq n$)
 only the first diagonal entry $h_{11}$ needs be stored,
 and the first component of the array {\tt H\%val} may be used for
-the purpose. Again, there is no sensible equivalent for the non-square $\bmA$.
+the purpose.
 
 \subsubsection{Identity-matrix storage format}\label{identity}
 If $\bmH$ is the identity matrix
@@ -203,8 +187,7 @@ Ten derived data types are accessible from the package.
 %%%%%%%%%%% matrix data type %%%%%%%%%%%
 
 \subsubsection{The derived data type for holding matrices}\label{typesmt}
-The derived data type {\tt SMT\_TYPE} is used to hold the matrices $\bmA$
-and $\bmH$.
+The derived data type {\tt SMT\_TYPE} is used to hold the matrix $\bmH$.
 The components of {\tt SMT\_TYPE} used here are:
 
 \begin{description}
@@ -412,86 +395,6 @@ If {\tt gradient\_kind} {= 0, 1}, {\tt G} need not be allocated.
 default \realdp, that holds
 the constant term, $f$, in the objective function.
 
-\ittf{A} is scalar variable of type {\tt SMT\_TYPE}
-that holds the Jacobian matrix $\bmA$ when it is available explicitly.
-The following components are used:
-
-\begin{description}
-
-\itt{A\%type} is an allocatable array of rank one and type default \character,
-that is used to indicate the storage scheme used. If the dense storage scheme
-(see Section~\ref{dense}) is used,
-the first five components of {\tt A\%type} must contain the
-string {\tt DENSE}.
-For the sparse co-ordinate scheme (see Section~\ref{coordinate}),
-the first ten components of {\tt A\%type} must contain the
-string {\tt COORDINATE}, while
-for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
-the first fourteen components of {\tt A\%type} must contain the
-string {\tt SPARSE\_BY\_ROWS}.
-
-Just as for {\tt H\%type} above, the procedure {\tt SMT\_put}
-may be used to allocate sufficient space and insert the required keyword
-into {\tt A\%type}.
-Once again, if {\tt prob} is of derived type {\tt \packagename\_problem\_type}
-and involves a Jacobian we wish to store using the sparse row-wise
-storage scheme, we may simply
-%\vspace*{-2mm}
-{\tt
-\begin{verbatim}
-        CALL SMT_put( prob%A%type, 'SPARSE_BY_ROWS', istat )
-\end{verbatim}
-}
-%\vspace*{-4mm}
-\noindent
-
-\itt{A\%ne} is a scalar variable of type default \integer, that
-holds the number of entries in $\bmA$
-in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
-It need not be set for either of the other two appropriate schemes.
-
-\itt{A\%val} is a rank-one allocatable array of type default \realdp, that holds
-the values of the entries of the Jacobian matrix $\bmA$ in any of the
-appropriate storage schemes discussed in Section~\ref{galmatrix}.
-
-\itt{A\%row} is a rank-one allocatable array of type default \integer,
-that holds the row indices of $\bmA$ in the sparse co-ordinate storage
-scheme (see Section~\ref{coordinate}).
-It need not be allocated for either of the other two appropriate schemes.
-
-\itt{A\%col} is a rank-one allocatable array variable of type default \integer,
-that holds the column indices of $\bmA$ in either the sparse co-ordinate
-(see Section~\ref{coordinate}), or the sparse row-wise
-(see Section~\ref{rowwise}) storage scheme.
-It need not be allocated when the dense storage scheme is used.
-
-\itt{A\%ptr} is a rank-one allocatable array of dimension {\tt m+1} and type
-default \integer, that holds the
-starting position of each row of $\bmA$, as well
-as the total number of entries plus one, in the sparse row-wise storage
-scheme (see Section~\ref{rowwise}). It need not be allocated when the
-other appropriate schemes are used.
-
-\end{description}
-
-\ittf{C\_l} is a rank-one allocatable array of dimension {\tt m} and type
-default \realdp, that holds the vector of lower bounds $\bmc^{l}$
-on the general constraints. The $i$-th component of
-{\tt C\_l}, $i = 1, \ldots , m$, contains $\bmc_{i}^{l}$.
-Infinite bounds are allowed by setting the corresponding
-components of {\tt C\_l} to any value smaller than {\tt -infinity},
-where {\tt infinity} is a component of the control array {\tt control}
-(see Section~\ref{typecontrol}).
-
-\ittf{C\_u} is a rank-one allocatable array of dimension {\tt m} and type
-default \realdp, that holds the vector of upper bounds $\bmc^{u}$
-on the general constraints. The $i$-th component of
-{\tt C\_u}, $i = 1,  \ldots ,  m$, contains $\bmc_{i}^{u}$.
-Infinite bounds are allowed by setting the corresponding
-components of {\tt C\_u} to any value larger than {\tt infinity},
-where {\tt infinity} is a component of the control array {\tt control}
-(see Section~\ref{typecontrol}).
-
 \ittf{X\_l} is a rank-one allocatable array of dimension {\tt n} and type
 default \realdp, that holds
 the vector of lower bounds $\bmx^{l}$ on the the variables.
@@ -517,18 +420,6 @@ default \realdp,
 that holds the values $\bmx$ of the optimization variables.
 The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains $x_{j}$.
 
-\ittf{C} is a rank-one allocatable array of dimension {\tt m} and type default
-\realdp, that holds
-the values $\bmA \bmx$ of the constraints.
-The $i$-th component of {\tt C}, $i = 1,  \ldots ,  m$, contains
-$\bma_{i}^{T}\bmx \equiv (\bmA \bmx)_{i}$.
-
-\ittf{Y} is a rank-one allocatable array of dimension {\tt m} and type
-default \realdp, that holds
-the values $\bmy$ of estimates  of the Lagrange multipliers
-corresponding to the general linear constraints (see Section~\ref{galmethod}).
-The $i$-th component of {\tt Y}, $i = 1,  \ldots ,  m$, contains $y_{i}$.
-
 \ittf{Z} is a rank-one allocatable array of dimension {\tt n} and type default
 \realdp, that holds
 the values $\bmz$ of estimates  of the dual variables
@@ -553,7 +444,7 @@ The components of
 {\tt \packagename\_control\_type}
 are:
 
-\input{cqp_control}
+\input{bqpb_control}
 
 %%%%%%%%%%% time type %%%%%%%%%%%
 
@@ -618,7 +509,7 @@ of the algorithm. The components of
 {\tt \packagename\_inform\_type}
 are:
 
-\input{cqp_inform}
+\input{bqpb_inform}
 
 %%%%%%%%%%% data type %%%%%%%%%%%
 
@@ -698,7 +589,7 @@ The quadratic programming solution algorithm is called as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_solve( prob, data, control, inform[, C\_stat, B\_stat] )}
+{\tt CALL \packagename\_solve( prob, data, control, inform[, X\_stat] )}
 
 %\vspace*{-3mm}
 \begin{description}
@@ -709,26 +600,21 @@ It is used to hold data about the problem being solved.
 The user must allocate all the array components,
 and set values for all components except {\tt prob\%C}.
 
-The components {\tt prob\%X}, {\tt prob\%Y} and {\tt prob\%Z}
+The components {\tt prob\%X} and {\tt prob\%Z}
 must be set to initial estimates of the primal variables, $\bmx$,
 Lagrange multipliers, $\bmy$, for the general constraints
 and dual variables for the bound constraints, $\bmz$, respectively.
 Inappropriate initial values will be altered, so the user should
 not be overly concerned if suitable values are not apparent, and may be
-content with merely setting {\tt prob\%X=0.0}, {\tt prob\%Y=0.0}
+content with merely setting {\tt prob\%X=0.0}
 and {\tt prob\%Z=0.0}.
 %The component {\tt prob\%C} need not be set on entry.
 
-On exit, the components {\tt prob\%X} , {\tt prob\%C}, {\tt prob\%Y},
-and {\tt prob\%Z}
+On exit, the components {\tt prob\%X} and {\tt prob\%Z}
 will contain the best estimates of the primal variables $\bmx$,
-the linear constraints $\bmA \bmx$,
-Lagrange multipliers, $\bmy$, for the general constraints
 and dual variables for the bound constraints $\bmz$, respectively.
 \restrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $\geq 0$,
- {\tt prob\%A\_type} $\in \{${\tt 'DENSE'},
- {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'} $\}$,
-              and (if $\bmH$ is provided) {\tt prob\%H\%ne} $\geq -2$.
+  If $\bmH$ is provided, {\tt prob\%H\%ne} $\geq -2$.
  {\tt prob\%H\_type} $\in \{${\tt 'DENSE'},
  {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'}, {\tt 'DIAGONAL'},
  {\tt 'SCALED\_IDENTITY'}, {\tt 'IDENTITY'}, {\tt 'ZERO'} $\}$.
@@ -753,36 +639,11 @@ A successful call to
 is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
 
-\itt{C\_stat} is an \optional\ rank-one \intentout\ array argument of
-dimension {\tt prob\%m}
-and type default \integer, that indicates which of the general linear
-constraints are in the optimal active set. Possible values for
-{\tt C\_stat(i)}, {\tt i}$=1, \ldots ,$ {\tt prob\%m}, and their meanings are
-\begin{description}
-\itt{<0} the $i$-th general constraint
-is in the active set, on its lower bound,
-\itt{>0} the $i$-th general constraint
-is in the active set, on its upper bound, and
-\itt{0}  the $i$-th general constraint is not in the active set.
-\end{description}
-When {\tt control\%crossover} is \true, more specific values are
-\begin{description}
-\itt{-1} the $i$-th general constraint
-is both independent and active on its lower bound,
-\itt{-2} the $i$-th general constraint
-is on its lower bound but linearly dependent on others,
-\itt{1} the $i$-th general constraint
-is both independent and active on its upper bound,
-\itt{2} the $i$-th general constraint
-is on its upper bound but linearly dependent on others, and
-\itt{0} the $i$-th general constraint is not in the active set.
-\end{description}
-
-\itt{B\_stat} is an \optional\ rank-one \intentout\ array argument of
+\itt{X\_stat} is an \optional\ rank-one \intentout\ array argument of
 dimension {\tt prob\%n}
 and type default \integer, that indicates which of the simple bound
 constraints are in the current active set. Possible values for
-{\tt B\_stat(j)}, {\tt j}$=1, \ldots ,$ {\tt prob\%n}, and their meanings are
+{\tt X\_stat(j)}, {\tt j}$=1, \ldots ,$ {\tt prob\%n}, and their meanings are
 \begin{description}
 \itt{<0} the $j$-th simple bound constraint
 is in the active set, on its lower bound,
@@ -871,8 +732,6 @@ and {\tt inform\%bad\_alloc} respectively.
 
 \itt{\galerrrestrictions.} One of the restrictions
  {\tt prob\%n} $> 0$ ,  {\tt prob\%m} $\geq 0$
-    the requirement that {\tt prob\%A\_type} contain its relevant string
-    {\tt 'DENSE'}, {\tt 'COORDINATE'} or {\tt 'SPARSE\_BY\_ROWS'},
     or the requirement that
     {\tt prob\%H\_type} contain its relevant string
     {\tt 'DENSE'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'},
@@ -885,8 +744,6 @@ and {\tt inform\%bad\_alloc} respectively.
 % is not large enough to hold the original, or reordered, matrix $\bmH$.
 
 \itt{\galerrbadbounds.} The bound constraints are inconsistent.
-
-\itt{\galerrprimalinfeasible.} The constraints appear to have no feasible point.
 
 \itt{\galerrunbounded.} The objective function appears to be unbounded
   from below on the feasible set.
@@ -953,24 +810,24 @@ must start
 with a "{\tt BEGIN \packagename}" command and end with an
 "{\tt END}" command.  The syntax of the specfile is thus defined as follows:
 \begin{verbatim}
-  ( .. lines ignored by CQP_read_specfile .. )
-    BEGIN CQP
+  ( .. lines ignored by BQPB_read_specfile .. )
+    BEGIN BQPB
        keyword    value
        .......    .....
        keyword    value
     END
-  ( .. lines ignored by CQP_read_specfile .. )
+  ( .. lines ignored by BQPB_read_specfile .. )
 \end{verbatim}
 where keyword and value are two strings separated by (at least) one blank.
 The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
 may contain additional (trailing) strings so long as such strings are
 separated by one or more blanks, so that lines such as
 \begin{verbatim}
-    BEGIN CQP SPECIFICATION
+    BEGIN BQPB SPECIFICATION
 \end{verbatim}
 and
 \begin{verbatim}
-    END CQP SPECIFICATION
+    END BQPB SPECIFICATION
 \end{verbatim}
 are acceptable. Furthermore,
 between the
@@ -1012,7 +869,7 @@ Control parameters may be read from a file as follows:
 \def\baselinestretch{0.8}
 {\tt
 \begin{verbatim}
-     CALL CQP_read_specfile( control, device )
+     CALL BQPB_read_specfile( control, device )
 \end{verbatim}
 }
 \def\baselinestretch{1.0}
@@ -1043,8 +900,8 @@ that each affects are given in Table~\ref{specfile}.
   {\tt series-order} & {\tt \%series\_order} & integer \\
   {\tt infinity-value} & {\tt \%infinity} & real \\
   {\tt identical-bounds-tolerance} & {\tt \%identical\_bounds\_tol} & real \\
-  {\tt absolute-primal-accuracy} & {\tt \%stop\_abs\_p} & real \\
-  {\tt relative-primal-accuracy} & {\tt \%stop\_rel\_p} & real \\
+%  {\tt absolute-primal-accuracy} & {\tt \%stop\_abs\_p} & real \\
+%  {\tt relative-primal-accuracy} & {\tt \%stop\_rel\_p} & real \\
   {\tt absolute-dual-accuracy} & {\tt \%stop\_abs\_d} & real \\
   {\tt relative-dual-accuracy} & {\tt \%stop\_rel\_d} & real \\
   {\tt absolute-complementary-slackness-accuracy} & {\tt \%stop\_abs\_c} & real \\
@@ -1063,7 +920,7 @@ that each affects are given in Table~\ref{specfile}.
   {\tt tapia-indicator-tolerance} & {\tt \%indicator\_tol\_tapia} & real \\
   {\tt maximum-cpu-time-limit} & {\tt \%cpu\_time\_limit} & real \\
   {\tt maximum-clock-time-limit} & {\tt \%clock\_time\_limit} & real \\
-  {\tt remove-linear-dependencies} & {\tt \%remove\_dependencies} & logical \\
+% {\tt remove-linear-dependencies} & {\tt \%remove\_dependencies} & logical \\
   {\tt treat-zero-bounds-as-general} & {\tt \%treat\_zero\_bounds\_as\_general} & logical \\
   {\tt just-find-feasible-point} & {\tt \%just\_feasible} & logical \\
   {\tt puiseux-series} & {\tt \%puiseux} & logical \\
@@ -1136,18 +993,17 @@ variables and Lagrange multipliers.
 {\tt GALAHAD\_QPD},
 {\tt GALAHAD\_FIT},
 {\tt GALAHAD\_ROOTS},
-{\tt GALAHAD\_NORMS},
-{\tt GALAHAD\_SBLS},
-{\tt GALAHAD\_CRO}
+{\tt GALAHAD\_CQP},
+{\tt GALAHAD\_SBLS}
 and
-{\tt GAL\-AHAD\_FDC}.
+{\tt GALAHAD\_CRO}
 \galio Output is under control of the arguments
  {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
-\galrestrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $\geq  0$,
-{\tt prob\%A\_type} and {\tt prob\%H\_type} $\in \{${\tt 'DENSE'},
+\galrestrictions {\tt prob\%n} $> 0$, 
+{\tt prob\%H\_type} $\in \{${\tt 'DENSE'},
  {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'}, {\tt 'DIAGONAL'},
  {\tt 'SCALED\_IDENTITY'}, {\tt 'IDENTITY'}, {\tt 'ZERO'} $\}$.
-(if $\bmH$ and $\bmA$ are explicit).
+(if $\bmH$ is explicit).
 \galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
 The package is thread-safe.
 
@@ -1156,64 +1012,53 @@ The package is thread-safe.
 \galmethod
 The required solution $\bmx$ necessarily satisfies
 the primal optimality conditions
-\eqn{4.1a}{\bmA \bmx = \bmc}
-and
-\eqn{4.1b}{
- \bmc^{l} \leq \bmc \leq \bmc^{u}, \;\;
+\eqn{4.1}{
 \bmx^{l} \leq\bmx \leq\bmx^{u},}
 the dual optimality conditions
 \eqn{4.2a}{
- \bmH \bmx + \bmg = \bmA^{T} \bmy + \bmz \;\;
+ \bmH \bmx + \bmg = \bmz \;\;
  (\mbox{or} \;\; \bmW^{2} (\bmx -\bmx^{0}) + \bmg =
- \bmA^{T} \bmy + \bmz \;\; \mbox{for the least-distance type objective})}
+ \bmz \;\; \mbox{for the least-distance type objective})}
 where
 \eqn{4.2b}{
- \bmy = \bmy^{l} + \bmy^{u}, \;\;
  \bmz = \bmz^{l} + \bmz^{u}, \,\,
- \bmy^{l} \geq 0 , \;\;
- \bmy^{u} \leq 0 , \;\;
  \bmz^{l} \geq 0 \;\; \mbox{and} \;\;
  \bmz^{u} \leq 0 ,}
 and the complementary slackness conditions
 \eqn{4.3}{
-( \bmA \bmx - \bmc^{l} )^{T} \bmy^{l} = 0  ,\;\;
-( \bmA \bmx - \bmc^{u} )^{T} \bmy^{u} = 0  ,\;\;
 (\bmx -\bmx^{l} )^{T} \bmz^{l} = 0   \tim{and}
 (\bmx -\bmx^{u} )^{T} \bmz^{u} = 0 ,}
 where the diagonal matrix $\bmW^{2}$ has diagonal entries $w_{j}^{2}$,
-$j = 1, \ldots , n$, where the vectors $\bmy$ and $\bmz$ are
-known as the Lagrange multipliers for
-the general linear constraints, and the dual variables for the bounds,
-respectively, and where the vector inequalities hold component-wise.
+$j = 1, \ldots , n$, where the vector $\bmz$ are
+the dual variables for the bounds,
+and where the vector inequalities hold component-wise.
 
 Primal-dual interior point methods iterate towards a point
 that satisfies these conditions by ultimately aiming to satisfy
-\req{4.1a}, \req{4.2a} and \req{4.3}, while ensuring that
-\req{4.1b} and \req{4.2b} are
+\req{4.2a} and \req{4.3}, while ensuring that
+\req{4.1} and \req{4.2b} are
 satisfied as strict inequalities at each stage.
 Appropriate norms of the amounts by
-which \req{4.1a}, \req{4.2a} and \req{4.3} fail to be satisfied are known as the
+which \req{4.2a} and \req{4.3} fail to be satisfied are known as the
 primal and dual infeasibility, and the violation of complementary slackness,
-respectively. The fact that \req{4.1b} and \req{4.2b} are satisfied as strict
+respectively. The fact that \req{4.1} and \req{4.2b} are satisfied as strict
 inequalities gives such methods their other title, namely
 interior-point methods.
 
 The method aims at each stage to reduce the
-overall violation of \req{4.1a}, \req{4.2a} and \req{4.3},
+overall violation of \req{4.2a} and \req{4.3},
 rather than reducing each of the terms individually. Given an estimate
-$\bmv = (\bmx, \; \bmc, \; \bmy, \; \bmy^{l}, \;
-\bmy^{u}, \; \bmz, \; \bmz^{l}, \; \bmz^{u})$
+$\bmv = (\bmx, \; \bmz, \; \bmz^{l}, \; \bmz^{u})$
 of the primal-dual variables, a correction
-$\Delta \bmv = \Delta (\bmx, \; \bmc, \; \bmy, \; \bmy^{l},
- \; \bmy^{u} ,\;\bmz,\;\bmz^{l} ,\;\bmz^{u} )$
+$\Delta \bmv = \Delta (\bmx, \;\bmz,\;\bmz^{l} ,\;\bmz^{u} )$
 is obtained by solving a suitable linear system of Newton equations for the
-nonlinear systems \req{4.1a}, \req{4.2a} and a parameterized ``residual
+nonlinear systems \req{4.2a} and a parameterized ``residual
 trajectory'' perturbation of \req{4.3}; residual trajectories
 proposed by Zhang (1994) and Zhao and Sun (1999) are possibilities.
 An improved estimate $\bmv + \alpha \Delta \bmv$
 is then used, where the step-size $\alpha$
 is chosen as close to 1.0 as possible while ensuring both that
-\req{4.1b} and \req{4.2b} continue to hold and that the individual components
+\req{4.1} and \req{4.2b} continue to hold and that the individual components
 which make up the complementary slackness
 \req{4.3} do not deviate too significantly
 from their average value. The parameter that controls the perturbation
@@ -1226,13 +1071,10 @@ to factorize the matrix as a whole (the so-called "augmented system"
 approach), to perform a block elimination first (the "Schur-complement"
 approach), or to let the method itself decide which of the two
 previous options is more appropriate.
-The "Schur-complement" approach is usually to be preferred when all the
-weights are nonzero or when every variable is bounded (at least one side),
-but may be inefficient if any of the columns of $\bmA$ is too dense.
 
-Optionally, the problem may be pre-processed temporarily to eliminate dependent
-constraints using the package {\tt GALAHAD\_FDC}. This may improve the
-performance of the subsequent iteration.
+The package is actually just a front-end to the 
+more-sophisticated \galahad\ package {\tt CQP} that saves users
+from setting unnecessary arguments.
 
 \vspace*{1mm}
 
@@ -1283,13 +1125,8 @@ $-1  \leq  x_{1}  \leq  1$ and $x_{3}  \leq  2$.
 Then, on writing the data for this problem as
 \disp{\bmH = \mat{ccc}{1 & & \\ & 2 & 1 \\ &  1 & 3}, \;\;
  \bmg = \vect{ 0 \\ 2 \\ 0 }, \;\;
-\bmx^{l} = \vect{ -1 \\ - \infty \\ - \infty }, \;\;
-\bmx^{u} = \vect{ 1 \\ \infty \\ 2 } }
-and
-\disp{
- \bmA = \mat{ccc}{ 2 & 1 & \\ & 1 & 1},\;\;
- \bmc^{l} = \vect{ 1 \\ 2 }, \tim{and}
- \bmc^{u} = \vect{ 2 \\ 2 }}
+\bmx^{l} = \vect{ -1 \\ - \infty \\ - \infty }
+\tim{and} \bmx^{u} = \vect{ 1 \\ \infty \\ 2 } }
 in sparse co-ordinate format, we may use the following code:
 
 {\tt \small
@@ -1315,16 +1152,11 @@ by
 {\tt \small
 \begin{verbatim}
 ! sparse row-wise storage format
-   CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', s )     ! Specify sparse row
-   CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )     ! storage for H and A
+   CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', s )     ! sparse row storage for H
    ALLOCATE( p%H%val( h_ne ), p%H%col( h_ne ), p%H%ptr( n + 1 ) )
-   ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( m + 1 ) )
    p%H%val = (/ 1.0_wp, 2.0_wp, 1.0_wp, 3.0_wp /) ! Hessian H
    p%H%col = (/ 1, 2, 2, 3 /)                     ! NB lower triangle
    p%H%ptr = (/ 1, 2, 3, 5 /)
-   p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
-   p%A%col = (/ 1, 2, 2, 3 /)
-   p%A%ptr = (/ 1, 3, 5 /)
 ! problem data complete
 \end{verbatim}
 }
@@ -1333,12 +1165,9 @@ or using a dense storage format with the replacement lines
 {\tt \small
 \begin{verbatim}
 !  dense storage format
-   CALL SMT_put( p%H%type, 'DENSE', s )     ! Specify dense
-   CALL SMT_put( p%A%type, 'DENSE', s )     ! storage for H and A
+   CALL SMT_put( p%H%type, 'DENSE', s )     ! sparse dense storage for H
    ALLOCATE( p%H%val( n * ( n + 1 ) / 2 ) )
-   ALLOCATE( p%A%val( n * m ) )
    p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp, 3.0_wp /) ! Hessian H
-   p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
 ! problem data complete
 \end{verbatim}
 }

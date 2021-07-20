@@ -22,7 +22,7 @@ DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
                make_gltr make_lpqp make_fdc make_fit \
                make_qpp make_trans make_scale make_scu \
                make_ir make_mop make_cro make_presolve \
-               make_qpd make_userdata
+               make_qpd make_userdata make_cqp
 
 #  other packages that depend on package
 

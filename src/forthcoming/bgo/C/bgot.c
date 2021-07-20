@@ -44,7 +44,6 @@ int main(void) {
     // Set problem data
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
-    double x[] = {0,0,0}; // Start from 0
     double x_l[] = {-10,-10,-10}; 
     double x_u[] = {0.5,0.5,0.5};
     int H_row[] = {0, 1, 2, 2, 2}; // Hessian H
@@ -69,6 +68,9 @@ int main(void) {
         control.sampling_strategy = 3;
         control.trb_control.maxit = 100;
         //control.print_level = 1;
+
+        // Start from 0
+        double x[] = {0,0,0};
 
         switch(d){
             case 1: // sparse co-ordinate storage
@@ -142,6 +144,9 @@ int main(void) {
         control.trb_control.maxit = 100;
         //control.print_level = 1;
 
+        // Start from 0
+        double x[] = {0,0,0};
+
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
@@ -158,9 +163,24 @@ int main(void) {
                     }else if(inform.status == 3){ // evaluate g
                         eval_status = grad(n, x, g, &userdata);
                     }else if(inform.status == 4){ // evaluate H
-                        eval_status = hess(n, ne, x, H_val, &userdata); 
+                        eval_status = hess(n, ne, x, H_val, &userdata);
+                    }else if(inform.status == 5){ // evaluate Hv product
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
                     }else if(inform.status == 6){ // evaluate the product with P
                         eval_status = prec(n, x, u, v, &userdata);
+                    }else if(inform.status == 23){ // evaluate f and g
+                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = grad(n, x, g, &userdata);
+                    }else if(inform.status == 25){ // evaluate f and Hv product
+                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                    }else if(inform.status == 35){ // evaluate g and Hv product
+                        eval_status = grad(n, x, g, &userdata);
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                    }else if(inform.status == 235){ // evaluate f, g and Hv product
+                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = grad(n, x, g, &userdata);
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
                     }else{
                         printf(" the value %1i of status should not occur\n", inform.status);
                         break;
@@ -182,9 +202,24 @@ int main(void) {
                     }else if(inform.status == 3){ // evaluate g
                         eval_status = grad(n, x, g, &userdata);
                     }else if(inform.status == 4){ // evaluate H
-                        eval_status = hess(n, ne, x, H_val, &userdata); 
+                        eval_status = hess(n, ne, x, H_val, &userdata);
+                    }else if(inform.status == 5){ // evaluate Hv product
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
                     }else if(inform.status == 6){ // evaluate the product with P
                         eval_status = prec(n, x, u, v, &userdata);
+                    }else if(inform.status == 23){ // evaluate f and g
+                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = grad(n, x, g, &userdata);
+                    }else if(inform.status == 25){ // evaluate f and Hv product
+                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                    }else if(inform.status == 35){ // evaluate g and Hv product
+                        eval_status = grad(n, x, g, &userdata);
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                    }else if(inform.status == 235){ // evaluate f, g and Hv product
+                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = grad(n, x, g, &userdata);
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
                     }else{
                         printf(" the value %1i of status should not occur\n", inform.status);
                         break;
@@ -206,9 +241,24 @@ int main(void) {
                     }else if(inform.status == 3){ // evaluate g
                         eval_status = grad(n, x, g, &userdata);
                     }else if(inform.status == 4){ // evaluate H
-                        eval_status = hess_dense(n, n*(n+1)/2, x, H_dense, &userdata); 
+                        eval_status = hess_dense(n, n*(n+1)/2, x, H_dense, &userdata);
+                    }else if(inform.status == 5){ // evaluate Hv product
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
                     }else if(inform.status == 6){ // evaluate the product with P
                         eval_status = prec(n, x, u, v, &userdata);
+                    }else if(inform.status == 23){ // evaluate f and g
+                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = grad(n, x, g, &userdata);
+                    }else if(inform.status == 25){ // evaluate f and Hv product
+                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                    }else if(inform.status == 35){ // evaluate g and Hv product
+                        eval_status = grad(n, x, g, &userdata);
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                    }else if(inform.status == 235){ // evaluate f, g and Hv product
+                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = grad(n, x, g, &userdata);
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
                     }else{
                         printf(" the value %1i of status should not occur\n", inform.status);
                         break;
@@ -230,9 +280,24 @@ int main(void) {
                     }else if(inform.status == 3){ // evaluate g
                         eval_status = grad_diag(n, x, g, &userdata);
                     }else if(inform.status == 4){ // evaluate H
-                        eval_status = hess_diag(n, n, x, H_diag, &userdata); 
+                        eval_status = hess_diag(n, n, x, H_diag, &userdata);
+                    }else if(inform.status == 5){ // evaluate Hv product
+                        eval_status = hessprod_diag(n, x, u, v, false, &userdata);
                     }else if(inform.status == 6){ // evaluate the product with P
                         eval_status = prec(n, x, u, v, &userdata);
+                    }else if(inform.status == 23){ // evaluate f and g
+                        eval_status = fun_diag(n, x, &f, &userdata);
+                        eval_status = grad_diag(n, x, g, &userdata);
+                    }else if(inform.status == 25){ // evaluate f and Hv product
+                        eval_status = fun_diag(n, x, &f, &userdata);
+                        eval_status = hessprod_diag(n, x, u, v, false, &userdata);
+                    }else if(inform.status == 35){ // evaluate g and Hv product
+                        eval_status = grad_diag(n, x, g, &userdata);
+                        eval_status = hessprod_diag(n, x, u, v, false, &userdata);
+                    }else if(inform.status == 235){ // evaluate f, g and Hv product
+                        eval_status = fun_diag(n, x, &f, &userdata);
+                        eval_status = grad_diag(n, x, g, &userdata);
+                        eval_status = hessprod_diag(n, x, u, v, false, &userdata);
                     }else{
                         printf(" the value %1i of status should not occur\n", inform.status);
                         break;
@@ -254,12 +319,25 @@ int main(void) {
                         eval_status = fun(n, x, &f, &userdata);
                     }else if(inform.status == 3){ // evaluate g
                         eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 5){ // evaluate H
+                    }else if(inform.status == 5){ // evaluate Hv product
                         eval_status = hessprod(n, x, u, v, false, &userdata);
                     }else if(inform.status == 6){ // evaluate the product with P
                         eval_status = prec(n, x, u, v, &userdata);
                     }else if(inform.status == 7){ // evaluate sparse Hessian-vector product
                         eval_status = shessprod(n, x, nnz_v, index_nz_v, v, &nnz_u, index_nz_u, u, false, &userdata);
+                    }else if(inform.status == 23){ // evaluate f and g
+                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = grad(n, x, g, &userdata);
+                    }else if(inform.status == 25){ // evaluate f and Hv product
+                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                    }else if(inform.status == 35){ // evaluate g and Hv product
+                        eval_status = grad(n, x, g, &userdata);
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                    }else if(inform.status == 235){ // evaluate f, g and Hv product
+                        eval_status = fun(n, x, &f, &userdata);
+                        eval_status = grad(n, x, g, &userdata);
+                        eval_status = hessprod(n, x, u, v, false, &userdata);
                     }else{
                         printf(" the value %1i of status should not occur\n", inform.status);
                         break;

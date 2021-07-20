@@ -153,8 +153,9 @@
 
        REAL ( KIND = wp ) :: lipschitz_reliability = 2.0_wp
 
-!    the reliablity control parameter, the actual reliability parameter
-!     used will be lipschitz_reliability + lipschitz_control / iteration
+!    the reliablity control parameter, the actual reliability parameter used 
+!     will be 
+!      lipschitz_reliability + MAX( 1, n - 1 ) * lipschitz_control / iteration
 
        REAL ( KIND = wp ) :: lipschitz_control = 50.0_wp
 
@@ -1304,7 +1305,7 @@
 
 !  basic single line of output per iteration
 
-     data%out = control%out
+     data%out = data%control%out
      data%set_printi = data%out > 0 .AND. data%control%print_level >= 1
 
 !  ensure that input parameters are within allowed ranges
@@ -1346,10 +1347,10 @@
        data%stop_print = data%control%stop_print
      END IF
 
-     IF ( control%print_gap < 2 ) THEN
+     IF ( data%control%print_gap < 2 ) THEN
        data%print_gap = 1
      ELSE
-       data%print_gap = control%print_gap
+       data%print_gap = data%control%print_gap
      END IF
 
      data%print_1st_header = .TRUE.
@@ -1393,14 +1394,14 @@
 !  create a file which the user may subsequently remove to cause
 !  immediate termination of a run
 
-     IF ( control%alive_unit > 0 ) THEN
-      INQUIRE( FILE = control%alive_file, EXIST = alive )
+     IF ( data%control%alive_unit > 0 ) THEN
+      INQUIRE( FILE = data%control%alive_file, EXIST = alive )
       IF ( .NOT. alive ) THEN
-         OPEN( control%alive_unit, FILE = control%alive_file,                  &
+         OPEN( data%control%alive_unit, FILE = data%control%alive_file,                  &
                FORM = 'FORMATTED', STATUS = 'NEW' )
-         REWIND control%alive_unit
-         WRITE( control%alive_unit, "( ' GALAHAD rampages onwards ' )" )
-         CLOSE( control%alive_unit )
+         REWIND data%control%alive_unit
+         WRITE( data%control%alive_unit, "( ' GALAHAD rampages onwards ' )" )
+         CLOSE( data%control%alive_unit )
        END IF
      END IF
 
@@ -1408,10 +1409,6 @@
 
   20 CONTINUE
      IF ( data%printi ) WRITE( data%out, 2000 ) prefix, TRIM( nlp%pname ), nlp%n
-
-!  make a local copy of the control parameters
-
-     data%control = control
 
 !  initialize iteration counter
 
@@ -1592,9 +1589,9 @@
 
 !  initialiize the hash table 
 
-     data%length = control%dictionary_size
+     data%length = data%control%dictionary_size
      CALL HASH_initialize( data%nchar, data%length, data%HASH_data,            &
-                           control%HASH_control, inform%HASH_inform )
+                           data%control%HASH_control, inform%HASH_inform )
      IF ( inform%HASH_inform%status /= GALAHAD_ok ) THEN
        inform%status = inform%HASH_inform%status ; GO TO 910
      END IF
@@ -1619,28 +1616,31 @@
      array_name = 'dgo: data%X_l'
      CALL SPACE_resize_array( nlp%n, data%X_l, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
      array_name = 'dgo: data%X_u'
      CALL SPACE_resize_array( nlp%n, data%X_u, inform%status,                  &
             inform%alloc_status, array_name = array_name,                      &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
+            deallocate_error_fatal = data%control%deallocate_error_fatal,      &
+            exact_size = data%control%space_critical,                          &
+            bad_alloc = inform%bad_alloc, out = data%control%error )
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
 !  initialisation
 
      data%f_upper = HUGE( one )
      data%f_best = HUGE( one )
-
+     data%control%lipschitz_control = data%control%lipschitz_control *         &
+       REAL( MAX( 1, nlp%n - 1 ), KIND = wp )
+       
 !  consider vertex x_l, and find its position, index_l, in the dictionary
 
      CALL DGO_vertex( nlp%n, nlp%X_l, data%string, data%rstring, index_l,      &
-                      data%HASH_data, control%HASH_control, inform%HASH_inform )
+                      data%HASH_data, data%control%HASH_control,               &
+                      inform%HASH_inform )
 
 !  the vertex is new
 
@@ -1649,7 +1649,7 @@
 !  initialize the vertex data
 
        CALL DGO_allocate_vertex_arrays( nlp%n, data%VERTEX( index_l ),         &
-                                        control, inform )
+                                        data%control, inform )
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
 !  record the vertex
@@ -1723,7 +1723,8 @@
 !  do the same to vertex x_u
 
      CALL DGO_vertex( nlp%n, nlp%X_u, data%string, data%rstring, index_u,      &
-                      data%HASH_data, control%HASH_control, inform%HASH_inform )
+                      data%HASH_data, data%control%HASH_control,               &
+                      inform%HASH_inform )
 
 !  the vertex is new
 
@@ -1732,7 +1733,7 @@
 !  initialize the vertex data
 
        CALL DGO_allocate_vertex_arrays( nlp%n, data%VERTEX( index_u ),         &
-                                        control, inform )
+                                        data%control, inform )
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
 !  record the vertex
@@ -1890,9 +1891,10 @@
        inform%TRB_inform%g_eval = 0
        inform%TRB_inform%h_eval = 0
        data%control%TRB_control%error = 0
-       data%control%TRB_control%hessian_available = control%hessian_available
-       data%control%TRB_control%maxit = MIN( control%TRB_control%maxit,        &
-           control%max_evals - inform%f_eval )
+       data%control%TRB_control%hessian_available                              &
+         = data%control%hessian_available
+       data%control%TRB_control%maxit = MIN( data%control%TRB_control%maxit,   &
+           data%control%max_evals - inform%f_eval )
 
  210   CONTINUE
 
@@ -2023,6 +2025,7 @@
        inform%obj = inform%TRB_inform%obj
        inform%norm_pg = inform%TRB_inform%norm_pg
        data%f_best = inform%obj
+       data%f_upper = data%f_best
        data%X_best = nlp%X
        data%G_best = nlp%G
        data%P => data%TRB_data%P
@@ -2090,25 +2093,25 @@
 !  ============================================================================
 
        loc = MAXLOC( data%BOX( : data%boxes )%gradient_lipschitz_estimate,     &
-                     MASK = .NOT. DATA%BOX( : data%boxes )%pruned )
+                     MASK = .NOT. data%BOX( : data%boxes )%pruned )
        lipschitz_estimate_max = data%BOX( loc( 1 ) )%gradient_lipschitz_estimate
-       m = ( control%lipschitz_reliability                                     &
-               + control%lipschitz_control / REAL( inform%iter, KIND = wp ) )  &
-             * MAX( control%lipschitz_lower_bound, lipschitz_estimate_max )
+       m = ( data%control%lipschitz_reliability +                              &
+             data%control%lipschitz_control / REAL( inform%iter, KIND = wp ) ) &
+             * MAX( data%control%lipschitz_lower_bound, lipschitz_estimate_max )
 
 !  ============================================================================
 !  2. Characteristics calculation
 !  ============================================================================
 
        DO i = 1, data%boxes
-         IF ( DATA%BOX( i )%pruned ) CYCLE
+         IF ( data%BOX( i )%pruned ) CYCLE
 
-!  ** step 2.1: compute a lower bound of the underestimating function phi
+!  2.1: compute a lower bound of the underestimating function phi
 
          term1 = quarter * data%BOX( i )%delta
          term2 = quarter * ( data%BOX( i )%df_u - data%BOX( i )%df_l ) / m
          term3 = ( data%BOX( i )%f_l - data%BOX( i )%f_u                       &
-                   + DATA%BOX( i )%df_u * data%BOX( i )%delta                  &
+                   + data%BOX( i )%df_u * data%BOX( i )%delta                  &
                    + half * m * data%BOX( i )%delta ** 2 )                     &
                    / ( m * data%BOX( i )%delta + data%BOX( i )%df_u            &
                          - data%BOX( i )%df_l )
@@ -2116,24 +2119,32 @@
          yp = - term1 - term2 + term3
          b = data%BOX( i )%df_u -two * m * y + m * data%BOX( i )%delta
 
-!  ** step 2.2: lower bound at phi(x) or endpoints
+!  2.2: lower bound at phi(x) or endpoints
 
-         IF ( ( m * y + b ) * ( m * yp + b ) < 0 ) THEN
+         IF ( ( m * y + b ) * ( m * yp + b ) < zero ) THEN
            x = two * y - data%BOX( i )%df_u / m - data%BOX( i )%delta
            phix = data%BOX( i )%f_u - data%BOX( i )%df_u * data%BOX( i )%delta &
                     - half * m * data%BOX( i )%delta**2 + m * y ** 2           &
                     - half * m * x ** 2
-           DATA%BOX( i )%f_lower                                               &
+           data%BOX( i )%f_lower                                               &
              = MIN( data%BOX( i )%f_l, phix, data%BOX( i )%f_u )
 
-!  ** step 2.3: lower bound at endpoints
+!  2.3: lower bound at endpoints
 
          ELSE
-           DATA%BOX( i )%f_lower = MIN( data%BOX( i )%f_l, data%BOX( i )%f_u ) 
+           data%BOX( i )%f_lower = MIN( data%BOX( i )%f_l, data%BOX( i )%f_u ) 
          END IF
+
+!  if desired, prune the current boxes to exclude those that cannot contain
+!  a global minimizer
+
          IF ( data%control%prune ) THEN
-           IF ( DATA%BOX( i )%f_lower > data%f_upper )                         &
-             DATA%BOX( i )%pruned = .TRUE.
+           IF ( data%BOX( i )%f_lower > data%f_upper ) THEN
+             IF ( data%printm ) WRITE( data%out, "( A, ' iteration ', I0,      &
+            &  ' pruning box ', I0, ' l, u ', 2ES12.4 )" ) prefix,             &
+               inform%iter, i, data%BOX( i )%f_lower, data%f_upper
+             data%BOX( i )%pruned = .TRUE.
+           END IF
          END IF
        END DO
 
@@ -2150,6 +2161,20 @@
        index_l_best = data%BOX( best )%index_l
        index_u_best = data%BOX( best )%index_u 
 
+!  describe the box if required
+
+       IF ( data%printm ) THEN
+         WRITE( data%out, "( /, A, ' iteration ', I0, ' best box ', I0 )" )    &
+           prefix, inform%iter, best
+         WRITE( data%out, "( A, ' l =', /, ( 5ES16.8 ) )" )                    &
+           prefix, DATA%VERTEX( index_l_best )%X( : nlp%n )
+         WRITE( data%out, "( A, ' u =', /, ( 5ES16.8 ) )" )                    &
+           prefix, DATA%VERTEX( index_u_best )%X( : nlp%n )
+         WRITE( data%out, "( A, ' f_lower, f_upper, delta', 3ES16.8 )" )       &
+           prefix, data%BOX( best )%f_lower, data%BOX( best )%f_upper,         &
+           data%BOX( best )%delta
+       END IF
+
 !  ============================================================================
 !  4. Test for termination
 !  ============================================================================
@@ -2157,14 +2182,14 @@
 !  stop if the maximum box length is sufficiently small
 
        inform%length_ratio = data%BOX( best )%delta / data%delta_0
-       IF ( inform%length_ratio <= control%stop_length ) THEN
+       IF ( inform%length_ratio <= data%control%stop_length ) THEN
          inform%why_stop  = 'D' ; inform%status = GALAHAD_ok ; GO TO 800
        END IF
 
 !  stop if the objective function gap is sufficiently small
 
        inform%f_gap = data%f_best - data%BOX( best )%f_lower 
-       IF  ( inform%f_gap <= control%stop_f ) THEN
+       IF  ( inform%f_gap <= data%control%stop_f ) THEN
          inform%why_stop  = 'F' ; inform%status = GALAHAD_ok ; GO TO 800
        END IF
 
@@ -2191,7 +2216,7 @@
 !  consider vertex x_l, and find its position, index_l, in the dictionary
 
        CALL DGO_vertex( nlp%n, data%X_l, data%string, data%rstring, index_l,   &
-                        data%HASH_data, control%HASH_control,                  &
+                        data%HASH_data, data%control%HASH_control,             &
                         inform%HASH_inform )
 
 !  the vertex is new
@@ -2201,7 +2226,7 @@
 !  initialize the vertex data
 
          CALL DGO_allocate_vertex_arrays( nlp%n, data%VERTEX( index_l ),       &
-                                          control, inform )
+                                          data%control, inform )
          IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
 !  record the vertex
@@ -2275,7 +2300,7 @@
 !  do the same to vertex x_u
 
        CALL DGO_vertex( nlp%n, data%X_u, data%string, data%rstring, index_u,   &
-                        data%HASH_data, control%HASH_control,                  &
+                        data%HASH_data, data%control%HASH_control,             &
                         inform%HASH_inform )
 
 !  the vertex is new
@@ -2285,7 +2310,7 @@
 !  initialize the vertex data
 
          CALL DGO_allocate_vertex_arrays( nlp%n, data%VERTEX( index_u ),       &
-                                          control, inform )
+                                          data%control, inform )
          IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
 !  record the vertex
@@ -2448,13 +2473,13 @@
            WRITE( data%out, "( A, ' found with guaranteed length tolerance',   &
           &   ES11.4, ' in ', I0, ' iterations', /, A, ' using ', I0,          &
           &  ' function and ', I0, ' gradient evaluations' )" )                &
-            prefix, control%stop_length, inform%iter,                          &
+            prefix, data%control%stop_length, inform%iter,                     &
             prefix, inform%f_eval, inform%g_eval
          ELSE IF ( inform%why_stop == 'F' ) THEN
            WRITE( data%out, "( A, ' found with guaranteed objective gap',      &
           &   ES11.4, ' in ', I0, ' iterations', /, A, ' using ', I0,          &
           &  ' function and ', I0, ' gradient evaluations' )" )                &
-            prefix, control%stop_f, inform%iter,                               &
+            prefix, data%control%stop_f, inform%iter,                          &
             prefix, inform%f_eval, inform%g_eval
          END IF
        ELSE
@@ -2757,14 +2782,13 @@
 
 !   compute the directional derivatives at x_l and x_u
 
-     BOX%df_l = DOT_PRODUCT( VERTEX_l%G, VERTEX_l%X - VERTEX_u%X ) / BOX%delta
-     BOX%df_u = DOT_PRODUCT( VERTEX_u%G, VERTEX_l%X - VERTEX_u%X ) / BOX%delta
+     BOX%df_l = DOT_PRODUCT( VERTEX_l%G, VERTEX_u%X - VERTEX_l%X ) / BOX%delta
+     BOX%df_u = DOT_PRODUCT( VERTEX_u%G, VERTEX_u%X - VERTEX_l%X ) / BOX%delta
 
 !  estimate the gradient Lipschitz constant over the box
 
-     t = two * ( VERTEX_l%f - VERTEX_u%f ) +                                   &
-           BOX%delta * ( BOX%df_l +  BOX%df_u ) 
-     d = SQRT( t ** 2 + ( BOX%delta * (  BOX%df_u - BOX%df_l ) ) ** 2 )
+     t = two * ( VERTEX_l%f - VERTEX_u%f ) + BOX%delta * ( BOX%df_l + BOX%df_u )
+     d = SQRT( t ** 2 + ( BOX%delta * ( BOX%df_u - BOX%df_l ) ) ** 2 )
      BOX%gradient_lipschitz_estimate = ( ABS( t ) + d ) / ( BOX%delta ** 2 )
 
 !  compute an upper bound of the objective in box

@@ -2127,7 +2127,6 @@
              IF ( data%present_eval_f ) THEN
                CALL eval_F( data%eval_status, nlp%X( : nlp%n ), userdata,      &
                             inform%TRB_inform%obj )
-  !write(6,*) ' f ', nlp%f
              ELSE
                data%branch = 550 ; inform%status = 2 ; RETURN
              END IF

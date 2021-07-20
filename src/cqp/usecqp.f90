@@ -1186,7 +1186,7 @@ qfval = qfval * SCALE_trans%f_scale
                 state = 'UPPER'
               IF ( ABS( prob%C_l( i ) - prob%C_u( i ) ) <       stopr )        &
                 state = 'EQUAL'
-              WRITE( out, 2130 ) i, CNAME( i ), STATE, prob%C( i ),            &
+              WRITE( out, 2130 ) i, CNAME( i ), state, prob%C( i ),            &
                                  prob%C_l( i ), prob%C_u( i ), prob%Y( i )
             END DO
           END DO
@@ -1249,7 +1249,7 @@ qfval = qfval * SCALE_trans%f_scale
               state = 'UPPER'
             IF ( ABS( prob%X_l( I ) - prob%X_u( I ) ) < stopr )                &
               state = 'FIXED'
-            WRITE( sfiledevice, 2050 ) i, VNAME( i ), STATE, prob%X( i ),      &
+            WRITE( sfiledevice, 2050 ) i, VNAME( i ), state, prob%X( i ),      &
               prob%X_l( i ), prob%X_u( i ), prob%Z( i )
           END DO
 
@@ -1263,7 +1263,7 @@ qfval = qfval * SCALE_trans%f_scale
                 state = 'UPPER'
               IF ( ABS( prob%C_l( i ) - prob%C_u( i ) ) < stopr )              &
                 state = 'EQUAL'
-              WRITE( sfiledevice, 2130 ) i, CNAME( i ), STATE, prob%C( i ),    &
+              WRITE( sfiledevice, 2130 ) i, CNAME( i ), state, prob%C( i ),    &
                 prob%C_l( i ), prob%C_u( i ), prob%Y( i )
             END DO
           END IF

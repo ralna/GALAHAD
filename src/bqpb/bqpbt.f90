@@ -2,7 +2,6 @@
    PROGRAM GALAHAD_BQPB_EXAMPLE
    USE GALAHAD_BQPB_double                            ! double precision version
    USE GALAHAD_SYMBOLS
-   USE GALAHAD_USERDATA_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    REAL ( KIND = wp ), PARAMETER :: infty = 10.0_wp ** 20
@@ -10,17 +9,16 @@
    TYPE ( BQPB_data_type ) :: data
    TYPE ( BQPB_control_type ) :: control        
    TYPE ( BQPB_inform_type ) :: info
-   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: n, m, h_ne, a_ne, tests, smt_stat
    INTEGER :: data_storage_type, i, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_stat
+   INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
 
    n = 3 ; h_ne = 4  
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%X( n ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ) )
-   ALLOCATE( B_stat( n ) )
+   ALLOCATE( X_stat( n ) )
 
 !  ================
 !  error exit tests
@@ -70,8 +68,8 @@
      IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
      CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat ) 
      p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 3.0_wp /)
-     p%H%col = (/ 1, 2, 2, 3 /)
-     p%H%ptr = (/ 1, 3, 4, 5 /)
+     p%H%col = (/ 1, 1, 2, 3 /)
+     p%H%ptr = (/ 1, 2, 4, 5 /)
      p%X = 0.0_wp ; p%Z = 0.0_wp
 
      IF ( status == - GALAHAD_error_restrictions ) THEN
@@ -88,7 +86,7 @@
      END IF
 
 !    control%out = 6 ; control%print_level = 1
-     CALL BQPB_solve( p, B_stat, data, control, info, userdata )
+     CALL BQPB_solve( p, data, control, info, X_stat )
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',   &
      &      F6.1, ' status = ', I6 )" ) status, info%iter,                    &
@@ -104,7 +102,7 @@
    END DO
    CALL BQPB_terminate( data, control, info )
    DEALLOCATE( p%G, p%X_l, p%X_u )
-   DEALLOCATE( p%X, p%Z, B_stat )
+   DEALLOCATE( p%X, p%Z, X_stat )
    DEALLOCATE( p%H%ptr )
 
 !  special test for status = - 20
@@ -117,7 +115,7 @@
    ALLOCATE( p%X( n ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ) )
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
-   ALLOCATE( B_stat( n ) )
+   ALLOCATE( X_stat( n ) )
    p%new_problem_structure = .TRUE.
    p%n = n ; p%H%ne = h_ne
    p%f = 0.0_wp
@@ -131,7 +129,7 @@
    control%infinity = infty
 !  control%print_level = 1
    p%X = 1.0_wp ; p%Z = 0.0_wp
-   CALL BQPB_solve( p, B_stat, data, control, info, userdata )
+   CALL BQPB_solve( p, data, control, info, X_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &          F6.1, ' status = ', I6 )" ) status, info%iter,                 &
@@ -142,7 +140,7 @@
    CALL BQPB_terminate( data, control, info )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%G, p%X_l, p%X_u )
-   DEALLOCATE( p%X, p%Z, B_stat )
+   DEALLOCATE( p%X, p%Z, X_stat )
    DEALLOCATE( p%H%ptr )
 
 !  =====================================
@@ -155,7 +153,7 @@
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%X( n ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ) )
-   ALLOCATE( B_stat( n ) )
+   ALLOCATE( X_stat( n ) )
 
    p%n = n ; p%f = 0.96_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
@@ -172,15 +170,15 @@
        ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
        IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
        CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
-       p%H%row = (/ 1, 2, 2, 3 /)
-       p%H%col = (/ 1, 1, 2, 3 /) ; p%H%ne = h_ne
+       p%H%row = (/ 1, 1, 2, 3 /)
+       p%H%col = (/ 1, 2, 2, 3 /) ; p%H%ne = h_ne
      ELSE IF ( data_storage_type == - 1 ) THEN     ! sparse row-wise storage
        st = 'R'
        ALLOCATE( p%H%val( h_ne ), p%H%row( 0 ), p%H%col( h_ne ) )
        IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
        CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
-       p%H%col = (/ 1, 2, 2, 3 /)
-       p%H%ptr = (/ 1, 3, 4, 5 /)
+       p%H%col = (/ 1, 1, 2, 3 /)
+       p%H%ptr = (/ 1, 2, 4, 5 /)
      ELSE IF ( data_storage_type == - 2 ) THEN      ! dense storage
        st = 'D'
        ALLOCATE( p%H%val(n*(n+1)/2), p%H%row(0), p%H%col(0))
@@ -206,7 +204,7 @@
          p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp /)
        END IF
        p%X = 0.0_wp ; p%Z = 0.0_wp
-       CALL BQPB_solve( p, B_stat, data, control, info, userdata )
+       CALL BQPB_solve( p, data, control, info, X_stat )
 
       IF ( info%status == 0 ) THEN
          WRITE( 6, "( A1,I1,':', I6,' iterations. Optimal objective value = ',&
@@ -222,7 +220,7 @@
 !    STOP
    END DO
    DEALLOCATE( p%G, p%X_l, p%X_u )
-   DEALLOCATE( p%X, p%Z, B_stat )
+   DEALLOCATE( p%X, p%Z, X_stat )
    DEALLOCATE( p%H%ptr )
 
 !  =============================
@@ -235,7 +233,7 @@
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%X( n ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ) )
-   ALLOCATE( B_stat( n ) )
+   ALLOCATE( X_stat( n ) )
 
    p%n = n ; p%f = 0.05_wp
    p%G = (/ 0.0_wp, 0.0_wp /)
@@ -257,15 +255,15 @@
    tests = 2
    DO i = 1, tests
      IF ( i == 1 ) THEN
-       B_stat = 1
+       X_stat = 1
      ELSE IF ( i == 2 ) THEN
-       B_stat = 0
+       X_stat = 0
      END IF
 
      p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp /)
      p%X = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 4
-     CALL BQPB_solve( p, B_stat, data, control, info, userdata )
+     CALL BQPB_solve( p, data, control, info, X_stat )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -294,7 +292,7 @@
    DO i = tests + 1, tests + 1
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Z = 0.0_wp
-     CALL BQPB_solve( p, B_stat, data, control, info, userdata )
+     CALL BQPB_solve( p, data, control, info, X_stat )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -322,7 +320,7 @@
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 1
-     CALL BQPB_solve( p, B_stat, data, control, info, userdata )
+     CALL BQPB_solve( p, data, control, info, X_stat )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -336,7 +334,7 @@
    CALL BQPB_terminate( data, control, info )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%G, p%X_l, p%X_u )
-   DEALLOCATE( p%X, p%Z, B_stat )
+   DEALLOCATE( p%X, p%Z, X_stat )
    DEALLOCATE( p%H%ptr )
 
 !  ============================
@@ -350,7 +348,7 @@
    ALLOCATE( p%X( n ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ) )
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
-   ALLOCATE( B_stat( n ) )
+   ALLOCATE( X_stat( n ) )
    p%new_problem_structure = .TRUE.
    IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
@@ -382,7 +380,7 @@
 !  control%error = 6
    p%X = 0.0_wp ; p%Z = 0.0_wp
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-   CALL BQPB_solve( p, B_stat, data, control, info, userdata )
+   CALL BQPB_solve( p, data, control, info, X_stat )
    CLOSE( UNIT = scratch_out )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -394,7 +392,7 @@
    CALL BQPB_terminate( data, control, info )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%G, p%X_l, p%X_u )
-   DEALLOCATE( p%X, p%Z, B_stat )
+   DEALLOCATE( p%X, p%Z, X_stat )
    DEALLOCATE( p%H%ptr )
 
 !  Second problem
@@ -404,7 +402,7 @@
    ALLOCATE( p%X( n ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ) )
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
-   ALLOCATE( B_stat( n ) )
+   ALLOCATE( X_stat( n ) )
    p%new_problem_structure = .TRUE.
    IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
@@ -425,7 +423,7 @@
    CALL BQPB_initialize( data, control, info )
    control%infinity = infty
    p%X = 0.0_wp ; p%Z = 0.0_wp
-   CALL BQPB_solve( p, B_stat, data, control, info, userdata )
+   CALL BQPB_solve( p, data, control, info, X_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &                F6.1, ' status = ', I6 )" ) 2, info%iter,                &
@@ -436,7 +434,7 @@
    CALL BQPB_terminate( data, control, info )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%G, p%X_l, p%X_u )
-   DEALLOCATE( p%X, p%Z, B_stat )
+   DEALLOCATE( p%X, p%Z, X_stat )
    DEALLOCATE( p%H%ptr )
 
 !  Third problem
@@ -446,7 +444,7 @@
    ALLOCATE( p%X( n ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ) )
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
-   ALLOCATE( B_stat( n ) )
+   ALLOCATE( X_stat( n ) )
    p%new_problem_structure = .TRUE.
    IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
@@ -467,9 +465,9 @@
    CALL BQPB_initialize( data, control, info )
    control%infinity = infty
    p%X = 0.0_wp ; p%Z = 0.0_wp
-   B_stat = 0
-   B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
-   CALL BQPB_solve( p, B_stat, data, control, info, userdata )
+   X_stat = 0
+   X_stat( 2 ) = - 1 ; X_stat( 9 ) = - 1
+   CALL BQPB_solve( p, data, control, info, X_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &                F6.1, ' status = ', I6 )" ) 3, info%iter,                &
@@ -481,7 +479,7 @@
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%H%type )
    DEALLOCATE( p%G, p%X_l, p%X_u )
-   DEALLOCATE( p%X, p%Z, B_stat )
+   DEALLOCATE( p%X, p%Z, X_stat )
    DEALLOCATE( p%H%ptr )
 
 !  Fourth and Fifth problems
@@ -491,7 +489,7 @@
    ALLOCATE( p%X( n ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ) )
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
-   ALLOCATE( B_stat( n ) )
+   ALLOCATE( X_stat( n ) )
    p%new_problem_structure = .TRUE.
    IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
@@ -511,9 +509,9 @@
    CALL BQPB_initialize( data, control, info )
    control%infinity = infty
    p%X = 0.0_wp ; p%Z = 0.0_wp
-   B_stat = 0
-   B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
-   CALL BQPB_solve( p, B_stat, data, control, info, userdata )
+   X_stat = 0
+   X_stat( 2 ) = - 1 ; X_stat( 9 ) = - 1
+   CALL BQPB_solve( p, data, control, info, X_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &                F6.1, ' status = ', I6 )" ) 4, info%iter,                &
@@ -527,9 +525,9 @@
 
    p%X_l( 1 ) = 1.0_wp ; p%X_u( 1 ) =  p%X_l( 1 )
    p%X = 0.0_wp ; p%Z = 0.0_wp
-   B_stat = 0
-   B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
-   CALL BQPB_solve( p, B_stat, data, control, info, userdata )
+   X_stat = 0
+   X_stat( 2 ) = - 1 ; X_stat( 9 ) = - 1
+   CALL BQPB_solve( p, data, control, info, X_stat )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &                F6.1, ' status = ', I6 )" ) 5, info%iter,                &
@@ -542,7 +540,7 @@
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%H%type )
    DEALLOCATE( p%G, p%X_l, p%X_u )
-   DEALLOCATE( p%X, p%Z, B_stat )
+   DEALLOCATE( p%X, p%Z, X_stat )
    DEALLOCATE( p%H%ptr )
 
    END PROGRAM GALAHAD_BQPB_EXAMPLE

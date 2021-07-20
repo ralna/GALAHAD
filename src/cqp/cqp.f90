@@ -1708,10 +1708,18 @@
 !  perform the preprocessing
 
       IF ( prob%new_problem_structure ) THEN
-        IF ( printi ) WRITE( control%out,                                      &
-               "( /, A, ' problem dimensions before preprocessing: ', /,  A,   &
-     &         ' n = ', I8, ' m = ', I8, ' a_ne = ', I8, ' h_ne = ', I8 )" )   &
+        IF ( printi ) THEN
+          IF ( prob%m > 0 ) THEN
+            WRITE( control%out,                                                &
+               "(  A, ' problem dimensions before preprocessing: ', /,  A,     &
+           &   ' n = ', I0, ' m = ', I0, ' a_ne = ', I0, ' h_ne = ', I0 )" )   &
                prefix, prefix, prob%n, prob%m, data%a_ne, data%h_ne
+          ELSE
+            WRITE( control%out,                                                &
+               "(  A, ' problem dimensions before preprocessing:',             &
+           &   ' n = ', I0, ' h_ne = ', I0 )" ) prefix, prob%n, data%h_ne
+          END IF
+        END IF
 
         CALL QPP_initialize( data%QPP_map, data%QPP_control )
         data%QPP_control%infinity = control%infinity
@@ -1770,10 +1778,18 @@
           END SELECT
         END IF
 
-        IF ( printi ) WRITE( control%out,                                      &
+        IF ( printi ) THEN
+          IF ( prob%m > 0 ) THEN
+            WRITE( control%out,                                                &
                "(  A, ' problem dimensions after preprocessing: ', /,  A,      &
-     &         ' n = ', I8, ' m = ', I8, ' a_ne = ', I8, ' h_ne = ', I8 )" )   &
+           &   ' n = ', I0, ' m = ', I0, ' a_ne = ', I0, ' h_ne = ', I0 )" )   &
                prefix, prefix, prob%n, prob%m, data%a_ne, data%h_ne
+          ELSE
+            WRITE( control%out,                                                &
+               "(  A, ' problem dimensions after  preprocessing:',             &
+           &   ' n = ', I0, ' h_ne = ', I0 )" ) prefix, prob%n, data%h_ne
+          END IF
+        END IF
 
         prob%new_problem_structure = .FALSE.
         data%trans = 1
@@ -2821,7 +2837,7 @@
       IF ( printi ) WRITE( control%out,                                        &
      "( /, A, 3X, ' =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=',    &
     &             '-=-=-=-=-=-=-=',                                            &
-    &   /, A, 3X, ' =                          CQP total time            ',    &
+    &   /, A, 3X, ' =                            total time              ',    &
     &             '             =',                                            &
     &   /, A, 3X, ' =', 24X, 0P, F12.2, 29x, '='                               &
     &   /, A, 3X, ' =    preprocess    analyse    factorize     solve    ',    &
@@ -3306,16 +3322,18 @@
        &  ' X_l =', /, ( 5X, 3ES24.16 ) )" ) prefix, X_l( : n )
         WRITE( control%out, "( A,                                              &
        &  ' X_u =', /, ( 5X, 3ES24.16 ) )" ) prefix, X_u( : n )
-        WRITE( control%out, "( A, ' A (row-wise) =' )" ) prefix
-        DO i = 1, m
-         IF ( A_ptr( i ) <= A_ptr( i + 1 ) - 1 )                               &
-            WRITE( control%out, "( ( 2X, 2( 2I8, ES24.16 ) ) )" )              &
-            ( i, A_col( j ), A_val( j ), j = A_ptr( i ), A_ptr( i + 1 ) - 1 )
-        END DO
-        WRITE( control%out, "( A,                                              &
-       &  ' C_l =', /, ( 5X, 3ES24.16 ) )" ) prefix, C_l( : m )
-        WRITE( control%out, "( A,                                              &
-       &  ' C_u =', /, ( 5X, 3ES24.16 ) )" ) prefix, C_u( : m )
+        IF ( m > 0 ) THEN
+          WRITE( control%out, "( A, ' A (row-wise) =' )" ) prefix
+          DO i = 1, m
+           IF ( A_ptr( i ) <= A_ptr( i + 1 ) - 1 )                             &
+              WRITE( control%out, "( ( 2X, 2( 2I8, ES24.16 ) ) )" )            &
+              ( i, A_col( j ), A_val( j ), j = A_ptr( i ), A_ptr( i + 1 ) - 1 )
+          END DO
+          WRITE( control%out, "( A,                                            &
+         &  ' C_l =', /, ( 5X, 3ES24.16 ) )" ) prefix, C_l( : m )
+          WRITE( control%out, "( A,                                            &
+         &  ' C_u =', /, ( 5X, 3ES24.16 ) )" ) prefix, C_u( : m )
+        END IF
       END IF
 
 ! -------------------------------------------------------------------
@@ -3939,11 +3957,10 @@
         hmax = zero
       END IF
 
-      IF ( printi ) WRITE( out, "( /, A, '  maximum element of A =', ES11.4,   &
-    &                              /, A, '  maximum element of H =', ES11.4,   &
-    &                              /, A, '  maximum element of G =', ES11.4 )")&
-        prefix, amax, prefix, hmax, prefix, gmax
-
+      IF ( printi .AND. m > 0 ) WRITE( out,                                    &
+         "( /, A, '  maximum element of A =', ES11.4 )" ) prefix, amax
+      IF ( printi ) WRITE( out, "( /, A, '  maximum element of H =', ES11.4,   &
+    &    /, A, '  maximum element of G =', ES11.4 )") prefix, hmax, prefix, gmax
 
 !  test to see if we are feasible
 
@@ -10413,7 +10430,6 @@ END DO
 !  End of module CQP
 
     END MODULE GALAHAD_CQP_double
-
 
 !  GRAD_L(dims%c_e)
 !  DIST_X_l(dims%x_l_start,dims%x_l_end)
