@@ -25,6 +25,8 @@
    the time limit has been exceeded
  
 19: TRU_solve exit status =    -19
+
+ Successful return from TRU_solve
  
 
  test of availible options

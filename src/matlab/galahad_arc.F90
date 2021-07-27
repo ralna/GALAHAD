@@ -86,6 +86,7 @@
 !          x: a first-order criticl point that is usually a local minimizer.
 !
 !  Optional Output -
+!    control: see above. Returned values are the defaults
 !     inform: a structure containing information parameters
 !             The components are of the form inform.value, where
 !             value is the name of the corresponding component of the

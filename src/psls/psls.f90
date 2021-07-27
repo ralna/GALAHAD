@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 26/07/2021 AT 14:45 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ P S L S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -966,7 +966,7 @@
             l = 0
             DO i = 1, data%n
               l = l + i
-              data%DIAG( i ) = data%DIAG( i ) + A%val( l )
+              data%DIAG( i ) = A%val( l )
             END DO
           END IF
         CASE ( 'SPARSE_BY_ROWS' )

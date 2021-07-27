@@ -1,2 +1,15 @@
- TRU: 6 iterations - optimal objective value = -1.0000E+00
- Optimal solution =  -9.4248E+00 -5.4248E+00  5.4248E+00
+
+Program received signal SIGSEGV: Segmentation fault - invalid memory reference.
+
+Backtrace for this error:
+#0  0x15276b407d21 in ???
+#1  0x15276b406ef5 in ???
+#2  0x15276a46d20f in ???
+#3  0x55c070a22bed in hessprod_
+	at /home/nimg/fortran/optrove/galahad/objects/pc64.lnx.gfo/double/trus2.f90:74
+#4  0x55c070a52a7e in __galahad_tru_double_MOD_tru_solve
+	at /home/nimg/fortran/optrove/galahad/objects/pc64.lnx.gfo/double/tru.f90:3000
+#5  0x55c070a228c6 in galahad_tru2_example
+	at /home/nimg/fortran/optrove/galahad/objects/pc64.lnx.gfo/double/trus2.f90:25
+#6  0x55c070a22d73 in main
+	at /home/nimg/fortran/optrove/galahad/objects/pc64.lnx.gfo/double/trus2.f90:2

@@ -411,7 +411,7 @@
 
 !  the maximum number of CG iterations allowed per iteration
 
-       INTEGER :: cg_maxit
+       INTEGER :: cg_maxit = - 1
 
 !  the total number of evaluations of the objection function
 

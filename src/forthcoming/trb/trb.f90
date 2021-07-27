@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 23/06/2021 AT 15:10 GMT.
+! THIS VERSION: GALAHAD 3.3 - 22/07/2021 AT 08:00 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ T R B   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -76,11 +76,11 @@
 !   P a r a m e t e r s
 !----------------------
 
-     INTEGER, PARAMETER  :: nskip_prec_max = 0
-     INTEGER, PARAMETER  :: history_max = 100
-     LOGICAL, PARAMETER  :: debug_model_4 = .TRUE.
-     LOGICAL, PARAMETER  :: test_s = .TRUE.
-!    LOGICAL, PARAMETER  :: test_s = .FALSE.
+     INTEGER, PARAMETER :: nskip_prec_max = 0
+     INTEGER, PARAMETER :: history_max = 100
+     LOGICAL, PARAMETER :: debug_model_4 = .TRUE.
+     LOGICAL, PARAMETER :: test_s = .TRUE.
+!    LOGICAL, PARAMETER :: test_s = .FALSE.
      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
@@ -259,6 +259,10 @@
 
         INTEGER :: mi28_rsize = 10
 
+!   any bound larger than infinity in modulus will be regarded as infinite
+
+        REAL ( KIND = wp ) :: infinity = ten ** 19
+
 !   overall convergence tolerances. The iteration will terminate when the
 !     norm of the gradient of the objective function is smaller than
 !       MAX( %stop_pg_absolute, %stop_pg_relative * norm of the initial gradient
@@ -268,14 +272,9 @@
        REAL ( KIND = wp ) :: stop_pg_relative = tenm8
        REAL ( KIND = wp ) :: stop_s = epsmch
 
-!   try to pick a good initial trust-region radius using %advanced_start
 !    iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1803
 
        INTEGER :: advanced_start = 0
-
-!   any bound larger than infinity in modulus will be regarded as infinite
-
-        REAL ( KIND = wp ) :: infinity = ten ** 19
 
 !   initial value for the trust-region radius
 
@@ -457,6 +456,10 @@
 
        CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
 
+!  the number of variables that are free from their bounds
+
+       INTEGER :: n_free = - 1
+
 !  the total number of iterations performed
 
        INTEGER :: iter = 0
@@ -467,7 +470,7 @@
 
 !  the maximum number of CG iterations allowed per iteration
 
-       INTEGER :: cg_maxit
+       INTEGER :: cg_maxit = - 1
 
 !  the total number of evaluations of the objection function
 
@@ -480,10 +483,6 @@
 !  the total number of evaluations of the Hessian of the objection function
 
        INTEGER :: h_eval = 0
-
-!  the number of free variables
-
-       INTEGER :: n_free = - 1
 
 !  the maximum number of factorizations in a sub-problem solve
 
@@ -504,10 +503,6 @@
 !  the total real workspace required for the factorization
 
        INTEGER :: factorization_real = - 1
-
-!  the average number of factorizations per sub-problem solve
-
-       REAL ( KIND = wp ) :: factorization_average = zero
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by TRB_solve
@@ -1203,6 +1198,10 @@
 !  X_u is a rank-one allocatable array of dimension n and type default real,
 !   that holds the values x_u of the upper bounds on the optimization
 !   variables x. The j-th component of X_u, j = 1, ... , n, contains (x_u)j.
+!
+!  Z is a rank-one allocatable array of dimension n and type default real, that
+!   holds the values z of the dual optimization variables. The j-th component of
+!   Z, j = 1, ... , n, contains z_j.
 !
 !  pname is a scalar variable of type default character and length 10, which
 !   contains the ``name'' of the problem for printing. The default ``empty''
@@ -4997,6 +4996,10 @@
      data%WK = TRB_projection( nlp%n, nlp%X - nlp%G, nlp%X_l, nlp%X_u )
      inform%norm_pg = TWO_NORM( nlp%X - data%WK )
 
+!  record the dual variables
+
+     nlp%Z( : nlp%n ) = nlp%G( : nlp%n )
+
 !  print details of solution
 
      CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
@@ -5785,6 +5788,14 @@
 
      array_name = 'trb: data%nlp%G'
      CALL SPACE_resize_array( n, data%nlp%G,                                   &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'trb: data%nlp%Z'
+     CALL SPACE_resize_array( n, data%nlp%Z,                                   &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &

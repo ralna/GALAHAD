@@ -92,6 +92,11 @@ make_checkpoint:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) checkpoint.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/checkpoint )
 
+make_common_ciface:
+	( cd $(GALAHAD)/src/common ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) common_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/common )
+
 make_convert:
 	( cd $(GALAHAD)/src/convert ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) convert.o \

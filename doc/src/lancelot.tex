@@ -2776,7 +2776,11 @@ feasible box for fixed values of the penalty parameter and Lagrange
 multiplier estimates. The outer iteration of {\tt \packagename}
 automatically adjusts the penalty parameter and Lagrange multiplier
 estimates to ensure convergence of these approximate minimizers to a
-solution of the constrained optimization problem.
+solution of the constrained optimization problem. Each inner iteration
+is terminated as soon as a norm of the projected gradient,
+\disp{\min(\max( \bmx - \nabla_x  \phi( \bmx, \bmy, \mu ), \bmx^l), \bmx^u) 
+ - \bmx,}
+is sufficiently small.
 
 In the inner iteration, a step from the current estimate of the solution
 is determined using a trust-region approach.  That is, a quadratic model

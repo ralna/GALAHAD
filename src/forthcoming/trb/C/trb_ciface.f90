@@ -64,7 +64,6 @@ module GALAHAD_TRB_double_ciface
         integer(C_LONG) :: max_entries_factors
         integer(C_INT) :: factorization_integer
         integer(C_INT) :: factorization_real
-        real(wp) :: factorization_average 
         real(wp) :: obj
         real(wp) :: norm_pg
         real(wp) :: radius
@@ -311,7 +310,6 @@ contains
         finform%factorization_real = cinform%factorization_real
 
         ! Reals
-        finform%factorization_average = cinform%factorization_average
         finform%obj = cinform%obj
         finform%norm_pg = cinform%norm_pg
         finform%radius = cinform%radius
@@ -354,7 +352,6 @@ contains
         cinform%factorization_real = finform%factorization_real
 
         ! Reals
-        cinform%factorization_average = finform%factorization_average
         cinform%obj = finform%obj
         cinform%norm_pg = finform%norm_pg
         cinform%radius = finform%radius

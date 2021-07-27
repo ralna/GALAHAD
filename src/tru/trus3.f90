@@ -17,6 +17,7 @@
    nlp%X = 1.0_wp                               ! start from one
 ! problem data complete   
    CALL TRU_initialize( data, control, inform ) ! Initialize control parameters
+!  control%print_level = 1
    control%hessian_available = .FALSE.          ! Hessian products will be used
 !  control%psls_control%preconditioner = - 3    ! Apply uesr's preconditioner
    inform%status = 1                            ! Set for initial entry

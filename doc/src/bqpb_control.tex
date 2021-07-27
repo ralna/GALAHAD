@@ -57,7 +57,7 @@ Possible values are:
    $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$, and $\bmx^{u}$
    will be restored to their input values.
 \itt{2} the entire problem, that is the above vector data along with
-the Jacobian matrix $\bmA$, will be restored.
+the Hessian $\bmH$, will be restored.
 \end{description}
 The default is {\tt restore\_problem = 2}.
 }{}
@@ -104,16 +104,16 @@ specify which constraint bounds are infinite.
 Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
 The default is {\tt infinity =} $10^{19}$.
 
-\itt{stop\_abs\_p} and {\tt stop\_rel\_p}
-are scalar variables of type default \realdp, that hold the
-required absolute and relative accuracy for the primal infeasibility
-(see Section~\ref{galmethod}).
-The absolute value of each component of the primal infeasibility
-on exit is required to be smaller than the larger of {\tt stop\_abs\_p} and
-{\tt stop\_rel\_p} times a ``typical value'' for this component.
-The defaults are {\tt stop\_abs\_p =} {\tt stop\_rel\_p =} $u^{1/3}$,
-where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
-{\tt \fullpackagename\_double}).
+%\itt{stop\_abs\_p} and {\tt stop\_rel\_p}
+%are scalar variables of type default \realdp, that hold the
+%required absolute and relative accuracy for the primal infeasibility
+%(see Section~\ref{galmethod}).
+%The absolute value of each component of the primal infeasibility
+%on exit is required to be smaller than the larger of {\tt stop\_abs\_p} and
+%{\tt stop\_rel\_p} times a ``typical value'' for this component.
+%The defaults are {\tt stop\_abs\_p =} {\tt stop\_rel\_p =} $u^{1/3}$,
+%where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+%{\tt \fullpackagename\_double}).
 
 \itt{stop\_abs\_d} and {\tt stop\_rel\_d}
 are scalar variables of type default \realdp, that hold the
@@ -164,7 +164,7 @@ not positive, it will be reset automatically to an appropriate value.
 The default is {\tt muzero = -1.0}.
 
 \itt{tau}  is a scalar variable of type default \realdp, that holds the
-weight attached to primal-dual infeasibility compared to complementarity
+weight attached to dual infeasibility compared to complementarity
 when assessing step acceptance.
 The default is {\tt tau = 1.0}.
 
@@ -175,7 +175,7 @@ The default is {\tt gamma\_c = $10^{-5}$}.
 
 \itt{gamma\_f}  is a scalar variable of type default \realdp, that holds the
 smallest value the average complementarity is allowed
-to be relative to the primal-dual infeasibility as the iteration proceeds.
+to be relative to the dual infeasibility as the iteration proceeds.
 The default is {\tt gamma\_c = $10^{-5}$}.
 
 \itt{reduce\_infeas}  is a scalar variable of type default
@@ -242,12 +242,12 @@ that is used to specify the maximum permitted elapsed system clock time.
 Any negative value indicates no limit will be imposed. The default is
 {\tt clock\_time\_limit = - 1.0}.
 
-\itt{remove\_dependencies} is a scalar variable of type
-default \logical, that must be set \true\ if the algorithm
-is to attempt to remove any linearly dependent constraints before
-solving the problem, and \false\ otherwise.
-We recommend removing linearly dependencies.
-The default is {\tt remove\_dependencies = .TRUE.}.
+%\itt{remove\_dependencies} is a scalar variable of type
+%default \logical, that must be set \true\ if the algorithm
+%is to attempt to remove any linearly dependent constraints before
+%solving the problem, and \false\ otherwise.
+%We recommend removing linearly dependencies.
+%The default is {\tt remove\_dependencies = .TRUE.}.
 
 \itt{treat\_zero\_bounds\_as\_general} is a scalar variable of type
 default \logical.

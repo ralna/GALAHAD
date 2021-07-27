@@ -29,7 +29,7 @@
    CALL TRB_initialize( data, control, inform ) ! Initialize control parameters
    control%subproblem_direct = .FALSE.          ! Use an iterative method
    control%maxit = 10
-   control%print_level = 1
+!  control%print_level = 1
    inform%status = 1                            ! set for initial entry
    CALL TRB_solve( nlp, control, inform, data, userdata, eval_F = FUN,         &
                    eval_G = GRAD, eval_H = HESS )  ! Solve problem

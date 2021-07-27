@@ -19,6 +19,7 @@
    userdata%real( 1 ) = p                       ! Record parameter, p
    CALL TRU_initialize( data, control, inform ) ! Initialize control parameters
    control%hessian_available = .FALSE.          ! Hessian products will be used
+   control%print_level = 1
    inform%status = 1                            ! Set for initial entry
    CALL TRU_solve( nlp, control, inform, data, userdata, eval_F = FUN,         &
                    eval_G = GRAD, eval_HPROD = HESSPROD )  ! Solve problem
@@ -62,10 +63,11 @@
    RETURN
    END SUBROUTINE GRAD
 
-   SUBROUTINE HESSPROD( status, userdata, U, V, X ) ! Hessian-vector product
+   SUBROUTINE HESSPROD( status, X, userdata, U, V, got_h ) ! Hessian-vector prod
    USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status
+   LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
    REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: X

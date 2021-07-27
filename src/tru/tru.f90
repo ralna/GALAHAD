@@ -47,7 +47,22 @@
      PRIVATE
      PUBLIC :: TRU_initialize, TRU_read_specfile, TRU_solve,                   &
                TRU_terminate, NLPT_problem_type, NLPT_userdata_type,           &
-               SMT_type, SMT_put
+               SMT_type, SMT_put,                                              &
+               TRU_import, TRU_solve_with_h, TRU_solve_without_h,              &
+               TRU_solve_reverse_with_h, TRU_solve_reverse_without_h,          &
+               TRU_full_initialize, TRU_full_terminate, TRU_information
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+      INTERFACE TRU_initialize
+        MODULE PROCEDURE TRU_initialize, TRU_full_initialize
+      END INTERFACE TRU_initialize
+
+      INTERFACE TRU_terminate
+        MODULE PROCEDURE TRU_terminate, TRU_full_terminate
+      END INTERFACE TRU_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -76,7 +91,7 @@
      REAL ( KIND = wp ), PARAMETER :: hundred = 100.0_wp
      REAL ( KIND = wp ), PARAMETER :: sixteen = 16.0_wp
      REAL ( KIND = wp ), PARAMETER :: tenm5 = ten ** ( - 5 )
-     REAL ( KIND = wp ), PARAMETER :: tenm8 = ten ** ( - 9 )
+     REAL ( KIND = wp ), PARAMETER :: tenm8 = ten ** ( - 8 )
      REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
      REAL ( KIND = wp ), PARAMETER :: point1 = ten ** ( - 1 )
      REAL ( KIND = wp ), PARAMETER :: point01 = ten ** ( - 2 )
@@ -243,6 +258,11 @@
 
         INTEGER :: mi28_rsize = 10
 
+!   try to pick a good initial trust-region radius using %advanced_start
+!    iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1803
+
+       INTEGER :: advanced_start = 0
+
 !   overall convergence tolerances. The iteration will terminate when the
 !     norm of the gradient of the objective function is smaller than
 !       MAX( %stop_g_absolute, %stop_g_relative * norm of the initial gradient
@@ -251,11 +271,6 @@
        REAL ( KIND = wp ) :: stop_g_absolute = tenm5
        REAL ( KIND = wp ) :: stop_g_relative = tenm8
        REAL ( KIND = wp ) :: stop_s = epsmch
-
-!   try to pick a good initial trust-region radius using %advanced_start
-!    iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1803
-
-       INTEGER :: advanced_start = 0
 
 !   initial value for the trust-region radius (-ve => ||g_0||)
 
@@ -481,6 +496,10 @@
 
        REAL ( KIND = wp ) :: norm_g = HUGE( one )
 
+!  the current value of the trust-region radius
+
+       REAL ( KIND = wp ) :: radius = zero
+
 !  timings (see above)
 
        TYPE ( TRU_time_type ) :: time
@@ -523,13 +542,14 @@
        INTEGER :: branch = 1
        INTEGER :: eval_status, out, start_print, stop_print, advanced_start_iter
        INTEGER :: print_level, print_level_gltr, print_level_trs, ref( 1 )
-       INTEGER :: len_history, ibound, ipoint, icp, lbfgs_mem, max_hist
+       INTEGER :: h_ne, len_history, ibound, ipoint, icp, lbfgs_mem, max_hist
        INTEGER :: nprec, nskip_lbfgs, nskip_prec, non_monotone_history, it_succ
        INTEGER :: print_gap, max_diffs, latest_diff, total_diffs, lwork_svd
+       INTEGER :: gltr_inform_status
        REAL :: time_start, time_record, time_now
        REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
        REAL ( KIND = wp ) :: f_ref, f_trial, f_best, m_best, model, ratio
-       REAL ( KIND = wp ) :: radius, old_radius, radius_trial, etat, ometat
+       REAL ( KIND = wp ) :: old_radius, radius_trial, etat, ometat
        REAL ( KIND = wp ) :: dxtdg, dgtdg, df, stg, hstbs, s_norm, radius_max
        REAL ( KIND = wp ) :: stop_g, s_new_norm, rho_g
        LOGICAL :: printi, printt, printd, printm
@@ -599,6 +619,14 @@
 
        TYPE ( SHA_data_type ) :: SHA_data
      END TYPE TRU_data_type
+
+     TYPE, PUBLIC :: TRU_full_data_type
+       TYPE ( TRU_data_type ) :: tru_data
+       TYPE ( TRU_control_type ) :: tru_control
+       TYPE ( TRU_inform_type ) :: tru_inform
+       TYPE ( NLPT_problem_type ) :: nlp
+       TYPE ( NLPT_userdata_type ) :: userdata
+     END TYPE TRU_full_data_type
 
    CONTAINS
 
@@ -688,6 +716,40 @@
 !  End of subroutine TRU_initialize
 
      END SUBROUTINE TRU_initialize
+
+!- G A L A H A D -  T R B _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE TRU_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for TRU controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRU_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TRU_control_type ), INTENT( OUT ) :: control
+     TYPE ( TRU_inform_type ), INTENT( OUT ) :: inform
+
+     CALL TRU_initialize( data%tru_data, data%tru_control, data%tru_inform )
+     control = data%tru_control
+     inform = data%tru_inform
+
+     RETURN
+
+!  End of subroutine TRU_full_initialize
+
+     END SUBROUTINE TRU_full_initialize
 
 !-*-*-*-*-   T R U _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-*-*-*-
 
@@ -1550,7 +1612,7 @@
      data%non_monotone_history = data%control%non_monotone
      IF ( data%non_monotone_history <= 0 ) data%non_monotone_history = 1
      data%monotone = data%non_monotone_history == 1
-     data%radius = data%control%initial_radius
+     inform%radius = data%control%initial_radius
      data%etat = half * ( data%control%eta_very_successful +                   &
                           data%control%eta_successful )
      data%ometat = one - data%etat
@@ -1808,7 +1870,7 @@
 !  reset the initial radius to ||g|| if no sensible value is given
 
      IF ( data%control%initial_radius <= zero )                                &
-       data%radius = inform%norm_g
+       inform%radius = inform%norm_g
 
 !  if a sparsity-based secant approximation of the Hessian is required,
 !  compute the evaluation ordering
@@ -2023,24 +2085,25 @@
                multiplier = inform%TRS_inform%multiplier
              END IF
              WRITE( data%out, 2120 ) prefix, char_iter, data%accept,           &
-                data%bndry, data%negcur, data%hard, inform%obj, inform%norm_g, &
-                data%ratio, data%radius, multiplier, char_facts, data%clock_now
+                data%bndry, data%negcur, data%hard, inform%obj,                &
+                inform%norm_g, data%ratio, inform%radius, multiplier,          &
+                char_facts, data%clock_now
            ELSE
              char_sit = ADJUSTR( STRING_integer_6( inform%GLTR_inform%iter ) )
              char_sit2 =                                                       &
                 ADJUSTR( STRING_integer_6( inform%GLTR_inform%iter_pass2 ) )
              WRITE( data%out, 2130 ) prefix, char_iter, data%accept,           &
                 data%bndry, data%negcur, data%perturb, inform%obj,             &
-                inform%norm_g, data%ratio, data%radius, char_sit, char_sit2,   &
-                data%clock_now
+                inform%norm_g, data%ratio, inform%radius, char_sit,            &
+                char_sit2, data%clock_now
            END IF
          ELSE
           IF ( data%control%subproblem_direct ) THEN
              WRITE( data%out, 2140 ) prefix,                                   &
-                  char_iter, inform%obj, inform%norm_g, data%radius
+                  char_iter, inform%obj, inform%norm_g, inform%radius
            ELSE
              WRITE( data%out, 2150 ) prefix,                                   &
-                  char_iter, inform%obj, inform%norm_g, data%radius
+                  char_iter, inform%obj, inform%norm_g, inform%radius
            END IF
          END IF
        END IF
@@ -2392,14 +2455,14 @@
 !  ============================================================================
 
        IF ( inform%iter > 1 ) THEN
-         data%old_radius = data%radius
+         data%old_radius = inform%radius
 
 !  if the iteration has increased the objective, decrease the radius so that
 !  had the objective been quadratic the next iteration would be very successful
 
          IF ( data%ratio < zero ) THEN
-           data%radius =                                                       &
-             MIN( data%control%radius_reduce * data%s_norm, data%radius *      &
+           inform%radius =                                                     &
+             MIN( data%control%radius_reduce * data%s_norm, inform%radius *    &
                   MAX( data%control%radius_reduce_max,                         &
                        data%ometat * data%stg / ( data%df +                    &
                          data%ometat * data%stg + data%etat * data%model ) ) )
@@ -2408,15 +2471,15 @@
 !  current step
 
          ELSE IF ( data%ratio < data%control%eta_successful ) THEN
-           data%radius = data%control%radius_reduce * data%s_norm
+           inform%radius = data%control%radius_reduce * data%s_norm
 
 !          radmin = data%s_norm * MAX( data%control%radius_reduce_max,         &
 !                data%ometat * data%stg /                                      &
 !             ( data%df + data%ometat * data%stg + data%etat * data%model ) )
 !          radmin = data%s_norm
 !          DO
-!            data%radius = data%control%radius_reduce * data%radius
-!            IF ( data%radius < radmin ) EXIT
+!            inform%radius = data%control%radius_reduce * inform%radius
+!            IF ( inform%radius < radmin ) EXIT
 !          END DO
 
 !  compute the new norm of the step
@@ -2445,7 +2508,7 @@
 !  if the norm has changed, adjust the radius accordingly
 
              IF ( data%s_norm /= zero )                                        &
-               data%radius = data%radius * ( data%s_new_norm / data%s_norm )
+               inform%radius = inform%radius * ( data%s_new_norm / data%s_norm )
              data%s_norm = data%s_new_norm
            END IF
 
@@ -2522,10 +2585,11 @@
                   data%ratio <= data%control%eta_too_successful ) THEN
                IF ( ABS( data%ratio - one ) <= rho_quad .AND.                  &
                     data%rho_g <= rho_quad ) THEN
-                 data%radius = data%control%maximum_radius
+                 inform%radius = data%control%maximum_radius
                ELSE
-                 IF ( data%control%radius_increase * data%s_norm > data%radius)&
-                   data%radius = MIN( data%control%maximum_radius,             &
+                 IF ( data%control%radius_increase * data%s_norm               &
+                      > inform%radius )                                        &
+                   inform%radius = MIN( data%control%maximum_radius,           &
                                     data%control%radius_increase * data%s_norm )
                END IF
              END IF
@@ -2562,8 +2626,8 @@
 
          IF ( data%ratio < zero ) THEN
            data%poor_model = .FALSE.
-           data%radius =                                                       &
-             MIN( data%control%radius_reduce * data%s_norm, data%radius *      &
+           inform%radius =                                                     &
+             MIN( data%control%radius_reduce * data%s_norm, inform%radius *    &
                   MAX( data%control%radius_reduce_max,                         &
                        - data%ometat * data%stg / ( - data%df -                &
                        data%ometat * data%stg + data%etat * data%model ) ) )
@@ -2573,21 +2637,19 @@
 
          ELSE IF ( data%ratio < data%control%eta_successful ) THEN
            data%poor_model = .FALSE.
-           data%radius = data%control%radius_reduce * data%s_norm
+           inform%radius = data%control%radius_reduce * data%s_norm
          ELSE IF ( data%ratio >= data%control%eta_very_successful .AND.        &
                    data%ratio <= data%control%eta_too_successful ) THEN
            IF ( ABS( data%ratio - one ) <= rho_quad .AND.                      &
                 data%rho_g <= rho_quad ) THEN
-             data%radius = data%control%maximum_radius
+             inform%radius = data%control%maximum_radius
            ELSE
-             IF ( data%control%radius_increase * data%s_norm > data%radius)    &
-                 data%radius = MIN( data%control%maximum_radius,               &
+             IF ( data%control%radius_increase * data%s_norm > inform%radius)  &
+                 inform%radius = MIN( data%control%maximum_radius,             &
                                 data%control%radius_increase * data%s_norm )
            END IF
          END IF
        END IF
-
-! write(6,*) 'radius', data%radius
 
    220 CONTINUE
 
@@ -2625,13 +2687,13 @@
            IF ( data%poor_model ) THEN
              CALL DPS_resolve( nlp%n, data%S( : nlp%n ), data%DPS_data,        &
                              data%control%DPS_control, inform%DPS_inform,      &
-                             delta = data%radius )
+                             delta = inform%radius )
              facts_this_solve = 0
            ELSE
              CALL DPS_solve( nlp%n, nlp%H, nlp%G( : nlp%n ), data%model,       &
                              data%S( : nlp%n ), data%DPS_data,                 &
                              data%control%DPS_control, inform%DPS_inform,      &
-                             delta = data%radius )
+                             delta = inform%radius )
              facts_this_solve = 1
              data%it_succ = data%it_succ + 1
            END IF
@@ -2666,7 +2728,8 @@
            END IF
 
            data%s_norm = inform%DPS_inform%x_norm
-           IF ( ABS( data%radius - data%s_norm ) <= 1.0D-8 * data%radius ) THEN
+           IF ( ABS( inform%radius - data%s_norm )                             &
+                  <= tenm8 * inform%radius ) THEN
              data%bndry = 'b'
            ELSE
              data%bndry = ' '
@@ -2720,7 +2783,7 @@
 !  look through the history to see if a better starting value is available
 
                DO i = data%len_history, 1, - 1
-                 IF ( data%history( i )%x_norm > data%radius ) THEN
+                 IF ( data%history( i )%x_norm > inform%radius ) THEN
                    data%control%TRS_control%initial_multiplier =               &
                      data%history( i )%lambda
                  ELSE
@@ -2741,9 +2804,9 @@
                ELSE
                  data%control%TRS_control%initial_multiplier =                 &
                    inform%TRS_inform%multiplier *                              &
-                     ( data%old_radius / data%radius ) +                       &
+                     ( data%old_radius / inform%radius ) +                     &
                    inform%TRS_inform%pole *                                    &
-                   ( one - ( data%old_radius / data%radius ) )
+                   ( one - ( data%old_radius / inform%radius ) )
                  IF ( inform%TRS_inform%pole > zero )                          &
                    data%control%TRS_control%initial_multiplier =               &
                      data%control%TRS_control%initial_multiplier               &
@@ -2777,14 +2840,15 @@
            facts_this_solve = inform%TRS_inform%factorizations
 
            IF ( data%non_trivial_p ) THEN
-             CALL TRS_solve( nlp%n, data%radius, data%model, nlp%G( : nlp%n ), &
-                             nlp%H, data%S( : nlp%n ), data%TRS_data,          &
-                             data%control%TRS_control, inform%TRS_inform,      &
-                             M = data%P )
+             CALL TRS_solve( nlp%n, inform%radius, data%model,                 &
+                             nlp%G( : nlp%n ), nlp%H, data%S( : nlp%n ),       &
+                             data%TRS_data, data%control%TRS_control,          &
+                             inform%TRS_inform, M = data%P )
            ELSE
-             CALL TRS_solve( nlp%n, data%radius, data%model, nlp%G( : nlp%n ), &
-                             nlp%H, data%S( : nlp%n ), data%TRS_data,          &
-                             data%control%TRS_control, inform%TRS_inform )
+             CALL TRS_solve( nlp%n, inform%radius, data%model,                 &
+                             nlp%G( : nlp%n ), nlp%H, data%S( : nlp%n ),       &
+                             data%TRS_data, data%control%TRS_control,          &
+                             inform%TRS_inform )
            END IF
 
 !  check for successful convergence
@@ -2821,7 +2885,8 @@
            END IF
 
            data%s_norm = inform%TRS_inform%x_norm
-           IF ( ABS( data%radius - data%s_norm ) <= 1.0D-8 * data%radius ) THEN
+           IF ( ABS( inform%radius - data%s_norm )                             &
+                  <= tenm8 * inform%radius ) THEN
              data%bndry = 'b'
            ELSE
              data%bndry = ' '
@@ -2865,10 +2930,11 @@
 
 !  perform a generalized Lanczos iteration
 
-         CALL GLTR_solve( nlp%n, data%radius, data%model, data%S( : nlp%n ),   &
+         CALL GLTR_solve( nlp%n, inform%radius, data%model, data%S( : nlp%n ), &
                           data%G_current( : nlp%n ), data%V( : nlp%n ),        &
                           data%GLTR_data, data%control%GLTR_control,           &
                           inform%GLTR_inform )
+         data%gltr_inform_status = inform%GLTR_inform%status
 
          SELECT CASE( inform%GLTR_inform%status )
 
@@ -2986,13 +3052,15 @@
   310    CONTINUE
          IF (  data%control%model == second_order_model ) THEN
            IF ( .NOT. data%control%hessian_available ) THEN
-             IF ( inform%GLTR_inform%status == 3 ) THEN
+!            IF ( inform%GLTR_inform%status == 3 ) THEN
+             IF ( data%gltr_inform_status == 3 ) THEN
                inform%h_eval = inform%h_eval + 1 ; data%got_h = .TRUE.
                data%V( : nlp%n ) = data%U( : nlp%n )
              END IF
            END IF
          END IF
-         IF ( inform%GLTR_inform%status == 2 .AND.                             &
+!        IF ( inform%GLTR_inform%status == 2 .AND.                             &
+         IF ( data%gltr_inform_status == 2 .AND.                               &
                 data%nprec == user_preconditioner .AND. data%reverse_prec ) THEN
            data%V( : nlp%n ) = data%U( : nlp%n )
          END IF
@@ -3014,8 +3082,8 @@
        END IF
 
        data%s_norm = inform%GLTR_inform%mnormx
-       IF ( ABS( data%radius - inform%GLTR_inform%mnormx )                     &
-              <= 1.0D-8 * data%radius ) THEN
+       IF ( ABS( inform%radius - inform%GLTR_inform%mnormx )                   &
+              <= tenm8 * inform%radius ) THEN
          data%bndry = 'b'
        ELSE
          data%bndry = ' '
@@ -3066,7 +3134,7 @@
            data%radius_max = data%control%maximum_radius
          END IF
 !write(6,*) ' radius_max ', data%radius_max
-         data%radius = data%s_norm
+         inform%radius = data%s_norm
          data%X_best( : nlp%n )  = nlp%X( : nlp%n )
          data%f_best = inform%obj
          data%m_best = data%model
@@ -3080,6 +3148,8 @@
 
  410   CONTINUE
        nlp%X( : nlp%n ) = data%X_current( : nlp%n ) + data%S( : nlp%n )
+!write(6,"(' X ', 5ES12.4)" ) data%X_current( : nlp%n )
+!write(6,"(' S ', 5ES12.4)" ) data%S( : nlp%n )
 !write(6,"(' X ', 5ES12.4)" ) nlp%X( : nlp%n )
 
 !  evaluate the objective function at the trial point
@@ -3155,7 +3225,7 @@
              WRITE( data%out,  "( A, A6, 1X, 4A1, '    NaN           -    ',   &
             &  '    - Inf ',  2ES8.1, 1X, A6, F8.2 )" )                        &
                 prefix, char_iter, data%accept, data%bndry, data%negcur,       &
-                data%hard, data%radius, multiplier, char_facts, data%clock_now
+                data%hard, inform%radius, multiplier, char_facts, data%clock_now
            ELSE
              char_sit = ADJUSTR( STRING_integer_6( inform%GLTR_inform%iter ) )
              char_sit2 =                                                       &
@@ -3163,7 +3233,7 @@
              WRITE( data%out, "( A, A6, 1X, 4A1, '    NaN           -    ',    &
             &  '    - Inf ', ES9.1, 1X, 2A6, F8.2 )" ) prefix,                 &
                 char_iter, data%accept, data%bndry, data%negcur, data%perturb, &
-                data%radius, char_sit, char_sit2, data%clock_now
+                inform%radius, char_sit, char_sit2, data%clock_now
            END IF
          END IF
 
@@ -3186,7 +3256,7 @@
 
 !  reduce the trust region radiius and try again
 
-         data%radius = data%control%radius_reduce * data%s_norm
+         inform%radius = data%control%radius_reduce * data%s_norm
          GO TO 220
        END IF
 
@@ -3211,7 +3281,7 @@
 
 !  If the predicted radius is larger than its upper bound, exit
 
-         IF ( data%radius >= data%radius_max ) GO TO 430
+         IF ( inform%radius >= data%radius_max ) GO TO 430
 
 !  perform another iteration
 
@@ -3301,13 +3371,13 @@
 
 !  restrict any increasze so that the radius does not exceed its maximim value
 
-           tau = MIN( tau, data%radius_max / data%radius )
+           tau = MIN( tau, data%radius_max / inform%radius )
 !write(6,*) ' tau ', tau
 
 !  update the radius and step length
 
-           data%old_radius = data%radius
-           data%radius = data%radius * tau
+           data%old_radius = inform%radius
+           inform%radius = inform%radius * tau
            data%s_norm = data%s_norm * tau
 
 !  update the slope, curvature and model value
@@ -4039,6 +4109,530 @@
 !  End of subroutine TRU_terminate
 
      END SUBROUTINE TRU_terminate
+
+!-  G A L A H A D -  T R B _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE TRU_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRU_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TRU_control_type ), INTENT( IN ) :: control
+     TYPE ( TRU_inform_type ), INTENT( INOUT ) :: inform
+
+     CALL TRU_terminate( data%tru_data, data%tru_control, data%tru_inform )
+     inform = data%tru_inform
+
+     RETURN
+
+!  End of subroutine TRU_full_terminate
+
+     END SUBROUTINE TRU_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-*-  G A L A H A D -  T R B _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+
+     SUBROUTINE TRU_import( control, data, status, n, H_type, ne, H_row,       &
+                            H_col, H_ptr )
+
+!  import problem data into internal storage prior to solution. 
+!  Arguments are as follows:
+
+!  control and inform are derived types whose components are described in 
+!   the leading comments to TRU_solve
+!
+!  data is a scalar variable of type TRU_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    0. The import was succesful
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0 or requirement that type contains
+!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'ABSENT' has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  H_type is a character string that specifies the Hessian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense',
+!   'diagonal' or 'absent', the latter if access to the Hessian is via
+!   matrix-vector products; lower or upper case variants are allowed
+!
+!  ne is a scalar variable of type default integer, that holds the number of
+!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other three schemes.
+!
+!  H_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  H_col is a rank-one array variable of type default integer,
+!   that holds the column indices of the  lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense or diagonal storage schemes are used, and in this 
+!   case can be of length 0
+!
+!  H_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRU_control_type ), INTENT( INOUT ) :: control
+     TYPE ( TRU_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n, ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
+     INTEGER, DIMENSION( : ), INTENT( IN ) :: H_row, H_col, H_ptr
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     data%tru_control = control
+
+     error = data%tru_control%error
+     space_critical = data%tru_control%space_critical
+     deallocate_error_fatal = data%tru_control%space_critical
+
+!  allocate space if required
+
+     array_name = 'tru: data%nlp%X'
+     CALL SPACE_resize_array( n, data%nlp%X,                                   &
+            data%tru_inform%status, data%tru_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%tru_inform%bad_alloc, out = error )
+     IF ( data%tru_inform%status /= 0 ) GO TO 900
+
+     array_name = 'tru: data%nlp%G'
+     CALL SPACE_resize_array( n, data%nlp%G,                                   &
+            data%tru_inform%status, data%tru_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%tru_inform%bad_alloc, out = error )
+     IF ( data%tru_inform%status /= 0 ) GO TO 900
+
+!  put data into the required components of the nlpt storage type
+
+     data%nlp%n = n
+
+!  set H appropriately in the nlpt storage type
+
+     SELECT CASE ( H_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       CALL SMT_put( data%nlp%H%type, 'COORDINATE',                            &
+                     data%tru_inform%alloc_status )
+       data%nlp%H%n = n
+       data%nlp%H%ne = ne
+
+       array_name = 'tru: data%nlp%H%row'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%row,                 &
+            data%tru_inform%status, data%tru_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%tru_inform%bad_alloc, out = error )
+       IF ( data%tru_inform%status /= 0 ) GO TO 900
+
+       array_name = 'tru: data%nlp%H%col'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%col,                 &
+            data%tru_inform%status, data%tru_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%tru_inform%bad_alloc, out = error )
+       IF ( data%tru_inform%status /= 0 ) GO TO 900
+
+       array_name = 'tru: data%nlp%H%val'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,                 &
+            data%tru_inform%status, data%tru_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%tru_inform%bad_alloc, out = error )
+       IF ( data%tru_inform%status /= 0 ) GO TO 900
+
+       data%nlp%H%row( : data%nlp%H%ne ) = H_row( : data%nlp%H%ne )
+       data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       CALL SMT_put( data%nlp%H%type, 'SPARSE_BY_ROWS',                        &
+                     data%tru_inform%alloc_status )
+       data%nlp%H%n = n
+       data%nlp%H%ne = H_ptr( n + 1 ) - 1
+
+       array_name = 'tru: data%nlp%H%ptr'
+       CALL SPACE_resize_array( n + 1, data%nlp%H%ptr,                         &
+            data%tru_inform%status, data%tru_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%tru_inform%bad_alloc, out = error )
+       IF ( data%tru_inform%status /= 0 ) GO TO 900
+
+       array_name = 'tru: data%nlp%H%col'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%col,                 &
+            data%tru_inform%status, data%tru_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%tru_inform%bad_alloc, out = error )
+       IF ( data%tru_inform%status /= 0 ) GO TO 900
+
+       array_name = 'tru: data%nlp%H%val'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,                 &
+            data%tru_inform%status, data%tru_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%tru_inform%bad_alloc, out = error )
+       IF ( data%tru_inform%status /= 0 ) GO TO 900
+
+       data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+       data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%nlp%H%type, 'DENSE', data%tru_inform%alloc_status )
+       data%nlp%H%n = n
+       data%nlp%H%ne = ( n * ( n + 1 ) ) / 2
+
+       array_name = 'tru: data%nlp%H%val'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,                 &
+            data%tru_inform%status, data%tru_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%tru_inform%bad_alloc, out = error )
+       IF ( data%tru_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%nlp%H%type, 'DIAGONAL', data%tru_inform%alloc_status )
+       data%nlp%H%n = n
+       data%nlp%H%ne = n
+
+       array_name = 'tru: data%nlp%H%val'
+       CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,                 &
+            data%tru_inform%status, data%tru_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%tru_inform%bad_alloc, out = error )
+       IF ( data%tru_inform%status /= 0 ) GO TO 900
+     CASE ( 'absent', 'ABSENT' )
+       data%tru_control%hessian_available = .FALSE.
+     CASE DEFAULT
+       data%tru_inform%status = GALAHAD_error_unknown_storage
+     END SELECT       
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status =  data%tru_inform%status
+     RETURN
+
+!  End of subroutine TRU_import
+
+     END SUBROUTINE TRU_import
+
+!-  G A L A H A D -  T R B _ s o l v e _ w i t ht _ h   S U B R O U T I N E 
+
+     SUBROUTINE TRU_solve_with_h( data, userdata, status, X, G,                &
+                                  eval_F, eval_G, eval_H, eval_PREC )
+
+!  solve the bound-constrained problem previously imported when access
+!  to function, gradient, Hessian and preconditioning operations are
+!  available via subroutine calls. See TRU_solve for a description of 
+!  the required arguments. The variable status is a proxy for inform%status
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     INTEGER, INTENT( INOUT ) :: status
+     TYPE ( TRU_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
+     EXTERNAL :: eval_F, eval_G, eval_H, eval_PREC
+
+     data%tru_inform%status = status
+     IF ( data%tru_inform%status == 1 )                                        &
+       data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+
+!  call the solver
+
+     CALL TRU_solve( data%nlp, data%tru_control, data%tru_inform,              &
+                     data%tru_data, userdata, eval_F = eval_F,                 &
+                     eval_G = eval_G, eval_H = eval_H, eval_PREC = eval_PREC )
+
+     X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
+     IF ( data%tru_inform%status == GALAHAD_ok )                               &
+       G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+     status = data%tru_inform%status
+
+     RETURN
+
+!  end of subroutine TRU_solve_with_h
+
+     END SUBROUTINE TRU_solve_with_h
+
+! - G A L A H A D -  T R B _ s o l v e _ w i t h o u t _h  S U B R O U T I N E -
+
+     SUBROUTINE TRU_solve_without_h( data, userdata, status, X, G,             &
+                                     eval_F, eval_G, eval_HPROD, eval_PREC )
+
+!  solve the bound-constrained problem previously imported when access
+!  to function, gradient, Hessian-vector and preconditioning operations 
+!  are available via subroutine calls. See TRU_solve for a description 
+!  of the required arguments. The variable status is a proxy for inform%status
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     INTEGER, INTENT( INOUT ) :: status
+     TYPE ( TRU_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
+     EXTERNAL :: eval_F, eval_G, eval_HPROD, eval_PREC
+
+     data%tru_inform%status = status
+     IF ( data%tru_inform%status == 1 )                                        &
+       data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+
+!  call the solver
+
+     CALL TRU_solve( data%nlp, data%tru_control, data%tru_inform,              &
+                     data%tru_data, userdata, eval_F = eval_F,                 &
+                     eval_G = eval_G, eval_HPROD = eval_HPROD,                 &
+                     eval_PREC = eval_PREC )
+
+     X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
+     IF ( data%tru_inform%status == GALAHAD_ok )                               &
+       G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+     status = data%tru_inform%status
+
+     RETURN
+
+!  end of subroutine TRU_solve_without_h
+
+     END SUBROUTINE TRU_solve_without_h
+
+!-*-  G A L A H A D -  T R B _ s o l v e _ reverse _ h  S U B R O U T I N E  -*-
+
+     SUBROUTINE TRU_solve_reverse_with_h( data, status, eval_status,           &
+                                          X, f, G, H_val, U, V )
+
+!  solve the bound-constrained problem previously imported when access
+!  to function, gradient, Hessian and preconditioning operations are
+!  available via reverse communication. See TRU_solve for a description 
+!  of the required arguments. The variable status is a proxy for inform%status
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     INTEGER, INTENT( INOUT ) :: status
+     TYPE ( TRU_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( INOUT ) :: eval_status
+     REAL ( KIND = wp ), INTENT( IN ) :: f
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: G
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: H_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: U
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: V
+
+!  recover data from reverse communication
+
+     data%tru_inform%status = status
+     data%tru_data%eval_status = eval_status
+     SELECT CASE ( data%tru_inform%status )
+     CASE ( 1 )
+       data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+     CASE ( 2 )
+       data%tru_data%eval_status = eval_status
+       IF ( eval_status == 0 ) data%nlp%f = f
+     CASE( 3 ) 
+       data%tru_data%eval_status = eval_status
+       IF ( eval_status == 0 ) data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
+     CASE( 4 ) 
+       data%tru_data%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%nlp%H%val( : data%nlp%H%ne ) = H_val( : data%nlp%H%ne )
+     CASE( 6 )
+       data%tru_data%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%tru_data%U( : data%nlp%n ) = U( : data%nlp%n )
+     END SELECT
+
+!  call the solver
+
+     CALL TRU_solve( data%nlp, data%tru_control, data%tru_inform,              &
+                     data%tru_data, data%userdata )
+
+!  collect data for reverse communication
+
+     X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
+     SELECT CASE ( data%tru_inform%status )
+     CASE( 0 )
+       G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+     CASE( 6 )
+       V( : data%nlp%n ) = data%tru_data%V( : data%nlp%n )
+     CASE( 5 ) 
+       WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
+         data%tru_inform%status
+     END SELECT
+     status = data%tru_inform%status
+
+     RETURN
+
+!  end of subroutine TRU_solve_reverse_with_h
+
+     END SUBROUTINE TRU_solve_reverse_with_h
+
+!-  G A L A H A D -  T R B _ s o l v e _ reverse _ no _h  S U B R O U T I N E  -
+
+     SUBROUTINE TRU_solve_reverse_without_h( data, status, eval_status,        &
+                                             X, f, G, U, V )
+
+!  solve the bound-constrained problem previously imported when access
+!  to function, gradient, Hessian-vector and preconditioning operations 
+!  are available via reverse communication. See TRU_solve for a description 
+!  of the required arguments. The variable status is a proxy for inform%status
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     INTEGER, INTENT( INOUT ) :: status
+     TYPE ( TRU_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( INOUT ) :: eval_status
+     REAL ( KIND = wp ), INTENT( IN ) :: f
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: G
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: V
+
+!  recover data from reverse communication
+
+     data%tru_inform%status = status
+     data%tru_data%eval_status = eval_status
+     SELECT CASE ( data%tru_inform%status )
+     CASE ( 1 )
+       data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+     CASE ( 2 )
+       data%tru_data%eval_status = eval_status
+       IF ( eval_status == 0 ) data%nlp%f = f
+     CASE( 3 ) 
+       data%tru_data%eval_status = eval_status
+       IF ( eval_status == 0 ) data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
+     CASE( 5 ) 
+       data%tru_data%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%tru_data%U( : data%nlp%n ) = U( : data%nlp%n )
+     CASE( 6 )
+       data%tru_data%eval_status = eval_status
+       IF ( eval_status == 0 )                                                 &
+         data%tru_data%U( : data%nlp%n ) = U( : data%nlp%n )
+     END SELECT
+
+!  call the solver
+
+     CALL TRU_solve( data%nlp, data%tru_control, data%tru_inform,              &
+                     data%tru_data, data%userdata )
+
+!  collect data for reverse communication
+
+     X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
+     SELECT CASE ( data%tru_inform%status )
+     CASE( 0 )
+       G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+     CASE( 2, 3 ) 
+     CASE( 4 ) 
+       WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
+         data%tru_inform%status
+     CASE( 5 )
+       U( : data%nlp%n ) = data%tru_data%U( : data%nlp%n )
+       V( : data%nlp%n ) = data%tru_data%V( : data%nlp%n )
+     CASE( 6 )
+       V( : data%nlp%n ) = data%tru_data%V( : data%nlp%n )
+     END SELECT
+     status = data%tru_inform%status
+
+     RETURN
+
+!  end of subroutine TRU_solve_reverse_without_h
+
+     END SUBROUTINE TRU_solve_reverse_without_h
+
+!-  G A L A H A D -  T R B _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE TRU_information( data, inform, status )
+
+!  return solver information during or after solution by TRU
+!  See TRU_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRU_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TRU_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%tru_inform
+     
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine TRU_information
+
+     END SUBROUTINE TRU_information
 
 !  End of module GALAHAD_TRU
 

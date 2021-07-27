@@ -686,7 +686,7 @@ and
 {\tt DPS\_control\%new\_h}
 may be changed by \solver).
 
-\itt{LMS\_control} and \itt{LMS\_control\_prec}
+\itt{LMS\_control} and {\tt LMS\_control\_prec}
 are scalar variables of type
 {\tt LMS\_control\_type}
 whose components are used to control the limited memory secant
@@ -866,7 +866,8 @@ See the specification sheet for the package
 {\tt \libraryname\_DPS}
 for details.
 
-\itt{LMS\_inform} is a scalar variable of type
+\itt{LMS\_inform}  and {\tt LMS\_inform\_prec}
+are scalar variables of type
 {\tt LMS\_inform\_type}
 whose components give information about the progress and needs
 of the limited memory secant approximations for the model Hessian
@@ -1532,7 +1533,7 @@ and {\tt inform\%bad\_alloc}, respectively.
     of a badly scaled problem.
 
 \itt{\galerralive.} The user has forced termination of \solver\
-     by removing the file named {\tt control\%a\-live\_file} from unit
+     by removing the file named {\tt control\%a\-live\_file} from
      unit {\tt control\%alive\_unit}.
 
 \end{description}

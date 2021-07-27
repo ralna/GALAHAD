@@ -10,8 +10,10 @@ D$(PACKAGE) = $(DEPENDENCIES) $(LGD)($(package).o)
 
 #  compilation agenda for package with C interface
 
-S$(PACKAGE)C = $(S$(PACKAGE)) $(CDEPENDENCIES) $(CLGS)($(package)_ciface.o)
-D$(PACKAGE)C = $(D$(PACKAGE)) $(CDEPENDENCIES) $(CLGD)($(package)_ciface.o)
+S$(PACKAGE)C = $(S$(PACKAGE)) $(CDEPENDENCIES) make_common_ciface \
+               $(CLGS)($(package)_ciface.o)
+D$(PACKAGE)C = $(D$(PACKAGE)) $(CDEPENDENCIES) make_common_ciface \
+               $(CLGD)($(package)_ciface.o)
 
 #  additional run agenda
 
@@ -48,22 +50,26 @@ OBJECTSD_CUTEST = $($(PACKAGE)OBJECTSD_CUTEST)
 $(PACKAGE)DS = $(D$(PACKAGE)) $(OBJD)/$(package)s.o
 $(PACKAGE)DS2 = $(D$(PACKAGE)) $(OBJD)/$(package)s2.o
 $(PACKAGE)DS3 = $(D$(PACKAGE)) $(OBJD)/$(package)s3.o
+$(PACKAGE)DS4 = $(D$(PACKAGE)) $(OBJD)/$(package)s4.o
 $(PACKAGE)DT = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t.o
 $(PACKAGE)DT2 = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t2.o
 $(PACKAGE)SS = $(S$(PACKAGE)) $(OBJS)/$(package)s.o
 $(PACKAGE)SS2 = $(S$(PACKAGE)) $(OBJS)/$(package)s2.o
 $(PACKAGE)SS3 = $(S$(PACKAGE)) $(OBJS)/$(package)s3.o
+$(PACKAGE)SS4 = $(S$(PACKAGE)) $(OBJS)/$(package)s4.o
 $(PACKAGE)ST = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t.o
 $(PACKAGE)ST2 = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t2.o
 
 R$(PACKAGE)DS = $(OBJD)/$(package)s.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS2 = $(OBJD)/$(package)s2.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS3 = $(OBJD)/$(package)s3.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS4 = $(OBJD)/$(package)s4.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DT = $(OBJD)/$(package)t.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DT2 = $(OBJD)/$(package)t2.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)SS = $(OBJS)/$(package)s.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS2 = $(OBJS)/$(package)s2.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS3 = $(OBJS)/$(package)s3.o -L$(OBJS) $(LIBS)
+R$(PACKAGE)SS4 = $(OBJS)/$(package)s4.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)ST = $(OBJS)/$(package)t.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)ST2 = $(OBJS)/$(package)t2.o -L$(OBJS) $(LIBS)
 
@@ -280,6 +286,14 @@ $(package)ss3: $($(PACKAGE)SS3)
 	cat $(package)s3.output
 	rm ./run_$(package)
 
+$(package)ss4: $($(PACKAGE)SS4)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)SS4)
+	$(RMOOC)
+	- ./run_$(package) > $(package)s4.output 2>&1
+	cat $(package)s4.output
+	rm ./run_$(package)
+
 $(package)ds: $($(PACKAGE)DS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DS)
@@ -292,8 +306,9 @@ $(package)ds2: $($(PACKAGE)DS2)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DS2)
 	$(RMOOC)
-	- ./run_$(package) > $(package)ds2.output 2>&1
-	cat $(package)ds2.output
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)ds2.output 2>&1
+#	cat $(package)ds2.output
 	rm ./run_$(package)
 
 $(package)ds3: $($(PACKAGE)DS3)
@@ -302,6 +317,14 @@ $(package)ds3: $($(PACKAGE)DS3)
 	$(RMOOC)
 	- ./run_$(package) > $(package)ds3.output 2>&1
 	cat $(package)ds3.output
+	rm ./run_$(package)
+
+$(package)ds4: $($(PACKAGE)DS4)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)DS4)
+	$(RMOOC)
+	- ./run_$(package) > $(package)ds4.output 2>&1
+	cat $(package)ds4.output
 	rm ./run_$(package)
 
 #  run C specification document example tests

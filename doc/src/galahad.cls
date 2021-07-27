@@ -639,7 +639,7 @@
 \newcommand{\lancelota}{\textsf{LANCELOT A}}
 \newcommand{\lancelotb}{\textsf{LANCELOT B}}
 
-\usepackage{graphicx,fancyheadings,pslatex,bm,fancyvrb,ifthen,url}
+\usepackage{graphicx,fancyheadings,pslatex,bm,fancyvrb,ifthen,url,varioref}
 
 % Page sizes
 
