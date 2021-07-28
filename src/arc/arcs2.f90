@@ -62,7 +62,7 @@
    RETURN
    END SUBROUTINE GRAD
 
-   SUBROUTINE HESSPROD( status, userdata, U, V, X ) ! Hessian-vector product
+   SUBROUTINE HESSPROD( status, X, userdata, U, V ) ! Hessian-vector product
    USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( OUT ) :: status

@@ -123,6 +123,7 @@
       INTEGER ( KIND = C_LONG ) :: max_entries_factors
       INTEGER ( KIND = C_INT ) :: factorization_integer
       INTEGER ( KIND = C_INT ) :: factorization_real
+      REAL ( KIND = wp ) :: factorization_average
       REAL ( KIND = wp ) :: obj
       REAL ( KIND = wp ) :: norm_g
       REAL ( KIND = wp ) :: radius
@@ -271,6 +272,7 @@
     finform%factorization_real = cinform%factorization_real
 
     ! Reals
+    finform%factorization_average = cinform%factorization_average
     finform%obj = cinform%obj
     finform%norm_g = cinform%norm_g
     finform%radius = cinform%radius
@@ -316,6 +318,7 @@
     cinform%factorization_real = finform%factorization_real
 
     ! Reals
+    cinform%factorization_average = finform%factorization_average
     cinform%obj = finform%obj
     cinform%norm_g = finform%norm_g
     cinform%radius = finform%radius

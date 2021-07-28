@@ -1,7 +1,7 @@
 /*
  * THIS VERSION: GALAHAD 3.3 - 27/07/2021 AT 08:30 GMT.
  *
- *-*-*-*-*-*-*-  G A L A H A D _ T R U  C  I N T E R F A C E  -*-*-*-*-*-*-*-
+ *-*-*-*-*-*-*-  G A L A H A D _ A R C  C  I N T E R F A C E  -*-*-*-*-*-*-*-
  *
  *  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
  *  Principal author: Jaroslav Fowkes & Nick Gould
@@ -20,8 +20,8 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_TRU_H 
-#define GALAHAD_TRU_H
+#ifndef GALAHAD_ARC_H 
+#define GALAHAD_ARC_H
 
 // precision
 #include "galahad_precision.h"
@@ -29,7 +29,7 @@ extern "C" {
 /*
  * control derived type as a C struct
  */
-struct tru_control_type { 
+struct arc_control_type { 
 
     // use C or Fortran sparse matrix indexing
     bool f_indexing;
@@ -120,7 +120,7 @@ struct tru_control_type {
 
     // the maximum number of entries within each column of the strictly lower
     // triangular matrix R used in the computation of the preconditioner by
-    // HSL_MI28.  Rank-1 arrays of size mi28_rsize *  n are allocated internally
+    // HSL_MI28.  Rank-1 arrays of size mi28_rsize * n are allocated internally
     // to hold R. Thus the amount of memory used, as well as the amount of work
     // involved in computing the preconditioner, depends on mi28_rsize. Setting
     // mi28_rsize > 0 generally leads to a higher quality preconditioner than
@@ -136,33 +136,44 @@ struct tru_control_type {
     real_wp_ stop_g_relative;
     real_wp_ stop_s;
 
-    // try to pick a good initial trust-region radius using .advanced_start
+    // try to pick a good initial regularization weight using .advanced_start
     // iterates of a variant on the strategy of Sartenaer SISC 18(6)
     // 1990:1788-1803
     int advanced_start;
 
-    // initial value for the trust-region radius
-    real_wp_ initial_radius;
+    // initial value for the regularisation weight  (-ve => 1/||g_0||)
+    real_wp_ initial_weight;
 
-    // maximum permitted trust-region radius
-    real_wp_ maximum_radius;
+    // minimum permitted regularization weight
+    real_wp_ minimum_weight;
+
+    // expert parameters as suggested in Gould, Porcelli & Toint, "Updating the
+    // regularization parameter in the adaptive cubic regularization algorithm",
+    //  RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011),
+    //     http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf
+    // (these are denoted beta, epsilon_chi and alpha_max in the paper)
+    real_wp_ reduce_gap;
+    real_wp_ tiny_gap;
+    real_wp_ large_root;
 
     // a potential iterate will only be accepted if the actual decrease
     // f - f(x_new) is larger than .eta_successful times that predicted
-    // by a quadratic model of the decrease. The trust-region radius will be
-    // increased if this relative decrease is greater than .eta_very_successful
+    // by a quadratic model of the decrease. The egularization weight will be
+    // decreased if this relative decrease is greater than .eta_very_successful
     // but smaller than .eta_too_successful
     real_wp_ eta_successful;
     real_wp_ eta_very_successful;
     real_wp_ eta_too_successful;
 
-    // on very successful iterations, the trust-region radius will be increased
-    // by the factor .radius_increase, while if the iteration is unsucceful, 
-    // the radius will be decreased by a factor .radius_reduce but no more
-    // than .radius_reduce_max
-    real_wp_ radius_increase;
-    real_wp_ radius_reduce;
-    real_wp_ radius_reduce_max;
+    // on very successful iterations, the regularization weight will be reduced
+    // by the factor %weight_decrease but no more than %weight_decrease_min
+    // while if the iteration is unsucceful, the weight will be increased by a
+    // factor %weight_increase but no more than %weight_increase_max (these are 
+    // delta_1, delta_2, delta3 and delta_max in Gould, Porcelli & Toint, 2011)
+    real_wp_ weight_decrease_min;
+    real_wp_ weight_decrease;    
+    real_wp_ weight_increase;    
+    real_wp_ weight_increase_max;
 
     // the smallest value the objective function may take before the problem
     // is marked as unbounded
@@ -182,12 +193,12 @@ struct tru_control_type {
     // find the search direction
     bool subproblem_direct;
 
-    // is a retrospective strategy to be used to update the trust-region radius?
-    bool retrospective_trust_region;
-
-    // should the radius be renormalized to account for a change in 
+    // should the weight be renormalized to account for a change in 
     // preconditioner?
-    bool renormalize_radius;
+    bool renormalize_weight;
+
+    // should the test for acceptance involve the quadratic model or the cubic?
+    bool quadratic_ratio_test;
 
     // if .space_critical true, every effort will be made to use as little
     // space as possible. This may result in longer computation time
@@ -202,14 +213,14 @@ struct tru_control_type {
     // quotes, e.g. "string" or 'string'
     char prefix[31];
 
-    // control parameters for TRS
-    //struct trs_control_type trs_control;
+    // control parameters for RQS
+    //struct rqs_control_type rqs_control;
 
     // control parameters for DPS
     //struct trs_control_type dps_control;
 
-    // control parameters for GLTR
-    //struct gltr_control_type gltr_control;
+    // control parameters for GLRT
+    //struct glrt_control_type glrt_control;
 
     // control parameters for PSLS
     //struct psls_control_type psls_control;
@@ -218,9 +229,6 @@ struct tru_control_type {
     //struct lms_control_type lms_control;
     //struct lms_control_type lms_control_prec;
 
-    // control parameters for SEC
-    //struct sha_control_type sec_control;
-
     // control parameters for SHA
     //struct sha_control_type sha_control;
 };
@@ -228,7 +236,7 @@ struct tru_control_type {
 /* 
  * time derived type as a C struct 
  */
-struct tru_time_type {
+struct arc_time_type {
 
     // the total CPU time spent in the package
     real_sp_ total;
@@ -266,9 +274,9 @@ struct tru_time_type {
 /*
  * inform derived type as a C struct
  */
-struct tru_inform_type {
+struct arc_inform_type {
 
-    // return status. See TRU_solve for details
+    // return status. See ARC_solve for details
     int status;
 
     // the status of the last attempted allocation/deallocation
@@ -311,18 +319,18 @@ struct tru_inform_type {
     real_wp_ factorization_average;
 
     // the value of the objective function at the best estimate of the solution
-    // determined by TRU_solve
+    // determined by ARC_solve
     real_wp_ obj;
 
     // the norm of the gradient of the objective function at the best estimate
-    // of the solution determined by TRU_solve
+    // of the solution determined by ARC_solve
     real_wp_ norm_g;
 
-    // the current value of the trust-region radius
-    real_wp_ radius;
+    // the current value of the regularization weight
+    real_wp_ weight;
 
     // timings (see above)
-    struct tru_time_type time;
+    struct arc_time_type time;
 
     // inform parameters for TRS
     //struct trs_inform_type trs_inform;
@@ -341,14 +349,14 @@ struct tru_inform_type {
     //struct sha_inform_type sha_inform;
 };
 
-/*  *-*-*-*-*-*-*-*-*-*-   T R U _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*
+/*  *-*-*-*-*-*-*-*-*-*-   A R C _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*
  *
- * Provide default values for TRU controls
+ * Provide default values for ARC controls
  */
 
-void tru_initialize(void **data, 
-                    struct tru_control_type *control,
-                    struct tru_inform_type *inform);
+void arc_initialize(void **data, 
+                    struct arc_control_type *control,
+                    struct arc_inform_type *inform);
 
 /*
  *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -358,21 +366,21 @@ void tru_initialize(void **data,
  *   inform   a struct containing output information
  */
 
-/*  *-*-*-*-*-*-*-*-*-   T R U _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*
+/*  *-*-*-*-*-*-*-*-*-   A R C _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*
  *
  * Read the content of a specification file, and perform the assignment of
  * values associated with given keywords to the corresponding control parameters
  */
 
-void tru_read_specfile(struct tru_control_type *control, 
+void arc_read_specfile(struct arc_control_type *control, 
                        const char specfile[]);
 
-/*  *-*-*-*-*-*-*-*-*-*-*-*-   T R U _ I M P O R T    -*-*-*-*-*-*-*-*-*-*-*
+/*  *-*-*-*-*-*-*-*-*-*-*-*-   A R C _ I M P O R T    -*-*-*-*-*-*-*-*-*-*-*
  *
  * Import problem data into internal storage prior to solution. 
  */
 
-void tru_import(struct tru_control_type *control,
+void arc_import(struct arc_control_type *control,
                 void **data,
                 int *status, 
                 int n, 
@@ -386,7 +394,7 @@ void tru_import(struct tru_control_type *control,
  *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
  *  control is a struct whose members are described in 
- *   the leading comments to tru_solve
+ *   the leading comments to arc_solve
  *
  *  data is used for internal data
  *
@@ -437,16 +445,16 @@ void tru_import(struct tru_control_type *control,
  *   other schemes are used, and in this case can be NULL
  */
 
-/*  *-*-*-*-*-*-*-*-*-*-   T R U _ S O L V E _ W I T H _ H   -*-*-*-*-*-*-*-*-*
+/*  *-*-*-*-*-*-*-*-*-*-   A R C _ S O L V E _ W I T H _ H   -*-*-*-*-*-*-*-*-*
  *
- * tru_solve_with_h, a trust-region method for finding 
+ * arc_solve_with_h, an adaptive-regularization method for finding
  *   a local minimizer of a given function
  *
  *   This call is for the case where H is provided specifically, and all
  *   function/derivative information is available by function calls
  */
 
-void tru_solve_with_h(void **data,
+void arc_solve_with_h(void **data,
                       void *userdata, 
                       int *status, 
                       int n, 
@@ -466,10 +474,10 @@ void tru_solve_with_h(void **data,
 /*
  *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
- *  For full details see the specification sheet for GALAHAD_TRU.
+ *  For full details see the specification sheet for GALAHAD_ARC.
  *
  *  ** NB. default real/complex means double precision real/complex in
- *  ** GALAHAD_TRU_double
+ *  ** GALAHAD_ARC_double
  *
  *  data is used for internal data.
  *
@@ -567,9 +575,9 @@ void tru_solve_with_h(void **data,
  *   be set to a nonzero value.
  */ 
 
-/*  *-*-*-*-*-*-*-*-*-   T R U _ S O L V E _ W I T H O U T _ H   -*-*-*-*-*-*-*
+/*  *-*-*-*-*-*-*-*-*-   A R C _ S O L V E _ W I T H O U T _ H   -*-*-*-*-*-*-*
  *
- * tru_solve_without_h, a trust-region method for finding
+ * arc_solve_without_h, an adaptive-regularization method for finding
  *   a local minimizer of a given function
  *
  *   This call is for the case where access to H is provided by Hessian-vector
@@ -577,7 +585,7 @@ void tru_solve_with_h(void **data,
  *   function calls
  */
 
-void tru_solve_without_h(void **data,
+void arc_solve_without_h(void **data,
                          void *userdata, 
                          int *status, 
                          int n, 
@@ -597,10 +605,10 @@ void tru_solve_without_h(void **data,
 /*
  *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
- *  For full details see the specification sheet for GALAHAD_TRU.
+ *  For full details see the specification sheet for GALAHAD_ARC.
  *
  *  ** NB. default real/complex means double precision real/complex in
- *  ** GALAHAD_TRU_double
+ *  ** GALAHAD_ARC_double
  *
  *  data is used for internal data.
  *
@@ -696,9 +704,9 @@ void tru_solve_without_h(void **data,
  *   be set to a nonzero value.
  */  
 
-/*  *-*-*-*-*-*-   T R U _ S O L V E _ R E V E R S E _ W I T H _ H   -*-*-*-*-*
+/*  *-*-*-*-*-*-   A R C _ S O L V E _ R E V E R S E _ W I T H _ H   -*-*-*-*-*
  *
- * tru_solve_reverse_with_h, a trust-region method for finding
+ * arc_solve_reverse_with_h, an adaptive-regularization method for finding 
  *   a local minimizer of a given function
  *
  *   This call is for the case where H is provided specifically, but
@@ -706,7 +714,7 @@ void tru_solve_without_h(void **data,
  *   calling procedure
  */
 
-void tru_solve_reverse_with_h(void **data,
+void arc_solve_reverse_with_h(void **data,
                               int *status, 
                               int *eval_status, 
                               int n, 
@@ -721,10 +729,10 @@ void tru_solve_reverse_with_h(void **data,
 /*
  *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
- *  For full details see the specification sheet for GALAHAD_TRU.
+ *  For full details see the specification sheet for GALAHAD_ARC.
  *
  *  ** NB. default real/complex means double precision real/complex in
- *  ** GALAHAD_TRU_double
+ *  ** GALAHAD_ARC_double
  *
  *  data is used for internal data.
  *
@@ -828,17 +836,17 @@ void tru_solve_reverse_with_h(void **data,
  *   at the point x indicated in x is computed (see above for details)
  */ 
 
-/*  *-*-*-*-   T R U _ S O L V E _ R E V E R S E _ W I T H O U T _ H   -*-*-*-*
+/*  *-*-*-*-   A R C _ S O L V E _ R E V E R S E _ W I T H O U T _ H   -*-*-*-*
  *
- * tru_solve_reverse_without_h, a trust-region method for finding
- *   a local  minimizer of a given function
+ * arc_solve_reverse_without_h, an adaptive-regularization method for finding 
+ *   a local minimizer of a given function
  *
  *   This call is for the case where access to H is provided by Hessian-vector
  *   products, but function/derivative information is only available by 
  *   returning to the calling procedure
  */
 
-void tru_solve_reverse_without_h(void **data,
+void arc_solve_reverse_without_h(void **data,
                                  int *status, 
                                  int *eval_status, 
                                  int n, 
@@ -851,10 +859,10 @@ void tru_solve_reverse_without_h(void **data,
 /*
  *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
- *  For full details see the specification sheet for GALAHAD_TRU.
+ *  For full details see the specification sheet for GALAHAD_ARC.
  *
  *  ** NB. default real/complex means double precision real/complex in
- *  ** GALAHAD_TRU_double
+ *  ** GALAHAD_ARC_double
  *
  *  data is used for internal data.
  * 
@@ -950,23 +958,23 @@ void tru_solve_reverse_without_h(void **data,
  *   reverse communication (see above for details)
  */  
 
-/*  *-*-*-*-*-*-*-*-*-*-   T R U _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
+/*  *-*-*-*-*-*-*-*-*-*-   A R C _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
  *
- * tru_information fills the output information structure inform 
- * (see tru_inform_type above)
+ * arc_information fills the output information structure inform 
+ * (see arc_inform_type above)
  */
 
-void tru_information(void **data,
-                     struct tru_inform_type *inform,
+void arc_information(void **data,
+                     struct arc_inform_type *inform,
                      int *status);
 
 /*
  *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
- *  For full details see the specification sheet for GALAHAD_TRU.
+ *  For full details see the specification sheet for GALAHAD_ARC.
  *
  *  ** NB. default real/complex means double precision real/complex in
- *  ** GALAHAD_TRU_double
+ *  ** GALAHAD_ARC_double
  *
  *  data is used for internal data.
  *
@@ -981,14 +989,14 @@ void tru_information(void **data,
  *
  */
 
-/*  *-*-*-*-*-*-*-*-*-*-   T R U _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
+/*  *-*-*-*-*-*-*-*-*-*-   A R C _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
  *
  * Deallocate all private storage
  */
 
-void tru_terminate(void **data, 
-                   struct tru_control_type *control, 
-                   struct tru_inform_type *inform);
+void arc_terminate(void **data, 
+                   struct arc_control_type *control, 
+                   struct arc_inform_type *inform);
 
 // end include guard
 #endif

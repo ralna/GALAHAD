@@ -62,7 +62,7 @@
         mwPointer :: factorization_max, factorization_status
         mwPointer :: max_entries_factors, factorization_integer
         mwPointer :: factorization_real, factorization_average
-        mwPointer :: obj, norm_g
+        mwPointer :: obj, norm_g, weight
         mwPointer :: time
         TYPE ( ARC_time_pointer_type ) :: time_pointer
         TYPE ( RQS_pointer_type ) :: RQS_pointer
@@ -479,7 +479,7 @@
 
       mwPointer :: mxCreateStructMatrix
 
-      INTEGER * 4, PARAMETER :: ninform = 23
+      INTEGER * 4, PARAMETER :: ninform = 24
       CHARACTER ( LEN = 21 ), PARAMETER :: finform( ninform ) = (/             &
            'status               ', 'alloc_status         ',                   &
            'bad_alloc            ', 'iter                 ',                   &
@@ -489,10 +489,10 @@
            'max_entries_factors  ', 'factorization_integer',                   &
            'factorization_real   ', 'factorization_average',                   &
            'obj                  ', 'norm_g               ',                   &
-           'time                 ', 'RQS_inform           ',                   &
-           'GLRT_inform          ', 'PSLS_inform          ',                   &
-           'LMS_inform           ', 'LMS_inform_prec      ',                   &
-           'SHA_inform           '                               /)
+           'weight               ', 'time                 ',                   &
+           'RQS_inform           ', 'GLRT_inform          ',                   &
+           'PSLS_inform          ', 'LMS_inform           ',                   &
+           'LMS_inform_prec      ', 'SHA_inform           ' /)
       INTEGER * 4, PARAMETER :: t_ninform = 10
       CHARACTER ( LEN = 21 ), PARAMETER :: t_finform( t_ninform ) = (/         &
            'total                ', 'preprocess           ',                   &
@@ -545,6 +545,8 @@
         'obj', ARC_pointer%obj )
       CALL MATLAB_create_real_component( ARC_pointer%pointer,                  &
         'norm_g', ARC_pointer%norm_g )
+      CALL MATLAB_create_real_component( ARC_pointer%pointer,                  &
+        'weight', ARC_pointer%weight )
 
 !  Define the components of sub-structure time
 
@@ -662,6 +664,8 @@
                                mxGetPr( ARC_pointer%obj ) )
       CALL MATLAB_copy_to_ptr( ARC_inform%norm_g,                              &
                                mxGetPr( ARC_pointer%norm_g ) )
+      CALL MATLAB_copy_to_ptr( ARC_inform%weight,                              &
+                               mxGetPr( ARC_pointer%weight ) )
 
 !  time components
 

@@ -534,8 +534,8 @@
        TYPE ( SHA_inform_type ) :: SHA_inform
      END TYPE TRU_inform_type
 
-!  - - - - - - - - - -
-!   data derived type
+!  - - - - - - - - - -  
+!   data derived types
 !  - - - - - - - - - -
 
      TYPE, PUBLIC :: TRU_data_type
@@ -717,7 +717,7 @@
 
      END SUBROUTINE TRU_initialize
 
-!- G A L A H A D -  T R B _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+!- G A L A H A D -  T R U _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
 
      SUBROUTINE TRU_full_initialize( data, control, inform )
 
@@ -4110,7 +4110,7 @@
 
      END SUBROUTINE TRU_terminate
 
-!-  G A L A H A D -  T R B _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+!-  G A L A H A D -  T R U _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
 
      SUBROUTINE TRU_full_terminate( data, control, inform )
 
@@ -4145,7 +4145,7 @@
 ! =============================================================================
 ! -----------------------------------------------------------------------------
 
-!-*-*-*-*-  G A L A H A D -  T R B _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+!-*-*-*-*-  G A L A H A D -  T R U _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
 
      SUBROUTINE TRU_import( control, data, status, n, H_type, ne, H_row,       &
                             H_col, H_ptr )
@@ -4374,7 +4374,7 @@
 
      END SUBROUTINE TRU_import
 
-!-  G A L A H A D -  T R B _ s o l v e _ w i t ht _ h   S U B R O U T I N E 
+!-  G A L A H A D -  T R U _ s o l v e _ w i t ht _ h   S U B R O U T I N E 
 
      SUBROUTINE TRU_solve_with_h( data, userdata, status, X, G,                &
                                   eval_F, eval_G, eval_H, eval_PREC )
@@ -4416,7 +4416,7 @@
 
      END SUBROUTINE TRU_solve_with_h
 
-! - G A L A H A D -  T R B _ s o l v e _ w i t h o u t _h  S U B R O U T I N E -
+! - G A L A H A D -  T R U _ s o l v e _ w i t h o u t _h  S U B R O U T I N E -
 
      SUBROUTINE TRU_solve_without_h( data, userdata, status, X, G,             &
                                      eval_F, eval_G, eval_HPROD, eval_PREC )
@@ -4459,7 +4459,7 @@
 
      END SUBROUTINE TRU_solve_without_h
 
-!-*-  G A L A H A D -  T R B _ s o l v e _ reverse _ h  S U B R O U T I N E  -*-
+!-*-  G A L A H A D -  T R U _ s o l v e _ reverse _ h  S U B R O U T I N E  -*-
 
      SUBROUTINE TRU_solve_reverse_with_h( data, status, eval_status,           &
                                           X, f, G, H_val, U, V )
@@ -4531,7 +4531,7 @@
 
      END SUBROUTINE TRU_solve_reverse_with_h
 
-!-  G A L A H A D -  T R B _ s o l v e _ reverse _ no _h  S U B R O U T I N E  -
+!-  G A L A H A D -  T R U _ s o l v e _ reverse _ no _h  S U B R O U T I N E  -
 
      SUBROUTINE TRU_solve_reverse_without_h( data, status, eval_status,        &
                                              X, f, G, U, V )
@@ -4606,7 +4606,7 @@
 
      END SUBROUTINE TRU_solve_reverse_without_h
 
-!-  G A L A H A D -  T R B _ i n f o r m a t i o n   S U B R O U T I N E  -
+!-  G A L A H A D -  T R U _ i n f o r m a t i o n   S U B R O U T I N E  -
 
      SUBROUTINE TRU_information( data, inform, status )
 
