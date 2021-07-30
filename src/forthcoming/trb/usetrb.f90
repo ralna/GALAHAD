@@ -241,12 +241,14 @@
           IF ( inform%status == 0 ) THEN
             WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
               inform%norm_pg, inform%iter, inform%g_eval,                      &
-              inform%factorization_average, inform%factorization_max,          &
+!             inform%factorization_average, inform%factorization_max,          &
+              inform%factorization_max,                                        &
               inform%time%clock_total, inform%status
           ELSE
             WRITE( rfiledevice, 2040 ) nlp%pname, nlp%n, inform%obj,           &
               inform%norm_pg, - inform%iter, - inform%g_eval,                  &
-              inform%factorization_average, inform%factorization_max,          &
+!             inform%factorization_average, inform%factorization_max,          &
+              inform%factorization_max,                                        &
               - inform%time%clock_total, inform%status
           END IF
         ELSE
@@ -287,11 +289,13 @@
        &  '   its     #g   av fac     time stat' )" )
         IF ( inform%status == 0 ) THEN
           WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj, inform%norm_pg,  &
-            inform%iter, inform%g_eval, inform%factorization_average,          &
+!           inform%iter, inform%g_eval, inform%factorization_average,          &
+            inform%iter, inform%g_eval,                                        &
             inform%factorization_max, inform%time%clock_total, inform%status
         ELSE
           WRITE( errout, 2040 ) nlp%pname, nlp%n, inform%obj, inform%norm_pg,  &
-            - inform%iter, - inform%g_eval, inform%factorization_average,      &
+!           - inform%iter, - inform%g_eval, inform%factorization_average,      &
+            - inform%iter, - inform%g_eval,                                    &
             inform%factorization_max, - inform%time%clock_total, inform%status
         END IF
       ELSE
@@ -353,7 +357,8 @@
  2010 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )
- 2040 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I7, F5.1, I4, F9.2, I5 )
+!2040 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I7, F5.1, I4, F9.2, I5 )
+ 2040 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I7, 5X, I4, F9.2, I5 )
  2050 FORMAT( A10, I6, ES16.8, ES9.1, bn, 2I7, I9, ' :', F9.2, I5 )
 
 

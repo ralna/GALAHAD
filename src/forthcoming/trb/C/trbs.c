@@ -11,9 +11,9 @@ struct userdata_type {
 };
 
 // Function prototypes
-int fun(int n, const double x[], double *f, const void *);
-int grad(int n, const double x[], double g[], const void *);
-int hess(int n, int ne, const double x[], double hval[], const void *);
+int fun( int n, const double x[], double *f, const void * );
+int grad( int n, const double x[], double g[], const void * );
+int hess( int n, int ne, const double x[], double hval[], const void * );
 
 int main(void) {
 
@@ -23,7 +23,7 @@ int main(void) {
     struct trb_inform_type inform;   
 
     // Initialize TRB
-    trb_initialize(&data, &control, &inform);
+    trb_initialize( &data, &control, &inform );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -48,14 +48,21 @@ int main(void) {
     double g[n]; // gradient
     
     // Set Hessian storage format, structure and problem bounds
-    trb_import(&control, &inform, &data, n, x_l, x_u, H_type, ne, H_row, H_col, NULL);
+    int status;
+    trb_import( &control, &data, &status, n, x_l, x_u, 
+                H_type, ne, H_row, H_col, NULL );
 
     // Set for initial entry
-    inform.status = 1; 
+    status = 1; 
 
     // Call TRB_solve
-    trb_solve_with_h(&control, &inform, &data, &userdata,n, x, g, ne, fun, grad, hess, NULL);
+    trb_solve_with_h( &data, &userdata, &status, 
+                      n, x, g, ne, fun, grad, hess, NULL );
 
+    // Record solution information
+    trb_information( &data, &inform, &status );
+
+    // Print solution details
     if(inform.status == 0){ // successful return
         printf("TRB successful solve\n");
         printf("iter: %d \n", inform.iter);
@@ -75,7 +82,7 @@ int main(void) {
     }
 
     // Delete internal workspace
-    trb_terminate(&data, &control, &inform);
+    trb_terminate( &data, &control, &inform );
 
     return 0;
 }

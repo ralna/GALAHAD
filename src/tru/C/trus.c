@@ -23,7 +23,7 @@ int main(void) {
     struct tru_inform_type inform;   
 
     // Initialize TRU
-    tru_initialize(&data, &control, &inform);
+    tru_initialize( &data, &control, &inform );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -47,17 +47,17 @@ int main(void) {
     
     // Set Hessian storage format, structure and problem bounds
     int status;
-    tru_import(&control, &data, &status, n, H_type, ne, H_row, H_col, NULL);
+    tru_import( &control, &data, &status, n, H_type, ne, H_row, H_col, NULL );
 
     // Set for initial entry
     status = 1; 
 
     // Call TRU_solve
-    tru_solve_with_h(&data, &userdata, &status,
-                     n, x, g, ne, fun, grad, hess, NULL);
+    tru_solve_with_h( &data, &userdata, &status,
+                      n, x, g, ne, fun, grad, hess, NULL );
 
     // Record solution information
-    tru_information(&data, &inform, &status);
+    tru_information( &data, &inform, &status );
     
     if(inform.status == 0){ // successful return
         printf("TRU successful solve\n");
@@ -78,7 +78,7 @@ int main(void) {
     }
 
     // Delete internal workspace
-    tru_terminate(&data, &control, &inform);
+    tru_terminate( &data, &control, &inform );
 
     return 0;
 }

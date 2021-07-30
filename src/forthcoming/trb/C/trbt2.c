@@ -11,20 +11,24 @@ struct userdata_type {
 };
 
 // Function prototypes
-int fun(int n, const double x[], double *f, const void *);
-int grad(int n, const double x[], double g[], const void *);
-int hess(int n, int ne, const double x[], double hval[], const void *);
-int hess_dense(int n, int ne, const double x[], double hval[], const void *);
-int hessprod(int n, const double x[], double u[], const double v[], bool got_h, const void *);
-int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
-                int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *);
-int prec(int n, const double x[], double u[], const double v[], const void *);
-int fun_diag(int n, const double x[], double *f, const void *);
-int grad_diag(int n, const double x[], double g[], const void *);
-int hess_diag(int n, int ne, const double x[], double hval[], const void *);
-int hessprod_diag(int n, const double x[], double u[], const double v[], bool got_h, const void *);
-int shessprod_diag(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
-                int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *);
+int fun( int n, const double x[], double *f, const void * );
+int grad( int n, const double x[], double g[], const void * );
+int hess( int n, int ne, const double x[], double hval[], const void * );
+int hess_dense( int n, int ne, const double x[], double hval[], const void * );
+int hessprod( int n, const double x[], double u[], const double v[], 
+              bool got_h, const void * );
+int shessprod( int n, const double x[], int nnz_v, const int index_nz_v[], 
+               const double v[], int *nnz_u, int index_nz_u[], double u[], 
+              bool got_h, const void * );
+int prec( int n, const double x[], double u[], const double v[], const void * );
+int fun_diag( int n, const double x[], double *f, const void * );
+int grad_diag( int n, const double x[], double g[], const void * );
+int hess_diag( int n, int ne, const double x[], double hval[], const void * );
+int hessprod_diag( int n, const double x[], double u[], const double v[], 
+                   bool got_h, const void * );
+int shessprod_diag( int n, const double x[], int nnz_v, const int index_nz_v[],
+                    const double v[], int *nnz_u, int index_nz_u[], double u[],
+                     bool got_h, const void * );
 
 int main(void) {
 
@@ -49,13 +53,14 @@ int main(void) {
     // Set storage
     double g[n]; // gradient
     char st;
+    int status;
 
     printf(" tests options for all-in-one storage format\n\n");
 
     for(int d=1; d <= 5; d++){
 
         // Initialize TRB
-        trb_initialize(&data, &control, &inform);
+        trb_initialize( &data, &control, &inform );
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
@@ -67,36 +72,51 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
-                trb_import(&control, &inform, &data, n, x_l, x_u, "coordinate", ne, H_row, H_col, NULL);
-                inform.status = 1; // set for initial entry
-                trb_solve_with_h(&control, &inform, &data, &userdata, n, x, g, ne, fun, grad, hess, prec);
+                trb_import( &control, &data, &status, n, x_l, x_u, 
+                            "coordinate", ne, H_row, H_col, NULL );
+                status = 1; // set for initial entry
+                trb_solve_with_h( &data, &userdata, &status, n, x, g, ne, 
+                                  fun, grad, hess, prec );
                 break;
             case 2: // sparse by rows  
                 st = 'R';
-                trb_import(&control, &inform, &data, n, x_l, x_u, "sparse_by_rows", ne, NULL, H_col, H_ptr);
-                inform.status = 1; // set for initial entry
-                trb_solve_with_h(&control, &inform, &data, &userdata, n, x, g, ne, fun, grad, hess, prec);
+                trb_import( &control, &data, &status, n, x_l, x_u, 
+                            "sparse_by_rows", ne, NULL, H_col, H_ptr );
+                status = 1; // set for initial entry
+                trb_solve_with_h( &data, &userdata, &status, n, x, g, ne, 
+                                  fun, grad, hess, prec );
                 break;
             case 3: // dense
                 st = 'D';
-                trb_import(&control, &inform, &data, n, x_l, x_u, "dense", ne, NULL, NULL, NULL);
-                inform.status = 1; // set for initial entry
-                trb_solve_with_h(&control, &inform, &data, &userdata, n, x, g, ne, fun, grad, hess_dense, prec);
+                trb_import( &control, &data, &status, n, x_l, x_u, 
+                            "dense", ne, NULL, NULL, NULL );
+                status = 1; // set for initial entry
+                trb_solve_with_h( &data, &userdata, &status, n, x, g, ne,  
+                                  fun, grad, hess_dense, prec );
                 break;
             case 4: // diagonal
                 st = 'I';
-                trb_import(&control, &inform, &data, n, x_l, x_u, "diagonal", ne, NULL, NULL, NULL);
-                inform.status = 1; // set for initial entry
-                trb_solve_with_h(&control, &inform, &data, &userdata, n, x, g, ne, fun_diag, grad_diag, hess_diag, prec);
+                trb_import( &control, &data, &status, n, x_l, x_u, 
+                            "diagonal", ne, NULL, NULL, NULL );
+                status = 1; // set for initial entry
+                trb_solve_with_h (&data, &userdata, &status, n, x, g, ne, 
+                                  fun_diag, grad_diag, hess_diag, prec );
                 break;
             case 5: // access by products
                 st = 'P';
-                trb_import(&control, &inform, &data, n, x_l, x_u, "absent", ne, NULL, NULL, NULL);
-                inform.status = 1; // set for initial entry
-                trb_solve_without_h(&control, &inform, &data, &userdata, n, x, g, fun, grad, hessprod, shessprod, prec);
+                trb_import( &control, &data, &status, n, x_l, x_u, 
+                            "absent", ne, NULL, NULL, NULL );
+                status = 1; // set for initial entry
+                trb_solve_without_h( &data, &userdata, &status, n, x, g, 
+                                     fun, grad, hessprod, shessprod, prec );
                 break;
         }
 
+
+        // Record solution information
+        trb_information( &data, &inform, &status );
+
+        // Print solution details
         if(inform.status == 0){
             printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", 
                    st, inform.iter, inform.obj, inform.status);
@@ -111,7 +131,7 @@ int main(void) {
         //printf("\n");
 
         // Delete internal workspace
-        trb_terminate(&data, &control, &inform);
+        trb_terminate( &data, &control, &inform );
     }
 
     printf("\n tests reverse-communication options\n\n");
@@ -138,129 +158,147 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
-                trb_import(&control, &inform, &data, n, x_l, x_u, "coordinate", ne, H_row, H_col, NULL);
-                inform.status = 1; // set for initial entry
+                trb_import( &control, &data, &status, n, x_l, x_u, 
+                            "coordinate", ne, H_row, H_col, NULL );
+                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    trb_solve_reverse_with_h(&control, &inform, &data, &eval_status, n, x, f, g, ne, H_val, u, v);
-                    if(inform.status == 0){ // successful termination
+                    trb_solve_reverse_with_h( &data, &status, &eval_status, 
+                                              n, x, f, g, ne, H_val, u, v );
+                    if(status == 0){ // successful termination
                         break;
-                    }else if(inform.status < 0){ // error exit
+                    }else if(status < 0){ // error exit
                         break;
-                    }else if(inform.status == 2){ // evaluate f
-                        eval_status = fun(n, x, &f, &userdata);
-                    }else if(inform.status == 3){ // evaluate g
-                        eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 4){ // evaluate H
-                        eval_status = hess(n, ne, x, H_val, &userdata); 
-                    }else if(inform.status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
+                    }else if(status == 2){ // evaluate f
+                        eval_status = fun( n, x, &f, &userdata );
+                    }else if(status == 3){ // evaluate g
+                        eval_status = grad( n, x, g, &userdata );
+                    }else if(status == 4){ // evaluate H
+                        eval_status = hess( n, ne, x, H_val, &userdata ); 
+                    }else if(status == 6){ // evaluate the product with P
+                        eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", inform.status);
+                        printf(" the value %1i of status should not occur\n", status);
                         break;
                     }
                 }
                 break;
             case 2: // sparse by rows  
                 st = 'R';
-                trb_import(&control, &inform, &data, n, x_l, x_u, "sparse_by_rows", ne, NULL, H_col, H_ptr);
-                inform.status = 1; // set for initial entry
+                trb_import( &control, &data, &status, n, x_l, x_u, 
+                            "sparse_by_rows", ne, NULL, H_col, H_ptr );
+                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    trb_solve_reverse_with_h(&control, &inform, &data, &eval_status, n, x, f, g, ne, H_val, u, v);
-                    if(inform.status == 0){ // successful termination
+                    trb_solve_reverse_with_h( &data, &status, &eval_status, 
+                                           n, x, f, g, ne, H_val, u, v );
+                    if(status == 0){ // successful termination
                         break;
-                    }else if(inform.status < 0){ // error exit
+                    }else if(status < 0){ // error exit
                         break;
-                    }else if(inform.status == 2){ // evaluate f
-                        eval_status = fun(n, x, &f, &userdata);
-                    }else if(inform.status == 3){ // evaluate g
-                        eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 4){ // evaluate H
-                        eval_status = hess(n, ne, x, H_val, &userdata); 
-                    }else if(inform.status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
+                    }else if(status == 2){ // evaluate f
+                        eval_status = fun( n, x, &f, &userdata );
+                    }else if(status == 3){ // evaluate g
+                        eval_status = grad( n, x, g, &userdata );
+                    }else if(status == 4){ // evaluate H
+                        eval_status = hess( n, ne, x, H_val, &userdata ); 
+                    }else if(status == 6){ // evaluate the product with P
+                        eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", inform.status);
+                        printf(" the value %1i of status should not occur\n", status);
                         break;
                     }
                 }
                 break;
             case 3: // dense
                 st = 'D';
-                trb_import(&control, &inform, &data, n, x_l, x_u, "dense", ne, NULL, NULL, NULL);
-                inform.status = 1; // set for initial entry
+                trb_import( &control, &data, &status, n, x_l, x_u, 
+                            "dense", ne, NULL, NULL, NULL );
+                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    trb_solve_reverse_with_h(&control, &inform, &data, &eval_status, n, x, f, g, n*(n+1)/2, H_dense, u, v);
-                    if(inform.status == 0){ // successful termination
+                    trb_solve_reverse_with_h( &data, &status, &eval_status, 
+                                              n, x, f, g, n*(n+1)/2, H_dense, 
+                                              u, v );
+                    if(status == 0){ // successful termination
                         break;
-                    }else if(inform.status < 0){ // error exit
+                    }else if(status < 0){ // error exit
                         break;
-                    }else if(inform.status == 2){ // evaluate f
-                        eval_status = fun(n, x, &f, &userdata);
-                    }else if(inform.status == 3){ // evaluate g
-                        eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 4){ // evaluate H
-                        eval_status = hess_dense(n, n*(n+1)/2, x, H_dense, &userdata); 
-                    }else if(inform.status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
+                    }else if(status == 2){ // evaluate f
+                        eval_status = fun( n, x, &f, &userdata );
+                    }else if(status == 3){ // evaluate g
+                        eval_status = grad( n, x, g, &userdata );
+                    }else if(status == 4){ // evaluate H
+                        eval_status = hess_dense( n, n*(n+1)/2, x, H_dense, 
+                                                  &userdata); 
+                    }else if(status == 6){ // evaluate the product with P
+                        eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", inform.status);
+                        printf(" the value %1i of status should not occur\n", status);
                         break;
                     }
                 }
                 break;
             case 4: // diagonal
                 st = 'I';
-                trb_import(&control, &inform, &data, n, x_l, x_u, "diagonal", ne, NULL, NULL, NULL);
-                inform.status = 1; // set for initial entry
+                trb_import( &control, &data, &status, n, x_l, x_u, 
+                            "diagonal", ne, NULL, NULL, NULL );
+                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    trb_solve_reverse_with_h(&control, &inform, &data, &eval_status, n, x, f, g, n, H_diag, u, v);
-                    if(inform.status == 0){ // successful termination
+                    trb_solve_reverse_with_h( &data, &status, &eval_status, 
+                                              n, x, f, g, n, H_diag, u, v );
+                    if(status == 0){ // successful termination
                         break;
-                    }else if(inform.status < 0){ // error exit
+                    }else if(status < 0){ // error exit
                         break;
-                    }else if(inform.status == 2){ // evaluate f
-                        eval_status = fun_diag(n, x, &f, &userdata);
-                    }else if(inform.status == 3){ // evaluate g
-                        eval_status = grad_diag(n, x, g, &userdata);
-                    }else if(inform.status == 4){ // evaluate H
-                        eval_status = hess_diag(n, n, x, H_diag, &userdata); 
-                    }else if(inform.status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
+                    }else if(status == 2){ // evaluate f
+                        eval_status = fun_diag( n, x, &f, &userdata );
+                    }else if(status == 3){ // evaluate g
+                        eval_status = grad_diag( n, x, g, &userdata );
+                    }else if(status == 4){ // evaluate H
+                        eval_status = hess_diag( n, n, x, H_diag, &userdata ); 
+                    }else if(status == 6){ // evaluate the product with P
+                        eval_status = prec( n, x, u, v, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", inform.status);
+                        printf(" the value %1i of status should not occur\n", status);
                         break;
                     }
                 }
                 break;
             case 5: // access by products
                 st = 'P';
-                trb_import(&control, &inform, &data, n, x_l, x_u, "absent", ne, NULL, NULL, NULL);
-                inform.status = 1; // set for initial entry
+                trb_import( &control, &data, &status, n, x_l, x_u, 
+                            "absent", ne, NULL, NULL, NULL );
+                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    trb_solve_reverse_without_h(&control, &inform, &data, &eval_status, n, x, f, g,
-                                                u, v, index_nz_v, &nnz_v, index_nz_u, nnz_u);
-                    if(inform.status == 0){ // successful termination
+                    trb_solve_reverse_without_h( &data, &status, &eval_status, 
+                                                 n, x, f, g, u, v, index_nz_v, 
+                                                &nnz_v, index_nz_u, nnz_u );
+                    if(status == 0){ // successful termination
                         break;
-                    }else if(inform.status < 0){ // error exit
+                    }else if(status < 0){ // error exit
                         break;
-                    }else if(inform.status == 2){ // evaluate f
-                        eval_status = fun(n, x, &f, &userdata);
-                    }else if(inform.status == 3){ // evaluate g
-                        eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 5){ // evaluate H
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
-                    }else if(inform.status == 7){ // evaluate sparse Hessian-vector product
-                        eval_status = shessprod(n, x, nnz_v, index_nz_v, v, &nnz_u, index_nz_u, u, false, &userdata);
+                    }else if(status == 2){ // evaluate f
+                        eval_status = fun( n, x, &f, &userdata );
+                    }else if(status == 3){ // evaluate g
+                        eval_status = grad( n, x, g, &userdata );
+                    }else if(status == 5){ // evaluate H
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 6){ // evaluate the product with P
+                        eval_status = prec(n, x, u, v, &userdata );
+                    }else if(status == 7){ // evaluate sparse Hessian-vect prod
+                        eval_status = shessprod( n, x, nnz_v, index_nz_v, v, 
+                                                 &nnz_u, index_nz_u, u, 
+                                                 false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", inform.status);
+                        printf(" the value %1i of status should not occur\n", status);
                         break;
                     }
                 }
                 break;
         }
 
+        // Record solution information
+        trb_information( &data, &inform, &status );
+
+        // Print solution details
         if(inform.status == 0){
             printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", 
                    st, inform.iter, inform.obj, inform.status);
@@ -275,7 +313,7 @@ int main(void) {
         //printf("\n");
 
         // Delete internal workspace
-        trb_terminate(&data, &control, &inform);
+        trb_terminate( &data, &control, &inform );
     }
 
 }
@@ -422,15 +460,15 @@ int shessprod_diag(int n, const double x[], int nnz_v, const int index_nz_v[], c
     for(int i = 0; i < nnz_v; i++){
         int j = index_nz_v[i];
         switch(j){
-            case 1:
+            case 0:
                 p[0] = p[0] - cos(x[0]) * v[0];
                 used[0] = true;
                 break;
-            case 2:
+            case 1:
                 p[1] = p[1] + 2.0 * v[1];
                 used[1] = true;
                 break;
-            case 3:
+            case 2:
                 p[2] = p[2] + 2.0 * v[2];
                 used[2] = true;
                 break;

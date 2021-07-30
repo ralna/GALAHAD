@@ -1,5 +1,5 @@
+   PROGRAM GALAHAD_TRB_test  !  GALAHAD 3.3 - 29/07/2021 AT 07:45 GMT
 ! THIS VERSION: GALAHAD 3.3 - 26/04/2021 AT 09:30 GMT.
-   PROGRAM GALAHAD_TRB_test_deck
    USE GALAHAD_TRB_double                       ! double precision version
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
@@ -17,7 +17,7 @@
 ! start problem data
    nlp%n = 1 ; nlp%H%ne = 1                     ! dimensions
    ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ),               &
-             nlp%G( nlp%n ) )
+             nlp%G( nlp%n ), nlp%Z( nlp%n ) )
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
@@ -32,7 +32,7 @@
 !  error exit tests
 !  ================
 
-   WRITE( 6, "( /, ' error exit tests ', / )" )
+   WRITE( 6, "( /, ' error exit tests ' )" )
 
 !  tests for s = - 1 ... - 40
 
@@ -140,7 +140,7 @@
                    eval_F = FUN, eval_G = GRAD, eval_H = HESS )
 
 10 continue
-   DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G )
+   DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G, nlp%Z )
    DEALLOCATE( nlp%H%val, nlp%H%row, nlp%H%col )
 
 !  =========================
@@ -150,7 +150,7 @@
 ! start problem data
    nlp%n = 3 ; nlp%H%ne = 5                  ! dimensions
    ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ),               &
-             nlp%G( nlp%n ) )
+             nlp%G( nlp%n ), nlp%Z( nlp%n ) )
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
@@ -161,7 +161,7 @@
    ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
    userdata%real( 1 ) = p                     ! Record parameter, p
 
-   WRITE( 6, "( /, ' test of availible options ', / )" )
+   WRITE( 6, "( ' test of availible options ', / )" )
 
 !  DO i = 1, 1
    DO i = 1, 7
@@ -241,7 +241,7 @@
 
      CALL TRB_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G )
+   DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G, nlp%Z )
    DEALLOCATE( nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
 
 !  ============================
@@ -251,7 +251,7 @@
 ! start problem data
    nlp%n = 3 ; nlp%H%ne = 5                  ! dimensions
    ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ),               &
-             nlp%G( nlp%n ) )
+             nlp%G( nlp%n ), nlp%Z( nlp%n ) )
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
@@ -330,7 +330,7 @@
 
      CALL TRB_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G )
+   DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G, nlp%Z )
    DEALLOCATE( nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
 
 CONTAINS
@@ -461,4 +461,4 @@ CONTAINS
    RETURN
    END SUBROUTINE SHESSPROD
 
-   END PROGRAM GALAHAD_TRB_test_deck
+   END PROGRAM GALAHAD_TRB_test

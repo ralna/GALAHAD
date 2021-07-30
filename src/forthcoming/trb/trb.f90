@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 22/07/2021 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 28/07/2021 AT 14:10 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ T R B   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -51,7 +51,7 @@
                NLPT_userdata_type, SMT_type, SMT_put,                          &
                TRB_import, TRB_solve_with_h, TRB_solve_without_h,              &
                TRB_solve_reverse_with_h, TRB_solve_reverse_without_h,          &
-               TRB_full_initialize, TRB_full_terminate
+               TRB_full_initialize, TRB_full_terminate, TRB_information
 
 !----------------------
 !   I n t e r f a c e s
@@ -656,7 +656,10 @@
      END TYPE TRB_data_type
 
      TYPE, PUBLIC :: TRB_full_data_type
+       LOGICAL :: f_indexing
        TYPE ( TRB_data_type ) :: trb_data
+       TYPE ( TRB_control_type ) :: trb_control
+       TYPE ( TRB_inform_type ) :: trb_inform
        TYPE ( NLPT_problem_type ) :: nlp
        TYPE ( NLPT_userdata_type ) :: userdata
      END TYPE TRB_full_data_type
@@ -1615,6 +1618,8 @@
   10 CONTINUE
      CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
      data%out = control%out
+
+     inform%iter = 0
 
 !  ensure that input parameters are within allowed ranges
 
@@ -3059,7 +3064,6 @@
 
 !  -------------------------- UNCONSTRAINED CASE ------------------------------
 
-!      IF ( data%unconstrained ) THEN
        IF ( .NOT. data%unconstrained ) GO TO 330
          data%control%GLTR_control%stop_relative                               &
            = MIN( data%control%GLTR_control%stop_relative,                     &
@@ -3147,9 +3151,8 @@
 !  if the Hessian is unavailable, obtain a matrix-free product
 
                ELSE
-!                data%U( : nlp%n ) = zero
+                 data%U( : nlp%n ) = zero
                  IF ( data%reverse_hprod ) THEN
-!                  data%V( : : nlp%n ) = data%U( : : nlp%n )
                    data%branch = 310 ; inform%status = 5 ; RETURN
                  ELSE
                    CALL eval_HPROD( data%eval_status, nlp%X( : nlp%n ),        &
@@ -5712,16 +5715,33 @@
 
 !-*-*-*-*-  G A L A H A D -  T R B _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
 
-     SUBROUTINE TRB_import( control, inform, data, n, X_l, X_u,                &
+     SUBROUTINE TRB_import( control, data, status, n, X_l, X_u,                &
                             H_type, ne, H_row, H_col, H_ptr )
 
 !  import problem data into internal storage prior to solution. 
 !  Arguments are as follows:
 
-!  control and inform are derived types whose components are described in 
-!   the leading comments to TRB_solve
+!  control is a derived type whose components are described in the leading 
+!   comments to TRB_solve
 !
 !  data is a scalar variable of type TRB_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    0. The import was succesful
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0 or requirement that type contains
+!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'ABSENT' has been violated.
 !
 !  n is a scalar variable of type default integer, that holds the number of
 !   variables
@@ -5765,58 +5785,73 @@
 !-----------------------------------------------
 
      TYPE ( TRB_control_type ), INTENT( INOUT ) :: control
-     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( IN ) :: n, ne
+     INTEGER, INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
      INTEGER, DIMENSION( : ), INTENT( IN ) :: H_row, H_col, H_ptr
      REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( n ) :: X_l, X_u
 
 !  local variables
 
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     data%trb_control = control
+
+     error = data%trb_control%error
+     space_critical = data%trb_control%space_critical
+     deallocate_error_fatal = data%trb_control%space_critical
 
 !  allocate space if required
 
      array_name = 'trb: data%nlp%X'
      CALL SPACE_resize_array( n, data%nlp%X,                                   &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) RETURN
+            data%trb_inform%status, data%trb_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%trb_inform%bad_alloc, out = error )
+     IF ( data%trb_inform%status /= 0 ) GO TO 900
 
      array_name = 'trb: data%nlp%G'
      CALL SPACE_resize_array( n, data%nlp%G,                                   &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) RETURN
+            data%trb_inform%status, data%trb_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%trb_inform%bad_alloc, out = error )
+     IF ( data%trb_inform%status /= 0 ) GO TO 900
 
      array_name = 'trb: data%nlp%Z'
      CALL SPACE_resize_array( n, data%nlp%Z,                                   &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) RETURN
+            data%trb_inform%status, data%trb_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%trb_inform%bad_alloc, out = error )
+     IF ( data%trb_inform%status /= 0 ) GO TO 900
 
      array_name = 'trb: data%nlp%X_l'
      CALL SPACE_resize_array( n, data%nlp%X_l,                                 &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) RETURN
+            data%trb_inform%status, data%trb_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%trb_inform%bad_alloc, out = error )
+     IF ( data%trb_inform%status /= 0 ) GO TO 900
 
      array_name = 'trb: data%nlp%X_u'
      CALL SPACE_resize_array( n, data%nlp%X_u,                                 &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= 0 ) RETURN
+            data%trb_inform%status, data%trb_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%trb_inform%bad_alloc, out = error )
+     IF ( data%trb_inform%status /= 0 ) GO TO 900
 
 !  put data into the required components of the nlpt storage type
 
@@ -5828,200 +5863,228 @@
 
      SELECT CASE ( H_type )
      CASE ( 'coordinate', 'COORDINATE' )
-       CALL SMT_put( data%nlp%H%type, 'COORDINATE', inform%alloc_status )
+       CALL SMT_put( data%nlp%H%type, 'COORDINATE',                            &
+                     data%trb_inform%alloc_status )
        data%nlp%H%n = n
        data%nlp%H%ne = ne
 
        array_name = 'trb: data%nlp%H%row'
        CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%row,                 &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) RETURN
+              data%trb_inform%status, data%trb_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trb_inform%bad_alloc, out = error )
+       IF ( data%trb_inform%status /= 0 ) GO TO 900
 
        array_name = 'trb: data%nlp%H%col'
        CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%col,                 &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) RETURN
+              data%trb_inform%status, data%trb_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trb_inform%bad_alloc, out = error )
+       IF ( data%trb_inform%status /= 0 ) GO TO 900
 
        array_name = 'trb: data%nlp%H%val'
        CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,                 &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) RETURN
+              data%trb_inform%status, data%trb_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trb_inform%bad_alloc, out = error )
+       IF ( data%trb_inform%status /= 0 ) GO TO 900
 
        data%nlp%H%row( : data%nlp%H%ne ) = H_row( : data%nlp%H%ne )
        data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
-       CALL SMT_put( data%nlp%H%type, 'SPARSE_BY_ROWS', inform%alloc_status )
+       CALL SMT_put( data%nlp%H%type, 'SPARSE_BY_ROWS',                        &
+                     data%trb_inform%alloc_status )
        data%nlp%H%n = n
        data%nlp%H%ne = H_ptr( n + 1 ) - 1
 
        array_name = 'trb: data%nlp%H%ptr'
        CALL SPACE_resize_array( n + 1, data%nlp%H%ptr,                         &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) RETURN
+              data%trb_inform%status, data%trb_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trb_inform%bad_alloc, out = error )
+       IF ( data%trb_inform%status /= 0 ) GO TO 900
 
        array_name = 'trb: data%nlp%H%col'
        CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%col,                 &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) RETURN
+              data%trb_inform%status, data%trb_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trb_inform%bad_alloc, out = error )
+       IF ( data%trb_inform%status /= 0 ) GO TO 900
 
        array_name = 'trb: data%nlp%H%val'
        CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,                 &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) RETURN
+              data%trb_inform%status, data%trb_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trb_inform%bad_alloc, out = error )
+       IF ( data%trb_inform%status /= 0 ) GO TO 900
 
        data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
        data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
 
      CASE ( 'dense', 'DENSE' )
-       CALL SMT_put( data%nlp%H%type, 'DENSE', inform%alloc_status )
+       CALL SMT_put( data%nlp%H%type, 'DENSE',                                 &
+                     data%trb_inform%alloc_status )
        data%nlp%H%n = n
        data%nlp%H%ne = ( n * ( n + 1 ) ) / 2
 
        array_name = 'trb: data%nlp%H%val'
        CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,                 &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) RETURN
+              data%trb_inform%status, data%trb_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trb_inform%bad_alloc, out = error )
+       IF ( data%trb_inform%status /= 0 ) GO TO 900
 
      CASE ( 'diagonal', 'DIAGONAL' )
-       CALL SMT_put( data%nlp%H%type, 'DIAGONAL', inform%alloc_status )
+       CALL SMT_put( data%nlp%H%type, 'DIAGONAL',                              &
+                     data%trb_inform%alloc_status )
        data%nlp%H%n = n
        data%nlp%H%ne = n
 
        array_name = 'trb: data%nlp%H%val'
        CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%val,                 &
-              inform%status, inform%alloc_status, array_name = array_name,     &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= 0 ) RETURN
+              data%trb_inform%status, data%trb_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trb_inform%bad_alloc, out = error )
+       IF ( data%trb_inform%status /= 0 ) GO TO 900
+
      CASE ( 'absent', 'ABSENT' )
-       control%hessian_available = .FALSE.
+       data%trb_control%hessian_available = .FALSE.
      CASE DEFAULT
-       inform%status = GALAHAD_error_unknown_storage
+       data%trb_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
      END SELECT       
 
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status =  data%trb_inform%status
      RETURN
 
 !  End of subroutine TRB_import
 
      END SUBROUTINE TRB_import
 
-!-  G A L A H A D -  T R B _ s o l v e _ w i t ht _ h   S U B R O U T I N E 
+!-  G A L A H A D -  T R B _ s o l v e _ w i t h _ h   S U B R O U T I N E  -
 
-     SUBROUTINE TRB_solve_with_h( control, inform, data, userdata, X, G,       &
+     SUBROUTINE TRB_solve_with_h( data, userdata, status, X, G,                &
                                   eval_F, eval_G, eval_H, eval_PREC )
 
 !  solve the bound-constrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
 !  available via subroutine calls. See TRB_solve for a description of 
-!  the required arguments
+!  the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TRB_control_type ), INTENT( IN ) :: control
-     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+     INTEGER, INTENT( INOUT ) :: status
      TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_F, eval_G, eval_H, eval_PREC
 
-     IF ( inform%status == 1 ) data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+     data%trb_inform%status = status
+     IF ( data%trb_inform%status == 1 )                                        &
+       data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
 
 !  call the solver
 
-     CALL TRB_solve( data%nlp, control, inform, data%trb_data, userdata,       &
-                     eval_F = eval_F, eval_G = eval_G, eval_H = eval_H,        &
-                     eval_PREC = eval_PREC )
+     CALL TRB_solve( data%nlp, data%trb_control, data%trb_inform,              &
+                     data%trb_data, userdata, eval_F = eval_F,                 &
+                     eval_G = eval_G, eval_H = eval_H, eval_PREC = eval_PREC )
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
-     IF ( inform%status == GALAHAD_ok )                                        &
+     IF ( data%trb_inform%status == GALAHAD_ok )                               &
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+     status = data%trb_inform%status
 
      RETURN
+
+!  end of subroutine TRB_solve_with_h
 
      END SUBROUTINE TRB_solve_with_h
 
 ! - G A L A H A D -  T R B _ s o l v e _ w i t h o u t _h  S U B R O U T I N E -
 
-     SUBROUTINE TRB_solve_without_h( control, inform, data, userdata, X, G,    &
+     SUBROUTINE TRB_solve_without_h( data, userdata, status, X, G,             &
                                      eval_F, eval_G, eval_HPROD,               &
                                      eval_SHPROD, eval_PREC )
 
 !  solve the bound-constrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations 
 !  are available via subroutine calls. See TRB_solve for a description 
-!  of the required arguments
+!  of the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TRB_control_type ), INTENT( IN ) :: control
-     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+     INTEGER, INTENT( INOUT ) :: status
      TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_F, eval_G, eval_HPROD, eval_SHPROD, eval_PREC
 
-     IF ( inform%status == 1 ) data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
+     data%trb_inform%status = status
+     IF ( data%trb_inform%status == 1 )                                        &
+       data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
 
 !  call the solver
 
-     CALL TRB_solve( data%nlp, control, inform, data%trb_data, userdata,       &
-                     eval_F = eval_F, eval_G = eval_G,                         &
-                     eval_HPROD = eval_HPROD, eval_SHPROD = eval_SHPROD,       &
-                     eval_PREC = eval_PREC )
+     CALL TRB_solve( data%nlp, data%trb_control, data%trb_inform,              &
+                     data%trb_data, userdata, eval_F = eval_F,                 &
+                     eval_G = eval_G, eval_HPROD = eval_HPROD,                 &
+                     eval_SHPROD = eval_SHPROD, eval_PREC = eval_PREC )
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
-     IF ( inform%status == GALAHAD_ok )                                        &
+     IF ( data%trb_inform%status == GALAHAD_ok )                               &
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+     status = data%trb_inform%status
 
      RETURN
+
+!  end of subroutine TRB_solve_without_h
 
      END SUBROUTINE TRB_solve_without_h
 
 !-*-  G A L A H A D -  T R B _ s o l v e _ reverse _ h  S U B R O U T I N E  -*-
 
-     SUBROUTINE TRB_solve_reverse_with_h( control, inform, data, eval_status,  &
+     SUBROUTINE TRB_solve_reverse_with_h( data, status, eval_status,           &
                                           X, f, G, H_val, U, V )
 
 !  solve the bound-constrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
 !  available via reverse communication. See TRB_solve for a description 
-!  of the required arguments
+!  of the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TRB_control_type ), INTENT( IN ) :: control
-     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
+     INTEGER, INTENT( INOUT ) :: status
      TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( INOUT ) :: eval_status
      REAL ( KIND = wp ), INTENT( IN ) :: f
@@ -6033,21 +6096,21 @@
 
 !  recover data from reverse communication
 
-     SELECT CASE ( inform%status )
+     data%trb_inform%status = status
+     data%trb_data%eval_status = eval_status
+     SELECT CASE ( data%trb_inform%status )
      CASE ( 1 )
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
      CASE ( 2 )
        data%trb_data%eval_status = eval_status
-       IF ( eval_status == 0 )                                                 &
-         data%nlp%f = f
+       IF ( eval_status == 0 ) data%nlp%f = f
      CASE( 3 ) 
        data%trb_data%eval_status = eval_status
-       IF ( eval_status == 0 )                                                 &
-         data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
+       IF ( eval_status == 0 ) data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
      CASE( 4 ) 
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
-         data%nlp%H%val( : data%trb_data%h_ne ) = H_val( : data%trb_data%h_ne )
+         data%nlp%H%val( : data%nlp%H%ne ) = H_val( : data%nlp%H%ne )
      CASE( 6 )
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
@@ -6056,47 +6119,49 @@
 
 !  call the solver
 
-     CALL TRB_solve( data%nlp, control, inform, data%trb_data, data%userdata )
+     CALL TRB_solve( data%nlp, data%trb_control, data%trb_inform,              &
+                     data%trb_data, data%userdata )
 
 !  collect data for reverse communication
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
-     SELECT CASE ( inform%status )
+     SELECT CASE ( data%trb_inform%status )
      CASE( 0 )
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
      CASE( 6 )
        V( : data%nlp%n ) = data%trb_data%V( : data%nlp%n )
      CASE( 5, 7 ) 
        WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
-         inform%status
+         data%trb_inform%status
      END SELECT
+     status = data%trb_inform%status
 
      RETURN
+
+!  end of subroutine TRB_solve_reverse_with_h
 
      END SUBROUTINE TRB_solve_reverse_with_h
 
 !-  G A L A H A D -  T R B _ s o l v e _ reverse _ no _h  S U B R O U T I N E  -
 
-     SUBROUTINE TRB_solve_reverse_without_h( control, inform, data,            &
-                                             eval_status, X, f, G, U, V,       &
+     SUBROUTINE TRB_solve_reverse_without_h( data, status, eval_status,        &
+                                             X, f, G, U, V,                    &
                                              INDEX_nz_v, nnz_v,                &
                                              INDEX_nz_u, nnz_u )
 
 !  solve the bound-constrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations 
 !  are available via reverse communication. See TRB_solve for a description 
-!  of the required arguments
+!  of the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TRB_control_type ), INTENT( IN ) :: control
-     TYPE ( TRB_inform_type ), INTENT( INOUT ) :: inform
-     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( INOUT ) :: status, eval_status
      INTEGER, INTENT( OUT ) :: nnz_v
-     INTEGER, INTENT( INOUT ) :: eval_status
      INTEGER, INTENT( IN ) :: nnz_u
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
      REAL ( KIND = wp ), INTENT( IN ) :: f
      INTEGER, DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_v
      INTEGER, DIMENSION( : ), INTENT( IN ) :: INDEX_nz_u 
@@ -6107,21 +6172,21 @@
 
 !  recover data from reverse communication
 
-     SELECT CASE ( inform%status )
+     data%trb_inform%status = status
+     data%trb_data%eval_status = eval_status
+     SELECT CASE ( data%trb_inform%status )
      CASE ( 1 )
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
      CASE ( 2 )
        data%trb_data%eval_status = eval_status
-       IF ( eval_status == 0 )                                                 &
-         data%nlp%f = f
+       IF ( eval_status == 0 ) data%nlp%f = f
      CASE( 3 ) 
        data%trb_data%eval_status = eval_status
-       IF ( eval_status == 0 )                                                 &
-         data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
+       IF ( eval_status == 0 ) data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
      CASE( 5 ) 
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
-          data%trb_data%U( : data%nlp%n ) = U( : data%nlp%n )
+         data%trb_data%U( : data%nlp%n ) = U( : data%nlp%n )
      CASE( 6 )
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
@@ -6138,18 +6203,19 @@
 
 !  call the solver
 
-     CALL TRB_solve( data%nlp, control, inform, data%trb_data, data%userdata )
+     CALL TRB_solve( data%nlp, data%trb_control, data%trb_inform,              &
+                     data%trb_data, data%userdata )
 
 !  collect data for reverse communication
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
-     SELECT CASE ( inform%status )
+     SELECT CASE ( data%trb_inform%status )
      CASE( 0 )
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
      CASE( 2, 3 ) 
      CASE( 4 ) 
        WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
-         inform%status
+         data%trb_inform%status
      CASE( 5 )
        U( : data%nlp%n ) = data%trb_data%U( : data%nlp%n )
        V( : data%nlp%n ) = data%trb_data%V( : data%nlp%n )
@@ -6163,10 +6229,41 @@
        V( INDEX_nz_v( 1 : nnz_v ) )                                            &
           = data%trb_data%P( INDEX_nz_v( 1 : nnz_v ) )
      END SELECT
+     status = data%trb_inform%status
 
      RETURN
 
+!  end of subroutine TRB_solve_reverse_without_h
+
      END SUBROUTINE TRB_solve_reverse_without_h
+
+!-  G A L A H A D -  T R B _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE TRB_information( data, inform, status )
+
+!  return solver information during or after solution by TRB
+!  See TRB_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TRB_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%trb_inform
+     
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine TRB_information
+
+     END SUBROUTINE TRB_information
 
 !  End of module GALAHAD_TRB
 

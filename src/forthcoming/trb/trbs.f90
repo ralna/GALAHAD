@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_TRB_EXAMPLE  !  GALAHAD 2.3 - 24/07/2008 AT 07:15 GMT
+   PROGRAM GALAHAD_TRB_EXAMPLE  !  GALAHAD 3.3 - 29/07/2021 AT 07:45 GMT
    USE GALAHAD_TRB_double                       ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -15,7 +15,7 @@
 ! start problem data
    nlp%pname = 'TRBSPEC'                        ! name
    nlp%n = n ; nlp%H%ne = h_ne                  ! dimensions
-   ALLOCATE( nlp%X( n ), nlp%G( n ), nlp%X_l( n ), nlp%X_u( n ) )
+   ALLOCATE( nlp%X( n ), nlp%G( n ), nlp%X_l( n ), nlp%X_u( n ), nlp%Z( n ) )
    nlp%X = 1.0_wp                               ! start from one
    nlp%X_l( : n )  = (/ - infinity, - infinity, 0.0_wp /) ; nlp%X_u = 1.1_wp
 !  sparse co-ordinate storage format

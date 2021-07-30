@@ -4153,8 +4153,8 @@
 !  import problem data into internal storage prior to solution. 
 !  Arguments are as follows:
 
-!  control and inform are derived types whose components are described in 
-!   the leading comments to TRU_solve
+!  control is a derived type whose components are described in the leading 
+!   comments to TRU_solve
 !
 !  data is a scalar variable of type TRU_full_data_type used for internal data
 !
@@ -4374,12 +4374,12 @@
 
      END SUBROUTINE TRU_import
 
-!-  G A L A H A D -  T R U _ s o l v e _ w i t ht _ h   S U B R O U T I N E 
+!-  G A L A H A D -  T R U _ s o l v e _ w i t h _ h   S U B R O U T I N E  -
 
      SUBROUTINE TRU_solve_with_h( data, userdata, status, X, G,                &
                                   eval_F, eval_G, eval_H, eval_PREC )
 
-!  solve the bound-constrained problem previously imported when access
+!  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
 !  available via subroutine calls. See TRU_solve for a description of 
 !  the required arguments. The variable status is a proxy for inform%status
@@ -4421,7 +4421,7 @@
      SUBROUTINE TRU_solve_without_h( data, userdata, status, X, G,             &
                                      eval_F, eval_G, eval_HPROD, eval_PREC )
 
-!  solve the bound-constrained problem previously imported when access
+!  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations 
 !  are available via subroutine calls. See TRU_solve for a description 
 !  of the required arguments. The variable status is a proxy for inform%status
@@ -4464,7 +4464,7 @@
      SUBROUTINE TRU_solve_reverse_with_h( data, status, eval_status,           &
                                           X, f, G, H_val, U, V )
 
-!  solve the bound-constrained problem previously imported when access
+!  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
 !  available via reverse communication. See TRU_solve for a description 
 !  of the required arguments. The variable status is a proxy for inform%status
@@ -4536,7 +4536,7 @@
      SUBROUTINE TRU_solve_reverse_without_h( data, status, eval_status,        &
                                              X, f, G, U, V )
 
-!  solve the bound-constrained problem previously imported when access
+!  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations 
 !  are available via reverse communication. See TRU_solve for a description 
 !  of the required arguments. The variable status is a proxy for inform%status

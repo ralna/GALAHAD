@@ -11,11 +11,13 @@ struct userdata_type {
 };
 
 // Function prototypes
-int fun(int n, const double x[], double *f, const void *);
-int grad(int n, const double x[], double g[], const void *);
-int hessprod(int n, const double x[], double u[], const double v[], bool got_h, const void *);
-int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
-                int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *);
+int fun( int n, const double x[], double *f, const void * );
+int grad( int n, const double x[], double g[], const void * );
+int hessprod( int n, const double x[], double u[], const double v[], 
+              bool got_h, const void * );
+int shessprod( int n, const double x[], int nnz_v, const int index_nz_v[], 
+               const double v[], int *nnz_u, int index_nz_u[], 
+               double u[], bool got_h, const void * );
 
 int main(void) {
 
@@ -25,7 +27,7 @@ int main(void) {
     struct trb_inform_type inform;
 
     // Initialize TRB
-    trb_initialize(&data, &control, &inform);
+    trb_initialize( &data, &control, &inform );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -48,14 +50,21 @@ int main(void) {
     double g[n]; // gradient
     
     // Set Hessian storage format, structure and problem bounds
-    trb_import(&control, &inform, &data, n, x_l, x_u, H_type, ne, NULL, NULL, NULL);
+    int status;
+    trb_import( &control, &data, &status, n, x_l, x_u, 
+                H_type, ne, NULL, NULL, NULL );
 
     // Set for initial entry
-    inform.status = 1; 
+    status = 1; 
 
     // Call TRB_solve
-    trb_solve_without_h(&control, &inform, &data, &userdata, n, x, g, fun, grad, hessprod, shessprod, NULL);
+    trb_solve_without_h( &data, &userdata, &status, 
+                         n, x, g, fun, grad, hessprod, shessprod, NULL );
 
+    // Record solution information
+    trb_information( &data, &inform, &status );
+
+    // Print solution details
     if(inform.status == 0){ // successful return
         printf("TRB successful solve\n");
         printf("iter: %d \n", inform.iter);
@@ -75,7 +84,7 @@ int main(void) {
     }
 
     // Delete internal workspace
-    trb_terminate(&data, &control, &inform);
+    trb_terminate( &data, &control, &inform );
 
     return 0;
 }

@@ -1,10 +1,10 @@
 /*
- * THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 3.3 - 28/07/2021 AT 15:50 GMT.
  *
- *-*-*-*-*-*-*-*-*-  GALAHAD_TRB C INTERFACE  *-*-*-*-*-*-*-*-*-*-
+ *-*-*-*-*-*-*-  G A L A H A D _ T R B  C  I N T E R F A C E  -*-*-*-*-*-*-*-
  *
  *  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
- *  Principal author: Jaroslav Fowkes
+ *  Principal author: Jaroslav Fowkes & Nick Gould
  *
  *  History -
  *   currently in development
@@ -25,6 +25,221 @@ extern "C" {
 
 // precision
 #include "galahad_precision.h"
+
+/*
+ * control derived type as a C struct
+ */
+struct trb_control_type { 
+
+    // use C or Fortran sparse matrix indexing
+    bool f_indexing;
+
+    // error and warning diagnostics occur on stream error
+    int error;
+
+    // general output occurs on stream out    
+    int out;
+
+    // the level of output required. <= 0 gives no output, = 1 gives a one-line
+    // summary for every iteration, = 2 gives a summary of the inner iteration
+    // for each iteration, >= 3 gives increasingly verbose (debugging) output      
+    int print_level; 
+
+    // any printing will start on this iteration
+    int start_print;
+
+    // any printing will stop on this iteration
+    int stop_print;
+
+    // the number of iterations between printing
+    int print_gap;
+
+    // the maximum number of iterations allowed
+    int maxit;
+
+    // removal of the file alive_file from unit alive_unit terminates execution
+    int alive_unit;
+    char alive_file[31];
+
+    // more_toraldo >= 1 gives the number of More'-Toraldo projected searches
+    // to be used to improve upon the Cauchy point, anything else is for the
+    // standard add-one-at-a-time CG search
+    int more_toraldo;
+
+    // non-monotone <= 0 monotone strategy used, anything else non-monotone
+    // strategy with this history length used
+    int non_monotone;
+
+    // specify the model used. Possible values are
+    //
+    //   0  dynamic (*not yet implemented*)
+    //   1  first-order (no Hessian)
+    //   2  second-order (exact Hessian)
+    //   3  barely second-order (identity Hessian)
+    //   4  secant second-order (sparsity-based)
+    //   5  secant second-order (limited-memory BFGS, with .lbfgs_vectors 
+    //      history)
+    //   6  secant second-order (limited-memory SR1, with .lbfgs_vectors 
+    //      history)
+    int model;
+
+    // specify the norm used. The norm is defined via ||v||^2 = v^T P v,
+    // and will define the preconditioner used for iterative methods.
+    // Possible values for P are
+    //
+    //   -3  users own preconditioner
+    //   -2  P = limited-memory BFGS matrix (with .lbfgs_vectors history)
+    //   -1  identity (= Euclidan two-norm)
+    //    0  automatic (*not yet implemented*)
+    //    1  diagonal, P = diag( max( Hessian, .min_diagonal ) )
+    //    2  banded, P = band( Hessian ) with semi-bandwidth .semi_bandwidth
+    //    3  re-ordered band, P=band(order(A)) with semi-bandwidth 
+    //       .semi_bandwidth
+    //    4  full factorization, P = Hessian, Schnabel-Eskow modification
+    //    5  full factorization, P = Hessian, GMPS modification (*not yet *)
+    //    6  incomplete factorization of Hessian, Lin-More'
+    //    7  incomplete factorization of Hessian, HSL_MI28
+    //    8  incomplete factorization of Hessian, Munskgaard (*not yet *)
+    //    9  expanding band of Hessian (*not yet implemented*)
+    int norm;
+
+    // specify the semi-bandwidth of the band matrix P if required
+    int semi_bandwidth;
+
+    // number of vectors used by the L-BFGS matrix P if required
+    int lbfgs_vectors;
+
+    // number of vectors used by the sparsity-based secant Hessian if required
+    int max_dxg;
+
+    // number of vectors used by the Lin-More' incomplete factorization
+    // matrix P if required
+    int icfs_vectors;
+
+    // the maximum number of fill entries within each column of the incomplete
+    // factor L computed by HSL_MI28. In general, increasing mi28_lsize improves
+    // the quality of the preconditioner but increases the time to compute
+    // and then apply the preconditioner. Values less than 0 are treated as 0
+    int mi28_lsize;
+
+    // the maximum number of entries within each column of the strictly lower
+    // triangular matrix R used in the computation of the preconditioner by
+    // HSL_MI28.  Rank-1 arrays of size mi28_rsize *  n are allocated internally
+    // to hold R. Thus the amount of memory used, as well as the amount of work
+    // involved in computing the preconditioner, depends on mi28_rsize. Setting
+    // mi28_rsize > 0 generally leads to a higher quality preconditioner than
+    // using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally
+    // recommended
+    int mi28_rsize;
+
+    // overall convergence tolerances. The iteration will terminate when the
+    // norm of the gradient of the objective function is smaller than
+    // MAX( .stop_pg_absolute, .stop_pg_relative * norm of the initial gradient
+    // or if the step is less than .stop_s
+    real_wp_ stop_pg_absolute;
+    real_wp_ stop_pg_relative;
+    real_wp_ stop_s;
+
+    // try to pick a good initial trust-region radius using .advanced_start
+    // iterates of a variant on the strategy of Sartenaer SISC 
+    // 18(6)1990:1788-1803
+    int advanced_start;
+
+    // any bound larger than infinity in modulus will be regarded as infinite
+    real_wp_ infinity;
+
+    // initial value for the trust-region radius
+    real_wp_ initial_radius;
+
+    // maximum permitted trust-region radius
+    real_wp_ maximum_radius;
+
+    // required relative reduction in the resuiduals from CG
+    real_wp_ stop_rel_cg;
+
+    // a potential iterate will only be accepted if the actual decrease
+    // f - f(x_new) is larger than .eta_successful times that predicted
+    // by a quadratic model of the decrease. The trust-region radius will be
+    // increased if this relative decrease is greater than .eta_very_successful
+    // but smaller than .eta_too_successful
+    real_wp_ eta_successful;
+    real_wp_ eta_very_successful;
+    real_wp_ eta_too_successful;
+
+    // on very successful iterations, the trust-region radius will be increased
+    // by the factor .radius_increase, while if the iteration is unsucceful, the
+    // radius will be decreased by a factor .radius_reduce but no more than
+    // .radius_reduce_max
+    real_wp_ radius_increase;
+    real_wp_ radius_reduce;
+    real_wp_ radius_reduce_max;
+
+    // the smallest value the objective function may take before the problem
+    // is marked as unbounded
+    real_wp_ obj_unbounded;
+
+    // the maximum CPU time allowed (-ve means infinite)
+    real_wp_ cpu_time_limit;
+
+    // the maximum elapsed clock time allowed (-ve means infinite)
+    real_wp_ clock_time_limit;
+
+    // is the Hessian matrix of second derivatives available or is access only
+    // via matrix-vector products?
+    bool hessian_available;
+
+    // use a direct (factorization) or (preconditioned) iterative method to
+    // find the search direction
+    bool subproblem_direct;
+
+    // is a retrospective strategy to be used to update the trust-region radius?
+    bool retrospective_trust_region;
+
+    // should the radius be renormalized to account for a change in 
+    //preconditioner?
+    bool renormalize_radius;
+
+    // should an ellipsoidal trust-region be used rather than an infinity 
+    // norm one?
+    bool two_norm_tr;
+
+    // is the exact Cauchy point required rather than an approximation?
+    bool exact_gcp;
+
+    // should the minimizer of the quadratic model within the intersection of
+    // the trust-region and feasible box be found (to a prescribed accuracy)
+    // rather than a (much) cheaper approximation?
+    bool accurate_bqp;
+
+    // if .space_critical true, every effort will be made to use as little
+    // space as possible. This may result in longer computation time
+    bool space_critical;
+
+    // if .deallocate_error_fatal is true, any array/pointer deallocation error
+    // will terminate execution. Otherwise, computation will continue
+    bool deallocate_error_fatal;
+
+    // all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1)
+    // where .prefix contains the required string enclosed in
+    // quotes, e.g. "string" or 'string'
+    char prefix[31];
+
+    // control parameters for TRS
+    //struct trs_control_type trs_control;
+
+    // control parameters for GLTR
+    //struct gltr_control_type gltr_control;
+
+    // control parameters for PSLS
+    //struct psls_control_type psls_control;
+
+    // control parameters for LMS
+    //struct lms_control_type lms_control;
+    //struct lms_control_type lms_control_prec;
+
+    // control parameters for SHA
+    //struct sha_control_type sha_control;
+};
 
 /* 
  * time derived type as a C struct 
@@ -143,243 +358,75 @@ struct trb_inform_type {
     //struct sha_inform_type sha_inform;
 };
 
-/*
- * control derived type as a C struct
- */
-struct trb_control_type { 
-
-    // use C or Fortran sparse matrix indexing
-    bool f_indexing;
-
-    // error and warning diagnostics occur on stream error
-    int error;
-
-    // general output occurs on stream out    
-    int out;
-
-    // the level of output required. <= 0 gives no output, = 1 gives a one-line
-    // summary for every iteration, = 2 gives a summary of the inner iteration
-    // for each iteration, >= 3 gives increasingly verbose (debugging) output      
-    int print_level; 
-
-    // any printing will start on this iteration
-    int start_print;
-
-    // any printing will stop on this iteration
-    int stop_print;
-
-    // the number of iterations between printing
-    int print_gap;
-
-    // the maximum number of iterations allowed
-    int maxit;
-
-    // removal of the file alive_file from unit alive_unit terminates execution
-    int alive_unit;
-    char alive_file[31];
-
-    // more_toraldo >= 1 gives the number of More'-Toraldo projected searches
-    // to be used to improve upon the Cauchy point, anything else is for the
-    // standard add-one-at-a-time CG search
-    int more_toraldo;
-
-    // non-monotone <= 0 monotone strategy used, anything else non-monotone
-    // strategy with this history length used
-    int non_monotone;
-
-    // specify the model used. Possible values are
-    //
-    //   0  dynamic (*not yet implemented*)
-    //   1  first-order (no Hessian)
-    //   2  second-order (exact Hessian)
-    //   3  barely second-order (identity Hessian)
-    //   4  secant second-order (sparsity-based)
-    //   5  secant second-order (limited-memory BFGS, with %lbfgs_vectors history)
-    //   6  secant second-order (limited-memory SR1, with %lbfgs_vectors history)
-    int model;
-
-    // specify the norm used. The norm is defined via ||v||^2 = v^T P v,
-    // and will define the preconditioner used for iterative methods.
-    // Possible values for P are
-    //
-    //   -3  users own preconditioner
-    //   -2  P = limited-memory BFGS matrix (with %lbfgs_vectors history)
-    //   -1  identity (= Euclidan two-norm)
-    //    0  automatic (*not yet implemented*)
-    //    1  diagonal, P = diag( max( Hessian, %min_diagonal ) )
-    //    2  banded, P = band( Hessian ) with semi-bandwidth %semi_bandwidth
-    //    3  re-ordered band, P=band(order(A)) with semi-bandwidth %semi_bandwidth
-    //    4  full factorization, P = Hessian, Schnabel-Eskow modification
-    //    5  full factorization, P = Hessian, GMPS modification (*not yet *)
-    //    6  incomplete factorization of Hessian, Lin-More'
-    //    7  incomplete factorization of Hessian, HSL_MI28
-    //    8  incomplete factorization of Hessian, Munskgaard (*not yet *)
-    //    9  expanding band of Hessian (*not yet implemented*)
-    int norm;
-
-    // specify the semi-bandwidth of the band matrix P if required
-    int semi_bandwidth;
-
-    // number of vectors used by the L-BFGS matrix P if required
-    int lbfgs_vectors;
-
-    // number of vectors used by the sparsity-based secant Hessian if required
-    int max_dxg;
-
-    // number of vectors used by the Lin-More' incomplete factorization
-    // matrix P if required
-    int icfs_vectors;
-
-    // the maximum number of fill entries within each column of the incomplete
-    // factor L computed by HSL_MI28. In general, increasing mi28_lsize improves
-    // the quality of the preconditioner but increases the time to compute
-    // and then apply the preconditioner. Values less than 0 are treated as 0
-    int mi28_lsize;
-
-    // the maximum number of entries within each column of the strictly lower
-    // triangular matrix R used in the computation of the preconditioner by
-    // HSL_MI28.  Rank-1 arrays of size mi28_rsize *  n are allocated internally
-    // to hold R. Thus the amount of memory used, as well as the amount of work
-    // involved in computing the preconditioner, depends on mi28_rsize. Setting
-    // mi28_rsize > 0 generally leads to a higher quality preconditioner than
-    // using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally
-    // recommended
-    int mi28_rsize;
-
-    // overall convergence tolerances. The iteration will terminate when the
-    // norm of the gradient of the objective function is smaller than
-    // MAX( %stop_pg_absolute, %stop_pg_relative * norm of the initial gradient
-    // or if the step is less than %stop_s
-    real_wp_ stop_pg_absolute;
-    real_wp_ stop_pg_relative;
-    real_wp_ stop_s;
-
-    // try to pick a good initial trust-region radius using %advanced_start
-    // iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1803
-    int advanced_start;
-
-    // any bound larger than infinity in modulus will be regarded as infinite
-    real_wp_ infinity;
-
-    // initial value for the trust-region radius
-    real_wp_ initial_radius;
-
-    // maximum permitted trust-region radius
-    real_wp_ maximum_radius;
-
-    // required relative reduction in the resuiduals from CG
-    real_wp_ stop_rel_cg;
-
-    // a potential iterate will only be accepted if the actual decrease
-    // f - f(x_new) is larger than %eta_successful times that predicted
-    // by a quadratic model of the decrease. The trust-region radius will be
-    // increased if this relative decrease is greater than %eta_very_successful
-    // but smaller than %eta_too_successful
-    real_wp_ eta_successful;
-    real_wp_ eta_very_successful;
-    real_wp_ eta_too_successful;
-
-    // on very successful iterations, the trust-region radius will be increased by
-    // the factor %radius_increase, while if the iteration is unsucceful, the
-    // radius will be decreased by a factor %radius_reduce but no more than
-    // %radius_reduce_max
-    real_wp_ radius_increase;
-    real_wp_ radius_reduce;
-    real_wp_ radius_reduce_max;
-
-    // the smallest value the objective function may take before the problem
-    // is marked as unbounded
-    real_wp_ obj_unbounded;
-
-    // the maximum CPU time allowed (-ve means infinite)
-    real_wp_ cpu_time_limit;
-
-    // the maximum elapsed clock time allowed (-ve means infinite)
-    real_wp_ clock_time_limit;
-
-    // is the Hessian matrix of second derivatives available or is access only
-    // via matrix-vector products?
-    bool hessian_available;
-
-    // use a direct (factorization) or (preconditioned) iterative method to
-    // find the search direction
-    bool subproblem_direct;
-
-    // is a retrospective strategy to be used to update the trust-region radius?
-    bool retrospective_trust_region;
-
-    // should the radius be renormalized to account for a change in preconditioner?
-    bool renormalize_radius;
-
-    // should an ellipsoidal trust-region be used rather than an infinity norm one?
-    bool two_norm_tr;
-
-    // is the exact Cauchy point required rather than an approximation?
-    bool exact_gcp;
-
-    // should the minimizer of the quadratic model within the intersection of the
-    // trust-region and feasible box be found (to a prescribed accuracy) rather
-    // than a (much) cheaper approximation?
-    bool accurate_bqp;
-
-    // if %space_critical true, every effort will be made to use as little
-    // space as possible. This may result in longer computation time
-    bool space_critical;
-
-    // if %deallocate_error_fatal is true, any array/pointer deallocation error
-    // will terminate execution. Otherwise, computation will continue
-    bool deallocate_error_fatal;
-
-    // all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-    // where %prefix contains the required string enclosed in
-    // quotes, e.g. "string" or 'string'
-    char prefix[31];
-
-    // control parameters for TRS
-    //struct trs_control_type trs_control;
-
-    // control parameters for GLTR
-    //struct gltr_control_type gltr_control;
-
-    // control parameters for PSLS
-    //struct psls_control_type psls_control;
-
-    // control parameters for LMS
-    //struct lms_control_type lms_control;
-    //struct lms_control_type lms_control_prec;
-
-    // control parameters for SHA
-    //struct sha_control_type sha_control;
-};
-
-/*
- * Provide default values for TRB controls
+/*  *-*-*-*-*-*-*-*-*-*-   T R B _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*
  *
- *   Arguments:
+ * Provide default values for TRB controls
+ */
+
+void trb_initialize(void **data, 
+                    struct trb_control_type *control,
+                    struct trb_inform_type *inform);
+
+/*
+ *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
  *   data     private internal data
  *   control  a struct containing control information
  *   inform   a struct containing output information
  */
-void trb_initialize(void **data, struct trb_control_type *control, struct trb_inform_type *inform);
 
-/*
+/*  *-*-*-*-*-*-*-*-*-   T R B _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*
+ *
  * Read the content of a specification file, and perform the assignment of
  * values associated with given keywords to the corresponding control parameters
  */
-void trb_read_specfile(struct trb_control_type *control, const char specfile[]);
+
+void trb_read_specfile(struct trb_control_type *control, 
+                       const char specfile[]);
+
+/*  *-*-*-*-*-*-*-*-*-*-*-*-   T R B _ I M P O R T    -*-*-*-*-*-*-*-*-*-*-*
+ *
+ * Import problem data into internal storage prior to solution. 
+ */
+
+void trb_import(struct trb_control_type *control,
+                void **data,
+                int *status, 
+                int n, 
+                const real_wp_ x_l[], 
+                const real_wp_ x_u[],
+                const char H_type[], 
+                int ne, 
+                const int H_row[],
+                const int H_col[], 
+                const int H_ptr[]);
 
 /*
- *  Import problem data into internal storage prior to solution. 
- *  Arguments are as follows:
+ *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
- *  control and inform are structs whose members are described in 
+ *  control is a struct whose members are described in 
  *   the leading comments to trb_solve
  *
  *  data is used for internal data
  *
- *  n is a scalar variable of type int, that holds the number of
- *   variables
+ *  status is a scalar variable of type int, that gives
+ *   the exit status from the package. Possible values are:
+ *
+ *     0. The import was succesful
+ *
+ *    -1. An allocation error occurred. A message indicating the offending
+ *        array is written on unit control.error, and the returned allocation
+ *        status and a string containing the name of the offending array
+ *        are held in inform.alloc_status and inform.bad_alloc respectively.
+ *    -2. A deallocation error occurred.  A message indicating the offending
+ *        array is written on unit control.error and the returned allocation
+ *        status and a string containing the name of the offending array
+ *        are held in inform.alloc_status and inform.bad_alloc respectively.
+ *    -3. The restriction n > 0 or requirement that type contains
+ *        its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+ *        'DIAGONAL' or 'ABSENT' has been violated.
+ *
+ *  n is a scalar variable of type int, that holds the number of variables
  *
  *  x_l is a one-dimensional array of size n and type double, that holds the
  *   values x_l of the lower bounds on the optimization variables x. The j-th 
@@ -388,7 +435,7 @@ void trb_read_specfile(struct trb_control_type *control, const char specfile[]);
  *  x_u is a one-dimensional array of size n and type double, that holds the 
  *   values x_u of the upper bounds on the optimization variables x. The j-th 
  *   component of x_u, j = 0, ... , n-1, contains (x_u)j.
- *
+*
  *  H_type is a one-dimensional array of type char that specifies the Hessian
  *   storage scheme used. It should be one of 'coordinate', 'sparse_by_rows',
  *  'dense', 'diagonal' or 'absent', the latter if access to the Hessian is
@@ -415,28 +462,53 @@ void trb_read_specfile(struct trb_control_type *control, const char specfile[]);
  *   in the sparse row-wise storage scheme. It need not be set when the
  *   other schemes are used, and in this case can be NULL
  */
-void trb_import(struct trb_control_type *control, struct trb_inform_type *inform, void **data,
-                  int n, const real_wp_ x_l[], const real_wp_ x_u[], const char H_type[],
-                  int ne, const int H_row[], const int H_col[], const int H_ptr[]);
+
+/*  *-*-*-*-*-*-*-*-*-*-   T R B _ S O L V E _ W I T H _ H   -*-*-*-*-*-*-*-*-*
+ *
+ * trb_solve_with_h, an trust-region method for finding a local 
+ *   minimizer of a given function where the variables are constrained to lie
+ *   in a "box"
+ *
+ *   This call is for the case where H is provided specifically, and all
+ *   function/derivative information is available by function calls
+ */
+
+void trb_solve_with_h(void **data,
+                      void *userdata, 
+                      int *status, 
+                      int n, 
+                      real_wp_ x[], 
+                      real_wp_ g[],
+                      int ne, 
+                      int (*eval_f)(
+                        int, const real_wp_[], real_wp_*, const void *), 
+                      int (*eval_g)(
+                        int, const real_wp_[], real_wp_[], const void *),
+                      int (*eval_h)(
+                        int, int, const real_wp_[], real_wp_[], const void *), 
+                      int (*eval_prec)(
+                        int, const real_wp_[], real_wp_[], const real_wp_[], 
+                        const void *));
 
 /*
- * trb_solve_with_h, a trust-region method for finding a local minimizer of a
- *    given function where the variables are constrained to lie in a "box"
- *
- *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
  *  For full details see the specification sheet for GALAHAD_TRB.
  *
  *  ** NB. default real/complex means double precision real/complex in
  *  ** GALAHAD_TRB_double
  *
- *  control is a struct of type trb_control_type. See trb_initialize for details
+ *  data is used for internal data.
  *
- *  inform is a struct of type trb_inform_type. On initial entry, inform.status 
- *   should be set to 1. On exit, the following components will have been set:
+ *  userdata is an optional user-defined struct that may be NULL. If non-NULL, 
+ *   it is used to pass user data to the eval_* functions (see below).
  *
- *   status is a scalar variable of type default integer, that gives
- *    the exit status from the package. Possible values are:
+ *   status is a scalar variable of type int, that gives the entry and exit 
+  *   status for the package
+ *
+ *    On initial entry, status must be set to 1
+ *
+ *    Possible exit values are:
  *
  *     0. The run was succesful
  *
@@ -451,8 +523,6 @@ void trb_import(struct trb_control_type *control, struct trb_inform_type *inform
  *    -3. The restriction n > 0 or requirement that type contains
  *        its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS'
  *          or 'DIAGONAL' has been violated.
- *    -4. One or more of the simple bound restrictions (x_l)_i <= (x_u)_i
- *        is violated.
  *    -7. The objective function appears to be unbounded from below
  *    -9. The analysis phase of the factorization failed; the return status
  *        from the factorization package is given in the component
@@ -471,11 +541,6 @@ void trb_import(struct trb_control_type *control, struct trb_inform_type *inform
  *        a badly scaled problem.
  *   -40. The user has forced termination of solver by removing the file named
  *        control.alive_file from unit unit control.alive_unit.
- *
- *  data is used for internal data.
- *
- *  userdata is an optional user-defined struct that may be NULL. If non-NULL, it is
- *   used to pass user data to the eval_* functions (see below).
  * 
  *  n is a scalar variable of type int, that holds the number of variables
  * 
@@ -509,48 +574,76 @@ void trb_import(struct trb_control_type *control, struct trb_inform_type *inform
  *
  *  eval_h is a function that must have the signature given below: 
  * 
- *     int eval_h(int n, int ne, const double x[], double h[], const void *userdata)
+ *     int eval_h(int n, int ne, const double x[], double h[],
+ *               const void *userdata)
  * 
  *   The nonzeros of the Hessian nabla_xx f(x) of the objective function
  *   evaluated at x must be assigned to h in the same order as presented in H,
  *   and the function return value set to 0. If the evaluation is impossible at
  *   x, return should be set to a nonzero value.
  *
- *  eval_prec is an optional function that may be NULL. If non-NULL, it must have
- *  the signature given below:
+ *  eval_prec is an optional function that may be NULL. If non-NULL, it must 
+ *  have the signature given below:
  *
- *     int eval_prec(int n, const double x[], double u[], const double v[], const void *userdata)
+ *     int eval_prec(int n, const double x[], double u[], const double v[],
+ *                   const void *userdata)
  * 
  *   The product u = P(x) v of the user's preconditioner P(x) evaluated at x
  *   with the vector v, the result u must be retured in u, and the function
  *   return value set to 0. If the evaluation is impossible at x, return should
  *   be set to a nonzero value.
  */ 
-void trb_solve_with_h(const struct trb_control_type *control, struct trb_inform_type *inform, void **data,
-                      void *userdata, int n, real_wp_ x[], real_wp_ g[], int ne,
-                      int (*eval_f)(int, const real_wp_[], real_wp_*, const void *), 
-                      int (*eval_g)(int, const real_wp_[], real_wp_[], const void *), 
-                      int (*eval_h)(int, int, const real_wp_[], real_wp_[], const void *), 
-                      int (*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *));
+
+/*  *-*-*-*-*-*-*-*-*-   T R B _ S O L V E _ W I T H O U T _ H   -*-*-*-*-*-*-*
+ *
+ * trb_solve_without_h, an trust-region method for finding
+ *   a local minimizer of a given function where the variables are 
+ *   constrained to lie in a "box"
+ *
+ *   This call is for the case where access to H is provided by Hessian-vector
+ *   products, and all function/derivative information is available by 
+ *   function calls
+ */
+
+void trb_solve_without_h(void **data,
+                         void *userdata, 
+                         int *status, 
+                         int n, 
+                         real_wp_ x[], 
+                         real_wp_ g[], 
+                         int (*eval_f)(
+                           int, const real_wp_[], real_wp_*, const void *), 
+                         int (*eval_g)(
+                           int, const real_wp_[], real_wp_[], const void *), 
+                         int (*eval_hprod)(
+                           int, const real_wp_[], real_wp_[], const real_wp_[], 
+                           bool, const void *), 
+                         int (*eval_shprod)(int, const real_wp_[], int, 
+                           const int[], const real_wp_[], int*, int[], 
+                           real_wp_[], bool, const void *), 
+                         int (*eval_prec)(
+                           int, const real_wp_[], real_wp_[], const real_wp_[], 
+                           const void *));
 
 /*
- * trb_solve_without_h, a trust-region method for finding a local minimizer of
- *    a given function where the variables are constrained to lie in a "box"
- *
- *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
  *  For full details see the specification sheet for GALAHAD_TRB.
  *
  *  ** NB. default real/complex means double precision real/complex in
  *  ** GALAHAD_TRB_double
  *
- *  control is a struct of type trb_control_type. See trb_initialize for details
+ *  data is used for internal data.
  *
- *  inform is a struct of type trb_inform_type. On initial entry, inform.status 
- *   should be set to 1. On exit, the following components will have been set:
+ *  userdata is an optional user-defined struct that may be NULL. If non-NULL,
+ *   it is used to pass user data to the eval_* functions (see below).
+ * 
+ *  status is a scalar variable of type int, that gives the entry and exit 
+*     status for the package. 
  *
- *   status is a scalar variable of type default integer, that gives
- *    the exit status from the package. Possible values are:
+ *    On initial entry, status must be set to 1.
+ *
+ *    Possible exit values are:
  *
  *     0. The run was succesful
  *
@@ -565,8 +658,6 @@ void trb_solve_with_h(const struct trb_control_type *control, struct trb_inform_
  *    -3. The restriction n > 0 or requirement that type contains
  *        its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS'
  *          or 'DIAGONAL' has been violated.
- *    -4. One or more of the simple bound restrictions (x_l)_i <= (x_u)_i
- *        is violated.
  *    -7. The objective function appears to be unbounded from below
  *    -9. The analysis phase of the factorization failed; the return status
  *        from the factorization package is given in the component
@@ -586,11 +677,6 @@ void trb_solve_with_h(const struct trb_control_type *control, struct trb_inform_
  *   -40. The user has forced termination of solver by removing the file named
  *        control.alive_file from unit unit control.alive_unit.
  *
- *  data is used for internal data.
- *
- *  userdata is an optional user-defined struct that may be NULL. If non-NULL, it is
- *   used to pass user data to the eval_* functions (see below).
- * 
  *  n is a scalar variable of type int, that holds the number of variables
  * 
  *  x is a one-dimensional array of size n and type double, that holds the 
@@ -620,18 +706,21 @@ void trb_solve_with_h(const struct trb_control_type *control, struct trb_inform_
  *
  *  eval_hprod is a function that must have the signature given below:
  * 
- *     int eval_hprod(int n, const double x[], double u[], const double v[], bool got_h, const void *userdata)
+ *     int eval_hprod(int n, const double x[], double u[], const double v[], 
+ *                    bool got_h, const void *userdata)
  * 
  *   The sum u + nabla_xx f(x) v of the product of the Hessian nabla_xx f(x) of
  *   the objective function evaluated at x with the vector v and the vector u
  *   must be returned in u, and the function return value set to 0. If the
  *   evaluation is impossible at x, return should be set to a nonzero value.
  *   The Hessian has already been evaluated or used at x if got_h is true.
- * 
+ *
  *  eval_shprod is a function that must have the signature given below:
  * 
- *     int eval_shprod(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
- *                     int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *userdata)
+ *     int eval_shprod(int n, const double x[], int nnz_v, 
+ *                     const int index_nz_v[], const double v[], 
+ *                     int *nnz_u, int index_nz_u[], double u[], 
+ *                     bool got_h, const void *userdata)
  * 
  *   The product u = nabla_xx f(x) v of the Hessian nabla_xx f(x) of the
  *   objective function evaluated at x with the sparse vector v must be
@@ -643,42 +732,57 @@ void trb_solve_with_h(const struct trb_control_type *control, struct trb_inform_
  *   to a nonzero value. The Hessian has already been evaluated or used at x if
  *   got_h is true.
  *
- *  eval_prec is an optional function that may be NULL. If non-NULL, it must have
- *  the signature given below:
+ *  eval_prec is an optional function that may be NULL. If non-NULL, it must
+ *  have the signature given below:
  *
- *     int eval_prec(int n, const double x[], double u[], const double v[], const void *userdata)
+ *     int eval_prec(int n, const double x[], double u[], const double v[],
+ *                   const void *userdata)
  * 
  *   The product u = P(x) v of the user's preconditioner P(x) evaluated at x
  *   with the vector v, the result u must be retured in u, and the function
  *   return value set to 0. If the evaluation is impossible at x, return should
  *   be set to a nonzero value.
  */  
-void trb_solve_without_h(const struct trb_control_type *control, struct trb_inform_type *inform, void **data,
-                         void *userdata, int n, real_wp_ x[], real_wp_ g[], 
-                         int (*eval_f)(int, const real_wp_[], real_wp_*, const void *), 
-                         int (*eval_g)(int, const real_wp_[], real_wp_[], const void *), 
-                         int (*eval_hprod)(int, const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), 
-                         int (*eval_shprod)(int, const real_wp_[], int, const int[], const real_wp_[], int*, int[], real_wp_[], bool, const void *), 
-                         int (*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *));
+
+/*  *-*-*-*-*-*-   T R B _ S O L V E _ R E V E R S E _ W I T H _ H   -*-*-*-*-*
+ *
+ * trb_solve_reverse_with_h, an trust-region method for finding 
+ *   a local minimizer of a given function where the variables are 
+ *   constrained to lie in a "box"
+ *
+ *   This call is for the case where H is provided specifically, but
+ *   function/derivative information is only available by returning to the 
+ *   calling procedure
+ */
+
+void trb_solve_reverse_with_h(void **data,
+                              int *status, 
+                              int *eval_status, 
+                              int n, 
+                              real_wp_ x[], 
+                              real_wp_ f, 
+                              real_wp_ g[], 
+                              int ne, 
+                              real_wp_ H_val[], 
+                              const real_wp_ u[], 
+                              real_wp_ v[]);
 
 /*
- * trb_solve_reverse_with_h, a trust-region method for finding a local minimizer
- *    of a given function where the variables are constrained to lie in a "box"
- *
- *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
  *  For full details see the specification sheet for GALAHAD_TRB.
  *
  *  ** NB. default real/complex means double precision real/complex in
  *  ** GALAHAD_TRB_double
  *
- *  control is a struct of type trb_control_type. See trb_initialize for details
+ *  data is used for internal data.
  *
- *  inform is a struct of type trb_inform_type. On initial entry, inform.status 
- *   should be set to 1. On exit, the following components will have been set:
+ *  status is a scalar variable of type int, that gives the entry and exit 
+*     status for the package. 
  *
- *   status is a scalar variable of type default integer, that gives
- *    the exit status from the package. Possible values are:
+ *    On initial entry, status must be set to 1.
+ *
+ *    Possible exit values are:
  *
  *     0. The run was succesful
  *
@@ -693,8 +797,6 @@ void trb_solve_without_h(const struct trb_control_type *control, struct trb_info
  *    -3. The restriction n > 0 or requirement that type contains
  *        its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS'
  *          or 'DIAGONAL' has been violated.
- *    -4. One or more of the simple bound restrictions (x_l)_i <= (x_u)_i
- *        is violated.
  *    -7. The objective function appears to be unbounded from below
  *    -9. The analysis phase of the factorization failed; the return status
  *        from the factorization package is given in the component
@@ -742,8 +844,6 @@ void trb_solve_without_h(const struct trb_control_type *control, struct trb_info
  *        0. If the user is unable to evaluate the product - for instance, if
  *        a component of the preconditioner is undefined at x - the user need
  *        not set u, but should then set eval_status to a non-zero value.
- *
- *  data is used for internal data.
  * 
  *  eval_status is a scalar variable of type int, that is used to indicate if
  *   objective function/gradient/Hessian values can be provided (see above) 
@@ -776,28 +876,48 @@ void trb_solve_without_h(const struct trb_control_type *control, struct trb_info
  *   the vector v for which the product u = P(x)v of the preconditioner P(x)
  *   at the point x indicated in x is computed (see above for details)
  */ 
-void trb_solve_reverse_with_h(const struct trb_control_type *control, struct trb_inform_type *inform, void **data,
-                              int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], 
-                              int ne, real_wp_ H_val[], const real_wp_ u[], real_wp_ v[]);
+
+/*  *-*-*-*-   T R B _ S O L V E _ R E V E R S E _ W I T H O U T _ H   -*-*-*-*
+ *
+ * trb_solve_reverse_without_h, an trust-region method for finding 
+ *   a local minimizer of a given function where the variables are 
+ *   constrained to lie in a "box"
+ *
+ *   This call is for the case where access to H is provided by Hessian-vector
+ *   products, but function/derivative information is only available by 
+ *   returning to the calling procedure
+ */
+
+void trb_solve_reverse_without_h(void **data,
+                                 int *status, 
+                                 int *eval_status, 
+                                 int n, 
+                                 real_wp_ x[], 
+                                 real_wp_ f, 
+                                 real_wp_ g[], 
+                                 real_wp_ u[], 
+                                 real_wp_ v[],
+                                 int index_nz_v[], 
+                                 int *nnz_v, 
+                                 const int index_nz_u[], 
+                                 int nnz_u);
 
 /*
- * trb_solve_reverse_without_h, a trust-region method for finding a local minimizer
- *    of a given function where the variables are constrained to lie in a "box"
- *
- *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
  *
  *  For full details see the specification sheet for GALAHAD_TRB.
  *
  *  ** NB. default real/complex means double precision real/complex in
  *  ** GALAHAD_TRB_double
  *
- *  control is a struct of type trb_control_type. See trb_initialize for details
+ *  data is used for internal data.
+ * 
+ *  status is a scalar variable of type int, that gives the entry and exit 
+ *    status for the package. 
  *
- *  inform is a struct of type trb_inform_type. On initial entry, inform.status 
- *   should be set to 1. On exit, the following components will have been set:
+ *    On initial entry, status must be set to 1.
  *
- *   status is a scalar variable of type default integer, that gives
- *    the exit status from the package. Possible values are:
+ *    Possible exit values are:
  *
  *     0. The run was succesful
  *
@@ -812,8 +932,6 @@ void trb_solve_reverse_with_h(const struct trb_control_type *control, struct trb
  *    -3. The restriction n > 0 or requirement that type contains
  *        its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS'
  *          or 'DIAGONAL' has been violated.
- *    -4. One or more of the simple bound restrictions (x_l)_i <= (x_u)_i
- *        is violated.
  *    -7. The objective function appears to be unbounded from below
  *    -9. The analysis phase of the factorization failed; the return status
  *        from the factorization package is given in the component
@@ -874,8 +992,6 @@ void trb_solve_reverse_with_h(const struct trb_control_type *control, struct trb
  *        instance, if a component of the Hessian is undefined at x - the user
  *        need not alter u, but should then set eval_status to a non-zero value.
  *
- *  data is used for internal data.
- * 
  *  eval_status is a scalar variable of type int, that is used to indicate if
  *   objective function/gradient/Hessian values can be provided (see above) 
  * 
@@ -897,7 +1013,7 @@ void trb_solve_reverse_with_h(const struct trb_control_type *control, struct trb
  * 
  *  v is a one-dimensional array of size n and type double, that is used for
  *   reverse communication (see above for details)
- * 
+ *
  *  index_nz_v is a one-dimensional array of size n and type int, that is used
  *   for reverse communication (see above for details)
  * 
@@ -910,19 +1026,46 @@ void trb_solve_reverse_with_h(const struct trb_control_type *control, struct trb
  *  nnz_u is a scalar variable of type int, that is used for reverse
  *   communication (see above for details)
  */  
-void trb_solve_reverse_without_h(const struct trb_control_type *control, struct trb_inform_type *inform, void **data,
-                                int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], real_wp_ u[], real_wp_ v[],
-                                int index_nz_v[], int *nnz_v, const int index_nz_u[], int nnz_u);
+
+/*  *-*-*-*-*-*-*-*-*-*-   T R B _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
+ *
+ * trb_information fills the output information structure inform 
+ * (see trb_inform_type above)
+ */
+
+void trb_information(void **data,
+                     struct trb_inform_type *inform,
+                     int *status);
 
 /*
+ *  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ *
+ *  For full details see the specification sheet for GALAHAD_TRB.
+ *
+ *  ** NB. default real/complex means double precision real/complex in
+ *  ** GALAHAD_TRB_double
+ *
+ *  data is used for internal data.
+ *
+ *  inform is a struct containing output information
+ *
+ *  status is a scalar variable of type int, that gives the exit 
+ *    status for the package. 
+ *
+ *    Possible exit values are (currently):
+ *
+ *     0. The information was retrieved succesfully
+ *
+ */
+
+/*  *-*-*-*-*-*-*-*-*-*-   T R B _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
+ *
  * Deallocate all private storage
  */
-void trb_terminate(void **data, struct trb_control_type *control, struct trb_inform_type *inform);
 
-/*
- * Compute the projection of c into the set x_l <= x <= x_u
- */
-void trb_projection(int n, const real_wp_ x[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ projection[]);
+void trb_terminate(void **data, 
+                   struct trb_control_type *control, 
+                   struct trb_inform_type *inform);
 
 // end include guard
 #endif

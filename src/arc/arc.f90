@@ -2075,7 +2075,7 @@
                ADJUSTR( STRING_integer_6( inform%RQS_inform%factorizations ) )
              WRITE( data%out, 2120 ) prefix, char_iter, data%accept,           &
                 data%hard, data%negcur, inform%obj, inform%norm_g,             &
-                data%ratio, inform%weight, inform%RQS_inform%x_norm,             &
+                data%ratio, inform%weight, inform%RQS_inform%x_norm,           &
                 char_facts, data%clock_now
            ELSE
              char_sit = ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter ) )
@@ -2083,7 +2083,7 @@
                ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter_pass2 ) )
              WRITE( data%out, 2130 ) prefix, char_iter, data%accept,           &
                 data%negcur, data%perturb, inform%obj,                         &
-                inform%norm_g, data%ratio, inform%weight,                        &
+                inform%norm_g, data%ratio, inform%weight,                      &
                 inform%GLRT_inform%xpo_norm,                                   &
                 char_sit, char_sit2, data%clock_now
            END IF
@@ -2117,7 +2117,7 @@
 
 !  reset the initial radius to 1/||g|| if no sensible value is given
 
-       IF ( inform%iter == 0 .AND. inform%weight <= zero )                       &
+       IF ( inform%iter == 0 .AND. inform%weight <= zero )                     &
          inform%weight = one / inform%norm_g
 
 !  stop if the gradient is swampled by the Hessian
@@ -2422,12 +2422,13 @@
              inform%weight = inform%weight * data%control%weight_increase_max
            ELSE IF ( data%ratio >= data%control%eta_very_successful .AND.      &
                      data%ratio < data%control%eta_too_successful ) THEN
-             inform%weight = MAX( inform%weight * data%control%weight_decrease_min,&
-                                control%minimum_weight )
+             inform%weight = MAX( inform%weight *                              &
+                                    data%control%weight_decrease_min,          &
+                                  control%minimum_weight )
            END IF
          ELSE
 !write(6,*) ' sths ', data%hstbs
-           CALL ARC_adjust_weight( inform%weight, data%model, data%stg,          &
+           CALL ARC_adjust_weight( inform%weight, data%model, data%stg,        &
                                    data%hstbs,  data%s_norm, data%ratio,       &
                                    data%control )
 !write(6,*) ' old, new weights ', data%old_weight, inform%weight
@@ -2642,13 +2643,13 @@
            facts_this_solve = inform%RQS_inform%factorizations
 
            IF ( data%non_trivial_p ) THEN
-             CALL RQS_solve( nlp%n, three, inform%weight, data%model,            &
+             CALL RQS_solve( nlp%n, three, inform%weight, data%model,          &
                              nlp%G( : nlp%n ),                                 &
                              nlp%H, data%S( : nlp%n ), data%RQS_data,          &
                              data%control%RQS_control, inform%RQS_inform,      &
                              M = data%P )
            ELSE
-             CALL RQS_solve( nlp%n, three, inform%weight, data%model,            &
+             CALL RQS_solve( nlp%n, three, inform%weight, data%model,          &
                              nlp%G( : nlp%n ),                                 &
                              nlp%H, data%S( : nlp%n ), data%RQS_data,          &
                              data%control%RQS_control, inform%RQS_inform )
@@ -4142,8 +4143,8 @@
 !  import problem data into internal storage prior to solution. 
 !  Arguments are as follows:
 
-!  control and inform are derived types whose components are described in 
-!   the leading comments to ARC_solve
+!  control is a derived type whose components are described in the leading 
+!   comments to ARC_solve
 !
 !  data is a scalar variable of type ARC_full_data_type used for internal data
 !
@@ -4348,6 +4349,7 @@
        data%arc_control%hessian_available = .FALSE.
      CASE DEFAULT
        data%arc_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
      END SELECT       
 
      status = GALAHAD_ok
@@ -4363,12 +4365,12 @@
 
      END SUBROUTINE ARC_import
 
-!-  G A L A H A D -  A R C _ s o l v e _ w i t ht _ h   S U B R O U T I N E 
+!-  G A L A H A D -  A R C _ s o l v e _ w i t h _ h   S U B R O U T I N E  -
 
      SUBROUTINE ARC_solve_with_h( data, userdata, status, X, G,                &
                                   eval_F, eval_G, eval_H, eval_PREC )
 
-!  solve the bound-constrained problem previously imported when access
+!  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
 !  available via subroutine calls. See ARC_solve for a description of 
 !  the required arguments. The variable status is a proxy for inform%status
@@ -4410,7 +4412,7 @@
      SUBROUTINE ARC_solve_without_h( data, userdata, status, X, G,             &
                                      eval_F, eval_G, eval_HPROD, eval_PREC )
 
-!  solve the bound-constrained problem previously imported when access
+!  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations 
 !  are available via subroutine calls. See ARC_solve for a description 
 !  of the required arguments. The variable status is a proxy for inform%status
@@ -4453,7 +4455,7 @@
      SUBROUTINE ARC_solve_reverse_with_h( data, status, eval_status,           &
                                           X, f, G, H_val, U, V )
 
-!  solve the bound-constrained problem previously imported when access
+!  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
 !  available via reverse communication. See ARC_solve for a description 
 !  of the required arguments. The variable status is a proxy for inform%status
@@ -4525,7 +4527,7 @@
      SUBROUTINE ARC_solve_reverse_without_h( data, status, eval_status,        &
                                              X, f, G, U, V )
 
-!  solve the bound-constrained problem previously imported when access
+!  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations 
 !  are available via reverse communication. See ARC_solve for a description 
 !  of the required arguments. The variable status is a proxy for inform%status

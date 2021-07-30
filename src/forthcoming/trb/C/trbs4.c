@@ -13,7 +13,7 @@ int main(void) {
     struct trb_inform_type inform;
 
     // Initialize TRB
-    trb_initialize(&data, &control, &inform);
+    trb_initialize( &data, &control, &inform );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -36,40 +36,44 @@ int main(void) {
     int index_nz_u[n], index_nz_v[n];
 
     // Set Hessian storage format, structure and problem bounds
-    trb_import(&control, &inform, &data, n, x_l, x_u, H_type, ne, NULL, NULL, NULL);
+    int status;
+    trb_import( &control, &data, &status, n, x_l, x_u, 
+                H_type, ne, NULL, NULL, NULL );
 
     // Set for initial entry
-    inform.status = 1;
+    status = 1;
 
     // Solve the problem
     while(true){ // reverse-communication loop
 
         // Call TRB_solve
-        trb_solve_reverse_without_h(&control, &inform, &data, &eval_status, n, x, f, g, u, v,index_nz_v, &nnz_v, index_nz_u, nnz_u);
+        trb_solve_reverse_without_h( &data, &status, &eval_status, 
+                                     n, x, f, g, u, v, index_nz_v, &nnz_v, 
+                                     index_nz_u, nnz_u );
 
         // Evaluate f(x) and its derivatives as required
-        if(inform.status == 0){ // successful termination
+        if(status == 0){ // successful termination
             printf("TRB successful solve\n");
             break; // break while loop
-        }else if(inform.status == 2){ // obtain the objective function
+        }else if(status == 2){ // obtain the objective function
             f = pow(x[0] + x[2] + 4.0, 2) + pow(x[1] + x[2], 2) + cos(x[0]);
             eval_status = 0; // record successful evaluation
-        }else if(inform.status == 3){ // obtain the gradient
+        }else if(status == 3){ // obtain the gradient
             g[0] = 2.0 * ( x[0] + x[2] + 4.0 ) - sin(x[0]);
             g[1] = 2.0 * ( x[1] + x[2] );
             g[2] = 2.0 * ( x[0] + x[2] + 4.0 ) + 2.0 * ( x[1] + x[2] );
             eval_status = 0; // record successful evaluation
-        }else if(inform.status == 5){ // obtain Hessian-vector product
+        }else if(status == 5){ // obtain Hessian-vector product
             u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos( x[0] ) * v[0];
             u[1] = u[1] + 2.0 * ( v[1] + v[2] );
             u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
             eval_status = 0; // record successful evaluation
-        }else if(inform.status == 6){ // apply the preconditioner
+        }else if(status == 6){ // apply the preconditioner
             u[0] = 0.5 * v[0];
             u[1] = 0.5 * v[1];
             u[2] = 0.25 * v[2];
             eval_status = 0; // record successful evaluation
-        }else if(inform.status == 7){ // obtain sparse Hessian-vector product
+        }else if(status == 7){ // obtain sparse Hessian-vector product
             double tmp[] = {0., 0., 0.};
             bool used[] = {false, false, false};
             for(int i = 0; i < nnz_v; i++){
@@ -111,21 +115,29 @@ int main(void) {
         }
     }
 
+    // Record solution information
+    trb_information( &data, &inform, &status );
+
     // Print solution details
-    printf("iter: %d \n", inform.iter);
-    printf("x: ");
-    for(int i = 0; i < n; i++) printf("%f ", x[i]);
-    printf("\n");
-    printf("objective: %f \n", inform.obj);
-    printf("gradient: ");
-    for(int i = 0; i < n; i++) printf("%f ", g[i]);
-    printf("\n");
-    printf("f_eval: %d \n", inform.f_eval);
-    printf("time: %f \n", inform.time.clock_total);
-    printf("status: %d \n", inform.status);
+    if(inform.status == 0){ // successful return
+        printf("iter: %d \n", inform.iter);
+        printf("x: ");
+        for(int i = 0; i < n; i++) printf("%f ", x[i]);
+        printf("\n");
+        printf("objective: %f \n", inform.obj);
+        printf("gradient: ");
+        for(int i = 0; i < n; i++) printf("%f ", g[i]);
+        printf("\n");
+        printf("f_eval: %d \n", inform.f_eval);
+        printf("time: %f \n", inform.time.clock_total);
+        printf("status: %d \n", inform.status);
+     }else{ // error returns
+        printf("TRB error in solve\n");
+        printf("status: %d \n", inform.status);
+    }
 
     // Delete internal workspace
-    trb_terminate(&data, &control, &inform);
+    trb_terminate( &data, &control, &inform );
 
     return 0;
 }

@@ -11,7 +11,7 @@
    TYPE ( NLPT_userdata_type ) :: userdata
 !  EXTERNAL :: FUN, GRAD, HESS, HESSPROD, PREC
    INTEGER :: n, ne, nnz_v, nnz_u
-   INTEGER :: i, s, data_storage_type, eval_status
+   INTEGER :: i, s, status, data_storage_type, eval_status
    LOGICAL :: alive
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
    REAL ( KIND = wp ) :: dum, f
@@ -50,40 +50,41 @@
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = 'C'
-       CALL TRB_import( control, inform, data, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
                         'coordinate', ne, H_row, H_col, H_ptr )
-       inform%status = 1 ! set for initial entry
-       CALL TRB_solve_with_h( control, inform, data, userdata, X, G,           &
+       status = 1 ! set for initial entry
+       CALL TRB_solve_with_h( data, userdata, status, X, G,                    &
                               FUN, GRAD, HESS, PREC )
      CASE ( 2 ) ! sparse by rows  
        st = 'R'
-       CALL TRB_import( control, inform, data, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
                         'sparse_by_rows', ne, H_row, H_col, H_ptr )
-       inform%status = 1 ! set for initial entry
-       CALL TRB_solve_with_h( control, inform, data, userdata, X, G,           &
+       status = 1 ! set for initial entry
+       CALL TRB_solve_with_h( data, userdata, status, X, G,                    &
                               FUN, GRAD, HESS, PREC )
      CASE ( 3 ) ! dense
        st = 'D'
-       CALL TRB_import( control, inform, data, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
                         'dense', ne, H_row, H_col, H_ptr )
-       inform%status = 1 ! set for initial entry
-       CALL TRB_solve_with_h( control, inform, data, userdata, X, G,           &
+       status = 1 ! set for initial entry
+       CALL TRB_solve_with_h( data, userdata, status, X, G,                    &
                               FUN, GRAD, HESS_dense, PREC )
      CASE ( 4 ) ! diagonal
        st = 'I'
-       CALL TRB_import( control, inform, data, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
                         'diagonal', ne, H_row, H_col, H_ptr )
-       inform%status = 1 ! set for initial entry
-       CALL TRB_solve_with_h( control, inform, data, userdata, X, G,           &
+       status = 1 ! set for initial entry
+       CALL TRB_solve_with_h( data, userdata, status, X, G,                    &
                               FUN_diag, GRAD_diag, HESS_diag, PREC )
      CASE ( 5 ) ! access by products
        st = 'P'
-       CALL TRB_import( control, inform, data, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
                         'absent', ne, H_row, H_col, H_ptr )
-       inform%status = 1 ! set for initial entry
-       CALL TRB_solve_without_h( control, inform, data, userdata, X, G,        &
+       status = 1 ! set for initial entry
+       CALL TRB_solve_without_h( data, userdata, status, X, G,                 &
                                  FUN, GRAD, HESSPROD, SHESSPROD, PREC )
      END SELECT
+     CALL TRB_information( data, inform, status )
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( A1, ':', I6, ' iterations. Optimal objective value = ',    &
      &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
@@ -106,13 +107,13 @@
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = 'C'
-       CALL TRB_import( control, inform, data, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
                         'coordinate', ne, H_row, H_col, H_ptr )
-       inform%status = 1 ! set for initial entry
+       status = 1 ! set for initial entry
        DO ! reverse-communication loop
-         CALL TRB_solve_reverse_with_h( control, inform, data, eval_status,    &
+         CALL TRB_solve_reverse_with_h( data, status, eval_status,             &
                                         X, f, G, H_val, U, V )
-         SELECT CASE ( inform%status )
+         SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
          CASE ( : - 1 ) ! error exit
@@ -127,19 +128,19 @@
            CALL PREC( eval_status, X, userdata, U, V )
          CASE DEFAULT
            WRITE( 6, "( ' the value ', I0, ' of status should not occur ')" )  &
-             inform%status
+             status
            EXIT
          END SELECT
        END DO
      CASE ( 2 ) ! sparse by rows  
        st = 'R'
-       CALL TRB_import( control, inform, data, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
                         'sparse_by_rows', ne, H_row, H_col, H_ptr )
-       inform%status = 1 ! set for initial entry
+       status = 1 ! set for initial entry
        DO ! reverse-communication loop
-         CALL TRB_solve_reverse_with_h( control, inform, data, eval_status,    &
+         CALL TRB_solve_reverse_with_h( data, status, eval_status,             &
                                         X, f, G, H_val, U, V )
-         SELECT CASE ( inform%status )
+         SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
          CASE ( : - 1 ) ! error exit
@@ -154,19 +155,19 @@
            CALL PREC( eval_status, X, userdata, U, V )
          CASE DEFAULT
            WRITE( 6, "( ' the value ', I0, ' of status should not occur ')" )  &
-             inform%status
+             status
            EXIT
          END SELECT
        END DO
      CASE ( 3 ) ! dense
        st = 'D'
-       CALL TRB_import( control, inform, data, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
                         'dense', ne, H_row, H_col, H_ptr )
-       inform%status = 1 ! set for initial entry
+       status = 1 ! set for initial entry
        DO ! reverse-communication loop
-         CALL TRB_solve_reverse_with_h( control, inform, data, eval_status,    &
+         CALL TRB_solve_reverse_with_h( data, status, eval_status,             &
                                         X, f, G, H_dense, U, V )
-         SELECT CASE ( inform%status )
+         SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
          CASE ( : - 1 ) ! error exit
@@ -181,19 +182,19 @@
            CALL PREC( eval_status, X, userdata, U, V )
          CASE DEFAULT
            WRITE( 6, "( ' the value ', I0, ' of status should not occur ')" )  &
-             inform%status
+             status
            EXIT
          END SELECT
        END DO
      CASE ( 4 ) ! diagonal
        st = 'I'
-       CALL TRB_import( control, inform, data, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
                         'diagonal', ne, H_row, H_col, H_ptr )
-       inform%status = 1 ! set for initial entry
+       status = 1 ! set for initial entry
        DO ! reverse-communication loop
-         CALL TRB_solve_reverse_with_h( control, inform, data, eval_status,    &
+         CALL TRB_solve_reverse_with_h( data, status, eval_status,             &
                                         X, f, G, H_diag, U, V )
-         SELECT CASE ( inform%status )
+         SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
          CASE ( : - 1 ) ! error exit
@@ -208,21 +209,20 @@
            CALL PREC( eval_status, X, userdata, U, V )
          CASE DEFAULT
            WRITE( 6, "( ' the value ', I0, ' of status should not occur ')" )  &
-             inform%status
+             status
            EXIT
          END SELECT
        END DO
      CASE ( 5 ) ! access by products
        st = 'P'
-       CALL TRB_import( control, inform, data, n, X_l, X_u,                    &
+       CALL TRB_import( control, data, status, n, X_l, X_u,                    &
                         'absent', ne, H_row, H_col, H_ptr )
-       inform%status = 1 ! set for initial entry
+       status = 1 ! set for initial entry
        DO ! reverse-communication loop
-         CALL TRB_solve_reverse_without_h( control, inform, data,              &
-                                           eval_status, X, f, G, U, V,         &
-                                           INDEX_nz_v, nnz_v,                  &
+         CALL TRB_solve_reverse_without_h( data, status, eval_status,          &
+                                           X, f, G, U, V, INDEX_nz_v, nnz_v,   &
                                            INDEX_nz_u, nnz_u )
-         SELECT CASE ( inform%status )
+         SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
          CASE ( : - 1 ) ! error exit
@@ -240,11 +240,12 @@
                            nnz_u, INDEX_nz_u, U )
          CASE DEFAULT
            WRITE( 6, "( ' the value ', I0, ' of status should not occur ')" )  &
-             inform%status
+             status
            EXIT
          END SELECT
        END DO
      END SELECT
+     CALL TRB_information( data, inform, status )
      IF ( inform%status == 0 ) THEN
        WRITE( 6, "( A1, ':', I6, ' iterations. Optimal objective value = ',    &
      &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
