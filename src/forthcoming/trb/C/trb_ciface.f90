@@ -697,6 +697,9 @@
 
     CALL f_trb_import( fcontrol, fdata, status, n, xl, xu, ftype, ne,          &
                        row_find, col_find, ptr_find )
+    IF ( ALLOCATED( row_find ) ) DEALLOCATE( row_find )
+    IF ( ALLOCATED( col_find ) ) DEALLOCATE( col_find )
+    IF ( ALLOCATED( ptr_find ) ) DEALLOCATE( ptr_find )
   ELSE
     CALL f_trb_import( fcontrol, fdata, status, n, xl, xu, ftype, ne,          &
                        row, col, ptr )
@@ -948,7 +951,7 @@
 
 !  eval_SHPROD wrapper
 
-    subroutine wrap_eval_shprod( status, x, userdata, nnz_v, index_nz_v, v,    &
+    SUBROUTINE wrap_eval_shprod( status, x, userdata, nnz_v, index_nz_v, v,    &
                                  nnz_u, index_nz_u, u, fgot_h )
     INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
@@ -1070,22 +1073,12 @@
 
   f_indexing = fdata%f_indexing
 
-!     IF ( status == 7 ) THEN
-!       write(6,*) ''
-!       write(6,*) ' nnz_u ', nnz_u
-!       write(6,*) ' index ', index_nz_u( : nnz_u )
-!     END IF
-
 !  call TRB_solve_reverse_without_h
 
   IF ( f_indexing ) THEN
     CALL f_trb_solve_reverse_without_h( fdata, status, eval_status, x, f, g,   &
                                         u, v, index_nz_v, nnz_v,               &
                                         index_nz_u, nnz_u )
-!     IF ( status == 7 ) THEN
-!       write(6,*) ' nnz_v ', nnz_v
-!       write(6,*) ' index ', index_nz_v( : nnz_v )
-!     END IF
   ELSE
     CALL f_trb_solve_reverse_without_h( fdata, status, eval_status, x, f, g,   &
                                         u, v, index_nz_v, nnz_v,               &
@@ -1093,12 +1086,7 @@
 
 !  convert to C indexing if required
 
-     IF ( status == 7 ) THEN
-       index_nz_v( : nnz_v ) = index_nz_v( : nnz_v ) - 1
-!       write(6,*) ' nnz_v ', nnz_v
-!       write(6,*) ' index ', index_nz_v( : nnz_v )
-     END IF
-
+     IF ( status == 7 ) index_nz_v( : nnz_v ) = index_nz_v( : nnz_v ) - 1
   END IF
 
   RETURN

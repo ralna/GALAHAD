@@ -1,35 +1,35 @@
-! THIS VERSION: GALAHAD 3.3 - 23/07/2021 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 01/08/2021 AT 15:40 GMT.
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D _ T R U   C   I N T E R F A C E  -*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D _ T R B   C   I N T E R F A C E  -*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal authors: Jaroslav Fowkes & Nick Gould
 
 !  History -
-!    originally released GALAHAD Version 3.3. July 23rd 2021
+!    originally released GALAHAD Version 3.3. July 28th 2021
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-!  C interface module to GALAHAD_TRU types and interfaces
+!  C interface module to GALAHAD_TRB types and interfaces
 
-  MODULE GALAHAD_TRU_double_ciface
+  MODULE GALAHAD_TRB_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_TRU_double, only:                                              &
-        f_tru_time_type               => TRU_time_type,                        &
-        f_tru_inform_type             => TRU_inform_type,                      &
-        f_tru_control_type            => TRU_control_type,                     &
-        f_tru_full_data_type          => TRU_full_data_type,                   &
-        f_tru_initialize              => TRU_initialize,                       &
-        f_tru_read_specfile           => TRU_read_specfile,                    &
-        f_tru_import                  => TRU_import,                           &
-        f_tru_solve_with_h            => TRU_solve_with_h,                     &
-        f_tru_solve_without_h         => TRU_solve_without_h,                  &
-        f_tru_solve_reverse_with_h    => TRU_solve_reverse_with_h,             &
-        f_tru_solve_reverse_without_h => TRU_solve_reverse_without_h,          &
-        f_tru_information             => TRU_information,                      &
-        f_tru_terminate               => TRU_terminate
+    USE GALAHAD_TRB_double, only:                                              &
+        f_trb_time_type               => TRB_time_type,                        &
+        f_trb_inform_type             => TRB_inform_type,                      &
+        f_trb_control_type            => TRB_control_type,                     &
+        f_trb_full_data_type          => TRB_full_data_type,                   &
+        f_trb_initialize              => TRB_initialize,                       &
+        f_trb_read_specfile           => TRB_read_specfile,                    &
+        f_trb_import                  => TRB_import,                           &
+        f_trb_solve_with_h            => TRB_solve_with_h,                     &
+        f_trb_solve_without_h         => TRB_solve_without_h,                  &
+        f_trb_solve_reverse_with_h    => TRB_solve_reverse_with_h,             &
+        f_trb_solve_reverse_without_h => TRB_solve_reverse_without_h,          &
+        f_trb_information             => TRB_information,                      &
+        f_trb_terminate               => TRB_terminate
     USE GALAHAD_NLPT_double, ONLY:                                             &
         f_nlpt_userdata_type          => NLPT_userdata_type
 
@@ -46,7 +46,7 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-    TYPE, BIND( C ) :: tru_control_type
+    TYPE, BIND( C ) :: trb_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
       INTEGER ( KIND = C_INT ) :: error
       INTEGER ( KIND = C_INT ) :: out
@@ -57,6 +57,7 @@
       INTEGER ( KIND = C_INT ) :: maxit
       INTEGER ( KIND = C_INT ) :: alive_unit 
       CHARACTER( KIND = C_CHAR ), DIMENSION(  31  ) :: alive_file
+      INTEGER ( KIND = C_INT ) :: more_toraldo
       INTEGER ( KIND = C_INT ) :: non_monotone
       INTEGER ( KIND = C_INT ) :: model
       INTEGER ( KIND = C_INT ) :: norm
@@ -67,11 +68,13 @@
       INTEGER ( KIND = C_INT ) :: mi28_lsize
       INTEGER ( KIND = C_INT ) :: mi28_rsize
       INTEGER ( KIND = C_INT ) :: advanced_start
-      REAL ( KIND = wp ) :: stop_g_absolute
-      REAL ( KIND = wp ) :: stop_g_relative
+      REAL ( KIND = wp ) :: stop_pg_absolute
+      REAL ( KIND = wp ) :: stop_pg_relative
       REAL ( KIND = wp ) :: stop_s
+      REAL ( KIND = wp ) :: infinity
       REAL ( KIND = wp ) :: initial_radius
       REAL ( KIND = wp ) :: maximum_radius
+      REAL ( KIND = wp ) :: stop_rel_cg
       REAL ( KIND = wp ) :: eta_successful
       REAL ( KIND = wp ) :: eta_very_successful
       REAL ( KIND = wp ) :: eta_too_successful
@@ -85,18 +88,21 @@
       LOGICAL ( KIND = C_BOOL ) :: subproblem_direct
       LOGICAL ( KIND = C_BOOL ) :: retrospective_trust_region
       LOGICAL ( KIND = C_BOOL ) :: renormalize_radius
+      LOGICAL ( KIND = C_BOOL ) :: two_norm_tr
+      LOGICAL ( KIND = C_BOOL ) :: exact_gcp
+      LOGICAL ( KIND = C_BOOL ) :: accurate_bqp
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix 
-!     TYPE ( trs_control_type ) :: trs_control
-!     TYPE ( gltr_control_type ) :: gltr_control
-!     TYPE ( psls_control_type ) :: psls_control
-!     TYPE ( lms_control_type ) :: lms_control
-!     TYPE ( lms_control_type ) :: lms_control_prec
-!     TYPE ( sha_control_type ) :: sha_control
-    END TYPE tru_control_type
+!     TYPE ( TRS_control_type ) :: trs_control
+!     TYPE ( GLTR_control_type ) :: gltr_control
+!     TYPE ( PSLS_control_type ) :: psls_control
+!     TYPE ( LMS_control_type ) :: lms_control
+!     TYPE ( LMS_control_type ) :: lms_control_prec
+!     TYPE ( SHA_control_type ) :: sha_control
+    END TYPE trb_control_type
 
-    TYPE, BIND( C ) :: tru_time_type
+    TYPE, BIND( C ) :: trb_time_type
       REAL ( KIND = sp ) :: total
       REAL ( KIND = sp ) :: preprocess
       REAL ( KIND = sp ) :: analyse
@@ -107,34 +113,35 @@
       REAL ( KIND = wp ) :: clock_analyse
       REAL ( KIND = wp ) :: clock_factorize
       REAL ( KIND = wp ) :: clock_solve
-    END TYPE tru_time_type
+    END TYPE trb_time_type
 
-    TYPE, BIND( C ) :: tru_inform_type
+    TYPE, BIND( C ) :: trb_inform_type
       INTEGER ( KIND = C_INT ) :: status
       INTEGER ( KIND = C_INT ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = C_INT ) :: iter
       INTEGER ( KIND = C_INT ) :: cg_iter
+      INTEGER ( KIND = C_INT ) :: cg_maxit
       INTEGER ( KIND = C_INT ) :: f_eval
       INTEGER ( KIND = C_INT ) :: g_eval
       INTEGER ( KIND = C_INT ) :: h_eval
+      INTEGER ( KIND = C_INT ) :: n_free
       INTEGER ( KIND = C_INT ) :: factorization_max
       INTEGER ( KIND = C_INT ) :: factorization_status
       INTEGER ( KIND = C_LONG ) :: max_entries_factors
       INTEGER ( KIND = C_INT ) :: factorization_integer
       INTEGER ( KIND = C_INT ) :: factorization_real
-      REAL ( KIND = wp ) :: factorization_average
       REAL ( KIND = wp ) :: obj
-      REAL ( KIND = wp ) :: norm_g
+      REAL ( KIND = wp ) :: norm_pg
       REAL ( KIND = wp ) :: radius
-      TYPE ( tru_time_type ) :: time
-!     TYPE ( trs_inform_type ) :: trs_inform
-!     TYPE ( gltr_inform_type ) :: gltr_inform
-!     TYPE ( psls_inform_type ) :: psls_inform
-!     TYPE ( lms_inform_type ) :: lms_inform
-!     TYPE ( lms_inform_type ) :: lms_inform_prec
-!     TYPE ( sha_inform_type ) :: sha_inform
-    END TYPE tru_inform_type
+      TYPE ( trb_time_type ) :: time
+!     TYPE ( TRS_inform_type ) :: trs_inform
+!     TYPE ( GLTR_inform_type ) :: gltr_inform
+!     TYPE ( PSLS_inform_type ) :: psls_inform
+!     TYPE ( LMS_inform_type ) :: lms_inform
+!     TYPE ( LMS_inform_type ) :: lms_inform_prec
+!     TYPE ( SHA_inform_type ) :: sha_inform
+    END TYPE trb_inform_type
 
 !----------------------
 !   I n t e r f a c e s
@@ -192,6 +199,25 @@
     END INTERFACE
 
     ABSTRACT INTERFACE
+      FUNCTION eval_shprod( n, x, nnz_v, index_nz_v, v, nnz_u, index_nz_u,     &
+                            u, got_h, userdata ) RESULT( status )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: nnz_v
+        INTEGER ( KIND = C_INT ), DIMENSION( n ), INTENT( IN ) :: index_nz_v
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: v
+        INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nnz_u 
+        INTEGER ( KIND = C_INT ), DIMENSION( n ), INTENT( OUT ) :: index_nz_u
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ) :: u
+        LOGICAL( KIND = C_BOOL ), INTENT( IN ), VALUE :: got_h
+        TYPE (C_PTR), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_shprod
+    END INTERFACE
+
+    ABSTRACT INTERFACE
       FUNCTION eval_prec( n, x, u, v, userdata ) RESULT( status )
         USE iso_c_binding
         IMPORT :: wp
@@ -213,8 +239,8 @@
 !  copy C times to fortran
 
     SUBROUTINE copy_time_in( ctime, ftime ) 
-    TYPE ( tru_time_type ), INTENT( IN ) :: ctime
-    TYPE ( f_tru_time_type ), INTENT( OUT ) :: ftime
+    TYPE ( trb_time_type ), INTENT( IN ) :: ctime
+    TYPE ( f_trb_time_type ), INTENT( OUT ) :: ftime
 
     ftime%total = ctime%total
     ftime%preprocess = ctime%preprocess
@@ -233,8 +259,8 @@
 !  copy fortran times to C
 
     SUBROUTINE copy_time_out( ftime,  ctime )
-    TYPE ( f_tru_time_type ), INTENT( IN ) :: ftime
-    TYPE ( tru_time_type ), INTENT( OUT ) :: ctime
+    TYPE ( f_trb_time_type ), INTENT( IN ) :: ftime
+    TYPE ( trb_time_type ), INTENT( OUT ) :: ctime
 
     ctime%total = ftime%total
     ctime%preprocess = ftime%preprocess
@@ -253,8 +279,8 @@
 !  copy C information parameters to fortran
 
     SUBROUTINE copy_inform_in( cinform, finform ) 
-    TYPE ( tru_inform_type ), INTENT( IN ) :: cinform
-    TYPE ( f_tru_inform_type ), INTENT( OUT ) :: finform
+    TYPE ( trb_inform_type ), INTENT( IN ) :: cinform
+    TYPE ( f_trb_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
 
     ! Integers
@@ -262,9 +288,11 @@
     finform%alloc_status = cinform%alloc_status
     finform%iter = cinform%iter
     finform%cg_iter = cinform%cg_iter
+    finform%cg_maxit = cinform%cg_maxit
     finform%f_eval = cinform%f_eval
     finform%g_eval = cinform%g_eval
     finform%h_eval = cinform%h_eval
+    finform%n_free = cinform%n_free
     finform%factorization_max = cinform%factorization_max
     finform%factorization_status = cinform%factorization_status
     finform%max_entries_factors = cinform%max_entries_factors
@@ -272,9 +300,8 @@
     finform%factorization_real = cinform%factorization_real
 
     ! Reals
-    finform%factorization_average = cinform%factorization_average
     finform%obj = cinform%obj
-    finform%norm_g = cinform%norm_g
+    finform%norm_pg = cinform%norm_pg
     finform%radius = cinform%radius
 
     ! Derived types
@@ -299,8 +326,8 @@
 !  copy fortran information parameters to C
 
     SUBROUTINE copy_inform_out( finform, cinform )
-    TYPE ( f_tru_inform_type ), INTENT( IN ) :: finform 
-    TYPE ( tru_inform_type ), INTENT( OUT ) :: cinform
+    TYPE ( f_trb_inform_type ), INTENT( IN ) :: finform 
+    TYPE ( trb_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i
 
     ! Integers
@@ -308,9 +335,11 @@
     cinform%alloc_status = finform%alloc_status
     cinform%iter = finform%iter
     cinform%cg_iter = finform%cg_iter
+    cinform%cg_maxit = finform%cg_maxit
     cinform%f_eval = finform%f_eval
     cinform%g_eval = finform%g_eval
     cinform%h_eval = finform%h_eval
+    cinform%n_free = finform%n_free
     cinform%factorization_max = finform%factorization_max
     cinform%factorization_status = finform%factorization_status
     cinform%max_entries_factors = finform%max_entries_factors
@@ -318,9 +347,8 @@
     cinform%factorization_real = finform%factorization_real
 
     ! Reals
-    cinform%factorization_average = finform%factorization_average
     cinform%obj = finform%obj
-    cinform%norm_g = finform%norm_g
+    cinform%norm_pg = finform%norm_pg
     cinform%radius = finform%radius
 
     ! Derived types
@@ -345,8 +373,8 @@
 !  copy C control parameters to fortran
 
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
-    TYPE ( tru_control_type ), INTENT( IN ) :: ccontrol
-    TYPE ( f_tru_control_type ), INTENT( OUT ) :: fcontrol
+    TYPE ( trb_control_type ), INTENT( IN ) :: ccontrol
+    TYPE ( f_trb_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
     INTEGER :: i
     
@@ -362,6 +390,7 @@
     fcontrol%print_gap = ccontrol%print_gap
     fcontrol%maxit = ccontrol%maxit
     fcontrol%alive_unit = ccontrol%alive_unit
+    fcontrol%more_toraldo = ccontrol%more_toraldo
     fcontrol%non_monotone = ccontrol%non_monotone
     fcontrol%model = ccontrol%model
     fcontrol%norm = ccontrol%norm
@@ -374,11 +403,13 @@
     fcontrol%advanced_start = ccontrol%advanced_start
 
     ! Reals
-    fcontrol%stop_g_absolute = ccontrol%stop_g_absolute
-    fcontrol%stop_g_relative = ccontrol%stop_g_relative
+    fcontrol%stop_pg_absolute = ccontrol%stop_pg_absolute
+    fcontrol%stop_pg_relative = ccontrol%stop_pg_relative
     fcontrol%stop_s = ccontrol%stop_s
+    fcontrol%infinity = ccontrol%infinity
     fcontrol%initial_radius = ccontrol%initial_radius
     fcontrol%maximum_radius = ccontrol%maximum_radius
+    fcontrol%stop_rel_cg = ccontrol%stop_rel_cg
     fcontrol%eta_successful = ccontrol%eta_successful
     fcontrol%eta_very_successful = ccontrol%eta_very_successful
     fcontrol%eta_too_successful = ccontrol%eta_too_successful
@@ -394,6 +425,9 @@
     fcontrol%subproblem_direct = ccontrol%subproblem_direct
     fcontrol%retrospective_trust_region = ccontrol%retrospective_trust_region
     fcontrol%renormalize_radius = ccontrol%renormalize_radius
+    fcontrol%two_norm_tr = ccontrol%two_norm_tr
+    fcontrol%exact_gcp = ccontrol%exact_gcp
+    fcontrol%accurate_bqp = ccontrol%accurate_bqp
     fcontrol%space_critical = ccontrol%space_critical
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
 
@@ -421,8 +455,8 @@
 !  copy fortran control parameters to C
 
     SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
-    TYPE ( f_tru_control_type ), INTENT( IN ) :: fcontrol
-    TYPE ( tru_control_type ), INTENT( OUT ) :: ccontrol
+    TYPE ( f_trb_control_type ), INTENT( IN ) :: fcontrol
+    TYPE ( trb_control_type ), INTENT( OUT ) :: ccontrol
     logical, optional, INTENT( IN ) :: f_indexing
     integer :: i
     
@@ -438,6 +472,7 @@
     ccontrol%print_gap = fcontrol%print_gap
     ccontrol%maxit = fcontrol%maxit
     ccontrol%alive_unit = fcontrol%alive_unit
+    ccontrol%more_toraldo = fcontrol%more_toraldo
     ccontrol%non_monotone = fcontrol%non_monotone
     ccontrol%model = fcontrol%model
     ccontrol%norm = fcontrol%norm
@@ -450,11 +485,13 @@
     ccontrol%advanced_start = fcontrol%advanced_start
 
     ! Reals
-    ccontrol%stop_g_absolute = fcontrol%stop_g_absolute
-    ccontrol%stop_g_relative = fcontrol%stop_g_relative
+    ccontrol%stop_pg_absolute = fcontrol%stop_pg_absolute
+    ccontrol%stop_pg_relative = fcontrol%stop_pg_relative
     ccontrol%stop_s = fcontrol%stop_s
+    ccontrol%infinity = fcontrol%infinity
     ccontrol%initial_radius = fcontrol%initial_radius
     ccontrol%maximum_radius = fcontrol%maximum_radius
+    ccontrol%stop_rel_cg = fcontrol%stop_rel_cg
     ccontrol%eta_successful = fcontrol%eta_successful
     ccontrol%eta_very_successful = fcontrol%eta_very_successful
     ccontrol%eta_too_successful = fcontrol%eta_too_successful
@@ -470,6 +507,9 @@
     ccontrol%subproblem_direct = fcontrol%subproblem_direct
     ccontrol%retrospective_trust_region = fcontrol%retrospective_trust_region
     ccontrol%renormalize_radius = fcontrol%renormalize_radius
+    ccontrol%two_norm_tr = fcontrol%two_norm_tr
+    ccontrol%exact_gcp = fcontrol%exact_gcp
+    ccontrol%accurate_bqp = fcontrol%accurate_bqp
     ccontrol%space_critical = fcontrol%space_critical
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
 
@@ -495,36 +535,36 @@
 
     END SUBROUTINE copy_control_out
 
-  END MODULE GALAHAD_TRU_double_ciface
+  END MODULE GALAHAD_TRB_double_ciface
 
 !  -------------------------------------
-!  C interface to fortran tru_initialize
+!  C interface to fortran trb_initialize
 !  -------------------------------------
 
-  SUBROUTINE tru_initialize( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_TRU_double_ciface
+  SUBROUTINE trb_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  USE GALAHAD_TRB_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
-  TYPE ( tru_control_type ), INTENT( OUT ) :: ccontrol
-  TYPE ( tru_inform_type ), INTENT( OUT ) :: cinform
+  TYPE ( trb_control_type ), INTENT( OUT ) :: ccontrol
+  TYPE ( trb_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
-  TYPE ( f_tru_full_data_type ), POINTER :: fdata
-  TYPE ( f_tru_control_type ) :: fcontrol
-  TYPE ( f_tru_inform_type ) :: finform
+  TYPE ( f_trb_full_data_type ), POINTER :: fdata
+  TYPE ( f_trb_control_type ) :: fcontrol
+  TYPE ( f_trb_inform_type ) :: finform
   LOGICAL :: f_indexing 
 
 !  allocate fdata
 
   ALLOCATE( fdata ); cdata = C_LOC(fdata)
 
-!  call TRU_initialize
+!  call TRB_initialize
 
-  CALL f_tru_initialize( fdata, fcontrol, finform )
+  CALL f_trb_initialize( fdata, fcontrol, finform )
 
 !  C sparse matrix indexing by default
 
@@ -540,24 +580,24 @@
   CALL copy_inform_out( finform, cinform )
   RETURN
 
-  END SUBROUTINE tru_initialize
+  END SUBROUTINE trb_initialize
 
 !  ----------------------------------------
-!  C interface to fortran tru_read_specfile
+!  C interface to fortran trb_read_specfile
 !  ----------------------------------------
 
-  SUBROUTINE tru_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_TRU_double_ciface
+  SUBROUTINE trb_read_specfile( ccontrol, cspecfile ) BIND( C )
+  USE GALAHAD_TRB_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  TYPE ( tru_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( trb_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cspecfile
 
 !  local variables
 
-  TYPE ( f_tru_control_type ) :: fcontrol
+  TYPE ( f_trb_control_type ) :: fcontrol
   CHARACTER ( KIND = C_CHAR, LEN = strlen( cspecfile ) ) :: fspecfile
   LOGICAL :: f_indexing
 
@@ -577,9 +617,9 @@
 
   open( UNIT = device, FILE = fspecfile )
   
-!  call TRU_read_specfile
+!  call TRB_read_specfile
 
-  CALL f_tru_read_specfile( fcontrol, device )
+  CALL f_trb_read_specfile( fcontrol, device )
 
 !  close specfile
 
@@ -590,15 +630,15 @@
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
 
-  END SUBROUTINE tru_read_specfile
+  END SUBROUTINE trb_read_specfile
 
 !  ---------------------------------
-!  C interface to fortran tru_inport
+!  C interface to fortran trb_inport
 !  ---------------------------------
 
-  SUBROUTINE tru_import( ccontrol, cdata, status, n, ctype,                    &
+  SUBROUTINE trb_import( ccontrol, cdata, status, n, xl, xu, ctype,            &
                          ne, row, col, ptr ) BIND( C )
-  USE GALAHAD_TRU_double_ciface
+  USE GALAHAD_TRB_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -607,16 +647,17 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ne ), optional :: row, col
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), optional :: ptr
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
 
 !  local variables
 
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: ctype
-  TYPE ( tru_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( trb_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( ctype ) ) :: ftype
-  TYPE ( f_tru_control_type ) :: fcontrol
-  TYPE ( f_tru_full_data_type ), POINTER :: fdata
+  TYPE ( f_trb_control_type ) :: fcontrol
+  TYPE ( f_trb_full_data_type ), POINTER :: fdata
   INTEGER, DIMENSION( : ), ALLOCATABLE :: row_find, col_find, ptr_find
   LOGICAL :: f_indexing
 
@@ -652,15 +693,15 @@
       ptr_find = ptr + 1
     END IF
 
-!  call TRU_import
+!  call TRB_import
 
-    CALL f_tru_import( fcontrol, fdata, status, n, ftype, ne,                  &
+    CALL f_trb_import( fcontrol, fdata, status, n, xl, xu, ftype, ne,          &
                        row_find, col_find, ptr_find )
     IF ( ALLOCATED( row_find ) ) DEALLOCATE( row_find )
     IF ( ALLOCATED( col_find ) ) DEALLOCATE( col_find )
     IF ( ALLOCATED( ptr_find ) ) DEALLOCATE( ptr_find )
-  ELSE 
-    CALL f_tru_import( fcontrol, fdata, status, n, ftype, ne,                  &
+  ELSE
+    CALL f_trb_import( fcontrol, fdata, status, n, xl, xu, ftype, ne,          &
                        row, col, ptr )
   END IF
 
@@ -669,15 +710,15 @@
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
 
-  END SUBROUTINE tru_import
+  END SUBROUTINE trb_import
 
 !  ---------------------------------------
-!  C interface to fortran tru_solve_with_h
+!  C interface to fortran trb_solve_with_h
 !  ---------------------------------------
 
-  SUBROUTINE tru_solve_with_h( cdata, cuserdata, status, n, x, g, ne,          &
+  SUBROUTINE trb_solve_with_h( cdata, cuserdata, status, n, x, g, ne,          &
                                ceval_f, ceval_g, ceval_h, ceval_prec ) BIND( C )
-  USE GALAHAD_TRU_double_ciface
+  USE GALAHAD_TRB_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -692,11 +733,12 @@
 
 !  local variables
 
-  TYPE ( f_tru_full_data_type ), POINTER :: fdata
+  TYPE ( f_trb_full_data_type ), POINTER :: fdata
   PROCEDURE( eval_f ), POINTER :: feval_f
   PROCEDURE( eval_g ), POINTER :: feval_g
   PROCEDURE( eval_h ), POINTER :: feval_h
   PROCEDURE( eval_prec ), POINTER :: feval_prec
+  LOGICAL :: f_indexing
 
 !  ignore Fortran userdata type (not interoperable)
 
@@ -717,9 +759,9 @@
     NULLIFY( feval_prec )
   END IF
 
-!  call TRU_solve_with_h
+!  call TRB_solve_with_h
 
-  CALL f_tru_solve_with_h( fdata, fuserdata, status, x, g, wrap_eval_f,       &
+  CALL f_trb_solve_with_h( fdata, fuserdata, status, x, g, wrap_eval_f,       &
                             wrap_eval_g, wrap_eval_h, wrap_eval_prec )
 
   RETURN
@@ -786,15 +828,16 @@
 
     END SUBROUTINE wrap_eval_prec
 
-  END SUBROUTINE tru_solve_with_h
+  END SUBROUTINE trb_solve_with_h
 
 !  ------------------------------------------
-!  C interface to fortran tru_solve_without_h
+!  C interface to fortran trb_solve_without_h
 !  ------------------------------------------
 
-  SUBROUTINE tru_solve_without_h( cdata, cuserdata, status, n, x, g, ceval_f,  &
-                                  ceval_g, ceval_hprod, ceval_prec ) BIND( C )
-  USE GALAHAD_TRU_double_ciface
+  SUBROUTINE trb_solve_without_h( cdata, cuserdata, status, n, x, g, ceval_f,  &
+                                  ceval_g, ceval_hprod, ceval_shprod,          &
+                                  ceval_prec ) BIND( C )
+  USE GALAHAD_TRB_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -805,15 +848,18 @@
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_f, ceval_g
-  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_hprod, ceval_prec
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_hprod, ceval_shprod
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_prec
 
 !  local variables
 
-  TYPE ( f_tru_full_data_type ), POINTER :: fdata
+  TYPE ( f_trb_full_data_type ), POINTER :: fdata
   PROCEDURE( eval_f ), POINTER :: feval_f
   PROCEDURE( eval_g ), POINTER :: feval_g
   PROCEDURE( eval_hprod ), POINTER :: feval_hprod
+  PROCEDURE( eval_shprod ), POINTER :: feval_shprod
   PROCEDURE( eval_prec ), POINTER :: feval_prec
+  LOGICAL :: f_indexing
 
 !  ignore Fortran userdata type (not interoperable)
 
@@ -821,23 +867,29 @@
 
 !  associate data pointer
 
-  CALL C_F_POINTER(cdata, fdata)
+  CALL C_F_POINTER( cdata, fdata )
+
+!  is fortran-style 1-based indexing used?
+
+  f_indexing = fdata%f_indexing
 
 !  associate procedure pointers
 
   CALL C_F_PROCPOINTER( ceval_f, feval_f ) 
   CALL C_F_PROCPOINTER( ceval_g, feval_g )
   CALL C_F_PROCPOINTER( ceval_hprod, feval_hprod )
+  CALL C_F_PROCPOINTER( ceval_shprod, feval_shprod )
   IF ( C_ASSOCIATED( ceval_prec ) ) THEN 
     CALL C_F_PROCPOINTER( ceval_prec, feval_prec )
   ELSE
     NULLIFY( feval_prec )
   END IF
 
-!  call TRU_solve_without_h
+!  call TRB_solve_without_h
 
-  CALL f_tru_solve_without_h( fdata, fuserdata, status, x, g, wrap_eval_f,     &
-                              wrap_eval_g, wrap_eval_hprod, wrap_eval_prec )
+  CALL f_trb_solve_without_h( fdata, fuserdata, status, x, g, wrap_eval_f,     &
+                              wrap_eval_g, wrap_eval_hprod, wrap_eval_shprod,  &
+                              wrap_eval_prec )
 
   RETURN
 
@@ -897,6 +949,42 @@
 
     END SUBROUTINE wrap_eval_hprod
 
+!  eval_SHPROD wrapper
+
+    SUBROUTINE wrap_eval_shprod( status, x, userdata, nnz_v, index_nz_v, v,    &
+                                 nnz_u, index_nz_u, u, fgot_h )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    INTEGER ( KIND = C_INT ), INTENT( IN ) :: nnz_v
+    INTEGER ( KIND = C_INT ), DIMENSION(:), INTENT( IN ) :: index_nz_v
+    REAL ( KIND = wp ), dimension( : ), INTENT( IN ) :: v
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nnz_u 
+    INTEGER ( KIND = C_INT ), DIMENSION( : ), INTENT( OUT ) :: index_nz_u
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: u
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
+    LOGICAL ( KIND = C_BOOL ) :: cgot_h
+
+!  call C interoperable eval_shprod
+
+    IF ( PRESENT( fgot_h ) ) THEN
+      cgot_h = fgot_h 
+    ELSE
+      cgot_h = .false.
+    END IF
+
+    IF ( f_indexing ) then
+      status = feval_shprod( n, x, nnz_v, index_nz_v, v, nnz_u, index_nz_u,    &
+                             u, cgot_h, cuserdata )
+    ELSE ! handle C sparse matrix indexing
+      status = feval_shprod(n, x, nnz_v, index_nz_v - 1, v, nnz_u, index_nz_u, &
+                             u, cgot_h, cuserdata )
+      index_nz_u = index_nz_u + 1
+    END IF
+    RETURN
+
+    END SUBROUTINE wrap_eval_shprod
+
 !  eval_PREC wrapper
 
     SUBROUTINE wrap_eval_prec( status, x, userdata, u, v )
@@ -913,15 +1001,15 @@
 
     END SUBROUTINE wrap_eval_prec
 
-  END SUBROUTINE tru_solve_without_h
+  END SUBROUTINE trb_solve_without_h
 
 !  -----------------------------------------------
-!  C interface to fortran tru_solve_reverse_with_h
+!  C interface to fortran trb_solve_reverse_with_h
 !  -----------------------------------------------
 
-  SUBROUTINE tru_solve_reverse_with_h( cdata, status, eval_status,             &
+  SUBROUTINE trb_solve_reverse_with_h( cdata, status, eval_status,             &
                                        n, x, f, g, ne, val, u, v ) BIND( C )
-  USE GALAHAD_TRU_double_ciface
+  USE GALAHAD_TRB_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -937,100 +1025,121 @@
 
 !  local variables
 
-  TYPE ( f_tru_full_data_type ), POINTER :: fdata
+  TYPE ( f_trb_full_data_type ), POINTER :: fdata
 
 !  associate data pointer
 
   CALL C_F_POINTER( cdata, fdata )
 
-! call TRU_solve_reverse_with_h
+! call TRB_solve_reverse_with_h
 
-  CALL f_tru_solve_reverse_with_h( fdata, status, eval_status, x, f, g, val,   &
+  CALL f_trb_solve_reverse_with_h( fdata, status, eval_status, x, f, g, val,   &
                                     u, v )
   RETURN
     
-  END SUBROUTINE tru_solve_reverse_with_h
+  END SUBROUTINE trb_solve_reverse_with_h
 
 !  --------------------------------------------------
-!  C interface to fortran tru_solve_reverse_without_h
+!  C interface to fortran trb_solve_reverse_without_h
 !  --------------------------------------------------
 
-  SUBROUTINE tru_solve_reverse_without_h( cdata, status, eval_status,          &
-                                          n, x, f, g, u, v ) BIND( C )
-  USE GALAHAD_TRU_double_ciface
+  SUBROUTINE trb_solve_reverse_without_h( cdata, status, eval_status,          &
+                                          n, x, f, g, u, v, index_nz_v, nnz_v, &
+                                          index_nz_u, nnz_u ) BIND( C )
+  USE GALAHAD_TRB_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, nnz_u
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nnz_v
   REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g, u, v
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n ) :: index_nz_u
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: index_nz_v
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
 
-  TYPE ( f_tru_full_data_type ), POINTER :: fdata
+  TYPE ( f_trb_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
 
 !  associate data pointer
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  call TRU_solve_reverse_without_h
+!  is fortran-style 1-based indexing used?
 
-  CALL f_tru_solve_reverse_without_h( fdata, status, eval_status, x, f, g,     &
-                                       u, v )
+  f_indexing = fdata%f_indexing
+
+!  call TRB_solve_reverse_without_h
+
+  IF ( f_indexing ) THEN
+    CALL f_trb_solve_reverse_without_h( fdata, status, eval_status, x, f, g,   &
+                                        u, v, index_nz_v, nnz_v,               &
+                                        index_nz_u, nnz_u )
+  ELSE
+    CALL f_trb_solve_reverse_without_h( fdata, status, eval_status, x, f, g,   &
+                                        u, v, index_nz_v, nnz_v,               &
+                                        index_nz_u + 1, nnz_u )
+
+!  convert to C indexing if required
+
+     IF ( status == 7 ) index_nz_v( : nnz_v ) = index_nz_v( : nnz_v ) - 1
+  END IF
+
   RETURN
 
-  END SUBROUTINE tru_solve_reverse_without_h
+  END SUBROUTINE trb_solve_reverse_without_h
 
 !  --------------------------------------
-!  C interface to fortran tru_information
+!  C interface to fortran trb_information
 !  --------------------------------------
 
-  SUBROUTINE tru_information( cdata, cinform, status ) BIND( C ) 
-  USE GALAHAD_TRU_double_ciface
+  SUBROUTINE trb_information( cdata, cinform, status ) BIND( C ) 
+  USE GALAHAD_TRB_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  TYPE ( tru_inform_type ), INTENT( INOUT ) :: cinform
+  TYPE ( trb_inform_type ), INTENT( INOUT ) :: cinform
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
 
-  TYPE ( f_tru_full_data_type ), pointer :: fdata
-  TYPE ( f_tru_inform_type ) :: finform
+  TYPE ( f_trb_full_data_type ), pointer :: fdata
+  TYPE ( f_trb_inform_type ) :: finform
 
 !  associate data pointer
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  call TRU_information
+!  call TRB_information
 
-  CALL f_tru_information( fdata, finform, status )
+  CALL f_trb_information( fdata, finform, status )
 
 !  copy inform out
 
   CALL copy_inform_out( finform, cinform )
   RETURN
 
-  END SUBROUTINE tru_information
+  END SUBROUTINE trb_information
 
 !  ------------------------------------
-!  C interface to fortran tru_terminate
+!  C interface to fortran trb_terminate
 !  ------------------------------------
 
-  SUBROUTINE tru_terminate( cdata, ccontrol, cinform ) BIND( C ) 
-  USE GALAHAD_TRU_double_ciface
+  SUBROUTINE trb_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  USE GALAHAD_TRB_double_ciface
   IMPLICIT NONE
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  TYPE ( tru_control_type ), INTENT( IN ) :: ccontrol
-  TYPE ( tru_inform_type ), INTENT( INOUT ) :: cinform
+  TYPE ( trb_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( trb_inform_type ), INTENT( INOUT ) :: cinform
 
-  TYPE ( f_tru_full_data_type ), pointer :: fdata
-  TYPE ( f_tru_control_type ) :: fcontrol
-  TYPE ( f_tru_inform_type ) :: finform
+  TYPE ( f_trb_full_data_type ), pointer :: fdata
+  TYPE ( f_trb_control_type ) :: fcontrol
+  TYPE ( f_trb_inform_type ) :: finform
   LOGICAL :: f_indexing
 
 !  copy control in
@@ -1045,9 +1154,9 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  call TRU_terminate
+!  call TRB_terminate
 
-  CALL f_tru_terminate( fdata, fcontrol,finform )
+  CALL f_trb_terminate( fdata, fcontrol,finform )
 
 !  copy inform out
 
@@ -1058,5 +1167,5 @@
   DEALLOCATE( fdata ); cdata = C_NULL_PTR 
   RETURN
 
-  END SUBROUTINE tru_terminate
+  END SUBROUTINE trb_terminate
 

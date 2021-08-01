@@ -544,7 +544,8 @@
 
 !  C sparse matrix indexing by default
 
-  f_indexing = .false.
+  f_indexing = .FALSE.
+  fdata%f_indexing = f_indexing
 
 !  copy control out 
 
@@ -647,6 +648,10 @@
 
   ftype = cstr_to_fchar( ctype )
 
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
@@ -662,16 +667,17 @@
       ALLOCATE( ptr_find( n + 1 ) )
       ptr_find = ptr + 1
     END IF
-  END IF
 
 !  call ARC_import
 
-  IF ( f_indexing ) THEN
-    CALL f_arc_import( fcontrol, fdata, status, n, ftype, ne,                  &
-                       row, col, ptr )
-  ELSE ! handle C sparse matrix indexing
     CALL f_arc_import( fcontrol, fdata, status, n, ftype, ne,                  &
                        row_find, col_find, ptr_find )
+    IF ( ALLOCATED( row_find ) ) DEALLOCATE( row_find )
+    IF ( ALLOCATED( col_find ) ) DEALLOCATE( col_find )
+    IF ( ALLOCATED( ptr_find ) ) DEALLOCATE( ptr_find )
+  ELSE
+    CALL f_arc_import( fcontrol, fdata, status, n, ftype, ne,                  &
+                       row, col, ptr )
   END IF
 
 !  copy control out 
@@ -707,7 +713,6 @@
   PROCEDURE( eval_g ), POINTER :: feval_g
   PROCEDURE( eval_h ), POINTER :: feval_h
   PROCEDURE( eval_prec ), POINTER :: feval_prec
-  LOGICAL :: f_indexing
 
 !  ignore Fortran userdata type (not interoperable)
 
@@ -825,7 +830,6 @@
   PROCEDURE( eval_g ), POINTER :: feval_g
   PROCEDURE( eval_hprod ), POINTER :: feval_hprod
   PROCEDURE( eval_prec ), POINTER :: feval_prec
-  LOGICAL :: f_indexing
 
 !  ignore Fortran userdata type (not interoperable)
 

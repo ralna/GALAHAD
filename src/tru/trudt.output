@@ -1,49 +1,17 @@
+ C sparse matrix indexing
 
- error exit tests
+ tests options for all-in-one storage format
 
- Error return from TRU_solve -
-   one or more restrictions violated
- 
- 3: TRU_solve exit status =     -3
+C:     5 iterations. Optimal objective value = -1.00 status = 0
+R:     5 iterations. Optimal objective value = -1.00 status = 0
+D:     5 iterations. Optimal objective value = -1.00 status = 0
+I:    15 iterations. Optimal objective value = -1.00 status = 0
+P:     9 iterations. Optimal objective value = -1.00 status = 0
 
- Error return from TRU_solve -
-   the problem appears to be unbounded from below
- 
- 7: TRU_solve exit status =     -7
+ tests reverse-communication options
 
- Error return from TRU_solve -
-   the provided preconditioner is flawed
- 
-15: TRU_solve exit status =    -15
-
- Error return from TRU_solve -
-   the iteration limit has been exceeded
- 
-18: TRU_solve exit status =    -18
-
- Error return from TRU_solve -
-   the time limit has been exceeded
- 
-19: TRU_solve exit status =    -19
-
- Successful return from TRU_solve
- 
-
- test of availible options
-
- 1:     8 iterations. Optimal objective value =   -1.0 status =      0
- 2:     5 iterations. Optimal objective value =   -1.0 status =      0
- 3:    13 iterations. Optimal objective value =   -1.0 status =      0
- 4:     5 iterations. Optimal objective value =   -1.0 status =      0
- 5:     6 iterations. Optimal objective value =   -1.0 status =      0
- 6:    80 iterations. Optimal objective value =   -1.0 status =      0
- 7:   148 iterations. Optimal objective value =   -1.0 status =      0
-
- full test of generic problems
-
- 1:     8 iterations. Optimal objective value =   -1.0 status =      0
- 2:     6 iterations. Optimal objective value =   -1.0 status =      0
- 3:    10 iterations. Optimal objective value =   -1.0 status =      0
- 4:     8 iterations. Optimal objective value =   -1.0 status =      0
- 5:     6 iterations. Optimal objective value =   -1.0 status =      0
- 6:    10 iterations. Optimal objective value =   -1.0 status =      0
+C:     5 iterations. Optimal objective value = -1.00 status = 0
+R:     5 iterations. Optimal objective value = -1.00 status = 0
+D:     5 iterations. Optimal objective value = -1.00 status = 0
+I:    15 iterations. Optimal objective value = -1.00 status = 0
+P:     9 iterations. Optimal objective value = -1.00 status = 0

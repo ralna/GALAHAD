@@ -486,9 +486,9 @@ make_trans:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trans )
 
 make_trb:
-	( cd $(GALAHAD)/src/forthcoming/trb ; \
+	( cd $(GALAHAD)/src/trb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trb.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/trb )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trb )
 
 make_trs:
 	( cd $(GALAHAD)/src/trs ; \
@@ -1054,9 +1054,9 @@ make_all_trans:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trans )
 
 make_all_trb:
-	( cd $(GALAHAD)/src/forthcoming/trb ; \
+	( cd $(GALAHAD)/src/trb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trb_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/trb )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trb )
 
 make_all_trs:
 	( cd $(GALAHAD)/src/trs ; \
@@ -1680,9 +1680,9 @@ make_ciface_trans:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trans )
 
 make_ciface_trb:
-	( cd $(GALAHAD)/src/forthcoming/trb ; \
+	( cd $(GALAHAD)/src/trb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trb_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/trb )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trb )
 
 make_ciface_trs:
 	( cd $(GALAHAD)/src/trs ; \

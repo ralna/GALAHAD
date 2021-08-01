@@ -617,6 +617,7 @@
      END TYPE ARC_data_type
 
      TYPE, PUBLIC :: ARC_full_data_type
+       LOGICAL :: f_indexing
        TYPE ( ARC_data_type ) :: arc_data
        TYPE ( ARC_control_type ) :: arc_control
        TYPE ( ARC_inform_type ) :: arc_inform
@@ -3932,8 +3933,66 @@
      TYPE ( ARC_control_type ), INTENT( IN ) :: control
      TYPE ( ARC_inform_type ), INTENT( INOUT ) :: inform
 
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
      CALL ARC_terminate( data%arc_data, data%arc_control, data%arc_inform )
      inform = data%arc_inform
+
+!  deallocate any internal problem arrays
+
+     array_name = 'arc: data%nlp%X'
+     CALL SPACE_dealloc_array( data%nlp%X,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'arc: data%nlp%G'
+     CALL SPACE_dealloc_array( data%nlp%G,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'arc: data%nlp%Z'
+     CALL SPACE_dealloc_array( data%nlp%Z,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'arc: data%nlp%H%row'
+     CALL SPACE_dealloc_array( data%nlp%H%row,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'arc: data%nlp%H%col'
+     CALL SPACE_dealloc_array( data%nlp%H%col,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'arc: data%nlp%H%ptr'
+     CALL SPACE_dealloc_array( data%nlp%H%ptr,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'arc: data%nlp%H%val'
+     CALL SPACE_dealloc_array( data%nlp%H%val,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'arc: data%nlp%H%type'
+     CALL SPACE_dealloc_array( data%nlp%H%type,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
      RETURN
 

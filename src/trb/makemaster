@@ -1,0 +1,67 @@
+#  Main body of the installation makefile for the GALAHAD TRB package
+
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-29
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = trb
+PACKAGE = TRB
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
+               make_lmt make_qpt make_lms make_rand \
+               make_gltr make_tools make_scu make_mi28 \
+               make_ir make_mop make_trs make_userdata \
+               make_nlpt make_icfs make_lancelot_psls \
+               make_psls make_sha make_cauchy make_cg
+
+#  auxiliary packages that the C interface to the current package depends 
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = 
+
+#  other packages that depend on package
+
+DEPENDS = bgo
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test)
+
+TESTS = test_full test_cutest
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = ALLINIT.SIF
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

@@ -1,0 +1,23 @@
+  Problem:  (n = 3): TRB stopping tolerance = 1.0000E-05
+
+It              f        pgrad      ratio   radius # active cg its         time 
+0          4.0540E+01  1.1896E+01           1.0E+02   0     
+1          1.7327E+00  3.3831E+00  8.9E-01  1.0E+02   1      1             0.00
+2         -3.1947E-01  1.6143E+00  6.3E-01  1.0E+02   1      3             0.00
+3         -7.5862E-01  4.0328E-02  1.0E+00  1.0E+02   1      0             0.00
+4         -7.5897E-01  2.8455E-05  1.0E+00  1.0E+02   1      2             0.00
+5         -7.5897E-01  2.7739E-11  1.0E+00  1.0E+02   1      0             0.00
+
+  Problem:  (n = 3): TRB stopping tolerance = 1.0000E-05
+  Second-order model used
+  Two-norm TR used
+  Total time = .00 seconds
+
+TRB successful solve
+iter: 5 
+x: -3.724693 0.000000 0.000000 
+objective: -0.758966 
+gradient: 0.000000 0.000000 0.550614 
+f_eval: 6 
+time: 0.000000 
+status: 0 
