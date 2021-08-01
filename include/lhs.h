@@ -30,7 +30,7 @@ extern "C" {
  * inform derived type as a C struct
  */
 struct lhs_inform_type {
-
+0
     //  return status. See LHS_solve for details
     int status;
 
@@ -54,10 +54,11 @@ struct lhs_control_type {
 
     // the level of output required. <= 0 gives no output, = 1 gives a one-line
     // summary for every iteration, = 2 gives a summary of the inner iteration
-    // for each iteration, >= 3 gives increasingly verbose (debugging) output      
+    // for each iteration, >= 3 gives increasingly verbose (debugging) output 
     int print_level; 
 
-    // the duplication factor. This must be at least 1, a value of 5 is reasonable
+    // the duplication factor. This must be at least 1, a value of 5 is 
+    // reasonable
     int duplication;
 
     // if %space_critical true, every effort will be made to use as little
@@ -83,13 +84,16 @@ struct lhs_control_type {
  *   control  a struct containing control information
  *   inform   a struct containing output information
  */
-void lhs_initialize(void **data, struct lhs_control_type *control, struct lhs_inform_type *inform);
+void lhs_initialize( void **data, 
+                     struct lhs_control_type *control, 
+                     struct lhs_inform_type *inform );
 
 /*
  * Read the content of a specification file, and perform the assignment of
  * values associated with given keywords to the corresponding control parameters
  */ 
-void lhs_read_specfile(struct lhs_control_type *control, const char specfile[]);
+void lhs_read_specfile( struct lhs_control_type *control, 
+                        const char specfile[] );
 
 /*
  * lhs_ihs implements the improved distributed hyper-cube sampling algorithm.
@@ -127,7 +131,12 @@ void lhs_read_specfile(struct lhs_control_type *control, const char specfile[]);
  *
  *    control, inform, data - see lhs_initialize
  */ 
-void lhs_ihs(int n_dimen, int n_points, int *seed, int X[n_dimen][n_points], const struct lhs_control_type *control, struct lhs_inform_type *inform, void **data);
+void lhs_ihs( int n_dimen, 
+              int n_points, 
+              int *seed, 
+              int X[n_dimen][n_points], 
+              const struct lhs_control_type *control, 
+              struct lhs_inform_type *inform, void **data );
 
 /*
  * lhs_get_seed gets a seed for the random number generator.
@@ -143,12 +152,14 @@ void lhs_ihs(int n_dimen, int n_points, int *seed, int X[n_dimen][n_points], con
  *
  *    Output, int* seed, a pseudorandom seed value.
  */ 
-void lhs_get_seed(int *seed);
+void lhs_get_seed( int *seed );
 
 /*
  * Deallocate all private storage
  */
-void lhs_terminate(void **data, struct lhs_control_type *control, struct lhs_inform_type *inform);
+void lhs_terminate( void **data, 
+                    struct lhs_control_type *control, 
+                    struct lhs_inform_type *inform );
 
 // end include guard
 #endif

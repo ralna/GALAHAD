@@ -180,13 +180,12 @@
       TYPE ( BQPB_control_type ) :: BQPB_control
       TYPE ( BQPB_inform_type ) :: BQPB_inform
       TYPE ( QPT_problem_type ) :: prob
-      TYPE ( GALAHAD_userdata_type ) :: userdata
 
 !  Allocatable arrays
 
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SH, SA
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: HX
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, B_stat
+      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, X_stat
 
      CALL CPU_TIME( time )
 
@@ -251,7 +250,7 @@
 
 !  Allocate derived types
 
-      ALLOCATE( prob%X0( n ), B_stat( n ), STAT = alloc_stat )
+      ALLOCATE( prob%X0( n ), X_stat( n ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
         WRITE( out, 2150 ) 'X0', alloc_stat
         STOP
@@ -436,7 +435,7 @@
       WRITE( out, 2020 ) pname
       WRITE( out, 2200 ) n, H_ne
 
-      B_stat = 0
+      X_stat = 0
 
 !  If required, scale the problem
 
@@ -522,7 +521,8 @@
 
         solv = ' BQPB'
         IF ( printo ) WRITE( out, " ( ' ** BQPB solver used ** ' ) " )
-        CALL BQPB_solve( prob, B_stat, data, BQPB_control, BQPB_inform, userdata )
+        CALL BQPB_solve( prob, data, BQPB_control, BQPB_inform,                &
+                         X_stat = X_stat )
 
         IF ( printo ) WRITE( out, " ( /, ' ** BQPB solver used ** ' ) " )
         qfval = BQPB_inform%obj
@@ -533,7 +533,7 @@
 
         status = BQPB_inform%status
         iter = BQPB_inform%iter
-        stopr = BQPB_control%stop_d
+        stopr = BQPB_control%stop_abs_d
         CALL BQPB_terminate( data, BQPB_control, BQPB_inform )
       ELSE
         timeo  = 0.0
@@ -541,7 +541,7 @@
         iter  = 0
         solv   = ' NONE'
         status = 0
-        stopr = BQPB_control%stop_d
+        stopr = BQPB_control%stop_abs_d
         qfval  = prob%f
       END IF
 

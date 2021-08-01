@@ -32,6 +32,8 @@ all_cutest_single:
                          tru_cutest PRECIS=single PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          arc_cutest PRECIS=single PWD=$(PWD)/arc )
+	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         trb_cutest PRECIS=single PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          nls_cutest PRECIS=single PWD=$(PWD)/nls )
 
@@ -54,6 +56,8 @@ all_cutest_double:
                           tru_cutest PRECIS=double PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           arc_cutest PRECIS=double PWD=$(PWD)/arc )
+	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          trb_cutest PRECIS=double PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls_cutest PRECIS=double PWD=$(PWD)/nls )
 
@@ -118,6 +122,8 @@ all_standalone_single:
                           tru PRECIS=single PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           arc PRECIS=single PWD=$(PWD)/arc )
+	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          trb PRECIS=single PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls PRECIS=single PWD=$(PWD)/nls )
 
@@ -140,6 +146,8 @@ all_standalone_double:
                           tru PRECIS=double PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           arc PRECIS=double PWD=$(PWD)/arc )
+	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          trb PRECIS=double PWD=$(PWD)/trb )
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls PRECIS=double PWD=$(PWD)/nls )
 
@@ -308,6 +316,8 @@ tests_single:
                       PRECIS=single PWD=$(PWD)/tru )
 	( cd arc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
                       PRECIS=single PWD=$(PWD)/arc )
+	( cd trb  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+                      PRECIS=single PWD=$(PWD)/trb )
 	( cd lms  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
                       PRECIS=single PWD=$(PWD)/lms )
 	( cd sls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
@@ -336,6 +346,8 @@ tests_double:
                       PRECIS=double PWD=$(PWD)/tru )
 	( cd arc  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
                       PRECIS=double PWD=$(PWD)/arc )
+	( cd trb  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
+                      PRECIS=double PWD=$(PWD)/trb )
 	( cd lms  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
                       PRECIS=double PWD=$(PWD)/lms )
 	( cd sls  ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
@@ -370,6 +382,8 @@ tests_full_single:
                             test_full  PRECIS=single PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                             test_full  PRECIS=single PWD=$(PWD)/arc )
+	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                            test_full  PRECIS=single PWD=$(PWD)/trb )
 	( cd lms      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                             test_full  PRECIS=single PWD=$(PWD)/lms )
 	( cd sls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -398,6 +412,8 @@ tests_full_double:
                             test_full  PRECIS=double PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                             test_full  PRECIS=double PWD=$(PWD)/arc )
+	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                            test_full  PRECIS=double PWD=$(PWD)/trb )
 	( cd lms      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                             test_full  PRECIS=double PWD=$(PWD)/lms )
 	( cd sls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -432,6 +448,8 @@ test_spec_single:
                           PRECIS=single PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           PRECIS=single PWD=$(PWD)/arc )
+	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+                          PRECIS=single PWD=$(PWD)/trb )
 	( cd lms      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           PRECIS=single PWD=$(PWD)/lms )
 	( cd sls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
@@ -460,6 +478,8 @@ test_spec_double:
                           PRECIS=double PWD=$(PWD)/tru )
 	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           PRECIS=double PWD=$(PWD)/arc )
+	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
+                          PRECIS=double PWD=$(PWD)/trb )
 	( cd lms      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                           PRECIS=double PWD=$(PWD)/lms )
 	( cd sls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
@@ -998,6 +1018,54 @@ barc_single:
 barc_double:
 	( cd forthcoming/barc ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             barc PRECIS=double PWD=$(PWD)/forthcoming/barc )
+
+#  ---
+#  tru
+#  ---
+
+tru_cutest: tru_cutest_$(PRECIS)
+
+tru_cutest_single:
+	( cd tru ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tru_cutest \
+                    PRECIS=single PWD=$(PWD)/tru )
+
+tru_cutest_double:
+	( cd tru ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tru_cutest \
+                    PRECIS=double PWD=$(PWD)/tru )
+
+tru: tru_$(PRECIS)
+
+tru_single:
+	( cd tru ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tru \
+                    PRECIS=single PWD=$(PWD)/tru )
+
+tru_double:
+	( cd tru ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tru \
+                    PRECIS=double PWD=$(PWD)/tru )
+
+#  ---
+#  trb
+#  ---
+
+trb_cutest: trb_cutest_$(PRECIS)
+
+trb_cutest_single:
+	( cd trb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            trb_cutest PRECIS=single PWD=$(PWD)/trb )
+
+trb_cutest_double:
+	( cd trb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            trb_cutest PRECIS=double PWD=$(PWD)/trb )
+
+trb: trb_$(PRECIS)
+
+trb_single:
+	( cd trb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            trb PRECIS=single PWD=$(PWD)/trb )
+
+trb_double:
+	( cd trb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            trb PRECIS=double PWD=$(PWD)/trb )
 
 #  ------
 #  funnel
