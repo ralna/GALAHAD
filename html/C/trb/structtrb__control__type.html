@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -147,7 +154,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struc
 <tr class="separator:a97a46af6187162b529821f79d1559827"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cd04d404e41a2a09c29eeb2de78cd85"><td class="memItemLeft" align="right" valign="top"><a id="a8cd04d404e41a2a09c29eeb2de78cd85"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtrb__control__type.html#a8cd04d404e41a2a09c29eeb2de78cd85">mi28_rsize</a></td></tr>
-<tr class="memdesc:a8cd04d404e41a2a09c29eeb2de78cd85"><td class="mdescLeft">&#160;</td><td class="mdescRight">the maximum number of entries within each column of the strictly lower triangular matrix <img class="formulaInl" alt="$R$" src="form_77.png"/> used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize * n are allocated internally to hold <img class="formulaInl" alt="$R$" src="form_77.png"/>. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize &gt; 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize &gt;= .mi28_lsize is generally recommended <br /></td></tr>
+<tr class="memdesc:a8cd04d404e41a2a09c29eeb2de78cd85"><td class="mdescLeft">&#160;</td><td class="mdescRight">the maximum number of entries within each column of the strictly lower triangular matrix \(R\) used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize * n are allocated internally to hold \(R\). Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize &gt; 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize &gt;= .mi28_lsize is generally recommended <br /></td></tr>
 <tr class="separator:a8cd04d404e41a2a09c29eeb2de78cd85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11a46bd456ea63bac8bdffb056fe98c9"><td class="memItemLeft" align="right" valign="top"><a id="a11a46bd456ea63bac8bdffb056fe98c9"></a>
 real_wp_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtrb__control__type.html#a11a46bd456ea63bac8bdffb056fe98c9">infinity</a></td></tr>
@@ -299,16 +306,16 @@ char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The norm is defined via <img class="formulaInl" alt="$\|v\|^2 = v^T P v$" src="form_74.png"/>, and will define the preconditioner used for iterative methods. Possible values for <img class="formulaInl" alt="$P$" src="form_75.png"/> are </p><ul>
+<p>The norm is defined via \(\|v\|^2 = v^T P v\), and will define the preconditioner used for iterative methods. Possible values for \(P\) are </p><ul>
 <li>-3 users own preconditioner </li>
-<li>-2 <img class="formulaInl" alt="$P =$" src="form_76.png"/> limited-memory BFGS matrix (with .lbfgs_vectors history) </li>
+<li>-2 \(P =\) limited-memory BFGS matrix (with .lbfgs_vectors history) </li>
 <li>-1 identity (= Euclidan two-norm) </li>
 <li>0 automatic (<em>not yet implemented</em>) </li>
-<li>1 diagonal, <img class="formulaInl" alt="$P =$" src="form_76.png"/> diag( max( Hessian, .min_diagonal ) ) </li>
-<li>2 banded, <img class="formulaInl" alt="$P =$" src="form_76.png"/> band( Hessian ) with semi-bandwidth .semi_bandwidth </li>
+<li>1 diagonal, \(P =\) diag( max( Hessian, .min_diagonal ) ) </li>
+<li>2 banded, \(P =\) band( Hessian ) with semi-bandwidth .semi_bandwidth </li>
 <li>3 re-ordered band, P=band(order(A)) with semi-bandwidth .semi_bandwidth </li>
-<li>4 full factorization, <img class="formulaInl" alt="$P =$" src="form_76.png"/> Hessian, Schnabel-Eskow modification </li>
-<li>5 full factorization, <img class="formulaInl" alt="$P =$" src="form_76.png"/> Hessian, GMPS modification (<em>not yet implemented</em>) </li>
+<li>4 full factorization, \(P =\) Hessian, Schnabel-Eskow modification </li>
+<li>5 full factorization, \(P =\) Hessian, GMPS modification (<em>not yet implemented</em>) </li>
 <li>6 incomplete factorization of Hessian, Lin-More' </li>
 <li>7 incomplete factorization of Hessian, HSL_MI28 </li>
 <li>8 incomplete factorization of Hessian, Munskgaard (<em>not yet implemented</em>) </li>
@@ -331,10 +338,10 @@ char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 
 <p>the level of output required. </p>
 <ul>
-<li><img class="formulaInl" alt="$\leq$" src="form_72.png"/> 0 gives no output, </li>
+<li>\(\leq\) 0 gives no output, </li>
 <li>= 1 gives a one-line summary for every iteration, </li>
 <li>= 2 gives a summary of the inner iteration for each iteration, </li>
-<li><img class="formulaInl" alt="$\geq$" src="form_73.png"/> 3 gives increasingly verbose (debugging) output </li>
+<li>\(\geq\) 3 gives increasingly verbose (debugging) output </li>
 </ul>
 
 </div>

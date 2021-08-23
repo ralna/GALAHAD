@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -66,7 +73,7 @@ $(function() {
 <div class="title">trut.c</div>  </div>
 </div><!--header-->
 <div class="contents">
-<p><a class="anchor" id="examples"></a> <img class="formulaInl" alt="$\label{examples}$" src="form_56.png"/></p>
+<p><a class="anchor" id="examples"></a> \(\label{examples}\)</p>
 <p>This is an example of how to use the package both when the Hessian is directly available and when its product with vectors may be found. Both function call evaluations and returns to the calling program to find the required values are illustrated. A variety of supported Hessian storage formats are shown.</p>
 <p>Notice that C-style indexing is used, and that this is flaggeed by setting <code>control.f_indexing</code> to <code>false</code>. In addition, see how parameters may be passed into the evaluation functions via <code>userdata</code>.<br  />
  </p><div class="fragment"><div class="line"><span class="comment">/* trut.c */</span></div>
