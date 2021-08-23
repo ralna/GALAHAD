@@ -31,7 +31,7 @@
 ! problem data complete
    CALL DGO_initialize( data, control, inform ) ! Initialize control parameters
 !  control%attempts_max = 10000
-   control%maxit = 100000
+   control%maxit = 10000
    control%max_evals = 20000
    control%print_level = 1
 ! Solve the problem

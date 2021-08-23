@@ -58,8 +58,8 @@ int main(void) {
     status = 1; 
 
     // Call TRB_solve
-    trb_solve_without_h( &data, &userdata, &status, 
-                         n, x, g, fun, grad, hessprod, shessprod, NULL );
+    trb_solve_without_mat( &data, &userdata, &status, 
+                           n, x, g, fun, grad, hessprod, shessprod, NULL );
 
     // Record solution information
     trb_information( &data, &inform, &status );

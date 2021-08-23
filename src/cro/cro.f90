@@ -242,7 +242,7 @@
 !  information from SCU
 
         INTEGER :: scu_status = 0
-        TYPE ( SCU_info_type ) :: SCU_inform
+        TYPE ( SCU_inform_type ) :: SCU_inform
 
 !  information from IR
 

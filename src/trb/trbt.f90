@@ -17,7 +17,7 @@
 ! start problem data
    nlp%n = 1 ; nlp%H%ne = 1                     ! dimensions
    ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ),               &
-             nlp%G( nlp%n ), nlp%Z( nlp%n ) )
+             nlp%G( nlp%n ) )
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
@@ -140,7 +140,7 @@
                    eval_F = FUN, eval_G = GRAD, eval_H = HESS )
 
 10 continue
-   DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G, nlp%Z )
+   DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G )
    DEALLOCATE( nlp%H%val, nlp%H%row, nlp%H%col )
 
 !  =========================
@@ -150,7 +150,7 @@
 ! start problem data
    nlp%n = 3 ; nlp%H%ne = 5                  ! dimensions
    ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ),               &
-             nlp%G( nlp%n ), nlp%Z( nlp%n ) )
+             nlp%G( nlp%n ) )
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
@@ -241,7 +241,7 @@
 
      CALL TRB_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G, nlp%Z )
+   DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G )
    DEALLOCATE( nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
 
 !  ============================
@@ -251,7 +251,7 @@
 ! start problem data
    nlp%n = 3 ; nlp%H%ne = 5                  ! dimensions
    ALLOCATE( nlp%X( nlp%n ), nlp%X_l( nlp%n ), nlp%X_u( nlp%n ),               &
-             nlp%G( nlp%n ), nlp%Z( nlp%n ) )
+             nlp%G( nlp%n ) )
 !  sparse co-ordinate storage format
    CALL SMT_put( nlp%H%type, 'COORDINATE', s )  ! Specify co-ordinate storage
    ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
@@ -330,7 +330,7 @@
 
      CALL TRB_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G, nlp%Z )
+   DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G )
    DEALLOCATE( nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
 
 CONTAINS

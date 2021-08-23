@@ -56,8 +56,8 @@ int main(void) {
     status = 1; 
 
     // Call TRB_solve
-    trb_solve_with_h( &data, &userdata, &status, 
-                      n, x, g, ne, fun, grad, hess, NULL );
+    trb_solve_with_mat( &data, &userdata, &status, 
+                        n, x, g, ne, fun, grad, hess, NULL );
 
     // Record solution information
     trb_information( &data, &inform, &status );

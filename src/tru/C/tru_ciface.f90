@@ -17,21 +17,21 @@
     USE iso_c_binding
     USE GALAHAD_common_ciface
     USE GALAHAD_TRU_double, only:                                              &
-        f_tru_time_type               => TRU_time_type,                        &
-        f_tru_inform_type             => TRU_inform_type,                      &
-        f_tru_control_type            => TRU_control_type,                     &
-        f_tru_full_data_type          => TRU_full_data_type,                   &
-        f_tru_initialize              => TRU_initialize,                       &
-        f_tru_read_specfile           => TRU_read_specfile,                    &
-        f_tru_import                  => TRU_import,                           &
-        f_tru_solve_with_h            => TRU_solve_with_h,                     &
-        f_tru_solve_without_h         => TRU_solve_without_h,                  &
-        f_tru_solve_reverse_with_h    => TRU_solve_reverse_with_h,             &
-        f_tru_solve_reverse_without_h => TRU_solve_reverse_without_h,          &
-        f_tru_information             => TRU_information,                      &
-        f_tru_terminate               => TRU_terminate
+        f_tru_time_type                 => TRU_time_type,                      &
+        f_tru_inform_type               => TRU_inform_type,                    &
+        f_tru_control_type              => TRU_control_type,                   &
+        f_tru_full_data_type            => TRU_full_data_type,                 &
+        f_tru_initialize                => TRU_initialize,                     &
+        f_tru_read_specfile             => TRU_read_specfile,                  &
+        f_tru_import                    => TRU_import,                         &
+        f_tru_solve_with_mat            => TRU_solve_with_mat,                 &
+        f_tru_solve_without_mat         => TRU_solve_without_mat,              &
+        f_tru_solve_reverse_with_mat    => TRU_solve_reverse_with_mat,         &
+        f_tru_solve_reverse_without_mat => TRU_solve_reverse_without_mat,      &
+        f_tru_information               => TRU_information,                    &
+        f_tru_terminate                 => TRU_terminate
     USE GALAHAD_NLPT_double, ONLY:                                             &
-        f_nlpt_userdata_type          => NLPT_userdata_type
+        f_nlpt_userdata_type            => NLPT_userdata_type
 
     IMPLICIT NONE
 
@@ -210,6 +210,159 @@
 
   CONTAINS
 
+!  copy C control parameters to fortran
+
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    TYPE ( tru_control_type ), INTENT( IN ) :: ccontrol
+    TYPE ( f_tru_control_type ), INTENT( OUT ) :: fcontrol
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER :: i
+    
+  ! C or Fortran sparse matrix indexing
+    IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
+
+  ! Integers
+    fcontrol%error = ccontrol%error
+    fcontrol%out = ccontrol%out
+    fcontrol%print_level = ccontrol%print_level
+    fcontrol%start_print = ccontrol%start_print
+    fcontrol%stop_print = ccontrol%stop_print
+    fcontrol%print_gap = ccontrol%print_gap
+    fcontrol%maxit = ccontrol%maxit
+    fcontrol%alive_unit = ccontrol%alive_unit
+    fcontrol%non_monotone = ccontrol%non_monotone
+    fcontrol%model = ccontrol%model
+    fcontrol%norm = ccontrol%norm
+    fcontrol%semi_bandwidth = ccontrol%semi_bandwidth
+    fcontrol%lbfgs_vectors = ccontrol%lbfgs_vectors
+    fcontrol%max_dxg = ccontrol%max_dxg
+    fcontrol%icfs_vectors = ccontrol%icfs_vectors
+    fcontrol%mi28_lsize = ccontrol%mi28_lsize
+    fcontrol%mi28_rsize = ccontrol%mi28_rsize
+    fcontrol%advanced_start = ccontrol%advanced_start
+
+    ! Reals
+    fcontrol%stop_g_absolute = ccontrol%stop_g_absolute
+    fcontrol%stop_g_relative = ccontrol%stop_g_relative
+    fcontrol%stop_s = ccontrol%stop_s
+    fcontrol%initial_radius = ccontrol%initial_radius
+    fcontrol%maximum_radius = ccontrol%maximum_radius
+    fcontrol%eta_successful = ccontrol%eta_successful
+    fcontrol%eta_very_successful = ccontrol%eta_very_successful
+    fcontrol%eta_too_successful = ccontrol%eta_too_successful
+    fcontrol%radius_increase = ccontrol%radius_increase
+    fcontrol%radius_reduce = ccontrol%radius_reduce
+    fcontrol%radius_reduce_max = ccontrol%radius_reduce_max
+    fcontrol%obj_unbounded = ccontrol%obj_unbounded
+    fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
+    fcontrol%clock_time_limit = ccontrol%clock_time_limit 
+
+    ! Logicals
+    fcontrol%hessian_available = ccontrol%hessian_available
+    fcontrol%subproblem_direct = ccontrol%subproblem_direct
+    fcontrol%retrospective_trust_region = ccontrol%retrospective_trust_region
+    fcontrol%renormalize_radius = ccontrol%renormalize_radius
+    fcontrol%space_critical = ccontrol%space_critical
+    fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
+
+    ! Derived types
+!   CALL copy_trs_control_in(ccontrol%trs_control,fcontrol%trs_control)
+!   CALL copy_gltr_control_in(ccontrol%gltr_control,fcontrol%gltr_control)
+!   CALL copy_psls_control_in(ccontrol%psls_control,fcontrol%psls_control)
+!   CALL copy_lms_control_in(ccontrol%lms_control,fcontrol%lms_control)
+!   CALL copy_lms_control_prec_in(ccontrol%lms_control_prec,                   &
+!                                 fcontrol%lms_control_prec)
+!   CALL copy_sha_control_in(ccontrol%sha_control,fcontrol%sha_control)
+
+    ! Strings
+    DO i = 1, 31
+      IF ( ccontrol%alive_file( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
+    END DO
+    DO i = 1, 31
+      IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%prefix( i : i ) = ccontrol%prefix( i )
+    END DO
+    RETURN
+    END SUBROUTINE copy_control_in
+
+!  copy fortran control parameters to C
+
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
+    TYPE ( f_tru_control_type ), INTENT( IN ) :: fcontrol
+    TYPE ( tru_control_type ), INTENT( OUT ) :: ccontrol
+    logical, optional, INTENT( IN ) :: f_indexing
+    integer :: i
+    
+  ! C or Fortran sparse matrix indexing
+    IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
+
+    ! Integers
+    ccontrol%error = fcontrol%error
+    ccontrol%out = fcontrol%out
+    ccontrol%print_level = fcontrol%print_level
+    ccontrol%start_print = fcontrol%start_print
+    ccontrol%stop_print = fcontrol%stop_print
+    ccontrol%print_gap = fcontrol%print_gap
+    ccontrol%maxit = fcontrol%maxit
+    ccontrol%alive_unit = fcontrol%alive_unit
+    ccontrol%non_monotone = fcontrol%non_monotone
+    ccontrol%model = fcontrol%model
+    ccontrol%norm = fcontrol%norm
+    ccontrol%semi_bandwidth = fcontrol%semi_bandwidth
+    ccontrol%lbfgs_vectors = fcontrol%lbfgs_vectors
+    ccontrol%max_dxg = fcontrol%max_dxg
+    ccontrol%icfs_vectors = fcontrol%icfs_vectors
+    ccontrol%mi28_lsize = fcontrol%mi28_lsize
+    ccontrol%mi28_rsize = fcontrol%mi28_rsize
+    ccontrol%advanced_start = fcontrol%advanced_start
+
+    ! Reals
+    ccontrol%stop_g_absolute = fcontrol%stop_g_absolute
+    ccontrol%stop_g_relative = fcontrol%stop_g_relative
+    ccontrol%stop_s = fcontrol%stop_s
+    ccontrol%initial_radius = fcontrol%initial_radius
+    ccontrol%maximum_radius = fcontrol%maximum_radius
+    ccontrol%eta_successful = fcontrol%eta_successful
+    ccontrol%eta_very_successful = fcontrol%eta_very_successful
+    ccontrol%eta_too_successful = fcontrol%eta_too_successful
+    ccontrol%radius_increase = fcontrol%radius_increase
+    ccontrol%radius_reduce = fcontrol%radius_reduce
+    ccontrol%radius_reduce_max = fcontrol%radius_reduce_max
+    ccontrol%obj_unbounded = fcontrol%obj_unbounded
+    ccontrol%cpu_time_limit = fcontrol%cpu_time_limit
+    ccontrol%clock_time_limit = fcontrol%clock_time_limit 
+
+    ! Logicals
+    ccontrol%hessian_available = fcontrol%hessian_available
+    ccontrol%subproblem_direct = fcontrol%subproblem_direct
+    ccontrol%retrospective_trust_region = fcontrol%retrospective_trust_region
+    ccontrol%renormalize_radius = fcontrol%renormalize_radius
+    ccontrol%space_critical = fcontrol%space_critical
+    ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
+
+    ! Derived types
+!   CALL copy_trs_control_out(fcontrol%trs_control,ccontrol%trs_control)
+!   CALL copy_gltr_control_out(fcontrol%gltr_control,ccontrol%gltr_control)
+!   CALL copy_psls_control_out(fcontrol%psls_control,ccontrol%psls_control)
+!   CALL copy_lms_control_out(fcontrol%lms_control,ccontrol%lms_control)
+!   CALL copy_lms_control_prec_out(fcontrol%lms_control_prec,                  &
+!                                  ccontrol%lms_control_prec)
+!   CALL copy_sha_control_out(fcontrol%sha_control,ccontrol%sha_control)
+
+    ! Strings
+    DO i = 1, LEN( fcontrol%alive_file )
+      ccontrol%alive_file( i ) = fcontrol%alive_file( i : i )
+    END DO
+    ccontrol%alive_file( LEN( fcontrol%alive_file ) + 1 ) = C_NULL_CHAR
+    DO i = 1, LEN( fcontrol%prefix )
+      ccontrol%prefix( i ) = fcontrol%prefix( i : i )
+    END DO
+    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+    RETURN
+
+    END SUBROUTINE copy_control_out
+
 !  copy C times to fortran
 
     SUBROUTINE copy_time_in( ctime, ftime ) 
@@ -342,159 +495,6 @@
 
     END SUBROUTINE copy_inform_out
 
-!  copy C control parameters to fortran
-
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
-    TYPE ( tru_control_type ), INTENT( IN ) :: ccontrol
-    TYPE ( f_tru_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
-    
-  ! C or Fortran sparse matrix indexing
-    IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
-
-  ! Integers
-    fcontrol%error = ccontrol%error
-    fcontrol%out = ccontrol%out
-    fcontrol%print_level = ccontrol%print_level
-    fcontrol%start_print = ccontrol%start_print
-    fcontrol%stop_print = ccontrol%stop_print
-    fcontrol%print_gap = ccontrol%print_gap
-    fcontrol%maxit = ccontrol%maxit
-    fcontrol%alive_unit = ccontrol%alive_unit
-    fcontrol%non_monotone = ccontrol%non_monotone
-    fcontrol%model = ccontrol%model
-    fcontrol%norm = ccontrol%norm
-    fcontrol%semi_bandwidth = ccontrol%semi_bandwidth
-    fcontrol%lbfgs_vectors = ccontrol%lbfgs_vectors
-    fcontrol%max_dxg = ccontrol%max_dxg
-    fcontrol%icfs_vectors = ccontrol%icfs_vectors
-    fcontrol%mi28_lsize = ccontrol%mi28_lsize
-    fcontrol%mi28_rsize = ccontrol%mi28_rsize
-    fcontrol%advanced_start = ccontrol%advanced_start
-
-    ! Reals
-    fcontrol%stop_g_absolute = ccontrol%stop_g_absolute
-    fcontrol%stop_g_relative = ccontrol%stop_g_relative
-    fcontrol%stop_s = ccontrol%stop_s
-    fcontrol%initial_radius = ccontrol%initial_radius
-    fcontrol%maximum_radius = ccontrol%maximum_radius
-    fcontrol%eta_successful = ccontrol%eta_successful
-    fcontrol%eta_very_successful = ccontrol%eta_very_successful
-    fcontrol%eta_too_successful = ccontrol%eta_too_successful
-    fcontrol%radius_increase = ccontrol%radius_increase
-    fcontrol%radius_reduce = ccontrol%radius_reduce
-    fcontrol%radius_reduce_max = ccontrol%radius_reduce_max
-    fcontrol%obj_unbounded = ccontrol%obj_unbounded
-    fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
-    fcontrol%clock_time_limit = ccontrol%clock_time_limit 
-
-    ! Logicals
-    fcontrol%hessian_available = ccontrol%hessian_available
-    fcontrol%subproblem_direct = ccontrol%subproblem_direct
-    fcontrol%retrospective_trust_region = ccontrol%retrospective_trust_region
-    fcontrol%renormalize_radius = ccontrol%renormalize_radius
-    fcontrol%space_critical = ccontrol%space_critical
-    fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
-
-    ! Derived types
-!   CALL copy_trs_control_in(ccontrol%trs_control,fcontrol%trs_control)
-!   CALL copy_gltr_control_in(ccontrol%gltr_control,fcontrol%gltr_control)
-!   CALL copy_psls_control_in(ccontrol%psls_control,fcontrol%psls_control)
-!   CALL copy_lms_control_in(ccontrol%lms_control,fcontrol%lms_control)
-!   CALL copy_lms_control_prec_in(ccontrol%lms_control_prec,                   &
-!                                 fcontrol%lms_control_prec)
-!   CALL copy_sha_control_in(ccontrol%sha_control,fcontrol%sha_control)
-
-    ! Strings
-    DO i = 1, 31
-        IF ( ccontrol%alive_file( i ) == C_NULL_CHAR ) EXIT
-        fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
-    END DO
-    DO i = 1, 31
-        IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
-        fcontrol%prefix( i : i ) = ccontrol%prefix( i )
-    END DO
-    RETURN
-    END SUBROUTINE copy_control_in
-
-!  copy fortran control parameters to C
-
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
-    TYPE ( f_tru_control_type ), INTENT( IN ) :: fcontrol
-    TYPE ( tru_control_type ), INTENT( OUT ) :: ccontrol
-    logical, optional, INTENT( IN ) :: f_indexing
-    integer :: i
-    
-  ! C or Fortran sparse matrix indexing
-    IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
-
-    ! Integers
-    ccontrol%error = fcontrol%error
-    ccontrol%out = fcontrol%out
-    ccontrol%print_level = fcontrol%print_level
-    ccontrol%start_print = fcontrol%start_print
-    ccontrol%stop_print = fcontrol%stop_print
-    ccontrol%print_gap = fcontrol%print_gap
-    ccontrol%maxit = fcontrol%maxit
-    ccontrol%alive_unit = fcontrol%alive_unit
-    ccontrol%non_monotone = fcontrol%non_monotone
-    ccontrol%model = fcontrol%model
-    ccontrol%norm = fcontrol%norm
-    ccontrol%semi_bandwidth = fcontrol%semi_bandwidth
-    ccontrol%lbfgs_vectors = fcontrol%lbfgs_vectors
-    ccontrol%max_dxg = fcontrol%max_dxg
-    ccontrol%icfs_vectors = fcontrol%icfs_vectors
-    ccontrol%mi28_lsize = fcontrol%mi28_lsize
-    ccontrol%mi28_rsize = fcontrol%mi28_rsize
-    ccontrol%advanced_start = fcontrol%advanced_start
-
-    ! Reals
-    ccontrol%stop_g_absolute = fcontrol%stop_g_absolute
-    ccontrol%stop_g_relative = fcontrol%stop_g_relative
-    ccontrol%stop_s = fcontrol%stop_s
-    ccontrol%initial_radius = fcontrol%initial_radius
-    ccontrol%maximum_radius = fcontrol%maximum_radius
-    ccontrol%eta_successful = fcontrol%eta_successful
-    ccontrol%eta_very_successful = fcontrol%eta_very_successful
-    ccontrol%eta_too_successful = fcontrol%eta_too_successful
-    ccontrol%radius_increase = fcontrol%radius_increase
-    ccontrol%radius_reduce = fcontrol%radius_reduce
-    ccontrol%radius_reduce_max = fcontrol%radius_reduce_max
-    ccontrol%obj_unbounded = fcontrol%obj_unbounded
-    ccontrol%cpu_time_limit = fcontrol%cpu_time_limit
-    ccontrol%clock_time_limit = fcontrol%clock_time_limit 
-
-    ! Logicals
-    ccontrol%hessian_available = fcontrol%hessian_available
-    ccontrol%subproblem_direct = fcontrol%subproblem_direct
-    ccontrol%retrospective_trust_region = fcontrol%retrospective_trust_region
-    ccontrol%renormalize_radius = fcontrol%renormalize_radius
-    ccontrol%space_critical = fcontrol%space_critical
-    ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
-
-    ! Derived types
-!   CALL copy_trs_control_out(fcontrol%trs_control,ccontrol%trs_control)
-!   CALL copy_gltr_control_out(fcontrol%gltr_control,ccontrol%gltr_control)
-!   CALL copy_psls_control_out(fcontrol%psls_control,ccontrol%psls_control)
-!   CALL copy_lms_control_out(fcontrol%lms_control,ccontrol%lms_control)
-!   CALL copy_lms_control_prec_out(fcontrol%lms_control_prec,                  &
-!                                  ccontrol%lms_control_prec)
-!   CALL copy_sha_control_out(fcontrol%sha_control,ccontrol%sha_control)
-
-    ! Strings
-    DO i = 1, LEN( fcontrol%alive_file )
-      ccontrol%alive_file( i ) = fcontrol%alive_file( i : i )
-    END DO
-    ccontrol%alive_file( LEN( fcontrol%alive_file ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%prefix )
-      ccontrol%prefix( i ) = fcontrol%prefix( i : i )
-    END DO
-    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
-    RETURN
-
-    END SUBROUTINE copy_control_out
-
   END MODULE GALAHAD_TRU_double_ciface
 
 !  -------------------------------------
@@ -522,7 +522,7 @@
 
   ALLOCATE( fdata ); cdata = C_LOC(fdata)
 
-!  call TRU_initialize
+!  initialize required fortran types
 
   CALL f_tru_initialize( fdata, fcontrol, finform )
 
@@ -577,7 +577,7 @@
 
   open( UNIT = device, FILE = fspecfile )
   
-!  call TRU_read_specfile
+!  read control parameters from the specfile
 
   CALL f_tru_read_specfile( fcontrol, device )
 
@@ -652,7 +652,7 @@
       ptr_find = ptr + 1
     END IF
 
-!  call TRU_import
+!  import the problem data into the required TRU structure
 
     CALL f_tru_import( fcontrol, fdata, status, n, ftype, ne,                  &
                        row_find, col_find, ptr_find )
@@ -671,12 +671,13 @@
 
   END SUBROUTINE tru_import
 
-!  ---------------------------------------
-!  C interface to fortran tru_solve_with_h
-!  ---------------------------------------
+!  -----------------------------------------
+!  C interface to fortran tru_solve_with_mat
+!  -----------------------------------------
 
-  SUBROUTINE tru_solve_with_h( cdata, cuserdata, status, n, x, g, ne,          &
-                               ceval_f, ceval_g, ceval_h, ceval_prec ) BIND( C )
+  SUBROUTINE tru_solve_with_mat( cdata, cuserdata, status, n, x, g, ne,        &
+                                 ceval_f, ceval_g, ceval_h,                    &
+                                 ceval_prec ) BIND( C )
   USE GALAHAD_TRU_double_ciface
   IMPLICIT NONE
 
@@ -717,10 +718,10 @@
     NULLIFY( feval_prec )
   END IF
 
-!  call TRU_solve_with_h
+!  solve the problem when the Hessian is explicitly available
 
-  CALL f_tru_solve_with_h( fdata, fuserdata, status, x, g, wrap_eval_f,       &
-                            wrap_eval_g, wrap_eval_h, wrap_eval_prec )
+  CALL f_tru_solve_with_mat( fdata, fuserdata, status, x, g, wrap_eval_f,     &
+                              wrap_eval_g, wrap_eval_h, wrap_eval_prec )
 
   RETURN
 
@@ -752,6 +753,7 @@
     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: g
 
 !  Call C interoperable eval_g
+
     status = feval_g( n, x, g, cuserdata )
     RETURN
 
@@ -766,6 +768,7 @@
     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: hval
 
 !  Call C interoperable eval_h
+
     status = feval_h( n, ne, x, hval, cuserdata )
     RETURN
 
@@ -781,19 +784,21 @@
     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
 
 !  Call C interoperable eval_prec
+
     status = feval_prec( n, x, u, v, cuserdata )
     RETURN
 
     END SUBROUTINE wrap_eval_prec
 
-  END SUBROUTINE tru_solve_with_h
+  END SUBROUTINE tru_solve_with_mat
 
-!  ------------------------------------------
-!  C interface to fortran tru_solve_without_h
-!  ------------------------------------------
+!  --------------------------------------------
+!  C interface to fortran tru_solve_without_mat
+!  --------------------------------------------
 
-  SUBROUTINE tru_solve_without_h( cdata, cuserdata, status, n, x, g, ceval_f,  &
-                                  ceval_g, ceval_hprod, ceval_prec ) BIND( C )
+  SUBROUTINE tru_solve_without_mat( cdata, cuserdata, status, n, x, g,         &
+                                    ceval_f, ceval_g, ceval_hprod,             &
+                                    ceval_prec ) BIND( C )
   USE GALAHAD_TRU_double_ciface
   IMPLICIT NONE
 
@@ -834,10 +839,10 @@
     NULLIFY( feval_prec )
   END IF
 
-!  call TRU_solve_without_h
+!  solve the problem when the Hessian is only available via products
 
-  CALL f_tru_solve_without_h( fdata, fuserdata, status, x, g, wrap_eval_f,     &
-                              wrap_eval_g, wrap_eval_hprod, wrap_eval_prec )
+  CALL f_tru_solve_without_mat( fdata, fuserdata, status, x, g, wrap_eval_f,   &
+                                wrap_eval_g, wrap_eval_hprod, wrap_eval_prec )
 
   RETURN
 
@@ -913,14 +918,14 @@
 
     END SUBROUTINE wrap_eval_prec
 
-  END SUBROUTINE tru_solve_without_h
+  END SUBROUTINE tru_solve_without_mat
 
-!  -----------------------------------------------
-!  C interface to fortran tru_solve_reverse_with_h
-!  -----------------------------------------------
+!  -------------------------------------------------
+!  C interface to fortran tru_solve_reverse_with_mat
+!  -------------------------------------------------
 
-  SUBROUTINE tru_solve_reverse_with_h( cdata, status, eval_status,             &
-                                       n, x, f, g, ne, val, u, v ) BIND( C )
+  SUBROUTINE tru_solve_reverse_with_mat( cdata, status, eval_status,           &
+                                         n, x, f, g, ne, val, u, v ) BIND( C )
   USE GALAHAD_TRU_double_ciface
   IMPLICIT NONE
 
@@ -943,20 +948,20 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-! call TRU_solve_reverse_with_h
+!  solve the problem when the Hessian is available by reverse communication
 
-  CALL f_tru_solve_reverse_with_h( fdata, status, eval_status, x, f, g, val,   &
-                                    u, v )
+  CALL f_tru_solve_reverse_with_mat( fdata, status, eval_status, x, f, g, val, &
+                                      u, v )
   RETURN
     
-  END SUBROUTINE tru_solve_reverse_with_h
+  END SUBROUTINE tru_solve_reverse_with_mat
 
-!  --------------------------------------------------
-!  C interface to fortran tru_solve_reverse_without_h
-!  --------------------------------------------------
+!  ----------------------------------------------------
+!  C interface to fortran tru_solve_reverse_without_mat
+!  ----------------------------------------------------
 
-  SUBROUTINE tru_solve_reverse_without_h( cdata, status, eval_status,          &
-                                          n, x, f, g, u, v ) BIND( C )
+  SUBROUTINE tru_solve_reverse_without_mat( cdata, status, eval_status,        &
+                                            n, x, f, g, u, v ) BIND( C )
   USE GALAHAD_TRU_double_ciface
   IMPLICIT NONE
 
@@ -976,13 +981,14 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  call TRU_solve_reverse_without_h
+!  solve the problem when Hessian products are available by reverse 
+!  communication
 
-  CALL f_tru_solve_reverse_without_h( fdata, status, eval_status, x, f, g,     &
-                                       u, v )
+  CALL f_tru_solve_reverse_without_mat( fdata, status, eval_status, x, f, g,   &
+                                        u, v )
   RETURN
 
-  END SUBROUTINE tru_solve_reverse_without_h
+  END SUBROUTINE tru_solve_reverse_without_mat
 
 !  --------------------------------------
 !  C interface to fortran tru_information
@@ -998,6 +1004,8 @@
   TYPE ( tru_inform_type ), INTENT( INOUT ) :: cinform
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
 
+!  local variables
+
   TYPE ( f_tru_full_data_type ), pointer :: fdata
   TYPE ( f_tru_inform_type ) :: finform
 
@@ -1005,7 +1013,7 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  call TRU_information
+!  obtain TRU solution information
 
   CALL f_tru_information( fdata, finform, status )
 
@@ -1024,9 +1032,13 @@
   USE GALAHAD_TRU_double_ciface
   IMPLICIT NONE
 
+!  dummy arguments
+
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( tru_control_type ), INTENT( IN ) :: ccontrol
   TYPE ( tru_inform_type ), INTENT( INOUT ) :: cinform
+
+!  local variables
 
   TYPE ( f_tru_full_data_type ), pointer :: fdata
   TYPE ( f_tru_control_type ) :: fcontrol
@@ -1045,7 +1057,7 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  call TRU_terminate
+!  deallocate workspace
 
   CALL f_tru_terminate( fdata, fcontrol,finform )
 

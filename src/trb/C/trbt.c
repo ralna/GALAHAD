@@ -55,9 +55,11 @@ int main(void) {
     char st;
     int status;
 
+    printf(" C sparse matrix indexing\n\n");
+
     printf(" tests options for all-in-one storage format\n\n");
 
-    for(int d=1; d <= 5; d++){
+    for( int d=1; d <= 5; d++){
 
         // Initialize TRB
         trb_initialize( &data, &control, &inform );
@@ -75,40 +77,40 @@ int main(void) {
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "coordinate", ne, H_row, H_col, NULL );
                 status = 1; // set for initial entry
-                trb_solve_with_h( &data, &userdata, &status, n, x, g, ne, 
-                                  fun, grad, hess, prec );
+                trb_solve_with_mat( &data, &userdata, &status, n, x, g, ne, 
+                                    fun, grad, hess, prec );
                 break;
             case 2: // sparse by rows  
                 st = 'R';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "sparse_by_rows", ne, NULL, H_col, H_ptr );
                 status = 1; // set for initial entry
-                trb_solve_with_h( &data, &userdata, &status, n, x, g, ne, 
-                                  fun, grad, hess, prec );
+                trb_solve_with_mat( &data, &userdata, &status, n, x, g, ne, 
+                                    fun, grad, hess, prec );
                 break;
             case 3: // dense
                 st = 'D';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "dense", ne, NULL, NULL, NULL );
                 status = 1; // set for initial entry
-                trb_solve_with_h( &data, &userdata, &status, n, x, g, ne,  
-                                  fun, grad, hess_dense, prec );
+                trb_solve_with_mat( &data, &userdata, &status, n, x, g, ne,  
+                                    fun, grad, hess_dense, prec );
                 break;
             case 4: // diagonal
                 st = 'I';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "diagonal", ne, NULL, NULL, NULL );
                 status = 1; // set for initial entry
-                trb_solve_with_h (&data, &userdata, &status, n, x, g, ne, 
-                                  fun_diag, grad_diag, hess_diag, prec );
+                trb_solve_with_mat (&data, &userdata, &status, n, x, g, ne, 
+                                    fun_diag, grad_diag, hess_diag, prec );
                 break;
             case 5: // access by products
                 st = 'P';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "absent", ne, NULL, NULL, NULL );
                 status = 1; // set for initial entry
-                trb_solve_without_h( &data, &userdata, &status, n, x, g, 
-                                     fun, grad, hessprod, shessprod, prec );
+                trb_solve_without_mat( &data, &userdata, &status, n, x, g, 
+                                       fun, grad, hessprod, shessprod, prec );
                 break;
         }
 
@@ -124,10 +126,10 @@ int main(void) {
             printf("%c: TRB_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for(int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for(int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace
@@ -143,10 +145,10 @@ int main(void) {
     int index_nz_u[n], index_nz_v[n];
     double H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
  
-    for(int d=1; d <= 5; d++){
+    for( int d=1; d <= 5; d++){
 
         // Initialize TRB
-        trb_initialize(&data, &control, &inform);
+        trb_initialize( &data, &control, &inform );
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
@@ -162,8 +164,8 @@ int main(void) {
                             "coordinate", ne, H_row, H_col, NULL );
                 status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    trb_solve_reverse_with_h( &data, &status, &eval_status, 
-                                              n, x, f, g, ne, H_val, u, v );
+                    trb_solve_reverse_with_mat( &data, &status, &eval_status, 
+                                                n, x, f, g, ne, H_val, u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
@@ -188,8 +190,8 @@ int main(void) {
                             "sparse_by_rows", ne, NULL, H_col, H_ptr );
                 status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    trb_solve_reverse_with_h( &data, &status, &eval_status, 
-                                           n, x, f, g, ne, H_val, u, v );
+                    trb_solve_reverse_with_mat( &data, &status, &eval_status, 
+                                                n, x, f, g, ne, H_val, u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
@@ -214,9 +216,9 @@ int main(void) {
                             "dense", ne, NULL, NULL, NULL );
                 status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    trb_solve_reverse_with_h( &data, &status, &eval_status, 
-                                              n, x, f, g, n*(n+1)/2, H_dense, 
-                                              u, v );
+                    trb_solve_reverse_with_mat( &data, &status, &eval_status, 
+                                                n, x, f, g, n*(n+1)/2, H_dense, 
+                                                u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
@@ -227,7 +229,7 @@ int main(void) {
                         eval_status = grad( n, x, g, &userdata );
                     }else if(status == 4){ // evaluate H
                         eval_status = hess_dense( n, n*(n+1)/2, x, H_dense, 
-                                                  &userdata); 
+                                                  &userdata ); 
                     }else if(status == 6){ // evaluate the product with P
                         eval_status = prec( n, x, u, v, &userdata );
                     }else{
@@ -242,8 +244,8 @@ int main(void) {
                             "diagonal", ne, NULL, NULL, NULL );
                 status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    trb_solve_reverse_with_h( &data, &status, &eval_status, 
-                                              n, x, f, g, n, H_diag, u, v );
+                    trb_solve_reverse_with_mat( &data, &status, &eval_status, 
+                                                n, x, f, g, n, H_diag, u, v );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
@@ -268,9 +270,9 @@ int main(void) {
                             "absent", ne, NULL, NULL, NULL );
                 status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    trb_solve_reverse_without_h( &data, &status, &eval_status, 
-                                                 n, x, f, g, u, v, index_nz_v, 
-                                                &nnz_v, index_nz_u, nnz_u );
+                    trb_solve_reverse_without_mat( &data, &status, &eval_status,
+                                                   n, x, f, g, u, v, index_nz_v,
+                                                   &nnz_v, index_nz_u, nnz_u );
                     if(status == 0){ // successful termination
                         break;
                     }else if(status < 0){ // error exit
@@ -306,10 +308,10 @@ int main(void) {
             printf("%c: TRB_solve exit status = %1i\n", st, inform.status);
         }
         //printf("x: ");
-        //for(int i = 0; i < n; i++) printf("%f ", x[i]);
+        //for( int i = 0; i < n; i++) printf("%f ", x[i]);
         //printf("\n");
         //printf("gradient: ");
-        //for(int i = 0; i < n; i++) printf("%f ", g[i]);
+        //for( int i = 0; i < n; i++) printf("%f ", g[i]);
         //printf("\n");
 
         // Delete internal workspace
@@ -319,8 +321,8 @@ int main(void) {
 }
 
 // Objective function 
-int fun(int n, const double x[], double *f, const void *userdata){
-    struct userdata_type *myuserdata = (struct userdata_type *) userdata;
+int fun( int n, const double x[], double *f, const void *userdata ){
+         struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
 
     *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) + cos(x[0]);
@@ -328,7 +330,7 @@ int fun(int n, const double x[], double *f, const void *userdata){
 }
 
 // Gradient of the objective
-int grad(int n, const double x[], double g[], const void *userdata){
+int grad( int n, const double x[], double g[], const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
 
@@ -339,7 +341,8 @@ int grad(int n, const double x[], double g[], const void *userdata){
 }
 
 // Hessian of the objective
-int hess(int n, int ne, const double x[], double hval[], const void *userdata){
+int hess( int n, int ne, const double x[], double hval[], 
+          const void *userdata ){
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 2.0;
     hval[2] = 2.0;
@@ -349,7 +352,8 @@ int hess(int n, int ne, const double x[], double hval[], const void *userdata){
 }
 
 // Dense Hessian
-int hess_dense(int n, int ne, const double x[], double hval[], const void *userdata){ 
+int hess_dense( int n, int ne, const double x[], double hval[], 
+                const void *userdata ){ 
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 0.0;
     hval[2] = 2.0;
@@ -360,7 +364,8 @@ int hess_dense(int n, int ne, const double x[], double hval[], const void *userd
 }
 
 // Hessian-vector product
-int hessprod(int n, const double x[], double u[], const double v[], bool got_h, const void *userdata){
+int hessprod( int n, const double x[], double u[], const double v[], 
+              bool got_h, const void *userdata ){
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos(x[0]) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
     u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
@@ -368,11 +373,12 @@ int hessprod(int n, const double x[], double u[], const double v[], bool got_h, 
 }
 
 // Sparse Hessian-vector product
-int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
-                int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *userdata){
+int shessprod( int n, const double x[], int nnz_v, const int index_nz_v[], 
+               const double v[], int *nnz_u, int index_nz_u[], double u[], 
+               bool got_h, const void *userdata ){
     double p[] = {0., 0., 0.};
     bool used[] = {false, false, false};
-    for(int i = 0; i < nnz_v; i++){
+    for( int i = 0; i < nnz_v; i++){
         int j = index_nz_v[i];
         switch(j){
             case 0:
@@ -398,7 +404,7 @@ int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const 
         }
     }
     *nnz_u = 0;
-    for(int j = 0; j < 3; j++){
+    for( int j = 0; j < 3; j++){
         if(used[j]){
         u[j] = p[j];
         *nnz_u = *nnz_u + 1;
@@ -409,7 +415,8 @@ int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const 
 }
 
 // Apply preconditioner
-int prec(int n, const double x[], double u[], const double v[], const void *userdata){
+int prec( int n, const double x[], double u[], const double v[], 
+          const void *userdata ){
    u[0] = 0.5 * v[0];
    u[1] = 0.5 * v[1];
    u[2] = 0.25 * v[2];
@@ -417,7 +424,7 @@ int prec(int n, const double x[], double u[], const double v[], const void *user
 }
 
  // Objective function 
-int fun_diag(int n, const double x[], double *f, const void *userdata){
+int fun_diag( int n, const double x[], double *f, const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
 
@@ -426,7 +433,7 @@ int fun_diag(int n, const double x[], double *f, const void *userdata){
 }
 
 // Gradient of the objective
-int grad_diag(int n, const double x[], double g[], const void *userdata){
+int grad_diag( int n, const double x[], double g[], const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
 
@@ -437,7 +444,8 @@ int grad_diag(int n, const double x[], double g[], const void *userdata){
 }
 
 // Hessian of the objective
-int hess_diag(int n, int ne, const double x[], double hval[], const void *userdata){
+int hess_diag( int n, int ne, const double x[], double hval[], 
+               const void *userdata ){
     hval[0] = -cos(x[0]);
     hval[1] = 2.0;
     hval[2] = 2.0;
@@ -445,7 +453,8 @@ int hess_diag(int n, int ne, const double x[], double hval[], const void *userda
 }  
 
 // Hessian-vector product
-int hessprod_diag(int n, const double x[], double u[], const double v[], bool got_h, const void *userdata){
+int hessprod_diag( int n, const double x[], double u[], const double v[], 
+                   bool got_h, const void *userdata ){
     u[0] = u[0] + - cos(x[0]) * v[0];
     u[1] = u[1] + 2.0 * v[1];
     u[2] = u[2] + 2.0 * v[2];
@@ -453,11 +462,12 @@ int hessprod_diag(int n, const double x[], double u[], const double v[], bool go
 }
 
 // Sparse Hessian-vector product
-int shessprod_diag(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
-                int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *userdata){
+int shessprod_diag( int n, const double x[], int nnz_v, const int index_nz_v[],
+                    const double v[], int *nnz_u, int index_nz_u[], double u[],
+                     bool got_h, const void *userdata ){
     double p[] = {0., 0., 0.};
     bool used[] = {false, false, false};
-    for(int i = 0; i < nnz_v; i++){
+    for( int i = 0; i < nnz_v; i++){
         int j = index_nz_v[i];
         switch(j){
             case 0:
@@ -475,7 +485,7 @@ int shessprod_diag(int n, const double x[], int nnz_v, const int index_nz_v[], c
         }
     }
     *nnz_u = 0;
-    for(int j = 0; j < 3; j++){
+    for( int j = 0; j < 3; j++){
         if(used[j]){
         u[j] = p[j];
         *nnz_u = *nnz_u + 1;

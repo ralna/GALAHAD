@@ -99,7 +99,7 @@
        REAL ( KIND = wp ) :: obj, norm_g, radius
        CHARACTER ( LEN = 10 ) :: pname
        CHARACTER ( LEN = 24 ) :: bad_alloc
-       TYPE ( GLTR_info_type ) :: gltr_inform
+       TYPE ( GLTR_inform_type ) :: gltr_inform
        TYPE ( TRTN_time_type ) :: time
      END TYPE TRTN_inform_type
 
@@ -108,9 +108,11 @@
 !  ===================================
 
      TYPE, PUBLIC :: TRTN_data_type
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G, G_m, S, X_trial, VECTOR
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL, RES, RHS, BEST, P_pert
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y, X_grad, X_hess, G_wrty
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G, G_m, S, SOL, RES
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_trial, VECTOR
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS, BEST, P_pert
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y, X_grad, X_hess
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_wrty
        LOGICAL, ALLOCATABLE, DIMENSION( : ) :: FREE
        CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: X_name
        TYPE ( GLTR_data_type ) :: gltr_data

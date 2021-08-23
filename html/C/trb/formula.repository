@@ -1,0 +1,78 @@
+\_form#0:$\mathbf{f(x)}$
+\_form#1:$\mathbf{x}$
+\_form#2:$\mathbf{x^l \leq x \leq x^u}$
+\_form#3:$\nabla_x f(x)$
+\_form#4:$f(x)$
+\_form#5:$i$
+\_form#6:$\partial f(x)/\partial x_i$
+\_form#7:$\nabla_{xx} f(x)$
+\_form#8:$i,j$
+\_form#9:$\partial^2 f(x)/\partial x_i \partial x_j$
+\_form#10:$x_k$
+\_form#11:$s_k$
+\_form#12:$m_k(s)$
+\_form#13:$f(x_k + s)$
+\_form#14:$x^l \leq x \leq x^u$
+\_form#15:$\|s_k\| \leq \Delta_k$
+\_form#16:$\Delta_k$
+\_form#17:$(f(x_k) - f(x_k + s_k))/ (m_k(0) - m_k(s_k))$
+\_form#18:$\eta_s > 0$
+\_form#19:$x_{k+1} = x_k + s_k$
+\_form#20:$x_{k+1} = x_k$
+\_form#21:$\|s_k\|$
+\_form#22:$\eta_v \geq \eta_d$
+\_form#23:$\|\nabla_x f(x_k)\|$
+\_form#24:$f(x_k) + s^T \nabla_x f(x_k)$
+\_form#25:$f(x_k) + s^T \nabla_x f(x_k) + \frac{1}{2} s^T B_k s$
+\_form#26:$B_k$
+\_form#27:$\nabla_{xx}f(x_k)$
+\_form#28:$(B_k + \lambda_k I) s_k = - \nabla_x f(x_k)$
+\_form#29:$\lambda_k$
+\_form#30:$B_k v$
+\_form#31:\[\|\min(\max( x_k - \nabla_x f(x_k), x^l), x^u) -x_k\|_2,\]
+\_form#32:$\nabla_x f(x_k) = z_k$
+\_form#33:$z_i$
+\_form#34:$x_i$
+\_form#35:$x^l_i$
+\_form#36:$x^u_i$
+\_form#37:$n$
+\_form#38:$H = \nabla_{xx}f$
+\_form#39:$H$
+\_form#40:$H_{ij}$
+\_form#41:$0 \leq j \leq i \leq n-1$
+\_form#42:$i \ast i / 2 + j$
+\_form#43:$H_{ji}$
+\_form#44:$l$
+\_form#45:$0 \leq l \leq ne-1$
+\_form#46:$ne$
+\_form#47:$0 \leq j \leq i$
+\_form#48:$\ldots$
+\_form#49:$x^l$
+\_form#50:$x$
+\_form#51:$j = 0, \ldots, n-1$
+\_form#52:$x^l_j$
+\_form#53:$x^u$
+\_form#54:$x^u_j$
+\_form#55:$H = \nabla_{xx}f(x)$
+\_form#56:$x_j$
+\_form#57:$g = \nabla_xf(x)$
+\_form#58:$g_j $
+\_form#59:$g = \nabla_x f(x$
+\_form#60:$u = P(x) v$
+\_form#61:$P(x)$
+\_form#62:$v$
+\_form#63:$u$
+\_form#64:$u + \nabla_{xx}f(x) v$
+\_form#65:$\nabla_{xx}f(x)$
+\_form#66:$u = \nabla_{xx}f(x) v$
+\_form#67:$u = P(x)v$
+\_form#68:$\nabla_{xx}f(x)v$
+\_form#69:$u + \nabla_{xx}f(x)v$
+\_form#70:$u = \nabla_{xx}f(x)v$
+\_form#71:$\label{examples}$
+\_form#72:$\leq$
+\_form#73:$\geq$
+\_form#74:$\|v\|^2 = v^T P v$
+\_form#75:$P$
+\_form#76:$P =$
+\_form#77:$R$

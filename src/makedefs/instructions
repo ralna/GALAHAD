@@ -81,12 +81,14 @@ $(PACKAGE)CDS3 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs3.o
 $(PACKAGE)CDS4 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs4.o
 $(PACKAGE)CDT = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct.o
 $(PACKAGE)CDT2 = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct2.o
+$(PACKAGE)CDTF = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ctf.o
 $(PACKAGE)CSS = $(S$(PACKAGE)C) $(OBJS)/$(package)cs.o
 $(PACKAGE)CSS2 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs2.o
 $(PACKAGE)CSS3 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs3.o
 $(PACKAGE)CSS4 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs4.o
 $(PACKAGE)CST = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ct.o
 $(PACKAGE)CST2 = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ct2.o
+$(PACKAGE)CSTF = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ctf.o
 
 R$(PACKAGE)CDS = $(OBJD)/$(package)cs.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDS2 = $(OBJD)/$(package)cs2.o -L$(OBJD) $(CLIBS)
@@ -94,12 +96,14 @@ R$(PACKAGE)CDS3 = $(OBJD)/$(package)cs3.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDS4 = $(OBJD)/$(package)cs4.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDT = $(OBJD)/$(package)ct.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDT2 = $(OBJD)/$(package)ct2.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDTF = $(OBJD)/$(package)ctf.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CSS = $(OBJS)/$(package)cs.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSS2 = $(OBJS)/$(package)cs2.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSS3 = $(OBJS)/$(package)cs3.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSS4 = $(OBJS)/$(package)cs4.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CST = $(OBJS)/$(package)ct.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CT2 = $(OBJS)/$(package)ct2.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CTF = $(OBJS)/$(package)ctf.o -L$(OBJS) $(CLIBS)
 
 #  =========================================================================
 #  ========================== makefile stanza ==============================
@@ -330,7 +334,7 @@ $(package)ds4: $($(PACKAGE)DS4)
 #  run C specification document example tests
 
 $(package)css: $($(PACKAGE)CSS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CSS)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cs.output 2>&1
@@ -338,7 +342,7 @@ $(package)css: $($(PACKAGE)CSS)
 	rm ./run_$(package)
 
 $(package)css2: $($(PACKAGE)CSS2)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CSS2)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cs2.output 2>&1
@@ -346,7 +350,7 @@ $(package)css2: $($(PACKAGE)CSS2)
 	rm ./run_$(package)
 
 $(package)css3: $($(PACKAGE)CSS3)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CSS3)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cs3.output 2>&1
@@ -354,7 +358,7 @@ $(package)css3: $($(PACKAGE)CSS3)
 	rm ./run_$(package)
 
 $(package)css4: $($(PACKAGE)CSS4)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CSS4)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cs4.output 2>&1
@@ -362,15 +366,16 @@ $(package)css4: $($(PACKAGE)CSS4)
 	rm ./run_$(package)
 
 $(package)cds: $($(PACKAGE)CDS)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDS)
 	$(RMOOC)
-	- ./run_$(package) > $(package)cds.output 2>&1
-	cat $(package)cds.output
+	./run_$(package)
+#	- ./run_$(package) > $(package)cds.output 2>&1
+#	cat $(package)cds.output
 	rm ./run_$(package)
 
 $(package)cds2: $($(PACKAGE)CDS2)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDS2)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cds2.output 2>&1
@@ -378,7 +383,7 @@ $(package)cds2: $($(PACKAGE)CDS2)
 	rm ./run_$(package)
 
 $(package)cds3: $($(PACKAGE)CDS3)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDS3)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cds3.output 2>&1
@@ -386,7 +391,7 @@ $(package)cds3: $($(PACKAGE)CDS3)
 	rm ./run_$(package)
 
 $(package)cds4: $($(PACKAGE)CDS4)
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDS4)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cds4.output 2>&1
@@ -436,7 +441,7 @@ $(package)dt2: $($(PACKAGE)DT2)
 
 $(package)cst: $($(PACKAGE)CST)
 	echo " Exhaustive test of subroutine interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CST)
 	$(RMOOC)
 	- ./run_$(package) > $(package)st.output 2>&1
@@ -445,30 +450,47 @@ $(package)cst: $($(PACKAGE)CST)
 
 $(package)cst2: $($(PACKAGE)CST2)
 	echo " Exhaustive test of subroutine interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CST2)
 	$(RMOOC)
 	- ./run_$(package) > $(package)st2.output 2>&1
 	cat $(package)st2.output
 	rm ./run_$(package)
 
+$(package)cstf: $($(PACKAGE)CSTF)
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
+                                                     $(R$(PACKAGE)CSTF)
+	$(RMOOC)
+	- ./run_$(package) > $(package)stf.output 2>&1
+	cat $(package)stf.output
+	rm ./run_$(package)
+
 $(package)cdt: $($(PACKAGE)CDT)
 	echo " Exhaustive test of subroutine interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDT)
 	$(RMOOC)
-#	- ./run_$(package)
 	- ./run_$(package) > $(package)dt.output 2>&1
 	cat $(package)dt.output
 	rm ./run_$(package)
 
 $(package)cdt2: $($(PACKAGE)CDT2)
 	echo " Exhaustive test of subroutine interface to $(package)"
-	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDT2)
 	$(RMOOC)
 	- ./run_$(package) > $(package)dt2.output 2>&1
 	cat $(package)dt2.output
+	rm ./run_$(package)
+
+$(package)cdtf: $($(PACKAGE)CDTF)
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
+                                                     $(R$(PACKAGE)CDTF)
+	$(RMOOC)
+	- ./run_$(package) > $(package)dtf.output 2>&1
+	cat $(package)dtf.output
 	rm ./run_$(package)
 
 #  main program

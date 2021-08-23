@@ -1,415 +1,573 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 03/08/2021 AT 09:00 GMT.
 
-!-*-*-*-*-*-*-*-*-  GALAHAD_UGO C INTERFACE  *-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D _ U G O   C   I N T E R F A C E  -*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
-!  Principal author: Jaroslav Fowkes
+!  Principal author: Jaroslav Fowkes & Nick Gould
 
 !  History -
-!   currently in development
+!    originally released GALAHAD Version 3.3. July 28th 2021
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-module GALAHAD_UGO_double_ciface
-    use iso_c_binding
-    use GALAHAD_UGO_double, only:                  &
-        f_ugo_time_type     => UGO_time_type,      &
-        f_ugo_inform_type   => UGO_inform_type,    &
-        f_ugo_control_type  => UGO_control_type,   &
-        f_ugo_data_type     => UGO_data_type,      &
-        f_ugo_initialize    => UGO_initialize,     &
-        f_ugo_read_specfile => UGO_read_specfile,  &
-        f_ugo_solve         => UGO_solve,          &
-        f_ugo_terminate     => UGO_terminate
-    use GALAHAD_NLPT_double, only:                 &
+  MODULE GALAHAD_UGO_double_ciface
+    USE iso_c_binding
+    USE GALAHAD_common_ciface
+    USE GALAHAD_UGO_double, only:                                              &
+        f_ugo_time_type      => UGO_time_type,                                 &
+        f_ugo_inform_type    => UGO_inform_type,                               &
+        f_ugo_control_type   => UGO_control_type,                              &
+        f_ugo_full_data_type => UGO_full_data_type,                            &
+        f_ugo_initialize     => UGO_initialize,                                &
+        f_ugo_read_specfile  => UGO_read_specfile,                             &
+        f_ugo_import         => UGO_import,                                    &
+        f_ugo_solve_reverse  => UGO_solve_reverse,                             &
+        f_ugo_solve_direct   => UGO_solve_direct,                              &
+        f_ugo_information    => UGO_information,                               &
+        f_ugo_terminate      => UGO_terminate
+    USE GALAHAD_NLPT_double, only:                                             &
         f_nlpt_userdata_type => NLPT_userdata_type
 
-    implicit none
+    IMPLICIT NONE
 
-    integer, parameter :: wp = C_DOUBLE ! double precision
-    integer, parameter :: sp = C_FLOAT  ! single precision
+!--------------------
+!   P r e c i s i o n
+!--------------------
 
-    type, bind(C) :: ugo_time_type
-        real(sp) :: total
-        real(wp) :: clock_total 
-    end type ugo_time_type
+    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
+    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
 
-    type, bind(C) :: ugo_inform_type
-        integer(C_INT) :: status
-        integer(C_INT) :: eval_status
-        integer(C_INT) :: alloc_status
-        character(C_CHAR), dimension(81) :: bad_alloc
-        integer(C_INT) :: iter
-        integer(C_INT) :: f_eval
-        integer(C_INT) :: g_eval
-        integer(C_INT) :: h_eval 
-        type(ugo_time_type) :: time
-    end type ugo_inform_type
+!-------------------------------------------------
+!  D e r i v e d   t y p e   d e f i n i t i o n s
+!-------------------------------------------------
 
-    type, bind(C) :: ugo_control_type
-        integer(C_INT) :: error
-        integer(C_INT) :: out
-        integer(C_INT) :: print_level
-        integer(C_INT) :: start_print
-        integer(C_INT) :: stop_print
-        integer(C_INT) :: print_gap
-        integer(C_INT) :: maxit
-        integer(C_INT) :: initial_points
-        integer(C_INT) :: storage_increment 
-        integer(C_INT) :: buffer
-        integer(C_INT) :: lipschitz_estimate_used
-        integer(C_INT) :: next_interval_selection 
-        integer(C_INT) :: refine_with_newton 
-        integer(C_INT) :: alive_unit 
-        character(C_CHAR), dimension(31) :: alive_file
-        real(wp) :: stop_length 
-        real(wp) :: small_g_for_newton 
-        real(wp) :: small_g 
-        real(wp) :: obj_sufficient 
-        real(wp) :: global_lipschitz_constant 
-        real(wp) :: reliability_parameter 
-        real(wp) :: lipschitz_lower_bound 
-        real(wp) :: cpu_time_limit 
-        real(wp) :: clock_time_limit 
-        logical(C_BOOL) :: space_critical
-        logical(C_BOOL) :: deallocate_error_fatal
-        character(C_CHAR), dimension(31) :: prefix 
-    end type ugo_control_type
+    TYPE, BIND( C ) :: ugo_control_type
+      INTEGER ( KIND = C_INT ) :: error
+      INTEGER ( KIND = C_INT ) :: out
+      INTEGER ( KIND = C_INT ) :: print_level
+      INTEGER ( KIND = C_INT ) :: start_print
+      INTEGER ( KIND = C_INT ) :: stop_print
+      INTEGER ( KIND = C_INT ) :: print_gap
+      INTEGER ( KIND = C_INT ) :: maxit
+      INTEGER ( KIND = C_INT ) :: initial_points
+      INTEGER ( KIND = C_INT ) :: storage_increment 
+      INTEGER ( KIND = C_INT ) :: buffer
+      INTEGER ( KIND = C_INT ) :: lipschitz_estimate_used
+      INTEGER ( KIND = C_INT ) :: next_interval_selection 
+      INTEGER ( KIND = C_INT ) :: refine_with_newton 
+      INTEGER ( KIND = C_INT ) :: alive_unit 
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: alive_file
+      REAL ( KIND = wp ) :: stop_length 
+      REAL ( KIND = wp ) :: small_g_for_newton 
+      REAL ( KIND = wp ) :: small_g 
+      REAL ( KIND = wp ) :: obj_sufficient 
+      REAL ( KIND = wp ) :: global_lipschitz_constant 
+      REAL ( KIND = wp ) :: reliability_parameter 
+      REAL ( KIND = wp ) :: lipschitz_lower_bound 
+      REAL ( KIND = wp ) :: cpu_time_limit 
+      REAL ( KIND = wp ) :: clock_time_limit 
+      LOGICAL ( KIND = C_BOOL ) :: space_critical
+      LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix 
+    END TYPE ugo_control_type
 
-    interface
-        integer(C_SIZE_T) pure function strlen(cstr) bind(C)
-            use iso_c_binding
-            implicit none
-            type(C_PTR), intent(in), value :: cstr
-        end function strlen 
-    end interface
+    TYPE, BIND( C ) :: ugo_time_type
+      REAL ( KIND = sp ) :: total
+      REAL ( KIND = wp ) :: clock_total 
+    END TYPE ugo_time_type
 
-    abstract interface
-        function eval_fgh(x, f, g, h, userdata) result(status)
-            use iso_c_binding
-            import :: wp
-            
-            real(wp), intent(in), value :: x
-            real(wp), intent(out) :: f, g, h
-            type(C_PTR), intent(in), value :: userdata
-            integer(C_INT) :: status
-        end function eval_fgh
-    end interface
+    TYPE, BIND( C ) :: ugo_inform_type
+      INTEGER ( KIND = C_INT ) :: status
+      INTEGER ( KIND = C_INT ) :: eval_status
+      INTEGER ( KIND = C_INT ) :: alloc_status
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
+      INTEGER ( KIND = C_INT ) :: iter
+      INTEGER ( KIND = C_INT ) :: f_eval
+      INTEGER ( KIND = C_INT ) :: g_eval
+      INTEGER ( KIND = C_INT ) :: h_eval 
+      TYPE ( ugo_time_type ) :: time
+    END TYPE ugo_inform_type
 
-contains
+!----------------------
+!   I n t e r f a c e s
+!----------------------
 
-    function cstr_to_fchar(cstr) result(fchar)
-        type(C_PTR) :: cstr
-        character(kind=C_CHAR, len=strlen(cstr)) :: fchar
-        
-        integer :: i
-        character(C_CHAR), dimension(:) , pointer :: temp
+    ABSTRACT INTERFACE
+      FUNCTION eval_fgh( x, f, g, h, userdata ) result( status )
+        USE iso_c_binding
+        IMPORT :: wp
+        REAL ( KIND = wp ), INTENT( IN ), value :: x
+        REAL ( KIND = wp ), INTENT( OUT ) :: f, g, h
+        TYPE ( C_PTR ), INTENT( IN ), value :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_fgh
+    END INTERFACE
 
-        call c_f_pointer(cstr, temp, shape = (/ strlen(cstr) /) )
+!----------------------
+!   P r o c e d u r e s
+!----------------------
 
-        do i = 1, size(temp) 
-            fchar(i:i) = temp(i)
-        end do
-    end function cstr_to_fchar
+  CONTAINS
 
-    subroutine copy_inform_in(cinform, finform) 
-        type(ugo_inform_type), intent(in) :: cinform
-        type(f_ugo_inform_type), intent(out) :: finform
-        integer :: i
+!  copy C control parameters to fortran
 
-        ! Integers
-        finform%status = cinform%status
-        finform%alloc_status = cinform%alloc_status
-        finform%iter = cinform%iter
-        finform%f_eval = cinform%f_eval
-        finform%g_eval = cinform%g_eval
-        finform%h_eval = cinform%h_eval
-        
-        ! Time derived type
-        finform%time%total = cinform%time%total
-        finform%time%clock_total = cinform%time%clock_total
-
-        ! Strings
-        do i = 1, 81
-            if (cinform%bad_alloc(i) == C_NULL_CHAR) exit
-            finform%bad_alloc(i:i) = cinform%bad_alloc(i)
-        end do
-    end subroutine copy_inform_in
-
-    subroutine copy_inform_out(finform, cinform) 
-        type(f_ugo_inform_type), intent(in) :: finform
-        type(ugo_inform_type), intent(out) :: cinform
-        integer :: i
-
-        ! Integers
-        cinform%status = finform%status
-        cinform%alloc_status = finform%alloc_status
-        cinform%iter = finform%iter
-        cinform%f_eval = finform%f_eval
-        cinform%g_eval = finform%g_eval
-        cinform%h_eval = finform%h_eval
-        
-        ! Time derived type
-        cinform%time%total = finform%time%total
-        cinform%time%clock_total = finform%time%clock_total
-
-        ! Strings
-        do i = 1,len(finform%bad_alloc)
-            cinform%bad_alloc(i) = finform%bad_alloc(i:i)
-        end do
-        cinform%bad_alloc(len(finform%bad_alloc) + 1) = C_NULL_CHAR
-    end subroutine copy_inform_out
-
-    subroutine copy_control_in(ccontrol, fcontrol) 
-        type(ugo_control_type), intent(in) :: ccontrol
-        type(f_ugo_control_type), intent(out) :: fcontrol
-        integer :: i
-        
-        ! Integers
-        fcontrol%error = ccontrol%error
-        fcontrol%out = ccontrol%out
-        fcontrol%print_level = ccontrol%print_level
-        fcontrol%start_print = ccontrol%start_print
-        fcontrol%stop_print = ccontrol%stop_print
-        fcontrol%print_gap = ccontrol%print_gap
-        fcontrol%maxit = ccontrol%maxit
-        fcontrol%initial_points = ccontrol%initial_points
-        fcontrol%storage_increment  = ccontrol%storage_increment 
-        fcontrol%buffer = ccontrol%buffer
-        fcontrol%lipschitz_estimate_used = ccontrol%lipschitz_estimate_used
-        fcontrol%next_interval_selection = ccontrol%next_interval_selection
-        fcontrol%refine_with_newton = ccontrol%refine_with_newton
-        fcontrol%alive_unit = ccontrol%alive_unit
-
-        ! Doubles
-        fcontrol%stop_length = ccontrol%stop_length 
-        fcontrol%small_g_for_newton = ccontrol%small_g_for_newton
-        fcontrol%small_g = ccontrol%small_g
-        fcontrol%obj_sufficient = ccontrol%obj_sufficient
-        fcontrol%global_lipschitz_constant = ccontrol%global_lipschitz_constant
-        fcontrol%reliability_parameter = ccontrol%reliability_parameter
-        fcontrol%lipschitz_lower_bound = ccontrol%lipschitz_lower_bound
-        fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
-        fcontrol%clock_time_limit = ccontrol%clock_time_limit 
-
-        ! Logicals
-        fcontrol%space_critical = ccontrol%space_critical
-        fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
-
-        ! Strings
-        do i = 1, 31
-            if (ccontrol%alive_file(i) == C_NULL_CHAR) exit
-            fcontrol%alive_file(i:i) = ccontrol%alive_file(i)
-        end do
-        do i = 1, 31
-            if (ccontrol%prefix(i) == C_NULL_CHAR) exit
-            fcontrol%prefix(i:i) = ccontrol%prefix(i)
-        end do
-    end subroutine copy_control_in
-
-    subroutine copy_control_out(fcontrol, ccontrol) 
-        type(f_ugo_control_type), intent(in) :: fcontrol
-        type(ugo_control_type), intent(out) :: ccontrol
-        integer :: i
-        
-        ! Integers
-        ccontrol%error = fcontrol%error
-        ccontrol%out = fcontrol%out
-        ccontrol%print_level = fcontrol%print_level
-        ccontrol%start_print = fcontrol%start_print
-        ccontrol%stop_print = fcontrol%stop_print
-        ccontrol%print_gap = fcontrol%print_gap
-        ccontrol%maxit = fcontrol%maxit
-        ccontrol%initial_points = fcontrol%initial_points
-        ccontrol%storage_increment  = fcontrol%storage_increment 
-        ccontrol%buffer = fcontrol%buffer
-        ccontrol%lipschitz_estimate_used = fcontrol%lipschitz_estimate_used
-        ccontrol%next_interval_selection = fcontrol%next_interval_selection
-        ccontrol%refine_with_newton = fcontrol%refine_with_newton
-        ccontrol%alive_unit = fcontrol%alive_unit
-
-        ! Doubles
-        ccontrol%stop_length = fcontrol%stop_length 
-        ccontrol%small_g_for_newton = fcontrol%small_g_for_newton
-        ccontrol%small_g = fcontrol%small_g
-        ccontrol%obj_sufficient = fcontrol%obj_sufficient
-        ccontrol%global_lipschitz_constant = fcontrol%global_lipschitz_constant
-        ccontrol%reliability_parameter = fcontrol%reliability_parameter
-        ccontrol%lipschitz_lower_bound = fcontrol%lipschitz_lower_bound
-        ccontrol%cpu_time_limit = fcontrol%cpu_time_limit
-        ccontrol%clock_time_limit = fcontrol%clock_time_limit
-
-        ! Logicals
-        ccontrol%space_critical = fcontrol%space_critical
-        ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
-
-        ! Strings
-        do i = 1,len(fcontrol%alive_file)
-            ccontrol%alive_file(i) = fcontrol%alive_file(i:i)
-        end do
-        ccontrol%alive_file(len(fcontrol%alive_file) + 1) = C_NULL_CHAR
-        do i = 1,len(fcontrol%prefix)
-            ccontrol%prefix(i) = fcontrol%prefix(i:i)
-        end do
-        ccontrol%prefix(len(fcontrol%prefix) + 1) = C_NULL_CHAR
-    end subroutine copy_control_out
-
-end module GALAHAD_UGO_double_ciface
-
-subroutine ugo_initialize(cdata, ccontrol, cinform) bind(C) 
-    use GALAHAD_UGO_double_ciface
-    implicit none
-
-    type(C_PTR), intent(out) :: cdata ! data is a black-box
-    type(ugo_control_type), intent(out) :: ccontrol
-    type(ugo_inform_type), intent(out) :: cinform
-
-    type(f_ugo_data_type), pointer :: fdata
-    type(f_ugo_control_type) :: fcontrol
-    type(f_ugo_inform_type) :: finform
-
-    ! Allocate fdata 
-    allocate(fdata); cdata = C_LOC(fdata)
-
-    ! Call UGO_initialize
-    call f_ugo_initialize(fdata, fcontrol, finform) 
-
-    ! Initialize eval_status (for reverse communication interface)
-    cinform%eval_status = 0
-
-    ! Copy control out
-    call copy_control_out(fcontrol, ccontrol)
-
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
-end subroutine ugo_initialize
-
-subroutine ugo_read_specfile(ccontrol, cspecfile) bind(C)
-    use GALAHAD_UGO_double_ciface
-    implicit none
-
-    type(ugo_control_type), intent(inout) :: ccontrol
-    type(C_PTR), intent(in), value :: cspecfile
-
-    type(f_ugo_control_type) :: fcontrol
-    character(kind=C_CHAR, len=strlen(cspecfile)) :: fspecfile
-
-    ! Device unit number for specfile
-    integer(C_INT), parameter :: device = 10
-
-    ! Convert C string to Fortran string
-    fspecfile = cstr_to_fchar(cspecfile)
-
-    ! Copy control in
-    call copy_control_in(ccontrol, fcontrol)
+    SUBROUTINE copy_control_in( ccontrol, fcontrol ) 
+    TYPE ( ugo_control_type ), INTENT( IN ) :: ccontrol
+    TYPE ( f_ugo_control_type ), INTENT( OUT ) :: fcontrol
+    INTEGER :: i
     
-    ! Open specfile for reading
-    open(unit=device, file=fspecfile)
+    ! Integers
+    fcontrol%error = ccontrol%error
+    fcontrol%out = ccontrol%out
+    fcontrol%print_level = ccontrol%print_level
+    fcontrol%start_print = ccontrol%start_print
+    fcontrol%stop_print = ccontrol%stop_print
+    fcontrol%print_gap = ccontrol%print_gap
+    fcontrol%maxit = ccontrol%maxit
+    fcontrol%initial_points = ccontrol%initial_points
+    fcontrol%storage_increment  = ccontrol%storage_increment 
+    fcontrol%buffer = ccontrol%buffer
+    fcontrol%lipschitz_estimate_used = ccontrol%lipschitz_estimate_used
+    fcontrol%next_interval_selection = ccontrol%next_interval_selection
+    fcontrol%refine_with_newton = ccontrol%refine_with_newton
+    fcontrol%alive_unit = ccontrol%alive_unit
+
+    ! Reals
+    fcontrol%stop_length = ccontrol%stop_length 
+    fcontrol%small_g_for_newton = ccontrol%small_g_for_newton
+    fcontrol%small_g = ccontrol%small_g
+    fcontrol%obj_sufficient = ccontrol%obj_sufficient
+    fcontrol%global_lipschitz_constant = ccontrol%global_lipschitz_constant
+    fcontrol%reliability_parameter = ccontrol%reliability_parameter
+    fcontrol%lipschitz_lower_bound = ccontrol%lipschitz_lower_bound
+    fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
+    fcontrol%clock_time_limit = ccontrol%clock_time_limit 
+
+    ! logicals
+    fcontrol%space_critical = ccontrol%space_critical
+    fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
+
+    ! Strings
+    DO i = 1, 31
+      IF ( ccontrol%alive_file( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
+    END DO
+    DO i = 1, 31
+      IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%prefix( i : i ) = ccontrol%prefix( i )
+    END DO
+    RETURN
+
+    END SUBROUTINE copy_control_in
+
+!  copy fortran control parameters to C
+
+    SUBROUTINE copy_control_out( fcontrol, ccontrol ) 
+    TYPE ( f_ugo_control_type ), INTENT( IN ) :: fcontrol
+    TYPE ( ugo_control_type ), INTENT( OUT ) :: ccontrol
+    INTEGER :: i
     
-    ! Call UGO_read_specfile
-    call f_ugo_read_specfile(fcontrol, device)
+    ! Integers
+    ccontrol%error = fcontrol%error
+    ccontrol%out = fcontrol%out
+    ccontrol%print_level = fcontrol%print_level
+    ccontrol%start_print = fcontrol%start_print
+    ccontrol%stop_print = fcontrol%stop_print
+    ccontrol%print_gap = fcontrol%print_gap
+    ccontrol%maxit = fcontrol%maxit
+    ccontrol%initial_points = fcontrol%initial_points
+    ccontrol%storage_increment  = fcontrol%storage_increment 
+    ccontrol%buffer = fcontrol%buffer
+    ccontrol%lipschitz_estimate_used = fcontrol%lipschitz_estimate_used
+    ccontrol%next_interval_selection = fcontrol%next_interval_selection
+    ccontrol%refine_with_newton = fcontrol%refine_with_newton
+    ccontrol%alive_unit = fcontrol%alive_unit
 
-    ! Close specfile
-    close(device)
+    ! Reals
+    ccontrol%stop_length = fcontrol%stop_length 
+    ccontrol%small_g_for_newton = fcontrol%small_g_for_newton
+    ccontrol%small_g = fcontrol%small_g
+    ccontrol%obj_sufficient = fcontrol%obj_sufficient
+    ccontrol%global_lipschitz_constant = fcontrol%global_lipschitz_constant
+    ccontrol%reliability_parameter = fcontrol%reliability_parameter
+    ccontrol%lipschitz_lower_bound = fcontrol%lipschitz_lower_bound
+    ccontrol%cpu_time_limit = fcontrol%cpu_time_limit
+    ccontrol%clock_time_limit = fcontrol%clock_time_limit
 
-    ! Copy control out
-    call copy_control_out(fcontrol, ccontrol)
-end subroutine ugo_read_specfile
+    ! Logicals
+    ccontrol%space_critical = fcontrol%space_critical
+    ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
 
-subroutine ugo_solve(x_l, x_u, x, f, g, h, ccontrol, cinform, cdata, cuserdata, ceval_fgh) bind(C) 
-    use GALAHAD_UGO_double_ciface
-    implicit none
+    ! Strings
+    DO i = 1, LEN( fcontrol%alive_file )
+      ccontrol%alive_file( i ) = fcontrol%alive_file( i : i )
+    END DO
+    ccontrol%alive_file( LEN( fcontrol%alive_file ) + 1 ) = C_NULL_CHAR
+    DO i = 1, LEN( fcontrol%prefix )
+      ccontrol%prefix( i ) = fcontrol%prefix( i : i )
+    END DO
+    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+    RETURN
 
-    real(wp), intent(in), value :: x_l, x_u
-    real(wp), intent(inout) :: x, f, g, h
+    END SUBROUTINE copy_control_out
 
-    type(ugo_control_type), intent(in) :: ccontrol
-    type(ugo_inform_type), intent(inout) :: cinform
-    type(C_PTR), intent(inout) :: cdata
-    type(C_PTR), intent(in), value :: cuserdata
-    type(C_FUNPTR), intent(in), value :: ceval_fgh
+!  copy C information parameters to fortran
 
-    type(f_ugo_control_type) :: fcontrol
-    type(f_ugo_inform_type) :: finform
-    type(f_ugo_data_type), pointer :: fdata
-    procedure(eval_fgh), pointer :: feval_fgh
+    SUBROUTINE copy_inform_in( cinform, finform ) 
+    TYPE ( ugo_inform_type ), INTENT( IN ) :: cinform
+    TYPE ( f_ugo_inform_type ), INTENT( OUT ) :: finform
+    INTEGER :: i
 
-    ! Ignore Fortran userdata type (not interoperable)
-    type(f_nlpt_userdata_type), pointer :: fuserdata => null()
+    ! Integers
+    finform%status = cinform%status
+    finform%alloc_status = cinform%alloc_status
+    finform%iter = cinform%iter
+    finform%f_eval = cinform%f_eval
+    finform%g_eval = cinform%g_eval
+    finform%h_eval = cinform%h_eval
+    
+    ! Time derived type
+    finform%time%total = cinform%time%total
+    finform%time%clock_total = cinform%time%clock_total
 
-    ! Copy control in
-    call copy_control_in(ccontrol, fcontrol)
+    ! Strings
+    DO i = 1, 81
+      IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
+      finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
+    END DO
+    RETURN
 
-    ! Copy inform in
-    call copy_inform_in(cinform, finform)
+    END SUBROUTINE copy_inform_in
 
-    ! Associate data pointers
-    call C_F_POINTER(cdata, fdata)
+!  copy fortran information parameters to C
 
-    ! Set eval_status (for reverse communication interface)
-    fdata%eval_status = cinform%eval_status
+    SUBROUTINE copy_inform_out( finform, cinform ) 
+    TYPE ( f_ugo_inform_type ), INTENT( IN ) :: finform
+    TYPE ( ugo_inform_type ), INTENT( OUT ) :: cinform
+    INTEGER :: i
 
-    ! Associate eval_fgh procedure pointers 
-    if(C_ASSOCIATED(ceval_fgh)) then ! if ceval_fgh is not NULL 
-        call C_F_PROCPOINTER(ceval_fgh, feval_fgh)
-    else ! otherwise nullify feval_fgh
-        nullify(feval_fgh)
-    endif  
+    ! integers
+    cinform%status = finform%status
+    cinform%alloc_status = finform%alloc_status
+    cinform%iter = finform%iter
+    cinform%f_eval = finform%f_eval
+    cinform%g_eval = finform%g_eval
+    cinform%h_eval = finform%h_eval
+    
+    ! Time derived type
+    cinform%time%total = finform%time%total
+    cinform%time%clock_total = finform%time%clock_total
 
-    if(associated(feval_fgh)) then ! if eval_fgh is passed as not NULL
-        ! Call UGO_solve forward communication version
-        call f_ugo_solve(x_l, x_u, x, f, g, h, fcontrol, finform, fdata, fuserdata, wrap_eval_fgh)
-    else
-        ! Call UGO_solve reverse communication version
-        call f_ugo_solve(x_l, x_u, x, f, g, h, fcontrol, finform, fdata, fuserdata)
-    end if
+    ! Strings
+    DO i = 1, LEN( finform%bad_alloc )
+      cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
+    END DO
+    cinform%bad_alloc( LEN( finform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    RETURN
 
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
+    END SUBROUTINE copy_inform_out
 
-contains
+  END MODULE GALAHAD_UGO_double_ciface
 
-    ! eval_FGH wrapper
-    subroutine wrap_eval_fgh(status, x, userdata, f, g, h)     
-        integer(C_INT), intent(out) :: status
-        real(wp), intent(in) :: x
-        type(f_nlpt_userdata_type), intent(inout) :: userdata
-        real(wp), intent(out) :: f, g, h
+!  -------------------------------------
+!  C interface to fortran ugo_initialize
+!  -------------------------------------
 
-        ! Call C interoperable eval_fgh
-        status = feval_fgh(x, f, g, h, cuserdata)
-    end subroutine wrap_eval_fgh
+  SUBROUTINE ugo_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  USE GALAHAD_UGO_double_ciface
+  IMPLICIT NONE
 
-end subroutine ugo_solve
+!  dummy arguments
 
-subroutine ugo_terminate(cdata, ccontrol, cinform) bind(C) 
-    use GALAHAD_UGO_double_ciface
-    implicit none
+  TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
+  TYPE ( ugo_control_type ), INTENT( OUT ) :: ccontrol
+  TYPE ( ugo_inform_type ), INTENT( OUT ) :: cinform
 
-    type(C_PTR), intent(inout) :: cdata
-    type(ugo_control_type), intent(in) :: ccontrol
-    type(ugo_inform_type), intent(inout) :: cinform
+!  local variables
 
-    type(f_ugo_control_type) :: fcontrol
-    type(f_ugo_inform_type) :: finform
-    type(f_ugo_data_type), pointer :: fdata
+  TYPE ( f_ugo_full_data_type ), POINTER :: fdata
+  TYPE ( f_ugo_control_type ) :: fcontrol
+  TYPE ( f_ugo_inform_type ) :: finform
 
-    ! Copy control in
-    call copy_control_in(ccontrol, fcontrol)
+!  allocate fdata 
 
-    ! Copy inform in
-    call copy_inform_in(cinform, finform)
+  ALLOCATE( fdata ); cdata = C_LOC( fdata )
 
-    ! Associate data pointers
-    call C_F_POINTER(cdata, fdata)
+!  initialize required fortran types
 
-    ! Call UGO_terminate
-    call f_ugo_terminate(fdata,fcontrol,finform)
+  CALL f_ugo_initialize( fdata, fcontrol, finform ) 
 
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
+!  initialize eval_status (for reverse communication INTERFACE)
 
-    ! Deallocate fdata
-    deallocate(fdata); cdata = C_NULL_PTR 
-end subroutine ugo_terminate   
+  cinform%eval_status = 0
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE ugo_initialize
+
+!  ----------------------------------------
+!  C interface to fortran ugo_read_specfile
+!  ----------------------------------------
+
+  SUBROUTINE ugo_read_specfile( ccontrol, cspecfile ) BIND( C )
+  USE GALAHAD_UGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( ugo_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( IN ), value :: cspecfile
+
+!  local variables
+
+  TYPE ( f_ugo_control_type ) :: fcontrol
+  CHARACTER( KIND = C_CHAR, LEN = strlen( cspecfile ) ) :: fspecfile
+
+!  device unit number for specfile
+
+  INTEGER ( KIND = C_INT ), parameter :: device = 10
+
+!  convert C string to Fortran string
+
+  fspecfile = cstr_to_fchar( cspecfile )
+
+!  Copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol )
+  
+!  open specfile for reading
+
+  OPEN( UNIT = device, FILE = fspecfile )
+  
+!  read control parameters from the specfile
+
+  CALL f_ugo_read_specfile( fcontrol, device )
+
+!  close specfile
+
+  CLOSE( device )
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol )
+  RETURN
+
+  END SUBROUTINE ugo_read_specfile
+
+!  ---------------------------------
+!  C interface to fortran ugo_inport
+!  ---------------------------------
+
+  SUBROUTINE ugo_import( ccontrol, cdata, status, xl, xu ) BIND( C )
+  USE GALAHAD_UGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ) :: xl, xu
+  TYPE ( ugo_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_ugo_control_type ) :: fcontrol
+  TYPE ( f_ugo_full_data_type ), POINTER :: fdata
+
+!  copy control and inform in
+
+  CALL copy_control_in( ccontrol, fcontrol )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  import the problem data into the required UGO structure
+
+  CALL f_ugo_import( fcontrol, fdata, status, xl, xu )
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol )
+  RETURN
+
+  END SUBROUTINE ugo_import
+
+!  ---------------------------------------
+!  C interface to fortran ugo_solve_direct
+!  ---------------------------------------
+
+  SUBROUTINE ugo_solve_direct( cdata, cuserdata, status, x, f, g, h,           &
+                               ceval_fgh ) BIND( C ) 
+  USE GALAHAD_UGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( INOUT ) :: x, f, g, h
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_fgh
+
+!  local variables
+
+  TYPE ( f_ugo_full_data_type ), POINTER :: fdata
+  PROCEDURE( eval_fgh ), POINTER :: feval_fgh
+
+!  ignore Fortran userdata type (not interoperable)
+
+  TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  associate eval_fgh procedure pointer
+
+  CALL C_F_PROCPOINTER( ceval_fgh, feval_fgh )
+
+!  solve the problem using internal evaluations
+
+  CALL f_ugo_solve_direct( fdata, fuserdata, status, x, f, g, h, wrap_eval_fgh )
+  RETURN
+
+!  wrappers
+
+  CONTAINS
+
+!  eval_FGH wrapper
+
+    SUBROUTINE wrap_eval_fgh( status, x, userdata, f, g, h )     
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), INTENT( IN ) :: x
+    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), INTENT( OUT ) :: f, g, h
+
+!  call C interoperable eval_fgh
+
+    status = feval_fgh( x, f, g, h, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_fgh
+
+  END SUBROUTINE ugo_solve_direct
+
+!  ----------------------------------------
+!  C interface to fortran ugo_solve_reverse
+!  ----------------------------------------
+
+  SUBROUTINE ugo_solve_reverse( cdata, status, eval_status,                    &
+                                x, f, g, h ) BIND( C ) 
+  USE GALAHAD_UGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  REAL ( KIND = wp ), INTENT( INOUT ) :: x, f, g, h
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_ugo_full_data_type ), POINTER :: fdata
+
+!  associate data pointers
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the problem by reverse communication
+
+  CALL f_ugo_solve_reverse( fdata, status, eval_status, x, f, g, h )
+  RETURN
+
+  END SUBROUTINE ugo_solve_reverse
+
+!  --------------------------------------
+!  C interface to fortran ugo_information
+!  --------------------------------------
+
+  SUBROUTINE ugo_information( cdata, cinform, status ) BIND( C ) 
+  USE GALAHAD_UGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( ugo_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_ugo_full_data_type ), pointer :: fdata
+  TYPE ( f_ugo_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain UGO solution information
+
+  CALL f_ugo_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE ugo_information
+
+!  ------------------------------------
+!  C interface to fortran ugo_terminate
+!  ------------------------------------
+
+  SUBROUTINE ugo_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  USE GALAHAD_UGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( ugo_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( ugo_inform_type ), INTENT( INOUT ) :: cinform
+
+!  local variables
+
+  TYPE ( f_ugo_control_type ) :: fcontrol
+  TYPE ( f_ugo_inform_type ) :: finform
+  TYPE ( f_ugo_full_data_type ), POINTER :: fdata
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol )
+
+!  copy inform in
+
+  CALL copy_inform_in( cinform, finform )
+
+!  associate data pointers
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  deallocate workspace
+
+  CALL f_ugo_terminate( fdata, fcontrol, finform )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+
+!  deallocate fdata
+
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  RETURN
+
+  END SUBROUTINE ugo_terminate   

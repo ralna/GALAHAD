@@ -34,7 +34,7 @@
      USE GALAHAD_LPQP_double, ONLY: LPQP_data_type, LPQP_control_type
      USE GALAHAD_FIT_double, ONLY: FIT_data_type
      USE GALAHAD_ROOTS_double, ONLY: ROOTS_data_type
-     USE GALAHAD_SCU_double, ONLY: SCU_matrix_type, SCU_info_type,             &
+     USE GALAHAD_SCU_double, ONLY: SCU_matrix_type, SCU_inform_type,           &
                                    SCU_data_type
      USE GALAHAD_LMS_double, ONLY: LMS_control_type, LMS_inform_type,          &
                                    LMS_apply_lbfgs
@@ -380,7 +380,7 @@
        TYPE ( SILS_ainfo ) :: AINFO
        TYPE ( SILS_finfo ) :: FINFO
        TYPE ( SCU_matrix_type ) :: SCU_mat
-       TYPE ( SCU_info_type ) :: SCU_info
+       TYPE ( SCU_inform_type ) :: SCU_info
        TYPE ( SCU_data_type ) :: SCU_data
 
 !  EQP derived type components

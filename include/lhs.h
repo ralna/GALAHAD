@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 3.3 - 03/08/2021 AT 07:50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LHS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -7,7 +7,7 @@
  *  Principal author: Jaroslav Fowkes
  *
  *  History -
- *   currently in development
+ *   originally released GALAHAD Version 3.3. August 3rd 2021
  *
  *  For full documentation, see
  *   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -30,7 +30,7 @@ extern "C" {
  * inform derived type as a C struct
  */
 struct lhs_inform_type {
-0
+
     //  return status. See LHS_solve for details
     int status;
 
@@ -75,27 +75,43 @@ struct lhs_control_type {
     char prefix[31]; 
 };
 
-/*
+/*  *-*-*-*-*-*-*-*-*-*-   L H S _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*
+ *
  * Provide default values for LHS controls
- *
- *   Arguments:
- *
- *   data     private internal data
- *   control  a struct containing control information
- *   inform   a struct containing output information
  */
+
 void lhs_initialize( void **data, 
                      struct lhs_control_type *control, 
                      struct lhs_inform_type *inform );
 
-/*
+/*  ------------------------  A R G U M E N T S  ------------------------------
+ *
+ *   data     private internal data
+ *   control  a struct containing default control information (see above)
+ *   inform   a struct containing output information (see above)
+ *
+ *  ---------------------------------------------------------------------------
+ */
+
+/*  *-*-*-*-*-*-*-*-*-   L H S _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*
+ *
  * Read the content of a specification file, and perform the assignment of
  * values associated with given keywords to the corresponding control parameters
  */ 
+
 void lhs_read_specfile( struct lhs_control_type *control, 
                         const char specfile[] );
 
-/*
+/*  ------------------------  A R G U M E N T S  ------------------------------
+ *
+ *   control  a struct containing control information (see above)
+ *   specfile a character string containing the name of the specfile
+ *
+ *  ---------------------------------------------------------------------------
+ */
+
+/*  *-*-*-*-*-*-*-*-*-*-*-*-*-*-   L H S _ I H S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*
+ *
  * lhs_ihs implements the improved distributed hyper-cube sampling algorithm.
  *
  *  Discussion:
@@ -118,8 +134,16 @@ void lhs_read_specfile( struct lhs_control_type *control,
  *    Brian Beachkofski, Ramana Grandhi,
  *    Improved Distributed Hypercube Sampling,
  *    American Institute of Aeronautics and Astronautics Paper 2002-1274
- *
- *  Parameters:
+ */
+
+void lhs_ihs( int n_dimen, 
+              int n_points, 
+              int *seed, 
+              int X[n_dimen][n_points], 
+              const struct lhs_control_type *control, 
+              struct lhs_inform_type *inform, void **data );
+
+/*  ------------------------  A R G U M E N T S  ------------------------------
  *
  *    Input, int n_dimen, the spatial dimension
  *
@@ -130,15 +154,12 @@ void lhs_read_specfile( struct lhs_control_type *control,
  *    Output, int X[n_dimen][n_points], the points
  *
  *    control, inform, data - see lhs_initialize
+ *
+ *  ---------------------------------------------------------------------------
  */ 
-void lhs_ihs( int n_dimen, 
-              int n_points, 
-              int *seed, 
-              int X[n_dimen][n_points], 
-              const struct lhs_control_type *control, 
-              struct lhs_inform_type *inform, void **data );
 
-/*
+/*  *-*-*-*-*-*-*-*-*-*-*-*-   L H S _ G E T _ S E E D  -*-*-*-*-*-*-*-*-*-*-*
+ *
  * lhs_get_seed gets a seed for the random number generator.
  *
  *  Discussion:
@@ -147,19 +168,32 @@ void lhs_ihs( int n_dimen,
  *    different every millisecond.  Once the seed is obtained, a random
  *    number generator should be called a few times to further process
  *    the seed.
- *
- *  Parameters:
- *
- *    Output, int* seed, a pseudorandom seed value.
  */ 
+
 void lhs_get_seed( int *seed );
 
-/*
+/*  ------------------------  A R G U M E N T S  ------------------------------
+ *
+ *    Output, int* seed, a pseudorandom seed value.
+ *
+ *  ---------------------------------------------------------------------------
+ */ 
+
+/*  *-*-*-*-*-*-*-*-*-*-*-   L H S _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*-*
+ *
  * Deallocate all private storage
  */
+
 void lhs_terminate( void **data, 
                     struct lhs_control_type *control, 
                     struct lhs_inform_type *inform );
+
+/*  ------------------------  A R G U M E N T S  ------------------------------
+ *
+ * see lhs_initialize above
+ *
+ *  ---------------------------------------------------------------------------
+ */
 
 // end include guard
 #endif

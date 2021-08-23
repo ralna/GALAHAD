@@ -49,8 +49,8 @@ int main(void) {
     while(true){ // reverse-communication loop
 
         // Call TRB_solve
-        trb_solve_reverse_with_h( &data, &status, &eval_status, 
-                                  n, x, f, g, ne, H_val, u, v );
+        trb_solve_reverse_with_mat( &data, &status, &eval_status, 
+                                    n, x, f, g, ne, H_val, u, v );
 
         // Evaluate f(x) and its derivatives as required
         if(status == 0){ // successful termination

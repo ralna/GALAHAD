@@ -30,7 +30,7 @@
       USE GALAHAD_QPT_double, ONLY : QPT_keyword_H
       USE GALAHAD_SLS_double
       USE GALAHAD_SCU_double, ONLY : SCU_matrix_type, SCU_data_type,           &
-        SCU_info_type, SCU_factorize, SCU_solve, SCU_append, SCU_terminate
+        SCU_inform_type, SCU_factorize, SCU_solve, SCU_append, SCU_terminate
       USE GALAHAD_SORT_double, ONLY : SORT_reorder_by_cols
       USE GALAHAD_EXTEND_double, ONLY : EXTEND_arrays
       USE LANCELOT_BAND_double
@@ -398,7 +398,7 @@
         TYPE ( SLS_data_type ) :: SLS_data
         TYPE ( SCU_matrix_type ) :: SCU_matrix
         TYPE ( SCU_data_type ) :: SCU_data
-        TYPE ( SCU_info_type ) :: SCU_inform
+        TYPE ( SCU_inform_type ) :: SCU_inform
         TYPE ( MI28_control ) :: MI28_control
         TYPE ( MI28_keep ) ::  MI28_keep
       END TYPE PSLS_data_type
@@ -829,7 +829,10 @@
         GO TO 930
       END IF
 
-      IF ( control%new_structure ) THEN
+      data%sub_matrix = PRESENT( SUB )
+
+      IF ( control%new_structure .OR. data%sub_matrix ) THEN
+!     IF ( control%new_structure ) THEN
         data%n_update = 0
         data%max_col = control%max_col
         IF ( data%max_col <= 0 ) data%max_col = 100
@@ -837,8 +840,6 @@
 !  Record if a variable is contained in the submatrix
 
         data%n = A%n
-
-        data%sub_matrix = PRESENT( SUB )
         IF ( data%sub_matrix ) THEN
           data%n_sub = SIZE( SUB )
           array_name = 'psls: data%SUB'
@@ -934,7 +935,8 @@
 
 !  allocate space to hold the diagonal
 
-        IF ( control%new_structure ) THEN
+ !      IF ( control%new_structure ) THEN
+        IF ( control%new_structure .OR. data%sub_matrix ) THEN
           array_name = 'psls: data%DIAG'
           CALL SPACE_resize_array( data%n_sub, data%DIAG,                      &
               inform%status, inform%alloc_status, array_name = array_name,     &
@@ -949,7 +951,10 @@
         SELECT CASE ( SMT_get( A%type ) )
         CASE ( 'DIAGONAL' )
           IF ( data%sub_matrix ) THEN
-            data%DIAG = A%val( SUB( : data%n_sub ) )
+            DO l = 1, data%n_sub
+              data%DIAG( l ) = A%val( SUB( l ) )
+            END DO
+!           data%DIAG( : data%n_sub ) = A%val( SUB( : data%n_sub ) )
           ELSE
             data%DIAG = A%val( : data%n )
           END IF

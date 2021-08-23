@@ -13,7 +13,7 @@ int main(void) {
     struct arc_inform_type inform;
 
     // Initialize ARC
-    arc_initialize(&data, &control, &inform);
+    arc_initialize( &data, &control, &inform );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -33,7 +33,7 @@ int main(void) {
     double u[n], v[n];
 
     // Set Hessian storage format, structure and problem bounds
-    arc_import(&control, &data, &status, n, H_type, ne, NULL, NULL, NULL);
+    arc_import( &control, &data, &status, n, H_type, ne, NULL, NULL, NULL );
     control.maxit=2;
     control.print_level=5;
 
@@ -44,8 +44,8 @@ int main(void) {
     while(true){ // reverse-communication loop
 
         // Call ARC_solve
-        arc_solve_reverse_without_h(&data, &status, &eval_status, 
-                        n, x, f, g, u, v );
+        arc_solve_reverse_without_mat( &data, &status, &eval_status, 
+                                       n, x, f, g, u, v );
 
         // Evaluate f(x) and its derivatives as required
         if(status == 0){ // successful termination
@@ -74,7 +74,7 @@ int main(void) {
     }
 
     // Record solution information
-    arc_information(&data, &inform, &status);
+    arc_information( &data, &inform, &status );
 
     // Print solution details
     printf("iter: %d \n", inform.iter);
@@ -90,7 +90,7 @@ int main(void) {
     printf("status: %d \n", inform.status);
 
     // Delete internal workspace
-    arc_terminate(&data, &control, &inform);
+    arc_terminate( &data, &control, &inform );
 
     return 0;
 }

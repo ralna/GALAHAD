@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.2 - 25/02/2018 AT 07:45 GMT.
+! THIS VERSION: GALAHAD 3.3 - 10/08/2021 AT 08:30 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ G L T R  double  M O D U L E  *-*-*-*-*-*-*-
 
@@ -41,6 +41,22 @@
       PUBLIC :: GLTR_initialize, GLTR_read_specfile, GLTR_solve,               &
                 GLTR_terminate, GLTR_leftmost_eigenvalue,                      &
                 GLTR_leftmost_eigenvector, GLTR_tridiagonal_solve
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+      INTERFACE GLTR_initialize
+        MODULE PROCEDURE GLTR_initialize, GLTR_initialize_info
+      END INTERFACE GLTR_initialize
+
+      INTERFACE GLTR_solve
+        MODULE PROCEDURE GLTR_solve, GLTR_solve_info
+      END INTERFACE GLTR_solve
+
+      INTERFACE GLTR_terminate
+        MODULE PROCEDURE GLTR_terminate, GLTR_terminate_info
+      END INTERFACE GLTR_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -169,13 +185,13 @@
 !   quotes, e.g. "string" or 'string'
 
         CHARACTER ( LEN = 30 ) :: prefix = '""                            '
-      END TYPE
+      END TYPE GLTR_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
-      TYPE, PUBLIC :: GLTR_info_type
+      TYPE, PUBLIC :: GLTR_inform_type
 
 !  return status. See GLTR_solve for details
 
@@ -229,7 +245,17 @@
 !  did the hard case occur ?
 
         LOGICAL :: hard_case = .FALSE.
-      END TYPE
+      END TYPE GLTR_inform_type
+
+!  - - - - - - - - - - - - - - - - - - - - - - -
+!   info derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - - -
+
+!  extends the GLTR_info_type so that it can be refered to as 
+!  the more conventional GLTR_inform_type
+
+      TYPE, PUBLIC, EXTENDS( GLTR_inform_type ) :: GLTR_info_type
+      END TYPE GLTR_info_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
 !   data derived type with private components
@@ -266,7 +292,7 @@
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R_extra
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P_extra
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: V_extra
-      END TYPE
+      END TYPE GLTR_data_type
 
     CONTAINS
 
@@ -293,7 +319,7 @@
 
       TYPE ( GLTR_data_type ), INTENT( INOUT ) :: data
       TYPE ( GLTR_control_type ), INTENT( OUT ) :: control
-      TYPE ( GLTR_info_type ), INTENT( OUT ) :: inform
+      TYPE ( GLTR_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
 
@@ -315,6 +341,21 @@
 !  End of subroutine GLTR_initialize
 
       END SUBROUTINE GLTR_initialize
+
+!-*-*-*-  G L T R _ I N I T I A L I Z E  _ I N F O  S U B R O U T I N E   -*-*-
+
+      SUBROUTINE GLTR_initialize_info( data, control, info )
+
+!  equivalent to GLTR_initialize, needed for backward compatibility
+
+      TYPE ( GLTR_data_type ), INTENT( INOUT ) :: data
+      TYPE ( GLTR_control_type ), INTENT( OUT ) :: control
+      TYPE ( GLTR_info_type ), INTENT( OUT ) :: info
+      TYPE ( GLTR_inform_type ) :: inform
+      CALL GLTR_initialize( data, control, inform )
+      info%GLTR_inform_type = inform
+      RETURN
+      END SUBROUTINE GLTR_initialize_info
 
 !-*-*-*-   G L T R _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
 
@@ -573,7 +614,7 @@
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, R, VECTOR
       TYPE ( GLTR_data_type ), INTENT( INOUT ) :: data
       TYPE ( GLTR_control_type ), INTENT( IN ) :: control
-      TYPE ( GLTR_info_type ), INTENT( INOUT ) :: inform
+      TYPE ( GLTR_inform_type ), INTENT( INOUT ) :: inform
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -1586,6 +1627,26 @@
 
       END SUBROUTINE GLTR_solve
 
+!-*-*-*-*-*-*-*  G L T R _ S O L V E _ I N F O  S U B R O U T I N E  -*-*-*-*-*
+
+      SUBROUTINE GLTR_solve_info( n, radius, f, X, R, VECTOR, data, control,   &
+                                  info )
+!  equivalent to GLTR_solve, needed for backward compatibility
+
+      INTEGER, INTENT( IN ) :: n
+      REAL ( KIND = wp ), INTENT( IN ) :: radius
+      REAL ( KIND = wp ), INTENT( INOUT ) :: f
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, R, VECTOR
+      TYPE ( GLTR_data_type ), INTENT( INOUT ) :: data
+      TYPE ( GLTR_control_type ), INTENT( IN ) :: control
+      TYPE ( GLTR_info_type ), INTENT( INOUT ) :: info
+      TYPE ( GLTR_inform_type ) :: inform
+      inform = info%GLTR_inform_type
+      CALL GLTR_solve( n, radius, f, X, R, VECTOR, data, control, inform )
+      info%GLTR_inform_type = inform
+      RETURN
+      END SUBROUTINE GLTR_solve_info
+
 !-*-*-*-*-*-  G L T R _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-*-
 
       SUBROUTINE GLTR_terminate( data, control, inform )
@@ -1609,7 +1670,7 @@
 
       TYPE ( GLTR_data_type ), INTENT( INOUT ) :: data
       TYPE ( GLTR_control_type ), INTENT( IN ) :: control
-      TYPE ( GLTR_info_type ), INTENT( INOUT ) :: inform
+      TYPE ( GLTR_inform_type ), INTENT( INOUT ) :: inform
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e
@@ -1740,6 +1801,22 @@
 !  End of subroutine GLTR_terminate
 
       END SUBROUTINE GLTR_terminate
+
+!-*-*-*-  G L T R _ T E R M I N A T E _ I N F O   S U B R O U T I N E   -*-*-*-
+
+      SUBROUTINE GLTR_terminate_info( data, control, info )
+
+!  equivalent to GLTR_terminate, needed for backward compatibility
+
+      TYPE ( GLTR_data_type ), INTENT( INOUT ) :: data
+      TYPE ( GLTR_control_type ), INTENT( IN ) :: control
+      TYPE ( GLTR_info_type ), INTENT( INOUT ) :: info
+      TYPE ( GLTR_inform_type ) :: inform
+      inform = info%GLTR_inform_type
+      CALL GLTR_terminate( data, control, inform )
+      info%GLTR_inform_type = inform
+      RETURN
+      END SUBROUTINE GLTR_terminate_info
 
 !-*-*-*-*-*-*-*-*-*-*-  G L T R _ t t r s  S U B R O U T I N E -*-*-*-*-*-*-*-*
 

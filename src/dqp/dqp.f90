@@ -542,12 +542,12 @@
 
 !  return information from GLTR
 
-        TYPE ( GLTR_info_type ) :: GLTR_inform
+        TYPE ( GLTR_inform_type ) :: GLTR_inform
 
 !  inform parameters for SCU
 
         INTEGER :: scu_status = 0
-        TYPE ( SCU_info_type ) :: SCU_inform
+        TYPE ( SCU_inform_type ) :: SCU_inform
 
 !  inform parameters for RPD
 

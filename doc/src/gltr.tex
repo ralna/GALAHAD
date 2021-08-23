@@ -63,7 +63,7 @@ Access to the package requires a {\tt USE} statement such as
 
 \noindent
 If it is required to use both modules at the same time, the derived types
-{\tt \packagename\_control\_type}, {\tt \packagename\_info\_type},
+{\tt \packagename\_control\_type}, {\tt \packagename\_inform\_type},
 {\tt \packagename\_data\_type},
 (Section~\ref{galtypes})
 and the subroutines
@@ -233,10 +233,10 @@ a string, they may use the default {\tt prefix = ""}.
 \subsubsection{The derived data type for holding informational
  parameters}\label{typeinfo}
 The derived data type
-{\tt \packagename\_info\_type}
+{\tt \packagename\_inform\_type}
 is used to hold parameters that give information about the progress and needs
 of the algorithm. The components of
-{\tt \packagename\_info\_type}
+{\tt \packagename\_inform\_type}
 are:
 
 \begin{description}
@@ -276,6 +276,11 @@ current number of Lanczos vectors used in the second pass.
 is set \true\ if $\bmH$ has been found to be indefinite during the calculation
 and \false\ otherwise.
 \end{description}
+
+\noindent
+For backward compatibility with an earlier version of the package, there
+is an equivalent type {\tt \packagename\_info\_type}, and the two names
+may be used interchangeably.
 
 %%%%%%%%%%% data type %%%%%%%%%%%
 
@@ -342,7 +347,7 @@ These values should only be changed after calling
 {\tt \packagename\_initialize}.
 
 \itt{inform} is a scalar \intentout\ argument of type
-{\tt \packagename\_info\_type}
+{\tt \packagename\_inform\_type}
 (see Section~\ref{typeinfo}). A successful call to
 {\tt \packagename\_initialize}
 is indicated when the  component {\tt status} has the value 0.
@@ -415,7 +420,7 @@ Default values may be assigned by calling {\tt \packagename\_initialize}
 prior to the first call to {\tt \packagename\_solve}.
 
 \itt{inform} is a scalar \intentinout argument of type
-{\tt \packagename\_info\_type}
+{\tt \packagename\_inform\_type}
 (see Section~\ref{typeinfo}).
 On initial entry, the component {\tt status} must be set to {\tt 1.}
 The remaining components need not be set.
@@ -450,7 +455,7 @@ exactly as for
 {\tt \packagename\_solve}.
 
 \itt{inform} is a scalar \intentout argument of type
-{\tt \packagename\_info\_type}
+{\tt \packagename\_inform\_type}
 exactly as for
 {\tt \packagename\_solve}.
 Only the component {\tt status} will be set on exit, and a

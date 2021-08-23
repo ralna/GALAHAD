@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 10/08/2021 AT 11:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ S C U   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -33,6 +33,34 @@
     PUBLIC :: SCU_restart_m_eq_0, SCU_factorize, SCU_solve,                    &
               SCU_append, SCU_delete, SCU_increase_diagonal, SCU_terminate
 
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+    INTERFACE SCU_restart_m_eq_0
+      MODULE PROCEDURE SCU_restart_m_eq_0, SCU_restart_m_eq_0_info
+    END INTERFACE SCU_restart_m_eq_0
+
+    INTERFACE SCU_factorize
+      MODULE PROCEDURE SCU_factorize, SCU_factorize_info
+    END INTERFACE SCU_factorize
+
+    INTERFACE SCU_append
+      MODULE PROCEDURE SCU_append, SCU_append_info
+    END INTERFACE SCU_append
+
+    INTERFACE SCU_delete
+      MODULE PROCEDURE SCU_delete, SCU_delete_info
+    END INTERFACE SCU_delete
+
+    INTERFACE SCU_increase_diagonal
+      MODULE PROCEDURE SCU_increase_diagonal, SCU_increase_diagonal_info
+    END INTERFACE SCU_increase_diagonal
+
+    INTERFACE SCU_terminate
+      MODULE PROCEDURE SCU_terminate, SCU_terminate_info
+    END INTERFACE SCU_terminate
+
 !--------------------
 !   P r e c i s i o n
 !--------------------
@@ -61,12 +89,15 @@
       INTEGER, ALLOCATABLE, DIMENSION( : ) :: CD_row_start
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BD_val
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: CD_val
-    END TYPE
+    END TYPE SCU_matrix_type
 
-    TYPE, PUBLIC :: SCU_info_type
+    TYPE, PUBLIC :: SCU_inform_type
       INTEGER :: alloc_status
       INTEGER, DIMENSION( 3 ) :: inertia
-    END TYPE
+    END TYPE SCU_inform_type
+
+    TYPE, PUBLIC, EXTENDS( SCU_inform_type ) :: SCU_info_type
+    END TYPE SCU_info_type
 
     TYPE, PUBLIC :: SCU_data_type
       PRIVATE
@@ -77,13 +108,13 @@
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Q
-    END TYPE
+    END TYPE SCU_data_type
 
   CONTAINS
 
 !-*-*-*-  S C U _ r e s t a r t _ m _ e q _ 0    S U B R O U T I N E   -*-*-*-*-
 
-    SUBROUTINE SCU_restart_m_eq_0( data, info )
+    SUBROUTINE SCU_restart_m_eq_0( data, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -104,7 +135,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
+      TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
 
 !  Re-initialize data values
@@ -112,14 +143,29 @@
       data%m = 0
       data%got_factors = .TRUE.
       data%sign_determinant = 1
-      info%inertia = (/ 0, 0, 0 /)
+      inform%inertia = (/ 0, 0, 0 /)
       RETURN
 
     END SUBROUTINE SCU_restart_m_eq_0
 
-!-*-*-*-*-*-  S C U _ f a c t o r i z e    S U B R O U T I N E   -*-*-*-*-*-*-
+!-*-  S C U _ r e s t a r t _ m _ e q _ 0  _ i n f o   S U B R O U T I N E  -*-
 
-    SUBROUTINE SCU_factorize( matrix, data, VECTOR, status, info )
+    SUBROUTINE SCU_restart_m_eq_0_info( data, info )
+
+!  equivalent to SCU_restart_m_eq_0, needed for backward compatibility
+
+    TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
+    TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
+    TYPE ( SCU_inform_type ) :: inform
+    inform = info%SCU_inform_type
+    CALL SCU_restart_m_eq_0( data, inform )
+    info%SCU_inform_type = inform
+    RETURN
+    END SUBROUTINE SCU_restart_m_eq_0_info
+
+!-*-*-*-*-*-  S C U _ f a c t o r i z e   S U B R O U T I N E   -*-*-*-*-*-*-
+
+    SUBROUTINE SCU_factorize( matrix, data, VECTOR, status, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -141,7 +187,7 @@
 !-----------------------------------------------
 
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
-      TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
+      TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
       INTEGER, INTENT( INOUT ) :: status
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
@@ -176,29 +222,29 @@
       data%class = matrix%class
       data%m_max = matrix%m_max
       data%sign_determinant = 1
-      info%inertia = (/ 0, 0, 0 /)
+      inform%inertia = (/ 0, 0, 0 /)
 
 !  Allocate the data arrays Q, R and W
 
       IF ( matrix%class <= 2 ) THEN
         IF ( ALLOCATED( data%Q ) ) THEN
           DEALLOCATE( data%Q, STAT = i )
-          info%alloc_status = i
-          IF ( info%alloc_status /= 0 ) THEN ; status = - 12 ; RETURN ; END IF
+          inform%alloc_status = i
+          IF ( inform%alloc_status /= 0 ) THEN ; status = - 12 ; RETURN ; END IF
         END IF
         ALLOCATE( data%Q( matrix%m_max, matrix%m_max ), STAT = i )
-        info%alloc_status = i
-        IF ( info%alloc_status /= 0 ) THEN ; status = - 12 ; RETURN ; END IF
+        inform%alloc_status = i
+        IF ( inform%alloc_status /= 0 ) THEN ; status = - 12 ; RETURN ; END IF
       END IF
 
       IF ( ALLOCATED( data%R ) ) THEN
         DEALLOCATE( data%R, STAT = i )
-        info%alloc_status = i
-        IF ( info%alloc_status /= 0 ) THEN ; status = - 12 ; RETURN ; END IF
+        inform%alloc_status = i
+        IF ( inform%alloc_status /= 0 ) THEN ; status = - 12 ; RETURN ; END IF
       END IF
       ALLOCATE( data%R( matrix%m_max * ( matrix%m_max + 1 ) / 2 ), STAT = i )
-      info%alloc_status = i
-      IF ( info%alloc_status /= 0 ) THEN
+      inform%alloc_status = i
+      IF ( inform%alloc_status /= 0 ) THEN
         IF ( matrix%class <= 2 ) DEALLOCATE( data%Q, STAT = status )
         status = - 12
         RETURN
@@ -206,12 +252,12 @@
 
       IF ( ALLOCATED( data%W ) ) THEN
         DEALLOCATE( data%W, STAT = i )
-        info%alloc_status = i
-        IF ( info%alloc_status /= 0 ) THEN ; status = - 12 ; RETURN ; END IF
+        inform%alloc_status = i
+        IF ( inform%alloc_status /= 0 ) THEN ; status = - 12 ; RETURN ; END IF
       END IF
       ALLOCATE( data%W( matrix%m_max ), STAT = i )
-      info%alloc_status = i
-      IF ( info%alloc_status /= 0 ) THEN
+      inform%alloc_status = i
+      IF ( inform%alloc_status /= 0 ) THEN
         IF ( matrix%class <= 2 ) DEALLOCATE( data%Q, STAT = status )
         IF ( matrix%class <= 2 ) DEALLOCATE( data%R, STAT = status )
         status = - 12
@@ -252,7 +298,7 @@
       END IF
 
       data%sign_determinant = 1
-      info%inertia = (/ 0, 0, 0 /)
+      inform%inertia = (/ 0, 0, 0 /)
 
       IF ( matrix%m == 0 ) GO TO 100
 
@@ -476,9 +522,9 @@
 
           sign_determinant = SCU_sign_determinant( mnew, data%R )
           IF ( sign_determinant == data%sign_determinant ) THEN
-            info%inertia( 1 ) = info%inertia( 1 ) + 1
+            inform%inertia( 1 ) = inform%inertia( 1 ) + 1
           ELSE
-            info%inertia( 2 ) = info%inertia( 2 ) + 1
+            inform%inertia( 2 ) = inform%inertia( 2 ) + 1
             data%sign_determinant = sign_determinant
           END IF
 
@@ -498,9 +544,9 @@
           RETURN 
         END IF
         IF ( data%class == 3 ) THEN
-          info%inertia( 1 ) = info%inertia( 1 ) + 1
+          inform%inertia( 1 ) = inform%inertia( 1 ) + 1
         ELSE
-          info%inertia( 2 ) = info%inertia( 2 ) + 1
+          inform%inertia( 2 ) = inform%inertia( 2 ) + 1
         END IF
         data%R( 1 ) = sqrt( scalar )
         newdia = 1
@@ -525,9 +571,9 @@
             RETURN
           END IF
           IF ( data%class == 3 ) THEN
-            info%inertia( 1 ) = info%inertia( 1 ) + 1
+            inform%inertia( 1 ) = inform%inertia( 1 ) + 1
           ELSE
-            info%inertia( 2 ) = info%inertia( 2 ) + 1
+            inform%inertia( 2 ) = inform%inertia( 2 ) + 1
           END IF
           data%R( newdia ) = sqrt( scalar )
         END DO
@@ -541,6 +587,24 @@
 !  End of SCU_factorize
 
     END SUBROUTINE SCU_factorize
+
+!-*-*-*-  S C U _ f a c t o r i z e  _ i n f o   S U B R O U T I N E   -*-*-*-
+
+    SUBROUTINE SCU_factorize_info( matrix, data, VECTOR, status, info )
+
+!  equivalent to SCU_factorize, needed for backward compatibility
+
+    TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
+    TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
+    TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
+    INTEGER, INTENT( INOUT ) :: status
+    REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
+    TYPE ( SCU_inform_type ) :: inform
+    inform = info%SCU_inform_type
+    CALL SCU_factorize( matrix, data, VECTOR, status, inform )
+    info%SCU_inform_type = inform
+    RETURN
+    END SUBROUTINE SCU_factorize_info
 
 !-*-*-*-*-*-*-  - S C U _ s o l v e    S U B R O U T I N E   -*-*-*-*-*-*-*-*-
 
@@ -712,7 +776,7 @@
 
 !-*-*-*-*-*-*-*-  S C U _ a p p e n d    S U B R O U T I N E   -*-*-*-*-*-*-*-
 
-    SUBROUTINE SCU_append( matrix, data, VECTOR, status, info )
+    SUBROUTINE SCU_append( matrix, data, VECTOR, status, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -736,11 +800,10 @@
 !-----------------------------------------------
 
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
-      TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
+      TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
       INTEGER, INTENT( INOUT ) :: status
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-                               DIMENSION ( matrix%n ) :: VECTOR
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -1005,9 +1068,9 @@
           RETURN
         END IF
         IF ( data%class == 3 ) THEN
-          info%inertia( 1 ) = info%inertia( 1 ) + 1
+          inform%inertia( 1 ) = inform%inertia( 1 ) + 1
         ELSE
-          info%inertia( 2 ) = info%inertia( 2 ) + 1
+          inform%inertia( 2 ) = inform%inertia( 2 ) + 1
         END IF
 
 !  Find the new diagonal of R
@@ -1028,7 +1091,7 @@
         CALL SCU_triangular( matrix%m, 1, data%R, data%W, status,             &
                               Q = data%Q )
         IF ( status < 0 ) THEN
-          info%inertia( 2 ) = info%inertia( 2 ) + 1
+          inform%inertia( 2 ) = inform%inertia( 2 ) + 1
           data%sign_determinant = - data%sign_determinant
           data%m = data%m + 1
           matrix%m = data%m
@@ -1040,9 +1103,9 @@
         IF ( data%class == 2 ) THEN
           sign_determinant = SCU_sign_determinant( mnew, data%R )
           IF ( sign_determinant == data%sign_determinant ) THEN
-            info%inertia( 1 ) = info%inertia( 1 ) + 1
+            inform%inertia( 1 ) = inform%inertia( 1 ) + 1
           ELSE
-            info%inertia( 2 ) = info%inertia( 2 ) + 1
+            inform%inertia( 2 ) = inform%inertia( 2 ) + 1
             data%sign_determinant = sign_determinant
           END IF
         END IF
@@ -1058,10 +1121,28 @@
 
     END SUBROUTINE SCU_append
 
+!-*-*-*-*-*-  S C U _ a p p e n d _ i n f o   S U B R O U T I N E   -*-*-*-*-*-
+
+    SUBROUTINE SCU_append_info( matrix, data, VECTOR, status, info )
+
+!  equivalent to SCU_append, needed for backward compatibility
+
+    TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
+    TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
+    TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
+    INTEGER, INTENT( INOUT ) :: status
+    REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
+    TYPE ( SCU_inform_type ) :: inform
+    inform = info%SCU_inform_type
+    CALL SCU_append( matrix, data, VECTOR, status, inform )
+    info%SCU_inform_type = inform
+    RETURN
+    END SUBROUTINE SCU_append_info
+
 !-*-*-*-*-*-*-*-  S C U _ d e l e t e    S U B R O U T I N E   -*-*-*-*-*-*-*-
 
-    SUBROUTINE SCU_delete( matrix, data, VECTOR, status, info, col_del,      &
-                            row_del )
+    SUBROUTINE SCU_delete( matrix, data, VECTOR, status, inform, col_del,      &
+                           row_del )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -1087,7 +1168,7 @@
 !-----------------------------------------------
 
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
-      TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
+      TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
       INTEGER, INTENT( IN ) :: col_del
       INTEGER, INTENT( IN ), OPTIONAL :: row_del
@@ -1415,9 +1496,9 @@
       END IF
 
       IF ( data%class == 3 ) THEN
-        info%inertia( 1 ) = info%inertia( 1 ) - 1
+        inform%inertia( 1 ) = inform%inertia( 1 ) - 1
       ELSE IF ( data%class == 4 ) THEN
-        info%inertia( 2 ) = info%inertia( 2 ) - 1
+        inform%inertia( 2 ) = inform%inertia( 2 ) - 1
       END IF
 
       IF ( qused ) THEN
@@ -1473,9 +1554,9 @@
         IF ( data%class == 2 ) THEN
           sign_determinant = SCU_sign_determinant( mm1, data%R )
           IF ( sign_determinant == data%sign_determinant ) THEN
-            info%inertia( 1 ) = info%inertia( 1 ) - 1
+            inform%inertia( 1 ) = inform%inertia( 1 ) - 1
           ELSE
-            info%inertia( 2 ) = info%inertia( 2 ) - 1
+            inform%inertia( 2 ) = inform%inertia( 2 ) - 1
             data%sign_determinant = sign_determinant
           END IF
         END IF
@@ -1490,9 +1571,30 @@
 
     END SUBROUTINE SCU_delete
 
+!-*-*-*-*-*-  S C U _ d e l e t e _ i n f o   S U B R O U T I N E   -*-*-*-*-*-
+
+    SUBROUTINE SCU_delete_info( matrix, data, VECTOR, status, info, col_del,   &
+                                row_del )
+
+!  equivalent to SCU_delete, needed for backward compatibility
+
+    TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
+    TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
+    TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
+    INTEGER, INTENT( IN ) :: col_del
+    INTEGER, INTENT( IN ), OPTIONAL :: row_del
+    INTEGER, INTENT( OUT ) :: status
+    TYPE ( SCU_inform_type ) :: inform
+    REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( matrix%n ) :: VECTOR
+    inform = info%SCU_inform_type
+    CALL SCU_delete( matrix, data, VECTOR, status, inform, col_del, row_del )
+    info%SCU_inform_type = inform
+    RETURN
+    END SUBROUTINE SCU_delete_info
+
 !-*-*-*-*-*-*-  S C U _ i n c r e a s e   S U B R O U T I N E   -*-*-*-*-*-*-
 
-    SUBROUTINE SCU_increase_diagonal( data, diagonal, info )
+    SUBROUTINE SCU_increase_diagonal( data, diagonal, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -1507,7 +1609,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
+      TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
       REAL ( KIND = wp ), INTENT( OUT ) :: diagonal
 
@@ -1536,17 +1638,33 @@
       data%R( rstart : rend ) = data%R( rstart : rend ) +                      &
                                 diagonal * data%Q( m , : m )
       
-      info%inertia( 1 ) = info%inertia( 1 ) + 1
-      info%inertia( 2 ) = info%inertia( 2 ) - 1
+      inform%inertia( 1 ) = inform%inertia( 1 ) + 1
+      inform%inertia( 2 ) = inform%inertia( 2 ) - 1
       data%sign_determinant = - data%sign_determinant
 
       RETURN
 
     END SUBROUTINE SCU_increase_diagonal
 
+!-*-*-*-*-  S C U _ i n c r e a s e _ i n f o  S U B R O U T I N E   -*-*-*-*-
+
+    SUBROUTINE SCU_increase_diagonal_info( data, diagonal, info )
+
+!  equivalent to SCU_delete, needed for backward compatibility
+
+    TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
+    TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
+    REAL ( KIND = wp ), INTENT( OUT ) :: diagonal
+    TYPE ( SCU_inform_type ) :: inform
+    inform = info%SCU_inform_type
+    CALL SCU_increase_diagonal( data, diagonal, inform )
+    info%SCU_inform_type = inform
+    RETURN
+    END SUBROUTINE SCU_increase_diagonal_info
+
 !-*-*-*-*-*- S C U _ t e r m i n a t e    S U B R O U T I N E   -*-*-*-*-*-*-
 
-    SUBROUTINE SCU_terminate( data, status, info )
+    SUBROUTINE SCU_terminate( data, status, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -1560,28 +1678,44 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      TYPE ( SCU_info_type ), INTENT( OUT ) :: info
+      TYPE ( SCU_inform_type ), INTENT( OUT ) :: inform
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
       INTEGER, INTENT( OUT ) :: status
 
 !  Allocate the data arrays Q, R and W
 
-      status = 0 ; info%alloc_status = 0
+      status = 0 ; inform%alloc_status = 0
       IF ( data%class <= 2 ) THEN
         IF ( ALLOCATED( data%Q ) ) DEALLOCATE( data%Q, STAT = status )
-        IF ( status /= 0 ) info%alloc_status = status
+        IF ( status /= 0 ) inform%alloc_status = status
       END IF
 
       IF ( ALLOCATED( data%R ) ) DEALLOCATE( data%R, STAT = status )
-      IF ( status /= 0 ) info%alloc_status = status
+      IF ( status /= 0 ) inform%alloc_status = status
 
       IF ( ALLOCATED( data%W ) ) DEALLOCATE( data%W, STAT = status )
-      IF ( status /= 0 ) info%alloc_status = status
+      IF ( status /= 0 ) inform%alloc_status = status
 
-      IF ( info%alloc_status /= 0 ) status = - 12
+      IF ( inform%alloc_status /= 0 ) status = - 12
       RETURN
 
     END SUBROUTINE SCU_terminate
+
+!-*-*-*-*- S C U _ t e r m i n a t e  _ i n f o  S U B R O U T I N E   -*-*-*-
+
+    SUBROUTINE SCU_terminate_info( data, status, info )
+
+!  equivalent to SCU_terminate, needed for backward compatibility
+
+    TYPE ( SCU_info_type ), INTENT( OUT ) :: info
+    TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
+    INTEGER, INTENT( OUT ) :: status
+    TYPE ( SCU_inform_type ) :: inform
+    inform = info%SCU_inform_type
+    CALL SCU_terminate( data, status, inform )
+    info%SCU_inform_type = inform
+    RETURN
+    END SUBROUTINE SCU_terminate_info
 
 !-*-*-*-*-*-   S C U _ t r i a n g u l a r   S U B R O U T I N E   -*-*-*-*-*-
 

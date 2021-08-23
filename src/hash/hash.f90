@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 05/07/2021 AT 09:15 GMT.
+! THIS VERSION: GALAHAD 3.3 - 11/08/2021 AT 16:15 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*- G A L A H A D   M O D U l E -*-*-*-*-*-*-*-*-*-*-
 
@@ -24,7 +24,21 @@
 
       PRIVATE
       PUBLIC :: HASH_initialize, HASH_read_specfile, HASH_insert,              &
-                HASH_search, HASH_remove, HASH_rebuild, HASH_terminate
+                HASH_search, HASH_remove, HASH_rebuild, HASH_terminate,        &
+                HASH_full_initialize, HASH_full_terminate,                     &
+                HASH_import, HASH_information
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+      INTERFACE HASH_initialize
+        MODULE PROCEDURE HASH_initialize, HASH_full_initialize
+      END INTERFACE HASH_initialize
+
+      INTERFACE HASH_terminate
+        MODULE PROCEDURE HASH_terminate, HASH_full_terminate
+      END INTERFACE HASH_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -146,6 +160,12 @@
       CHARACTER ( LEN = 1 ), DIMENSION( : , : ), ALLOCATABLE :: KEY_temp
 
       END TYPE HASH_data_type
+
+      TYPE, PUBLIC :: HASH_full_data_type
+        TYPE ( HASH_data_type ) :: HASH_data
+        TYPE ( HASH_control_type ) :: HASH_control
+        TYPE ( HASH_inform_type ) :: HASH_inform
+      END TYPE HASH_full_data_type
 
     CONTAINS
 
@@ -335,7 +355,38 @@
 
       END SUBROUTINE HASH_initialize
 
-!-*-*- G A L A H A D   H A S H _ i n s e r t    S U B R O U T I N E -*-*-
+!- G A L A H A D -  H A S H _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
+
+     SUBROUTINE HASH_full_initialize( nchar, length, data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for HASH controls
+
+!   Arguments:
+
+!   see above
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     INTEGER, INTENT( IN ) :: nchar, length
+     TYPE ( HASH_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( HASH_control_type ), INTENT( OUT ) :: control
+     TYPE ( HASH_inform_type ), INTENT( OUT ) :: inform
+
+     CALL HASH_initialize( nchar, length, data%hash_data, control, inform )
+
+     RETURN
+
+!  End of subroutine HASH_full_initialize
+
+     END SUBROUTINE HASH_full_initialize
+
+!-*-*-*- G A L A H A D   H A S H _ i n s e r t    S U B R O U T I N E -*-*-*-*-
 
       SUBROUTINE HASH_insert( nchar, FIELD, position, data, control, inform )
 
@@ -914,6 +965,140 @@
 !  end of subroutine HASH_terminate
 
       END SUBROUTINE HASH_terminate
+
+! -  G A L A H A D -  H A S H _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE HASH_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( HASH_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( HASH_control_type ), INTENT( IN ) :: control
+     TYPE ( HASH_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL HASH_terminate( data%hash_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     RETURN
+
+!  End of subroutine HASH_full_terminate
+
+     END SUBROUTINE HASH_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-*-  G A L A H A D -  H A S H _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+
+     SUBROUTINE HASH_import( control, data, status )
+
+!  import problem data into internal storage prior to solution. 
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading 
+!   comments to HASH_solve
+!
+!  data is a scalar variable of type HASH_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    0. The import was succesful
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. An input restriction has been violated.
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( HASH_control_type ), INTENT( INOUT ) :: control
+     TYPE ( HASH_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     data%hash_control = control
+
+     error = data%hash_control%error
+     space_critical = data%hash_control%space_critical
+     deallocate_error_fatal = data%hash_control%space_critical
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%hash_inform%status
+     RETURN
+
+!  End of subroutine HASH_import
+
+     END SUBROUTINE HASH_import
+
+!-  G A L A H A D -  H A S H _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE HASH_information( data, inform, status )
+
+!  return solver information during or after solution by HASH
+!  See HASH_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( HASH_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( HASH_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%hash_inform
+     
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine HASH_information
+
+     END SUBROUTINE HASH_information
 
 !  end of module GALAHAD_HASH
 

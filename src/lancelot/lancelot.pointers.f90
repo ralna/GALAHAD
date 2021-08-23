@@ -42,7 +42,7 @@
      USE GALAHAD_SMT_double
      USE GALAHAD_SILS_double
      USE GALAHAD_SCU_double, ONLY : SCU_matrix_type, SCU_data_type,            &
-       SCU_info_type, SCU_factorize, SCU_terminate
+       SCU_inform_type, SCU_factorize, SCU_terminate
      USE LANCELOT_ASMBL_double, ONLY : ASMBL_save_type
      USE GALAHAD_EXTEND_double, ONLY : EXTEND_save_type
 
@@ -343,7 +343,7 @@
        REAL ( KIND = wp ) :: ratio, mu, radius, ciccg
        LOGICAL :: newsol
        CHARACTER ( LEN = 24 ) :: bad_alloc
-       TYPE ( SCU_info_type ) :: SCU_info
+       TYPE ( SCU_inform_type ) :: SCU_info
        TYPE ( SILS_ainfo ) :: SILS_infoa
        TYPE ( SILS_finfo ) :: SILS_infof
        TYPE ( SILS_sinfo ) :: SILS_infos

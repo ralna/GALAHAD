@@ -11,7 +11,7 @@
      USE GALAHAD_SMT_double
      USE GALAHAD_SILS_double
      USE GALAHAD_SCU_double, ONLY : SCU_matrix_type, SCU_data_type,            &
-       SCU_info_type, SCU_restart_m_eq_0, SCU_solve, SCU_append
+       SCU_inform_type, SCU_restart_m_eq_0, SCU_solve, SCU_append
      USE LANCELOT_ASMBL_double
      USE LANCELOT_MDCHL_double
    
@@ -103,7 +103,7 @@
      LOGICAL, DIMENSION( ng  ) :: GXEQX
      TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: SCU_matrix
      TYPE ( SCU_data_type ), INTENT( INOUT ) :: SCU_data
-     TYPE ( SCU_info_type ), INTENT( INOUT ) :: SCU_info
+     TYPE ( SCU_inform_type ), INTENT( INOUT ) :: SCU_info
      TYPE ( SMT_type ), INTENT( INOUT ) :: matrix
      TYPE ( SILS_factors ), INTENT( INOUT ) :: SILS_data
      TYPE ( SILS_control ), INTENT( INOUT ) :: SILS_cntl

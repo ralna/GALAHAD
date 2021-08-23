@@ -17,19 +17,19 @@
     USE iso_c_binding
     USE GALAHAD_common_ciface
     USE GALAHAD_ARC_double, only:                                              &
-        f_arc_time_type               => ARC_time_type,                        &
-        f_arc_inform_type             => ARC_inform_type,                      &
-        f_arc_control_type            => ARC_control_type,                     &
-        f_arc_full_data_type          => ARC_full_data_type,                   &
-        f_arc_initialize              => ARC_initialize,                       &
-        f_arc_read_specfile           => ARC_read_specfile,                    &
-        f_arc_import                  => ARC_import,                           &
-        f_arc_solve_with_h            => ARC_solve_with_h,                     &
-        f_arc_solve_without_h         => ARC_solve_without_h,                  &
-        f_arc_solve_reverse_with_h    => ARC_solve_reverse_with_h,             &
-        f_arc_solve_reverse_without_h => ARC_solve_reverse_without_h,          &
-        f_arc_information             => ARC_information,                      &
-        f_arc_terminate               => ARC_terminate
+        f_arc_time_type                 => ARC_time_type,                      &
+        f_arc_inform_type               => ARC_inform_type,                    &
+        f_arc_control_type              => ARC_control_type,                   &
+        f_arc_full_data_type            => ARC_full_data_type,                 &
+        f_arc_initialize                => ARC_initialize,                     &
+        f_arc_read_specfile             => ARC_read_specfile,                  &
+        f_arc_import                    => ARC_import,                         &
+        f_arc_solve_with_mat            => ARC_solve_with_mat,                 &
+        f_arc_solve_without_mat         => ARC_solve_without_mat,              &
+        f_arc_solve_reverse_with_mat    => ARC_solve_reverse_with_mat,         &
+        f_arc_solve_reverse_without_mat => ARC_solve_reverse_without_mat,      &
+        f_arc_information               => ARC_information,                    &
+        f_arc_terminate                 => ARC_terminate
     USE GALAHAD_NLPT_double, ONLY:                                             &
         f_nlpt_userdata_type          => NLPT_userdata_type
 
@@ -214,6 +214,172 @@
 
   CONTAINS
 
+!  copy C control parameters to fortran
+
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    TYPE ( arc_control_type ), INTENT( IN ) :: ccontrol
+    TYPE ( f_arc_control_type ), INTENT( OUT ) :: fcontrol
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+    INTEGER :: i
+    
+  ! C or Fortran sparse matrix indexing
+    IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
+
+  ! Integers
+    fcontrol%error = ccontrol%error
+    fcontrol%out = ccontrol%out
+    fcontrol%print_level = ccontrol%print_level
+    fcontrol%start_print = ccontrol%start_print
+    fcontrol%stop_print = ccontrol%stop_print
+    fcontrol%print_gap = ccontrol%print_gap
+    fcontrol%maxit = ccontrol%maxit
+    fcontrol%alive_unit = ccontrol%alive_unit
+    fcontrol%non_monotone = ccontrol%non_monotone
+    fcontrol%model = ccontrol%model
+    fcontrol%norm = ccontrol%norm
+    fcontrol%semi_bandwidth = ccontrol%semi_bandwidth
+    fcontrol%lbfgs_vectors = ccontrol%lbfgs_vectors
+    fcontrol%max_dxg = ccontrol%max_dxg
+    fcontrol%icfs_vectors = ccontrol%icfs_vectors
+    fcontrol%mi28_lsize = ccontrol%mi28_lsize
+    fcontrol%mi28_rsize = ccontrol%mi28_rsize
+    fcontrol%advanced_start = ccontrol%advanced_start
+
+    ! Reals
+    fcontrol%stop_g_absolute = ccontrol%stop_g_absolute
+    fcontrol%stop_g_relative = ccontrol%stop_g_relative
+    fcontrol%stop_s = ccontrol%stop_s
+    fcontrol%initial_weight = ccontrol%initial_weight
+    fcontrol%minimum_weight = ccontrol%minimum_weight
+
+    fcontrol%reduce_gap = ccontrol%reduce_gap
+    fcontrol%tiny_gap = ccontrol%tiny_gap
+    fcontrol%large_root = ccontrol%large_root
+
+    fcontrol%eta_successful = ccontrol%eta_successful
+    fcontrol%eta_very_successful = ccontrol%eta_very_successful
+    fcontrol%eta_too_successful = ccontrol%eta_too_successful
+
+    fcontrol%weight_decrease_min = ccontrol%weight_decrease_min
+    fcontrol%weight_decrease  = ccontrol%weight_decrease 
+    fcontrol%weight_increase = ccontrol%weight_increase
+    fcontrol%weight_increase_max = ccontrol%weight_increase_max
+
+    fcontrol%obj_unbounded = ccontrol%obj_unbounded
+    fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
+    fcontrol%clock_time_limit = ccontrol%clock_time_limit 
+
+    ! Logicals
+    fcontrol%hessian_available = ccontrol%hessian_available
+    fcontrol%subproblem_direct = ccontrol%subproblem_direct
+    fcontrol%renormalize_weight = ccontrol%renormalize_weight
+    fcontrol%quadratic_ratio_test = ccontrol%quadratic_ratio_test
+    fcontrol%space_critical = ccontrol%space_critical
+    fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
+
+    ! Derived types
+!   CALL copy_rqs_control_in(ccontrol%rqs_control,fcontrol%rqs_control)
+!   CALL copy_glrt_control_in(ccontrol%glrt_control,fcontrol%glrt_control)
+!   CALL copy_psls_control_in(ccontrol%psls_control,fcontrol%psls_control)
+!   CALL copy_lms_control_in(ccontrol%lms_control,fcontrol%lms_control)
+!   CALL copy_lms_control_prec_in(ccontrol%lms_control_prec,                   &
+!                                 fcontrol%lms_control_prec)
+!   CALL copy_sha_control_in(ccontrol%sha_control,fcontrol%sha_control)
+
+    ! Strings
+    DO i = 1, 31
+        IF ( ccontrol%alive_file( i ) == C_NULL_CHAR ) EXIT
+        fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
+    END DO
+    DO i = 1, 31
+        IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
+        fcontrol%prefix( i : i ) = ccontrol%prefix( i )
+    END DO
+    RETURN
+    END SUBROUTINE copy_control_in
+
+!  copy fortran control parameters to C
+
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
+    TYPE ( f_arc_control_type ), INTENT( IN ) :: fcontrol
+    TYPE ( arc_control_type ), INTENT( OUT ) :: ccontrol
+    logical, optional, INTENT( IN ) :: f_indexing
+    integer :: i
+    
+    ! C or Fortran sparse matrix indexing
+
+    IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
+
+    ! Integers
+    ccontrol%error = fcontrol%error
+    ccontrol%out = fcontrol%out
+    ccontrol%print_level = fcontrol%print_level
+    ccontrol%start_print = fcontrol%start_print
+    ccontrol%stop_print = fcontrol%stop_print
+    ccontrol%print_gap = fcontrol%print_gap
+    ccontrol%maxit = fcontrol%maxit
+    ccontrol%alive_unit = fcontrol%alive_unit
+    ccontrol%non_monotone = fcontrol%non_monotone
+    ccontrol%model = fcontrol%model
+    ccontrol%norm = fcontrol%norm
+    ccontrol%semi_bandwidth = fcontrol%semi_bandwidth
+    ccontrol%lbfgs_vectors = fcontrol%lbfgs_vectors
+    ccontrol%max_dxg = fcontrol%max_dxg
+    ccontrol%icfs_vectors = fcontrol%icfs_vectors
+    ccontrol%mi28_lsize = fcontrol%mi28_lsize
+    ccontrol%mi28_rsize = fcontrol%mi28_rsize
+    ccontrol%advanced_start = fcontrol%advanced_start
+
+    ! Reals
+    ccontrol%stop_g_absolute = fcontrol%stop_g_absolute
+    ccontrol%stop_g_relative = fcontrol%stop_g_relative
+    ccontrol%stop_s = fcontrol%stop_s
+    ccontrol%initial_weight = fcontrol%initial_weight
+    ccontrol%minimum_weight = fcontrol%minimum_weight
+    ccontrol%reduce_gap = fcontrol%reduce_gap
+    ccontrol%tiny_gap = fcontrol%tiny_gap
+    ccontrol%large_root = fcontrol%large_root
+    ccontrol%eta_successful = fcontrol%eta_successful
+    ccontrol%eta_very_successful = fcontrol%eta_very_successful
+    ccontrol%eta_too_successful = fcontrol%eta_too_successful
+    ccontrol%weight_decrease_min = fcontrol%weight_decrease_min
+    ccontrol%weight_decrease  = fcontrol%weight_decrease 
+    ccontrol%weight_increase = fcontrol%weight_increase
+    ccontrol%weight_increase_max = fcontrol%weight_increase_max
+    ccontrol%obj_unbounded = fcontrol%obj_unbounded
+    ccontrol%cpu_time_limit = fcontrol%cpu_time_limit
+    ccontrol%clock_time_limit = fcontrol%clock_time_limit 
+
+    ! Logicals
+    ccontrol%hessian_available = fcontrol%hessian_available
+    ccontrol%subproblem_direct = fcontrol%subproblem_direct
+    ccontrol%renormalize_weight = fcontrol%renormalize_weight
+    ccontrol%quadratic_ratio_test = fcontrol%quadratic_ratio_test
+    ccontrol%space_critical = fcontrol%space_critical
+    ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
+
+    ! Derived types
+!   CALL copy_rqs_control_out(fcontrol%rqs_control,ccontrol%rqs_control)
+!   CALL copy_glrt_control_out(fcontrol%glrt_control,ccontrol%glrt_control)
+!   CALL copy_psls_control_out(fcontrol%psls_control,ccontrol%psls_control)
+!   CALL copy_lms_control_out(fcontrol%lms_control,ccontrol%lms_control)
+!   CALL copy_lms_control_prec_out(fcontrol%lms_control_prec,                  &
+!                                  ccontrol%lms_control_prec)
+!   CALL copy_sha_control_out(fcontrol%sha_control,ccontrol%sha_control)
+
+    ! Strings
+    DO i = 1, LEN( fcontrol%alive_file )
+      ccontrol%alive_file( i ) = fcontrol%alive_file( i : i )
+    END DO
+    ccontrol%alive_file( LEN( fcontrol%alive_file ) + 1 ) = C_NULL_CHAR
+    DO i = 1, LEN( fcontrol%prefix )
+      ccontrol%prefix( i ) = fcontrol%prefix( i : i )
+    END DO
+    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+    RETURN
+
+    END SUBROUTINE copy_control_out
+
 !  copy C times to fortran
 
     SUBROUTINE copy_time_in( ctime, ftime ) 
@@ -283,8 +449,8 @@
 
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
-!   CALL copy_trs_inform_in( cinform%trs_inform, finform%trs_inform )
-!   CALL copy_gltr_inform_in( cinform%gltr_inform, finform%gltr_inform )
+!   CALL copy_rqs_inform_in( cinform%rqs_inform, finform%rqs_inform )
+!   CALL copy_glrt_inform_in( cinform%glrt_inform, finform%glrt_inform )
 !   CALL copy_psls_inform_in( cinform%psls_inform, finform%psls_inform )
 !   CALL copy_lms_inform_in( cinform%lms_inform, finform%lms_inform )
 !   CALL copy_lms_inform_prec_in( cinform%lms_inform_prec, &
@@ -329,8 +495,8 @@
 
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
-!   CALL copy_trs_inform_out( finform%trs_inform, cinform%trs_inform )
-!   CALL copy_gltr_inform_out( finform%gltr_inform, cinform%gltr_inform )
+!   CALL copy_rqs_inform_out( finform%rqs_inform, cinform%rqs_inform )
+!   CALL copy_glrt_inform_out( finform%glrt_inform, cinform%glrt_inform )
 !   CALL copy_psls_inform_out( finform%psls_inform, cinform%psls_inform )
 !   CALL copy_lms_inform_out( finform%lms_inform, cinform%lms_inform )
 !   CALL copy_lms_inform_prec_out( finform%lms_inform_prec,                    &
@@ -345,171 +511,6 @@
     RETURN
 
     END SUBROUTINE copy_inform_out
-
-!  copy C control parameters to fortran
-
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
-    TYPE ( arc_control_type ), INTENT( IN ) :: ccontrol
-    TYPE ( f_arc_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
-    
-  ! C or Fortran sparse matrix indexing
-    IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
-
-  ! Integers
-    fcontrol%error = ccontrol%error
-    fcontrol%out = ccontrol%out
-    fcontrol%print_level = ccontrol%print_level
-    fcontrol%start_print = ccontrol%start_print
-    fcontrol%stop_print = ccontrol%stop_print
-    fcontrol%print_gap = ccontrol%print_gap
-    fcontrol%maxit = ccontrol%maxit
-    fcontrol%alive_unit = ccontrol%alive_unit
-    fcontrol%non_monotone = ccontrol%non_monotone
-    fcontrol%model = ccontrol%model
-    fcontrol%norm = ccontrol%norm
-    fcontrol%semi_bandwidth = ccontrol%semi_bandwidth
-    fcontrol%lbfgs_vectors = ccontrol%lbfgs_vectors
-    fcontrol%max_dxg = ccontrol%max_dxg
-    fcontrol%icfs_vectors = ccontrol%icfs_vectors
-    fcontrol%mi28_lsize = ccontrol%mi28_lsize
-    fcontrol%mi28_rsize = ccontrol%mi28_rsize
-    fcontrol%advanced_start = ccontrol%advanced_start
-
-    ! Reals
-    fcontrol%stop_g_absolute = ccontrol%stop_g_absolute
-    fcontrol%stop_g_relative = ccontrol%stop_g_relative
-    fcontrol%stop_s = ccontrol%stop_s
-    fcontrol%initial_weight = ccontrol%initial_weight
-    fcontrol%minimum_weight = ccontrol%minimum_weight
-
-    fcontrol%reduce_gap = ccontrol%reduce_gap
-    fcontrol%tiny_gap = ccontrol%tiny_gap
-    fcontrol%large_root = ccontrol%large_root
-
-    fcontrol%eta_successful = ccontrol%eta_successful
-    fcontrol%eta_very_successful = ccontrol%eta_very_successful
-    fcontrol%eta_too_successful = ccontrol%eta_too_successful
-
-    fcontrol%weight_decrease_min = ccontrol%weight_decrease_min
-    fcontrol%weight_decrease  = ccontrol%weight_decrease 
-    fcontrol%weight_increase = ccontrol%weight_increase
-    fcontrol%weight_increase_max = ccontrol%weight_increase_max
-
-    fcontrol%obj_unbounded = ccontrol%obj_unbounded
-    fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
-    fcontrol%clock_time_limit = ccontrol%clock_time_limit 
-
-    ! Logicals
-    fcontrol%hessian_available = ccontrol%hessian_available
-    fcontrol%subproblem_direct = ccontrol%subproblem_direct
-    fcontrol%renormalize_weight = ccontrol%renormalize_weight
-    fcontrol%quadratic_ratio_test = ccontrol%quadratic_ratio_test
-    fcontrol%space_critical = ccontrol%space_critical
-    fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
-
-    ! Derived types
-!   CALL copy_trs_control_in(ccontrol%trs_control,fcontrol%trs_control)
-!   CALL copy_gltr_control_in(ccontrol%gltr_control,fcontrol%gltr_control)
-!   CALL copy_psls_control_in(ccontrol%psls_control,fcontrol%psls_control)
-!   CALL copy_lms_control_in(ccontrol%lms_control,fcontrol%lms_control)
-!   CALL copy_lms_control_prec_in(ccontrol%lms_control_prec,                   &
-!                                 fcontrol%lms_control_prec)
-!   CALL copy_sha_control_in(ccontrol%sha_control,fcontrol%sha_control)
-
-    ! Strings
-    DO i = 1, 31
-        IF ( ccontrol%alive_file( i ) == C_NULL_CHAR ) EXIT
-        fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
-    END DO
-    DO i = 1, 31
-        IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
-        fcontrol%prefix( i : i ) = ccontrol%prefix( i )
-    END DO
-    RETURN
-    END SUBROUTINE copy_control_in
-
-!  copy fortran control parameters to C
-
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
-    TYPE ( f_arc_control_type ), INTENT( IN ) :: fcontrol
-    TYPE ( arc_control_type ), INTENT( OUT ) :: ccontrol
-    logical, optional, INTENT( IN ) :: f_indexing
-    integer :: i
-    
-  ! C or Fortran sparse matrix indexing
-    IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
-
-    ! Integers
-    ccontrol%error = fcontrol%error
-    ccontrol%out = fcontrol%out
-    ccontrol%print_level = fcontrol%print_level
-    ccontrol%start_print = fcontrol%start_print
-    ccontrol%stop_print = fcontrol%stop_print
-    ccontrol%print_gap = fcontrol%print_gap
-    ccontrol%maxit = fcontrol%maxit
-    ccontrol%alive_unit = fcontrol%alive_unit
-    ccontrol%non_monotone = fcontrol%non_monotone
-    ccontrol%model = fcontrol%model
-    ccontrol%norm = fcontrol%norm
-    ccontrol%semi_bandwidth = fcontrol%semi_bandwidth
-    ccontrol%lbfgs_vectors = fcontrol%lbfgs_vectors
-    ccontrol%max_dxg = fcontrol%max_dxg
-    ccontrol%icfs_vectors = fcontrol%icfs_vectors
-    ccontrol%mi28_lsize = fcontrol%mi28_lsize
-    ccontrol%mi28_rsize = fcontrol%mi28_rsize
-    ccontrol%advanced_start = fcontrol%advanced_start
-
-    ! Reals
-    ccontrol%stop_g_absolute = fcontrol%stop_g_absolute
-    ccontrol%stop_g_relative = fcontrol%stop_g_relative
-    ccontrol%stop_s = fcontrol%stop_s
-    ccontrol%initial_weight = fcontrol%initial_weight
-    ccontrol%minimum_weight = fcontrol%minimum_weight
-    ccontrol%reduce_gap = fcontrol%reduce_gap
-    ccontrol%tiny_gap = fcontrol%tiny_gap
-    ccontrol%large_root = fcontrol%large_root
-    ccontrol%eta_successful = fcontrol%eta_successful
-    ccontrol%eta_very_successful = fcontrol%eta_very_successful
-    ccontrol%eta_too_successful = fcontrol%eta_too_successful
-    ccontrol%weight_decrease_min = fcontrol%weight_decrease_min
-    ccontrol%weight_decrease  = fcontrol%weight_decrease 
-    ccontrol%weight_increase = fcontrol%weight_increase
-    ccontrol%weight_increase_max = fcontrol%weight_increase_max
-    ccontrol%obj_unbounded = fcontrol%obj_unbounded
-    ccontrol%cpu_time_limit = fcontrol%cpu_time_limit
-    ccontrol%clock_time_limit = fcontrol%clock_time_limit 
-
-    ! Logicals
-    ccontrol%hessian_available = fcontrol%hessian_available
-    ccontrol%subproblem_direct = fcontrol%subproblem_direct
-    ccontrol%renormalize_weight = fcontrol%renormalize_weight
-    ccontrol%quadratic_ratio_test = fcontrol%quadratic_ratio_test
-    ccontrol%space_critical = fcontrol%space_critical
-    ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
-
-    ! Derived types
-!   CALL copy_trs_control_out(fcontrol%trs_control,ccontrol%trs_control)
-!   CALL copy_gltr_control_out(fcontrol%gltr_control,ccontrol%gltr_control)
-!   CALL copy_psls_control_out(fcontrol%psls_control,ccontrol%psls_control)
-!   CALL copy_lms_control_out(fcontrol%lms_control,ccontrol%lms_control)
-!   CALL copy_lms_control_prec_out(fcontrol%lms_control_prec,                  &
-!                                  ccontrol%lms_control_prec)
-!   CALL copy_sha_control_out(fcontrol%sha_control,ccontrol%sha_control)
-
-    ! Strings
-    DO i = 1, LEN( fcontrol%alive_file )
-      ccontrol%alive_file( i ) = fcontrol%alive_file( i : i )
-    END DO
-    ccontrol%alive_file( LEN( fcontrol%alive_file ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%prefix )
-      ccontrol%prefix( i ) = fcontrol%prefix( i : i )
-    END DO
-    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
-    RETURN
-
-    END SUBROUTINE copy_control_out
 
   END MODULE GALAHAD_ARC_double_ciface
 
@@ -538,7 +539,7 @@
 
   ALLOCATE( fdata ); cdata = C_LOC(fdata)
 
-!  call ARC_initialize
+!  initialize required fortran types
 
   CALL f_arc_initialize( fdata, fcontrol, finform )
 
@@ -593,7 +594,7 @@
 
   open( UNIT = device, FILE = fspecfile )
   
-!  call ARC_read_specfile
+!  read control parameters from the specfile
 
   CALL f_arc_read_specfile( fcontrol, device )
 
@@ -668,7 +669,7 @@
       ptr_find = ptr + 1
     END IF
 
-!  call ARC_import
+!  import the problem data into the required ARC structure
 
     CALL f_arc_import( fcontrol, fdata, status, n, ftype, ne,                  &
                        row_find, col_find, ptr_find )
@@ -687,12 +688,13 @@
 
   END SUBROUTINE arc_import
 
-!  ---------------------------------------
-!  C interface to fortran arc_solve_with_h
-!  ---------------------------------------
+!  -----------------------------------------
+!  C interface to fortran arc_solve_with_mat
+!  -----------------------------------------
 
-  SUBROUTINE arc_solve_with_h( cdata, cuserdata, status, n, x, g, ne,          &
-                               ceval_f, ceval_g, ceval_h, ceval_prec ) BIND( C )
+  SUBROUTINE arc_solve_with_mat( cdata, cuserdata, status, n, x, g, ne,        &
+                                 ceval_f, ceval_g, ceval_h,                    &
+                                 ceval_prec ) BIND( C )
   USE GALAHAD_ARC_double_ciface
   IMPLICIT NONE
 
@@ -733,10 +735,10 @@
     NULLIFY( feval_prec )
   END IF
 
-!  call ARC_solve_with_h
+!  solve the problem when the Hessian is explicitly available
 
-  CALL f_arc_solve_with_h( fdata, fuserdata, status, x, g, wrap_eval_f,       &
-                            wrap_eval_g, wrap_eval_h, wrap_eval_prec )
+  CALL f_arc_solve_with_mat( fdata, fuserdata, status, x, g, wrap_eval_f,     &
+                              wrap_eval_g, wrap_eval_h, wrap_eval_prec )
 
   RETURN
 
@@ -802,14 +804,15 @@
 
     END SUBROUTINE wrap_eval_prec
 
-  END SUBROUTINE arc_solve_with_h
+  END SUBROUTINE arc_solve_with_mat
 
-!  ------------------------------------------
-!  C interface to fortran arc_solve_without_h
-!  ------------------------------------------
+!  --------------------------------------------
+!  C interface to fortran arc_solve_without_mat
+!  --------------------------------------------
 
-  SUBROUTINE arc_solve_without_h( cdata, cuserdata, status, n, x, g, ceval_f,  &
-                                  ceval_g, ceval_hprod, ceval_prec ) BIND( C )
+  SUBROUTINE arc_solve_without_mat( cdata, cuserdata, status, n, x, g,         &
+                                    ceval_f, ceval_g, ceval_hprod,             &
+                                    ceval_prec ) BIND( C )
   USE GALAHAD_ARC_double_ciface
   IMPLICIT NONE
 
@@ -850,11 +853,10 @@
     NULLIFY( feval_prec )
   END IF
 
-!  call ARC_solve_without_h
+!  solve the problem when the Hessian is only available via products
 
-  CALL f_arc_solve_without_h( fdata, fuserdata, status, x, g, wrap_eval_f,     &
-                              wrap_eval_g, wrap_eval_hprod, wrap_eval_prec )
-
+  CALL f_arc_solve_without_mat( fdata, fuserdata, status, x, g, wrap_eval_f,   &
+                                wrap_eval_g, wrap_eval_hprod, wrap_eval_prec )
   RETURN
 
 !  wrappers
@@ -929,14 +931,14 @@
 
     END SUBROUTINE wrap_eval_prec
 
-  END SUBROUTINE arc_solve_without_h
+  END SUBROUTINE arc_solve_without_mat
 
-!  -----------------------------------------------
-!  C interface to fortran arc_solve_reverse_with_h
-!  -----------------------------------------------
+!  -------------------------------------------------
+!  C interface to fortran arc_solve_reverse_with_mat
+!  -------------------------------------------------
 
-  SUBROUTINE arc_solve_reverse_with_h( cdata, status, eval_status,             &
-                                       n, x, f, g, ne, val, u, v ) BIND( C )
+  SUBROUTINE arc_solve_reverse_with_mat( cdata, status, eval_status,           &
+                                         n, x, f, g, ne, val, u, v ) BIND( C )
   USE GALAHAD_ARC_double_ciface
   IMPLICIT NONE
 
@@ -959,20 +961,20 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-! call ARC_solve_reverse_with_h
+!  solve the problem when the Hessian is available by reverse communication
 
-  CALL f_arc_solve_reverse_with_h( fdata, status, eval_status, x, f, g, val,   &
-                                    u, v )
+  CALL f_arc_solve_reverse_with_mat( fdata, status, eval_status, x, f, g, val, &
+                                      u, v )
   RETURN
     
-  END SUBROUTINE arc_solve_reverse_with_h
+  END SUBROUTINE arc_solve_reverse_with_mat
 
-!  --------------------------------------------------
-!  C interface to fortran arc_solve_reverse_without_h
-!  --------------------------------------------------
+!  ----------------------------------------------------
+!  C interface to fortran arc_solve_reverse_without_mat
+!  ----------------------------------------------------
 
-  SUBROUTINE arc_solve_reverse_without_h( cdata, status, eval_status,          &
-                                          n, x, f, g, u, v ) BIND( C )
+  SUBROUTINE arc_solve_reverse_without_mat( cdata, status, eval_status,        &
+                                            n, x, f, g, u, v ) BIND( C )
   USE GALAHAD_ARC_double_ciface
   IMPLICIT NONE
 
@@ -992,13 +994,14 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  call ARC_solve_reverse_without_h
+!  solve the problem when Hessian products are available by reverse 
+!  communication
 
-  CALL f_arc_solve_reverse_without_h( fdata, status, eval_status, x, f, g,     &
-                                       u, v )
+  CALL f_arc_solve_reverse_without_mat( fdata, status, eval_status, x, f, g,   &
+                                         u, v )
   RETURN
 
-  END SUBROUTINE arc_solve_reverse_without_h
+  END SUBROUTINE arc_solve_reverse_without_mat
 
 !  --------------------------------------
 !  C interface to fortran arc_information
@@ -1014,6 +1017,8 @@
   TYPE ( arc_inform_type ), INTENT( INOUT ) :: cinform
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
 
+!  local variables
+
   TYPE ( f_arc_full_data_type ), pointer :: fdata
   TYPE ( f_arc_inform_type ) :: finform
 
@@ -1021,7 +1026,7 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  call ARC_information
+!  obtain ARC solution information
 
   CALL f_arc_information( fdata, finform, status )
 
@@ -1040,9 +1045,13 @@
   USE GALAHAD_ARC_double_ciface
   IMPLICIT NONE
 
+!  dummy arguments
+
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( arc_control_type ), INTENT( IN ) :: ccontrol
   TYPE ( arc_inform_type ), INTENT( INOUT ) :: cinform
+
+!  local variables
 
   TYPE ( f_arc_full_data_type ), pointer :: fdata
   TYPE ( f_arc_control_type ) :: fcontrol
@@ -1061,7 +1070,7 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  call ARC_terminate
+!  deallocate workspace
 
   CALL f_arc_terminate( fdata, fcontrol,finform )
 

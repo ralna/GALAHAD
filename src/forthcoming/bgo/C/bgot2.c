@@ -13,20 +13,24 @@ struct userdata_type {
 };
 
 // Function prototypes
-int fun(int n, const double x[], double *f, const void *);
-int grad(int n, const double x[], double g[], const void *);
-int hess(int n, int ne, const double x[], double hval[], const void *);
-int hess_dense(int n, int ne, const double x[], double hval[], const void *);
-int hessprod(int n, const double x[], double u[], const double v[], bool got_h, const void *);
-int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
-                int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *);
-int prec(int n, const double x[], double u[], const double v[], const void *);
-int fun_diag(int n, const double x[], double *f, const void *);
-int grad_diag(int n, const double x[], double g[], const void *);
-int hess_diag(int n, int ne, const double x[], double hval[], const void *);
-int hessprod_diag(int n, const double x[], double u[], const double v[], bool got_h, const void *);
-int shessprod_diag(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
-                int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *);
+int fun( int n, const double x[], double *f, const void * );
+int grad( int n, const double x[], double g[], const void * );
+int hess( int n, int ne, const double x[], double hval[], const void * );
+int hess_dense( int n, int ne, const double x[], double hval[], const void * );
+int hessprod( int n, const double x[], double u[], const double v[], 
+              bool got_h, const void * );
+int shessprod( int n, const double x[], int nnz_v, const int index_nz_v[], 
+               const double v[], int *nnz_u, int index_nz_u[], double u[], 
+               bool got_h, const void * );
+int prec(int n, const double x[], double u[], const double v[], const void * );
+int fun_diag(int n, const double x[], double *f, const void * );
+int grad_diag(int n, const double x[], double g[], const void * );
+int hess_diag(int n, int ne, const double x[], double hval[], const void * );
+int hessprod_diag( int n, const double x[], double u[], const double v[], 
+                   bool got_h, const void * );
+int shessprod_diag( int n, const double x[], int nnz_v, const int index_nz_v[],
+                    const double v[], int *nnz_u, int index_nz_u[], 
+                    double u[], bool got_h, const void * );
 
 int main(void) {
 
@@ -49,17 +53,19 @@ int main(void) {
     int H_row[] = {1, 2, 3, 3, 3}; // Hessian H
     int H_col[] = {1, 2, 1, 2, 3}; // NB lower triangle
     int H_ptr[] = {1, 2, 3, 6};    // row pointers
-
     // Set storage
     double g[n]; // gradient
     char st;
+    int status;
+
+    printf(" Fortran sparse matrix indexing\n\n");
 
     printf(" tests options for all-in-one storage format\n\n");
 
     for(int d=1; d <= 5; d++){
 
         // Initialize BGO
-        bgo_initialize(&data, &control, &inform);
+        bgo_initialize( &data, &control, &inform );
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
@@ -75,39 +81,53 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
-                bgo_import(&control, &inform, &data, n, x_l, x_u, "coordinate", ne, H_row, H_col, NULL);
-                inform.status = 1; // set for initial entry
-                bgo_solve_with_h(&control, &inform, &data, &userdata, n, x, g, ne, fun, grad, hess, hessprod, prec);
+                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                            "coordinate", ne, H_row, H_col, NULL );
+                status = 1; // set for initial entry
+                bgo_solve_with_mat( &data, &userdata, &status, n, x, g, 
+                                    ne, fun, grad, hess, hessprod, prec );
                 break;
             case 2: // sparse by rows  
                 st = 'R';
-                bgo_import(&control, &inform, &data, n, x_l, x_u, "sparse_by_rows", ne, NULL, H_col, H_ptr);
-                inform.status = 1; // set for initial entry
-                bgo_solve_with_h(&control, &inform, &data, &userdata, n, x, g, ne, fun, grad, hess, hessprod, prec);
+                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                            "sparse_by_rows", ne, NULL, H_col, H_ptr );
+                status = 1; // set for initial entry
+                bgo_solve_with_mat( &data, &userdata, &status, n, x, g, 
+                                    ne, fun, grad, hess, hessprod, prec );
                 break;
             case 3: // dense
                 st = 'D';
-                bgo_import(&control, &inform, &data, n, x_l, x_u, "dense", ne, NULL, NULL, NULL);
-                inform.status = 1; // set for initial entry
-                bgo_solve_with_h(&control, &inform, &data, &userdata, n, x, g, ne, fun, grad, hess_dense, hessprod, prec);
+                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                            "dense", ne, NULL, NULL, NULL );
+                status = 1; // set for initial entry
+                bgo_solve_with_mat( &data, &userdata, &status, n, x, g, 
+                                    ne, fun, grad, hess_dense, hessprod, prec );
                 break;
             case 4: // diagonal
                 st = 'I';
-                bgo_import(&control, &inform, &data, n, x_l, x_u, "diagonal", ne, NULL, NULL, NULL);
-                inform.status = 1; // set for initial entry
-                bgo_solve_with_h(&control, &inform, &data, &userdata, n, x, g, ne, fun_diag, grad_diag, hess_diag, hessprod_diag, prec);
+                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                            "diagonal", ne, NULL, NULL, NULL );
+                status = 1; // set for initial entry
+                bgo_solve_with_mat( &data, &userdata, &status, n, x, g, 
+                                    ne, fun_diag, grad_diag, hess_diag, 
+                                    hessprod_diag, prec );
                 break;
             case 5: // access by products
                 st = 'P';
-                bgo_import(&control, &inform, &data, n, x_l, x_u, "absent", ne, NULL, NULL, NULL);
-                inform.status = 1; // set for initial entry
-                bgo_solve_without_h(&control, &inform, &data, &userdata, n, x, g, fun, grad, hessprod, shessprod, prec);
+                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                            "absent", ne, NULL, NULL, NULL );
+                status = 1; // set for initial entry
+                bgo_solve_without_mat( &data, &userdata, &status, n, x, g, 
+                                       fun, grad, hessprod, shessprod, prec );
                 break;
         }
 
+        // Record solution information
+        bgo_information( &data, &inform, &status );
+
         if(inform.status == 0){
-            printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", 
-                   st, inform.trb_inform.iter, inform.obj, inform.status);
+            printf("%c:%6i evaluations. Optimal objective value = %5.2f"
+              " status = %1i\n", st, inform.f_eval, inform.obj, inform.status);
         }else{
             printf("%c: BGO_solve exit status = %1i\n", st, inform.status);
         }
@@ -119,7 +139,7 @@ int main(void) {
         //printf("\n");
 
         // Delete internal workspace
-        bgo_terminate(&data, &control, &inform);
+        bgo_terminate( &data, &control, &inform );
     }
 
     printf("\n tests reverse-communication options\n\n");
@@ -134,7 +154,7 @@ int main(void) {
     for(int d=1; d <= 5; d++){
 
         // Initialize BGO
-        bgo_initialize(&data, &control, &inform);
+        bgo_initialize( &data, &control, &inform );
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
@@ -150,205 +170,231 @@ int main(void) {
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
-                bgo_import(&control, &inform, &data, n, x_l, x_u, "coordinate", ne, H_row, H_col, NULL);
-                inform.status = 1; // set for initial entry
+                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                            "coordinate", ne, H_row, H_col, NULL );
+                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    bgo_solve_reverse_with_h(&control, &inform, &data, &eval_status, n, x, f, g, ne, H_val, u, v);
-                    if(inform.status == 0){ // successful termination
+                    bgo_solve_reverse_with_mat( &data, &status, &eval_status, 
+                                                n, x, f, g, ne, H_val, u, v );
+                    if(status == 0){ // successful termination
                         break;
-                    }else if(inform.status < 0){ // error exit
+                    }else if(status < 0){ // error exit
                         break;
-                    }else if(inform.status == 2){ // evaluate f
-                        eval_status = fun(n, x, &f, &userdata);
-                    }else if(inform.status == 3){ // evaluate g
-                        eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 4){ // evaluate H
-                        eval_status = hess(n, ne, x, H_val, &userdata);
-                    }else if(inform.status == 5){ // evaluate Hv product
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
-                    }else if(inform.status == 23){ // evaluate f and g
-                        eval_status = fun(n, x, &f, &userdata);
-                        eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 25){ // evaluate f and Hv product
-                        eval_status = fun(n, x, &f, &userdata);
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 35){ // evaluate g and Hv product
-                        eval_status = grad(n, x, g, &userdata);
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 235){ // evaluate f, g and Hv product
-                        eval_status = fun(n, x, &f, &userdata);
-                        eval_status = grad(n, x, g, &userdata);
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                    }else if(status == 2){ // evaluate f
+                        eval_status = fun( n, x, &f, &userdata );
+                    }else if(status == 3){ // evaluate g
+                        eval_status = grad( n, x, g, &userdata );
+                    }else if(status == 4){ // evaluate H
+                        eval_status = hess( n, ne, x, H_val, &userdata );
+                    }else if(status == 5){ // evaluate Hv product
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 6){ // evaluate the product with P
+                        eval_status = prec( n, x, u, v, &userdata );
+                    }else if(status == 23){ // evaluate f and g
+                        eval_status = fun( n, x, &f, &userdata );
+                        eval_status = grad( n, x, g, &userdata );
+                    }else if(status == 25){ // evaluate f and Hv product
+                        eval_status = fun( n, x, &f, &userdata );
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 35){ // evaluate g and Hv product
+                        eval_status = grad( n, x, g, &userdata );
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 235){ // evaluate f, g and Hv product
+                        eval_status = fun( n, x, &f, &userdata );
+                        eval_status = grad( n, x, g, &userdata );
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", inform.status);
+                        printf(" the value %1i of status should not occur\n", 
+                               status );
                         break;
                     }
                 }
                 break;
             case 2: // sparse by rows  
                 st = 'R';
-                bgo_import(&control, &inform, &data, n, x_l, x_u, "sparse_by_rows", ne, NULL, H_col, H_ptr);
-                inform.status = 1; // set for initial entry
+                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                            "sparse_by_rows", ne, NULL, H_col, H_ptr );
+                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    bgo_solve_reverse_with_h(&control, &inform, &data, &eval_status, n, x, f, g, ne, H_val, u, v);
-                    if(inform.status == 0){ // successful termination
+                    bgo_solve_reverse_with_mat( &data, &status, &eval_status, 
+                                                n, x, f, g, ne, H_val, u, v );
+                    if(status == 0){ // successful termination
                         break;
-                    }else if(inform.status < 0){ // error exit
+                    }else if(status < 0){ // error exit
                         break;
-                    }else if(inform.status == 2){ // evaluate f
-                        eval_status = fun(n, x, &f, &userdata);
-                    }else if(inform.status == 3){ // evaluate g
-                        eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 4){ // evaluate H
-                        eval_status = hess(n, ne, x, H_val, &userdata);
-                    }else if(inform.status == 5){ // evaluate Hv product
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
-                    }else if(inform.status == 23){ // evaluate f and g
-                        eval_status = fun(n, x, &f, &userdata);
-                        eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 25){ // evaluate f and Hv product
-                        eval_status = fun(n, x, &f, &userdata);
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 35){ // evaluate g and Hv product
-                        eval_status = grad(n, x, g, &userdata);
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 235){ // evaluate f, g and Hv product
-                        eval_status = fun(n, x, &f, &userdata);
-                        eval_status = grad(n, x, g, &userdata);
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                    }else if(status == 2){ // evaluate f
+                        eval_status = fun( n, x, &f, &userdata );
+                    }else if(status == 3){ // evaluate g
+                        eval_status = grad( n, x, g, &userdata );
+                    }else if(status == 4){ // evaluate H
+                        eval_status = hess( n, ne, x, H_val, &userdata );
+                    }else if(status == 5){ // evaluate Hv product
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 6){ // evaluate the product with P
+                        eval_status = prec( n, x, u, v, &userdata );
+                    }else if(status == 23){ // evaluate f and g
+                        eval_status = fun( n, x, &f, &userdata );
+                        eval_status = grad( n, x, g, &userdata );
+                    }else if(status == 25){ // evaluate f and Hv product
+                        eval_status = fun( n, x, &f, &userdata );
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 35){ // evaluate g and Hv product
+                        eval_status = grad( n, x, g, &userdata );
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 235){ // evaluate f, g and Hv product
+                        eval_status = fun( n, x, &f, &userdata );
+                        eval_status = grad( n, x, g, &userdata );
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", inform.status);
+                        printf(" the value %1i of status should not occur\n", 
+                               status);
                         break;
                     }
                 }
                 break;
             case 3: // dense
                 st = 'D';
-                bgo_import(&control, &inform, &data, n, x_l, x_u, "dense", ne, NULL, NULL, NULL);
-                inform.status = 1; // set for initial entry
+                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                            "dense", ne, NULL, NULL, NULL );
+                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    bgo_solve_reverse_with_h(&control, &inform, &data, &eval_status, n, x, f, g, n*(n+1)/2, H_dense, u, v);
-                    if(inform.status == 0){ // successful termination
+                    bgo_solve_reverse_with_mat( &data, &status, &eval_status, 
+                                                n, x, f, g, n*(n+1)/2, 
+                                                H_dense, u, v );
+                    if(status == 0){ // successful termination
                         break;
-                    }else if(inform.status < 0){ // error exit
+                    }else if(status < 0){ // error exit
                         break;
-                    }else if(inform.status == 2){ // evaluate f
-                        eval_status = fun(n, x, &f, &userdata);
-                    }else if(inform.status == 3){ // evaluate g
-                        eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 4){ // evaluate H
-                        eval_status = hess_dense(n, n*(n+1)/2, x, H_dense, &userdata);
-                    }else if(inform.status == 5){ // evaluate Hv product
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
-                    }else if(inform.status == 23){ // evaluate f and g
-                        eval_status = fun(n, x, &f, &userdata);
-                        eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 25){ // evaluate f and Hv product
-                        eval_status = fun(n, x, &f, &userdata);
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 35){ // evaluate g and Hv product
-                        eval_status = grad(n, x, g, &userdata);
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 235){ // evaluate f, g and Hv product
-                        eval_status = fun(n, x, &f, &userdata);
-                        eval_status = grad(n, x, g, &userdata);
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                    }else if(status == 2){ // evaluate f
+                        eval_status = fun( n, x, &f, &userdata );
+                    }else if(status == 3){ // evaluate g
+                        eval_status = grad( n, x, g, &userdata );
+                    }else if(status == 4){ // evaluate H
+                        eval_status = hess_dense( n, n*(n+1)/2, x, H_dense, 
+                                                  &userdata );
+                    }else if(status == 5){ // evaluate Hv product
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 6){ // evaluate the product with P
+                        eval_status = prec( n, x, u, v, &userdata );
+                    }else if(status == 23){ // evaluate f and g
+                        eval_status = fun( n, x, &f, &userdata );
+                        eval_status = grad( n, x, g, &userdata );
+                    }else if(status == 25){ // evaluate f and Hv product
+                        eval_status = fun( n, x, &f, &userdata );
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 35){ // evaluate g and Hv product
+                        eval_status = grad( n, x, g, &userdata );
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 235){ // evaluate f, g and Hv product
+                        eval_status = fun( n, x, &f, &userdata );
+                        eval_status = grad( n, x, g, &userdata );
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", inform.status);
+                        printf(" the value %1i of status should not occur\n", 
+                               status);
                         break;
                     }
                 }
                 break;
             case 4: // diagonal
                 st = 'I';
-                bgo_import(&control, &inform, &data, n, x_l, x_u, "diagonal", ne, NULL, NULL, NULL);
-                inform.status = 1; // set for initial entry
+                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                            "diagonal", ne, NULL, NULL, NULL );
+                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    bgo_solve_reverse_with_h(&control, &inform, &data, &eval_status, n, x, f, g, n, H_diag, u, v);
-                    if(inform.status == 0){ // successful termination
+                    bgo_solve_reverse_with_mat( &data, &status, &eval_status, 
+                                                n, x, f, g, n, H_diag, u, v );
+                    if(status == 0){ // successful termination
                         break;
-                    }else if(inform.status < 0){ // error exit
+                    }else if(status < 0){ // error exit
                         break;
-                    }else if(inform.status == 2){ // evaluate f
-                        eval_status = fun_diag(n, x, &f, &userdata);
-                    }else if(inform.status == 3){ // evaluate g
-                        eval_status = grad_diag(n, x, g, &userdata);
-                    }else if(inform.status == 4){ // evaluate H
-                        eval_status = hess_diag(n, n, x, H_diag, &userdata);
-                    }else if(inform.status == 5){ // evaluate Hv product
-                        eval_status = hessprod_diag(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
-                    }else if(inform.status == 23){ // evaluate f and g
-                        eval_status = fun_diag(n, x, &f, &userdata);
-                        eval_status = grad_diag(n, x, g, &userdata);
-                    }else if(inform.status == 25){ // evaluate f and Hv product
-                        eval_status = fun_diag(n, x, &f, &userdata);
-                        eval_status = hessprod_diag(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 35){ // evaluate g and Hv product
-                        eval_status = grad_diag(n, x, g, &userdata);
-                        eval_status = hessprod_diag(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 235){ // evaluate f, g and Hv product
-                        eval_status = fun_diag(n, x, &f, &userdata);
-                        eval_status = grad_diag(n, x, g, &userdata);
-                        eval_status = hessprod_diag(n, x, u, v, false, &userdata);
+                    }else if(status == 2){ // evaluate f
+                        eval_status = fun_diag( n, x, &f, &userdata );
+                    }else if(status == 3){ // evaluate g
+                        eval_status = grad_diag( n, x, g, &userdata );
+                    }else if(status == 4){ // evaluate H
+                        eval_status = hess_diag( n, n, x, H_diag, &userdata );
+                    }else if(status == 5){ // evaluate Hv product
+                        eval_status = hessprod_diag( n, x, u, v, false, 
+                                                     &userdata );
+                    }else if(status == 6){ // evaluate the product with P
+                        eval_status = prec( n, x, u, v, &userdata );
+                    }else if(status == 23){ // evaluate f and g
+                        eval_status = fun_diag( n, x, &f, &userdata );
+                        eval_status = grad_diag( n, x, g, &userdata );
+                    }else if(status == 25){ // evaluate f and Hv product
+                        eval_status = fun_diag( n, x, &f, &userdata );
+                        eval_status = hessprod_diag( n, x, u, v, false, 
+                                                     &userdata );
+                    }else if(status == 35){ // evaluate g and Hv product
+                        eval_status = grad_diag( n, x, g, &userdata );
+                        eval_status = hessprod_diag( n, x, u, v, false, 
+                                                     &userdata );
+                    }else if(status == 235){ // evaluate f, g and Hv product
+                        eval_status = fun_diag( n, x, &f, &userdata );
+                        eval_status = grad_diag( n, x, g, &userdata );
+                        eval_status = hessprod_diag( n, x, u, v, false, 
+                                                     &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", inform.status);
+                        printf(" the value %1i of status should not occur\n", 
+                               status);
                         break;
                     }
                 }
                 break;
             case 5: // access by products
                 st = 'P';
-                bgo_import(&control, &inform, &data, n, x_l, x_u, "absent", ne, NULL, NULL, NULL);
-                inform.status = 1; // set for initial entry
+                bgo_import( &control, &data, &status, n, x_l, x_u, 
+                            "absent", ne, NULL, NULL, NULL );
+                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    bgo_solve_reverse_without_h(&control, &inform, &data, &eval_status, n, x, f, g,
-                                                u, v, index_nz_v, &nnz_v, index_nz_u, nnz_u);
-                    if(inform.status == 0){ // successful termination
+                    bgo_solve_reverse_without_mat( &data, &status, &eval_status,
+                                                   n, x, f, g, u, v, index_nz_v,
+                                                   &nnz_v, index_nz_u, nnz_u );
+                    if(status == 0){ // successful termination
                         break;
-                    }else if(inform.status < 0){ // error exit
+                    }else if(status < 0){ // error exit
                         break;
-                    }else if(inform.status == 2){ // evaluate f
-                        eval_status = fun(n, x, &f, &userdata);
-                    }else if(inform.status == 3){ // evaluate g
-                        eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 5){ // evaluate Hv product
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 6){ // evaluate the product with P
-                        eval_status = prec(n, x, u, v, &userdata);
-                    }else if(inform.status == 7){ // evaluate sparse Hessian-vector product
-                        eval_status = shessprod(n, x, nnz_v, index_nz_v, v, &nnz_u, index_nz_u, u, false, &userdata);
-                    }else if(inform.status == 23){ // evaluate f and g
-                        eval_status = fun(n, x, &f, &userdata);
-                        eval_status = grad(n, x, g, &userdata);
-                    }else if(inform.status == 25){ // evaluate f and Hv product
-                        eval_status = fun(n, x, &f, &userdata);
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 35){ // evaluate g and Hv product
-                        eval_status = grad(n, x, g, &userdata);
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
-                    }else if(inform.status == 235){ // evaluate f, g and Hv product
-                        eval_status = fun(n, x, &f, &userdata);
-                        eval_status = grad(n, x, g, &userdata);
-                        eval_status = hessprod(n, x, u, v, false, &userdata);
+                    }else if(status == 2){ // evaluate f
+                        eval_status = fun( n, x, &f, &userdata );
+                    }else if(status == 3){ // evaluate g
+                        eval_status = grad( n, x, g, &userdata );
+                    }else if(status == 5){ // evaluate Hv product
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 6){ // evaluate the product with P
+                        eval_status = prec( n, x, u, v, &userdata );
+                    }else if(status == 7){ // evaluate sparse Hess-vect product
+                        eval_status = shessprod( n, x, nnz_v, index_nz_v, v, 
+                                                 &nnz_u, index_nz_u, u, 
+                                                 false, &userdata );
+                    }else if(status == 23){ // evaluate f and g
+                        eval_status = fun( n, x, &f, &userdata );
+                        eval_status = grad( n, x, g, &userdata );
+                    }else if(status == 25){ // evaluate f and Hv product
+                        eval_status = fun( n, x, &f, &userdata );
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 35){ // evaluate g and Hv product
+                        eval_status = grad( n, x, g, &userdata );
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
+                    }else if(status == 235){ // evaluate f, g and Hv product
+                        eval_status = fun( n, x, &f, &userdata );
+                        eval_status = grad( n, x, g, &userdata );
+                        eval_status = hessprod( n, x, u, v, false, &userdata );
                     }else{
-                        printf(" the value %1i of status should not occur\n", inform.status);
+                        printf(" the value %1i of status should not occur\n", 
+                               status);
                         break;
                     }
                 }
                 break;
         }
 
+        // Record solution information
+        bgo_information( &data, &inform, &status );
+
         if(inform.status == 0){
-            printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", 
-                   st, inform.trb_inform.iter, inform.obj, inform.status);
+            printf("%c:%6i evaluations. Optimal objective value = %5.2f"
+              " status = %1i\n", st, inform.f_eval, inform.obj, inform.status);
         }else{
             printf("%c: BGO_solve exit status = %1i\n", st, inform.status);
         }
@@ -360,13 +406,16 @@ int main(void) {
         //printf("\n");
 
         // Delete internal workspace
-        bgo_terminate(&data, &control, &inform);
+        bgo_terminate( &data, &control, &inform );
     }
 
 }
 
 // Objective function 
-int fun(int n, const double x[], double *f, const void *userdata){
+int fun( int n, 
+         const double x[], 
+         double *f, 
+         const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
     double freq = myuserdata->freq;
@@ -378,7 +427,10 @@ int fun(int n, const double x[], double *f, const void *userdata){
 }
 
 // Gradient of the objective
-int grad(int n, const double x[], double g[], const void *userdata){
+int grad( int n, 
+          const double x[], 
+          double g[], 
+          const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
     double freq = myuserdata->freq;
@@ -391,7 +443,11 @@ int grad(int n, const double x[], double g[], const void *userdata){
 }
 
 // Hessian of the objective
-int hess(int n, int ne, const double x[], double hval[], const void *userdata){
+int hess( int n, 
+          int ne, 
+          const double x[], 
+          double hval[], 
+          const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double freq = myuserdata->freq;
     double mag = myuserdata->mag;
@@ -405,7 +461,11 @@ int hess(int n, int ne, const double x[], double hval[], const void *userdata){
 }
 
 // Dense Hessian
-int hess_dense(int n, int ne, const double x[], double hval[], const void *userdata){ 
+int hess_dense( int n, 
+                int ne, 
+                const double x[], 
+                double hval[], 
+                const void *userdata ){ 
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double freq = myuserdata->freq;
     double mag = myuserdata->mag;
@@ -420,20 +480,34 @@ int hess_dense(int n, int ne, const double x[], double hval[], const void *userd
 }
 
 // Hessian-vector product
-int hessprod(int n, const double x[], double u[], const double v[], bool got_h, const void *userdata){
+int hessprod( int n, 
+              const double x[], 
+              double u[], 
+              const double v[], 
+              bool got_h, 
+              const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double freq = myuserdata->freq;
     double mag = myuserdata->mag;
     
-    u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - mag * freq * freq * cos(freq*x[0]) * v[0];
+    u[0] = u[0] + 2.0 * ( v[0] + v[2] ) 
+           - mag * freq * freq * cos(freq*x[0]) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
     u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
     return 0;
 }
 
 // Sparse Hessian-vector product
-int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
-                int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *userdata){
+int shessprod( int n, 
+               const double x[], 
+               int nnz_v, 
+               const int index_nz_v[], 
+               const double v[], 
+               int *nnz_u, 
+               int index_nz_u[], 
+               double u[], 
+               bool got_h, 
+               const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double freq = myuserdata->freq;
     double mag = myuserdata->mag;
@@ -444,7 +518,8 @@ int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const 
         int j = index_nz_v[i];
         switch(j){
             case 1:
-                p[0] = p[0] + 2.0 * v[0] - mag * freq * freq * cos(freq*x[0]) * v[0];
+                p[0] = p[0] + 2.0 * v[0] 
+                       - mag * freq * freq * cos(freq*x[0]) * v[0];
                 used[0] = true;
                 p[2] = p[2] + 2.0 * v[0];
                 used[2] = true;
@@ -477,7 +552,11 @@ int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const 
 }
 
 // Apply preconditioner
-int prec(int n, const double x[], double u[], const double v[], const void *userdata){
+int prec( int n, 
+          const double x[], 
+          double u[], 
+          const double v[], 
+          const void *userdata ){
    u[0] = 0.5 * v[0];
    u[1] = 0.5 * v[1];
    u[2] = 0.25 * v[2];
@@ -485,7 +564,10 @@ int prec(int n, const double x[], double u[], const double v[], const void *user
 }
 
 // Objective function 
-int fun_diag(int n, const double x[], double *f, const void *userdata){
+int fun_diag( int n, 
+              const double x[], 
+              double *f, 
+              const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
     double freq = myuserdata->freq;
@@ -497,7 +579,10 @@ int fun_diag(int n, const double x[], double *f, const void *userdata){
 }
 
 // Gradient of the objective
-int grad_diag(int n, const double x[], double g[], const void *userdata){
+int grad_diag( int n, 
+               const double x[], 
+               double g[], 
+               const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
     double freq = myuserdata->freq;
@@ -510,7 +595,11 @@ int grad_diag(int n, const double x[], double g[], const void *userdata){
 }
 
 // Hessian of the objective
-int hess_diag(int n, int ne, const double x[], double hval[], const void *userdata){
+int hess_diag( int n, 
+               int ne, 
+               const double x[], 
+               double hval[], 
+               const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double freq = myuserdata->freq;
     double mag = myuserdata->mag;
@@ -522,7 +611,12 @@ int hess_diag(int n, int ne, const double x[], double hval[], const void *userda
 }  
 
 // Hessian-vector product
-int hessprod_diag(int n, const double x[], double u[], const double v[], bool got_h, const void *userdata){
+int hessprod_diag( int n, 
+                   const double x[], 
+                   double u[], 
+                   const double v[], 
+                   bool got_h, 
+                   const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double freq = myuserdata->freq;
     double mag = myuserdata->mag;
@@ -534,8 +628,16 @@ int hessprod_diag(int n, const double x[], double u[], const double v[], bool go
 }
 
 // Sparse Hessian-vector product
-int shessprod_diag(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
-                int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *userdata){
+int shessprod_diag( int n, 
+                    const double x[], 
+                    int nnz_v, 
+                    const int index_nz_v[], 
+                    const double v[], 
+                    int *nnz_u, 
+                    int index_nz_u[], 
+                    double u[], 
+                    bool got_h, 
+                    const void *userdata ){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double freq = myuserdata->freq;
     double mag = myuserdata->mag;

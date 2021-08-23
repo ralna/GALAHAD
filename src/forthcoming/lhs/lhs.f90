@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.8 - 29/06/2016 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 02/08/2021 AT 11:50 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ L H S   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -270,7 +270,7 @@
 
 !*****************************************************************************
 !
-!! IHS implements the improved distributed hyper-cube sampling algorithm.
+!  IHS implements the improved distributed hyper-cube sampling algorithm.
 !
 !  Discussion:
 !
@@ -311,7 +311,8 @@
 !
 !    Input, integer  n_points, the number of points to be generated
 !
-!    Input/output, integer seed, a seed for the random number generator
+!    Input/output, integer seed, a seed for the random number generator.
+!      seed should lie between 1 and HUGE(1)-1
 !
 !    Output, integer X(n_dimen,n), the points
 !

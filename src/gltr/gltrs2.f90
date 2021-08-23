@@ -10,7 +10,7 @@
    REAL ( KIND = working ), DIMENSION( n ) :: X, R, VECTOR, H_vector
    TYPE ( GLTR_data_type ) :: data
    TYPE ( GLTR_control_type ) :: control        
-   TYPE ( GLTR_info_type ) :: info
+   TYPE ( GLTR_inform_type ) :: info
    CALL GLTR_initialize( data, control, info )  ! Initialize control parameters
    control%f_0 = 4.731884325266608D+0
 !  control%print_level = 3

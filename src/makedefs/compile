@@ -33,7 +33,7 @@ $(LG)($(package).o): ../$(package)/$(package).f90
 
 #  package C interface compilation
 
-$(package)_ciface.o: $(CLG)($(package)_ciface.o)
+$(package)_ciface.o: $(LG)($(package).o) $(CLG)($(package)_ciface.o)
 
 $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_ciface"
@@ -217,6 +217,18 @@ $(OBJ)/$(package)ct2.o: ../$(package)/C/$(package)t2.c
            ../$(package)/C/$(package)t2.c > $(OBJ)/$(package)ct2.c
 	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
 	cd $(OBJ) ; $(CC) -o $(package)ct2.o $(CFLAGS) $(package)ct2.c \
+                     -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
+	@printf '[ OK ]\n'
+
+$(package)ctf.o: $(OBJ)/$(package)ctf.o
+
+$(OBJ)/$(package)ctf.o: ../$(package)/C/$(package)tf.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)ctf  "
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package)tf.c > $(OBJ)/$(package)ctf.c
+	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
+	cd $(OBJ) ; $(CC) -o $(package)ctf.o $(CFLAGS) $(package)ctf.c \
                      -I $(GALAHAD)/include -I $(OBJ)
 	rm $(OBJ)/*.c
 	@printf '[ OK ]\n'

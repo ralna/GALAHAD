@@ -398,7 +398,7 @@
 
 !  inform parameters for GLTR
 
-       TYPE ( GLTR_info_type ) :: GLTR_inform
+       TYPE ( GLTR_inform_type ) :: GLTR_inform
 
 !  inform parameters for PSLS
 
@@ -406,7 +406,7 @@
 
 !  inform parameters for SCU
 
-       TYPE ( SCU_info_type ) :: SCU_inform
+       TYPE ( SCU_inform_type ) :: SCU_inform
 
      END TYPE ISM_inform_type
 

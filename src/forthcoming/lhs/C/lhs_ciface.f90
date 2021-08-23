@@ -1,272 +1,340 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 02/08/2021 AT 10:00 GMT.
 
-!-*-*-*-*-*-*-*-*-  GALAHAD_LHS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D _ L H S   C   I N T E R F A C E  -*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Jaroslav Fowkes
 
 !  History -
-!   currently in development
+!   originally released GALAHAD Version 3.3. August 2nd 2021
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-module GALAHAD_LHS_double_ciface
-    use iso_c_binding
-    use GALAHAD_LHS_double, only:                  &
-        f_lhs_inform_type   => LHS_inform_type,    &
-        f_lhs_control_type  => LHS_control_type,   &
-        f_lhs_data_type     => LHS_data_type,      &
-        f_lhs_initialize    => LHS_initialize,     &
-        f_lhs_read_specfile => LHS_read_specfile,  &
-        f_lhs_ihs           => LHS_ihs,            &
-        f_lhs_get_seed      => LHS_get_seed,       &
+!  C interface module to GALAHAD_LHS types and interfaces
+
+  MODULE GALAHAD_LHS_double_ciface
+    USE iso_c_binding
+    USE GALAHAD_common_ciface
+    USE GALAHAD_LHS_double, only:                                              &
+        f_lhs_inform_type   => LHS_inform_type,                                &
+        f_lhs_control_type  => LHS_control_type,                               &
+        f_lhs_data_type     => LHS_data_type,                                  &
+        f_lhs_initialize    => LHS_initialize,                                 &
+        f_lhs_read_specfile => LHS_read_specfile,                              &
+        f_lhs_ihs           => LHS_ihs,                                        &
+        f_lhs_get_seed      => LHS_get_seed,                                   &
         f_lhs_terminate     => LHS_terminate
 
-    implicit none
+    IMPLICIT NONE
 
-    integer, parameter :: wp = C_DOUBLE ! double precision
-    integer, parameter :: sp = C_FLOAT  ! single precision
+!-------------------------------------------------
+!  D e r i v e d   t y p e   d e f i n i t i o n s
+!-------------------------------------------------
 
-    type, bind(C) :: lhs_inform_type
-        integer(C_INT) :: status
-        integer(C_INT) :: alloc_status
-        character(C_CHAR), dimension(81) :: bad_alloc
-    end type lhs_inform_type
+    TYPE, BIND( C ) :: lhs_control_type
+      INTEGER ( KIND = C_INT ) :: error
+      INTEGER ( KIND = C_INT ) :: out
+      INTEGER ( KIND = C_INT ) :: print_level
+      INTEGER ( KIND = C_INT ) :: duplication
+      LOGICAL ( KIND = C_BOOL ) :: space_critical
+      LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
+      CHARACTER ( KIND = C_CHAR ), dimension( 31 ) :: prefix 
+    END TYPE lhs_control_type
 
-    type, bind(C) :: lhs_control_type
-        integer(C_INT) :: error
-        integer(C_INT) :: out
-        integer(C_INT) :: print_level
-        integer(C_INT) :: duplication
-        logical(C_BOOL) :: space_critical
-        logical(C_BOOL) :: deallocate_error_fatal
-        character(C_CHAR), dimension(31) :: prefix 
-    end type lhs_control_type
+    TYPE, BIND( C ) :: lhs_inform_type
+      INTEGER ( KIND = C_INT ) :: status
+      INTEGER ( KIND = C_INT ) :: alloc_status
+      CHARACTER ( KIND = C_CHAR ), dimension( 81 ) :: bad_alloc
+    END TYPE lhs_inform_type
 
-    interface
-        integer(C_SIZE_T) pure function strlen(cstr) bind(C)
-            use iso_c_binding
-            implicit none
-            type(C_PTR), intent(in), value :: cstr
-        end function strlen 
-    end interface
+!----------------------
+!   P r o c e d u r e s
+!----------------------
 
-contains
+  CONTAINS
 
-    function cstr_to_fchar(cstr) result(fchar)
-        type(C_PTR) :: cstr
-        character(kind=C_CHAR, len=strlen(cstr)) :: fchar
-        
-        integer :: i
-        character(C_CHAR), dimension(:) , pointer :: temp
+!  copy fortran control parameters to C
 
-        call c_f_pointer(cstr, temp, shape = (/ strlen(cstr) /) )
-
-        do i = 1, size(temp) 
-            fchar(i:i) = temp(i)
-        end do
-    end function cstr_to_fchar
-
-    subroutine copy_inform_in(cinform, finform)
-        type(lhs_inform_type), intent(in) :: cinform
-        type(f_lhs_inform_type), intent(out) :: finform
-        integer :: i
-
-        ! Integers
-        finform%status = cinform%status
-        finform%alloc_status = cinform%alloc_status
-
-        ! Strings
-        do i = 1, 81
-            if (cinform%bad_alloc(i) == C_NULL_CHAR) exit
-            finform%bad_alloc(i:i) = cinform%bad_alloc(i)
-        end do
-    end subroutine copy_inform_in
-
-    subroutine copy_inform_out(finform, cinform) 
-        type(f_lhs_inform_type), intent(in) :: finform
-        type(lhs_inform_type), intent(out) :: cinform
-        integer :: i
-
-        ! Integers
-        cinform%status = finform%status
-        cinform%alloc_status = finform%alloc_status
-
-        ! Strings
-        do i = 1,len(finform%bad_alloc)
-            cinform%bad_alloc(i) = finform%bad_alloc(i:i)
-        end do
-        cinform%bad_alloc(len(finform%bad_alloc) + 1) = C_NULL_CHAR
-    end subroutine copy_inform_out
-
-    subroutine copy_control_in(ccontrol, fcontrol) 
-        type(lhs_control_type), intent(in) :: ccontrol
-        type(f_lhs_control_type), intent(out) :: fcontrol
-        integer :: i
-        
-        ! Integers
-        fcontrol%error = ccontrol%error
-        fcontrol%out = ccontrol%out
-        fcontrol%print_level = ccontrol%print_level
-        fcontrol%duplication = ccontrol%duplication
-
-        ! Logicals
-        fcontrol%space_critical = ccontrol%space_critical
-        fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
-
-        ! Strings
-        do i = 1, 31
-            if (ccontrol%prefix(i) == C_NULL_CHAR) exit
-            fcontrol%prefix(i:i) = ccontrol%prefix(i)
-        end do
-    end subroutine copy_control_in
-
-    subroutine copy_control_out(fcontrol, ccontrol) 
-        type(f_lhs_control_type), intent(in) :: fcontrol
-        type(lhs_control_type), intent(out) :: ccontrol
-        integer :: i
-        
-        ! Integers
-        ccontrol%error = fcontrol%error
-        ccontrol%out = fcontrol%out
-        ccontrol%print_level = fcontrol%print_level
-        ccontrol%duplication = fcontrol%duplication
-
-        ! Logicals
-        ccontrol%space_critical = fcontrol%space_critical
-        ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
-
-        ! Strings
-        do i = 1,len(fcontrol%prefix)
-            ccontrol%prefix(i) = fcontrol%prefix(i:i)
-        end do
-        ccontrol%prefix(len(fcontrol%prefix) + 1) = C_NULL_CHAR
-    end subroutine copy_control_out
-
-end module GALAHAD_LHS_double_ciface
-
-subroutine lhs_initialize(cdata, ccontrol, cinform) bind(C) 
-    use GALAHAD_LHS_double_ciface
-    implicit none
-
-    type(C_PTR), intent(out) :: cdata ! data is a black-box
-    type(lhs_control_type), intent(out) :: ccontrol
-    type(lhs_inform_type), intent(out) :: cinform
-
-    type(f_lhs_data_type), pointer :: fdata
-    type(f_lhs_control_type) :: fcontrol
-    type(f_lhs_inform_type) :: finform
-
-    ! Allocate fdata 
-    allocate(fdata); cdata = C_LOC(fdata)
-
-    ! Call LHS_initialize
-    call f_lhs_initialize(fdata, fcontrol, finform) 
-
-    ! Copy control out
-    call copy_control_out(fcontrol, ccontrol)
-
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
-end subroutine lhs_initialize
-
-subroutine lhs_read_specfile(ccontrol, cspecfile) bind(C)
-    use GALAHAD_LHS_double_ciface
-    implicit none
-
-    type(lhs_control_type), intent(inout) :: ccontrol
-    type(C_PTR), intent(in), value :: cspecfile
-
-    type(f_lhs_control_type) :: fcontrol
-    character(kind=C_CHAR, len=strlen(cspecfile)) :: fspecfile
-
-    ! Device unit number for specfile
-    integer(C_INT), parameter :: device = 10
-
-    ! Convert C string to Fortran string
-    fspecfile = cstr_to_fchar(cspecfile)
-
-    ! Copy control in
-    call copy_control_in(ccontrol, fcontrol)
+    SUBROUTINE copy_control_in( ccontrol, fcontrol ) 
+    TYPE ( lhs_control_type ), INTENT( IN ) :: ccontrol
+    TYPE ( f_lhs_control_type ), INTENT( OUT ) :: fcontrol
+    INTEGER :: i
     
-    ! Open specfile for reading
-    open(unit=device, file=fspecfile)
+    ! integers
+    fcontrol%error = ccontrol%error
+    fcontrol%out = ccontrol%out
+    fcontrol%print_level = ccontrol%print_level
+    fcontrol%duplication = ccontrol%duplication
+
+    ! Logicals
+    fcontrol%space_critical = ccontrol%space_critical
+    fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
+
+    ! Strings
+    DO i = 1, 31
+      IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%prefix( i : i ) = ccontrol%prefix( i )
+    END DO
+    RETURN
+
+    END SUBROUTINE copy_control_in
+
+!  copy fortran control parameters to C
+
+    SUBROUTINE copy_control_out( fcontrol, ccontrol ) 
+    TYPE ( f_lhs_control_type ), INTENT( IN ) :: fcontrol
+    TYPE ( lhs_control_type ), INTENT( OUT ) :: ccontrol
+    INTEGER :: i
     
-    ! Call LHS_read_specfile
-    call f_lhs_read_specfile(fcontrol, device)
+    ! integers
+    ccontrol%error = fcontrol%error
+    ccontrol%out = fcontrol%out
+    ccontrol%print_level = fcontrol%print_level
+    ccontrol%duplication = fcontrol%duplication
 
-    ! Close specfile
-    close(device)
+    ! logicals
+    ccontrol%space_critical = fcontrol%space_critical
+    ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
 
-    ! Copy control out
-    call copy_control_out(fcontrol, ccontrol)
-end subroutine lhs_read_specfile
+    ! strings
+    DO i = 1,  LEN(  fcontrol%prefix )
+      ccontrol%prefix( i ) = fcontrol%prefix( i : i )
+    END DO
+    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+    RETURN
 
-subroutine lhs_ihs(n_dimen, n_points, seed, X, ccontrol, cinform, cdata) bind(C)
-    use GALAHAD_LHS_double_ciface
-    implicit none
+    END SUBROUTINE copy_control_out
 
-    integer(C_INT), value, intent(in) :: n_dimen, n_points
-    integer(C_INT), intent(inout) :: seed
-    integer(C_INT), dimension(n_dimen,n_points) :: X
+!  copy C information to fortran
 
-    type(lhs_control_type), intent(in) :: ccontrol
-    type(lhs_inform_type), intent(inout) :: cinform
-    type(C_PTR), intent(inout) :: cdata
+    SUBROUTINE copy_inform_in( cinform, finform )
+    TYPE ( lhs_inform_type ), INTENT( IN ) :: cinform
+    TYPE ( f_lhs_inform_type ), INTENT( OUT ) :: finform
+    INTEGER :: i
 
-    type(f_lhs_control_type) :: fcontrol
-    type(f_lhs_inform_type) :: finform
-    type(f_lhs_data_type), pointer :: fdata
+    ! integers
+    finform%status = cinform%status
+    finform%alloc_status = cinform%alloc_status
 
-    ! Copy control in
-    call copy_control_in(ccontrol, fcontrol)
+    ! strings
+    DO i = 1, 81
+      IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
+      finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
+    END DO
+    RETURN
 
-    ! Associate data pointers
-    call C_F_POINTER(cdata, fdata)
+    END SUBROUTINE copy_inform_in
 
-    ! Call lhs_irhs
-    call f_lhs_ihs(n_dimen, n_points, seed, X, fcontrol, finform, fdata)
+!  copy fortran information to C
 
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
-end subroutine lhs_ihs
+    SUBROUTINE copy_inform_out( finform, cinform ) 
+    TYPE ( f_lhs_inform_type ), INTENT( IN ) :: finform
+    TYPE ( lhs_inform_type ), INTENT( OUT ) :: cinform
+    INTEGER :: i
 
-subroutine lhs_get_seed(seed) bind(C)
-    use GALAHAD_LHS_double_ciface
-    implicit none
+    ! integers
+    cinform%status = finform%status
+    cinform%alloc_status = finform%alloc_status
 
-    integer(C_INT), intent(out) :: seed
+    ! strings
+    DO i = 1, LEN( finform%bad_alloc)
+        cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
+    END DO
+    cinform%bad_alloc( LEN( finform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    RETURN
 
-    ! Call LHS_get_seed    
-    call f_lhs_get_seed(seed)
+    END SUBROUTINE copy_inform_out
 
-end subroutine lhs_get_seed
+  END module GALAHAD_LHS_double_ciface
 
-subroutine lhs_terminate(cdata, ccontrol, cinform) bind(C) 
-    use GALAHAD_LHS_double_ciface
-    implicit none
+!  -------------------------------------
+!  C interface to fortran lhs_initialize
+!  -------------------------------------
 
-    type(C_PTR), intent(inout) :: cdata
-    type(lhs_control_type), intent(in) :: ccontrol
-    type(lhs_inform_type), intent(out) :: cinform
+  SUBROUTINE lhs_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  USE GALAHAD_LHS_double_ciface
+  IMPLICIT NONE
 
-    type(f_lhs_control_type) :: fcontrol
-    type(f_lhs_inform_type) :: finform
-    type(f_lhs_data_type), pointer :: fdata
+!  dummy arguments
 
-    ! Copy control in
-    call copy_control_in(ccontrol, fcontrol)
+  TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
+  TYPE ( lhs_control_type ), INTENT( OUT ) :: ccontrol
+  TYPE ( lhs_inform_type ), INTENT( OUT ) :: cinform
 
-    ! Associate data pointers
-    call C_F_POINTER(cdata, fdata)
+!  local variables
 
-    ! Call LHS_terminate
-    call f_lhs_terminate(fdata,fcontrol,finform)
+  TYPE ( f_lhs_data_type ), POINTER :: fdata
+  TYPE ( f_lhs_control_type ) :: fcontrol
+  TYPE ( f_lhs_inform_type ) :: finform
 
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
+!  allocate fdata 
 
-    ! Deallocate fdata
-    deallocate(fdata); cdata = C_NULL_PTR 
-end subroutine lhs_terminate
+  ALLOCATE( fdata ); cdata = C_LOC( fdata )
+
+!  initialize required fortran types
+
+  CALL f_lhs_initialize( fdata, fcontrol, finform ) 
+
+! copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE lhs_initialize
+
+!  ----------------------------------------
+!  C interface to fortran lhs_read_specfile
+!  ----------------------------------------
+
+  SUBROUTINE lhs_read_specfile( ccontrol, cspecfile ) BIND( C )
+  USE GALAHAD_LHS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( lhs_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( IN ), value :: cspecfile
+
+!  local variables
+
+  TYPE ( f_lhs_control_type ) :: fcontrol
+  CHARACTER ( KIND = C_CHAR, LEN = strlen( cspecfile ) ) :: fspecfile
+
+!  device unit number for specfile
+
+  INTEGER ( KIND = C_INT ), parameter :: device = 10
+
+!  convert C string to Fortran string
+
+  fspecfile = cstr_to_fchar( cspecfile )
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol )
+  
+!  open specfile for reading
+
+  OPEN( UNIT = device, FILE = fspecfile )
+
+!  read control parameters from the specfile
+
+  CALL f_lhs_read_specfile( fcontrol, device )
+
+!  close specfile
+
+  CLOSE( device )
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol )
+  RETURN
+
+  END SUBROUTINE lhs_read_specfile
+
+!  ------------------------------
+!  C interface to fortran lhs_ihs
+!  ------------------------------
+
+  SUBROUTINE lhs_ihs( n_dimen, n_points, seed, X, ccontrol, cinform,           &
+                      cdata ) BIND( C )
+  USE GALAHAD_LHS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), VALUE, INTENT( IN ) :: n_dimen, n_points
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: seed
+  INTEGER ( KIND = C_INT ), DIMENSION( n_dimen, n_points ) :: X
+  TYPE ( lhs_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( lhs_inform_type ), INTENT( INOUT ) :: cinform
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_lhs_control_type ) :: fcontrol
+  TYPE ( f_lhs_inform_type ) :: finform
+  TYPE ( f_lhs_data_type ), POINTER :: fdata
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol )
+
+!  associate data pointers
+
+  CALL C_F_POINTER(cdata, fdata)
+
+!  call the improved distributed hyper-cube sampling (ihs) algorithm
+
+  CALL f_lhs_ihs(n_dimen, n_points, seed, X, fcontrol, finform, fdata )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE lhs_ihs
+
+!  -----------------------------------
+!  C interface to fortran lhs_get_seed
+!  -----------------------------------
+
+  SUBROUTINE lhs_get_seed( seed ) BIND( C )
+  USE GALAHAD_LHS_double_ciface
+  IMPLICIT NONE
+
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: seed
+
+!  get the random-number seed
+
+  CALL f_lhs_get_seed( seed )
+  RETURN
+
+  END SUBROUTINE lhs_get_seed
+
+!  ------------------------------------
+!  C interface to fortran lhs_terminate
+!  ------------------------------------
+
+  SUBROUTINE lhs_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  USE GALAHAD_LHS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( lhs_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( lhs_inform_type ), INTENT( OUT ) :: cinform
+
+!  local variables
+
+  TYPE ( f_lhs_control_type ) :: fcontrol
+  TYPE ( f_lhs_inform_type ) :: finform
+  TYPE ( f_lhs_data_type ), POINTER :: fdata
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol )
+
+!  associate data pointers
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  deallocate workspace
+
+  CALL f_lhs_terminate( fdata, fcontrol, finform )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+
+!  deallocate fdata
+
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  RETURN
+
+  END SUBROUTINE lhs_terminate

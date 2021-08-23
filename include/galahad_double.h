@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+ * THIS VERSION: GALAHAD 3.3 - 27/07/2021 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD C INTERFACE PRECISION  *-*-*-*-*-*-*-*-*-*-
  *
@@ -7,7 +7,7 @@
  *  Principal author: Jaroslav Fowkes
  *
  *  History -
- *   currently in development
+ *   originally released GALAHAD Version 3.3. July 27th 2021
  *
  *  For full documentation, see
  *   http://galahad.rl.ac.uk/galahad-www/specs.html

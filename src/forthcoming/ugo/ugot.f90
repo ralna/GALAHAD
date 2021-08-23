@@ -163,8 +163,13 @@
      END SELECT
 
      userdata%integer( 1 ) = prob                ! Record problem # prob
-     control%print_level = 0
-!    control%maxit = 100
+     IF ( prob == 6 .OR. prob == 11 ) THEN
+       control%print_level = 0
+       control%maxit = 1000
+     ELSE
+       control%print_level = 0
+       control%maxit = 100
+     END IF
      control%lipschitz_estimate_used = 3
 
      inform%status = 1                            ! set for initial entry

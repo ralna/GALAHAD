@@ -1,904 +1,1076 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 10/08/2021 AT 15:40 GMT.
 
-!-*-*-*-*-*-*-*-*-  GALAHAD_BGO C INTERFACE  *-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D _ B G O   C   I N T E R F A C E  -*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
-!  Principal author: Jaroslav Fowkes
+!  Principal authors: Jaroslav Fowkes & Nick Gould
 
 !  History -
-!   currently in development
+!    originally released GALAHAD Version 3.3. August 3rd 2021
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-module GALAHAD_BGO_double_ciface
-    use iso_c_binding
-    use GALAHAD_BGO_double, only:                                     &
-        f_bgo_time_type               => BGO_time_type,               &
-        f_bgo_inform_type             => BGO_inform_type,             &
-        f_bgo_control_type            => BGO_control_type,            &
-        f_bgo_full_data_type          => BGO_full_data_type,          &
-        f_bgo_initialize              => BGO_initialize,              &
-        f_bgo_read_specfile           => BGO_read_specfile,           &
-        f_bgo_import                  => BGO_import,                  &
-        f_bgo_solve_with_h            => BGO_solve_with_h,            &
-        f_bgo_solve_without_h         => BGO_solve_without_h,         &
-        f_bgo_solve_reverse_with_h    => BGO_solve_reverse_with_h,    &
-        f_bgo_solve_reverse_without_h => BGO_solve_reverse_without_h, &
-        f_bgo_terminate               => BGO_terminate
-    use GALAHAD_NLPT_double, only:                                    &
+  MODULE GALAHAD_BGO_double_ciface
+    USE iso_c_binding
+    USE GALAHAD_common_ciface
+    USE GALAHAD_BGO_double, ONLY:                                              &
+        f_bgo_time_type                 => BGO_time_type,                      &
+        f_bgo_inform_type               => BGO_inform_type,                    &
+        f_bgo_control_type              => BGO_control_type,                   &
+        f_bgo_full_data_type            => BGO_full_data_type,                 &
+        f_bgo_initialize                => BGO_initialize,                     &
+        f_bgo_read_specfile             => BGO_read_specfile,                  &
+        f_bgo_import                    => BGO_import,                         &
+        f_bgo_solve_with_mat            => BGO_solve_with_mat,                 &
+        f_bgo_solve_without_mat         => BGO_solve_without_mat,              &
+        f_bgo_solve_reverse_with_mat    => BGO_solve_reverse_with_mat,         &
+        f_bgo_solve_reverse_without_mat => BGO_solve_reverse_without_mat,      &
+        f_bgo_information               => BGO_information,                    &
+        f_bgo_terminate                 => BGO_terminate
+    USE GALAHAD_NLPT_double, ONLY:                                             &
         f_nlpt_userdata_type          => NLPT_userdata_type
 
-    use GALAHAD_TRB_double_ciface, only:                              &
-        trb_inform_type,                                              &
-        trb_control_type,                                             &
-        copy_trb_inform_in            => copy_inform_in,              &
-        copy_trb_inform_out           => copy_inform_out,             &
-        copy_trb_control_in           => copy_control_in,             &
+    USE GALAHAD_TRB_double_ciface, ONLY:                                       &
+        trb_inform_type,                                                       &
+        trb_control_type,                                                      &
+        copy_trb_inform_in            => copy_inform_in,                       &
+        copy_trb_inform_out           => copy_inform_out,                      &
+        copy_trb_control_in           => copy_control_in,                      &
         copy_trb_control_out          => copy_control_out
-    use GALAHAD_UGO_double_ciface, only:                              &
-        ugo_inform_type,                                              &
-        ugo_control_type,                                             &
-        copy_ugo_inform_in            => copy_inform_in,              &
-        copy_ugo_inform_out           => copy_inform_out,             &
-        copy_ugo_control_in           => copy_control_in,             &
+    USE GALAHAD_UGO_double_ciface, ONLY:                                       &
+        ugo_inform_type,                                                       &
+        ugo_control_type,                                                      &
+        copy_ugo_inform_in            => copy_inform_in,                       &
+        copy_ugo_inform_out           => copy_inform_out,                      &
+        copy_ugo_control_in           => copy_control_in,                      &
         copy_ugo_control_out          => copy_control_out
-    use GALAHAD_LHS_double_ciface, only:                              &
-        lhs_inform_type,                                              &
-        lhs_control_type,                                             &
-        copy_lhs_inform_in            => copy_inform_in,              &
-        copy_lhs_inform_out           => copy_inform_out,             &
-        copy_lhs_control_in           => copy_control_in,             &
+    USE GALAHAD_LHS_double_ciface, ONLY:                                       &
+        lhs_inform_type,                                                       &
+        lhs_control_type,                                                      &
+        copy_lhs_inform_in            => copy_inform_in,                       &
+        copy_lhs_inform_out           => copy_inform_out,                      &
+        copy_lhs_control_in           => copy_control_in,                      &
         copy_lhs_control_out          => copy_control_out
 
-    implicit none
+    IMPLICIT NONE
 
-    integer, parameter :: wp = C_DOUBLE ! double precision
-    integer, parameter :: sp = C_FLOAT  ! single precision
+!--------------------
+!   P r e c i s i o n
+!--------------------
 
-    type, bind(C) :: bgo_time_type
-        real(sp) :: total
-        real(sp) :: univariate_global
-        real(sp) :: multivariate_local
-        real(wp) :: clock_total
-        real(wp) :: clock_univariate_global
-        real(wp) :: clock_multivariate_local
-    end type bgo_time_type
+    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
+    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
 
-    type, bind(C) :: bgo_inform_type
-        integer(C_INT) :: status
-        integer(C_INT) :: alloc_status
-        character(C_CHAR), dimension(81) :: bad_alloc
-        integer(C_INT) :: f_eval
-        integer(C_INT) :: g_eval
-        integer(C_INT) :: h_eval
-        real(wp) :: obj
-        real(wp) :: norm_pg
-        type(bgo_time_type) :: time
-        type(trb_inform_type) :: trb_inform
-        type(ugo_inform_type) :: ugo_inform
-        type(lhs_inform_type) :: lhs_inform
-    end type bgo_inform_type
+!-------------------------------------------------
+!  D e r i v e d   t y p e   d e f i n i t i o n s
+!-------------------------------------------------
 
-    type, bind(C) :: bgo_control_type
-        logical(C_BOOL) :: f_indexing
-        integer(C_INT) :: error
-        integer(C_INT) :: out
-        integer(C_INT) :: print_level
-        integer(C_INT) :: attempts_max
-        integer(C_INT) :: max_evals
-        integer(C_INT) :: sampling_strategy
-        integer(C_INT) :: hypercube_discretization
-        integer(C_INT) :: alive_unit 
-        character(C_CHAR), dimension(31) :: alive_file
-        real(wp) :: infinity
-        real(wp) :: obj_unbounded
-        real(wp) :: cpu_time_limit 
-        real(wp) :: clock_time_limit 
-        logical(C_BOOL) :: random_multistart
-        logical(C_BOOL) :: hessian_available
-        logical(C_BOOL) :: space_critical
-        logical(C_BOOL) :: deallocate_error_fatal
-        character(C_CHAR), dimension(31) :: prefix 
-        type(trb_control_type) :: trb_control
-        type(ugo_control_type) :: ugo_control
-        type(lhs_control_type) :: lhs_control
-    end type bgo_control_type
+    TYPE, BIND( C ) :: bgo_control_type
+      LOGICAL ( KIND = C_BOOL ) :: f_indexing
+      INTEGER ( KIND = C_INT ) :: error
+      INTEGER ( KIND = C_INT ) :: out
+      INTEGER ( KIND = C_INT ) :: print_level
+      INTEGER ( KIND = C_INT ) :: attempts_max
+      INTEGER ( KIND = C_INT ) :: max_evals
+      INTEGER ( KIND = C_INT ) :: sampling_strategy
+      INTEGER ( KIND = C_INT ) :: hypercube_discretization
+      INTEGER ( KIND = C_INT ) :: alive_unit 
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: alive_file
+      REAL ( KIND = wp ) :: infinity
+      REAL ( KIND = wp ) :: obj_unbounded
+      REAL ( KIND = wp ) :: cpu_time_limit 
+      REAL ( KIND = wp ) :: clock_time_limit 
+      LOGICAL ( KIND = C_BOOL ) :: random_multistart
+      LOGICAL ( KIND = C_BOOL ) :: hessian_available
+      LOGICAL ( KIND = C_BOOL ) :: space_critical
+      LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix 
+      TYPE ( trb_control_type ) :: trb_control
+      TYPE ( ugo_control_type ) :: ugo_control
+      TYPE ( lhs_control_type ) :: lhs_control
+    END type bgo_control_type
 
-    interface
-        integer(C_SIZE_T) pure function strlen(cstr) bind(C)
-            use iso_c_binding
-            implicit none
-            type(C_PTR), intent(in), value :: cstr
-        end function strlen 
-    end interface 
+    TYPE, BIND( C ) :: bgo_time_type
+      REAL ( KIND = sp ) :: total
+      REAL ( KIND = sp ) :: univariate_global
+      REAL ( KIND = sp ) :: multivariate_local
+      REAL ( KIND = wp ) :: clock_total
+      REAL ( KIND = wp ) :: clock_univariate_global
+      REAL ( KIND = wp ) :: clock_multivariate_local
+    END TYPE bgo_time_type
 
-    abstract interface
-        function eval_f(n, x, f, userdata) result(status)
-            use iso_c_binding
-            import :: wp
-            
-            integer(C_INT), intent(in), value :: n
-            real(wp), dimension(n), intent(in) :: x
-            real(wp), intent(out) :: f
-            type(C_PTR), intent(in), value :: userdata
-            integer(C_INT) :: status
-        end function eval_f
-    end interface
+    TYPE, BIND( C ) :: bgo_inform_type
+      INTEGER ( KIND = C_INT ) :: status
+      INTEGER ( KIND = C_INT ) :: alloc_status
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
+      INTEGER ( KIND = C_INT ) :: f_eval
+      INTEGER ( KIND = C_INT ) :: g_eval
+      INTEGER ( KIND = C_INT ) :: h_eval
+      REAL ( KIND = wp ) :: obj
+      REAL ( KIND = wp ) :: norm_pg
+      TYPE ( bgo_time_type ) :: time
+      TYPE ( trb_inform_type ) :: trb_inform
+      TYPE ( ugo_inform_type ) :: ugo_inform
+      TYPE ( lhs_inform_type ) :: lhs_inform
+    END TYPE bgo_inform_type
 
-    abstract interface
-        function eval_g(n, x, g, userdata) result(status)
-            use iso_c_binding
-            import :: wp
-            
-            integer(C_INT), intent(in), value :: n
-            real(wp), dimension(n), intent(in) :: x
-            real(wp), dimension(n), intent(out) :: g
-            type(C_PTR), intent(in), value :: userdata
-            integer(C_INT) :: status
-        end function eval_g
-    end interface
+!----------------------
+!   I n t e r f a c e s
+!----------------------
 
-    abstract interface
-        function eval_h(n, ne, x, hval, userdata) result(status)
-            use iso_c_binding
-            import :: wp
-            
-            integer(C_INT), intent(in), value :: n
-            integer(C_INT), intent(in), value :: ne
-            real(wp), dimension(n), intent(in) :: x
-            real(wp), dimension(ne), intent(out) :: hval
-            type(C_PTR), intent(in), value :: userdata
-            integer(C_INT) :: status
-        end function eval_h
-    end interface
+    ABSTRACT INTERFACE
+      FUNCTION eval_f( n, x, f, userdata ) RESULT( status )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), value :: n
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), INTENT( OUT ) :: f
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_f
+    END INTERFACE
 
-    abstract interface
-        function eval_hprod(n, x, u, v, got_h, userdata) result(status)
-            use iso_c_binding
-            import :: wp
-            
-            integer(C_INT), intent(in), value :: n
-            real(wp), dimension(n), intent(in) :: x
-            real(wp), dimension(n), intent(inout) :: u
-            real(wp), dimension(n), intent(in) :: v
-            logical(C_BOOL), intent(in), value :: got_h
-            type(C_PTR), intent(in), value :: userdata
-            integer(C_INT) :: status
-        end function eval_hprod
-    end interface
+    ABSTRACT INTERFACE
+      FUNCTION eval_g( n, x, g, userdata ) RESULT( status )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ) :: g
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_g
+    END INTERFACE
 
-    abstract interface
-        function eval_shprod(n, x, nnz_v, index_nz_v, v, nnz_u, index_nz_u, u, got_h, userdata) result(status)
-            use iso_c_binding
-            import :: wp
+    ABSTRACT INTERFACE
+      FUNCTION eval_h( n, ne, x, hval, userdata ) RESULT( status )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: ne
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( ne ), INTENT( OUT ) :: hval
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_h
+    END INTERFACE
 
-            integer(C_INT), intent(in), value :: n
-            real(wp), dimension(n), intent(in) :: x
-            integer(C_INT), intent(in), value :: nnz_v
-            integer(C_INT), dimension(n), intent(in) :: index_nz_v
-            real(wp), dimension(n), intent(in) :: v
-            integer(C_INT), intent(out) :: nnz_u 
-            integer(C_INT), dimension(n), intent(out) :: index_nz_u
-            real(wp), dimension(n), intent(out) :: u
-            logical(C_BOOL), intent(in), value :: got_h
-            type(C_PTR), intent(in), value :: userdata
-            integer(C_INT) :: status
-        end function eval_shprod
-    end interface
+    ABSTRACT INTERFACE
+      FUNCTION eval_hprod( n, x, u, v, got_h, userdata ) RESULT( status )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( INOUT ) :: u
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: v
+        LOGICAL ( KIND = C_BOOL ), INTENT( IN ), VALUE :: got_h
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_hprod
+    END INTERFACE
 
-    abstract interface
-        function eval_prec(n, x, u, v, userdata) result(status)
-            use iso_c_binding
-            import :: wp
+    ABSTRACT INTERFACE
+      FUNCTION eval_shprod( n, x, nnz_v, index_nz_v, v, nnz_u, index_nz_u,     &
+                            u, got_h, userdata ) RESULT( status )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: nnz_v
+        INTEGER ( KIND = C_INT ), DIMENSION( n ), INTENT( IN ) :: index_nz_v
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: v
+        INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nnz_u 
+        INTEGER ( KIND = C_INT ), DIMENSION( n ), INTENT( OUT ) :: index_nz_u
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ) :: u
+        LOGICAL( KIND = C_BOOL ), INTENT( IN ), VALUE :: got_h
+        TYPE (C_PTR), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_shprod
+    END INTERFACE
 
-            integer(C_INT), intent(in), value :: n
-            real(wp), dimension(n), intent(in) :: x
-            real(wp), dimension(n), intent(out) :: u
-            real(wp), dimension(n), intent(in) :: v
-            type(C_PTR), intent(in), value :: userdata
-            integer(C_INT) :: status
-        end function eval_prec
-    end interface
+    ABSTRACT INTERFACE
+      FUNCTION eval_prec( n, x, u, v, userdata ) RESULT( status )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ) :: u
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: v
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_prec
+    END INTERFACE
 
-contains
+!----------------------
+!   P r o c e d u r e s
+!----------------------
 
-    ! optional string length
-    pure function opt_strlen(cstr) result(len)
-        type(C_PTR), intent(in), value :: cstr
-        integer(C_SIZE_T) :: len    
+  CONTAINS
 
-        if(C_ASSOCIATED(cstr)) then
-            len = strlen(cstr)
-        else
-            len = 0
-        end if
-    end function opt_strlen
+!  copy C control parameters to fortran
 
-    function cstr_to_fchar(cstr) result(fchar)
-        type(C_PTR) :: cstr
-        character(kind=C_CHAR, len=strlen(cstr)) :: fchar
-        
-        integer :: i
-        character(C_CHAR), dimension(:) , pointer :: temp
-
-        call c_f_pointer(cstr, temp, shape = (/ strlen(cstr) /) )
-
-        do i = 1, size(temp) 
-            fchar(i:i) = temp(i)
-        end do
-    end function cstr_to_fchar
-
-    subroutine copy_time_in(ctime, ftime) 
-        type(bgo_time_type), intent(in) :: ctime
-        type(f_bgo_time_type), intent(out) :: ftime
-
-        ftime%total = ctime%total
-        ftime%univariate_global = ctime%univariate_global
-        ftime%multivariate_local = ctime%multivariate_local
-        ftime%clock_total = ctime%clock_total
-        ftime%clock_univariate_global = ctime%clock_univariate_global
-        ftime%clock_multivariate_local = ctime%clock_multivariate_local
-    end subroutine copy_time_in
-
-    subroutine copy_time_out(ftime, ctime)
-        type(f_bgo_time_type), intent(in) :: ftime
-        type(bgo_time_type), intent(out) :: ctime
-
-        ctime%total = ftime%total
-        ctime%univariate_global = ftime%univariate_global
-        ctime%multivariate_local = ftime%multivariate_local
-        ctime%clock_total = ftime%clock_total
-        ctime%clock_univariate_global = ftime%clock_univariate_global
-        ctime%clock_multivariate_local = ftime%clock_multivariate_local
-    end subroutine copy_time_out
-
-    subroutine copy_inform_in(cinform, finform) 
-        type(bgo_inform_type), intent(in) :: cinform
-        type(f_bgo_inform_type), intent(out) :: finform
-        integer :: i
-
-        ! Integers
-        finform%status = cinform%status
-        finform%alloc_status = cinform%alloc_status
-        finform%f_eval = cinform%f_eval
-        finform%g_eval = cinform%g_eval
-        finform%h_eval = cinform%h_eval
-
-        ! Reals
-        finform%obj = cinform%obj
-        finform%norm_pg = cinform%norm_pg
-
-        ! Derived types
-        call copy_time_in(cinform%time,finform%time)
-        call copy_trb_inform_in(cinform%trb_inform,finform%trb_inform)
-        call copy_ugo_inform_in(cinform%ugo_inform,finform%ugo_inform)
-        call copy_lhs_inform_in(cinform%lhs_inform,finform%lhs_inform)
-
-        ! Strings
-        do i = 1, 81
-            if (cinform%bad_alloc(i) == C_NULL_CHAR) exit
-            finform%bad_alloc(i:i) = cinform%bad_alloc(i)
-        end do
-    end subroutine copy_inform_in
-
-    subroutine copy_inform_out(finform, cinform)
-        type(f_bgo_inform_type), intent(in) :: finform 
-        type(bgo_inform_type), intent(out) :: cinform
-        integer :: i
-
-        ! Integers
-        cinform%status = finform%status
-        cinform%alloc_status = finform%alloc_status
-        cinform%f_eval = finform%f_eval
-        cinform%g_eval = finform%g_eval
-        cinform%h_eval = finform%h_eval
-
-        ! Reals
-        cinform%obj = finform%obj
-        cinform%norm_pg = finform%norm_pg
-
-        ! Derived types
-        call copy_time_out(finform%time,cinform%time)
-        call copy_trb_inform_out(finform%trb_inform,cinform%trb_inform)
-        call copy_ugo_inform_out(finform%ugo_inform,cinform%ugo_inform)
-        call copy_lhs_inform_out(finform%lhs_inform,cinform%lhs_inform)
-
-        ! Strings
-        do i = 1,len(finform%bad_alloc)
-            cinform%bad_alloc(i) = finform%bad_alloc(i:i)
-        end do
-        cinform%bad_alloc(len(finform%bad_alloc) + 1) = C_NULL_CHAR
-    end subroutine copy_inform_out
-
-    subroutine copy_control_in(ccontrol, fcontrol, f_indexing) 
-        type(bgo_control_type), intent(in) :: ccontrol
-        type(f_bgo_control_type), intent(out) :: fcontrol
-        logical, optional, intent(out) :: f_indexing
-        integer :: i
-        
-        ! C or Fortran sparse matrix indexing
-        if(present(f_indexing)) f_indexing = ccontrol%f_indexing
-
-        ! Integers
-        fcontrol%error = ccontrol%error
-        fcontrol%out = ccontrol%out
-        fcontrol%print_level = ccontrol%print_level
-        fcontrol%attempts_max = ccontrol%attempts_max
-        fcontrol%max_evals = ccontrol%max_evals
-        fcontrol%sampling_strategy = ccontrol%sampling_strategy
-        fcontrol%hypercube_discretization = ccontrol%hypercube_discretization
-        fcontrol%alive_unit = ccontrol%alive_unit
-
-        ! Doubles
-        fcontrol%infinity = ccontrol%infinity
-        fcontrol%obj_unbounded = ccontrol%obj_unbounded
-        fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
-        fcontrol%clock_time_limit = ccontrol%clock_time_limit 
-
-        ! Logicals
-        fcontrol%random_multistart = ccontrol%random_multistart
-        fcontrol%hessian_available = ccontrol%hessian_available
-        fcontrol%space_critical = ccontrol%space_critical
-        fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
-
-        ! Derived types
-        call copy_trb_control_in(ccontrol%trb_control,fcontrol%trb_control)
-        call copy_ugo_control_in(ccontrol%ugo_control,fcontrol%ugo_control)
-        call copy_lhs_control_in(ccontrol%lhs_control,fcontrol%lhs_control)
-
-        ! Strings
-        do i = 1, 31
-            if (ccontrol%alive_file(i) == C_NULL_CHAR) exit
-            fcontrol%alive_file(i:i) = ccontrol%alive_file(i)
-        end do
-        do i = 1, 31
-            if (ccontrol%prefix(i) == C_NULL_CHAR) exit
-            fcontrol%prefix(i:i) = ccontrol%prefix(i)
-        end do
-    end subroutine copy_control_in
-
-    subroutine copy_control_out(fcontrol, ccontrol, f_indexing)
-        type(f_bgo_control_type), intent(in) :: fcontrol
-        type(bgo_control_type), intent(out) :: ccontrol
-        logical, optional, intent(in) :: f_indexing
-        integer :: i
-        
-        ! C or Fortran sparse matrix indexing
-        if(present(f_indexing)) ccontrol%f_indexing = f_indexing
-
-        ! Integers
-        ccontrol%error = fcontrol%error
-        ccontrol%out = fcontrol%out
-        ccontrol%print_level = fcontrol%print_level
-        ccontrol%attempts_max = fcontrol%attempts_max
-        ccontrol%max_evals = fcontrol%max_evals
-        ccontrol%sampling_strategy = fcontrol%sampling_strategy
-        ccontrol%hypercube_discretization = fcontrol%hypercube_discretization
-        ccontrol%alive_unit = fcontrol%alive_unit
-
-        ! Doubles
-        ccontrol%infinity = fcontrol%infinity
-        ccontrol%obj_unbounded = fcontrol%obj_unbounded
-        ccontrol%cpu_time_limit = fcontrol%cpu_time_limit
-        ccontrol%clock_time_limit = fcontrol%clock_time_limit 
-
-        ! Logicals
-        ccontrol%random_multistart = fcontrol%random_multistart
-        ccontrol%hessian_available = fcontrol%hessian_available
-        ccontrol%space_critical = fcontrol%space_critical
-        ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
-
-        ! Derived types
-        call copy_trb_control_out(fcontrol%trb_control,ccontrol%trb_control)
-        call copy_ugo_control_out(fcontrol%ugo_control,ccontrol%ugo_control)
-        call copy_lhs_control_out(fcontrol%lhs_control,ccontrol%lhs_control)
-
-        ! Strings
-        do i = 1,len(fcontrol%alive_file)
-            ccontrol%alive_file(i) = fcontrol%alive_file(i:i)
-        end do
-        ccontrol%alive_file(len(fcontrol%alive_file) + 1) = C_NULL_CHAR
-        do i = 1,len(fcontrol%prefix)
-            ccontrol%prefix(i) = fcontrol%prefix(i:i)
-        end do
-        ccontrol%prefix(len(fcontrol%prefix) + 1) = C_NULL_CHAR
-    end subroutine copy_control_out
-
-end module GALAHAD_BGO_double_ciface
-
-subroutine bgo_initialize(cdata, ccontrol, cinform) bind(C) 
-    use GALAHAD_BGO_double_ciface
-    implicit none
-
-    type(C_PTR), intent(out) :: cdata ! data is a black-box
-    type(bgo_control_type), intent(out) :: ccontrol
-    type(bgo_inform_type), intent(out) :: cinform
-
-    type(f_bgo_full_data_type), pointer :: fdata
-    type(f_bgo_control_type) :: fcontrol
-    type(f_bgo_inform_type) :: finform
-    logical :: f_indexing 
-
-    ! Allocate fdata
-    allocate(fdata); cdata = C_LOC(fdata)
-
-    ! Call BGO_initialize
-    call f_bgo_initialize(fdata, fcontrol, finform)
-
-    ! C sparse matrix indexing by default
-    f_indexing = .false.
-
-    ! Copy control out 
-    call copy_control_out(fcontrol, ccontrol, f_indexing)
-
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
-end subroutine bgo_initialize
-
-subroutine bgo_read_specfile(ccontrol, cspecfile) bind(C)
-    use GALAHAD_BGO_double_ciface
-    implicit none
-
-    type(bgo_control_type), intent(inout) :: ccontrol
-    type(C_PTR), intent(in), value :: cspecfile
-
-    type(f_bgo_control_type) :: fcontrol
-    character(kind=C_CHAR, len=strlen(cspecfile)) :: fspecfile
-    logical :: f_indexing
-
-    ! Device unit number for specfile
-    integer(C_INT), parameter :: device = 10
-
-    ! Convert C string to Fortran string
-    fspecfile = cstr_to_fchar(cspecfile)
-
-    ! Copy control in
-    call copy_control_in(ccontrol, fcontrol, f_indexing)
+    SUBROUTINE copy_control_in(ccontrol, fcontrol, f_indexing) 
+    TYPE ( bgo_control_type ), INTENT( IN ) :: ccontrol
+    TYPE ( f_bgo_control_type ), INTENT( OUT ) :: fcontrol
+    LOGICAL, optional, INTENT( OUT ) :: f_indexing
+    INTEGER :: i
     
-    ! Open specfile for reading
-    open(unit=device, file=fspecfile)
+    ! C or Fortran sparse matrix indexing
+    IF ( PRESENT( f_indexing ) )  f_indexing = ccontrol%f_indexing
+
+    ! Integers
+    fcontrol%error = ccontrol%error
+    fcontrol%out = ccontrol%out
+    fcontrol%print_level = ccontrol%print_level
+    fcontrol%attempts_max = ccontrol%attempts_max
+    fcontrol%max_evals = ccontrol%max_evals
+    fcontrol%sampling_strategy = ccontrol%sampling_strategy
+    fcontrol%hypercube_discretization = ccontrol%hypercube_discretization
+    fcontrol%alive_unit = ccontrol%alive_unit
+
+    ! Reals
+    fcontrol%infinity = ccontrol%infinity
+    fcontrol%obj_unbounded = ccontrol%obj_unbounded
+    fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
+    fcontrol%clock_time_limit = ccontrol%clock_time_limit 
+
+    ! Logicals
+    fcontrol%random_multistart = ccontrol%random_multistart
+    fcontrol%hessian_available = ccontrol%hessian_available
+    fcontrol%space_critical = ccontrol%space_critical
+    fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
+
+    ! Derived types
+    CALL copy_trb_control_in(ccontrol%trb_control,fcontrol%trb_control)
+    CALL copy_ugo_control_in(ccontrol%ugo_control,fcontrol%ugo_control)
+    CALL copy_lhs_control_in(ccontrol%lhs_control,fcontrol%lhs_control)
+
+    ! Strings
+    DO i = 1, 31
+      IF ( ccontrol%alive_file( i ) == C_NULL_CHAR) EXIT
+      fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
+    END DO
+    DO i = 1, 31
+      IF ( ccontrol%prefix( i ) == C_NULL_CHAR) EXIT
+      fcontrol%prefix( i : i ) = ccontrol%prefix( i )
+    END DO
+    RETURN
+
+    END SUBROUTINE copy_control_in
+
+!  copy fortran control parameters to C
+
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
+    TYPE ( f_bgo_control_type ), INTENT( IN ) :: fcontrol
+    TYPE ( bgo_control_type ), INTENT( OUT ) :: ccontrol
+    LOGICAL, optional, INTENT( IN ) :: f_indexing
+    INTEGER :: i
     
-    ! Call BGO_read_specfile
-    call f_bgo_read_specfile(fcontrol, device)
+    ! C or Fortran sparse matrix indexing
+    IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
-    ! Close specfile
-    close(device)
+    ! Integers
+    ccontrol%error = fcontrol%error
+    ccontrol%out = fcontrol%out
+    ccontrol%print_level = fcontrol%print_level
+    ccontrol%attempts_max = fcontrol%attempts_max
+    ccontrol%max_evals = fcontrol%max_evals
+    ccontrol%sampling_strategy = fcontrol%sampling_strategy
+    ccontrol%hypercube_discretization = fcontrol%hypercube_discretization
+    ccontrol%alive_unit = fcontrol%alive_unit
 
-    ! Copy control out
-    call copy_control_out(fcontrol, ccontrol, f_indexing)
-end subroutine bgo_read_specfile
+    ! Reals
+    ccontrol%infinity = fcontrol%infinity
+    ccontrol%obj_unbounded = fcontrol%obj_unbounded
+    ccontrol%cpu_time_limit = fcontrol%cpu_time_limit
+    ccontrol%clock_time_limit = fcontrol%clock_time_limit 
 
-subroutine bgo_import(ccontrol, cinform, cdata, n, xl, xu, ctype, ne, row, col, ptr) bind(C)
-    use GALAHAD_BGO_double_ciface
-    implicit none
+    ! Logicals
+    ccontrol%random_multistart = fcontrol%random_multistart
+    ccontrol%hessian_available = fcontrol%hessian_available
+    ccontrol%space_critical = fcontrol%space_critical
+    ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
 
-    integer(C_INT), intent(in), value :: n, ne
-    real(wp), intent(in), dimension(n) :: xl, xu
-    integer(C_INT), intent(in), dimension(ne), optional :: row, col
-    integer(C_INT), intent(in), dimension(n+1), optional :: ptr
+    ! Derived types
+    CALL copy_trb_control_out( fcontrol%trb_control, ccontrol%trb_control )
+    CALL copy_ugo_control_out( fcontrol%ugo_control, ccontrol%ugo_control )
+    CALL copy_lhs_control_out( fcontrol%lhs_control, ccontrol%lhs_control )
 
-    type(C_PTR), intent(in), value :: ctype
-    type(bgo_control_type), intent(inout) :: ccontrol
-    type(bgo_inform_type), intent(inout) :: cinform
-    type(C_PTR), intent(inout) :: cdata
+    ! Strings
+    DO i = 1, LEN( fcontrol%alive_file )
+      ccontrol%alive_file( i ) = fcontrol%alive_file( i : i )
+    END DO
+    ccontrol%alive_file( LEN( fcontrol%alive_file ) + 1 ) = C_NULL_CHAR
+    DO i = 1, LEN( fcontrol%prefix )
+      ccontrol%prefix(i) = fcontrol%prefix( i : i )
+    END DO
+    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+    RETURN
 
-    character(kind=C_CHAR, len=opt_strlen(ctype)) :: ftype
-    type(f_bgo_control_type) :: fcontrol
-    type(f_bgo_inform_type) :: finform
-    type(f_bgo_full_data_type), pointer :: fdata
-    integer, dimension(:), allocatable :: row_find, col_find, ptr_find
-    logical :: f_indexing
+    END SUBROUTINE copy_control_out
+
+!  copy C times to fortran
+
+    SUBROUTINE copy_time_in(ctime, ftime) 
+    TYPE ( bgo_time_type ), INTENT( IN ) :: ctime
+    TYPE ( f_bgo_time_type ), INTENT( OUT ) :: ftime
+
+    ftime%total = ctime%total
+    ftime%univariate_global = ctime%univariate_global
+    ftime%multivariate_local = ctime%multivariate_local
+    ftime%clock_total = ctime%clock_total
+    ftime%clock_univariate_global = ctime%clock_univariate_global
+    ftime%clock_multivariate_local = ctime%clock_multivariate_local
+    RETURN
+
+    END SUBROUTINE copy_time_in
+
+!  copy fortran times to C
+
+    SUBROUTINE copy_time_out(ftime, ctime)
+    TYPE ( f_bgo_time_type ), INTENT( IN ) :: ftime
+    TYPE ( bgo_time_type ), INTENT( OUT ) :: ctime
+
+    ctime%total = ftime%total
+    ctime%univariate_global = ftime%univariate_global
+    ctime%multivariate_local = ftime%multivariate_local
+    ctime%clock_total = ftime%clock_total
+    ctime%clock_univariate_global = ftime%clock_univariate_global
+    ctime%clock_multivariate_local = ftime%clock_multivariate_local
+    RETURN
+
+    END SUBROUTINE copy_time_out
+
+!  copy C information parameters to fortran
+
+    SUBROUTINE copy_inform_in(cinform, finform) 
+    TYPE ( bgo_inform_type ), INTENT( IN ) :: cinform
+    TYPE ( f_bgo_inform_type ), INTENT( OUT ) :: finform
+    INTEGER :: i
+
+    ! Integers
+    finform%status = cinform%status
+    finform%alloc_status = cinform%alloc_status
+    finform%f_eval = cinform%f_eval
+    finform%g_eval = cinform%g_eval
+    finform%h_eval = cinform%h_eval
+
+    ! Reals
+    finform%obj = cinform%obj
+    finform%norm_pg = cinform%norm_pg
+
+    ! Derived types
+    CALL copy_time_in( cinform%time, finform%time )
+    CALL copy_trb_inform_in( cinform%trb_inform, finform%trb_inform )
+    CALL copy_ugo_inform_in( cinform%ugo_inform, finform%ugo_inform )
+    CALL copy_lhs_inform_in( cinform%lhs_inform, finform%lhs_inform )
+
+    ! Strings
+    DO i = 1, 81
+      IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
+      finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
+    END DO
+    RETURN
+
+    END SUBROUTINE copy_inform_in
+
+!  copy fortran information parameters to C
+
+    SUBROUTINE copy_inform_out( finform, cinform )
+    TYPE ( f_bgo_inform_type ), INTENT( IN ) :: finform 
+    TYPE ( bgo_inform_type ), INTENT( OUT ) :: cinform
+    INTEGER :: i
+
+    ! Integers
+    cinform%status = finform%status
+    cinform%alloc_status = finform%alloc_status
+    cinform%f_eval = finform%f_eval
+    cinform%g_eval = finform%g_eval
+    cinform%h_eval = finform%h_eval
+
+    ! Reals
+    cinform%obj = finform%obj
+    cinform%norm_pg = finform%norm_pg
+
+    ! Derived types
+    CALL copy_time_out( finform%time, cinform%time )
+    CALL copy_trb_inform_out( finform%trb_inform, cinform%trb_inform )
+    CALL copy_ugo_inform_out( finform%ugo_inform, cinform%ugo_inform )
+    CALL copy_lhs_inform_out( finform%lhs_inform, cinform%lhs_inform )
+
+    ! Strings
+    DO i = 1, LEN( finform%bad_alloc )
+      cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
+    END DO
+    cinform%bad_alloc( LEN( finform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    RETURN
+
+    END SUBROUTINE copy_inform_out
+
+  END MODULE GALAHAD_BGO_double_ciface
+
+!  -------------------------------------
+!  C interface to fortran bgo_initialize
+!  -------------------------------------
+
+  SUBROUTINE bgo_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  USE GALAHAD_BGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
+  TYPE ( bgo_control_type ), INTENT( OUT ) :: ccontrol
+  TYPE ( bgo_inform_type ), INTENT( OUT ) :: cinform
+
+!  local variables
+
+  TYPE ( f_bgo_full_data_type ), POINTER :: fdata
+  TYPE ( f_bgo_control_type ) :: fcontrol
+  TYPE ( f_bgo_inform_type ) :: finform
+  LOGICAL :: f_indexing 
+
+!  allocate fdata
+
+  ALLOCATE( fdata ); cdata = C_LOC( fdata )
+
+!  initialize required fortran types
+
+  CALL f_bgo_initialize( fdata, fcontrol, finform )
+
+!  C sparse matrix indexing by default
+
+  f_indexing = .FALSE.
+  fdata%f_indexing = f_indexing
+
+!  copy control out 
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE bgo_initialize
+
+!  ----------------------------------------
+!  C interface to fortran bgo_read_specfile
+!  ----------------------------------------
+
+  SUBROUTINE bgo_read_specfile( ccontrol, cspecfile ) BIND( C )
+  USE GALAHAD_BGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( bgo_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cspecfile
+
+!  local variables
+
+  TYPE ( f_bgo_control_type ) :: fcontrol
+  CHARACTER ( KIND = C_CHAR, LEN = strlen( cspecfile ) ) :: fspecfile
+  LOGICAL :: f_indexing
+
+!  device unit number for specfile
+
+  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
+
+!  convert C string to Fortran string
+
+  fspecfile = cstr_to_fchar( cspecfile )
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+  
+!  open specfile for reading
+
+  open( UNIT = device, FILE = fspecfile )
+  
+!  read control parameters from the specfile
+
+  CALL f_bgo_read_specfile( fcontrol, device )
+
+!  close specfile
+
+  close( device )
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+  RETURN
+
+  END SUBROUTINE bgo_read_specfile
+
+!  ---------------------------------
+!  C interface to fortran bgo_inport
+!  ---------------------------------
+
+  SUBROUTINE bgo_import( ccontrol, cdata, status, n, xl, xu, ctype,            &
+                         ne, row, col, ptr ) BIND( C )
+  USE GALAHAD_BGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, ne
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ne ), optional :: row, col
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), optional :: ptr
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: ctype
+  TYPE ( bgo_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( ctype ) ) :: ftype
+  TYPE ( f_bgo_control_type ) :: fcontrol
+  TYPE ( f_bgo_full_data_type ), POINTER :: fdata
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: row_find, col_find, ptr_find
+  LOGICAL :: f_indexing
+
+!  copy control and inform in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  convert C string to Fortran string
+
+  ftype = cstr_to_fchar( ctype )
+
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
+!  handle C sparse matrix indexing
+
+  IF ( .NOT. f_indexing ) THEN
+    IF ( PRESENT( row ) ) THEN
+      ALLOCATE( row_find( ne ) )
+      row_find = row + 1
+    END IF
+    IF ( PRESENT( col ) ) THEN
+      ALLOCATE( col_find(ne ) )
+      col_find = col + 1
+    END IF
+    IF ( PRESENT( ptr ) ) THEN
+      ALLOCATE( ptr_find( n + 1 ) )
+      ptr_find = ptr + 1
+    END IF
+
+!  import the problem data into the required BGO structure
+
+    CALL f_bgo_import( fcontrol, fdata, status, n, xl, xu, ftype, ne,          &
+                       row_find, col_find, ptr_find )
+    IF ( ALLOCATED( row_find ) ) DEALLOCATE( row_find )
+    IF ( ALLOCATED( col_find ) ) DEALLOCATE( col_find )
+    IF ( ALLOCATED( ptr_find ) ) DEALLOCATE( ptr_find )
+  ELSE
+    CALL f_bgo_import( fcontrol, fdata, status, n, xl, xu, ftype, ne,          &
+                       row, col, ptr )
+  END IF
+
+!  copy control out
+
+  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+  RETURN
+
+  END SUBROUTINE bgo_import
+
+!  -----------------------------------------
+!  C interface to fortran bgo_solve_with_mat
+!  -----------------------------------------
+
+  SUBROUTINE bgo_solve_with_mat( cdata, cuserdata, status, n, x, g, ne,        &
+                                 ceval_f, ceval_g, ceval_h, ceval_hprod,       &
+                                 ceval_prec ) BIND( C )
+  USE GALAHAD_BGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, ne
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_f, ceval_g
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_h, ceval_hprod, ceval_prec
+
+!  local variables
+
+  TYPE ( f_bgo_full_data_type ), POINTER :: fdata
+  PROCEDURE( eval_f ), POINTER :: feval_f
+  PROCEDURE( eval_g ), POINTER :: feval_g
+  PROCEDURE( eval_h ), POINTER :: feval_h
+  PROCEDURE( eval_hprod ), POINTER :: feval_hprod
+  PROCEDURE( eval_prec ), POINTER :: feval_prec
+  LOGICAL :: f_indexing
+
+!  ignore Fortran userdata type (not interoperable)
+
+  TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  associate procedure pointers
+
+  CALL C_F_PROCPOINTER( ceval_f, feval_f )
+  CALL C_F_PROCPOINTER( ceval_g, feval_g )
+  CALL C_F_PROCPOINTER( ceval_h, feval_h )
+  CALL C_F_PROCPOINTER( ceval_hprod, feval_hprod )
+  IF ( C_ASSOCIATED( ceval_prec ) ) THEN 
+    CALL C_F_PROCPOINTER( ceval_prec, feval_prec )
+  ELSE
+    NULLIFY( feval_prec )
+  END IF
+
+!  solve the problem when the Hessian is explicitly available
+
+  CALL f_bgo_solve_with_mat( fdata, fuserdata, status, x, g, wrap_eval_f,      &
+                              wrap_eval_g, wrap_eval_h, wrap_eval_hprod,       &
+                              wrap_eval_prec )
+
+  RETURN
+
+!  wrappers
+
+  CONTAINS
+
+!  eval_F wrapper
+
+    SUBROUTINE wrap_eval_f( status, x, userdata, f )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), INTENT( OUT ) :: f
+
+!  call C interoperable eval_f
+
+    status = feval_f( n, x, f, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_f
+
+!  eval_G wrapper
+
+    SUBROUTINE wrap_eval_g( status, x, userdata, g )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: g
+
+!  Call C interoperable eval_g
+    status = feval_g( n, x, g, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_g
+
+!  eval_H wrapper
+
+    SUBROUTINE wrap_eval_h( status, x, userdata, hval )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: hval
+
+!  Call C interoperable eval_h
+    status = feval_h( n, ne, x, hval, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_h
+
+! eval_HPROD wrapper    
+
+    SUBROUTINE wrap_eval_hprod( status, x, userdata, u, v, fgot_h )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: u
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
+    LOGICAL ( KIND = C_BOOL ) :: cgot_h
+
+! Call C interoperable eval_hprod
+    IF ( PRESENT( fgot_h ) ) THEN
+      cgot_h = fgot_h
+    ELSE
+      cgot_h = .FALSE.
+    END IF
+    status = feval_hprod( n, x, u, v, cgot_h, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_hprod
+
+!  eval_PREC wrapper
+
+    SUBROUTINE wrap_eval_prec( status, x, userdata, u, v )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: u
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+
+!  call C interoperable eval_prec
+
+    status = feval_prec( n, x, u, v, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_prec
+
+  END SUBROUTINE bgo_solve_with_mat
+
+!  --------------------------------------------
+!  C interface to fortran bgo_solve_without_mat
+!  --------------------------------------------
+
+  SUBROUTINE bgo_solve_without_mat( cdata, cuserdata, status, n, x, g,         &
+                                    ceval_f, ceval_g, ceval_hprod,             &
+                                    ceval_shprod, ceval_prec ) BIND( C )
+  USE GALAHAD_BGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_f, ceval_g
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_hprod, ceval_shprod
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_prec
+
+!  local variables
+
+  TYPE ( f_bgo_full_data_type ), POINTER :: fdata
+  PROCEDURE( eval_f ), POINTER :: feval_f
+  PROCEDURE( eval_g ), POINTER :: feval_g
+  PROCEDURE( eval_hprod ), POINTER :: feval_hprod
+  PROCEDURE( eval_shprod ), POINTER :: feval_shprod
+  PROCEDURE( eval_prec ), POINTER :: feval_prec
+  LOGICAL :: f_indexing
+
+!  ignore Fortran userdata type (not interoperable)
+
+  TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  is fortran-style 1-based indexing used?
+
+  f_indexing = fdata%f_indexing
+
+!  associate procedure pointers
+
+  CALL C_F_PROCPOINTER( ceval_f, feval_f ) 
+  CALL C_F_PROCPOINTER( ceval_g, feval_g )
+  CALL C_F_PROCPOINTER( ceval_hprod, feval_hprod )
+  CALL C_F_PROCPOINTER( ceval_shprod, feval_shprod )
+  IF ( C_ASSOCIATED( ceval_prec ) ) THEN 
+    CALL C_F_PROCPOINTER( ceval_prec, feval_prec )
+  ELSE
+    NULLIFY( feval_prec )
+  END IF
+
+!  solve the problem when the Hessian is only available via products
+
+  CALL f_bgo_solve_without_mat( fdata, fuserdata, status, x, g, wrap_eval_f,   &
+                                wrap_eval_g, wrap_eval_hprod,                  &
+                                wrap_eval_shprod, wrap_eval_prec )
+
+  RETURN
+
+!  wrappers
+
+  CONTAINS
+
+!  eval_F wrapper
+
+    SUBROUTINE wrap_eval_f( status, x, userdata, f )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), INTENT( OUT ) :: f
+
+!  call C interoperable eval_f
+
+    status = feval_f( n, x, f, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_f
+
+!  eval_G wrapper
+
+    SUBROUTINE wrap_eval_g( status, x, userdata, g )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: g
+
+!  call C interoperable eval_g
+
+    status = feval_g( n, x, g, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_g
+
+!  eval_HPROD wrapper
+
+    SUBROUTINE wrap_eval_hprod( status, x, userdata, u, v, fgot_h )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: u
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
+    LOGICAL ( KIND = C_BOOL ) :: cgot_h
+
+!  call C interoperable eval_hprod
+
+    IF ( PRESENT( fgot_h ) ) THEN
+      cgot_h = fgot_h
+    ELSE
+      cgot_h = .false.
+    END IF
+    status = feval_hprod( n, x, u, v, cgot_h, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_hprod
+
+!  eval_SHPROD wrapper
+
+    SUBROUTINE wrap_eval_shprod( status, x, userdata, nnz_v, index_nz_v, v,    &
+                                 nnz_u, index_nz_u, u, fgot_h )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    INTEGER ( KIND = C_INT ), INTENT( IN ) :: nnz_v
+    INTEGER ( KIND = C_INT ), DIMENSION(:), INTENT( IN ) :: index_nz_v
+    REAL ( KIND = wp ), dimension( : ), INTENT( IN ) :: v
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nnz_u 
+    INTEGER ( KIND = C_INT ), DIMENSION( : ), INTENT( OUT ) :: index_nz_u
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: u
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
+    LOGICAL ( KIND = C_BOOL ) :: cgot_h
+
+!  call C interoperable eval_shprod
+
+    IF ( PRESENT( fgot_h ) ) THEN
+      cgot_h = fgot_h 
+    ELSE
+      cgot_h = .false.
+    END IF
+
+    IF ( f_indexing ) then
+      status = feval_shprod( n, x, nnz_v, index_nz_v, v, nnz_u, index_nz_u,    &
+                             u, cgot_h, cuserdata )
+    ELSE ! handle C sparse matrix indexing
+      status = feval_shprod(n, x, nnz_v, index_nz_v - 1, v, nnz_u, index_nz_u, &
+                             u, cgot_h, cuserdata )
+      index_nz_u = index_nz_u + 1
+    END IF
+    RETURN
+
+    END SUBROUTINE wrap_eval_shprod
+
+!  eval_PREC wrapper
+
+    SUBROUTINE wrap_eval_prec( status, x, userdata, u, v )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: u
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+
+!  call C interoperable eval_prec
+
+    status = feval_prec( n, x, u, v, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_prec
+
+  END SUBROUTINE bgo_solve_without_mat
+
+!  -------------------------------------------------
+!  C interface to fortran bgo_solve_reverse_with_mat
+!  -------------------------------------------------
+
+  SUBROUTINE bgo_solve_reverse_with_mat( cdata, status, eval_status,           &
+                                         n, x, f, g, ne, val, u, v ) BIND( C )
+  USE GALAHAD_BGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, ne
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g, u, v 
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( ne ) :: val
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_bgo_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the problem when the Hessian is available by reverse communication
+
+  CALL f_bgo_solve_reverse_with_mat( fdata, status, eval_status, x, f, g, val, &
+                                      u, v )
+  RETURN
     
+  END SUBROUTINE bgo_solve_reverse_with_mat
 
-    ! Copy control and inform in
-    call copy_control_in(ccontrol, fcontrol, f_indexing)
-    call copy_inform_in(cinform, finform)
-
-    ! Associate data pointer
-    call C_F_POINTER(cdata, fdata)
-
-    ! Convert C string to Fortran string
-    ftype = cstr_to_fchar(ctype)
-
-    ! Handle C sparse matrix indexing
-    if(.not.f_indexing) then
-        if(present(row)) then
-            allocate(row_find(ne))
-            row_find = row + 1
-        end if
-        if(present(col)) then
-            allocate(col_find(ne))
-            col_find = col + 1
-        end if
-        if(present(ptr)) then
-            allocate(ptr_find(n+1))
-            ptr_find = ptr + 1
-        end if
-    end if
-
-    ! Call BGO_import
-    if(f_indexing) then
-        call f_bgo_import(fcontrol, finform, fdata, n, xl, xu, ftype, ne, row, col, ptr)
-    else ! handle C sparse matrix indexing
-        call f_bgo_import(fcontrol, finform, fdata, n, xl, xu, ftype, ne, row_find, col_find, ptr_find)
-    end if
-
-    ! Copy control out 
-    call copy_control_out(fcontrol, ccontrol, f_indexing)
-
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
-end subroutine bgo_import
-
-subroutine bgo_solve_with_h(ccontrol, cinform, cdata, cuserdata, n, x, g, ne, &
-                            ceval_f, ceval_g, ceval_h, ceval_hprod, ceval_prec) bind(C)
-    use GALAHAD_BGO_double_ciface
-    implicit none
-
-    integer(C_INT), intent(in), value :: n, ne
-    real(wp), intent(inout), dimension(n) :: x, g 
-
-    type(bgo_control_type), intent(in) :: ccontrol
-    type(bgo_inform_type), intent(inout) :: cinform
-    type(C_PTR), intent(inout) :: cdata
-    type(C_PTR), intent(in), value :: cuserdata
-    type(C_FUNPTR), intent(in), value :: ceval_f, ceval_g, ceval_h, ceval_hprod, ceval_prec
-
-    type(f_bgo_control_type) :: fcontrol
-    type(f_bgo_inform_type) :: finform
-    type(f_bgo_full_data_type), pointer :: fdata
-    procedure(eval_f), pointer :: feval_f
-    procedure(eval_g), pointer :: feval_g
-    procedure(eval_h), pointer :: feval_h
-    procedure(eval_hprod), pointer :: feval_hprod
-    procedure(eval_prec), pointer :: feval_prec
-    logical :: f_indexing
-
-    ! Ignore Fortran userdata type (not interoperable)
-    type(f_nlpt_userdata_type), pointer :: fuserdata => null()
-
-    ! Copy control and inform in
-    call copy_control_in(ccontrol, fcontrol, f_indexing)
-    call copy_inform_in(cinform, finform)
-
-    ! Associate data pointer
-    call C_F_POINTER(cdata, fdata)
-
-    ! Associate procedure pointers
-    call C_F_PROCPOINTER(ceval_f, feval_f)
-    call C_F_PROCPOINTER(ceval_g, feval_g)
-    call C_F_PROCPOINTER(ceval_h, feval_h)
-    call C_F_PROCPOINTER(ceval_hprod, feval_hprod)
-    if(C_ASSOCIATED(ceval_prec)) then 
-        call C_F_PROCPOINTER(ceval_prec, feval_prec)
-    else
-        nullify(feval_prec)
-    endif
-
-    ! Call BGO_solve_with_h
-    call f_bgo_solve_with_h(fcontrol, finform, fdata, fuserdata, x, g, &
-                            wrap_eval_f, wrap_eval_g, wrap_eval_h, wrap_eval_hprod, wrap_eval_prec)
-
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
-
-    contains
-
-    ! eval_F wrapper
-    subroutine wrap_eval_f(status, x, userdata, f)
-        integer(C_INT), intent(out) :: status
-        real(wp), dimension(:), intent(in) :: x
-        type(f_nlpt_userdata_type), intent(inout) :: userdata
-        real(wp), intent(out) :: f
-
-        ! Call C interoperable eval_f
-        status = feval_f(n, x, f, cuserdata)
-    end subroutine wrap_eval_f
-
-    ! eval_G wrapper
-    subroutine wrap_eval_g(status, x, userdata, g)
-        integer(C_INT), intent(out) :: status
-        real(wp), dimension(:), intent(in) :: x
-        type(f_nlpt_userdata_type), intent(inout) :: userdata
-        real(wp), dimension(:), intent(out) :: g
-
-        ! Call C interoperable eval_g
-        status = feval_g(n, x, g, cuserdata)
-    end subroutine wrap_eval_g
-
-    ! eval_H wrapper
-    subroutine wrap_eval_h(status, x, userdata, hval)
-        integer(C_INT), intent(out) :: status
-        real(wp), dimension(:), intent(in) :: x
-        type(f_nlpt_userdata_type), intent(inout) :: userdata
-        real(wp), dimension(:), intent(out) :: hval
-
-        ! Call C interoperable eval_h
-        status = feval_h(n, ne, x, hval, cuserdata)
-    end subroutine wrap_eval_h
-
-    ! eval_HPROD wrapper    
-    subroutine wrap_eval_hprod(status, x, userdata, u, v, fgot_h)
-        integer(C_INT), intent(out) :: status
-        real(wp), dimension(:), intent(in) :: x
-        type(f_nlpt_userdata_type), intent(inout) :: userdata
-        real(wp), dimension(:), intent(inout) :: u
-        real(wp), dimension(:), intent(in) :: v
-        logical, optional, intent(in) :: fgot_h
-        logical(C_BOOL) :: cgot_h
-
-        ! Call C interoperable eval_hprod
-        if(present(fgot_h)) then
-            cgot_h = fgot_h
-        else
-            cgot_h = .false.
-        end if
-        status = feval_hprod(n, x, u, v, cgot_h, cuserdata)
-    end subroutine wrap_eval_hprod
-
-    ! eval_PREC wrapper
-    subroutine wrap_eval_prec(status, x, userdata, u, v)
-        integer(C_INT), intent(out) :: status
-        real(wp), dimension(:), intent(in) :: x
-        type(f_nlpt_userdata_type), intent(inout) :: userdata
-        real(wp), dimension(:), intent(out) :: u
-        real(wp), dimension(:), intent(in) :: v
-
-        ! Call C interoperable eval_prec
-        status = feval_prec(n, x, u, v, cuserdata)
-    end subroutine wrap_eval_prec
-
-end subroutine bgo_solve_with_h
-
-subroutine bgo_solve_without_h(ccontrol, cinform, cdata, cuserdata, n, x, g, &
-                               ceval_f, ceval_g, ceval_hprod, ceval_shprod, ceval_prec) bind(C)
-    use GALAHAD_BGO_double_ciface
-    implicit none
-
-    integer(C_INT), intent(in), value :: n
-    real(wp), intent(inout), dimension(n) :: x, g 
-
-    type(bgo_control_type), intent(in) :: ccontrol
-    type(bgo_inform_type), intent(inout) :: cinform
-    type(C_PTR), intent(inout) :: cdata
-    type(C_PTR), intent(in), value :: cuserdata
-    type(C_FUNPTR), intent(in), value :: ceval_f, ceval_g, ceval_hprod, ceval_shprod, ceval_prec
-
-    type(f_bgo_control_type) :: fcontrol
-    type(f_bgo_inform_type) :: finform
-    type(f_bgo_full_data_type), pointer :: fdata
-    procedure(eval_f), pointer :: feval_f
-    procedure(eval_g), pointer :: feval_g
-    procedure(eval_hprod), pointer :: feval_hprod
-    procedure(eval_shprod), pointer :: feval_shprod
-    procedure(eval_prec), pointer :: feval_prec
-    logical :: f_indexing
-
-    ! Ignore Fortran userdata type (not interoperable)
-    type(f_nlpt_userdata_type), pointer :: fuserdata => null()
-
-    ! Copy control and inform in
-    call copy_control_in(ccontrol, fcontrol, f_indexing)
-    call copy_inform_in(cinform, finform)
-
-    ! Associate data pointer
-    call C_F_POINTER(cdata, fdata)
-
-    ! Associate procedure pointers
-    call C_F_PROCPOINTER(ceval_f, feval_f) 
-    call C_F_PROCPOINTER(ceval_g, feval_g)
-    call C_F_PROCPOINTER(ceval_hprod, feval_hprod)
-    call C_F_PROCPOINTER(ceval_shprod, feval_shprod)
-    if(C_ASSOCIATED(ceval_prec)) then 
-        call C_F_PROCPOINTER(ceval_prec, feval_prec)
-    else
-        nullify(feval_prec)
-    endif
-
-    ! Call BGO_solve_without_h
-    call f_bgo_solve_without_h(fcontrol, finform, fdata, fuserdata, x, g, &
-                               wrap_eval_f, wrap_eval_g, wrap_eval_hprod, wrap_eval_shprod, wrap_eval_prec)
-
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
-
-    contains
-
-    ! eval_F wrapper
-    subroutine wrap_eval_f(status, x, userdata, f)
-        integer(C_INT), intent(out) :: status
-        real(wp), dimension(:), intent(in) :: x
-        type(f_nlpt_userdata_type), intent(inout) :: userdata
-        real(wp), intent(out) :: f
-
-        ! Call C interoperable eval_f
-        status = feval_f(n, x, f, cuserdata)
-    end subroutine wrap_eval_f
-
-    ! eval_G wrapper
-    subroutine wrap_eval_g(status, x, userdata, g)
-        integer(C_INT), intent(out) :: status
-        real(wp), dimension(:), intent(in) :: x
-        type(f_nlpt_userdata_type), intent(inout) :: userdata
-        real(wp), dimension(:), intent(out) :: g
-
-        ! Call C interoperable eval_g
-        status = feval_g(n, x, g, cuserdata)
-    end subroutine wrap_eval_g
-
-    ! eval_HPROD wrapper 
-    subroutine wrap_eval_hprod(status, x, userdata, u, v, fgot_h)
-        integer(C_INT), intent(out) :: status
-        real(wp), dimension(:), intent(in) :: x
-        type(f_nlpt_userdata_type), intent(inout) :: userdata
-        real(wp), dimension(:), intent(inout) :: u
-        real(wp), dimension(:), intent(in) :: v
-        logical, optional, intent(in) :: fgot_h
-        logical(C_BOOL) :: cgot_h
-
-        ! Call C interoperable eval_hprod
-        if(present(fgot_h)) then
-            cgot_h = fgot_h
-        else
-            cgot_h = .false.
-        end if
-        status = feval_hprod(n, x, u, v, cgot_h, cuserdata)
-    end subroutine wrap_eval_hprod
-
-    ! eval_SHPROD wrapper
-    subroutine wrap_eval_shprod(status, x, userdata, nnz_v, index_nz_v, v, &
-        nnz_u, index_nz_u, u, fgot_h)
-        integer(C_INT), intent(out) :: status
-        real(wp), dimension(:), intent(in) :: x
-        type(f_nlpt_userdata_type), intent(inout) :: userdata
-        integer(C_INT), intent(in) :: nnz_v
-        integer(C_INT), dimension(:), intent(in) :: index_nz_v
-        real(wp), dimension(:), intent(in) :: v
-        integer(C_INT), intent(out) :: nnz_u 
-        integer(C_INT), dimension(:), intent(out) :: index_nz_u
-        real(wp), dimension(:), intent(out) :: u
-        logical, optional, intent(in) :: fgot_h
-        logical(C_BOOL) :: cgot_h
-
-        ! Call C interoperable eval_shprod
-        if(present(fgot_h)) then
-            cgot_h = fgot_h 
-        else
-            cgot_h = .false.
-        end if
-        if(f_indexing) then
-            status = feval_shprod(n, x, nnz_v, index_nz_v, v, nnz_u, index_nz_u, u, cgot_h, cuserdata)
-        else ! handle C sparse matrix indexing
-            status = feval_shprod(n, x, nnz_v, index_nz_v-1, v, nnz_u, index_nz_u, u, cgot_h, cuserdata)
-            index_nz_u = index_nz_u + 1
-        endif
-    end subroutine wrap_eval_shprod
-
-    ! eval_PREC wrapper
-    subroutine wrap_eval_prec(status, x, userdata, u, v)
-        integer(C_INT), intent(out) :: status
-        real(wp), dimension(:), intent(in) :: x
-        type(f_nlpt_userdata_type), intent(inout) :: userdata
-        real(wp), dimension(:), intent(out) :: u
-        real(wp), dimension(:), intent(in) :: v
-
-        ! Call C interoperable eval_prec
-        status = feval_prec(n, x, u, v, cuserdata)
-    end subroutine wrap_eval_prec
-
-end subroutine bgo_solve_without_h
-
-subroutine bgo_solve_reverse_with_h(ccontrol, cinform, cdata, eval_status, n, x, f, g, ne, val, u, v) bind(C)
-    use GALAHAD_BGO_double_ciface
-    implicit none
-
-    integer(C_INT), intent(in), value :: n, ne
-    integer(C_INT), intent(inout) :: eval_status
-    real(wp), intent(in), value :: f
-    real(wp), intent(inout), dimension(n) :: x, g, u, v 
-    real(wp), intent(inout), dimension(ne) :: val
-
-    type(bgo_control_type), intent(in) :: ccontrol
-    type(bgo_inform_type), intent(inout) :: cinform
-    type(C_PTR), intent(inout) :: cdata
-
-    type(f_bgo_control_type) :: fcontrol
-    type(f_bgo_inform_type) :: finform
-    type(f_bgo_full_data_type), pointer :: fdata
-    logical :: f_indexing
-
-    ! Copy control and inform in
-    call copy_control_in(ccontrol, fcontrol, f_indexing)
-    call copy_inform_in(cinform, finform)
-
-    ! Associate data pointer
-    call C_F_POINTER(cdata, fdata)
-
-    ! Call BGO_solve_reverse_with_h
-    call f_bgo_solve_reverse_with_h(fcontrol, finform, fdata, eval_status, x, f, g, val, u, v)
-
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
-    
-end subroutine bgo_solve_reverse_with_h
-
-subroutine bgo_solve_reverse_without_h(ccontrol, cinform, cdata, eval_status, n, x, f, g, u, v, &
-                                       index_nz_v, nnz_v, index_nz_u, nnz_u) bind(C)
-    use GALAHAD_BGO_double_ciface
-    implicit none
-
-    integer(C_INT), intent(in), value :: n, nnz_u
-    integer(C_INT), intent(inout) :: eval_status
-    integer(C_INT), intent(out) :: nnz_v
-    real(wp), intent(in), value :: f
-    real(wp), intent(inout), dimension(n) :: x, g, u, v
-    integer(C_INT), intent(in), dimension(n) :: index_nz_u
-    integer(C_INT), intent(out), dimension(n) :: index_nz_v
-
-    type(bgo_control_type), intent(in) :: ccontrol
-    type(bgo_inform_type), intent(inout) :: cinform
-    type(C_PTR), intent(inout) :: cdata
-
-    type(f_bgo_control_type) :: fcontrol
-    type(f_bgo_inform_type) :: finform
-    type(f_bgo_full_data_type), pointer :: fdata
-    logical :: f_indexing
-
-    ! Copy control and inform in
-    call copy_control_in(ccontrol, fcontrol, f_indexing)
-    call copy_inform_in(cinform, finform)
-
-    ! Associate data pointer
-    call C_F_POINTER(cdata, fdata)
-
-    ! Call BGO_solve_reverse_without_h
-    if(f_indexing) then
-        call f_bgo_solve_reverse_without_h(fcontrol, finform, fdata, eval_status, x, f, g, u, v, &
-                                           index_nz_v, nnz_v, index_nz_u, nnz_u)
-    else
-        call f_bgo_solve_reverse_without_h(fcontrol, finform, fdata, eval_status, x, f, g, u, v, &
-                                           index_nz_v, nnz_v, index_nz_u+1, nnz_u) 
-    end if
-
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
-
-    ! Convert to C indexing if required
-    if(.not.f_indexing) then
-        index_nz_v = index_nz_v - 1
-    endif
-
-end subroutine bgo_solve_reverse_without_h
-
-subroutine bgo_terminate(cdata, ccontrol, cinform) bind(C) 
-    use GALAHAD_BGO_double_ciface
-    implicit none
-
-    type(C_PTR), intent(inout) :: cdata
-    type(bgo_control_type), intent(in) :: ccontrol
-    type(bgo_inform_type), intent(inout) :: cinform
-
-    type(f_bgo_full_data_type), pointer :: fdata
-    type(f_bgo_control_type) :: fcontrol
-    type(f_bgo_inform_type) :: finform
-    logical :: f_indexing
-
-    ! Copy control in
-    call copy_control_in(ccontrol, fcontrol, f_indexing)
-
-    ! Copy inform in
-    call copy_inform_in(cinform, finform)
-
-    ! Associate data pointer
-    call C_F_POINTER(cdata, fdata)
-
-    ! Call BGO_terminate
-    call f_bgo_terminate(fdata,fcontrol,finform)
-
-    ! Copy inform out
-    call copy_inform_out(finform, cinform)
-
-    ! Deallocate data
-    deallocate(fdata); cdata = C_NULL_PTR 
-end subroutine bgo_terminate
+!  ----------------------------------------------------
+!  C interface to fortran bgo_solve_reverse_without_mat
+!  ----------------------------------------------------
+
+  SUBROUTINE bgo_solve_reverse_without_mat( cdata, status, eval_status, n,     &
+                                            x, f, g, u, v, index_nz_v, nnz_v,  &
+                                            index_nz_u, nnz_u ) BIND( C )
+  USE GALAHAD_BGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, nnz_u
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nnz_v
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g, u, v
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n ) :: index_nz_u
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: index_nz_v
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_bgo_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  is fortran-style 1-based indexing used?
+
+  f_indexing = fdata%f_indexing
+
+!  solve the problem when Hessian products are available by reverse 
+!  communication
+
+  IF ( f_indexing ) THEN
+    CALL f_bgo_solve_reverse_without_mat( fdata, status, eval_status, x, f, g, &
+                                          u, v, index_nz_v, nnz_v,             &
+                                          index_nz_u, nnz_u )
+  ELSE
+    CALL f_bgo_solve_reverse_without_mat( fdata, status, eval_status, x, f, g, &
+                                          u, v, index_nz_v, nnz_v,             &
+                                          index_nz_u + 1, nnz_u )
+
+!  convert to C indexing if required
+
+     IF ( status == 7 ) index_nz_v( : nnz_v ) = index_nz_v( : nnz_v ) - 1
+  END IF
+
+  RETURN
+
+  END SUBROUTINE bgo_solve_reverse_without_mat
+
+!  --------------------------------------
+!  C interface to fortran bgo_information
+!  --------------------------------------
+
+  SUBROUTINE bgo_information( cdata, cinform, status ) BIND( C ) 
+  USE GALAHAD_BGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( bgo_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+
+!  local variables
+
+  TYPE ( f_bgo_full_data_type ), pointer :: fdata
+  TYPE ( f_bgo_inform_type ) :: finform
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  obtain BGO solution information
+
+  CALL f_bgo_information( fdata, finform, status )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+  RETURN
+
+  END SUBROUTINE bgo_information
+
+!  ------------------------------------
+!  C interface to fortran bgo_terminate
+!  ------------------------------------
+
+  SUBROUTINE bgo_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  USE GALAHAD_BGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( bgo_control_type ), INTENT( IN ) :: ccontrol
+  TYPE ( bgo_inform_type ), INTENT( INOUT ) :: cinform
+
+!  local variables
+
+  TYPE ( f_bgo_full_data_type ), pointer :: fdata
+  TYPE ( f_bgo_control_type ) :: fcontrol
+  TYPE ( f_bgo_inform_type ) :: finform
+  LOGICAL :: f_indexing
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  copy inform in
+
+  CALL copy_inform_in( cinform, finform )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  deallocate workspace
+
+  CALL f_bgo_terminate( fdata, fcontrol, finform )
+
+!  copy inform out
+
+  CALL copy_inform_out( finform, cinform )
+
+!  deallocate data
+
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  RETURN
+
+  END SUBROUTINE bgo_terminate
+

@@ -15,7 +15,7 @@
 ! start problem data
    nlp%pname = 'TRBSPEC'                        ! name
    nlp%n = n ; nlp%H%ne = h_ne                  ! dimensions
-   ALLOCATE( nlp%X( n ), nlp%G( n ), nlp%X_l( n ), nlp%X_u( n ), nlp%Z( n ) )
+   ALLOCATE( nlp%X( n ), nlp%G( n ), nlp%X_l( n ), nlp%X_u( n ) )
    nlp%X = 1.0_wp                               ! start from one
    nlp%X_l( : n )  = (/ - infinity, - infinity, 0.0_wp /) ; nlp%X_u = 1.1_wp
 !  sparse co-ordinate storage format

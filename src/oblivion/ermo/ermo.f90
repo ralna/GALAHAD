@@ -90,7 +90,7 @@
        REAL ( KIND = wp ) :: obj, norm_g
        CHARACTER ( LEN = 80 ) :: bad_alloc
        TYPE ( ERMO_time_type ) :: time
-       TYPE ( GLTR_info_type ) :: GLTR_inform
+       TYPE ( GLTR_inform_type ) :: GLTR_inform
        TYPE ( TRU_inform_type ) :: TRU_inform
      END TYPE ERMO_inform_type
 

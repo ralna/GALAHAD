@@ -2194,7 +2194,7 @@
       TYPE ( SLS_control_type ), INTENT( INOUT ) :: SLS_control
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: SCU_mat
-      TYPE ( SCU_info_type ), INTENT( INOUT ) :: SCU_info
+      TYPE ( SCU_inform_type ), INTENT( INOUT ) :: SCU_info
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: SCU_data
       TYPE ( SMT_type ), INTENT( INOUT ) :: K
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
@@ -2845,7 +2845,7 @@
       TYPE ( SLS_control_type ), INTENT( INOUT ) :: SLS_control
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: SCU_mat
-      TYPE ( SCU_info_type ), INTENT( INOUT ) :: SCU_info
+      TYPE ( SCU_inform_type ), INTENT( INOUT ) :: SCU_info
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: SCU_data
       TYPE ( SMT_type ), INTENT( INOUT ) :: K
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
@@ -11450,7 +11450,7 @@ main: DO
       REAL ( KIND = wp ), INTENT( IN ),                                        &
                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: SCU_mat
-      TYPE ( SCU_info_type ), INTENT( INOUT ) :: SCU_info
+      TYPE ( SCU_inform_type ), INTENT( INOUT ) :: SCU_info
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: SCU_data
       TYPE ( SMT_type ), INTENT( IN ) :: K
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
@@ -11697,7 +11697,7 @@ main: DO
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( k_n_max ) :: VECTOR
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m + n ) :: PERT
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: SCU_mat
-      TYPE ( SCU_info_type ), INTENT( INOUT ) :: SCU_info
+      TYPE ( SCU_inform_type ), INTENT( INOUT ) :: SCU_info
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: SCU_data
       TYPE ( SMT_type ), INTENT( IN ) :: K
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data

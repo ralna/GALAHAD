@@ -11,7 +11,7 @@
    REAL ( KIND = working ), DIMENSION( 0 ) :: X0, R0, VECTOR0
    TYPE ( GLTR_data_type ) :: data
    TYPE ( GLTR_control_type ) :: control        
-   TYPE ( GLTR_info_type ) :: info
+   TYPE ( GLTR_inform_type ) :: info
 
 !  ==============
 !  Normal entries

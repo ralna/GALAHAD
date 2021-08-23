@@ -43,7 +43,7 @@
 !-------------------------------
 
      TYPE ( GLTR_control_type ) :: control
-     TYPE ( GLTR_info_type ) :: inform
+     TYPE ( GLTR_inform_type ) :: inform
      TYPE ( GLTR_data_type ) :: data
 
 !------------------------------------

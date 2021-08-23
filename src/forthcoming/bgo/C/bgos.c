@@ -11,10 +11,11 @@ struct userdata_type {
 };
 
 // Function prototypes
-int fun(int n, const double x[], double *f, const void *);
-int grad(int n, const double x[], double g[], const void *);
-int hess(int n, int ne, const double x[], double hval[], const void *);
-int hessprod(int n, const double x[], double u[], const double v[], bool got_h, const void *);
+int fun( int n, const double x[], double *f, const void * );
+int grad( int n, const double x[], double g[], const void * );
+int hess( int n, int ne, const double x[], double hval[], const void * );
+int hessprod( int n, const double x[], double u[], const double v[], 
+              bool got_h, const void * );
 
 int main(void) {
 
@@ -24,7 +25,7 @@ int main(void) {
     struct bgo_inform_type inform;   
 
     // Initialize BGO
-    bgo_initialize(&data, &control, &inform);
+    bgo_initialize( &data, &control, &inform );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -52,17 +53,23 @@ int main(void) {
     double g[n]; // gradient
     
     // Set Hessian storage format, structure and problem bounds
-    bgo_import(&control, &inform, &data, n, x_l, x_u, H_type, ne, H_row, H_col, NULL);
+    int status;
+    bgo_import( &control, &data, &status, n, x_l, x_u, 
+                H_type, ne, H_row, H_col, NULL );
 
     // Set for initial entry
-    inform.status = 1; 
+    status = 1; 
 
     // Call BGO_solve
-    bgo_solve_with_h(&control, &inform, &data, &userdata,n, x, g, ne, fun, grad, hess, hessprod, NULL);
+    bgo_solve_with_mat( &data, &userdata, &status, 
+                      n, x, g, ne, fun, grad, hess, hessprod, NULL );
+
+    // Record solution information
+    bgo_information( &data, &inform, &status );
 
     if(inform.status == 0){ // successful return
         printf("BGO successful solve\n");
-        printf("iter: %d \n", inform.trb_inform.iter);
+        printf("TR iter: %d \n", inform.trb_inform.iter);
         printf("x: ");
         for(int i = 0; i < n; i++) printf("%f ", x[i]);
         printf("\n");
@@ -79,13 +86,13 @@ int main(void) {
     }
 
     // Delete internal workspace
-    bgo_terminate(&data, &control, &inform);
+    bgo_terminate( &data, &control, &inform );
 
     return 0;
 }
 
 // Objective function 
-int fun(int n, const double x[], double *f, const void *userdata){
+int fun( int n, const double x[], double *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
 
@@ -94,7 +101,7 @@ int fun(int n, const double x[], double *f, const void *userdata){
 }
 
 // Gradient of the objective
-int grad(int n, const double x[], double g[], const void *userdata){
+int grad( int n, const double x[], double g[], const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
 
@@ -105,7 +112,7 @@ int grad(int n, const double x[], double g[], const void *userdata){
 }
 
 // Hessian of the objective
-int hess(int n, int ne, const double x[], double hval[], const void *userdata){
+int hess( int n, int ne, const double x[], double hval[], const void *userdata){
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 2.0;
     hval[2] = 2.0;
@@ -115,7 +122,8 @@ int hess(int n, int ne, const double x[], double hval[], const void *userdata){
 }
 
 // Hessian-vector product
-int hessprod(int n, const double x[], double u[], const double v[], bool got_h, const void *userdata){
+int hessprod( int n, const double x[], double u[], const double v[], 
+              bool got_h, const void *userdata){
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos( x[0] ) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
     u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );

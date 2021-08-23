@@ -131,7 +131,7 @@
       TYPE ( SMT_type ) :: H, M
       TYPE ( GLTR_data_type ), SAVE :: data
       TYPE ( GLTR_control_type ), SAVE :: control
-      TYPE ( GLTR_info_type ) :: inform
+      TYPE ( GLTR_inform_type ) :: inform
 
       TYPE ( PSLS_data_type ), SAVE :: PSLS_data
       TYPE ( PSLS_control_type ), SAVE :: PSLS_control

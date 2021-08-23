@@ -3296,7 +3296,7 @@
         ELSE IF ( gradient_kind == 1 ) THEN
           WRITE( control%out, "( A, ' G = ones' )" ) prefix
         ELSE
-          WRITE( control%out, "( A, ' G =', /, ( 5X, 3ES24.16 ) )" )          &
+          WRITE( control%out, "( A, ' G =', /, ( 5X, 3ES24.16 ) )" )           &
             prefix, G( : n )
         END IF
         IF ( Hessian_kind == 0 ) THEN

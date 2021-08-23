@@ -23,7 +23,7 @@ int main(void) {
     struct arc_inform_type inform;   
 
     // Initialize ARC
-    arc_initialize(&data, &control, &inform);
+    arc_initialize( &data, &control, &inform );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -47,17 +47,17 @@ int main(void) {
     
     // Set Hessian storage format, structure and problem bounds
     int status;
-    arc_import(&control, &data, &status, n, H_type, ne, H_row, H_col, NULL);
+    arc_import( &control, &data, &status, n, H_type, ne, H_row, H_col, NULL );
 
     // Set for initial entry
     status = 1; 
 
     // Call ARC_solve
-    arc_solve_with_h(&data, &userdata, &status,
-                     n, x, g, ne, fun, grad, hess, NULL);
+    arc_solve_with_mat( &data, &userdata, &status,
+                        n, x, g, ne, fun, grad, hess, NULL );
 
     // Record solution information
-    arc_information(&data, &inform, &status);
+    arc_information( &data, &inform, &status );
     
     if(inform.status == 0){ // successful return
         printf("ARC successful solve\n");
@@ -78,7 +78,7 @@ int main(void) {
     }
 
     // Delete internal workspace
-    arc_terminate(&data, &control, &inform);
+    arc_terminate( &data, &control, &inform );
 
     return 0;
 }

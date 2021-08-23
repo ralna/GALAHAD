@@ -47,7 +47,21 @@
      PUBLIC :: NLS_initialize, NLS_read_specfile, NLS_solve, NLS_terminate,    &
                NLS_subproblem_initialize, NLS_subproblem_read_specfile,        &
                NLS_subproblem_solve, NLS_subproblem_terminate,                 &
+               NLS_full_initialize, NLS_full_terminate,                        &
+               NLS_import, NLS_information,                                    &
                NLPT_problem_type, GALAHAD_userdata_type, SMT_type, SMT_put
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE NLS_initialize
+       MODULE PROCEDURE NLS_initialize, NLS_full_initialize
+     END INTERFACE NLS_initialize
+
+     INTERFACE NLS_terminate
+       MODULE PROCEDURE NLS_terminate, NLS_full_terminate
+     END INTERFACE NLS_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -206,7 +220,7 @@
 !
 !     -3  user's own regularization norm
 !     -2  S = limited-memory BFGS matrix (with
-!          %PSLS_contro%lbfgs_vectors history) (*not yet implemented*)
+!          %PSLS_control%lbfgs_vectors history) (*not yet implemented*)
 !     -1  identity (= Euclidan two-norm)
 !      0  automatic (*not yet implemented*)
 !      1  diagonal, S = diag( max( JTJ Hessian, %PSLS_contro%min_diagonal ) )
@@ -237,8 +251,8 @@
 
 !   overall convergence tolerances. The iteration will terminate when
 !      ||c||_2 <= MAX( %stop_c_absolute, %stop_c_relative * ||c_initial||_2
-!     or when the norm of the gradient g = J^T(x) c(x) / ||c(x)||_2 of ||c||_2
-!      ||g||_2 <= MAX( %stop_g_absolute, %stop_g_relative * ||g_initial||_2
+!     or when the norm of the gradient g = J^T(x) c(x) / ||c(x)||_2 of ||c||_2,
+!      ||g||_2 <= MAX( %stop_g_absolute, %stop_g_relative * ||g_initial||_2,
 !     or if the step is less than %stop_s
 
        REAL ( KIND = wp ) :: stop_c_absolute = tenm6
@@ -487,17 +501,17 @@
 
        REAL ( KIND = wp ) :: factorization_average = zero
 
-!  the value of the objective function 1/2||c(x)||_2^2 at the best estimate of
+!  the value of the objective function 1/2||c(x)||^2_W at the best estimate of
 !   the solution, x, determined by NLS_solve
 
        REAL ( KIND = wp ) :: obj = HUGE( one )
 
-!  the norm of the residual ||c(x)||_2 at the best estimate of the solution,
+!  the norm of the residual ||c(x)||_W at the best estimate of the solution,
 !   x, determined by NLS_solve
 
        REAL ( KIND = wp ) :: norm_c = HUGE( one )
 
-!  the norm of the gradient of ||c(x)||_2 of the objective function
+!  the norm of the gradient of ||c(x)||_W of the objective function
 !   at the best estimate, x, of the solution determined by NLS_solve
 
        REAL ( KIND = wp ) :: norm_g = HUGE( one )
@@ -664,6 +678,12 @@
        TYPE ( NLS_subproblem_data_type ) :: subproblem_data
      END TYPE NLS_data_type
 
+     TYPE, PUBLIC :: NLS_full_data_type
+       TYPE ( NLS_data_type ) :: NLS_data
+       TYPE ( NLS_control_type ) :: NLS_control
+       TYPE ( NLS_inform_type ) :: NLS_inform
+     END TYPE NLS_full_data_type
+
    CONTAINS
 
 ! G A L A H A D - N E W T O N _ N L S _ I N I T I A L I Z E  S U B R O U T I N E
@@ -781,6 +801,38 @@
 !  End of subroutine NLS_initialize
 
      END SUBROUTINE NLS_initialize
+
+!- G A L A H A D -  N L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE NLS_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for NLS controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( NLS_control_type ), INTENT( OUT ) :: control
+     TYPE ( NLS_inform_type ), INTENT( OUT ) :: inform
+
+     CALL NLS_initialize( data%nls_data, control, inform )
+
+     RETURN
+
+!  End of subroutine NLS_full_initialize
+
+     END SUBROUTINE NLS_full_initialize
 
 !-*-  N L S _ N E W T O N _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-
 
@@ -8474,6 +8526,142 @@
 !  End of subroutine NLS_terminate
 
      END SUBROUTINE NLS_terminate
+
+! -  G A L A H A D -  N L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE NLS_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( NLS_control_type ), INTENT( IN ) :: control
+     TYPE ( NLS_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL NLS_terminate( data%nls_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     RETURN
+
+!  End of subroutine NLS_full_terminate
+
+     END SUBROUTINE NLS_full_terminate
+
+
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-*-  G A L A H A D -  N L S _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+
+     SUBROUTINE NLS_import( control, data, status )
+
+!  import problem data into internal storage prior to solution. 
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading 
+!   comments to NLS_solve
+!
+!  data is a scalar variable of type NLS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    0. The import was succesful
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. An input restriction has been violated.
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( NLS_control_type ), INTENT( INOUT ) :: control
+     TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     data%nls_control = control
+
+     error = data%nls_control%error
+     space_critical = data%nls_control%space_critical
+     deallocate_error_fatal = data%nls_control%space_critical
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%nls_inform%status
+     RETURN
+
+!  End of subroutine NLS_import
+
+     END SUBROUTINE NLS_import
+
+!-  G A L A H A D -  N L S _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE NLS_information( data, inform, status )
+
+!  return solver information during or after solution by NLS
+!  See NLS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( NLS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%nls_inform
+     
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine NLS_information
+
+     END SUBROUTINE NLS_information
 
 !  End of module GALAHAD_NLS
 

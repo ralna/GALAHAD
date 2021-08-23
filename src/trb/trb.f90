@@ -49,8 +49,8 @@
      PUBLIC :: TRB_initialize, TRB_read_specfile, TRB_solve,                   &
                TRB_projection, TRB_terminate, NLPT_problem_type,               &
                NLPT_userdata_type, SMT_type, SMT_put,                          &
-               TRB_import, TRB_solve_with_h, TRB_solve_without_h,              &
-               TRB_solve_reverse_with_h, TRB_solve_reverse_without_h,          &
+               TRB_import, TRB_solve_with_mat, TRB_solve_without_mat,          &
+               TRB_solve_reverse_with_mat, TRB_solve_reverse_without_mat,      &
                TRB_full_initialize, TRB_full_terminate, TRB_information
 
 !----------------------
@@ -528,7 +528,7 @@
 
 !  inform parameters for GLTR
 
-       TYPE ( GLTR_info_type ) :: GLTR_inform
+       TYPE ( GLTR_inform_type ) :: GLTR_inform
 
 !  inform parameters for PSLS
 
@@ -1565,6 +1565,7 @@
      CHARACTER ( LEN = 6 ) :: char_active
      CHARACTER ( LEN = 80 ) :: array_name
 !    REAL ( KIND = wp ), DIMENSION( nlp%n ) :: V
+     TYPE ( TRB_inform_type ) :: inform_initialize
 
 !  prefix for all output
 
@@ -1619,7 +1620,9 @@
      CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
      data%out = control%out
 
-     inform%iter = 0
+!  initialize components of inform 
+
+     inform = inform_initialize
 
 !  ensure that input parameters are within allowed ranges
 
@@ -4999,10 +5002,6 @@
      data%WK = TRB_projection( nlp%n, nlp%X - nlp%G, nlp%X_l, nlp%X_u )
      inform%norm_pg = TWO_NORM( nlp%X - data%WK )
 
-!  record the dual variables
-
-     nlp%Z( : nlp%n ) = nlp%G( : nlp%n )
-
 !  print details of solution
 
      CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
@@ -5536,12 +5535,6 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'trb: data%nlp%Z'
-     CALL SPACE_dealloc_array( data%nlp%Z,                                     &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
      array_name = 'trb: data%nlp%X_l'
      CALL SPACE_dealloc_array( data%nlp%X_l,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -5789,7 +5782,7 @@
      SUBROUTINE TRB_import( control, data, status, n, X_l, X_u,                &
                             H_type, ne, H_row, H_col, H_ptr )
 
-!  import problem data into internal storage prior to solution. 
+!  import fixed problem data into internal storage prior to solution. 
 !  Arguments are as follows:
 
 !  control is a derived type whose components are described in the leading 
@@ -5890,15 +5883,6 @@
 
      array_name = 'trb: data%nlp%G'
      CALL SPACE_resize_array( n, data%nlp%G,                                   &
-            data%trb_inform%status, data%trb_inform%alloc_status,              &
-            array_name = array_name,                                           &
-            deallocate_error_fatal = deallocate_error_fatal,                   &
-            exact_size = space_critical,                                       &
-            bad_alloc = data%trb_inform%bad_alloc, out = error )
-     IF ( data%trb_inform%status /= 0 ) GO TO 900
-
-     array_name = 'trb: data%nlp%Z'
-     CALL SPACE_resize_array( n, data%nlp%Z,                                   &
             data%trb_inform%status, data%trb_inform%alloc_status,              &
             array_name = array_name,                                           &
             deallocate_error_fatal = deallocate_error_fatal,                   &
@@ -6048,17 +6032,17 @@
 !  error returns
 
  900 CONTINUE
-     status =  data%trb_inform%status
+     status = data%trb_inform%status
      RETURN
 
 !  End of subroutine TRB_import
 
      END SUBROUTINE TRB_import
 
-!-  G A L A H A D -  T R B _ s o l v e _ w i t h _ h   S U B R O U T I N E  -
+!-  G A L A H A D -  T R B _ s o l v e _ w i t h _ m a t  S U B R O U T I N E  -
 
-     SUBROUTINE TRB_solve_with_h( data, userdata, status, X, G,                &
-                                  eval_F, eval_G, eval_H, eval_PREC )
+     SUBROUTINE TRB_solve_with_mat( data, userdata, status, X, G,              &
+                                    eval_F, eval_G, eval_H, eval_PREC )
 
 !  solve the bound-constrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
@@ -6093,15 +6077,15 @@
 
      RETURN
 
-!  end of subroutine TRB_solve_with_h
+!  end of subroutine TRB_solve_with_mat
 
-     END SUBROUTINE TRB_solve_with_h
+     END SUBROUTINE TRB_solve_with_mat
 
-! - G A L A H A D -  T R B _ s o l v e _ w i t h o u t _h  S U B R O U T I N E -
+!  G A L A H A D -  T R B _ s o l v e _ without _ m a t  S U B R O U T I N E 
 
-     SUBROUTINE TRB_solve_without_h( data, userdata, status, X, G,             &
-                                     eval_F, eval_G, eval_HPROD,               &
-                                     eval_SHPROD, eval_PREC )
+     SUBROUTINE TRB_solve_without_mat( data, userdata, status, X, G,           &
+                                       eval_F, eval_G, eval_HPROD,             &
+                                       eval_SHPROD, eval_PREC )
 
 !  solve the bound-constrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations 
@@ -6137,14 +6121,14 @@
 
      RETURN
 
-!  end of subroutine TRB_solve_without_h
+!  end of subroutine TRB_solve_without_mat
 
-     END SUBROUTINE TRB_solve_without_h
+     END SUBROUTINE TRB_solve_without_mat
 
-!-*-  G A L A H A D -  T R B _ s o l v e _ reverse _ h  S U B R O U T I N E  -*-
+!-  G A L A H A D -  T R B _ s o l v e _ reverse _ m a t  S U B R O U T I N E -
 
-     SUBROUTINE TRB_solve_reverse_with_h( data, status, eval_status,           &
-                                          X, f, G, H_val, U, V )
+     SUBROUTINE TRB_solve_reverse_with_mat( data, status, eval_status,         &
+                                            X, f, G, H_val, U, V )
 
 !  solve the bound-constrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
@@ -6169,6 +6153,7 @@
 
      data%trb_inform%status = status
      data%trb_data%eval_status = eval_status
+
      SELECT CASE ( data%trb_inform%status )
      CASE ( 1 )
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
@@ -6209,16 +6194,16 @@
 
      RETURN
 
-!  end of subroutine TRB_solve_reverse_with_h
+!  end of subroutine TRB_solve_reverse_with_mat
 
-     END SUBROUTINE TRB_solve_reverse_with_h
+     END SUBROUTINE TRB_solve_reverse_with_mat
 
-!-  G A L A H A D -  T R B _ s o l v e _ reverse _ no _h  S U B R O U T I N E  -
+!-  G A L A H A D -  T R B _ s o l v e _ reverse _ no _ mat  S U B R O U T I N E
 
-     SUBROUTINE TRB_solve_reverse_without_h( data, status, eval_status,        &
-                                             X, f, G, U, V,                    &
-                                             INDEX_nz_v, nnz_v,                &
-                                             INDEX_nz_u, nnz_u )
+     SUBROUTINE TRB_solve_reverse_without_mat( data, status, eval_status,      &
+                                               X, f, G, U, V,                  &
+                                               INDEX_nz_v, nnz_v,              &
+                                               INDEX_nz_u, nnz_u )
 
 !  solve the bound-constrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations 
@@ -6245,6 +6230,7 @@
 
      data%trb_inform%status = status
      data%trb_data%eval_status = eval_status
+
      SELECT CASE ( data%trb_inform%status )
      CASE ( 1 )
        data%nlp%X( : data%nlp%n ) = X( : data%nlp%n )
@@ -6304,9 +6290,9 @@
 
      RETURN
 
-!  end of subroutine TRB_solve_reverse_without_h
+!  end of subroutine TRB_solve_reverse_without_mat
 
-     END SUBROUTINE TRB_solve_reverse_without_h
+     END SUBROUTINE TRB_solve_reverse_without_mat
 
 !-  G A L A H A D -  T R B _ i n f o r m a t i o n   S U B R O U T I N E  -
 

@@ -13,7 +13,7 @@ int main(void) {
     struct tru_inform_type inform;
 
     // Initialize TRU
-    tru_initialize(&data, &control, &inform);
+    tru_initialize( &data, &control, &inform );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -33,7 +33,7 @@ int main(void) {
     double u[n], v[n];
 
     // Set Hessian storage format, structure and problem bounds
-    tru_import(&control, &data, &status, n, H_type, ne, NULL, NULL, NULL);
+    tru_import( &control, &data, &status, n, H_type, ne, NULL, NULL, NULL );
     control.maxit=2;
     control.print_level=5;
 
@@ -44,8 +44,8 @@ int main(void) {
     while(true){ // reverse-communication loop
 
         // Call TRU_solve
-        tru_solve_reverse_without_h(&data, &status, &eval_status, 
-                        n, x, f, g, u, v );
+        tru_solve_reverse_without_mat( &data, &status, &eval_status, 
+                                       n, x, f, g, u, v );
 
         // Evaluate f(x) and its derivatives as required
         if(status == 0){ // successful termination
@@ -74,7 +74,7 @@ int main(void) {
     }
 
     // Record solution information
-    tru_information(&data, &inform, &status);
+    tru_information( &data, &inform, &status );
 
     // Print solution details
     printf("iter: %d \n", inform.iter);
@@ -90,7 +90,7 @@ int main(void) {
     printf("status: %d \n", inform.status);
 
     // Delete internal workspace
-    tru_terminate(&data, &control, &inform);
+    tru_terminate( &data, &control, &inform );
 
     return 0;
 }

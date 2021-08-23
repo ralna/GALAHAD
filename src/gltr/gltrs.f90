@@ -9,7 +9,7 @@
    REAL ( KIND = working ), DIMENSION( n ) :: X, R, VECTOR, H_vector
    TYPE ( GLTR_data_type ) :: data
    TYPE ( GLTR_control_type ) :: control
-   TYPE ( GLTR_info_type ) :: inform
+   TYPE ( GLTR_inform_type ) :: inform
    CALL GLTR_initialize( data, control, inform ) ! Initialize control parameters
    control%unitm = .FALSE.                ! M is not the identity matrix
    R = one                                ! The linear term is a vector of ones

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/04/2021 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 10/08/2021 AT 09:30 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ T R U   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -48,8 +48,8 @@
      PUBLIC :: TRU_initialize, TRU_read_specfile, TRU_solve,                   &
                TRU_terminate, NLPT_problem_type, NLPT_userdata_type,           &
                SMT_type, SMT_put,                                              &
-               TRU_import, TRU_solve_with_h, TRU_solve_without_h,              &
-               TRU_solve_reverse_with_h, TRU_solve_reverse_without_h,          &
+               TRU_import, TRU_solve_with_mat, TRU_solve_without_mat,          &
+               TRU_solve_reverse_with_mat, TRU_solve_reverse_without_mat,      &
                TRU_full_initialize, TRU_full_terminate, TRU_information
 
 !----------------------
@@ -514,7 +514,7 @@
 
 !  inform parameters for GLTR
 
-       TYPE ( GLTR_info_type ) :: GLTR_inform
+       TYPE ( GLTR_inform_type ) :: GLTR_inform
 
 !  inform parameters for PSLS
 
@@ -4209,7 +4209,7 @@
      SUBROUTINE TRU_import( control, data, status, n, H_type, ne, H_row,       &
                             H_col, H_ptr )
 
-!  import problem data into internal storage prior to solution. 
+!  import fixed problem data into internal storage prior to solution. 
 !  Arguments are as follows:
 
 !  control is a derived type whose components are described in the leading 
@@ -4433,10 +4433,10 @@
 
      END SUBROUTINE TRU_import
 
-!-  G A L A H A D -  T R U _ s o l v e _ w i t h _ h   S U B R O U T I N E  -
+!-  G A L A H A D -  T R U _ s o l v e _ w i t h _ m a t  S U B R O U T I N E  -
 
-     SUBROUTINE TRU_solve_with_h( data, userdata, status, X, G,                &
-                                  eval_F, eval_G, eval_H, eval_PREC )
+     SUBROUTINE TRU_solve_with_mat( data, userdata, status, X, G,              &
+                                    eval_F, eval_G, eval_H, eval_PREC )
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
@@ -4471,14 +4471,14 @@
 
      RETURN
 
-!  end of subroutine TRU_solve_with_h
+!  end of subroutine TRU_solve_with_mat
 
-     END SUBROUTINE TRU_solve_with_h
+     END SUBROUTINE TRU_solve_with_mat
 
-! - G A L A H A D -  T R U _ s o l v e _ w i t h o u t _h  S U B R O U T I N E -
+! - G A L A H A D -  T R U _ s o l v e _ without _ m a t  S U B R O U T I N E -
 
-     SUBROUTINE TRU_solve_without_h( data, userdata, status, X, G,             &
-                                     eval_F, eval_G, eval_HPROD, eval_PREC )
+     SUBROUTINE TRU_solve_without_mat( data, userdata, status, X, G,           &
+                                       eval_F, eval_G, eval_HPROD, eval_PREC )
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations 
@@ -4514,14 +4514,14 @@
 
      RETURN
 
-!  end of subroutine TRU_solve_without_h
+!  end of subroutine TRU_solve_without_mat
 
-     END SUBROUTINE TRU_solve_without_h
+     END SUBROUTINE TRU_solve_without_mat
 
-!-*-  G A L A H A D -  T R U _ s o l v e _ reverse _ h  S U B R O U T I N E  -*-
+!-  G A L A H A D -  T R U _ s o l v e _ reverse _ M A T  S U B R O U T I N E -
 
-     SUBROUTINE TRU_solve_reverse_with_h( data, status, eval_status,           &
-                                          X, f, G, H_val, U, V )
+     SUBROUTINE TRU_solve_reverse_with_mat( data, status, eval_status,         &
+                                            X, f, G, H_val, U, V )
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
@@ -4586,14 +4586,14 @@
 
      RETURN
 
-!  end of subroutine TRU_solve_reverse_with_h
+!  end of subroutine TRU_solve_reverse_with_mat
 
-     END SUBROUTINE TRU_solve_reverse_with_h
+     END SUBROUTINE TRU_solve_reverse_with_mat
 
-!-  G A L A H A D -  T R U _ s o l v e _ reverse _ no _h  S U B R O U T I N E  -
+!-  G A L A H A D -  T R U _ s o l v e _ reverse _ no _ mat  S U B R O U T I N E
 
-     SUBROUTINE TRU_solve_reverse_without_h( data, status, eval_status,        &
-                                             X, f, G, U, V )
+     SUBROUTINE TRU_solve_reverse_without_mat( data, status, eval_status,      &
+                                               X, f, G, U, V )
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations 
@@ -4661,9 +4661,9 @@
 
      RETURN
 
-!  end of subroutine TRU_solve_reverse_without_h
+!  end of subroutine TRU_solve_reverse_without_mat
 
-     END SUBROUTINE TRU_solve_reverse_without_h
+     END SUBROUTINE TRU_solve_reverse_without_mat
 
 !-  G A L A H A D -  T R U _ i n f o r m a t i o n   S U B R O U T I N E  -
 

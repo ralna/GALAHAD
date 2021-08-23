@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_BGO_EXAMPLE  !  GALAHAD 2.8 - 20/06/2016 AT 15:15 GMT.
+   PROGRAM GALAHAD_BGO_EXAMPLE  !  GALAHAD 3.3 - 03/08/2021 AT 14:15 GMT.
    USE GALAHAD_BGO_double                       ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
@@ -29,7 +29,7 @@
    CALL BGO_initialize( data, control, inform ) ! Initialize control parameters
    control%TRB_control%subproblem_direct = .FALSE.  ! Use an iterative method
    control%attempts_max = 1000
-   control%max_eval = 1000
+   control%max_evals = 1000
    control%TRB_control%maxit = 10
    control%print_level = 1
 ! Solve the problem
@@ -37,10 +37,10 @@
    CALL BGO_solve( nlp, control, inform, data, userdata, eval_F = FUN,         &
                    eval_G = GRAD, eval_H = HESS, eval_HPROD = HPROD )
    IF ( inform%status == 0 ) THEN               ! Successful return
-     WRITE( 6, "( ' BGO: ', I0, ' iterations -',                               &
+     WRITE( 6, "( ' BGO: ', I0, ' evaluations -',                              &
     &     ' optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
-     inform%TRB_inform%iter, inform%obj, nlp%X
+     inform%f_eval, inform%obj, nlp%X
    ELSE                                         ! Error returns
      WRITE( 6, "( ' BGO_solve exit status = ', I6 ) " ) inform%status
    END IF

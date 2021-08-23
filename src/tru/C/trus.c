@@ -53,8 +53,8 @@ int main(void) {
     status = 1; 
 
     // Call TRU_solve
-    tru_solve_with_h( &data, &userdata, &status,
-                      n, x, g, ne, fun, grad, hess, NULL );
+    tru_solve_with_mat( &data, &userdata, &status,
+                        n, x, g, ne, fun, grad, hess, NULL );
 
     // Record solution information
     tru_information( &data, &inform, &status );

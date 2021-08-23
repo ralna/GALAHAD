@@ -4,7 +4,7 @@
    IMPLICIT NONE 
    TYPE ( SCU_matrix_type ) :: mat, mat2 
    TYPE ( SCU_data_type ) :: data
-   TYPE ( SCU_info_type ) :: info
+   TYPE ( SCU_inform_type ) :: info
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    INTEGER, PARAMETER :: n = 5, m = 2, mmax = m + 1
    INTEGER, PARAMETER :: lcd = 10, lbd = 11, lcd2 = 13, lbd2 = 14

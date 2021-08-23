@@ -1378,7 +1378,7 @@
 
          TYPE ( GLTR_data_type )    :: GLTR_data
          TYPE ( GLTR_control_type ) :: GLTR_control
-         TYPE ( GLTR_info_type )    :: GLTR_info
+         TYPE ( GLTR_inform_type )  :: GLTR_info
 
 !        ----------------------------------------------
 !        The value of the controls at the previous call

@@ -481,7 +481,7 @@
 
 !  inform parameters for GLTR
 
-       TYPE ( GLTR_info_type ) :: GLTR_inform
+       TYPE ( GLTR_inform_type ) :: GLTR_inform
 
 !  inform parameters for PSLS
 

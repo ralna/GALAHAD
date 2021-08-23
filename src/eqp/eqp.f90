@@ -338,7 +338,7 @@
 
 !  return information from GLTR
 
-        TYPE ( GLTR_info_type ) :: GLTR_inform
+        TYPE ( GLTR_inform_type ) :: GLTR_inform
       END TYPE
 
    CONTAINS

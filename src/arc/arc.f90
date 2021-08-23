@@ -48,8 +48,8 @@
      PUBLIC :: ARC_initialize, ARC_read_specfile, ARC_solve,                   &
                ARC_adjust_weight, ARC_terminate, NLPT_problem_type,            &
                NLPT_userdata_type, SMT_type, SMT_put,                          &
-               ARC_import, ARC_solve_with_h, ARC_solve_without_h,              &
-               ARC_solve_reverse_with_h, ARC_solve_reverse_without_h,          &
+               ARC_import, ARC_solve_with_mat, ARC_solve_without_mat,          &
+               ARC_solve_reverse_with_mat, ARC_solve_reverse_without_mat,      &
                ARC_full_initialize, ARC_full_terminate, ARC_information
 
 !----------------------
@@ -254,7 +254,8 @@
         INTEGER :: mi28_rsize = 10
 
 !   try to pick a good initial regularization weight using %advanced_start
-!    iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1803
+!    iterates of a variant on the strategy of Sartenaer SISC 18(6)
+!    1990:1788-1803
 
        INTEGER :: advanced_start = 0
 
@@ -275,7 +276,7 @@
 
        REAL ( KIND = wp ) :: minimum_weight = tenm8
 
-!  expert parameters as suggested in Gould, Porcelli and Toint, "Updating the
+!  expert parameters as suggested in Gould, Porcelli & Toint, "Updating the
 !   regularization parameter in the adaptive cubic regularization algorithm",
 !   RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011),
 !      http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf
@@ -298,8 +299,8 @@
 
 !   on very successful iterations, the regularization weight will be reduced
 !    by the factor %weight_decrease but no more than %weight_decrease_min
-!    while if the iteration is unsucceful, the weight will be increased by a
-!    factor %weight_increase but no more than %weight_increase_max
+!    while if the iteration is unsuccessful, the weight will be increased by
+!    a factor %weight_increase but no more than %weight_increase_max
 !    (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli
 !    and Toint, 2011)
 
@@ -331,7 +332,8 @@
 
        LOGICAL :: subproblem_direct = .FALSE.
 
-!   should the weight be renormalized to account for a change in preconditioner?
+!   should the weight be renormalized to account for a change in 
+!    preconditioner?
 
        LOGICAL :: renormalize_weight = .FALSE.
 
@@ -395,7 +397,8 @@
 
        REAL :: preprocess = 0.0
 
-!  the CPU time spent analysing the required matrices prior to factorization
+!  the CPU time spent analysing the required matrices prior to
+!    factorization
 
        REAL :: analyse = 0.0
 
@@ -415,7 +418,8 @@
 
        REAL ( KIND = wp ) :: clock_preprocess = 0.0
 
-!  the clock time spent analysing the required matrices prior to factorization
+!  the clock time spent analysing the required matrices prior to 
+!   factorization
 
        REAL ( KIND = wp ) :: clock_analyse = 0.0
 
@@ -2608,7 +2612,7 @@
                ELSE
                  data%control%RQS_control%initial_multiplier =                 &
                    inform%RQS_inform%multiplier *                              &
-                     ( data%old_weight / inform%weight ) +                       &
+                     ( data%old_weight / inform%weight ) +                     &
                    inform%RQS_inform%pole *                                    &
                    ( one - ( data%old_weight / inform%weight ) )
                  IF ( inform%RQS_inform%pole > zero )                          &
@@ -3613,10 +3617,10 @@
                  ' n=-ve curvature h=hard case)' )
  2100 FORMAT( A, '    It           f        grad    ',                         &
              ' ratio   weight  step   # fact        time' )
- 2110 FORMAT( A, '    It           f        grad    ',                         &
-             ' ratio   weight   step  pass 1 pass 2       time' )
+ 2110 FORMAT( A, '    It           f       grad     ',                         &
+             'ratio   weight  step   pass 1 pass 2      time' )
  2120 FORMAT( A, A6, 1X, 3A1, ES12.4, ES9.2, ES9.1, 2ES8.1, A7, F12.2 )
- 2130 FORMAT( A, A6, 1X, 3A1, ES12.4, ES9.2, ES9.1, 2ES8.1, 2A7, F11.2 )
+ 2130 FORMAT( A, A6, 1X, 3A1, ES12.4, ES9.2, ES9.1, 2ES8.1, 2A7, F10.2 )
  2140 FORMAT( A, A6, 4X, ES12.4, ES9.2, 9X, ES8.1 )
 
  !  End of subroutine ARC_solve
@@ -4199,7 +4203,7 @@
      SUBROUTINE ARC_import( control, data, status, n, H_type, ne, H_row,       &
                             H_col, H_ptr )
 
-!  import problem data into internal storage prior to solution. 
+!  import fixed problem data into internal storage prior to solution. 
 !  Arguments are as follows:
 
 !  control is a derived type whose components are described in the leading 
@@ -4424,10 +4428,10 @@
 
      END SUBROUTINE ARC_import
 
-!-  G A L A H A D -  A R C _ s o l v e _ w i t h _ h   S U B R O U T I N E  -
+!-  G A L A H A D -  A R C _ s o l v e _ w i t h _ M A T  S U B R O U T I N E  -
 
-     SUBROUTINE ARC_solve_with_h( data, userdata, status, X, G,                &
-                                  eval_F, eval_G, eval_H, eval_PREC )
+     SUBROUTINE ARC_solve_with_mat( data, userdata, status, X, G,              &
+                                    eval_F, eval_G, eval_H, eval_PREC )
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
@@ -4462,14 +4466,14 @@
 
      RETURN
 
-!  end of subroutine ARC_solve_with_h
+!  end of subroutine ARC_solve_with_mat
 
-     END SUBROUTINE ARC_solve_with_h
+     END SUBROUTINE ARC_solve_with_mat
 
 ! - G A L A H A D -  A R C _ s o l v e _ w i t h o u t _h  S U B R O U T I N E -
 
-     SUBROUTINE ARC_solve_without_h( data, userdata, status, X, G,             &
-                                     eval_F, eval_G, eval_HPROD, eval_PREC )
+     SUBROUTINE ARC_solve_without_mat( data, userdata, status, X, G,           &
+                                       eval_F, eval_G, eval_HPROD, eval_PREC )
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations 
@@ -4505,14 +4509,14 @@
 
      RETURN
 
-!  end of subroutine ARC_solve_without_h
+!  end of subroutine ARC_solve_without_mat
 
-     END SUBROUTINE ARC_solve_without_h
+     END SUBROUTINE ARC_solve_without_mat
 
-!-*-  G A L A H A D -  A R C _ s o l v e _ reverse _ h  S U B R O U T I N E  -*-
+!-  G A L A H A D -  A R C _ s o l v e _ reverse _ M A T   S U B R O U T I N E 
 
-     SUBROUTINE ARC_solve_reverse_with_h( data, status, eval_status,           &
-                                          X, f, G, H_val, U, V )
+     SUBROUTINE ARC_solve_reverse_with_mat( data, status, eval_status,         &
+                                            X, f, G, H_val, U, V )
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
@@ -4577,14 +4581,14 @@
 
      RETURN
 
-!  end of subroutine ARC_solve_reverse_with_h
+!  end of subroutine ARC_solve_reverse_with_mat
 
-     END SUBROUTINE ARC_solve_reverse_with_h
+     END SUBROUTINE ARC_solve_reverse_with_mat
 
-!-  G A L A H A D -  A R C _ s o l v e _ reverse _ no _h  S U B R O U T I N E  -
+!-  G A L A H A D -  A R C _ s o l v e _ reverse _ no _ mat  S U B R O U T I N E
 
-     SUBROUTINE ARC_solve_reverse_without_h( data, status, eval_status,        &
-                                             X, f, G, U, V )
+     SUBROUTINE ARC_solve_reverse_without_mat( data, status, eval_status,      &
+                                               X, f, G, U, V )
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian-vector and preconditioning operations 
@@ -4652,9 +4656,9 @@
 
      RETURN
 
-!  end of subroutine ARC_solve_reverse_without_h
+!  end of subroutine ARC_solve_reverse_without_mat
 
-     END SUBROUTINE ARC_solve_reverse_without_h
+     END SUBROUTINE ARC_solve_reverse_without_mat
 
 !-  G A L A H A D -  A R C _ i n f o r m a t i o n   S U B R O U T I N E  -
 

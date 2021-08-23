@@ -7,7 +7,7 @@
    INTEGER, PARAMETER :: n = 5, m = 2, mmax = m + 1 
    TYPE ( SCU_matrix_type ) :: mat 
    TYPE ( SCU_data_type ) :: data 
-   TYPE ( SCU_info_type ) :: info 
+   TYPE ( SCU_inform_type ) :: info 
    REAL ( KIND = wp ) :: X1( n + m ), RHS1( n + m )
    REAL ( KIND = wp ) :: X2( n + m + 1 ), RHS2( n + m + 1 )
    REAL ( KIND = wp ) :: X3( n + m ), RHS3( n + m ), VECTOR( n ) 

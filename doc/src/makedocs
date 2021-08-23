@@ -63,12 +63,13 @@
 #foreach pack ( smt )
 #foreach pack ( trs rqs )
 #foreach pack ( dps )
-foreach pack ( trb )
+#foreach pack ( trb )
+#foreach pack ( gltr scu )
 #foreach pack ( trs )
 #foreach pack ( llst )
 #foreach pack ( rqs)
 #foreach pack ( tru )
-#foreach pack ( arc tru )
+foreach pack ( arc tru trb )
 #foreach pack ( ir )
 #foreach pack ( gltr sbls eqp )
 #foreach pack ( symbols )
@@ -82,9 +83,9 @@ foreach pack ( trb )
 #foreach pack ( qpa qpb qpc qpp lsqp fdc symbols eqp sbls )
 #foreach pack ( cqp eqp fdc lsqp qpa qpb qpc qp rqs sbls sls trs wcp )
   echo "    " $pack
-  latex $pack
-  latex $pack
-  latex $pack
+  my_latex $pack
+  my_latex $pack
+  my_latex $pack
   psfromdvi ../$pack
 # lpr ../$pack.ps
   ps2pdf "-sPAPERSIZE=a4" ../$pack.ps ../$pack.pdf

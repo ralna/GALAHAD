@@ -26,7 +26,7 @@
      USE LANCELOT_OTHERS_double, ONLY: OTHERS_fdgrad_save_type
      USE LANCELOT_PRECN_double, ONLY: PRECN_save_type
      USE GALAHAD_SCU_double, ONLY: SCU_matrix_type, SCU_data_type,             &
-                                   SCU_info_type
+                                   SCU_inform_type
      USE GALAHAD_SILS_double, ONLY: SILS_control, SILS_factors,                &
                                     SILS_ainfo, SILS_finfo, SILS_sinfo
      USE GALAHAD_SMT_double, ONLY: SMT_type
@@ -589,7 +589,7 @@
 
 !  return information from SCU
 
-       TYPE ( SCU_info_type ) :: SCU_info
+       TYPE ( SCU_inform_type ) :: SCU_info
 
 !  return information from SILS
 

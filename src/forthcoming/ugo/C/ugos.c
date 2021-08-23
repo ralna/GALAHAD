@@ -16,7 +16,8 @@ int fgh(double x, double *f, double *g, double *h, const void *userdata){
 
    *f = x * x * cos( a*x );
    *g = - a * x * x * sin( a*x ) + 2.0 * x * cos( a*x );
-   *h = - a * a* x * x * cos( a*x ) - 4.0 * a * x * sin( a*x ) + 2.0 * cos( a*x );
+   *h = - a * a* x * x * cos( a*x ) - 4.0 * a * x * sin( a*x ) 
+        + 2.0 * cos( a*x );
    return 0;
 }
 
@@ -28,7 +29,8 @@ int main(void) {
     struct ugo_inform_type inform;
 
     // Initialize UGO
-    ugo_initialize(&data, &control, &inform);
+
+    ugo_initialize( &data, &control, &inform );
 
     // Set user-defined control options
     control.print_level = 1;
@@ -45,13 +47,19 @@ int main(void) {
 
     // Test problem objective, gradient, Hessian values
     double x, f, g, h;
+    int status;
+
+    // import problem data
+    ugo_import( &control, &data, &status, &x_l, &x_u );
 
     // Set for initial entry
-    inform.status = 1; 
+    status = 1; 
     
     // Call UGO_solve
-    ugo_solve(x_l, x_u, &x, &f, &g, &h, &control, &inform, &data, &userdata, fgh);
+    ugo_solve_direct( &data, &userdata, &status, &x, &f, &g, &h, fgh );    
 
+    // Record solution information
+    ugo_information( &data, &inform, &status );
     if(inform.status == 0){ // successful return
         printf("UGO successful solve\n");
         printf("iter: %d \n", inform.iter);
@@ -68,7 +76,7 @@ int main(void) {
     }
 
     // Delete internal workspace
-    ugo_terminate(&data, &control, &inform);
+    ugo_terminate( &data, &control, &inform );
 
     return 0;
 }

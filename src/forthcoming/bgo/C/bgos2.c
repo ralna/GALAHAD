@@ -11,11 +11,13 @@ struct userdata_type {
 };
 
 // Function prototypes
-int fun(int n, const double x[], double *f, const void *);
-int grad(int n, const double x[], double g[], const void *);
-int hessprod(int n, const double x[], double u[], const double v[], bool got_h, const void *);
-int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
-                int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *);
+int fun( int n, const double x[], double *f, const void * );
+int grad( int n, const double x[], double g[], const void * );
+int hessprod( int n, const double x[], double u[], const double v[], 
+              bool got_h, const void * );
+int shessprod( int n, const double x[], int nnz_v, const int index_nz_v[], 
+               const double v[], int *nnz_u, int index_nz_u[], double u[], 
+               bool got_h, const void * );
 
 int main(void) {
 
@@ -25,7 +27,7 @@ int main(void) {
     struct bgo_inform_type inform;
 
     // Initialize BGO
-    bgo_initialize(&data, &control, &inform);
+    bgo_initialize( &data, &control, &inform );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -51,13 +53,19 @@ int main(void) {
     double g[n]; // gradient
     
     // Set Hessian storage format, structure and problem bounds
-    bgo_import(&control, &inform, &data, n, x_l, x_u, H_type, ne, NULL, NULL, NULL);
+    int status;
+    bgo_import( &control, &data, &status, n, x_l, x_u, 
+                H_type, ne, NULL, NULL, NULL );
 
     // Set for initial entry
-    inform.status = 1; 
+    status = 1; 
 
     // Call BGO_solve
-    bgo_solve_without_h(&control, &inform, &data, &userdata, n, x, g, fun, grad, hessprod, shessprod, NULL);
+    bgo_solve_without_mat( &data, &userdata, &status, n, x, g, 
+                           fun, grad, hessprod, shessprod, NULL );
+
+    // Record solution information
+    bgo_information( &data, &inform, &status );
 
     if(inform.status == 0){ // successful return
         printf("BGO successful solve\n");
@@ -104,7 +112,8 @@ int grad(int n, const double x[], double g[], const void *userdata){
 }
 
 // Hessian-vector product
-int hessprod(int n, const double x[], double u[], const double v[], bool got_h, const void *userdata){
+int hessprod(int n, const double x[], double u[], const double v[], 
+             bool got_h, const void *userdata){
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos( x[0] ) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
     u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
@@ -112,8 +121,9 @@ int hessprod(int n, const double x[], double u[], const double v[], bool got_h, 
 }
 
 // Sparse Hessian-vector product
-int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
-                int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *userdata){
+int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], 
+              const double v[], int *nnz_u, int index_nz_u[], double u[], 
+              bool got_h, const void *userdata){
     double p[] = {0., 0., 0.};
     bool used[] = {false, false, false};
     for(int i = 0; i < nnz_v; i++){

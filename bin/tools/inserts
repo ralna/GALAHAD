@@ -1,0 +1,190 @@
+               XXX_full_initialize, XXX_full_terminate,                        &
+               XXX_import, XXX_information,                                    &
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE XXX_initialize
+       MODULE PROCEDURE XXX_initialize, XXX_full_initialize
+     END INTERFACE XXX_initialize
+
+     INTERFACE XXX_terminate
+       MODULE PROCEDURE XXX_terminate, XXX_full_terminate
+     END INTERFACE XXX_terminate
+
+     TYPE, PUBLIC :: XXX_full_data_type
+       TYPE ( XXX_data_type ) :: XXX_data
+       TYPE ( XXX_control_type ) :: XXX_control
+       TYPE ( XXX_inform_type ) :: XXX_inform
+     END TYPE XXX_full_data_type
+
+!- G A L A H A D -  X X X _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE XXX_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for XXX controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( XXX_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( XXX_control_type ), INTENT( OUT ) :: control
+     TYPE ( XXX_inform_type ), INTENT( OUT ) :: inform
+
+     CALL XXX_initialize( data%xxx_data, control, inform )
+
+     RETURN
+
+!  End of subroutine XXX_full_initialize
+
+     END SUBROUTINE XXX_full_initialize
+
+! -  G A L A H A D -  X X X _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE XXX_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( XXX_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( XXX_control_type ), INTENT( IN ) :: control
+     TYPE ( XXX_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL XXX_terminate( data%xxx_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     RETURN
+
+!  End of subroutine XXX_full_terminate
+
+     END SUBROUTINE XXX_full_terminate
+
+
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-*-  G A L A H A D -  X X X _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+
+     SUBROUTINE XXX_import( control, data, status )
+
+!  import problem data into internal storage prior to solution. 
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading 
+!   comments to XXX_solve
+!
+!  data is a scalar variable of type XXX_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    0. The import was succesful
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. An input restriction has been violated.
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( XXX_control_type ), INTENT( INOUT ) :: control
+     TYPE ( XXX_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     data%xxx_control = control
+
+     error = data%xxx_control%error
+     space_critical = data%xxx_control%space_critical
+     deallocate_error_fatal = data%xxx_control%space_critical
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%xxx_inform%status
+     RETURN
+
+!  End of subroutine XXX_import
+
+     END SUBROUTINE XXX_import
+
+
+!-  G A L A H A D -  X X X _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE XXX_information( data, inform, status )
+
+!  return solver information during or after solution by XXX
+!  See XXX_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( XXX_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( XXX_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%xxx_inform
+     
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine XXX_information
+
+     END SUBROUTINE XXX_information
+

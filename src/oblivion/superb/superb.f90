@@ -223,7 +223,7 @@
        LOGICAL :: newsol
        CHARACTER ( LEN = 10 ) :: pname
        CHARACTER ( LEN = 80 ) :: bad_alloc
-       TYPE ( GLTR_info_type ) :: gltr_inform
+       TYPE ( GLTR_inform_type ) :: gltr_inform
        TYPE ( PTRANS_inform_type ) :: ptrans_inform
        TYPE ( SUPERB_time_type ) :: time
        TYPE ( WCP_inform_type ) :: WCP_info

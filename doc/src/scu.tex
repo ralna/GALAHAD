@@ -65,7 +65,7 @@ Access to the package requires a {\tt USE} statement such as
 \noindent
 If it is required to use both modules at the same time, the derived types 
 {\tt \packagename\_matrix\_type}, 
-{\tt \packagename\_info\_type}, and
+{\tt \packagename\_inform\_type}, and
 {\tt \packagename\_data\_type} 
 (Section~\ref{galtypes}),
 and the subroutines
@@ -180,10 +180,10 @@ All components of {\tt \packagename\_data\_type} are private.
 \subsubsection{The derived data type for holding informational
  parameters}\label{typeinfo}
 The derived data type 
-{\tt \packagename\_info\_type} 
+{\tt \packagename\_inform\_type} 
 is used to hold parameters that give information about the factorization.
 The components of
-{\tt \packagename\_info\_type} 
+{\tt \packagename\_inform\_type} 
 are:
 
 \begin{description}
@@ -201,6 +201,11 @@ give the number of positive, negative and zero eigenvalues of
 $\bmS$ respectively. 
  
 \end{description}
+
+\noindent
+For backward compatibility with an earlier version of the package, there
+is an equivalent type {\tt \packagename\_info\_type}, and the two names
+may be used interchangeably.
 
 %%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -382,7 +387,7 @@ A successful call is indicated by the exit value {\tt status=0}.
 For other values, see Sections~\ref{galreverse} and \ref{galerrors}. 
  
 \itt{info} is a scalar \intentinout\ argument of type 
-{\tt \packagename\_info\_type} 
+{\tt \packagename\_inform\_type} 
 (see Section~\ref{typeinfo}). 
  
 \end{description}
@@ -567,7 +572,7 @@ A successful call is indicated by the exit value {\tt status=0}.
 For other values, see Section~\ref{galreverse} and \ref{galerrors}. 
  
 \itt{info} is a scalar \intentinout\ argument of type 
-{\tt \packagename\_info\_type} (see Section~\ref{typeinfo}). 
+{\tt \packagename\_inform\_type} (see Section~\ref{typeinfo}). 
  
 \end{description}
 
@@ -629,7 +634,7 @@ A successful call is indicated by the exit value {\tt status=0}.
 For other values, see Section~\ref{galerrors}. 
  
 \itt{info} is a scalar \intentinout\ argument of type 
-{\tt \packagename\_info\_type} 
+{\tt \packagename\_inform\_type} 
 (see Section~\ref{typeinfo}). 
  
 \itt{col\_del} is an scalar \intentin\ argument of type 
@@ -674,7 +679,7 @@ A successful call is indicated by the exit value {\tt status=0}.
 For other values, see Section~\ref{galerrors}. 
  
 \itt{info} is a scalar \intentout\ argument of type 
-{\tt \packagename\_info\_type} 
+{\tt \packagename\_inform\_type} 
 (see Section~\ref{typeinfo}). 
  
 
