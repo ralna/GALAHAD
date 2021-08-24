@@ -56,13 +56,13 @@
 !   I n t e r f a c e s
 !----------------------
 
-      INTERFACE ARC_initialize
-        MODULE PROCEDURE ARC_initialize, ARC_full_initialize
-      END INTERFACE ARC_initialize
+     INTERFACE ARC_initialize
+       MODULE PROCEDURE ARC_initialize, ARC_full_initialize
+     END INTERFACE ARC_initialize
 
-      INTERFACE ARC_terminate
-        MODULE PROCEDURE ARC_terminate, ARC_full_terminate
-      END INTERFACE ARC_terminate
+     INTERFACE ARC_terminate
+       MODULE PROCEDURE ARC_terminate, ARC_full_terminate
+     END INTERFACE ARC_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -4224,7 +4224,7 @@
 !       array is written on unit control.error and the returned allocation
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
-!   -3. The restriction n > 0 or requirement that type contains
+!   -3. The restriction n > 0 or requirement that H_type contains
 !       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
 !       'DIAGONAL' or 'ABSENT' has been violated.
 !

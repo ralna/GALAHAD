@@ -1,0 +1,68 @@
+#  Main body of the installation makefile for the GALAHAD COMMON package
+
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-29
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = common
+PACKAGE = COMMON
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = 
+
+#  other packages that depend on package
+
+DEPENDS =
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test)
+
+TESTS =
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions
+
+#  special package compilation instructions
+
+#  package C interface compilation
+
+$(package)_ciface.o: $(CLG)($(package)_ciface.o)
+
+$(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_ciface"
+	$(SED) -f $(CISEDS) ../$(package)/C/$(package)_ciface.f90 \
+           > $(OBJ)/$(package)_ciface.f90
+	cd $(OBJ); $(FORTRAN) -o $(package)_ciface.o $(FFLAGSS) \
+           $(package)_ciface.f90 \
+            || ( printf ' %-26s' "=> Disabling optimization " ; \
+           $(FORTRAN) -o $(package)_ciface.o $(FFLAGSN) $(package)_ciface.f90 )
+	cd $(OBJ); $(CARR) $(package)_ciface.o
+	cd $(OBJ); $(RM) $(package)_ciface.f90 $(package)_ciface.o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

@@ -57,13 +57,13 @@
 !   I n t e r f a c e s
 !----------------------
 
-      INTERFACE TRB_initialize
-        MODULE PROCEDURE TRB_initialize, TRB_full_initialize
-      END INTERFACE TRB_initialize
+     INTERFACE TRB_initialize
+       MODULE PROCEDURE TRB_initialize, TRB_full_initialize
+     END INTERFACE TRB_initialize
 
-      INTERFACE TRB_terminate
-        MODULE PROCEDURE TRB_terminate, TRB_full_terminate
-      END INTERFACE TRB_terminate
+     INTERFACE TRB_terminate
+       MODULE PROCEDURE TRB_terminate, TRB_full_terminate
+     END INTERFACE TRB_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -5803,7 +5803,7 @@
 !       array is written on unit control.error and the returned allocation
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
-!   -3. The restriction n > 0 or requirement that type contains
+!   -3. The restriction n > 0 or requirement that H_type contains
 !       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
 !       'DIAGONAL' or 'ABSENT' has been violated.
 !

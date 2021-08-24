@@ -56,13 +56,13 @@
 !   I n t e r f a c e s
 !----------------------
 
-      INTERFACE TRU_initialize
-        MODULE PROCEDURE TRU_initialize, TRU_full_initialize
-      END INTERFACE TRU_initialize
+     INTERFACE TRU_initialize
+       MODULE PROCEDURE TRU_initialize, TRU_full_initialize
+     END INTERFACE TRU_initialize
 
-      INTERFACE TRU_terminate
-        MODULE PROCEDURE TRU_terminate, TRU_full_terminate
-      END INTERFACE TRU_terminate
+     INTERFACE TRU_terminate
+       MODULE PROCEDURE TRU_terminate, TRU_full_terminate
+     END INTERFACE TRU_terminate
 
 !--------------------
 !   P r e c i s i o n

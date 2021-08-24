@@ -22,25 +22,25 @@
 !   P r e c i s i o n
 !--------------------
 
-      INTEGER, PRIVATE, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: wcp = KIND( ( 1.0D+0, 1.0D+0 ) )
+     INTEGER, PRIVATE, PARAMETER :: wp = KIND( 1.0D+0 )
+     INTEGER, PARAMETER :: wcp = KIND( ( 1.0D+0, 1.0D+0 ) )
 
 !  ======================================
 !  The GALAHAD_userdata_type derived type
 !  ======================================
 
      TYPE, PUBLIC :: GALAHAD_userdata_type
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: integer
-         REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: real
-         COMPLEX ( KIND = wcp ), ALLOCATABLE, DIMENSION( : ) :: complex
-         CHARACTER, ALLOCATABLE, DIMENSION( : ) :: character
-         LOGICAL, ALLOCATABLE, DIMENSION( : ) :: logical
-         INTEGER, POINTER, DIMENSION( : ) :: integer_pointer => null( )
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: real_pointer => null( )
-         COMPLEX ( KIND = wcp ), POINTER,                                      &
-           DIMENSION( : ) :: complex_pointer => null( )
-         CHARACTER, POINTER, DIMENSION( : ) :: character_pointer => null( )
-         LOGICAL, POINTER, DIMENSION( : ) :: logical_pointer => null( )
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: integer
+       REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: real
+       COMPLEX ( KIND = wcp ), ALLOCATABLE, DIMENSION( : ) :: complex
+       CHARACTER, ALLOCATABLE, DIMENSION( : ) :: character
+       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: logical
+       INTEGER, POINTER, DIMENSION( : ) :: integer_pointer => null( )
+       REAL( KIND = wp ), POINTER, DIMENSION( : ) :: real_pointer => null( )
+       COMPLEX ( KIND = wcp ), POINTER,                                        &
+         DIMENSION( : ) :: complex_pointer => null( )
+       CHARACTER, POINTER, DIMENSION( : ) :: character_pointer => null( )
+       LOGICAL, POINTER, DIMENSION( : ) :: logical_pointer => null( )
      END TYPE GALAHAD_userdata_type
 
 !  End of module USERDATA

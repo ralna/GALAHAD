@@ -679,9 +679,11 @@
      END TYPE NLS_data_type
 
      TYPE, PUBLIC :: NLS_full_data_type
+       LOGICAL :: f_indexing
        TYPE ( NLS_data_type ) :: NLS_data
        TYPE ( NLS_control_type ) :: NLS_control
        TYPE ( NLS_inform_type ) :: NLS_inform
+       TYPE ( GALAHAD_userdata_type ) :: userdata
      END TYPE NLS_full_data_type
 
    CONTAINS

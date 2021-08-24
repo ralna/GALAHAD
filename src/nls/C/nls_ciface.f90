@@ -81,7 +81,6 @@
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: nls_subproblem_control_type
-      LOGICAL ( KIND = C_BOOL ) :: f_indexing
       INTEGER ( KIND = C_INT ) :: error
       INTEGER ( KIND = C_INT ) :: out
       INTEGER ( KIND = C_INT ) :: print_level
@@ -133,7 +132,57 @@
 !!$      TYPE ( roots_control_type ) :: roots_control
     END TYPE nls_subproblem_control_type
 
-    TYPE, EXTENDS( NLS_subproblem_control_type ), BIND( C ) :: nls_control_type
+    TYPE, BIND( C ) :: nls_control_type
+      LOGICAL ( KIND = C_BOOL ) :: f_indexing
+      INTEGER ( KIND = C_INT ) :: error
+      INTEGER ( KIND = C_INT ) :: out
+      INTEGER ( KIND = C_INT ) :: print_level
+      INTEGER ( KIND = C_INT ) :: start_print
+      INTEGER ( KIND = C_INT ) :: stop_print
+      INTEGER ( KIND = C_INT ) :: print_gap
+      INTEGER ( KIND = C_INT ) :: maxit
+      INTEGER ( KIND = C_INT ) :: alive_unit
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: alive_file
+      INTEGER ( KIND = C_INT ) :: jacobian_available
+      INTEGER ( KIND = C_INT ) :: hessian_available
+      INTEGER ( KIND = C_INT ) :: model
+      INTEGER ( KIND = C_INT ) :: norm
+      INTEGER ( KIND = C_INT ) :: non_monotone
+      INTEGER ( KIND = C_INT ) :: weight_update_strategy
+      REAL ( KIND = wp ) :: stop_c_absolute
+      REAL ( KIND = wp ) :: stop_c_relative
+      REAL ( KIND = wp ) :: stop_g_absolute
+      REAL ( KIND = wp ) :: stop_g_relative
+      REAL ( KIND = wp ) :: stop_s
+      REAL ( KIND = wp ) :: power
+      REAL ( KIND = wp ) :: initial_weight
+      REAL ( KIND = wp ) :: minimum_weight
+      REAL ( KIND = wp ) :: initial_inner_weight
+      REAL ( KIND = wp ) :: eta_successful
+      REAL ( KIND = wp ) :: eta_very_successful
+      REAL ( KIND = wp ) :: eta_too_successful
+      REAL ( KIND = wp ) :: weight_decrease_min
+      REAL ( KIND = wp ) :: weight_decrease
+      REAL ( KIND = wp ) :: weight_increase
+      REAL ( KIND = wp ) :: weight_increase_max
+      REAL ( KIND = wp ) :: reduce_gap
+      REAL ( KIND = wp ) :: tiny_gap
+      REAL ( KIND = wp ) :: large_root
+      REAL ( KIND = wp ) :: switch_to_newton
+      REAL ( KIND = wp ) :: cpu_time_limit
+      REAL ( KIND = wp ) :: clock_time_limit
+      LOGICAL ( KIND = C_BOOL ) :: subproblem_direct
+      LOGICAL ( KIND = C_BOOL ) :: renormalize_weight
+      LOGICAL ( KIND = C_BOOL ) :: magic_step
+      LOGICAL ( KIND = C_BOOL ) :: print_obj
+      LOGICAL ( KIND = C_BOOL ) :: space_critical
+      LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
+!!$      TYPE ( rqs_control_type ) :: rqs_control
+!!$      TYPE ( glrt_control_type ) :: glrt_control
+!!$      TYPE ( psls_control_type ) :: psls_control
+!!$      TYPE ( bsc_control_type ) :: bsc_control
+!!$      TYPE ( roots_control_type ) :: roots_control
       TYPE ( nls_subproblem_control_type ) :: subproblem_control
     END TYPE nls_control_type
 
@@ -178,7 +227,32 @@
 !!$      TYPE ( roots_inform_type ) :: roots_inform
     END TYPE nls_subproblem_inform_type
 
-    TYPE, EXTENDS( nls_subproblem_inform_type ), BIND( C ) :: nls_inform_type
+    TYPE, BIND( C ) :: nls_inform_type
+      INTEGER ( KIND = C_INT ) :: status
+      INTEGER ( KIND = C_INT ) :: alloc_status
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 13 ) :: bad_eval
+      INTEGER ( KIND = C_INT ) :: iter
+      INTEGER ( KIND = C_INT ) :: cg_iter
+      INTEGER ( KIND = C_INT ) :: c_eval
+      INTEGER ( KIND = C_INT ) :: j_eval
+      INTEGER ( KIND = C_INT ) :: h_eval
+      INTEGER ( KIND = C_INT ) :: factorization_max
+      INTEGER ( KIND = C_INT ) :: factorization_status
+      INTEGER ( KIND = C_INT ) :: max_entries_factors
+      INTEGER ( KIND = C_INT ) :: factorization_integer
+      INTEGER ( KIND = C_INT ) :: factorization_real
+      REAL ( KIND = wp ) :: factorization_average
+      REAL ( KIND = wp ) :: obj
+      REAL ( KIND = wp ) :: norm_c
+      REAL ( KIND = wp ) :: norm_g
+      REAL ( KIND = wp ) :: weight
+      TYPE ( nls_time_type ) :: time
+!!$      TYPE ( rqs_inform_type ) :: rqs_inform
+!!$      TYPE ( glrt_inform_type ) :: glrt_inform
+!!$      TYPE ( psls_inform_type ) :: psls_inform
+!!$      TYPE ( bsc_inform_type ) :: bsc_inform
+!!$      TYPE ( roots_inform_type ) :: roots_inform
       TYPE ( nls_subproblem_inform_type ) :: subproblem_inform
     END TYPE nls_inform_type
 
@@ -190,14 +264,14 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_subproblem_control_in( ccontrol, fcontrol, f_indexing ) 
-    TYPE ( nls_subproblem_control_type ), INTENT( IN ) :: ccontrol
-    TYPE ( f_nls_subproblem_control_type ), INTENT( OUT ) :: fcontrol
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    TYPE ( nls_control_type ), INTENT( IN ) :: ccontrol
+    TYPE ( f_nls_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
     INTEGER :: i
     
     ! C or Fortran sparse matrix indexing
-    IF ( PRESENT( f_indexing ) )  f_indexing = ccontrol%f_indexing
+    IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
     ! Integers
     fcontrol%error = ccontrol%error
@@ -252,7 +326,8 @@
 !!$    CALL copy_glrt_control_in( ccontrol%glrt_control, fcontrol%glrt_control )
 !!$    CALL copy_psls_control_in( ccontrol%psls_control, fcontrol%psls_control )
 !!$    CALL copy_bsc_control_in( ccontrol%bsc_control, fcontrol%bsc_control )
-!!$    CALL copy_roots_control_in( ccontrol%roots_control, fcontrol%roots_control )
+!!$    CALL copy_roots_control_in( ccontrol%roots_control,                     &
+!!$                               fcontrol%roots_control )
 
     ! Strings
     DO i = 1, 31
@@ -263,28 +338,131 @@
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
     END DO
+
+    ! subproblem_control parameters
+
+    ! Integers
+    fcontrol%subproblem_control%error = &
+      ccontrol%subproblem_control%error
+    fcontrol%subproblem_control%out = &
+      ccontrol%subproblem_control%out
+    fcontrol%subproblem_control%print_level = &
+      ccontrol%subproblem_control%print_level
+    fcontrol%subproblem_control%start_print = &
+      ccontrol%subproblem_control%start_print
+    fcontrol%subproblem_control%stop_print = &
+      ccontrol%subproblem_control%stop_print
+    fcontrol%subproblem_control%print_gap = &
+      ccontrol%subproblem_control%print_gap
+    fcontrol%subproblem_control%maxit = &
+      ccontrol%subproblem_control%maxit
+    fcontrol%subproblem_control%alive_unit = &
+      ccontrol%subproblem_control%alive_unit
+    fcontrol%subproblem_control%jacobian_available = &
+      ccontrol%subproblem_control%jacobian_available
+    fcontrol%subproblem_control%hessian_available = &
+      ccontrol%subproblem_control%hessian_available
+    fcontrol%subproblem_control%model = &
+      ccontrol%subproblem_control%model
+    fcontrol%subproblem_control%norm = &
+      ccontrol%subproblem_control%norm
+    fcontrol%subproblem_control%non_monotone = &
+      ccontrol%subproblem_control%non_monotone
+    fcontrol%subproblem_control%weight_update_strategy = &
+      ccontrol%subproblem_control%weight_update_strategy
+
+    ! Reals
+    fcontrol%subproblem_control%stop_c_absolute = &
+      ccontrol%subproblem_control%stop_c_absolute
+    fcontrol%subproblem_control%stop_c_relative = &
+      ccontrol%subproblem_control%stop_c_relative
+    fcontrol%subproblem_control%stop_g_absolute = &
+      ccontrol%subproblem_control%stop_g_absolute
+    fcontrol%subproblem_control%stop_g_relative = &
+      ccontrol%subproblem_control%stop_g_relative
+    fcontrol%subproblem_control%stop_s = &
+      ccontrol%subproblem_control%stop_s
+    fcontrol%subproblem_control%power = &
+      ccontrol%subproblem_control%power
+    fcontrol%subproblem_control%initial_weight = &
+      ccontrol%subproblem_control%initial_weight
+    fcontrol%subproblem_control%minimum_weight = &
+      ccontrol%subproblem_control%minimum_weight
+    fcontrol%subproblem_control%initial_inner_weight = &
+      ccontrol%subproblem_control%initial_inner_weight
+    fcontrol%subproblem_control%eta_successful = &
+      ccontrol%subproblem_control%eta_successful
+    fcontrol%subproblem_control%eta_very_successful = &
+      ccontrol%subproblem_control%eta_very_successful
+    fcontrol%subproblem_control%eta_too_successful = &
+      ccontrol%subproblem_control%eta_too_successful
+    fcontrol%subproblem_control%weight_decrease_min = &
+      ccontrol%subproblem_control%weight_decrease_min
+    fcontrol%subproblem_control%weight_decrease = &
+      ccontrol%subproblem_control%weight_decrease
+    fcontrol%subproblem_control%weight_increase = &
+      ccontrol%subproblem_control%weight_increase
+    fcontrol%subproblem_control%weight_increase_max = &
+      ccontrol%subproblem_control%weight_increase_max
+    fcontrol%subproblem_control%reduce_gap = &
+      ccontrol%subproblem_control%reduce_gap
+    fcontrol%subproblem_control%tiny_gap = &
+      ccontrol%subproblem_control%tiny_gap
+    fcontrol%subproblem_control%large_root = &
+      ccontrol%subproblem_control%large_root
+    fcontrol%subproblem_control%switch_to_newton = &
+      ccontrol%subproblem_control%switch_to_newton
+    fcontrol%subproblem_control%cpu_time_limit = &
+      ccontrol%subproblem_control%cpu_time_limit
+    fcontrol%subproblem_control%clock_time_limit = &
+      ccontrol%subproblem_control%clock_time_limit
+
+    ! Logicals
+    fcontrol%subproblem_control%subproblem_direct = &
+      ccontrol%subproblem_control%subproblem_direct
+    fcontrol%subproblem_control%renormalize_weight = &
+      ccontrol%subproblem_control%renormalize_weight
+    fcontrol%subproblem_control%magic_step = &
+      ccontrol%subproblem_control%magic_step
+    fcontrol%subproblem_control%print_obj = &
+      ccontrol%subproblem_control%print_obj
+    fcontrol%subproblem_control%space_critical = &
+      ccontrol%subproblem_control%space_critical
+    fcontrol%subproblem_control%deallocate_error_fatal = &
+      ccontrol%subproblem_control%deallocate_error_fatal
+
+    ! Derived types
+!!$    CALL copy_rqs_control_in( ccontrol%subproblem_control%rqs_control,      &
+!!&                              fcontrol%subproblem_control%rqs_control )
+!!$    CALL copy_glrt_control_in( ccontrol%subproblem_control%glrt_control,    &
+!!&                              fcontrol%subproblem_control%glrt_control )
+!!$    CALL copy_psls_control_in( ccontrol%subproblem_control%psls_control,    &
+!!&                              fcontrol%subproblem_control%psls_control )
+!!$    CALL copy_bsc_control_in( ccontrol%subproblem_control%bsc_control,      &
+!!&                              fcontrol%subproblem_control%bsc_control )
+!!$    CALL copy_roots_control_in( ccontrol%subproblem_control%roots_control,  &
+!!&                                fcontrol%subproblem_control%roots_control )
+
+    ! Strings
+    DO i = 1, 31
+      IF ( ccontrol%subproblem_control%alive_file( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%subproblem_control%alive_file( i : i ) =                        &
+        ccontrol%subproblem_control%alive_file( i )
+    END DO
+    DO i = 1, 31
+      IF ( ccontrol%subproblem_control%prefix( i ) == C_NULL_CHAR ) EXIT
+      fcontrol%subproblem_control%prefix( i : i ) =                            &
+        ccontrol%prefix( i )
+    END DO
     RETURN
 
-    END SUBROUTINE copy_subproblem_control_in
-
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
-    TYPE ( nls_control_type ), INTENT( IN ) :: ccontrol
-    TYPE ( f_nls_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    CALL copy_subproblem_control_in( ccontrol%nls_subproblem_control_type,     &
-                                     fcontrol%f_nls_subproblem_control_type,   &
-                                     f_indexing ) 
-    CALL copy_subproblem_control_in( ccontrol%subproblem_control,              &
-                                     fcontrol%subproblem_control,              &
-                                     f_indexing ) 
-    RETURN
     END SUBROUTINE copy_control_in
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_subproblem_control_out( fcontrol, ccontrol, f_indexing ) 
-    TYPE ( f_nls_subproblem_control_type ), INTENT( IN ) :: fcontrol
-    TYPE ( nls_subproblem_control_type ), INTENT( OUT ) :: ccontrol
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    TYPE ( f_nls_control_type ), INTENT( IN ) :: fcontrol
+    TYPE ( nls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER :: i
     
@@ -340,11 +518,16 @@
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
 
     ! Derived types
-!!$    CALL copy_rqs_control_out( fcontrol%rqs_control, ccontrol%rqs_control )
-!!$    CALL copy_glrt_control_out( fcontrol%glrt_control, ccontrol%glrt_control )
-!!$    CALL copy_psls_control_out( fcontrol%psls_control, ccontrol%psls_control )
-!!$    CALL copy_bsc_control_out( fcontrol%bsc_control, ccontrol%bsc_control )
-!!$    CALL copy_roots_control_out( fcontrol%roots_control, ccontrol%roots_control )
+!!$    CALL copy_rqs_control_out( fcontrol%rqs_control,                        &
+!!&                                ccontrol%rqs_control )
+!!$    CALL copy_glrt_control_out( fcontrol%glrt_control,                      &
+!!&                                ccontrol%glrt_control )
+!!$    CALL copy_psls_control_out( fcontrol%psls_control,                      &
+!!&                                ccontrol%psls_control )
+!!$    CALL copy_bsc_control_out( fcontrol%bsc_control,                        &
+!!&                               ccontrol%bsc_control )
+!!$    CALL copy_roots_control_out( fcontrol%roots_control,                    &
+!!&                                 ccontrol%roots_control )
 
     ! Strings
     DO i = 1, LEN( fcontrol%alive_file )
@@ -355,20 +538,126 @@
       ccontrol%prefix( i ) = fcontrol%prefix( i : i )
     END DO
     ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+
+    ! subproblem_control parameters
+
+    ! Integers
+    ccontrol%subproblem_control%error = &
+      fcontrol%subproblem_control%error
+    ccontrol%subproblem_control%out = &
+      fcontrol%subproblem_control%out
+    ccontrol%subproblem_control%print_level = &
+      fcontrol%subproblem_control%print_level
+    ccontrol%subproblem_control%start_print = &
+      fcontrol%subproblem_control%start_print
+    ccontrol%subproblem_control%stop_print = &
+      fcontrol%subproblem_control%stop_print
+    ccontrol%subproblem_control%print_gap = &
+      fcontrol%subproblem_control%print_gap
+    ccontrol%subproblem_control%maxit = &
+      fcontrol%subproblem_control%maxit
+    ccontrol%subproblem_control%alive_unit = &
+      fcontrol%subproblem_control%alive_unit
+    ccontrol%subproblem_control%jacobian_available = &
+      fcontrol%subproblem_control%jacobian_available
+    ccontrol%subproblem_control%hessian_available = &
+      fcontrol%subproblem_control%hessian_available
+    ccontrol%subproblem_control%model = &
+      fcontrol%subproblem_control%model
+    ccontrol%subproblem_control%norm = &
+      fcontrol%subproblem_control%norm
+    ccontrol%subproblem_control%non_monotone = &
+      fcontrol%subproblem_control%non_monotone
+    ccontrol%subproblem_control%weight_update_strategy = &
+      fcontrol%subproblem_control%weight_update_strategy
+
+    ! Reals
+    ccontrol%subproblem_control%stop_c_absolute = &
+      fcontrol%subproblem_control%stop_c_absolute
+    ccontrol%subproblem_control%stop_c_relative = &
+      fcontrol%subproblem_control%stop_c_relative
+    ccontrol%subproblem_control%stop_g_absolute = &
+      fcontrol%subproblem_control%stop_g_absolute
+    ccontrol%subproblem_control%stop_g_relative = &
+      fcontrol%subproblem_control%stop_g_relative
+    ccontrol%subproblem_control%stop_s = &
+      fcontrol%subproblem_control%stop_s
+    ccontrol%subproblem_control%power = &
+      fcontrol%subproblem_control%power
+    ccontrol%subproblem_control%initial_weight = &
+      fcontrol%subproblem_control%initial_weight
+    ccontrol%subproblem_control%minimum_weight = &
+      fcontrol%subproblem_control%minimum_weight
+    ccontrol%subproblem_control%initial_inner_weight = &
+      fcontrol%subproblem_control%initial_inner_weight
+    ccontrol%subproblem_control%eta_successful = &
+      fcontrol%subproblem_control%eta_successful
+    ccontrol%subproblem_control%eta_very_successful = &
+      fcontrol%subproblem_control%eta_very_successful
+    ccontrol%subproblem_control%eta_too_successful = &
+      fcontrol%subproblem_control%eta_too_successful
+    ccontrol%subproblem_control%weight_decrease_min = &
+      fcontrol%subproblem_control%weight_decrease_min
+    ccontrol%subproblem_control%weight_decrease = &
+      fcontrol%subproblem_control%weight_decrease
+    ccontrol%subproblem_control%weight_increase = &
+      fcontrol%subproblem_control%weight_increase
+    ccontrol%subproblem_control%weight_increase_max = &
+      fcontrol%subproblem_control%weight_increase_max
+    ccontrol%subproblem_control%reduce_gap = &
+      fcontrol%subproblem_control%reduce_gap
+    ccontrol%subproblem_control%tiny_gap = &
+      fcontrol%subproblem_control%tiny_gap
+    ccontrol%subproblem_control%large_root = &
+      fcontrol%subproblem_control%large_root
+    ccontrol%subproblem_control%switch_to_newton = &
+      fcontrol%subproblem_control%switch_to_newton
+    ccontrol%subproblem_control%cpu_time_limit = &
+      fcontrol%subproblem_control%cpu_time_limit
+    ccontrol%subproblem_control%clock_time_limit = &
+      fcontrol%subproblem_control%clock_time_limit
+
+    ! Logicals
+    ccontrol%subproblem_control%subproblem_direct = &
+      fcontrol%subproblem_control%subproblem_direct
+    ccontrol%subproblem_control%renormalize_weight = &
+      fcontrol%subproblem_control%renormalize_weight
+    ccontrol%subproblem_control%magic_step = &
+      fcontrol%subproblem_control%magic_step
+    ccontrol%subproblem_control%print_obj = &
+      fcontrol%subproblem_control%print_obj
+    ccontrol%subproblem_control%space_critical = &
+      fcontrol%subproblem_control%space_critical
+    ccontrol%subproblem_control%deallocate_error_fatal = &
+      fcontrol%subproblem_control%deallocate_error_fatal
+
+    ! Derived types
+!!$    CALL copy_rqs_control_out( fcontrol%subproblem_control%rqs_controll,    &
+!!&                               ccontrol%subproblem_control%rqs_control )
+!!$    CALL copy_glrt_control_out( fcontrol%subproblem_control,                &
+!!&                                ccontrol%subproblem_control%glrt_control )
+!!$    CALL copy_psls_control_out( fcontrol%subproblem_control%psls_control,   &
+!!&                                ccontrol%subproblem_control%psls_control )
+!!$    CALL copy_bsc_control_out( fcontrol%subproblem_control%bsc_control,     &
+!!&                               ccontrol%subproblem_control%bsc_control )
+!!$    CALL copy_roots_control_out( fcontrol%subproblem_control%roots_control, &
+!!&                                 ccontrol%subproblem_control%roots_control )
+
+    ! Strings
+    DO i = 1, LEN( fcontrol%subproblem_control%alive_file )
+      ccontrol%subproblem_control%alive_file( i ) =                            &
+        fcontrol%subproblem_control%alive_file( i : i )
+    END DO
+    ccontrol%subproblem_control%alive_file(                                    &
+      LEN( fcontrol%subproblem_control%alive_file ) + 1 ) = C_NULL_CHAR
+    DO i = 1, LEN( fcontrol%subproblem_control%prefix )
+      ccontrol%subproblem_control%prefix( i ) =                                &
+        fcontrol%subproblem_control%prefix( i : i )
+    END DO
+    ccontrol%subproblem_control%prefix(                                        &
+      LEN( fcontrol%subproblem_control%prefix ) + 1 ) = C_NULL_CHAR
     RETURN
 
-    END SUBROUTINE copy_subproblem_control_out
-
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
-    TYPE ( f_nls_control_type ), INTENT( IN ) :: fcontrol
-    TYPE ( nls_control_type ), INTENT( OUT ) :: ccontrol
-    LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    CALL copy_subproblem_control_out( fcontrol%f_nls_subproblem_control_type,  &
-                                      ccontrol%nls_subproblem_control_type,    &
-                                      f_indexing ) 
-    CALL copy_subproblem_control_out( fcontrol%subproblem_control,             &
-                                      ccontrol%subproblem_control, f_indexing ) 
-    RETURN
     END SUBROUTINE copy_control_out
 
 !  copy C time parameters to fortran
@@ -415,9 +704,9 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_subproblem_inform_in( cinform, finform ) 
-    TYPE ( nls_subproblem_inform_type ), INTENT( IN ) :: cinform
-    TYPE ( f_nls_subproblem_inform_type ), INTENT( OUT ) :: finform
+    SUBROUTINE copy_inform_in( cinform, finform ) 
+    TYPE ( nls_inform_type ), INTENT( IN ) :: cinform
+    TYPE ( f_nls_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
 
     ! Integers
@@ -458,25 +747,81 @@
       IF ( cinform%bad_eval( i ) == C_NULL_CHAR ) EXIT
       finform%bad_eval( i : i ) = cinform%bad_eval( i )
     END DO
+
+    ! subproblem_inform parameters
+
+    ! Integers
+    finform%subproblem_inform%status = &
+      cinform%subproblem_inform%status
+    finform%subproblem_inform%alloc_status = &
+      cinform%subproblem_inform%alloc_status
+    finform%subproblem_inform%iter = &
+      cinform%subproblem_inform%iter
+    finform%subproblem_inform%cg_iter = &
+      cinform%subproblem_inform%cg_iter
+    finform%subproblem_inform%c_eval = &
+      cinform%subproblem_inform%c_eval
+    finform%subproblem_inform%j_eval = &
+      cinform%subproblem_inform%j_eval
+    finform%subproblem_inform%h_eval = &
+      cinform%subproblem_inform%h_eval
+    finform%subproblem_inform%factorization_max = &
+      cinform%subproblem_inform%factorization_max
+    finform%subproblem_inform%factorization_status = &
+      cinform%subproblem_inform%factorization_status
+    finform%subproblem_inform%max_entries_factors = &
+      cinform%subproblem_inform%max_entries_factors
+    finform%subproblem_inform%factorization_integer = &
+      cinform%subproblem_inform%factorization_integer
+    finform%subproblem_inform%factorization_real = &
+      cinform%subproblem_inform%factorization_real
+
+    ! Reals
+    finform%subproblem_inform%factorization_average = &
+      cinform%subproblem_inform%factorization_average
+    finform%subproblem_inform%obj = &
+      cinform%subproblem_inform%obj
+    finform%subproblem_inform%norm_c = &
+      cinform%subproblem_inform%norm_c
+    finform%subproblem_inform%norm_g = &
+      cinform%subproblem_inform%norm_g
+    finform%subproblem_inform%weight = &
+      cinform%subproblem_inform%weight
+
+    ! Derived types
+    CALL copy_time_in( cinform%subproblem_inform%time,                         &
+                       finform%subproblem_inform%time )
+!!$    CALL copy_rqs_inform_in( cinform%subproblem_inform%rqs_inform,          &
+!!&                             finform%subproblem_inform%rqs_inform )
+!!$    CALL copy_glrt_inform_in( cinform%subproblem_inform%glrt_inform,        &
+!!&                              finform%subproblem_inform%glrt_inform )
+!!$    CALL copy_psls_inform_in( cinform%subproblem_inform%psls_inform,        &
+!!&                              finform%subproblem_inform%psls_inform )
+!!$    CALL copy_bsc_inform_in( cinform%subproblem_inform%bsc_inform,          &
+!!&                             finform%subproblem_inform%bsc_inform )
+!!$    CALL copy_roots_inform_in( cinform%subproblem_inform%roots_inform,      &
+!!&                               finform%subproblem_inform%roots_inform )
+
+    ! Strings
+    DO i = 1, 81
+      IF ( cinform%subproblem_inform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
+      finform%subproblem_inform%bad_alloc( i : i ) =                           &
+        cinform%subproblem_inform%bad_alloc( i )
+    END DO
+    DO i = 1, 13
+      IF ( cinform%subproblem_inform%bad_eval( i ) == C_NULL_CHAR ) EXIT
+      finform%subproblem_inform%bad_eval( i : i ) =                            &
+        cinform%subproblem_inform%bad_eval( i )
+    END DO
     RETURN
 
-    END SUBROUTINE copy_subproblem_inform_in
-
-    SUBROUTINE copy_inform_in( cinform, finform ) 
-    TYPE ( nls_inform_type ), INTENT( IN ) :: cinform
-    TYPE ( f_nls_inform_type ), INTENT( OUT ) :: finform
-    CALL copy_subproblem_inform_in( cinform%nls_subproblem_inform_type,        &
-                                    finform%f_nls_subproblem_inform_type ) 
-    CALL copy_subproblem_inform_in( cinform%subproblem_inform,                 &
-                                    finform%subproblem_inform ) 
-    RETURN
     END SUBROUTINE copy_inform_in
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_subproblem_inform_out( finform, cinform ) 
-    TYPE ( f_nls_subproblem_inform_type ), INTENT( IN ) :: finform
-    TYPE ( nls_subproblem_inform_type ), INTENT( OUT ) :: cinform
+    SUBROUTINE copy_inform_out( finform, cinform ) 
+    TYPE ( f_nls_inform_type ), INTENT( IN ) :: finform
+    TYPE ( nls_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i
 
     ! Integers
@@ -517,18 +862,76 @@
       cinform%bad_eval( i ) = finform%bad_eval( i : i )
     END DO
     cinform%bad_eval( LEN( finform%bad_eval ) + 1 ) = C_NULL_CHAR
+
+    ! subproblem_inform parameters
+
+    ! Integers
+    cinform%subproblem_inform%status = &
+      finform%subproblem_inform%status
+    cinform%subproblem_inform%alloc_status = &
+      finform%subproblem_inform%alloc_status
+    cinform%subproblem_inform%iter = &
+      finform%subproblem_inform%iter
+    cinform%subproblem_inform%cg_iter = &
+      finform%subproblem_inform%cg_iter
+    cinform%subproblem_inform%c_eval = &
+      finform%subproblem_inform%c_eval
+    cinform%subproblem_inform%j_eval = &
+      finform%subproblem_inform%j_eval
+    cinform%subproblem_inform%h_eval = &
+      finform%subproblem_inform%h_eval
+    cinform%subproblem_inform%factorization_max = &
+      finform%subproblem_inform%factorization_max
+    cinform%subproblem_inform%factorization_status = &
+      finform%subproblem_inform%factorization_status
+    cinform%subproblem_inform%max_entries_factors = &
+      finform%subproblem_inform%max_entries_factors
+    cinform%subproblem_inform%factorization_integer = &
+      finform%subproblem_inform%factorization_integer
+    cinform%subproblem_inform%factorization_real = &
+      finform%subproblem_inform%factorization_real
+
+    ! Reals
+    cinform%subproblem_inform%factorization_average = &
+      finform%subproblem_inform%factorization_average
+    cinform%subproblem_inform%obj = &
+      finform%subproblem_inform%obj
+    cinform%subproblem_inform%norm_c = &
+      finform%subproblem_inform%norm_c
+    cinform%subproblem_inform%norm_g = &
+      finform%subproblem_inform%norm_g
+    cinform%subproblem_inform%weight = &
+      finform%subproblem_inform%weight
+
+    ! Derived types
+    CALL copy_time_out( finform%subproblem_inform%time,                        &
+                        cinform%subproblem_inform%time )
+!!$    CALL copy_rqs_inform_out( finform%subproblem_inform%rqs_inform,         &
+!!$                              cinform%subproblem_inform%rqs_inform )
+!!$    CALL copy_glrt_inform_out( finform%subproblem_inform%glrt_inform,       &
+!!$                               cinform%subproblem_inform%glrt_inform )
+!!$    CALL copy_psls_inform_out( finform%subproblem_inform%psls_inform,       &
+!!$                               cinform%subproblem_inform%psls_inform )
+!!$    CALL copy_bsc_inform_out( finform%subproblem_inform%bsc_inform,         &
+!!$                               cinform%subproblem_inform%bsc_inform )
+!!$    CALL copy_roots_inform_out( finform%subproblem_inform%roots_inform,     &
+!!$                                cinform%subproblem_inform%roots_inform )
+
+    ! Strings
+    DO i = 1, LEN( finform%subproblem_inform%bad_alloc )
+      cinform%subproblem_inform%bad_alloc( i ) =                               &
+        finform%subproblem_inform%bad_alloc( i : i )
+    END DO
+    cinform%subproblem_inform%bad_alloc(                                       &
+      LEN( finform%subproblem_inform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    DO i = 1, LEN( finform%subproblem_inform%bad_eval )
+      cinform%subproblem_inform%bad_eval( i ) =                                &
+        finform%subproblem_inform%bad_eval( i : i )
+    END DO
+    cinform%subproblem_inform%bad_eval(                                        &
+      LEN( finform%subproblem_inform%bad_eval ) + 1 ) = C_NULL_CHAR
     RETURN
 
-    END SUBROUTINE copy_subproblem_inform_out
-
-    SUBROUTINE copy_inform_out( finform, cinform ) 
-    TYPE ( f_nls_inform_type ), INTENT( IN ) :: finform
-    TYPE ( nls_inform_type ), INTENT( OUT ) :: cinform
-    CALL copy_subproblem_inform_in( finform%f_nls_subproblem_inform_type,      &
-                                    cinform%nls_subproblem_inform_type )
-    CALL copy_subproblem_inform_in( finform%subproblem_inform,                 &
-                                    cinform%subproblem_inform )
-    RETURN
     END SUBROUTINE copy_inform_out
 
   END MODULE GALAHAD_NLS_double_ciface
