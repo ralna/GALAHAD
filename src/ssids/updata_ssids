@@ -1,9 +1,9 @@
 #!/bin/bash
 
-SPRALorig=/numerical/nimg/fortran/spral/src
+SPRALorig=$FO/spral/src
 SPRAL=$GALAHAD/src/spral
 
-SSIDSorig=/numerical/nimg/fortran/spral/src/ssids
+SSIDSorig=$FO/spral/src/ssids
 SSIDS=$GALAHAD/src/ssids
 
 #echo $SPRALorig
@@ -80,8 +80,3 @@ cp -u -r $SSIDSorig/gpu/kernels/solve.cu $SSIDS
 cp -u -r $SSIDSorig/gpu/kernels/syrk.cu $SSIDS/
 cp -u -r $SSIDSorig/gpu/kernels/datatypes.h $SSIDS/gpu/kernels/
 cp -u -r $SSIDSorig/gpu/kernels/dtrsv.h $SSIDS/gpu/kernels/
-
-
-
-
-
