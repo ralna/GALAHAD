@@ -146,7 +146,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;C&#39;</span>;</div>
 <div class="line">                <a name="a3"></a><a class="code" href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;coordinate&quot;</span>, </div>
 <div class="line">                            ne, H_row, H_col, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a name="a4"></a><a class="code" href="arc_8h.html#aa952762f20eddedff0728c99ef8795b9">arc_solve_with_mat</a>( &amp;data, &amp;userdata, &amp;status,</div>
 <div class="line">                                    n, x, g, ne, fun, grad, hess, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -154,7 +153,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;R&#39;</span>;</div>
 <div class="line">                <a class="code" href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;sparse_by_rows&quot;</span>, </div>
 <div class="line">                           ne, NULL, H_col, H_ptr);</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a class="code" href="arc_8h.html#aa952762f20eddedff0728c99ef8795b9">arc_solve_with_mat</a>( &amp;data, &amp;userdata, &amp;status,</div>
 <div class="line">                                    n, x, g, ne, fun, grad, hess, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -162,7 +160,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;D&#39;</span>;</div>
 <div class="line">                <a class="code" href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;dense&quot;</span>, </div>
 <div class="line">                           ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a class="code" href="arc_8h.html#aa952762f20eddedff0728c99ef8795b9">arc_solve_with_mat</a>( &amp;data, &amp;userdata, &amp;status,</div>
 <div class="line">                                    n, x, g, ne, fun, grad, hess_dense, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -170,7 +167,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;I&#39;</span>;</div>
 <div class="line">                <a class="code" href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;diagonal&quot;</span>, </div>
 <div class="line">                           ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a class="code" href="arc_8h.html#aa952762f20eddedff0728c99ef8795b9">arc_solve_with_mat</a>( &amp;data, &amp;userdata, &amp;status, n, x, g, </div>
 <div class="line">                                    ne, fun_diag, grad_diag, hess_diag, prec) ;</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -178,7 +174,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;P&#39;</span>;</div>
 <div class="line">                <a class="code" href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;absent&quot;</span>, </div>
 <div class="line">                           ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a name="a5"></a><a class="code" href="arc_8h.html#aea7f9bc40b893f4df507d807ea8cd670">arc_solve_without_mat</a>( &amp;data, &amp;userdata, &amp;status,</div>
 <div class="line">                                       n, x, g, fun, grad, hessprod, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -228,7 +223,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;C&#39;</span>;</div>
 <div class="line">                <a class="code" href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;coordinate&quot;</span>, </div>
 <div class="line">                           ne, H_row, H_col, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a name="a8"></a><a class="code" href="arc_8h.html#ac47e436d7364399dd7a60efac61ef955">arc_solve_reverse_with_mat</a>( &amp;data, &amp;status, &amp;eval_status, </div>
 <div class="line">                                                n, x, f, g, ne, H_val, u, v );</div>
@@ -255,7 +249,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;R&#39;</span>;</div>
 <div class="line">                <a class="code" href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;sparse_by_rows&quot;</span>, ne, </div>
 <div class="line">                           NULL, H_col, H_ptr);</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a class="code" href="arc_8h.html#ac47e436d7364399dd7a60efac61ef955">arc_solve_reverse_with_mat</a>( &amp;data, &amp;status, &amp;eval_status, </div>
 <div class="line">                                                n, x, f, g, ne, H_val, u, v );</div>
@@ -282,7 +275,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;D&#39;</span>;</div>
 <div class="line">                <a class="code" href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;dense&quot;</span>, </div>
 <div class="line">                           ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a class="code" href="arc_8h.html#ac47e436d7364399dd7a60efac61ef955">arc_solve_reverse_with_mat</a>( &amp;data, &amp;status, &amp;eval_status, </div>
 <div class="line">                                         n, x, f, g, n*(n+1)/2, H_dense, u, v );</div>
@@ -310,7 +302,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;I&#39;</span>;</div>
 <div class="line">                <a class="code" href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;diagonal&quot;</span>, </div>
 <div class="line">                           ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a class="code" href="arc_8h.html#ac47e436d7364399dd7a60efac61ef955">arc_solve_reverse_with_mat</a>( &amp;data, &amp;status, &amp;eval_status, </div>
 <div class="line">                                                n, x, f, g, n, H_diag, u, v );</div>
@@ -337,7 +328,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;P&#39;</span>;</div>
 <div class="line">                <a class="code" href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;absent&quot;</span>, </div>
 <div class="line">                           ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a name="a9"></a><a class="code" href="arc_8h.html#a1f098df65cdabfcf80d8e6fb3b1035c5">arc_solve_reverse_without_mat</a>( &amp;data, &amp;status, &amp;eval_status,</div>
 <div class="line">                                                   n, x, f, g, u, v );</div>
@@ -486,12 +476,12 @@ $(function() {
 <div class="ttc" id="aarc_8h_html_a1f098df65cdabfcf80d8e6fb3b1035c5"><div class="ttname"><a href="arc_8h.html#a1f098df65cdabfcf80d8e6fb3b1035c5">arc_solve_reverse_without_mat</a></div><div class="ttdeci">void arc_solve_reverse_without_mat(void **data, int *status, int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], real_wp_ u[], real_wp_ v[])</div></div>
 <div class="ttc" id="aarc_8h_html_aea7f9bc40b893f4df507d807ea8cd670"><div class="ttname"><a href="arc_8h.html#aea7f9bc40b893f4df507d807ea8cd670">arc_solve_without_mat</a></div><div class="ttdeci">void arc_solve_without_mat(void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_hprod)(int, const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</div></div>
 <div class="ttc" id="aarc_8h_html_a8358ca1b4baa7ce2716f83768c0df5d4"><div class="ttname"><a href="arc_8h.html#a8358ca1b4baa7ce2716f83768c0df5d4">arc_initialize</a></div><div class="ttdeci">void arc_initialize(void **data, struct arc_control_type *control, struct arc_inform_type *inform)</div></div>
-<div class="ttc" id="astructarc__inform__type_html"><div class="ttname"><a href="structarc__inform__type.html">arc_inform_type</a></div><div class="ttdef"><b>Definition:</b> arc.h:543</div></div>
+<div class="ttc" id="astructarc__inform__type_html"><div class="ttname"><a href="structarc__inform__type.html">arc_inform_type</a></div><div class="ttdef"><b>Definition:</b> arc.h:548</div></div>
 <div class="ttc" id="aarc_8h_html_a4121482e6db477eee55cc2b50bc52835"><div class="ttname"><a href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a></div><div class="ttdeci">void arc_import(struct arc_control_type *control, void **data, int *status, int n, const char H_type[], int ne, const int H_row[], const int H_col[], const int H_ptr[])</div></div>
 <div class="ttc" id="aarc_8h_html_a7aa74c74e7ca781532d38d337f0d05eb"><div class="ttname"><a href="arc_8h.html#a7aa74c74e7ca781532d38d337f0d05eb">arc_terminate</a></div><div class="ttdeci">void arc_terminate(void **data, struct arc_control_type *control, struct arc_inform_type *inform)</div></div>
 <div class="ttc" id="aarc_8h_html_aec0ce871d494f995e8ad500011a10d56"><div class="ttname"><a href="arc_8h.html#aec0ce871d494f995e8ad500011a10d56">arc_information</a></div><div class="ttdeci">void arc_information(void **data, struct arc_inform_type *inform, int *status)</div></div>
 <div class="ttc" id="aarc_8h_html_ac47e436d7364399dd7a60efac61ef955"><div class="ttname"><a href="arc_8h.html#ac47e436d7364399dd7a60efac61ef955">arc_solve_reverse_with_mat</a></div><div class="ttdeci">void arc_solve_reverse_with_mat(void **data, int *status, int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], int ne, real_wp_ H_val[], const real_wp_ u[], real_wp_ v[])</div></div>
-<div class="ttc" id="astructarc__control__type_html"><div class="ttname"><a href="structarc__control__type.html">arc_control_type</a></div><div class="ttdef"><b>Definition:</b> arc.h:227</div></div>
+<div class="ttc" id="astructarc__control__type_html"><div class="ttname"><a href="structarc__control__type.html">arc_control_type</a></div><div class="ttdef"><b>Definition:</b> arc.h:232</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

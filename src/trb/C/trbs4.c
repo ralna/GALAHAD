@@ -40,9 +40,6 @@ int main(void) {
     trb_import( &control, &data, &status, n, x_l, x_u, 
                 H_type, ne, NULL, NULL, NULL );
 
-    // Set for initial entry
-    status = 1;
-
     // Solve the problem
     while(true){ // reverse-communication loop
 

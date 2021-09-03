@@ -63,22 +63,25 @@ dev_init_chol_fact(
     const int lda, // leading dimension of a
     volatile ELEMENT_TYPE *const fs // initial L factor (shared mem)
 ) {
-  if (TILES > 0) { // load the diagonal (pivot) tile
-    const int SIZE_X = TILES * TILE_SIZE;
-    
-    fs[threadIdx.x + SIZE_X*threadIdx.y] =
-      ((threadIdx.x < ncols) && (threadIdx.y < ncols)) ?
-      a[threadIdx.x + lda*threadIdx.y] : 0.0;
+  const int SIZE_X = TILES*TILE_SIZE;
 
-    for (int tile = 1, x /* row index */; tile < TILES; tile++) {
-      // load A's offdiagonal tiles into shared memory
+  int x; // row index
+
+  for ( int tile = 0; tile < TILES; tile++ ) {
+    if ( tile ) { // load A's offdiagonal tiles into shared memory
       x = ncols + threadIdx.x + (tile - 1)*TILE_SIZE +
         (TILES - 1)*TILE_SIZE*block; // offdiagonal row index in A
       fs[threadIdx.x + tile*TILE_SIZE + SIZE_X*threadIdx.y] =
-        ((x < nrows) && (threadIdx.y < ncols)) ?
-        a[x + lda*threadIdx.y] : 0.0;
+        ( x < nrows && threadIdx.y < ncols ) ? 
+          a[x + lda*threadIdx.y] : 0.0;
+    }
+    else { // load the diagonal (pivot) tile
+      fs[threadIdx.x + SIZE_X*threadIdx.y] =
+        ( threadIdx.x < ncols && threadIdx.y < ncols ) ?
+          a[threadIdx.x + lda*threadIdx.y] : 0.0;
     }
   }
+
 }
 
 template
@@ -96,25 +99,25 @@ dev_save_chol_fact(
     ELEMENT_TYPE *const f, // array of elements of L
     const int ldf // leading dimension of f
 ) {
-  if (TILES > 0) {
-    const int SIZE_X = TILES * TILE_SIZE;
+  const int SIZE_X = TILES*TILE_SIZE;
 
-    if (block == 0) { 
-      // upload to f and fd
-      if ( (threadIdx.x < ncols) && (threadIdx.y < ncols) )
-        f[threadIdx.x + ldf*threadIdx.y] =
-          fs[threadIdx.x + SIZE_X*threadIdx.y];
-    }
+  int x; // row index
 
-    for (int tile = 1, x /* row index */; tile < TILES; tile++) {
-      // upload the relevant elements of fs to f
+  for ( int tile = 0; tile < TILES; tile++ ) {
+    if ( tile ) { // upload the relevant elements of fs to f
       x = ncols + threadIdx.x + (tile - 1)*TILE_SIZE +
         (TILES - 1)*TILE_SIZE*block;
       if ((x < nrows) && (threadIdx.y < ncols))
         f[x + ldf*threadIdx.y] =
           fs[threadIdx.x + tile*TILE_SIZE + SIZE_X*threadIdx.y];
-    } // loop through tiles ends here
-  }
+    }
+    else if ( block == 0 ) { 
+      // upload to f and fd
+      if ( threadIdx.x < ncols && threadIdx.y < ncols )
+        f[threadIdx.x + ldf*threadIdx.y] =
+          fs[threadIdx.x + SIZE_X*threadIdx.y];
+    }
+  } // loop through tiles ends here
 }
 
 template
@@ -400,22 +403,22 @@ dev_init_fact(
 
   y = threadIdx.y % TILE_SIZE; // fs & fds column processed by this thread
 
-  if (threadIdx.y < TILE_SIZE) {
-    if (TILES > 0) {
-      // load A_d
-      fs[threadIdx.x + SIZE_X*threadIdx.y] =
-        ((threadIdx.x < ncols) && (threadIdx.y < ncols)) ?
-        a[offp + threadIdx.x + lda*threadIdx.y] : 0.0;
-    }
-    for (int tile = 1; tile < TILES; tile += 2) {
-      // load A_u and A_l's even tiles into shared memory
-      x = threadIdx.x + (tile - 1)*TILE_SIZE +
-        (TILES - 1)*TILE_SIZE*block; // offdiagonal row index in A
-      if (x >= offp)
-        x += ncols; // skip A_d
-      fs[threadIdx.x + tile*TILE_SIZE + SIZE_X*threadIdx.y] =
-        ((x < nrows) && (threadIdx.y < ncols)) ? 
-        a[x + lda*threadIdx.y] : 0.0;
+  if ( threadIdx.y < TILE_SIZE ) {
+    for ( int tile = 0; tile < TILES; tile += 2 ) {
+      if ( tile ) { // load A_u and A_l's even tiles into shared memory
+        x = threadIdx.x + (tile - 1)*TILE_SIZE +
+            (TILES - 1)*TILE_SIZE*block; // offdiagonal row index in A
+        if ( x >= offp )
+          x += ncols; // skip A_d
+        fs[threadIdx.x + tile*TILE_SIZE + SIZE_X*threadIdx.y] =
+          ( x < nrows && threadIdx.y < ncols ) ? 
+            a[x + lda*threadIdx.y] : 0.0;
+      }
+      else { // load A_d
+        fs[threadIdx.x + SIZE_X*threadIdx.y] =
+          ( threadIdx.x < ncols && threadIdx.y < ncols ) ?
+            a[offp + threadIdx.x + lda*threadIdx.y] : 0.0;
+      }
     }
   }
   else {
@@ -464,30 +467,31 @@ dev_save_fact(
 
   y = threadIdx.y % TILE_SIZE; // fs & fds column processed by this thread
 
-  if (threadIdx.y < TILE_SIZE) { // warps 0, 1
-    if ((TILES > 0) && (block == 0)) {
-      // upload L_d and L_d*D
-      if ((threadIdx.x < ncols) && (threadIdx.y < ncols) && my) {
-        f[offp + threadIdx.x + ldf*threadIdx.y] =
-          fs[threadIdx.x + SIZE_X*threadIdx.y];
-        fd[offp + threadIdx.x + ldfd*threadIdx.y] =
-          fds[threadIdx.x + SIZE_X*threadIdx.y];
+  if ( threadIdx.y < TILE_SIZE ) { // warps 0, 1
+    for ( int tile = 0; tile < TILES; tile += 2 ) {
+      if ( tile ) { // upload L_u, L_l, L_u*D and L_l*D's even tiles
+        x = threadIdx.x + (tile - 1)*TILE_SIZE +
+            (TILES - 1)*TILE_SIZE*block;
+        if ( x >= offp ) // skip L_d
+          x += ncols;
+        if ( x < nrows && threadIdx.y < ncols && my ) {
+          f[x + ldf*threadIdx.y] =
+            fs[threadIdx.x + tile*TILE_SIZE + SIZE_X*threadIdx.y];
+          fd[x + ldfd*threadIdx.y] =
+            fds[threadIdx.x + tile*TILE_SIZE + SIZE_X*threadIdx.y];
+        }
       }
-      // upload D**(-1)
-      if ((threadIdx.x < 2) && (threadIdx.y < ncols))
-        d[threadIdx.x + 2*threadIdx.y] = ds[threadIdx.x + 2*threadIdx.y];
-    }
-    for (int tile = 1; tile < TILES; tile += 2) {
-      // upload L_u, L_l, L_u*D and L_l*D's even tiles
-      x = threadIdx.x + (tile - 1)*TILE_SIZE +
-        (TILES - 1)*TILE_SIZE*block;
-      if (x >= offp) // skip L_d
-        x += ncols;
-      if ((x < nrows) && (threadIdx.y < ncols) && my) {
-        f[x + ldf*threadIdx.y] =
-          fs[threadIdx.x + tile*TILE_SIZE + SIZE_X*threadIdx.y];
-        fd[x + ldfd*threadIdx.y] =
-          fds[threadIdx.x + tile*TILE_SIZE + SIZE_X*threadIdx.y];
+      else if ( block == 0 ) { 
+        // upload L_d and L_d*D
+        if ( threadIdx.x < ncols && threadIdx.y < ncols && my ) {
+          f[offp + threadIdx.x + ldf*threadIdx.y] =
+            fs[threadIdx.x + SIZE_X*threadIdx.y];
+          fd[offp + threadIdx.x + ldfd*threadIdx.y] =
+            fds[threadIdx.x + SIZE_X*threadIdx.y];
+        }
+        // upload D**(-1)
+        if ( threadIdx.x < 2 && threadIdx.y < ncols )
+          d[threadIdx.x + 2*threadIdx.y] = ds[threadIdx.x + 2*threadIdx.y];
       }
     } // loop through even tiles ends here
   }
@@ -1434,45 +1438,46 @@ cu_collect_stats(
 extern "C" {
 
 void spral_ssids_block_ldlt(
-    cudaStream_t stream, int nrows, int ncols, int p,
-    double* a, int lda,
-    double* f, int ldf,
-    double* fd, int ldfd,
-    double* d,
-    double delta, double eps,
-    int* index, int* stat
-) {
+      cudaStream_t *stream, int nrows, int ncols, int p,
+      double* a, int lda,
+      double* f, int ldf,
+      double* fd, int ldfd,
+      double* d,
+      double delta, double eps,
+      int* index, int* stat
+      ) {
+   
    int nblocks = (nrows - ncols - 1)/(BLOCK_SIZE*(BLOCKS - 1)) + 1;
-   cu_block_ldlt_init<<< 1, BLOCK_SIZE, 0, stream >>>( ncols, stat, index );
+   cu_block_ldlt_init<<< 1, BLOCK_SIZE, 0, *stream >>>( ncols, stat, index );
   
    dim3 threads(BLOCK_SIZE, 2*BLOCK_SIZE);
    cu_block_ldlt
       < double, BLOCK_SIZE, BLOCKS >
-      <<< nblocks, threads, 0, stream >>>
+      <<< nblocks, threads, 0, *stream >>>
       ( nrows, ncols, p, a, lda, f, ldf, fd, ldfd, d, delta, eps, index, stat );
 }
 
-void spral_ssids_block_llt( cudaStream_t stream, int nrows, int ncols,
+void spral_ssids_block_llt( cudaStream_t *stream, int nrows, int ncols,
       double* a, int lda, double* f, int ldf, int* stat ) {
    int smsize = CBLOCKS*BLOCK_SIZE*BLOCK_SIZE*sizeof(double);
    int nblocks = (nrows - ncols - 1)/(BLOCK_SIZE*(CBLOCKS - 1)) + 1;
    dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
    cu_block_chol
       < double, BLOCK_SIZE, CBLOCKS >
-      <<< nblocks, threads, smsize, stream >>>
+      <<< nblocks, threads, smsize, *stream >>>
       ( nrows, ncols, a, lda, f, ldf, stat );
 }
 
-void spral_ssids_collect_stats(cudaStream_t stream, int nblk,
+void spral_ssids_collect_stats(cudaStream_t *stream, int nblk,
       const struct cstat_data_type *csdata, struct cuda_stats *stats) {
    for(int i=0; i<nblk; i+=MAX_CUDA_BLOCKS) {
       int nb = min(MAX_CUDA_BLOCKS, nblk-i);
-      cu_collect_stats <<<nb, 1, 0, stream>>> (csdata+i, stats);
+      cu_collect_stats <<<nb, 1, 0, *stream>>> (csdata+i, stats);
       CudaCheckError();
    }
 }
 
-void spral_ssids_multiblock_ldlt( cudaStream_t stream, int nblocks,
+void spral_ssids_multiblock_ldlt( cudaStream_t *stream, int nblocks,
       struct multiblock_fact_type *mbfdata, double* f, double delta,
       double eps, int* index, int* stat ) {
    dim3 threads(BLOCK_SIZE, 2*BLOCK_SIZE);
@@ -1480,25 +1485,25 @@ void spral_ssids_multiblock_ldlt( cudaStream_t stream, int nblocks,
       int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
       cu_multiblock_ldlt
          < double, BLOCK_SIZE, MBLOCKS >
-         <<< nb, threads, 0, stream >>>
+         <<< nb, threads, 0, *stream >>>
          ( mbfdata + i, f, delta, eps, index, stat );
    }
 }
 
-void spral_ssids_multiblock_ldlt_setup( cudaStream_t stream, int nblocks,
+void spral_ssids_multiblock_ldlt_setup( cudaStream_t *stream, int nblocks,
       struct multinode_fact_type *ndata, struct multiblock_fact_type *mbfdata,
       int step, int block_size, int blocks, int* stat, int* ind, int* ncb ) {
-  dim3 threads(16,8);
-  for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
-    int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
-    cu_multiblock_fact_setup
-      <<< nb, threads, 0, stream >>>
-      ( ndata + i, mbfdata, step, block_size, blocks, 
-        i, stat + i, ind + block_size*i, ncb );
-  }
+   dim3 threads(10,8);
+   for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
+      int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
+      cu_multiblock_fact_setup
+         <<< nb, threads, 0, *stream >>>
+         ( ndata + i, mbfdata, step, block_size, blocks, 
+         i, stat + i, ind + block_size*i, ncb );
+   }
 }
 
-void spral_ssids_multiblock_llt( cudaStream_t stream, int nblocks,
+void spral_ssids_multiblock_llt( cudaStream_t *stream, int nblocks,
       struct multiblock_fact_type *mbfdata, double* f, int* stat ) {
    if ( nblocks < 1 )
       return;
@@ -1509,39 +1514,39 @@ void spral_ssids_multiblock_llt( cudaStream_t stream, int nblocks,
       int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
       cu_multiblock_chol
          < double, BLOCK_SIZE, MCBLOCKS > 
-         <<< nb, threads, smsize, stream >>>
+         <<< nb, threads, smsize, *stream >>>
          ( mbfdata + i, f, stat );
    }
 }
 
-void spral_ssids_multiblock_llt_setup( cudaStream_t stream, int nblocks,
+void spral_ssids_multiblock_llt_setup( cudaStream_t *stream, int nblocks,
       struct multinode_fact_type *ndata, struct multiblock_fact_type *mbfdata,
       int step, int block_size, int blocks, int* stat, int* ncb ) {
-  dim3 threads(16,8);
-  for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
-    int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
-    cu_multiblock_fact_setup
-      <<< nb, threads, 0, stream >>>
-      ( ndata + i, mbfdata, step, block_size, blocks, i, stat + i, 0, ncb );
-  }
+   dim3 threads(16,8);
+   for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
+      int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
+      cu_multiblock_fact_setup
+         <<< nb, threads, 0, *stream >>>
+         ( ndata + i, mbfdata, step, block_size, blocks, i, stat + i, 0, ncb );
+   }
 }
 
 void spral_ssids_square_ldlt( 
-    cudaStream_t stream, 
-    int n, 
-    double* a, 
-    double* f, 
-    double* w,
-    double* d,
-    int ld,
-    double delta, double eps,
-    int* index,
-    int* stat
-)
+            cudaStream_t *stream, 
+            int n, 
+            double* a, 
+            double* f, 
+            double* w,
+            double* d,
+            int ld,
+            double delta, double eps,
+            int* index,
+            int* stat
+           )
 {
   int nt = min(n, 256);
   int sm = nt*sizeof(double) + (nt + 2)*sizeof(int);
-  cu_square_ldlt< double ><<< 1, nt, sm, stream >>>
+  cu_square_ldlt< double ><<< 1, nt, sm, *stream >>>
     ( n, a, f, w, d, ld, delta, eps, index, stat );
 }
 

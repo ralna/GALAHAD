@@ -144,7 +144,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;C&#39;</span>;</div>
 <div class="line">                <a name="a3"></a><a class="code" href="tru_8h.html#a8175a402569a69faa351e2dcd3c48b94">tru_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;coordinate&quot;</span>, </div>
 <div class="line">                            ne, H_row, H_col, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a name="a4"></a><a class="code" href="tru_8h.html#a638a31d7027eaf1ae39aa7278e7c5c5a">tru_solve_with_mat</a>( &amp;data, &amp;userdata, &amp;status,</div>
 <div class="line">                                    n, x, g, ne, fun, grad, hess, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -152,7 +151,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;R&#39;</span>;</div>
 <div class="line">                <a class="code" href="tru_8h.html#a8175a402569a69faa351e2dcd3c48b94">tru_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;sparse_by_rows&quot;</span>, </div>
 <div class="line">                            ne, NULL, H_col, H_ptr );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a class="code" href="tru_8h.html#a638a31d7027eaf1ae39aa7278e7c5c5a">tru_solve_with_mat</a>( &amp;data, &amp;userdata, &amp;status,</div>
 <div class="line">                                    n, x, g, ne, fun, grad, hess, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -160,7 +158,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;D&#39;</span>;</div>
 <div class="line">                <a class="code" href="tru_8h.html#a8175a402569a69faa351e2dcd3c48b94">tru_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;dense&quot;</span>, </div>
 <div class="line">                            ne, NULL, NULL, NULL ) ;</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a class="code" href="tru_8h.html#a638a31d7027eaf1ae39aa7278e7c5c5a">tru_solve_with_mat</a>( &amp;data, &amp;userdata, &amp;status,</div>
 <div class="line">                                    n, x, g, ne, fun, grad, hess_dense, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -168,7 +165,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;I&#39;</span>;</div>
 <div class="line">                <a class="code" href="tru_8h.html#a8175a402569a69faa351e2dcd3c48b94">tru_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;diagonal&quot;</span>, </div>
 <div class="line">                            ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a class="code" href="tru_8h.html#a638a31d7027eaf1ae39aa7278e7c5c5a">tru_solve_with_mat</a>( &amp;data, &amp;userdata, &amp;status, n, x, g, </div>
 <div class="line">                                    ne, fun_diag, grad_diag, hess_diag, prec) ;</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -176,7 +172,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;P&#39;</span>;</div>
 <div class="line">                <a class="code" href="tru_8h.html#a8175a402569a69faa351e2dcd3c48b94">tru_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;absent&quot;</span>, </div>
 <div class="line">                            ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a name="a5"></a><a class="code" href="tru_8h.html#aaa508227d17d8da723bb0401023acd96">tru_solve_without_mat</a>( &amp;data, &amp;userdata, &amp;status,</div>
 <div class="line">                                       n, x, g, fun, grad, hessprod, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -226,7 +221,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;C&#39;</span>;</div>
 <div class="line">                <a class="code" href="tru_8h.html#a8175a402569a69faa351e2dcd3c48b94">tru_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;coordinate&quot;</span>, </div>
 <div class="line">                            ne, H_row, H_col, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a name="a8"></a><a class="code" href="tru_8h.html#a804863856294e362b724fca8953300d5">tru_solve_reverse_with_mat</a>( &amp;data, &amp;status, &amp;eval_status, </div>
 <div class="line">                                                n, x, f, g, ne, H_val, u, v );</div>
@@ -253,7 +247,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;R&#39;</span>;</div>
 <div class="line">                <a class="code" href="tru_8h.html#a8175a402569a69faa351e2dcd3c48b94">tru_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;sparse_by_rows&quot;</span>, ne, </div>
 <div class="line">                            NULL, H_col, H_ptr );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a class="code" href="tru_8h.html#a804863856294e362b724fca8953300d5">tru_solve_reverse_with_mat</a>( &amp;data, &amp;status, &amp;eval_status, </div>
 <div class="line">                                                n, x, f, g, ne, H_val, u, v );</div>
@@ -280,7 +273,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;D&#39;</span>;</div>
 <div class="line">                <a class="code" href="tru_8h.html#a8175a402569a69faa351e2dcd3c48b94">tru_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;dense&quot;</span>, </div>
 <div class="line">                            ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a class="code" href="tru_8h.html#a804863856294e362b724fca8953300d5">tru_solve_reverse_with_mat</a>( &amp;data, &amp;status, &amp;eval_status, </div>
 <div class="line">                                         n, x, f, g, n*(n+1)/2, H_dense, u, v );</div>
@@ -308,7 +300,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;I&#39;</span>;</div>
 <div class="line">                <a class="code" href="tru_8h.html#a8175a402569a69faa351e2dcd3c48b94">tru_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;diagonal&quot;</span>,</div>
 <div class="line">                            ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a class="code" href="tru_8h.html#a804863856294e362b724fca8953300d5">tru_solve_reverse_with_mat</a>( &amp;data, &amp;status, &amp;eval_status, </div>
 <div class="line">                                                n, x, f, g, n, H_diag, u, v );</div>
@@ -335,7 +326,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;P&#39;</span>;</div>
 <div class="line">                <a class="code" href="tru_8h.html#a8175a402569a69faa351e2dcd3c48b94">tru_import</a>( &amp;control, &amp;data, &amp;status, n, <span class="stringliteral">&quot;absent&quot;</span>, </div>
 <div class="line">                            ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a name="a9"></a><a class="code" href="tru_8h.html#a97252b83eaab0b4d5d3ac53e6b317206">tru_solve_reverse_without_mat</a>( &amp;data, &amp;status, &amp;eval_status,</div>
 <div class="line">                                                   n, x, f, g, u, v );</div>
@@ -483,11 +473,11 @@ $(function() {
 <div class="ttc" id="atru_8h_html_a1ae7a579fa70c63d8dc62566c04d9aff"><div class="ttname"><a href="tru_8h.html#a1ae7a579fa70c63d8dc62566c04d9aff">tru_initialize</a></div><div class="ttdeci">void tru_initialize(void **data, struct tru_control_type *control, struct tru_inform_type *inform)</div></div>
 <div class="ttc" id="atru_8h_html_a804863856294e362b724fca8953300d5"><div class="ttname"><a href="tru_8h.html#a804863856294e362b724fca8953300d5">tru_solve_reverse_with_mat</a></div><div class="ttdeci">void tru_solve_reverse_with_mat(void **data, int *status, int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], int ne, real_wp_ H_val[], const real_wp_ u[], real_wp_ v[])</div></div>
 <div class="ttc" id="atru_8h_html_a638a31d7027eaf1ae39aa7278e7c5c5a"><div class="ttname"><a href="tru_8h.html#a638a31d7027eaf1ae39aa7278e7c5c5a">tru_solve_with_mat</a></div><div class="ttdeci">void tru_solve_with_mat(void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int ne, int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_h)(int, int, const real_wp_[], real_wp_[], const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</div></div>
-<div class="ttc" id="astructtru__inform__type_html"><div class="ttname"><a href="structtru__inform__type.html">tru_inform_type</a></div><div class="ttdef"><b>Definition:</b> tru.h:489</div></div>
+<div class="ttc" id="astructtru__inform__type_html"><div class="ttname"><a href="structtru__inform__type.html">tru_inform_type</a></div><div class="ttdef"><b>Definition:</b> tru.h:494</div></div>
 <div class="ttc" id="atru_8h_html"><div class="ttname"><a href="tru_8h.html">tru.h</a></div></div>
 <div class="ttc" id="atru_8h_html_a97252b83eaab0b4d5d3ac53e6b317206"><div class="ttname"><a href="tru_8h.html#a97252b83eaab0b4d5d3ac53e6b317206">tru_solve_reverse_without_mat</a></div><div class="ttdeci">void tru_solve_reverse_without_mat(void **data, int *status, int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], real_wp_ u[], real_wp_ v[])</div></div>
 <div class="ttc" id="atru_8h_html_aa38f8880b4f63e610ae1f269353ac46e"><div class="ttname"><a href="tru_8h.html#aa38f8880b4f63e610ae1f269353ac46e">tru_terminate</a></div><div class="ttdeci">void tru_terminate(void **data, struct tru_control_type *control, struct tru_inform_type *inform)</div></div>
-<div class="ttc" id="astructtru__control__type_html"><div class="ttname"><a href="structtru__control__type.html">tru_control_type</a></div><div class="ttdef"><b>Definition:</b> tru.h:208</div></div>
+<div class="ttc" id="astructtru__control__type_html"><div class="ttname"><a href="structtru__control__type.html">tru_control_type</a></div><div class="ttdef"><b>Definition:</b> tru.h:213</div></div>
 <div class="ttc" id="atru_8h_html_a7c756ce759b44ddbd1ffac77bf497e5a"><div class="ttname"><a href="tru_8h.html#a7c756ce759b44ddbd1ffac77bf497e5a">tru_information</a></div><div class="ttdeci">void tru_information(void **data, struct tru_inform_type *inform, int *status)</div></div>
 <div class="ttc" id="atru_8h_html_aaa508227d17d8da723bb0401023acd96"><div class="ttname"><a href="tru_8h.html#aaa508227d17d8da723bb0401023acd96">tru_solve_without_mat</a></div><div class="ttdeci">void tru_solve_without_mat(void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_hprod)(int, const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</div></div>
 <!-- start footer part -->

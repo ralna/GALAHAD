@@ -120,7 +120,7 @@
 !----------------------
 
     ABSTRACT INTERFACE
-      FUNCTION eval_f( n, x, f, userdata ) RESULT( status )
+      FUNCTION eval_f( n, x, f, userdata ) RESULT( status ) BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), value :: n
@@ -132,7 +132,7 @@
     END INTERFACE
 
     ABSTRACT INTERFACE
-      FUNCTION eval_g( n, x, g, userdata ) RESULT( status )
+      FUNCTION eval_g( n, x, g, userdata ) RESULT( status ) BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
@@ -144,7 +144,7 @@
     END INTERFACE
 
     ABSTRACT INTERFACE
-      FUNCTION eval_h( n, ne, x, hval, userdata ) RESULT( status )
+      FUNCTION eval_h( n, ne, x, hval, userdata ) RESULT( status ) BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
@@ -157,7 +157,8 @@
     END INTERFACE
 
     ABSTRACT INTERFACE
-      FUNCTION eval_hprod( n, x, u, v, got_h, userdata ) RESULT( status )
+      FUNCTION eval_hprod( n, x, u, v, got_h, userdata ) RESULT( status )      &
+                                                         BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
@@ -172,7 +173,7 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_shprod( n, x, nnz_v, index_nz_v, v, nnz_u, index_nz_u,     &
-                            u, got_h, userdata ) RESULT( status )
+                            u, got_h, userdata ) RESULT( status ) BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
@@ -190,7 +191,7 @@
     END INTERFACE
 
     ABSTRACT INTERFACE
-      FUNCTION eval_prec( n, x, u, v, userdata ) RESULT( status )
+      FUNCTION eval_prec( n, x, u, v, userdata ) RESULT( status ) BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n

@@ -5793,7 +5793,7 @@
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the import. Possible values are:
 !
-!    0. The import was succesful
+!    1. The import was succesful, and the package is ready for the solve phase
 !
 !   -1. An allocation error occurred. A message indicating the offending
 !       array is written on unit control.error, and the returned allocation
@@ -5832,8 +5832,8 @@
 !   co-ordinate storage scheme. It need not be set for any of the other
 !   three schemes, and in this case can be of length 0
 !
-!  H_col is a rank-one array variable of type default integer,
-!   that holds the column indices of the  lower triangular part of H in either
+!  H_col is a rank-one array of type default integer, that holds the 
+!   column indices of the  lower triangular part of H in either
 !   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
 !   be set when the dense or diagonal storage schemes are used, and in this 
 !   case can be of length 0
@@ -6026,7 +6026,7 @@
        GO TO 900
      END SELECT       
 
-     status = GALAHAD_ok
+     status = GALAHAD_ready_to_solve
      RETURN
 
 !  error returns

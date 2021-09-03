@@ -594,21 +594,21 @@ void spral_ssids_run_fwd_solve_kernels(bool posdef,
       struct lookups_gpu_fwd const* gpu, double *xlocal_gpu,
       double **xstack_gpu, double *x_gpu, double ** cvalues_gpu,
       double *work_gpu, int nsync, int *sync, int nasm_sync, int *asm_sync,
-      const cudaStream_t stream) {
+      const cudaStream_t *stream) {
 
    if(nsync>0) {
       for(int i=0; i<nsync; i+=65535)
-         trsv_init <<<MIN(65535,nsync-i), 1, 0, stream>>> (sync+2*i);
+         trsv_init <<<MIN(65535,nsync-i), 1, 0, *stream>>> (sync+2*i);
       CudaCheckError();
    }
    for(int i=0; i<gpu->nassemble; i+=65535)
       grabx
-         <<<MIN(65535,gpu->nassemble-i), ASSEMBLE_NB, 0, stream>>>
+         <<<MIN(65535,gpu->nassemble-i), ASSEMBLE_NB, 0, *stream>>>
          (xlocal_gpu, xstack_gpu, x_gpu, gpu->assemble+i);
    cudaMemset(asm_sync, 0, (1+gpu->nasm_sync)*sizeof(int));
    for(int i=0; i<gpu->nasmblk; i+=65535)
       assemble_lvl
-         <<<MIN(65535,gpu->nasmblk-i), ASSEMBLE_NB, 0, stream>>>
+         <<<MIN(65535,gpu->nasmblk-i), ASSEMBLE_NB, 0, *stream>>>
          (gpu->assemble2, gpu->asmblk, xlocal_gpu, &asm_sync[0], &asm_sync[1], cvalues_gpu);
    CudaCheckError();
    if(gpu->ntrsv>0) {
@@ -616,13 +616,13 @@ void spral_ssids_run_fwd_solve_kernels(bool posdef,
          for(int i=0; i<gpu->ntrsv; i+=65535)
             trsv_ln_exec
                <double,TRSV_NB_TASK,THREADSX_TASK,THREADSY_TASK,false>
-               <<<MIN(65535,gpu->ntrsv-i), dim3(THREADSX_TASK,THREADSY_TASK), 0, stream>>>
+               <<<MIN(65535,gpu->ntrsv-i), dim3(THREADSX_TASK,THREADSY_TASK), 0, *stream>>>
                (xlocal_gpu, sync, gpu->trsv+i);
       } else {
          for(int i=0; i<gpu->ntrsv; i+=65535)
             trsv_ln_exec
                <double,TRSV_NB_TASK,THREADSX_TASK,THREADSY_TASK,true>
-               <<<MIN(65535,gpu->ntrsv-i), dim3(THREADSX_TASK,THREADSY_TASK), 0, stream>>>
+               <<<MIN(65535,gpu->ntrsv-i), dim3(THREADSX_TASK,THREADSY_TASK), 0, *stream>>>
                (xlocal_gpu, sync, gpu->trsv+i);
       }
       CudaCheckError();
@@ -631,7 +631,7 @@ void spral_ssids_run_fwd_solve_kernels(bool posdef,
       for(int i=0; i<gpu->ngemv; i+=65535)
          simple_gemv_lookup
             <GEMV_THREADSX, GEMV_THREADSY, GEMV_NX, GEMV_NY>
-            <<<MIN(65535,gpu->ngemv-i), dim3(GEMV_THREADSX,GEMV_THREADSY), 0, stream>>>
+            <<<MIN(65535,gpu->ngemv-i), dim3(GEMV_THREADSX,GEMV_THREADSY), 0, *stream>>>
             (xlocal_gpu, work_gpu, gpu->gemv+i);
       CudaCheckError();
    }
@@ -639,24 +639,24 @@ void spral_ssids_run_fwd_solve_kernels(bool posdef,
       if((gpu->nreduce + 4 - 1) / 4 > 65535)
          printf("Unhandled error! fwd solve gemv_reduce_lookup()\n");
       gemv_reduce_lookup
-         <<<dim3((gpu->nreduce + 4 - 1) / 4), dim3(GEMV_NX, 4), 0, stream>>>
+         <<<dim3((gpu->nreduce + 4 - 1) / 4), dim3(GEMV_NX, 4), 0, *stream>>>
          (work_gpu, cvalues_gpu, gpu->nreduce, gpu->reduce);
       CudaCheckError();
    }
    for(int i=0; i<gpu->nscatter; i+=65535)
       scatter
-         <<<MIN(65535,gpu->nscatter-i), SCATTER_NB, 0, stream>>>
+         <<<MIN(65535,gpu->nscatter-i), SCATTER_NB, 0, *stream>>>
          (gpu->scatter+i, xlocal_gpu, x_gpu);
    CudaCheckError();
 }
 
 void spral_ssids_run_d_solve_kernel(double *x_gpu, double *y_gpu,
-      struct lookups_gpu_bwd *gpu, const cudaStream_t stream) {
+      struct lookups_gpu_bwd *gpu, const cudaStream_t *stream) {
 
    if(gpu->nrds>0) {
       d_solve
          <REDUCING_D_SOLVE_THREADS_PER_BLOCK>
-         <<<gpu->nrds, REDUCING_D_SOLVE_THREADS_PER_BLOCK, 0, stream>>>
+         <<<gpu->nrds, REDUCING_D_SOLVE_THREADS_PER_BLOCK, 0, *stream>>>
          (gpu->rds, x_gpu, y_gpu);
       CudaCheckError();
    }
@@ -664,19 +664,19 @@ void spral_ssids_run_d_solve_kernel(double *x_gpu, double *y_gpu,
 
 void spral_ssids_run_bwd_solve_kernels(bool dsolve, bool unit_diagonal,
       double *x_gpu, double *work_gpu, int nsync, int *sync_gpu,
-      struct lookups_gpu_bwd *gpu, const cudaStream_t stream) {
+      struct lookups_gpu_bwd *gpu, const cudaStream_t *stream) {
 
    /* === Kernel Launches === */
    if(nsync>0) {
       for(int i=0; i<nsync; i+=65535)
-         trsv_init <<<MIN(65535,nsync-i), 1, 0, stream>>> (sync_gpu+2*i);
+         trsv_init <<<MIN(65535,nsync-i), 1, 0, *stream>>> (sync_gpu+2*i);
       CudaCheckError();
    }
    if(gpu->ngemv>0) {
       for(int i=0; i<gpu->ngemv; i+=65535)
          gemv_transpose_sps_rhs
             <TRSM_TR_THREADSX, TRSM_TR_THREADSY, TRSM_TR_NBX, TRSM_TR_NBY>
-            <<<MIN(65535,gpu->ngemv-i), dim3(TRSM_TR_THREADSX,TRSM_TR_THREADSY), 0, stream>>>
+            <<<MIN(65535,gpu->ngemv-i), dim3(TRSM_TR_THREADSX,TRSM_TR_THREADSY), 0, *stream>>>
             (gpu->gemv+i, x_gpu, work_gpu);
       CudaCheckError();
    }
@@ -686,13 +686,13 @@ void spral_ssids_run_bwd_solve_kernels(bool dsolve, bool unit_diagonal,
          for(int i=0; i<gpu->nrds; i+=65535)
             reducing_d_solve
                <REDUCING_D_SOLVE_THREADS_PER_BLOCK, true>
-               <<<MIN(65535,gpu->nrds-i), REDUCING_D_SOLVE_THREADS_PER_BLOCK, 0, stream>>>
+               <<<MIN(65535,gpu->nrds-i), REDUCING_D_SOLVE_THREADS_PER_BLOCK, 0, *stream>>>
                (gpu->rds+i, work_gpu, x_gpu);
       } else {
          for(int i=0; i<gpu->nrds; i+=65535)
             reducing_d_solve
                <REDUCING_D_SOLVE_THREADS_PER_BLOCK, false>
-               <<<MIN(65535,gpu->nrds-i), REDUCING_D_SOLVE_THREADS_PER_BLOCK, 0, stream>>>
+               <<<MIN(65535,gpu->nrds-i), REDUCING_D_SOLVE_THREADS_PER_BLOCK, 0, *stream>>>
                (gpu->rds+i, work_gpu, x_gpu);
       }
       CudaCheckError();
@@ -703,13 +703,13 @@ void spral_ssids_run_bwd_solve_kernels(bool dsolve, bool unit_diagonal,
          for(int i=0; i<gpu->ntrsv; i+=65535)
             trsv_lt_exec
                <double,TRSV_NB_TASK,THREADSX_TASK,THREADSY_TASK,true>
-               <<<MIN(65535,gpu->ntrsv-i), dim3(THREADSX_TASK,THREADSY_TASK), 0, stream>>>
+               <<<MIN(65535,gpu->ntrsv-i), dim3(THREADSX_TASK,THREADSY_TASK), 0, *stream>>>
                (gpu->trsv+i, work_gpu, sync_gpu);
       } else {
          for(int i=0; i<gpu->ntrsv; i+=65535)
             trsv_lt_exec
                <double,TRSV_NB_TASK,THREADSX_TASK,THREADSY_TASK,false>
-               <<<MIN(65535,gpu->ntrsv-i), dim3(THREADSX_TASK,THREADSY_TASK), 0, stream>>>
+               <<<MIN(65535,gpu->ntrsv-i), dim3(THREADSX_TASK,THREADSY_TASK), 0, *stream>>>
                (gpu->trsv+i, work_gpu, sync_gpu);
       }
       CudaCheckError();
@@ -718,18 +718,18 @@ void spral_ssids_run_bwd_solve_kernels(bool dsolve, bool unit_diagonal,
    if(gpu->nscatter>0) {
       for(int i=0; i<gpu->nscatter; i+=65535)
          scatter
-            <<<MIN(65535,gpu->nscatter-i), SCATTER_NB, 0, stream>>>
+            <<<MIN(65535,gpu->nscatter-i), SCATTER_NB, 0, *stream>>>
             (gpu->scatter+i, work_gpu, x_gpu);
       CudaCheckError();
    }
 }
 
 void spral_ssids_run_slv_contrib_fwd(struct lookup_contrib_fwd const* gpu,
-      double* x_gpu, double const* xstack_gpu, const cudaStream_t stream) {
+      double* x_gpu, double const* xstack_gpu, const cudaStream_t *stream) {
    if(gpu->nscatter>0) {
       for(int i=0; i<gpu->nscatter; i+=65535)
          scatter_sum
-            <<<MIN(65535,gpu->nscatter-i), SCATTER_NB, 0, stream>>>
+            <<<MIN(65535,gpu->nscatter-i), SCATTER_NB, 0, *stream>>>
             (gpu->scatter+i, xstack_gpu, x_gpu);
       CudaCheckError();
    }

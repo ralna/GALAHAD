@@ -168,9 +168,9 @@ public:
               if (!my_abort) {
                #pragma omp cancellation point taskgroup
                try {
-                  /*printf("%d: Node %d parent %d (of %d) size %d x %d\n",
-                        omp_get_thread_num(), ni, symb_[ni].parent,
-                        symb_.nnodes_, symb_[ni].nrow, symb_[ni].ncol);*/
+                  // printf("%d: Node %d parent %d (of %d) size %d x %d\n",
+                  //       omp_get_thread_num(), ni, symb_[ni].parent,
+                  //       symb_.nnodes_, symb_[ni].nrow, symb_[ni].ncol);
                   int this_thread = omp_get_thread_num();
                   // Assembly of node (not of contribution block)
                   assemble_pre
@@ -180,7 +180,7 @@ public:
                   int nrow = symb_[ni].nrow + nodes_[ni].ndelay_in;
                   thread_stats[this_thread].maxfront =
                      std::max(thread_stats[this_thread].maxfront, nrow);
-
+                  
                   // Factorization
                   factor_node<posdef>
                      (ni, symb_[ni], nodes_[ni], options,
@@ -229,6 +229,7 @@ public:
             } } // task/abort
          }
       } // taskgroup
+
 
       // Reduce thread_stats
       stats = ThreadStats(); // initialise

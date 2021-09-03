@@ -2,6 +2,7 @@
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
+!> \author    Florent Lopez
 module spral_ssids_profile
    use, intrinsic :: iso_c_binding
    implicit none
@@ -11,7 +12,8 @@ module spral_ssids_profile
              profile_end, &
              profile_task_type, &
              profile_create_task, &
-             profile_set_state
+             profile_set_state, &
+             profile_add_event
 
    type :: profile_task_type
       private
@@ -21,9 +23,13 @@ module spral_ssids_profile
    end type profile_task_type
 
    interface
-      subroutine profile_begin() &
+      subroutine c_begin(nregions, regions) &
             bind(C, name="spral_ssids_profile_begin")
-      end subroutine profile_begin
+        use, intrinsic :: iso_c_binding
+        implicit none
+        integer(c_int), value :: nregions
+        type(c_ptr), value, intent(in) :: regions
+      end subroutine c_begin
       subroutine profile_end() &
             bind(C, name="spral_ssids_profile_end")
       end subroutine profile_end
@@ -45,65 +51,132 @@ module spral_ssids_profile
          character(C_CHAR), dimension(*), intent(in) :: type
          character(C_CHAR), dimension(*), intent(in) :: name
       end subroutine c_set_state
+      subroutine c_add_event(type, val, thread) &
+        bind(C, name="spral_ssids_profile_add_event")
+        use, intrinsic :: iso_c_binding
+        implicit none
+        character(C_CHAR), dimension(*), intent(in) :: type
+        character(C_CHAR), dimension(*), intent(in) :: val
+        integer(C_INT), value :: thread
+      end subroutine c_add_event
    end interface
 
 contains
-   type(profile_task_type) function profile_create_task(name, thread)
-      character(len=*), intent(in) :: name
-      integer, optional, intent(in) :: thread
 
-      integer(C_INT) :: mythread
-      character(C_CHAR), dimension(200) :: cname
+  subroutine profile_begin(regions)
+    use spral_hw_topology, only : numa_region, c_numa_region
+    implicit none
 
-      mythread = -1 ! autodetect
-      if(present(thread)) mythread = thread
-      call f2c_string(name, cname)
+    type(numa_region), dimension(:), intent(in) :: regions
 
-      profile_create_task%ctask = c_create_task(cname, mythread)
-   end function profile_create_task
+    type(c_numa_region), dimension(:), pointer, contiguous :: f_regions
+    integer(c_int) :: nregions
+    integer :: ngpus
+    integer :: i
+    integer :: st
+    integer(c_int), dimension(:), pointer, contiguous :: gpus
+    type(c_ptr) :: c_regions
+    
+    nullify(gpus)
+    
+    nregions = size(regions, 1)
+    allocate(f_regions(nregions), stat=st)    
+    do i = 1, nregions
+       f_regions(i)%nproc = regions(i)%nproc
+       ngpus = size(regions(i)%gpus, 1)
+       f_regions(i)%ngpu = ngpus
+       if (ngpus .gt. 0) then
+          allocate(gpus(ngpus), stat=st)
+          gpus(:) = regions(i)%gpus
+          f_regions(i)%gpus = c_loc(gpus(1))
+          nullify(gpus)
+       end if
+    end do
 
-   subroutine end_task(this)
-      class(profile_task_type), intent(in) :: this
+    c_regions = c_loc(f_regions)
+    
+    call c_begin(nregions, c_regions)
 
-      call c_end_task(this%ctask)
-   end subroutine end_task
+    ! TODO free data structures
 
-   subroutine profile_set_state(container, type, name)
-      character(len=*), intent(in) :: container
-      character(len=*), intent(in) :: type
-      character(len=*), intent(in) :: name
+  end subroutine profile_begin
 
-      character(C_CHAR), dimension(200) :: cname, ctype, ccontainer
+  type(profile_task_type) function profile_create_task(name, thread)
+    character(len=*), intent(in) :: name
+    integer, optional, intent(in) :: thread
 
-      call f2c_string(container, ccontainer)
-      call f2c_string(type, ctype)
-      call f2c_string(name, cname)
-      call c_set_state(ccontainer, ctype, cname)
-   end subroutine profile_set_state
+    integer(C_INT) :: mythread
+    character(C_CHAR), dimension(200) :: cname
 
-   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   !> @brief Convert Fortran character to C string, adding null terminator.
-   !> @param fstring Fortran string to convert.
-   !> @param cstring On output, overwritten with C string. Must be long enough
-   !>        to include null termination.
-   !> @param stat Status, 0 on sucess, otherwise number of additional characters
-   !>        required.
-   subroutine f2c_string(fstring, cstring, stat)
-      character(len=*), intent(in) :: fstring
-      character(C_CHAR), dimension(:), intent(out) :: cstring
-      integer, optional, intent(out) :: stat
+    mythread = -1 ! autodetect
+    if(present(thread)) mythread = thread
+    call f2c_string(name, cname)
 
-      integer :: i
+    profile_create_task%ctask = c_create_task(cname, mythread)
+  end function profile_create_task
 
-      if(size(cstring).lt.len(fstring)+1) then
-         ! Not big enough, need +1 for null terminator
-         if(present(stat)) stat = len(fstring)+1 - size(cstring)
-         return
-      endif
+  subroutine end_task(this)
+    class(profile_task_type), intent(in) :: this
 
-      do i = 1, len(fstring)
-         cstring(i) = fstring(i:i)
-      end do
-      cstring(len(fstring)+1) = C_NULL_CHAR
-   end subroutine f2c_string
+    call c_end_task(this%ctask)
+  end subroutine end_task
+
+  subroutine profile_set_state(container, type, name)
+    character(len=*), intent(in) :: container
+    character(len=*), intent(in) :: type
+    character(len=*), intent(in) :: name
+
+    character(C_CHAR), dimension(200) :: cname, ctype, ccontainer
+
+    call f2c_string(container, ccontainer)
+    call f2c_string(type, ctype)
+    call f2c_string(name, cname)
+    call c_set_state(ccontainer, ctype, cname)
+  end subroutine profile_set_state
+
+  subroutine profile_add_event(type, val, thread)
+    implicit none
+
+    character(len=*), intent(in) :: type
+    character(len=*), intent(in) :: val
+    integer, optional, intent(in) :: thread
+
+    integer(C_INT) :: mythread
+    character(C_CHAR), dimension(200) :: ctype, cval
+
+    call f2c_string(type, ctype)
+    call f2c_string(val, cval)
+    mythread = -1 ! autodetect
+    if(present(thread)) mythread = thread
+
+    call c_add_event(ctype, cval, mythread)
+
+  end subroutine profile_add_event
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !> @brief Convert Fortran character to C string, adding null terminator.
+  !> @param fstring Fortran string to convert.
+  !> @param cstring On output, overwritten with C string. Must be long enough
+  !>        to include null termination.
+  !> @param stat Status, 0 on sucess, otherwise number of additional characters
+  !>        required.
+  subroutine f2c_string(fstring, cstring, stat)
+    character(len=*), intent(in) :: fstring
+    character(C_CHAR), dimension(:), intent(out) :: cstring
+    integer, optional, intent(out) :: stat
+
+    integer :: i
+
+    if(size(cstring).lt.len(fstring)+1) then
+       ! Not big enough, need +1 for null terminator
+       if(present(stat)) stat = len(fstring)+1 - size(cstring)
+       return
+    endif
+
+    do i = 1, len(fstring)
+       cstring(i) = fstring(i:i)
+    end do
+    cstring(len(fstring)+1) = C_NULL_CHAR
+  end subroutine f2c_string
+
 end module spral_ssids_profile

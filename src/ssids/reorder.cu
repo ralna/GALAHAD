@@ -874,39 +874,39 @@ cu_multisymm( const struct multisymm_type* msdata )
 
 extern "C" {
 
-void spral_ssids_copy_ic(cudaStream_t stream, int nrows, int ncols,
+void spral_ssids_copy_ic(cudaStream_t *stream, int nrows, int ncols,
     double* a, int lda, double* b, int ldb, int* ind) {
   int rb = (nrows - 1)/BLOCK_SIZE + 1;
   int cb = (ncols - 1)/BLOCK_SIZE + 1;
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   dim3 grid(rb, cb);
   cu_copy_ic< double >
-    <<< grid, threads, 0, stream >>>
+    <<< grid, threads, 0, *stream >>>
     ( nrows, ncols, a, lda, b, ldb, ind );
 }
 
-void spral_ssids_copy_mc(cudaStream_t stream, int nrows, int ncols, double* a,
+void spral_ssids_copy_mc(cudaStream_t *stream, int nrows, int ncols, double* a,
       int lda, double* b, int ldb, int* mask) {
   int rb = (nrows - 1)/BLOCK_SIZE + 1;
   int cb = (ncols - 1)/BLOCK_SIZE + 1;
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   dim3 grid(rb, cb);
   cu_copy_mc< double >
-    <<< grid, threads, 0, stream >>>
+    <<< grid, threads, 0, *stream >>>
     ( nrows, ncols, a, lda, b, ldb, mask );
 }
 
-void spral_ssids_multisymm(cudaStream_t stream, int nblocks,
+void spral_ssids_multisymm(cudaStream_t *stream, int nblocks,
       const struct multisymm_type* msdata) {
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
     int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
     dim3 grid(nb,4,4);
-    cu_multisymm< double ><<< grid, threads, 0, stream >>>( msdata + i );
+    cu_multisymm< double ><<< grid, threads, 0, *stream >>>( msdata + i );
   }
 }
 
-void spral_ssids_multicopy(cudaStream_t stream, int nblocks,
+void spral_ssids_multicopy(cudaStream_t *stream, int nblocks,
       const struct multinode_fact_type *ndata, 
       const struct multireorder_data *rdata,
       double* a, double* b, int* stat, int* ncb) {
@@ -914,12 +914,12 @@ void spral_ssids_multicopy(cudaStream_t stream, int nblocks,
   for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
     int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
     cu_multicopy< double, BLOCK_SIZE, BLOCK_SIZE >
-      <<< nb, threads, 0, stream >>>
+      <<< nb, threads, 0, *stream >>>
       ( ndata, rdata + i, b, stat, ncb );
   }
 }
 
-void spral_ssids_multireorder(cudaStream_t stream, int nblocks,
+void spral_ssids_multireorder(cudaStream_t *stream, int nblocks,
       const struct multinode_fact_type *ndata, 
       const struct multireorder_data *rdata,
       double* c, int* stat, int* ind, int* index, int* ncb) {
@@ -928,13 +928,13 @@ void spral_ssids_multireorder(cudaStream_t stream, int nblocks,
     int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
     dim3 grid(nb,1);
     cu_multireorder< double, 2*BLOCK_SIZE, 2*BLOCK_SIZE >
-      <<< grid, threads, 0, stream >>>
+      <<< grid, threads, 0, *stream >>>
       ( ndata, rdata + i, c, stat, ind, index, ncb );
   }
 }
 
 // ncols <= 2*BLOCK_SIZE
-void spral_ssids_reorder_cols2(cudaStream_t stream, int nrows, int ncols,
+void spral_ssids_reorder_cols2(cudaStream_t *stream, int nrows, int ncols,
     double* a, int lda, double* b, int ldb, int* index, int mode ) {
   int rb = (nrows - 1)/BLOCK_SIZE + 1;
   dim3 grid(rb, 2);
@@ -942,30 +942,30 @@ void spral_ssids_reorder_cols2(cudaStream_t stream, int nrows, int ncols,
   if ( ncols <= BLOCK_SIZE ) {
     dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
     cu_reorder_cols2< double, BLOCK_SIZE, BLOCK_SIZE >
-      <<< grid, threads, 0, stream >>>
+      <<< grid, threads, 0, *stream >>>
       ( nrows, ncols, a, lda, b, ldb, index, mode );
   }
   else if ( ncols <= 2*BLOCK_SIZE ) {
     dim3 threads(BLOCK_SIZE, 2*BLOCK_SIZE);
     cu_reorder_cols2< double, BLOCK_SIZE, 2*BLOCK_SIZE >
-      <<< grid, threads, 0, stream >>>
+      <<< grid, threads, 0, *stream >>>
       ( nrows, ncols, a, lda, b, ldb, index, mode );
   }
 }
 
-void spral_ssids_reorder_rows(cudaStream_t stream, int nrows, int ncols,
+void spral_ssids_reorder_rows(cudaStream_t *stream, int nrows, int ncols,
       double* a, int lda, double* b, int ldb, int* index) {
   int cb = (ncols - 1)/BLOCK_SIZE + 1;
   dim3 grid(1, cb);
   int tx = min(nrows, 1024/BLOCK_SIZE);
   dim3 threads(tx, BLOCK_SIZE);
   cu_reorder_rows< double >
-    <<< grid, threads, 0, stream >>>
+    <<< grid, threads, 0, *stream >>>
     ( nrows, ncols, a, lda, b, ldb, index );
 }
 
 // nrows <= 2*BLOCK_SIZE
-void spral_ssids_reorder_rows2(cudaStream_t stream, int nrows, int ncols,
+void spral_ssids_reorder_rows2(cudaStream_t *stream, int nrows, int ncols,
     double* a, int lda, double* b, int ldb, int* index, int mode ) {
   int cb = (ncols - 1)/BLOCK_SIZE + 1;
   dim3 grid(cb, 2);
@@ -973,18 +973,18 @@ void spral_ssids_reorder_rows2(cudaStream_t stream, int nrows, int ncols,
   if ( nrows <= BLOCK_SIZE ) {
     dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
     cu_reorder_rows2< double, BLOCK_SIZE, BLOCK_SIZE >
-      <<< grid, threads, 0, stream >>>
+      <<< grid, threads, 0, *stream >>>
       ( nrows, ncols, a, lda, b, ldb, index, mode );
   }
   else if ( nrows <= 2*BLOCK_SIZE ) {
     dim3 threads(2*BLOCK_SIZE, BLOCK_SIZE);
     cu_reorder_rows2< double, 2*BLOCK_SIZE, BLOCK_SIZE >
-      <<< grid, threads, 0, stream >>>
+      <<< grid, threads, 0, *stream >>>
       ( nrows, ncols, a, lda, b, ldb, index, mode );
   }
 }
 
-void spral_ssids_swap_ni2Dm(cudaStream_t stream, int nblocks,
+void spral_ssids_swap_ni2Dm(cudaStream_t *stream, int nblocks,
       struct multiswap_type *swapdata) {
    dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
    for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
@@ -992,34 +992,34 @@ void spral_ssids_swap_ni2Dm(cudaStream_t stream, int nblocks,
       dim3 grid(nb,8);
       cu_multiswap_ni2D_c
          < double >
-         <<< grid, threads, 0, stream >>>
+         <<< grid, threads, 0, *stream >>>
          ( swapdata + i );
       cu_multiswap_ni2D_r
          < double >
-         <<< grid, threads, 0, stream >>>
+         <<< grid, threads, 0, *stream >>>
          ( swapdata + i );
    }
 }
 
-void spral_ssids_swap_ni2D_ic(cudaStream_t stream, int nrows, int ncols,
+void spral_ssids_swap_ni2D_ic(cudaStream_t *stream, int nrows, int ncols,
       double* a, int lda, double* b, int ldb, int* index) {
   int rb = (nrows - 1)/BLOCK_SIZE + 1;
   int cb = (ncols - 1)/BLOCK_SIZE + 1;
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   dim3 grid(rb, cb);
   cu_swap_ni2D_ic< double >
-    <<< grid, threads, 0, stream >>>
+    <<< grid, threads, 0, *stream >>>
     ( nrows, ncols, a, lda, b, ldb, index );
 }
 
-void spral_ssids_swap_ni2D_ir(cudaStream_t stream, int nrows, int ncols,
+void spral_ssids_swap_ni2D_ir(cudaStream_t *stream, int nrows, int ncols,
     double* a, int lda, double* b, int ldb, int* index) {
   int rb = (nrows - 1)/BLOCK_SIZE + 1;
   int cb = (ncols - 1)/BLOCK_SIZE + 1;
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
   dim3 grid(rb, cb);
   cu_swap_ni2D_ir< double >
-    <<< grid, threads, 0, stream >>>
+    <<< grid, threads, 0, *stream >>>
     ( nrows, ncols, a, lda, b, ldb, index );
 }
 

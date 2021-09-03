@@ -602,7 +602,7 @@ cu_syrk_r4x4(
 
 extern "C" {
 
-void spral_ssids_dsyrk(cudaStream_t stream, int n, int m, int k, double alpha,
+void spral_ssids_dsyrk(cudaStream_t *stream, int n, int m, int k, double alpha,
       const double* a, int lda, const double* b, int ldb, double beta,
       double* c, int ldc) {
   int nx, ny;
@@ -610,29 +610,29 @@ void spral_ssids_dsyrk(cudaStream_t stream, int n, int m, int k, double alpha,
   ny = (m - 1)/32 + 1;
   dim3 threads(8,8);
   dim3 grid(nx,ny);
-  cu_syrk_r4x4< double > <<< grid, threads, 0, stream >>>
+  cu_syrk_r4x4< double > <<< grid, threads, 0, *stream >>>
     ( n, m, k, alpha, a, lda, b, ldb, beta, c, ldc );
 }
 
-void spral_ssids_multidsyrk(cudaStream_t stream, bool posdef, int nb,
+void spral_ssids_multidsyrk(cudaStream_t *stream, bool posdef, int nb,
       int* stat, struct multielm_data* mdata, 
       struct multinode_fact_type *ndata) {
   dim3 threads(8,8);
   for ( int i = 0; i < nb; i += MAX_CUDA_BLOCKS ) {
     int blocks = min(MAX_CUDA_BLOCKS, nb - i);
     cu_multisyrk_r4x4< double >
-      <<< blocks, threads, 0, stream >>>
+      <<< blocks, threads, 0, *stream >>>
       ( posdef, stat, mdata + i, i, ndata );
   }
 }
 
-void spral_ssids_multidsyrk_low_col(cudaStream_t stream, int nb,
+void spral_ssids_multidsyrk_low_col(cudaStream_t *stream, int nb,
       struct multisyrk_type* msdata, double* c) {
   dim3 threads(8,8);
   for ( int i = 0; i < nb; i += MAX_CUDA_BLOCKS ) {
     int blocks = min(MAX_CUDA_BLOCKS, nb - i);
     cu_multisyrk_lc_r4x4< double >
-      <<< blocks, threads, 0, stream >>>( msdata + i, i, c );
+      <<< blocks, threads, 0, *stream >>>( msdata + i, i, c );
   }
 }
 } // end extern "C"

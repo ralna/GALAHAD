@@ -154,7 +154,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;C&#39;</span>;</div>
 <div class="line">                <a name="a3"></a><a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( &amp;control, &amp;data, &amp;status, n, x_l, x_u, </div>
 <div class="line">                            <span class="stringliteral">&quot;coordinate&quot;</span>, ne, H_row, H_col, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a name="a4"></a><a class="code" href="trb_8h.html#a5a58e6c0c022eb451f14c82d653967f7">trb_solve_with_mat</a>( &amp;data, &amp;userdata, &amp;status, n, x, g, ne, </div>
 <div class="line">                                    fun, grad, hess, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -162,7 +161,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;R&#39;</span>;</div>
 <div class="line">                <a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( &amp;control, &amp;data, &amp;status, n, x_l, x_u, </div>
 <div class="line">                            <span class="stringliteral">&quot;sparse_by_rows&quot;</span>, ne, NULL, H_col, H_ptr );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a class="code" href="trb_8h.html#a5a58e6c0c022eb451f14c82d653967f7">trb_solve_with_mat</a>( &amp;data, &amp;userdata, &amp;status, n, x, g, ne, </div>
 <div class="line">                                    fun, grad, hess, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -170,7 +168,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;D&#39;</span>;</div>
 <div class="line">                <a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( &amp;control, &amp;data, &amp;status, n, x_l, x_u, </div>
 <div class="line">                            <span class="stringliteral">&quot;dense&quot;</span>, ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a class="code" href="trb_8h.html#a5a58e6c0c022eb451f14c82d653967f7">trb_solve_with_mat</a>( &amp;data, &amp;userdata, &amp;status, n, x, g, ne,  </div>
 <div class="line">                                    fun, grad, hess_dense, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -178,7 +175,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;I&#39;</span>;</div>
 <div class="line">                <a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( &amp;control, &amp;data, &amp;status, n, x_l, x_u, </div>
 <div class="line">                            <span class="stringliteral">&quot;diagonal&quot;</span>, ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a class="code" href="trb_8h.html#a5a58e6c0c022eb451f14c82d653967f7">trb_solve_with_mat</a> (&amp;data, &amp;userdata, &amp;status, n, x, g, ne, </div>
 <div class="line">                                    fun_diag, grad_diag, hess_diag, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -186,7 +182,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;P&#39;</span>;</div>
 <div class="line">                <a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( &amp;control, &amp;data, &amp;status, n, x_l, x_u, </div>
 <div class="line">                            <span class="stringliteral">&quot;absent&quot;</span>, ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <a name="a5"></a><a class="code" href="trb_8h.html#a376b81748cec0bf992542d80b8d38f49">trb_solve_without_mat</a>( &amp;data, &amp;userdata, &amp;status, n, x, g, </div>
 <div class="line">                                       fun, grad, hessprod, shessprod, prec );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
@@ -240,7 +235,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;C&#39;</span>;</div>
 <div class="line">                <a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( &amp;control, &amp;data, &amp;status, n, x_l, x_u, </div>
 <div class="line">                            <span class="stringliteral">&quot;coordinate&quot;</span>, ne, H_row, H_col, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a name="a8"></a><a class="code" href="trb_8h.html#a7bb520e36666386824b216a84be08837">trb_solve_reverse_with_mat</a>( &amp;data, &amp;status, &amp;eval_status, </div>
 <div class="line">                                                n, x, f, g, ne, H_val, u, v );</div>
@@ -266,7 +260,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;R&#39;</span>;</div>
 <div class="line">                <a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( &amp;control, &amp;data, &amp;status, n, x_l, x_u, </div>
 <div class="line">                            <span class="stringliteral">&quot;sparse_by_rows&quot;</span>, ne, NULL, H_col, H_ptr );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a class="code" href="trb_8h.html#a7bb520e36666386824b216a84be08837">trb_solve_reverse_with_mat</a>( &amp;data, &amp;status, &amp;eval_status, </div>
 <div class="line">                                                n, x, f, g, ne, H_val, u, v );</div>
@@ -292,7 +285,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;D&#39;</span>;</div>
 <div class="line">                <a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( &amp;control, &amp;data, &amp;status, n, x_l, x_u, </div>
 <div class="line">                            <span class="stringliteral">&quot;dense&quot;</span>, ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a class="code" href="trb_8h.html#a7bb520e36666386824b216a84be08837">trb_solve_reverse_with_mat</a>( &amp;data, &amp;status, &amp;eval_status, </div>
 <div class="line">                                                n, x, f, g, n*(n+1)/2, H_dense, </div>
@@ -320,7 +312,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;I&#39;</span>;</div>
 <div class="line">                <a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( &amp;control, &amp;data, &amp;status, n, x_l, x_u, </div>
 <div class="line">                            <span class="stringliteral">&quot;diagonal&quot;</span>, ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a class="code" href="trb_8h.html#a7bb520e36666386824b216a84be08837">trb_solve_reverse_with_mat</a>( &amp;data, &amp;status, &amp;eval_status, </div>
 <div class="line">                                                n, x, f, g, n, H_diag, u, v );</div>
@@ -346,7 +337,6 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;P&#39;</span>;</div>
 <div class="line">                <a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( &amp;control, &amp;data, &amp;status, n, x_l, x_u, </div>
 <div class="line">                            <span class="stringliteral">&quot;absent&quot;</span>, ne, NULL, NULL, NULL );</div>
-<div class="line">                status = 1; <span class="comment">// set for initial entry</span></div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a name="a9"></a><a class="code" href="trb_8h.html#a95eac11acf02fe0d6eb4bc39ace5a100">trb_solve_reverse_without_mat</a>( &amp;data, &amp;status, &amp;eval_status,</div>
 <div class="line">                                                   n, x, f, g, u, v, index_nz_v,</div>
@@ -574,9 +564,9 @@ $(function() {
 <div class="line">}</div>
 </div><!-- fragment --> </div><!-- contents -->
 <div class="ttc" id="atrb_8h_html_a95eac11acf02fe0d6eb4bc39ace5a100"><div class="ttname"><a href="trb_8h.html#a95eac11acf02fe0d6eb4bc39ace5a100">trb_solve_reverse_without_mat</a></div><div class="ttdeci">void trb_solve_reverse_without_mat(void **data, int *status, int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], real_wp_ u[], real_wp_ v[], int index_nz_v[], int *nnz_v, const int index_nz_u[], int nnz_u)</div></div>
-<div class="ttc" id="astructtrb__control__type_html"><div class="ttname"><a href="structtrb__control__type.html">trb_control_type</a></div><div class="ttdef"><b>Definition:</b> trb.h:231</div></div>
+<div class="ttc" id="astructtrb__control__type_html"><div class="ttname"><a href="structtrb__control__type.html">trb_control_type</a></div><div class="ttdef"><b>Definition:</b> trb.h:236</div></div>
 <div class="ttc" id="atrb_8h_html_a376b81748cec0bf992542d80b8d38f49"><div class="ttname"><a href="trb_8h.html#a376b81748cec0bf992542d80b8d38f49">trb_solve_without_mat</a></div><div class="ttdeci">void trb_solve_without_mat(void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_hprod)(int, const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), int(*eval_shprod)(int, const real_wp_[], int, const int[], const real_wp_[], int *, int[], real_wp_[], bool, const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</div></div>
-<div class="ttc" id="astructtrb__inform__type_html"><div class="ttname"><a href="structtrb__inform__type.html">trb_inform_type</a></div><div class="ttdef"><b>Definition:</b> trb.h:546</div></div>
+<div class="ttc" id="astructtrb__inform__type_html"><div class="ttname"><a href="structtrb__inform__type.html">trb_inform_type</a></div><div class="ttdef"><b>Definition:</b> trb.h:551</div></div>
 <div class="ttc" id="atrb_8h_html_a105f41a31d49c59885c3372090bec776"><div class="ttname"><a href="trb_8h.html#a105f41a31d49c59885c3372090bec776">trb_information</a></div><div class="ttdeci">void trb_information(void **data, struct trb_inform_type *inform, int *status)</div></div>
 <div class="ttc" id="atrb_8h_html_a7bb520e36666386824b216a84be08837"><div class="ttname"><a href="trb_8h.html#a7bb520e36666386824b216a84be08837">trb_solve_reverse_with_mat</a></div><div class="ttdeci">void trb_solve_reverse_with_mat(void **data, int *status, int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], int ne, real_wp_ H_val[], const real_wp_ u[], real_wp_ v[])</div></div>
 <div class="ttc" id="atrb_8h_html"><div class="ttname"><a href="trb_8h.html">trb.h</a></div></div>

@@ -55,12 +55,11 @@ public:
     */
    T *get_nowait() {
       T *ptr = nullptr;
-      lock_.set();
-         if(pool_.size() > 0) {
-            ptr = pool_.back();
-            pool_.pop_back();
-         }
-      lock_.unset();
+      spral::omp::AcquiredLock scopeLock(lock_);
+      if(pool_.size() > 0) {
+         ptr = pool_.back();
+         pool_.pop_back();
+      }
       return ptr;
    }
    /** Get next free block in a thread-safe fashion.
@@ -78,9 +77,8 @@ public:
    }
    /** Release block acquired using get_*() function for reuse */
    void release(T *const ptr) {
-      lock_.set();
-         pool_.push_back(ptr);
-      lock_.unset();
+      spral::omp::AcquiredLock scopeLock(lock_);
+      pool_.push_back(ptr);
    }
 private:
    typename CharAllocTraits::allocator_type alloc_;

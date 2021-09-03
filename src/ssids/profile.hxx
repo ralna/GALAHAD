@@ -6,6 +6,7 @@
 #pragma once
 
 #include "config.h"
+#include <time.h>
 
 //#define PROFILE
 
@@ -19,7 +20,6 @@
 extern "C" {
 #include <GTG.h>
 }
-#include <time.h>
 #endif /* HAVE_GTG */
 #ifdef HAVE_SCHED_GETCPU
 #include <sched.h>
@@ -132,7 +132,8 @@ public:
     * \note Times are all measured from the end of this subroutine.
     */
    static
-   void init(void) {
+   // void init(int nregions, spral::hw_topology::NumaRegion* regions) {
+   void init(int nnodes, spral::hw_topology::NumaRegion* nodes) {
 #if defined(PROFILE) && defined(HAVE_GTG)
       // Initialise profiling
       setTraceType(PAJE);
@@ -141,9 +142,9 @@ public:
       addContType("CT_NODE", "0", "Node");
       addContType("CT_THREAD", "CT_NODE", "Thread");
       addContType("CT_GPU", "CT_NODE", "GPU");
-      int nnodes = 0;
-      spral::hw_topology::NumaRegion* nodes;
-      spral_hw_topology_guess(&nnodes, &nodes);
+      // int nnodes = 0;
+      // spral::hw_topology::NumaRegion* nodes;
+      if (!nodes) spral_hw_topology_guess(&nnodes, &nodes);
       int core_idx=0;
       for(int node=0; node<nnodes; ++node) {
          char node_id[100], node_name[100];
@@ -191,6 +192,7 @@ public:
       addEntityValue("GT_FACTOR", "ST_GPU_TASK", "Factor", GTG_RED);
       // Define events
       addEventType("EV_AGG_FAIL", "CT_THREAD", "Aggressive pivot fail");
+      addEventType("EV_ALL_REGIONS", "CT_THREAD", "All regions subtree");
       // Initialise start time
       clock_gettime(CLOCK_REALTIME, &tstart);
 #endif
@@ -237,11 +239,13 @@ private:
       return thread_name[thread];
    }
 
+#ifdef PROFILE
    /** \brief Return difference in seconds between t1 and t2. */
    static
    double tdiff(struct timespec t1, struct timespec t2) {
       return (t2.tv_sec - t1.tv_sec) + 1e-9*(t2.tv_nsec - t1.tv_nsec);
    }
+#endif
 
    /** \brief Return best guess at processor id. */
    static
@@ -249,7 +253,7 @@ private:
 #ifdef HAVE_SCHED_GETCPU
       return sched_getcpu();
 #else /* HAVE_SCHED_GETCPU */
-      return omp::get_global_thread_num()
+      return omp::get_global_thread_num();
 #endif /* HAVE_SCHED_GETCPU */
    }
 

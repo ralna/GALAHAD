@@ -280,14 +280,14 @@ void __global__ add_delays(
 extern "C" {
 
 /* Invokes the add_delays<<<>>>() kernel */
-void spral_ssids_add_delays( const cudaStream_t stream, int ndblk,
+void spral_ssids_add_delays( const cudaStream_t *stream, int ndblk,
       struct assemble_delay_type *gpu_dinfo, int *rlist_direct ) {
    if ( ndblk == 0 ) return; // Nothing to see here
    dim3 threads(ADD_DELAYS_TX, ADD_DELAYS_TY);
    for ( int i = 0; i < ndblk; i += MAX_CUDA_BLOCKS ) {
       int nb = min(MAX_CUDA_BLOCKS, ndblk - i);
       add_delays
-         <<< nb, threads, 0, stream >>>
+         <<< nb, threads, 0, *stream >>>
          ( gpu_dinfo + i, rlist_direct );
       CudaCheckError();
    }
@@ -295,7 +295,7 @@ void spral_ssids_add_delays( const cudaStream_t stream, int ndblk,
 
 /* Runs the kernel assemble<<<>>>() after setting up memory correctly. */
 /* Requires gpu_next_sync[] to be of size >= (1+ncp)*sizeof(unsigned int) */
-void spral_ssids_assemble(const cudaStream_t stream, int nblk, int blkoffset,
+void spral_ssids_assemble(const cudaStream_t *stream, int nblk, int blkoffset,
       struct assemble_blk_type *blkdata, int ncp,
       struct assemble_cp_type *cpdata, double *children,
       double *parents, unsigned int *gpu_next_sync) {
@@ -304,7 +304,7 @@ void spral_ssids_assemble(const cudaStream_t stream, int nblk, int blkoffset,
       sync[ncp]
     */
    CudaSafeCall(
-         cudaMemsetAsync(gpu_next_sync,0,(1+ncp)*sizeof(unsigned int),stream)
+         cudaMemsetAsync(gpu_next_sync,0,(1+ncp)*sizeof(unsigned int),*stream)
          );
    /* Note, that we can only have at most 65535 blocks per dimn.
     * For some problems, nblk can exceed this, so we use more than one launch.
@@ -316,7 +316,7 @@ void spral_ssids_assemble(const cudaStream_t stream, int nblk, int blkoffset,
       assemble
          <HOGG_ASSEMBLE_TX, HOGG_ASSEMBLE_TY,
           HOGG_ASSEMBLE_NTX, HOGG_ASSEMBLE_NTY>
-         <<<blocks, threads, 0, stream>>>
+         <<<blocks, threads, 0, *stream>>>
          (&blkdata[blkoffset], cpdata, children, parents, &gpu_next_sync[0],
           &gpu_next_sync[1]);
       CudaCheckError();
@@ -324,38 +324,38 @@ void spral_ssids_assemble(const cudaStream_t stream, int nblk, int blkoffset,
 }
 
 // Note: modified value lval is passed in via pointer in lndata, not as argument
-void spral_ssids_load_nodes( const cudaStream_t stream, int nblocks,
+void spral_ssids_load_nodes( const cudaStream_t *stream, int nblocks,
       const struct load_nodes_type *lndata, const long* list,
       const double* mval ) {
   for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
     int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
-    cu_load_nodes <<< nb, 128, 0, stream >>> ( lndata + i, list, mval );
+    cu_load_nodes <<< nb, 128, 0, *stream >>> ( lndata + i, list, mval );
     CudaCheckError();
   }
 }
 
 // Note: modified value lval is passed in via pointer in lndata, not as argument
-void spral_ssids_load_nodes_sc( const cudaStream_t stream, int nblocks,
+void spral_ssids_load_nodes_sc( const cudaStream_t *stream, int nblocks,
       const struct load_nodes_type *lndata, const long* list, const int* rlist,
       const double* scale, const double* mval ) {
   for ( int i = 0; i < nblocks; i += MAX_CUDA_BLOCKS ) {
     int nb = min(MAX_CUDA_BLOCKS, nblocks - i);
-    cu_load_nodes_sc <<< nb, 128, 0, stream >>> ( lndata + i, list, rlist, scale, mval );
+    cu_load_nodes_sc <<< nb, 128, 0, *stream >>> ( lndata + i, list, rlist, scale, mval );
     CudaCheckError();
   }
 }
 
-void spral_ssids_max_abs( const cudaStream_t stream, 
+void spral_ssids_max_abs( const cudaStream_t *stream, 
       int nb, long n, double* u, double* buff, double* maxabs )
 {
-  cudaMemsetAsync(buff, 0, nb*sizeof(double), stream);
-  cudaStreamSynchronize(stream);
+  cudaMemsetAsync(buff, 0, nb*sizeof(double), *stream);
+  cudaStreamSynchronize(*stream);
   if ( n > 1024*nb )
-    cu_max_abs< double, 256 ><<< nb, 256, 0, stream >>>( n, u, buff );
+    cu_max_abs< double, 256 ><<< nb, 256, 0, *stream >>>( n, u, buff );
   else
-    cu_max_abs< double, 32 ><<< nb, 32, 0, stream >>>( n, u, buff );
+    cu_max_abs< double, 32 ><<< nb, 32, 0, *stream >>>( n, u, buff );
   CudaCheckError();
-  cu_max_abs< double, 1024 ><<< 1, 1024, 0, stream >>>( nb, buff, maxabs );
+  cu_max_abs< double, 1024 ><<< 1, 1024, 0, *stream >>>( nb, buff, maxabs );
   CudaCheckError();
 }
 

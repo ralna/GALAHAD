@@ -125,6 +125,7 @@ Call order</h1>
 Symmetric matrix storage formats</h1>
 <p>The symmetric \(n\) by \(n\) matrix \(H = \nabla_{xx}f\) may be presented and stored in a variety of formats. But crucially symmetry is exploited by only storing values from the lower triangular part (i.e, those entries that lie on or below the leading diagonal).</p>
 <p>Both C-style (0 based) and fortran-style (1-based) indexing is allowed. Choose <code>control.f_indexing</code> as <code>false</code> for C style and <code>true</code> for fortran style; the discussion below presumes C style, but add 1 to indices for the corresponding fortran version.</p>
+<p>Wrappers will automatically convert between 0-based (C) and 1-based (fortran) array indexing, so may be used transparently from C. This conversion involves both time and memory overheads that may be avoided by supplying data that is already stored using 1-based indexing.</p>
 <h2><a class="anchor" id="symmetric_matrix_dense"></a>
 Dense storage format</h2>
 <p>The matrix \(H\) is stored as a compact dense matrix by rows, that is, the values of the entries of each row in turn are stored in order within an appropriate real one-dimensional array. Since \(H\) is symmetric, only the lower triangular part (that is the part \(H_{ij}\) for \(0 \leq j \leq i \leq n-1\)) need be held. In this case the lower triangle should be stored by rows, that is component \(i \ast i / 2 + j\) of the storage array H_val will hold the value \(H_{ij}\) (and, by symmetry, \(H_{ji}\)) for \(0 \leq j \leq i \leq n-1\).</p>

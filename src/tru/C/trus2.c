@@ -48,9 +48,6 @@ int main(void) {
     int status;
     tru_import( &control, &data, &status, n, H_type, ne, NULL, NULL, NULL );
 
-    // Set for initial entry
-    status = 1; 
-
     // Call TRU_solve
     tru_solve_without_mat( &data, &userdata, &status,
                           n, x, g, fun, grad, hessprod, NULL );

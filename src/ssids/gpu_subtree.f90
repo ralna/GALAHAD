@@ -14,6 +14,8 @@ module spral_ssids_gpu_subtree
   private
   public :: gpu_symbolic_subtree, construct_gpu_symbolic_subtree
   public :: gpu_numeric_subtree, gpu_free_contrib
+  ! C interfaces
+  public :: spral_ssids_build_child_pointers
 
   type, extends(symbolic_subtree_base) :: gpu_symbolic_subtree
      integer :: device
@@ -91,7 +93,7 @@ contains
     integer :: cuda_error, st
 
     nullify(this)
-
+    ! print *, "[construct_gpu_symbolic_subtree] device = ", device
     ! Specify which device we're using
     cuda_error = cudaSetDevice(device)
     if (cuda_error .ne. 0) then
@@ -240,7 +242,7 @@ contains
       rlist_direct, gpu_nlist, gpu_rlist, gpu_rlist_direct, cuda_error)
    implicit none
    integer(long), intent(in) :: lnlist
-   integer(C_LONG), dimension(lnlist), target, intent(in) :: nlist
+   integer(C_LONG_LONG), dimension(lnlist), target, intent(in) :: nlist
    integer(long), intent(in) :: lrlist
    integer(C_INT), dimension(lrlist), target, intent(in) :: rlist
    integer(C_INT), dimension(lrlist), target, intent(in) :: rlist_direct
@@ -270,9 +272,6 @@ contains
         lrlist*C_SIZEOF(rlist_direct(1)))
    if (cuda_error .ne. 0) return
 
-   ! Synchronise the device, see:
-   ! http://docs.nvidia.com/cuda/cuda-runtime-api/api-sync-behavior.html#api-sync-behavior
-   cuda_error = cudaDeviceSynchronize()
  end subroutine copy_analyse_data_to_device
  
  subroutine symbolic_cleanup(this)
@@ -346,7 +345,7 @@ contains
    if (st .ne. 0) goto 10
    gpu_factor%nodes(:)%ndelay = 0
 
-   allocate(map(0:this%n), stat=st)
+   allocate(map(0:this%n), stat=st) ! TODO cleanup
    if (st .ne. 0) goto 10
    map(0) = -1 ! initally map unassociated with any node
 
@@ -361,6 +360,9 @@ contains
    ! * options%multiplier * (nfactor+2*n) reals    (for nodes(:)%lcol)
    ! FIXME: do we really need this multiplier memory????
    ! FIXME: In posdef case ints and reals not needed!
+   !
+   ! FIXME: It seems that the memory allocated for the factors should
+   ! only be needed when factors are stored on the host.
    allocate(gpu_factor%alloc, stat=st)
    if (st .ne. 0) goto 10
    call smalloc_setup(gpu_factor%alloc, &
@@ -375,19 +377,7 @@ contains
    if (cuda_error .ne. 0) goto 200
    cuda_error = cudaMemcpy_h2d(gpu_val, C_LOC(aval), sz*C_SIZEOF(aval(1)))
    if (cuda_error .ne. 0) goto 200
-   if (present(scaling)) then
-      ! Copy scaling vector to GPU
-      cuda_error = cudaMalloc(gpu_scaling, aligned_size(this%n*C_SIZEOF(scaling(1))))
-      if (cuda_error .ne. 0) goto 200
-      cuda_error = cudaMemcpy_h2d(gpu_scaling, C_LOC(scaling), &
-           this%n*C_SIZEOF(scaling(1)))
-      if (cuda_error .ne. 0) goto 200
-   end if
-   ! Synchronise the device, see:
-   ! http://docs.nvidia.com/cuda/cuda-runtime-api/api-sync-behavior.html#api-sync-behavior
-   cuda_error = cudaDeviceSynchronize()
-   if (cuda_error .ne. 0) goto 200
-
+   
    ! Initialize stream and contrib_wait event
    cuda_error = cudaStreamCreate(gpu_factor%stream_handle)
    if (cuda_error .ne. 0) goto 200
@@ -397,12 +387,12 @@ contains
 
    ! Call main factorization routine
    if (present(scaling)) then
-      ! ! Copy scaling vector to GPU
-      ! cuda_error = cudaMalloc(gpu_scaling, aligned_size(this%n*C_SIZEOF(scaling(1))))
-      ! if (cuda_error .ne. 0) goto 200
-      ! cuda_error = cudaMemcpy_h2d(gpu_scaling, C_LOC(scaling), &
-      !      this%n*C_SIZEOF(scaling(1)))
-      ! if (cuda_error .ne. 0) goto 200
+      ! Copy scaling vector to GPU
+      cuda_error = cudaMalloc(gpu_scaling, this%n*C_SIZEOF(scaling(1)))
+      if(cuda_error.ne.0) goto 200
+      cuda_error = cudaMemcpy_h2d(gpu_scaling, C_LOC(scaling), &
+         this%n*C_SIZEOF(scaling(1)))
+      if(cuda_error.ne.0) goto 200
 
       ! Perform factorization
       call parfactor(posdef, this%child_ptr, this%child_list, this%n,         &
@@ -543,10 +533,7 @@ contains
    ! Now wait until data copy has finished before releasing result
    ! FIXME: handle cuda_error?
    cuda_error = cudaEventSynchronize(this%contrib_wait)
-   ! Play safe and synchronize the entire stream.
    ! FIXME: handle cuda_error?
-   ! FIXME: remove if not needed
-   cuda_error = cudaStreamSynchronize(this%stream_handle)
  end function get_contrib
 
  subroutine gpu_free_contrib(contrib)
@@ -974,11 +961,6 @@ contains
       end do
    !endif
 
-   ! Synchronise the device, see:
-   ! http://docs.nvidia.com/cuda/cuda-runtime-api/api-sync-behavior.html#api-sync-behavior
-   cuda_error = cudaDeviceSynchronize()
-   if (cuda_error .ne. 0) goto 200
-
    return ! Normal return
 
 100 continue ! Memory allocation error
@@ -1029,5 +1011,125 @@ contains
       end do
    end do
  end subroutine alter_gpu_cpu
+
+ ! C interfaces
+
+ subroutine spral_ssids_nodes_init(nnodes, c_nodes) bind(C)
+   use, intrinsic :: iso_c_binding
+   implicit none
+
+   integer(c_int), value :: nnodes
+   type(c_ptr) :: c_nodes
+
+   type(node_type), dimension(:), pointer :: nodes
+   integer :: st
+
+   c_nodes = c_null_ptr
+   allocate(nodes(nnodes+1), stat=st)
+   if (st .ne. 0) goto 100
+   nodes(:)%ndelay = 0 ! Number of incoming delays
+   nodes(:)%nelim = 0 ! Number of eliminated columns
+   
+   c_nodes = c_loc(nodes(1))
+   
+200 continue
+    return
+100 continue
+    print *, "Error: memory allocation"
+    goto 200
+ end subroutine spral_ssids_nodes_init
+ 
+ subroutine spral_ssids_build_rlist_direct(n, nnodes, c_sparent, c_rptr, &
+      c_rlist, c_rlist_direct) bind(C)
+   implicit none
+
+   integer(c_int), value :: n
+   integer(c_int), value :: nnodes
+   type(c_ptr), intent(in), value :: c_sparent
+   type(c_ptr), intent(in), value :: c_rptr
+   type(c_ptr), intent(in), value :: c_rlist
+   type(c_ptr), value :: c_rlist_direct
+
+   integer, dimension(:), pointer :: sparent
+   integer(long), dimension(:), pointer :: rptr
+   integer, dimension(:), pointer :: rlist
+   integer, dimension(:), pointer :: rlist_direct
+   integer :: st
+
+   if (C_ASSOCIATED(c_sparent)) then
+      call C_F_POINTER(c_sparent, sparent, shape=(/ nnodes /))
+   else
+      print *, "Error c_sparent is NULL"
+      return
+   end if
+
+   if (C_ASSOCIATED(c_rptr)) then
+      call C_F_POINTER(c_rptr, rptr, shape=(/ nnodes+1 /))
+   else
+      print *, "Error c_rptr is NULL"
+      return
+   end if
+
+   if (C_ASSOCIATED(c_rlist)) then
+      call C_F_POINTER(c_rlist, rlist, shape=(/ rptr(nnodes+1)-1 /))
+   else
+      print *, "Error c_rlist is NULL"
+      return
+   end if
+
+   if (C_ASSOCIATED(c_rlist_direct)) then
+      call C_F_POINTER(c_rlist_direct, rlist_direct, shape=(/ rptr(nnodes+1)-1 /))
+   else
+      print *, "Error c_rlist_direct is NULL"
+      return
+   end if
+   
+   call build_rlist_direct(n, nnodes, sparent, rptr, rlist, rlist_direct, st)
+   if (st .ne. 0) goto 100
+
+200 continue
+    return
+100 continue
+    print *, "Error memory allocation"
+    goto 200
+ end subroutine spral_ssids_build_rlist_direct
+   
+ subroutine spral_ssids_build_child_pointers(nnodes, c_sparent, c_child_ptr, &
+      c_child_list) bind (C) 
+   implicit none
+
+   integer(c_int), value :: nnodes
+   type(c_ptr), intent(in), value :: c_sparent
+   type(c_ptr) :: c_child_ptr 
+   type(c_ptr) :: c_child_list
+
+   integer, dimension(:), pointer :: sparent
+   integer, dimension(:), allocatable, target, save :: child_ptr
+   integer, dimension(:), allocatable, target, save :: child_list
+   integer :: st
+
+   nullify(sparent)
+   c_child_ptr = c_null_ptr
+   c_child_list = c_null_ptr
+   
+   if (C_ASSOCIATED(c_sparent)) then
+      call C_F_POINTER(c_sparent, sparent, shape=(/ nnodes /))
+   else
+      print *, "Error: sparent not associated"
+      return
+   end if
+
+   call build_child_pointers(nnodes, sparent, child_ptr, child_list, st)
+   if (st .ne. 0) goto 100
+   
+   c_child_ptr = c_loc(child_ptr(1))
+   c_child_list = c_loc(child_list(1))
+
+200 continue
+   return
+100 continue
+   print *, "Error memory allocation"
+   goto 200     
+ end subroutine spral_ssids_build_child_pointers
 
 end module spral_ssids_gpu_subtree

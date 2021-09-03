@@ -148,7 +148,7 @@
 !----------------------
 
     ABSTRACT INTERFACE
-      FUNCTION eval_f( n, x, f, userdata ) RESULT( status )
+      FUNCTION eval_f( n, x, f, userdata ) RESULT( status ) BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), value :: n
@@ -160,7 +160,7 @@
     END INTERFACE
 
     ABSTRACT INTERFACE
-      FUNCTION eval_g( n, x, g, userdata ) RESULT( status )
+      FUNCTION eval_g( n, x, g, userdata ) RESULT( status ) BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
@@ -172,7 +172,7 @@
     END INTERFACE
 
     ABSTRACT INTERFACE
-      FUNCTION eval_h( n, ne, x, hval, userdata ) RESULT( status )
+      FUNCTION eval_h( n, ne, x, hval, userdata ) RESULT( status ) BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
@@ -185,7 +185,8 @@
     END INTERFACE
 
     ABSTRACT INTERFACE
-      FUNCTION eval_hprod( n, x, u, v, got_h, userdata ) RESULT( status )
+      FUNCTION eval_hprod( n, x, u, v, got_h, userdata ) RESULT( status )      &
+                                                         BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
@@ -200,7 +201,7 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_shprod( n, x, nnz_v, index_nz_v, v, nnz_u, index_nz_u,     &
-                            u, got_h, userdata ) RESULT( status )
+                            u, got_h, userdata ) RESULT( status ) BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
@@ -218,7 +219,7 @@
     END INTERFACE
 
     ABSTRACT INTERFACE
-      FUNCTION eval_prec( n, x, u, v, userdata ) RESULT( status )
+      FUNCTION eval_prec( n, x, u, v, userdata ) RESULT( status ) BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
@@ -645,8 +646,8 @@
 
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, ne
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ne ), optional :: row, col
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), optional :: ptr
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: row, col
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: ptr
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: ctype
   TYPE ( trb_control_type ), INTENT( INOUT ) :: ccontrol
@@ -684,7 +685,7 @@
       row_find = row + 1
     END IF
     IF ( PRESENT( col ) ) THEN
-      ALLOCATE( col_find(ne ) )
+      ALLOCATE( col_find( ne ) )
       col_find = col + 1
     END IF
     IF ( PRESENT( ptr ) ) THEN

@@ -69,7 +69,6 @@ int main(void) {
                 // control.print_level = 1;
                 tru_import( &control, &data, &status, n, "coordinate", 
                             ne, H_row, H_col, NULL );
-                status = 1; // set for initial entry
                 tru_solve_with_mat( &data, &userdata, &status,
                                     n, x, g, ne, fun, grad, hess, prec );
                 break;
@@ -77,7 +76,6 @@ int main(void) {
                 st = 'R';
                 tru_import( &control, &data, &status, n, "sparse_by_rows", 
                            ne, NULL, H_col, H_ptr);
-                status = 1; // set for initial entry
                 tru_solve_with_mat( &data, &userdata, &status,
                                     n, x, g, ne, fun, grad, hess, prec );
                 break;
@@ -85,7 +83,6 @@ int main(void) {
                 st = 'D';
                 tru_import( &control, &data, &status, n, "dense", 
                             ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 tru_solve_with_mat( &data, &userdata, &status,
                                     n, x, g, ne, fun, grad, hess_dense, prec );
                 break;
@@ -93,7 +90,6 @@ int main(void) {
                 st = 'I';
                 tru_import( &control, &data, &status, n, "diagonal", 
                             ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 tru_solve_with_mat( &data, &userdata, &status, n, x, g, 
                                     ne, fun_diag, grad_diag, hess_diag, prec );
                 break;
@@ -101,7 +97,6 @@ int main(void) {
                 st = 'P';
                 tru_import( &control, &data, &status, n, "absent", 
                             ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 tru_solve_without_mat( &data, &userdata, &status,
                                        n, x, g, fun, grad, hessprod, prec );
                 break;
@@ -151,7 +146,6 @@ int main(void) {
                 st = 'C';
                 tru_import( &control, &data, &status, n, "coordinate", 
                             ne, H_row, H_col, NULL );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
                     tru_solve_reverse_with_mat( &data, &status, &eval_status, 
                                                 n, x, f, g, ne, H_val, u, v );
@@ -178,7 +172,6 @@ int main(void) {
                 st = 'R';
                 tru_import( &control, &data, &status, n, "sparse_by_rows", ne, 
                             NULL, H_col, H_ptr );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
                     tru_solve_reverse_with_mat( &data, &status, &eval_status, 
                                                 n, x, f, g, ne, H_val, u, v );
@@ -205,7 +198,6 @@ int main(void) {
                 st = 'D';
                 tru_import( &control, &data, &status, n, "dense", 
                             ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
                     tru_solve_reverse_with_mat( &data, &status, &eval_status, 
                                          n, x, f, g, n*(n+1)/2, H_dense, u, v );
@@ -233,7 +225,6 @@ int main(void) {
                 st = 'I';
                 tru_import( &control, &data, &status, n, "diagonal", 
                            ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
                     tru_solve_reverse_with_mat( &data, &status, &eval_status, 
                                                 n, x, f, g, n, H_diag, u, v );
@@ -260,7 +251,6 @@ int main(void) {
                 st = 'P';
                 tru_import( &control, &data, &status, n, "absent", 
                             ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
                     tru_solve_reverse_without_mat( &data, &status, &eval_status,
                                                    n, x, f, g, u, v );
@@ -311,13 +301,6 @@ int fun( int n, const double x[], double *f, const void *userdata ){
     double p = myuserdata->p;
 
     *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) + cos(x[0]);
-//   *f = pow(x[0] + x[2] + 4.0, 2) + pow(x[1] + x[2], 2) + cos(x[0]);
-//        printf("p: %f \n", p);
-//        printf("n:  %d \n", n);
-//        printf("x: ");
-//        for( int i = 0; i < n; i++) printf("%f ", x[i]);
-//        printf("\n");
-//        printf("objective: %f \n", *f);
     return 0;
 }
 
@@ -327,10 +310,8 @@ int grad( int n, const double x[], double g[], const void *userdata ){
     double p = myuserdata->p;
 
     g[0] = 2.0 * ( x[0] + x[2] + p ) - sin(x[0]);
-//    g[0] = 2.0 * ( x[0] + x[2] + 4.0 ) - sin(x[0]);
     g[1] = 2.0 * ( x[1] + x[2] );
     g[2] = 2.0 * ( x[0] + x[2] + p ) + 2.0 * ( x[1] + x[2] );
-//    g[2] = 2.0 * ( x[0] + x[2] + 4.0 ) + 2.0 * ( x[1] + x[2] );
     return 0;
 }
 
@@ -397,7 +378,7 @@ int grad_diag( int n, const double x[], double g[], const void *userdata ){
 
 // Hessian of the objective
 int hess_diag( int n, int ne, const double x[], double hval[], 
-              const void *userdata ){
+               const void *userdata ){
     hval[0] = -cos(x[0]);
     hval[1] = 2.0;
     hval[2] = 2.0;

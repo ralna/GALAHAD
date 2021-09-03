@@ -94,7 +94,7 @@
 !----------------------
 
     ABSTRACT INTERFACE
-      FUNCTION eval_fgh( x, f, g, h, userdata ) result( status )
+      FUNCTION eval_fgh( x, f, g, h, userdata ) result( status ) BIND( C )
         USE iso_c_binding
         IMPORT :: wp
         REAL ( KIND = wp ), INTENT( IN ), value :: x

@@ -68,40 +68,35 @@ int main(void) {
                 st = 'C';
                 arc_import( &control, &data, &status, n, "coordinate", 
                             ne, H_row, H_col, NULL );
-                status = 1; // set for initial entry
-                arc_solve_with_h( &data, &userdata, &status,
+                arc_solve_with_mat( &data, &userdata, &status,
                                   n, x, g, ne, fun, grad, hess, prec );
                 break;
             case 2: // sparse by rows  
                 st = 'R';
                 arc_import( &control, &data, &status, n, "sparse_by_rows", 
                             ne, NULL, H_col, H_ptr);
-                status = 1; // set for initial entry
-                arc_solve_with_h( &data, &userdata, &status,
+                arc_solve_with_mat( &data, &userdata, &status,
                                   n, x, g, ne, fun, grad, hess, prec );
                 break;
             case 3: // dense
                 st = 'D';
                 arc_import(&control, &data, &status, n, "dense", 
                            ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
-                arc_solve_with_h( &data, &userdata, &status,
+                arc_solve_with_mat( &data, &userdata, &status,
                                   n, x, g, ne, fun, grad, hess_dense, prec );
                 break;
             case 4: // diagonal
                 st = 'I';
                 arc_import( &control, &data, &status, n, "diagonal", 
                            ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
-                arc_solve_with_h( &data, &userdata, &status, n, x, g, 
+                arc_solve_with_mat( &data, &userdata, &status, n, x, g, 
                                   ne, fun_diag, grad_diag, hess_diag, prec );
                 break;
             case 5: // access by products
                 st = 'P';
                 arc_import( &control, &data, &status, n, "absent", 
                            ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
-                arc_solve_without_h( &data, &userdata, &status,
+                arc_solve_without_mat( &data, &userdata, &status,
                                      n, x, g, fun, grad, hessprod, prec );
                 break;
         }
@@ -150,9 +145,8 @@ int main(void) {
                 st = 'C';
                 arc_import( &control, &data, &status, n, "coordinate", 
                             ne, H_row, H_col, NULL );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    arc_solve_reverse_with_h( &data, &status, &eval_status, 
+                    arc_solve_reverse_with_mat( &data, &status, &eval_status, 
                                               n, x, f, g, ne, H_val, u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -177,9 +171,8 @@ int main(void) {
                 st = 'R';
                 arc_import( &control, &data, &status, n, "sparse_by_rows", ne, 
                             NULL, H_col, H_ptr );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    arc_solve_reverse_with_h( &data, &status, &eval_status, 
+                    arc_solve_reverse_with_mat( &data, &status, &eval_status, 
                                               n, x, f, g, ne, H_val, u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -204,9 +197,8 @@ int main(void) {
                 st = 'D';
                 arc_import( &control, &data, &status, n, "dense", 
                            ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    arc_solve_reverse_with_h( &data, &status, &eval_status, 
+                    arc_solve_reverse_with_mat( &data, &status, &eval_status, 
                                          n, x, f, g, n*(n+1)/2, H_dense, u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -232,9 +224,8 @@ int main(void) {
                 st = 'I';
                 arc_import( &control, &data, &status, n, "diagonal", 
                             ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    arc_solve_reverse_with_h( &data, &status, &eval_status, 
+                    arc_solve_reverse_with_mat( &data, &status, &eval_status, 
                                               n, x, f, g, n, H_diag, u, v );
                     if(status == 0){ // successful termination
                         break;
@@ -259,9 +250,8 @@ int main(void) {
                 st = 'P';
                 arc_import( &control, &data, &status, n, "absent", 
                            ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
-                    arc_solve_reverse_without_h( &data, &status, &eval_status, 
+                    arc_solve_reverse_without_mat( &data, &status, &eval_status,
                                                 n, x, f, g, u, v );
                     if(status == 0){ // successful termination
                         break;

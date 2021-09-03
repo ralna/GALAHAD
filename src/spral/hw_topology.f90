@@ -14,7 +14,8 @@ module spral_hw_topology
   private
   public :: numa_region ! datatype describing regions
   public :: guess_topology ! returns best guess of hardware topology
-
+  public :: c_numa_region
+  
   !> Fortran interoperable definition of spral::hw_topology::NumaRegion
   type, bind(C) :: c_numa_region
      integer(C_INT) :: nproc
@@ -63,6 +64,7 @@ contains
     type(C_PTR) :: c_regions
     type(c_numa_region), dimension(:), pointer, contiguous :: f_regions
     integer(C_INT), dimension(:), pointer, contiguous :: f_gpus
+
     ! Get regions from C
     call spral_hw_topology_guess(nregions, c_regions)
     if (c_associated(c_regions)) then

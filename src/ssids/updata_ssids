@@ -17,7 +17,9 @@ SSIDS=$GALAHAD/src/ssids
 cp -u $SPRALorig/matrix_util.f90 $SPRAL/
 cp -u $SPRALorig/scaling.f90 $SPRAL/
 cp -u $SPRALorig/match_order.f90 $SPRAL/
-cp -u $SPRALorig/metis4_wrapper.f90 $SPRAL/
+#cp -u $SPRALorig/metis4_wrapper.f90 $SPRAL/
+cp -u $SPRALorig/metis4_wrapper.F90 $SPRAL/
+cp -u $SPRALorig/metis5_wrapper.F90 $SPRAL/
 cp -u $SPRALorig/core_analyse.f90 $SPRAL/
 cp -u $SPRALorig/pgm.f90 $SPRAL/
 cp -u $SPRALorig/random.f90 $SPRAL/
@@ -42,7 +44,8 @@ cp -u $SSIDSorig/datatypes.f90 $SSIDS/
 cp -u $SSIDSorig/inform.f90 $SSIDS/
 cp -u $SSIDSorig/subtree.f90 $SSIDS/
 cp -u $SSIDSorig/akeep.f90 $SSIDS/
-cp -u $SSIDSorig/fkeep.f90 $SSIDS/
+#cp -u $SSIDSorig/fkeep.f90 $SSIDS/
+cp -u $SSIDSorig/fkeep.F90 $SSIDS/
 cp -u $SSIDSorig/contrib.f90 $SSIDS/
 cp -u $SSIDSorig/contrib_free.f90 $SSIDS/
 cp -u $SSIDSorig/anal.f90 $SSIDS/

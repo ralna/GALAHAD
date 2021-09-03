@@ -51,10 +51,10 @@ module spral_ssids_cpu_subtree
        integer(C_INT), value :: en
        integer(C_INT), dimension(*), intent(in) :: sptr
        integer(C_INT), dimension(*), intent(in) :: sparent
-       integer(C_LONG), dimension(*), intent(in) :: rptr
+       integer(C_LONG_LONG), dimension(*), intent(in) :: rptr
        integer(C_INT), dimension(*), intent(in) :: rlist
-       integer(C_LONG), dimension(*), intent(in) :: nptr
-       integer(C_LONG), dimension(*), intent(in) :: nlist
+       integer(C_LONG_LONG), dimension(*), intent(in) :: nptr
+       integer(C_LONG_LONG), dimension(*), intent(in) :: nlist
        integer(C_INT), value :: ncontrib
        integer(C_INT), dimension(*), intent(in) :: contrib_idx
        type(cpu_factor_options), intent(in) :: options

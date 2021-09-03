@@ -214,7 +214,7 @@ module spral_ssids_datatypes
      !
      ! High level subtree splitting parameters
      !
-     logical :: ignore_numa = .false. ! If true, treat entire machine as single
+     logical :: ignore_numa = .true. ! If true, treat entire machine as single
        ! NUMA region for purposes of subtree allocation.
      logical :: use_gpu = .true. ! Use GPUs if present
      logical :: gpu_only = .false. ! FIXME: not yet implemented.

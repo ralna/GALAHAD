@@ -57,9 +57,6 @@ int main(void) {
     bgo_import( &control, &data, &status, n, x_l, x_u, 
                 H_type, ne, NULL, NULL, NULL );
 
-    // Set for initial entry
-    status = 1; 
-
     // Call BGO_solve
     bgo_solve_without_mat( &data, &userdata, &status, n, x, g, 
                            fun, grad, hessprod, shessprod, NULL );

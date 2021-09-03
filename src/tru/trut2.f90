@@ -49,35 +49,30 @@
        st = 'C'
        CALL TRU_import( control, data, status, n,                              &
                         'coordinate', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        CALL TRU_solve_with_mat( data, userdata, status, X, G,                  &
                                 FUN, GRAD, HESS, PREC )
      CASE ( 2 ) ! sparse by rows  
        st = 'R'
        CALL TRU_import( control, data, status, n,                              &
                         'sparse_by_rows', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        CALL TRU_solve_with_mat( data, userdata, status, X, G,                  &
                                 FUN, GRAD, HESS, PREC )
      CASE ( 3 ) ! dense
        st = 'D'
        CALL TRU_import( control, data, status, n,                              &
                         'dense', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        CALL TRU_solve_with_mat( data, userdata, status, X, G,                  &
                                 FUN, GRAD, HESS_dense, PREC )
      CASE ( 4 ) ! diagonal
        st = 'I'
        CALL TRU_import( control, data, status, n,                              &
                         'diagonal', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        CALL TRU_solve_with_mat( data, userdata, status, X, G,                  &
                                 FUN_diag, GRAD_diag, HESS_diag, PREC )
      CASE ( 5 ) ! access by products
        st = 'P'
        CALL TRU_import( control, data, status, n,                              &
                         'absent', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        CALL TRU_solve_without_mat( data, userdata, status, X, G,               &
                                    FUN, GRAD, HESSPROD, PREC )
      END SELECT
@@ -105,7 +100,6 @@
        st = 'C'
        CALL TRU_import( control, data, status, n,                              &
                         'coordinate', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        DO ! reverse-communication loop
          CALL TRU_solve_reverse_with_mat( data, status, eval_status,           &
                                           X, f, G, H_val, U, V )
@@ -132,7 +126,6 @@
        st = 'R'
        CALL TRU_import( control, data, status, n,                              &
                         'sparse_by_rows', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        DO ! reverse-communication loop
          CALL TRU_solve_reverse_with_mat( data, status, eval_status,           &
                                           X, f, G, H_val, U, V )
@@ -159,7 +152,6 @@
        st = 'D'
        CALL TRU_import( control, data, status, n,                              &
                         'dense', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        DO ! reverse-communication loop
          CALL TRU_solve_reverse_with_mat( data, status, eval_status,           &
                                           X, f, G, H_dense, U, V )
@@ -186,7 +178,6 @@
        st = 'I'
        CALL TRU_import( control, data, status, n,                              &
                         'diagonal', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        DO ! reverse-communication loop
          CALL TRU_solve_reverse_with_mat( data, status, eval_status,           &
                                           X, f, G, H_diag, U, V )
@@ -213,7 +204,6 @@
        st = 'P'
        CALL TRU_import( control, data, status, n,                              &
                         'absent', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        DO ! reverse-communication loop
          CALL TRU_solve_reverse_without_mat( data, status, eval_status,        &
                                              X, f, G, U, V )

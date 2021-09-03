@@ -32,13 +32,10 @@ int main(void) {
     double g[n];
     double u[n], v[n];
 
+    //control.maxit=2;
+    //control.print_level=5;
     // Set Hessian storage format, structure and problem bounds
     tru_import( &control, &data, &status, n, H_type, ne, NULL, NULL, NULL );
-    control.maxit=2;
-    control.print_level=5;
-
-    // Set for initial entry
-    status = 1;
 
     // Solve the problem
     while(true){ // reverse-communication loop

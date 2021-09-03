@@ -997,15 +997,29 @@ $(RLG)(profile_iface.o): ../ssids/profile_iface.f90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
+#fkeep.o: $(RLG)(fkeep.o)
+
+#$(RLG)(fkeep.o): ../ssids/fkeep.f90
+#	@printf ' %-9s %-15s\t\t' "Compiling" "fkeep  "
+#	$(SED) -f $(SEDS) ../ssids/fkeep.f90 > $(OBJ)/fkeep.f90
+#	cd $(OBJ) ; $(FORTRAN) -o fkeep.o $(FFLAGSOMP) fkeep.f90 \
+#                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+#                    $(FORTRAN) -o fkeep.o $(FFLAGSNOMP) fkeep.f90 )
+#	cd $(OBJ) ; $(RARR) fkeep.o ; $(RM) fkeep.f90 fkeep.o
+#	$(RRMARFILE) ssids.o
+##	$(RANLIB) $(RLG)
+#	$(MVMODS)
+#	@printf '[ OK ]\n'
+
 fkeep.o: $(RLG)(fkeep.o)
 
-$(RLG)(fkeep.o): ../ssids/fkeep.f90
+$(RLG)(fkeep.o): ../ssids/fkeep.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "fkeep  "
-	$(SED) -f $(SEDS) ../ssids/fkeep.f90 > $(OBJ)/fkeep.f90
-	cd $(OBJ) ; $(FORTRAN) -o fkeep.o $(FFLAGSOMP) fkeep.f90 \
+	$(SED) -f $(SEDS) ../ssids/fkeep.F90 > $(OBJ)/fkeep.F90
+	cd $(OBJ) ; $(FORTRAN) -o fkeep.o $(FFLAGSOMP) fkeep.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o fkeep.o $(FFLAGSNOMP) fkeep.f90 )
-	cd $(OBJ) ; $(RARR) fkeep.o ; $(RM) fkeep.f90 fkeep.o
+                    $(FORTRAN) -o fkeep.o $(FFLAGSNOMP) fkeep.F90 )
+	cd $(OBJ) ; $(RARR) fkeep.o ; $(RM) fkeep.F90 fkeep.o
 	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -1084,7 +1098,7 @@ ssidss.o: $(OBJ)/ssidss.o
 $(OBJ)/ssidss.o: ../ssids/ssidss.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssidss  "
 	$(SED) -f $(SEDS) ../ssids/ssidss.f90 > $(OBJ)/ssidss.f90
-	cd $(OBJ) ; $(FORTRAN) -o ssidss.o $(FFLAGS) ssidss.f90
+	cd $(OBJ) ; $(FORTRAN) -o ssidss.o $(FFLAGSOMP) ssidss.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 

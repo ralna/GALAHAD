@@ -54,9 +54,6 @@ int main(void) {
     trb_import( &control, &data, &status, n, x_l, x_u, 
                 H_type, ne, NULL, NULL, NULL );
 
-    // Set for initial entry
-    status = 1; 
-
     // Call TRB_solve
     trb_solve_without_mat( &data, &userdata, &status, 
                            n, x, g, fun, grad, hessprod, shessprod, NULL );

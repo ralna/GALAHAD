@@ -799,7 +799,7 @@ contains
        gpu_u = c_ptr_plus( gpu_L, sz )
     
        call block_llt(stream, rb, cb, gpu_u, ldL, gpu_B, nrows, gpu_stat)
-    
+
        cuda_error = cudaMemcpyAsync_d2h(C_LOC(pstat), gpu_stat, C_SIZEOF(pstat), &
             stream)
        if (cuda_error .ne. 0) return
@@ -808,7 +808,7 @@ contains
           flag = SSIDS_ERROR_NOT_POS_DEF ! (numerically) not positive definite
           return
        end if
-    
+
        cuda_error = cudaMemcpyAsync_d2d(gpu_u, gpu_B, &
             (rb + nrows*(cb - 1))*C_SIZEOF(dummy_real), stream)
        if (cuda_error .ne. 0) return

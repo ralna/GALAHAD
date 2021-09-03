@@ -227,7 +227,7 @@ void ugo_import( struct ugo_control_type *control,
  *  status is a scalar variable of type int, that gives
  *   the exit status from the package. Possible values are:
  *
- *     0. The import was succesful
+ *     1. The import was succesful, and the package is ready for the solve phase
  *
  *    -1. An allocation error occurred. A message indicating the offending
  *        array is written on unit control.error, and the returned allocation

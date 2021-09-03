@@ -2,6 +2,7 @@
  *  \copyright 2016 The Science and Technology Facilities Council (STFC)
  *  \licence   BSD licence, see LICENCE file for details
  *  \author    Jonathan Hogg
+ *  \author    Florent Lopez
  */
 #include "ssids/profile.hxx"
 
@@ -12,8 +13,8 @@ struct timespec spral::ssids::Profile::tstart;
 using namespace spral::ssids;
 
 extern "C"
-void spral_ssids_profile_begin() {
-   Profile::init();
+void spral_ssids_profile_begin(int nregions, void const* regions) {
+   Profile::init(nregions, (spral::hw_topology::NumaRegion*)regions);
 }
 
 extern "C"
@@ -41,4 +42,10 @@ extern "C"
 void spral_ssids_profile_set_state(char const* container, char const* type,
       char const* name) {
    Profile::setState(container, type, name);
+}
+
+extern "C"
+void spral_ssids_profile_add_event(
+      char const* type, char const*val, int thread) {
+   Profile::addEvent(type, val, thread);
 }

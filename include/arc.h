@@ -164,6 +164,11 @@
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
 
+  Wrappers will automatically convert between 0-based (C) and 1-based
+  (fortran) array indexing, so may be used transparently from C. This
+  conversion involves both time and memory overheads that may be avoided
+  by supplying data that is already stored using 1-based indexing. 
+
   \subsection symmetric_matrix_dense Dense storage format
   The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is, 
   the values of the entries of each row in turn are
@@ -697,7 +702,7 @@ void arc_import( struct arc_control_type *control,
 
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
-  \li  0. The import was succesful
+  \li  1. The import was succesful, and the package is ready for the solve phase
   \li -1. An allocation error occurred. A message indicating the offending
        array is written on unit control.error, and the returned allocation
        status and a string containing the name of the offending array
@@ -1117,7 +1122,7 @@ void arc_solve_reverse_with_mat( void **data,
     that holds the values of the entries of the lower triangular part of the 
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[in,out] u is a one-dimensional array of size n and type double, that is 
+ @param[in] u is a one-dimensional array of size n and type double, that is 
     used for reverse communication (see above for details)
   
  @param[in,out] v is a one-dimensional array of size n and type double, that is 

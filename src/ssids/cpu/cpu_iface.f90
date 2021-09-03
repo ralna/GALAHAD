@@ -24,7 +24,7 @@ module spral_ssids_cpu_iface
       real(C_DOUBLE) :: small
       real(C_DOUBLE) :: u
       real(C_DOUBLE) :: multiplier
-      integer(C_LONG) :: small_subtree_threshold
+      integer(C_LONG_LONG) :: small_subtree_threshold
       integer(C_INT) :: cpu_block_size
       integer(C_INT) :: pivot_method
       integer(C_INT) :: failed_pivot_method

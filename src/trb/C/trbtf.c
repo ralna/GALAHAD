@@ -76,7 +76,6 @@ int main(void) {
                 st = 'C';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "coordinate", ne, H_row, H_col, NULL );
-                status = 1; // set for initial entry
                 trb_solve_with_mat( &data, &userdata, &status, n, x, g, ne, 
                                     fun, grad, hess, prec );
                 break;
@@ -84,7 +83,6 @@ int main(void) {
                 st = 'R';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "sparse_by_rows", ne, NULL, H_col, H_ptr );
-                status = 1; // set for initial entry
                 trb_solve_with_mat( &data, &userdata, &status, n, x, g, ne, 
                                     fun, grad, hess, prec );
                 break;
@@ -92,7 +90,6 @@ int main(void) {
                 st = 'D';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "dense", ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 trb_solve_with_mat( &data, &userdata, &status, n, x, g, ne,  
                                     fun, grad, hess_dense, prec );
                 break;
@@ -100,7 +97,6 @@ int main(void) {
                 st = 'I';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "diagonal", ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 trb_solve_with_mat (&data, &userdata, &status, n, x, g, ne, 
                                     fun_diag, grad_diag, hess_diag, prec );
                 break;
@@ -108,7 +104,6 @@ int main(void) {
                 st = 'P';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "absent", ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 trb_solve_without_mat( &data, &userdata, &status, n, x, g, 
                                        fun, grad, hessprod, shessprod, prec );
                 break;
@@ -162,7 +157,6 @@ int main(void) {
                 st = 'C';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "coordinate", ne, H_row, H_col, NULL );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
                     trb_solve_reverse_with_mat( &data, &status, &eval_status, 
                                                 n, x, f, g, ne, H_val, u, v );
@@ -188,7 +182,6 @@ int main(void) {
                 st = 'R';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "sparse_by_rows", ne, NULL, H_col, H_ptr );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
                     trb_solve_reverse_with_mat( &data, &status, &eval_status, 
                                                 n, x, f, g, ne, H_val, u, v );
@@ -214,7 +207,6 @@ int main(void) {
                 st = 'D';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "dense", ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
                     trb_solve_reverse_with_mat( &data, &status, &eval_status, 
                                                 n, x, f, g, n*(n+1)/2, H_dense, 
@@ -242,7 +234,6 @@ int main(void) {
                 st = 'I';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "diagonal", ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
                     trb_solve_reverse_with_mat( &data, &status, &eval_status, 
                                                 n, x, f, g, n, H_diag, u, v );
@@ -268,7 +259,6 @@ int main(void) {
                 st = 'P';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "absent", ne, NULL, NULL, NULL );
-                status = 1; // set for initial entry
                 while(true){ // reverse-communication loop
                     trb_solve_reverse_without_mat( &data, &status, &eval_status,
                                                    n, x, f, g, u, v, index_nz_v,

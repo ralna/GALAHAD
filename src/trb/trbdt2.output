@@ -1,0 +1,16 @@
+
+ basic tests of storage formats 
+
+C:     5 iterations. Optimal objective value = -0.97 status = 0
+R:     5 iterations. Optimal objective value = -0.97 status = 0
+D:     5 iterations. Optimal objective value = -0.97 status = 0
+I:     1 iterations. Optimal objective value =  0.88 status = 0
+P:     6 iterations. Optimal objective value = -0.97 status = 0
+
+ tests reverse-communication options 
+
+C:     5 iterations. Optimal objective value = -0.97 status = 0
+R:     5 iterations. Optimal objective value = -0.97 status = 0
+D:     5 iterations. Optimal objective value = -0.97 status = 0
+I:     1 iterations. Optimal objective value =  0.88 status = 0
+P:     6 iterations. Optimal objective value = -0.97 status = 0

@@ -15,17 +15,23 @@
     USE iso_c_binding
     USE GALAHAD_common_ciface
     USE GALAHAD_NLS_double, ONLY: &
-        f_nls_subproblem_control_type => NLS_subproblem_control_type, &
-        f_nls_control_type => NLS_control_type, &
-        f_nls_time_type => NLS_time_type, &
-        f_nls_subproblem_inform_type => NLS_subproblem_inform_type, &
-        f_nls_inform_type => NLS_inform_type, &
-        f_nls_full_data_type => NLS_full_data_type, &
-        f_nls_initialize => NLS_initialize, &
-        f_nls_read_specfile => NLS_read_specfile, &
-        f_nls_import => NLS_import, &
-        f_nls_information => NLS_information, &
-        f_nls_terminate => NLS_terminate
+        f_nls_subproblem_control_type   => NLS_subproblem_control_type,        &
+        f_nls_control_type              => NLS_control_type,                   &
+        f_nls_time_type                 => NLS_time_type,                      &
+        f_nls_subproblem_inform_type    => NLS_subproblem_inform_type,         &
+        f_nls_inform_type               => NLS_inform_type,                    &
+        f_nls_full_data_type            => NLS_full_data_type,                 &
+        f_nls_initialize                => NLS_initialize,                     &
+        f_nls_read_specfile             => NLS_read_specfile,                  &
+        f_nls_import                    => NLS_import,                         &
+        f_nls_solve_with_mat            => NLS_solve_with_mat,                 &
+        f_nls_solve_without_mat         => NLS_solve_without_mat,              &
+        f_nls_solve_reverse_with_mat    => NLS_solve_reverse_with_mat,         &
+        f_nls_solve_reverse_without_mat => NLS_solve_reverse_without_mat,      &
+        f_nls_information               => NLS_information,                    &
+        f_nls_terminate                 => NLS_terminate
+    USE GALAHAD_USERDATA_double, only:                                         &
+        f_galahad_userdata_type => GALAHAD_userdata_type
 
 !!$    USE GALAHAD_RQS_double_ciface, ONLY: &
 !!$        rqs_inform_type, &
@@ -211,7 +217,7 @@
       INTEGER ( KIND = C_INT ) :: h_eval
       INTEGER ( KIND = C_INT ) :: factorization_max
       INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_INT ) :: max_entries_factors
+      INTEGER ( KIND = C_LONG ) :: max_entries_factors
       INTEGER ( KIND = C_INT ) :: factorization_integer
       INTEGER ( KIND = C_INT ) :: factorization_real
       REAL ( KIND = wp ) :: factorization_average
@@ -255,6 +261,106 @@
 !!$      TYPE ( roots_inform_type ) :: roots_inform
       TYPE ( nls_subproblem_inform_type ) :: subproblem_inform
     END TYPE nls_inform_type
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_C( n, m, x, c, userdata ) RESULT( status ) BIND( C )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
+        REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: c
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_C
+    END INTERFACE
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_J( n, m, jne, x, jval, userdata ) RESULT( status ) BIND( C )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: jval
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_J
+    END INTERFACE
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_H( n, m, hne, x, y, hval,                                  &
+                       userdata ) RESULT( status ) BIND( C )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, y
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: hval
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_H
+    END INTERFACE
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_JPROD( n, m, x, transpose, u, v, got_j,                    &
+                           userdata ) RESULT( status ) BIND( C )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
+        LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: transpose
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: u
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+        LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_j
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_JPROD
+    END INTERFACE
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_HPROD( n, m, x, y, u, v, got_h,                            &
+                           userdata ) RESULT( status ) BIND( C )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, y
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: u
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+        LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_h
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_HPROD
+    END INTERFACE
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_HPRODS( n, m, pne, x, v, pval, got_h,                      &
+                            userdata ) RESULT( status ) BIND( C )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, pne
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: pval
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+        LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_h
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_HPRODS
+    END INTERFACE
+
+    ABSTRACT INTERFACE
+      FUNCTION eval_SCALE( n, m, x, u, v,                                      &
+                           userdata ) RESULT( status ) BIND( C )
+        USE iso_c_binding
+        IMPORT :: wp
+        INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, v
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: u
+        TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
+        INTEGER ( KIND = C_INT ) :: status
+      END FUNCTION eval_SCALE
+    END INTERFACE
 
 !----------------------
 !   P r o c e d u r e s
@@ -467,6 +573,7 @@
     INTEGER :: i
     
     ! C or Fortran sparse matrix indexing
+
     IF ( PRESENT( f_indexing ) )  ccontrol%f_indexing = f_indexing
 
     ! Integers
@@ -642,7 +749,6 @@
 !!&                               ccontrol%subproblem_control%bsc_control )
 !!$    CALL copy_roots_control_out( fcontrol%subproblem_control%roots_control, &
 !!&                                 ccontrol%subproblem_control%roots_control )
-
     ! Strings
     DO i = 1, LEN( fcontrol%subproblem_control%alive_file )
       ccontrol%subproblem_control%alive_file( i ) =                            &
@@ -1035,7 +1141,10 @@
 !  C interface to fortran nls_inport
 !  ---------------------------------
 
-  SUBROUTINE nls_import( ccontrol, cdata, status ) BIND( C )
+  SUBROUTINE nls_import( ccontrol, cdata, status, n, m,                        &
+                         cjtype, jne, jrow, jcol, jptr,                        &
+                         chtype, hne, hrow, hcol, hptr,                        &
+                         cptype, pne, prow, pcol, pptr, w ) BIND( C )
   USE GALAHAD_NLS_double_ciface
   IMPLICIT NONE
 
@@ -1044,11 +1153,31 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( nls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: jrow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: jcol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: jptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cjtype
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: hrow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: hcol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: prow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: pcol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: pptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cptype
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ), OPTIONAL :: w
 
 !  local variables
 
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( cjtype ) ) :: fjtype
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( cptype ) ) :: fptype
   TYPE ( f_nls_control_type ) :: fcontrol
   TYPE ( f_nls_full_data_type ), POINTER :: fdata
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: jrow_find, jcol_find, jptr_find
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: prow_find, pcol_find, pptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -1059,6 +1188,12 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
+!  convert C string to Fortran string
+
+  fjtype = cstr_to_fchar( cjtype )
+  fhtype = cstr_to_fchar( chtype )
+  fptype = cstr_to_fchar( cptype )
+
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
@@ -1066,12 +1201,56 @@
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
+    IF ( PRESENT( jrow ) ) THEN
+      ALLOCATE( jrow_find( jne ) )
+      jrow_find = jrow + 1
+    END IF
+    IF ( PRESENT( jcol ) ) THEN
+      ALLOCATE( jcol_find( jne ) )
+      jcol_find = jcol + 1
+    END IF
+    IF ( PRESENT( jptr ) ) THEN
+      ALLOCATE( jptr_find( n + 1 ) )
+      jptr_find = jptr + 1
+    END IF
+
+    IF ( PRESENT( hrow ) ) THEN
+      ALLOCATE( hrow_find( hne ) )
+      hrow_find = hrow + 1
+    END IF
+    IF ( PRESENT( hcol ) ) THEN
+      ALLOCATE( hcol_find( hne ) )
+      hcol_find = hcol + 1
+    END IF
+    IF ( PRESENT( hptr ) ) THEN
+      ALLOCATE( hptr_find( n + 1 ) )
+      hptr_find = hptr + 1
+    END IF
+
+    IF ( PRESENT( prow ) ) THEN
+      ALLOCATE( prow_find( pne ) )
+      prow_find = prow + 1
+    END IF
+    IF ( PRESENT( pcol ) ) THEN
+      ALLOCATE( pcol_find( pne ) )
+      pcol_find = pcol + 1
+    END IF
+    IF ( PRESENT( pptr ) ) THEN
+      ALLOCATE( pptr_find( m + 1 ) )
+      pptr_find = pptr + 1
+    END IF
 
 !  import the problem data into the required NLS structure
 
-    CALL f_nls_import( fcontrol, fdata, status )
+    CALL f_nls_import( fcontrol, fdata, status, n, m,                          &
+                       fjtype, jne, jrow_find, jcol_find, jptr_find,           &
+                       fhtype, hne, hrow_find, hcol_find, hptr_find,           &
+                       fptype, pne, prow_find, pcol_find, pptr_find, w )
   ELSE
-    CALL f_nls_import( fcontrol, fdata, status )
+    CALL f_nls_import( fcontrol, fdata, status, n, m,                          &
+                       fjtype, jne, jrow, jcol, jptr,                          &
+                       fhtype, hne, hrow, hcol, hptr,                          &
+                       fptype, pne, prow, pcol, pptr, w )
   END IF
 
 !  copy control out
@@ -1080,6 +1259,366 @@
   RETURN
 
   END SUBROUTINE nls_import
+
+!  -----------------------------------------
+!  C interface to fortran nls_solve_with_mat
+!  -----------------------------------------
+
+  SUBROUTINE nls_solve_with_mat( cdata, cuserdata, status, n, m, x, g,         &
+                                 ceval_c, jne, ceval_j, hne, ceval_h,          &
+                                 pne, ceval_hprods ) BIND( C )
+  USE GALAHAD_NLS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_c, ceval_j
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_h, ceval_hprods
+
+!  local variables
+
+  TYPE ( f_nls_full_data_type ), POINTER :: fdata
+  PROCEDURE( eval_c ), POINTER :: feval_c
+  PROCEDURE( eval_j ), POINTER :: feval_j
+  PROCEDURE( eval_h ), POINTER :: feval_h
+  PROCEDURE( eval_hprods ), POINTER :: feval_hprods
+
+!  ignore Fortran userdata type (not interoperable)
+
+  TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  associate procedure pointers
+
+  CALL C_F_PROCPOINTER( ceval_c, feval_c )
+  CALL C_F_PROCPOINTER( ceval_j, feval_j )
+  IF ( C_ASSOCIATED( ceval_h ) ) THEN 
+    CALL C_F_PROCPOINTER( ceval_h, feval_h )
+  ELSE
+    NULLIFY( feval_h )
+  END IF
+  IF ( C_ASSOCIATED( ceval_hprods ) ) THEN 
+    CALL C_F_PROCPOINTER( ceval_hprods, feval_hprods )
+  ELSE
+    NULLIFY( feval_hprods )
+  END IF
+
+!  solve the problem when the Hessian is explicitly available
+
+  CALL f_nls_solve_with_mat( fdata, fuserdata, status, x, g, wrap_eval_c,     &
+                              wrap_eval_j, wrap_eval_h, wrap_eval_hprods )
+
+  RETURN
+
+!  wrappers
+
+  CONTAINS
+
+!  eval_c wrapper
+
+    SUBROUTINE wrap_eval_c( status, x, userdata, c )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: c
+
+!  call C interoperable eval_c
+
+    write(6, "( ' X in wrap_eval_c = ', 2ES12.4 )" ) x
+    status = feval_c( n, m, x, c, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_c
+
+!  eval_j wrapper
+
+    SUBROUTINE wrap_eval_j( status, x, userdata, jval )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: jval
+
+!  Call C interoperable eval_j
+    status = feval_j( n, m, jne, x, jval, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_j
+
+!  eval_H wrapper
+
+    SUBROUTINE wrap_eval_h( status, x, y, userdata, hval )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, y
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: hval
+
+!  Call C interoperable eval_h
+    status = feval_h( n, m, hne, x, y, hval, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_h
+
+!  eval_hprods wrapper
+
+    SUBROUTINE wrap_eval_hprods( status, x, v, userdata, pval, fgot_h )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, v
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: pval
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
+    LOGICAL ( KIND = C_BOOL ) :: cgot_h
+
+!  call C interoperable eval_hprods
+
+    IF ( PRESENT( fgot_h ) ) THEN
+      cgot_h = fgot_h
+    ELSE
+      cgot_h = .FALSE.
+    END IF
+
+    status = feval_hprods( n, m, pne, x, v, pval, cgot_h, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_hprods
+
+  END SUBROUTINE nls_solve_with_mat
+
+!  --------------------------------------------
+!  C interface to fortran nls_solve_without_mat
+!  --------------------------------------------
+
+  SUBROUTINE nls_solve_without_mat( cdata, cuserdata, status, n, m, x, g,      &
+                                    ceval_c, ceval_jprod, ceval_hprod,         &
+                                    pne, ceval_hprods ) BIND( C )
+  USE GALAHAD_NLS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, pne
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_c, ceval_jprod
+  TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_hprod, ceval_hprods
+
+!  local variables
+
+  TYPE ( f_nls_full_data_type ), POINTER :: fdata
+  PROCEDURE( eval_c ), POINTER :: feval_c
+  PROCEDURE( eval_jprod ), POINTER :: feval_jprod
+  PROCEDURE( eval_hprod ), POINTER :: feval_hprod
+  PROCEDURE( eval_hprods ), POINTER :: feval_hprods
+
+!  ignore Fortran userdata type (not interoperable)
+
+  TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
+
+!  associate data pointer
+
+  CALL C_F_POINTER(cdata, fdata)
+
+!  associate procedure pointers
+
+  CALL C_F_PROCPOINTER( ceval_c, feval_c ) 
+  CALL C_F_PROCPOINTER( ceval_jprod, feval_jprod )
+  IF ( C_ASSOCIATED( ceval_hprod ) ) THEN 
+    CALL C_F_PROCPOINTER( ceval_hprod, feval_hprod )
+  ELSE
+    NULLIFY( feval_hprod )
+  END IF
+  IF ( C_ASSOCIATED( ceval_hprods ) ) THEN 
+    CALL C_F_PROCPOINTER( ceval_hprods, feval_hprods )
+  ELSE
+    NULLIFY( feval_hprods )
+  END IF
+
+!  solve the problem when the Hessian is only available via products
+
+  CALL f_nls_solve_without_mat( fdata, fuserdata, status, x, g, wrap_eval_c,   &
+                                wrap_eval_jprod, wrap_eval_hprod,              &
+                                wrap_eval_hprods )
+  RETURN
+
+!  wrappers
+
+  CONTAINS
+
+!  eval_c wrapper
+
+    SUBROUTINE wrap_eval_c( status, x, userdata, c )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: c
+
+!  call C interoperable eval_c
+
+    status = feval_c( n, m, x, c, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_c
+
+!  eval_jprod wrapper
+
+    SUBROUTINE wrap_eval_jprod( status, x, userdata, ftranspose, u, v, fgot_j )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: u
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+    LOGICAL, OPTIONAL, INTENT( IN ) :: ftranspose
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_j
+    LOGICAL ( KIND = C_BOOL ) :: cgot_j, ctranspose
+
+!  call C interoperable eval_jprod
+
+    ctranspose = ftranspose
+    IF ( PRESENT( fgot_j ) ) THEN
+      cgot_j = fgot_j
+    ELSE
+      cgot_j = .FALSE.
+    END IF
+    status = feval_jprod( n, m, x, ctranspose, u, v, cgot_j, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_jprod
+
+!  eval_hprod wrapper
+
+    SUBROUTINE wrap_eval_hprod( status, x, y, userdata, u, v, fgot_h )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, y
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: u
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
+    LOGICAL ( KIND = C_BOOL ) :: cgot_h
+
+!  call C interoperable eval_hprod
+
+    IF ( PRESENT( fgot_h ) ) THEN
+      cgot_h = fgot_h
+    ELSE
+      cgot_h = .FALSE.
+    END IF
+    status = feval_hprod( n, m, x, y, u, v, cgot_h, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_hprod
+
+!  eval_hprods wrapper
+
+    SUBROUTINE wrap_eval_hprods( status, x, v, userdata, pval, fgot_h )
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, v
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
+    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: pval
+    LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
+    LOGICAL ( KIND = C_BOOL ) :: cgot_h
+
+!  call C interoperable eval_hprods
+
+    IF ( PRESENT( fgot_h ) ) THEN
+      cgot_h = fgot_h
+    ELSE
+      cgot_h = .FALSE.
+    END IF
+
+    status = feval_hprods( n, m, pne, x, v, pval, cgot_h, cuserdata )
+    RETURN
+
+    END SUBROUTINE wrap_eval_hprods
+
+  END SUBROUTINE nls_solve_without_mat
+
+!  -------------------------------------------------
+!  C interface to fortran nls_solve_reverse_with_mat
+!  -------------------------------------------------
+
+  SUBROUTINE nls_solve_reverse_with_mat( cdata, status, eval_status,           &
+                                         n, m, x, g, c, jne, jval, y,          &
+                                         hne, hval, v, pne, pval ) BIND( C )
+  USE GALAHAD_NLS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: c
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( jne ) :: jval
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( hne ) :: hval
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( pne ) :: pval
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: y
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: v
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_nls_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the problem when the Hessian is available by reverse communication
+
+  CALL f_nls_solve_reverse_with_mat( fdata, status, eval_status, x, g, c,      &
+                                     jval, y, hval, v, pval )
+  RETURN
+    
+  END SUBROUTINE nls_solve_reverse_with_mat
+
+!  ----------------------------------------------------
+!  C interface to fortran nls_solve_reverse_without_mat
+!  ----------------------------------------------------
+
+  SUBROUTINE nls_solve_reverse_without_mat( cdata, status, eval_status,        &
+                                            n, m, x, g, c, ctranspose, u, v,   &
+                                            y, pne, pval ) BIND( C )
+  USE GALAHAD_NLS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, pne
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: c, y
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( MAX( n, m ) ) :: u, v
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( pne ) :: pval
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  LOGICAL ( KIND = C_BOOL ), INTENT( IN )  :: ctranspose
+  
+!  local variables
+
+  TYPE ( f_nls_full_data_type ), POINTER :: fdata
+  LOGICAL :: ftranspose
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the problem when Hessian products are available by reverse 
+!  communication
+
+  ftranspose = ctranspose
+  CALL f_nls_solve_reverse_without_mat( fdata, status, eval_status, x, g, c,  &
+                                        ftranspose, u, v, y, pval )
+  RETURN
+
+  END SUBROUTINE nls_solve_reverse_without_mat
 
 !  --------------------------------------
 !  C interface to fortran nls_information

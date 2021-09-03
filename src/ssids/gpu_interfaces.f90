@@ -74,7 +74,7 @@ module spral_ssids_gpu_interfaces
          implicit none
          type(C_PTR), value :: stream
          integer(C_INT), intent(in), value :: nb
-         integer(C_LONG), intent(in), value :: n
+         integer(C_LONG_LONG), intent(in), value :: n
          type(C_PTR), value :: array
          type(C_PTR), value :: buff
          type(C_PTR), value :: maxabs
@@ -445,6 +445,9 @@ contains
       if(cuda_error.ne.0) return
 
       ! Set SSIDS specific values
+      !
+      ! Note: The following option has no effect on Pascal and newer
+      ! architectures
       cuda_error = cudaDeviceSetSharedMemConfig(cudaSharedMemBankSizeEightByte)
       if(cuda_error.ne.0) return
       
@@ -461,4 +464,4 @@ contains
       
    end subroutine pop_ssids_cuda_settings
 
-end module spral_ssids_gpu_interfaces
+ end module spral_ssids_gpu_interfaces

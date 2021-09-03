@@ -30,12 +30,12 @@ module spral_ssids_gpu_datatypes
 
 
    type, bind(C) :: load_nodes_type
-      integer(C_LONG) :: nnz   ! Number of entries to map
+      integer(C_LONG_LONG) :: nnz   ! Number of entries to map
       integer(C_INT) :: lda   ! Leading dimension of A
       integer(C_INT) :: ldl   ! Leading dimension of L
       type(C_PTR) :: lcol     ! Pointer to non-delay part of L
-      integer(C_LONG) :: offn  ! Offset into nlist
-      integer(C_LONG) :: offr ! Offset into rlist
+      integer(C_LONG_LONG) :: offn  ! Offset into nlist
+      integer(C_LONG_LONG) :: offr ! Offset into rlist
    end type load_nodes_type
 
    type, bind(C) :: assemble_cp_type
@@ -45,7 +45,7 @@ module spral_ssids_gpu_datatypes
       integer(C_INT) :: cm
       integer(C_INT) :: cn
       integer(C_INT) :: ldc
-      integer(C_LONG) :: cvoffset
+      integer(C_LONG_LONG) :: cvoffset
       type(C_PTR) :: cv
       type(C_PTR) :: rlist_direct
       type(C_PTR) :: ind
@@ -61,7 +61,7 @@ module spral_ssids_gpu_datatypes
       integer(C_INT) :: lds
       type(C_PTR) :: dval
       type(C_PTR) :: sval
-      integer(C_LONG) :: roffset
+      integer(C_LONG_LONG) :: roffset
    end type assemble_delay_type
 
    type, bind(C) :: assemble_blk_type
@@ -231,12 +231,12 @@ module spral_ssids_gpu_datatypes
       integer :: presolve = 0
       integer, dimension(:), allocatable :: lvlptr ! pointers into lvllist
       integer, dimension(:), allocatable :: lvllist ! list of nodes at level
-      integer(C_LONG), dimension(:), allocatable :: off_L ! offsets for each node
+      integer(C_LONG_LONG), dimension(:), allocatable :: off_L ! offsets for each node
       ! the following three are row offsets for independence from nrhs
       integer, dimension(:), allocatable :: off_lx ! node offsets for fwd solve
       integer, dimension(:), allocatable :: off_lc ! offsets for node contrib.
       integer, dimension(:), allocatable :: off_ln ! node offsets for bwd solve
-      integer(C_LONG) :: rd_size = 0
+      integer(C_LONG_LONG) :: rd_size = 0
       integer :: max_lx_size = 0
       integer :: max_lc_size = 0
       type(eltree_level), dimension(:), allocatable :: values_L(:) ! data
@@ -315,7 +315,7 @@ module spral_ssids_gpu_datatypes
       integer(C_INT) :: first
       type(C_PTR) :: lval
       type(C_PTR) :: ldval
-      integer(C_LONG) :: offc
+      integer(C_LONG_LONG) :: offc
       integer(C_INT) :: n
       integer(C_INT) :: k
       integer(C_INT) :: lda
@@ -342,7 +342,7 @@ module spral_ssids_gpu_datatypes
     integer(C_INT) :: ncols
     integer(C_INT) :: nrhs
     integer(C_INT) :: offb
-    integer(C_LONG) :: off_a
+    integer(C_LONG_LONG) :: off_a
     integer(C_INT) :: off_b
     integer(C_INT) :: off_u
     integer(C_INT) :: off_v

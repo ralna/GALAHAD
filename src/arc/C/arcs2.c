@@ -48,9 +48,6 @@ int main(void) {
     int status;
     arc_import( &control, &data, &status, n, H_type, ne, NULL, NULL, NULL );
 
-    // Set for initial entry
-    status = 1; 
-
     // Call ARC_solve
     arc_solve_without_mat( &data, &userdata, &status,
                            n, x, g, fun, grad, hessprod, NULL );

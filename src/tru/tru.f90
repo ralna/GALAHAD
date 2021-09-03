@@ -4206,7 +4206,7 @@
 
 !-*-*-*-*-  G A L A H A D -  T R U _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
 
-     SUBROUTINE TRU_import( control, data, status, n, H_type, ne, H_row,       &
+     SUBROUTINE TRU_import( control, data, status, n, H_type, H_ne, H_row,     &
                             H_col, H_ptr )
 
 !  import fixed problem data into internal storage prior to solution. 
@@ -4220,7 +4220,7 @@
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the import. Possible values are:
 !
-!    0. The import was succesful
+!    1. The import was succesful, and the package is ready for the solve phase
 !
 !   -1. An allocation error occurred. A message indicating the offending
 !       array is written on unit control.error, and the returned allocation
@@ -4230,9 +4230,10 @@
 !       array is written on unit control.error and the returned allocation
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
-!   -3. The restriction n > 0 or requirement that type contains
+!   -3. The restriction n > 0 or requirement that H_type contains
 !       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
 !       'DIAGONAL' or 'ABSENT' has been violated.
+!  -79. An optional array required by storage type H_type is missing
 !
 !  n is a scalar variable of type default integer, that holds the number of
 !   variables
@@ -4242,26 +4243,27 @@
 !   'diagonal' or 'absent', the latter if access to the Hessian is via
 !   matrix-vector products; lower or upper case variants are allowed
 !
-!  ne is a scalar variable of type default integer, that holds the number of
-!   entries in the  lower triangular part of H in the sparse co-ordinate
-!   storage scheme. It need not be set for any of the other three schemes.
+!  H_ne is an optional scalar variable of type default integer, that holds the 
+!   number of entries in the  lower triangular part of H in the sparse 
+!   co-ordinate storage scheme. It is not required and need not be set for 
+!   any of the other three schemes.
 !
-!  H_row is a rank-one array of type default integer, that holds
+!  H_row is an optional rank-one array of type default integer, that holds
 !   the row indices of the  lower triangular part of H in the sparse
-!   co-ordinate storage scheme. It need not be set for any of the other
-!   three schemes, and in this case can be of length 0
+!   co-ordinate storage scheme. It is not required and need not be set for 
+!   any of the other three schemes, and in this case can be of length 0
 !
-!  H_col is a rank-one array variable of type default integer,
-!   that holds the column indices of the  lower triangular part of H in either
-!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
-!   be set when the dense or diagonal storage schemes are used, and in this 
-!   case can be of length 0
+!  H_col is an optional rank-one array of type default integer, that holds the 
+!   column indices of the  lower triangular part of H in either the sparse 
+!   co-ordinate, or the sparse row-wise storage scheme. It is not required and 
+!   need not be set when the dense or diagonal storage schemes are used, and 
+!   in this case can be of length 0
 !
-!  H_ptr is a rank-one array of dimension n+1 and type default
+!  H_ptr is an optional rank-one array of dimension n+1 and type default
 !   integer, that holds the starting position of  each row of the  lower
 !   triangular part of H, as well as the total number of entries plus one,
-!   in the sparse row-wise storage scheme. It need not be set when the
-!   other schemes are used, and in this case can be of length 0
+!   in the sparse row-wise storage scheme. It is not required and need not be
+!   set when the other schemes are used, and in this case can be of length 0
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -4269,10 +4271,11 @@
 
      TYPE ( TRU_control_type ), INTENT( INOUT ) :: control
      TYPE ( TRU_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, ne
+     INTEGER, INTENT( IN ) :: n
      INTEGER, INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: H_row, H_col, H_ptr
+     INTEGER, INTENT( IN ), OPTIONAL :: H_ne
+     INTEGER, DIMENSION( : ), INTENT( IN ), OPTIONAL :: H_row, H_col, H_ptr
 
 !  local variables
 
@@ -4316,10 +4319,15 @@
 
      SELECT CASE ( H_type )
      CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( H_ne ) .AND. PRESENT( H_row ) .AND.               &
+                    PRESENT( H_col ) ) ) THEN
+         data%tru_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
        CALL SMT_put( data%nlp%H%type, 'COORDINATE',                            &
                      data%tru_inform%alloc_status )
        data%nlp%H%n = n
-       data%nlp%H%ne = ne
+       data%nlp%H%ne = H_ne
 
        array_name = 'tru: data%nlp%H%row'
        CALL SPACE_resize_array( data%nlp%H%ne, data%nlp%H%row,                 &
@@ -4352,6 +4360,10 @@
        data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
+         data%tru_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
        CALL SMT_put( data%nlp%H%type, 'SPARSE_BY_ROWS',                        &
                      data%tru_inform%alloc_status )
        data%nlp%H%n = n
@@ -4420,7 +4432,7 @@
        data%tru_inform%status = GALAHAD_error_unknown_storage
      END SELECT       
 
-     status = GALAHAD_ok
+     status = GALAHAD_ready_to_solve
      RETURN
 
 !  error returns

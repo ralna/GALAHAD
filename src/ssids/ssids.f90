@@ -1424,8 +1424,11 @@ contains
     type(omp_settings), intent(out) :: user_settings
     integer, intent(inout) :: flag
 !   CHARACTER( LEN = 255 ) :: OMP_CANCELLATION_VAR
+!   logical :: ompgc
 !   CALL get_environment_variable( "OMP_CANCELLATION", OMP_CANCELLATION_VAR )
 !   WRITE (*,*) 'OMP_CANCELLATION = ', TRIM( OMP_CANCELLATION_VAR )
+!!$  ompgc = omp_get_cancellation()
+!!$  write(6,*) ' ompgc ', ompgc
     ! Dummy, for now.
     user_settings%nested = .true.
     user_settings%max_active_levels = huge(user_settings%max_active_levels)

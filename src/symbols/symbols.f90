@@ -45,9 +45,10 @@
 !                            General
 !-------------------------------------------------------------------------------
 
-!  New exit conditions (0 to -99; others will be package specific)
+!  New exit conditions (1 to -99; others will be package specific)
 
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_ok                      = 0
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_ready_to_solve          = 1
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_allocate          = - 1
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_deallocate        = - 2
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_restrictions      = - 3

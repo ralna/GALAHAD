@@ -47,7 +47,7 @@
 !  DO data_storage_type = 1, 1
    DO data_storage_type = 1, 5
      CALL DGO_initialize( data, control, inform )
-     control%print_level = 1
+!    control%print_level = 1
      control%max_evals = 20000
      X = 0.0_wp  ! start from 1.0
      SELECT CASE ( data_storage_type )
@@ -55,28 +55,24 @@
        st = 'C'
        CALL DGO_import( control, data, status, n, X_l, X_u,                    &
                         'coordinate', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        CALL DGO_solve_with_mat( data, userdata, status, X, G,                  &
                                 FUN, GRAD, HESS, HESSPROD, PREC )
      CASE ( 2 ) ! sparse by rows  
        st = 'R'
        CALL DGO_import( control, data, status, n, X_l, X_u,                    &
                         'sparse_by_rows', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        CALL DGO_solve_with_mat( data, userdata, status, X, G,                  &
                                 FUN, GRAD, HESS, HESSPROD, PREC )
      CASE ( 3 ) ! dense
        st = 'D'
        CALL DGO_import( control, data, status, n, X_l, X_u,                    &
                         'dense', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        CALL DGO_solve_with_mat( data, userdata, status, X, G,                  &
                                 FUN, GRAD, HESS_dense, HESSPROD, PREC )
      CASE ( 4 ) ! diagonal
        st = 'I'
        CALL DGO_import( control, data, status, n, X_l, X_u,                    &
                         'diagonal', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        CALL DGO_solve_with_mat( data, userdata, status, X, G,                  &
                                 FUN_diag, GRAD_diag, HESS_diag, HESSPROD_diag, &
                                 PREC )
@@ -84,12 +80,13 @@
        st = 'P'
        CALL DGO_import( control, data, status, n, X_l, X_u,                    &
                         'absent', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        CALL DGO_solve_without_mat( data, userdata, status, X, G,               &
                                    FUN, GRAD, HESSPROD, SHESSPROD, PREC )
      END SELECT
      CALL DGO_information( data, inform, status )
+
      IF ( inform%status == GALAHAD_ok .OR.                                     &
+          inform%status == GALAHAD_error_max_iterations .OR.                   &
           inform%status == GALAHAD_error_max_evaluations ) THEN  ! Success
        WRITE( 6, "( A1, ':', I6, ' evaluations.',                              &
      &  ' Best objective value found = ', F8.2, ' status = ', I0 )" )          &
@@ -117,7 +114,6 @@
        st = 'C'
        CALL DGO_import( control, data, status, n, X_l, X_u,                    &
                         'coordinate', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        DO ! reverse-communication loop
          CALL DGO_solve_reverse_with_mat( data, status, eval_status,           &
                                           X, f, G, H_val, U, V )
@@ -154,7 +150,6 @@
        st = 'R'
        CALL DGO_import( control, data, status, n, X_l, X_u,                    &
                         'sparse_by_rows', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        DO ! reverse-communication loop
          CALL DGO_solve_reverse_with_mat( data, status, eval_status,           &
                                           X, f, G, H_val, U, V )
@@ -191,7 +186,6 @@
        st = 'D'
        CALL DGO_import( control, data, status, n, X_l, X_u,                    &
                         'dense', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        DO ! reverse-communication loop
          CALL DGO_solve_reverse_with_mat( data, status, eval_status,           &
                                           X, f, G, H_dense, U, V )
@@ -228,7 +222,6 @@
        st = 'I'
        CALL DGO_import( control, data, status, n, X_l, X_u,                    &
                         'diagonal', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        DO ! reverse-communication loop
          CALL DGO_solve_reverse_with_mat( data, status, eval_status,           &
                                           X, f, G, H_diag, U, V )
@@ -265,7 +258,6 @@
        st = 'P'
        CALL DGO_import( control, data, status, n, X_l, X_u,                    &
                         'absent', ne, H_row, H_col, H_ptr )
-       status = 1 ! set for initial entry
        DO ! reverse-communication loop
          CALL DGO_solve_reverse_without_mat( data, status, eval_status,        &
                                              X, f, G, U, V,                    &
@@ -306,6 +298,7 @@
      END SELECT
      CALL DGO_information( data, inform, status )
      IF ( inform%status == GALAHAD_ok .OR.                                     &
+          inform%status == GALAHAD_error_max_iterations .OR.                   &
           inform%status == GALAHAD_error_max_evaluations ) THEN  ! Success
        WRITE( 6, "( A1, ':', I6, ' evaluations.',                              &
      &  ' Best objective value found = ', F8.2, ' status = ', I0 )" )          &

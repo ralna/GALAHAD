@@ -1978,7 +1978,7 @@
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the import. Possible values are:
 !
-!    0. The import was succesful
+!    1. The import was succesful, and the package is ready for the solve phase
 !
 !   -1. An allocation error occurred. A message indicating the offending
 !       array is written on unit control.error, and the returned allocation
@@ -2018,7 +2018,7 @@
 
 !  flag a successful call
 
-     status = GALAHAD_ok
+     status = GALAHAD_ready_to_solve
      RETURN
 
 !  End of subroutine UGO_import

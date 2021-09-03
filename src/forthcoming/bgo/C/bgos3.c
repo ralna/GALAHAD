@@ -45,9 +45,6 @@ int main(void) {
     bgo_import( &control, &data, &status, n, x_l, x_u, 
                 H_type, ne, H_row, H_col, NULL );
 
-    // Set for initial entry
-    status = 1;
-
     // Solve the problem
     while(true){ // reverse-communication loop
 

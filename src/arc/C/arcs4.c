@@ -37,9 +37,6 @@ int main(void) {
     control.maxit=2;
     control.print_level=5;
 
-    // Set for initial entry
-    status = 1;
-
     // Solve the problem
     while(true){ // reverse-communication loop
 

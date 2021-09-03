@@ -26,6 +26,8 @@ contains
     integer(C_SIZE_T), intent(in) :: bytes
     integer, intent(out) :: cuda_error
 
+    ! integer(C_SIZE_T) :: free, total
+
     cuda_error = 0 ! All is good
 
     ! Check stack not still in use
@@ -46,6 +48,10 @@ contains
 
     ! Always align!
     stack%stack_sz = aligned_size(bytes)
+
+    ! cuda_error = cudaMemGetInfo(free, total)
+    ! print *, "[custack_init] Mem free (MB) = ", free/(1024.0*1024.0), ", total (MB) = ", total/(1024.0*1024.0)
+    ! print *, "[custack_init] stack_sz (MB) = ", stack%stack_sz/(1024.0*1024.0)
 
     ! Allocate stack to new size
     cuda_error = cudaMalloc(stack%stack, stack%stack_sz)

@@ -29,7 +29,7 @@ mkdir -p $GALAHAD/html/C/$package
 echo "building pdf and html"
 cp $GALAHAD/include/$package.h $package/.
 doxygen Doxyfile
-mogrify -trim $GALAHAD/html/C/$package/*.png
+#mogrify -trim $GALAHAD/html/C/$package/*.png
 ( cd ./$package/latex ; make )
 cp ./$package/latex/refman.pdf $GALAHAD/doc/"$package"_c.pdf
 rm $package/$package.h

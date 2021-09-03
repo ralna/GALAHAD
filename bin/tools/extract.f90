@@ -864,7 +864,7 @@
  & '    INTEGER :: i', /, &
  & '    ', /, &
  & '    ! C or Fortran sparse matrix indexing', /, &
- & '    IF ( PRESENT( f_indexing ) )  f_indexing = ccontrol%f_indexing' &
+ & '    IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing' &
    )" ) TRIM( package_lower ), TRIM( package_lower )
     IF ( control_ni > 0 ) THEN
       WRITE( ciface_unit, "( '', /, '    ! Integers' )" )
@@ -934,7 +934,7 @@
  & '    INTEGER :: i', /, &
  & '    ', /, &
  & '    ! C or Fortran sparse matrix indexing', /, &
- & '    IF ( PRESENT( f_indexing ) )  ccontrol%f_indexing = f_indexing' &
+ & '    IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing' &
    )" ) TRIM( package_lower ), TRIM( package_lower )
     IF ( control_ni > 0 ) THEN
       WRITE( ciface_unit, "( '', /, '    ! Integers' )" )
