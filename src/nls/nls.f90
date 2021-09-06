@@ -1902,7 +1902,6 @@
        END IF
 
 !  see if W = I
-
        data%w_eq_identity = .NOT. PRESENT( W )
        IF ( .NOT. data%w_eq_identity ) THEN
          IF ( COUNT( W( : nlp%m ) <= zero ) > 0 ) THEN
@@ -1978,8 +1977,9 @@
 
 !  check that the Hessian is specified in a permitted format
 
-     data%hessian_available = control%hessian_available >= 2 .OR.              &
-       PRESENT( eval_H )
+!    data%hessian_available = control%hessian_available >= 2 .OR.              &
+!      PRESENT( eval_H )
+     data%hessian_available = control%hessian_available >= 2
      IF ( data%hessian_available ) THEN
        SELECT CASE (  SMT_get( nlp%H%type ) )
        CASE ( 'DIAGONAL', 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE',             &
@@ -2021,7 +2021,6 @@
 !  record controls and ensure that data is consistent
 
      data%control = control
-write(6,*) ' print ', control%print_level
      data%non_monotone_history = data%control%non_monotone
      IF ( data%non_monotone_history <= 0 ) data%non_monotone_history = 1
      data%monotone = data%non_monotone_history == 1
@@ -2728,7 +2727,6 @@ write(6,*) ' print ', control%print_level
 !  return from reverse communication with the residual function value c(x)
 
   30 CONTINUE
-write(6,*) ' a '
 !    CALL CLOCK_time( data%clock_now )
 !    write(6,*) ' 30 elapsed', data%clock_now - data%clock_start
      IF ( data%printw ) WRITE( data%out, "( A, ' statement 30' )" ) prefix
@@ -2743,7 +2741,7 @@ write(6,*) ' a '
        inform%norm_c = SQRT( val )
        inform%obj = half * val
      END IF
-write(6,*) ' C ', nlp%C
+
 !  test to see if the initial objective value is undefined
 
 !    data%f_is_nan = IEEE_IS_NAN( inform%obj )
@@ -5270,8 +5268,9 @@ write(6,*) ' C ', nlp%C
 !  action on a vector, or is unavailable, and whether reverse communication
 !  will be required
 
-     data%hessian_available = data%control%hessian_available >= 2 .OR.         &
-       PRESENT( eval_H )
+!    data%hessian_available = data%control%hessian_available >= 2 .OR.         &
+!      PRESENT( eval_H )
+     data%hessian_available = data%control%hessian_available >= 2
      IF ( data%hessian_available ) THEN
        data%reverse_h = .NOT. PRESENT( eval_H )
      ELSE IF ( data%control%hessian_available == 1 ) THEN
@@ -5813,7 +5812,6 @@ write(6,*) ' C ', nlp%C
      IF ( data%reverse_c ) THEN
        data%branch = 30 ; inform%status = 2 ; RETURN
      ELSE
-     write(6, "( ' before eval_c x ', 2ES12.4 )" ) nlp%X( : nlp%n )
        CALL eval_C( data%eval_status, nlp%X( : nlp%n ), userdata,              &
                     nlp%C( : nlp%m ) )
        IF ( data%eval_status /= 0 ) THEN
@@ -5834,13 +5832,12 @@ write(6,*) ' C ', nlp%C
        inform%norm_c = TWO_NORM( nlp%C( : nlp%m ) )
        inform%obj = half * inform%norm_c ** 2
      ELSE
+!write(6,*) ' w ', W( : nlp%m )
        data%Y( : nlp%m ) = W( : nlp%m ) * nlp%C( : nlp%m )
        val = DOT_PRODUCT( data%Y( : nlp%m ), nlp%C( : nlp%m ) )
        inform%norm_c = SQRT( val )
        inform%obj = half * val
      END IF
-     write(6,*) ' x ', nlp%X( : nlp%n )
-     write(6,*) ' c ', nlp%C( : nlp%m )
 
 !  account for the stabilization term if necessary
 
@@ -6752,7 +6749,7 @@ write(6,*) ' C ', nlp%C
 !        inform%GLRT_inform%status = 6
          inform%GLRT_inform%status = 1
        END IF
-!data%control%GLRT_control%print_level = 1
+!      data%control%GLRT_control%print_level = 1
 
 !  Start of the generalized Lanczos iteration
 !  ..........................................
@@ -6839,6 +6836,7 @@ write(6,*) ' C ', nlp%C
 !  form the Hessian-vector product v <- u = H v
 
          CASE ( 3 )
+!write(6,*) ' model = ', data%control%model
            SELECT CASE( data%control%model )
 
 !  linear model
@@ -6859,8 +6857,10 @@ write(6,*) ' C ', nlp%C
 
 !  if the Jacobian has been calculated, form the product v <- J v directly
 
+!write(6,*) ' available ', data%jacobian_available
+!write(6,*) ' w  ', data%W
              IF ( data%jacobian_available ) THEN
-               CALL mop_Ax( one, nlp%J,  data%W( : nlp%n ), zero,              &
+               CALL mop_Ax( one, nlp%J, data%W( : nlp%n ), zero,               &
                             data%V( : nlp%m ), out = data%out,                 &
                             error = data%control%error, print_level = 0,       &
                             transpose = .FALSE. )
@@ -6870,15 +6870,20 @@ write(6,*) ' C ', nlp%C
              ELSE
                data%transpose = .FALSE.
                IF ( data%reverse_jprod ) THEN
+!write(6,*) ' via reverse'
                  data%V( : nlp%n ) = data%W( : nlp%n )
                  data%U( : nlp%m ) = zero
                  data%branch = 230 ; inform%status = 5 ; RETURN
                ELSE
+!write(6,*) ' via jprod'
                  data%V( : nlp%m ) = zero
                  CALL eval_JPROD( data%eval_status, nlp%X( : nlp%n ),          &
                                   userdata, data%transpose,                    &
                                   data%V( : nlp%m ), data%W( : nlp%n ),        &
                                   got_j = data%got_j )
+!write(6,*) ' trans  ', data%transpose
+!write(6,*) ' w  ', data%W
+!write(6,*) ' v  ', data%V
                  IF ( data%eval_status /= 0 ) THEN
                    inform%bad_eval = 'eval_JPROD'
                    inform%status = GALAHAD_error_evaluation ; GO TO 900
@@ -6921,6 +6926,7 @@ write(6,*) ' C ', nlp%C
 
 !  if the Jacobian has been calculated, form the product u = J^T W v directly
 
+!write(6,*) ' v  ', data%V
            IF ( data%jacobian_available ) THEN
              IF ( data%w_eq_identity ) THEN
                CALL mop_Ax( one, nlp%J, data%V( : nlp%m ), zero,               &
@@ -6944,6 +6950,7 @@ write(6,*) ' C ', nlp%C
                ELSE
                   data%V( : nlp%m ) = W( : nlp%m ) * data%U( : nlp%m )
                END IF
+!write(6,*) ' v  ', data%V
                data%U( : nlp%n ) = zero
                data%branch = 240 ; inform%status = 5 ; RETURN
              ELSE
@@ -7137,6 +7144,7 @@ write(6,*) ' C ', nlp%C
 
 !  form the trial point
 
+!write(6,"( ' s = ', 2ES12.4 )" ) data%S( : nlp%n )
        nlp%X( : nlp%n ) = data%X_current( : nlp%n ) + data%S( : nlp%n )
 
 !  evaluate the objective function at the trial point
@@ -9199,7 +9207,7 @@ write(6,*) ' C ', nlp%C
                 data%nls_inform%status, data%nls_inform%alloc_status,          &
                 array_name = array_name,                                       &
                 deallocate_error_fatal = deallocate_error_fatal,               &
-                exact_size = space_critical,                                   &
+                exact_size = space_critical,                                  &
                 bad_alloc = data%nls_inform%bad_alloc, out = error )
          IF ( data%nls_inform%status /= 0 ) GO TO 900
 
@@ -9266,7 +9274,7 @@ write(6,*) ' C ', nlp%C
 
 !-  G A L A H A D -  N L S _ s o l v e _ w i t h _ m a t  S U B R O U T I N E  -
 
-     SUBROUTINE NLS_solve_with_mat( data, userdata, status, X, G,              &
+     SUBROUTINE NLS_solve_with_mat( data, userdata, status, X, C, G,           &
                                     eval_C, eval_J, eval_H, eval_HPRODS )
 
 !  solve the nonlinear least-squares problem previously imported when access
@@ -9283,6 +9291,7 @@ write(6,*) ' C ', nlp%C
      TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_C, eval_J, eval_H, eval_HPRODS
      OPTIONAL :: eval_H, eval_HPRODS
@@ -9306,8 +9315,8 @@ write(6,*) ' C ', nlp%C
      END IF
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
-     IF ( data%nls_inform%status == GALAHAD_ok )                               &
-       G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+     C( : data%nlp%m ) = data%nlp%C( : data%nlp%m )
+     G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
      status = data%nls_inform%status
 
      RETURN
@@ -9318,7 +9327,7 @@ write(6,*) ' C ', nlp%C
 
 ! - G A L A H A D -  N L S _ s o l v e _ without _ m a t  S U B R O U T I N E -
 
-     SUBROUTINE NLS_solve_without_mat( data, userdata, status, X, G,           &
+     SUBROUTINE NLS_solve_without_mat( data, userdata, status, X, C, G,        &
                                        eval_C, eval_JPROD, eval_HPROD,         &
                                        eval_HPRODS )
 
@@ -9336,6 +9345,7 @@ write(6,*) ' C ', nlp%C
      TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_C, eval_JPROD, eval_HPROD, eval_HPRODS
      OPTIONAL :: eval_HPROD, eval_HPRODS
@@ -9359,8 +9369,8 @@ write(6,*) ' C ', nlp%C
      END IF
 
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
-     IF ( data%nls_inform%status == GALAHAD_ok )                               &
-       G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
+     C( : data%nlp%m ) = data%nlp%C( : data%nlp%m )
+     G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
      status = data%nls_inform%status
 
      RETURN
@@ -9372,7 +9382,7 @@ write(6,*) ' C ', nlp%C
 !-  G A L A H A D -  N L S _ s o l v e _ reverse _ M A T  S U B R O U T I N E -
 
      SUBROUTINE NLS_solve_reverse_with_mat( data, status, eval_status,         &
-                                            X, G, C, J_val, Y, H_val, V, P_val )
+                                            X, C, G, J_val, Y, H_val, V, P_val )
 
 !  solve the nonlinear least-squares problem previously imported when access
 !  to residual, Jacobian, Hessian and residual-Hessians vector product 
@@ -9388,8 +9398,8 @@ write(6,*) ' C ', nlp%C
      TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( INOUT ) :: eval_status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: C
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: J_val
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ), OPTIONAL :: Y
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ), OPTIONAL :: H_val
@@ -9435,6 +9445,7 @@ write(6,*) ' C ', nlp%C
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
      SELECT CASE ( data%nls_inform%status )
      CASE( 0 )
+       C( : data%nlp%m ) = data%nlp%C( : data%nlp%m )
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
      CASE( 4 )
        Y( : data%nlp%m ) = data%nls_data%Y( : data%nlp%m )
@@ -9455,7 +9466,7 @@ write(6,*) ' C ', nlp%C
 !-  G A L A H A D -  N L S _ s o l v e _ reverse _ no _ mat  S U B R O U T I N E
 
      SUBROUTINE NLS_solve_reverse_without_mat( data, status, eval_status,      &
-                                               X, G, C, transpose, U, V,       &
+                                               X, C, G, transpose, U, V,       &
                                                Y, P_val )
                                                
 
@@ -9474,8 +9485,8 @@ write(6,*) ' C ', nlp%C
      INTEGER, INTENT( INOUT ) :: eval_status
      LOGICAL, INTENT( INOUT ) :: transpose
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: C
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: V
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ), OPTIONAL :: Y
@@ -9525,6 +9536,7 @@ write(6,*) ' C ', nlp%C
      X( : data%nlp%n ) = data%nlp%X( : data%nlp%n )
      SELECT CASE ( data%nls_inform%status )
      CASE( 0 )
+       C( : data%nlp%m ) = data%nlp%C( : data%nlp%m )
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
      CASE( 2 ) 
      CASE( 3, 4 ) 

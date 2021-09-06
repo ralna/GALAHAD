@@ -892,7 +892,7 @@ void tru_solve_without_mat( void **data,
    \code
       int eval_g( int n, const double x[], double g[], const void *userdata )
    \endcode
-   The components of the gradient \f$g = \nabla_x f(x\f$) of the objective 
+   The components of the gradient \f$g = \nabla_x f(x)\f$ of the objective 
    function evaluated at x=\f$x\f$ must be assigned to g, and the function 
    return value set to 0. If the evaluation is impossible at x, return 
    should be set to a nonzero value.

@@ -67,7 +67,7 @@ int main(void) {
     double g[n]; // gradient
     double c[m]; // residual
     double y[m]; // multipliers
-    double W[] = {1.0, 1.0}; // weights
+    double W[] = {1.0, 1.0, 1.0}; // weights
     char st;
     int status;
 
@@ -75,8 +75,8 @@ int main(void) {
 
     printf(" tests options for all-in-one storage format\n\n");
 
-//  for( int d=1; d <= 5; d++){
-    for( int d=1; d <= 1; d++){
+    for( int d=1; d <= 5; d++){
+//  for( int d=5; d <= 5; d++){
 
         // Initialize NLS
         nls_initialize( &data, &control, &inform );
@@ -84,33 +84,62 @@ int main(void) {
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
         //control.print_level = 1;
-
-        // Start from 1.5
-        double x[] = {1.5,1.5}; 
+        control.jacobian_available = 2; 
+        control.hessian_available = 2;
+        control.model = 6;
+        double x[] = {1.5,1.5}; // starting point
+        double W[] = {1.0, 1.0, 1.0}; // weights
 
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
-                control.print_level = 101;
                 nls_import( &control, &data, &status, n, m, 
                             "coordinate", j_ne, J_row, J_col, NULL,
                             "coordinate", h_ne, H_row, H_col, NULL,
                             "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W ); 
                 nls_solve_with_mat( &data, &userdata, &status,
-                                    n, m, x, g, res, j_ne, jac, 
+                                    n, m, x, c, g, res, j_ne, jac, 
                                     h_ne, hess, p_ne, rhessprods );
                 break;
             case 2: // sparse by rows  
                 st = 'R';
+                nls_import( &control, &data, &status, n, m, 
+                            "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
+                            "sparse_by_rows", h_ne, NULL, H_col, H_ptr,
+                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W ); 
+                nls_solve_with_mat( &data, &userdata, &status,
+                                    n, m, x, c, g, res, j_ne, jac, 
+                                    h_ne, hess, p_ne, rhessprods );
                 break;
             case 3: // dense
                 st = 'D';
+                nls_import( &control, &data, &status, n, m, 
+                            "dense", j_ne, NULL, NULL, NULL,
+                            "dense", h_ne, NULL, NULL, NULL,
+                            "dense", p_ne, NULL, NULL, NULL, W ); 
+                nls_solve_with_mat( &data, &userdata, &status,
+                                    n, m, x, c, g, res, j_ne, jac_dense, 
+                                    h_ne, hess_dense, p_ne, rhessprods_dense );
                 break;
             case 4: // diagonal
                 st = 'I';
+                nls_import( &control, &data, &status, n, m, 
+                            "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
+                            "diagonal", h_ne, NULL, NULL, NULL,
+                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W ); 
+                nls_solve_with_mat( &data, &userdata, &status,
+                                    n, m, x, c, g, res, j_ne, jac, 
+                                    h_ne, hess, p_ne, rhessprods );
                 break;
             case 5: // access by products
                 st = 'P';
+                nls_import( &control, &data, &status, n, m, 
+                            "absent", j_ne, NULL, NULL, NULL,
+                            "absent", h_ne, NULL, NULL, NULL,
+                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W ); 
+                nls_solve_without_mat( &data, &userdata, &status,
+                                       n, m, x, c, g, res, jacprod, 
+                                       hessprod, p_ne, rhessprods );
                 break;
         }
 
@@ -135,37 +164,183 @@ int main(void) {
     double J_val[j_ne], J_dense[m*n];
     double H_val[h_ne], H_dense[n*(n+1)/2], H_diag[n];
     double P_val[p_ne], P_dense[m*n];
+    bool transpose;
+    bool got_j = false;
+    bool got_h = false;
 
-//  for( int d=1; d <= 5; d++){
-    for( int d=1; d <= 0; d++){
+    for( int d=1; d <= 5; d++){
+//  for( int d=1; d <= 4; d++){
 
-/*
         // Initialize NLS
         nls_initialize( &data, &control, &inform );
+
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
         //control.print_level = 1;
-
-        // Start from 1.5
-        double x[] = {1.5,1.5}; 
+        control.jacobian_available = 2; 
+        control.hessian_available = 2;
+        control.model = 6;
+        double x[] = {1.5,1.5}; // starting point
+        double W[] = {1.0, 1.0, 1.0}; // weights
 
         switch(d){
             case 1: // sparse co-ordinate storage
                 st = 'C';
+                nls_import( &control, &data, &status, n, m, 
+                            "coordinate", j_ne, J_row, J_col, NULL,
+                            "coordinate", h_ne, H_row, H_col, NULL,
+                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W ); 
+                while(true){ // reverse-communication loop
+                  nls_solve_reverse_with_mat( &data, &status, &eval_status,
+                                              n, m, x, c, g, j_ne, J_val, y, 
+                                              h_ne, H_val, v, p_ne, P_val );
+                  if(status == 0){ // successful termination
+                        break;
+                  }else if(status < 0){ // error exit
+                      break;
+                  }else if(status == 2){ // evaluate c
+                      eval_status = res( n, m, x, c, &userdata );
+                  }else if(status == 3){ // evaluate J
+                      eval_status = jac( n, m, j_ne, x, J_val, &userdata );
+                  }else if(status == 4){ // evaluate H
+                      eval_status = hess( n, m, h_ne, x, y, H_val, &userdata );
+                  }else if(status == 7){ // evaluate P
+                      eval_status = rhessprods( n, m, p_ne, x, v, P_val, 
+                                                got_h, &userdata );
+                  }else{
+                      printf(" the value %1i of status should not occur\n", 
+                        status);
+                      break;
+                  }
+                }
                 break;
             case 2: // sparse by rows  
                 st = 'R';
+                nls_import( &control, &data, &status, n, m, 
+                            "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
+                            "sparse_by_rows", h_ne, NULL, H_col, H_ptr,
+                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W ); 
+                while(true){ // reverse-communication loop
+                  nls_solve_reverse_with_mat( &data, &status, &eval_status,
+                                              n, m, x, c, g, j_ne, J_val, y, 
+                                              h_ne, H_val, v, p_ne, P_val );
+                  if(status == 0){ // successful termination
+                        break;
+                  }else if(status < 0){ // error exit
+                      break;
+                  }else if(status == 2){ // evaluate c
+                      eval_status = res( n, m, x, c, &userdata );
+                  }else if(status == 3){ // evaluate J
+                      eval_status = jac( n, m, j_ne, x, J_val, &userdata );
+                  }else if(status == 4){ // evaluate H
+                      eval_status = hess( n, m, h_ne, x, y, H_val, &userdata );
+                  }else if(status == 7){ // evaluate P
+                      eval_status = rhessprods( n, m, p_ne, x, v, P_val, 
+                                                got_h, &userdata );
+                  }else{
+                      printf(" the value %1i of status should not occur\n", 
+                        status);
+                      break;
+                  }
+                }
                 break;
             case 3: // dense
                 st = 'D';
+                nls_import( &control, &data, &status, n, m, 
+                            "dense", j_ne, NULL, NULL, NULL,
+                            "dense", h_ne, NULL, NULL, NULL,
+                            "dense", p_ne, NULL, NULL, NULL, W ); 
+                while(true){ // reverse-communication loop
+                  nls_solve_reverse_with_mat( &data, &status, &eval_status,
+                                              n, m, x, c, g, j_ne, J_dense, y, 
+                                              h_ne, H_dense, v, p_ne, P_dense );
+                  if(status == 0){ // successful termination
+                        break;
+                  }else if(status < 0){ // error exit
+                      break;
+                  }else if(status == 2){ // evaluate c
+                      eval_status = res( n, m, x, c, &userdata );
+                  }else if(status == 3){ // evaluate J
+                      eval_status = jac_dense( n, m, j_ne, x, J_dense, 
+                                               &userdata );
+                  }else if(status == 4){ // evaluate H
+                      eval_status = hess_dense( n, m, h_ne, x, y, H_dense, 
+                                                &userdata );
+                  }else if(status == 7){ // evaluate P
+                      eval_status = rhessprods_dense( n, m, p_ne, x, v, P_dense,
+                                                      got_h, &userdata );
+                  }else{
+                      printf(" the value %1i of status should not occur\n", 
+                        status);
+                      break;
+                  }
+                }
                 break;
             case 4: // diagonal
                 st = 'I';
+                nls_import( &control, &data, &status, n, m, 
+                            "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
+                            "diagonal", h_ne, NULL, NULL, NULL,
+                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W ); 
+                while(true){ // reverse-communication loop
+                  nls_solve_reverse_with_mat( &data, &status, &eval_status,
+                                              n, m, x, c, g, j_ne, J_val, y, 
+                                              h_ne, H_diag, v, p_ne, P_val );
+                  if(status == 0){ // successful termination
+                        break;
+                  }else if(status < 0){ // error exit
+                      break;
+                  }else if(status == 2){ // evaluate c
+                      eval_status = res( n, m, x, c, &userdata );
+                  }else if(status == 3){ // evaluate J
+                      eval_status = jac( n, m, j_ne, x, J_val, &userdata );
+                  }else if(status == 4){ // evaluate H
+                      eval_status = hess( n, m, h_ne, x, y, H_diag, &userdata );
+                  }else if(status == 7){ // evaluate P
+                      eval_status = rhessprods( n, m, p_ne, x, v, P_val, 
+                                                got_h, &userdata );
+                  }else{
+                      printf(" the value %1i of status should not occur\n", 
+                        status);
+                      break;
+                  }
+                }
                 break;
             case 5: // access by products
                 st = 'P';
+//              control.print_level = 1;
+                nls_import( &control, &data, &status, n, m, 
+                            "absent", j_ne, NULL, NULL, NULL,
+                            "absent", h_ne, NULL, NULL, NULL,
+                            "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W ); 
+                while(true){ // reverse-communication loop
+                  nls_solve_reverse_without_mat( &data, &status, &eval_status,
+                                                 n, m, x, c, g, &transpose, 
+                                                 u, v, y, p_ne, P_val );
+                  if(status == 0){ // successful termination
+                        break;
+                  }else if(status < 0){ // error exit
+                      break;
+                  }else if(status == 2){ // evaluate c
+                      eval_status = res( n, m, x, c, &userdata );
+                  }else if(status == 5){ // evaluate u + J v or u + J'v
+                      eval_status = jacprod( n, m, x, transpose, u, v, got_j, 
+                                             &userdata );
+                  }else if(status == 6){ // evaluate u + H v
+                      eval_status = hessprod( n, m, x, y, u, v, got_h, 
+                                              &userdata );
+                  }else if(status == 7){ // evaluate P
+                      eval_status = rhessprods( n, m, p_ne, x, v, P_val, 
+                                                got_h, &userdata );
+                  }else{
+                      printf(" the value %1i of status should not occur\n", 
+                        status);
+                      break;
+                  }
+                }
                 break;
         }
+
         nls_information( &data, &inform, &status );
 
         if(inform.status == 0){
@@ -177,23 +352,209 @@ int main(void) {
         }
         // Delete internal workspace
         nls_terminate( &data, &control, &inform );
-*/
-        printf("hello again\n");
     }
-        printf("goodbye\n");
+
+    printf("\n basic tests of models used, direct acces\n\n");
+
+    for( int model=3; model <= 8; model++){
+
+        // Initialize NLS
+        nls_initialize( &data, &control, &inform );
+
+        // Set user-defined control options
+        control.f_indexing = false; // C sparse matrix indexing
+        //control.print_level = 1;
+        control.jacobian_available = 2; 
+        control.hessian_available = 2;
+        control.model = model;
+        double x[] = {1.5,1.5}; // starting point
+        double W[] = {1.0, 1.0, 1.0}; // weights
+
+        nls_import( &control, &data, &status, n, m, 
+                    "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
+                    "sparse_by_rows", h_ne, NULL, H_col, H_ptr,
+                    "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W ); 
+        nls_solve_with_mat( &data, &userdata, &status,
+                            n, m, x, c, g, res, j_ne, jac, 
+                            h_ne, hess, p_ne, rhessprods );
+
+        nls_information( &data, &inform, &status );
+
+        if(inform.status == 0){
+            printf(" %1i:%6i iterations. Optimal objective value = %5.2f"
+                   " status = %1i\n", 
+                   model, inform.iter, inform.obj, inform.status);
+        }else{
+            printf(" %i: NLS_solve exit status = %1i\n", model, inform.status);
+        }
+        // Delete internal workspace
+        nls_terminate( &data, &control, &inform );
+    }
+
+    printf("\n basic tests of models used, access by products\n\n");
+
+    for( int model=3; model <= 8; model++){
+
+        // Initialize NLS
+        nls_initialize( &data, &control, &inform );
+
+        // Set user-defined control options
+        control.f_indexing = false; // C sparse matrix indexing
+        //control.print_level = 1;
+        control.jacobian_available = 2; 
+        control.hessian_available = 2;
+        control.model = model;
+        double x[] = {1.5,1.5}; // starting point
+        double W[] = {1.0, 1.0, 1.0}; // weights
+
+        nls_import( &control, &data, &status, n, m, 
+                    "absent", j_ne, NULL, NULL, NULL,
+                    "absent", h_ne, NULL, NULL, NULL,
+                    "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W ); 
+        nls_solve_without_mat( &data, &userdata, &status,
+                               n, m, x, c, g, res, jacprod, 
+                               hessprod, p_ne, rhessprods );
+        nls_information( &data, &inform, &status );
+
+        if(inform.status == 0){
+            printf("P%1i:%6i iterations. Optimal objective value = %5.2f"
+                   " status = %1i\n", 
+                   model, inform.iter, inform.obj, inform.status);
+        }else{
+            printf("P%i: NLS_solve exit status = %1i\n", model, inform.status);
+        }
+        // Delete internal workspace
+        nls_terminate( &data, &control, &inform );
+    }
+
+    printf("\n basic tests of models used, reverse access\n\n");
+
+    for( int model=3; model <= 8; model++){
+
+        // Initialize NLS
+        nls_initialize( &data, &control, &inform );
+
+        // Set user-defined control options
+        control.f_indexing = false; // C sparse matrix indexing
+        //control.print_level = 1;
+        control.jacobian_available = 2; 
+        control.hessian_available = 2;
+        control.model = model;
+        double x[] = {1.5,1.5}; // starting point
+        double W[] = {1.0, 1.0, 1.0}; // weights
+
+        nls_import( &control, &data, &status, n, m, 
+                    "sparse_by_rows", j_ne, NULL, J_col, J_ptr,
+                    "sparse_by_rows", h_ne, NULL, H_col, H_ptr,
+                    "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W ); 
+        while(true){ // reverse-communication loop
+          nls_solve_reverse_with_mat( &data, &status, &eval_status,
+                                      n, m, x, c, g, j_ne, J_val, y, 
+                                      h_ne, H_val, v, p_ne, P_val );
+          if(status == 0){ // successful termination
+                break;
+          }else if(status < 0){ // error exit
+              break;
+          }else if(status == 2){ // evaluate c
+              eval_status = res( n, m, x, c, &userdata );
+          }else if(status == 3){ // evaluate J
+              eval_status = jac( n, m, j_ne, x, J_val, &userdata );
+          }else if(status == 4){ // evaluate H
+              eval_status = hess( n, m, h_ne, x, y, H_val, &userdata );
+          }else if(status == 7){ // evaluate P
+              eval_status = rhessprods( n, m, p_ne, x, v, P_val, 
+                                        got_h, &userdata );
+          }else{
+              printf(" the value %1i of status should not occur\n", 
+                status);
+              break;
+          }
+        }
+
+        nls_information( &data, &inform, &status );
+
+        if(inform.status == 0){
+            printf("P%1i:%6i iterations. Optimal objective value = %5.2f"
+                   " status = %1i\n", 
+                   model, inform.iter, inform.obj, inform.status);
+        }else{
+            printf(" %i: NLS_solve exit status = %1i\n", model, inform.status);
+        }
+        // Delete internal workspace
+        nls_terminate( &data, &control, &inform );
+    }
+
+    printf("\n basic tests of models used, reverse access by products\n\n");
+
+    for( int model=3; model <= 8; model++){
+
+        // Initialize NLS
+        nls_initialize( &data, &control, &inform );
+
+        // Set user-defined control options
+        control.f_indexing = false; // C sparse matrix indexing
+        //control.print_level = 1;
+        control.jacobian_available = 2; 
+        control.hessian_available = 2;
+        control.model = model;
+        double x[] = {1.5,1.5}; // starting point
+        double W[] = {1.0, 1.0, 1.0}; // weights
+
+        nls_import( &control, &data, &status, n, m, 
+                    "absent", j_ne, NULL, NULL, NULL,
+                    "absent", h_ne, NULL, NULL, NULL,
+                    "sparse_by_columns", p_ne, P_row, NULL, P_ptr, W ); 
+        while(true){ // reverse-communication loop
+          nls_solve_reverse_without_mat( &data, &status, &eval_status,
+                                         n, m, x, c, g, &transpose, 
+                                         u, v, y, p_ne, P_val );
+          if(status == 0){ // successful termination
+                break;
+          }else if(status < 0){ // error exit
+              break;
+          }else if(status == 2){ // evaluate c
+              eval_status = res( n, m, x, c, &userdata );
+          }else if(status == 5){ // evaluate u + J v or u + J'v
+              eval_status = jacprod( n, m, x, transpose, u, v, got_j, 
+                                     &userdata );
+          }else if(status == 6){ // evaluate u + H v
+              eval_status = hessprod( n, m, x, y, u, v, got_h, 
+                                      &userdata );
+          }else if(status == 7){ // evaluate P
+              eval_status = rhessprods( n, m, p_ne, x, v, P_val, 
+                                        got_h, &userdata );
+          }else{
+              printf(" the value %1i of status should not occur\n", 
+                status);
+              break;
+          }
+        }
+
+        nls_information( &data, &inform, &status );
+
+        if(inform.status == 0){
+            printf("P%1i:%6i iterations. Optimal objective value = %5.2f"
+                   " status = %1i\n", 
+                   model, inform.iter, inform.obj, inform.status);
+        }else{
+            printf("P%i: NLS_solve exit status = %1i\n", model, inform.status);
+        }
+        // Delete internal workspace
+        nls_terminate( &data, &control, &inform );
+    }
 }
 
 // compute the residuals
 int res( int n, int m, const double x[], double c[], const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     double p = myuserdata->p;
-    printf(" in res\n");
+//    printf(" in res\n");
 //    printf( "n, m = %6i %6i\n", n, m );
-    printf( "X = %5.2f %5.2f\n", x[0], x[1]);
+//    printf( "X = %12.4e %12.4e\n", x[0], x[1]);
     c[0] = pow(x[0],2.0) + p;
     c[1] = x[0] + pow(x[1],2.0);
     c[2] = x[0] - x[1];
-    printf( "C = %5.2f %5.2f %5.2f\n", c[0], c[1], c[2]);
+//    printf( "C = %12.4e %12.4e %12.4e\n", c[0], c[1], c[2]);
     return 0;
 }
 
@@ -201,11 +562,14 @@ int res( int n, int m, const double x[], double c[], const void *userdata ){
 int jac( int n, int m, int jne, const double x[], double jval[], 
          const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
+//    printf( "X = %12.4e %12.4e\n", x[0], x[1]);
     jval[0] = 2.0 * x[0];
     jval[1] = 1.0;
     jval[2] = 2.0 * x[1];
     jval[3] = 1.0;
     jval[4] = - 1.0;
+//  printf( "J = %12.4e %12.4e %12.4e %12.4e %12.4e\n", 
+//          jval[0], jval[1], jval[2], jval[3], jval[4]);
     return 0;
 }
 
@@ -222,13 +586,21 @@ int hess( int n, int m, int hne, const double x[], const double y[],
 int jacprod( int n, int m, const double x[], const bool transpose, double u[], 
              const double v[], bool got_j, const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
-    if ( transpose ) {
+//    printf( "X in = %12.4e %12.4e\n", x[0], x[1]);
+//    printf( " transpose %d\n", transpose);
+//    printf(transpose ? "transpose is true\n" : "transpose is false\n");
+    if (transpose) {
+//      printf("transpose\n");
       u[0] = u[0] + 2.0 * x[0] * v[0] + v[1] + v[2];
       u[1] = u[1] + 2.0 * x[1] * v[1] - v[2];
     }else{
+//      printf("not transpose\n");
+//      printf( "U in = %12.4e %12.4e %12.4e\n", u[0], u[1], u[2]);
+//      printf( "V in = %12.4e %12.4e\n", v[0], v[1]);
       u[0] = u[0] + 2.0 * x[0] * v[0];
       u[1] = u[1] + v[0]  + 2.0 * x[1] * v[1];
       u[2] = u[2] + v[0] - v[1];
+//      printf( "U in = %12.4e %12.4e %12.4e\n", u[0], u[1], u[2]);
     }
     return 0;
 }

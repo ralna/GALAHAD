@@ -379,13 +379,6 @@ $(function() {
 <div class="line">    <span class="keywordtype">double</span> p = myuserdata-&gt;p;</div>
 <div class="line"> </div>
 <div class="line">    *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) + cos(x[0]);</div>
-<div class="line"><span class="comment">//   *f = pow(x[0] + x[2] + 4.0, 2) + pow(x[1] + x[2], 2) + cos(x[0]);</span></div>
-<div class="line"><span class="comment">//        printf(&quot;p: %f \n&quot;, p);</span></div>
-<div class="line"><span class="comment">//        printf(&quot;n:  %d \n&quot;, n);</span></div>
-<div class="line"><span class="comment">//        printf(&quot;x: &quot;);</span></div>
-<div class="line"><span class="comment">//        for( int i = 0; i &lt; n; i++) printf(&quot;%f &quot;, x[i]);</span></div>
-<div class="line"><span class="comment">//        printf(&quot;\n&quot;);</span></div>
-<div class="line"><span class="comment">//        printf(&quot;objective: %f \n&quot;, *f);</span></div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 <div class="line"> </div>
@@ -395,10 +388,8 @@ $(function() {
 <div class="line">    <span class="keywordtype">double</span> p = myuserdata-&gt;p;</div>
 <div class="line"> </div>
 <div class="line">    g[0] = 2.0 * ( x[0] + x[2] + p ) - sin(x[0]);</div>
-<div class="line"><span class="comment">//    g[0] = 2.0 * ( x[0] + x[2] + 4.0 ) - sin(x[0]);</span></div>
 <div class="line">    g[1] = 2.0 * ( x[1] + x[2] );</div>
 <div class="line">    g[2] = 2.0 * ( x[0] + x[2] + p ) + 2.0 * ( x[1] + x[2] );</div>
-<div class="line"><span class="comment">//    g[2] = 2.0 * ( x[0] + x[2] + 4.0 ) + 2.0 * ( x[1] + x[2] );</span></div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 <div class="line"> </div>
@@ -465,7 +456,7 @@ $(function() {
 <div class="line"> </div>
 <div class="line"><span class="comment">// Hessian of the objective</span></div>
 <div class="line"><span class="keywordtype">int</span> hess_diag( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> ne, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">double</span> hval[], </div>
-<div class="line">              <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata ){</div>
+<div class="line">               <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata ){</div>
 <div class="line">    hval[0] = -cos(x[0]);</div>
 <div class="line">    hval[1] = 2.0;</div>
 <div class="line">    hval[2] = 2.0;</div>

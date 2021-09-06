@@ -271,8 +271,8 @@
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
-        REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: x
-        REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: c
+        REAL ( KIND = wp ), DIMENSION( n ),INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( m ),INTENT( OUT ) :: c
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
         INTEGER ( KIND = C_INT ) :: status
       END FUNCTION eval_C
@@ -283,8 +283,8 @@
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
-        REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: jval
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( jne ),INTENT( OUT ) :: jval
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
         INTEGER ( KIND = C_INT ) :: status
       END FUNCTION eval_J
@@ -296,8 +296,9 @@
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, y
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: hval
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( m ), INTENT( IN ) :: y
+        REAL ( KIND = wp ), DIMENSION( hne ), INTENT( OUT ) :: hval
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
         INTEGER ( KIND = C_INT ) :: status
       END FUNCTION eval_H
@@ -309,10 +310,10 @@
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
-        LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: transpose
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: u
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+        LOGICAL ( KIND = C_BOOL ), INTENT( IN ), VALUE :: transpose
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( MAX( n, m ) ), INTENT( INOUT ) :: u
+        REAL ( KIND = wp ), DIMENSION( MAX( n, m ) ), INTENT( IN ) :: v
         LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_j
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
         INTEGER ( KIND = C_INT ) :: status
@@ -325,9 +326,10 @@
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, y
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: u
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( m ), INTENT( IN ) :: y
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( INOUT ) :: u
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: v
         LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_h
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
         INTEGER ( KIND = C_INT ) :: status
@@ -340,9 +342,9 @@
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, pne
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: pval
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x
+        REAL ( KIND = wp ), DIMENSION( m ), INTENT( IN ) :: v
+        REAL ( KIND = wp ), DIMENSION( pne ), INTENT( INOUT ) :: pval
         LOGICAL ( KIND = C_BOOL ), INTENT( IN ) :: got_h
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
         INTEGER ( KIND = C_INT ) :: status
@@ -355,8 +357,8 @@
         USE iso_c_binding
         IMPORT :: wp
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: x, v
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: u
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: x, v
+        REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ) :: u
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: userdata
         INTEGER ( KIND = C_INT ) :: status
       END FUNCTION eval_SCALE
@@ -1156,7 +1158,7 @@
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: jrow
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: jcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: jptr
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: jptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cjtype
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: hrow
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: hcol
@@ -1164,7 +1166,7 @@
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: prow
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: pcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: pptr
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: pptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cptype
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ), OPTIONAL :: w
 
@@ -1179,6 +1181,8 @@
   INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
   INTEGER, DIMENSION( : ), ALLOCATABLE :: prow_find, pcol_find, pptr_find
   LOGICAL :: f_indexing
+
+! IF ( PRESENT( w ) ) WRITE( 6, * ) ' w ', w
 
 !  copy control and inform in
 
@@ -1210,7 +1214,7 @@
       jcol_find = jcol + 1
     END IF
     IF ( PRESENT( jptr ) ) THEN
-      ALLOCATE( jptr_find( n + 1 ) )
+      ALLOCATE( jptr_find( m + 1 ) )
       jptr_find = jptr + 1
     END IF
 
@@ -1264,7 +1268,7 @@
 !  C interface to fortran nls_solve_with_mat
 !  -----------------------------------------
 
-  SUBROUTINE nls_solve_with_mat( cdata, cuserdata, status, n, m, x, g,         &
+  SUBROUTINE nls_solve_with_mat( cdata, cuserdata, status, n, m, x, c, g,      &
                                  ceval_c, jne, ceval_j, hne, ceval_h,          &
                                  pne, ceval_hprods ) BIND( C )
   USE GALAHAD_NLS_double_ciface
@@ -1274,7 +1278,9 @@
 
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: g 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_c, ceval_j
@@ -1313,7 +1319,7 @@
 
 !  solve the problem when the Hessian is explicitly available
 
-  CALL f_nls_solve_with_mat( fdata, fuserdata, status, x, g, wrap_eval_c,     &
+  CALL f_nls_solve_with_mat( fdata, fuserdata, status, x, c, g, wrap_eval_c,   &
                               wrap_eval_j, wrap_eval_h, wrap_eval_hprods )
 
   RETURN
@@ -1332,7 +1338,7 @@
 
 !  call C interoperable eval_c
 
-    write(6, "( ' X in wrap_eval_c = ', 2ES12.4 )" ) x
+!   write(6, "( ' X in wrap_eval_c = ', 2ES12.4 )" ) x
     status = feval_c( n, m, x, c, cuserdata )
     RETURN
 
@@ -1395,7 +1401,7 @@
 !  C interface to fortran nls_solve_without_mat
 !  --------------------------------------------
 
-  SUBROUTINE nls_solve_without_mat( cdata, cuserdata, status, n, m, x, g,      &
+  SUBROUTINE nls_solve_without_mat( cdata, cuserdata, status, n, m, x, c, g,   &
                                     ceval_c, ceval_jprod, ceval_hprod,         &
                                     pne, ceval_hprods ) BIND( C )
   USE GALAHAD_NLS_double_ciface
@@ -1405,7 +1411,9 @@
 
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, pne
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: g 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_c, ceval_jprod
@@ -1444,9 +1452,9 @@
 
 !  solve the problem when the Hessian is only available via products
 
-  CALL f_nls_solve_without_mat( fdata, fuserdata, status, x, g, wrap_eval_c,   &
-                                wrap_eval_jprod, wrap_eval_hprod,              &
-                                wrap_eval_hprods )
+  CALL f_nls_solve_without_mat( fdata, fuserdata, status, x, c, g,             &
+                                wrap_eval_c, wrap_eval_jprod,                  &
+                                wrap_eval_hprod, wrap_eval_hprods )
   RETURN
 
 !  wrappers
@@ -1476,13 +1484,21 @@
     TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: u
     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
-    LOGICAL, OPTIONAL, INTENT( IN ) :: ftranspose
+    LOGICAL, INTENT( IN ) :: ftranspose
     LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_j
     LOGICAL ( KIND = C_BOOL ) :: cgot_j, ctranspose
 
 !  call C interoperable eval_jprod
 
     ctranspose = ftranspose
+!   IF ( ftranspose ) THEN
+!     t = 1
+!     ctranspose = .TRUE.
+!   ELSE
+!     t = 0
+!     ctranspose = .FALSE.
+!   END IF
+!   write(6,*) 'ctranspose, ftranspose', ctranspose, ftranspose
     IF ( PRESENT( fgot_j ) ) THEN
       cgot_j = fgot_j
     ELSE
@@ -1546,7 +1562,7 @@
 !  -------------------------------------------------
 
   SUBROUTINE nls_solve_reverse_with_mat( cdata, status, eval_status,           &
-                                         n, m, x, g, c, jne, jval, y,          &
+                                         n, m, x, c, g, jne, jval, y,          &
                                          hne, hval, v, pne, pval ) BIND( C )
   USE GALAHAD_NLS_double_ciface
   IMPLICIT NONE
@@ -1574,7 +1590,7 @@
 
 !  solve the problem when the Hessian is available by reverse communication
 
-  CALL f_nls_solve_reverse_with_mat( fdata, status, eval_status, x, g, c,      &
+  CALL f_nls_solve_reverse_with_mat( fdata, status, eval_status, x, c, g,      &
                                      jval, y, hval, v, pval )
   RETURN
     
@@ -1585,7 +1601,7 @@
 !  ----------------------------------------------------
 
   SUBROUTINE nls_solve_reverse_without_mat( cdata, status, eval_status,        &
-                                            n, m, x, g, c, ctranspose, u, v,   &
+                                            n, m, x, c, g, ctranspose, u, v,   &
                                             y, pne, pval ) BIND( C )
   USE GALAHAD_NLS_double_ciface
   IMPLICIT NONE
@@ -1599,7 +1615,7 @@
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( MAX( n, m ) ) :: u, v
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( pne ) :: pval
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  LOGICAL ( KIND = C_BOOL ), INTENT( IN )  :: ctranspose
+  LOGICAL ( KIND = C_BOOL ), INTENT( INOUT )  :: ctranspose
   
 !  local variables
 
@@ -1613,9 +1629,9 @@
 !  solve the problem when Hessian products are available by reverse 
 !  communication
 
-  ftranspose = ctranspose
-  CALL f_nls_solve_reverse_without_mat( fdata, status, eval_status, x, g, c,  &
+  CALL f_nls_solve_reverse_without_mat( fdata, status, eval_status, x, c, g,  &
                                         ftranspose, u, v, y, pval )
+  IF ( status == 5 ) ctranspose = ftranspose
   RETURN
 
   END SUBROUTINE nls_solve_reverse_without_mat

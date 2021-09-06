@@ -52,26 +52,26 @@ $(PACKAGE)DS2 = $(D$(PACKAGE)) $(OBJD)/$(package)s2.o
 $(PACKAGE)DS3 = $(D$(PACKAGE)) $(OBJD)/$(package)s3.o
 $(PACKAGE)DS4 = $(D$(PACKAGE)) $(OBJD)/$(package)s4.o
 $(PACKAGE)DT = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t.o
-$(PACKAGE)DT2 = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t2.o
+$(PACKAGE)DTI = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)ti.o
 $(PACKAGE)SS = $(S$(PACKAGE)) $(OBJS)/$(package)s.o
 $(PACKAGE)SS2 = $(S$(PACKAGE)) $(OBJS)/$(package)s2.o
 $(PACKAGE)SS3 = $(S$(PACKAGE)) $(OBJS)/$(package)s3.o
 $(PACKAGE)SS4 = $(S$(PACKAGE)) $(OBJS)/$(package)s4.o
 $(PACKAGE)ST = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t.o
-$(PACKAGE)ST2 = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t2.o
+$(PACKAGE)STI = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)ti.o
 
 R$(PACKAGE)DS = $(OBJD)/$(package)s.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS2 = $(OBJD)/$(package)s2.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS3 = $(OBJD)/$(package)s3.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS4 = $(OBJD)/$(package)s4.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DT = $(OBJD)/$(package)t.o -L$(OBJD) $(LIBS)
-R$(PACKAGE)DT2 = $(OBJD)/$(package)t2.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DTI = $(OBJD)/$(package)ti.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)SS = $(OBJS)/$(package)s.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS2 = $(OBJS)/$(package)s2.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS3 = $(OBJS)/$(package)s3.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS4 = $(OBJS)/$(package)s4.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)ST = $(OBJS)/$(package)t.o -L$(OBJS) $(LIBS)
-R$(PACKAGE)ST2 = $(OBJS)/$(package)t2.o -L$(OBJS) $(LIBS)
+R$(PACKAGE)STI = $(OBJS)/$(package)ti.o -L$(OBJS) $(LIBS)
 
 #  test agenda for C interfaces
 
@@ -80,14 +80,14 @@ $(PACKAGE)CDS2 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs2.o
 $(PACKAGE)CDS3 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs3.o
 $(PACKAGE)CDS4 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs4.o
 $(PACKAGE)CDT = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct.o
-$(PACKAGE)CDT2 = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct2.o
+$(PACKAGE)CDTI = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)cti.o
 $(PACKAGE)CDTF = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ctf.o
 $(PACKAGE)CSS = $(S$(PACKAGE)C) $(OBJS)/$(package)cs.o
 $(PACKAGE)CSS2 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs2.o
 $(PACKAGE)CSS3 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs3.o
 $(PACKAGE)CSS4 = $(S$(PACKAGE)C) $(OBJS)/$(package)cs4.o
 $(PACKAGE)CST = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ct.o
-$(PACKAGE)CST2 = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ct2.o
+$(PACKAGE)CSTI = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)cti.o
 $(PACKAGE)CSTF = $(S$(PACKAGE)C) $(TESTDEPS) $(OBJS)/$(package)ctf.o
 
 R$(PACKAGE)CDS = $(OBJD)/$(package)cs.o -L$(OBJD) $(CLIBS)
@@ -95,14 +95,14 @@ R$(PACKAGE)CDS2 = $(OBJD)/$(package)cs2.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDS3 = $(OBJD)/$(package)cs3.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDS4 = $(OBJD)/$(package)cs4.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDT = $(OBJD)/$(package)ct.o -L$(OBJD) $(CLIBS)
-R$(PACKAGE)CDT2 = $(OBJD)/$(package)ct2.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDTI = $(OBJD)/$(package)cti.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDTF = $(OBJD)/$(package)ctf.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CSS = $(OBJS)/$(package)cs.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSS2 = $(OBJS)/$(package)cs2.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSS3 = $(OBJS)/$(package)cs3.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CSS4 = $(OBJS)/$(package)cs4.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CST = $(OBJS)/$(package)ct.o -L$(OBJS) $(CLIBS)
-R$(PACKAGE)CT2 = $(OBJS)/$(package)ct2.o -L$(OBJS) $(CLIBS)
+R$(PACKAGE)CTI = $(OBJS)/$(package)cti.o -L$(OBJS) $(CLIBS)
 R$(PACKAGE)CTF = $(OBJS)/$(package)ctf.o -L$(OBJS) $(CLIBS)
 
 #  =========================================================================
@@ -409,13 +409,13 @@ $(package)st: $($(PACKAGE)ST)
 	cat $(package)st.output
 	rm ./run_$(package)
 
-$(package)st2: $($(PACKAGE)ST2)
+$(package)sti: $($(PACKAGE)STI)
 	echo " Exhaustive test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)ST2)
+                                                     $(R$(PACKAGE)STI)
 	$(RMOOC)
-	- ./run_$(package) > $(package)st2.output 2>&1
-	cat $(package)st2.output
+	- ./run_$(package) > $(package)sti.output 2>&1
+	cat $(package)sti.output
 	rm ./run_$(package)
 
 $(package)dt: $($(PACKAGE)DT)
@@ -428,13 +428,13 @@ $(package)dt: $($(PACKAGE)DT)
 	cat $(package)dt.output
 	rm ./run_$(package)
 
-$(package)dt2: $($(PACKAGE)DT2)
+$(package)dti: $($(PACKAGE)DTI)
 	echo " Exhaustive test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
-                                                     $(R$(PACKAGE)DT2)
+                                                     $(R$(PACKAGE)DTI)
 	$(RMOOC)
-	- ./run_$(package) > $(package)dt2.output 2>&1
-	cat $(package)dt2.output
+	- ./run_$(package) > $(package)dti.output 2>&1
+	cat $(package)dti.output
 	rm ./run_$(package)
 
 #  run full (comprehensive) C example tests
@@ -448,13 +448,13 @@ $(package)cst: $($(PACKAGE)CST)
 	cat $(package)st.output
 	rm ./run_$(package)
 
-$(package)cst2: $($(PACKAGE)CST2)
+$(package)csti: $($(PACKAGE)CSTI)
 	echo " Exhaustive test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CST2)
+                                                     $(R$(PACKAGE)CSTI)
 	$(RMOOC)
-	- ./run_$(package) > $(package)st2.output 2>&1
-	cat $(package)st2.output
+	- ./run_$(package) > $(package)sti.output 2>&1
+	cat $(package)sti.output
 	rm ./run_$(package)
 
 $(package)cstf: $($(PACKAGE)CSTF)
@@ -476,13 +476,13 @@ $(package)cdt: $($(PACKAGE)CDT)
 #	cat $(package)dt.output
 	rm ./run_$(package)
 
-$(package)cdt2: $($(PACKAGE)CDT2)
+$(package)cdti: $($(PACKAGE)CDTI)
 	echo " Exhaustive test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
-                                                     $(R$(PACKAGE)CDT2)
+                                                     $(R$(PACKAGE)CDTI)
 	$(RMOOC)
-	- ./run_$(package) > $(package)dt2.output 2>&1
-	cat $(package)dt2.output
+	- ./run_$(package) > $(package)dti.output 2>&1
+	cat $(package)dti.output
 	rm ./run_$(package)
 
 $(package)cdtf: $($(PACKAGE)CDTF)

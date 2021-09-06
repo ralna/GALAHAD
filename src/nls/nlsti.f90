@@ -66,7 +66,7 @@
                         'coordinate', H_ne, H_row, H_col, H_ptr,               &
                         'sparse_by_columns', P_ne, P_row, P_col, P_ptr,        &
                          W = W )
-       CALL NLS_solve_with_mat( data, userdata, status, X, G,                  &
+       CALL NLS_solve_with_mat( data, userdata, status, X, C, G,               &
                                 RES, JAC, HESS, RHESSPRODS )
      CASE ( 2 ) ! sparse by rows  
        st = ' R'
@@ -75,16 +75,16 @@
                         'sparse_by_rows', H_ne, H_row, H_col, H_ptr,           &
                         'sparse_by_columns', P_ne, P_row, P_col, P_ptr,        &
                          W = W )
-       CALL NLS_solve_with_mat( data, userdata, status, X, G,                  &
+       CALL NLS_solve_with_mat( data, userdata, status, X, C, G,               &
                                 RES, JAC, HESS, RHESSPRODS )
      CASE ( 3 ) ! dense
        st = ' D'
        CALL NLS_import( control, data, status, n, m,                           &
                         'dense', J_ne, J_row, J_col, J_ptr,                    &
                         'dense', H_ne, H_row, H_col, H_ptr,                    &
-                        'dense_by_columns', P_ne, P_row, P_col, P_ptr,        &
+                        'dense_by_columns', P_ne, P_row, P_col, P_ptr,         &
                          W = W )
-       CALL NLS_solve_with_mat( data, userdata, status, X, G,                  &
+       CALL NLS_solve_with_mat( data, userdata, status, X, C, G,               &
                                 RES, JAC_dense, HESS_dense, RHESSPRODS_dense  )
      CASE ( 4 ) ! diagonal
        st = ' I'
@@ -93,17 +93,19 @@
                         'diagonal', H_ne, H_row, H_col, H_ptr,                 &
                         'sparse_by_columns', P_ne, P_row, P_col, P_ptr,        &
                          W = W )
-       CALL NLS_solve_with_mat( data, userdata, status, X, G,                  &
+       CALL NLS_solve_with_mat( data, userdata, status, X, C, G,               &
                                 RES, JAC, HESS_diag, RHESSPRODS )
      CASE ( 5 ) ! access by products
        st = ' P'
        control%jacobian_available = 1 ; control%hessian_available = 1
+!       control%print_level = 5 ; control%maxit = 1
        CALL NLS_import( control, data, status, n, m,                           &
                         'absent', J_ne, J_row, J_col, J_ptr,                   &
                         'absent', H_ne, H_row, H_col, H_ptr,                   &
-                        'absent', P_ne, P_row, P_col, P_ptr,        &
+                        'sparse_by_columns', P_ne, P_row, P_col, P_ptr,        &
+!                       'absent', P_ne, P_row, P_col, P_ptr,                   &
                          W = W )
-       CALL NLS_solve_without_mat( data, userdata, status, X, G,               &
+       CALL NLS_solve_without_mat( data, userdata, status, X, C, G,            &
                                    RES, JACPROD, HESSPROD, RHESSPRODS )
      END SELECT
      CALL NLS_information( data, inform, status )
@@ -141,7 +143,7 @@
                          W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, G, C, J_val, Y, H_val, V, P_val )
+                                          X, C, G, J_val, Y, H_val, V, P_val )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -170,7 +172,7 @@
                          W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, G, C, J_val, Y, H_val, V, P_val )
+                                          X, C, G, J_val, Y, H_val, V, P_val )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -199,7 +201,7 @@
                          W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, G, C, J_dense, Y, H_dense,        &
+                                          X, C, G, J_dense, Y, H_dense,        &
                                           V, P_dense )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
@@ -229,7 +231,7 @@
                          W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, G, C, J_val, Y, H_diag, V, P_val )
+                                          X, C, G, J_val, Y, H_diag, V, P_val )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -259,7 +261,7 @@
                          W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_without_mat( data, status, eval_status,        &
-                                             X, G, C, transpose, U, V,         &
+                                             X, C, G, transpose, U, V,         &
                                              Y, P_val )
                                              
          SELECT CASE ( status )
@@ -308,24 +310,28 @@
      SELECT CASE ( model )
      CASE ( 3 ) ! Gauss-Newton model
        st = ' 3'
+!      control%print_level = 5
+!      control%maxit = 1
        CALL NLS_import( control, data, status, n, m,                           &
                         'sparse_by_rows', J_ne, J_row, J_col, J_ptr,           &
                         W = W )
-       CALL NLS_solve_with_mat( data, userdata, status, X, G, RES, JAC )
+       CALL NLS_solve_with_mat( data, userdata, status, X, C, G, RES, JAC )
      CASE ( 4 ) ! Newton model
        st = ' 4'
        CALL NLS_import( control, data, status, n, m,                           &
                         'sparse_by_rows', J_ne, J_row, J_col, J_ptr,           &
                         'sparse_by_rows', H_ne, H_row, H_col, H_ptr,           &
                         W = W )
-       CALL NLS_solve_with_mat( data, userdata, status, X, G, RES, JAC, HESS )
+       CALL NLS_solve_with_mat( data, userdata, status, X, C, G, RES,          &
+                                JAC, HESS )
      CASE ( 5 ) ! Gauss-Newton to Newton model
        st = ' 5'
        CALL NLS_import( control, data, status, n, m,                           &
                         'sparse_by_rows', J_ne, J_row, J_col, J_ptr,           &
                         'sparse_by_rows', H_ne, H_row, H_col, H_ptr,           &
                         W = W )
-       CALL NLS_solve_with_mat( data, userdata, status, X, G, RES, JAC, HESS )
+       CALL NLS_solve_with_mat( data, userdata, status, X, C, G, RES,          &
+                                JAC, HESS )
      CASE ( 6 ) ! Tensor-Newton model using Gaus-Newton solve
        st = ' 6'
        CALL NLS_import( control, data, status, n, m,                           &
@@ -333,7 +339,7 @@
                         'sparse_by_rows', H_ne, H_row, H_col, H_ptr,           &
                         'sparse_by_columns', P_ne, P_row, P_col, P_ptr,        &
                         W = W )
-       CALL NLS_solve_with_mat( data, userdata, status, X, G,                  &
+       CALL NLS_solve_with_mat( data, userdata, status, X, C, G,               &
                                 RES, JAC, HESS, RHESSPRODS )
      CASE ( 7 ) ! Tensor-Newton model using Newton solve
        st = ' 7'
@@ -342,7 +348,7 @@
                         'sparse_by_rows', H_ne, H_row, H_col, H_ptr,           &
                         'sparse_by_columns', P_ne, P_row, P_col, P_ptr,        &
                         W = W )
-       CALL NLS_solve_with_mat( data, userdata, status, X, G,                  &
+       CALL NLS_solve_with_mat( data, userdata, status, X, C, G,               &
                                 RES, JAC, HESS, RHESSPRODS )
      CASE ( 8 ) ! Tensor-Newton model using Gaus-Newton to Newton solve
        st = ' 8'
@@ -351,7 +357,7 @@
                         'sparse_by_rows', H_ne, H_row, H_col, H_ptr,           &
                         'sparse_by_columns', P_ne, P_row, P_col, P_ptr,        &
                         W = W )
-       CALL NLS_solve_with_mat( data, userdata, status, X, G,                  &
+       CALL NLS_solve_with_mat( data, userdata, status, X, C, G,               &
                                 RES, JAC, HESS, RHESSPRODS )
      END SELECT
      CALL NLS_information( data, inform, status )
@@ -381,7 +387,7 @@
        CALL NLS_import( control, data, status, n, m,                           &
                         'absent', J_ne, J_row, J_col, J_ptr,                   &
                         W = W )
-       CALL NLS_solve_without_mat( data, userdata, status, X, G,               &
+       CALL NLS_solve_without_mat( data, userdata, status, X, C, G,            &
                                    RES, JACPROD )
      CASE ( 4 ) ! Newton model
        st = 'P4'
@@ -391,7 +397,7 @@
                         'absent', J_ne, J_row, J_col, J_ptr,                   &
                         'absent', H_ne, H_row, H_col, H_ptr,                   &
                         W = W )
-       CALL NLS_solve_without_mat( data, userdata, status, X, G,               &
+       CALL NLS_solve_without_mat( data, userdata, status, X, C, G,            &
                                    RES, JACPROD, HESSPROD )
      CASE ( 5 ) ! Gauss-Newton to Newton model
        st = 'P5'
@@ -401,7 +407,7 @@
                         'absent', J_ne, J_row, J_col, J_ptr,                   &
                         'absent', H_ne, H_row, H_col, H_ptr,                   &
                         W = W )
-       CALL NLS_solve_without_mat( data, userdata, status, X, G,               &
+       CALL NLS_solve_without_mat( data, userdata, status, X, C, G,            &
                                    RES, JACPROD, HESSPROD )
      CASE ( 6 ) ! Tensor-Newton model using Gaus-Newton solve
        st = 'P6'
@@ -412,7 +418,7 @@
                         'absent', H_ne, H_row, H_col, H_ptr,                   &
                         'absent', P_ne, P_row, P_col, P_ptr,                   &
                         W = W )
-       CALL NLS_solve_without_mat( data, userdata, status, X, G,               &
+       CALL NLS_solve_without_mat( data, userdata, status, X, C, G,            &
                                    RES, JACPROD, HESSPROD, RHESSPRODS )
      CASE ( 7 ) ! Tensor-Newton model using Newton solve
        st = 'P7'
@@ -423,7 +429,7 @@
                         'absent', H_ne, H_row, H_col, H_ptr,                   &
                         'absent', P_ne, P_row, P_col, P_ptr,                   &
                         W = W )
-       CALL NLS_solve_without_mat( data, userdata, status, X, G,               &
+       CALL NLS_solve_without_mat( data, userdata, status, X, C, G,            &
                                    RES, JACPROD, HESSPROD, RHESSPRODS )
      CASE ( 8 ) ! Tensor-Newton model using Gaus-Newton to Newton solve
        st = 'P8'
@@ -434,7 +440,7 @@
                         'absent', H_ne, H_row, H_col, H_ptr,                   &
                         'absent', P_ne, P_row, P_col, P_ptr,                   &
                         W = W )
-       CALL NLS_solve_without_mat( data, userdata, status, X, G,               &
+       CALL NLS_solve_without_mat( data, userdata, status, X, C, G,            &
                                    RES, JACPROD, HESSPROD, RHESSPRODS )
      END SELECT
      CALL NLS_information( data, inform, status )
@@ -467,7 +473,7 @@
                         W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, G, C, J_val )
+                                          X, C, G, J_val )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -492,7 +498,7 @@
                         W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, G, C, J_val, Y, H_val )
+                                          X, C, G, J_val, Y, H_val )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -519,7 +525,7 @@
                         W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, G, C, J_val, Y, H_val )
+                                          X, C, G, J_val, Y, H_val )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -547,7 +553,7 @@
                         W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, G, C, J_val, Y, H_val, V, P_val )
+                                          X, C, G, J_val, Y, H_val, V, P_val )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -577,7 +583,7 @@
                         W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, G, C, J_val, Y, H_val, V, P_val )
+                                          X, C, G, J_val, Y, H_val, V, P_val )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -607,7 +613,7 @@
                         W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_with_mat( data, status, eval_status,           &
-                                          X, G, C, J_val, Y, H_val, V, P_val )
+                                          X, C, G, J_val, Y, H_val, V, P_val )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -656,7 +662,7 @@
                          W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_without_mat( data, status, eval_status,        &
-                                             X, G, C, transpose, U, V )
+                                             X, C, G, transpose, U, V )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -680,7 +686,7 @@
                          W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_without_mat( data, status, eval_status,        &
-                                             X, G, C, transpose, U, V, Y )
+                                             X, C, G, transpose, U, V, Y )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -706,7 +712,7 @@
                          W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_without_mat( data, status, eval_status,        &
-                                             X, G, C, transpose, U, V, Y )
+                                             X, C, G, transpose, U, V, Y )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -734,7 +740,7 @@
                          W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_without_mat( data, status, eval_status,        &
-                                             X, G, C, transpose, U, V,         &
+                                             X, C, G, transpose, U, V,         &
                                              Y, P_val )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
@@ -765,7 +771,7 @@
                          W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_without_mat( data, status, eval_status,        &
-                                             X, G, C, transpose, U, V,         &
+                                             X, C, G, transpose, U, V,         &
                                              Y, P_val )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
@@ -796,7 +802,7 @@
                          W = W )
        DO ! reverse-communication loop
          CALL NLS_solve_reverse_without_mat( data, status, eval_status,        &
-                                             X, G, C, transpose, U, V,         &
+                                             X, C, G, transpose, U, V,         &
                                              Y, P_val )
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
@@ -830,7 +836,7 @@
      CALL NLS_terminate( data, control, inform )  ! delete internal workspace
    END DO
 
-   DEALLOCATE( X, G, C, Y, W )
+   DEALLOCATE( X, C, G, Y, W, U, V )
    DEALLOCATE( J_val, J_row, J_col, J_ptr, J_dense )
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, userdata%real )
    DEALLOCATE( P_val, P_row, P_ptr, P_dense )
@@ -888,13 +894,17 @@ CONTAINS
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
+!    write(6,"( 'X in = ', 2ES12.4 )" ) X( 1 ), X( 2 )
      IF ( transpose ) THEN
        U( 1 ) = U( 1 ) + 2.0_wp * X( 1 ) * V( 1 ) + V( 2 ) + V( 3 )
        U( 2 ) = U( 2 ) + 2.0_wp * X( 2 ) * V( 2 ) - V( 3 )
      ELSE
+!      write(6,"( 'U in = ', 3ES12.4 )" ) U( 1 ), U( 2 ), U( 3 )
+!      write(6,"( 'V in = ', 2ES12.4 )" ) V( 1 ), V( 2 )
        U( 1 ) = U( 1 ) + 2.0_wp * X( 1 ) * V( 1 )
        U( 2 ) = U( 2 ) + V( 1 )  + 2.0_wp * X( 2 ) * V( 2 )
        U( 3 ) = U( 3 ) + V( 1 ) - V( 2 )
+!      write(6,"( 'U in = ', 3ES12.4 )" ) U( 1 ), U( 2 ), U( 3 )
      END IF
      status = 0
      END SUBROUTINE JACPROD
