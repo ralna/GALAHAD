@@ -1,5 +1,6 @@
 /* nlst.c */
 /* Full test for the NLS C interface using C sparse matrix indexing */
+/* Jari Fowkes & Nick Gould, STFC-Rutherford Appleton Laboratory, 2021 */
 
 #include <stdio.h>
 #include <math.h>
@@ -354,7 +355,7 @@ int main(void) {
         nls_terminate( &data, &control, &inform );
     }
 
-    printf("\n basic tests of models used, direct acces\n\n");
+    printf("\n basic tests of models used, direct access\n\n");
 
     for( int model=3; model <= 8; model++){
 
@@ -548,13 +549,9 @@ int main(void) {
 int res( int n, int m, const double x[], double c[], const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     double p = myuserdata->p;
-//    printf(" in res\n");
-//    printf( "n, m = %6i %6i\n", n, m );
-//    printf( "X = %12.4e %12.4e\n", x[0], x[1]);
     c[0] = pow(x[0],2.0) + p;
     c[1] = x[0] + pow(x[1],2.0);
     c[2] = x[0] - x[1];
-//    printf( "C = %12.4e %12.4e %12.4e\n", c[0], c[1], c[2]);
     return 0;
 }
 
@@ -562,14 +559,11 @@ int res( int n, int m, const double x[], double c[], const void *userdata ){
 int jac( int n, int m, int jne, const double x[], double jval[], 
          const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
-//    printf( "X = %12.4e %12.4e\n", x[0], x[1]);
     jval[0] = 2.0 * x[0];
     jval[1] = 1.0;
     jval[2] = 2.0 * x[1];
     jval[3] = 1.0;
     jval[4] = - 1.0;
-//  printf( "J = %12.4e %12.4e %12.4e %12.4e %12.4e\n", 
-//          jval[0], jval[1], jval[2], jval[3], jval[4]);
     return 0;
 }
 
@@ -586,21 +580,13 @@ int hess( int n, int m, int hne, const double x[], const double y[],
 int jacprod( int n, int m, const double x[], const bool transpose, double u[], 
              const double v[], bool got_j, const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
-//    printf( "X in = %12.4e %12.4e\n", x[0], x[1]);
-//    printf( " transpose %d\n", transpose);
-//    printf(transpose ? "transpose is true\n" : "transpose is false\n");
     if (transpose) {
-//      printf("transpose\n");
       u[0] = u[0] + 2.0 * x[0] * v[0] + v[1] + v[2];
       u[1] = u[1] + 2.0 * x[1] * v[1] - v[2];
     }else{
-//      printf("not transpose\n");
-//      printf( "U in = %12.4e %12.4e %12.4e\n", u[0], u[1], u[2]);
-//      printf( "V in = %12.4e %12.4e\n", v[0], v[1]);
       u[0] = u[0] + 2.0 * x[0] * v[0];
       u[1] = u[1] + v[0]  + 2.0 * x[1] * v[1];
       u[2] = u[2] + v[0] - v[1];
-//      printf( "U in = %12.4e %12.4e %12.4e\n", u[0], u[1], u[2]);
     }
     return 0;
 }
