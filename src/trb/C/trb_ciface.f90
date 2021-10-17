@@ -24,6 +24,7 @@
         f_trb_initialize                => TRB_initialize,                     &
         f_trb_read_specfile             => TRB_read_specfile,                  &
         f_trb_import                    => TRB_import,                         &
+        f_trb_reset_control             => TRB_reset_control,                  &
         f_trb_solve_with_mat            => TRB_solve_with_mat,                 &
         f_trb_solve_without_mat         => TRB_solve_without_mat,              &
         f_trb_solve_reverse_with_mat    => TRB_solve_reverse_with_mat,         &
@@ -661,7 +662,7 @@
   INTEGER, DIMENSION( : ), ALLOCATABLE :: row_find, col_find, ptr_find
   LOGICAL :: f_indexing
 
-!  copy control and inform in
+!  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
 
@@ -711,6 +712,45 @@
   RETURN
 
   END SUBROUTINE trb_import
+
+!  ----------------------------------------
+!  C interface to fortran trb_reset_control
+!  ----------------------------------------
+
+  SUBROUTINE trb_reset_control( ccontrol, cdata, status ) BIND( C )
+  USE GALAHAD_TRB_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  TYPE ( trb_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_trb_control_type ) :: fcontrol
+  TYPE ( f_trb_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
+
+!  copy control and inform in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
+!  import the control parameters into the required structure
+
+  CALL f_trb_reset_control( fcontrol, fdata, status )
+  RETURN
+
+  END SUBROUTINE trb_reset_control
 
 !  -----------------------------------------
 !  C interface to fortran trb_solve_with_mat

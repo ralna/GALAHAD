@@ -41,7 +41,8 @@
                NLPT_userdata_type, SMT_type, SMT_put,                          &
                BGO_import, BGO_solve_with_mat, BGO_solve_without_mat,          &
                BGO_solve_reverse_with_mat, BGO_solve_reverse_without_mat,      &
-               BGO_full_initialize, BGO_full_terminate, BGO_information
+               BGO_full_initialize, BGO_full_terminate, BGO_reset_control,     &
+               BGO_information
 
 !----------------------
 !   I n t e r f a c e s
@@ -2821,7 +2822,7 @@
 
      error = data%bgo_control%error
      space_critical = data%bgo_control%space_critical
-     deallocate_error_fatal = data%bgo_control%space_critical
+     deallocate_error_fatal = data%bgo_control%deallocate_error_fatal
 
 !  allocate space if required
 
@@ -2987,6 +2988,34 @@
 !  End of subroutine BGO_import
 
      END SUBROUTINE BGO_import
+
+!-  G A L A H A D -  B G O _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE BGO_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See BGO_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BGO_control_type ), INTENT( IN ) :: control
+     TYPE ( BGO_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%bgo_control = control
+     
+!  flag a successful call
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  end of subroutine BGO_reset_control
+
+     END SUBROUTINE BGO_reset_control
 
 !-  G A L A H A D -  B G O _ s o l v e _ w i t h _ m a t   S U B R O U T I N E 
 

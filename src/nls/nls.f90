@@ -50,7 +50,8 @@
                NLS_full_initialize, NLS_full_terminate, NLS_import,            &
                NLS_information, NLS_solve_with_mat, NLS_solve_without_mat,     &
                NLS_solve_reverse_with_mat, NLS_solve_reverse_without_mat,      &
-               NLPT_problem_type, GALAHAD_userdata_type, SMT_type, SMT_put
+               NLS_reset_control, NLPT_problem_type, GALAHAD_userdata_type,    &
+               SMT_type, SMT_put
 
 !----------------------
 !   I n t e r f a c e s
@@ -8836,7 +8837,7 @@
 !   It need not be set when the other schemes are used, and in this case 
 !   can be of length 0
 !
-!  W is an optional rank-one array of dimension n and type default
+!  W is an optional rank-one array of dimension m and type default
 !   real, that holds the vector of weights w attached to the residuals
 !   in the least-squares objective function.
 !   If W is present, the i-th component of W, i = 1, ... , m, contains (w)i.
@@ -8886,7 +8887,7 @@
 
      error = data%nls_control%error
      space_critical = data%nls_control%space_critical
-     deallocate_error_fatal = data%nls_control%space_critical
+     deallocate_error_fatal = data%nls_control%deallocate_error_fatal
 
 !  allocate space if required
 
@@ -9271,6 +9272,34 @@
 !  End of subroutine NLS_import
 
      END SUBROUTINE NLS_import
+
+!-  G A L A H A D -  N L S _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE NLS_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See NLS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( NLS_control_type ), INTENT( IN ) :: control
+     TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%nls_control = control
+     
+!  flag a successful call
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  end of subroutine NLS_reset_control
+
+     END SUBROUTINE NLS_reset_control
 
 !-  G A L A H A D -  N L S _ s o l v e _ w i t h _ m a t  S U B R O U T I N E  -
 

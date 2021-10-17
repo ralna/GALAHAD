@@ -22,6 +22,7 @@
         f_dgo_initialize                => DGO_initialize,                     &
         f_dgo_read_specfile             => DGO_read_specfile,                  &
         f_dgo_import                    => DGO_import,                         &
+        f_dgo_reset_control             => DGO_reset_control,                  &
         f_dgo_solve_with_mat            => DGO_solve_with_mat,                 &
         f_dgo_solve_without_mat         => DGO_solve_without_mat,              &
         f_dgo_solve_reverse_with_mat    => DGO_solve_reverse_with_mat,         &
@@ -627,6 +628,45 @@
   RETURN
 
   END SUBROUTINE dgo_import
+
+!  ----------------------------------------
+!  C interface to fortran dgo_reset_control
+!  ----------------------------------------
+
+  SUBROUTINE dgo_reset_control( ccontrol, cdata, status ) BIND( C )
+  USE GALAHAD_DGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  TYPE ( dgo_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_dgo_control_type ) :: fcontrol
+  TYPE ( f_dgo_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
+!  import the control parameters into the required structure
+
+  CALL f_dgo_reset_control( fcontrol, fdata, status )
+  RETURN
+
+  END SUBROUTINE dgo_reset_control
 
 !  -----------------------------------------
 !  C interface to fortran dgo_solve_with_mat

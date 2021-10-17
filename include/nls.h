@@ -191,7 +191,7 @@ for i,j=1,...,n\endmanonly
 
   C. Cartis,  N. I. M. Gould and Ph. L. Toint,
   ``Adaptive cubic regularisation methods for unconstrained optimization.
-  Part I: motivation, convergence and numerical results''
+  Part I: motivation, convergence and numerical results'',
   Mathematical Programming 127(2) (2011) 245-295,
 
   and uses ``tricks'' as suggested in
@@ -219,6 +219,8 @@ for i,j=1,...,n\endmanonly
       by reading replacement values from a file
   - \link nls_import \endlink - set up problem data structures and fixed
       values
+  - \link nls_reset_control \endlink (optional) - possibly change control 
+      parameters if a sequence of problems are being solved
   - solve the problem by calling one of 
      - \link nls_solve_with_mat \endlink - solve using function calls to
        evaluate function, gradient and Hessian values
@@ -1272,21 +1274,21 @@ void nls_import( struct nls_control_type *control,
 
  @param[in]  J_type is a one-dimensional array of type char that specifies the
    \link main_unsymmetric_matrices symmetric storage scheme \endlink 
-   used for the Jacobian, \bf$J\bf$. It should be one of 'coordinate', 
+   used for the Jacobian, \f$J\f$. It should be one of 'coordinate', 
   'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian
   is via matrix-vector products; lower or upper case variants are allowed.
 
  @param[in]  J_ne is a scalar variable of type int, that holds the number of
-   entries in \bf$J\bf$ in the sparse co-ordinate storage scheme. 
+   entries in \f$J\f$ in the sparse co-ordinate storage scheme. 
    It need not be set for any of the other schemes.
 
  @param[in]  J_row is a one-dimensional array of size J_ne and type int, that 
-   holds the row indices of \bf$J\bf$ in the sparse co-ordinate storage scheme. 
+   holds the row indices of \f$J\f$ in the sparse co-ordinate storage scheme. 
    It need not be set for any of the other schemes, 
    and in this case can be NULL.
 
  @param[in]  J_col is a one-dimensional array of size J_ne and type int,
-   that holds the column indices of \bf$J\bf$ in either the sparse co-ordinate, 
+   that holds the column indices of \f$J\f$ in either the sparse co-ordinate, 
    or the sparse row-wise storage scheme. It need not be set when the 
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
@@ -1358,6 +1360,25 @@ void nls_import( struct nls_control_type *control,
    all ones, and in this case can be NULL
  */
 
+//  *-*-*-*-*-*-*-*-*-   N L S _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
+
+void nls_reset_control( struct nls_control_type *control,
+                        void **data,
+                        int *status, );
+
+/*!< 
+ Reset control parameters after import if required.
+
+ @param[in] control is a struct whose members provide control
+  paramters for the remaining prcedures (see nls_control_type)
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are:
+  \li  1. The import was succesful, and the package is ready for the solve phase
+ */
+
 //  *-*-*-*-*-*-*-*-*-   N L S _ S O L V E _ W I T H _ M A T   -*-*-*-*-*-*-*-*
 
 void nls_solve_with_mat( void **data,
@@ -1401,7 +1422,7 @@ void nls_solve_with_mat( void **data,
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
-  \li  0. The import was succesful
+  \li  0. The run was succesful
 
   \li -1. An allocation error occurred. A message indicating the offending
        array is written on unit control.error, and the returned allocation
@@ -1559,7 +1580,7 @@ void nls_solve_without_mat( void **data,
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
-  \li  0. The import was succesful
+  \li  0. The run was succesful
 
   \li -1. An allocation error occurred. A message indicating the offending
        array is written on unit control.error, and the returned allocation
@@ -1703,7 +1724,7 @@ void nls_solve_reverse_with_mat( void **data,
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
-  \li  0. The import was succesful
+  \li  0. The run was succesful
 
   \li -1. An allocation error occurred. A message indicating the offending
        array is written on unit control.error, and the returned allocation
@@ -1868,7 +1889,7 @@ void nls_solve_reverse_without_mat( void **data,
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
-  \li  0. The import was succesful
+  \li  0. The run was succesful
 
   \li -1. An allocation error occurred. A message indicating the offending
        array is written on unit control.error, and the returned allocation

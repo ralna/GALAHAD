@@ -1,0 +1,12 @@
+MAIN
+! write-problem-data                                no
+! write-result-summary                              yes
+! aqt-result-summary-file-name                      AQTRES.d
+! aqt-result-summary-file-device                    47
+! print-full-solution                               no
+! write-solution                                    yes
+! aqt-solution-file-name                            AQTSOL.d
+! aqt-solution-file-device                          62
+! radius                                            1.0
+
+INCLUDE AQT

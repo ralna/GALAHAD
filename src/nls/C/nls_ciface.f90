@@ -24,6 +24,7 @@
         f_nls_initialize                => NLS_initialize,                     &
         f_nls_read_specfile             => NLS_read_specfile,                  &
         f_nls_import                    => NLS_import,                         &
+        f_nls_reset_control             => NLS_reset_control,                  &
         f_nls_solve_with_mat            => NLS_solve_with_mat,                 &
         f_nls_solve_without_mat         => NLS_solve_without_mat,              &
         f_nls_solve_reverse_with_mat    => NLS_solve_reverse_with_mat,         &
@@ -1263,6 +1264,45 @@
   RETURN
 
   END SUBROUTINE nls_import
+
+!  ----------------------------------------
+!  C interface to fortran nls_reset_control
+!  ----------------------------------------
+
+  SUBROUTINE nls_reset_control( ccontrol, cdata, status ) BIND( C )
+  USE GALAHAD_NLS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  TYPE ( nls_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_nls_control_type ) :: fcontrol
+  TYPE ( f_nls_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
+!  import the control parameters into the required structure
+
+  CALL f_nls_reset_control( fcontrol, fdata, status )
+  RETURN
+
+  END SUBROUTINE nls_reset_control
 
 !  -----------------------------------------
 !  C interface to fortran nls_solve_with_mat

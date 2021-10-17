@@ -15,15 +15,16 @@
     USE iso_c_binding
     USE GALAHAD_common_ciface
     USE GALAHAD_CQP_double, ONLY: &
-        f_cqp_control_type => CQP_control_type, &
-        f_cqp_time_type => CQP_time_type, &
-        f_cqp_inform_type => CQP_inform_type, &
-        f_cqp_full_data_type => CQP_full_data_type, &
-        f_cqp_initialize => CQP_initialize, &
-        f_cqp_read_specfile => CQP_read_specfile, &
-        f_cqp_import => CQP_import, &
-        f_cqp_information => CQP_information, &
-        f_cqp_terminate => CQP_terminate
+        f_cqp_control_type   => CQP_control_type,                              &
+        f_cqp_time_type      => CQP_time_type,                                 &
+        f_cqp_inform_type    => CQP_inform_type,                               &
+        f_cqp_full_data_type => CQP_full_data_type,                            &
+        f_cqp_initialize     => CQP_initialize,                                &
+        f_cqp_read_specfile  => CQP_read_specfile,                             &
+        f_cqp_import         => CQP_import,                                    &
+        f_cqp_reset_control  => CQP_reset_control,                             &
+        f_cqp_information    => CQP_information,                               &
+        f_cqp_terminate      => CQP_terminate
 
 !!$    USE GALAHAD_FDC_double_ciface, ONLY: &
 !!$        fdc_inform_type, &
@@ -685,6 +686,45 @@
   RETURN
 
   END SUBROUTINE cqp_import
+
+!  ----------------------------------------
+!  C interface to fortran cqp_reset_control
+!  ----------------------------------------
+
+  SUBROUTINE cqp_reset_control( ccontrol, cdata, status ) BIND( C )
+  USE GALAHAD_CQP_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  TYPE ( cqp_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_cqp_control_type ) :: fcontrol
+  TYPE ( f_cqp_full_data_type ), POINTER :: fdata
+  LOGICAL :: f_indexing
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  is fortran-style 1-based indexing used?
+
+  fdata%f_indexing = f_indexing
+
+!  import the control parameters into the required structure
+
+  CALL f_cqp_reset_control( fcontrol, fdata, status )
+  RETURN
+
+  END SUBROUTINE cqp_reset_control
 
 !  --------------------------------------
 !  C interface to fortran cqp_information

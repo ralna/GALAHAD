@@ -184,226 +184,246 @@
 
 !  Cholesky factorization
 
-     INTERFACE POTRF
+      INTERFACE POTRF
 
-       SUBROUTINE SPOTRF( uplo, n, A, lda, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-       INTEGER, INTENT( IN ) :: n, lda
-       INTEGER, INTENT( OUT ) :: info
-       REAL, INTENT( INOUT ), DIMENSION( lda, * ) :: A
-       END SUBROUTINE SPOTRF
+        SUBROUTINE SPOTRF( uplo, n, A, lda, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
+        INTEGER, INTENT( IN ) :: n, lda
+        INTEGER, INTENT( OUT ) :: info
+        REAL, INTENT( INOUT ), DIMENSION( lda, * ) :: A
+        END SUBROUTINE SPOTRF
 
-       SUBROUTINE DPOTRF( uplo, n, A, lda, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-       INTEGER, INTENT( IN ) :: n, lda
-       INTEGER, INTENT( OUT ) :: info
-       DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
-       END SUBROUTINE DPOTRF
+        SUBROUTINE DPOTRF( uplo, n, A, lda, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
+        INTEGER, INTENT( IN ) :: n, lda
+        INTEGER, INTENT( OUT ) :: info
+        DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
+        END SUBROUTINE DPOTRF
 
-     END INTERFACE POTRF
+      END INTERFACE POTRF
 
 !  Cholesky combined forward and back solves
 
-     INTERFACE POTRS
+      INTERFACE POTRS
 
-       SUBROUTINE SPOTRS( uplo, n, nrhs, A, lda, B, ldb, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-       INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
-       INTEGER, INTENT( OUT ) :: info
-       REAL, INTENT( IN ), DIMENSION( lda, n ) :: A
-       REAL, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
-       END SUBROUTINE SPOTRS
+        SUBROUTINE SPOTRS( uplo, n, nrhs, A, lda, B, ldb, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
+        INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
+        INTEGER, INTENT( OUT ) :: info
+        REAL, INTENT( IN ), DIMENSION( lda, n ) :: A
+        REAL, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
+        END SUBROUTINE SPOTRS
 
-       SUBROUTINE DPOTRS( uplo, n, nrhs, A, lda, B, ldb, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-       INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
-       INTEGER, INTENT( OUT ) :: info
-       DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, n ) :: A
-       DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
-       END SUBROUTINE DPOTRS
+        SUBROUTINE DPOTRS( uplo, n, nrhs, A, lda, B, ldb, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
+        INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
+        INTEGER, INTENT( OUT ) :: info
+        DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, n ) :: A
+        DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
+        END SUBROUTINE DPOTRS
 
-     END INTERFACE POTRS
+      END INTERFACE POTRS
 
 !  Bunch-Kaufman factorization
 
-     INTERFACE SYTRF
+      INTERFACE SYTRF
 
-       SUBROUTINE SSYTRF( uplo, n, A, lda, IPIV, WORK, lwork, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-       INTEGER, INTENT( IN ) :: n, lda, lwork
-       INTEGER, INTENT( OUT ) :: info
-       INTEGER, INTENT( OUT ), DIMENSION( n ) :: IPIV
-       REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
-       REAL, INTENT( OUT ), DIMENSION( lwork ) :: WORK
-       END SUBROUTINE SSYTRF
+        SUBROUTINE SSYTRF( uplo, n, A, lda, IPIV, WORK, lwork, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
+        INTEGER, INTENT( IN ) :: n, lda, lwork
+        INTEGER, INTENT( OUT ) :: info
+        INTEGER, INTENT( OUT ), DIMENSION( n ) :: IPIV
+        REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
+        REAL, INTENT( OUT ), DIMENSION( lwork ) :: WORK
+        END SUBROUTINE SSYTRF
 
-       SUBROUTINE DSYTRF( uplo, n, A, lda, IPIV, WORK, lwork, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-       INTEGER, INTENT( IN ) :: n, lda, lwork
-       INTEGER, INTENT( OUT ) :: info
-       INTEGER, INTENT( OUT ), DIMENSION( n ) :: IPIV
-       DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
-       DOUBLE PRECISION, INTENT( OUT ), DIMENSION( lwork ) :: WORK
+        SUBROUTINE DSYTRF( uplo, n, A, lda, IPIV, WORK, lwork, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
+        INTEGER, INTENT( IN ) :: n, lda, lwork
+        INTEGER, INTENT( OUT ) :: info
+        INTEGER, INTENT( OUT ), DIMENSION( n ) :: IPIV
+        DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
+        DOUBLE PRECISION, INTENT( OUT ), DIMENSION( lwork ) :: WORK
 
-       END SUBROUTINE DSYTRF
+        END SUBROUTINE DSYTRF
 
-     END INTERFACE SYTRF
+      END INTERFACE SYTRF
 
 !  Bunch-Kaufman factorization combined forward and back solves
 
-     INTERFACE SYTRS
+      INTERFACE SYTRS
 
-       SUBROUTINE SSYTRS( uplo, n, nrhs, A, lda, IPIV, B, ldb, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-       INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
-       INTEGER, INTENT( OUT ) :: info
-       INTEGER, INTENT( IN ), DIMENSION( n ) :: IPIV
-       REAL, INTENT( IN ), DIMENSION( lda, n ) :: A
-       REAL, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
-       END SUBROUTINE SSYTRS
+        SUBROUTINE SSYTRS( uplo, n, nrhs, A, lda, IPIV, B, ldb, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
+        INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
+        INTEGER, INTENT( OUT ) :: info
+        INTEGER, INTENT( IN ), DIMENSION( n ) :: IPIV
+        REAL, INTENT( IN ), DIMENSION( lda, n ) :: A
+        REAL, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
+        END SUBROUTINE SSYTRS
 
-       SUBROUTINE DSYTRS( uplo, n, nrhs, A, lda, IPIV, B, ldb, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-       INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
-       INTEGER, INTENT( OUT ) :: info
-       INTEGER, INTENT( IN ), DIMENSION( n ) :: IPIV
-       DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, n ) :: A
-       DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
-       END SUBROUTINE DSYTRS
+        SUBROUTINE DSYTRS( uplo, n, nrhs, A, lda, IPIV, B, ldb, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
+        INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
+        INTEGER, INTENT( OUT ) :: info
+        INTEGER, INTENT( IN ), DIMENSION( n ) :: IPIV
+        DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, n ) :: A
+        DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
+        END SUBROUTINE DSYTRS
 
-     END INTERFACE SYTRS
+      END INTERFACE SYTRS
 
 !  Cholesky factorization of a band matrix
 
-     INTERFACE PBTRF
+      INTERFACE PBTRF
 
-       SUBROUTINE SPBTRF( uplo, n, semi_bandwidth, A, lda, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-       INTEGER, INTENT( IN ) :: n, semi_bandwidth, lda
-       INTEGER, INTENT( OUT ) :: info
-       REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
-       END SUBROUTINE SPBTRF
+        SUBROUTINE SPBTRF( uplo, n, semi_bandwidth, A, lda, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
+        INTEGER, INTENT( IN ) :: n, semi_bandwidth, lda
+        INTEGER, INTENT( OUT ) :: info
+        REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
+        END SUBROUTINE SPBTRF
 
-       SUBROUTINE DPBTRF( uplo, n, semi_bandwidth, A, lda, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-       INTEGER, INTENT( IN ) :: n, semi_bandwidth, lda
-       INTEGER, INTENT( OUT ) :: info
-       DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
-       END SUBROUTINE DPBTRF
+        SUBROUTINE DPBTRF( uplo, n, semi_bandwidth, A, lda, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
+        INTEGER, INTENT( IN ) :: n, semi_bandwidth, lda
+        INTEGER, INTENT( OUT ) :: info
+        DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
+        END SUBROUTINE DPBTRF
 
-     END INTERFACE PBTRF
+      END INTERFACE PBTRF
 
 !  Cholesky factorization combined forward and back solves for a band matrix
 
-     INTERFACE PBTRS
+      INTERFACE PBTRS
 
-       SUBROUTINE SPBTRS( uplo, n, semi_bandwidth, nrhs, A, lda, B, ldb, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-       INTEGER, INTENT( IN ) :: n, semi_bandwidth, nrhs, lda, ldb
-       INTEGER, INTENT( OUT ) :: info
-       REAL, INTENT( IN ), DIMENSION( lda, n ) :: A
-       REAL, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
-       END SUBROUTINE SPBTRS
+        SUBROUTINE SPBTRS( uplo, n, semi_bandwidth, nrhs, A, lda, B, ldb, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
+        INTEGER, INTENT( IN ) :: n, semi_bandwidth, nrhs, lda, ldb
+        INTEGER, INTENT( OUT ) :: info
+        REAL, INTENT( IN ), DIMENSION( lda, n ) :: A
+        REAL, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
+        END SUBROUTINE SPBTRS
 
-       SUBROUTINE DPBTRS( uplo, n, semi_bandwidth, nrhs, A, lda, B, ldb, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
-       INTEGER, INTENT( IN ) :: n, semi_bandwidth, nrhs, lda, ldb
-       INTEGER, INTENT( OUT ) :: info
-       DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, n ) :: A
-       DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
-       END SUBROUTINE DPBTRS
+        SUBROUTINE DPBTRS( uplo, n, semi_bandwidth, nrhs, A, lda, B, ldb, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: uplo
+        INTEGER, INTENT( IN ) :: n, semi_bandwidth, nrhs, lda, ldb
+        INTEGER, INTENT( OUT ) :: info
+        DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, n ) :: A
+        DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
+        END SUBROUTINE DPBTRS
 
-     END INTERFACE PBTRS
+      END INTERFACE PBTRS
 
 !  spectral factorization 
 
-     INTERFACE SYEV
+      INTERFACE SYEV
 
-       SUBROUTINE SSYEV( jobz, uplo, n,  A, lda, D, WORK, lwork, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: jobz, uplo
-       INTEGER, INTENT( IN ) :: n, lda, lwork
-       INTEGER, INTENT( out ) :: info
-       REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
-       REAL, INTENT( OUT ), DIMENSION( n ) :: D
-       REAL, INTENT( OUT ), DIMENSION( lwork ) :: WORK
-       END SUBROUTINE SSYEV
+        SUBROUTINE SSYEV( jobz, uplo, n,  A, lda, D, WORK, lwork, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: jobz, uplo
+        INTEGER, INTENT( IN ) :: n, lda, lwork
+        INTEGER, INTENT( out ) :: info
+        REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
+        REAL, INTENT( OUT ), DIMENSION( n ) :: D
+        REAL, INTENT( OUT ), DIMENSION( lwork ) :: WORK
+        END SUBROUTINE SSYEV
 
-       SUBROUTINE DSYEV( jobz, uplo, n,  A, lda, D, WORK, lwork, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: jobz, uplo
-       INTEGER, INTENT( IN ) :: n, lda, lwork
-       INTEGER, INTENT( out ) :: info
-       DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
-       DOUBLE PRECISION, INTENT( OUT ), DIMENSION( n ) :: D
-       DOUBLE PRECISION, INTENT( OUT ), DIMENSION( lwork ) :: WORK
-       END SUBROUTINE DSYEV
+        SUBROUTINE DSYEV( jobz, uplo, n,  A, lda, D, WORK, lwork, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: jobz, uplo
+        INTEGER, INTENT( IN ) :: n, lda, lwork
+        INTEGER, INTENT( out ) :: info
+        DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
+        DOUBLE PRECISION, INTENT( OUT ), DIMENSION( n ) :: D
+        DOUBLE PRECISION, INTENT( OUT ), DIMENSION( lwork ) :: WORK
+        END SUBROUTINE DSYEV
 
-     END INTERFACE SYEV
+      END INTERFACE SYEV
 
 !  generalized spectral factorization 
 
-     INTERFACE SYGV
+      INTERFACE SYGV
 
-       SUBROUTINE SSYGV( itype, jobz, uplo, n,  A, lda, B, ldb, D,            &
-                         WORK, lwork, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: jobz, uplo
-       INTEGER, INTENT( IN ) :: itype, n, lda, ldb, lwork
-       INTEGER, INTENT( out ) :: info
-       REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
-       REAL, INTENT( INOUT ), DIMENSION( ldb, n ) :: B
-       REAL, INTENT( OUT ), DIMENSION( n ) :: D
-       REAL, INTENT( OUT ), DIMENSION( lwork ) :: WORK
-       END SUBROUTINE SSYGV
+        SUBROUTINE SSYGV( itype, jobz, uplo, n,  A, lda, B, ldb, D,            &
+                          WORK, lwork, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: jobz, uplo
+        INTEGER, INTENT( IN ) :: itype, n, lda, ldb, lwork
+        INTEGER, INTENT( out ) :: info
+        REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
+        REAL, INTENT( INOUT ), DIMENSION( ldb, n ) :: B
+        REAL, INTENT( OUT ), DIMENSION( n ) :: D
+        REAL, INTENT( OUT ), DIMENSION( lwork ) :: WORK
+        END SUBROUTINE SSYGV
 
-       SUBROUTINE DSYGV( itype, jobz, uplo, n,  A, lda, B, ldb, D,            &
-                         WORK, lwork, info )
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: jobz, uplo
-       INTEGER, INTENT( IN ) :: itype, n, lda, ldb, lwork
-       INTEGER, INTENT( out ) :: info
-       DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
-       DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, n ) :: B
-       DOUBLE PRECISION, INTENT( OUT ), DIMENSION( n ) :: D
-       DOUBLE PRECISION, INTENT( OUT ), DIMENSION( lwork ) :: WORK
-       END SUBROUTINE DSYGV
+        SUBROUTINE DSYGV( itype, jobz, uplo, n,  A, lda, B, ldb, D,            &
+                          WORK, lwork, info )
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: jobz, uplo
+        INTEGER, INTENT( IN ) :: itype, n, lda, ldb, lwork
+        INTEGER, INTENT( out ) :: info
+        DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
+        DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, n ) :: B
+        DOUBLE PRECISION, INTENT( OUT ), DIMENSION( n ) :: D
+        DOUBLE PRECISION, INTENT( OUT ), DIMENSION( lwork ) :: WORK
+        END SUBROUTINE DSYGV
 
-     END INTERFACE SYGV
+      END INTERFACE SYGV
 
 !  eigenvalues of a Hessenberg matrix
 
-     INTERFACE HSEQR
-       SUBROUTINE SHSEQR( job, compz, n, ilo, ihi, H, ldh,  WR, WI, Z, ldz,    &
-                          WORK, lwork, info )
-       INTEGER, INTENT( IN ) :: ihi, ilo, ldh, ldz, lwork, n
-       INTEGER, INTENT( OUT ) :: info
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: compz, job
-       REAL, INTENT( INOUT ) :: H( ldh, * ), Z( ldz, * )
-       REAL, INTENT( OUT ) :: WI( * ), WR( * ), WORK( * )
-       END SUBROUTINE SHSEQR
+      INTERFACE HSEQR
 
-       SUBROUTINE DHSEQR( job, compz, n, ilo, ihi, H, ldh,  WR, WI, Z, ldz,    &
-                          WORK, lwork, info )
-       INTEGER, INTENT( IN ) :: ihi, ilo, ldh, ldz, lwork, n
-       INTEGER, INTENT( OUT ) :: info
-       CHARACTER ( LEN = 1 ), INTENT( IN ) :: compz, job
-       DOUBLE PRECISION, INTENT( INOUT ) :: H( ldh, * ), Z( ldz, * )
-       DOUBLE PRECISION, INTENT( OUT ) :: WI( * ), WR( * ), WORK( * )
-       END SUBROUTINE DHSEQR
-     END INTERFACE HSEQR
+        SUBROUTINE SHSEQR( job, compz, n, ilo, ihi, H, ldh,  WR, WI, Z, ldz,   &
+                           WORK, lwork, info )
+        INTEGER, INTENT( IN ) :: ihi, ilo, ldh, ldz, lwork, n
+        INTEGER, INTENT( OUT ) :: info
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: compz, job
+        REAL, INTENT( INOUT ) :: H( ldh, * ), Z( ldz, * )
+        REAL, INTENT( OUT ) :: WI( * ), WR( * ), WORK( * )
+        END SUBROUTINE SHSEQR
+
+        SUBROUTINE DHSEQR( job, compz, n, ilo, ihi, H, ldh,  WR, WI, Z, ldz,   &
+                           WORK, lwork, info )
+        INTEGER, INTENT( IN ) :: ihi, ilo, ldh, ldz, lwork, n
+        INTEGER, INTENT( OUT ) :: info
+        CHARACTER ( LEN = 1 ), INTENT( IN ) :: compz, job
+        DOUBLE PRECISION, INTENT( INOUT ) :: H( ldh, * ), Z( ldz, * )
+        DOUBLE PRECISION, INTENT( OUT ) :: WI( * ), WR( * ), WORK( * )
+        END SUBROUTINE DHSEQR
+
+      END INTERFACE HSEQR
 
 !  eigenvalues of a symmetric tridigonal matrix
 
-     INTERFACE STERF
-       SUBROUTINE SSTERF( n, D, E, info )
-       INTEGER, INTENT( IN ) :: n
-       INTEGER, INTENT( OUT ) :: info
-       REAL, INTENT( INOUT ) :: D( n ), E( n - 1 )
-       END SUBROUTINE SSTERF
+      INTERFACE STERF
 
-       SUBROUTINE DSTERF( n, D, E, info )
-       INTEGER, INTENT( IN ) :: n
-       INTEGER, INTENT( OUT ) :: info
-       DOUBLE PRECISION, INTENT( INOUT ) :: D( n ), E( n - 1 )
-       END SUBROUTINE DSTERF
-     END INTERFACE STERF
+        SUBROUTINE SSTERF( n, D, E, info )
+        INTEGER, INTENT( IN ) :: n
+        INTEGER, INTENT( OUT ) :: info
+        REAL, INTENT( INOUT ) :: D( n ), E( n - 1 )
+        END SUBROUTINE SSTERF
+
+        SUBROUTINE DSTERF( n, D, E, info )
+        INTEGER, INTENT( IN ) :: n
+        INTEGER, INTENT( OUT ) :: info
+        DOUBLE PRECISION, INTENT( INOUT ) :: D( n ), E( n - 1 )
+        END SUBROUTINE DSTERF
+
+      END INTERFACE STERF
+
+!  eigenvalues and eigenvectors of a symmetric 2 by 2 matrix
+
+      INTERFACE LAEV2
+
+        SUBROUTINE SLAEV2( a, b, c, rt1, rt2, cs1, sn1 )
+        REAL, INTENT( IN ) :: a, b, c
+        REAL, INTENT( OUT ) :: cs1, rt1, rt2, sn1
+        END SUBROUTINE SLAEV2
+
+        SUBROUTINE DLAEV2( a, b, c, rt1, rt2, cs1, sn1 )
+        DOUBLE PRECISION, INTENT( IN ) :: a, b, c
+        DOUBLE PRECISION, INTENT( OUT ) :: cs1, rt1, rt2, sn1
+        END SUBROUTINE DLAEV2
+
+      END INTERFACE LAEV2
 
 !  End of module GALAHAD_LAPACK_interface
 

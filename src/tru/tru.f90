@@ -50,7 +50,8 @@
                SMT_type, SMT_put,                                              &
                TRU_import, TRU_solve_with_mat, TRU_solve_without_mat,          &
                TRU_solve_reverse_with_mat, TRU_solve_reverse_without_mat,      &
-               TRU_full_initialize, TRU_full_terminate, TRU_information
+               TRU_full_initialize, TRU_full_terminate, TRU_reset_control,     &
+               TRU_information
 
 !----------------------
 !   I n t e r f a c e s
@@ -4289,7 +4290,7 @@
 
      error = data%tru_control%error
      space_critical = data%tru_control%space_critical
-     deallocate_error_fatal = data%tru_control%space_critical
+     deallocate_error_fatal = data%tru_control%deallocate_error_fatal
 
 !  allocate space if required
 
@@ -4444,6 +4445,34 @@
 !  End of subroutine TRU_import
 
      END SUBROUTINE TRU_import
+
+!-  G A L A H A D -  T R U _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE TRU_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See TRU_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRU_control_type ), INTENT( IN ) :: control
+     TYPE ( TRU_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%tru_control = control
+     
+!  flag a successful call
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  end of subroutine TRU_reset_control
+
+     END SUBROUTINE TRU_reset_control
 
 !-  G A L A H A D -  T R U _ s o l v e _ w i t h _ m a t  S U B R O U T I N E  -
 

@@ -292,6 +292,30 @@ void bgo_import( struct bgo_control_type *control,
  *  ---------------------------------------------------------------------------
  */
 
+/*  *-*-*-*-*-*-*-*-*-   B G O _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
+ *
+ * Reset control parameters after import if required
+ */
+
+void bgo_reset_control( struct bgo_control_type *control,
+                        void **data,
+                        int *status, );
+
+/*  ------------------------  A R G U M E N T S  ------------------------------
+ *
+ *  control is a struct whose members are described in 
+ *   the leading comments to bgo_solve
+ *
+ *  data is used for internal data
+ *
+ *  status is a scalar variable of type int, that gives
+ *   the exit status from the package. Possible values are:
+ *
+ *     1. The import was succesful, and the package is ready for the solve phase
+ *
+ *  ---------------------------------------------------------------------------
+ */
+
 /*  *-*-*-*-*-*-*-*-*-   B G O _ S O L V E _ W I T H _ M A T   -*-*-*-*-*-*-*-*
  *
  * bgo_solve_with_mat, a stochastic multistart method that aims to find
@@ -336,7 +360,7 @@ void bgo_solve_with_mat( void **data,
  *   it is used to pass user data to the eval_* functions (see below).
  *
  *   status is a scalar variable of type int, that gives the entry and exit 
-  *   status for the package
+ *    status for the package
  *
  *    On initial entry, status must be set to 1
  *

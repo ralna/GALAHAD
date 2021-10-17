@@ -51,7 +51,8 @@
                NLPT_userdata_type, SMT_type, SMT_put,                          &
                TRB_import, TRB_solve_with_mat, TRB_solve_without_mat,          &
                TRB_solve_reverse_with_mat, TRB_solve_reverse_without_mat,      &
-               TRB_full_initialize, TRB_full_terminate, TRB_information
+               TRB_full_initialize, TRB_full_terminate, TRB_reset_control,     &
+               TRB_information
 
 !----------------------
 !   I n t e r f a c e s
@@ -5868,7 +5869,7 @@
 
      error = data%trb_control%error
      space_critical = data%trb_control%space_critical
-     deallocate_error_fatal = data%trb_control%space_critical
+     deallocate_error_fatal = data%trb_control%deallocate_error_fatal
 
 !  allocate space if required
 
@@ -6038,6 +6039,34 @@
 !  End of subroutine TRB_import
 
      END SUBROUTINE TRB_import
+
+!-  G A L A H A D -  T R B _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE TRB_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See TRB_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRB_control_type ), INTENT( IN ) :: control
+     TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%trb_control = control
+     
+!  flag a successful call
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  end of subroutine TRB_reset_control
+
+     END SUBROUTINE TRB_reset_control
 
 !-  G A L A H A D -  T R B _ s o l v e _ w i t h _ m a t  S U B R O U T I N E  -
 

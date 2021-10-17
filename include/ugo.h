@@ -247,6 +247,30 @@ void ugo_import( struct ugo_control_type *control,
  *  ---------------------------------------------------------------------------
  */
 
+/*  *-*-*-*-*-*-*-*-*-   U G O _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
+ *
+ * Reset control parameters after import if required
+ */
+
+void ugo_reset_control( struct ugo_control_type *control,
+                        void **data,
+                        int *status, );
+
+/*  ------------------------  A R G U M E N T S  ------------------------------
+ *
+ *  control is a struct whose members are described in 
+ *   the leading comments to ugo_solve
+ *
+ *  data is used for internal data
+ *
+ *  status is a scalar variable of type int, that gives
+ *   the exit status from the package. Possible values are:
+ *
+ *     1. The import was succesful, and the package is ready for the solve phase
+ *
+ *  ---------------------------------------------------------------------------
+ */
+
 /*  *-*-*-*-*-*-*-*-*-*-   U G O _ S O L V E _ D I R E C T   -*-*-*-*-*-*-*-*-*
 /* 
  *  ugo_solve_direct, a method for finding the global minimizer of a univariate
@@ -291,6 +315,8 @@ void ugo_solve_direct( void **data,
  *    On initial entry, status must be set to 1.
  *
  *    Possible exit values are:
+ *
+ *     0. The run was succesful
  *
  *    -1. An allocation error occurred. A message indicating the offending
  *        array is written on unit control.error, and the returned allocation

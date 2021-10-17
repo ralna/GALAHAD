@@ -1,4 +1,4 @@
-.TH "nls/nls.h" 3 "Mon Sep 6 2021" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
+.TH "nls/nls.h" 3 "Mon Sep 27 2021" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -41,6 +41,9 @@ nls/nls.h
 .br
 .ti -1c
 .RI "void \fBnls_import\fP (struct \fBnls_control_type\fP *control, void **data, int *status, int n, int m, const char J_type[], int J_ne, const int J_row[], const int J_col[], const int J_ptr[], const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char P_type[], int P_ne, const int P_row[], const int P_col[], const int P_ptr[], const real_wp_ w[])"
+.br
+.ti -1c
+.RI "void \fBnls_reset_control\fP (struct \fBnls_control_type\fP *control, void **data, int *status,)"
 .br
 .ti -1c
 .RI "void \fBnls_solve_with_mat\fP (void **data, void *userdata, int *status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], int(*eval_c)(int, int, const real_wp_[], real_wp_[], const void *), int j_ne, int(*eval_j)(int, int, int, const real_wp_[], real_wp_[], const void *), int h_ne, int(*eval_h)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], const void *), int p_ne, int(*eval_hprods)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], bool, const void *))"
@@ -122,7 +125,7 @@ When a quartic model is used, the model is itself of least-squares form, and the
 .SS "Reference"
 The generic adaptive cubic regularization method is described in detail in
 .PP
-C\&. Cartis, N\&. I\&. M\&. Gould and Ph\&. L\&. Toint, ``Adaptive cubic regularisation methods for unconstrained optimization\&. Part I: motivation, convergence and numerical results'' Mathematical Programming 127(2) (2011) 245-295,
+C\&. Cartis, N\&. I\&. M\&. Gould and Ph\&. L\&. Toint, ``Adaptive cubic regularisation methods for unconstrained optimization\&. Part I: motivation, convergence and numerical results'', Mathematical Programming 127(2) (2011) 245-295,
 .PP
 and uses ``tricks'' as suggested in
 .PP
@@ -140,6 +143,8 @@ To solve a given problem, functions from the nls package must be called in the f
 \fBnls_read_specfile\fP (optional) - override control values by reading replacement values from a file
 .IP "\(bu" 2
 \fBnls_import\fP - set up problem data structures and fixed values
+.IP "\(bu" 2
+\fBarc_reset_control\fP (optional) - possibly change control parameters if a sequence of problems are being solved
 .IP "\(bu" 2
 solve the problem by calling one of
 .IP "  \(bu" 4
@@ -297,6 +302,24 @@ Read the content of a specification file, and assign values associated with give
 .RE
 .PP
 
+.SS "void nls_reset_control (struct \fBnls_control_type\fP * control, void ** data, int * status)"
+Reset control parameters after import if required\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBnls_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.PP
+.RE
+.PP
+
 .SS "void nls_solve_reverse_with_mat (void ** data, int * status, int * eval_status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], int j_ne, real_wp_ J_val[], const real_wp_ y[], int h_ne, real_wp_ H_val[], real_wp_ v[], int p_ne, real_wp_ P_val[])"
 Find a local minimizer of a given function using a trust-region method\&.
 .PP
@@ -314,7 +337,7 @@ This call is for the case where H = nabla_{xx}f(x) is provided specifically, but
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful
+0\&. The run was succesful
 .PP
 .PD 0
 .IP "\(bu" 2
@@ -405,7 +428,7 @@ This call is for the case where access to H = nabla_{xx}f(x) is provided by Hess
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful
+0\&. The run was succesful
 .PP
 .PD 0
 .IP "\(bu" 2
@@ -500,7 +523,7 @@ This call is for the case where H = nabla_{xx}f(x) is provided specifically, and
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful
+0\&. The run was succesful
 .PP
 .PD 0
 .IP "\(bu" 2
@@ -604,7 +627,7 @@ This call is for the case where access to H = nabla_{xx}f(x) is provided by Hess
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful
+0\&. The run was succesful
 .PP
 .PD 0
 .IP "\(bu" 2

@@ -50,7 +50,8 @@
                NLPT_userdata_type, SMT_type, SMT_put,                          &
                ARC_import, ARC_solve_with_mat, ARC_solve_without_mat,          &
                ARC_solve_reverse_with_mat, ARC_solve_reverse_without_mat,      &
-               ARC_full_initialize, ARC_full_terminate, ARC_information
+               ARC_full_initialize, ARC_full_terminate, ARC_reset_control,     &
+               ARC_information
 
 !----------------------
 !   I n t e r f a c e s
@@ -4280,7 +4281,7 @@
 
      error = data%arc_control%error
      space_critical = data%arc_control%space_critical
-     deallocate_error_fatal = data%arc_control%space_critical
+     deallocate_error_fatal = data%arc_control%deallocate_error_fatal
 
 !  allocate space if required
 
@@ -4427,6 +4428,34 @@
 !  End of subroutine ARC_import
 
      END SUBROUTINE ARC_import
+
+!-  G A L A H A D -  A R C _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE ARC_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See ARC_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( ARC_control_type ), INTENT( IN ) :: control
+     TYPE ( ARC_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%arc_control = control
+     
+!  flag a successful call
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  end of subroutine ARC_reset_control
+
+     END SUBROUTINE ARC_reset_control
 
 !-  G A L A H A D -  A R C _ s o l v e _ w i t h _ M A T  S U B R O U T I N E  -
 

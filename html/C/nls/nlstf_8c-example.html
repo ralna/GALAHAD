@@ -76,6 +76,7 @@ $(function() {
 <p>This is the same example, but now fortran-style indexing is used.<br  />
  </p><div class="fragment"><div class="line"><span class="comment">/* nlstf.c */</span></div>
 <div class="line"><span class="comment">/* Full test for the NLS interface using Fortran sparse matrix indexing */</span></div>
+<div class="line"><span class="comment">/* Jari Fowkes &amp; Nick Gould, STFC-Rutherford Appleton Laboratory, 2021 */</span></div>
 <div class="line"> </div>
 <div class="line"><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
 <div class="line"><span class="preprocessor">#include &lt;math.h&gt;</span></div>
@@ -430,7 +431,7 @@ $(function() {
 <div class="line">        <a class="code" href="nls_8h.html#a7babe9112dfad1eb7b57b70135704ab0">nls_terminate</a>( &amp;data, &amp;control, &amp;inform );</div>
 <div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">    printf(<span class="stringliteral">&quot;\n basic tests of models used, direct acces\n\n&quot;</span>);</div>
+<div class="line">    printf(<span class="stringliteral">&quot;\n basic tests of models used, direct access\n\n&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordflow">for</span>( <span class="keywordtype">int</span> model=3; model &lt;= 8; model++){</div>
 <div class="line"> </div>
@@ -624,13 +625,9 @@ $(function() {
 <div class="line"><span class="keywordtype">int</span> res( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">double</span> c[], <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata ){</div>
 <div class="line">    <span class="keyword">struct </span>userdata_type *myuserdata = ( <span class="keyword">struct </span>userdata_type * ) userdata;</div>
 <div class="line">    <span class="keywordtype">double</span> p = myuserdata-&gt;p;</div>
-<div class="line"><span class="comment">//    printf(&quot; in res\n&quot;);</span></div>
-<div class="line"><span class="comment">//    printf( &quot;n, m = %6i %6i\n&quot;, n, m );</span></div>
-<div class="line"><span class="comment">//    printf( &quot;X = %12.4e %12.4e\n&quot;, x[0], x[1]);</span></div>
 <div class="line">    c[0] = pow(x[0],2.0) + p;</div>
 <div class="line">    c[1] = x[0] + pow(x[1],2.0);</div>
 <div class="line">    c[2] = x[0] - x[1];</div>
-<div class="line"><span class="comment">//    printf( &quot;C = %12.4e %12.4e %12.4e\n&quot;, c[0], c[1], c[2]);</span></div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 <div class="line"> </div>
@@ -638,14 +635,11 @@ $(function() {
 <div class="line"><span class="keywordtype">int</span> jac( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> jne, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">double</span> jval[], </div>
 <div class="line">         <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata ){</div>
 <div class="line">    <span class="keyword">struct </span>userdata_type *myuserdata = ( <span class="keyword">struct </span>userdata_type * ) userdata;</div>
-<div class="line"><span class="comment">//    printf( &quot;X = %12.4e %12.4e\n&quot;, x[0], x[1]);</span></div>
 <div class="line">    jval[0] = 2.0 * x[0];</div>
 <div class="line">    jval[1] = 1.0;</div>
 <div class="line">    jval[2] = 2.0 * x[1];</div>
 <div class="line">    jval[3] = 1.0;</div>
 <div class="line">    jval[4] = - 1.0;</div>
-<div class="line"><span class="comment">//  printf( &quot;J = %12.4e %12.4e %12.4e %12.4e %12.4e\n&quot;, </span></div>
-<div class="line"><span class="comment">//          jval[0], jval[1], jval[2], jval[3], jval[4]);</span></div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
 <div class="line"> </div>
@@ -662,21 +656,13 @@ $(function() {
 <div class="line"><span class="keywordtype">int</span> jacprod( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keyword">const</span> <span class="keywordtype">bool</span> transpose, <span class="keywordtype">double</span> u[], </div>
 <div class="line">             <span class="keyword">const</span> <span class="keywordtype">double</span> v[], <span class="keywordtype">bool</span> got_j, <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata ){</div>
 <div class="line">    <span class="keyword">struct </span>userdata_type *myuserdata = ( <span class="keyword">struct </span>userdata_type * ) userdata;</div>
-<div class="line"><span class="comment">//    printf( &quot;X in = %12.4e %12.4e\n&quot;, x[0], x[1]);</span></div>
-<div class="line"><span class="comment">//    printf( &quot; transpose %d\n&quot;, transpose);</span></div>
-<div class="line"><span class="comment">//    printf(transpose ? &quot;transpose is true\n&quot; : &quot;transpose is false\n&quot;);</span></div>
 <div class="line">    <span class="keywordflow">if</span> (transpose) {</div>
-<div class="line"><span class="comment">//      printf(&quot;transpose\n&quot;);</span></div>
 <div class="line">      u[0] = u[0] + 2.0 * x[0] * v[0] + v[1] + v[2];</div>
 <div class="line">      u[1] = u[1] + 2.0 * x[1] * v[1] - v[2];</div>
 <div class="line">    }<span class="keywordflow">else</span>{</div>
-<div class="line"><span class="comment">//      printf(&quot;not transpose\n&quot;);</span></div>
-<div class="line"><span class="comment">//      printf( &quot;U in = %12.4e %12.4e %12.4e\n&quot;, u[0], u[1], u[2]);</span></div>
-<div class="line"><span class="comment">//      printf( &quot;V in = %12.4e %12.4e\n&quot;, v[0], v[1]);</span></div>
 <div class="line">      u[0] = u[0] + 2.0 * x[0] * v[0];</div>
 <div class="line">      u[1] = u[1] + v[0]  + 2.0 * x[1] * v[1];</div>
 <div class="line">      u[2] = u[2] + v[0] - v[1];</div>
-<div class="line"><span class="comment">//      printf( &quot;U in = %12.4e %12.4e %12.4e\n&quot;, u[0], u[1], u[2]);</span></div>
 <div class="line">    }</div>
 <div class="line">    <span class="keywordflow">return</span> 0;</div>
 <div class="line">}</div>
@@ -773,12 +759,12 @@ $(function() {
 <div class="ttc" id="anls_8h_html_a3f0eb83fd31ee4108156f2e84176389d"><div class="ttname"><a href="nls_8h.html#a3f0eb83fd31ee4108156f2e84176389d">nls_import</a></div><div class="ttdeci">void nls_import(struct nls_control_type *control, void **data, int *status, int n, int m, const char J_type[], int J_ne, const int J_row[], const int J_col[], const int J_ptr[], const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char P_type[], int P_ne, const int P_row[], const int P_col[], const int P_ptr[], const real_wp_ w[])</div></div>
 <div class="ttc" id="anls_8h_html_a7babe9112dfad1eb7b57b70135704ab0"><div class="ttname"><a href="nls_8h.html#a7babe9112dfad1eb7b57b70135704ab0">nls_terminate</a></div><div class="ttdeci">void nls_terminate(void **data, struct nls_control_type *control, struct nls_inform_type *inform)</div></div>
 <div class="ttc" id="anls_8h_html_a692ecbfaa428584e60aa4c33d7278a64"><div class="ttname"><a href="nls_8h.html#a692ecbfaa428584e60aa4c33d7278a64">nls_solve_without_mat</a></div><div class="ttdeci">void nls_solve_without_mat(void **data, void *userdata, int *status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], int(*eval_c)(int, int, const real_wp_[], real_wp_[], const void *), int(*eval_jprod)(int, int, const real_wp_[], const bool, real_wp_[], const real_wp_[], bool, const void *), int(*eval_hprod)(int, int, const real_wp_[], const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), int p_ne, int(*eval_hprods)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], bool, const void *))</div></div>
-<div class="ttc" id="astructnls__control__type_html"><div class="ttname"><a href="structnls__control__type.html">nls_control_type</a></div><div class="ttdef"><b>Definition:</b> nls.h:656</div></div>
+<div class="ttc" id="astructnls__control__type_html"><div class="ttname"><a href="structnls__control__type.html">nls_control_type</a></div><div class="ttdef"><b>Definition:</b> nls.h:658</div></div>
 <div class="ttc" id="anls_8h_html_a9ad89605640c53c33ddd5894b5e3edd1"><div class="ttname"><a href="nls_8h.html#a9ad89605640c53c33ddd5894b5e3edd1">nls_solve_reverse_with_mat</a></div><div class="ttdeci">void nls_solve_reverse_with_mat(void **data, int *status, int *eval_status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], int j_ne, real_wp_ J_val[], const real_wp_ y[], int h_ne, real_wp_ H_val[], real_wp_ v[], int p_ne, real_wp_ P_val[])</div></div>
 <div class="ttc" id="anls_8h_html_a765da96b0a1f3d07dab53cc3400c22d8"><div class="ttname"><a href="nls_8h.html#a765da96b0a1f3d07dab53cc3400c22d8">nls_information</a></div><div class="ttdeci">void nls_information(void **data, struct nls_inform_type *inform, int *status)</div></div>
 <div class="ttc" id="anls_8h_html_ae923c2e6afabb3563fe0998d45b715c4"><div class="ttname"><a href="nls_8h.html#ae923c2e6afabb3563fe0998d45b715c4">nls_solve_with_mat</a></div><div class="ttdeci">void nls_solve_with_mat(void **data, void *userdata, int *status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], int(*eval_c)(int, int, const real_wp_[], real_wp_[], const void *), int j_ne, int(*eval_j)(int, int, int, const real_wp_[], real_wp_[], const void *), int h_ne, int(*eval_h)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], const void *), int p_ne, int(*eval_hprods)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], bool, const void *))</div></div>
 <div class="ttc" id="anls_8h_html_a6dddd928c19adec0abf76bdb2d75da17"><div class="ttname"><a href="nls_8h.html#a6dddd928c19adec0abf76bdb2d75da17">nls_solve_reverse_without_mat</a></div><div class="ttdeci">void nls_solve_reverse_without_mat(void **data, int *status, int *eval_status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], bool *transpose, real_wp_ u[], real_wp_ v[], real_wp_ y[], int p_ne, real_wp_ P_val[])</div></div>
-<div class="ttc" id="astructnls__inform__type_html"><div class="ttname"><a href="structnls__inform__type.html">nls_inform_type</a></div><div class="ttdef"><b>Definition:</b> nls.h:1078</div></div>
+<div class="ttc" id="astructnls__inform__type_html"><div class="ttname"><a href="structnls__inform__type.html">nls_inform_type</a></div><div class="ttdef"><b>Definition:</b> nls.h:1080</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

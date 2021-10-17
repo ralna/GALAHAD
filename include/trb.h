@@ -133,6 +133,8 @@
       by reading replacement values from a file
   - \link trb_import \endlink - set up problem data structures and fixed
       values
+  - \link trb_reset_control \endlink (optional) - possibly change control 
+      parameters if a sequence of problems are being solved
   - solve the problem by calling one of 
      - \link trb_solve_with_mat \endlink - solve using function calls to
        evaluate function, gradient and Hessian values
@@ -651,7 +653,6 @@ struct trb_inform_type {
     ///struct sha_inform_type sha_inform;
 };
 
-
 //  *-*-*-*-*-*-*-*-*-*-   T R B _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*
 
 void trb_initialize( void **data, 
@@ -762,6 +763,25 @@ void trb_import( struct trb_control_type *control,
    other schemes are used, and in this case can be NULL
  */
 
+//  *-*-*-*-*-*-*-*-*-   T R B _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
+
+void trb_reset_control( struct trb_control_type *control,
+                        void **data,
+                        int *status, );
+
+/*!< 
+ Reset control parameters after import if required.
+
+ @param[in] control is a struct whose members provide control
+  paramters for the remaining prcedures (see trb_control_type)
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are:
+  \li  1. The import was succesful, and the package is ready for the solve phase
+ */
+
 //  *-*-*-*-*-*-*-*-*-   T R B _ S O L V E _ W I T H _ M A T   -*-*-*-*-*-*-*-*
 
 void trb_solve_with_mat( void **data,
@@ -799,7 +819,7 @@ void trb_solve_with_mat( void **data,
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
-  \li  0. The import was succesful
+  \li  0. The run was succesful
 
   \li -1. An allocation error occurred. A message indicating the offending
        array is written on unit control.error, and the returned allocation
@@ -933,7 +953,7 @@ void trb_solve_without_mat( void **data,
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
-  \li  0. The import was succesful
+  \li  0. The run was succesful
 
   \li -1. An allocation error occurred. A message indicating the offending
        array is written on unit control.error, and the returned allocation
@@ -1072,7 +1092,7 @@ void trb_solve_reverse_with_mat( void **data,
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
-  \li  0. The import was succesful
+  \li  0. The run was succesful
 
   \li -1. An allocation error occurred. A message indicating the offending
        array is written on unit control.error, and the returned allocation
@@ -1202,7 +1222,7 @@ void trb_solve_reverse_without_mat( void **data,
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
-  \li  0. The import was succesful
+  \li  0. The run was succesful
 
   \li -1. An allocation error occurred. A message indicating the offending
        array is written on unit control.error, and the returned allocation

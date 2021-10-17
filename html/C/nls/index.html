@@ -118,7 +118,7 @@ Method</h2>
 <h2><a class="anchor" id="nls_references"></a>
 Reference</h2>
 <p>The generic adaptive cubic regularization method is described in detail in</p>
-<p>C. Cartis, N. I. M. Gould and Ph. L. Toint, `&lsquo;Adaptive cubic regularisation methods for unconstrained optimization. Part I: motivation, convergence and numerical results&rsquo;' Mathematical Programming 127(2) (2011) 245-295,</p>
+<p>C. Cartis, N. I. M. Gould and Ph. L. Toint, `&lsquo;Adaptive cubic regularisation methods for unconstrained optimization. Part I: motivation, convergence and numerical results&rsquo;', Mathematical Programming 127(2) (2011) 245-295,</p>
 <p>and uses `&lsquo;tricks&rsquo;' as suggested in</p>
 <p>N. I. M. Gould, M. Porcelli and Ph. L. Toint, `&lsquo;Updating the regularization parameter in the adaptive cubic regularization algorithm&rsquo;'. Computational Optimization and Applications 53(1) (2012) 1-22.</p>
 <p>The specific methods employed here are discussed in</p>
@@ -130,6 +130,7 @@ Call order</h2>
 <li><a class="el" href="nls_8h.html#aa344bb15b74ab3b3ee6afb2de072b19f">nls_initialize</a> - provide default control parameters and set up initial data structures</li>
 <li><a class="el" href="nls_8h.html#adf9db7eff2fce137ae2abd2e013c47b3">nls_read_specfile</a> (optional) - override control values by reading replacement values from a file</li>
 <li><a class="el" href="nls_8h.html#a3f0eb83fd31ee4108156f2e84176389d">nls_import</a> - set up problem data structures and fixed values</li>
+<li><a class="el" href="">arc_reset_control</a> (optional) - possibly change control parameters if a sequence of problems are being solved</li>
 <li>solve the problem by calling one of<ul>
 <li><a class="el" href="nls_8h.html#ae923c2e6afabb3563fe0998d45b715c4">nls_solve_with_mat</a> - solve using function calls to evaluate function, gradient and Hessian values</li>
 <li><a class="el" href="nls_8h.html#a692ecbfaa428584e60aa4c33d7278a64">nls_solve_without_mat</a> - solve using function calls to evaluate function and gradient values and Hessian-vector products</li>

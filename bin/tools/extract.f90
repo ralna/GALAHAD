@@ -616,6 +616,7 @@
    & '        f_', A, '_initialize => ', A, '_initialize, &', /, &
    & '        f_', A, '_read_specfile => ', A, '_read_specfile, &', /, &
    & '        f_', A, '_import => ', A, '_import, &', /, &
+   & '        f_', A, '_reset_control => ', A, '_reset_control, &', /, &
    & '        f_', A, '_information => ', A, '_information, &', /, &
    & '        f_', A, '_terminate => ', A, '_terminate' )" )                   &
     TRIM( package_lower ), TRIM( package_upper ),                              &
@@ -752,7 +753,8 @@
  &  '', /, &
  &  ' @param[in,out] status is a scalar variable of type int, that gives', /, &
  &  '    the exit status from the package. Possible values are:', /, &
- &  '  \li  0. The import was succesful', /, &
+ &  '  \li  1. The import was succesful, and the package is ready for', &    
+ &  ' the solve phase', /, &
  &  '  \li -1. An allocation error occurred. A message indicating the ', /, &
  &  '       offending array is written on unit control.error, and the ', /, &
  &  '       returned allocation status and a string containing the name ', /, &
@@ -767,6 +769,33 @@
  &  '       its relevant string ''dense'', ''coordinate'', ', &     
  &  '''sparse_by_rows'',', /, &
  &  '       ''diagonal'' or ''absent'' has been violated.', /, &
+ &  '*/'  &
+ & )" ) TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower )
+
+  WRITE( h_unit, "(                                                            &
+ & '', /, &
+ & '// *-*-*-*-*-*-*-   ', 10( 1X, A1 ) )", ADVANCE = 'NO' )                   &
+   ( package_upper( i : i ), i = 1, len_name )   
+
+  WRITE( h_unit, "(                                                            &
+ & ' _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*', /, &
+ & '', /, &
+ & 'void ', A, '_reset_control( struct ', A, '_control_type *control,', /, &
+ & '                 void **data,', /, &
+ & '                 int *status );', /, &
+ & '', /, &
+ &  '/*!<', /, &
+ &  ' Reset control parameters after import if required. ', /, &
+ &  '', /, &
+ &  ' @param[in] control is a struct whose members provide control', /, &
+ &  '  paramters for the remaining prcedures (see ', A, '_control_type)', /, &
+ &  '', /, &
+ &  ' @param[in,out] data holds private internal data', /, &
+ &  '', /, &
+ &  ' @param[in,out] status is a scalar variable of type int, that gives', /, &
+ &  '    the exit status from the package. Possible values are:', /, &
+ &  '  \li  1. The import was succesful, and the package is ready for', &    
+ &  ' the solve phase', /, &
  &  '*/'  &
  & )" ) TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower )
 
@@ -1356,6 +1385,51 @@
      TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower ),      &
      TRIM( package_upper ), TRIM( package_lower ), TRIM( package_lower ),      &
      TRIM( package_lower )
+
+  WRITE( ciface_unit, "(                                                       &
+ & '', /, &
+ & '!  ---------------------------------------', /, &
+ & '!  C interface to fortran ', A, '_reset_control', /, &
+ & '!  ----------------------------------------', /, &
+ & '', /, &
+ & '  SUBROUTINE ', A, '_reset_control( ccontrol, cdata, status ) BIND( C )', /, &
+ & '  USE GALAHAD_', A, '_double_ciface', /, &
+ & '  IMPLICIT NONE', /, &
+ & '', /, &
+ & '!  dummy arguments', /, &
+ & '', /, &
+ & '  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status', /, &
+ & '  TYPE ( ', A, '_control_type ), INTENT( INOUT ) :: ccontrol', /, &
+ & '  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata', /, &
+ & '', /, &
+ & '!  local variables', /, &
+ & '', /, &
+ & '  TYPE ( f_', A, '_control_type ) :: fcontrol', /, &
+ & '  TYPE ( f_', A, '_full_data_type ), POINTER :: fdata', /, &
+ & '  LOGICAL :: f_indexing', /, &
+ & '', /, &
+ & '!  copy control in', /, &
+ & '', /, &
+ & '  CALL copy_control_in( ccontrol, fcontrol, f_indexing )', /, &
+ & '', /, &
+ & '!  associate data pointer', /, &
+ & '', /, &
+ & '  CALL C_F_POINTER( cdata, fdata )', /, &
+ & '', /, &
+ & '!  is fortran-style 1-based indexing used?', /, &
+ & '', /, &
+ & '  fdata%f_indexing = f_indexing', /, &
+ & '', /, &
+ & '!  import the control parameters into the required structure', /, &
+ & '', /, &
+ & '  CALL f_', A, '_reset_control( fcontrol, fdata, status )', /, &
+ & '  RETURN', /, &
+ & '', /, &
+ & '  END SUBROUTINE ', A, '_reset_control' &
+ & )" )                                                                        &
+     TRIM( package_lower ), TRIM( package_lower ), TRIM( package_upper ),      &
+     TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower ),      &
+     TRIM( package_upper ), TRIM( package_lower )
 
   WRITE( ciface_unit, "(                                                       &
  & '', /, &

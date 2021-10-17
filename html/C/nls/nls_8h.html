@@ -106,6 +106,8 @@ Functions</h2></td></tr>
 <tr class="separator:adf9db7eff2fce137ae2abd2e013c47b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f0eb83fd31ee4108156f2e84176389d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nls_8h.html#a3f0eb83fd31ee4108156f2e84176389d">nls_import</a> (struct <a class="el" href="structnls__control__type.html">nls_control_type</a> *control, void **data, int *status, int n, int m, const char J_type[], int J_ne, const int J_row[], const int J_col[], const int J_ptr[], const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char P_type[], int P_ne, const int P_row[], const int P_col[], const int P_ptr[], const real_wp_ w[])</td></tr>
 <tr class="separator:a3f0eb83fd31ee4108156f2e84176389d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a855775351d3ef7c77fac1dcec9e7915d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nls_8h.html#a855775351d3ef7c77fac1dcec9e7915d">nls_reset_control</a> (struct <a class="el" href="structnls__control__type.html">nls_control_type</a> *control, void **data, int *status,)</td></tr>
+<tr class="separator:a855775351d3ef7c77fac1dcec9e7915d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae923c2e6afabb3563fe0998d45b715c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nls_8h.html#ae923c2e6afabb3563fe0998d45b715c4">nls_solve_with_mat</a> (void **data, void *userdata, int *status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], int(*eval_c)(int, int, const real_wp_[], real_wp_[], const void *), int j_ne, int(*eval_j)(int, int, int, const real_wp_[], real_wp_[], const void *), int h_ne, int(*eval_h)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], const void *), int p_ne, int(*eval_hprods)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], bool, const void *))</td></tr>
 <tr class="separator:ae923c2e6afabb3563fe0998d45b715c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a692ecbfaa428584e60aa4c33d7278a64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nls_8h.html#a692ecbfaa428584e60aa4c33d7278a64">nls_solve_without_mat</a> (void **data, void *userdata, int *status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], int(*eval_c)(int, int, const real_wp_[], real_wp_[], const void *), int(*eval_jprod)(int, int, const real_wp_[], const bool, real_wp_[], const real_wp_[], bool, const void *), int(*eval_hprod)(int, int, const real_wp_[], const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), int p_ne, int(*eval_hprods)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], bool, const void *))</td></tr>
@@ -426,6 +428,52 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a855775351d3ef7c77fac1dcec9e7915d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a855775351d3ef7c77fac1dcec9e7915d">&#9670;&nbsp;</a></span>nls_reset_control()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nls_reset_control </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structnls__control__type.html">nls_control_type</a> *&#160;</td>
+          <td class="paramname"><em>control</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void **&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Reset control parameters after import if required.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">control</td><td>is a struct whose members provide control paramters for the remaining prcedures (see <a class="el" href="structnls__control__type.html">nls_control_type</a>)</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the exit status from the package. Possible values are: <ul>
+<li>1. The import was succesful, and the package is ready for the solve phase </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a9ad89605640c53c33ddd5894b5e3edd1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9ad89605640c53c33ddd5894b5e3edd1">&#9670;&nbsp;</a></span>nls_solve_reverse_with_mat()</h2>
 
@@ -543,7 +591,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
  On initial entry, status must be set to 1. <br  />
  Possible exit are: <ul>
-<li>0. The import was succesful</li>
+<li>0. The run was succesful</li>
 </ul>
 <ul>
 <li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
@@ -697,7 +745,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
  On initial entry, status must be set to 1. <br  />
  Possible exit are: <ul>
-<li>0. The import was succesful</li>
+<li>0. The run was succesful</li>
 </ul>
 <ul>
 <li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
@@ -862,7 +910,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
  On initial entry, status must be set to 1. <br  />
  Possible exit are: <ul>
-<li>0. The import was succesful</li>
+<li>0. The run was succesful</li>
 </ul>
 <ul>
 <li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
@@ -1006,7 +1054,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
  On initial entry, status must be set to 1. <br  />
  Possible exit are: <ul>
-<li>0. The import was succesful</li>
+<li>0. The run was succesful</li>
 </ul>
 <ul>
 <li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>

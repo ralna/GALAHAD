@@ -337,6 +337,30 @@ void dgo_import( struct dgo_control_type *control,
  *  ---------------------------------------------------------------------------
  */
 
+/*  *-*-*-*-*-*-*-*-*-   D G O _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
+ *
+ * Reset control parameters after import if required
+ */
+
+void dgo_reset_control( struct dgo_control_type *control,
+                        void **data,
+                        int *status, );
+
+/*  ------------------------  A R G U M E N T S  ------------------------------
+ *
+ *  control is a struct whose members are described in 
+ *   the leading comments to dgo_solve
+ *
+ *  data is used for internal data
+ *
+ *  status is a scalar variable of type int, that gives
+ *   the exit status from the package. Possible values are:
+ *
+ *     1. The import was succesful, and the package is ready for the solve phase
+ *
+ *  ---------------------------------------------------------------------------
+ */
+
 /*  *-*-*-*-*-*-*-*-*-   D G O _ S O L V E _ W I T H _ M A T  -*-*-*-*-*-*-*-*-*
  *
  * dgo_solve_with_mat, a stochastic multistart method that aims to find

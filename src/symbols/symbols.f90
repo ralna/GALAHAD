@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 08/05/2013 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 28/09/2021 AT 11:40 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -134,6 +134,7 @@
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_inner_its     = - 89
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unknown_storage   = - 90
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_storage       = - 91
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_hessian_type      = - 92
 
 !     General integers
 

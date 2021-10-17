@@ -1698,7 +1698,7 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'gltr: OFFE'
+      array_name = 'gltr: OFFD'
       CALL SPACE_dealloc_array( data%OFFD,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )

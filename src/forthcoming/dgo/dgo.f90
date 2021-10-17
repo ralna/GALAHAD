@@ -42,7 +42,8 @@
                NLPT_userdata_type, SMT_type, SMT_put,                          &
                DGO_import, DGO_solve_with_mat, DGO_solve_without_mat,          &
                DGO_solve_reverse_with_mat, DGO_solve_reverse_without_mat,      &
-               DGO_full_initialize, DGO_full_terminate, DGO_information
+               DGO_full_initialize, DGO_full_terminate, DGO_reset_control,     &
+               DGO_information
 
 !----------------------
 !   I n t e r f a c e s
@@ -2999,7 +3000,7 @@
 
      error = data%dgo_control%error
      space_critical = data%dgo_control%space_critical
-     deallocate_error_fatal = data%dgo_control%space_critical
+     deallocate_error_fatal = data%dgo_control%deallocate_error_fatal
 
 !  allocate space if required
 
@@ -3168,6 +3169,34 @@
 !  End of subroutine DGO_import
 
      END SUBROUTINE DGO_import
+
+!-  G A L A H A D -  D G O _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE DGO_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See DGO_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( DGO_control_type ), INTENT( IN ) :: control
+     TYPE ( DGO_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%dgo_control = control
+     
+!  flag a successful call
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  end of subroutine DGO_reset_control
+
+     END SUBROUTINE DGO_reset_control
 
 !-  G A L A H A D -  D G O _ s o l v e _ w i t h _ m a t   S U B R O U T I N E 
 
