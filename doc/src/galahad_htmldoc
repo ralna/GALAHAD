@@ -1,0 +1,96 @@
+#!/bin/bash -vx
+
+# galahad_htmldoc: generate html documentation from LaTeX using pandoc
+
+# Use: galahad_htmldoc package
+
+# where package is the name of the galahad package
+
+#  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+#  Principal author: Nick Gould
+
+#  History -
+#   originally released GALAHAD Version 3.3. October 28th, 2021
+
+if [[ -z $GALAHAD ]]; then
+  echo ' You have not set the GALAHAD environment variable. '
+  echo ' This needs to point to the main directory in which '
+  echo ' you have installed the GALAHAD package. '
+  exit 1
+fi
+
+# record the package name
+
+package=$1
+
+# check that there is LaTeX documentation for the package, and if so
+# set variables to point to examples, data and output
+
+if [[ -e $GALAHAD/doc/src/$package.tex ]]; then
+ packageexample=$GALAHAD/src/$package/"$package"s.f90
+ packageresults=$GALAHAD/src/$package/"$package"ds.output
+ packagedata=$GALAHAD/src/$package/"$package"s.data
+ packageexample2=$GALAHAD/src/$package/"$package"s2.f90
+ packageresults2=$GALAHAD/src/$package/"$package"ds2.output
+ packagedata2=$GALAHAD/src/$package/"$package"s2.data
+ packageexample3=$GALAHAD/src/$package/"$package"s3.f90
+ packageresults3=$GALAHAD/src/$package/"$package"ds3.output
+ packagedata3=$GALAHAD/src/$package/"$package"s3.data
+else
+  echo " There is no LaTeX documentation for $package."
+  exit 2
+fi
+
+echo $packageexample
+
+# move to the LaTeX directory in a subshell
+
+( cd  $GALAHAD/doc/src/
+
+# use sed to preprocess the LaTeX document so that pndoc can process it
+
+sed '/documentclass{galahad}/a \\\\input{galahad_pandoc.cls}' $package.tex \
+| sed '/\VerbatimInput{\\packageexample}/i \\\begin{verbatim}' \
+| sed '/\VerbatimInput{\\packageexample}/a \\\end{verbatim}' \
+| sed '/\VerbatimInput{\\packageexample}/r '$packageexample \
+| sed '/\VerbatimInput{\\packageexample}/d' \
+| sed '/\VerbatimInput{\\packageresults}/i \\\begin{verbatim}' \
+| sed '/\VerbatimInput{\\packageresults}/a \\\end{verbatim}' \
+| sed '/\VerbatimInput{\\packageresults}/r '$packageresults \
+| sed '/\VerbatimInput{\\packageresults}/d' \
+| sed '/\VerbatimInput{\\packagedata}/i \\\begin{verbatim}' \
+| sed '/\VerbatimInput{\\packagedata}/a \\\end{verbatim}' \
+| sed '/\VerbatimInput{\\packagedata}/r '$packagedata \
+| sed '/\VerbatimInput{\\packagedata}/d' \
+| sed '/\VerbatimInput{\\packageexample2}/i \\\begin{verbatim}' \
+| sed '/\VerbatimInput{\\packageexample2}/a \\\end{verbatim}' \
+| sed '/\VerbatimInput{\\packageexample2}/r '$packageexample2 \
+| sed '/\VerbatimInput{\\packageexample2}/d' \
+| sed '/\VerbatimInput{\\packageresults2}/i \\\begin{verbatim}' \
+| sed '/\VerbatimInput{\\packageresults2}/a \\\end{verbatim}' \
+| sed '/\VerbatimInput{\\packageresults2}/r '$packageresults2 \
+| sed '/\VerbatimInput{\\packageresults2}/d' \
+| sed '/\VerbatimInput{\\packagedata2}/i \\\begin{verbatim}' \
+| sed '/\VerbatimInput{\\packagedata2}/a \\\end{verbatim}' \
+| sed '/\VerbatimInput{\\packagedata2}/r '$packagedata2 \
+| sed '/\VerbatimInput{\\packagedata2}/d' \
+| sed '/\VerbatimInput{\\packageexample3}/i \\\begin{verbatim}' \
+| sed '/\VerbatimInput{\\packageexample3}/a \\\end{verbatim}' \
+| sed '/\VerbatimInput{\\packageexample3}/r '$packageexample3 \
+| sed '/\VerbatimInput{\\packageexample3}/d' \
+| sed '/\VerbatimInput{\\packageresults3}/i \\\begin{verbatim}' \
+| sed '/\VerbatimInput{\\packageresults3}/a \\\end{verbatim}' \
+| sed '/\VerbatimInput{\\packageresults3}/r '$packageresults3 \
+| sed '/\VerbatimInput{\\packageresults3}/d' \
+| sed '/\VerbatimInput{\\packagedata3}/i \\\begin{verbatim}' \
+| sed '/\VerbatimInput{\\packagedata3}/a \\\end{verbatim}' \
+| sed '/\VerbatimInput{\\packagedata3}/r '$packagedata3 \
+| sed '/\VerbatimInput{\\packagedata3}/d' \
+ > /tmp/$package.tex
+
+# generate the html documentation using pandoc
+
+pandoc -f latex --mathjax -t html /tmp/$package.tex -s -o /tmp/$package.html \
+ --metadata pagetitle="$package"
+
+)

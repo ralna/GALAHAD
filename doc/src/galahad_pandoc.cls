@@ -1,40 +1,7 @@
-%
-%% This is file `galahad.cls',
-%% generated with the docstrip utility.
-%%
-%% The original source files were:
-%%
-%% classes.dtx  (with options: `galahad')
-%%
-%% This is a generated file.
-%%
-%% Copyright 1993 1994 1995 1996 1997 1998 1999
-%% The LaTeX3 Project and any individual authors listed elsewhere
-%% in this file.
-%%
-%% This file is part of the LaTeX2e system.
-%% ----------------------------------------
-%%
-%% It may be distributed under the terms of the LaTeX Project Public
-%% License, as described in lppl.txt in the base LaTeX distribution.
-%% Either version 1.0 or, at your option, any later version.
-%% \CharacterTable
-%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
-%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
-%%   Digits        \0\1\2\3\4\5\6\7\8\9
-%%   Exclamation   \!     Double quote  \"     Hash (number) \#
-%%   Dollar        \$     Percent       \%     Ampersand     \&
-%%   Acute accent  \'     Left paren    \(     Right paren   \)
-%%   Asterisk      \*     Plus          \+     Comma         \,
-%%   Minus         \-     Point         \.     Solidus       \/
-%%   Colon         \:     Semicolon     \;     Less than     \<
-%%   Equals        \=     Greater than  \>     Question mark \?
-%%   Commercial at \@     Left bracket  \[     Backslash     \\
-%%   Right bracket \]     Circumflex    \^     Underscore    \_
-%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
-%%   Right brace   \}     Tilde         \~}
+%% This is file `galahad_pandoc.cls',
+
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{galahad}
+\ProvidesClass{galahad_pandoc}
               [1999/01/07 v1.4a
  Standard LaTeX document class]
 
@@ -217,7 +184,7 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 
 % subsection names
 
-\newcommand{\galterminology}{\subsection{\ref{galterminology}. 
+\newcommand{\galterminology}{\subsection{\ref{galterminology}.
              Basic terminology}
              \label{galterminology}}
 \newcommand{\galmatrix}{\subsection{\ref{galmatrix}. Matrix storage formats}
@@ -226,9 +193,13 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
              \label{galsymbols}}
 \newcommand{\galtype}{\subsection{\ref{galtype}. The derived data type}
              \label{galtype}}
+\newcommand{\galopenmp}{\subsection{\ref{galopenmp}. OpenMP}
+             \label{galopenmp}}
+\newcommand{\galintkinds}{\subsection{\ref{galintkinds}. Integer kinds}
+             \label{galintkinds}}
 \newcommand{\galtypes}{\subsection{\ref{galtypes}. The derived data types}
              \label{galtypes}}
-\newcommand{\galarguments}{\subsection{\ref{galarguments}. 
+\newcommand{\galarguments}{\subsection{\ref{galarguments}.
              Argument lists and calling sequences}
              \label{galarguments}}
 \newcommand{\galreverse}{\subsection{Reverse communication}
@@ -245,6 +216,8 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
              \label{galbasics}}
 \newcommand{\galexternal}{\subsection{External packages}
              \label{galexternal}}
+
+% subsubsection names
 
 % attributes
 
@@ -280,11 +253,9 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\logical}{{\tt LOGICAL}}
 \newcommand{\character}{{\tt CHARACTER}}
 \newcommand{\real}{{\tt REAL}}
-\newcommand{\realdp}{{\tt REAL} (double precision
- in {\tt \fullpackagename\-\_\-double})}
+\newcommand{\realdp}{{\tt REAL} (double precision in $ ${\tt \fullpackagename\-\_\-double})}
 \newcommand{\complex}{{\tt COMPLEX}}
-\newcommand{\complexdp}{{\tt COMPLEX} (double precision complex
- in {\tt \fullpackagename\_\-double})}
+\newcommand{\complexdp}{{\tt COMPLEX} (double precision complex in $ $ {\tt \fullpackagename\_\-double})}
 \newcommand{\optional}{{\tt OPTIONAL}}
 \newcommand{\associated}{{\tt ASSOCIATED}}
 \newcommand{\allocated}{{\tt ALLOCATED}}
@@ -462,4 +433,3 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 
 %%
 %% End of file `galahad.cls'.
-

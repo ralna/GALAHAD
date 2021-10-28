@@ -810,6 +810,8 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\galsymbols}{\subsection{The GALAHAD symbols\label{galsymbols}}}
 \newcommand{\galtype}{\subsection{The derived data type\label{galtype}}}
 \newcommand{\galtypes}{\subsection{The derived data types\label{galtypes}}}
+\newcommand{\galopenmp}{\subsection{OpenMP}}\label{galopenmp}
+\newcommand{\galintkinds}{\subsection{Integer kinds}}\label{galintkinds}
 \newcommand{\galarguments}{\subsection{Argument lists and calling sequences\label{galarguments}}}
 \newcommand{\galreverse}{\subsection{Reverse communication\label{galreverse}}}
 \newcommand{\galerrors}{\subsection{Warning and error messages\label{galerrors}}}
