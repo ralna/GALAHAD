@@ -102,6 +102,8 @@ Functions</h2></td></tr>
 <tr class="separator:a870a28132f2747e12d7c93c9ce6ffd01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8175a402569a69faa351e2dcd3c48b94"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tru_8h.html#a8175a402569a69faa351e2dcd3c48b94">tru_import</a> (struct <a class="el" href="structtru__control__type.html">tru_control_type</a> *control, void **data, int *status, int n, const char H_type[], int ne, const int H_row[], const int H_col[], const int H_ptr[])</td></tr>
 <tr class="separator:a8175a402569a69faa351e2dcd3c48b94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b6fdf7f4f42d0615e2ebaa1295181d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tru_8h.html#a3b6fdf7f4f42d0615e2ebaa1295181d8">tru_reset_control</a> (struct <a class="el" href="structtru__control__type.html">tru_control_type</a> *control, void **data, int *status,)</td></tr>
+<tr class="separator:a3b6fdf7f4f42d0615e2ebaa1295181d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a638a31d7027eaf1ae39aa7278e7c5c5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tru_8h.html#a638a31d7027eaf1ae39aa7278e7c5c5a">tru_solve_with_mat</a> (void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int ne, int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_h)(int, int, const real_wp_[], real_wp_[], const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</td></tr>
 <tr class="separator:a638a31d7027eaf1ae39aa7278e7c5c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa508227d17d8da723bb0401023acd96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tru_8h.html#aaa508227d17d8da723bb0401023acd96">tru_solve_without_mat</a> (void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_hprod)(int, const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</td></tr>
@@ -338,6 +340,52 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a3b6fdf7f4f42d0615e2ebaa1295181d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b6fdf7f4f42d0615e2ebaa1295181d8">&#9670;&nbsp;</a></span>tru_reset_control()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tru_reset_control </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structtru__control__type.html">tru_control_type</a> *&#160;</td>
+          <td class="paramname"><em>control</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void **&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Reset control parameters after import if required.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">control</td><td>is a struct whose members provide control paramters for the remaining prcedures (see <a class="el" href="structtru__control__type.html">tru_control_type</a>)</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the exit status from the package. Possible values are: <ul>
+<li>1. The import was succesful, and the package is ready for the solve phase </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a804863856294e362b724fca8953300d5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a804863856294e362b724fca8953300d5">&#9670;&nbsp;</a></span>tru_solve_reverse_with_mat()</h2>
 
@@ -425,7 +473,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
  On initial entry, status must be set to 1. <br  />
  Possible exit are: <ul>
-<li>0. The import was succesful</li>
+<li>0. The run was succesful</li>
 </ul>
 <ul>
 <li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
@@ -540,7 +588,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
  On initial entry, status must be set to 1. <br  />
  Possible exit are: <ul>
-<li>0. The import was succesful</li>
+<li>0. The run was succesful</li>
 </ul>
 <ul>
 <li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
@@ -666,7 +714,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
  On initial entry, status must be set to 1. <br  />
  Possible exit are: <ul>
-<li>0. The import was succesful</li>
+<li>0. The run was succesful</li>
 </ul>
 <ul>
 <li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
@@ -786,7 +834,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
  On initial entry, status must be set to 1. <br  />
  Possible exit are: <ul>
-<li>0. The import was succesful</li>
+<li>0. The run was succesful</li>
 </ul>
 <ul>
 <li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
@@ -808,7 +856,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir"></td><td class="paramname">eval_f</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_f( <span class="keywordtype">int</span> n, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">double</span> *f, <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata ) </div>
 </div><!-- fragment --> The value of the objective function \(f(x)\) evaluated at x= \(x\) must be assigned to f, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_f</code> via the structure <code>userdata</code>.</td></tr>
     <tr><td class="paramdir"></td><td class="paramname">eval_g</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_g( <span class="keywordtype">int</span> n, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">double</span> g[], <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata )</div>
-</div><!-- fragment --> The components of the gradient \(g = \nabla_x f(x\)) of the objective function evaluated at x= \(x\) must be assigned to g, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_g</code> via the structure <code>userdata</code>.</td></tr>
+</div><!-- fragment --> The components of the gradient \(g = \nabla_x f(x)\) of the objective function evaluated at x= \(x\) must be assigned to g, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_g</code> via the structure <code>userdata</code>.</td></tr>
     <tr><td class="paramdir"></td><td class="paramname">eval_hprod</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_hprod( <span class="keywordtype">int</span> n, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">double</span> u[], <span class="keyword">const</span> <span class="keywordtype">double</span> v[], </div>
 <div class="line">                <span class="keywordtype">bool</span> got_h, <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata )</div>
 </div><!-- fragment --> The sum \(u + \nabla_{xx}f(x) v\) of the product of the Hessian \(\nabla_{xx}f(x)\) of the objective function evaluated at x= \(x\) with the vector v= \(v\) and the vector $ \(u\) must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessian has already been evaluated or used at x if got_h is true. Data may be passed into <code>eval_hprod</code> via the structure <code>userdata</code>.</td></tr>
