@@ -69,7 +69,19 @@
                 CQP_workspace, CQP_full_initialize, CQP_full_terminate,        &
                 CQP_import, CQP_solve_qp, CQP_solve_sld, CQP_reset_control,    &
                 CQP_information
-                 
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE CQP_initialize
+       MODULE PROCEDURE CQP_initialize, CQP_full_initialize
+     END INTERFACE CQP_initialize
+
+     INTERFACE CQP_terminate
+       MODULE PROCEDURE CQP_terminate, CQP_full_terminate
+     END INTERFACE CQP_terminate
+
 !--------------------
 !   P r e c i s i o n
 !--------------------
@@ -183,7 +195,7 @@
 !     2 the Zhao-Sun quadratic residual trajectory
 !     3 the Zhang arc ultimately switching to the Zhao-Sun residual trajectory
 !     4 the mixed linear-quadratic residual trajectory
-!     5 the Zhang arc ultimately switching to the mixed linear-quadratic 
+!     5 the Zhang arc ultimately switching to the mixed linear-quadratic
 !       residual trajectory
 
         INTEGER :: arc = 1
@@ -10627,10 +10639,10 @@ END DO
                             H_type, H_ne, H_row, H_col, H_ptr,                 &
                             A_type, A_ne, A_row, A_col, A_ptr )
 
-!  import fixed problem data into internal storage prior to solution. 
+!  import fixed problem data into internal storage prior to solution.
 !  Arguments are as follows:
 
-!  control is a derived type whose components are described in the leading 
+!  control is a derived type whose components are described in the leading
 !   comments to CQP_solve
 !
 !  data is a scalar variable of type CQP_full_data_type used for internal data
@@ -10661,8 +10673,8 @@ END DO
 !
 !  H_type is a character string that specifies the Hessian storage scheme
 !   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
-!   'diagonal' 'scaled_identity', 'identity', 'zero', 'none' or 
-!   'shifted_least_distance', the latter if the Hessian is that of 
+!   'diagonal' 'scaled_identity', 'identity', 'zero', 'none' or
+!   'shifted_least_distance', the latter if the Hessian is that of
 !   1/2 sum_j w_j (x_j-x^0_j)^2 rather than of 1/2 x' H x
 !   Lower or upper case variants are allowed.
 !
@@ -10678,7 +10690,7 @@ END DO
 !  H_col is a rank-one array of type default integer,
 !   that holds the column indices of the  lower triangular part of H in either
 !   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
-!   be set when the dense, diagonal, scaled identity, identity or zero schemes 
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
 !   are used, and in this case can be of length 0
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
@@ -10692,22 +10704,22 @@ END DO
 !   or 'absent', the latter if m = 0; lower or upper case variants are allowed
 !
 !  A_ne is a scalar variable of type default integer, that holds the number of
-!   entries in J in the sparse co-ordinate storage scheme. It need not be set 
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
 !  for any of the other schemes.
 !
-!  A_row is a rank-one array of type default integer, that holds the row 
-!   indices J in the sparse co-ordinate storage scheme. It need not be set 
+!  A_row is a rank-one array of type default integer, that holds the row
+!   indices J in the sparse co-ordinate storage scheme. It need not be set
 !   for any of the other schemes, and in this case can be of length 0
 !
-!  A_col is a rank-one array of type default integer, that holds the column 
-!   indices of J in either the sparse co-ordinate, or the sparse row-wise 
-!   storage scheme. It need not be set when the dense scheme is used, and 
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
 !   in this case can be of length 0
 !
-!  A_ptr is a rank-one array of dimension n+1 and type default integer, 
-!   that holds the starting position of each row of J, as well as the total 
-!   number of entries plus one, in the sparse row-wise storage scheme. 
-!   It need not be set when the other schemes are used, and in this case 
+!  A_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of J, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
 !   can be of length 0
 !
 !-----------------------------------------------
@@ -10958,7 +10970,7 @@ END DO
      CASE DEFAULT
        data%cqp_inform%status = GALAHAD_error_unknown_storage
        GO TO 900
-     END SELECT       
+     END SELECT
 
 !  set A appropriately in the qpt storage type
 
@@ -11052,7 +11064,7 @@ END DO
      CASE DEFAULT
        data%cqp_inform%status = GALAHAD_error_unknown_storage
        GO TO 900
-     END SELECT       
+     END SELECT
 
      status = GALAHAD_ready_to_solve
      RETURN
@@ -11085,7 +11097,7 @@ END DO
 !  set control in internal data
 
      data%cqp_control = control
-     
+
 !  flag a successful call
 
      status = GALAHAD_ready_to_solve
@@ -11100,8 +11112,8 @@ END DO
      SUBROUTINE CQP_solve_qp( data, status, H_val, G, f, A_val, C_l, C_u,      &
                               X_l, X_u, X, C, Y, Z, X_stat, C_stat )
 
-!  solve the quadratic programming problem whose structure was previously 
-!  imported. See CQP_solve for a description of the required arguments. 
+!  solve the quadratic programming problem whose structure was previously
+!  imported. See CQP_solve for a description of the required arguments.
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -11199,7 +11211,7 @@ END DO
 !  constraint values
 
      X( : n ) = data%prob%X( : n )
-     Z( : n ) = data%prob%Z( : n ) 
+     Z( : n ) = data%prob%Z( : n )
      Y( : m ) = data%prob%Y( : m )
      C( : m ) = data%prob%C( : m )
 
@@ -11221,8 +11233,8 @@ END DO
      SUBROUTINE CQP_solve_sld( data, status, W, X_0, G, f, A_val, C_l, C_u,    &
                                X_l, X_u, X, C, Y, Z, X_stat, C_stat )
 
-!  solve the shifted-least-distance problem whose structure was previously 
-!  imported. See CQP_solve for a description of the required arguments. 
+!  solve the shifted-least-distance problem whose structure was previously
+!  imported. See CQP_solve for a description of the required arguments.
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -11347,7 +11359,7 @@ END DO
 !  constraint values
 
      X( : n ) = data%prob%X( : n )
-     Z( : n ) = data%prob%Z( : n ) 
+     Z( : n ) = data%prob%Z( : n )
      Y( : m ) = data%prob%Y( : m )
      C( : m ) = data%prob%C( : m )
 
@@ -11382,7 +11394,7 @@ END DO
 !  recover inform from internal data
 
      inform = data%cqp_inform
-     
+
 !  flag a successful call
 
      status = GALAHAD_ok
