@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#  syntax: galdoxy package
+
+#  create the C documentation for GALAHAD.
+#  currently this will produce pdf
+
+#  Nick Gould, August 21st 2021
+
+#  does the package exist?
+
+export package=$1
+if [ -d "$GALAHAD/src/$package" ]; then 
+  export PACKAGE=${package^^}
+elif [ $package == "galahad" ]; then
+  export PACKAGE=
+else
+  echo "Error: package $package does not exist."
+  exit 1
+fi
+
+#  make sure that required subdirectories exist
+
+mkdir -p $package
+mkdir -p $GALAHAD/html/C/$package
+
+#  build the pdf documentation
+
+echo "building pdf and html"
+cp $GALAHAD/include/$package.h $package/.
+doxygen Doxyfile_latex
+#mogrify -trim $GALAHAD/html/C/$package/*.png
+( cd ./$package/latex ; make )
+cp ./$package/latex/refman.pdf $GALAHAD/doc/"$package"_c.pdf
+rm $package/$package.h
+

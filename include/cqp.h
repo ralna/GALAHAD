@@ -335,7 +335,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_cqp_H 
+#ifndef GALAHAD_CQP_H 
 #define GALAHAD_CQP_H
 
 // precision

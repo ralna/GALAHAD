@@ -199,7 +199,7 @@
  &   )" ) TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower ), &
           TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower ), &
           TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower ), &
-          TRIM( package_lower ), TRIM( package_upper ), TRIM( package_upper )
+          TRIM( package_upper ), TRIM( package_upper )
 
 !  set up and initialize the C interface file, along with an associated 
 !  scratch file
