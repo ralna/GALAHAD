@@ -1,4 +1,4 @@
-#!/bin/bash -vx
+#!/bin/bash
 
 # galahad_htmldoc: generate html documentation from LaTeX using pandoc
 
@@ -41,7 +41,7 @@ else
   exit 2
 fi
 
-echo $packageexample
+#echo $packageexample
 
 # move to the LaTeX directory in a subshell
 
@@ -90,7 +90,9 @@ sed '/documentclass{galahad}/a \\\\input{galahad_pandoc.cls}' $package.tex \
 
 # generate the html documentation using pandoc
 
-pandoc -f latex --mathjax -t html /tmp/$package.tex -s -o /tmp/$package.html \
- --metadata pagetitle="$package"
+pandoc -f latex --mathjax -t html /tmp/$package.tex -s \
+  -o $GALAHAD/html/$package.html --metadata pagetitle="$package"
 
+echo "html documentaion installed in"
+echo " $GALAHAD/html/$package.html"
 )
