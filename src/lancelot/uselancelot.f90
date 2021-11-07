@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.0 - 24/10/2017 AT 14:45 GMT.
+! THIS VERSION: GALAHAD 3.3 - 03/11/2021 AT 12:45 GMT.
 
 !-*-*-*-*-*-*-*-*-  L A N C E L O T  - B - U S E L A N C E L O T  -*-*-*-*-*-*-
 
@@ -1462,26 +1462,44 @@
        READ( input, 1090 ) pname, nfree , nfixed, nlower, nupper, nboth ,      &
              nslack, nlinob, nnlnob, nlineq, nnlneq, nlinin, nnlnin
        BACKSPACE( rfiledevice )
-       WRITE( rfiledevice, 2090 ) pname, nfree, nfixed, nlower, nupper, nboth, &
-             nslack, nlinob, nnlnob, nlineq, nnlneq, nlinin, nnlnin
+!      WRITE( rfiledevice, 2090 ) pname, nfree, nfixed, nlower, nupper, nboth, &
+!            nslack, nlinob, nnlnob, nlineq, nnlneq, nlinin, nnlnin
        IF ( ialgor == 1 ) optimi = 'SBMIN'
        IF ( ialgor == 2 ) optimi = 'AUGLG'
        IF ( get_max ) THEN
-         WRITE( rfiledevice, 2310 ) pname, numvar, minmax, optimi,             &
-           control%two_norm_tr, control%linear_solver,                         &
-           control%first_derivatives,                                          &
-           control%second_derivatives, control%exact_gcp,                      &
-           control%accurate_bqp, control%structured_tr, control%more_toraldo,  &
-           control%non_monotone, inform%iter, inform%ngeval, inform%itercg,    &
-           inform%status, pname, ttotal, - fobj
+         IF ( inform%status == 0 ) THEN
+           WRITE( rfiledevice, 2710 ) pname, numvar, - inform%obj,             &
+             inform%pjgnrm, inform%cnorm, inform%iter, inform%ngeval,          &
+             ttotal, inform%status
+         ELSE
+           WRITE( rfiledevice, 2710 ) pname, numvar, - inform%obj,             &
+             inform%pjgnrm, inform%cnorm, - inform%iter, - inform%ngeval,      &
+             - ttotal, inform%status
+         END IF
+!        WRITE( rfiledevice, 2310 ) pname, numvar, minmax, optimi,             &
+!          control%two_norm_tr, control%linear_solver,                         &
+!          control%first_derivatives,                                          &
+!          control%second_derivatives, control%exact_gcp,                      &
+!          control%accurate_bqp, control%structured_tr, control%more_toraldo,  &
+!          control%non_monotone, inform%iter, inform%ngeval, inform%itercg,    &
+!          inform%status, pname, ttotal, - fobj
        ELSE
-         WRITE( rfiledevice, 2310 ) pname, numvar, minmax, optimi,             &
-           control%two_norm_tr, control%linear_solver,                         &
-           control%first_derivatives,                                          &
-           control%second_derivatives, control%exact_gcp,                      &
-           control%accurate_bqp, control%structured_tr, control%more_toraldo,  &
-           control%non_monotone, inform%iter, inform%ngeval, inform%itercg,    &
-           inform%status, pname, ttotal, fobj
+         IF ( inform%status == 0 ) THEN
+           WRITE( rfiledevice, 2710 ) pname, numvar, inform%obj,               &
+             inform%pjgnrm, inform%cnorm, inform%iter, inform%ngeval,          &
+             ttotal, inform%status
+         ELSE
+           WRITE( rfiledevice, 2710 ) pname, numvar, inform%obj,               &
+             inform%pjgnrm, inform%cnorm, - inform%iter, - inform%ngeval,      &
+             - ttotal, inform%status
+         END IF
+!        WRITE( rfiledevice, 2310 ) pname, numvar, minmax, optimi,             &
+!          control%two_norm_tr, control%linear_solver,                         &
+!          control%first_derivatives,                                          &
+!          control%second_derivatives, control%exact_gcp,                      &
+!          control%accurate_bqp, control%structured_tr, control%more_toraldo,  &
+!          control%non_monotone, inform%iter, inform%ngeval, inform%itercg,    &
+!          inform%status, pname, ttotal, fobj
        END IF
      END IF
      GO TO 900
@@ -1568,7 +1586,7 @@
                   ' and resume execution ? , or ', /,                          &
                   ' 3. Save the solution estimate and resume execution ? ' )
  2080  FORMAT( ' Please reply 0, 1, 2 or 3 ' )
- 2090  FORMAT( A10, 12I8 )
+!2090  FORMAT( A10, 12I8 )
  2100  FORMAT( /, ' *-*-*-*-*-* LANCELOT B -*-*-*-*-*-*' )
  2110  FORMAT( /, ' Error evaluating problem function at the initial point ' )
 !2150  FORMAT( /, ' Constraint violations are large. Problem',                 &
@@ -1588,10 +1606,10 @@
  2270  FORMAT( /, ' XL solution  ', 10X, ES12.5 )
  2290  FORMAT( /, '*   Lagrange multipliers ', / )
  2300  FORMAT( /, '*   variables ', / )
- 2310  FORMAT( A10, I6, 1X, A3, 1X, A5, '( ', L1, ' ', I2,' ', I1, ' ', I1,    &
-               ' ', L1, ' ', L1, ' ', L1, ' ', I4, ' ', I4, ') ',     &
-               3I8, I4,                                                        &
-               /, A10,' time ',0P, F12.2, ' Final function value ', ES12.4 )
+!2310  FORMAT( A10, I6, 1X, A3, 1X, A5, '( ', L1, ' ', I2,' ', I1, ' ', I1,    &
+!              ' ', L1, ' ', L1, ' ', L1, ' ', I4, ' ', I4, ') ',     &
+!              3I8, I4,                                                        &
+!              /, A10,' time ',0P, F12.2, ' Final function value ', ES12.4 )
  2320  FORMAT( /, ' Only a feasible point is required ... removing objective ' )
  2340  FORMAT( /, ' *-*-*-*-*-*-* Minimizer sought *-*-*-*-*-*-*-*-*' )
  2350  FORMAT( /, ' *-*-*-*-*-*-* Maximizer sought *-*-*-*-*-*-*-*-*' )
@@ -1623,6 +1641,7 @@
                A10, ' out of order on re-entry ' )
  2610  FORMAT( /, ' =+=+= Automatic derivatives - forward mode  =+=+=' )
  2620  FORMAT( /, ' =+=+= Automatic derivatives - backward mode =+=+=')
+ 2710  FORMAT( A10, I6, ES16.8, 2ES9.1, bn, 2I7, ' :', F9.2, I5 )
  2990  FORMAT( ' ** Message from -USE_LANCELOT-', /,                           &
                ' Allocation error (status = ', I0, ') for ', A )
 

@@ -1496,6 +1496,93 @@
 
      END SUBROUTINE AQT_solve_2d
 
+!-*-*-*- G A L A H A D -  A Q T _ S O L V E _ 1 D   S U B R O U T I N E -*-*-*-
+
+     SUBROUTINE AQT_solve_1d( h_11, g_1, radius, x_1, lambda, status )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Compute the minimizer x = (x1,x2) of the quadratic function
+!
+!    q(x) = 1/2 x^T H x + g^t x
+!         = 1/2 h_11 x_1^2 + g_1 x_1
+!
+!  within the trust region ||x||^2 = x_1^2 <= radius^2
+!
+!  The required solution satisfies the equations ( H + lambda I ) x = - g, i.e.,
+!
+!    ( h_11 + lambda ) x_1 = - g_1
+!
+!  input arguments:
+!  
+!   h_11, g_1, radius - real, as above 
+!
+!  output arguments:
+!  
+!  x_1, lambda - real, as above
+!  status - integer, output status. Possible values are
+!             0  boundary solution, usual case
+!             1  interior solution
+!             2  pure eigenvector solution
+!             3  boundary solution, hard (degenerate) case
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     INTEGER, INTENT( OUT ) :: status
+     REAL ( KIND = wp ), INTENT( IN ) :: h_11, g_1, radius
+     REAL ( KIND = wp ), INTENT( OUT ) :: x_1, lambda
+
+!  if the curvature is positive, check for an interior solution. Otherwise
+!  step to the trust-region boundary
+
+     IF ( h_11 > zero ) THEN
+       x_1 = - g_1 / h_ll
+       IF ( g_1 > zero ) THEN
+         IF ( x_1 >= - radius ) THEN
+           lambda = zero
+           status = 1
+         ELSE
+           x_1 = - radius
+           lambda = - h_11 + g_1 / radius
+           status = 0
+         END IF
+       ELSE
+         IF ( x_1 <= radius ) THEN
+           lambda = zero
+           status = 1
+         ELSE
+           x_1 = radius
+           lambda = - h_11 - g_1 / radius
+           status = 0
+         END IF
+       END IF
+
+!  if the curvature is not positive, the solution lies on the boundary
+
+     ELSE IF ( g_1 == zero ) THEN
+       x_1 = radius
+       lambda = - h_11
+       status = 3
+     ELSE IF ( g_1 > zero ) THEN
+       x_1 = - radius
+       lambda = - h_11 + g_1 / radius
+       status = 0
+     ELSE
+       x_1 = radius
+       lambda = - h_11 - g_1 / radius
+       status = 0
+     END IF
+
+     RETURN
+
+!  end of SUBROUTINE AQT_solve_1d
+
+     END SUBROUTINE AQT_solve_1d
+
 ! -----------------------------------------------------------------------------
 ! =============================================================================
 ! -----------------------------------------------------------------------------
@@ -1590,3 +1677,179 @@
 !-*-*-*-*-*-  End of G A L A H A D _ A Q T  double  M O D U L E  *-*-*-*-*-*-
 
    END MODULE GALAHAD_AQT_double
+
+!  Given epsilon > 0 and k_max >= k_min >= 0 
+!  let r_0 = g, s_0 = 0, w_-1 = 0 and k = 0
+
+     R = G
+     S = zero
+     k = 0
+
+!  main iteration loop
+
+     DO
+
+!  compute u_k = M^-1 r_k 
+
+       U = M^-1 * R
+
+!  set gamma_k = sqrt( r_k' u_k )
+
+       IF ( k > 1 ) gamma_older = gamma_old
+       IF ( k > 0 ) gamma_old = gamma
+       gamma = SQRT( DOT_PRODUCT( R, U ) )
+
+!  compute xi_k
+
+!  set xi_k = mu_0^2 ( gamma_1^2 + delta_0^2 )
+
+       IF ( k == 1 ) THEN
+          xi = mu ** 2 ( gamma ** 2 + delta ** 2 )
+
+!  update xi_k = vartheta_1^2 xi_1 
+!     + 2 vartheta_1 mu_1 mu_0 gamma_1 ( delta_1 + delta_0 ) 
+!     + mu_1^2 ( gamma_2^2 + delta_1^2 + gamma_1^2 )  
+
+       ELSE IF ( k == 2 ) THEN
+         xi = vartheta ** 2 * xi                                               &
+          + two * vartheta * mu * mu_old * gamma_old * ( delta + delta_old )   &
+          + mu ** 2 ( gamma ** 2 + delta ** 2 + gamma_old ** 2 )  
+
+!  update xi_k = vartheta_k-1^2 xi_k-1  
+!     + 2 vartheta_k-1mu_k-1 ( gamma_k^2 + delta_k-1^2 + gamma_k-1^2 )   
+!     + mu_k-1^2 ( vartheta_k-1 mu_k-2 gamma_k-1 ( delta_k-1 + delta_k-2 )   
+!                 + vartheta_k-2 vartheta_k-1 mu_k-3 gamma_k-2 gamma_k-1 )  
+
+       ELSE IF ( k > 2 ) THEN
+         xi = vartheta ** 2 * xi + two * vartheta * mu                         &
+                * ( gamma ** 2 + delta ** 2 + gamma_old ** 2 )                 &
+                + mu ** 2 * ( vartheta * mu_old * gamma_old                    &
+                * ( delta + delta_old )                                        &
+                  + vartheta_old * vartheta * mu_older * gamma_older * gamma )  
+       END IF
+
+!   compute g_norm_squared = ||g_0 + lambda_0 M s_0||^2_M^-1
+
+       IF ( k == 0 ) THEN
+
+!   compute ||g_0 + lambda_0 M s_0||^2_M^-1 = gamma_0^2
+
+         gamma_0_squared = gamma ** 2
+         g_norm_squared = gamma_0_squared
+
+!  record w_k-1
+
+       ELSE
+         W_old = W
+
+!  compute ||g_k + lambda_k M s_k||^2_M^-1 = gamma_0^2 + 2 eta_k + xi_k
+!            + 2 lambda_k ( kappa_k + tau_k ) + lambda_k^2 ||s_k||^2_M 
+
+         g_norm_squared = gamma_0_squared + two * eta + xi                     &
+          + two * lambda * ( kappa + tau ) + lambda ** 2 * s_norm_squared
+       END IF
+
+!  stop if the gradient is small so long as there have been sufficient 
+!  iterations
+
+       IF ( g_norm_squared <= epsilon ** 2 .AND. k >= k_min ) STOP
+
+!  set w_k = r_k / gamma_k and q_k = u_k / gamma_k 
+
+       W = R / gamma
+       Q = U / gamma
+
+!  compute y_k = H q_k 
+
+       Y = H * Q 
+
+!  set omega_k =  s_k' y_k and delta_k =  q_k' y_k
+
+       IF ( k > 0 ) THEN
+         delta_old = delta
+         omega = DOT_PRODUCT( S, Y )
+       END IF
+       delta = DOT_PRODUCT( Q, Y )
+
+       IF ( k == 0 ) THEN
+
+!  find mu_0 = argminin_{mu : mu^2 <= Delta^2} half delta_0 mu^2 + gamma_0 mu
+!  with associated multiplier lambda_1 
+
+         h_qq =  delta
+         g_q = gamma
+         CALL AQT_solve_1d( h_qq, g_q, radius, mu, lambda, status )
+
+!  set vartheta_0 = theta_0 = 0 and s_1 = mu_0 q_0 
+
+         vartheta = zero
+         S = mu * Q
+       ELSE
+         vartheta_old = vartheta
+         IF ( k > 1 ) mu_older = mu_old
+         mu_old = mu
+
+!  find (theta_,kmu_k) = argminin_{(theta,mu) : theta^2 + mu^2 <= Delta^2}
+!     half (tau_k/||s_k||_M^2) theta^2 + omega_k/||s_k||_M  theta mu 
+!      + half delta_k mu^2 + kappa_k / ||s_k||_M theta 
+!  with associated multiplier lambda_k+1 
+
+         h_ss = tau / s_norm_squared
+         h_sq = omega / s_norm
+         h_qq = delta
+         g_s = kappa / s_norm 
+         g_q = zero
+         CALL SUBROUTINE AQT_solve_2d( h_ss, h_sq, h_qq, g_s, g_q, radius,     &
+                                       theta, mu, lambda, status )
+
+!  set vartheta_k = theta_k / ||s_k||_M and s_k+1  = vartheta_k s_k + mu_k q_k 
+
+         vartheta = theta / s_norm
+         S = vartheta * S + mu * Q
+       END IF
+
+       IF ( k == k_max ) STOP
+
+!  compute ||s_k+1||_M^2, kappa_k+1, tau_k+1, eta_k+1 and r_k+1
+
+       IF ( k == 0 ) THEN
+
+!  set ||s_1||_M = mu_0, kappa_1 = mu_0 gamma_0, tau_1 = mu_0^2 delta_0,
+!  eta_1 = mu_0 gamma_0 delta_0 and r_1 = y_0 - delta_0 w_0
+
+         s_norm = mu
+         s_norm_squared = s_norm ** 2
+         kappa = mu * gamma
+         tau = mu ** 2 * delta 
+         eta = mu * gamma * delta
+         R = Y - delta * W
+        ELSE
+
+!  set ||s_k+1||_M^2 = theta_k^2 + mu_k^2, update kappa_k+1 =vartheta_k kappa_k,
+!  tau_k+1 = vartheta_k^2 tau_k + 2 vartheta_k mu_k omega_k + mu_k^2 delta_k
+!  and r_k+1 = y_k - delta_k w_k - gamma_k w_k-1 
+
+         s_norm_squared = theta ** 2 + mu ** 2
+         s_norm = SQRT( s_norm_squared )
+         kappa = vartheta * kappa
+         tau = vartheta ** 2 * tau                                             &
+                 + two * vartheta * mu * omega + mu ** 2 * delta 
+         R = Y - delta * W - gamma * W_old 
+
+         IF ( k == 1 ) THEN
+
+!  update eta_2 = vartheta_1 eta_1 + mu_1 gamma_0 gamma_1
+
+           eta = vartheta * eta + mu * gamma * gamma_old
+         ELSE
+
+!   update eta_k+1 = vartheta_k eta_k
+
+           eta = vartheta * eta
+         END IF
+       END IF
+
+!  k  = k + 1
+
+       k  = k + 1
+     END DO
