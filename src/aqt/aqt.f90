@@ -89,10 +89,9 @@
 
         INTEGER :: itmax = - 1
 
-!   the maximum number of iterations allowed once the boundary has been
-!    encountered (-ve = no bound)
+!   the minimum number of iterations allowed (-ve = 0)
 
-        INTEGER :: phase_2_itmax = - 1
+        INTEGER :: itmin = 0
 
 !   the iteration stops successfully when the gradient in the M(inverse) norm
 !    is smaller than max( stop_relative * initial M(inverse)
@@ -170,38 +169,25 @@
 
         INTEGER :: iter = - 1
 
-!  the total number of pass-2 iterations required if the solution lies on
-!   the trust-region boundary
-
-        INTEGER :: iter_pass2 = - 1
-
 !  the Lagrange multiplier corresponding to the trust-region constraint
 
         REAL ( KIND = wp ) :: multiplier = zero
 
 !  the M-norm of x
 
-        REAL ( KIND = wp ) :: mnormx = zero
-
-!  the latest pivot in the Cholesky factorization of the Lanczos tridiagonal
-
-        REAL ( KIND = wp ) :: piv = biginf
+        REAL ( KIND = wp ) :: x_norm = zero
 
 !  the most negative cuurvature encountered
 
         REAL ( KIND = wp ) :: curv = biginf
 
-!  the current Rayleigh quotient
-
-        REAL ( KIND = wp ) :: rayleigh = biginf
-
-!  an estimate of the leftmost generalized eigenvalue of the pencil (H,M)
-
-        REAL ( KIND = wp ) :: leftmost = biginf
-
 !  was negative curvature encountered ?
 
         LOGICAL :: negative_curvature = .FALSE.
+
+!  is the approximate solution interior?
+
+        LOGICAL :: interior = .FALSE.
 
 !  did the hard case occur ?
 
@@ -213,17 +199,19 @@
 !  - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: AQT_data_type
-        PRIVATE
         INTEGER :: branch = 100
-        INTEGER :: iter, itm1, itmax, phase_2_itmax
-        REAL ( KIND = wp ) :: alpha, theta, theta_old, pgnorm, radius2
-        REAL ( KIND = wp ) :: stop, normp, xmx, xmp, pmp, gamma, h_xx, c_x
-        LOGICAL :: printi, printd, interior
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P
+        INTEGER :: iter, itmax, itmin
+        REAL ( KIND = wp ) :: delta, delta_old, eta, gamma, gamma_0_squared
+        REAL ( KIND = wp ) :: gamma_old, gamma_older, kappa, lambda
+        REAL ( KIND = wp ) :: mu, mu_old, mu_older, omega, tau, vartheta
+        REAL ( KIND = wp ) :: vartheta_old, xi, x_norm, x_norm_squared
+        LOGICAL :: printi, printd
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Q
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W_old
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y
       END TYPE AQT_data_type
 
       TYPE, PUBLIC :: AQT_full_data_type
@@ -246,7 +234,7 @@
 !  Argument:
 !  =========
 !
-!   data     private internal data
+!   data     internal data
 !   control  a structure containing control information. See preamble
 !   inform   a structure containing output information. See preamble
 !
@@ -262,11 +250,11 @@
 
       inform%status = GALAHAD_ok
 
-!  Set initial control parameter values
+!  set initial control parameter values
 
       control%stop_relative = SQRT( epsmch )
 
-!  Set branch for initial entry
+!  set branch for initial entry
 
       data%branch = 100
 
@@ -286,7 +274,7 @@
 
 !   Arguments:
 
-!   data     private internal data
+!   data     internal data
 !   control  a structure containing control information. See preamble
 !   inform   a structure containing output information. See preamble
 
@@ -323,7 +311,7 @@
 !   printout-device                                 6
 !   print-level                                     0
 !   maximum-number-of-iterations                    -1
-!   maximum-number-of-phase-2-iterations            -1
+!   minimum-number-of-iterations                    -1
 !   relative-accuracy-required                      1.0E-8
 !   absolute-accuracy-required                      0.0
 !   fraction-optimality-required                    1.0
@@ -352,8 +340,8 @@
       INTEGER, PARAMETER :: out = error + 1
       INTEGER, PARAMETER :: print_level = out + 1
       INTEGER, PARAMETER :: itmax = print_level + 1
-      INTEGER, PARAMETER :: phase_2_itmax = itmax + 1
-      INTEGER, PARAMETER :: stop_relative = phase_2_itmax + 1
+      INTEGER, PARAMETER :: itmin = itmax + 1
+      INTEGER, PARAMETER :: stop_relative = itmin + 1
       INTEGER, PARAMETER :: stop_absolute = stop_relative + 1
       INTEGER, PARAMETER :: fraction_opt = stop_absolute + 1
       INTEGER, PARAMETER :: theta_zero = fraction_opt + 1
@@ -379,7 +367,7 @@
       spec( out )%keyword = 'printout-device'
       spec( print_level )%keyword = 'print-level'
       spec( itmax )%keyword = 'maximum-number-of-iterations'
-      spec( phase_2_itmax )%keyword = 'maximum-number-of-phase-2-iterations'
+      spec( itmin )%keyword = 'minimum-number-of-iterations'
 
 !  real key-words
 
@@ -426,8 +414,8 @@
       CALL SPECFILE_assign_value( spec( itmax ),                               &
                                   control%itmax,                               &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( phase_2_itmax ),                       &
-                                  control%phase_2_itmax,                       &
+      CALL SPECFILE_assign_value( spec( itmin ),                               &
+                                  control%itmin,                               &
                                   control%error )
 
 !  Set real values
@@ -481,7 +469,7 @@
 
 !-*-*-*-*-*-*-*-*-*-*  A Q T _ S O L V E   S U B R O U T I N E  -*-*-*-*-*-*-*
 
-      SUBROUTINE AQT_solve( n, radius, f, X, C, VECTOR, data, control, inform )
+      SUBROUTINE AQT_solve( n, radius, f, X, C, data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -496,23 +484,17 @@
 !   X        the vector of unknowns. Need not be set on entry.
 !            On exit, the best value found so far
 !   C        On entry this must contain the vector c
-!   VECTOR   see inform%status = 2 and 3
-!   data     private internal data
+!   data     internal data, but see inform%status = 2 and 3
 !   control  a structure containing control information. See AQT_initialize
 !   inform   a structure containing information. The component
 !             %status is the input/output status. This must be set to 1 on
 !              initial entry or 4 on a re-entry when only radius has
 !              been reduced since the last entry. Other values are
 !               2 on exit => the inverse of M must be applied to
-!                 VECTOR with the result returned in VECTOR and the subroutine
+!                 data%R with the result returned in data%U and the subroutine
 !                 re-entered. This will only happen if unitm is .FALSE.
-!               3 on exit => the product H * VECTOR must be formed, with
-!                 the result returned in VECTOR and the subroutine re-entered
-!               4 The iteration is to be restarted with a smaller radius but
-!                 with all other data unchanged. Set R to c for this entry.
-!               5 The iteration will be restarted. Reset R to c and re-enter.
-!                 This exit will only occur if control%steihaug_toint is
-!                 .FALSE. and the solution lies on the trust-region boundary
+!               3 on exit => the product H * data%Q must be formed, with
+!                 the result returned in data%Y the subroutine re-entered
 !               0 the solution has been found
 !              -1 an array allocation has failed
 !              -2 an array deallocation has failed
@@ -532,7 +514,7 @@
       INTEGER, INTENT( IN ) :: n
       REAL ( KIND = wp ), INTENT( IN ) :: radius
       REAL ( KIND = wp ), INTENT( INOUT ) :: f
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, C, VECTOR
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, C
       TYPE ( AQT_data_type ), INTENT( INOUT ) :: data
       TYPE ( AQT_control_type ), INTENT( IN ) :: control
       TYPE ( AQT_inform_type ), INTENT( INOUT ) :: inform
@@ -541,11 +523,9 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: it, itp1, nroots, info, status
-      REAL ( KIND = wp ) :: alpha, beta, other_root, xmx_trial, sqrt_theta
-      REAL ( KIND = wp ) :: h_xx, h_xq, h_qq, c_x, c_q, x_x, x_q, lambda, f_tol
-      REAL ( KIND = wp ) :: delta
-      LOGICAL :: filexx
+      INTEGER :: status
+      REAL ( KIND = wp ) :: g_norm_squared, g_s, g_q, h_ss, h_sq, h_qq, theta
+      REAL ( KIND = wp ) :: rtu
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -556,11 +536,7 @@
 
 !  Branch to different sections of the code depending on input status
 
-      IF ( inform%status == 1 ) THEN
-        data%branch = 10
-      ELSE IF ( inform%status == 4 ) THEN
-        data%branch = 600
-      END IF
+      IF ( inform%status == 1 ) data%branch = 10
 
       SELECT CASE ( data%branch )
       CASE ( 10 )
@@ -569,14 +545,6 @@
         GO TO 110
       CASE ( 120 )
         GO TO 120
-      CASE ( 210 )
-        GO TO 210
-      CASE ( 220 )
-        GO TO 220
-      CASE ( 600 )
-        GO TO 600
-      CASE ( 900 )
-        GO TO 900
       END SELECT
 
 !  on initial entry, set constants
@@ -588,34 +556,19 @@
       IF ( n <= 0 ) GO TO 940
       IF ( radius <= zero ) GO TO 950
 
-      data%iter = 0 ; data%itm1 = - 1
+!  set termination parameters
+
       data%itmax = control%itmax ; IF ( data%itmax < 0 ) data%itmax = n
-      data%phase_2_itmax = control%phase_2_itmax
-      IF ( data%phase_2_itmax < 0 ) data%phase_2_itmax = n
+      data%itmin = control%itmin ; IF ( data%itmin < 0 ) data%itmin = 0
+
       data%printi = control%out > 0 .AND. control%print_level >= 1
       data%printd = control%out > 0 .AND. control%print_level >= 2
-      inform%alloc_status = 0 ; inform%bad_alloc = ''
-      inform%iter_pass2 = 0 ; inform%negative_curvature = .FALSE.
-      inform%curv = HUGE( one ) ; inform%piv = HUGE( one )
-      inform%rayleigh = HUGE( one )
-      inform%mnormx = radius ; inform%multiplier = zero
-      inform%hard_case = .FALSE.
-      data%interior = .TRUE.
-      data%radius2 = radius * radius
-      X = zero ; f = control%f_0
 
 !  =====================
 !  Array (re)allocations
 !  =====================
 
-      array_name = 'aqt: P'
-      CALL SPACE_resize_array( n, data%P,                                      &
-          inform%status, inform%alloc_status, array_name = array_name,         &
-          deallocate_error_fatal = control%deallocate_error_fatal,             &
-          exact_size = control%space_critical,                                 &
-          bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= 0 ) GO TO 960
-
+      inform%alloc_status = 0 ; inform%bad_alloc = ''
       array_name = 'aqt: Q'
       CALL SPACE_resize_array( n, data%Q,                                      &
           inform%status, inform%alloc_status, array_name = array_name,         &
@@ -648,399 +601,256 @@
           bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= 0 ) GO TO 960
 
-      data%R( : n ) = C( : n )
+      array_name = 'aqt: Y'
+      CALL SPACE_resize_array( n, data%Y,                                      &
+          inform%status, inform%alloc_status, array_name = array_name,         &
+          deallocate_error_fatal = control%deallocate_error_fatal,             &
+          exact_size = control%space_critical,                                 &
+          bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= 0 ) GO TO 960
 
-!  =======================================================================
-!  Start of the main phase-1 (preconditioned conjugate-gradient) iteration
-!  =======================================================================
+      IF ( .NOT. control%unitm ) THEN
+        array_name = 'aqt: U'
+        CALL SPACE_resize_array( n, data%U,                                    &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= 0 ) GO TO 960
+      END IF
+
+!  set r_0 = c, x_0 = 0 and k = 0 (store k in inform%iter)
+
+      data%R( : n ) = C( : n )
+      X( : n ) = zero
+      data%x_norm = zero
+      data%lambda = zero
+      f = control%f_0
+      inform%iter = 0
+
+!  main iteration loop
 
   100 CONTINUE
-      inform%iter = data%iter
+
+!  -----------------------------------------------
+!  compute u_k = M^-1 r_k by reverse communication
+!  -----------------------------------------------
+
+!      data%U( : n ) = M^-1 * data%R( : n )
+       IF ( .NOT. control%unitm ) THEN
+         data%branch = 110 ; inform%status = 2 ; RETURN
+       END IF
+ 110   CONTINUE
+
+!  set gamma_k = sqrt( r_k' u_k )
+
+       IF ( inform%iter > 1 ) data%gamma_older = data%gamma_old
+       IF ( inform%iter > 0 ) data%gamma_old = data%gamma
+       IF ( control%unitm ) THEN
+         data%gamma = SQRT( DOT_PRODUCT( data%R( : n ), data%R( : n ) ) )
+       ELSE
+         rtu = DOT_PRODUCT( data%R( : n ), data%U( : n ) )
+         IF ( rtu < zero ) GO TO 930
+         data%gamma = SQRT( rtu )
+       END IF
+
+!  compute xi_k
+
+!  set xi_k = mu_0^2 ( gamma_1^2 + delta_0^2 )
+
+       IF ( inform%iter == 1 ) THEN
+          data%xi = data%mu ** 2 * ( data%gamma ** 2 + data%delta ** 2 )
+
+!  update xi_k = vartheta_1^2 xi_1
+!     + 2 vartheta_1 mu_1 mu_0 gamma_1 ( delta_1 + delta_0 )
+!     + mu_1^2 ( gamma_2^2 + delta_1^2 + gamma_1^2 )
+
+       ELSE IF ( inform%iter == 2 ) THEN
+         data%xi = data%vartheta ** 2 * data%xi                                &
+          + two * data%vartheta * data%mu * data%mu_old * data%gamma_old       &
+             * ( data%delta + data%delta_old ) + data%mu ** 2                  &
+               * ( data%gamma ** 2 + data%delta ** 2 + data%gamma_old ** 2 )
+
+!  update xi_k = vartheta_k-1^2 xi_k-1
+!     + 2 vartheta_k-1mu_k-1 ( gamma_k^2 + delta_k-1^2 + gamma_k-1^2 )
+!     + mu_k-1^2 ( vartheta_k-1 mu_k-2 gamma_k-1 ( delta_k-1 + delta_k-2 )
+!                 + vartheta_k-2 vartheta_k-1 mu_k-3 gamma_k-2 gamma_k-1 )
+
+       ELSE IF ( inform%iter > 2 ) THEN
+         data%xi = data%vartheta ** 2 * data%xi                                &
+           + two * data%vartheta * data%mu                                     &
+              * ( data%gamma ** 2 + data%delta ** 2 + data%gamma_old ** 2 )    &
+           + data%mu ** 2 * ( data%vartheta * data%mu_old * data%gamma_old     &
+              * ( data%delta + data%delta_old )                                &
+           + data%vartheta_old * data%vartheta * data%mu_older                 &
+              * data%gamma_older * data%gamma )
+       END IF
+
+!   compute g_norm_squared = ||g_0 + lambda_0 M s_0||^2_M^-1
+
+       IF ( inform%iter == 0 ) THEN
+
+!   compute ||g_0 + lambda_0 M s_0||^2_M^-1 = gamma_0^2
+
+         data%gamma_0_squared = data%gamma ** 2
+         g_norm_squared = data%gamma_0_squared
+
+!  record w_k-1
+
+       ELSE
+         data%W_old = data%W
+
+!  compute ||c + H x_k + lambda_k M x_k||^2_M^-1 = gamma_0^2 + 2 eta_k + xi_k
+!            + 2 lambda_k ( kappa_k + tau_k ) + lambda_k^2 ||x_k||^2_M
+
+         g_norm_squared = data%gamma_0_squared + two * data%eta + data%xi      &
+          + two * data%lambda * ( data%kappa + data%tau )                      &
+          + data%lambda ** 2 * data%x_norm_squared
+       END IF
+
+!  print details of the latest iteration
+
+       IF ( data%printi ) THEN
+         IF ( MOD( inform%iter, 25 ) == 0 .OR. data%printd )                     &
+             WRITE( control%out, "( /, A, '   Iter        f        ',          &
+            &       ' pgnorm    step    norm p   norm x     curv ' )" ) prefix
+         WRITE( control%out, "( A, I7, ES16.8, 2ES9.2 )" )                     &
+                prefix, inform%iter, f, SQRT( g_norm_squared ), data%x_norm
+       END IF
+
+!  stop if the gradient is small so long as there have been sufficient
+!  iterations
+
+       IF ( g_norm_squared <= control%stop_relative ** 2 .AND.                 &
+            inform%iter >= data%itmin ) GO TO 900
+
+!  set w_k = r_k / gamma_k and q_k = u_k / gamma_k
+
+       data%W( : n ) = data%R( : n ) / data%gamma
+       IF ( control%unitm ) THEN
+         data%Q( : n ) = data%W( : n )
+       ELSE
+         data%Q( : n ) = data%U( : n ) / data%gamma
+       END IF
 
 !  --------------------------------------------
-!  obtain the preconditioned residual v = M^-1 r 
-!  (r output in VECTOR, v returned in VECTOR)
+!  compute y_k = H q_k by reverse communication
 !  --------------------------------------------
 
-      VECTOR( : n ) = data%R( : n )
-      IF ( .NOT. control%unitm ) THEN
-        data%branch = 110 ; inform%status = 2 ; RETURN
-      END IF
-
-!  obtain the scaled norm of the residual, pgnorm = sqrt(r'v)
-
-  110 CONTINUE
-      data%theta = DOT_PRODUCT( data%R( : n ), VECTOR( : n ) )
-      IF ( ABS( data%theta ) < control%theta_zero ) data%theta = zero
-      IF ( data%theta < zero ) THEN
-        IF ( MAXVAL( ABS( VECTOR( : n ) ) ) <                                  &
-               epsmch * MAXVAL( ABS( data%R( : n ) ) ) ) THEN
-          data%theta = zero
-        ELSE
-          GO TO 930
-        END IF
-      END IF
-      sqrt_theta = SIGN( SQRT( ABS( data%theta ) ), data%theta )
-      data%pgnorm = sqrt_theta
-
-!  compute beta = r'v / (r'v)_old
-
-      IF ( data%iter > 0 ) THEN
-        beta = data%theta / data%theta_old
-
-!  record the scalar gamma and vector w_old that will be needed by phase 2
-
-        data%gamma = SQRT( beta ) / ABS( data%alpha )
-        data%W_old( : n ) = data%W( : n )
-
-!  compute the stopping tolerance
-
-      ELSE
-        data%gamma = sqrt_theta
-        data%xmx = zero
-        data%stop = MAX( control%stop_relative * data%pgnorm,                  &
-                         control%stop_absolute )
-        IF ( data%printi )                                                     &
-          WRITE( control%out, "( /, A, ' stopping tolerance = ',               &
-         &         ES10.4, ', radius = ', ES10.4 )" ) prefix, data%stop, radius
-      END IF
-
-!  record the vectors w and q that will be needed by phase 2
-
-      data%W( : n ) = data%R( : n ) / sqrt_theta
-      data%Q( : n ) = VECTOR( : n ) / sqrt_theta
-
-      IF ( data%printi ) THEN
-        IF ( MOD( data%iter, 25 ) == 0 .OR. data%printd ) THEN
-          IF ( data%interior ) THEN
-            WRITE( control%out, "( /, A, '   Iter        f        ',           &
-           &       ' pgnorm    step    norm p   norm x     curv ' )" ) prefix
-          ELSE
-            WRITE( control%out, 2000 ) prefix
-          END IF
-        ELSE
-          IF ( .NOT. data%interior .AND. data%iter /= 0 .AND. data%printd )    &
-            WRITE( control%out, 2000 ) prefix
-        END IF
-
-        IF ( data%interior ) THEN
-          IF ( data%iter /= 0 ) THEN
-            WRITE( control%out, "( A, I7, ES16.8, 4ES9.2, ES10.2 )" )          &
-                   prefix, data%iter, f, data%pgnorm, data%alpha,              &
-                   data%normp, SQRT( data%xmx ), inform%rayleigh
-          ELSE
-            WRITE( control%out, "( A, I7, ES16.8, ES9.2, 4X, '-',              &
-           &      2( 8X, '-' ), 9X, '-' )" ) prefix, data%iter, f, data%pgnorm
-          END IF
-        ELSE
-          IF ( data%iter /= 0 ) THEN
-            WRITE( control%out, "( A, I7, ES16.8, ES9.2, ES9.2 )")&
-                   prefix, data%iter, f
-          END IF
-        END IF
-      END IF
-
-!  test for an interior approximate solution
-
-      IF ( data%interior .AND. data%pgnorm <= data%stop ) THEN
-        IF ( data%printi ) WRITE( control%out,                                 &
-          "( A, ' pgnorm ', ES10.4, ' < ', ES10.4 )" )                         &
-             prefix, data%pgnorm, data%stop
-        inform%mnormx = SQRT( data%xmx )
-        GO TO 900
-      END IF
-
-!  test to see that iteration limit has not been exceeded
-
-      IF ( data%iter > 0 ) THEN
-        IF ( data%iter >= data%itmax .AND. data%interior ) THEN
-          inform%mnormx = SQRT( data%xmx )
-          GO TO 910
-        END IF
-
-!  compute a new search direction p that maintains conjugacy
-
-        data%xmp = beta * ( data%xmp + data%alpha * data%pmp )
-        data%pmp = data%theta + data%pmp * beta * beta
-        data%P( : n ) = - VECTOR + beta * data%P( : n )
+!      data%Y = H * data%Q
+       data%branch = 120 ; inform%status = 3 ; RETURN
+ 120   CONTINUE
 
-!  special case for the first iteration
+!  set omega_k =  x_k' y_k and delta_k =  q_k' y_k
 
-      ELSE
-        data%P( : n ) = - VECTOR
-        data%pmp = data%theta ; data%xmp = zero
-      END IF
+       IF ( inform%iter > 0 ) THEN
+         data%delta_old = data%delta
+         data%omega = DOT_PRODUCT( X( : n ), data%Y( : n ) )
+       END IF
+       data%delta = DOT_PRODUCT( data%Q( : n ), data%Y( : n ) )
 
-      data%theta_old = data%theta
+!  find mu_0 = argminin_{mu : mu^2 <= radius^2} half delta_0 mu^2 + gamma_0 mu
+!  with associated multiplier lambda_1
 
-!  compute the 2-norm of the search direction
+       IF ( inform%iter == 0 ) THEN
+         h_qq = data%delta
+         g_q = data%gamma
+         CALL AQT_solve_1d( h_qq, g_q, radius, data%mu, data%lambda, status )
 
-      data%normp = TWO_NORM( data%P( : n ) )
+!  set vartheta_0 = theta_0 = 0 and x_1 = mu_0 q_0
 
-!  test for convergence
+         data%vartheta = zero
+         X( : n ) = data%mu * data%Q( : n )
+       ELSE
+         data%vartheta_old = data%vartheta
+         IF ( inform%iter > 1 ) data%mu_older = data%mu_old
+         data%mu_old = data%mu
 
-      IF ( data%interior .AND. data%normp <= two * epsmch ) THEN
-        IF ( data%printi ) WRITE( control%out, "( A, ' pnorm ', ES12.4,        &
-       &   ' < ', ES12.4 )" ) prefix, data%normp, ten * epsmch
-        inform%mnormx = SQRT( data%xmx )
-        GO TO 900
-      END IF
+!  find (theta_,kmu_k) = argminin_{(theta,mu) : theta^2 + mu^2 <= Delta^2}
+!     half (tau_k/||x_k||_M^2) theta^2 + omega_k/||x_k||_M  theta mu
+!      + half delta_k mu^2 + kappa_k / ||x_k||_M theta
+!  with associated multiplier lambda_k+1
 
-      data%itm1 = data%iter ; data%iter = data%iter + 1
+         h_ss = data%tau / data%x_norm_squared
+         h_sq = data%omega / data%x_norm
+         h_qq = data%delta
+         g_s = data%kappa / data%x_norm
+         g_q = zero
+         CALL AQT_solve_2d( h_ss, h_sq, h_qq, g_s, g_q, radius,                &
+                            theta, data%mu, data%lambda, status )
 
-!  ------------------------------------------
-!  Obtain the product w = H p 
-!  (p output in VECTOR, w returned in VECTOR)
-!  ------------------------------------------
+!  set vartheta_k = theta_k / ||x_k||_M and x_k+1  = vartheta_k x_k + mu_k q_k
 
-      VECTOR = data%P( : n ) ; inform%iter = data%iter
-      data%branch = 120 ; inform%status = 3 ; RETURN
+         data%vartheta = theta / data%x_norm
+         X( : n ) = data%vartheta * X( : n ) + data%mu * data%Q( : n )
+       END IF
 
-!  calculate the curvature p' w = p' H p 
+!  compute ||x_k+1||_M^2, kappa_k+1, tau_k+1, eta_k+1 and r_k+1
 
-  120 CONTINUE
-      inform%curv = DOT_PRODUCT( data%P( : n ) , VECTOR( : n ) )
-      inform%rayleigh = inform%curv / data%pmp
+       IF ( inform%iter == 0 ) THEN
 
-!  calculate the stepsize alpha = r M^-1 r / p' H p
+!  set ||x_1||_M = mu_0, kappa_1 = mu_0 gamma_0, and tau_1 = mu_0^2 delta_0,
 
-      IF ( inform%curv > zero ) THEN
-        data%alpha = data%theta / inform%curv
-      ELSE IF ( inform%curv == zero ) THEN
-        data%alpha = HUGE( one ) ** 0.25
-      ELSE
-        inform%negative_curvature = .TRUE.
-      END IF
+         data%x_norm = data%mu
+         data%x_norm_squared = data%x_norm ** 2
+         data%kappa = data%mu * data%gamma
+         data%tau = data%mu ** 2 * data%delta
+       ELSE
 
-!  See if the new estimate of the solution is interior
+!  set ||x_k+1||_M^2 = theta_k^2 + mu_k^2, update kappa_k+1 =vartheta_k kappa_k,
+!  and tau_k+1 = vartheta_k^2 tau_k + 2 vartheta_k mu_k omega_k + mu_k^2 delta_k
 
+         data%x_norm_squared = theta ** 2 + data%mu ** 2
+         data%x_norm = SQRT( data%x_norm_squared )
+         data%kappa = data%vartheta * data%kappa
+         data%tau = data%vartheta ** 2 * data%tau                              &
+                 + two * data%vartheta * data%mu * data%omega                  &
+                 + data%mu ** 2 * data%delta
+       END IF
 
-!  the new point will be on the boundary if there is negative curvature
+       f = control%f_0 + data%kappa + half * data%tau
+       IF ( inform%iter == data%itmax ) GO TO 910
 
-      IF ( inform%negative_curvature ) THEN
-        data%interior = .FALSE.
+!  compute eta_k+1 and r_k+1
 
-!  if negative curvature has not been detected, find the square of the
-!  norm of the new point, and compare this with the radius
+       IF ( inform%iter == 0 ) THEN
 
-      ELSE
-        xmx_trial = data%xmx +                                                 &
-           data%alpha * ( data%xmp + data%xmp + data%alpha * data%pmp )
+!  set eta_1 = mu_0 gamma_0 delta_0 and r_1 = y_0 - delta_0 w_0
 
-!  the new point is interior
+         data%eta = data%mu * data%gamma * data%delta
+         data%R( : n ) = data%Y( : n ) - data%delta * data%W( : n )
+       ELSE
 
-        IF ( xmx_trial <= data%radius2 ) THEN
-          data%xmx = xmx_trial
-          X = X + data%alpha * data%P( : n )
-          f = f - half * data%alpha * data%alpha * inform%curv
+!  set r_k+1 = y_k - delta_k w_k - gamma_k w_k-1
 
-!  the new point lies on the boundary
+         data%R( : n ) = data%Y( : n ) - data%delta * data%W( : n )            &
+                           - data%gamma * data%W_old( : n )
 
-        ELSE
-          data%interior = .FALSE.
-        END IF
-      END IF
+!  update eta_2 = vartheta_1 eta_1 + mu_1 gamma_0 gamma_1
 
-!  if the new point is on the boundary, compute the required step
+         IF ( inform%iter == 1 ) THEN
+           data%eta = data%vartheta * data%eta                                 &
+                        + data%mu * data%gamma * data%gamma_old
 
-      IF ( .NOT. data%interior ) THEN
-        data%itmax = min( data%itmax, data%iter + data%phase_2_itmax )
+!   update eta_k+1 = vartheta_k eta_k
 
-!  find the boundary point and the value of the objective there
+         ELSE
+           data%eta = data%vartheta * data%eta
+         END IF
+       END IF
 
-        IF ( data%iter == 1 .OR. control%steihaug_toint ) THEN
-          CALL ROOTS_quadratic( data%xmx - data%radius2, two * data%xmp,       &
-                                data%pmp, roots_tol, nroots, other_root,       &
-                                alpha, roots_debug )
-          data%xmx = data%xmx + alpha * ( two * data%xmp + alpha * data%pmp )
-          X( : n ) = X( : n ) + alpha * data%P( : n )
-          f = f + alpha * ( half * alpha * inform%curv - data%theta )
-          inform%mnormx = SQRT( data%xmx )
+!  k  = k + 1
 
-!  terminate if f is smaller than the permitted minimum
+       inform%iter = inform%iter + 1
 
-          IF ( f < control%f_min ) GO TO 970
+!  end of main iteration loop
 
-!  if the Steihaug-Toint strategy is to be used, stop on the boundary
+    GO TO 100
 
-          IF ( control%steihaug_toint ) THEN
-            data%alpha = alpha ; GO TO 920
+!  record output statistics
 
-!  if a more accurate solution is required, switch to phase 2
-
-          ELSE
-            IF ( data%printi ) THEN
-               WRITE( control%out, "( /, A, ' Boundary encountered,',          &
-              &   ' entering phase 2' )" ) prefix
-               IF ( .NOT. data%printd ) WRITE( control%out, 2000 ) prefix
-            END IF
-            GO TO 200
-          END IF
-
-!  if this is not the first iteration, move to phase 2
-
-        ELSE
-          VECTOR = data%Q( : n ) ; inform%iter = data%iter
-          data%branch = 220 ; inform%status = 3 ; RETURN
-          GO TO 220
-        END IF
-
-!  if this is the first iteration, move to the boundary
-
-      END IF
-
-!  update the residual r <- r + alpha v
-
-      data%R = data%R + data%alpha * VECTOR
-
-!  =====================================================================
-!  End of the main phase-1 (preconditioned conjugate-gradient) iteration
-!  =====================================================================
-
-      GO TO 100
-
-!  if the solution lies on the boundary, record the current M-orthogonal 
-!  Lanczos vector, q = v / pgnorm
-
-!      IF ( .NOT.  data%interior ) THEN
-!        data%Q( : n ) = data%VECTOR( : n ) / data%pgnorm
-
-!  M-orthogonalize q with respect to the current estimate of the mininizer, x,
-!  i.e., find d = q - omega x such that d' Mx = 0, which gives that
-!  omega = x'Mq / ||x||_M^2 = x'r / ( pgnorm * radius^2 )
-
-!       omega = DOT_PRODUCT( data%R( : n ), X( : n ) ) / ( data%pgnorm )
-!       d( : n ) = data%Q( : n ) - omega *  X( : n )
-
-
-!  =======================================================================
-!  Start of the main phase-2 (preconditioned Lanczos) iteration
-!  =======================================================================
-
-  200 CONTINUE
-      inform%iter = data%iter
-
-!  --------------------------------------------
-!  obtain the preconditioned residual u = M^-1 r 
-!  (r output in VECTOR, u returned in VECTOR)
-!  --------------------------------------------
-
-      VECTOR( : n ) = data%R( : n )
-      IF ( .NOT. control%unitm ) THEN
-        data%branch = 210 ; inform%status = 2 ; RETURN
-      END IF
-
-!  obtain the scaled norm of the residual, gamma = sqrt(r'u)
-
-  210 CONTINUE
-      data%theta = DOT_PRODUCT( data%R( : n ), VECTOR )
-      IF ( ABS( data%theta ) < control%theta_zero ) data%theta = zero
-      IF ( data%theta < zero ) THEN
-        IF ( MAXVAL( ABS( VECTOR ) ) < epsmch * MAXVAL( ABS( data%R ) ) ) THEN
-          data%theta = zero
-        ELSE
-          GO TO 930
-        END IF
-      END IF
-      data%gamma = SIGN( SQRT( ABS( data%theta ) ), data%theta )
-
-!  save the old w
-
-      data%W_old( : n ) = data%W( : n )
-
-!  calculate the vectors w and q
-
-      data%W( : n ) = data%R( : n ) / data%gamma
-      data%Q( : n ) = VECTOR( : n ) / data%gamma
-
-      IF ( data%printi ) THEN
-        IF ( MOD( data%iter, 25 ) == 0 .OR. data%printd ) THEN
-          IF ( data%interior ) THEN
-            WRITE( control%out, "( /, A, '   Iter        f        ',           &
-           &       ' pgnorm    step    norm p   norm x     curv ' )" ) prefix
-          ELSE
-            WRITE( control%out, 2000 ) prefix
-          END IF
-        ELSE
-          IF ( .NOT. data%interior .AND. data%iter /= 0 .AND. data%printd )    &
-            WRITE( control%out, 2000 ) prefix
-        END IF
-
-        IF ( data%interior ) THEN
-          IF ( data%iter /= 0 ) THEN
-            WRITE( control%out, "( A, I7, ES16.8, 4ES9.2, ES10.2 )" )          &
-                   prefix, data%iter, f, data%pgnorm, data%alpha,              &
-                   data%normp, SQRT( data%xmx ), inform%rayleigh
-          ELSE
-            WRITE( control%out, "( A, I7, ES16.8, ES9.2, 4X, '-',              &
-           &      2( 8X, '-' ), 9X, '-' )" ) prefix, data%iter, f, data%pgnorm
-          END IF
-        ELSE
-          IF ( data%iter /= 0 ) THEN
-            WRITE( control%out, "( A, I7, ES16.8, ES9.2, ES9.2 )")&
-                   prefix, data%iter, f
-          END IF
-        END IF
-      END IF
-
-!  test to see that iteration limit has not been exceeded
-
-      IF ( data%iter > 0 ) THEN
-        IF ( data%iter >= data%itmax ) THEN
-          GO TO 910
-        END IF
-      END IF
-
-!  ------------------------------------------
-!  Obtain the product t = H q
-!  (q output in VECTOR, t returned in VECTOR)
-!  ------------------------------------------
-
-      VECTOR = data%Q( : n ) ; inform%iter = data%iter
-      data%branch = 220 ; inform%status = 3 ; RETURN
-
-!  calculate the curvature delta = t' q = q' H q
-
-  220 CONTINUE
-      WRITE( 6, "( ' q^T M x = ', ES12.4 )" )                                  &
-        DOT_PRODUCT( data%Q( : n ), X( : n ) )
-
-      delta = DOT_PRODUCT( data%Q( : n ), VECTOR( : n ) )
-
-!  compute the new point x in the subspace spanned by the normalized 
-!  old one x / ||x||_M and q
-
-      h_xx = data%h_xx / data%xmx
-      h_xq = DOT_PRODUCT( X( : n ), VECTOR( : n ) ) / inform%mnormx
-      h_qq = delta
-      c_x = data%c_x  / inform%mnormx
-      c_q =  DOT_PRODUCT( C( : n ), data%Q( : n ) )
-      CALL AQT_solve_2d( h_xx, h_xq, h_qq, c_x, c_q, radius,                   &
-                         x_x, x_q, lambda, status )
-      WRITE( 6, "( ' AQT_solve_2d status = ', I0 )" ) status
-      X( : n ) = ( x_x / inform%mnormx ) * X( : n ) + x_q * data%Q( : n )
-      data%h_xx = x_x * x_x * h_xx + two * x_x * x_q * h_xq + x_q * x_q * h_qq 
-      data%c_x = x_x * c_x + x_q * c_q
-      f = half * data%h_xx + data%c_x
-      data%xmx = ( x_x / inform%mnormx ) ** 2 + x_q ** 2
-      inform%mnormx = SQRT( data%xmx )
-
-!  compute r = t - delta * w - gamma * w_old
-
-      data%R( : n ) = VECTOR( : n ) - delta * data%W( : n )                    &
-                       - data%gamma * data%W_old( : n )
-
-!  ==========================================================
-!  End of the main phase-2 (preconditioned Lanczos) iteration
-!  ==========================================================
-
-      GO TO 200
-
-!  ======================================================
-!  Re-entry for solution with smaller trust-region radius
-!  ======================================================
-
-  600 CONTINUE
+    inform%x_norm = data%x_norm ; inform%multiplier = data%lambda
+    inform%interior = ABS( inform%x_norm - radius ) <= ten ** ( -15 )
 
 !  ===============
 !  Exit conditions
@@ -1048,17 +858,17 @@
 
 !  successful returns
 
-  900 CONTINUE
-      inform%status = GALAHAD_ok
-      RETURN
+ 900 CONTINUE
+     inform%status = GALAHAD_ok
+     RETURN
 
 !  too many iterations
 
-  910 CONTINUE
-      IF ( data%printi )                                                       &
-        WRITE( control%out, "( /, A, ' Iteration limit exceeded ' ) " ) prefix
-      inform%status = GALAHAD_error_max_iterations ; inform%iter = data%iter
-      RETURN
+ 910 CONTINUE
+     IF ( data%printi )                                                        &
+       WRITE( control%out, "( /, A, ' Iteration limit exceeded ' ) " ) prefix
+     inform%status = GALAHAD_error_max_iterations ; inform%iter = data%iter
+     RETURN
 
 !  boundary encountered in Steihaug-Toint method
 
@@ -1070,13 +880,13 @@
 
 !  record terminal information
 
-      IF ( data%printi ) WRITE( control%out, "( A, I7, ES16.8, 4X, '-', 4X,    &
-     &     3ES9.2, ES10.2, //, A,                                              &
-     &     ' Now leaving trust region (Steihaug-Toint)' )" )                   &
-          prefix, data%iter, f, data%alpha, data%normp, SQRT( data%xmx ),      &
-          inform%rayleigh, prefix
-      inform%status = GALAHAD_warning_on_boundary ; inform%iter = data%iter
-      RETURN
+!     IF ( data%printi ) WRITE( control%out, "( A, I7, ES16.8, 4X, '-', 4X,    &
+!    &     3ES9.2, ES10.2, //, A,                                              &
+!    &     ' Now leaving trust region (Steihaug-Toint)' )" )                   &
+!         prefix, inform%iter, f, data%alpha, data%normp, SQRT( data%xmx ),    &
+!         inform%rayleigh, prefix
+!     inform%status = GALAHAD_warning_on_boundary
+!     RETURN
 
 !  unsuccessful returns
 
@@ -1084,28 +894,27 @@
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
         WRITE( control%error,                                                  &
          "( A, ' The matrix M appears to be indefinite. Inner product = ',     &
-     &      ES12.4  )" ) prefix, data%theta
-      inform%status = GALAHAD_error_preconditioner ; inform%iter = data%iter
+     &      ES12.4  )" ) prefix, rtu
+      inform%status = GALAHAD_error_preconditioner
       RETURN
 
   940 CONTINUE
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
         WRITE( control%error,                                                  &
          "( A, ' n = ', I6, ' is not positive ' )" ) prefix, n
-      inform%status = GALAHAD_error_restrictions ; inform%iter = data%iter
+      inform%status = GALAHAD_error_restrictions
       RETURN
 
   950 CONTINUE
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
         WRITE( control%error,                                                  &
          "( A, ' The radius ', ES12.4 , ' is not positive ' )" ) prefix, radius
-      inform%status = GALAHAD_error_restrictions ; inform%iter = data%iter
+      inform%status = GALAHAD_error_restrictions
       RETURN
 
 !  Allocation or deallocation error
 
   960 CONTINUE
-      inform%iter = data%iter
       RETURN
 
 !  objective-function value is too small
@@ -1117,10 +926,6 @@
         prefix, control%f_min
       inform%status = GALAHAD_error_f_min ; inform%iter = data%iter
       RETURN
-
-!  Non-executable statements
-
- 2000 FORMAT( /, A, '  Iter        f         pgnorm    tr it info' )
 
 !  End of subroutine AQT_solve
 
@@ -1159,14 +964,20 @@
 
 !  Deallocate all internal arrays
 
-      array_name = 'aqt: P'
-      CALL SPACE_dealloc_array( data%P,                                        &
+      array_name = 'aqt: Q'
+      CALL SPACE_dealloc_array( data%Q,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'aqt: Q'
-      CALL SPACE_dealloc_array( data%Q,                                        &
+      array_name = 'aqt: R'
+      CALL SPACE_dealloc_array( data%R,                                        &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'aqt: U'
+      CALL SPACE_dealloc_array( data%U,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -1179,6 +990,12 @@
 
       array_name = 'aqt: W_old'
       CALL SPACE_dealloc_array( data%W_old,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'aqt: Y'
+      CALL SPACE_dealloc_array( data%Y,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -1243,11 +1060,11 @@
 !    (      h_12      h_22 + lambda ) ( x_2 )     ( g_2 )
 !
 !  input arguments:
-!  
-!   h_11, h_12, h_22, g_1, g_2, radius - real, as above 
+!
+!   h_11, h_12, h_22, g_1, g_2, radius - real, as above
 !
 !  output arguments:
-!  
+!
 !  x_1, x_2, lambda - real, as above
 !  status - integer, output status. Possible values are
 !             0  boundary solution, usual case
@@ -1275,7 +1092,7 @@
      REAL ( KIND = wp ) :: root1, root2, root3, root4, lambda_min
      LOGICAL :: interior, debug
 
-!  compute the eigen-decomposition H = Q^T Lambda Q, i.e., 
+!  compute the eigen-decomposition H = Q^T Lambda Q, i.e.,
 
 !     ( h_11  h_12 ) = ( c -s ) ( lambda_1   0    ) (  c s )
 !     ( h_12  h_22 )   ( s  c ) (     0  lambda_2 ) ( -s c )
@@ -1294,7 +1111,7 @@
        leftmost = 1
      ELSE IF ( lambda_1 == lambda_2 ) THEN
        leftmost = 12
-     ELSE 
+     ELSE
        leftmost = 2
      END IF
 
@@ -1308,7 +1125,7 @@
          x_1 = zero ; x_2 = zero ; lambda = zero
          status = 1 ; RETURN
 
-!  otherwise, the solution is radius times the eigenvector for the 
+!  otherwise, the solution is radius times the eigenvector for the
 !  leftmost eigenvalue
 
        ELSE IF ( leftmost == 1 ) THEN
@@ -1319,8 +1136,8 @@
          status = 2 ; RETURN
        END IF
      END IF
-  
-!  g is nonzero. Compute the vector gamma = Q g, i.e, 
+
+!  g is nonzero. Compute the vector gamma = Q g, i.e,
 
 !   ( gamma_1 ) =  (  c s ) ( g_1 )
 !   ( gamma_2 )    ( -s c ) ( g_2 )
@@ -1339,18 +1156,18 @@
          y_1 = - gamma_1 / lambda_1
        ELSE IF ( gamma_1 == 0 ) THEN
          y_1 = zero
-       ELSE 
+       ELSE
          interior = .FALSE.
        END IF
        IF ( lambda_2 > 0 ) THEN
          y_2 = - gamma_2 / lambda_2
        ELSE IF ( gamma_2 == 0 ) THEN
          y_2 = zero
-       ELSE 
+       ELSE
          interior = .FALSE.
        END IF
 
-!  try x = Q^T y, i.e., 
+!  try x = Q^T y, i.e.,
 
 !   ( x_1 ) =  ( c -s ) ( y_1 )
 !   ( x_2 )    ( s  c ) ( y_2 )
@@ -1369,14 +1186,14 @@
 
 !  if gamma_1 and gamma_2 are nonzero, solve the secular equation
 
-!             gamma_1^2                 gamma_2^2       
+!             gamma_1^2                 gamma_2^2
 !     ----------------------- + ----------------------- = radius^2
 !     ( lambda + lambda_1 )^2   ( lambda + lambda_2 )^2
 
 !  or equivalently the quartic equation
 
 !     ( lambda + lambda_1 )^2 ( lambda + lambda_2 )^2
-!       - ( gamma_1 / radius )^2 ( lambda + lambda_2 )^2 
+!       - ( gamma_1 / radius )^2 ( lambda + lambda_2 )^2
 !       - ( gamma_2 / radius )^2 ( lambda + lambda_2 )^2 = 0
 
      IF ( gamma_1 /= zero .AND. gamma_2 /= zero ) THEN
@@ -1409,7 +1226,7 @@
 
 !  if gamma_i is zero but gamma_j isn't, solve the secular equation
 
-!             gamma_j^2      
+!             gamma_j^2
 !     ----------------------- = radius^2
 !     ( lambda + lambda_j )^2
 
@@ -1514,11 +1331,11 @@
 !    ( h_11 + lambda ) x_1 = - g_1
 !
 !  input arguments:
-!  
-!   h_11, g_1, radius - real, as above 
+!
+!   h_11, g_1, radius - real, as above
 !
 !  output arguments:
-!  
+!
 !  x_1, lambda - real, as above
 !  status - integer, output status. Possible values are
 !             0  boundary solution, usual case
@@ -1540,7 +1357,7 @@
 !  step to the trust-region boundary
 
      IF ( h_11 > zero ) THEN
-       x_1 = - g_1 / h_ll
+       x_1 = - g_1 / h_11
        IF ( g_1 > zero ) THEN
          IF ( x_1 >= - radius ) THEN
            lambda = zero
@@ -1595,10 +1412,10 @@
 
      SUBROUTINE AQT_import( control, data, status, n )
 
-!  import fixed problem data into internal storage prior to solution. 
+!  import fixed problem data into internal storage prior to solution.
 !  Arguments are as follows:
 
-!  control is a derived type whose components are described in the leading 
+!  control is a derived type whose components are described in the leading
 !   comments to AQT_solve
 !
 !  data is a scalar variable of type AQT_full_data_type used for internal data
@@ -1664,7 +1481,7 @@
 !  recover inform from internal data
 
      inform = data%aqt_inform
-     
+
 !  flag a successful call
 
      status = GALAHAD_ok
@@ -1677,179 +1494,3 @@
 !-*-*-*-*-*-  End of G A L A H A D _ A Q T  double  M O D U L E  *-*-*-*-*-*-
 
    END MODULE GALAHAD_AQT_double
-
-!  Given epsilon > 0 and k_max >= k_min >= 0 
-!  let r_0 = g, s_0 = 0, w_-1 = 0 and k = 0
-
-     R = G
-     S = zero
-     k = 0
-
-!  main iteration loop
-
-     DO
-
-!  compute u_k = M^-1 r_k 
-
-       U = M^-1 * R
-
-!  set gamma_k = sqrt( r_k' u_k )
-
-       IF ( k > 1 ) gamma_older = gamma_old
-       IF ( k > 0 ) gamma_old = gamma
-       gamma = SQRT( DOT_PRODUCT( R, U ) )
-
-!  compute xi_k
-
-!  set xi_k = mu_0^2 ( gamma_1^2 + delta_0^2 )
-
-       IF ( k == 1 ) THEN
-          xi = mu ** 2 ( gamma ** 2 + delta ** 2 )
-
-!  update xi_k = vartheta_1^2 xi_1 
-!     + 2 vartheta_1 mu_1 mu_0 gamma_1 ( delta_1 + delta_0 ) 
-!     + mu_1^2 ( gamma_2^2 + delta_1^2 + gamma_1^2 )  
-
-       ELSE IF ( k == 2 ) THEN
-         xi = vartheta ** 2 * xi                                               &
-          + two * vartheta * mu * mu_old * gamma_old * ( delta + delta_old )   &
-          + mu ** 2 ( gamma ** 2 + delta ** 2 + gamma_old ** 2 )  
-
-!  update xi_k = vartheta_k-1^2 xi_k-1  
-!     + 2 vartheta_k-1mu_k-1 ( gamma_k^2 + delta_k-1^2 + gamma_k-1^2 )   
-!     + mu_k-1^2 ( vartheta_k-1 mu_k-2 gamma_k-1 ( delta_k-1 + delta_k-2 )   
-!                 + vartheta_k-2 vartheta_k-1 mu_k-3 gamma_k-2 gamma_k-1 )  
-
-       ELSE IF ( k > 2 ) THEN
-         xi = vartheta ** 2 * xi + two * vartheta * mu                         &
-                * ( gamma ** 2 + delta ** 2 + gamma_old ** 2 )                 &
-                + mu ** 2 * ( vartheta * mu_old * gamma_old                    &
-                * ( delta + delta_old )                                        &
-                  + vartheta_old * vartheta * mu_older * gamma_older * gamma )  
-       END IF
-
-!   compute g_norm_squared = ||g_0 + lambda_0 M s_0||^2_M^-1
-
-       IF ( k == 0 ) THEN
-
-!   compute ||g_0 + lambda_0 M s_0||^2_M^-1 = gamma_0^2
-
-         gamma_0_squared = gamma ** 2
-         g_norm_squared = gamma_0_squared
-
-!  record w_k-1
-
-       ELSE
-         W_old = W
-
-!  compute ||g_k + lambda_k M s_k||^2_M^-1 = gamma_0^2 + 2 eta_k + xi_k
-!            + 2 lambda_k ( kappa_k + tau_k ) + lambda_k^2 ||s_k||^2_M 
-
-         g_norm_squared = gamma_0_squared + two * eta + xi                     &
-          + two * lambda * ( kappa + tau ) + lambda ** 2 * s_norm_squared
-       END IF
-
-!  stop if the gradient is small so long as there have been sufficient 
-!  iterations
-
-       IF ( g_norm_squared <= epsilon ** 2 .AND. k >= k_min ) STOP
-
-!  set w_k = r_k / gamma_k and q_k = u_k / gamma_k 
-
-       W = R / gamma
-       Q = U / gamma
-
-!  compute y_k = H q_k 
-
-       Y = H * Q 
-
-!  set omega_k =  s_k' y_k and delta_k =  q_k' y_k
-
-       IF ( k > 0 ) THEN
-         delta_old = delta
-         omega = DOT_PRODUCT( S, Y )
-       END IF
-       delta = DOT_PRODUCT( Q, Y )
-
-       IF ( k == 0 ) THEN
-
-!  find mu_0 = argminin_{mu : mu^2 <= Delta^2} half delta_0 mu^2 + gamma_0 mu
-!  with associated multiplier lambda_1 
-
-         h_qq =  delta
-         g_q = gamma
-         CALL AQT_solve_1d( h_qq, g_q, radius, mu, lambda, status )
-
-!  set vartheta_0 = theta_0 = 0 and s_1 = mu_0 q_0 
-
-         vartheta = zero
-         S = mu * Q
-       ELSE
-         vartheta_old = vartheta
-         IF ( k > 1 ) mu_older = mu_old
-         mu_old = mu
-
-!  find (theta_,kmu_k) = argminin_{(theta,mu) : theta^2 + mu^2 <= Delta^2}
-!     half (tau_k/||s_k||_M^2) theta^2 + omega_k/||s_k||_M  theta mu 
-!      + half delta_k mu^2 + kappa_k / ||s_k||_M theta 
-!  with associated multiplier lambda_k+1 
-
-         h_ss = tau / s_norm_squared
-         h_sq = omega / s_norm
-         h_qq = delta
-         g_s = kappa / s_norm 
-         g_q = zero
-         CALL SUBROUTINE AQT_solve_2d( h_ss, h_sq, h_qq, g_s, g_q, radius,     &
-                                       theta, mu, lambda, status )
-
-!  set vartheta_k = theta_k / ||s_k||_M and s_k+1  = vartheta_k s_k + mu_k q_k 
-
-         vartheta = theta / s_norm
-         S = vartheta * S + mu * Q
-       END IF
-
-       IF ( k == k_max ) STOP
-
-!  compute ||s_k+1||_M^2, kappa_k+1, tau_k+1, eta_k+1 and r_k+1
-
-       IF ( k == 0 ) THEN
-
-!  set ||s_1||_M = mu_0, kappa_1 = mu_0 gamma_0, tau_1 = mu_0^2 delta_0,
-!  eta_1 = mu_0 gamma_0 delta_0 and r_1 = y_0 - delta_0 w_0
-
-         s_norm = mu
-         s_norm_squared = s_norm ** 2
-         kappa = mu * gamma
-         tau = mu ** 2 * delta 
-         eta = mu * gamma * delta
-         R = Y - delta * W
-        ELSE
-
-!  set ||s_k+1||_M^2 = theta_k^2 + mu_k^2, update kappa_k+1 =vartheta_k kappa_k,
-!  tau_k+1 = vartheta_k^2 tau_k + 2 vartheta_k mu_k omega_k + mu_k^2 delta_k
-!  and r_k+1 = y_k - delta_k w_k - gamma_k w_k-1 
-
-         s_norm_squared = theta ** 2 + mu ** 2
-         s_norm = SQRT( s_norm_squared )
-         kappa = vartheta * kappa
-         tau = vartheta ** 2 * tau                                             &
-                 + two * vartheta * mu * omega + mu ** 2 * delta 
-         R = Y - delta * W - gamma * W_old 
-
-         IF ( k == 1 ) THEN
-
-!  update eta_2 = vartheta_1 eta_1 + mu_1 gamma_0 gamma_1
-
-           eta = vartheta * eta + mu * gamma * gamma_old
-         ELSE
-
-!   update eta_k+1 = vartheta_k eta_k
-
-           eta = vartheta * eta
-         END IF
-       END IF
-
-!  k  = k + 1
-
-       k  = k + 1
-     END DO

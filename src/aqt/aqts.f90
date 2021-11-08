@@ -6,31 +6,29 @@
    INTEGER, PARAMETER :: n = 10000                ! problem dimension
    INTEGER :: i
    REAL ( KIND = working ) :: f, radius = 10.0_working  ! radius of ten
-   REAL ( KIND = working ), DIMENSION( n ) :: X, R, VECTOR, H_vector
+   REAL ( KIND = working ), DIMENSION( n ) :: X, C, H_vector
    TYPE ( AQT_data_type ) :: data
    TYPE ( AQT_control_type ) :: control
    TYPE ( AQT_inform_type ) :: inform
    CALL AQT_initialize( data, control, inform ) ! Initialize control parameters
    control%unitm = .FALSE.                ! M is not the identity matrix
-   R = one                                ! The linear term is a vector of ones
+   C = one                                ! The linear term is a vector of ones
    inform%status = 1
+   control%print_level = 1
    DO                                     !  Iteration to find the minimizer
-     CALL AQT_solve( n, radius, f, X, R, VECTOR, data, control, inform )
+     CALL AQT_solve( n, radius, f, X, C, data, control, inform )
      SELECT CASE( inform%status )  ! Branch as a result of inform%status
      CASE( 2 )                  ! Form the preconditioned gradient
-       VECTOR = VECTOR / two      ! Preconditioner is two times identity
+       data%U( : n ) = data%R( : n ) / two  ! Preconditioner is 2 times identity
      CASE ( 3 )                 ! Form the matrix-vector product
-       H_vector( 1 ) = - two * VECTOR( 1 ) + VECTOR( 2 )
+       data%Y( 1 ) = - two * data%Q( 1 ) + data%Q( 2 )
        DO i = 2, n - 1
-         H_vector( i ) = VECTOR( i - 1 ) - two * VECTOR( i ) + VECTOR( i + 1 )
+         data%Y( i ) = data%Q( i - 1 ) - two * data%Q( i ) + data%Q( i + 1 )
        END DO
-       H_vector( n ) = VECTOR( n - 1 ) - two * VECTOR( n )
-       VECTOR = H_vector
-     CASE ( 5 )        !  Restart
-       R = one
+       data%Y( n ) = data%Q( n - 1 ) - two * data%Q( n )
      CASE ( - 30, 0 )  !  Successful return
        WRITE( 6, "( I6, ' iterations. Solution and Lagrange multiplier = ',  &
-      &    2ES12.4 )" ) inform%iter + inform%iter_pass2, f, inform%multiplier
+      &    2ES12.4 )" ) inform%iter, f, inform%multiplier
        CALL AQT_terminate( data, control, inform ) ! delete internal workspace
         EXIT
      CASE DEFAULT      !  Error returns
