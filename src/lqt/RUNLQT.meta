@@ -1,0 +1,12 @@
+MAIN
+! write-problem-data                                no
+! write-result-summary                              yes
+! lqt-result-summary-file-name                      LQTRES.d
+! lqt-result-summary-file-device                    47
+! print-full-solution                               no
+! write-solution                                    yes
+! lqt-solution-file-name                            LQTSOL.d
+! lqt-solution-file-device                          62
+! radius                                            1.0
+
+INCLUDE LQT

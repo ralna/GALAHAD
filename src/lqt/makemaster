@@ -1,0 +1,58 @@
+#  Main body of the installation makefile for the GALAHAD LQT package
+
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-10-08
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = lqt
+PACKAGE = LQT
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 \
+               make_smt make_space make_roots make_norms make_rand
+
+#  other packages that depend on package
+
+DEPENDS = trb tru
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test_)
+
+TESTS = test_full test_cutest
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = BQPBAND.SIF
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries
