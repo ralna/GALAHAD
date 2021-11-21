@@ -1,34 +1,34 @@
 ! THIS VERSION: GALAHAD 3.3 - 08/10/2021 AT 09:45 GMT.
 
-!-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ L Q T  -*-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ L Q R  -*-*-*-*-*-*-*-*-*-*-
 
 !  Nick Gould, for GALAHAD productions
 !  Copyright reserved
 !  October 8th 2021
 
-   MODULE GALAHAD_USELQT_double
+   MODULE GALAHAD_USELQR_double
 
-!  This is the driver program for running LQT for a variety of computing
+!  This is the driver program for running LQR for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
      USE CUTEst_interface_double
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_LQT_double
+     USE GALAHAD_LQR_double
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_double
      IMPLICIT NONE
 
      PRIVATE
-     PUBLIC :: USE_LQT
+     PUBLIC :: USE_LQR
 
    CONTAINS
 
-!-*-*-*-*-*-*-*-*-*-  U S E _ L Q T   S U B R O U T I N E  -*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-  U S E _ L Q R   S U B R O U T I N E  -*-*-*-*-*-*-*-
 
-     SUBROUTINE USE_LQT( input )
+     SUBROUTINE USE_LQR( input )
 
 !  Dummy argument
 
@@ -42,9 +42,9 @@
 !   D e r i v e d   T y p e s
 !-------------------------------
 
-     TYPE ( LQT_control_type ) :: control
-     TYPE ( LQT_inform_type ) :: inform
-     TYPE ( LQT_data_type ) :: data
+     TYPE ( LQR_control_type ) :: control
+     TYPE ( LQR_inform_type ) :: inform
+     TYPE ( LQR_data_type ) :: data
 
 !------------------------------------
 !   L o c a l   P a r a m e t e r s
@@ -77,15 +77,15 @@
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: lqt_rfiledevice = 47
-     INTEGER :: lqt_sfiledevice = 62
+     INTEGER :: lqr_rfiledevice = 47
+     INTEGER :: lqr_sfiledevice = 62
      LOGICAL :: fulsol = .FALSE.
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_solution       = .FALSE.
 !    LOGICAL :: write_result_summary = .FALSE.
      LOGICAL :: write_result_summary = .TRUE.
-     CHARACTER ( LEN = 30 ) :: lqt_rfilename = 'LQTRES.d'
-     CHARACTER ( LEN = 30 ) :: lqt_sfilename = 'LQTSOL.d'
+     CHARACTER ( LEN = 30 ) :: lqr_rfilename = 'LQRRES.d'
+     CHARACTER ( LEN = 30 ) :: lqr_sfilename = 'LQRSOL.d'
      REAL ( KIND = wp ) ::  radius = 1.0_wp
 
 !  Output file characteristics
@@ -99,11 +99,11 @@
 
      INTEGER, PARAMETER :: input_specfile = 34
      INTEGER, PARAMETER :: lspec = 15
-     CHARACTER ( LEN = 16 ) :: specname = 'RUNLQT'
+     CHARACTER ( LEN = 16 ) :: specname = 'RUNLQR'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
-     CHARACTER ( LEN = 16 ) :: runspec = 'RUNLQT.SPC'
+     CHARACTER ( LEN = 16 ) :: runspec = 'RUNLQR.SPC'
 
-!  ------------------ Open the specfile for lqt ----------------
+!  ------------------ Open the specfile for lqr ----------------
 
      INQUIRE( FILE = runspec, EXIST = is_specfile )
      IF ( is_specfile ) THEN
@@ -113,14 +113,14 @@
 
        spec( 1 )%keyword  = 'write-problem-data'
        spec( 2 )%keyword  = 'write-result-summary'
-       spec( 3 )%keyword  = 'lqt-result-summary-file-name'
-       spec( 4 )%keyword = 'lqt-result-summary-file-device'
+       spec( 3 )%keyword  = 'lqr-result-summary-file-name'
+       spec( 4 )%keyword = 'lqr-result-summary-file-device'
        spec( 5 )%keyword  = ''
        spec( 6 )%keyword = ''
        spec( 7 )%keyword  = 'print-full-solution'
        spec( 8 )%keyword  = 'write-solution'
-       spec( 9 )%keyword  = 'lqt-solution-file-name'
-       spec( 10 )%keyword  = 'lqt-solution-file-device'
+       spec( 9 )%keyword  = 'lqr-solution-file-name'
+       spec( 10 )%keyword  = 'lqr-solution-file-device'
        spec( 11 )%keyword  = ''
        spec( 12 )%keyword  = ''
        spec( 13 )%keyword = 'radius'
@@ -135,12 +135,12 @@
 
        CALL SPECFILE_assign_logical( spec( 1 ), write_problem_data, errout )
        CALL SPECFILE_assign_logical( spec( 2 ), write_result_summary, errout )
-       CALL SPECFILE_assign_string ( spec( 3 ), lqt_rfilename, errout )
-       CALL SPECFILE_assign_integer( spec( 4 ), lqt_rfiledevice, errout )
+       CALL SPECFILE_assign_string ( spec( 3 ), lqr_rfilename, errout )
+       CALL SPECFILE_assign_integer( spec( 4 ), lqr_rfiledevice, errout )
        CALL SPECFILE_assign_logical( spec( 7 ), fulsol, errout )
        CALL SPECFILE_assign_logical( spec( 8 ), write_solution, errout )
-       CALL SPECFILE_assign_string ( spec( 9 ), lqt_sfilename, errout )
-       CALL SPECFILE_assign_integer( spec( 10 ), lqt_sfiledevice, errout )
+       CALL SPECFILE_assign_string ( spec( 9 ), lqr_sfilename, errout )
+       CALL SPECFILE_assign_integer( spec( 10 ), lqr_sfiledevice, errout )
        CALL SPECFILE_assign_real( spec( 13 ), radius, errout )
      END IF
 
@@ -150,8 +150,8 @@
 
 !  Set up data for next problem
 
-     CALL LQT_initialize( data, control, inform )
-     IF ( is_specfile ) CALL LQT_read_specfile( control, input_specfile )
+     CALL LQR_initialize( data, control, inform )
+     IF ( is_specfile ) CALL LQR_read_specfile( control, input_specfile )
      IF ( is_specfile ) CLOSE( input_specfile )
 
 !  Read the initial point and bounds
@@ -180,32 +180,32 @@
      CALL CUTEST_ugr( cutest_status, n, X0, G )
      IF ( cutest_status /= 0 ) GO TO 910
 
-!  Use LQT
+!  Use LQR
 
-     solv = 'LQT'
+     solv = 'LQR'
 
 !  If required, open a file for the results
 
      IF ( write_result_summary ) THEN
-       INQUIRE( FILE = lqt_rfilename, EXIST = filexx )
+       INQUIRE( FILE = lqr_rfilename, EXIST = filexx )
        IF ( filexx ) THEN
-          OPEN( lqt_rfiledevice, FILE = lqt_rfilename, FORM = 'FORMATTED',   &
+          OPEN( lqr_rfiledevice, FILE = lqr_rfilename, FORM = 'FORMATTED',   &
                 STATUS = 'OLD', POSITION = 'APPEND', IOSTAT = iores )
        ELSE
-          OPEN( lqt_rfiledevice, FILE = lqt_rfilename, FORM = 'FORMATTED',   &
+          OPEN( lqr_rfiledevice, FILE = lqr_rfilename, FORM = 'FORMATTED',   &
                 STATUS = 'NEW', IOSTAT = iores )
        END IF
        IF ( iores /= 0 ) THEN
-         write( errout, 2030 ) iores, lqt_rfilename
+         write( errout, 2030 ) iores, lqr_rfilename
          STOP
        END IF
-       WRITE( lqt_rfiledevice, "( A10 )" ) pname
+       WRITE( lqr_rfiledevice, "( A10 )" ) pname
      END IF
 
 !  Solve the problem
 
      IF ( control%print_level > 0 .AND. control%out > 0 )                      &
-       WRITE( control%out, "( ' LQT used ', / )" )
+       WRITE( control%out, "( ' LQR used ', / )" )
 
  ! Initialize control parameters
 
@@ -214,7 +214,7 @@
      goth = .FALSE.
      inform%status = 1
      DO                   !  Iteration to find the minimizer
-       CALL LQT_solve( n, radius, f, X, C, data, control, inform )
+       CALL LQR_solve( n, radius, f, X, C, data, control, inform )
        SELECT CASE( inform%status ) ! Branch as a result of inform%status
        CASE( 2 )         ! Form the preconditioned gradient
        CASE( 3 )         ! Form the matrix-vector product
@@ -225,27 +225,27 @@
         &    2ES12.4 )" ) inform%iter, f, inform%multiplier
          EXIT
        CASE DEFAULT      !  Error returns
-         WRITE( 6, "( ' LQT_solve exit status = ', I6 ) " ) inform%status
+         WRITE( 6, "( ' LQR_solve exit status = ', I6 ) " ) inform%status
          EXIT
       END SELECT
      END DO
-     CALL LQT_terminate( data, control, inform ) ! delete internal workspace
+     CALL LQR_terminate( data, control, inform ) ! delete internal workspace
 
      CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
      time_now = time_now - time_start
      clock_now = clock_now - clock_start
      IF ( control%print_level > 0 .AND. control%out > 0 )                      &
-       WRITE( control%out, "( /, ' LQT used ' )" )
+       WRITE( control%out, "( /, ' LQR used ' )" )
 
 !  If required, append results to a file,
 
      IF ( write_result_summary ) THEN
-       BACKSPACE( lqt_rfiledevice )
+       BACKSPACE( lqr_rfiledevice )
        IF ( inform%status == 0 ) THEN
-         WRITE( lqt_rfiledevice, 2040 ) pname, n, f, inform%multiplier,       &
+         WRITE( lqr_rfiledevice, 2040 ) pname, n, f, inform%multiplier,       &
           inform%iter, clock_now, inform%status
        ELSE
-         WRITE( lqt_rfiledevice, 2040 ) pname, n, f, inform%multiplier,       &
+         WRITE( lqr_rfiledevice, 2040 ) pname, n, f, inform%multiplier,       &
           - inform%iter, - clock_now, inform%status
        END IF
      END IF
@@ -282,21 +282,21 @@
 
      IF ( write_solution .AND.                                                 &
          ( inform%status == 0  .OR. inform%status == - 10 ) ) THEN
-       INQUIRE( FILE = lqt_sfilename, EXIST = filexx )
+       INQUIRE( FILE = lqr_sfilename, EXIST = filexx )
        IF ( filexx ) THEN
-          OPEN( lqt_sfiledevice, FILE = lqt_sfilename, FORM = 'FORMATTED',   &
+          OPEN( lqr_sfiledevice, FILE = lqr_sfilename, FORM = 'FORMATTED',   &
               STATUS = 'OLD', IOSTAT = iores )
        ELSE
-          OPEN( lqt_sfiledevice, FILE = lqt_sfilename, FORM = 'FORMATTED',   &
+          OPEN( lqr_sfiledevice, FILE = lqr_sfilename, FORM = 'FORMATTED',   &
                STATUS = 'NEW', IOSTAT = iores )
        END IF
        IF ( iores /= 0 ) THEN
-         write( out, 2030 ) iores, lqt_sfilename ; STOP ; END IF
-       WRITE( lqt_sfiledevice, "( /, ' Problem:    ', A10, /,' Solver :   ',  &
+         write( out, 2030 ) iores, lqr_sfilename ; STOP ; END IF
+       WRITE( lqr_sfiledevice, "( /, ' Problem:    ', A10, /,' Solver :   ',  &
       &       A, /, ' Objective:', ES24.16 )" ) pname, solv, f
-       WRITE( lqt_sfiledevice, 2000 )
+       WRITE( lqr_sfiledevice, 2000 )
        DO i = 1, n
-         WRITE( lqt_sfiledevice, 2020 ) i, VNAMES( i ), X( i )
+         WRITE( lqr_sfiledevice, 2020 ) i, VNAMES( i ), X( i )
        END DO
      END IF
      DEALLOCATE( X, X0, G, C, VNAMES )
@@ -321,10 +321,10 @@
  2060 FORMAT( /, 'name           n  f               lambda    ',               &
                  '      iter iter2     time stat' )
 
-!  End of subroutine USE_LQT
+!  End of subroutine USE_LQR
 
-     END SUBROUTINE USE_LQT
+     END SUBROUTINE USE_LQR
 
-!  End of module USELQT_double
+!  End of module USELQR_double
 
-   END MODULE GALAHAD_USELQT_double
+   END MODULE GALAHAD_USELQR_double

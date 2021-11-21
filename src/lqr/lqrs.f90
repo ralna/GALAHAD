@@ -1,5 +1,5 @@
-   PROGRAM GALAHAD_LQT_EXAMPLE  !  GALAHAD 3.3 - 08/10/2021 AT 09:45 GMT.
-   USE GALAHAD_LQT_DOUBLE                        ! double precision version
+   PROGRAM GALAHAD_LQR_EXAMPLE  !  GALAHAD 3.3 - 08/10/2021 AT 09:45 GMT.
+   USE GALAHAD_LQR_DOUBLE                        ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )     ! set precision
    INTEGER, PARAMETER :: n = 10000               ! problem dimension
@@ -7,17 +7,17 @@
    REAL ( KIND = wp ) :: f, radius = 10.0_wp  ! radius of ten
    REAL ( KIND = wp ) :: tau, omega, delta, kappa, eta, xi, m
    REAL ( KIND = wp ), DIMENSION( n ) :: X, C, G
-   TYPE ( LQT_data_type ) :: data
-   TYPE ( LQT_control_type ) :: control
-   TYPE ( LQT_inform_type ) :: inform
-   CALL LQT_initialize( data, control, inform ) ! Initialize control parameters
+   TYPE ( LQR_data_type ) :: data
+   TYPE ( LQR_control_type ) :: control
+   TYPE ( LQR_inform_type ) :: inform
+   CALL LQR_initialize( data, control, inform ) ! Initialize control parameters
    control%unitm = .FALSE.                ! M is not the identity matrix
    C = 1.0_wp                             ! The linear term is a vector of ones
    inform%status = 1
    control%print_level = 1
 !  control%stop_f_relative = 10.0_wp ** ( - 14 )
    DO                                     !  Iteration to find the minimizer
-     CALL LQT_solve( n, radius, f, X, C, data, control, inform )
+     CALL LQR_solve( n, radius, f, X, C, data, control, inform )
      SELECT CASE( inform%status )  ! Branch as a result of inform%status
      CASE( 2 )                  ! Form the preconditioned gradient
        data%U( : n ) = data%R( : n ) / 2.0_wp  ! Preconditioner is 2 * identity
@@ -30,12 +30,12 @@
      CASE ( 0, - 17 )  !  Successful return
        WRITE( 6, "( I6, ' iterations. Solution and Lagrange multiplier = ',    &
       &    2ES12.4 )" ) inform%iter, f, inform%multiplier
-       CALL LQT_terminate( data, control, inform ) ! delete internal workspace
+       CALL LQR_terminate( data, control, inform ) ! delete internal workspace
        EXIT
      CASE DEFAULT      !  Error returns
-       WRITE( 6, "( ' LQT_solve exit status = ', I6 ) " ) inform%status
-       CALL LQT_terminate( data, control, inform ) ! delete internal workspace
+       WRITE( 6, "( ' LQR_solve exit status = ', I6 ) " ) inform%status
+       CALL LQR_terminate( data, control, inform ) ! delete internal workspace
        EXIT
      END SELECT
    END DO
-   END PROGRAM GALAHAD_LQT_EXAMPLE
+   END PROGRAM GALAHAD_LQR_EXAMPLE

@@ -442,7 +442,7 @@
         DO i = 1, degree
           IF ( AIMAG( data%CROOTS( i ) ) == zero ) THEN
             nroots = nroots + 1
-            ROOTS( nroots) = REAL( data%CROOTS( i ) )
+            ROOTS( nroots ) = REAL( data%CROOTS( i ) )
           END IF
         END DO
 
@@ -516,7 +516,7 @@
         END IF
       END IF
 
-!  perfom a Newton iteration to ensure that the roots are accurate
+!  perform a Newton iteration to ensure that the roots are accurate
 
       IF ( nroots >= 1 ) THEN
         p = ( a2 * root1 + a1 ) * root1 + a0
@@ -543,9 +543,9 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( ' root ', I1, ': value = ', ES12.4, ' quadratic = ', ES12.4,     &
+ 2000 FORMAT( ' root ', I1, ': value = ', ES16.8, ' quadratic = ', ES12.4,     &
               ' delta = ', ES12.4 )
- 2010 FORMAT( ' root ', I1, ': value = ', ES12.4, ' quadratic = ', ES12.4 )
+ 2010 FORMAT( ' root ', I1, ': value = ', ES16.8, ' quadratic = ', ES12.4 )
 
 
 !  End of subroutine ROOTS_quadratic
@@ -585,6 +585,7 @@
 !    1 = Nonweiler, 2 = Littlewood, 3 = Viete, other = companion matrix
 
       INTEGER, PARAMETER :: method = 1
+!     INTEGER, PARAMETER :: method = 4
 
 !  Check to see if the quartic is actually a cubic
 
@@ -800,14 +801,14 @@
           END IF
           root3 = root2 ; root2 = a
         END IF
-        IF ( debug ) WRITE( out, "( ' 3 real roots ' )" )
+        IF ( debug ) WRITE( out, "( ' cubic has 3 real roots ' )" )
       ELSE IF ( nroots == 2 ) THEN
-        IF ( debug ) WRITE( out, "( ' 2 real roots ' )" )
+        IF ( debug ) WRITE( out, "( ' cubic has 2 real roots ' )" )
       ELSE
-        IF ( debug ) WRITE( out, "( ' 1 real root ' )" )
+        IF ( debug ) WRITE( out, "( ' cubic has 1 real root ' )" )
       END IF
 
-!  perfom a Newton iteration to ensure that the roots are accurate
+!  perform a Newton iteration to ensure that the roots are accurate
 
       p = ( ( a3 * root1 + a2 ) * root1 + a1 ) * root1 + a0
       pprime = ( three * a3 * root1 + two * a2 ) * root1 + a1
@@ -842,9 +843,9 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( ' root ', I1, ': value = ', ES12.4, ' cubic = ', ES12.4,         &
+ 2000 FORMAT( ' root ', I1, ': value = ', ES16.8, ' cubic = ', ES12.4,         &
               ' delta = ', ES12.4 )
- 2010 FORMAT( ' root ', I1, ': value = ', ES12.4, ' cubic = ', ES12.4 )
+ 2010 FORMAT( ' root ', I1, ': value = ', ES16.8, ' cubic = ', ES12.4 )
 
 
 !  End of subroutine ROOTS_cubic
@@ -875,11 +876,18 @@
 
 !  Local variables
 
-      INTEGER :: type_roots, nrootsc
+      INTEGER :: i, info, type_roots, nrootsc
       REAL ( KIND = wp ) :: a, alpha, b, beta, c, d, delta, gamma, r
       REAL ( KIND = wp ) :: x1, xm, xmd, xn, xnd
       REAL ( KIND = wp ) :: d3, d2, d1, d0, b4, b3, b2, b1
       REAL ( KIND = wp ) :: rootc1, rootc2, rootc3, p, pprime
+      REAL ( KIND = wp ) :: H( 4, 4 ), ER( 4 ), EI( 4 ), ZZ( 1, 4 ), WORK( 44 )
+
+!  define method used:
+!    1 = Ferrari, other = companion matrix
+
+!     INTEGER, PARAMETER :: method = 1
+      INTEGER, PARAMETER :: method = 2
 
 !  Check to see if the quartic is actually a cubic
 
@@ -890,142 +898,213 @@
         RETURN
       END IF
 
-!  Use Ferrari's algorithm
+!  Deflate the polnomial if the trailing coefficient is zero
+
+      IF ( a0 == zero ) THEN
+        root1 = zero
+        CALL ROOTS_cubic( a1, a2, a3, a4, tol, nroots, root2, root3, root4,    &
+                          debug )
+        nroots = nroots + 1
+        RETURN
+      END IF
+
+!  1. Use Ferrari's algorithm
+
+      IF ( method == 1 ) THEN
 
 !  Initialize
 
-      nroots = 0
-      b1 = a3 / a4
-      b2 = a2 / a4
-      b3 = a1 / a4
-      b4 = a0 / a4
-      d3 = one
-      d2 =  - b2
-      d1 = b1 * b3 - four * b4
-      d0 = b4 * ( four * b2 - b1 * b1 ) - b3 * b3
+        nroots = 0
+        b1 = a3 / a4
+        b2 = a2 / a4
+        b3 = a1 / a4
+        b4 = a0 / a4
+        d3 = one
+        d2 =  - b2
+        d1 = b1 * b3 - four * b4
+        d0 = b4 * ( four * b2 - b1 * b1 ) - b3 * b3
 
 !  Compute the roots of the auxiliary cubic
 
-      CALL ROOTS_cubic( d0, d1, d2, d3, tol, nrootsc, rootc1, rootc2, rootc3, &
-                        debug )
-      IF ( nrootsc > 1 ) rootc1 = rootc3
-      x1 = b1 * b1 * quarter - b2 + rootc1
-      IF ( x1 < zero ) THEN
-        xmd = SQRT( - x1 )
-        xnd = quarter * ( two * b3 - b1 * rootc1 ) / xmd
-        alpha = half * b1 * b1 - rootc1 - b2
-        beta = four * xnd - b1 * xmd
-        r = SQRT( alpha * alpha + beta * beta )
-        gamma = SQRT( half * ( alpha + r ) )
-        IF ( gamma == zero ) THEN
-          delta = SQRT( - alpha )
-        ELSE
-          delta = beta * half / gamma
+        CALL ROOTS_cubic( d0, d1, d2, d3, tol, nrootsc, rootc1, rootc2,        &
+                          rootc3, debug )
+        IF ( nrootsc > 1 ) rootc1 = rootc3
+        x1 = b1 * b1 * quarter - b2 + rootc1
+        IF ( x1 < zero ) THEN
+          xmd = SQRT( - x1 )
+          xnd = quarter * ( two * b3 - b1 * rootc1 ) / xmd
+          alpha = half * b1 * b1 - rootc1 - b2
+          beta = four * xnd - b1 * xmd
+          r = SQRT( alpha * alpha + beta * beta )
+          gamma = SQRT( half * ( alpha + r ) )
+          IF ( gamma == zero ) THEN
+            delta = SQRT( - alpha )
+          ELSE
+            delta = beta * half / gamma
+          END IF
+          root1 = half * ( - half * b1 + gamma )
+          root2 = half * ( xmd + delta )
+          root3 = half * ( - half * b1 - gamma )
+          root4 = half * ( xmd - delta )
+          GO TO 900
         END IF
-        root1 = half * ( - half * b1 + gamma )
-        root2 = half * ( xmd + delta )
-        root3 = half * ( - half * b1 - gamma )
-        root4 = half * ( xmd - delta )
-        GO TO 900
-      END IF
-      IF ( x1 /= zero ) THEN
-        xm = SQRT( x1 )
-        xn = quarter * ( b1 * rootc1 - two * b3 ) / xm
-      ELSE
-        xm = zero
-        xn = SQRT( quarter * rootc1 * rootc1 - b4 )
-      END IF
-      alpha = half * b1 * b1 - rootc1 - b2
-      beta = four * xn - b1 * xm
-      gamma = alpha + beta
-      delta = alpha - beta
-      a = - half * b1
+        IF ( x1 /= zero ) THEN
+          xm = SQRT( x1 )
+          xn = quarter * ( b1 * rootc1 - two * b3 ) / xm
+        ELSE
+          xm = zero
+          xn = SQRT( quarter * rootc1 * rootc1 - b4 )
+        END IF
+        alpha = half * b1 * b1 - rootc1 - b2
+        beta = four * xn - b1 * xm
+        gamma = alpha + beta
+        delta = alpha - beta
+        a = - half * b1
 
 !  Compute how many real roots there are
 
-      type_roots = 1
-      IF ( gamma >= zero ) THEN
-        nroots = nroots + 2
-        type_roots = 0
-        gamma = SQRT( gamma )
-      ELSE
-        gamma = SQRT( - gamma )
-      END IF
-      IF ( delta >= zero ) THEN
-        nroots = nroots + 2
-        delta = SQRT( delta )
-      ELSE
-        delta = SQRT( - delta )
-      END IF
-      type_roots = nroots + type_roots
+        type_roots = 1
+        IF ( gamma >= zero ) THEN
+          nroots = nroots + 2
+          type_roots = 0
+          gamma = SQRT( gamma )
+        ELSE
+          gamma = SQRT( - gamma )
+        END IF
+        IF ( delta >= zero ) THEN
+          nroots = nroots + 2
+          delta = SQRT( delta )
+        ELSE
+          delta = SQRT( - delta )
+        END IF
+        type_roots = nroots + type_roots
 
 !  Two real roots
 
-      IF ( type_roots == 3 ) THEN
-        root1 = half * ( a - xm - delta )
-        root2 = half * ( a - xm + delta )
-        root3 = half * ( a + xm )
-        root4 = half * gamma
-        GO TO 900
-      ELSE IF ( type_roots /= 4 ) THEN
-        IF ( type_roots == 2 ) THEN
-          root1 = half * ( a + xm - gamma )
-          root2 = half * ( a + xm + gamma )
-        ELSE
+        IF ( type_roots == 3 ) THEN
+          root1 = half * ( a - xm - delta )
+          root2 = half * ( a - xm + delta )
+          root3 = half * ( a + xm )
+          root4 = half * gamma
+          GO TO 900
+        ELSE IF ( type_roots /= 4 ) THEN
+          IF ( type_roots == 2 ) THEN
+            root1 = half * ( a + xm - gamma )
+            root2 = half * ( a + xm + gamma )
 
 !  No real roots
 
-          root1 = half * ( a + xm )
-          root2 = half * gamma
+          ELSE
+            root1 = half * ( a + xm )
+            root2 = half * gamma
+          END IF
+          root3 = half * ( a - xm ) * half
+          root4 = half * delta
+          GO TO 900
         END IF
-        root3 = half * ( a - xm ) * half
-        root4 = half * delta
-        GO TO 900
-      END IF
 
 !  Four real roots
 
-      b = half * ( a + xm + gamma )
-      d = half * ( a - xm + delta )
-      c = half * ( a - xm - delta )
-      a = half * ( a + xm - gamma )
+        b = half * ( a + xm + gamma )
+        d = half * ( a - xm + delta )
+        c = half * ( a - xm - delta )
+        a = half * ( a + xm - gamma )
 
 !  Sort the roots
 
-      root1 = MIN( a, b, c, d )
-      root4 = MAX( a, b, c, d )
+        root1 = MIN( a, b, c, d )
+        root4 = MAX( a, b, c, d )
 
-      IF ( a == root1 ) THEN
-        root2 = MIN( b, c, d )
-      ELSE IF ( b == root1 ) THEN
-        root2 = MIN( a, c, d )
-      ELSE IF ( c == root1 ) THEN
-        root2 = MIN( a, b, d )
-      ELSE
-        root2 = MIN( a, b, c )
-      END IF
+        IF ( a == root1 ) THEN
+          root2 = MIN( b, c, d )
+        ELSE IF ( b == root1 ) THEN
+          root2 = MIN( a, c, d )
+        ELSE IF ( c == root1 ) THEN
+          root2 = MIN( a, b, d )
+        ELSE
+          root2 = MIN( a, b, c )
+        END IF
 
-      IF ( a == root4 ) THEN
-        root3 = MAX( b, c, d )
-      ELSE IF ( b == root4 ) THEN
-        root3 = MAX( a, c, d )
-      ELSE IF ( c == root4 ) THEN
-        root3 = MAX( a, b, d )
+        IF ( a == root4 ) THEN
+          root3 = MAX( b, c, d )
+        ELSE IF ( b == root4 ) THEN
+          root3 = MAX( a, c, d )
+        ELSE IF ( c == root4 ) THEN
+          root3 = MAX( a, b, d )
+        ELSE
+          root3 = MAX( a, b, c )
+        END IF
+
+!  2. Compute the roots as the eigenvalues of the relevant compainion matrix
+
       ELSE
-        root3 = MAX( a, b, c )
+        H( 1, 1 ) = zero ; H( 2, 1 ) = one ; H( 3, 1 ) = zero ; H( 4, 1 ) = zero
+        H( 1, 2 ) = zero ; H( 2, 2 ) = zero ; H( 3, 2 ) = one ; H( 4, 2 ) = zero
+        H( 1, 3 ) = zero ; H( 2, 3 ) = zero ; H( 3, 3 ) = zero ; H( 4, 3 ) = one
+        H( 1, 4 ) = - a0 / a4 ; H( 2, 4 ) = - a1 / a4
+        H( 3, 4 ) = - a2 / a4 ; H( 4, 4 ) = - a3 / a4
+        CALL HSEQR( 'E', 'N', 4, 1, 4, H, 4, ER, EI, ZZ, 1, WORK, 44, info )
+        IF ( info /= 0 ) THEN
+          IF ( debug ) WRITE( out,                                             &
+         &   "( ' ** error return ', I0, ' from HSEQR in ROOTS_cubic' )" ) info
+          nroots = 0
+          RETURN
+        END IF
+
+!  count, record and reorder the roots
+
+        nroots = COUNT( ABS( EI ) <= epsmch )
+        IF ( nroots == 2 ) THEN
+          IF ( ABS( EI( 1 ) ) <= epsmch ) THEN
+            root1 = ER( 1 )
+            IF ( ABS( EI( 2 ) ) <= epsmch ) THEN
+              root2 = ER( 2 )
+            ELSE IF ( ABS( EI( 3 ) ) <= epsmch ) THEN
+              root2 = ER( 3 )
+            ELSE 
+              root2 = ER( 4 )
+            END IF
+          ELSE IF ( ABS( EI( 2 ) ) <= epsmch ) THEN
+            root1 = ER( 2 )
+            IF ( ABS( EI( 3 ) ) <= epsmch ) THEN
+              root2 = ER( 3 )
+            ELSE 
+              root2 = ER( 4 )
+            END IF
+          ELSE
+            root1 = ER( 3 )
+            root2 = ER( 4 )
+          END IF
+          IF ( root1 > root2 ) THEN
+            a = root2 ; root2 = root1 ; root1 = a
+          END IF
+        ELSE IF ( nroots == 4 ) THEN
+          root1 = ER( 1 ) ; root2 = ER( 2 ) ; root3 = ER( 3 ) ; root4 = ER( 4 )
+          DO i = 1, 2
+            IF ( root1 > root2 ) THEN
+              a = root2 ; root2 = root1 ; root1 = a
+            END IF
+            IF ( root3 > root4 ) THEN
+              a = root4 ; root4 = root3 ; root3 = a
+            END IF
+            IF ( root2 > root3 ) THEN
+              a = root3 ; root3 = root2 ; root2 = a
+            END IF
+          END DO
+        END IF
       END IF
 
   900 CONTINUE
 
-!  Perfom a Newton iteration to ensure that the roots are accurate
+!  Perform a Newton iteration to ensure that the roots are accurate
 
       IF ( debug ) THEN
         IF ( nroots == 0 ) THEN
-          WRITE( out, "( ' no real roots ' )" )
+          WRITE( out, "( ' quartic has no real roots ' )" )
         ELSE IF ( nroots == 2 ) THEN
-          WRITE( out, "( ' 2 real roots ' )" )
+          WRITE( out, "( ' quartic has 2 real roots ' )" )
         ELSE IF ( nroots == 4 ) THEN
-          WRITE( out, "( ' 4 real roots ' )" )
+          WRITE( out, "( ' quartic has 4 real roots ' )" )
         END IF
       END IF
       IF ( nroots == 0 ) RETURN
@@ -1076,9 +1155,9 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( ' root ', I1, ': value = ', ES12.4, ' quartic = ', ES12.4,       &
+ 2000 FORMAT( ' root ', I1, ': value = ', ES16.8, ' quartic = ', ES12.4,       &
               ' delta = ', ES12.4 )
- 2010 FORMAT( ' root ', I1, ': value = ', ES12.4, ' quartic = ', ES12.4 )
+ 2010 FORMAT( ' root ', I1, ': value = ', ES16.8, ' quartic = ', ES12.4 )
 
 !  End of subroutine ROOTS_quartic
 
@@ -1178,14 +1257,14 @@
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-! Find the roots of a real polynomial
+!  Find the roots of a real polynomial
 !
-! n must be set to the degree of the polynomial
-! A(i) must be set to hold the coefficient of x**(i),
-!   i=0,1,..., n. It is changed during the execution,
-!   but is restored before return.
-! ROOT(i), i=1,2,..., n, holds the roots on return
-! D is used as a workspace array
+!  n must be set to the degree of the polynomial
+!  A(i) must be set to hold the coefficient of x**(i),
+!    i=0,1,..., n. It is changed during the execution,
+!    but is restored before return.
+!  ROOT(i), i=1,2,..., n, holds the roots on return
+!  D is used as a workspace array
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -1198,40 +1277,40 @@
 
 !  Local variables
 
-! When (n-nn) roots are found, D(0), ..., D(nn) will hold the coefficients of
-!  the deflated polynomial (backwards), ROOT(nn + 1),..,ROOT(n) will hold the
-!  roots found, A(0),...,A(nn - 1) will hold the coefficients of the derivative
-!  of the deflated polynomial, and ROOT(1),...,ROOT(nn),A(nn),...,A(n) hold the
-!  coefficients of the original polynomial (forwards)
-! div2 .TRUE. if the search with step-lengths dz,dz/2,...is in use and .FALSE.
-!  if the search with steps dz,2*dz,...is in use
-! dz Tentative step
-! fc Temporary variable used in the test for deflation
-! fd Temporary variable used in the test for deflation
-! fw f(w)
-! fz f(z)
-! f1z f'(z)
-! f1z0 f'(z0)
-! f2 Approx. to abs(f''(z))
-! g Temporary variable used in the test for deflation
-! iter Index for main iteration loop
-! pp Temporary variable used in the complex deflation
-! qq Temporary variable used in the complex deflation
-! r Abs(DZ)
-! rr Temporary variable used in the complex deflation
-! afz0 abs(f(Z0))
-! rz Real(Z)
-! ss Temporary variable used in the complex deflation
-! stage1 is .TRUE. during stage 1 of the iteration and .FALSE during stage 2
-! tt Temporary variable used in the complex deflation
-! u Scale factor for deflated polynomial. Also temporary variable
-! u1 Largest absolute value of a coefficient of the deflated polynomial
-! u2 Smallest absolute value of a nonzero coefficient of the deflated
-!  polynomial
-! w Current point of line search
-! z Current point
-! zt Last tentative point
-! z0 Last point
+!  When (n-nn) roots are found, D(0), ..., D(nn) will hold the coefficients of
+!   the deflated polynomial (backwards), ROOT(nn + 1),..,ROOT(n) will hold the
+!   roots found, A(0),...,A(nn - 1) will hold the coefficients of the 
+!   derivative of the deflated polynomial, and ROOT(1), ... ,ROOT(nn),
+!   A(nn), ..., A(n) hold the coefficients of the original polynomial (forwards)
+!  div2 .TRUE. if the search with step-lengths dz,dz/2,...is in use and .FALSE.
+!   if the search with steps dz,2*dz,...is in use
+!  dz Tentative step
+!  fc Temporary variable used in the test for deflation
+!  fd Temporary variable used in the test for deflation
+!  fw f(w)
+!  fz f(z)
+!  f1z f'(z)
+!  f1z0 f'(z0)
+!  f2 Approx. to abs(f''(z))
+!  g Temporary variable used in the test for deflation
+!  iter Index for main iteration loop
+!  pp Temporary variable used in the complex deflation
+!  qq Temporary variable used in the complex deflation
+!  r Abs(DZ)
+!  rr Temporary variable used in the complex deflation
+!  afz0 abs(f(Z0))
+!  rz Real(Z)
+!  ss Temporary variable used in the complex deflation
+!  stage1 is .TRUE. during stage 1 of the iteration and .FALSE during stage 2
+!  tt Temporary variable used in the complex deflation
+!  u Scale factor for deflated polynomial. Also temporary variable
+!  u1 Largest absolute value of a coefficient of the deflated polynomial
+!  u2 Smallest absolute value of a nonzero coefficient of the deflated
+!   polynomial
+!  w Current point of line search
+!  z Current point
+!  zt Last tentative point
+!  z0 Last point
 
         INTEGER :: i, iter, k, kk, loop, nn
         REAL ( KIND = wp ) :: afw, afz, afz0, afzmin, arz, blog, f2, fc, fd, g
@@ -1476,22 +1555,22 @@
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-! Find error bounds on computed roots
+!  Find error bounds on computed roots
 
-! A( i ) must be set to hold the coefficient of x**( i ), i=0,1,...,n
-! n must be set to the degree of the polynomial
-! ROOT( i ), i=1,2,...,n, must be set to the computed roots
-! E must be set by the user to error bounds for the coefficients, or to
-!   zero if these are accurate to machine precision. On return, the
-!   first N locations will have been set to approximate bounds on the
-!   moduli of the errors in the roots
-! W is a workspace array used to hold the coefficients
-!   of the polynomial formed from the calculated roots and then
-!   the coefficients of the error polynomial
-! IG is a workspace array used to link together the roots
-!   in a group. The first is IG1, IG( k ) follows k and the last is i
-!   Other roots have IG( k )=0
-! CR is a workspace array used to hold distances from root i to the rest
+!  A( i ) must be set to hold the coefficient of x**( i ), i=0,1,...,n
+!  n must be set to the degree of the polynomial
+!  ROOT( i ), i=1,2,...,n, must be set to the computed roots
+!  E must be set by the user to error bounds for the coefficients, or to
+!    zero if these are accurate to machine precision. On return, the
+!    first N locations will have been set to approximate bounds on the
+!    moduli of the errors in the roots
+!  W is a workspace array used to hold the coefficients
+!    of the polynomial formed from the calculated roots and then
+!    the coefficients of the error polynomial
+!  IG is a workspace array used to link together the roots
+!    in a group. The first is IG1, IG( k ) follows k and the last is i
+!    Other roots have IG( k )=0
+!  CR is a workspace array used to hold distances from root i to the rest
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -1507,28 +1586,28 @@
 
 !  Local variables
 
-! btm   Denominator of the expression (3.9) of the report R 7986
-! dmax  Maximum distance to a root in the group
-! dist  Distance from root I to root K
-! dmin  Minimum distance to a root not in the group
-! i     Index of root under test
-! ig1   First root of the group
-! l     Nearset root not in the group
-! loop  DO index
-! loopb Index of bisection loop
-! m     Number of roots in the group
-! oldr  Old value of rad
-! prod  The product in inequality (3.8) of the report R 7986
-! r     Current root
-! rad   Radius for Rouche circle.
-! rl    Lower bound for RAD in bisection loop
-! rm    Upper bound for RAD in bisection loop
-! rp    Temporary variable used to form the polynomial
-! rs    Temporary variable used to form the polynomial
-! r     Real(r)
-! s     Abs(r)+RAD
-! tb    top/btm
-! top   Numerator of the expression (3.9) of the report R 7986 polynomial
+!  btm   Denominator of the expression (3.9) of the report R 7986
+!  dmax  Maximum distance to a root in the group
+!  dist  Distance from root I to root K
+!  dmin  Minimum distance to a root not in the group
+!  i     Index of root under test
+!  ig1   First root of the group
+!  l     Nearset root not in the group
+!  loop  DO index
+!  loopb Index of bisection loop
+!  m     Number of roots in the group
+!  oldr  Old value of rad
+!  prod  The product in inequality (3.8) of the report R 7986
+!  r     Current root
+!  rad   Radius for Rouche circle.
+!  rl    Lower bound for RAD in bisection loop
+!  rm    Upper bound for RAD in bisection loop
+!  rp    Temporary variable used to form the polynomial
+!  rs    Temporary variable used to form the polynomial
+!  r     Real(r)
+!  s     Abs(r)+RAD
+!  tb    top/btm
+!  top   Numerator of the expression (3.9) of the report R 7986 polynomial
 
         INTEGER :: i, ig1, ii, j, k, l, loop, loopb, loopr, m
         REAL ( KIND = wp ) :: btm, dist, dmax, dmin, fact, oldr, prod, rad

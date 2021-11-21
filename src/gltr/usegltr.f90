@@ -302,7 +302,7 @@
          WRITE( gltr_sfiledevice, 2020 ) i, VNAMES( i ), X( i )
        END DO
      END IF
-     DEALLOCATE( X, X0, G, R, VECTOR, VNAMES )
+     DEALLOCATE( X, X0, G, R, VECTOR, H_vector, VNAMES )
 
      CALL CUTEST_cterminate( cutest_status )
      RETURN

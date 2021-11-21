@@ -26,7 +26,8 @@
 
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_double
-      USE GALAHAD_ROOTS_double, ONLY: ROOTS_quadratic, ROOTS_quartic
+!     USE GALAHAD_ROOTS_double, ONLY: ROOTS_quadratic, ROOTS_quartic
+      USE GALAHAD_ROOTS_double
       USE GALAHAD_SPECFILE_double
       USE GALAHAD_NORMS_double, ONLY: TWO_NORM
       USE GALAHAD_LAPACK_interface, ONLY : LAEV2
@@ -60,8 +61,11 @@
       REAL ( KIND = wp ), PARAMETER :: roots_tol = ten ** ( - 12 )
       REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
       REAL ( KIND = wp ), PARAMETER :: biginf = HUGE( one )
+      REAL ( KIND = wp ), PARAMETER :: boundary_tol = epsmch ** 0.75
       INTEGER, PARAMETER :: itref_max = 1
       LOGICAL :: roots_debug = .FALSE.
+      LOGICAL :: find_roots = .FALSE.
+      LOGICAL :: shift_roots = .TRUE.
 
 !--------------------------
 !  Derived type definitions
@@ -93,6 +97,11 @@
 
         INTEGER :: itmin = 0
 
+!   the maximum number of iterations allowed once the trust-region boundary 
+!   has been achieved (-ve = no bound)
+
+        INTEGER :: itmax_beyond_boundary = - 1
+
 !   the iteration stops successfully when the gradient in the M(inverse) norm
 !    is smaller than max( stop_relative * initial M(inverse)
 !                         gradient norm, stop_absolute )
@@ -100,19 +109,10 @@
         REAL ( KIND = wp ) :: stop_relative = epsmch
         REAL ( KIND = wp ) :: stop_absolute = zero
 
-!   an estimate of the solution that gives at least %fraction_opt times
-!    the optimal objective value will be found
+!  the iteration stops successfully when the current decrease in the 
+!   objective function is smaller than stop_f_relative * the overall decrease
 
-        REAL ( KIND = wp ) :: fraction_opt = one
-
-!   the iteration stops if the objective-function value is lower than f_min
-
-        REAL ( KIND = wp ) :: f_min = - ( biginf / two )
-
-!   the smallest value that the square of the M norm of the gradient of the
-!    the objective may be before it is considered to be zero
-
-        REAL ( KIND = wp ) :: theta_zero = ten * epsmch
+        REAL ( KIND = wp ) :: stop_f_relative = epsmch
 
 !   the constant term, f0, in the objective function
 
@@ -121,14 +121,6 @@
 !   is M the identity matrix ?
 
         LOGICAL :: unitm = .TRUE.
-
-!   should the iteration stop when the Trust-region is first encountered ?
-
-        LOGICAL :: steihaug_toint  = .FALSE.
-
-!  is the solution thought to lie on the constraint boundary ?
-
-        LOGICAL :: boundary  = .FALSE.
 
 !  if %space_critical true, every effort will be made to use as little
 !    space as possible. This may result in longer computation time
@@ -169,6 +161,10 @@
 
         INTEGER :: iter = - 1
 
+!  the iteration that the boundary is achieved (-1=never)
+
+        INTEGER :: iter_boundary = - 1
+
 !  the Lagrange multiplier corresponding to the trust-region constraint
 
         REAL ( KIND = wp ) :: multiplier = zero
@@ -187,7 +183,7 @@
 
 !  is the approximate solution interior?
 
-        LOGICAL :: interior = .FALSE.
+        LOGICAL :: interior = .TRUE.
 
 !  did the hard case occur ?
 
@@ -205,6 +201,7 @@
         REAL ( KIND = wp ) :: gamma_old, gamma_older, kappa, lambda
         REAL ( KIND = wp ) :: mu, mu_old, mu_older, omega, tau, vartheta
         REAL ( KIND = wp ) :: vartheta_old, xi, x_norm, x_norm_squared
+        REAL ( KIND = wp ) :: stop_g_squared, f_current, f_last
         LOGICAL :: printi, printd
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Q
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R
@@ -253,6 +250,7 @@
 !  set initial control parameter values
 
       control%stop_relative = SQRT( epsmch )
+      control%stop_f_relative = SQRT( epsmch )
 
 !  set branch for initial entry
 
@@ -312,15 +310,13 @@
 !   print-level                                     0
 !   maximum-number-of-iterations                    -1
 !   minimum-number-of-iterations                    -1
+!   maximum-number-of-iterations-beyond-TR          -1
 !   relative-accuracy-required                      1.0E-8
 !   absolute-accuracy-required                      0.0
-!   fraction-optimality-required                    1.0
-!   small-f-stop                                    - 1.0D+100
-!   zero-gradient-tolerance                         2.0E-15
+!   relative-objective-decrease-required            1.0E-8
+!   small-f-stop                                    -1.0D+100
 !   constant-term-in-objective                      0.0
 !   two-norm-trust-region                           T
-!   stop-as-soon-as-boundary-encountered            F
-!   solution-is-likely-on-boundary                  F
 !   space-critical                                  F
 !   deallocate-error-fatal                          F
 !   output-line-prefix                              ""
@@ -341,16 +337,13 @@
       INTEGER, PARAMETER :: print_level = out + 1
       INTEGER, PARAMETER :: itmax = print_level + 1
       INTEGER, PARAMETER :: itmin = itmax + 1
-      INTEGER, PARAMETER :: stop_relative = itmin + 1
+      INTEGER, PARAMETER :: itmax_beyond_boundary  = itmin + 1
+      INTEGER, PARAMETER :: stop_relative = itmax_beyond_boundary + 1
       INTEGER, PARAMETER :: stop_absolute = stop_relative + 1
-      INTEGER, PARAMETER :: fraction_opt = stop_absolute + 1
-      INTEGER, PARAMETER :: theta_zero = fraction_opt + 1
-      INTEGER, PARAMETER :: f_0 = theta_zero + 1
-      INTEGER, PARAMETER :: f_min = f_0 + 1
-      INTEGER, PARAMETER :: unitm = f_min + 1
-      INTEGER, PARAMETER :: steihaug_toint = unitm + 1
-      INTEGER, PARAMETER :: boundary = steihaug_toint + 1
-      INTEGER, PARAMETER :: space_critical = boundary + 1
+      INTEGER, PARAMETER :: stop_f_relative = stop_absolute + 1
+      INTEGER, PARAMETER :: f_0 = stop_f_relative
+      INTEGER, PARAMETER :: unitm = f_0 + 1
+      INTEGER, PARAMETER :: space_critical = unitm + 1
       INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
       INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
       INTEGER, PARAMETER :: lspec = prefix
@@ -368,21 +361,19 @@
       spec( print_level )%keyword = 'print-level'
       spec( itmax )%keyword = 'maximum-number-of-iterations'
       spec( itmin )%keyword = 'minimum-number-of-iterations'
+      spec( itmax_beyond_boundary )%keyword                                    &
+         = 'maximum-number-of-iterations-beyond-TR'
 
 !  real key-words
 
       spec( stop_relative )%keyword = 'relative-accuracy-required'
       spec( stop_absolute )%keyword = 'absolute-accuracy-required'
-      spec( fraction_opt )%keyword = 'fraction-optimality-required'
-      spec( theta_zero )%keyword = 'zero-gradient-tolerance'
+      spec( stop_f_relative )%keyword = 'relative-objective-decrease-required'
       spec( f_0 )%keyword = 'constant-term-in-objective'
-      spec( f_min )%keyword = 'small-f-stop'
 
 !  logical key-words
 
       spec( unitm )%keyword = 'two-norm-trust-region'
-      spec( steihaug_toint )%keyword = 'stop-as-soon-as-boundary-encountered'
-      spec( boundary )%keyword = 'solution-is-likely-on-boundary'
       spec( space_critical )%keyword = 'space-critical'
       spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
 
@@ -417,6 +408,9 @@
       CALL SPECFILE_assign_value( spec( itmin ),                               &
                                   control%itmin,                               &
                                   control%error )
+      CALL SPECFILE_assign_value( spec( itmax_beyond_boundary ),               &
+                                  control%itmax_beyond_boundary,               &
+                                  control%error )
 
 !  Set real values
 
@@ -426,14 +420,8 @@
       CALL SPECFILE_assign_value( spec( stop_absolute ),                       &
                                   control%stop_absolute,                       &
                                   control%error )
-      CALL SPECFILE_assign_value( spec( fraction_opt ),                        &
-                                  control%fraction_opt,                        &
-                                  control%error )
-      CALL SPECFILE_assign_value( spec( f_min ),                               &
-                                  control%f_min,                               &
-                                  control%error )
-      CALL SPECFILE_assign_value( spec( theta_zero ),                         &
-                                  control%theta_zero,                         &
+      CALL SPECFILE_assign_value( spec( stop_f_relative ),                     &
+                                  control%stop_f_relative,                     &
                                   control%error )
       CALL SPECFILE_assign_value( spec( f_0 ),                                 &
                                   control%f_0,                                 &
@@ -443,12 +431,6 @@
 
       CALL SPECFILE_assign_value( spec( unitm ),                               &
                                   control%unitm,                               &
-                                  control%error )
-      CALL SPECFILE_assign_value( spec( steihaug_toint ),                      &
-                                  control%steihaug_toint,                      &
-                                  control%error )
-      CALL SPECFILE_assign_value( spec( boundary ),                            &
-                                  control%boundary,                            &
                                   control%error )
       CALL SPECFILE_assign_value( spec( space_critical ),                      &
                                   control%space_critical,                      &
@@ -500,9 +482,8 @@
 !              -2 an array deallocation has failed
 !              -3 n and/or radius is not positive
 !              -15 the matrix M appears to be indefinite
+!              -17 insufficient objective improvement occurs
 !              -18 the iteration limit has been exceeded
-!              -30 the trust-region has been encountered in Steihaug-Toint mode
-!              -31 the function value is smaller than control%f_min
 !             the remaining components are described in the preamble
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -625,10 +606,24 @@
       X( : n ) = zero
       data%x_norm = zero
       data%lambda = zero
+      data%f_current = zero
       f = control%f_0
-      inform%iter = 0
 
-!  main iteration loop
+!  initiliaze output information
+
+      inform%iter = 0
+      inform%iter_boundary = - 1
+      inform%interior = .TRUE.
+
+!  =============================
+!  main iteration loop - here:
+!   tau_k   = x_k' H x_k
+!   omega_k = q_k' H x_k
+!   delta_k = q_k' H q_k
+!   kappa_k = c' x_k
+!   eta_k   = c' M^-1 H x_k
+!   xi_k    = x_k' H M^-1 H x_k
+!  =============================
 
   100 CONTINUE
 
@@ -666,24 +661,24 @@
 !     + mu_1^2 ( gamma_2^2 + delta_1^2 + gamma_1^2 )
 
        ELSE IF ( inform%iter == 2 ) THEN
-         data%xi = data%vartheta ** 2 * data%xi                                &
+         data%xi = data%xi * data%vartheta ** 2                                &
           + two * data%vartheta * data%mu * data%mu_old * data%gamma_old       &
-             * ( data%delta + data%delta_old ) + data%mu ** 2                  &
-               * ( data%gamma ** 2 + data%delta ** 2 + data%gamma_old ** 2 )
-
+             * ( data%delta + data%delta_old )                                 &
+          + ( data%gamma ** 2 + data%delta ** 2 + data%gamma_old ** 2 )        &
+               * data%mu ** 2
 !  update xi_k = vartheta_k-1^2 xi_k-1
-!     + 2 vartheta_k-1mu_k-1 ( gamma_k^2 + delta_k-1^2 + gamma_k-1^2 )
-!     + mu_k-1^2 ( vartheta_k-1 mu_k-2 gamma_k-1 ( delta_k-1 + delta_k-2 )
-!                 + vartheta_k-2 vartheta_k-1 mu_k-3 gamma_k-2 gamma_k-1 )
+!     + 2 vartheta_k-1 mu_k-1 ( mu_k-2 gamma_k-1 ( delta_k-1 + delta_k-2 )
+!                               + vartheta_k-2 mu_k-3 gamma_k-2 gamma_k-1 )
+!     + mu_k-1^2 ( gamma_k^2 + delta_k-1^2 + gamma_k-1^2 )
 
        ELSE IF ( inform%iter > 2 ) THEN
-         data%xi = data%vartheta ** 2 * data%xi                                &
+         data%xi = data%xi * data%vartheta ** 2                                &
            + two * data%vartheta * data%mu                                     &
-              * ( data%gamma ** 2 + data%delta ** 2 + data%gamma_old ** 2 )    &
-           + data%mu ** 2 * ( data%vartheta * data%mu_old * data%gamma_old     &
-              * ( data%delta + data%delta_old )                                &
-           + data%vartheta_old * data%vartheta * data%mu_older                 &
-              * data%gamma_older * data%gamma )
+           * ( data%mu_old * data%gamma_old * ( data%delta + data%delta_old )  &
+              + data%vartheta_old * data%mu_older                              &
+                 * data%gamma_older * data%gamma_old ) &
+           + ( data%gamma ** 2 + data%delta ** 2 + data%gamma_old ** 2 )    &
+               * data%mu ** 2
        END IF
 
 !   compute g_norm_squared = ||g_0 + lambda_0 M s_0||^2_M^-1
@@ -694,6 +689,8 @@
 
          data%gamma_0_squared = data%gamma ** 2
          g_norm_squared = data%gamma_0_squared
+         data%stop_g_squared = MAX( control%stop_relative * data%gamma,        &
+                                    control%stop_absolute ) ** 2
 
 !  record w_k-1
 
@@ -705,24 +702,34 @@
 
          g_norm_squared = data%gamma_0_squared + two * data%eta + data%xi      &
           + two * data%lambda * ( data%kappa + data%tau )                      &
-          + data%lambda ** 2 * data%x_norm_squared
+          + data%x_norm_squared * data%lambda ** 2
        END IF
 
 !  print details of the latest iteration
 
        IF ( data%printi ) THEN
-         IF ( MOD( inform%iter, 25 ) == 0 .OR. data%printd )                     &
+         IF ( MOD( inform%iter, 25 ) == 0 .OR. data%printd )                   &
              WRITE( control%out, "( /, A, '   Iter        f        ',          &
-            &       ' pgnorm    step    norm p   norm x     curv ' )" ) prefix
-         WRITE( control%out, "( A, I7, ES16.8, 2ES9.2 )" )                     &
-                prefix, inform%iter, f, SQRT( g_norm_squared ), data%x_norm
+            &       ' pgnorm   norm x   step x   step_q   lambda' )" ) prefix
+         IF ( inform%iter > 0 ) THEN
+           WRITE( control%out, "( A, I7, ES16.8, 5ES9.2 )" )                   &
+!                 prefix, inform%iter, f, 0.0_wp, data%x_norm, &
+                  prefix, inform%iter, f, SQRT( g_norm_squared ), data%x_norm, &
+                  data%vartheta, data%mu, data%lambda
+         ELSE
+           WRITE( control%out, "( A, I7, ES16.8, 2ES9.2, '    -        -    ', &
+          &                    ES9.2 )" ) prefix, inform%iter, f,              &
+              SQRT( g_norm_squared ), data%x_norm, data%lambda
+         END IF
        END IF
 
 !  stop if the gradient is small so long as there have been sufficient
 !  iterations
 
-       IF ( g_norm_squared <= control%stop_relative ** 2 .AND.                 &
-            inform%iter >= data%itmin ) GO TO 900
+       IF ( g_norm_squared <= data%stop_g_squared .AND.                        &
+            inform%iter >= data%itmin ) THEN
+         inform%status = GALAHAD_ok ; GO TO 900
+       END IF
 
 !  set w_k = r_k / gamma_k and q_k = u_k / gamma_k
 
@@ -748,6 +755,15 @@
          data%omega = DOT_PRODUCT( X( : n ), data%Y( : n ) )
        END IF
        data%delta = DOT_PRODUCT( data%Q( : n ), data%Y( : n ) )
+
+!      IF ( .TRUE. ) &
+       IF ( .FALSE. ) &
+ write(6,"( ' tau   = ', ES22.14, /, ' omega = ', ES22.14, /, &
+ &          ' delta = ', ES22.14, /, ' kappa = ', ES22.14, /, &
+ &          ' eta   = ', ES22.14, /, ' xi    = ', ES22.14, /, &
+ &          ' m     = ', ES22.14, / )" ) &
+           data%tau, data%omega, data%delta, data%kappa, data%eta, data%xi, &
+           data%f_current
 
 !  find mu_0 = argminin_{mu : mu^2 <= radius^2} half delta_0 mu^2 + gamma_0 mu
 !  with associated multiplier lambda_1
@@ -803,13 +819,45 @@
          data%x_norm_squared = theta ** 2 + data%mu ** 2
          data%x_norm = SQRT( data%x_norm_squared )
          data%kappa = data%vartheta * data%kappa
-         data%tau = data%vartheta ** 2 * data%tau                              &
-                 + two * data%vartheta * data%mu * data%omega                  &
-                 + data%mu ** 2 * data%delta
+         data%tau = data%tau * data%vartheta ** 2                              &
+                      + two * data%vartheta * data%mu * data%omega             &
+                      + data%delta * data%mu ** 2
        END IF
 
-       f = control%f_0 + data%kappa + half * data%tau
-       IF ( inform%iter == data%itmax ) GO TO 910
+!  record when the boundary is reached, and adjust the iteration limit
+!  accordingly
+
+       IF ( inform%interior ) THEN
+         IF ( ABS( data%x_norm - radius ) <= boundary_tol ) THEN
+           inform%iter_boundary = inform%iter
+           inform%interior = .FALSE.
+           IF ( control%itmax_beyond_boundary > 0 )                            &
+             data%itmax = MIN( data%itmax,                                     &
+                               inform%iter + control%itmax_beyond_boundary )
+         END IF
+       END IF
+
+!  record the new function value
+
+       data%f_last = data%f_current
+       data%f_current = data%kappa + half * data%tau
+       f = control%f_0 + data%f_current
+
+!  check to see if the iteration limit has been achieved
+
+       IF ( inform%iter == data%itmax ) THEN
+         inform%status = GALAHAD_error_max_iterations ; GO TO 900
+       END IF
+
+!  check to see if the objective improvement is insufficient
+
+!      WRITE( 6, "( ' Df, total f = ', 2ES22.14 )" )                           &
+!        data%f_last - data%f_current, - data%f_current
+       IF ( data%f_last - data%f_current <=                                    &
+            - control%stop_f_relative * data%f_current .AND.                   &
+            inform%iter >= data%itmin ) THEN
+         inform%status = GALAHAD_error_tiny_step ; GO TO 900
+       END IF
 
 !  compute eta_k+1 and r_k+1
 
@@ -843,50 +891,41 @@
 
        inform%iter = inform%iter + 1
 
+!  ==========================
 !  end of main iteration loop
+!  ==========================
 
     GO TO 100
 
 !  record output statistics
 
+ 900 CONTINUE
     inform%x_norm = data%x_norm ; inform%multiplier = data%lambda
-    inform%interior = ABS( inform%x_norm - radius ) <= ten ** ( -15 )
+    inform%interior = ABS( inform%x_norm - radius ) <= boundary_tol
 
 !  ===============
 !  Exit conditions
 !  ===============
 
+    SELECT CASE ( inform%status )
+
 !  successful returns
 
- 900 CONTINUE
-     inform%status = GALAHAD_ok
-     RETURN
+    CASE ( GALAHAD_ok )
 
 !  too many iterations
 
- 910 CONTINUE
-     IF ( data%printi )                                                        &
-       WRITE( control%out, "( /, A, ' Iteration limit exceeded ' ) " ) prefix
-     inform%status = GALAHAD_error_max_iterations ; inform%iter = data%iter
-     RETURN
+    CASE ( GALAHAD_error_max_iterations )
+      IF ( data%printi ) WRITE( control%out,                                   &
+         "( /, A, ' Iteration limit exceeded' )" ) prefix
 
-!  boundary encountered in Steihaug-Toint method
+!  f improvement too small
 
-  920 CONTINUE
-
-!  find the gradient at the appropriate point on the boundary
-
-!     R = R + data%alpha * VECTOR
-
-!  record terminal information
-
-!     IF ( data%printi ) WRITE( control%out, "( A, I7, ES16.8, 4X, '-', 4X,    &
-!    &     3ES9.2, ES10.2, //, A,                                              &
-!    &     ' Now leaving trust region (Steihaug-Toint)' )" )                   &
-!         prefix, inform%iter, f, data%alpha, data%normp, SQRT( data%xmx ),    &
-!         inform%rayleigh, prefix
-!     inform%status = GALAHAD_warning_on_boundary
-!     RETURN
+    CASE ( GALAHAD_error_tiny_step )
+      IF ( data%printi ) WRITE( control%out,                                   &
+        "( /, A, ' Insufficient objective improvement' )" ) prefix
+   END SELECT
+   RETURN
 
 !  unsuccessful returns
 
@@ -901,30 +940,20 @@
   940 CONTINUE
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
         WRITE( control%error,                                                  &
-         "( A, ' n = ', I6, ' is not positive ' )" ) prefix, n
+         "( A, ' n = ', I6, ' is not positive' )" ) prefix, n
       inform%status = GALAHAD_error_restrictions
       RETURN
 
   950 CONTINUE
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
         WRITE( control%error,                                                  &
-         "( A, ' The radius ', ES12.4 , ' is not positive ' )" ) prefix, radius
+         "( A, ' The radius ', ES12.4 , ' is not positive' )" ) prefix, radius
       inform%status = GALAHAD_error_restrictions
       RETURN
 
 !  Allocation or deallocation error
 
   960 CONTINUE
-      RETURN
-
-!  objective-function value is too small
-
-  970 CONTINUE
-      IF ( control%error > 0 .AND. control%print_level > 0 )                   &
-        WRITE( control%error,                                                  &
-         "( A, ' The objective function value is smaller than', ES12.4 )" )    &
-        prefix, control%f_min
-      inform%status = GALAHAD_error_f_min ; inform%iter = data%iter
       RETURN
 
 !  End of subroutine LQT_solve
@@ -1086,11 +1115,18 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: leftmost, nroots
+     INTEGER :: i, leftmost, nroots
      REAL ( KIND = wp ) :: gamma_1, gamma_2, lambda_1, lambda_2, c, s
      REAL ( KIND = wp ) :: a4, a3, a2, a1, a0, tol, y_1, y_2, c1, c2
      REAL ( KIND = wp ) :: root1, root2, root3, root4, lambda_min
+     REAL ( KIND = wp ) :: dlambda, phi, phi_prime, lambda_n, cn, mu
      LOGICAL :: interior, debug
+
+     REAL ( KIND = wp ), DIMENSION( 0 : 4 ) :: A
+     REAL ( KIND = wp ), DIMENSION( 4 ) :: ROOTS
+     TYPE ( ROOTS_data_type ) :: data
+     TYPE ( ROOTS_control_type ) :: control
+     TYPE ( ROOTS_inform_type ) :: inform
 
 !  compute the eigen-decomposition H = Q^T Lambda Q, i.e.,
 
@@ -1186,9 +1222,9 @@
 
 !  if gamma_1 and gamma_2 are nonzero, solve the secular equation
 
-!             gamma_1^2                 gamma_2^2
-!     ----------------------- + ----------------------- = radius^2
-!     ( lambda + lambda_1 )^2   ( lambda + lambda_2 )^2
+!                         gamma_1^2                 gamma_2^2
+!   phi(lambda) =  ----------------------- + ----------------------- = radius^2
+!                  ( lambda + lambda_1 )^2   ( lambda + lambda_2 )^2
 
 !  or equivalently the quartic equation
 
@@ -1200,35 +1236,102 @@
        c1 = ( gamma_1 / radius ) ** 2
        c2 = ( gamma_2 / radius ) ** 2
 
-       a4 = one
-       a3 = two * ( lambda_1 + lambda_2 )
-       a2 = lambda_1 ** 2 + lambda_2 ** 2 + four * lambda_1 * lambda_2         &
-            - c1 - c2
-       a1 = two * lambda_1 * lambda_2 * ( lambda_1 + lambda_2 )                &
-            - two * ( c1 * lambda_2 + c2 * lambda_1 )
-       a0 = ( lambda_1 * lambda_2 ) ** 2                                       &
-            - c1 * lambda_2 ** 2 - c2 * lambda_1 ** 2
-       CALL ROOTS_quartic( a0, a1, a2, a3, a4, epsmch,                         &
-                           nroots, root1, root2, root3, root4, roots_debug )
+!  either estimate the larger root by replacing phi by the underestimator
+!  gamma_min^2 / ( lambda + lambda_min )^2 
+
+       IF ( .NOT. find_roots ) THEN
+         IF ( lambda_1 < lambda_2 ) THEN
+           lambda = - lambda_1 + ABS( gamma_1 ) / radius
+           dlambda =  lambda + lambda_1
+         ELSE
+           lambda = - lambda_2 + ABS( gamma_2 ) / radius
+           dlambda =  lambda + lambda_2
+         END IF
+
+!  or find all the roots via an appropriate rootfinder. In practice, shift
+!  the root-finding problem by lambda_min to avoid some cancellation when
+!  forming coefficients
+
+       ELSE
+         IF ( shift_roots ) THEN
+           IF ( lambda_1 < lambda_2 ) THEN
+             mu = lambda_2 - lambda_1
+             A( 4 ) = one
+             A( 3 ) = two * mu
+             A( 2 ) = mu ** 2 - c1 - c2
+             A( 1 ) = - two * c1 * mu
+             A( 0 ) = - c1 * mu ** 2
+           ELSE
+             mu = lambda_1 - lambda_2
+             A( 4 ) = one
+             A( 3 ) = two * mu
+             A( 2 ) = mu ** 2 - c1 - c2
+             A( 1 ) = - two * c2 * mu
+             A( 0 ) = - c2 * mu ** 2
+           END IF 
+
+!  un-shifted case
+
+         ELSE
+           A( 4 ) = one
+           A( 3 ) = two * ( lambda_1 + lambda_2 )
+           A( 2 ) = lambda_1 ** 2 + lambda_2 ** 2 + four * lambda_1 * lambda_2 &
+                    - c1 - c2
+           A( 1 ) = two * lambda_1 * lambda_2 * ( lambda_1 + lambda_2 )        &
+                    - two * ( c1 * lambda_2 + c2 * lambda_1 )
+           A( 0 ) = ( lambda_1 * lambda_2 ) ** 2                               &
+                    - c1 * lambda_2 ** 2 - c2 * lambda_1 ** 2
+         END IF
+
+!        CALL ROOTS_solve( A, nroots, ROOTS, control, inform, data )
+         CALL ROOTS_quartic( A( 0 ), A( 1 ), A( 2 ), A( 3 ), A( 4 ), epsmch,   &
+                            nroots, ROOTS( 1 ), ROOTS( 2 ), ROOTS( 3 ),        &
+                            ROOTS( 4 ), .TRUE. )
 
 !  record the required root
 
-       IF ( nroots == 4 ) THEN
-         lambda = root4
-       ELSE IF ( nroots == 2 ) THEN
-         lambda = root2
-       ELSE
-         WRITE( 6, "( ' Should not be here !!' )" )
-         WRITE( 6, "( I0, ' roots ' )" ) nroots
-         GO TO 900
+         IF ( nroots == 4 ) THEN
+           IF ( lambda_1 < lambda_2 ) THEN
+             lambda = - lambda_1 + ROOTS( 4 )
+           ELSE
+             lambda = - lambda_2 + ROOTS( 4 )
+           END IF
+         ELSE IF ( nroots == 2 ) THEN
+           IF ( lambda_1 < lambda_2 ) THEN
+             lambda = - lambda_1 + ROOTS( 2 )
+           ELSE
+             lambda = - lambda_2 + ROOTS( 2 )
+           END IF
+         ELSE
+           WRITE( 6, "( ' Should not be here !! - quartic case' )" )
+           WRITE( 6, "( I0, ' roots ' )" ) nroots
+           GO TO 900
+         END IF
        END IF
+
+!  perform a few iterations of Newton's method, applied to 
+!  ( phi(lambda) )^-1/2 = radiius^-1/2, to improve the root
+
+       DO i = 1, 10
+         phi = c1 / ( lambda + lambda_1 ) ** 2 + c2 / ( lambda + lambda_2 ) ** 2
+         phi_prime = - two * c1 / ( lambda + lambda_1 ) ** 3                   &
+                     - two * c2 / ( lambda + lambda_2 ) ** 3
+!        dlambda = - ( phi - one ) / phi_prime
+         dlambda = ( phi ** ( - 0.5_wp ) - one ) /                             &
+                   ( half * phi_prime * phi ** ( - 1.5_wp ) )
+!        IF ( ABS( dlambda ) <= ten * epsmch * MAX( one, lambda ) ) THEN
+         IF ( ABS( dlambda ) <= epsmch * MAX( one, lambda ) ) THEN
+           EXIT
+         END IF
+         lambda = lambda + dlambda
+       END DO
        status = 0
 
 !  if gamma_i is zero but gamma_j isn't, solve the secular equation
 
-!             gamma_j^2
-!     ----------------------- = radius^2
-!     ( lambda + lambda_j )^2
+!                         gamma_j^2
+!   phi(lambda) =  ----------------------- = radius^2
+!                  ( lambda + lambda_j )^2
 
 !  or equivalently the quartic equation
 
@@ -1236,28 +1339,43 @@
 
      ELSE IF ( gamma_1 /= zero .OR. gamma_2 /= zero ) THEN
        IF ( gamma_1 /= zero ) THEN
-         a2 = one ; a1 = two * lambda_1
-         a0 = lambda_1 ** 2 - ( gamma_1 / radius ) ** 2
+         cn = ( gamma_1 / radius ) ** 2 ; lambda_n = lambda_1
        ELSE
-         a2 = one ; a1 = two * lambda_2
-         a0 = lambda_2 ** 2 - ( gamma_2 / radius ) ** 2
+         cn = ( gamma_2 / radius ) ** 2 ; lambda_n = lambda_2
        END IF
-       CALL ROOTS_quadratic( a0, a1, a2, epsmch,                               &
-                             nroots, root1, root2, roots_debug )
+       A( 2 ) = one ; A( 1 ) = two * lambda_n
+       A( 0 ) = lambda_n ** 2 - cn
+       CALL ROOTS_quadratic( A( 0 ), A( 1 ), A( 2 ), epsmch,                   &
+                             nroots, ROOTS( 1 ), ROOTS( 2 ), roots_debug )
 
 !  record the required root, and check for the hard case
 
        IF ( nroots == 2 ) THEN
-         lambda = root2
-         IF ( root2 < lambda_min ) THEN
+         lambda = ROOTS( 2 )
+         IF ( ROOTS( 2 ) < lambda_min ) THEN
            lambda = lambda_min
            status = 3
          ELSE
-           lambda = root2
+           lambda = ROOTS( 2 )
+ 
+!  perform a few iterations of Newton's method, applied to 
+!  ( phi(lambda) )^-1/2 = radiius^-1/2, to improve the root
+
+!          dlambda = zero
+           DO i = 1, 5
+             phi = cn / ( lambda + lambda_n ) ** 2
+             phi_prime = - two * cn / ( lambda + lambda_n ) ** 3
+!            dlambda = - ( phi - one ) / phi_prime
+             dlambda = ( phi ** ( - 0.5_wp ) - one ) /                         &
+                       ( half * phi_prime * phi ** ( - 1.5_wp ) )
+!            IF ( ABS( dlambda ) <= ten * epsmch * MAX( one, lambda ) ) EXIT
+             IF ( ABS( dlambda ) <= epsmch * MAX( one, lambda ) ) EXIT
+             lambda = lambda + dlambda
+           END DO
            status = 0
          END IF
        ELSE
-         WRITE( 6, "( ' Should not be here !!' )" )
+         WRITE( 6, "( ' Should not be here !! - quadratic case' )" )
          WRITE( 6, "( I0, ' roots ' )" ) nroots
          GO TO 900
        END IF
@@ -1300,11 +1418,22 @@
 
      x_1 = c * y_1 - s * y_2 ; x_2 = s * y_1 + c * y_2
 
+     y_1 = g_1 + ( h_11 + lambda ) * x_1 + h_12 * x_2
+     y_2 = g_2 + h_12 * x_1 + ( h_22 + lambda ) * x_2
+
+!write(6,*) ' m ', half * h_11 * x_1 ** 2 + half * h_22 * x_2 ** 2 &
+!           + h_12 * x_1 * x_2 + g_1 * x_1 + g_2 * x_2
+!write(6,*) ' res ', y_1, y_2
+!write(6,*) ' lambda, c ', lambda, x_1 ** 2 + x_2 ** 2 - radius ** 2
+!write(6,"( ' data ', 5ES12.4)") h_11, h_12, h_22, g_1, g_2
+
      RETURN
 
 !  error returns
 
  900 CONTINUE
+     WRITE( 6, "( ' h_11, h_12, h_22 = ', 3ES12.4 )" ) h_11, h_12, h_22
+     WRITE( 6, "( ' g_1, g_2 = ', 2ES12.4 )" ) g_1, g_2
      x_1 = zero ; x_2 = zero ; lambda = zero
      status = - 1
      RETURN

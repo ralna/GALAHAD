@@ -1,0 +1,12 @@
+MAIN
+! write-problem-data                                no
+! write-result-summary                              yes
+! lqr-result-summary-file-name                      LQRRES.d
+! lqr-result-summary-file-device                    47
+! print-full-solution                               no
+! write-solution                                    yes
+! lqr-solution-file-name                            LQRSOL.d
+! lqr-solution-file-device                          62
+! radius                                            1.0
+
+INCLUDE LQR

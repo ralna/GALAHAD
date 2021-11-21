@@ -24,6 +24,7 @@
    CALL SMT_put( M%type, 'DIAGONAL', s )        ! Specify diagonal for M
    ALLOCATE( M%val( n ) ) ; M%val = 2.0_wp
    CALL TRS_initialize( data, control, inform ) ! Initialize control parameters
+!  control%print_level = 1
    CALL TRS_solve( n, radius, f, C, H, X, data, control, inform, M = M ) ! Solve
    IF ( inform%status == 0 ) THEN !  Successful return
     WRITE( 6, "( 1X, I0, ' factorizations. Objective and Lagrange multiplier', &

@@ -1,18 +1,20 @@
    PROGRAM GALAHAD_GLTR_EXAMPLE  !  GALAHAD 2.7 - 11/08/2016 AT 13:00 GMT.
    USE GALAHAD_GLTR_DOUBLE                        ! double precision version
    IMPLICIT NONE
-   INTEGER, PARAMETER :: working = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = working ), PARAMETER :: one = 1.0_working, two = 2.0_working
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
+   REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp, two = 2.0_wp
    INTEGER, PARAMETER :: n = 10000                ! problem dimension
    INTEGER :: i
-   REAL ( KIND = working ) :: f, radius = 10.0_working  ! radius of ten
-   REAL ( KIND = working ), DIMENSION( n ) :: X, R, VECTOR, H_vector
+   REAL ( KIND = wp ) :: f, radius = 10.0_wp  ! radius of ten
+   REAL ( KIND = wp ), DIMENSION( n ) :: X, R, VECTOR, H_vector
    TYPE ( GLTR_data_type ) :: data
    TYPE ( GLTR_control_type ) :: control
    TYPE ( GLTR_inform_type ) :: inform
    CALL GLTR_initialize( data, control, inform ) ! Initialize control parameters
+!  control%print_level = 1
    control%unitm = .FALSE.                ! M is not the identity matrix
    R = one                                ! The linear term is a vector of ones
+   R = 0.0001_wp
    inform%status = 1
    DO                                     !  Iteration to find the minimizer
      CALL GLTR_solve( n, radius, f, X, R, VECTOR, data, control, inform )
