@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 26/07/2021 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 3.3 - 22/11/2021 AT 13:40 GMT.
    PROGRAM GALAHAD_CQP_interface_test
    USE GALAHAD_CQP_double                       ! double precision version
    USE GALAHAD_SYMBOLS
@@ -23,16 +23,14 @@
 ! set up problem data
 
    n = 3 ;  m = 2 ; A_ne = 4 ; H_ne = 3
-   ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), G( n ), W( n ), X_0( n ) )
-   ALLOCATE( C( m ), Y( m ), C_l( m ), c_u( m ) )
-   ALLOCATE( C_stat( m ), X_stat( n ) )
+   f = 1.0_wp
+   ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), G( n ), X_stat( n ) )
+   ALLOCATE( C( m ), Y( m ), C_l( m ), C_u( m ), C_stat( m ) )
    G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)         ! objective gradient
    C_l = (/ 1.0_wp, 2.0_wp /)               ! constraint lower bound
    C_u = (/ 2.0_wp, 2.0_wp /)               ! constraint upper bound
    X_l = (/ - 1.0_wp, - infinity, - infinity /) ! variable lower bound
    X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
-   W = 1.0_wp                               ! weights
-   X_0 = 0.0_wp                             ! shifts
    ALLOCATE( A_val( A_ne ), A_row( A_ne ), A_col( A_ne ), A_ptr( m + 1 ) )
    A_val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
    A_row = (/ 1, 1, 2, 2 /)
@@ -59,7 +57,6 @@
 
    DO data_storage_type = 1, 7
      CALL CQP_initialize( data, control, inform )
-     control%print_level = 1
      X = 0.0_wp ; Y = 0.0_wp ; Z = 0.0_wp ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -119,12 +116,40 @@
      ELSE
        WRITE( 6, "( A2, ': CQP_solve exit status = ', I0 ) " ) st, inform%status
      END IF
-!    WRITE( 6, "( ' X ', 3ES12.5 )" ) X
-!    WRITE( 6, "( ' G ', 3ES12.5 )" ) G
      CALL CQP_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( X, C, G, Y, Z, W, X_stat, C_stat )
-   DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, H_zero )
+
+!  shifted least-distance example
+
+   ALLOCATE( W( n ), X_0( n ) )
+   W = 1.0_wp    ! weights
+   X_0 = 0.0_wp  ! shifts
+
+   DO data_storage_type = 1, 1
+     CALL CQP_initialize( data, control, inform )
+!    control%print_level = 1
+     X = 0.0_wp ; Y = 0.0_wp ; Z = 0.0_wp ! start from zero
+     SELECT CASE ( data_storage_type )
+     CASE ( 1 ) ! sparse co-ordinate storage
+       st = ' W'
+       CALL CQP_import( control, data, status, n, m,                           &
+                        'shifted_least_distance', H_ne, H_row, H_col, H_ptr,   &
+                        'coordinate', A_ne, A_row, A_col, A_ptr )
+       CALL CQP_solve_sld( data, status, W, X_0, G, f, A_val, C_l, C_u,        &
+                           X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+
+     END SELECT
+     CALL CQP_information( data, inform, status )
+     IF ( inform%status == 0 ) THEN
+       WRITE( 6, "( A2, ':', I6, ' iterations. Optimal objective value = ',    &
+     &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
+     ELSE
+       WRITE( 6, "( A2, ': CQP_solve exit status = ', I0 ) " ) st, inform%status
+     END IF
+     CALL CQP_terminate( data, control, inform )  ! delete internal workspace
+   END DO
+   DEALLOCATE( X, C, G, Y, Z, W, X_0, X_stat, C_stat )
+   DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
 
    END PROGRAM GALAHAD_CQP_interface_test

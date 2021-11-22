@@ -2167,6 +2167,7 @@
                                  data%SBLS_data, prefix,                       &
                                  control, inform,                              &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
                                  C_stat = C_stat, B_Stat = B_Stat )
@@ -2194,6 +2195,7 @@
                                  data%SBLS_data, prefix,                       &
                                  control, inform,                              &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  G = prob%G,                                   &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
@@ -2224,6 +2226,7 @@
                                  data%SBLS_data, prefix,                       &
                                  control, inform,                              &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  X0 = prob%X0,                                 &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
@@ -2252,6 +2255,7 @@
                                  data%SBLS_data, prefix,                       &
                                  control, inform,                              &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  X0 = prob%X0, G = prob%G,                     &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
@@ -2282,6 +2286,7 @@
                                  data%SBLS_data, prefix,                       &
                                  control, inform,                              &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  WEIGHT = prob%WEIGHT, X0 = prob%X0,           &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
@@ -2310,6 +2315,7 @@
                                  data%SBLS_data, prefix,                       &
                                  control, inform,                              &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  WEIGHT = prob%WEIGHT, X0 = prob%X0,           &
                                  G = prob%G,                                   &
                                  C_last = data%A_s, X_last = data%H_s,         &
@@ -2342,6 +2348,7 @@
                                    data%SBLS_data, prefix,                     &
                                    control, inform,                            &
                                    prob%Hessian_kind, prob%gradient_kind,      &
+                                   prob%target_kind,                           &
                                    H_lm = prob%H_lm,                           &
                                    C_last = data%A_s, X_last = data%H_s,       &
                                    Y_last = data%Y_last,                       &
@@ -2371,6 +2378,7 @@
                                    data%SBLS_data, prefix,                     &
                                    control, inform,                            &
                                    prob%Hessian_kind, prob%gradient_kind,      &
+                                   prob%target_kind,                           &
                                    H_val = prob%H%val, H_col = prob%H%col,     &
                                    H_ptr = prob%H%ptr,                         &
                                    C_last = data%A_s, X_last = data%H_s,       &
@@ -2403,6 +2411,7 @@
                                    data%SBLS_data, prefix,                     &
                                    control, inform,                            &
                                    prob%Hessian_kind, prob%gradient_kind,      &
+                                   prob%target_kind,                           &
                                    H_lm = prob%H_lm, G = prob%G,               &
                                    C_last = data%A_s, X_last = data%H_s,       &
                                    Y_last = data%Y_last,                       &
@@ -2432,6 +2441,7 @@
                                    data%SBLS_data, prefix,                     &
                                    control, inform,                            &
                                    prob%Hessian_kind, prob%gradient_kind,      &
+                                   prob%target_kind,                           &
                                    H_val = prob%H%val, H_col = prob%H%col,     &
                                    H_ptr = prob%H%ptr, G = prob%G,             &
                                    C_last = data%A_s, X_last = data%H_s,       &
@@ -2469,7 +2479,9 @@
                                  data%OPT_alpha, data%OPT_merit,               &
                                  data%SBLS_data, prefix,                       &
                                  control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind )
+                                 prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind )
+
           ELSE
             CALL CQP_solve_main( data%dims, prob%n, prob%m,                    &
                                  prob%A%val, prob%A%col, prob%A%ptr,           &
@@ -2494,6 +2506,7 @@
                                  data%SBLS_data, prefix,                       &
                                  control, inform,                              &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  G = prob%G )
           END IF
         ELSE IF ( prob%Hessian_kind == 1 ) THEN
@@ -2521,6 +2534,7 @@
                                  data%SBLS_data, prefix,                       &
                                  control, inform,                              &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  X0 = prob%X0 )
           ELSE
             CALL CQP_solve_main( data%dims, prob%n, prob%m,                    &
@@ -2546,6 +2560,7 @@
                                  data%SBLS_data, prefix,                       &
                                  control, inform,                              &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  X0 = prob%X0, G = prob%G )
           END IF
         ELSE IF ( prob%Hessian_kind == 1 ) THEN
@@ -2573,6 +2588,7 @@
                                  data%SBLS_data, prefix,                       &
                                  control, inform,                              &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  WEIGHT = prob%WEIGHT, X0 = prob%X0 )
           ELSE
             CALL CQP_solve_main( data%dims, prob%n, prob%m,                    &
@@ -2598,6 +2614,7 @@
                                  data%SBLS_data, prefix,                       &
                                  control, inform,                              &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  WEIGHT = prob%WEIGHT, X0 = prob%X0,           &
                                  G = prob%G )
           END IF
@@ -2627,6 +2644,7 @@
                                    data%SBLS_data, prefix,                     &
                                    control, inform,                            &
                                    prob%Hessian_kind, prob%gradient_kind,      &
+                                   prob%target_kind,                           &
                                    H_lm = prob%H_lm )
             ELSE
               CALL CQP_solve_main( data%dims, prob%n, prob%m,                  &
@@ -2652,6 +2670,7 @@
                                    data%SBLS_data, prefix,                     &
                                    control, inform,                            &
                                    prob%Hessian_kind, prob%gradient_kind,      &
+                                   prob%target_kind,                           &
                                    H_val = prob%H%val, H_col = prob%H%col,     &
                                    H_ptr = prob%H%ptr )
             END IF
@@ -2680,6 +2699,7 @@
                                    data%SBLS_data, prefix,                     &
                                    control, inform,                            &
                                    prob%Hessian_kind, prob%gradient_kind,      &
+                                   prob%target_kind,                           &
                                    H_lm = prob%H_lm, G = prob%G )
             ELSE
               CALL CQP_solve_main( data%dims, prob%n, prob%m,                  &
@@ -2705,6 +2725,7 @@
                                    data%SBLS_data, prefix,                     &
                                    control, inform,                            &
                                    prob%Hessian_kind, prob%gradient_kind,      &
+                                   prob%target_kind,                           &
                                    H_val = prob%H%val, H_col = prob%H%col,     &
                                    H_ptr = prob%H%ptr, G = prob%G )
             END IF
@@ -2947,7 +2968,7 @@
                                   DY_u_zh, DZ_l_zh, DZ_u_zh,                   &
                                   OPT_alpha, OPT_merit,                        &
                                   SBLS_data, prefix, control, inform,          &
-                                  Hessian_kind, gradient_kind,                 &
+                                  Hessian_kind, gradient_kind, target_kind,    &
                                   H_val, H_col, H_ptr, H_lm, WEIGHT, X0, G,    &
                                   C_last, X_last, Y_last, Z_last,              &
                                   C_stat, B_Stat )
@@ -3186,7 +3207,8 @@
 !  Dummy arguments
 
       TYPE ( CQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, Hessian_kind, gradient_kind, order
+      INTEGER, INTENT( IN ) :: n, m, order
+      INTEGER, INTENT( IN ) :: Hessian_kind, gradient_kind, target_kind
       REAL ( KIND = wp ), INTENT( IN ) :: f
       INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
       INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
@@ -3938,9 +3960,21 @@
       IF ( Hessian_kind == 0 ) THEN
         inform%obj = f
       ELSE IF ( Hessian_kind == 1 ) THEN
-        inform%obj = f + half * SUM( ( X - X0 ) ** 2 )
+        IF ( target_kind == 0 ) THEN
+          inform%obj = f + half * SUM( X ** 2 )
+        ELSE IF ( target_kind == 1 ) THEN
+          inform%obj = f + half * SUM( ( X - one ) ** 2 )
+        ELSE
+          inform%obj = f + half * SUM( ( X - X0 ) ** 2 )
+        END IF
       ELSE IF ( Hessian_kind == 2 ) THEN
-        inform%obj = f + half * SUM( ( WEIGHT * ( X - X0 ) ) ** 2 )
+        IF ( target_kind == 0 ) THEN
+          inform%obj = f + half * SUM( ( WEIGHT * X ) ** 2 )
+        ELSE IF ( target_kind == 1 ) THEN
+          inform%obj = f + half * SUM( ( WEIGHT * ( X - one ) ) ** 2 )
+        ELSE
+          inform%obj = f + half * SUM( ( WEIGHT * ( X - X0 ) ) ** 2 )
+        END IF
       ELSE
         IF ( lbfgs ) THEN
           CALL LMS_apply_lbfgs( X, H_lm, i, RESULT = RHS( : n ) )
@@ -4041,6 +4075,7 @@
                                      control%getdua, dufeas,                   &
                                      control%perturb_h,                        &
                                      Hessian_kind, gradient_kind,              &
+                                     target_kind,                              &
                                      h_ne = h_ne, H_val = H_val,               &
                                      H_col = H_col, H_ptr = H_ptr,             &
                                      H_lm = H_lm, G = G,                       &
@@ -4351,9 +4386,21 @@
         IF ( Hessian_kind == 0 ) THEN
           RHS( : n ) = zero
         ELSE IF ( Hessian_kind == 1 ) THEN
-           RHS( : n ) = X - X0
+          IF ( target_kind == 0 ) THEN
+            RHS( : n ) = X
+          ELSE IF ( target_kind == 1 ) THEN
+            RHS( : n ) = X - one
+          ELSE
+            RHS( : n ) = X - X0
+          END IF
         ELSE IF ( Hessian_kind == 2 ) THEN
-           RHS( : n ) = ( WEIGHT ** 2 ) * ( X - X0 )
+          IF ( target_kind == 0 ) THEN
+            RHS( : n ) = ( WEIGHT ** 2 ) * X
+          ELSE IF ( target_kind == 1 ) THEN
+            RHS( : n ) = ( WEIGHT ** 2 ) * ( X - one )
+          ELSE
+            RHS( : n ) = ( WEIGHT ** 2 ) * ( X - X0 )
+          END IF
         ELSE
           IF ( lbfgs ) THEN  ! this is not quite right ... but not crucial
             CALL LMS_apply_lbfgs( ABS( X ), H_lm, i, RESULT = RHS( : n ) )
@@ -6663,6 +6710,7 @@
                                          control%getdua, dufeas,               &
                                          control%perturb_h,                    &
                                          Hessian_kind, gradient_kind,          &
+                                         target_kind,                          &
                                          h_ne = h_ne, H_val = H_val,           &
                                          H_col = H_col, H_ptr = H_ptr,         &
                                          H_lm = H_lm, G = G,                   &
@@ -6721,9 +6769,21 @@
             IF ( Hessian_kind == 0 ) THEN
               inform%obj = f
             ELSE IF ( Hessian_kind == 1 ) THEN
-              inform%obj = f + half * SUM( ( X - X0 ) ** 2 )
+              IF ( target_kind == 0 ) THEN
+                inform%obj = f + half * SUM( X ** 2 )
+              ELSE IF ( target_kind == 1 ) THEN
+                inform%obj = f + half * SUM( ( X - one ) ** 2 )
+              ELSE
+                inform%obj = f + half * SUM( ( X - X0 ) ** 2 )
+              END IF
             ELSE IF ( Hessian_kind == 2 ) THEN
-              inform%obj = f + half * SUM( ( WEIGHT * ( X - X0 ) ) ** 2 )
+              IF ( target_kind == 0 ) THEN
+                inform%obj = f + half * SUM( ( WEIGHT * X ) ** 2 )
+              ELSE IF ( target_kind == 1 ) THEN
+                inform%obj = f + half * SUM( ( WEIGHT * ( X - one ) ) ** 2 )
+              ELSE
+                inform%obj = f + half * SUM( ( WEIGHT * ( X - X0 ) ) ** 2 )
+              END IF
             ELSE
               IF ( lbfgs ) THEN
                 CALL LMS_apply_lbfgs( X, H_lm, i, RESULT = RHS( : n ) )
@@ -6923,6 +6983,7 @@ END DO
                                        control%getdua, dufeas,                 &
                                        control%perturb_h,                      &
                                        Hessian_kind, gradient_kind,            &
+                                       target_kind,                            &
                                        h_ne = h_ne, H_val = H_val,             &
                                        H_col = H_col, H_ptr = H_ptr,           &
                                        H_lm = H_lm, G = G,                     &
@@ -6945,9 +7006,21 @@ END DO
         IF ( Hessian_kind == 0 ) THEN
           inform%obj = f
         ELSE IF ( Hessian_kind == 1 ) THEN
-          inform%obj = f + half * SUM( ( X - X0 ) ** 2 )
+          IF ( target_kind == 0 ) THEN
+            inform%obj = f + half * SUM( X ** 2 )
+          ELSE IF ( target_kind == 1 ) THEN
+            inform%obj = f + half * SUM( ( X - one ) ** 2 )
+          ELSE
+            inform%obj = f + half * SUM( ( X - X0 ) ** 2 )
+          END IF
         ELSE IF ( Hessian_kind == 2 ) THEN
-          inform%obj = f + half * SUM( ( WEIGHT * ( X - X0 ) ) ** 2 )
+          IF ( target_kind == 0 ) THEN
+            inform%obj = f + half * SUM( ( WEIGHT * X ) ** 2 )
+          ELSE IF ( target_kind == 1 ) THEN
+            inform%obj = f + half * SUM( ( WEIGHT * ( X - one ) ) ** 2 )
+          ELSE
+            inform%obj = f + half * SUM( ( WEIGHT * ( X - X0 ) ) ** 2 )
+          END IF
         ELSE
           IF ( lbfgs ) THEN
             CALL LMS_apply_lbfgs( X, H_lm, i, RESULT = RHS( : n ) )
@@ -7266,9 +7339,21 @@ END DO
       IF ( Hessian_kind == 0 ) THEN
         inform%obj = f
       ELSE IF ( Hessian_kind == 1 ) THEN
-        inform%obj = f + half * SUM( ( X - X0 ) ** 2 )
+        IF ( target_kind == 0 ) THEN
+          inform%obj = f + half * SUM( X ** 2 )
+        ELSE IF ( target_kind == 1 ) THEN
+          inform%obj = f + half * SUM( ( X - one ) ** 2 )
+        ELSE
+          inform%obj = f + half * SUM( ( X - X0 ) ** 2 )
+        END IF
       ELSE IF ( Hessian_kind == 2 ) THEN
-        inform%obj = f + half * SUM( ( WEIGHT * ( X - X0 ) ) ** 2 )
+        IF ( target_kind == 0 ) THEN
+          inform%obj = f + half * SUM( ( WEIGHT * X ) ** 2 )
+        ELSE IF ( target_kind == 1 ) THEN
+          inform%obj = f + half * SUM( ( WEIGHT * ( X - one ) ) ** 2 )
+        ELSE
+          inform%obj = f + half * SUM( ( WEIGHT * ( X - X0 ) ) ** 2 )
+        END IF
       ELSE
         IF ( lbfgs ) THEN
           CALL LMS_apply_lbfgs( X, H_lm, i, RESULT = RHS( : n ) )
@@ -8304,7 +8389,8 @@ END DO
                                           DIST_X_l, DIST_X_u, DIST_C_l,        &
                                           DIST_C_u, GRAD_L, getdua, dufeas,    &
                                           perturb_h, Hessian_kind,             &
-                                          gradient_kind, h_ne, H_val, H_col,   &
+                                          gradient_kind, target_kind,          &
+                                          h_ne, H_val, H_col,                  &
                                           H_ptr, H_lm, G, WEIGHT, X0 )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -8318,7 +8404,7 @@ END DO
 !  Dummy arguments
 
       TYPE ( CQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, Hessian_kind, gradient_kind
+      INTEGER, INTENT( IN ) :: n, m, Hessian_kind, gradient_kind, target_kind
       REAL ( KIND = wp ), INTENT( IN ) :: dufeas, perturb_h
       LOGICAL, INTENT( IN ) :: getdua
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
@@ -8362,9 +8448,21 @@ END DO
       IF ( Hessian_kind == 0 ) THEN
         GRAD_L = zero
       ELSE IF ( Hessian_kind == 1 ) THEN
-        GRAD_L = X - X0
+        IF ( target_kind == 0 ) THEN
+          GRAD_L = X
+        ELSE IF ( target_kind == 1 ) THEN
+          GRAD_L = X - one
+        ELSE
+          GRAD_L = X - X0
+        END IF
       ELSE IF ( Hessian_kind == 2 ) THEN
-        GRAD_L = ( WEIGHT ** 2 ) * ( X - X0 )
+        IF ( target_kind == 0 ) THEN
+          GRAD_L = ( WEIGHT ** 2 ) * X
+        ELSE IF ( target_kind == 1 ) THEN
+          GRAD_L = ( WEIGHT ** 2 ) * ( X - one )
+        ELSE
+          GRAD_L = ( WEIGHT ** 2 ) * ( X - X0 )
+        END IF
       ELSE
 !write(6, "( ' x ', /, ( 5ES12.4) )" ) X
         IF ( PRESENT( H_lm ) ) THEN
@@ -10953,7 +11051,7 @@ END DO
        IF ( data%cqp_inform%status /= 0 ) GO TO 900
 
      CASE ( 'identity', 'IDENTITY' )
-       CALL SMT_put( data%prob%H%type, 'SCALED_IDENTITY',                      &
+       CALL SMT_put( data%prob%H%type, 'IDENTITY',                             &
                      data%cqp_inform%alloc_status )
        data%prob%H%n = n
        data%prob%H%ne = 0
@@ -11230,7 +11328,7 @@ END DO
 
 !-*-*-*-  G A L A H A D -  C Q P _ s o l v e _ s l d  S U B R O U T I N E  -*-*-
 
-     SUBROUTINE CQP_solve_sld( data, status, W, X_0, G, f, A_val, C_l, C_u,    &
+     SUBROUTINE CQP_solve_sld( data, status, W, X0, G, f, A_val, C_l, C_u,     &
                                X_l, X_u, X, C, Y, Z, X_stat, C_stat )
 
 !  solve the shifted-least-distance problem whose structure was previously
@@ -11242,7 +11340,7 @@ END DO
 
      INTEGER, INTENT( OUT ) :: status
      TYPE ( CQP_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: W, X_0
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: W, X0
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
      REAL ( KIND = wp ), INTENT( IN ) :: f
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
@@ -11323,9 +11421,9 @@ END DO
          data%prob%WEIGHT( : n ) = W( : n )
        END IF
 
-       IF ( COUNT( X_0( : n ) == 0.0_wp ) == n ) THEN
+       IF ( COUNT( X0( : n ) == 0.0_wp ) == n ) THEN
          data%prob%target_kind = 0
-       ELSE IF ( COUNT( X_0( : n ) == 1.0_wp ) == n ) THEN
+       ELSE IF ( COUNT( X0( : n ) == 1.0_wp ) == n ) THEN
          data%prob%target_kind = 1
        ELSE
          data%prob%target_kind = 2
@@ -11339,7 +11437,7 @@ END DO
                 bad_alloc = data%cqp_inform%bad_alloc,                         &
                 out = data%cqp_control%error )
          IF ( data%cqp_inform%status /= 0 ) GO TO 900
-         data%prob%X0( : n ) = X_0( : n )
+         data%prob%X0( : n ) = X0( : n )
        END IF
      ELSE
        data%cqp_inform%status = GALAHAD_error_hessian_type

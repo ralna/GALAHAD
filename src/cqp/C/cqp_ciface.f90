@@ -14,7 +14,7 @@
   MODULE GALAHAD_CQP_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_CQP_double, ONLY: &
+    USE GALAHAD_CQP_double, ONLY:                                              &
         f_cqp_control_type   => CQP_control_type,                              &
         f_cqp_time_type      => CQP_time_type,                                 &
         f_cqp_inform_type    => CQP_inform_type,                               &
@@ -187,8 +187,8 @@
       REAL ( KIND = wp ) :: potential
       REAL ( KIND = wp ) :: non_negligible_pivot
       LOGICAL ( KIND = C_BOOL ) :: feasible
-      INTEGER ( KIND = C_INT ) :: checkpointsIter
-      REAL ( KIND = wp ) :: checkpointsTime
+      INTEGER ( KIND = C_INT ), DIMENSION( 16 ) :: checkpointsIter
+      REAL ( KIND = wp ), DIMENSION( 16 ) :: checkpointsTime
       TYPE ( cqp_time_type ) :: time
 !!$      TYPE ( fdc_inform_type ) :: fdc_inform
 !!$      TYPE ( sbls_inform_type ) :: sbls_inform
@@ -206,12 +206,12 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( cqp_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_cqp_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -259,14 +259,16 @@
 
     ! Logicals
     fcontrol%remove_dependencies = ccontrol%remove_dependencies
-    fcontrol%treat_zero_bounds_as_general = ccontrol%treat_zero_bounds_as_general
+    fcontrol%treat_zero_bounds_as_general                                      &
+      = ccontrol%treat_zero_bounds_as_general
     fcontrol%treat_separable_as_general = ccontrol%treat_separable_as_general
     fcontrol%just_feasible = ccontrol%just_feasible
     fcontrol%getdua = ccontrol%getdua
     fcontrol%puiseux = ccontrol%puiseux
     fcontrol%every_order = ccontrol%every_order
     fcontrol%feasol = ccontrol%feasol
-    fcontrol%balance_initial_complentarity = ccontrol%balance_initial_complentarity
+    fcontrol%balance_initial_complentarity                                     &
+      = ccontrol%balance_initial_complentarity
     fcontrol%crossover = ccontrol%crossover
     fcontrol%space_critical = ccontrol%space_critical
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
@@ -299,12 +301,12 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_cqp_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( cqp_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
@@ -352,14 +354,16 @@
 
     ! Logicals
     ccontrol%remove_dependencies = fcontrol%remove_dependencies
-    ccontrol%treat_zero_bounds_as_general = fcontrol%treat_zero_bounds_as_general
+    ccontrol%treat_zero_bounds_as_general                                      &
+      = fcontrol%treat_zero_bounds_as_general
     ccontrol%treat_separable_as_general = fcontrol%treat_separable_as_general
     ccontrol%just_feasible = fcontrol%just_feasible
     ccontrol%getdua = fcontrol%getdua
     ccontrol%puiseux = fcontrol%puiseux
     ccontrol%every_order = fcontrol%every_order
     ccontrol%feasol = fcontrol%feasol
-    ccontrol%balance_initial_complentarity = fcontrol%balance_initial_complentarity
+    ccontrol%balance_initial_complentarity                                     &
+      = fcontrol%balance_initial_complentarity
     ccontrol%crossover = fcontrol%crossover
     ccontrol%space_critical = fcontrol%space_critical
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
@@ -377,11 +381,13 @@
     DO i = 1, LEN( fcontrol%sif_file_name )
       ccontrol%sif_file_name( i ) = fcontrol%sif_file_name( i : i )
     END DO
-    ccontrol%sif_file_name( LEN( fcontrol%sif_file_name ) + 1 ) = C_NULL_CHAR
+    ccontrol%sif_file_name( LEN( fcontrol%sif_file_name ) + 1 )                &
+      = C_NULL_CHAR
     DO i = 1, LEN( fcontrol%qplib_file_name )
       ccontrol%qplib_file_name( i ) = fcontrol%qplib_file_name( i : i )
     END DO
-    ccontrol%qplib_file_name( LEN( fcontrol%qplib_file_name ) + 1 ) = C_NULL_CHAR
+    ccontrol%qplib_file_name( LEN( fcontrol%qplib_file_name ) + 1 )            &
+      = C_NULL_CHAR
     DO i = 1, LEN( fcontrol%prefix )
       ccontrol%prefix( i ) = fcontrol%prefix( i : i )
     END DO
@@ -392,7 +398,7 @@
 
 !  copy C time parameters to fortran
 
-    SUBROUTINE copy_time_in( ctime, ftime ) 
+    SUBROUTINE copy_time_in( ctime, ftime )
     TYPE ( cqp_time_type ), INTENT( IN ) :: ctime
     TYPE ( f_cqp_time_type ), INTENT( OUT ) :: ftime
 
@@ -415,7 +421,7 @@
 
 !  copy fortran time parameters to C
 
-    SUBROUTINE copy_time_out( ftime, ctime ) 
+    SUBROUTINE copy_time_out( ftime, ctime )
     TYPE ( f_cqp_time_type ), INTENT( IN ) :: ftime
     TYPE ( cqp_time_type ), INTENT( OUT ) :: ctime
 
@@ -438,7 +444,7 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( cqp_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_cqp_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
@@ -490,7 +496,7 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_cqp_inform_type ), INTENT( IN ) :: finform
     TYPE ( cqp_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i
@@ -546,7 +552,7 @@
 !  C interface to fortran cqp_initialize
 !  -------------------------------------
 
-  SUBROUTINE cqp_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE cqp_initialize( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_CQP_double_ciface
   IMPLICIT NONE
 
@@ -561,7 +567,7 @@
   TYPE ( f_cqp_full_data_type ), POINTER :: fdata
   TYPE ( f_cqp_control_type ) :: fcontrol
   TYPE ( f_cqp_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -576,7 +582,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
 
@@ -617,11 +623,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_cqp_read_specfile( fcontrol, device )
@@ -641,7 +647,9 @@
 !  C interface to fortran cqp_inport
 !  ---------------------------------
 
-  SUBROUTINE cqp_import( ccontrol, cdata, status ) BIND( C )
+  SUBROUTINE cqp_import( ccontrol, cdata, status, n, m,                        &
+                         chtype, hne, hrow, hcol, hptr,                        &
+                         catype, ane, arow, acol, aptr ) BIND( C )
   USE GALAHAD_CQP_double_ciface
   IMPLICIT NONE
 
@@ -650,11 +658,24 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( cqp_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne, ane
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
 
 !  local variables
 
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
   TYPE ( f_cqp_control_type ) :: fcontrol
   TYPE ( f_cqp_full_data_type ), POINTER :: fdata
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -672,12 +693,42 @@
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
+    IF ( PRESENT( arow ) ) THEN
+      ALLOCATE( arow_find( ane ) )
+      arow_find = arow + 1
+    END IF
+    IF ( PRESENT( acol ) ) THEN
+      ALLOCATE( acol_find( ane ) )
+      acol_find = acol + 1
+    END IF
+    IF ( PRESENT( aptr ) ) THEN
+      ALLOCATE( aptr_find( m + 1 ) )
+      aptr_find = aptr + 1
+    END IF
+
+    IF ( PRESENT( hrow ) ) THEN
+      ALLOCATE( hrow_find( hne ) )
+      hrow_find = hrow + 1
+    END IF
+    IF ( PRESENT( hcol ) ) THEN
+      ALLOCATE( hcol_find( hne ) )
+      hcol_find = hcol + 1
+    END IF
+    IF ( PRESENT( hptr ) ) THEN
+      ALLOCATE( hptr_find( n + 1 ) )
+      hptr_find = hptr + 1
+    END IF
 
 !  import the problem data into the required CQP structure
 
-    CALL f_cqp_import( fcontrol, fdata, status )
+    CALL f_cqp_import( fcontrol, fdata, status, n, m,                          &
+                       fhtype, hne, hrow_find, hcol_find, hptr_find,           &
+                       fatype, ane, arow_find, acol_find, aptr_find )
   ELSE
-    CALL f_cqp_import( fcontrol, fdata, status )
+    CALL f_cqp_import( fcontrol, fdata, status, n, m,                          &
+                       fhtype, hne, hrow, hcol, hptr,                          &
+                       fatype, ane, arow, acol, aptr )
+
   END IF
 
 !  copy control out
@@ -726,11 +777,96 @@
 
   END SUBROUTINE cqp_reset_control
 
+!  ------------------------------------
+!  C interface to fortran cqp_solve_cqp
+!  ------------------------------------
+
+  SUBROUTINE cqp_solve_qp( cdata, status, n, m, hne, hval, g, f, ane, aval,    &
+                           cl, cu, xl, xu, x, c, y, z, xstat, cstat ) BIND( C )
+  USE GALAHAD_CQP_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane, hne
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( IN ) :: f
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( m ) :: cstat
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_cqp_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the qp
+
+  CALL f_cqp_solve_qp( fdata, status, hval, g, f, aval, cl, cu, xl, xu,        &
+                       x, c, y, z, xstat, cstat )
+  RETURN
+
+  END SUBROUTINE cqp_solve_qp
+
+!  ------------------------------------
+!  C interface to fortran cqp_solve_sld
+!  ------------------------------------
+
+  SUBROUTINE cqp_solve_sld( cdata, status, n, m, w, x0, g, f, ane, aval,       &
+                            cl, cu, xl, xu, x, c, y, z, xstat, cstat ) BIND( C )
+  USE GALAHAD_CQP_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: w
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: x0
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( IN ) :: f
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( m ) :: cstat
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_cqp_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the qp
+
+  CALL f_cqp_solve_sld( fdata, status, w, x0, g, f, aval, cl, cu, xl, xu,      &
+                        x, c, y, z, xstat, cstat )
+  RETURN
+
+  END SUBROUTINE cqp_solve_sld
+
 !  --------------------------------------
 !  C interface to fortran cqp_information
 !  --------------------------------------
 
-  SUBROUTINE cqp_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE cqp_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_CQP_double_ciface
   IMPLICIT NONE
 
@@ -764,7 +900,7 @@
 !  C interface to fortran cqp_terminate
 !  ------------------------------------
 
-  SUBROUTINE cqp_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE cqp_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_CQP_double_ciface
   IMPLICIT NONE
 
@@ -803,7 +939,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE cqp_terminate
