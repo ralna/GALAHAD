@@ -1636,7 +1636,7 @@
           data%save_structure = .TRUE.
         END IF
 
-!  assign the output status if required 
+!  assign the output status if required
 
         IF ( stat_required ) THEN
           DO i = 1, prob%n
@@ -1817,7 +1817,8 @@
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
 !                                prob%Hessian_kind, prob%gradient_kind,        &
-                                 - 1, prob%gradient_kind, H_val = prob%H%val,  &
+                                 - 1, prob%gradient_kind, prob%target_kind,    &
+                                 H_val = prob%H%val,                           &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
                                  C_stat = data%C_stat, B_Stat = data%X_stat )
@@ -1845,8 +1846,8 @@
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
 !                                prob%Hessian_kind, prob%gradient_kind,        &
-                                 - 1, prob%gradient_kind, H_val = prob%H%val,  &
-                                 G = prob%G,                                   &
+                                 - 1, prob%gradient_kind, prob%target_kind,    &
+                                 H_val = prob%H%val, G = prob%G,               &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
                                  C_stat = data%C_stat, B_Stat = data%X_stat )
@@ -1876,7 +1877,7 @@
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
 !                                prob%Hessian_kind, prob%gradient_kind,        &
-                                 0, prob%gradient_kind,                        &
+                                 0, prob%gradient_kind, prob%target_kind,      &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
                                  C_stat = data%C_stat, B_Stat = data%X_stat )
@@ -1904,7 +1905,7 @@
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
 !                                prob%Hessian_kind, prob%gradient_kind,        &
-                                 0, prob%gradient_kind,                        &
+                                 0, prob%gradient_kind, prob%target_kind,      &
                                  G = prob%G,                                   &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last, Z_last = data%Z_last,   &
@@ -1936,7 +1937,7 @@
                                data%SBLS_data, prefix,                         &
                                CQP_control, inform%CQP_inform,                 &
                                prob%Hessian_kind, prob%gradient_kind,          &
-                               X0 = prob%X0,                                   &
+                               prob%target_kind, X0 = prob%X0,                 &
                                C_last = data%A_s, X_last = data%H_s,           &
                                Y_last = data%Y_last, Z_last = data%Z_last,     &
                                C_stat = data%C_stat, B_Stat = data%X_stat )
@@ -1964,6 +1965,7 @@
                                data%SBLS_data, prefix,                         &
                                CQP_control, inform%CQP_inform,                 &
                                prob%Hessian_kind, prob%gradient_kind,          &
+                               prob%target_kind,                               &
                                X0 = prob%X0, G = prob%G,                       &
                                C_last = data%A_s, X_last = data%H_s,           &
                                Y_last = data%Y_last, Z_last = data%Z_last,     &
@@ -1994,6 +1996,7 @@
                                data%SBLS_data, prefix,                         &
                                CQP_control, inform%CQP_inform,                 &
                                prob%Hessian_kind, prob%gradient_kind,          &
+                               prob%target_kind,                               &
                                WEIGHT = prob%WEIGHT, X0 = prob%X0,             &
                                C_last = data%A_s, X_last = data%H_s,           &
                                Y_last = data%Y_last, Z_last = data%Z_last,     &
@@ -2022,6 +2025,7 @@
                                data%SBLS_data, prefix,                         &
                                CQP_control, inform%CQP_inform,                 &
                                prob%Hessian_kind, prob%gradient_kind,          &
+                               prob%target_kind,                               &
                                WEIGHT = prob%WEIGHT, X0 = prob%X0,             &
                                G = prob%G,                                     &
                                C_last = data%A_s, X_last = data%H_s,           &
@@ -2054,6 +2058,7 @@
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  H_lm = prob%H_lm,                             &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last,                         &
@@ -2083,6 +2088,7 @@
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  H_val = prob%H%val, H_col = prob%H%col,       &
                                  H_ptr = prob%H%ptr,                           &
                                  C_last = data%A_s, X_last = data%H_s,         &
@@ -2115,6 +2121,7 @@
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  H_lm = prob%H_lm, G = prob%G,                 &
                                  C_last = data%A_s, X_last = data%H_s,         &
                                  Y_last = data%Y_last,                         &
@@ -2144,6 +2151,7 @@
                                  data%SBLS_data, prefix,                       &
                                  CQP_control, inform%CQP_inform,               &
                                  prob%Hessian_kind, prob%gradient_kind,        &
+                                 prob%target_kind,                             &
                                  H_val = prob%H%val, H_col = prob%H%col,       &
                                  H_ptr = prob%H%ptr, G = prob%G,               &
                                  C_last = data%A_s, X_last = data%H_s,         &

@@ -373,12 +373,12 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( nls_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_nls_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -569,12 +569,12 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_nls_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( nls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
 
     IF ( PRESENT( f_indexing ) )  ccontrol%f_indexing = f_indexing
@@ -771,7 +771,7 @@
 
 !  copy C time parameters to fortran
 
-    SUBROUTINE copy_time_in( ctime, ftime ) 
+    SUBROUTINE copy_time_in( ctime, ftime )
     TYPE ( nls_time_type ), INTENT( IN ) :: ctime
     TYPE ( f_nls_time_type ), INTENT( OUT ) :: ftime
 
@@ -792,7 +792,7 @@
 
 !  copy fortran time parameters to C
 
-    SUBROUTINE copy_time_out( ftime, ctime ) 
+    SUBROUTINE copy_time_out( ftime, ctime )
     TYPE ( f_nls_time_type ), INTENT( IN ) :: ftime
     TYPE ( nls_time_type ), INTENT( OUT ) :: ctime
 
@@ -813,7 +813,7 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( nls_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_nls_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
@@ -928,7 +928,7 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_nls_inform_type ), INTENT( IN ) :: finform
     TYPE ( nls_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i
@@ -1049,7 +1049,7 @@
 !  C interface to fortran nls_initialize
 !  -------------------------------------
 
-  SUBROUTINE nls_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE nls_initialize( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_NLS_double_ciface
   IMPLICIT NONE
 
@@ -1064,7 +1064,7 @@
   TYPE ( f_nls_full_data_type ), POINTER :: fdata
   TYPE ( f_nls_control_type ) :: fcontrol
   TYPE ( f_nls_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -1079,7 +1079,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
 
@@ -1120,11 +1120,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_nls_read_specfile( fcontrol, device )
@@ -1161,12 +1161,12 @@
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: jcol
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: jptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cjtype
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: hrow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: hcol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: prow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( jne ), OPTIONAL :: pcol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( pne ), OPTIONAL :: prow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( pne ), OPTIONAL :: pcol
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: pptr
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cptype
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ), OPTIONAL :: w
@@ -1320,7 +1320,7 @@
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
   REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: g 
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: g
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_c, ceval_j
@@ -1346,12 +1346,12 @@
 
   CALL C_F_PROCPOINTER( ceval_c, feval_c )
   CALL C_F_PROCPOINTER( ceval_j, feval_j )
-  IF ( C_ASSOCIATED( ceval_h ) ) THEN 
+  IF ( C_ASSOCIATED( ceval_h ) ) THEN
     CALL C_F_PROCPOINTER( ceval_h, feval_h )
   ELSE
     NULLIFY( feval_h )
   END IF
-  IF ( C_ASSOCIATED( ceval_hprods ) ) THEN 
+  IF ( C_ASSOCIATED( ceval_hprods ) ) THEN
     CALL C_F_PROCPOINTER( ceval_hprods, feval_hprods )
   ELSE
     NULLIFY( feval_hprods )
@@ -1453,7 +1453,7 @@
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, pne
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
   REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: g 
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: g
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_c, ceval_jprod
@@ -1477,14 +1477,14 @@
 
 !  associate procedure pointers
 
-  CALL C_F_PROCPOINTER( ceval_c, feval_c ) 
+  CALL C_F_PROCPOINTER( ceval_c, feval_c )
   CALL C_F_PROCPOINTER( ceval_jprod, feval_jprod )
-  IF ( C_ASSOCIATED( ceval_hprod ) ) THEN 
+  IF ( C_ASSOCIATED( ceval_hprod ) ) THEN
     CALL C_F_PROCPOINTER( ceval_hprod, feval_hprod )
   ELSE
     NULLIFY( feval_hprod )
   END IF
-  IF ( C_ASSOCIATED( ceval_hprods ) ) THEN 
+  IF ( C_ASSOCIATED( ceval_hprods ) ) THEN
     CALL C_F_PROCPOINTER( ceval_hprods, feval_hprods )
   ELSE
     NULLIFY( feval_hprods )
@@ -1611,7 +1611,7 @@
 
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, jne, hne, pne
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: c
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( jne ) :: jval
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( hne ) :: hval
@@ -1633,7 +1633,7 @@
   CALL f_nls_solve_reverse_with_mat( fdata, status, eval_status, x, c, g,      &
                                      jval, y, hval, v, pval )
   RETURN
-    
+
   END SUBROUTINE nls_solve_reverse_with_mat
 
 !  ----------------------------------------------------
@@ -1656,7 +1656,7 @@
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( pne ) :: pval
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   LOGICAL ( KIND = C_BOOL ), INTENT( INOUT )  :: ctranspose
-  
+
 !  local variables
 
   TYPE ( f_nls_full_data_type ), POINTER :: fdata
@@ -1666,7 +1666,7 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  solve the problem when Hessian products are available by reverse 
+!  solve the problem when Hessian products are available by reverse
 !  communication
 
   CALL f_nls_solve_reverse_without_mat( fdata, status, eval_status, x, c, g,  &
@@ -1680,7 +1680,7 @@
 !  C interface to fortran nls_information
 !  --------------------------------------
 
-  SUBROUTINE nls_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE nls_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_NLS_double_ciface
   IMPLICIT NONE
 
@@ -1714,7 +1714,7 @@
 !  C interface to fortran nls_terminate
 !  ------------------------------------
 
-  SUBROUTINE nls_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE nls_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_NLS_double_ciface
   IMPLICIT NONE
 
@@ -1753,7 +1753,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE nls_terminate

@@ -1503,11 +1503,14 @@
 !  unscramble the reordered version
 
       IF ( control%dual ) THEN
-        CALL LPA_revert_dual( prob, data%x_map, data%c_map, data%n, data%X,    &
-                              data%WS, data%Z, control, inform )
+!       CALL LPA_revert_dual( prob, data%x_map, data%c_map, data%n, data%X,    &
+!                             data%WS, data%Z, control, inform )
+        CALL LPA_revert_dual( prob, data%c_map, data%n, data%X, data%WS,       &
+                              control, inform )
       ELSE
         CALL LPA_revert( prob, data%x_map, data%c_map, data%X,                 &
-                         data%WS, data%Z, control, inform )
+                         data%WS, control, inform )
+!                        data%WS, data%Z, control, inform )
       END IF
 
 !  if required, return the status of the general constraints
@@ -2712,7 +2715,8 @@
 
 !-*-*-*-*-*-*-*-   L P A _ r e v e r t    S U B R O U T I N E  -*-*-*-*-*-*-
 
-      SUBROUTINE LPA_revert( prob, x_map, c_map, X, Y, Z, control, inform )
+!     SUBROUTINE LPA_revert( prob, x_map, c_map, X, Y, Z, control, inform )
+      SUBROUTINE LPA_revert( prob, x_map, c_map, X, Y, control, inform )
 
 !  recover the solution from the reordered problem solved by LA04
 
@@ -2722,7 +2726,8 @@
       TYPE ( LPA_control_type ), INTENT( IN ) :: control
       TYPE ( LPA_inform_type ), INTENT( INOUT ) :: inform
       INTEGER, INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: x_map, c_map
-      REAL ( KIND = wp ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: X, Y, Z
+      REAL ( KIND = wp ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: X, Y
+!     REAL ( KIND = wp ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: Z
 
 !  local variables
 
@@ -3806,8 +3811,9 @@
 
 !-*-*-*-*-*-*-   L P A _ r e v e r t _ d u a l   S U B R O U T I N E  -*-*-*-*-
 
-      SUBROUTINE LPA_revert_dual( prob, x_map, c_map, n, X, Y, Z,              &
-                                  control, inform )
+!     SUBROUTINE LPA_revert_dual( prob, x_map, c_map, n, X, Y, Z,              &
+!                                 control, inform )
+      SUBROUTINE LPA_revert_dual( prob, c_map, n, X, Y, control, inform )
 
 !  recover the solution from the reordered problem solved by LA04
 
@@ -3817,8 +3823,10 @@
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
       TYPE ( LPA_control_type ), INTENT( IN ) :: control
       TYPE ( LPA_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER, INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: x_map, c_map
-      REAL ( KIND = wp ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: X, Y, Z
+!     INTEGER, INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: x_map
+      INTEGER, INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: c_map
+      REAL ( KIND = wp ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: X, Y
+!     REAL ( KIND = wp ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: Z
 
 !  local variables
 

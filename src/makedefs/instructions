@@ -29,7 +29,7 @@ DQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) $(OBJD)/in$(package).o
 LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
                  $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
-CLIBS = -lgalahad_c $(LIBS) 
+CLIBS = -lgalahad_c $(LIBS)
 
 #  compilation and run agenda
 
@@ -433,6 +433,7 @@ $(package)dti: $($(PACKAGE)DTI)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DTI)
 	$(RMOOC)
+#	- ./run_$(package)
 	- ./run_$(package) > $(package)dti.output 2>&1
 	cat $(package)dti.output
 	rm ./run_$(package)

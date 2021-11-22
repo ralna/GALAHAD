@@ -4794,10 +4794,10 @@
 
 !  factorize H
 
-     CALL SLS_analyse( data%H_lambda, data%SLS_data,                           &
-                       data%control%SLS_control, inform%SLS_inform )
-     CALL SLS_factorize( data%H_lambda, data%SLS_data,                         &
-                         data%control%SLS_control, inform%SLS_inform )
+     CALL SLS_analyse( H, data%SLS_data, data%control%SLS_control,             &
+                       inform%SLS_inform )
+     CALL SLS_factorize( H, data%SLS_data, data%control%SLS_control,           &
+                         inform%SLS_inform )
 
 !    U = 0.0_wp
 !    Y = 0.0_wp
@@ -4807,8 +4807,8 @@
 !  compute x_1 = - H^-1 c
 
      X( : , 1 ) = - C
-     CALL SLS_solve( data%H_lambda, X( : , 1 ), data%SLS_data,                 &
-                     data%control%SLS_control, inform%SLS_inform )
+     CALL SLS_solve( H, X( : , 1 ), data%SLS_data, data%control%SLS_control,   &
+                     inform%SLS_inform )
 
 !  main loop
 
@@ -4818,8 +4818,8 @@
 !  set z_k = H^{-1} x_k and Z_k = ( Z_k-1 : z_k )
 
        Z( : , k ) = X( : , k )
-       CALL SLS_solve( data%H_lambda, Z( : , k ), data%SLS_data,               &
-                       data%control%SLS_control, inform%SLS_inform )
+       CALL SLS_solve( H, Z( : , k ), data%SLS_data, data%control%SLS_control, &
+                       inform%SLS_inform )
 
 !write(6,*) ' z ', k, Z( : , k )
 

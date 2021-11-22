@@ -10,7 +10,7 @@
 !   originally released GALAHAD Version 2.4. August 22nd 2009 as QPE
 !   renamed as PDQP, GALAHAD Version 3.3, April 14th 2021
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_PDQP_double
@@ -31,7 +31,7 @@
       USE GALAHAD_SPACE_double
       USE GALAHAD_QPT_double
       USE GALAHAD_SORT_double
-      USE GALAHAD_SPECFILE_double 
+      USE GALAHAD_SPECFILE_double
       USE GALAHAD_SBLS_double
 
       IMPLICIT NONE
@@ -87,7 +87,7 @@
 
         REAL ( KIND = wp ) :: infinity = ten ** 19
 
-!  primal violations and dual variable that smaller in absolute value than 
+!  primal violations and dual variable that smaller in absolute value than
 !  var_small will be set to zero
 
         REAL ( KIND = wp ) :: var_small = ten ** ( - 15 )
@@ -100,9 +100,9 @@
 
         LOGICAL :: deallocate_error_fatal  = .FALSE.
 
-!  all output lines will be prefixed by 
+!  all output lines will be prefixed by
 !    prefix(2:LEN(TRIM(%prefix))-1)
-!  where prefix contains the required string enclosed in quotes, 
+!  where prefix contains the required string enclosed in quotes,
 !  e.g. "string" or 'string'
 
         CHARACTER ( LEN = 30 ) :: prefix = '""                            '
@@ -117,7 +117,7 @@
         INTEGER :: alloc_status = 0
         INTEGER :: iter = - 1
         REAL :: time = 0.0
-        REAL ( KIND = wp ):: obj = HUGE( one ) 
+        REAL ( KIND = wp ):: obj = HUGE( one )
         CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
         TYPE ( SBLS_inform_type ) :: SBLS_inform
       END TYPE
@@ -153,12 +153,12 @@
 !
 !  Default control data for PDQP. This routine should be called before
 !  PDQP_solve
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
 !
-!  data is a structure of type PDQP_data_type. On output, 
+!  data is a structure of type PDQP_data_type. On output,
 !   pointer array components will have been nullified.
 !
 !  control is a structure of type PDQP_control_type that contains
@@ -166,16 +166,16 @@
 !
 !  INTEGER control parameters:
 !
-!   error. Error and warning diagnostics occur on stream error 
-!   
+!   error. Error and warning diagnostics occur on stream error
+!
 !   out. General output occurs on stream out
-!   
+!
 !   print_level. The level of output required is specified by print_level
 !
 !  REAL control parameters:
 !
-!   infinity. Any bound larger than infinity in modulus will be regarded as 
-!    infinite 
+!   infinity. Any bound larger than infinity in modulus will be regarded as
+!    infinite
 !
 !  LOGICAL control parameters:
 !
@@ -203,10 +203,10 @@
 
       SUBROUTINE PDQP_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by PDQP_initialize could (roughly) 
+!  The defauly values as given by PDQP_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN PDQP SPECIFICATIONS (DEFAULT)
@@ -224,7 +224,7 @@
 
 !  Dummy arguments
 
-      TYPE ( PDQP_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( PDQP_control_type ), INTENT( INOUT ) :: control
       INTEGER, INTENT( IN ) :: device
       CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
@@ -252,7 +252,7 @@
 
       spec( error )%keyword = 'error-printout-device'
       spec( out )%keyword = 'printout-device'
-      spec( print_level )%keyword = 'print-level' 
+      spec( print_level )%keyword = 'print-level'
       spec( maxit )%keyword = 'maximum-number-of-iterations'
       spec( temporarily_fixed )%keyword =                                      &
         'maximum-number-of-initially-free-variables'
@@ -346,7 +346,7 @@
 !        and        (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
 !
 !  where x is a vector of n components ( x_1, .... , x_n ), const is a
-!  constant, g is an n-vector, H is a symmetric, posistive-definite M-matrix, 
+!  constant, g is an n-vector, H is a symmetric, posistive-definite M-matrix,
 !  A is an m by n matrix, and any of the bounds (c_l)_i, (c_u)_i
 !  (x_l)_i, (x_u)_i may be infinite.
 !
@@ -354,16 +354,16 @@
 !
 !  Arguments:
 !
-!  prob is a structure of type QPT_problem_type, whose components hold 
+!  prob is a structure of type QPT_problem_type, whose components hold
 !   information about the problem on input, and its solution on output.
 !   The following components must be set:
 !
 !   %n is an INTEGER variable, which must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
-!                 
+!
 !   %m is an INTEGER variable, which must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
-!                 
+!
 !   %H_* is used to hold the LOWER TRIANGULAR part of H.
 !   Three storage formats are permitted:
 !
@@ -374,12 +374,12 @@
 !       %H%val( : )  the values of the components of H
 !       %H%row( : )  the row indices of the components of H
 !       %H%col( : )  the column indices of the components of H
-!       %H%ne        the number of nonzeros used to store 
+!       %H%ne        the number of nonzeros used to store
 !                    the LOWER TRIANGULAR part of H
 !
 !       In addition, the array
 !
-!       %H%ptr( : )   must be of length %n + 1 
+!       %H%ptr( : )   must be of length %n + 1
 !
 !       but need not be set
 !
@@ -404,7 +404,7 @@
 !       In this case, the following must be set:
 !
 !       %H%val( : )  the values of the components of H, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !       %H%ne    = - 2
 !
@@ -419,8 +419,8 @@
 !   %G is a REAL array of length %n, which must be set by
 !    the user to the value of the gradient, g, of the linear term of the
 !    quadratic objective function. The i-th component of G, i = 1, ....,
-!    n, should contain the value of g_i.  
-!   
+!    n, should contain the value of g_i.
+!
 !   %f is a REAL variable, which must be set by the user to the value of
 !    the constant term f in the objective function.
 !
@@ -438,7 +438,7 @@
 !
 !       In addition, the array
 !
-!       %A%ptr( : )   must be of length %m + 1 
+!       %A%ptr( : )   must be of length %m + 1
 !
 !       but need not be set
 !
@@ -463,7 +463,7 @@
 !       In this case, the following must be set:
 !
 !       %A%val( : )   the values of the components of A, stored row by row,
-!                     with each the entries in each row in order of 
+!                     with each the entries in each row in order of
 !                     increasing column indicies.
 !       %A%ne    = -2
 !
@@ -475,8 +475,8 @@
 !
 !       but need not be set
 !
-!   %C is a REAL array of length %m, which is used to store the values of 
-!    A x. It need not be set on entry. On exit, it will have been filled 
+!   %C is a REAL array of length %m, which is used to store the values of
+!    A x. It need not be set on entry. On exit, it will have been filled
 !    with appropriate values.
 !
 !   %X is a REAL array of length %n, which must be set by the user
@@ -485,46 +485,46 @@
 !
 !   %C_l, %C_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays c_l and c_u of lower and upper bounds on A x.
-!    Any bound c_l_i or c_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %C_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %C_u to a value larger than 
-!    control%infinity. 
-!   
+!    Any bound c_l_i or c_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %C_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %C_u to a value larger than
+!    control%infinity.
+!
 !   %Y is a REAL array of length %m, which must be set by the user to
-!    appropriate estimates of the values of the Lagrange multipliers 
-!    corresponding to the general constraints c_l <= A x <= c_u. 
-!    On successful exit, it will contain the required vector of Lagrange 
+!    appropriate estimates of the values of the Lagrange multipliers
+!    corresponding to the general constraints c_l <= A x <= c_u.
+!    On successful exit, it will contain the required vector of Lagrange
 !    multipliers.
 !
 !   %X_l, %X_u are REAL arrays of length %n, which must be set by the user
 !    to the values of the arrays x_l and x_u of lower and upper bounds on x.
-!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %X_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %X_u to a value larger than 
-!    control%infinity. 
-!   
+!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %X_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %X_u to a value larger than
+!    control%infinity.
+!
 !   %Z is a REAL array of length %n, which must be set by the user to
-!    appropriate estimates of the values of the dual variables 
-!    (Lagrange multipliers corresponding to the simple bound constraints 
+!    appropriate estimates of the values of the dual variables
+!    (Lagrange multipliers corresponding to the simple bound constraints
 !    x_l <= x <= x_u). On successful exit, it will contain
-!    the required vector of dual variables. 
+!    the required vector of dual variables.
 !
 !  control is a structure of type PDQP_control_type that contains
 !   control parameters. See PDQP_initialize for details.
 !
-!  inform is a structure of type PDQP_inform_type that provides 
-!    information on exit from PDQP_solve. The component status 
+!  inform is a structure of type PDQP_inform_type that provides
+!    information on exit from PDQP_solve. The component status
 !    has possible values:
-!  
+!
 !     0 Normal termination with the solution to the problem.
 !
-!   - 1 one of the restrictions 
+!   - 1 one of the restrictions
 !          prob%n     >=  1
 !          prob%m     >=  0
 !          prob%A%ne  >=  -2
@@ -539,14 +539,14 @@
 !
 !    -4 an entry from the strict upper triangle of H has been input.
 !
-!  On exit from QPB_solve, other components of inform give the 
+!  On exit from QPB_solve, other components of inform give the
 !  following:
 !
-!     alloc_status = The status of the last attempted allocation/deallocation 
+!     alloc_status = The status of the last attempted allocation/deallocation
 !     time = the total time spent in the package.
 !
-!  X_stat and C_stat are optional INTEGER pointer arrays of length n 
-!  and m (respectively) that contain the input and output status of the 
+!  X_stat and C_stat are optional INTEGER pointer arrays of length n
+!  and m (respectively) that contain the input and output status of the
 !  variables and constraints. The ith variable/constraint is on its lower bound
 !  if X/C_stat(i) < 0, is free if X/C_stat(i) =0 and on its upper bound
 !  if X/C_stat(i) > 0.
@@ -563,19 +563,18 @@
 
 !  Local variables
 
-      INTEGER :: m, n, a_ne, h_ne, i, j, l, ll, ii, jj, alloc_status, n_infeas
+      INTEGER :: m, n, a_ne, h_ne, i, j, l, ii, jj, alloc_status, n_infeas
       INTEGER :: n_orig, a_ne_orig, h_ne_orig, n_free, n_low, n_up
       INTEGER :: n_fixed, temporarily_fixed
-      REAL :: time_start, time
-      REAL ( KIND = wp ) :: cl, cu, x, xl, xu, z, val, infinity, rho
+      REAL :: time_start
+      REAL ( KIND = wp ) :: cl, cu, x, xl, xu, z, val, rho
       LOGICAL :: stats
       CHARACTER ( LEN =  6 ) :: st
-      CHARACTER ( LEN = 20 ) :: bad_alloc
-      
+
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( ' entering PDQP_fomulate ' )" )
 
-!  If required, write out problem 
+!  If required, write out problem
 
 !     IF ( control%out > 0 .AND. control%print_level >= 1 ) THEN
       IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
@@ -685,7 +684,7 @@
       ELSE
         inform%status = GALAHAD_error_restrictions
         GO TO 800
-      END IF     
+      END IF
       h_ne_orig = h_ne
 
 !  ensure bounds on A x are consistent
@@ -694,7 +693,7 @@
         cl = prob%c_l( i ) ; cu = prob%c_u( i )
         IF ( cu == cl ) THEN      !  equality constraint
         ELSE IF ( cl > - control%infinity ) THEN
-          IF ( cu < control%infinity ) THEN 
+          IF ( cu < control%infinity ) THEN
             IF ( cl <= cl ) THEN  !  constraint bounded on both sides
               n = n + 1
               a_ne = a_ne + 1
@@ -866,7 +865,7 @@
             data%H%VAL( l ) = prob%H%VAL( l )
           END DO
         END DO
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, n_orig
           DO j = 1, i
@@ -876,7 +875,7 @@
             data%H%VAL( l ) = prob%H%VAL( l )
           END DO
         END DO
-      CASE ( 'DIAGONAL' ) 
+      CASE ( 'DIAGONAL' )
         DO i = 1, n_orig
           data%H%ROW( i ) = i
           data%H%COL( i ) = i
@@ -899,7 +898,7 @@
             data%A%VAL( l ) = prob%A%VAL( l )
           END DO
         END DO
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, m
           DO j = 1, n_orig
@@ -988,7 +987,7 @@
             data%X( i ) = MAX( xl, MIN( xu, prob%X( i ) ) )
             data%C_free( n_free ) = data%C( i )
           ELSE IF ( X_stat( i ) < 0 ) THEN
-            data%X( i ) = xl 
+            data%X( i ) = xl
           ELSE
             data%X( i ) = xu
           END IF
@@ -1116,7 +1115,7 @@
           data%Z( i ) = data%Z( i ) + val * data%X( j )
           IF ( i /= j ) data%Z( j ) = data%Z( j ) + val * data%X( i )
         END DO
-  
+
 !       inform%obj = DOT_PRODUCT( 0.5_wp * (data%Z + data%C), data%X ) + prob%f
         inform%obj = 0.5_wp * DOT_PRODUCT( data%Z + data%C, data%X ) + prob%f
 
@@ -1127,7 +1126,7 @@
         END DO
 !write(6,*) ' z ', data%X( : n_orig )
 
-!  reset variables that are close to bounds to the bound values 
+!  reset variables that are close to bounds to the bound values
 
         DO i = 1, n
           IF ( ABS( data%X( i ) - data%X_l( i ) ) <= control%var_small )       &
@@ -1169,7 +1168,7 @@
           END DO
         END IF
 
-!  decide on the new active set: 
+!  decide on the new active set:
 !   state of variable i =
 !    -1 => on lower bound
 !     0 => on upper bound
@@ -1341,7 +1340,7 @@
               = data%B_free( i ) - data%A%val( l ) * data%X_u( j )
           END IF
         END DO
-     
+
 !  factorize the matrix
 
 !  (  H_free   A_free^T )
@@ -1402,11 +1401,11 @@
 
       END DO
 
-  800 CONTINUE 
+  800 CONTINUE
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( ' leaving PDQP_solve with status', I0 )" )      &
           inform%status
-      RETURN  
+      RETURN
 
       CONTAINS
 
@@ -1454,7 +1453,7 @@
 !  Dummy arguments
 
       TYPE ( PDQP_data_type ), INTENT( INOUT ) :: data
-      TYPE ( PDQP_control_type ), INTENT( IN ) :: control        
+      TYPE ( PDQP_control_type ), INTENT( IN ) :: control
       TYPE ( PDQP_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables

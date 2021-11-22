@@ -8,12 +8,12 @@
 
    MODULE GALAHAD_USEFDH_double
 
-!  This is the driver program for running FDH for a variety of computing 
-!  systems. It opens and closes all the files, allocate arrays, reads and 
+!  This is the driver program for running FDH for a variety of computing
+!  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
      USE GALAHAD_FDH_double
-     USE GALAHAD_SPECFILE_double 
+     USE GALAHAD_SPECFILE_double
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_double
      USE GALAHAD_RAND_double
@@ -79,10 +79,6 @@
      INTEGER :: errout = 6
      INTEGER, PARAMETER :: io_buffer = 11
 
-!  functions
-
-!$    INTEGER :: OMP_GET_MAX_THREADS
-
 !  specfile characteristics
 
      INTEGER, PARAMETER :: input_specfile = 34
@@ -134,7 +130,7 @@
        CALL SPECFILE_assign_integer( spec( 7 ), max_sy, errout )
        CALL SPECFILE_assign_integer( spec( 8 ), print_level, errout )
      END IF
-    
+
 !  If required, open a file for the results
 
      IF ( write_result_summary ) THEN
@@ -146,7 +142,7 @@
           OPEN( rfiledevice, FILE = rfilename, FORM = 'FORMATTED',             &
                 STATUS = 'NEW', IOSTAT = iores )
        END IF
-       IF ( iores /= 0 ) THEN 
+       IF ( iores /= 0 ) THEN
          WRITE( errout,                                                        &
         &  "( ' IOSTAT = ', I0, ' when opening file ', A, '. Stopping ' )" )   &
            iores, rfilename
@@ -168,7 +164,7 @@
           OPEN( sfiledevice, FILE = sfilename, FORM = 'FORMATTED',             &
                 STATUS = 'NEW', IOSTAT = iores )
        END IF
-       IF ( iores /= 0 ) THEN 
+       IF ( iores /= 0 ) THEN
          WRITE( errout,                                                        &
         &  "( ' IOSTAT = ', I0, ' when opening file ', A, '. Stopping ' )" )   &
            iores, sfilename
@@ -176,7 +172,7 @@
        END IF
      END IF
 
-!  set copyright 
+!  set copyright
 
      IF ( out > 0 ) CALL COPYRIGHT( out, '2013' )
 
@@ -331,7 +327,7 @@
        END IF
      END DO
 
-! analyse the sparsity 
+! analyse the sparsity
 
      CALL CLOCK_time( clocks )
 !    CALL FDH_analyse( n, nnzh, ROW, COL, data, control, inform )
@@ -358,7 +354,7 @@
 !      CALL FDH_estimate( n, nnzh, ROW, COL, difs_max, difs, RD, n, difs, S,   &
 !                         n, difs, Y, VAL_est, data, control, inform )
 
-10     CONTINUE  
+10     CONTINUE
        CALL FDH_estimate( n, nz, ROW_lower, DIAG_lower, X, G, STEPSIZE, H_est, &
                           data, control, inform, userdata )
        IF ( inform%status == 0 ) THEN              ! Success
