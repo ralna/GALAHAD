@@ -1,0 +1,830 @@
+.TH "cqp.h" 3 "Wed Nov 24 2021" "C interfaces to GALAHAD CQP" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+cqp.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBcqp_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBcqp_time_type\fP"
+.br
+.ti -1c
+.RI "struct \fBcqp_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBcqp_initialize\fP (void **data, struct \fBcqp_control_type\fP *control, struct \fBcqp_inform_type\fP *inform)"
+.br
+.ti -1c
+.RI "void \fBcqp_read_specfile\fP (struct \fBcqp_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBcqp_import\fP (struct \fBcqp_control_type\fP *control, void **data, int *status, int n, int m, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[])"
+.br
+.ti -1c
+.RI "void \fBcqp_reset_control\fP (struct \fBcqp_control_type\fP *control, void **data, int *status)"
+.br
+.ti -1c
+.RI "void \fBcqp_solve_qp\fP (void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])"
+.br
+.ti -1c
+.RI "void \fBcqp_solve_sldqp\fP (void **data, int *status, int n, int m, const real_wp_ w[], const real_wp_ x0[], const real_wp_ g[], const real_wp_ f, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])"
+.br
+.ti -1c
+.RI "void \fBcqp_information\fP (void **data, struct \fBcqp_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBcqp_terminate\fP (void **data, struct \fBcqp_control_type\fP *control, struct \fBcqp_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+This package uses a primal-dual interior-point method to solve the \fBconvex quadratic programming problem\fP \[\mbox{minimize}\;\; q(x) = 1/2 x^T H x + g^T x + f \]  
+  \n
+  minimize q(x) := 1/2 x^T H x + g^T x + f
+  \n
+ or the \fBshifted least-distance problem\fP \[\mbox{minimize}\;\; 1/2 \sum_{j=1}^n w_j^2 ( x_j^{ } - x_j^0 )^2 + g^T x + f \]  
+  \n
+   minimize 1/2 \sum_{j=1}^n w_j^2 ( x_j - x_j^0 )^2  + g^T x + f
+  \n
+ subject to the general linear constraints \[c_{i}^{l} <= a_{i}^{T}x <= c_{i}^{u}, \;\;\; i = 1, ... , m,\]  
+  \n
+   c_i^l \[<=] a_i^Tx \[<=] c_i^u, i = 1, ... , m,
+  \n
+ and the simple bound constraints \[x_{j}^{l} <= x_{j}^{ } <= x_{j}^{u}, \;\;\; j = 1, ... , n,\]  
+  \n
+   x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
+  \n
+ where the n by n symmetric, positive-semi-definite matrix H, the vectors g, w, x^{0}, a_{i}, c^{l}, c^{u}, x^{l}, x^{u} and the scalar f are given\&. Any of the constraint bounds c_{i}^{l}, c_{i}^{u}, x_{j}^{l} and x_{j}^{u} may be infinite\&. Full advantage is taken of any zero coefficients in the matrix H or the matrix A of vectors a_{i}\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould and D\&. P\&. Robinson, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+November 2010, C interface September 2021\&.
+.SS "Method"
+The required solution x necessarily satisfies the primal optimality conditions \[\mbox{(1a) $\hspace{66mm} A x = c\hspace{66mm}$}\]  
+  \n
+  (1a) A x = c
+  \n
+ and \[\mbox{(1b) $\hspace{52mm} c^l <= c <= c^u, \;\; x^l <= x <= x^u,\hspace{52mm}$} \]  
+  \n
+  (1b) c^l \[<=] c \[<=] c^u, x^l \[<=] x \[<=] x^u,
+  \n
+ the dual optimality conditions \[\mbox{(2a) $\hspace{3mm} H x + g = A^T y + z \;\; (\mbox{or} \;\; W^{2} (x -x^0) + g = A^T y + z \;\; \mbox{for the shifted-least-distance type objective})$}\]  
+  \n
+  (2a) H x + g = A^T y + z 
+       (or W^2 (x -x^0) + g = A^T y + z 
+        for the shifted-least-distance type objective)
+  \n
+ where \[\mbox{(2b) $\hspace{24mm} y = y^{l} + y^{u}, \;\; z = z^{l} + z^{u}, \,\, y^{l} >= 0 , \;\; y^{u} <= 0 , \;\; z^{l} >= 0 \;\; \mbox{and} \;\; z^{u} <= 0,\hspace{24mm}$} \]  
+  \n
+   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
+        z^l \[>=] 0 and z^u \[<=] 0,
+  \n
+ and the complementary slackness conditions \[\mbox{(3) $\hspace{12mm} ( A x - c^{l} )^{T} y^{l} = 0 ,\;\; ( A x - c^{u} )^{T} y^{u} = 0 ,\;\; (x -x^{l} )^{T} z^{l} = 0 \;\; \mbox{and} \;\; (x -x^{u} )^{T} z^{u} = 0,\hspace{12mm} $}\]  
+  \n
+  (3) (A x - c^l)^T y^l = 0, (A x - c^u)^T y^u = 0,
+      (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
+  \n
+ where the diagonal matrix W^2 has diagonal entries w_j^2, j = 1, \&.\&.\&. , n, where the vectors y and z are known as the Lagrange multipliers for the general linear constraints, and the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise\&.
+.PP
+Primal-dual interior point methods iterate towards a point that satisfies these conditions by ultimately aiming to satisfy (1a), (2a) and (3), while ensuring that (1b) and (2b) are satisfied as strict inequalities at each stage\&. Appropriate norms of the amounts by which (1a), (2a) and (3) fail to be satisfied are known as the primal and dual infeasibility, and the violation of complementary slackness, respectively\&. The fact that (1b) and (2b) are satisfied as strict inequalities gives such methods their other title, namely interior-point methods\&.
+.PP
+The method aims at each stage to reduce the overall violation of (1a), (2a) and (3), rather than reducing each of the terms individually\&. Given an estimate v = (x, c, y, y^l, y^u, z, z^l, z^u) of the primal-dual variables, a correction Delta v = Delta (x, c, y, y^l, y^u z, z^l, z^u) is obtained by solving a suitable linear system of Newton equations for the nonlinear systems (1a), (2a) and a parameterized ``residual trajectory'' perturbation of (3); residual trajectories proposed by Zhang (1994) and Zhao and Sun (1999) are possibilities\&. An improved estimate v + alpha Delta v is then used, where the step-size alpha is chosen as close to 1\&.0 as possible while ensuring both that (1b) and (2b) continue to hold and that the individual components which make up the complementary slackness (3) do not deviate too significantly from their average value\&. The parameter that controls the perturbation of (3) is ultimately driven to zero\&.
+.PP
+The Newton equations are solved by applying the GALAHAD matrix factorization package SBLS, but there are options to factorize the matrix as a whole (the so-called 'augmented system' approach), to perform a block elimination first (the 'Schur-complement' approach), or to let the method itself decide which of the two previous options is more appropriate\&. The 'Schur-complement' approach is usually to be preferred when all the weights are nonzero or when every variable is bounded (at least one side), but may be inefficient if any of the columns of A is too dense\&.
+.PP
+Optionally, the problem may be pre-processed temporarily to eliminate dependent constraints using the GALAHAD package FDC\&. This may improve the performance of the subsequent iteration\&.
+.SS "Reference"
+The basic algorithm is a generalisation of those of
+.PP
+Y\&. Zhang (1994), On the convergence of a class of infeasible interior-point methods for the horizontal linear complementarity problem, SIAM J\&. Optimization 4(1) 208-227,
+.PP
+and
+.PP
+G\&. Zhao and J\&. Sun (1999)\&. On the rate of local convergence of high-order infeasible path-following algorithms for the P_* linear complementarity problems, Computational Optimization and Applications 14(1) 293-307,
+.PP
+with many enhancements described by
+.PP
+N\&. I\&. M\&. Gould, D\&. Orban and D\&. P\&. Robinson (2013)\&. Trajectory-following methods for large-scale degenerate convex quadratic programming, Mathematical Programming Computation 5(2) 113-142\&.
+.SS "Call order"
+To solve a given problem, functions from the nls package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBcqp_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBcqp_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+\fBcqp_import\fP - set up problem data structures and fixed values
+.IP "\(bu" 2
+\fBcqp_reset_control\fP (optional) - possibly change control parameters if a sequence of problems are being solved
+.IP "\(bu" 2
+solve the problem by calling one of
+.IP "  \(bu" 4
+\fBcqp_solve_qp\fP - solve the quadratic program
+.IP "  \(bu" 4
+\fBcqp_solve_sld\fP - solve the shifted least-distance problem
+.PP
+
+.IP "\(bu" 2
+\fBcqp_information\fP (optional) - recover information about the solution and solution process
+.IP "\(bu" 2
+\fBcqp_terminate\fP - deallocate data structures
+.PP
+.PP
+   
+  See the examples section for illustrations of use.
+  
+.SS "Unsymmetric matrix storage formats"
+The unsymmetric m by n constraint matrix A may be presented and stored in a variety of convenient input formats\&.
+.PP
+Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; the discussion below presumes C style, but add 1 to indices for the corresponding fortran version\&.
+.PP
+Wrappers will automatically convert between 0-based (C) and 1-based (fortran) array indexing, so may be used transparently from C\&. This conversion involves both time and memory overheads that may be avoided by supplying data that is already stored using 1-based indexing\&.
+.SS "Dense storage format"
+The matrix A is stored as a compact dense matrix by rows, that is, the values of the entries of each row in turn are stored in order within an appropriate real one-dimensional array\&. In this case, component n * i + j of the storage array A_val will hold the value A_{ij} for 0 <= i <= m-1, 0 <= j <= n-1\&.
+.SS "Sparse co-ordinate storage format"
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
+.SS "Sparse row-wise storage format"
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+.SS "Symmetric matrix storage formats"
+Likewise, the symmetric n by n objective Hessian matrix H may be presented and stored in a variety of formats\&. But crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&.
+.SS "Dense storage format"
+The matrix H is stored as a compact dense matrix by rows, that is, the values of the entries of each row in turn are stored in order within an appropriate real one-dimensional array\&. Since H is symmetric, only the lower triangular part (that is the part h_{ij} for 0 <= j <= i <= n-1) need be held\&. In this case the lower triangle should be stored by rows, that is component i * i / 2 + j of the storage array H_val will hold the value h_{ij} (and, by symmetry, h_{ji}) for 0 <= j <= i <= n-1\&.
+.SS "Sparse co-ordinate storage format"
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of H, its row index i, column index j and value h_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays H_row and H_col and real array H_val, respectively, while the number of nonzeros is recorded as H_ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
+.SS "Sparse row-wise storage format"
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values h_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+.SS "Diagonal storage format"
+If H is diagonal (i\&.e\&., H_{ij} = 0 for all 0 <= i /= j <= n-1) only the diagonals entries H_{ii}, 0 <= i <= n-1 need be stored, and the first n components of the array H_val may be used for the purpose\&.
+.SS "Multiples of the identity storage format"
+If H is a multiple of the identity matrix, (i\&.e\&., H = alpha I where I is the n by n identity matrix and alpha is a scalar), it suffices to store alpha as the first component of H_val\&.
+.SS "The identity matrix format"
+If H is the identity matrix, no values need be stored\&.
+.SS "The zero matrix format"
+The same is true if H is the zero matrix\&. 
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct cqp_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIarc\fP which residual trajectory should be used to aim from the current iterate to the solution\&. Possible values are 
+.PD 0
+
+.IP "\(bu" 2
+1 the Zhang linear residual trajectory 
+.IP "\(bu" 2
+2 the Zhao-Sun quadratic residual trajectory 
+.IP "\(bu" 2
+3 the Zhang arc ultimately switching to the Zhao-Sun residual trajectory 
+.IP "\(bu" 2
+4 the mixed linear-quadratic residual trajectory 
+.IP "\(bu" 2
+5 the Zhang arc ultimately switching to the mixed linear-quadratic residual trajectory 
+.PP
+
+.br
+.PP
+bool \fIbalance_initial_complentarity\fP if \&.balance_initial_complentarity is true, the initial complemetarity is required to be balanced 
+.br
+.PP
+real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
+.br
+.PP
+real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite) 
+.br
+.PP
+bool \fIcrossover\fP if \&.crossover is true, cross over the solution to one defined by linearly-independent constraints if possible 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+.br
+.PP
+real_wp_ \fIdufeas\fP initial dual variables will not be closer than \&.dufeas from their bounds 
+.br
+.PP
+int \fIerror\fP error and warning diagnostics occur on stream error 
+.br
+.PP
+bool \fIevery_order\fP try every order of series up to series_order? 
+.br
+.PP
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+bool \fIfeasol\fP if \&.feasol is true, the final solution obtained will be perturbed so that variables close to their bounds are moved onto these bounds 
+.br
+.PP
+real_wp_ \fIgamma_c\fP individual complementarities will not be allowed to be smaller than gamma_c times the average value 
+.br
+.PP
+real_wp_ \fIgamma_f\fP the average complementarity will not be allowed to be smaller than gamma_f times the primal/dual infeasibility 
+.br
+.PP
+bool \fIgenerate_qplib_file\fP if \&.generate_qplib_file is \&.true\&. if a QPLIB file describing the current problem is to be generated 
+.br
+.PP
+bool \fIgenerate_sif_file\fP if \&.generate_sif_file is \&.true\&. if a SIF file describing the current problem is to be generated 
+.br
+.PP
+bool \fIgetdua\fP if \&.getdua, is true, advanced initial values are obtained for the dual variables 
+.br
+.PP
+real_wp_ \fIidentical_bounds_tol\fP any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than \&.identical_bounds_tol will be reset to the average of their values 
+.br
+.PP
+real_wp_ \fIindicator_tol_p\fP if \&.indicator_type = 1, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound <= \&.indicator_p_tol 
+.br
+.PP
+real_wp_ \fIindicator_tol_pd\fP if \&.indicator_type = 2, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound <= \&.indicator_tol_pd * size of corresponding multiplier 
+.br
+.PP
+real_wp_ \fIindicator_tol_tapia\fP if \&.indicator_type = 3, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound <= \&.indicator_tol_tapia * distance to same bound at previous iteration 
+.br
+.PP
+int \fIindicator_type\fP specifies the type of indicator function used\&. Pssible values are 
+.PD 0
+
+.IP "\(bu" 2
+1 primal indicator: a constraint is active if and only if the distance to its nearest bound <= \&.indicator_p_tol 
+.IP "\(bu" 2
+2 primal-dual indicator: a constraint is active if and only if the distance to its nearest bound <= \&.indicator_tol_pd * size of corresponding multiplier 
+.IP "\(bu" 2
+3 primal-dual indicator: a constraint is active if and only if the distance to its nearest bound <= \&.indicator_tol_tapia * distance to same bound at previous iteration 
+.PP
+
+.br
+.PP
+int \fIinfeas_max\fP the number of iterations for which the overall infeasibility of the problem is not reduced by at least a factor \&.reduce_infeas before the problem is flagged as infeasible (see reduce_infeas) 
+.br
+.PP
+real_wp_ \fIinfinity\fP any bound larger than infinity in modulus will be regarded as infinite 
+.br
+.PP
+bool \fIjust_feasible\fP if \&.treat_separable_as_general, is true, any separability in the problem structure will be ignored 
+.br
+.PP
+int \fImaxit\fP at most maxit inner iterations are allowed 
+.br
+.PP
+real_wp_ \fImu_lunge\fP start terminal extrapolation when mu reaches mu_lunge 
+.br
+.PP
+real_wp_ \fImuzero\fP the initial value of the barrier parameter\&. If muzero is not positive, it will be reset to an appropriate value 
+.br
+.PP
+int \fImuzero_fixed\fP the initial value of the barrier parameter will not be changed for the first muzero_fixed iterations 
+.br
+.PP
+real_wp_ \fIobj_unbounded\fP if the objective function value is smaller than obj_unbounded, it will be flagged as unbounded from below\&. 
+.br
+.PP
+int \fIout\fP general output occurs on stream out 
+.br
+.PP
+real_wp_ \fIperturb_h\fP \&.perturb_h will be added to the Hessian 
+.br
+.PP
+real_wp_ \fIpotential_unbounded\fP if W=0 and the potential function value is smaller than \&.potential_unbounded * number of one-sided bounds, the analytic center will be flagged as unbounded 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+real_wp_ \fIprfeas\fP initial primal variables will not be closer than \&.prfeas from their bounds 
+.br
+.PP
+int \fIprint_level\fP the level of output required is specified by print_level 
+.PD 0
+
+.IP "\(bu" 2
+<= 0 gives no output, 
+.IP "\(bu" 2
+= 1 gives a one-line summary for every iteration, 
+.IP "\(bu" 2
+= 2 gives a summary of the inner iteration for each iteration, 
+.IP "\(bu" 2
+>= 3 gives increasingly verbose (debugging) output 
+.PP
+
+.br
+.PP
+bool \fIpuiseux\fP decide between Puiseux and Taylor series approximations to the arc 
+.br
+.PP
+int \fIqplib_file_device\fP specifies the unit number to write generated QPLIB file describing the current problem 
+.br
+.PP
+char \fIqplib_file_name[31]\fP name of generated QPLIB file containing input problem 
+.br
+.PP
+real_wp_ \fIreduce_infeas\fP if the overall infeasibility of the problem is not reduced by at least a factor \&.reduce_infeas over \&.infeas_max iterations, the problem is flagged as infeasible (see infeas_max) 
+.br
+.PP
+bool \fIremove_dependencies\fP the equality constraints will be preprocessed to remove any linear dependencies if true 
+.br
+.PP
+int \fIrestore_problem\fP indicate whether and how much of the input problem should be restored on output\&. Possible values are 
+.PD 0
+
+.IP "\(bu" 2
+0 nothing restored 
+.IP "\(bu" 2
+1 scalar and vector parameters 
+.IP "\(bu" 2
+2 all parameters 
+.PP
+
+.br
+.PP
+int \fIseries_order\fP the order of (Taylor/Puiseux) series to fit to the path data 
+.br
+.PP
+int \fIsif_file_device\fP specifies the unit number to write generated SIF file describing the current problem 
+.br
+.PP
+char \fIsif_file_name[31]\fP name of generated SIF file containing input problem 
+.br
+.PP
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+.br
+.PP
+int \fIstart_print\fP any printing will start on this iteration 
+.br
+.PP
+real_wp_ \fIstop_abs_c\fP the required absolute and relative accuracies for the complementarity 
+.br
+.PP
+real_wp_ \fIstop_abs_d\fP the required absolute and relative accuracies for the dual infeasibility 
+.br
+.PP
+real_wp_ \fIstop_abs_p\fP the required absolute and relative accuracies for the primal infeasibility 
+.br
+.PP
+int \fIstop_print\fP any printing will stop on this iteration 
+.br
+.PP
+real_wp_ \fIstop_rel_c\fP see stop_abs_c 
+.br
+.PP
+real_wp_ \fIstop_rel_d\fP see stop_abs_d 
+.br
+.PP
+real_wp_ \fIstop_rel_p\fP see stop_abs_p 
+.br
+.PP
+real_wp_ \fItau\fP the weight attached to primal-dual infeasibility compared to complementa when assessing step acceptance 
+.br
+.PP
+bool \fItreat_separable_as_general\fP if \&.just_feasible is true, the algorithm will stop as soon as a feasible point is found\&. Otherwise, the optimal solution to the problem will be found 
+.br
+.PP
+bool \fItreat_zero_bounds_as_general\fP any problem bound with the value zero will be treated as if it were a general value if true 
+.br
+.PP
+.RE
+.PP
+.SH "struct cqp_time_type"
+.PP 
+time derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+real_wp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorization 
+.br
+.PP
+real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorization 
+.br
+.PP
+real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
+.br
+.PP
+real_wp_ \fIclock_find_dependent\fP the clock time spent detecting linear dependencies 
+.br
+.PP
+real_wp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem 
+.br
+.PP
+real_wp_ \fIclock_solve\fP the clock time spent computing the search direction 
+.br
+.PP
+real_wp_ \fIclock_total\fP the total clock time spent in the package 
+.br
+.PP
+real_wp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
+.br
+.PP
+real_wp_ \fIfind_dependent\fP the CPU time spent detecting linear dependencies 
+.br
+.PP
+real_wp_ \fIpreprocess\fP the CPU time spent preprocessing the problem 
+.br
+.PP
+real_wp_ \fIsolve\fP the CPU time spent computing the search direction 
+.br
+.PP
+real_wp_ \fItotal\fP the total CPU time spent in the package 
+.br
+.PP
+.RE
+.PP
+.SH "struct cqp_inform_type"
+.PP 
+inform derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+.br
+.PP
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+.br
+.PP
+int \fIcheckpointsIter[16]\fP checkpoints(i) records the iteration at which the criticality measures first fall below 10^{-i}, i = 1, \&.\&.\&., 16 (-1 means not achieved) 
+.br
+.PP
+real_wp_ \fIcheckpointsTime[16]\fP see checkpointsIter 
+.br
+.PP
+real_wp_ \fIcomplementary_slackness\fP the value of the complementary slackness 
+.br
+.PP
+real_wp_ \fIdual_infeasibility\fP the value of the dual infeasibility 
+.br
+.PP
+int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+.br
+.PP
+int \fIfactorization_real\fP the total real workspace required for the factorization 
+.br
+.PP
+int \fIfactorization_status\fP the return status from the factorization 
+.br
+.PP
+bool \fIfeasible\fP is the returned 'solution' feasible? 
+.br
+.PP
+real_wp_ \fIinit_complementary_slackness\fP see init_primal_infeasibility 
+.br
+.PP
+real_wp_ \fIinit_dual_infeasibility\fP see init_primal_infeasibility 
+.br
+.PP
+real_wp_ \fIinit_primal_infeasibility\fP these values at the initial point (needed bg GALAHAD_CCQP) 
+.br
+.PP
+int \fIiter\fP the total number of iterations required 
+.br
+.PP
+int \fInbacts\fP the total number of 'wasted' function evaluations during the linesearch 
+.br
+.PP
+int \fInfacts\fP the total number of factorizations performed 
+.br
+.PP
+real_wp_ \fInon_negligible_pivot\fP the smallest pivot which was not judged to be zero when detecting linear dependent constraints 
+.br
+.PP
+real_wp_ \fIobj\fP the value of the objective function at the best estimate of the solution determined by CQP_solve 
+.br
+.PP
+real_wp_ \fIpotential\fP the value of the logarithmic potential function sum -log(distance to constraint boundary) 
+.br
+.PP
+real_wp_ \fIprimal_infeasibility\fP the value of the primal infeasibility 
+.br
+.PP
+int \fIstatus\fP return status\&. See CQP_solve for details 
+.br
+.PP
+int \fIthreads\fP the number of threads used 
+.br
+.PP
+struct \fBcqp_time_type\fP \fItime\fP timings (see above) 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void cqp_import (struct \fBcqp_control_type\fP * control, void ** data, int * status, int n, int m, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[])"
+Import problem data into internal storage prior to solution\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBcqp_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&. 
+.IP "\(bu" 2
+-23\&. An entry from the strict upper triangle of H has been specified\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables\&.
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general linear constraints\&.
+.br
+\fIH_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the Hessian, H\&. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if H=0; lower or upper case variants are allowed\&.
+.br
+\fIH_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
+.br
+\fIH_row\fP is a one-dimensional array of size H_ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme\&. It need not be set for any of the other three schemes, and in this case can be NULL\&.
+.br
+\fIH_col\fP is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL\&.
+.br
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
+.br
+\fIA_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the constraint Jacobian, A\&. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed\&.
+.br
+\fIA_ne\fP is a scalar variable of type int, that holds the number of entries in A in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
+.br
+\fIA_row\fP is a one-dimensional array of size A_ne and type int, that holds the row indices of A in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes, and in this case can be NULL\&.
+.br
+\fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
+.br
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+.RE
+.PP
+
+.SS "void cqp_information (void ** data, struct \fBcqp_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBcqp_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void cqp_initialize (void ** data, struct \fBcqp_control_type\fP * control, struct \fBcqp_inform_type\fP * inform)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data 
+.br
+\fIcontrol\fP is a struct containing control information (see \fBcqp_control_type\fP) 
+.br
+\fIinform\fP is a struct containing output information (see \fBcqp_inform_type\fP) 
+.RE
+.PP
+
+.SS "void cqp_read_specfile (struct \fBcqp_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBcqp_control_type\fP) 
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
+.SS "void cqp_reset_control (struct \fBcqp_control_type\fP * control, void ** data, int * status)"
+Reset control parameters after import if required\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBcqp_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.PP
+.RE
+.PP
+
+.SS "void cqp_solve_qp (void ** data, int * status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])"
+Solve the quadratic program when the Hessian H is available\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&. 
+.IP "\(bu" 2
+-5\&. The simple-bound constraints are inconsistent\&. 
+.IP "\(bu" 2
+-7\&. The constraints appear to have no feasible point\&. 
+.IP "\(bu" 2
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+.IP "\(bu" 2
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+.IP "\(bu" 2
+-17\&. The step is too small to make further impact\&. 
+.IP "\(bu" 2
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-23\&. An entry from the strict upper triangle of H has been specified\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general linear constraints\&.
+.br
+\fIh_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix H\&.
+.br
+\fIH_val\fP is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H in any of the available storage schemes\&.
+.br
+\fIg\fP is a one-dimensional array of size n and type double, that holds the linear term g of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
+.br
+\fIf\fP is a scalar of type double, that holds the constant term f of the objective function\&.
+.br
+\fIa_ne\fP is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix A\&.
+.br
+\fIA_val\fP is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the constraint Jacobian matrix A in any of the available storage schemes\&.
+.br
+\fIc_l\fP is a one-dimensional array of size m and type double, that holds the lower bounds c^l on the constraints A x\&. The i-th component of c_l, i = 0, \&.\&.\&. , m-1, contains c^l_i\&.
+.br
+\fIc_u\fP is a one-dimensional array of size m and type double, that holds the upper bounds c^l on the constraints A x\&. The i-th component of c_u, i = 0, \&.\&.\&. , m-1, contains c^u_i\&.
+.br
+\fIx_l\fP is a one-dimensional array of size n and type double, that holds the lower bounds x^l on the variables x\&. The j-th component of x_l, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
+.br
+\fIx_u\fP is a one-dimensional array of size n and type double, that holds the upper bounds x^l on the variables x\&. The j-th component of x_u, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
+.br
+\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication\&. See status = 7, above, for more details\&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
+.br
+\fIc\fP is a one-dimensional array of size m and type double, that holds the residual c(x)\&. The i-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j(x) \&.
+.br
+\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the general linear constraints\&. The j-th component of y, j = 0, \&.\&.\&. , n-1, contains y_j\&.
+.br
+\fIz\fP is a one-dimensional array of size n and type double, that holds the values z of the dual variables\&. The j-th component of z, j = 0, \&.\&.\&. , n-1, contains z_j\&.
+.br
+\fIx_stat\fP is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables\&. If x_stat(j) is negative, the variable x_j most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&.
+.br
+\fIc_stat\fP is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints\&. If c_stat(i) is negative, the constraint value a_{i}^{T}x most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&. 
+.RE
+.PP
+
+.SS "void cqp_solve_sldqp (void ** data, int * status, int n, int m, const real_wp_ w[], const real_wp_ x0[], const real_wp_ g[], const real_wp_ f, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])"
+Solve the shifted least-distance quadratic program
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&. 
+.IP "\(bu" 2
+-5\&. The simple-bound constraints are inconsistent\&. 
+.IP "\(bu" 2
+-7\&. The constraints appear to have no feasible point\&. 
+.IP "\(bu" 2
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+.IP "\(bu" 2
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+.IP "\(bu" 2
+-17\&. The step is too small to make further impact\&. 
+.IP "\(bu" 2
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-23\&. An entry from the strict upper triangle of H has been specified\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general linear constraints\&.
+.br
+\fIw\fP is a one-dimensional array of size n and type double, that holds the values of the weights w\&.
+.br
+\fIx0\fP is a one-dimensional array of size n and type double, that holds the values of the shifts x^0\&.
+.br
+\fIg\fP is a one-dimensional array of size n and type double, that holds the linear term g of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
+.br
+\fIf\fP is a scalar of type double, that holds the constant term f of the objective function\&.
+.br
+\fIa_ne\fP is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix A\&.
+.br
+\fIA_val\fP is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the constraint Jacobian matrix A in any of the available storage schemes\&.
+.br
+\fIc_l\fP is a one-dimensional array of size m and type double, that holds the lower bounds c^l on the constraints A x\&. The i-th component of c_l, i = 0, \&.\&.\&. , m-1, contains c^l_i\&.
+.br
+\fIc_u\fP is a one-dimensional array of size m and type double, that holds the upper bounds c^l on the constraints A x\&. The i-th component of c_u, i = 0, \&.\&.\&. , m-1, contains c^u_i\&.
+.br
+\fIx_l\fP is a one-dimensional array of size n and type double, that holds the lower bounds x^l on the variables x\&. The j-th component of x_l, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
+.br
+\fIx_u\fP is a one-dimensional array of size n and type double, that holds the upper bounds x^l on the variables x\&. The j-th component of x_u, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
+.br
+\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication\&. See status = 7, above, for more details\&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
+.br
+\fIc\fP is a one-dimensional array of size m and type double, that holds the residual c(x)\&. The i-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j(x) \&.
+.br
+\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the general linear constraints\&. The j-th component of y, j = 0, \&.\&.\&. , n-1, contains y_j\&.
+.br
+\fIz\fP is a one-dimensional array of size n and type double, that holds the values z of the dual variables\&. The j-th component of z, j = 0, \&.\&.\&. , n-1, contains z_j\&.
+.br
+\fIx_stat\fP is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables\&. If x_stat(j) is negative, the variable x_j most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&.
+.br
+\fIc_stat\fP is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints\&. If c_stat(i) is negative, the constraint value a_{i}^{T}x most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&. 
+.RE
+.PP
+
+.SS "void cqp_terminate (void ** data, struct \fBcqp_control_type\fP * control, struct \fBcqp_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBcqp_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBcqp_inform_type\fP) 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD CQP from the source code\&.
