@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#  syntax: galdoxy package
+#  syntax: galdoxy_latex package
 
 #  create the C documentation for GALAHAD.
 #  currently this will produce pdf

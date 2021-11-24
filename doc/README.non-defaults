@@ -46,8 +46,8 @@ DEBUG = -debug -g -traceback
 
 ** BLAS, LAPACK and MKL **
 
-LAPACK = -L/opt/intel/mkl/lib/intel64 -mkl
-MKL_PARDISO = -L/opt/intel/mkl/lib/intel64 -mkl
+LAPACK = -L/opt/intel/mkl/lib/intel64 -qmkl
+MKL_PARDISO = -L/opt/intel/mkl/lib/intel64 -qmkl
 
 NAG nagfor
 ----------

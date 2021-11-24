@@ -1251,6 +1251,16 @@
                        fjtype, jne, jrow_find, jcol_find, jptr_find,           &
                        fhtype, hne, hrow_find, hcol_find, hptr_find,           &
                        fptype, pne, prow_find, pcol_find, pptr_find, w )
+
+    IF ( ALLOCATED( jrow_find ) ) DEALLOCATE( jrow_find )
+    IF ( ALLOCATED( jcol_find ) ) DEALLOCATE( jcol_find )
+    IF ( ALLOCATED( jptr_find ) ) DEALLOCATE( jptr_find )
+    IF ( ALLOCATED( hrow_find ) ) DEALLOCATE( hrow_find )
+    IF ( ALLOCATED( hcol_find ) ) DEALLOCATE( hcol_find )
+    IF ( ALLOCATED( hptr_find ) ) DEALLOCATE( hptr_find )
+    IF ( ALLOCATED( prow_find ) ) DEALLOCATE( prow_find )
+    IF ( ALLOCATED( pcol_find ) ) DEALLOCATE( pcol_find )
+    IF ( ALLOCATED( pptr_find ) ) DEALLOCATE( pptr_find )
   ELSE
     CALL f_nls_import( fcontrol, fdata, status, n, m,                          &
                        fjtype, jne, jrow, jcol, jptr,                          &

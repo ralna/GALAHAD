@@ -67,7 +67,7 @@
                 CQP_terminate, QPT_problem_type, SMT_type, SMT_put, SMT_get,   &
                 CQP_Ax, CQP_data_type, CQP_dims_type, CQP_indicators,          &
                 CQP_workspace, CQP_full_initialize, CQP_full_terminate,        &
-                CQP_import, CQP_solve_qp, CQP_solve_sld, CQP_reset_control,    &
+                CQP_import, CQP_solve_qp, CQP_solve_sldqp, CQP_reset_control,  &
                 CQP_information
 
 !----------------------
@@ -11290,7 +11290,8 @@ END DO
 !  save the Hessian entries
 
      IF ( data%prob%Hessian_kind /= 2 ) THEN
-       data%prob%H%val( : data%prob%H%ne ) = H_val( : data%prob%H%ne )
+       IF ( data%prob%H%ne > 0 )                                               &
+         data%prob%H%val( : data%prob%H%ne ) = H_val( : data%prob%H%ne )
      ELSE
        data%cqp_inform%status = GALAHAD_error_hessian_type
        GO TO 900
@@ -11298,7 +11299,8 @@ END DO
 
 !  save the constraint Jacobian entries
 
-     data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
+     IF ( data%prob%A%ne > 0 )                                                 &
+       data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
 
 !  call the solver
 
@@ -11326,10 +11328,10 @@ END DO
 
      END SUBROUTINE CQP_solve_qp
 
-!-*-*-*-  G A L A H A D -  C Q P _ s o l v e _ s l d  S U B R O U T I N E  -*-*-
+!-*-  G A L A H A D -  C Q P _ s o l v e _ s l d q p  S U B R O U T I N E  -*-
 
-     SUBROUTINE CQP_solve_sld( data, status, W, X0, G, f, A_val, C_l, C_u,     &
-                               X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+     SUBROUTINE CQP_solve_sldqp( data, status, W, X0, G, f, A_val, C_l, C_u,   &
+                                 X_l, X_u, X, C, Y, Z, X_stat, C_stat )
 
 !  solve the shifted-least-distance problem whose structure was previously
 !  imported. See CQP_solve for a description of the required arguments.
@@ -11470,9 +11472,9 @@ END DO
      status = data%cqp_inform%status
      RETURN
 
-!  End of subroutine CQP_solve_sld
+!  End of subroutine CQP_solve_sldqp
 
-     END SUBROUTINE CQP_solve_sld
+     END SUBROUTINE CQP_solve_sldqp
 
 !-  G A L A H A D -  C Q P _ i n f o r m a t i o n   S U B R O U T I N E  -
 

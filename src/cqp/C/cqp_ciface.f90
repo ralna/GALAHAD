@@ -6,7 +6,7 @@
 !  Principal authors: Jaroslav Fowkes & Nick Gould
 
 !  History -
-!    originally released GALAHAD Version 3.3. September 3rd 2021
+!    originally released GALAHAD Version 3.3. November 23rd 2021
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -23,6 +23,8 @@
         f_cqp_read_specfile  => CQP_read_specfile,                             &
         f_cqp_import         => CQP_import,                                    &
         f_cqp_reset_control  => CQP_reset_control,                             &
+        f_cqp_solve_qp       => CQP_solve_qp,                                  &
+        f_cqp_solve_sldqp    => CQP_solve_sldqp,                               &
         f_cqp_information    => CQP_information,                               &
         f_cqp_terminate      => CQP_terminate
 
@@ -686,6 +688,11 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
+!  convert C string to Fortran string
+
+  fhtype = cstr_to_fchar( chtype )
+  fatype = cstr_to_fchar( catype )
+
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
@@ -693,19 +700,6 @@
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( arow ) ) THEN
-      ALLOCATE( arow_find( ane ) )
-      arow_find = arow + 1
-    END IF
-    IF ( PRESENT( acol ) ) THEN
-      ALLOCATE( acol_find( ane ) )
-      acol_find = acol + 1
-    END IF
-    IF ( PRESENT( aptr ) ) THEN
-      ALLOCATE( aptr_find( m + 1 ) )
-      aptr_find = aptr + 1
-    END IF
-
     IF ( PRESENT( hrow ) ) THEN
       ALLOCATE( hrow_find( hne ) )
       hrow_find = hrow + 1
@@ -719,11 +713,31 @@
       hptr_find = hptr + 1
     END IF
 
+    IF ( PRESENT( arow ) ) THEN
+      ALLOCATE( arow_find( ane ) )
+      arow_find = arow + 1
+    END IF
+    IF ( PRESENT( acol ) ) THEN
+      ALLOCATE( acol_find( ane ) )
+      acol_find = acol + 1
+    END IF
+    IF ( PRESENT( aptr ) ) THEN
+      ALLOCATE( aptr_find( m + 1 ) )
+      aptr_find = aptr + 1
+    END IF
+
 !  import the problem data into the required CQP structure
 
     CALL f_cqp_import( fcontrol, fdata, status, n, m,                          &
                        fhtype, hne, hrow_find, hcol_find, hptr_find,           &
                        fatype, ane, arow_find, acol_find, aptr_find )
+
+    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
+    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
+    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
+    IF ( ALLOCATED( hrow_find ) ) DEALLOCATE( hrow_find )
+    IF ( ALLOCATED( hcol_find ) ) DEALLOCATE( hcol_find )
+    IF ( ALLOCATED( hptr_find ) ) DEALLOCATE( hptr_find )
   ELSE
     CALL f_cqp_import( fcontrol, fdata, status, n, m,                          &
                        fhtype, hne, hrow, hcol, hptr,                          &
@@ -793,7 +807,7 @@
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = wp ), INTENT( IN ) :: f
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, z
@@ -819,12 +833,12 @@
 
   END SUBROUTINE cqp_solve_qp
 
-!  ------------------------------------
-!  C interface to fortran cqp_solve_sld
-!  ------------------------------------
+!  --------------------------------------
+!  C interface to fortran cqp_solve_sldqp
+!  --------------------------------------
 
-  SUBROUTINE cqp_solve_sld( cdata, status, n, m, w, x0, g, f, ane, aval,       &
-                            cl, cu, xl, xu, x, c, y, z, xstat, cstat ) BIND( C )
+  SUBROUTINE cqp_solve_sldqp( cdata, status, n, m, w, x0, g, f, ane, aval, cl, &
+                              cu, xl, xu, x, c, y, z, xstat, cstat ) BIND( C )
   USE GALAHAD_CQP_double_ciface
   IMPLICIT NONE
 
@@ -836,7 +850,7 @@
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: x0
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
-  REAL ( KIND = wp ), INTENT( IN ) :: f
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, z
@@ -856,11 +870,11 @@
 
 !  solve the qp
 
-  CALL f_cqp_solve_sld( fdata, status, w, x0, g, f, aval, cl, cu, xl, xu,      &
-                        x, c, y, z, xstat, cstat )
+  CALL f_cqp_solve_sldqp( fdata, status, w, x0, g, f, aval, cl, cu, xl, xu,    &
+                          x, c, y, z, xstat, cstat )
   RETURN
 
-  END SUBROUTINE cqp_solve_sld
+  END SUBROUTINE cqp_solve_sldqp
 
 !  --------------------------------------
 !  C interface to fortran cqp_information

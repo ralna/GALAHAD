@@ -872,7 +872,19 @@ void cqp_read_specfile( struct cqp_control_type *control,
 
 void cqp_import( struct cqp_control_type *control,
                  void **data,
-                 int *status );
+                 int *status,
+                 int n,
+                 int m,
+                 const char H_type[], 
+                 int H_ne, 
+                 const int H_row[],
+                 const int H_col[], 
+                 const int H_ptr[],
+                 const char A_type[], 
+                 int A_ne, 
+                 const int A_row[],
+                 const int A_col[], 
+                 const int A_ptr[] );
 
 /*!<
  Import problem data into internal storage prior to solution. 
@@ -895,16 +907,80 @@ void cqp_import( struct cqp_control_type *control,
        returned allocation status and a string containing the
        name of the offending array are held in 
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restriction n > 0 or requirement that type contains
+  \li -3. The restrictions n > 0 or m > 0 or requirement that a type contains
        its relevant string 'dense', 'coordinate', 'sparse_by_rows',
-       'diagonal' or 'absent' has been violated.
+       'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
+        has been violated.
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+       specified.
+
+ @param[in] n is a scalar variable of type int, that holds the number of
+    variables.
+
+ @param[in] m is a scalar variable of type int, that holds the number of
+    general linear constraints.
+
+ @param[in]  H_type is a one-dimensional array of type char that specifies the
+   \link main_symmetric_matrices symmetric storage scheme \endlink 
+   used for the Hessian, \f$H\f$. It should be one of 'coordinate', 
+   'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity',
+   'zero' or 'none', the latter pair if \f$H=0\f$; lower or upper 
+   case variants are allowed.
+
+ @param[in]  H_ne is a scalar variable of type int, that holds the number of
+   entries in the lower triangular part of \f$H\f$ in the sparse co-ordinate
+   storage scheme. It need not be set for any of the other schemes.
+
+ @param[in]  H_row is a one-dimensional array of size H_ne and type int, that 
+   holds the row indices of the lower triangular part of \f$H\f$ in the sparse
+   co-ordinate storage scheme. It need not be set for any of the other
+   three schemes, and in this case can be NULL.
+
+ @param[in]  H_col is a one-dimensional array of size H_ne and type int,
+   that holds the column indices of the lower triangular part of \f$H\f$ in 
+   either the sparse co-ordinate, or the sparse row-wise storage scheme. It 
+   need not be set when the dense, diagonal or (scaled) identity storage 
+   schemes are used,  and in this case can be NULL.
+
+ @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
+   that holds the starting position of  each row of the lower
+   triangular part of \f$H\f$, as well as the total number of entries plus one,
+   in the sparse row-wise storage scheme. It need not be set when the
+   other schemes are used, and in this case can be NULL.
+
+ @param[in]  A_type is a one-dimensional array of type char that specifies the
+   \link main_unsymmetric_matrices symmetric storage scheme \endlink 
+   used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate', 
+  'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian
+  is via matrix-vector products; lower or upper case variants are allowed.
+
+ @param[in]  A_ne is a scalar variable of type int, that holds the number of
+   entries in \f$A\f$ in the sparse co-ordinate storage scheme. 
+   It need not be set for any of the other schemes.
+
+ @param[in]  A_row is a one-dimensional array of size A_ne and type int, that 
+   holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme. 
+   It need not be set for any of the other schemes, 
+   and in this case can be NULL.
+
+ @param[in]  A_col is a one-dimensional array of size A_ne and type int,
+   that holds the column indices of \f$A\f$ in either the sparse co-ordinate, 
+   or the sparse row-wise storage scheme. It need not be set when the 
+   dense or diagonal storage schemes are used, and in this case can be NULL.
+
+ @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
+   that holds the starting position of each row of \f$A\f$, as well as the 
+   total number of entries plus one, in the sparse row-wise storage scheme. 
+   It need not be set when the other schemes are used, 
+   and in this case can be NULL.
 */
+
 
 //  *-*-*-*-*-*-*-*-*-   C Q P _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
 
 void cqp_reset_control( struct cqp_control_type *control,
                         void **data,
-                        int *status, );
+                        int *status );
 
 /*!< 
  Reset control parameters after import if required.
@@ -918,6 +994,295 @@ void cqp_reset_control( struct cqp_control_type *control,
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
  */
+
+//  *-*-*-*-*-*-*-*-*-*-*-   C Q P _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*
+
+void cqp_solve_qp( void **data,
+                   int *status,
+                   int n, 
+                   int m, 
+                   int h_ne,
+                   const real_wp_ H_val[], 
+                   const real_wp_ g[], 
+                   const real_wp_ f, 
+                   int a_ne,
+                   const real_wp_ A_val[], 
+                   const real_wp_ c_l[], 
+                   const real_wp_ c_u[], 
+                   const real_wp_ x_l[], 
+                   const real_wp_ x_u[], 
+                   real_wp_ x[], 
+                   real_wp_ c[], 
+                   real_wp_ y[], 
+                   real_wp_ z[], 
+                   int x_stat[], 
+                   int c_stat[] );
+
+/*!<
+ Solve the quadratic program when the Hessian \f$H\f$ is available.
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the entry and exit status from the package. \n
+    On initial entry, status must be set to 1. \n
+    Possible exit are:
+  \li  0. The run was succesful
+
+  \li -1. An allocation error occurred. A message indicating the offending
+       array is written on unit control.error, and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the offending
+       array is written on unit control.error and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -3. The restrictions n > 0 and m > 0 or requirement that a type contains
+       its relevant string 'dense', 'coordinate', 'sparse_by_rows',
+       'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
+        has been violated.
+  \li -5. The simple-bound constraints are inconsistent.
+  \li -7. The constraints appear to have no feasible point.
+  \li -9. The analysis phase of the factorization failed; the return status
+         from the factorization package is given in the component
+         inform.factor_status
+  \li -10. The factorization failed; the return status from the factorization
+         package is given in the component inform.factor_status.
+  \li -11. The solution of a set of linear equations using factors from the
+         factorization package failed; the return status from the factorization
+         package is given in the component inform.factor_status.
+  \li -16. The problem is so ill-conditioned that further progress is 
+           impossible.
+  \li -17. The step is too small to make further impact.
+  \li -18. Too many iterations have been performed. This may happen if
+         control.maxit is too small, but may also be symptomatic of
+         a badly scaled problem.
+  \li -19. The CPU time limit has been reached. This may happen if
+         control.cpu_time_limit is too small, but may also be symptomatic of
+         a badly scaled problem.
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+           specified.
+ 
+ @param[in] n is a scalar variable of type int, that holds the number of
+    variables
+
+ @param[in] m is a scalar variable of type int, that holds the number of
+    general linear constraints.
+
+  @param[in] h_ne is a scalar variable of type int, that holds the number of 
+    entries in the lower triangular part of the Hessian matrix \f$H\f$.
+
+  @param[in] H_val is a one-dimensional array of size h_ne and type double, 
+    that holds the values of the entries of the lower triangular part of the 
+    Hessian matrix \f$H\f$ in any of the available storage schemes.
+
+ @param[in] g is a one-dimensional array of size n and type double, that 
+    holds the linear term \f$g\f$ of the objective function. 
+    The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
+  
+ @param[in] f is a scalar of type double, that 
+    holds the constant term \f$f\f$ of the objective function. 
+  
+ @param[in] a_ne is a scalar variable of type int, that holds the number of 
+    entries in the constraint Jacobian matrix \f$A\f$.
+ 
+@param[in] A_val is a one-dimensional array of size a_ne and type double, 
+    that holds the values of the entries of the constraint Jacobian matrix 
+    \f$A\f$ in any of the available storage schemes. 
+
+ @param[in] c_l is a one-dimensional array of size m and type double, that 
+    holds the lower bounds \f$c^l\f$ on the constraints \f$A x\f$.
+    The i-th component of c_l, i = 0, ... ,  m-1, contains  \f$c^l_i\f$.
+  
+ @param[in] c_u is a one-dimensional array of size m and type double, that 
+    holds the upper bounds \f$c^l\f$ on the constraints \f$A x\f$.
+    The i-th component of c_u, i = 0, ... ,  m-1, contains  \f$c^u_i\f$.
+  
+ @param[in] x_l is a one-dimensional array of size n and type double, that 
+    holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
+    The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
+  
+ @param[in] x_u is a one-dimensional array of size n and type double, that 
+    holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
+    The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
+  
+ @param[in,out] v is a one-dimensional array of size n and type double, that is 
+    used for reverse communication.
+    See status = 7, above, for more details.
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that 
+    holds the values \f$x\f$ of the optimization variables. The j-th component 
+    of x, j = 0, ... , n-1, contains \f$x_j\f$.
+  
+ @param[out] c is a one-dimensional array of size m and type double, that 
+    holds the residual \f$c(x)\f$.
+    The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
+  
+ @param[in,out] y is a one-dimensional array of size n and type double, that 
+    holds the values \f$y\f$ of the Lagrange multipliers for the general 
+    linear constraints. The j-th component 
+    of y, j = 0, ... , n-1, contains \f$y_j\f$.
+  
+ @param[in,out] z is a one-dimensional array of size n and type double, that 
+    holds the values \f$z\f$ of the dual variables. 
+    The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
+  
+ @param[out] x_stat is a one-dimensional array of size n and type int, that 
+    gives the optimal status of the problem variables. If x_stat(j) is negative,
+    the variable \f$x_j\f$ most likely lies on its lower bound, if it is
+    positive, it lies on its upper bound, and if it is zero, it lies
+    between its bounds.
+
+ @param[out] c_stat is a one-dimensional array of size m and type int, that 
+    gives the optimal status of the general linear constraints. If c_stat(i) is 
+    negative, the constraint value \f$a_{i}^{T}x\f$ most likely lies on its 
+    lower bound, if it is positive, it lies on its upper bound, and if it 
+    is zero, it lies  between its bounds.
+*/  
+
+//  *-*-*-*-*-*-*-*-*-*-   C Q P _ S O L V E _ S L D Q P  -*-*-*-*-*-*-*-*-*-
+
+void cqp_solve_sldqp( void **data,
+                      int *status,
+                      int n, 
+                      int m, 
+                      const real_wp_ w[], 
+                      const real_wp_ x0[], 
+                      const real_wp_ g[], 
+                      const real_wp_ f, 
+                      int a_ne,
+                      const real_wp_ A_val[], 
+                      const real_wp_ c_l[], 
+                      const real_wp_ c_u[], 
+                      const real_wp_ x_l[], 
+                      const real_wp_ x_u[], 
+                      real_wp_ x[], 
+                      real_wp_ c[], 
+                      real_wp_ y[], 
+                      real_wp_ z[], 
+                      int x_stat[], 
+                      int c_stat[] );
+
+/*!<
+ Solve the shifted least-distance quadratic program
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the entry and exit status from the package. \n
+    On initial entry, status must be set to 1. \n
+    Possible exit are:
+  \li  0. The run was succesful
+
+  \li -1. An allocation error occurred. A message indicating the offending
+       array is written on unit control.error, and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the offending
+       array is written on unit control.error and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -3. The restrictions n > 0 and m > 0 or requirement that a type contains
+       its relevant string 'dense', 'coordinate', 'sparse_by_rows',
+       'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
+        has been violated.
+  \li -5. The simple-bound constraints are inconsistent.
+  \li -7. The constraints appear to have no feasible point.
+  \li -9. The analysis phase of the factorization failed; the return status
+         from the factorization package is given in the component
+         inform.factor_status
+  \li -10. The factorization failed; the return status from the factorization
+         package is given in the component inform.factor_status.
+  \li -11. The solution of a set of linear equations using factors from the
+         factorization package failed; the return status from the factorization
+         package is given in the component inform.factor_status.
+  \li -16. The problem is so ill-conditioned that further progress is 
+           impossible.
+  \li -17. The step is too small to make further impact.
+  \li -18. Too many iterations have been performed. This may happen if
+         control.maxit is too small, but may also be symptomatic of
+         a badly scaled problem.
+  \li -19. The CPU time limit has been reached. This may happen if
+         control.cpu_time_limit is too small, but may also be symptomatic of
+         a badly scaled problem.
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+           specified.
+ 
+ @param[in] n is a scalar variable of type int, that holds the number of
+    variables
+
+ @param[in] m is a scalar variable of type int, that holds the number of
+    general linear constraints.
+
+  @param[in] w is a one-dimensional array of size n and type double, 
+    that holds the values of the weights \f$w\f$.
+
+  @param[in] x0 is a one-dimensional array of size n and type double, 
+    that holds the values of the shifts \f$x^0\f$.
+
+ @param[in] g is a one-dimensional array of size n and type double, that 
+    holds the linear term \f$g\f$ of the objective function. 
+    The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
+  
+ @param[in] f is a scalar of type double, that 
+    holds the constant term \f$f\f$ of the objective function. 
+  
+ @param[in] a_ne is a scalar variable of type int, that holds the number of 
+    entries in the constraint Jacobian matrix \f$A\f$.
+ 
+@param[in] A_val is a one-dimensional array of size a_ne and type double, 
+    that holds the values of the entries of the constraint Jacobian matrix 
+    \f$A\f$ in any of the available storage schemes. 
+
+ @param[in] c_l is a one-dimensional array of size m and type double, that 
+    holds the lower bounds \f$c^l\f$ on the constraints \f$A x\f$.
+    The i-th component of c_l, i = 0, ... ,  m-1, contains  \f$c^l_i\f$.
+  
+ @param[in] c_u is a one-dimensional array of size m and type double, that 
+    holds the upper bounds \f$c^l\f$ on the constraints \f$A x\f$.
+    The i-th component of c_u, i = 0, ... ,  m-1, contains  \f$c^u_i\f$.
+  
+ @param[in] x_l is a one-dimensional array of size n and type double, that 
+    holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
+    The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
+  
+ @param[in] x_u is a one-dimensional array of size n and type double, that 
+    holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
+    The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
+  
+ @param[in,out] v is a one-dimensional array of size n and type double, that is 
+    used for reverse communication.
+    See status = 7, above, for more details.
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that 
+    holds the values \f$x\f$ of the optimization variables. The j-th component 
+    of x, j = 0, ... , n-1, contains \f$x_j\f$.
+  
+ @param[out] c is a one-dimensional array of size m and type double, that 
+    holds the residual \f$c(x)\f$.
+    The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
+  
+ @param[in,out] y is a one-dimensional array of size n and type double, that 
+    holds the values \f$y\f$ of the Lagrange multipliers for the general 
+    linear constraints. The j-th component 
+    of y, j = 0, ... , n-1, contains \f$y_j\f$.
+  
+ @param[in,out] z is a one-dimensional array of size n and type double, that 
+    holds the values \f$z\f$ of the dual variables. 
+    The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
+  
+ @param[out] x_stat is a one-dimensional array of size n and type int, that 
+    gives the optimal status of the problem variables. If x_stat(j) is negative,
+    the variable \f$x_j\f$ most likely lies on its lower bound, if it is
+    positive, it lies on its upper bound, and if it is zero, it lies
+    between its bounds.
+
+ @param[out] c_stat is a one-dimensional array of size m and type int, that 
+    gives the optimal status of the general linear constraints. If c_stat(i) is 
+    negative, the constraint value \f$a_{i}^{T}x\f$ most likely lies on its 
+    lower bound, if it is positive, it lies on its upper bound, and if it 
+    is zero, it lies  between its bounds.
+*/  
 
 // *-*-*-*-*-*-*-*-*-*-    C Q P  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
@@ -963,7 +1328,7 @@ void cqp_terminate( void **data,
    \example cqpt.c
    This is an example of how to use the package to solve a quadratic program.
    A variety of supported Hessian and constraint matrix storage formats are 
-  shown.
+   shown.
   
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.

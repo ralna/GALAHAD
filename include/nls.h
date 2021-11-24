@@ -1829,7 +1829,7 @@ void nls_solve_reverse_with_mat( void **data,
  @param[in] j_ne is a scalar variable of type int, that holds the number of 
     entries in the Jacobian matrix \f$J\f$.
  
- @param[in] J_val is a one-dimensional array of size ne and type double, 
+ @param[in] J_val is a one-dimensional array of size j_ne and type double, 
     that holds the values of the entries of the Jacobian matrix \f$J\f$ 
     in any of the available storage schemes. 
     See status = 3, above, for more details.
@@ -1841,7 +1841,7 @@ void nls_solve_reverse_with_mat( void **data,
  @param[in] h_ne is a scalar variable of type int, that holds the number of 
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
  
- @param[in] H_val is a one-dimensional array of size ne and type double, 
+ @param[in] H_val is a one-dimensional array of size h_ne and type double, 
     that holds the values of the entries of the lower triangular part of the 
     Hessian matrix \f$H\f$ in any of the available storage schemes.
     See status = 4, above, for more details.
@@ -1853,7 +1853,7 @@ void nls_solve_reverse_with_mat( void **data,
  @param[in] p_ne is a scalar variable of type int, that holds the number of 
     entries in the residual-Hessians-vector product matrix, \f$P\f$.
  
- @param[in] P_val is a one-dimensional array of size ne and type double, 
+ @param[in] P_val is a one-dimensional array of size p_ne and type double, 
     that holds the values of the entries of the residual-Hessians-vector 
     product matrix, \f$P\f$.
     See status = 7, above, for more details.

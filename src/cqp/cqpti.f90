@@ -136,8 +136,8 @@
        CALL CQP_import( control, data, status, n, m,                           &
                         'shifted_least_distance', H_ne, H_row, H_col, H_ptr,   &
                         'coordinate', A_ne, A_row, A_col, A_ptr )
-       CALL CQP_solve_sld( data, status, W, X_0, G, f, A_val, C_l, C_u,        &
-                           X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+       CALL CQP_solve_sldqp( data, status, W, X_0, G, f, A_val, C_l, C_u,      &
+                             X_l, X_u, X, C, Y, Z, X_stat, C_stat )
 
      END SELECT
      CALL CQP_information( data, inform, status )
