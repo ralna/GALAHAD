@@ -11164,7 +11164,7 @@ END DO
        GO TO 900
      END SELECT
 
-     status = GALAHAD_ready_to_solve
+     status = GALAHAD_ok
      RETURN
 
 !  error returns
@@ -11198,7 +11198,7 @@ END DO
 
 !  flag a successful call
 
-     status = GALAHAD_ready_to_solve
+     status = GALAHAD_ok
      RETURN
 
 !  end of subroutine CQP_reset_control
@@ -11213,9 +11213,9 @@ END DO
 !  solve the quadratic programming problem whose structure was previously
 !  imported. See CQP_solve for a description of the required arguments.
 
-!-----------------------------------------------
+!--------------------------------
 !   D u m m y   A r g u m e n t s
-!-----------------------------------------------
+!--------------------------------
 
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -11336,9 +11336,9 @@ END DO
 !  solve the shifted-least-distance problem whose structure was previously
 !  imported. See CQP_solve for a description of the required arguments.
 
-!-----------------------------------------------
+!--------------------------------
 !   D u m m y   A r g u m e n t s
-!-----------------------------------------------
+!--------------------------------
 
      INTEGER, INTENT( OUT ) :: status
      TYPE ( CQP_full_data_type ), INTENT( INOUT ) :: data

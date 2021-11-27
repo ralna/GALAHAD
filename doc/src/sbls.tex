@@ -894,7 +894,7 @@ form \req{ls} as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_solve(n, m, A, C, data, control, inform, SOL )}
+{\tt CALL \packagename\_solve( n, m, A, C, data, control, inform, SOL )}
 \vspace*{1mm}
 
 \noindent
@@ -1001,7 +1001,7 @@ and {\tt inform\%bad\_alloc} respectively.
     {\tt prob\%C\_type} contain its relevant string
     {\tt 'DENSE'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'},
     {\tt 'DIAGONAL'}, {\tt 'SCALED\_IDENTITY'}, {\tt 'IDENTITY'},
-    {\tt ZERO} or {\tt NONE}
+    {\tt 'ZERO'} or {\tt 'NONE'}
     has been violated.
 
 %\itt{-3.} At least one of the arrays
@@ -1284,7 +1284,7 @@ interest to the general user, may be returned.
 and {\tt prob\%C\_type} $\in \{${\tt 'DENSE'},
  {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}, {\tt 'DIAGONAL'},
  {\tt 'SCALED\_IDENTITY'}, {\tt 'IDENTITY'} $\}$,
- {\tt ZERO}, {\tt NONE}.
+ {\tt 'ZERO'}, {\tt 'NONE'}.
 \galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
 The package is thread-safe.
 

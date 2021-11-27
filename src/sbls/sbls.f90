@@ -56,7 +56,22 @@
                 SBLS_solve_implicit, SBLS_solve_null_space, SBLS_terminate,    &
                 SBLS_fredholm_alternative, SBLS_part_solve, SBLS_eigs,         &
                 SBLS_solve_iterative, SBLS_cond, SMT_type, SMT_put, SMT_get,   &
+                SBLS_full_initialize, SBLS_full_terminate,                     &
+                SBLS_import, SBLS_factorize_matrix, SBLS_solve_system,         &
+                SBLS_reset_control, SBLS_information,                          &
                 LMS_control_type, LMS_data_type
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE SBLS_initialize
+       MODULE PROCEDURE SBLS_initialize, SBLS_full_initialize
+     END INTERFACE SBLS_initialize
+
+     INTERFACE SBLS_terminate
+       MODULE PROCEDURE SBLS_terminate, SBLS_full_terminate
+     END INTERFACE SBLS_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -187,7 +202,7 @@
 
         REAL ( KIND = wp ) :: pivot_tol_for_basis = 0.5
 
-!  the absolute pivot tolerance used by uls                           (OBSOLETE)
+!  the absolute pivot tolerance used by uls (obsolete)
 
 !       REAL ( KIND = wp ) :: zero_pivot = epsmch ** 0.75_wp
         REAL ( KIND = wp ) :: zero_pivot = epsmch
@@ -215,7 +230,7 @@
 
         LOGICAL :: find_basis_by_transpose = .TRUE.
 
-!  can the right-hand side c be assumed to be zero?
+!  can the right-hand side component b be assumed to be zero?
 
         LOGICAL :: affine = .FALSE.
 
@@ -519,6 +534,14 @@
         TYPE ( SBLS_null_space_factors_type ) :: nfactors
       END TYPE
 
+      TYPE, PUBLIC :: SBLS_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( SBLS_data_type ) :: SBLS_data
+        TYPE ( SBLS_control_type ) :: SBLS_control
+        TYPE ( SBLS_inform_type ) :: SBLS_inform
+        TYPE ( SMT_type ) :: H, A, C
+      END TYPE SBLS_full_data_type
+
    CONTAINS
 
 !-*-*-*-*-*-   S B L S  _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
@@ -562,6 +585,38 @@
 !  End of SBLS_initialize
 
       END SUBROUTINE SBLS_initialize
+
+!- G A L A H A D -  S B L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE SBLS_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for SBLS controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SBLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SBLS_control_type ), INTENT( OUT ) :: control
+     TYPE ( SBLS_inform_type ), INTENT( OUT ) :: inform
+
+     CALL SBLS_initialize( data%sbls_data, control, inform )
+
+     RETURN
+
+!  End of subroutine SBLS_full_initialize
+
+     END SUBROUTINE SBLS_full_initialize
 
 !-*-*-*-   S B L S _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
@@ -1522,6 +1577,114 @@
 !  End of subroutine SBLS_terminate
 
       END SUBROUTINE SBLS_terminate
+
+! -  G A L A H A D -  S B L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE SBLS_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SBLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SBLS_control_type ), INTENT( IN ) :: control
+     TYPE ( SBLS_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL SBLS_terminate( data%sbls_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     array_name = 'sbls: data%H%ptr'
+     CALL SPACE_dealloc_array( data%H%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%H%row'
+     CALL SPACE_dealloc_array( data%H%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%H%col'
+     CALL SPACE_dealloc_array( data%H%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%H%val'
+     CALL SPACE_dealloc_array( data%H%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%A%ptr'
+     CALL SPACE_dealloc_array( data%A%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%A%row'
+     CALL SPACE_dealloc_array( data%A%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%A%col'
+     CALL SPACE_dealloc_array( data%A%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%A%val'
+     CALL SPACE_dealloc_array( data%A%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%C%ptr'
+     CALL SPACE_dealloc_array( data%C%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%C%row'
+     CALL SPACE_dealloc_array( data%C%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%C%col'
+     CALL SPACE_dealloc_array( data%C%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%C%val'
+     CALL SPACE_dealloc_array( data%C%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     RETURN
+
+!  End of subroutine SBLS_full_terminate
+
+     END SUBROUTINE SBLS_full_terminate
 
 !-*-   S B L S _ F O R M _ A N D _ F A C T O R I Z E  S U B R O U T I N E   -*-
 
@@ -9241,6 +9404,648 @@
 !  End of subroutine SBLS_fredholm_alternative
 
       END SUBROUTINE SBLS_fredholm_alternative
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-  G A L A H A D -  S B L S _ i m p o r t _ S U B R O U T I N E -*-*-*-
+
+     SUBROUTINE SBLS_import( control, data, status, n, m,                      &
+                             H_type, H_ne, H_row, H_col, H_ptr,                &
+                             A_type, A_ne, A_row, A_col, A_ptr,                &
+                             C_type, C_ne, C_row, C_col, C_ptr )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to SBLS_solve
+!
+!  data is a scalar variable of type SBLS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that type contains
+!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' 'SCALED_IDENTITY', 'IDENTITY', 'ZERO', or 'NONE'
+!       has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   rows and columns in the 1,1 block
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   rows and columns in the 2,2 block
+!
+!  H_type is a character string that specifies the storage scheme used for H.
+!   It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   'diagonal' 'scaled_identity', 'identity', 'zero' or 'none';
+!   lower or upper case variants are allowed.
+!
+!  H_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  H_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  H_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  H_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!  A_type is a character string that specifies the storage scheme used for A.
+!   It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   or 'absent', the latter if m = 0; lower or upper case variants are allowed
+!
+!  A_ne is a scalar variable of type default integer, that holds the number of
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!  for any of the other schemes.
+!
+!  A_row is a rank-one array of type default integer, that holds the row
+!   indices J in the sparse co-ordinate storage scheme. It need not be set
+!   for any of the other schemes, and in this case can be of length 0
+!
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
+!   in this case can be of length 0
+!
+!  A_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of J, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
+!   can be of length 0
+!
+!  C_type is a character string that specifies the Hessian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   'diagonal' 'scaled_identity', 'identity', 'zero' or 'none';
+!   lower or upper case variants are allowed.
+!
+!  C_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  C_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  C_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  C_ptr is a rank-one array of dimension m+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SBLS_control_type ), INTENT( INOUT ) :: control
+     TYPE ( SBLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n, m, A_ne, H_ne, C_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER, DIMENSION( : ), INTENT( IN ) :: A_row, A_col, A_ptr
+     CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
+     INTEGER, DIMENSION( : ), INTENT( IN ) :: H_row, H_col, H_ptr
+     CHARACTER ( LEN = * ), INTENT( IN ) :: C_type
+     INTEGER, DIMENSION( : ), INTENT( IN ) :: C_row, C_col, C_ptr
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     data%SBLS_control = control
+
+     error = data%sbls_control%error
+     space_critical = data%sbls_control%space_critical
+     deallocate_error_fatal = data%sbls_control%space_critical
+
+!  set H appropriately in the smt storage type
+
+     data%H%n = n ; data%H%m = n
+     SELECT CASE ( H_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       CALL SMT_put( data%H%type, 'COORDINATE',                                &
+                     data%sbls_inform%alloc_status )
+       data%H%ne = H_ne
+
+       array_name = 'sbls: data%H%row'
+       CALL SPACE_resize_array( data%H%ne, data%H%row,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'sbls: data%H%col'
+       CALL SPACE_resize_array( data%H%ne, data%H%col,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'sbls: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       data%H%row( : data%H%ne ) = H_row( : data%H%ne )
+       data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       CALL SMT_put( data%H%type, 'SPARSE_BY_ROWS',                            &
+                     data%sbls_inform%alloc_status )
+       data%H%ne = H_ptr( n + 1 ) - 1
+
+       array_name = 'sbls: data%H%ptr'
+       CALL SPACE_resize_array( n + 1, data%H%ptr,                             &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'sbls: data%H%col'
+       CALL SPACE_resize_array( data%H%ne, data%H%col,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'sbls: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       data%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+       data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%H%type, 'DENSE',                                     &
+                     data%sbls_inform%alloc_status )
+       data%H%ne = ( n * ( n + 1 ) ) / 2
+
+       array_name = 'sbls: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%H%type, 'DIAGONAL',                                  &
+                     data%sbls_inform%alloc_status )
+       data%H%ne = n
+
+       array_name = 'sbls: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%H%type, 'SCALED_IDENTITY',                           &
+                     data%sbls_inform%alloc_status )
+       data%H%ne = 1
+
+       array_name = 'sbls: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%H%type, 'IDENTITY',                                  &
+                     data%sbls_inform%alloc_status )
+       data%H%ne = 0
+
+     CASE ( 'zero', 'ZERO', 'none', 'NONE' )
+       CALL SMT_put( data%H%type, 'ZERO',                                      &
+                     data%sbls_inform%alloc_status )
+       data%H%ne = 0
+
+     CASE DEFAULT
+       data%sbls_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+!  set A appropriately in the smt storage type
+
+     data%A%n = n ; data%A%m = m
+     SELECT CASE ( A_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       CALL SMT_put( data%A%type, 'COORDINATE',                                &
+                     data%sbls_inform%alloc_status )
+       data%A%ne = A_ne
+
+       array_name = 'sbls: data%A%row'
+       CALL SPACE_resize_array( data%A%ne, data%A%row,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'sbls: data%A%col'
+       CALL SPACE_resize_array( data%A%ne, data%A%col,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'sbls: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       data%A%row( : data%A%ne ) = A_row( : data%A%ne )
+       data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       CALL SMT_put( data%A%type, 'SPARSE_BY_ROWS',                            &
+                     data%sbls_inform%alloc_status )
+       data%A%ne = A_ptr( m + 1 ) - 1
+
+       array_name = 'sbls: data%A%ptr'
+       CALL SPACE_resize_array( m + 1, data%A%ptr,                             &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'sbls: data%A%col'
+       CALL SPACE_resize_array( data%A%ne, data%A%col,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'sbls: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       data%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+       data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%A%type, 'DENSE',                                     &
+                     data%sbls_inform%alloc_status )
+       data%A%ne = m * n
+
+       array_name = 'sbls: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%sbls_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+!  set C appropriately in the smt storage type
+
+     data%C%m = m ;  data%C%n = m
+     SELECT CASE ( C_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       CALL SMT_put( data%C%type, 'COORDINATE',                                &
+                     data%sbls_inform%alloc_status )
+       data%C%ne = C_ne
+
+       array_name = 'sbls: data%C%row'
+       CALL SPACE_resize_array( data%C%ne, data%C%row,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'sbls: data%C%col'
+       CALL SPACE_resize_array( data%C%ne, data%C%col,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'sbls: data%C%val'
+       CALL SPACE_resize_array( data%C%ne, data%C%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       data%C%row( : data%C%ne ) = C_row( : data%C%ne )
+       data%C%col( : data%C%ne ) = C_col( : data%C%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       CALL SMT_put( data%C%type, 'SPARSE_BY_ROWS',                            &
+                     data%sbls_inform%alloc_status )
+       data%C%ne = C_ptr( m + 1 ) - 1
+
+       array_name = 'sbls: data%C%ptr'
+       CALL SPACE_resize_array( m + 1, data%C%ptr,                             &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'sbls: data%C%col'
+       CALL SPACE_resize_array( data%C%ne, data%C%col,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'sbls: data%C%val'
+       CALL SPACE_resize_array( data%C%ne, data%C%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+       data%C%ptr( : m + 1 ) = C_ptr( : m + 1 )
+       data%C%col( : data%C%ne ) = C_col( : data%C%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%C%type, 'DENSE',                                     &
+                     data%sbls_inform%alloc_status )
+       data%C%ne = ( m * ( m + 1 ) ) / 2
+
+       array_name = 'sbls: data%C%val'
+       CALL SPACE_resize_array( data%C%ne, data%C%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%C%type, 'DIAGONAL',                                  &
+                     data%sbls_inform%alloc_status )
+       data%C%ne = m
+
+       array_name = 'sbls: data%C%val'
+       CALL SPACE_resize_array( data%C%ne, data%C%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%C%type, 'SCALED_IDENTITY',                           &
+                     data%sbls_inform%alloc_status )
+       data%C%ne = 1
+
+       array_name = 'sbls: data%C%val'
+       CALL SPACE_resize_array( data%C%ne, data%C%val,                         &
+              data%sbls_inform%status, data%sbls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%sbls_inform%bad_alloc, out = error )
+       IF ( data%sbls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%C%type, 'IDENTITY',                                  &
+                     data%sbls_inform%alloc_status )
+       data%C%ne = 0
+
+     CASE ( 'zero', 'ZERO', 'none', 'NONE' )
+       CALL SMT_put( data%C%type, 'ZERO',                                      &
+                     data%sbls_inform%alloc_status )
+       data%C%ne = 0
+
+     CASE DEFAULT
+       data%sbls_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%sbls_inform%status
+     RETURN
+
+!  End of subroutine SBLS_import
+
+     END SUBROUTINE SBLS_import
+
+!-  G A L A H A D -  S B L S _ r e s e t _ c o n t r o l   S U B R O U T I N E -
+
+     SUBROUTINE SBLS_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See SBLS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SBLS_control_type ), INTENT( IN ) :: control
+     TYPE ( SBLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%sbls_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine SBLS_reset_control
+
+     END SUBROUTINE SBLS_reset_control
+
+! G A L A H A D - S B L S _ f a c t o r i z e _ m a t r i x  S U B R O U T I N E
+
+     SUBROUTINE SBLS_factorize_matrix( data, status, H_val, A_val, C_val, D )
+
+!  form and factorize the block matrix ( H A^T ).
+!                                      ( A -C  )
+!  See SBLS_form_and_factorize for a description of the required arguments
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( SBLS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C_val
+     REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: D
+
+!  save the values of H, A and C
+
+     IF ( data%H%ne > 0 ) data%H%val( : data%H%ne ) = H_val( : data%H%ne )
+     IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
+     IF ( data%C%ne > 0 ) data%C%val( : data%C%ne ) = C_val( : data%C%ne )
+
+!  form and factorize the block matrix
+
+     CALL SBLS_form_and_factorize( data%H%n, data%C%m, data%H, data%A, data%C, &
+                                   data%sbls_data, data%sbls_control,          &
+                                   data%sbls_inform, D = D )
+
+     status = data%sbls_inform%status
+     RETURN
+
+!  end of subroutine SBLS_factorize_matrix
+
+     END SUBROUTINE SBLS_factorize_matrix
+
+!--  G A L A H A D -  S B L S _ s o l v e _ s y s t e m   S U B R O U T I N E  -
+
+     SUBROUTINE SBLS_solve_system( data, status, SOL )
+
+!  solve the linear system ( H A^T ) ( x ) = ( a ),
+!                          ( A -C  ) ( y )   ( b )
+!  where SOL holds the right-hand side on input, and the solution on output.
+!  See SBLS_solve for a description of the required arguments
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( SBLS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: SOL
+
+!  solve the block linear system
+
+     CALL SBLS_solve( data%H%n, data%C%m, data%A, data%C, data%sbls_data,      &
+                      data%sbls_control, data%sbls_inform, SOL )
+
+     status = data%sbls_inform%status
+     RETURN
+
+!  end of subroutine SBLS_solve_system
+
+     END SUBROUTINE SBLS_solve_system
+
+!-  G A L A H A D -  S B L S _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE SBLS_information( data, inform, status )
+
+!  return solver information during or after solution by SBLS
+!  See SBLS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SBLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SBLS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%sbls_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine SBLS_information
+
+     END SUBROUTINE SBLS_information
 
 !  End of module SBLS
 

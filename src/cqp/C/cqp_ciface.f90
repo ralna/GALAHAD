@@ -732,17 +732,16 @@
                        fhtype, hne, hrow_find, hcol_find, hptr_find,           &
                        fatype, ane, arow_find, acol_find, aptr_find )
 
-    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
-    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
-    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
     IF ( ALLOCATED( hrow_find ) ) DEALLOCATE( hrow_find )
     IF ( ALLOCATED( hcol_find ) ) DEALLOCATE( hcol_find )
     IF ( ALLOCATED( hptr_find ) ) DEALLOCATE( hptr_find )
+    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
+    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
+    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
   ELSE
     CALL f_cqp_import( fcontrol, fdata, status, n, m,                          &
                        fhtype, hne, hrow, hcol, hptr,                          &
                        fatype, ane, arow, acol, aptr )
-
   END IF
 
 !  copy control out

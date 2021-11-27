@@ -233,7 +233,7 @@
              CALL SMT_put( C%type, 'COORDINATE', smt_stat ) ; C%ne = 0
              ALLOCATE( C%val( C%ne ), C%row( C%ne ), C%col( C%ne ) )
            END IF
-         ELSE IF ( data_storage_type == - 3 ) THEN ! dense storage
+         ELSE IF ( data_storage_type == - 3 ) THEN ! diagonal storage
            IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
            CALL SMT_put( H%type, 'DIAGONAL', smt_stat )
            IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )

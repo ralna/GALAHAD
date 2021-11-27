@@ -188,7 +188,7 @@
   Mathematical Programming Computation 5(2) 113-142.
 
   \subsection cqp_call_order Call order
-  To solve a given problem, functions from the nls package must be called 
+  To solve a given problem, functions from the cqp package must be called 
   in the following order:
 
   - \link cqp_initialize \endlink - provide default control parameters and
@@ -992,7 +992,7 @@ void cqp_reset_control( struct cqp_control_type *control,
 
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
-  \li  1. The import was succesful, and the package is ready for the solve phase
+  \li  0. The import was succesful.
  */
 
 //  *-*-*-*-*-*-*-*-*-*-*-   C Q P _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*
@@ -1027,7 +1027,7 @@ void cqp_solve_qp( void **data,
     the entry and exit status from the package. \n
     On initial entry, status must be set to 1. \n
     Possible exit are:
-  \li  0. The run was succesful
+  \li  0. The run was succesful.
 
   \li -1. An allocation error occurred. A message indicating the offending
        array is written on unit control.error, and the returned allocation
@@ -1086,7 +1086,7 @@ void cqp_solve_qp( void **data,
  @param[in] a_ne is a scalar variable of type int, that holds the number of 
     entries in the constraint Jacobian matrix \f$A\f$.
  
-@param[in] A_val is a one-dimensional array of size a_ne and type double, 
+ @param[in] A_val is a one-dimensional array of size a_ne and type double, 
     that holds the values of the entries of the constraint Jacobian matrix 
     \f$A\f$ in any of the available storage schemes. 
 
