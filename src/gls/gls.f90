@@ -86,69 +86,208 @@
      END TYPE GLS_factors
 
      TYPE, PUBLIC :: GLS_control
-       REAL ( KIND = wp ) :: multiplier ! Factor by which arrays sizes are to be
-                         ! increased if they are too small                   NEW
-       REAL ( KIND = wp ) :: reduce ! if previously allocated internal workspace
-                         !  arrays are greater than reduce times the currently
-                         !  required sizes, they are reset to current
-                         !  requirments                                      NEW
-       REAL ( KIND = wp ) :: u     ! Pivot threshold
-       REAL ( KIND = wp ) :: switch ! Density for switch to full code        NEW
-       REAL ( KIND = wp ) :: drop   ! Drop tolerance
-       REAL ( KIND = wp ) :: tolerance ! anything < this is considered zero
-       REAL ( KIND = wp ) :: cgce  ! Ratio for required reduction using IR
-       INTEGER :: lp     ! Unit for error messages
-       INTEGER :: wp     ! Unit for warning messages                         NEW
-       INTEGER :: mp     ! Unit for monitor output
-       INTEGER :: ldiag  ! Controls level of diagnostic output               NEW
-       INTEGER :: btf    ! Minimum block size for BTF ... >=N to avoid       NEW
-       LOGICAL :: struct ! Control to abort if structurally singular      ABORT1
-       INTEGER :: maxit ! Maximum number of iterations
-       INTEGER :: factor_blocking ! Level 3 blocking in factorize            NEW
-       INTEGER :: solve_blas ! Switch for using Level 1 or 2 BLAS in solve.  NEW
-       INTEGER :: la     ! Initial size for real array for the factors.      NEW
-       INTEGER :: la_int ! Initial size for integer array for the factors.   NEW
-       INTEGER :: maxla  ! Max. size for real array for the factors.         NEW
-       INTEGER :: pivoting  ! Controls pivoting:
-                            !  Number of columns searched.  Zero for Markowitz
-                            !                                              NSRCH
-       LOGICAL :: diagonal_pivoting  ! Set to 0 for diagonal pivoting        NEW
-       INTEGER :: fill_in ! Initially fill_in * ne space allocated for factors
+
+! Unit for error messages
+
+       INTEGER :: lp = 6
+
+! Unit for warning messages                                                  NEW
+
+       INTEGER :: wp = 6
+
+! Unit for monitor output
+
+       INTEGER :: mp = 6
+
+! Controls level of diagnostic output                                        NEW
+
+       INTEGER :: ldiag = 2
+
+! Minimum block size for block-triangular form (BTF) ... >=n to avoid        NEW
+
+       INTEGER :: btf = 1
+
+! Maximum number of iterations
+
+       INTEGER :: maxit = 16
+
+! Level 3 blocking in factorize                                              NEW
+
+       INTEGER :: factor_blocking = 32
+
+! Switch for using Level 1 or 2 BLAS in solve.                               NEW
+
+       INTEGER :: solve_blas = 2
+
+! Initial size for real array for the factors.                               NEW
+
+       INTEGER :: la = 0
+
+! Initial size for integer array for the factors.                            NEW
+
+       INTEGER :: la_int = 0
+
+! Maximum size for real array for the factors.                               NEW
+
+       INTEGER :: maxla = HUGE( 0 )
+
+! Controls pivoting:  Number of columns searched.  Zero for Markowitz
+
+       INTEGER :: pivoting = 32768 
+
+! Initially fill_in * ne space allocated for factors
+
+       INTEGER :: fill_in = 3
+
+! Factor by which arrays sizes are to be increased if they are too small     NEW
+
+       REAL ( KIND = wp ) :: multiplier = 2.0_wp
+
+! if previously allocated internal workspace arrays are greater than reduce 
+! times the currently required sizes, they are reset to current requirments  NEW
+
+       REAL ( KIND = wp ) :: reduce = 2.0_wp
+
+! Pivot threshold
+
+       REAL ( KIND = wp ) :: u = 0.01_wp
+
+! Density for switch to full code                                            NEW
+
+       REAL ( KIND = wp ) :: switch = 0.5_wp
+
+! Drop tolerance
+
+       REAL ( KIND = wp ) :: drop = 0.0_wp
+
+! anything < this is considered zero
+
+       REAL ( KIND = wp ) :: tolerance = 0.0_wp
+
+! Ratio for required reduction using IR
+
+       REAL ( KIND = wp ) :: cgce = 0.5_wp
+
+! Set true for diagonal pivoting                                             NEW
+
+       LOGICAL :: diagonal_pivoting = .FALSE.
+
+! Control to abort if structurally singular
+
+       LOGICAL :: struct = .FALSE.
      END TYPE GLS_control
 
      TYPE, PUBLIC :: GLS_ainfo
-       REAL ( KIND = wp ) :: ops   ! Number of operations in elimination      NO
-       INTEGER :: flag   ! Flags success or failure case
-       INTEGER :: more    ! More information on failure
-       INTEGER :: len_analyse ! Size for analysis
-       INTEGER :: len_factorize  ! Size for factorize
-       INTEGER :: ncmpa   ! Number of compresses
-       INTEGER :: rank    ! Estimated rank
-       INTEGER :: drop    ! Number of entries dropped
-       INTEGER :: struc_rank ! Structural rank of matrix
-       INTEGER :: oor     ! Number of indices out-of-range                    NO
-       INTEGER :: dup     ! Number of duplicates                              NO
-       INTEGER :: stat    ! STAT value after allocate failure
-       INTEGER :: lblock  ! Size largest non-triangular block                 NO
-       INTEGER :: sblock  ! Sum of orders of non-triangular blocks            NO
-       INTEGER :: tblock  ! Total entries in all non-tringular blocks         NO
+
+! Flags success or failure case
+
+       INTEGER :: flag = 0
+
+! More information on failure
+
+       INTEGER :: more = 0
+
+! Size for analysis
+
+       INTEGER :: len_analyse = 0
+
+! Size for factorize
+
+       INTEGER :: len_factorize = 0
+
+! Number of compresses
+
+       INTEGER :: ncmpa = 0
+
+! Estimated rank
+
+       INTEGER :: rank = 0
+
+! Number of entries dropped
+
+       INTEGER :: drop = 0
+
+! Structural rank of matrix
+
+       INTEGER :: struc_rank = 0
+
+! Number of indices out-of-range
+
+       INTEGER :: oor = 0
+
+! Number of duplicates
+
+       INTEGER :: dup = 0
+
+! STAT value after allocate failure
+
+       INTEGER :: stat = 0
+
+! Size largest non-triangular block
+
+       INTEGER :: lblock = 0
+
+! Sum of orders of non-triangular blocks
+
+       INTEGER :: sblock = 0
+
+! Total entries in all non-tringular blocks
+
+       INTEGER :: tblock = 0
+
+! Number of operations in elimination
+
+       REAL ( KIND = wp ) :: ops 0.0_wp
      END TYPE GLS_ainfo
 
      TYPE, PUBLIC :: GLS_finfo
-       REAL ( KIND = wp ) :: ops   ! Number of operations in elimination      NO
-       INTEGER :: flag    ! Flags success or failure case
-       INTEGER :: more    ! More information on failure
-       INTEGER :: size_factor  ! Number of words to hold factors
-       INTEGER :: len_factorize  ! Size for subsequent factorization
-       INTEGER :: drop    ! Number of entries dropped
-       INTEGER :: rank    ! Estimated rank
-       INTEGER :: stat    ! STAT value after allocate failure
+
+! Flags success or failure case
+
+       INTEGER :: flag = 0
+
+! More information on failure
+
+       INTEGER :: more = 0
+
+! Number of words to hold factors
+
+       INTEGER :: size_factor = 0
+
+! Size for subsequent factorization
+
+       INTEGER :: len_factorize = 0
+
+! Number of entries dropped
+
+       INTEGER :: drop = 0
+
+! Estimated rank
+
+       INTEGER :: rank = 0
+
+! STAT value after allocate failure
+
+       INTEGER :: stat = 0
+
+! Number of operations in elimination
+
+       REAL ( KIND = wp ) :: ops = 0.0_wp
      END TYPE GLS_finfo
 
      TYPE, PUBLIC :: GLS_sinfo
-       INTEGER :: flag    ! Flags success or failure case
-       INTEGER :: more    ! More information on failure
-       INTEGER :: stat    ! STAT value after allocate failure
+
+! Flags success or failure case
+
+       INTEGER :: flag = 0
+
+! More information on failure
+
+       INTEGER :: more = 0
+
+! STAT value after allocate failure
+
+       INTEGER :: stat = 0
      END TYPE GLS_sinfo
 
 !--------------------------------

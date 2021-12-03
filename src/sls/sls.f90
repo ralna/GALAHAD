@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 29/03/2021 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/11/2021 AT 16:00 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ S L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -66,11 +66,30 @@
 
      PRIVATE
      PUBLIC :: SLS_initialize, SLS_analyse, SLS_factorize, SLS_solve,          &
-               SLS_fredholm_alternative,                                       &
-               SLS_terminate, SLS_enquire, SLS_alter_d, SLS_part_solve,        &
-               SLS_sparse_forward_solve, SLS_read_specfile,                    &
-               SLS_initialize_solver, SLS_coord_to_extended_csr,               &
-               SLS_coord_to_sorted_csr, SMT_type, SMT_get, SMT_put
+               SLS_fredholm_alternative, SLS_terminate, SLS_enquire,           &
+               SLS_alter_d, SLS_part_solve, SLS_sparse_forward_solve,          &
+               SLS_read_specfile, SLS_initialize_solver,                       &
+               SLS_coord_to_extended_csr, SLS_coord_to_sorted_csr,             &
+               SLS_full_initialize, SLS_full_terminate,                        &
+               SLS_analyse_matrix, SLS_factorize_matrix, SLS_solve_system,     &
+               SLS_reset_control, SLS_partial_solve, SLS_information,          &
+               SMT_type, SMT_get, SMT_put
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE SLS_initialize
+       MODULE PROCEDURE SLS_initialize, SLS_full_initialize
+     END INTERFACE SLS_initialize
+
+     INTERFACE SLS_solve
+       MODULE PROCEDURE SLS_solve_ir, SLS_solve_ir_multiple
+     END INTERFACE
+
+     INTERFACE SLS_terminate
+       MODULE PROCEDURE SLS_terminate, SLS_full_terminate
+     END INTERFACE SLS_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -783,17 +802,15 @@
 
        TYPE ( MC68_control ) :: mc68_control
        TYPE ( MC68_info ) :: mc68_info
-
      END TYPE SLS_data_type
 
-!----------------------------------
-!   I n t e r f a c e  B l o c k s
-!----------------------------------
-
-     INTERFACE SLS_solve
-       MODULE PROCEDURE SLS_solve_ir, SLS_solve_ir_multiple
-     END INTERFACE
-
+     TYPE, PUBLIC :: SLS_full_data_type
+       LOGICAL :: f_indexing
+       TYPE ( SLS_data_type ) :: SLS_data
+       TYPE ( SLS_control_type ) :: SLS_control
+       TYPE ( SLS_inform_type ) :: SLS_inform
+       TYPE ( SMT_type ) :: matrix
+     END TYPE SLS_full_data_type
 
    CONTAINS
 
@@ -897,7 +914,6 @@
 
      CASE ( 'pbtr' )
        IF ( control%ordering == 0 ) control%ordering = 6
-
      END SELECT
 
      RETURN
@@ -905,6 +921,40 @@
 !  End of SLS_initialize
 
      END SUBROUTINE SLS_initialize
+
+!- G A L A H A D -  S B L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
+
+     SUBROUTINE SLS_full_initialize( solver, data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for SLS controls
+
+!   Arguments:
+
+!   solver   name of solver to be used
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = * ), INTENT( IN ) :: solver
+     TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SLS_control_type ), INTENT( OUT ) :: control
+     TYPE ( SLS_inform_type ), INTENT( OUT ) :: inform
+
+     CALL SLS_initialize( solver, data%sls_data, control, inform )
+
+     RETURN
+
+!  End of subroutine SLS_full_initialize
+
+     END SUBROUTINE SLS_full_initialize
 
 !-*-*-   S L S _ I N I T I A L I Z E _ S O L V E R  S U B R O U T I N E   -*-*-
 
@@ -6077,6 +6127,58 @@
 
      END SUBROUTINE SLS_terminate
 
+! -  G A L A H A D -  S B L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+
+     SUBROUTINE SLS_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SLS_control_type ), INTENT( IN ) :: control
+     TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL SLS_terminate( data%sls_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     array_name = 'sls: data%matrix%ptr'
+     CALL SPACE_dealloc_array( data%matrix%ptr,                                &
+                               inform%status, inform%alloc_status )
+
+     array_name = 'sls: data%matrix%row'
+     CALL SPACE_dealloc_array( data%matrix%row,                                &
+                               inform%status, inform%alloc_status )
+
+     array_name = 'sls: data%matrix%col'
+     CALL SPACE_dealloc_array( data%matrix%col,                                &
+                               inform%status, inform%alloc_status )
+
+     array_name = 'sls: data%matrix%val'
+     CALL SPACE_dealloc_array( data%matrix%val,                                &
+                               inform%status, inform%alloc_status )
+
+     RETURN
+
+!  End of subroutine SLS_full_terminate
+
+     END SUBROUTINE SLS_full_terminate
+
 !-*-*-*-*-*-*-*-   S L S _ E N Q U I R E  S U B R O U T I N E   -*-*-*-*-*-*-
 
      SUBROUTINE SLS_enquire( data, inform, PERM, PIVOTS, D, PERTURBATION )
@@ -6453,20 +6555,21 @@
 
      END SUBROUTINE SLS_alter_d
 
-
 !-*-*-*-*-*-*-   S L S _ P A R T _ S O L V E   S U B R O U T I N E   -*-*-*-*-
 
      SUBROUTINE SLS_part_solve( part, X, data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-!  Solve a system involving individual factors
+!  Solve a system involving individual factors. The matrix A is presumed
+!  to have been factorized as A = L D U (with U = L^T).  The character 
+!  "part" is one of 'L', 'D', 'U' or 'S', where 'S' refers to L * SQRT(D)
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
 
-     CHARACTER, INTENT( IN ) :: part
+     CHARACTER ( LEN = 1 ), INTENT( IN ) :: part
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: X
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
@@ -8835,6 +8938,344 @@
 !!  End of SUBROUTINE SLS_map_to_sorted_csr
 !
 !     END SUBROUTINE SLS_map_to_sorted_csr
+
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D -  S B L S _ a n a l y s e _ m a t r i x _ S U B R O U T I N E
+
+     SUBROUTINE SLS_analyse_matrix( control, data, status, n,                  &
+                                    matrix_type, matrix_ne,                    &
+                                    matrix_row, matrix_col, matrix_ptr )
+
+!  import structural matrix data into internal storage, and analyse the
+!  structure prior to factorization
+
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to SLS_solve
+!
+!  data is a scalar variable of type SLS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that type contains
+!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' 'SCALED_IDENTITY', 'IDENTITY', 'ZERO', or 'NONE'
+!       has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   rows (and columns) of the matrix
+!
+!  matrix_type is a character string that specifies the storage scheme used 
+!   for A. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   'diagonal' 'scaled_identity', 'identity', 'zero' or 'none';
+!   lower or upper case variants are allowed.
+!
+!  matrix_ne is a scalar variable of type default integer, that holds the 
+!   number of entries in the  lower triangular part of A in the sparse 
+!   co-ordinate storage scheme. It need not be set for any of the other schemes.
+!
+!  matrix_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of A in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  matrix_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  matrix_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SLS_control_type ), INTENT( INOUT ) :: control
+     TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n, matrix_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: matrix_type
+     INTEGER, DIMENSION( : ), INTENT( IN ) :: matrix_row, matrix_col, matrix_ptr
+
+!  copy control to data
+
+     data%SLS_control = control
+
+!  set A appropriately in the smt storage type
+
+     data%matrix%n = n ; data%matrix%m = n
+     SELECT CASE ( matrix_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       CALL SMT_put( data%matrix%type, 'COORDINATE',                           &
+                     data%sls_inform%alloc_status )
+       data%matrix%ne = matrix_ne
+
+       CALL SPACE_resize_array( data%matrix%ne, data%matrix%row,               &
+              data%sls_inform%status, data%sls_inform%alloc_status )
+       IF ( data%sls_inform%status /= 0 ) GO TO 900
+
+       CALL SPACE_resize_array( data%matrix%ne, data%matrix%col,               &
+              data%sls_inform%status, data%sls_inform%alloc_status )
+       IF ( data%sls_inform%status /= 0 ) GO TO 900
+
+       CALL SPACE_resize_array( data%matrix%ne, data%matrix%val,               &
+              data%sls_inform%status, data%sls_inform%alloc_status )
+       IF ( data%sls_inform%status /= 0 ) GO TO 900
+
+       data%matrix%row( : data%matrix%ne ) = matrix_row( : data%matrix%ne )
+       data%matrix%col( : data%matrix%ne ) = matrix_col( : data%matrix%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       CALL SMT_put( data%matrix%type, 'SPARSE_BY_ROWS',                       &
+                     data%sls_inform%alloc_status )
+       data%matrix%ne = matrix_ptr( n + 1 ) - 1
+
+       CALL SPACE_resize_array( n + 1, data%matrix%ptr,                        &
+              data%sls_inform%status, data%sls_inform%alloc_status )
+       IF ( data%sls_inform%status /= 0 ) GO TO 900
+
+       CALL SPACE_resize_array( data%matrix%ne, data%matrix%col,               &
+              data%sls_inform%status, data%sls_inform%alloc_status )
+       IF ( data%sls_inform%status /= 0 ) GO TO 900
+
+       CALL SPACE_resize_array( data%matrix%ne, data%matrix%val,               &
+              data%sls_inform%status, data%sls_inform%alloc_status )
+       IF ( data%sls_inform%status /= 0 ) GO TO 900
+
+       data%matrix%ptr( : n + 1 ) = matrix_ptr( : n + 1 )
+       data%matrix%col( : data%matrix%ne ) = matrix_col( : data%matrix%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%matrix%type, 'DENSE',                                &
+                     data%sls_inform%alloc_status )
+       data%matrix%ne = ( n * ( n + 1 ) ) / 2
+
+       CALL SPACE_resize_array( data%matrix%ne, data%matrix%val,               &
+              data%sls_inform%status, data%sls_inform%alloc_status )
+       IF ( data%sls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%matrix%type, 'DIAGONAL',                             &
+                     data%sls_inform%alloc_status )
+       data%matrix%ne = n
+
+       CALL SPACE_resize_array( data%matrix%ne, data%matrix%val,               &
+              data%sls_inform%status, data%sls_inform%alloc_status )
+       IF ( data%sls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%matrix%type, 'SCALED_IDENTITY',                      &
+                     data%sls_inform%alloc_status )
+       data%matrix%ne = 1
+
+       CALL SPACE_resize_array( data%matrix%ne, data%matrix%val,               &
+              data%sls_inform%status, data%sls_inform%alloc_status )
+       IF ( data%sls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%matrix%type, 'IDENTITY',                             &
+                     data%sls_inform%alloc_status )
+       data%matrix%ne = 0
+
+     CASE ( 'zero', 'ZERO', 'none', 'NONE' )
+       CALL SMT_put( data%matrix%type, 'ZERO',                                 &
+                     data%sls_inform%alloc_status )
+       data%matrix%ne = 0
+
+     CASE DEFAULT
+       data%sls_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+!  analyse the sparsity structure of the matrix prior to factorization
+
+     CALL SLS_analyse( data%matrix, data%sls_data, data%sls_control,           &
+                       data%sls_inform )
+
+     status = data%sls_inform%status
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%sls_inform%status
+     RETURN
+
+!  End of subroutine SLS_analyse_matrix
+
+     END SUBROUTINE SLS_analyse_matrix
+
+!-  G A L A H A D -  S B L S _ r e s e t _ c o n t r o l   S U B R O U T I N E -
+
+     SUBROUTINE SLS_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See SLS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SLS_control_type ), INTENT( IN ) :: control
+     TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%sls_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine SLS_reset_control
+
+     END SUBROUTINE SLS_reset_control
+
+! G A L A H A D - S B L S _ f a c t o r i z e _ m a t r i x  S U B R O U T I N E
+
+     SUBROUTINE SLS_factorize_matrix( data, status, matrix_val )
+
+!  factorize the matrix A
+
+!  See SLS_form_and_factorize for a description of the required arguments
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: matrix_val
+
+!  save the values of matrix
+
+     IF ( data%matrix%ne > 0 )                                                 &
+       data%matrix%val( : data%matrix%ne ) = matrix_val( : data%matrix%ne )
+
+!  factorize the matrix
+
+     CALL SLS_factorize( data%matrix, data%sls_data, data%sls_control,         &
+                         data%sls_inform )
+
+     status = data%sls_inform%status
+     RETURN
+
+!  end of subroutine SLS_factorize_matrix
+
+     END SUBROUTINE SLS_factorize_matrix
+
+!--  G A L A H A D -  S B L S _ s o l v e _ s y s t e m   S U B R O U T I N E  -
+
+     SUBROUTINE SLS_solve_system( data, status, SOL )
+
+!  solve the linear system A x = b, where SOL holds the right-hand side b
+!  on input, and the solution x on output.
+!  See SLS_solve for a description of the required arguments
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: SOL
+
+!  solve the block linear system
+
+     CALL SLS_solve( data%matrix, SOL, data%sls_data, data%sls_control,        &
+                     data%sls_inform )
+
+     status = data%sls_inform%status
+     RETURN
+
+!  end of subroutine SLS_solve_system
+
+     END SUBROUTINE SLS_solve_system
+
+!--  G A L A H A D -  S B L S _ p a r t i a l _ s o l v e  S U B R O U T I N E -
+
+     SUBROUTINE SLS_partial_solve( part, data, status, SOL )
+
+!  Given the factorization A = L D U (with U = L^T), solve one of the 
+!  linear system M x = b, where M is L, D, U or S = L * SQRT(D), and 
+!  SOL holds the right-hand side b on input, and the solution x on output.
+!  See SLS_part_solve for a description of the required arguments
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     CHARACTER ( LEN = 1 ), INTENT( IN ) :: part
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: SOL
+
+!  solve the block linear system
+
+     CALL SLS_part_solve( part, SOL, data%sls_data, data%sls_control,          &
+                          data%sls_inform )
+
+     status = data%sls_inform%status
+     RETURN
+
+!  end of subroutine SLS_partial_solve
+
+     END SUBROUTINE SLS_partial_solve
+
+!-  G A L A H A D -  S B L S _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE SLS_information( data, inform, status )
+
+!  return solver information during or after solution by SLS
+!  See SLS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SLS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%sls_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine SLS_information
+
+     END SUBROUTINE SLS_information
 
 !  End of module GALAHAD_SLS_double
 

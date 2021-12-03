@@ -545,7 +545,7 @@
   END SUBROUTINE sbls_read_specfile
 
 !  ----------------------------------
-!  C interface to fortran sbls_inport
+!  C interface to fortran sbls_import
 !  ----------------------------------
 
   SUBROUTINE sbls_import( ccontrol, cdata, status, n, m,                       &

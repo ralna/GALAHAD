@@ -491,8 +491,9 @@ $(package)cdtf: $($(PACKAGE)CDTF)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDTF)
 	$(RMOOC)
-	- ./run_$(package) > $(package)dtf.output 2>&1
-	cat $(package)dtf.output
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)dtf.output 2>&1
+#	cat $(package)dtf.output
 	rm ./run_$(package)
 
 #  main program

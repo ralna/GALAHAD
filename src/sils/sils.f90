@@ -73,64 +73,134 @@
      END TYPE SILS_factors
 
      TYPE, PUBLIC :: SILS_control
-       REAL ( KIND = wp ) :: CNTL( 5 ) ! MA27 internal real controls
-       REAL ( KIND = wp ) :: multiplier ! Factor by which arrays sizes are to
-                         ! be increased if they are too small
-       REAL ( KIND = wp ) :: reduce ! If previously allocated internal
-                         ! workspace arrays are greater than reduce times
-                         ! the currently required sizes, they are reset to
-                         ! current requirments
-       REAL ( KIND = wp ) :: u     ! Pivot threshold
-       REAL ( KIND = wp ) :: static_tolerance ! used for setting static
-                           ! pivot level                                    NEW
-       REAL ( KIND = wp ) :: static_level ! used for switch to static       NEW
-       REAL ( KIND = wp ) :: tolerance ! Anything less than this is
-                         ! considered zero
-       REAL ( KIND = wp ) :: convergence = 0.5_wp ! used to monitor convergence
-                                                  ! in iterative refinement
-       INTEGER :: ICNTL( 30 ) ! MA27 internal integer controls
-       INTEGER :: lp     ! Unit for error messages
-       INTEGER :: wp     ! Unit for warning messages
-       INTEGER :: mp     ! Unit for monitor output                          NEW
-       INTEGER :: sp     ! Unit for statistical output                      NEW
-       INTEGER :: ldiag  ! Controls level of diagnostic output
-       INTEGER :: la     ! Initial size for real array for the factors.
-                         ! If less than nrlnec, default size used.
-       INTEGER :: liw    ! Initial size for integer array for the factors.
-                         ! If less than nirnec, default size used.
-       INTEGER :: maxla  ! Max. size for real array for the factors.
-       INTEGER :: maxliw ! Max. size for integer array for the factors.
-       INTEGER :: pivoting  ! Controls pivoting:
-                  !  1  Numerical pivoting will be performed.
-                  !  2  No pivoting will be performed and an error exit will
-                  !     occur immediately a pivot sign change is detected.
-                  !  3  No pivoting will be performed and an error exit will
-                  !     occur if a zero pivot is detected.
-                  !  4  No pivoting is performed but pivots are changed to
-                  !     all be positive.
-       INTEGER :: nemin = 1 ! Minimum number of eliminations in a step    UNUSED
-       INTEGER :: factorblocking = 16 ! Level 3 blocking in factorize     UNUSED
-       INTEGER :: solveblocking = 16 ! Level 2 and 3 blocking in solve    UNUSED
-       INTEGER :: thresh ! Controls threshold for detecting full rows in
-                  !     analyse, registered as percentage of N
-                  ! 100 Only fully dense rows detected (default)            NEW
-       INTEGER :: ordering  ! Controls ordering:                            NEW
-                 !  0  AMD using MC47
-                 !  1  User defined
-                 !  2  AMD using MC50
-                 !  3  Min deg as in MA57
-                 !  4  Metis_nodend ordering
-                 !  5  Ordering chosen depending on matrix characteristics.
-                 !     At the moment choices are MC50 or Metis_nodend
-                 ! >5  Presently equivalent to 5 but may chnage
-       INTEGER :: scaling  ! Controls scaling:                              NEW
-                 !  0  No scaling
-                 ! >0  Scaling using MC64 but may change for > 1
+
+! MA27 internal integer controls
+
+       INTEGER :: ICNTL( 30 ) =                                                &
+          (/ 6, 6, 0, 2139062143, 1, 32639, 32639, 32639, 32639, 14,           &
+             9, 8, 8, 9, 10, 32639, 32639, 32639, 32689, 24,                   &
+             11, 9, 8, 9, 10, 0, 0, 0, 0, 0 /)
+
+! Unit for error messages
+
+       INTEGER :: lp = 6
+
+! Unit for warning messages
+     
+       INTEGER :: wp = 6
+
+! Unit for monitor output                                                   NEW
+
+       INTEGER :: mp = 6
+
+! Unit for statistical output                                               NEW
+
+       INTEGER :: sp = - 1
+
+! Controls level of diagnostic output
+
+       INTEGER :: ldiag = 0
+
+! Initial size for real array for the factors. If less than nrlnec, 
+!  default size used.
+
+       INTEGER :: la = 0
+
+! Initial size for integer array for the factors. If less than nirnec, 
+!  default size used.
+
+       INTEGER :: liw = 0 
+
+! Max. size for real array for the factors.
+
+       INTEGER :: maxla = HUGE( 0 )
+
+! Max. size for integer array for the factors.
+
+       INTEGER :: maxliw = HUGE( 0 )
+
+! Controls pivoting:
+!  1  Numerical pivoting will be performed.
+!  2  No pivoting will be performed and an error exit will occur 
+!     immediately a pivot sign change is detected.
+!  3  No pivoting will be performed and an error exit will occur if a 
+!     zero pivot is detected.
+!  4  No pivoting is performed but pivots are changed to all be positive.
+
+       INTEGER :: pivoting = 1
+
+ ! Minimum number of eliminations in a step                               UNUSED
+
+       INTEGER :: nemin = 1
+
+! Level 3 blocking in factorize                                           UNUSED
+
+       INTEGER :: factorblocking = 16 
+
+! Level 2 and 3 blocking in solve                                         UNUSED
+
+       INTEGER :: solveblocking = 16
+
+! Controls threshold for detecting full rows in  analyse, registered as 
+!  percentage of N, 100 Only fully dense rows detected (default)             NEW
+
+       INTEGER :: thresh = 50
+
+! Controls ordering:                                                         NEW
+!   0  AMD using MC47
+!   1  User defined
+!   2  AMD using MC50
+!   3  Min deg as in MA57
+!   4  Metis_nodend ordering
+!   5  Ordering chosen depending on matrix characteristics.
+!      At the moment choices are MC50 or Metis_nodend
+!  >5  Presently equivalent to 5 but may chnage
+
+       INTEGER :: ordering = 3 
+
+ ! Controls scaling:                                                         NEW
+!    0  No scaling
+!   >0  Scaling using MC64 but may change for > 1
+
+       INTEGER :: scaling = 0
+
+! MA27 internal real controls
+
+       REAL ( KIND = wp ) :: CNTL( 5 ) =                                       &
+          (/ 0.1_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)
+
+! Factor by which arrays sizes are to be increased if they are too small
+
+       REAL ( KIND = wp ) :: multiplier  = 2.0_wp
+
+! If previously allocated internal workspace arrays are greater than reduce
+! times the currently required sizes, they are reset to current requirments
+
+       REAL ( KIND = wp ) :: reduce  = 2.0_wp
+
+! Pivot threshold
+
+       REAL ( KIND = wp ) :: u = 0.1_wp
+
+! used for setting static pivot level                                        NEW
+
+       REAL ( KIND = wp ) :: static_tolerance = 0.0_wp
+
+! used for switch to static                                                  NEW
+
+       REAL ( KIND = wp ) :: static_level = 0.0_wp
+
+! Anything less than this is considered zero
+
+       REAL ( KIND = wp ) :: tolerance  = 0.0_wp
+
+! used to monitor convergence in iterative refinement
+
+       REAL ( KIND = wp ) :: convergence = 0.5_wp 
+
      END TYPE SILS_control
 
      TYPE, PUBLIC :: SILS_ainfo
-       REAL ( KIND = wp ) :: opsa = - 1.0_wp! Anticipated # ops. in assembly NEW
-       REAL ( KIND = wp ) :: opse = - 1.0_wp ! Anticipated # ops. in elimin. NEW
        INTEGER :: flag = 0   ! Flags success or failure case
        INTEGER :: more = 0   ! More information on failure                  NEW
        INTEGER :: nsteps = 0 ! Number of elimination steps
@@ -146,15 +216,11 @@
        INTEGER :: maxfrt = - 1 ! Forecast maximum front size                NEW
        INTEGER :: stat = 0   ! STAT value after allocate failure            NEW
        INTEGER :: faulty = 0 ! OLD
+       REAL ( KIND = wp ) :: opsa = - 1.0_wp! Anticipated # ops. in assembly NEW
+       REAL ( KIND = wp ) :: opse = - 1.0_wp ! Anticipated # ops. in elimin. NEW
      END TYPE SILS_ainfo
 
      TYPE, PUBLIC :: SILS_finfo
-       REAL ( KIND = wp ) :: opsa = - 1.0_wp ! # operations in assembly     NEW
-       REAL ( KIND = wp ) :: opse = - 1.0_wp ! # operations in elimination  NEW
-       REAL ( KIND = wp ) :: opsb = - 1.0_wp ! Additional # ops. for BLAS   NEW
-       REAL ( KIND = wp ) :: maxchange = - 1.0_wp! Largest pivoting=4 mod.  NEW
-       REAL ( KIND = wp ) :: smin = 0.0_wp ! Minimum scaling factor
-       REAL ( KIND = wp ) :: smax = 0.0_wp ! Maximum scaling factor
        INTEGER :: flag = 0   ! Flags success or failure case
        INTEGER :: more = 0   ! More information on failure                  NEW
        INTEGER :: maxfrt = - 1 ! Largest front size
@@ -177,16 +243,22 @@
        INTEGER :: stat = - 1   ! STAT value after allocate failure
        INTEGER :: faulty = - 1 ! OLD
        INTEGER :: step = - 1   ! OLD
+       REAL ( KIND = wp ) :: opsa = - 1.0_wp ! # operations in assembly     NEW
+       REAL ( KIND = wp ) :: opse = - 1.0_wp ! # operations in elimination  NEW
+       REAL ( KIND = wp ) :: opsb = - 1.0_wp ! Additional # ops. for BLAS   NEW
+       REAL ( KIND = wp ) :: maxchange = - 1.0_wp! Largest pivoting=4 mod.  NEW
+       REAL ( KIND = wp ) :: smin = 0.0_wp ! Minimum scaling factor
+       REAL ( KIND = wp ) :: smax = 0.0_wp ! Maximum scaling factor
      END TYPE SILS_finfo
 
      TYPE, PUBLIC :: SILS_sinfo
+       INTEGER :: flag = - 1 ! Flags success or failure case
+       INTEGER :: stat = - 1 ! STAT value after allocate failure
        REAL ( KIND = wp ) :: cond = - 1.0_wp  ! Cond # of matrix (cat 1 eqs)
        REAL ( KIND = wp ) :: cond2 = - 1.0_wp ! Cond # of matrix (cat 2 eqs)
        REAL ( KIND = wp ) :: berr = - 1.0_wp  ! Cond # of matrix (cat 1 eqs)
        REAL ( KIND = wp ) :: berr2 = - 1.0_wp ! Cond # of matrix (cat 2 eqs)
        REAL ( KIND = wp ) :: error = - 1.0_wp  ! Estimate of forward error
-       INTEGER :: flag = - 1 ! Flags success or failure case
-       INTEGER :: stat = - 1 ! STAT value after allocate failure
      END TYPE SILS_sinfo
 
 !--------------------------------
@@ -289,8 +361,8 @@
        CONTROL%solveblocking = 16
        CONTROL%la = 0
        CONTROL%liw = 0
-       CONTROL%maxla = huge( 0 )
-       CONTROL%maxliw = huge( 0 )
+       CONTROL%maxla = HUGE( 0 )
+       CONTROL%maxliw = HUGE( 0 )
        CONTROL%pivoting = 1
        CONTROL%thresh = 50 ; CONTROL%CNTL( 2 ) = CONTROL%thresh / 100.0_wp
        CONTROL%ordering = 3

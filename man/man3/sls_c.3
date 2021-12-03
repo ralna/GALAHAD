@@ -1,0 +1,949 @@
+.TH "sls.h" 3 "Fri Dec 3 2021" "C interfaces to GALAHAD SLS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+sls.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'sils\&.h'\fP
+.br
+\fC#include 'ma57\&.h'\fP
+.br
+\fC#include 'ma77\&.h'\fP
+.br
+\fC#include 'ma86\&.h'\fP
+.br
+\fC#include 'ma87\&.h'\fP
+.br
+\fC#include 'ma97\&.h'\fP
+.br
+\fC#include 'ssids\&.h'\fP
+.br
+\fC#include 'mc64\&.h'\fP
+.br
+\fC#include 'mc68\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBsls_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBsls_time_type\fP"
+.br
+.ti -1c
+.RI "struct \fBsls_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBsls_initialize\fP (const char solver[], void **data, struct \fBsls_control_type\fP *control, struct \fBsls_inform_type\fP *inform)"
+.br
+.ti -1c
+.RI "void \fBsls_read_specfile\fP (struct \fBsls_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBsls_analyse_matrix\fP (struct \fBsls_control_type\fP *control, void **data, int *status, int n, const char type[], int ne, const int row[], const int col[], const int ptr[])"
+.br
+.ti -1c
+.RI "void \fBsls_reset_control\fP (struct \fBsls_control_type\fP *control, void **data, int *status)"
+.br
+.ti -1c
+.RI "void \fBsls_factorize_matrix\fP (void **data, int *status, int ne, const real_wp_ val[])"
+.br
+.ti -1c
+.RI "void \fBsls_solve_system\fP (void **data, int *status, int n, real_wp_ sol[])"
+.br
+.ti -1c
+.RI "void \fBsls_partial_solve_system\fP (const char part[], void **data, int *status, int n, real_wp_ sol[])"
+.br
+.ti -1c
+.RI "void \fBsls_information\fP (void **data, struct \fBsls_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBsls_terminate\fP (void **data, struct \fBsls_control_type\fP *control, struct \fBsls_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+This package \fB solves dense or sparse symmetric systems of linear equations\fP using variants of Gaussian elimination\&. Given a sparse symmetric n \\times n matrix A, and an n-vector b, this subroutine solves the system A x = b\&. The matrix A need not be definite\&.
+.PP
+The package provides a common interface to a variety of well-known solvers from HSL and elsewhere\&. Currently supported solvers include \fCMA27/SILS\fP, \fCHSL_MA57\fP, \fCHSL_MA77\fP, \fCHSL_MA86\fP, \fCHSL_MA87\fP and \fCHSL_MA97\fP from HSL, \fCSSIDS\fP from SPRAL, \fCPARDISO\fP both from the Pardiso Project and Intel's MKL and \fCWSMP\fP from the IBM alpha Works, as well as \fCPOTR\fP, \fCSYTR\fP and \fCSBTR\fP from LAPACK\&. Note that \fB the solvers themselves do not form part of this package and must be obtained separately\&.\fP Dummy instances are provided for solvers that are unavailable\&. Also note that additional flexibility may be obtained by calling the solvers directly rather that via this package\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+August 2009, C interface December 2021\&.
+.SS "Terminology"
+The solvers used each produce an L D L^T factorization of A or a perturbation thereof, where L is a permuted lower triangular matrix and D is a block diagonal matrix with blocks of order 1 and 2\&. It is convenient to write this factorization in the form \[A + E = P L D L^T P^T,\] where P is a permutation matrix and E is any diagonal perturbation introduced\&.
+.SS "Supported external solvers"
+The key features of the external solvers supported by sls are given in the following table\&.
+.PP
+ 
+(ignore next paragraph - doxygen bug!)
+.PP
+External solver characteristicssolver factorization indefinite A out-of-core parallelised \fCSILS/MA27\fP multifrontal yes no no \fCHSL_MA57\fP multifrontal yes no no \fCHSL_MA77\fP multifrontal yes yes OpenMP core \fCHSL_MA86\fP left-looking yes no OpenMP fully \fCHSL_MA87\fP left-looking no no OpenMP fully \fCHSL_MA97\fP multifrontal yes no OpenMP core \fCSSIDS\fP multifrontal yes no CUDA core \fCPARDISO\fP left-right-looking yes no OpenMP fully \fCMKL_PARDISO\fP left-right-looking yes optionally OpenMP fully \fCWSMP\fP left-right-looking yes no OpenMP fully \fCPOTR\fP dense no no with parallel LAPACK \fCSYTR\fP dense yes no with parallel LAPACK \fCPBTR\fP dense band no no with parallel LAPACK 
+.PP
+ 
+External solver characteristics (ooc = out-of-core factorization)
+
+ solver     factorization indefinite A  ooc    parallelised
+ SILS/MA27   multifrontal          yes   no    no
+ HSL_MA57    multifrontal          yes   no    no
+ HSL_MA77    multifrontal          yes  yes    OpenMP core
+ HSL_MA86    left-looking          yes   no    OpenMP fully
+ HSL_MA87    left-looking           no   no    OpenMP fully
+ HSL_MA97    multifrontal          yes   no    OpenMP core
+ SSIDS       multifrontal          yes   no    CUDA core
+ PARDISO     left-right-looking    yes   no    OpenMP fully
+ MKL_PARDISO left-right-looking    yes  optionally  OpenMP fully
+ WSMP        left-right-looking    yes   no    OpenMP fully
+ POTR        dense                  no   no    with parallel LAPACK
+ SYTR        dense                 yes   no    with parallel LAPACK
+ PBTR        dense band             no   no    with parallel LAPACK
+.SS "Method"
+Variants of sparse Gaussian elimination are used\&.
+.PP
+The solver \fCSILS\fP is available as part of GALAHAD and relies on the HSL Archive package \fCMA27\fP\&. To obtain HSL Archive packages, see
+.PP
+http://hsl.rl.ac.uk/archive/ \&.
+.PP
+The solvers \fCHSL_MA57\fP, \fCHSL_MA77\fP, \fCHSL_MA86\fP, \fCHSL_MA87\fP and \fCHSL_MA97\fP, the ordering packages \fCMC61\fP and \fCHSL_MC68\fP, and the scaling packages \fCHSL_MC64\fP and \fCMC77\fP are all part of HSL 2011\&. To obtain HSL 2011 packages, see
+.PP
+http://hsl.rl.ac.uk
+.PP
+The solver \fCSSIDS\fP is from the SPRAL sparse-matrix collection, and is available as part of GALAHAD\&.
+.PP
+The solver \fCPARDISO\fP is available from the Pardiso Project; version 4\&.0\&.0 or above is required\&. To obtain \fCPARDISO\fP, see
+.PP
+http://www.pardiso-project.org/ \&.
+.PP
+The solver \fCMKL\fP PARDISO is available as part of Intel's oneAPI Math Kernel Library (oneMKL)\&. To obtain this version of \fCPARDISO\fP, see
+.PP
+https://software.intel.com/content/www/us/en/develop/tools/oneapi.html \&.
+.PP
+The solver \fCWSMP\fP is available from the IBM alpha Works; version 10\&.9 or above is required\&. To obtain \fCWSMP\fP, see
+.PP
+http://www.alphaworks.ibm.com/tech/wsmp \&.
+.PP
+The solvers \fCPOTR\fP, \fCSYTR\fP and \fCPBTR\fP, are available as \fCS/DPOTRF/S\fP, \fCS/DSYTRF/S\fP and \fCS/DPBTRF/S\fP as part of LAPACK\&. Reference versions are provided by GALAHAD, but for good performance machined-tuned versions should be used\&.
+.PP
+Explicit sparsity re-orderings are obtained by calling the HSL package \fCHSL_MC68\fP\&. Both this, \fCHSL_MA57\fP and \fCPARDISO\fP rely optionally on the ordering package \fCMETIS\fP from the Karypis Lab\&. To obtain \fCMETIS\fP, see
+.PP
+http://glaros.dtc.umn.edu/gkhome/views/metis/ \&.
+.PP
+Bandwidth, Profile and wavefront reduction is supported by calling HSL's \fCMC61\fP\&.
+.SS "Reference"
+The methods used are described in the user-documentation for
+.PP
+HSL 2011, A collection of Fortran codes for large-scale scientific computation (2011)\&. http://www.hsl.rl.ac.uk
+.PP
+and papers
+.PP
+O\&. Schenk and K\&. Ga\*(4rtner, ``Solving Unsymmetric Sparse Systems of Linear Equations with PARDISO''\&. Journal of Future Generation Computer Systems \fB\fP, 20(3) (2004) 475--487,
+.PP
+O\&. Schenk and K\&. Ga\*(4rtner, ``On fast factorization pivoting methods for symmetric indefinite systems''\&. Electronic Transactions on Numerical Analysis \fB23\fP (2006) 158--179, and
+.PP
+A\&. Gupta, ``WSMP: Watson Sparse Matrix Package Part I - direct solution of symmetric sparse systems''\&. IBM Research Report RC 21886, IBM T\&. J\&. Watson Research Center, NY 10598, USA (2010)\&.
+.SS "Call order"
+To solve a given problem, functions from the sls package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBsls_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBsls_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+\fBsls_analyse_matrix\fP - set up matrix data structures and analyse the structure to choose a suitable order for factorization
+.IP "\(bu" 2
+\fBsls_reset_control\fP (optional) - possibly change control parameters if a sequence of problems are being solved
+.IP "\(bu" 2
+\fBsls_factorize_matrix\fP - form and factorize the block matrix from its components
+.IP "\(bu" 2
+one of
+.IP "  \(bu" 4
+\fBsls_solve_system\fP - solve the linear system of equations Ax=b
+.IP "  \(bu" 4
+\fBsls_partial_solve_system\fP - solve a linear system Mx=b involving one of the matrix factors M of A
+.PP
+
+.IP "\(bu" 2
+\fBsls_information\fP (optional) - recover information about the solution and solution process
+.IP "\(bu" 2
+\fBsls_terminate\fP - deallocate data structures
+.PP
+.PP
+   
+  See the examples section for illustrations of use.
+   
+.SS "Symmetric matrix storage formats"
+The symmetric n by n coefficient matrix A may be presented and stored in a variety of convenient input formats\&. Crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&.
+.PP
+Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; the discussion below presumes C style, but add 1 to indices for the corresponding fortran version\&.
+.PP
+Wrappers will automatically convert between 0-based (C) and 1-based (fortran) array indexing, so may be used transparently from C\&. This conversion involves both time and memory overheads that may be avoided by supplying data that is already stored using 1-based indexing\&.
+.SS "Dense storage format"
+The matrix A is stored as a compact dense matrix by rows, that is, the values of the entries of each row in turn are stored in order within an appropriate real one-dimensional array\&. Since A is symmetric, only the lower triangular part (that is the part A_{ij} for 0 <= j <= i <= n-1) need be held\&. In this case the lower triangle should be stored by rows, that is component i * i / 2 + j of the storage array val will hold the value A_{ij} (and, by symmetry, A_{ji}) for 0 <= j <= i <= n-1\&.
+.SS "Sparse co-ordinate storage format"
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays row and col and real array val, respectively, while the number of nonzeros is recorded as ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
+.SS "Sparse row-wise storage format"
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array ptr holds the position of the first entry in this row, while ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values A_{ij} of the entries in the i-th row are stored in components l = ptr(i), \&.\&.\&., ptr(i+1)-1 of the integer array col, and real array val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct sls_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+int \fIerror\fP unit for error messages 
+.br
+.PP
+int \fIwarning\fP unit for warning messages 
+.br
+.PP
+int \fIout\fP unit for monitor output 
+.br
+.PP
+int \fIstatistics\fP unit for statistical output 
+.br
+.PP
+int \fIprint_level\fP controls level of diagnostic output 
+.br
+.PP
+int \fIprint_level_solver\fP controls level of diagnostic output from external solver 
+.br
+.PP
+int \fIbits\fP number of bits used in architecture 
+.br
+.PP
+int \fIblock_size_kernel\fP the target blocksize for kernel factorization 
+.br
+.PP
+int \fIblock_size_elimination\fP the target blocksize for parallel elimination 
+.br
+.PP
+int \fIblas_block_size_factorize\fP level 3 blocking in factorize 
+.br
+.PP
+int \fIblas_block_size_solve\fP level 2 and 3 blocking in solve 
+.br
+.PP
+int \fInode_amalgamation\fP a child node is merged with its parent if they both involve fewer than node_amalgamation eliminations 
+.br
+.PP
+int \fIinitial_pool_size\fP initial size of task-pool arrays for parallel elimination 
+.br
+.PP
+int \fImin_real_factor_size\fP initial size for real array for the factors and other data 
+.br
+.PP
+int \fImin_integer_factor_size\fP initial size for integer array for the factors and other data 
+.br
+.PP
+int \fImax_real_factor_size\fP maximum size for real array for the factors and other data 
+.br
+.PP
+int \fImax_integer_factor_size\fP maximum size for integer array for the factors and other data 
+.br
+.PP
+int \fImax_in_core_store\fP amount of in-core storage to be used for out-of-core factorization 
+.br
+.PP
+real_wp_ \fIarray_increase_factor\fP factor by which arrays sizes are to be increased if they are too small 
+.br
+.PP
+real_wp_ \fIarray_decrease_factor\fP if previously allocated internal workspace arrays are greater than array_decrease_factor times the currently required sizes, they are reset to current requirements 
+.br
+.PP
+int \fIpivot_control\fP pivot control: 
+.PD 0
+
+.IP "\(bu" 2
+1 Numerical pivoting will be performed\&. 
+.IP "\(bu" 2
+2 No pivoting will be performed and an error exit will occur immediately a pivot sign change is detected\&. 
+.IP "\(bu" 2
+3 No pivoting will be performed and an error exit will occur if a zero pivot is detected\&. 
+.IP "\(bu" 2
+4 No pivoting is performed but pivots are changed to all be positive 
+.PP
+
+.br
+.PP
+int \fIordering\fP controls ordering (ignored if explicit PERM argument present) 
+.PD 0
+
+.IP "\(bu" 2
+<0 chosen by the specified solver with its own ordering-selected value -ordering 
+.IP "\(bu" 2
+0 chosen package default (or the AMD ordering if no package default) 
+.IP "\(bu" 2
+1 Approximate minimum degree (AMD) with provisions for 'dense' rows/col 
+.IP "\(bu" 2
+2 Minimum degree 
+.IP "\(bu" 2
+3 Nested disection 
+.IP "\(bu" 2
+4 indefinite ordering to generate a combination of 1x1 and 2x2 pivots 
+.IP "\(bu" 2
+5 Profile/Wavefront reduction 
+.IP "\(bu" 2
+6 Bandwidth reduction 
+.IP "\(bu" 2
+>6 ordering chosen depending on matrix characteristics (not yet implemented) 
+.PP
+
+.br
+.PP
+int \fIfull_row_threshold\fP controls threshold for detecting full rows in analyse, registered as percentage of matrix order\&. If 100, only fully dense rows detected (defa 
+.br
+.PP
+int \fIrow_search_indefinite\fP number of rows searched for pivot when using indefinite ordering 
+.br
+.PP
+int \fIscaling\fP controls scaling (ignored if explicit SCALE argument present) 
+.PD 0
+
+.IP "\(bu" 2
+<0 chosen by the specified solver with its own scaling-selected value -scaling 
+.IP "\(bu" 2
+0 No scaling 
+.IP "\(bu" 2
+1 Scaling using HSL's MC64 
+.IP "\(bu" 2
+2 Scaling using HSL's MC77 based on the row one-norm 
+.IP "\(bu" 2
+3 Scaling using HSL's MC77 based on the row infinity-norm 
+.PP
+
+.br
+.PP
+int \fIscale_maxit\fP the number of scaling iterations performed (default 10 used if \&.scale_maxit < 0) 
+.br
+.PP
+real_wp_ \fIscale_thresh\fP the scaling iteration stops as soon as the row/column norms are less than 1+/-\&.scale_thresh 
+.br
+.PP
+real_wp_ \fIrelative_pivot_tolerance\fP pivot threshold 
+.br
+.PP
+real_wp_ \fIminimum_pivot_tolerance\fP smallest permitted relative pivot threshold 
+.br
+.PP
+real_wp_ \fIabsolute_pivot_tolerance\fP any pivot small than this is considered zero 
+.br
+.PP
+real_wp_ \fIzero_tolerance\fP any entry smaller than this is considered zero 
+.br
+.PP
+real_wp_ \fIzero_pivot_tolerance\fP any pivot smaller than this is considered zero for positive-definite sol 
+.br
+.PP
+real_wp_ \fInegative_pivot_tolerance\fP any pivot smaller than this is considered to be negative for p-d solvers 
+.br
+.PP
+real_wp_ \fIstatic_pivot_tolerance\fP used for setting static pivot level 
+.br
+.PP
+real_wp_ \fIstatic_level_switch\fP used for switch to static 
+.br
+.PP
+real_wp_ \fIconsistency_tolerance\fP used to determine whether a system is consistent when seeking a Fredholm alternative 
+.br
+.PP
+int \fImax_iterative_refinements\fP maximum number of iterative refinements allowed 
+.br
+.PP
+real_wp_ \fIacceptable_residual_relative\fP refinement will cease as soon as the residual ||Ax-b|| falls below max( acceptable_residual_relative * ||b||, acceptable_residual_absolute 
+.br
+.PP
+real_wp_ \fIacceptable_residual_absolute\fP see acceptable_residual_relative 
+.br
+.PP
+bool \fImultiple_rhs\fP set \&.multiple_rhs to \&.true\&. if there is possibility that the solver will be required to solve systems with more than one right-hand side\&. More efficient execution may be possible when \&.multiple_rhs = \&.false\&. 
+.br
+.PP
+bool \fIgenerate_matrix_file\fP if \&.generate_matrix_file is \&.true\&. if a file describing the current matrix is to be generated 
+.br
+.PP
+int \fImatrix_file_device\fP specifies the unit number to write the input matrix (in co-ordinate form 
+.br
+.PP
+char \fImatrix_file_name[31]\fP name of generated matrix file containing input problem 
+.br
+.PP
+char \fIout_of_core_directory[401]\fP directory name for out of core factorization and additional real workspace in the indefinite case, respectively 
+.br
+.PP
+char \fIout_of_core_integer_factor_file[401]\fP out of core superfile names for integer and real factor data, real works and additional real workspace in the indefinite case, respectively 
+.br
+.PP
+char \fIout_of_core_real_factor_file[401]\fP see out_of_core_integer_factor_file 
+.br
+.PP
+char \fIout_of_core_real_work_file[401]\fP see out_of_core_integer_factor_file 
+.br
+.PP
+char \fIout_of_core_indefinite_file[401]\fP see out_of_core_integer_factor_file 
+.br
+.PP
+char \fIout_of_core_restart_file[501]\fP see out_of_core_integer_factor_file 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+.RE
+.PP
+.SH "struct sls_time_type"
+.PP 
+time derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+real_wp_ \fItotal\fP the total cpu time spent in the package 
+.br
+.PP
+real_wp_ \fIanalyse\fP the total cpu time spent in the analysis phase 
+.br
+.PP
+real_wp_ \fIfactorize\fP the total cpu time spent in the factorization phase 
+.br
+.PP
+real_wp_ \fIsolve\fP the total cpu time spent in the solve phases 
+.br
+.PP
+real_wp_ \fIorder_external\fP the total cpu time spent by the external solver in the ordering phase 
+.br
+.PP
+real_wp_ \fIanalyse_external\fP the total cpu time spent by the external solver in the analysis phase 
+.br
+.PP
+real_wp_ \fIfactorize_external\fP the total cpu time spent by the external solver in the factorization pha 
+.br
+.PP
+real_wp_ \fIsolve_external\fP the total cpu time spent by the external solver in the solve phases 
+.br
+.PP
+real_wp_ \fIclock_total\fP the total clock time spent in the package 
+.br
+.PP
+real_wp_ \fIclock_analyse\fP the total clock time spent in the analysis phase 
+.br
+.PP
+real_wp_ \fIclock_factorize\fP the total clock time spent in the factorization phase 
+.br
+.PP
+real_wp_ \fIclock_solve\fP the total clock time spent in the solve phases 
+.br
+.PP
+real_wp_ \fIclock_order_external\fP the total clock time spent by the external solver in the ordering phase 
+.br
+.PP
+real_wp_ \fIclock_analyse_external\fP the total clock time spent by the external solver in the analysis phase 
+.br
+.PP
+real_wp_ \fIclock_factorize_external\fP the total clock time spent by the external solver in the factorization p 
+.br
+.PP
+real_wp_ \fIclock_solve_external\fP the total clock time spent by the external solver in the solve phases 
+.br
+.PP
+.RE
+.PP
+.SH "struct sls_inform_type"
+.PP 
+inform derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP reported return status: 0 success -1 allocation error -2 deallocation error -3 matrix data faulty (\&.n < 1, \&.ne < 0) -20 alegedly +ve definite matrix is not -29 unavailable option -31 input order is not a permutation or is faulty in some other way -32 > control\&.max_integer_factor_size integer space required for factor -33 > control\&.max_real_factor_size real space required for factors -40 not possible to alter the diagonals -41 no access to permutation or pivot sequence used -42 no access to diagonal perturbations -43 direct-access file error -50 solver-specific error; see the solver's info parameter -101 unknown solver 
+.br
+.PP
+int \fIalloc_status\fP STAT value after allocate failure\&. 
+.br
+.PP
+char \fIbad_alloc[81]\fP name of array which provoked an allocate failure 
+.br
+.PP
+int \fImore_info\fP further information on failure 
+.br
+.PP
+int \fIentries\fP number of entries 
+.br
+.PP
+int \fIout_of_range\fP number of indices out-of-range 
+.br
+.PP
+int \fIduplicates\fP number of duplicates 
+.br
+.PP
+int \fIupper\fP number of entries from the strict upper triangle 
+.br
+.PP
+int \fImissing_diagonals\fP number of missing diagonal entries for an allegedly-definite matrix 
+.br
+.PP
+int \fImax_depth_assembly_tree\fP maximum depth of the assembly tree 
+.br
+.PP
+int \fInodes_assembly_tree\fP nodes in the assembly tree (= number of elimination steps) 
+.br
+.PP
+int \fIreal_size_desirable\fP desirable or actual size for real array for the factors and other data 
+.br
+.PP
+int \fIinteger_size_desirable\fP desirable or actual size for integer array for the factors and other dat 
+.br
+.PP
+int \fIreal_size_necessary\fP necessary size for real array for the factors and other data 
+.br
+.PP
+int \fIinteger_size_necessary\fP necessary size for integer array for the factors and other data 
+.br
+.PP
+int \fIreal_size_factors\fP predicted or actual number of reals to hold factors 
+.br
+.PP
+int \fIinteger_size_factors\fP predicted or actual number of integers to hold factors 
+.br
+.PP
+int \fIentries_in_factors\fP number of entries in factors 
+.br
+.PP
+int \fImax_task_pool_size\fP maximum number of tasks in the factorization task pool 
+.br
+.PP
+int \fImax_front_size\fP forecast or actual size of largest front 
+.br
+.PP
+int \fIcompresses_real\fP number of compresses of real data 
+.br
+.PP
+int \fIcompresses_integer\fP number of compresses of integer data 
+.br
+.PP
+int \fItwo_by_two_pivots\fP number of 2x2 pivots 
+.br
+.PP
+int \fIsemi_bandwidth\fP semi-bandwidth of matrix following bandwidth reduction 
+.br
+.PP
+int \fIdelayed_pivots\fP number of delayed pivots (total) 
+.br
+.PP
+int \fIpivot_sign_changes\fP number of pivot sign changes if no pivoting is used successfully 
+.br
+.PP
+int \fIstatic_pivots\fP number of static pivots chosen 
+.br
+.PP
+int \fIfirst_modified_pivot\fP first pivot modification when static pivoting 
+.br
+.PP
+int \fIrank\fP estimated rank of the matrix 
+.br
+.PP
+int \fInegative_eigenvalues\fP number of negative eigenvalues 
+.br
+.PP
+int \fInum_zero\fP number of pivots that are considered zero (and ignored) 
+.br
+.PP
+int \fIiterative_refinements\fP number of iterative refinements performed 
+.br
+.PP
+int \fIflops_assembly\fP anticipated or actual number of floating-point operations in assembly 
+.br
+.PP
+int \fIflops_elimination\fP anticipated or actual number of floating-point operations in elimination 
+.br
+.PP
+int \fIflops_blas\fP additional number of floating-point operations for BLAS 
+.br
+.PP
+real_wp_ \fIlargest_modified_pivot\fP largest diagonal modification when static pivoting or ensuring definiten 
+.br
+.PP
+real_wp_ \fIminimum_scaling_factor\fP minimum scaling factor 
+.br
+.PP
+real_wp_ \fImaximum_scaling_factor\fP maximum scaling factor 
+.br
+.PP
+real_wp_ \fIcondition_number_1\fP esimate of the condition number of the matrix (category 1 equations) 
+.br
+.PP
+real_wp_ \fIcondition_number_2\fP estimate of the condition number of the matrix (category 2 equations) 
+.br
+.PP
+real_wp_ \fIbackward_error_1\fP esimate of the backward error (category 1 equations) 
+.br
+.PP
+real_wp_ \fIbackward_error_2\fP esimate of the backward error (category 2 equations) 
+.br
+.PP
+real_wp_ \fIforward_error\fP estimate of forward error 
+.br
+.PP
+bool \fIalternative\fP has an 'alternative' y: A y = 0 and yT b > 0 been found when trying to solve A x = b ? 
+.br
+.PP
+struct \fBsls_time_type\fP \fItime\fP timings (see above) 
+.br
+.PP
+struct sils_ainfo_type \fIsils_ainfo\fP the output structure from sils 
+.br
+.PP
+struct sils_finfo_type \fIsils_finfo\fP see sils_ainfo 
+.br
+.PP
+struct sils_sinfo_type \fIsils_sinfo\fP see sils_ainfo 
+.br
+.PP
+struct ma57_ainfo_d \fIma57_ainfo\fP the output structure from ma57 
+.br
+.PP
+struct ma57_finfo_d \fIma57_finfo\fP see ma57_ainfo 
+.br
+.PP
+struct ma57_sinfo_d \fIma57_sinfo\fP see ma57_ainfo 
+.br
+.PP
+struct ma77_info_d \fIma77_inform\fP the output structure from ma77 
+.br
+.PP
+struct ma86_info_d \fIma86_inform\fP the output structure from ma86 
+.br
+.PP
+struct ma87_info_d \fIma87_inform\fP the output structure from ma87 
+.br
+.PP
+struct ma97_info_d \fIma97_inform\fP the output structure from ma97 
+.br
+.PP
+struct spral_ssids_inform \fIssids_inform\fP the output structure from ssids 
+.br
+.PP
+int \fImc61_info[10]\fP the integer and real output arrays from mc61 
+.br
+.PP
+real_wp_ \fImc61_rinfo[15]\fP see mc61_info 
+.br
+.PP
+struct mc64_info_d \fImc64_inform\fP the output structure from mc64 
+.br
+.PP
+struct mc68_info_i \fImc68_inform\fP the output structure from mc68 
+.br
+.PP
+int \fImc77_info[10]\fP the integer output array from mc77 
+.br
+.PP
+real_wp_ \fImc77_rinfo[10]\fP the real output status from mc77 
+.br
+.PP
+int \fIpardiso_error\fP the output scalars and arrays from pardiso 
+.br
+.PP
+int \fIpardiso_IPARM[64]\fP see pardiso_error 
+.br
+.PP
+real_wp_ \fIpardiso_DPARM[64]\fP see pardiso_error 
+.br
+.PP
+int \fImkl_pardiso_error\fP the output scalars and arrays from mkl_pardiso 
+.br
+.PP
+int \fImkl_pardiso_IPARM[64]\fP see mkl_pardiso_error 
+.br
+.PP
+int \fIwsmp_error\fP the output scalars and arrays from wsmp 
+.br
+.PP
+int \fIwsmp_iparm[64]\fP see wsmp_error 
+.br
+.PP
+real_wp_ \fIwsmp_dparm[64]\fP see wsmp_error 
+.br
+.PP
+int \fIlapack_error\fP the output scalars and arrays from LAPACK routines 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void sls_initialize (const char solver[], void ** data, struct \fBsls_control_type\fP * control, struct \fBsls_inform_type\fP * inform)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIsolver\fP is a one-dimensional array of type char that specifies the \fBsolver package \fP that should be used to factorize the matrix A\&. It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'pardiso', 'mkl pardiso', 'wsmp', 'potr', 'sytr' or 'pbtr'; lower or upper case variants are allowed\&. 
+.br
+\fIdata\fP holds private internal data 
+.br
+\fIcontrol\fP is a struct containing control information (see \fBsls_control_type\fP) 
+.br
+\fIinform\fP is a struct containing output information (see \fBsls_inform_type\fP)\&. A successful call occurs when inform\&.status = 0, while if inform\&.status = -26, the requested solver is unavailable\&. 
+.RE
+.PP
+
+.SS "void sls_read_specfile (struct \fBsls_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBsls_control_type\fP) 
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
+.SS "void sls_analyse_matrix (struct \fBsls_control_type\fP * control, void ** data, int * status, int n, const char type[], int ne, const int row[], const int col[], const int ptr[])"
+Import structural matrix data into internal storage prior to solution
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBsls_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 or requirement that the matrix type mus contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated\&. 
+.IP "\(bu" 2
+-20 The matrix is not positive definite while the solver used expected it to be\&. 
+.IP "\(bu" 2
+-26 The requested solver is not available\&. 
+.IP "\(bu" 2
+-29 This option is not available with this solver\&. 
+.IP "\(bu" 2
+-32 More than control\&.max integer factor size words of internal integer storage are required for in-core factorization\&. 
+.IP "\(bu" 2
+-34 The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
+.IP "\(bu" 2
+-35 The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&. 
+.IP "\(bu" 2
+-36 The scaling package HSL MC64 failed; check the solver-specific information component inform\&.mc64_info along with HSL MC64’s documentation for more details\&. 
+.IP "\(bu" 2
+-37 The scaling package MC77 failed; check the solver-specific information components inform\&.mc77 info and inform\&.mc77_rinfo along with MC77’s documentation for more details\&. 
+.IP "\(bu" 2
+-43 A direct-access file error occurred\&. See the value of inform\&.ma77_info\&.flag for more details\&. 
+.IP "\(bu" 2
+-50 A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of rows in the symmetric matrix A\&.
+.br
+\fItype\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the matrix A\&. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed\&.
+.br
+\fIne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of A in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
+.br
+\fIrow\fP is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of A in the sparse co-ordinate storage scheme\&. It need not be set for any of the other three schemes, and in this case can be NULL\&.
+.br
+\fIcol\fP is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL\&.
+.br
+\fIptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+.RE
+.PP
+
+.SS "void sls_reset_control (struct \fBsls_control_type\fP * control, void ** data, int * status)"
+Reset control parameters after import if required\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBsls_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void sls_factorize_matrix (void ** data, int * status, int ne, const real_wp_ val[])"
+Form and factorize the symmetric matrix A\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The factors were generated succesfully\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 or requirement that the matrix type must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated\&. 
+.IP "\(bu" 2
+-20 The matrix is not positive definite while the solver used expected it to be\&. 
+.IP "\(bu" 2
+-26 The requested solver is not available\&. 
+.IP "\(bu" 2
+-29 This option is not available with this solver\&. 
+.IP "\(bu" 2
+-32 More than control\&.max integer factor size words of internal integer storage are required for in-core factorization\&. 
+.IP "\(bu" 2
+-34 The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
+.IP "\(bu" 2
+-35 The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&. 
+.IP "\(bu" 2
+-36 The scaling package HSL MC64 failed; check the solver-specific information component inform\&.mc64_info along with HSL MC64’s documentation for more details\&. 
+.IP "\(bu" 2
+-37 The scaling package MC77 failed; check the solver-specific information components inform\&.mc77 info and inform\&.mc77_rinfo along with MC77’s documentation for more details\&. 
+.IP "\(bu" 2
+-43 A direct-access file error occurred\&. See the value of inform\&.ma77_info\&.flag for more details\&. 
+.IP "\(bu" 2
+-50 A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details\&.
+.PP
+.br
+\fIne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix A\&.
+.br
+\fIval\fP is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix A in any of the available storage schemes 
+.RE
+.PP
+
+.SS "void sls_solve_system (void ** data, int * status, int n, real_wp_ sol[])"
+Solve the linear system Ax=b\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The required solution was obtained\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-34 The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
+.IP "\(bu" 2
+-35 The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of entries in the vectors b and x\&.
+.br
+\fIsol\fP is a one-dimensional array of size n and type double\&. On entry, it must hold the vector b\&. On a successful exit, its contains the solution x\&. 
+.RE
+.PP
+
+.SS "void sls_partial_solve_system (const char part[], void ** data, int * status, int n, real_wp_ sol[])"
+Given the factorization A = L D U with U = L^T, solve the linear system Mx=b, where M is one of L, D, U or S = L sqrt{D}\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIpart\fP is a one-dimensional array of type char that specifies the component M of the factorization that is to be used\&. It should be one of 'L', 'D', 'U' or 'S', and these correspond to the parts L, D, U and S; lower or upper case variants are allowed\&.
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The required solution was obtained\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-34 The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
+.IP "\(bu" 2
+-35 The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of entries in the vectors b and x\&.
+.br
+\fIsol\fP is a one-dimensional array of size n and type double\&. On entry, it must hold the vector b\&. On a successful exit, its contains the solution x\&. 
+.RE
+.PP
+
+.SS "void sls_information (void ** data, struct \fBsls_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBsls_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void sls_terminate (void ** data, struct \fBsls_control_type\fP * control, struct \fBsls_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBsls_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBsls_inform_type\fP) 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD SLS from the source code\&.

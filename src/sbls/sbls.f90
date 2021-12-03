@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.1 - 26/08/2018 AT 14:20 GMT.
+! THIS VERSION: GALAHAD 3.3 - 27/11/2021 AT 16:20 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ S B L S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -586,7 +586,7 @@
 
       END SUBROUTINE SBLS_initialize
 
-!- G A L A H A D -  S B L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+!- G A L A H A D -  S B L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
 
      SUBROUTINE SBLS_full_initialize( data, control, inform )
 
@@ -1578,7 +1578,7 @@
 
       END SUBROUTINE SBLS_terminate
 
-! -  G A L A H A D -  S B L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+! -  G A L A H A D -  S B L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E
 
      SUBROUTINE SBLS_full_terminate( data, control, inform )
 

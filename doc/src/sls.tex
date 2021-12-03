@@ -969,18 +969,21 @@ that gives the minimum scaling factor used.
 \itt{maximum\_scaling\_factor} is a scalar variable of type \realdp,
 that gives the maximum scaling factor used.
 
+\itt{backward\_error\_1} and
+{\tt backward\_error\_2} are scalar variables of type \realdp,
+that gives estimates of the scaled backward errors (i.e., the residuals
+of the equations suitably normalised by the sizes of $\bmA$ and 
+$\bmb$/$\bmB$) for category-1 and -2 equations, respectively;
+category-2 equations are exceptional ones for which the residuals are 
+nonzero but the normalising factors are large.
+
 \itt{condition\_number\_1} and
 {\tt condition\_number\_2} are scalar variables of type \realdp,
 that gives estimates of the condition numbers of the matrix
 for category-1 and -2 equations, respectively.
 
-\itt{backward\_error\_1} and
-{\tt backward\_error\_2} are scalar variables of type \realdp,
-that gives estimates of the backward errors
-for category-1 and -2 equations, respectively.
-
 \itt{forward\_error} is a scalar variable of type \realdp,
-that gives an estimate of the forward error.
+that gives an estimate of the forward error (i.e., the error in the solution).
 
 \ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
 whose components are used to hold elapsed CPU and system clock times
@@ -1965,7 +1968,7 @@ and
 are all part of HSL 2011.
 To obtain HSL 2011 packages, see
 
-{\tt http://hsl.rl.ac.uk/hsl2011/ }.
+{\tt http://hsl.rl.ac.uk }.
 
 \noindent
 The solver {\tt SSIDS} is from the SPRAL sparse-matrix collection,

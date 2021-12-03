@@ -624,6 +624,7 @@
     TRIM( package_lower ), TRIM( package_upper ),                              &
     TRIM( package_lower ), TRIM( package_upper ),                              &
     TRIM( package_lower ), TRIM( package_upper ),                              &
+    TRIM( package_lower ), TRIM( package_upper ),                              &
     TRIM( package_lower ), TRIM( package_upper )
 
   DO l = 1, ndeps
