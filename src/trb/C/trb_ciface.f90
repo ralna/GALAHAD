@@ -57,7 +57,7 @@
       INTEGER ( KIND = C_INT ) :: print_gap
       INTEGER ( KIND = C_INT ) :: maxit
       INTEGER ( KIND = C_INT ) :: alive_unit 
-      CHARACTER( KIND = C_CHAR ), DIMENSION(  31  ) :: alive_file
+      CHARACTER( KIND = C_CHAR ), DIMENSION( 31 ) :: alive_file
       INTEGER ( KIND = C_INT ) :: more_toraldo
       INTEGER ( KIND = C_INT ) :: non_monotone
       INTEGER ( KIND = C_INT ) :: model
@@ -309,11 +309,11 @@
 !   CALL copy_sha_control_in(ccontrol%sha_control,fcontrol%sha_control)
 
     ! Strings
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%alive_file )
         IF ( ccontrol%alive_file( i ) == C_NULL_CHAR ) EXIT
         fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
     END DO
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%prefix )
         IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
         fcontrol%prefix( i : i ) = ccontrol%prefix( i )
     END DO
@@ -326,7 +326,7 @@
     TYPE ( f_trb_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( trb_control_type ), INTENT( OUT ) :: ccontrol
     logical, optional, INTENT( IN ) :: f_indexing
-    integer :: i
+    integer :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -391,14 +391,16 @@
 !   CALL copy_sha_control_out(fcontrol%sha_control,ccontrol%sha_control)
 
     ! Strings
-    DO i = 1, LEN( fcontrol%alive_file )
+    l = LEN( fcontrol%alive_file )
+    DO i = 1, l
       ccontrol%alive_file( i ) = fcontrol%alive_file( i : i )
     END DO
-    ccontrol%alive_file( LEN( fcontrol%alive_file ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%prefix )
+    ccontrol%alive_file( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%prefix )
+    DO i = 1, l
       ccontrol%prefix( i ) = fcontrol%prefix( i : i )
     END DO
-    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+    ccontrol%prefix( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_control_out
@@ -482,7 +484,7 @@
 !   CALL copy_sha_inform_in( cinform%sha_inform, finform%sha_inform )
 
     ! Strings
-    DO i = 1, 81
+    DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
     END DO
@@ -495,7 +497,7 @@
     SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_trb_inform_type ), INTENT( IN ) :: finform 
     TYPE ( trb_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i
+    INTEGER :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -529,10 +531,11 @@
 !   CALL copy_sha_inform_out( finform%sha_inform, cinform%sha_inform )
 
     ! Strings
-    DO i = 1, LEN( finform%bad_alloc )
+    l = LEN( finform%bad_alloc )
+    DO i = 1, l
       cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
     end do
-    cinform%bad_alloc( LEN( finform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_inform_out
@@ -543,15 +546,15 @@
 !  C interface to fortran trb_initialize
 !  -------------------------------------
 
-  SUBROUTINE trb_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE trb_initialize( cdata, ccontrol, status ) BIND( C ) 
   USE GALAHAD_TRB_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( trb_control_type ), INTENT( OUT ) :: ccontrol
-  TYPE ( trb_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
@@ -567,6 +570,7 @@
 !  initialize required fortran types
 
   CALL f_trb_initialize( fdata, fcontrol, finform )
+  status = finform%status
 
 !  C sparse matrix indexing by default
 
@@ -576,10 +580,6 @@
 !  copy control out 
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
-
-!  copy inform out
-
-  CALL copy_inform_out( finform, cinform )
   RETURN
 
   END SUBROUTINE trb_initialize
@@ -779,11 +779,11 @@
   PROCEDURE( eval_g ), POINTER :: feval_g
   PROCEDURE( eval_h ), POINTER :: feval_h
   PROCEDURE( eval_prec ), POINTER :: feval_prec
-  LOGICAL :: f_indexing
 
 !  ignore Fortran userdata type (not interoperable)
 
-  TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+! TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_nlpt_userdata_type ) :: fuserdata
 
 !  associate data pointer
 
@@ -905,7 +905,8 @@
 
 !  ignore Fortran userdata type (not interoperable)
 
-  TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+! TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_nlpt_userdata_type ) :: fuserdata
 
 !  associate data pointer
 

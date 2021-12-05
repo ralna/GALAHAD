@@ -2139,7 +2139,7 @@
 !  Solve the problem
 !  =================
 
-!  constraint/variable exit ststus required
+!  constraint/variable exit status required
 
       IF ( stat_required ) THEN
         IF ( prob%Hessian_kind == 0 ) THEN
@@ -2744,8 +2744,10 @@
 
 !  crossover solution if required
 
+! ** NB. No crossover for shifted least-norm problems currently
+
       IF ( stat_required .AND. control%crossover .AND.                         &
-           inform%status == GALAHAD_ok ) THEN
+           inform%status == GALAHAD_ok .AND. prob%Hessian_kind < 0 ) THEN
         IF ( printa ) THEN
           WRITE( control%out, "( A, ' Before crossover:' )" ) prefix
           WRITE( control%out, "( /, A, '      i       X_l             X   ',   &
@@ -10828,10 +10830,14 @@ END DO
      TYPE ( CQP_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( IN ) :: n, m, A_ne, H_ne
      INTEGER, INTENT( OUT ) :: status
-     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: A_row, A_col, A_ptr
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: H_row, H_col, H_ptr
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
 
 !  local variables
 
@@ -10841,6 +10847,7 @@ END DO
 
 !  copy control to data
 
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
      data%cqp_control = control
 
      error = data%cqp_control%error

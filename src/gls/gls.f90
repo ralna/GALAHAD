@@ -237,7 +237,7 @@
 
 ! Number of operations in elimination
 
-       REAL ( KIND = wp ) :: ops 0.0_wp
+       REAL ( KIND = wp ) :: ops = 0.0_wp
      END TYPE GLS_ainfo
 
      TYPE, PUBLIC :: GLS_finfo

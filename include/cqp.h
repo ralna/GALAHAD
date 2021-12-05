@@ -343,7 +343,7 @@ extern "C" {
 
 // required packages
 //#include "fdc.h"
-//#include "sbls.h"
+#include "sbls.h"
 //#include "fit.h"
 //#include "roots.h"
 //#include "cro.h"
@@ -646,7 +646,7 @@ struct cqp_control_type {
 
     /// \brief
     /// control parameters for SBLS
-    ///struct sbls_control_type sbls_control;
+    struct sbls_control_type sbls_control;
 
     /// \brief
     /// control parameters for FIT
@@ -744,11 +744,11 @@ struct cqp_inform_type {
 
     /// \brief
     /// the total integer workspace required for the factorization
-    int factorization_integer;
+    long int factorization_integer;
 
     /// \brief
     /// the total real workspace required for the factorization
-    int factorization_real;
+    long int factorization_real;
 
     /// \brief
     /// the total number of factorizations performed
@@ -818,7 +818,7 @@ struct cqp_inform_type {
 
     /// \brief
     /// inform parameters for SBLS
-    ///struct sbls_inform_type sbls_inform;
+    struct sbls_inform_type sbls_inform;
 
     /// \brief
     /// return information from FIT
@@ -841,16 +841,19 @@ struct cqp_inform_type {
 
 void cqp_initialize( void **data, 
                      struct cqp_control_type *control,
-                     struct cqp_inform_type *inform );
+                     int *status );
 
 /*!<
  Set default control values and initialize private data
 
-  @param[in,out] data  holds private internal data
-  @param[out] control  is a struct containing control information 
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information 
               (see cqp_control_type)
-  @param[out] inform   is a struct containing output information
-              (see cqp_inform_type) 
+
+  @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The import was succesful.
 */
 
 // *-*-*-*-*-*-*-*-*-    C Q P  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
@@ -862,9 +865,10 @@ void cqp_read_specfile( struct cqp_control_type *control,
   Read the content of a specification file, and assign values associated 
   with given keywords to the corresponding control parameters
 
-  @param[in,out]  control  is a struct containing control information 
+  @param[in,out]  control is a struct containing control information 
               (see cqp_control_type)
-  @param[in]  specfile  is a character string containing the name of
+
+  @param[in]  specfile is a character string containing the name of
               the specification file
 */
 

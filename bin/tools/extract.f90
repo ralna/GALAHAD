@@ -699,10 +699,10 @@
  &  '/*!<', /, &
  &  ' Set default control values and initialize private data', /, &
  &  '', /, &
- &  '  @param[in,out] data  holds private internal data', /, &
- &  '  @param[out] control  is a struct containing control information ', /, &
+ &  '  @param[in,out] data holds private internal data', /, &
+ &  '  @param[out] control is a struct containing control information ', /, &
  &  '              (see ', A, '_control_type)', /, &
- &  '  @param[out] inform   is a struct containing output information', /, &
+ &  '  @param[out] inform is a struct containing output information', /, &
  &  '              (see ', A, '_inform_type) ', /, &
  &  '*/' &
  & )" ) TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower ),   &
@@ -724,10 +724,10 @@
  &  ' associated ', /, &
  &  '  with given keywords to the corresponding control parameters', /, &
  &  '', /, &
- &  '  @param[in,out]  control  is a struct containing control', & 
+ &  '  @param[in,out]  control is a struct containing control', & 
  &  ' information ', /, &
  &  '              (see ', A, '_control_type)', /, &
- &  '  @param[in]  specfile  is a character string containing the name of', /, &
+ &  '  @param[in]  specfile is a character string containing the name of', /, &
  &  '              the specification file', /, &
  &  '*/'  &
  & )" ) TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower )
@@ -815,9 +815,9 @@
  &  '/*!<', /, &
  &  '  Provides output information', /, &
  &  '', /, &
- &  '  @param[in,out] data  holds private internal data', /, &
+ &  '  @param[in,out] data holds private internal data', /, &
  &  '', /, &
- &  '  @param[out] inform   is a struct containing output information', /, &
+ &  '  @param[out] inform is a struct containing output information', /, &
  &  '              (see ', A, '_inform_type) ', /, &
  &  '', /, &
  &  '  @param[out] status is a scalar variable of type int, that gives', /, &
@@ -940,12 +940,12 @@
       WRITE( ciface_unit, "( '', /, '    ! Strings' )" )
       DO i = 1, control_nc
         WRITE( ciface_unit, "( &
-      & '    DO i = 1, ', I0, /, &
+      & '    DO i = 1, LEN( fcontrol%', A, ' )', /, &
       & '      IF ( ccontrol%', A, '( i ) == C_NULL_CHAR ) EXIT', /, &
       & '      fcontrol%', A, '( i : i ) = ccontrol%', A, '( i )', /, &
       & '    END DO' &
-      & )" ) control_clen( i ) + 1, TRIM( control_c( i ) ),                    &
-         TRIM( control_c( i ) ), TRIM( control_c( i ) )
+      & )" ) TRIM( control_c( i ) ), TRIM( control_c( i ) ),                   &
+             TRIM( control_c( i ) ), TRIM( control_c( i ) )
       END DO
     END IF  
     WRITE( ciface_unit, "(                                                     &
@@ -961,7 +961,7 @@
  & '    TYPE ( f_', A, '_control_type ), INTENT( IN ) :: fcontrol', /, &
  & '    TYPE ( ', A, '_control_type ), INTENT( OUT ) :: ccontrol', /, &
  & '    LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing', /, &
- & '    INTEGER :: i', /, &
+ & '    INTEGER :: i, l', /, &
  & '    ', /, &
  & '    ! C or Fortran sparse matrix indexing', /, &
  & '    IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing' &
@@ -1010,12 +1010,13 @@
       WRITE( ciface_unit, "( '', /, '    ! Strings' )" )
       DO i = 1, control_nc
         WRITE( ciface_unit, "( &
-      & '    DO i = 1, LEN( fcontrol%', A, ' )', /, &
+      & '    l = 1, LEN( fcontrol%', A, ' )', /, &
+      & '    DO i = 1, l', /, &
       & '      ccontrol%', A, '( i ) = fcontrol%', A, '( i : i )', /, &
       & '    END DO', /, &
-      & '    ccontrol%', A, '( LEN( fcontrol%', A, ' ) + 1 ) = C_NULL_CHAR' &
+      & '    ccontrol%', A, '( l + 1 ) = C_NULL_CHAR' &
       & )" ) TRIM( control_c( i ) ), TRIM( control_c( i ) ),                   &
-         TRIM( control_c( i ) ), TRIM( control_c( i ) ), TRIM( control_c( i ) )
+             TRIM( control_c( i ) ), TRIM( control_c( i ) )
       END DO
     END IF  
     WRITE( ciface_unit, "(                                                     &
@@ -1133,12 +1134,12 @@
       WRITE( ciface_unit, "( '', /, '    ! Strings' )" )
       DO i = 1, inform_nc
         WRITE( ciface_unit, "( &
-      & '    DO i = 1, ', I0, /, &
+      & '    DO i = 1, LEN( finform%', A, ' )', /, &
       & '      IF ( cinform%', A, '( i ) == C_NULL_CHAR ) EXIT', /, &
       & '      finform%', A, '( i : i ) = cinform%', A, '( i )', /, &
       & '    END DO' &
-      & )" ) inform_clen( i ) + 1, TRIM( inform_c( i ) ),                    &
-         TRIM( inform_c( i ) ), TRIM( inform_c( i ) )
+      & )" ) TRIM( inform_c( i ) ), TRIM( inform_c( i ) ),                    &
+             TRIM( inform_c( i ) ), TRIM( inform_c( i ) )
       END DO
     END IF  
     WRITE( ciface_unit, "(                                                     &
@@ -1153,7 +1154,7 @@
  & '    SUBROUTINE copy_inform_out( finform, cinform ) ', /, &
  & '    TYPE ( f_', A, '_inform_type ), INTENT( IN ) :: finform', /, &
  & '    TYPE ( ', A, '_inform_type ), INTENT( OUT ) :: cinform', /, &
- & '    INTEGER :: i' &
+ & '    INTEGER :: i, l' &
    )" ) TRIM( package_lower ), TRIM( package_lower )
     IF ( inform_ni > 0 ) THEN
       WRITE( ciface_unit, "( '', /, '    ! Integers' )" )
@@ -1204,12 +1205,13 @@
       WRITE( ciface_unit, "( '', /, '    ! Strings' )" )
       DO i = 1, inform_nc
         WRITE( ciface_unit, "( &
-      & '    DO i = 1, LEN( finform%', A, ' )', /, &
+      & '    l = LEN( finform%', A, ' )', /, &
+      & '    DO i = 1, l', /, &
       & '      cinform%', A, '( i ) = finform%', A, '( i : i )', /, &
       & '    END DO', /, &
-      & '    cinform%', A, '( LEN( finform%', A, ' ) + 1 ) = C_NULL_CHAR' &
-      & )" ) TRIM( inform_c( i ) ), TRIM( inform_c( i ) ),                   &
-         TRIM( inform_c( i ) ), TRIM( inform_c( i ) ), TRIM( inform_c( i ) )
+      & '    cinform%', A, '( l + 1 ) = C_NULL_CHAR' &
+      & )" ) TRIM( inform_c( i ) ), TRIM( inform_c( i ) ),                     &
+             TRIM( inform_c( i ) ), TRIM( inform_c( i ) )
       END DO
     END IF  
     WRITE( ciface_unit, "(                                                     &

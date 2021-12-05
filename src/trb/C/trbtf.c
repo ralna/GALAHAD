@@ -62,7 +62,7 @@ int main(void) {
     for( int d=1; d <= 5; d++){
 
         // Initialize TRB
-        trb_initialize( &data, &control, &inform );
+        trb_initialize( &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
@@ -135,7 +135,7 @@ int main(void) {
 
     // reverse-communication input/output
     int eval_status, nnz_u, nnz_v;
-    double f;
+    double f = 0.0;
     double u[n], v[n];
     int index_nz_u[n], index_nz_v[n];
     double H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
@@ -143,7 +143,7 @@ int main(void) {
     for( int d=1; d <= 5; d++){
 
         // Initialize TRB
-        trb_initialize( &data, &control, &inform );
+        trb_initialize( &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing

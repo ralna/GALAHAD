@@ -657,16 +657,19 @@ struct trb_inform_type {
 
 void trb_initialize( void **data, 
                      struct trb_control_type *control,
-                     struct trb_inform_type *inform );
+                     int *status );
 
 /*!<
  Set default control values and initialize private data
 
-  @param[in,out] data  holds private internal data
-  @param[out] control  is a struct containing control information 
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information 
               (see trb_control_type)
-  @param[out] inform   is a struct containing output information
-              (see trb_inform_type) 
+
+  @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+   \li  0. The import was succesful.
 */
 
 //  *-*-*-*-*-*-*-*-*-   T R B _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*
@@ -678,9 +681,10 @@ void trb_read_specfile( struct trb_control_type *control,
   Read the content of a specification file, and assign values associated 
   with given keywords to the corresponding control parameters
 
-  @param[in,out]  control  is a struct containing control information 
+  @param[in,out]  control is a struct containing control information 
               (see trb_control_type)
-  @param[in]  specfile  is a character string containing the name of the 
+
+  @param[in]  specfile is a character string containing the name of the 
               specification file
 */
 
@@ -767,7 +771,7 @@ void trb_import( struct trb_control_type *control,
 
 void trb_reset_control( struct trb_control_type *control,
                         void **data,
-                        int *status, );
+                        int *status );
 
 /*!< 
  Reset control parameters after import if required.
@@ -1330,13 +1334,13 @@ void trb_solve_reverse_without_mat( void **data,
  @param[in,out] index_nz_v is a one-dimensional array of size n and type int, 
     that is used for reverse communication (see status=5,6,7 above for details)
  
- @param[in,out]   nnz_v is a scalar variable of type int, that is used for 
+ @param[in,out] nnz_v is a scalar variable of type int, that is used for 
     reverse communication (see status=5,6,7 above for details)
  
  @param[in] index_nz_u s a one-dimensional array of size n and type int, 
      that is used for reverse communication (see status=5,6,7 above for details)
  
- @param[in]   nnz_u is a scalar variable of type int, that is used for reverse
+ @param[in] nnz_u is a scalar variable of type int, that is used for reverse
      communication (see status=5,6,7 above for details)
 */  
 

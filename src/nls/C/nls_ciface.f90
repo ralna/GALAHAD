@@ -246,7 +246,7 @@
       INTEGER ( KIND = C_INT ) :: h_eval
       INTEGER ( KIND = C_INT ) :: factorization_max
       INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_INT ) :: max_entries_factors
+      INTEGER ( KIND = C_LONG ) :: max_entries_factors
       INTEGER ( KIND = C_INT ) :: factorization_integer
       INTEGER ( KIND = C_INT ) :: factorization_real
       REAL ( KIND = wp ) :: factorization_average
@@ -1346,7 +1346,8 @@
 
 !  ignore Fortran userdata type (not interoperable)
 
-  TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
+! TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_galahad_userdata_type ) :: fuserdata
 
 !  associate data pointer
 
@@ -1479,7 +1480,8 @@
 
 !  ignore Fortran userdata type (not interoperable)
 
-  TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
+! TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_galahad_userdata_type ) :: fuserdata
 
 !  associate data pointer
 

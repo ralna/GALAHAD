@@ -1738,7 +1738,7 @@
                CALL TRS_orthogonal_solve( nlp%n, nlp%G( : nlp%n ), nlp%H,      &
                                data%S( : nlp%n, : data%n_subspace_max ),       &
                                data%n_subspace_max, data%TRS_data,             &
-                               data%control%TRS_control, inform%TRS_inform )
+                               inform%TRS_inform )
 
 
 !  normalise all of the new directions, and compute their products with the

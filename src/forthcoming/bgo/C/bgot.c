@@ -66,7 +66,7 @@ int main(void) {
     for(int d=1; d <= 5; d++){
 
         // Initialize BGO
-        bgo_initialize( &data, &control, &inform );
+        bgo_initialize( &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
@@ -150,7 +150,7 @@ int main(void) {
     for(int d=1; d <= 5; d++){
 
         // Initialize BGO
-        bgo_initialize( &data, &control, &inform );
+        bgo_initialize( &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing

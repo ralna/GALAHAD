@@ -131,9 +131,9 @@
       INTEGER ( KIND = C_INT ) :: initial_pool_size
       INTEGER ( KIND = C_INT ) :: min_real_factor_size
       INTEGER ( KIND = C_INT ) :: min_integer_factor_size
-      INTEGER ( KIND = C_INT ) :: max_real_factor_size
-      INTEGER ( KIND = C_INT ) :: max_integer_factor_size
-      INTEGER ( KIND = C_INT ) :: max_in_core_store
+      INTEGER ( KIND = C_LONG ) :: max_real_factor_size
+      INTEGER ( KIND = C_LONG ) :: max_integer_factor_size
+      INTEGER ( KIND = C_LONG ) :: max_in_core_store
       REAL ( KIND = wp ) :: array_increase_factor
       REAL ( KIND = wp ) :: array_decrease_factor
       INTEGER ( KIND = C_INT ) :: pivot_control
@@ -203,13 +203,13 @@
       INTEGER ( KIND = C_INT ) :: missing_diagonals
       INTEGER ( KIND = C_INT ) :: max_depth_assembly_tree
       INTEGER ( KIND = C_INT ) :: nodes_assembly_tree
-      INTEGER ( KIND = C_INT ) :: real_size_desirable
-      INTEGER ( KIND = C_INT ) :: integer_size_desirable
-      INTEGER ( KIND = C_INT ) :: real_size_necessary
-      INTEGER ( KIND = C_INT ) :: integer_size_necessary
-      INTEGER ( KIND = C_INT ) :: real_size_factors
-      INTEGER ( KIND = C_INT ) :: integer_size_factors
-      INTEGER ( KIND = C_INT ) :: entries_in_factors
+      INTEGER ( KIND = C_LONG ) :: real_size_desirable
+      INTEGER ( KIND = C_LONG ) :: integer_size_desirable
+      INTEGER ( KIND = C_LONG ) :: real_size_necessary
+      INTEGER ( KIND = C_LONG ) :: integer_size_necessary
+      INTEGER ( KIND = C_LONG ) :: real_size_factors
+      INTEGER ( KIND = C_LONG ) :: integer_size_factors
+      INTEGER ( KIND = C_LONG ) :: entries_in_factors
       INTEGER ( KIND = C_INT ) :: max_task_pool_size
       INTEGER ( KIND = C_INT ) :: max_front_size
       INTEGER ( KIND = C_INT ) :: compresses_real
@@ -224,9 +224,9 @@
       INTEGER ( KIND = C_INT ) :: negative_eigenvalues
       INTEGER ( KIND = C_INT ) :: num_zero
       INTEGER ( KIND = C_INT ) :: iterative_refinements
-      INTEGER ( KIND = C_INT ) :: flops_assembly
-      INTEGER ( KIND = C_INT ) :: flops_elimination
-      INTEGER ( KIND = C_INT ) :: flops_blas
+      INTEGER ( KIND = C_LONG ) :: flops_assembly
+      INTEGER ( KIND = C_LONG ) :: flops_elimination
+      INTEGER ( KIND = C_LONG ) :: flops_blas
       REAL ( KIND = wp ) :: largest_modified_pivot
       REAL ( KIND = wp ) :: minimum_scaling_factor
       REAL ( KIND = wp ) :: maximum_scaling_factor
@@ -333,35 +333,41 @@
     fcontrol%generate_matrix_file = ccontrol%generate_matrix_file
 
     ! Strings
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%matrix_file_name )
       IF ( ccontrol%matrix_file_name( i ) == C_NULL_CHAR ) EXIT
       fcontrol%matrix_file_name( i : i ) = ccontrol%matrix_file_name( i )
     END DO
-    DO i = 1, 401
+    DO i = 1, LEN( fcontrol%out_of_core_directory )
       IF ( ccontrol%out_of_core_directory( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%out_of_core_directory( i : i ) = ccontrol%out_of_core_directory( i )
+      fcontrol%out_of_core_directory( i : i )                                  &
+        = ccontrol%out_of_core_directory( i )
     END DO
-    DO i = 1, 401
+    DO i = 1, LEN( fcontrol%out_of_core_integer_factor_file )
       IF ( ccontrol%out_of_core_integer_factor_file( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%out_of_core_integer_factor_file( i : i ) = ccontrol%out_of_core_integer_factor_file( i )
+      fcontrol%out_of_core_integer_factor_file( i : i )                        &
+        = ccontrol%out_of_core_integer_factor_file( i )
     END DO
-    DO i = 1, 401
+    DO i = 1, LEN( fcontrol%out_of_core_real_factor_file )
       IF ( ccontrol%out_of_core_real_factor_file( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%out_of_core_real_factor_file( i : i ) = ccontrol%out_of_core_real_factor_file( i )
+      fcontrol%out_of_core_real_factor_file( i : i )                           &
+        = ccontrol%out_of_core_real_factor_file( i )
     END DO
-    DO i = 1, 401
+    DO i = 1, LEN( fcontrol%out_of_core_real_work_file )
       IF ( ccontrol%out_of_core_real_work_file( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%out_of_core_real_work_file( i : i ) = ccontrol%out_of_core_real_work_file( i )
+      fcontrol%out_of_core_real_work_file( i : i )                             &
+        = ccontrol%out_of_core_real_work_file( i )
     END DO
-    DO i = 1, 401
+    DO i = 1, LEN( fcontrol%out_of_core_indefinite_file )
       IF ( ccontrol%out_of_core_indefinite_file( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%out_of_core_indefinite_file( i : i ) = ccontrol%out_of_core_indefinite_file( i )
+      fcontrol%out_of_core_indefinite_file( i : i )                            &
+        = ccontrol%out_of_core_indefinite_file( i )
     END DO
-    DO i = 1, 501
+    DO i = 1, LEN( fcontrol%out_of_core_restart_file )
       IF ( ccontrol%out_of_core_restart_file( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%out_of_core_restart_file( i : i ) = ccontrol%out_of_core_restart_file( i )
+      fcontrol%out_of_core_restart_file( i : i )                               &
+        = ccontrol%out_of_core_restart_file( i )
     END DO
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
     END DO
@@ -375,7 +381,7 @@
     TYPE ( f_sls_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( sls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i
+    INTEGER :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -421,46 +427,62 @@
     ccontrol%static_pivot_tolerance = fcontrol%static_pivot_tolerance
     ccontrol%static_level_switch = fcontrol%static_level_switch
     ccontrol%consistency_tolerance = fcontrol%consistency_tolerance
-    ccontrol%acceptable_residual_relative = fcontrol%acceptable_residual_relative
-    ccontrol%acceptable_residual_absolute = fcontrol%acceptable_residual_absolute
+    ccontrol%acceptable_residual_relative                                      &
+      = fcontrol%acceptable_residual_relative
+    ccontrol%acceptable_residual_absolute                                      &
+      = fcontrol%acceptable_residual_absolute
 
     ! Logicals
     ccontrol%multiple_rhs = fcontrol%multiple_rhs
     ccontrol%generate_matrix_file = fcontrol%generate_matrix_file
 
     ! Strings
-    DO i = 1, LEN( fcontrol%matrix_file_name )
+    l = LEN( fcontrol%matrix_file_name )
+    DO i = 1, l
       ccontrol%matrix_file_name( i ) = fcontrol%matrix_file_name( i : i )
     END DO
-    ccontrol%matrix_file_name( LEN( fcontrol%matrix_file_name ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%out_of_core_directory )
-      ccontrol%out_of_core_directory( i ) = fcontrol%out_of_core_directory( i : i )
+    ccontrol%matrix_file_name( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%out_of_core_directory )
+    DO i = 1, l
+      ccontrol%out_of_core_directory( i )                                      &
+        = fcontrol%out_of_core_directory( i : i )
     END DO
-    ccontrol%out_of_core_directory( LEN( fcontrol%out_of_core_directory ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%out_of_core_integer_factor_file )
-      ccontrol%out_of_core_integer_factor_file( i ) = fcontrol%out_of_core_integer_factor_file( i : i )
+    ccontrol%out_of_core_directory( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%out_of_core_integer_factor_file )
+    DO i = 1, l
+      ccontrol%out_of_core_integer_factor_file( i )                            &
+        = fcontrol%out_of_core_integer_factor_file( i : i )
     END DO
-    ccontrol%out_of_core_integer_factor_file( LEN( fcontrol%out_of_core_integer_factor_file ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%out_of_core_real_factor_file )
-      ccontrol%out_of_core_real_factor_file( i ) = fcontrol%out_of_core_real_factor_file( i : i )
+    ccontrol%out_of_core_integer_factor_file( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%out_of_core_real_factor_file )
+    DO i = 1, l
+      ccontrol%out_of_core_real_factor_file( i )                               &
+        = fcontrol%out_of_core_real_factor_file( i : i )
     END DO
-    ccontrol%out_of_core_real_factor_file( LEN( fcontrol%out_of_core_real_factor_file ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%out_of_core_real_work_file )
-      ccontrol%out_of_core_real_work_file( i ) = fcontrol%out_of_core_real_work_file( i : i )
+    ccontrol%out_of_core_real_factor_file( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%out_of_core_real_work_file )
+    DO i = 1, l
+      ccontrol%out_of_core_real_work_file( i )                                 &
+       = fcontrol%out_of_core_real_work_file( i : i )
     END DO
-    ccontrol%out_of_core_real_work_file( LEN( fcontrol%out_of_core_real_work_file ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%out_of_core_indefinite_file )
-      ccontrol%out_of_core_indefinite_file( i ) = fcontrol%out_of_core_indefinite_file( i : i )
+    ccontrol%out_of_core_real_work_file( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%out_of_core_indefinite_file )
+    DO i = 1, l
+      ccontrol%out_of_core_indefinite_file( i )                                &
+        = fcontrol%out_of_core_indefinite_file( i : i )
     END DO
-    ccontrol%out_of_core_indefinite_file( LEN( fcontrol%out_of_core_indefinite_file ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%out_of_core_restart_file )
-      ccontrol%out_of_core_restart_file( i ) = fcontrol%out_of_core_restart_file( i : i )
+    ccontrol%out_of_core_indefinite_file( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%out_of_core_restart_file )
+    DO i = 1, l
+      ccontrol%out_of_core_restart_file( i )                                   &
+        = fcontrol%out_of_core_restart_file( i : i )
     END DO
-    ccontrol%out_of_core_restart_file( LEN( fcontrol%out_of_core_restart_file ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%prefix )
+    ccontrol%out_of_core_restart_file( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%prefix )
+    DO i = 1, l
       ccontrol%prefix( i ) = fcontrol%prefix( i : i )
     END DO
-    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+    ccontrol%prefix( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_control_out
@@ -605,7 +627,7 @@
 !    CALL copy_mc68_inform_in( cinform%mc68_inform, finform%mc68_inform )
 
     ! Strings
-    DO i = 1, 81
+    DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
     END DO
@@ -618,7 +640,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_sls_inform_type ), INTENT( IN ) :: finform
     TYPE ( sls_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i
+    INTEGER :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -699,10 +721,11 @@
 !    CALL copy_mc68_inform_out( finform%mc68_inform, cinform%mc68_inform )
 
     ! Strings
-    DO i = 1, LEN( finform%bad_alloc )
+    l = LEN( finform%bad_alloc )
+    DO i = 1, l
       cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
     END DO
-    cinform%bad_alloc( LEN( finform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_inform_out
@@ -713,16 +736,16 @@
 !  C interface to fortran sls_initialize
 !  -------------------------------------
 
-  SUBROUTINE sls_initialize( csolver, cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE sls_initialize( csolver, cdata, ccontrol, status ) BIND( C ) 
   USE GALAHAD_SLS_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: csolver
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( sls_control_type ), INTENT( OUT ) :: ccontrol
-  TYPE ( sls_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
@@ -743,6 +766,7 @@
 !  initialize required fortran types
 
   CALL f_sls_initialize( fsolver, fdata, fcontrol, finform )
+  status = finform%status
 
 !  C sparse matrix indexing by default
 
@@ -752,10 +776,7 @@
 !  copy control out 
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
-
-!  copy inform out
-
-  CALL copy_inform_out( finform, cinform )
+  
   RETURN
 
   END SUBROUTINE sls_initialize

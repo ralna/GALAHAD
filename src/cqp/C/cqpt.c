@@ -46,7 +46,7 @@ int main(void) {
     for( int d=1; d <= 7; d++){
 
         // Initialize CQP
-        cqp_initialize( &data, &control, &inform );
+        cqp_initialize( &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
@@ -78,14 +78,16 @@ int main(void) {
                 break;
             case 3: // dense
                 st = 'D';
+                int H_dense_ne = 6; // number of elements of H
+                int A_dense_ne = 6; // number of elements of A
                 double H_dense[] = {1.0, 0.0, 1.0, 0.0, 0.0, 1.0};
                 double A_dense[] = {2.0, 1.0, 0.0, 0.0, 1.0, 1.0};
                 cqp_import( &control, &data, &status, n, m,
                             "dense", H_ne, NULL, NULL, NULL,
                             "dense", A_ne, NULL, NULL, NULL );
-                cqp_solve_qp( &data, &status, n, m, H_ne, H_dense, g, f, 
-                              A_ne, A_dense, c_l, c_u, x_l, x_u, x, c, y, z, 
-                              x_stat, c_stat );
+                cqp_solve_qp( &data, &status, n, m, H_dense_ne, H_dense, g, f, 
+                              A_dense_ne, A_dense, c_l, c_u, x_l, x_u, 
+                              x, c, y, z, x_stat, c_stat );
                 break;
             case 4: // diagonal
                 st = 'L';
@@ -151,7 +153,7 @@ int main(void) {
     for( int d=1; d <= 1; d++){
 
         // Initialize CQP
-        cqp_initialize( &data, &control, &inform );
+        cqp_initialize( &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing

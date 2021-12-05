@@ -19,6 +19,7 @@ int main(void) {
     // Set problem data
     int n = 5; // dimension of A
     int ne = 7; // number of elements of A
+    int dense_ne = 15; // number of elements of A
     int row[] = {1, 2, 2, 3, 3, 4, 5}; // indices, NB lower triangle
     int col[] = {1, 1, 5, 2, 3, 3, 5};
     int ptr[] = {1, 2, 4, 6, 7, 8}; // pointers to indices
@@ -39,10 +40,11 @@ int main(void) {
     printf(" basic tests of storage formats\n\n");
 
     printf(" storage          RHS   refine  partial\n");
+
     for( int d=1; d <= 3; d++){
 
         // Initialize SLS - use the sils solver
-        sls_initialize( "sils", &data, &control, &inform );
+        sls_initialize( "sils", &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = true; // Fortran sparse matrix indexing
@@ -64,7 +66,7 @@ int main(void) {
                 printf(" dense          ");
                 sls_analyse_matrix( &control, &data, &status, n,
                                     "dense", ne, NULL, NULL, NULL );
-                sls_factorize_matrix( &data, &status, ne, dense );
+                sls_factorize_matrix( &data, &status, dense_ne, dense );
                 break;
             }
 

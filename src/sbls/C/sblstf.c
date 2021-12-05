@@ -18,6 +18,9 @@ int main(void) {
     int H_ne = 4; // number of elements of H
     int A_ne = 3; // number of elements of A
     int C_ne = 3; // number of elements of C
+    int H_dense_ne = 6; // number of elements of H
+    int A_dense_ne = 6; // number of elements of A
+    int C_dense_ne = 3; // number of elements of C
     int H_row[] = {1, 2, 3, 3}; // row indices, NB lower triangle
     int H_col[] = {1, 2, 3, 1};
     int H_ptr[] = {1, 2, 3, 5}; 
@@ -48,7 +51,7 @@ int main(void) {
     for( int d=1; d <= 7; d++){
 
         // Initialize SBLS
-        sbls_initialize( &data, &control, &inform );
+        sbls_initialize( &data, &control, &status );
         control.preconditioner = 2;
         control.factorization = 2;
         control.get_norm_residual = true;
@@ -63,8 +66,10 @@ int main(void) {
                            "coordinate", H_ne, H_row, H_col, NULL,
                            "coordinate", A_ne, A_row, A_col, NULL,
                            "coordinate", C_ne, C_row, C_col, NULL );
-                sbls_factorize_matrix( &data, &status, n, m, H_ne, H_val, 
-                                       A_ne, A_val, C_ne, C_val, NULL );
+                sbls_factorize_matrix( &data, &status, n, 
+                                       H_ne, H_val, 
+                                       A_ne, A_val, 
+                                       C_ne, C_val, NULL );
                 break;
             printf(" case %1i break\n",d);
             case 2: // sparse by rows
@@ -73,8 +78,10 @@ int main(void) {
                             "sparse_by_rows", H_ne, NULL, H_col, H_ptr,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr,
                             "sparse_by_rows", C_ne, NULL, C_col, C_ptr );
-                sbls_factorize_matrix( &data, &status, n, m, H_ne, H_val, 
-                                       A_ne, A_val, C_ne, C_val, NULL );
+                sbls_factorize_matrix( &data, &status, n, 
+                                       H_ne, H_val, 
+                                       A_ne, A_val, 
+                                       C_ne, C_val, NULL );
                 break;
             case 3: // dense
                 st = 'D';
@@ -82,8 +89,11 @@ int main(void) {
                             "dense", H_ne, NULL, NULL, NULL,
                             "dense", A_ne, NULL, NULL, NULL,
                             "dense", C_ne, NULL, NULL, NULL );
-                sbls_factorize_matrix( &data, &status, n, m, H_ne, H_dense, 
-                                       A_ne, A_dense, C_ne, C_dense, NULL );
+                sbls_factorize_matrix( &data, &status, n, 
+                                       H_dense_ne, H_dense, 
+                                       A_dense_ne, A_dense, 
+                                       C_dense_ne, C_dense,
+                                       NULL );
                 break;
             case 4: // diagonal
                 st = 'L';
@@ -91,8 +101,11 @@ int main(void) {
                             "diagonal", H_ne, NULL, NULL, NULL,
                             "dense", A_ne, NULL, NULL, NULL,
                             "diagonal", C_ne, NULL, NULL, NULL );
-                sbls_factorize_matrix( &data, &status, n, m, H_ne, H_diag, 
-                                       A_ne, A_dense, C_ne, C_diag, NULL );
+                sbls_factorize_matrix( &data, &status, n, 
+                                       n, H_diag, 
+                                       A_dense_ne, A_dense, 
+                                       m, C_diag, 
+                                       NULL );
                 break;
 
             case 5: // scaled identity
@@ -101,8 +114,11 @@ int main(void) {
                             "scaled_identity", H_ne, NULL, NULL, NULL,
                             "dense", A_ne, NULL, NULL, NULL,
                             "scaled_identity", C_ne, NULL, NULL, NULL );
-                sbls_factorize_matrix( &data, &status, n, m, H_ne, H_scid, 
-                                       A_ne, A_dense, C_ne, C_scid, NULL );
+                sbls_factorize_matrix( &data, &status, n,
+                                       1, H_scid, 
+                                       A_dense_ne, A_dense, 
+                                       1, C_scid, 
+                                       NULL );
                 break;
             case 6: // identity
                 st = 'I';
@@ -110,8 +126,10 @@ int main(void) {
                             "identity", H_ne, NULL, NULL, NULL,
                             "dense", A_ne, NULL, NULL, NULL,
                             "identity", C_ne, NULL, NULL, NULL );
-                sbls_factorize_matrix( &data, &status, n, m, H_ne, H_val, 
-                                       A_ne, A_dense, C_ne, C_val, NULL );
+                sbls_factorize_matrix( &data, &status, n, 
+                                       0, H_val, 
+                                       A_dense_ne, A_dense, 
+                                       0, C_val, NULL );
                 break;
             case 7: // zero
                 st = 'Z';
@@ -119,8 +137,10 @@ int main(void) {
                             "identity", H_ne, NULL, NULL, NULL,
                             "dense", A_ne, NULL, NULL, NULL,
                             "zero", C_ne, NULL, NULL, NULL );
-                sbls_factorize_matrix( &data, &status, n, m, H_ne, H_val, 
-                                       A_ne, A_dense, C_ne, NULL, NULL );
+                sbls_factorize_matrix( &data, &status, n, 
+                                       0, H_val, 
+                                       A_dense_ne, A_dense, 
+                                       0, NULL, NULL );
                 break;
             }
 

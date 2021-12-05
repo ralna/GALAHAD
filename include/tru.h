@@ -576,16 +576,19 @@ struct tru_inform_type {
 
 void tru_initialize( void **data, 
                      struct tru_control_type *control,
-                     struct tru_inform_type *inform );
+                     int *status );
 
 /*!<
  Set default control values and initialize private data
 
   @param[in,out] data  holds private internal data
+
   @param[out] control  is a struct containing control information 
               (see tru_control_type)
-  @param[out] inform   is a struct containing output information
-              (see tru_inform_type) 
+
+  @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+   \li  0. The import was succesful.
 */
 
 //  *-*-*-*-*-*-*-*-*-   T R U _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*
@@ -674,7 +677,7 @@ void tru_import( struct tru_control_type *control,
 
 void tru_reset_control( struct tru_control_type *control,
                         void **data,
-                        int *status, );
+                        int *status );
 
 /*!< 
  Reset control parameters after import if required.

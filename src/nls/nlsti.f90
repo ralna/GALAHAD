@@ -4,16 +4,14 @@
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
-   TYPE ( NLPT_problem_type ):: nlp
    TYPE ( NLS_control_type ) :: control
    TYPE ( NLS_inform_type ) :: inform
    TYPE ( NLS_full_data_type ) :: data
    TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: n, m, J_ne, H_ne, P_ne
-   INTEGER :: i, s, data_storage_type, model, status, eval_status
-   LOGICAL :: alive, transpose
+   INTEGER :: data_storage_type, model, status, eval_status
+   LOGICAL :: transpose
    REAL ( KIND = wp ), PARAMETER :: p = 1.0_wp
-   REAL ( KIND = wp ) :: dum, f
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, G, C, Y, W, U, V
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: J_row, J_col, J_ptr
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: J_val, J_dense
@@ -937,19 +935,19 @@ CONTAINS
      status = 0
      END SUBROUTINE RHESSPRODS
 
-     SUBROUTINE SCALE( status, X, userdata, U, V )
-     USE GALAHAD_USERDATA_double
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, V
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
-     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-!     U( 1 ) = 0.5_wp * V( 1 )
-!     U( 2 ) = 0.5_wp * V( 2 )
-     U( 1 ) = V( 1 )
-     U( 2 ) = V( 2 )
-     status = 0
-     END SUBROUTINE SCALE
+!     SUBROUTINE SCALE( status, X, userdata, U, V )
+!     USE GALAHAD_USERDATA_double
+!     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+!     INTEGER, INTENT( OUT ) :: status
+!     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, V
+!     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
+!     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+!!     U( 1 ) = 0.5_wp * V( 1 )
+!!     U( 2 ) = 0.5_wp * V( 2 )
+!     U( 1 ) = V( 1 )
+!     U( 2 ) = V( 2 )
+!     status = 0
+!     END SUBROUTINE SCALE
 
      SUBROUTINE JAC_dense( status, X, userdata, J_val )
      USE GALAHAD_USERDATA_double

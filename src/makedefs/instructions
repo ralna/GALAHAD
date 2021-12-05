@@ -494,7 +494,7 @@ $(package)cdtf: $($(PACKAGE)CDTF)
 	- ./run_$(package)
 #	- ./run_$(package) > $(package)dtf.output 2>&1
 #	cat $(package)dtf.output
-	rm ./run_$(package)
+#	rm ./run_$(package)
 
 #  main program
 

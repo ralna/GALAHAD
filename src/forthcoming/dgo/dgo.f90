@@ -1255,7 +1255,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, l, st, best, index_l, index_u, index_l_best, index_u_best
+     INTEGER :: i, best, index_l, index_u, index_l_best, index_u_best
      INTEGER, DIMENSION( 1 ) :: loc
      REAL ( KIND = wp ) :: b, d, m, phix, term1, term2, term3
      REAL ( KIND = wp ) :: lipschitz_estimate_max, x, y, yp, delta_upper

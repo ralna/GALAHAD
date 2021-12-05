@@ -93,6 +93,7 @@
 
    WRITE( 6, "( /, ' tests reverse-communication options ', / )" )
 
+   f = 0.0_wp
    ALLOCATE( U( n ), V( n ) ) ! reverse-communication input/output
    ALLOCATE( INDEX_nz_v( n ), INDEX_nz_u( n ) )
    DO data_storage_type = 1, 5

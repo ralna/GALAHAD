@@ -36,14 +36,14 @@
 !!$        copy_fdc_control_in => copy_control_in, &
 !!$        copy_fdc_control_out => copy_control_out
 !!$
-!!$    USE GALAHAD_SBLS_double_ciface, ONLY: &
-!!$        sbls_inform_type, &
-!!$        sbls_control_type, &
-!!$        copy_sbls_inform_in => copy_inform_in, &
-!!$        copy_sbls_inform_out => copy_inform_out, &
-!!$        copy_sbls_control_in => copy_control_in, &
-!!$        copy_sbls_control_out => copy_control_out
-!!$
+    USE GALAHAD_SBLS_double_ciface, ONLY: &
+        sbls_inform_type, &
+        sbls_control_type, &
+        copy_sbls_inform_in => copy_inform_in, &
+        copy_sbls_inform_out => copy_inform_out, &
+        copy_sbls_control_in => copy_control_in, &
+        copy_sbls_control_out => copy_control_out
+
 !!$    USE GALAHAD_FIT_double_ciface, ONLY: &
 !!$        fit_inform_type, &
 !!$        fit_control_type, &
@@ -147,7 +147,7 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: qplib_file_name
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
 !!$      TYPE ( fdc_control_type ) :: fdc_control
-!!$      TYPE ( sbls_control_type ) :: sbls_control
+      TYPE ( sbls_control_type ) :: sbls_control
 !!$      TYPE ( fit_control_type ) :: fit_control
 !!$      TYPE ( roots_control_type ) :: roots_control
 !!$      TYPE ( cro_control_type ) :: cro_control
@@ -174,8 +174,8 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = C_INT ) :: iter
       INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_INT ) :: factorization_integer
-      INTEGER ( KIND = C_INT ) :: factorization_real
+      INTEGER ( KIND = C_LONG ) :: factorization_integer
+      INTEGER ( KIND = C_LONG ) :: factorization_real
       INTEGER ( KIND = C_INT ) :: nfacts
       INTEGER ( KIND = C_INT ) :: nbacts
       INTEGER ( KIND = C_INT ) :: threads
@@ -193,7 +193,7 @@
       REAL ( KIND = wp ), DIMENSION( 16 ) :: checkpointsTime
       TYPE ( cqp_time_type ) :: time
 !!$      TYPE ( fdc_inform_type ) :: fdc_inform
-!!$      TYPE ( sbls_inform_type ) :: sbls_inform
+      TYPE ( sbls_inform_type ) :: sbls_inform
 !!$      TYPE ( fit_inform_type ) :: fit_inform
 !!$      TYPE ( roots_inform_type ) :: roots_inform
 !!$      TYPE ( cro_inform_type ) :: cro_inform
@@ -279,21 +279,21 @@
 
     ! Derived types
 !!$    CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
-!!$    CALL copy_sbls_control_in( ccontrol%sbls_control, fcontrol%sbls_control )
+    CALL copy_sbls_control_in( ccontrol%sbls_control, fcontrol%sbls_control )
 !!$    CALL copy_fit_control_in( ccontrol%fit_control, fcontrol%fit_control )
 !!$    CALL copy_roots_control_in( ccontrol%roots_control, fcontrol%roots_control )
 !!$    CALL copy_cro_control_in( ccontrol%cro_control, fcontrol%cro_control )
 
     ! Strings
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%sif_file_name )
       IF ( ccontrol%sif_file_name( i ) == C_NULL_CHAR ) EXIT
       fcontrol%sif_file_name( i : i ) = ccontrol%sif_file_name( i )
     END DO
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%qplib_file_name )
       IF ( ccontrol%qplib_file_name( i ) == C_NULL_CHAR ) EXIT
       fcontrol%qplib_file_name( i : i ) = ccontrol%qplib_file_name( i )
     END DO
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
     END DO
@@ -307,7 +307,7 @@
     TYPE ( f_cqp_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( cqp_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i
+    INTEGER :: i, l
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -374,26 +374,27 @@
 
     ! Derived types
 !!$    CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
-!!$    CALL copy_sbls_control_out( fcontrol%sbls_control, ccontrol%sbls_control )
+    CALL copy_sbls_control_out( fcontrol%sbls_control, ccontrol%sbls_control )
 !!$    CALL copy_fit_control_out( fcontrol%fit_control, ccontrol%fit_control )
 !!$    CALL copy_roots_control_out( fcontrol%roots_control, ccontrol%roots_control )
 !!$    CALL copy_cro_control_out( fcontrol%cro_control, ccontrol%cro_control )
 
     ! Strings
-    DO i = 1, LEN( fcontrol%sif_file_name )
+    l = LEN( fcontrol%sif_file_name )
+    DO i = 1, l
       ccontrol%sif_file_name( i ) = fcontrol%sif_file_name( i : i )
     END DO
-    ccontrol%sif_file_name( LEN( fcontrol%sif_file_name ) + 1 )                &
-      = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%qplib_file_name )
+    ccontrol%sif_file_name( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%qplib_file_name )
+    DO i = 1, l
       ccontrol%qplib_file_name( i ) = fcontrol%qplib_file_name( i : i )
     END DO
-    ccontrol%qplib_file_name( LEN( fcontrol%qplib_file_name ) + 1 )            &
-      = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%prefix )
+    ccontrol%qplib_file_name( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%prefix )
+    DO i = 1, l
       ccontrol%prefix( i ) = fcontrol%prefix( i : i )
     END DO
-    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+    ccontrol%prefix( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_control_out
@@ -481,14 +482,14 @@
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
 !!$    CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
-!!$    CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
+    CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
 !!$    CALL copy_fit_inform_in( cinform%fit_inform, finform%fit_inform )
 !!$    CALL copy_roots_inform_in( cinform%roots_inform, finform%roots_inform )
 !!$    CALL copy_cro_inform_in( cinform%cro_inform, finform%cro_inform )
 !!$    CALL copy_rpd_inform_in( cinform%rpd_inform, finform%rpd_inform )
 
     ! Strings
-    DO i = 1, 81
+    DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
     END DO
@@ -501,7 +502,7 @@
     SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_cqp_inform_type ), INTENT( IN ) :: finform
     TYPE ( cqp_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i
+    INTEGER :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -533,17 +534,18 @@
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
 !!$    CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
-!!$    CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
+    CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
 !!$    CALL copy_fit_inform_out( finform%fit_inform, cinform%fit_inform )
 !!$    CALL copy_roots_inform_out( finform%roots_inform, cinform%roots_inform )
 !!$    CALL copy_cro_inform_out( finform%cro_inform, cinform%cro_inform )
 !!$    CALL copy_rpd_inform_out( finform%rpd_inform, cinform%rpd_inform )
 
     ! Strings
-    DO i = 1, LEN( finform%bad_alloc )
+    l = LEN( finform%bad_alloc )
+    DO i = 1, l
       cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
     END DO
-    cinform%bad_alloc( LEN( finform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_inform_out
@@ -554,15 +556,15 @@
 !  C interface to fortran cqp_initialize
 !  -------------------------------------
 
-  SUBROUTINE cqp_initialize( cdata, ccontrol, cinform ) BIND( C )
+  SUBROUTINE cqp_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_CQP_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( cqp_control_type ), INTENT( OUT ) :: ccontrol
-  TYPE ( cqp_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
@@ -578,6 +580,7 @@
 !  initialize required fortran types
 
   CALL f_cqp_initialize( fdata, fcontrol, finform )
+  status = finform%status
 
 !  C sparse matrix indexing by default
 
@@ -588,9 +591,6 @@
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
 
-!  copy inform out
-
-  CALL copy_inform_out( finform, cinform )
   RETURN
 
   END SUBROUTINE cqp_initialize

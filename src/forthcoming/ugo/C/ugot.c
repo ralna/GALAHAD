@@ -32,7 +32,8 @@ int main(void) {
     struct ugo_inform_type inform;
 
     // Initialize UGO
-    ugo_initialize( &data, &control, &inform );
+    int status, eval_status;
+    ugo_initialize( &data, &control, &status );
 
     // Set user-defined control options
     //control.print_level = 1;
@@ -49,7 +50,6 @@ int main(void) {
 
     // Test problem objective, gradient, Hessian values
     double x, f, g, h;
-    int status, eval_status;
 
     // import problem data
     ugo_import( &control, &data, &status, &x_l, &x_u );

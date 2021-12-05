@@ -249,11 +249,11 @@
     CALL copy_lhs_control_in(ccontrol%lhs_control,fcontrol%lhs_control)
 
     ! Strings
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%alive_file )
       IF ( ccontrol%alive_file( i ) == C_NULL_CHAR) EXIT
       fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
     END DO
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
     END DO
@@ -267,7 +267,7 @@
     TYPE ( f_bgo_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( bgo_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, optional, INTENT( IN ) :: f_indexing
-    INTEGER :: i
+    INTEGER :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -300,14 +300,16 @@
     CALL copy_lhs_control_out( fcontrol%lhs_control, ccontrol%lhs_control )
 
     ! Strings
-    DO i = 1, LEN( fcontrol%alive_file )
+    l = LEN( fcontrol%alive_file )
+    DO i = 1, l
       ccontrol%alive_file( i ) = fcontrol%alive_file( i : i )
     END DO
-    ccontrol%alive_file( LEN( fcontrol%alive_file ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%prefix )
+    ccontrol%alive_file( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%prefix )
+    DO i = 1, l
       ccontrol%prefix(i) = fcontrol%prefix( i : i )
     END DO
-    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+    ccontrol%prefix( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_control_out
@@ -369,7 +371,7 @@
     CALL copy_lhs_inform_in( cinform%lhs_inform, finform%lhs_inform )
 
     ! Strings
-    DO i = 1, 81
+    DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
     END DO
@@ -382,7 +384,7 @@
     SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_bgo_inform_type ), INTENT( IN ) :: finform 
     TYPE ( bgo_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i
+    INTEGER :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -402,10 +404,11 @@
     CALL copy_lhs_inform_out( finform%lhs_inform, cinform%lhs_inform )
 
     ! Strings
-    DO i = 1, LEN( finform%bad_alloc )
+    l = LEN( finform%bad_alloc )
+    DO i = 1, l
       cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
     END DO
-    cinform%bad_alloc( LEN( finform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_inform_out
@@ -416,15 +419,15 @@
 !  C interface to fortran bgo_initialize
 !  -------------------------------------
 
-  SUBROUTINE bgo_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE bgo_initialize( cdata, ccontrol, status ) BIND( C ) 
   USE GALAHAD_BGO_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( bgo_control_type ), INTENT( OUT ) :: ccontrol
-  TYPE ( bgo_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
@@ -440,6 +443,7 @@
 !  initialize required fortran types
 
   CALL f_bgo_initialize( fdata, fcontrol, finform )
+  status = finform%status
 
 !  C sparse matrix indexing by default
 
@@ -449,10 +453,6 @@
 !  copy control out 
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
-
-!  copy inform out
-
-  CALL copy_inform_out( finform, cinform )
   RETURN
 
   END SUBROUTINE bgo_initialize
@@ -653,7 +653,6 @@
   PROCEDURE( eval_h ), POINTER :: feval_h
   PROCEDURE( eval_hprod ), POINTER :: feval_hprod
   PROCEDURE( eval_prec ), POINTER :: feval_prec
-  LOGICAL :: f_indexing
 
 !  ignore Fortran userdata type (not interoperable)
 

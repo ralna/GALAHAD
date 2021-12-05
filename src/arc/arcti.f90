@@ -90,6 +90,7 @@
 
    WRITE( 6, "( /, ' tests reverse-communication options ', / )" )
 
+   f = 0.0_wp
    ALLOCATE( U( n ), V( n ) ) ! reverse-communication input/output
    DO data_storage_type = 1, 5
      CALL ARC_initialize( data, control, inform )

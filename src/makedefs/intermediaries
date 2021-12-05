@@ -1286,6 +1286,11 @@ make_ciface_checkpoint:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) checkpoint_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/checkpoint )
 
+make_ciface_common:
+	( cd $(GALAHAD)/src/common ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) common_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/common )
+
 make_ciface_convert:
 	( cd $(GALAHAD)/src/convert ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) convert_ciface.o \

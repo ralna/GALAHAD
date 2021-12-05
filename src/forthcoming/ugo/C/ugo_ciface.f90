@@ -149,11 +149,11 @@
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
 
     ! Strings
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%alive_file )
       IF ( ccontrol%alive_file( i ) == C_NULL_CHAR ) EXIT
       fcontrol%alive_file( i : i ) = ccontrol%alive_file( i )
     END DO
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
     END DO
@@ -166,7 +166,7 @@
     SUBROUTINE copy_control_out( fcontrol, ccontrol ) 
     TYPE ( f_ugo_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( ugo_control_type ), INTENT( OUT ) :: ccontrol
-    INTEGER :: i
+    INTEGER :: i, l
     
     ! Integers
     ccontrol%error = fcontrol%error
@@ -200,14 +200,16 @@
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
 
     ! Strings
-    DO i = 1, LEN( fcontrol%alive_file )
+    l = LEN( fcontrol%alive_file )
+    DO i = 1, l
       ccontrol%alive_file( i ) = fcontrol%alive_file( i : i )
     END DO
-    ccontrol%alive_file( LEN( fcontrol%alive_file ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%prefix )
+    ccontrol%alive_file( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%prefix )
+    DO i = 1, l
       ccontrol%prefix( i ) = fcontrol%prefix( i : i )
     END DO
-    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+    ccontrol%prefix( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_control_out
@@ -232,7 +234,7 @@
     finform%time%clock_total = cinform%time%clock_total
 
     ! Strings
-    DO i = 1, 81
+    DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
     END DO
@@ -245,7 +247,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_ugo_inform_type ), INTENT( IN ) :: finform
     TYPE ( ugo_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i
+    INTEGER :: i, l
 
     ! integers
     cinform%status = finform%status
@@ -260,10 +262,11 @@
     cinform%time%clock_total = finform%time%clock_total
 
     ! Strings
-    DO i = 1, LEN( finform%bad_alloc )
+    l = LEN( finform%bad_alloc )
+    DO i = 1, l
       cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
     END DO
-    cinform%bad_alloc( LEN( finform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_inform_out
@@ -274,15 +277,15 @@
 !  C interface to fortran ugo_initialize
 !  -------------------------------------
 
-  SUBROUTINE ugo_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE ugo_initialize( cdata, ccontrol, status ) BIND( C ) 
   USE GALAHAD_UGO_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( ugo_control_type ), INTENT( OUT ) :: ccontrol
-  TYPE ( ugo_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
@@ -297,18 +300,11 @@
 !  initialize required fortran types
 
   CALL f_ugo_initialize( fdata, fcontrol, finform ) 
-
-!  initialize eval_status (for reverse communication INTERFACE)
-
-  cinform%eval_status = 0
+  status = finform%status
 
 !  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol )
-
-!  copy inform out
-
-  CALL copy_inform_out( finform, cinform )
   RETURN
 
   END SUBROUTINE ugo_initialize

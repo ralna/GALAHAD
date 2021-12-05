@@ -9535,12 +9535,18 @@
      TYPE ( SBLS_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( IN ) :: n, m, A_ne, H_ne, C_ne
      INTEGER, INTENT( OUT ) :: status
-     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: A_row, A_col, A_ptr
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: H_row, H_col, H_ptr
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
      CHARACTER ( LEN = * ), INTENT( IN ) :: C_type
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: C_row, C_col, C_ptr
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: C_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: C_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: C_ptr
 
 !  local variables
 

@@ -184,33 +184,35 @@ struct bgo_control_type {
 
 void bgo_initialize( void **data, 
                      struct bgo_control_type *control,
-                     struct bgo_inform_type *inform );
+                     int *status );
 
-/*  ------------------------  A R G U M E N T S  ------------------------------
- *
- *   data     private internal data
- *   control  a struct containing default control information (see above)
- *   inform   a struct containing output information (see above)
- *
- *  ---------------------------------------------------------------------------
- */
+/*!<
+ Set default control values and initialize private data
 
-/*  *-*-*-*-*-*-*-*-*-   B G O _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*
- *
- * Read the content of a specification file, and perform the assignment of
- * values associated with given keywords to the corresponding control parameters
- */
+ @param[in,out] data  holds private internal data
+
+ @param[out] control is a struct containing control information 
+              (see bgo_control_type)
+
+ @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The import was succesful.
+*/
+
+// *-*-*-*-*-*-*-*-*-    B G O  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
 void bgo_read_specfile( struct bgo_control_type *control, 
                         const char specfile[] );
 
-/*  ------------------------  A R G U M E N T S  ------------------------------
- *
- *   control  a struct containing control information (see above)
- *   specfile a character string containing the name of the specfile
- *
- *  ---------------------------------------------------------------------------
- */
+/*!<
+  Read the content of a specification file, and assign values associated 
+  with given keywords to the corresponding control parameters
+
+  @param[in,out] control is a struct containing control information 
+              (see bgo_control_type)
+  @param[in]  specfile is a character string containing the name of
+              the specification file
+*/
 
 /*  *-*-*-*-*-*-*-*-*-*-*-*-   B G O _ I M P O R T    -*-*-*-*-*-*-*-*-*-*-*-*
  *
@@ -299,7 +301,7 @@ void bgo_import( struct bgo_control_type *control,
 
 void bgo_reset_control( struct bgo_control_type *control,
                         void **data,
-                        int *status, );
+                        int *status );
 
 /*  ------------------------  A R G U M E N T S  ------------------------------
  *

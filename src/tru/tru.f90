@@ -4276,7 +4276,9 @@
      INTEGER, INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
      INTEGER, INTENT( IN ), OPTIONAL :: H_ne
-     INTEGER, DIMENSION( : ), INTENT( IN ), OPTIONAL :: H_row, H_col, H_ptr
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
 
 !  local variables
 
@@ -4286,6 +4288,7 @@
 
 !  copy control to data
 
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
      data%tru_control = control
 
      error = data%tru_control%error

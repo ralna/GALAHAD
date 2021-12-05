@@ -1016,7 +1016,7 @@ struct nls_subproblem_inform_type {
 
     /// \brief
     /// the maximum number of entries in the factors
-    int max_entries_factors;
+    long int max_entries_factors;
 
     /// \brief
     /// the total integer workspace required for the factorization
@@ -1364,7 +1364,7 @@ void nls_import( struct nls_control_type *control,
 
 void nls_reset_control( struct nls_control_type *control,
                         void **data,
-                        int *status, );
+                        int *status );
 
 /*!< 
  Reset control parameters after import if required.

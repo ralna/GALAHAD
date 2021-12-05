@@ -4689,8 +4689,7 @@
 
 !-  G A L A H A D - T R S _ o r t h o g o n a l _ s o l v e  S U B R O U T I N E
 
-      SUBROUTINE TRS_orthogonal_solve( n, C, H, X, k_max,                      &
-                                       data, control, inform )
+      SUBROUTINE TRS_orthogonal_solve( n, C, H, X, k_max, data, inform )
 
 ! ------------------------------------------------------------------------
 
@@ -4789,7 +4788,6 @@
      REAL ( KIND = wp ), DIMENSION( k_max, k_max ) :: LT
      REAL ( KIND = wp ), DIMENSION( n, k_max ) :: Z
      TYPE ( TRS_data_type ), INTENT( INOUT ) :: data
-     TYPE ( TRS_control_type ), INTENT( IN ) :: control
      TYPE ( TRS_inform_type ), INTENT( INOUT ) :: inform
 
 !  factorize H

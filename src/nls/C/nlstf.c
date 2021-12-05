@@ -253,8 +253,9 @@ int main(void) {
                             "dense", p_ne, NULL, NULL, NULL, W ); 
                 while(true){ // reverse-communication loop
                   nls_solve_reverse_with_mat( &data, &status, &eval_status,
-                                              n, m, x, c, g, j_ne, J_dense, y, 
-                                              h_ne, H_dense, v, p_ne, P_dense );
+                                              n, m, x, c, g, m*n, J_dense, y, 
+                                              n*(n+1)/2, H_dense, v, m*n, 
+                                              P_dense );
                   if(status == 0){ // successful termination
                         break;
                   }else if(status < 0){ // error exit
@@ -286,7 +287,7 @@ int main(void) {
                 while(true){ // reverse-communication loop
                   nls_solve_reverse_with_mat( &data, &status, &eval_status,
                                               n, m, x, c, g, j_ne, J_val, y, 
-                                              h_ne, H_diag, v, p_ne, P_val );
+                                              n, H_diag, v, p_ne, P_val );
                   if(status == 0){ // successful termination
                         break;
                   }else if(status < 0){ // error exit

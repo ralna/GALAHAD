@@ -19,6 +19,7 @@ int main(void) {
     // Set problem data
     int n = 5; // dimension of A
     int ne = 7; // number of elements of A
+    int dense_ne = 15; // number of elements of A
     int row[] = {0, 1, 1, 2, 2, 3, 4}; // indices, NB lower triangle
     int col[] = {0, 0, 4, 1, 2, 2, 4};
     int ptr[] = {0, 1, 3, 5, 6, 7}; // pointers to indices
@@ -42,7 +43,7 @@ int main(void) {
     for( int d=1; d <= 3; d++){
 
         // Initialize SLS - use the sils solver
-        sls_initialize( "sils", &data, &control, &inform );
+        sls_initialize( "sils", &data, &control, &status );
 
         // Set user-defined control options
         control.f_indexing = false; // C sparse matrix indexing
@@ -64,7 +65,7 @@ int main(void) {
                 printf(" dense          ");
                 sls_analyse_matrix( &control, &data, &status, n,
                                     "dense", ne, NULL, NULL, NULL );
-                sls_factorize_matrix( &data, &status, ne, dense );
+                sls_factorize_matrix( &data, &status, dense_ne, dense );
                 break;
             }
 

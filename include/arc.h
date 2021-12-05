@@ -654,16 +654,19 @@ struct arc_inform_type {
 
 void arc_initialize( void **data, 
                      struct arc_control_type *control,
-                     struct arc_inform_type *inform );
+                     int *status );
 
 /*!<
  Set default control values and initialize private data
 
-  @param[in,out] data  holds private internal data
-  @param[out] control  is a struct containing control information 
+  @param[in,out] data holds private internal data
+
+  @param[out] control is a struct containing control information 
               (see arc_control_type)
-  @param[out] inform   is a struct containing output information
-              (see arc_inform_type) 
+
+  @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+   \li  0. The import was succesful.
 */
 
 //  *-*-*-*-*-*-*-*-*-   A R C _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*
@@ -675,9 +678,9 @@ void arc_read_specfile( struct arc_control_type *control,
   Read the content of a specification file, and assign values associated 
   with given keywords to the corresponding control parameters
 
-  @param[in,out]  control  is a struct containing control information 
+  @param[in,out]  control is a struct containing control information 
               (see arc_control_type)
-  @param[in]  specfile  is a character string containing the name of the 
+  @param[in]  specfile is a character string containing the name of the 
               specification file
 */
 
@@ -752,7 +755,7 @@ void arc_import( struct arc_control_type *control,
 
 void arc_reset_control( struct arc_control_type *control,
                         void **data,
-                        int *status, );
+                        int *status );
 
 /*!< 
  Reset control parameters after import if required.

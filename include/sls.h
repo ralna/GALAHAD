@@ -386,15 +386,15 @@ struct sls_control_type {
 
     /// \brief
     /// maximum size for real array for the factors and other data
-    int max_real_factor_size;
+    long int max_real_factor_size;
 
     /// \brief
     /// maximum size for integer array for the factors and other data
-    int max_integer_factor_size;
+    long int max_integer_factor_size;
 
     /// \brief
     /// amount of in-core storage to be used for out-of-core factorization
-    int max_in_core_store;
+    long int max_in_core_store;
 
     /// \brief
     /// factor by which arrays sizes are to be increased if they are too small
@@ -693,31 +693,31 @@ struct sls_inform_type {
 
     /// \brief
     /// desirable or actual size for real array for the factors and other data
-    int real_size_desirable;
+    long int real_size_desirable;
 
     /// \brief
     /// desirable or actual size for integer array for the factors and other dat
-    int integer_size_desirable;
+    long int integer_size_desirable;
 
     /// \brief
     /// necessary size for real array for the factors and other data
-    int real_size_necessary;
+    long int real_size_necessary;
 
     /// \brief
     /// necessary size for integer array for the factors and other data
-    int integer_size_necessary;
+    long int integer_size_necessary;
 
     /// \brief
     /// predicted or actual number of reals to hold factors
-    int real_size_factors;
+    long int real_size_factors;
 
     /// \brief
     /// predicted or actual number of integers to hold factors
-    int integer_size_factors;
+    long int integer_size_factors;
 
     /// \brief
     /// number of entries in factors
-    int entries_in_factors;
+    long int entries_in_factors;
 
     /// \brief
     /// maximum number of tasks in the factorization task pool
@@ -777,15 +777,15 @@ struct sls_inform_type {
 
     /// \brief
     /// anticipated or actual number of floating-point operations in assembly
-    int flops_assembly;
+    long int flops_assembly;
 
     /// \brief
     /// anticipated or actual number of floating-point operations in elimination
-    int flops_elimination;
+    long int flops_elimination;
 
     /// \brief
     /// additional number of floating-point operations for BLAS
-    int flops_blas;
+    long int flops_blas;
 
     /// \brief
     /// largest diagonal modification when static pivoting or ensuring definiten
@@ -920,24 +920,27 @@ struct sls_inform_type {
 void sls_initialize( const char solver[], 
                      void **data, 
                      struct sls_control_type *control,
-                     struct sls_inform_type *inform );
+                     int *status );
 
 /*!<
  Set default control values and initialize private data
 
- @param[in] solver is a one-dimensional array of type char that specifies the
-   \link external solver package \endlink 
-   that should be used to factorize the matrix \f$A\f$. It should be one of 
-  'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 
-  'ssids', 'pardiso', 'mkl pardiso', 'wsmp', 'potr', 'sytr' or 'pbtr';
-  lower or upper case variants are allowed.
-  @param[in,out] data  holds private internal data
-  @param[out] control is a struct containing control information 
+ @param[in] solver is a one-dimensional array of type char that specifies
+    the \link external solver package \endlink 
+    that should be used to factorize the matrix \f$A\f$. It should be one of 
+   'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 
+   'pardiso', 'mkl pardiso', 'wsmp', 'potr', 'sytr' or 'pbtr';
+   lower or upper case variants are allowed.
+
+ @param[in,out] data  holds private internal data
+
+ @param[out] control is a struct containing control information 
               (see sls_control_type)
-  @param[out] inform is a struct containing output information
-              (see sls_inform_type). A successful call occurs
-               when inform.status = 0, while if inform.status = -26,
-               the requested solver is unavailable.
+
+ @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are:
+  \li  0. The import was succesful.
+  \li -26. The requested solver is not available.
 */
 
 // *-*-*-*-*-*-*-*-*-    S L S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
@@ -949,7 +952,7 @@ void sls_read_specfile( struct sls_control_type *control,
   Read the content of a specification file, and assign values associated 
   with given keywords to the corresponding control parameters
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out] control is a struct containing control information 
               (see sls_control_type)
   @param[in]  specfile  is a character string containing the name of
               the specification file
@@ -975,46 +978,46 @@ void sls_analyse_matrix( struct sls_control_type *control,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
-    the exit status from the package. Possible values are:
-  \li  0. The import was succesful.
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
-       inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
-       returned allocation status and a string containing the
-       name of the offending array are held in 
-       inform.alloc_status and inform.bad_alloc respectively.
+ @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. \n
+    Possible values are:
+  \li  0. The import and analysis were conducted succesfully.
+
+  \li -1. An allocation error occurred. A message indicating the offending
+       array is written on unit control.error, and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the offending
+       array is written on unit control.error and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restrictions n > 0 or requirement that the matrix type 
-       mus contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows
+       must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows
        has been violated.
-  \li -20 The matrix is not positive definite while the solver used
+  \li -20. The matrix is not positive definite while the solver used
         expected it to be.
-  \li -26 The requested solver is not available.
-  \li -29 This option is not available with this solver.
-  \li -32 More than control.max integer factor size words of internal
+  \li -26. The requested solver is not available.
+  \li -29. This option is not available with this solver.
+  \li -32. More than control.max integer factor size words of internal
        integer storage are required for in-core factorization.
-  \li -34 The package PARDISO failed; check the solver-specific
+  \li -34. The package PARDISO failed; check the solver-specific
        information components inform.pardiso iparm and inform.pardiso_dparm 
        along with PARDISO’s documentation for more details.
-  \li -35 The package WSMP failed; check the solver-specific information
+  \li -35. The package WSMP failed; check the solver-specific information
        components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s
        documentation for more details.
-  \li -36 The scaling package HSL MC64 failed; check the solver-specific
+  \li -36. The scaling package HSL MC64 failed; check the solver-specific
        information component inform.mc64_info along with HSL MC64’s
        documentation for more details.
-  \li -37 The scaling package MC77 failed; check the solver-specific
+  \li -37. The scaling package MC77 failed; check the solver-specific
        information components inform.mc77 info and inform.mc77_rinfo along
        with MC77’s documentation for more details.
-  \li -43 A direct-access file error occurred. See the value of
+  \li -43. A direct-access file error occurred. See the value of
        inform.ma77_info.flag for more details.
-  \li -50 A solver-specific error occurred; check the solver-specific
+  \li -50. A solver-specific error occurred; check the solver-specific
        information component of inform along with the solver’s
        documentation for more details.
-
+ 
  @param[in] n is a scalar variable of type int, that holds the number of
     rows in the symmetric matrix \f$A\f$.
 
@@ -1077,10 +1080,9 @@ void sls_factorize_matrix( void **data,
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
-    the entry and exit status from the package. \n
-    On initial entry, status must be set to 1. \n
-    Possible exit are:
+ @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. \n
+    Possible values are:
   \li  0. The factors were generated succesfully.
 
   \li -1. An allocation error occurred. A message indicating the offending
@@ -1094,27 +1096,27 @@ void sls_factorize_matrix( void **data,
   \li -3. The restrictions n > 0 or requirement that the matrix type 
        must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows
        has been violated.
-  \li -20 The matrix is not positive definite while the solver used
+  \li -20. The matrix is not positive definite while the solver used
         expected it to be.
-  \li -26 The requested solver is not available.
-  \li -29 This option is not available with this solver.
-  \li -32 More than control.max integer factor size words of internal
+  \li -26. The requested solver is not available.
+  \li -29. This option is not available with this solver.
+  \li -32. More than control.max integer factor size words of internal
        integer storage are required for in-core factorization.
-  \li -34 The package PARDISO failed; check the solver-specific
+  \li -34. The package PARDISO failed; check the solver-specific
        information components inform.pardiso iparm and inform.pardiso_dparm 
        along with PARDISO’s documentation for more details.
-  \li -35 The package WSMP failed; check the solver-specific information
+  \li -35. The package WSMP failed; check the solver-specific information
        components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s
        documentation for more details.
-  \li -36 The scaling package HSL MC64 failed; check the solver-specific
+  \li -36. The scaling package HSL MC64 failed; check the solver-specific
        information component inform.mc64_info along with HSL MC64’s
        documentation for more details.
-  \li -37 The scaling package MC77 failed; check the solver-specific
+  \li -37. The scaling package MC77 failed; check the solver-specific
        information components inform.mc77 info and inform.mc77_rinfo along
        with MC77’s documentation for more details.
-  \li -43 A direct-access file error occurred. See the value of
+  \li -43. A direct-access file error occurred. See the value of
        inform.ma77_info.flag for more details.
-  \li -50 A solver-specific error occurred; check the solver-specific
+  \li -50. A solver-specific error occurred; check the solver-specific
        information component of inform along with the solver’s
        documentation for more details.
  
@@ -1139,9 +1141,8 @@ void sls_solve_system( void **data,
  @param[in,out] data holds private internal data
 
  @param[in,out] status is a scalar variable of type int, that gives
-    the entry and exit status from the package. \n
-    On initial entry, status must be set to 1. \n
-    Possible exit are:
+    the exit status from the package. \n
+    Possible values are:
   \li  0. The required solution was obtained.
 
   \li -1. An allocation error occurred. A message indicating the offending
@@ -1152,10 +1153,10 @@ void sls_solve_system( void **data,
        array is written on unit control.error and the returned allocation
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
-  \li -34 The package PARDISO failed; check the solver-specific
+  \li -34. The package PARDISO failed; check the solver-specific
        information components inform.pardiso iparm and inform.pardiso_dparm 
        along with PARDISO’s documentation for more details.
-  \li -35 The package WSMP failed; check the solver-specific information
+  \li -35. The package WSMP failed; check the solver-specific information
        components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s
        documentation for more details.
 
@@ -1203,10 +1204,10 @@ void sls_partial_solve_system( const char part[],
        array is written on unit control.error and the returned allocation
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
-  \li -34 The package PARDISO failed; check the solver-specific
+  \li -34. The package PARDISO failed; check the solver-specific
        information components inform.pardiso iparm and inform.pardiso_dparm 
        along with PARDISO’s documentation for more details.
-  \li -35 The package WSMP failed; check the solver-specific information
+  \li -35. The package WSMP failed; check the solver-specific information
        components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s
        documentation for more details.
 
@@ -1230,7 +1231,7 @@ void sls_information( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] inform   is a struct containing output information
+  @param[out] inform is a struct containing output information
               (see sls_inform_type) 
 
   @param[out] status is a scalar variable of type int, that gives
@@ -1250,10 +1251,10 @@ void sls_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control is a struct containing control information 
               (see sls_control_type)
 
-  @param[out] inform   is a struct containing output information
+  @param[out] inform  is a struct containing output information
               (see sls_inform_type)
  */
 

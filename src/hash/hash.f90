@@ -988,8 +988,6 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     CHARACTER ( LEN = 80 ) :: array_name
-
 !  deallocate workspace
 
      CALL HASH_terminate( data%hash_data, control, inform )
@@ -1049,7 +1047,6 @@
 
      INTEGER :: error
      LOGICAL :: deallocate_error_fatal, space_critical
-     CHARACTER ( LEN = 80 ) :: array_name
 
 !  copy control to data
 
@@ -1060,12 +1057,6 @@
      deallocate_error_fatal = data%hash_control%space_critical
 
      status = GALAHAD_ok
-     RETURN
-
-!  error returns
-
- 900 CONTINUE
-     status = data%hash_inform%status
      RETURN
 
 !  End of subroutine HASH_import

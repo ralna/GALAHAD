@@ -15,27 +15,27 @@
     USE iso_c_binding
     USE GALAHAD_common_ciface
     USE GALAHAD_SBLS_double, ONLY: &
-        f_sbls_control_type => SBLS_control_type, &
-        f_sbls_time_type => SBLS_time_type, &
-        f_sbls_inform_type => SBLS_inform_type, &
-        f_sbls_full_data_type => SBLS_full_data_type, &
-        f_sbls_initialize => SBLS_initialize, &
-        f_sbls_read_specfile => SBLS_read_specfile, &
-        f_sbls_import => SBLS_import, &
-        f_sbls_reset_control => SBLS_reset_control, &
-        f_sbls_factorize_matrix => SBLS_factorize_matrix, &
-        f_sbls_solve_system => SBLS_solve_system, &
-        f_sbls_information => SBLS_information, &
-        f_sbls_terminate => SBLS_terminate
+        f_sbls_control_type     => SBLS_control_type,                          &
+        f_sbls_time_type        => SBLS_time_type,                             &
+        f_sbls_inform_type      => SBLS_inform_type,                           &
+        f_sbls_full_data_type   => SBLS_full_data_type,                        &
+        f_sbls_initialize       => SBLS_initialize,                            &
+        f_sbls_read_specfile    => SBLS_read_specfile,                         &
+        f_sbls_import           => SBLS_import,                                &
+        f_sbls_reset_control    => SBLS_reset_control,                         &
+        f_sbls_factorize_matrix => SBLS_factorize_matrix,                      &
+        f_sbls_solve_system     => SBLS_solve_system,                          &
+        f_sbls_information      => SBLS_information,                           &
+        f_sbls_terminate        => SBLS_terminate
 
-!!$    USE GALAHAD_SLS_double_ciface, ONLY: &
-!!$        sls_inform_type, &
-!!$        sls_control_type, &
-!!$        copy_sls_inform_in => copy_inform_in, &
-!!$        copy_sls_inform_out => copy_inform_out, &
-!!$        copy_sls_control_in => copy_control_in, &
-!!$        copy_sls_control_out => copy_control_out
-!!$
+    USE GALAHAD_SLS_double_ciface, ONLY: &
+        sls_inform_type, &
+        sls_control_type, &
+        copy_sls_inform_in => copy_inform_in, &
+        copy_sls_inform_out => copy_inform_out, &
+        copy_sls_control_in => copy_control_in, &
+        copy_sls_control_out => copy_control_out
+
 !!$    USE GALAHAD_ULS_double_ciface, ONLY: &
 !!$        uls_inform_type, &
 !!$        uls_control_type, &
@@ -97,7 +97,7 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: definite_linear_solver
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: unsymmetric_linear_solver
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
-!      TYPE ( sls_control_type ) :: sls_control
+      TYPE ( sls_control_type ) :: sls_control
 !      TYPE ( uls_control_type ) :: uls_control
     END TYPE sbls_control_type
 
@@ -126,8 +126,8 @@
       INTEGER ( KIND = C_INT ) :: uls_factorize_status
       INTEGER ( KIND = C_INT ) :: uls_solve_status
       INTEGER ( KIND = C_INT ) :: sort_status
-      INTEGER ( KIND = C_INT ) :: factorization_integer
-      INTEGER ( KIND = C_INT ) :: factorization_real
+      INTEGER ( KIND = C_LONG ) :: factorization_integer
+      INTEGER ( KIND = C_LONG ) :: factorization_real
       INTEGER ( KIND = C_INT ) :: preconditioner
       INTEGER ( KIND = C_INT ) :: factorization
       INTEGER ( KIND = C_INT ) :: d_plus
@@ -138,7 +138,7 @@
       REAL ( KIND = wp ) :: norm_residual
       LOGICAL ( KIND = C_BOOL ) :: alternative
       TYPE ( sbls_time_type ) :: time
-!      TYPE ( sls_inform_type ) :: sls_inform
+      TYPE ( sls_inform_type ) :: sls_inform
 !      TYPE ( uls_inform_type ) :: uls_inform
     END TYPE sbls_inform_type
 
@@ -153,7 +153,7 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( sbls_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_sbls_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
     INTEGER :: i
     
     ! C or Fortran sparse matrix indexing
@@ -200,26 +200,26 @@
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
 
     ! Derived types
-!   CALL copy_sls_control_in( ccontrol%sls_control, fcontrol%sls_control )
+    CALL copy_sls_control_in( ccontrol%sls_control, fcontrol%sls_control )
 !   CALL copy_uls_control_in( ccontrol%uls_control, fcontrol%uls_control )
 
     ! Strings
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%symmetric_linear_solver )
       IF ( ccontrol%symmetric_linear_solver( i ) == C_NULL_CHAR ) EXIT
       fcontrol%symmetric_linear_solver( i : i )                                &
         = ccontrol%symmetric_linear_solver( i )
     END DO
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%definite_linear_solver )
       IF ( ccontrol%definite_linear_solver( i ) == C_NULL_CHAR ) EXIT
       fcontrol%definite_linear_solver( i : i )                                 &
         = ccontrol%definite_linear_solver( i )
     END DO
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%unsymmetric_linear_solver )
       IF ( ccontrol%unsymmetric_linear_solver( i ) == C_NULL_CHAR ) EXIT
       fcontrol%unsymmetric_linear_solver( i : i )                              &
         = ccontrol%unsymmetric_linear_solver( i )
     END DO
-    DO i = 1, 31
+    DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
       fcontrol%prefix( i : i ) = ccontrol%prefix( i )
     END DO
@@ -233,7 +233,7 @@
     TYPE ( f_sbls_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( sbls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i
+    INTEGER :: i, l
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -279,32 +279,33 @@
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
 
     ! Derived types
-!    CALL copy_sls_control_out( fcontrol%sls_control, ccontrol%sls_control )
+    CALL copy_sls_control_out( fcontrol%sls_control, ccontrol%sls_control )
 !    CALL copy_uls_control_out( fcontrol%uls_control, ccontrol%uls_control )
 
     ! Strings
-    DO i = 1, LEN( fcontrol%symmetric_linear_solver )
+    l = LEN( fcontrol%symmetric_linear_solver )
+    DO i = 1, l
       ccontrol%symmetric_linear_solver( i )                                    &
         = fcontrol%symmetric_linear_solver( i : i )
     END DO
-    ccontrol%symmetric_linear_solver(                                          &
-      LEN( fcontrol%symmetric_linear_solver ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%definite_linear_solver )
+    ccontrol%symmetric_linear_solver( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%definite_linear_solver )
+    DO i = 1, l
       ccontrol%definite_linear_solver( i )                                     &
         = fcontrol%definite_linear_solver( i : i )
     END DO
-    ccontrol%definite_linear_solver(                                           &
-      LEN( fcontrol%definite_linear_solver ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%unsymmetric_linear_solver )
+    ccontrol%definite_linear_solver( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%unsymmetric_linear_solver )
+    DO i = 1, l
       ccontrol%unsymmetric_linear_solver( i )                                  &
         = fcontrol%unsymmetric_linear_solver( i : i )
     END DO
-    ccontrol%unsymmetric_linear_solver(                                        &
-      LEN( fcontrol%unsymmetric_linear_solver ) + 1 ) = C_NULL_CHAR
-    DO i = 1, LEN( fcontrol%prefix )
+    ccontrol%unsymmetric_linear_solver( l + 1 ) = C_NULL_CHAR
+    l = LEN( fcontrol%prefix )
+    DO i = 1, l
       ccontrol%prefix( i ) = fcontrol%prefix( i : i )
     END DO
-    ccontrol%prefix( LEN( fcontrol%prefix ) + 1 ) = C_NULL_CHAR
+    ccontrol%prefix( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_control_out
@@ -385,11 +386,11 @@
 
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
-!   CALL copy_sls_inform_in( cinform%sls_inform, finform%sls_inform )
+    CALL copy_sls_inform_in( cinform%sls_inform, finform%sls_inform )
 !   CALL copy_uls_inform_in( cinform%uls_inform, finform%uls_inform )
 
     ! Strings
-    DO i = 1, 81
+    DO i = 1, LEN( finform%bad_alloc )
       IF ( cinform%bad_alloc( i ) == C_NULL_CHAR ) EXIT
       finform%bad_alloc( i : i ) = cinform%bad_alloc( i )
     END DO
@@ -402,7 +403,7 @@
     SUBROUTINE copy_inform_out( finform, cinform ) 
     TYPE ( f_sbls_inform_type ), INTENT( IN ) :: finform
     TYPE ( sbls_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i
+    INTEGER :: i, l
 
     ! Integers
     cinform%status = finform%status
@@ -435,14 +436,15 @@
 
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
-!   CALL copy_sls_inform_out( finform%sls_inform, cinform%sls_inform )
+    CALL copy_sls_inform_out( finform%sls_inform, cinform%sls_inform )
 !   CALL copy_uls_inform_out( finform%uls_inform, cinform%uls_inform )
 
     ! Strings
-    DO i = 1, LEN( finform%bad_alloc )
+    l = LEN( finform%bad_alloc )
+    DO i = 1, l
       cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
     END DO
-    cinform%bad_alloc( LEN( finform%bad_alloc ) + 1 ) = C_NULL_CHAR
+    cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_inform_out
@@ -453,15 +455,15 @@
 !  C interface to fortran sbls_initialize
 !  -------------------------------------
 
-  SUBROUTINE sbls_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE sbls_initialize( cdata, ccontrol, status ) BIND( C ) 
   USE GALAHAD_SBLS_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( sbls_control_type ), INTENT( OUT ) :: ccontrol
-  TYPE ( sbls_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
@@ -477,6 +479,7 @@
 !  initialize required fortran types
 
   CALL f_sbls_initialize( fdata, fcontrol, finform )
+  status = finform%status
 
 !  C sparse matrix indexing by default
 
@@ -487,9 +490,6 @@
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
 
-!  copy inform out
-
-  CALL copy_inform_out( finform, cinform )
   RETURN
 
   END SUBROUTINE sbls_initialize
@@ -719,14 +719,14 @@
 !  C interface to fortran sbls_factorize_matrix
 !  --------------------------------------------
 
-  SUBROUTINE sbls_factorize_matrix( cdata, status, n, m, hne, hval,            &
+  SUBROUTINE sbls_factorize_matrix( cdata, status, n, hne, hval,               &
                                     ane, aval, cne, cval, d ) BIND( C )
   USE GALAHAD_SBLS_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane, hne, cne
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, ane, hne, cne
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval

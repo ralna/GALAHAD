@@ -27,51 +27,6 @@ extern "C" {
 #include "galahad_precision.h"
 
 /* 
- * time derived type as a C struct
- */
-struct ugo_time_type {
-
-    // the total CPU time spent in the package
-    real_sp_ total;
-
-    // the total clock time spent in the package
-    real_wp_ clock_total;
-};
-
-/* 
- * inform derived type as a C struct
- */
-struct ugo_inform_type {
-
-    //  return status. See UGO_solve for details
-    int status;
-
-    // evaluation status for reverse communication interface
-    int eval_status;
-
-    // the status of the last attempted allocation/deallocation
-    int alloc_status ;
-
-    // the name of the array for which an allocation/deallocation error ocurred
-    char bad_alloc[81];
-
-    // the total number of iterations performed
-    int iter;
-
-    // the total number of evaluations of the objection function
-    int f_eval;
-
-    // the total number of evaluations of the gradient of the objection function
-    int g_eval;
-
-    // the total number of evaluations of the Hessian of the objection function
-    int h_eval;
-
-    // timings (see above)
-    struct ugo_time_type time;
-};
-
-/* 
  * control derived type as a C struct
  */
 struct ugo_control_type { 
@@ -173,38 +128,84 @@ struct ugo_control_type {
     char prefix[31]; 
 };
 
-/*  *-*-*-*-*-*-*-*-*-*-   U G O _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*
- *
- * Provide default values for UGO controls
+/* 
+ * time derived type as a C struct
  */
+struct ugo_time_type {
+
+    // the total CPU time spent in the package
+    real_sp_ total;
+
+    // the total clock time spent in the package
+    real_wp_ clock_total;
+};
+
+/* 
+ * inform derived type as a C struct
+ */
+struct ugo_inform_type {
+
+    //  return status. See UGO_solve for details
+    int status;
+
+    // evaluation status for reverse communication interface
+    int eval_status;
+
+    // the status of the last attempted allocation/deallocation
+    int alloc_status ;
+
+    // the name of the array for which an allocation/deallocation error ocurred
+    char bad_alloc[81];
+
+    // the total number of iterations performed
+    int iter;
+
+    // the total number of evaluations of the objection function
+    int f_eval;
+
+    // the total number of evaluations of the gradient of the objection function
+    int g_eval;
+
+    // the total number of evaluations of the Hessian of the objection function
+    int h_eval;
+
+    // timings (see above)
+    struct ugo_time_type time;
+};
+
+//  *-*-*-*-*-*-*-*-*-*-   U G O _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*
 
 void ugo_initialize( void **data, 
                      struct ugo_control_type *control, 
-                     struct ugo_inform_type *inform );
+                     int *status );
 
-/*  ------------------------  A R G U M E N T S  ------------------------------
- *
- *   data     private internal data
- *   control  a struct containing default control information (see above)
- *   inform   a struct containing output information (see above)
- *
- *  ---------------------------------------------------------------------------
- */
+/*!<
+ Set default control values and initialize private data
 
-/*
- * Read the content of a specification file, and perform the assignment of
- * values associated with given keywords to the corresponding control parameters
- */ 
+ @param[in,out] data  holds private internal data
+
+ @param[out] control is a struct containing control information 
+              (see ugo_control_type)
+
+ @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The import was succesful.
+*/
+
+// *-*-*-*-*-*-*-*-*-    U G O  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
+
 void ugo_read_specfile( struct ugo_control_type *control, 
                         const char specfile[] );
 
-/*  ------------------------  A R G U M E N T S  ------------------------------
- *
- *   control  a struct containing control information (see above)
- *   specfile a character string containing the name of the specfile
- *
- *  ---------------------------------------------------------------------------
- */
+/*!<
+  Read the content of a specification file, and assign values associated 
+  with given keywords to the corresponding control parameters
+
+  @param[in,out] control is a struct containing control information 
+              (see ugo_control_type)
+  @param[in]  specfile is a character string containing the name of
+              the specification file
+*/
 
 /*  *-*-*-*-*-*-*-*-*-*-*-*-   U G O _ I M P O R T    -*-*-*-*-*-*-*-*-*-*-*-*
  *
@@ -254,7 +255,7 @@ void ugo_import( struct ugo_control_type *control,
 
 void ugo_reset_control( struct ugo_control_type *control,
                         void **data,
-                        int *status, );
+                        int *status );
 
 /*  ------------------------  A R G U M E N T S  ------------------------------
  *

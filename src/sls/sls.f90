@@ -9020,7 +9020,9 @@
      INTEGER, INTENT( IN ) :: n, matrix_ne
      INTEGER, INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: matrix_type
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: matrix_row, matrix_col, matrix_ptr
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: matrix_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: matrix_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: matrix_ptr
 
 !  copy control to data
 
