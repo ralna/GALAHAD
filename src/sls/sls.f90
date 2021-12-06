@@ -348,7 +348,6 @@
                                    'work_indefinite_ooc' // REPEAT( ' ', 381 )
        CHARACTER ( LEN = 500 ) :: out_of_core_restart_file =                   &
                                    'restart_ooc' // REPEAT( ' ', 489 )
-
 !  all output lines will be prefixed by
 !    prefix(2:LEN(TRIM(%prefix))-1)
 !  where prefix contains the required string enclosed in quotes,
@@ -1496,7 +1495,7 @@
      iparm( 11 ) = 0 ! disable scaling (1 = enable)
      iparm( 12 ) = 0 ! usual solve (2 = transposed system)
      iparm( 13 ) = 0 ! no maximum weighted algorithm (1 = on)
-     iparm( 14 ) = 0 ! (OUTPUT) number of perturbed pivots 
+     iparm( 14 ) = 0 ! (OUTPUT) number of perturbed pivots
      iparm( 15 ) = 0 ! (OUTPUT) peak memory symbolic factorization
      iparm( 16 ) = 0 ! (OUTPUT) permenent memory symbolic factorization
      iparm( 17 ) = 0 ! (OUTPUT) peak memory numerical factorization
@@ -3249,7 +3248,7 @@
          END IF
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
 
-         data%mkl_pardiso_PT( 1 : 64 )%DUMMY =  0 
+         data%mkl_pardiso_PT( 1 : 64 )%DUMMY =  0
 
          CALL SLS_copy_control_to_mkl_pardiso( control, data%mkl_pardiso_IPARM )
          IF ( control%ordering > 0 .OR. PRESENT( PERM ) )                      &
@@ -6562,7 +6561,7 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Solve a system involving individual factors. The matrix A is presumed
-!  to have been factorized as A = L D U (with U = L^T).  The character 
+!  to have been factorized as A = L D U (with U = L^T).  The character
 !  "part" is one of 'L', 'D', 'U' or 'S', where 'S' refers to L * SQRT(D)
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -6999,7 +6998,7 @@
 
      CASE ( 'mkl_pardiso' )
        IF ( part == 'L' ) THEN
-         phase = 331         
+         phase = 331
        ELSE IF ( part == 'D' ) THEN
          phase = 332
        ELSE IF ( part == 'U' ) THEN
@@ -8985,13 +8984,13 @@
 !  n is a scalar variable of type default integer, that holds the number of
 !   rows (and columns) of the matrix
 !
-!  matrix_type is a character string that specifies the storage scheme used 
+!  matrix_type is a character string that specifies the storage scheme used
 !   for A. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
 !   'diagonal' 'scaled_identity', 'identity', 'zero' or 'none';
 !   lower or upper case variants are allowed.
 !
-!  matrix_ne is a scalar variable of type default integer, that holds the 
-!   number of entries in the  lower triangular part of A in the sparse 
+!  matrix_ne is a scalar variable of type default integer, that holds the
+!   number of entries in the  lower triangular part of A in the sparse
 !   co-ordinate storage scheme. It need not be set for any of the other schemes.
 !
 !  matrix_row is a rank-one array of type default integer, that holds
@@ -9225,8 +9224,8 @@
 
      SUBROUTINE SLS_partial_solve( part, data, status, SOL )
 
-!  Given the factorization A = L D U (with U = L^T), solve one of the 
-!  linear system M x = b, where M is L, D, U or S = L * SQRT(D), and 
+!  Given the factorization A = L D U (with U = L^T), solve one of the
+!  linear system M x = b, where M is L, D, U or S = L * SQRT(D), and
 !  SOL holds the right-hand side b on input, and the solution x on output.
 !  See SLS_part_solve for a description of the required arguments
 

@@ -281,7 +281,7 @@
 !  where prefix contains the required string enclosed in quotes,
 !  e.g. "string" or 'string'
 
-        CHARACTER ( LEN = 30 ) :: prefix = '""                            '
+        CHARACTER ( LEN = 30 ) :: prefix = '""' // REPEAT( ' ', 28 )
 
 !  control parameters for SLS
 
@@ -569,8 +569,8 @@
 
       control%stop_absolute = epsmch ** 0.33
       control%stop_relative = epsmch ** 0.33
-      control%SLS_control%prefix = '" - SLS:"                    '
-      control%ULS_control%prefix = '" - ULS:"                    '
+      control%SLS_control%prefix = '" - SLS:"                     '
+      control%ULS_control%prefix = '" - ULS:"                     '
       data%last_preconditioner = no_last
       data%last_factorization = no_last
       data%efactors%len_sol_workspace = - 1

@@ -1,12 +1,12 @@
 ** CURRENT STATUS OF PACKAGES 2021-06-05 **
 
-CONVERSION TO NEW MAKEMASTERS & C INTERFACES   
+CONVERSION TO NEW MAKEMASTERS & C INTERFACES
 --------------------------------------------
 
 M = makemaster done, C = C interface planned, C+ = C interface done
 
 ampl
-arc                       M C
+arc                       M C+
 basic                     M
 blls                      M C
 bqp                       M C
@@ -51,7 +51,7 @@ lms                       M
 lmt                       M
 lpa                       M C
 lpb                       M C
-lpqp                      M 
+lpqp                      M
 lsqp                      M C
 lsrt                      M C
 lstr                      M C
@@ -77,14 +77,14 @@ rand                      M
 roots                     M
 rpd                       M
 rqs                       M C
-sbls                      M C
+sbls                      M C+ stack smashing detected
 scale                     M
 scaling                   M
 scu                       M
 sec                       M
 sha                       M
 sils                      M
-sls                       M C
+sls                       M C+
 smt                       M
 sort                      M
 space                     M
@@ -95,22 +95,23 @@ string                    M
 symbols                   M
 tools                     M
 trans                     M
+trb                       M C+
 trs                       M C
-tru                       M C
+tru                       M C+
 uls                       M C
 userdata                  M
 warm                      M
 wcp                       M C
 zd11                      M
 
-forthcoming: 
+forthcoming:
 
 barc                      M C
-bgo                       M C
+bgo                       M C+
+dgo                       M C+ (bug with reverse hashing ifort)
 lhs                       M C+
 trace                     M (but buggy)
 tral                      M (broken)
-trb                       M C+
 ugo                       M C+
 
 oblivion:
@@ -142,7 +143,7 @@ Program terminated by fatal error
 space.f90, line 3397: Error occurred in GALAHAD_SPACE_DOUBLE:SPACE_DEALLOC_REAL_POINTER
 bgo.f90, line 2450: Called by GALAHAD_BGO_DOUBLE:BGO_TERMINATE
 bgos.f90, line 44: Called by GALAHAD_BGO_EXAMPLE
- data%P associated 
+ data%P associated
   pass       #d             f                g          #f      #g        time
      1        0 -7.5896562424494007E-01 6.2412E-12       6       6        0.00
  BGO_solve exit status =      5

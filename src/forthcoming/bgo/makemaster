@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD BGO package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-28
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -26,10 +26,11 @@ DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
                make_psls make_sha make_lhs make_ugo \
                make_sha make_cauchy make_cg make_trb
 
-#  auxiliary packages that the C interface to the current package depends 
+#  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)
 
-CDEPENDENCIES = make_ciface_lhs make_ciface_trb make_ciface_ugo 
+CDEPENDENCIES = make_ciface_common make_ciface_lhs make_ciface_trb \
+                make_ciface_ugo
 
 #  other packages that depend on package
 
@@ -52,11 +53,11 @@ CUTEST_EXAMPLE = HART6.SIF
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -64,6 +65,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
-include $(GALAHAD)/src/makedefs/intermediaries
 
+include $(GALAHAD)/src/makedefs/intermediaries
