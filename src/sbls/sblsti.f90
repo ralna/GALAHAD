@@ -3,19 +3,18 @@
    USE GALAHAD_SBLS_double                            ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   TYPE ( SMT_type ) :: H, A, C
    TYPE ( SBLS_full_data_type ) :: data
    TYPE ( SBLS_control_type ) :: control
    TYPE ( SBLS_inform_type ) :: inform
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
+   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_val
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense, H_zero
+   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_row, C_col, C_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_val, C_dense, C_diag
+   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_val
    INTEGER :: n, m, h_ne, a_ne, c_ne
-   INTEGER :: data_storage_type, status, smt_stat
+   INTEGER :: data_storage_type, status
    CHARACTER ( LEN = 15 ), DIMENSION( 7 ) :: scheme =                          &
      (/ 'coordinate     ', 'sparse-by-rows ', 'dense          ',               &
         'diagonal       ', 'scaled-identity', 'identity       ',               &

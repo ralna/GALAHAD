@@ -18,6 +18,14 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
+    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+  } }
+});
+</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -124,7 +132,7 @@ $(function() {
 <div class="line">    <span class="keywordflow">for</span>( <span class="keywordtype">int</span> d=1; d &lt;= 7; d++){</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Initialize CQP</span></div>
-<div class="line">        <a name="a3"></a><a class="code" href="cqp_8h.html#a44f40145b22d57b6675cc664c85f19bf">cqp_initialize</a>( &amp;data, &amp;control, &amp;inform );</div>
+<div class="line">        <a name="a3"></a><a class="code" href="cqp_8h.html#a782387ad9cccc5f2e2da9df9016fb923">cqp_initialize</a>( &amp;data, &amp;control, &amp;<a class="code" href="cqp_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a> );</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Set user-defined control options</span></div>
 <div class="line">        control.<a name="a4"></a><a class="code" href="cqp_8h.html#a6e8421b34d6b85dcb33c1dd0179efbb3">f_indexing</a> = <span class="keyword">false</span>; <span class="comment">// C sparse matrix indexing</span></div>
@@ -156,14 +164,16 @@ $(function() {
 <div class="line">                <span class="keywordflow">break</span>;</div>
 <div class="line">            <span class="keywordflow">case</span> 3: <span class="comment">// dense</span></div>
 <div class="line">                st = <span class="charliteral">&#39;D&#39;</span>;</div>
+<div class="line">                <span class="keywordtype">int</span> H_dense_ne = 6; <span class="comment">// number of elements of H</span></div>
+<div class="line">                <span class="keywordtype">int</span> A_dense_ne = 6; <span class="comment">// number of elements of A</span></div>
 <div class="line">                <span class="keywordtype">double</span> H_dense[] = {1.0, 0.0, 1.0, 0.0, 0.0, 1.0};</div>
 <div class="line">                <span class="keywordtype">double</span> A_dense[] = {2.0, 1.0, 0.0, 0.0, 1.0, 1.0};</div>
 <div class="line">                <a class="code" href="cqp_8h.html#a6a2be17b6f871df80bbac93940b83af3">cqp_import</a>( &amp;control, &amp;data, &amp;<a class="code" href="cqp_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a>, n, m,</div>
 <div class="line">                            <span class="stringliteral">&quot;dense&quot;</span>, H_ne, NULL, NULL, NULL,</div>
 <div class="line">                            <span class="stringliteral">&quot;dense&quot;</span>, A_ne, NULL, NULL, NULL );</div>
-<div class="line">                <a class="code" href="cqp_8h.html#ac2d720ee7b719bf63c3fa208d37f1bc1">cqp_solve_qp</a>( &amp;data, &amp;<a class="code" href="cqp_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a>, n, m, H_ne, H_dense, g, f, </div>
-<div class="line">                              A_ne, A_dense, c_l, c_u, x_l, x_u, x, c, y, z, </div>
-<div class="line">                              x_stat, c_stat );</div>
+<div class="line">                <a class="code" href="cqp_8h.html#ac2d720ee7b719bf63c3fa208d37f1bc1">cqp_solve_qp</a>( &amp;data, &amp;<a class="code" href="cqp_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a>, n, m, H_dense_ne, H_dense, g, f, </div>
+<div class="line">                              A_dense_ne, A_dense, c_l, c_u, x_l, x_u, </div>
+<div class="line">                              x, c, y, z, x_stat, c_stat );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
 <div class="line">            <span class="keywordflow">case</span> 4: <span class="comment">// diagonal</span></div>
 <div class="line">                st = <span class="charliteral">&#39;L&#39;</span>;</div>
@@ -229,7 +239,7 @@ $(function() {
 <div class="line">    <span class="keywordflow">for</span>( <span class="keywordtype">int</span> d=1; d &lt;= 1; d++){</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Initialize CQP</span></div>
-<div class="line">        <a class="code" href="cqp_8h.html#a44f40145b22d57b6675cc664c85f19bf">cqp_initialize</a>( &amp;data, &amp;control, &amp;inform );</div>
+<div class="line">        <a class="code" href="cqp_8h.html#a782387ad9cccc5f2e2da9df9016fb923">cqp_initialize</a>( &amp;data, &amp;control, &amp;<a class="code" href="cqp_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a> );</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Set user-defined control options</span></div>
 <div class="line">        control.<a class="code" href="cqp_8h.html#a6e8421b34d6b85dcb33c1dd0179efbb3">f_indexing</a> = <span class="keyword">false</span>; <span class="comment">// C sparse matrix indexing</span></div>
@@ -284,7 +294,7 @@ $(function() {
 <div class="ttc" id="acqp_8h_html"><div class="ttname"><a href="cqp_8h.html">cqp.h</a></div></div>
 <div class="ttc" id="acqp_8h_html_a0cbcb28977ac1f47ab67d27e4216626d"><div class="ttname"><a href="cqp_8h.html#a0cbcb28977ac1f47ab67d27e4216626d">cqp_inform_type::obj</a></div><div class="ttdeci">real_wp_ obj</div><div class="ttdoc">the value of the objective function at the best estimate of the solution determined by CQP_solve</div><div class="ttdef"><b>Definition:</b> cqp.h:768</div></div>
 <div class="ttc" id="acqp_8h_html_a84e12e9e546f51762d305333dce68e2b"><div class="ttname"><a href="cqp_8h.html#a84e12e9e546f51762d305333dce68e2b">cqp_terminate</a></div><div class="ttdeci">void cqp_terminate(void **data, struct cqp_control_type *control, struct cqp_inform_type *inform)</div></div>
-<div class="ttc" id="acqp_8h_html_a44f40145b22d57b6675cc664c85f19bf"><div class="ttname"><a href="cqp_8h.html#a44f40145b22d57b6675cc664c85f19bf">cqp_initialize</a></div><div class="ttdeci">void cqp_initialize(void **data, struct cqp_control_type *control, struct cqp_inform_type *inform)</div></div>
+<div class="ttc" id="acqp_8h_html_a782387ad9cccc5f2e2da9df9016fb923"><div class="ttname"><a href="cqp_8h.html#a782387ad9cccc5f2e2da9df9016fb923">cqp_initialize</a></div><div class="ttdeci">void cqp_initialize(void **data, struct cqp_control_type *control, int *status)</div></div>
 <div class="ttc" id="acqp_8h_html_ac2d720ee7b719bf63c3fa208d37f1bc1"><div class="ttname"><a href="cqp_8h.html#ac2d720ee7b719bf63c3fa208d37f1bc1">cqp_solve_qp</a></div><div class="ttdeci">void cqp_solve_qp(void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])</div></div>
 <div class="ttc" id="acqp_8h_html_aab6f168571c2073e01e240524b8a3da0"><div class="ttname"><a href="cqp_8h.html#aab6f168571c2073e01e240524b8a3da0">cqp_inform_type::iter</a></div><div class="ttdeci">int iter</div><div class="ttdoc">the total number of iterations required</div><div class="ttdef"><b>Definition:</b> cqp.h:739</div></div>
 <div class="ttc" id="acqp_8h_html_structcqp__inform__type"><div class="ttname"><a href="cqp_8h.html#structcqp__inform__type">cqp_inform_type</a></div><div class="ttdef"><b>Definition:</b> cqp.h:723</div></div>

@@ -87,7 +87,6 @@ $(function() {
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &quot;galahad_precision.h&quot;</code><br />
 <code>#include &quot;sls.h&quot;</code><br />
-<code>#include &quot;uls.h&quot;</code><br />
 </div>
 <p><a href="sbls_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -102,16 +101,16 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:acff800cfbe2a1e907413cdd4c2f257a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sbls_8h.html#acff800cfbe2a1e907413cdd4c2f257a0">sbls_initialize</a> (void **data, struct <a class="el" href="sbls_8h.html#structsbls__control__type">sbls_control_type</a> *control, struct <a class="el" href="sbls_8h.html#structsbls__inform__type">sbls_inform_type</a> *inform)</td></tr>
-<tr class="separator:acff800cfbe2a1e907413cdd4c2f257a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30b1a9463e4abd5cfa0150ffb30569a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sbls_8h.html#a30b1a9463e4abd5cfa0150ffb30569a9">sbls_initialize</a> (void **data, struct <a class="el" href="sbls_8h.html#structsbls__control__type">sbls_control_type</a> *control, int *status)</td></tr>
+<tr class="separator:a30b1a9463e4abd5cfa0150ffb30569a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abde2e76567a4c8721fe9c2386106e972"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sbls_8h.html#abde2e76567a4c8721fe9c2386106e972">sbls_read_specfile</a> (struct <a class="el" href="sbls_8h.html#structsbls__control__type">sbls_control_type</a> *control, const char specfile[])</td></tr>
 <tr class="separator:abde2e76567a4c8721fe9c2386106e972"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20cca573b9d2a1d63cea21beec0109dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sbls_8h.html#a20cca573b9d2a1d63cea21beec0109dc">sbls_import</a> (struct <a class="el" href="sbls_8h.html#structsbls__control__type">sbls_control_type</a> *control, void **data, int *status, int n, int m, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[], int C_ne, const int C_row[], const int C_col[], const int C_ptr[])</td></tr>
-<tr class="separator:a20cca573b9d2a1d63cea21beec0109dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7cbabccf52f8be7ae417e089eba4b82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sbls_8h.html#ab7cbabccf52f8be7ae417e089eba4b82">sbls_import</a> (struct <a class="el" href="sbls_8h.html#structsbls__control__type">sbls_control_type</a> *control, void **data, int *status, int n, int m, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[], const char C_type[], int C_ne, const int C_row[], const int C_col[], const int C_ptr[])</td></tr>
+<tr class="separator:ab7cbabccf52f8be7ae417e089eba4b82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afdfe80ab659c2936d23802b6a6103eb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sbls_8h.html#afdfe80ab659c2936d23802b6a6103eb8">sbls_reset_control</a> (struct <a class="el" href="sbls_8h.html#structsbls__control__type">sbls_control_type</a> *control, void **data, int *status)</td></tr>
 <tr class="separator:afdfe80ab659c2936d23802b6a6103eb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc4e94e4b4358d6c358d080182454f96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sbls_8h.html#acc4e94e4b4358d6c358d080182454f96">sbls_factorize_matrix</a> (void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], int a_ne, const real_wp_ A_val[], int c_ne, const real_wp_ C_val[], const real_wp_ D[])</td></tr>
-<tr class="separator:acc4e94e4b4358d6c358d080182454f96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77799da1282c3567b56ae8db42b75f65"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sbls_8h.html#a77799da1282c3567b56ae8db42b75f65">sbls_factorize_matrix</a> (void **data, int *status, int n, int h_ne, const real_wp_ H_val[], int a_ne, const real_wp_ A_val[], int c_ne, const real_wp_ C_val[], const real_wp_ D[])</td></tr>
+<tr class="separator:a77799da1282c3567b56ae8db42b75f65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c3ae7b15fc1c43771d395540c37b9fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sbls_8h.html#a2c3ae7b15fc1c43771d395540c37b9fa">sbls_solve_system</a> (void **data, int *status, int n, int m, real_wp_ sol[])</td></tr>
 <tr class="separator:a2c3ae7b15fc1c43771d395540c37b9fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f93f5c87ae0088ceb72c4f7e73c9418"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sbls_8h.html#a9f93f5c87ae0088ceb72c4f7e73c9418">sbls_information</a> (void **data, struct <a class="el" href="sbls_8h.html#structsbls__inform__type">sbls_inform_type</a> *inform, int *status)</td></tr>
@@ -132,6 +131,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>control derived type as a C struct </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="sblst_8c-example.html#_a0">sblst.c</a>, and <a class="el" href="sblstf_8c-example.html#_a0">sblstf.c</a>.</dd>
+</dl>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -394,12 +395,6 @@ all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix
 sls_control</td>
 <td class="fielddoc">
 control parameters for SLS </td></tr>
-<tr><td class="fieldtype">
-<a id="ac6782df4602dd9c04417e2554d72bb00"></a>struct uls_control_type</td>
-<td class="fieldname">
-uls_control</td>
-<td class="fielddoc">
-control parameters for ULS </td></tr>
 </table>
 
 </div>
@@ -482,6 +477,8 @@ clock time spent solving linear systems inolving \(K_G\) </td></tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>inform derived type as a C struct </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="sblst_8c-example.html#_a1">sblst.c</a>, and <a class="el" href="sblstf_8c-example.html#_a1">sblstf.c</a>.</dd>
+</dl>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -563,13 +560,13 @@ sort_status</td>
 <td class="fielddoc">
 the return status from the sorting routines </td></tr>
 <tr><td class="fieldtype">
-<a id="a1e477a1869f7d6863b2c42209fc98bae"></a>int</td>
+<a id="a99a94a4b8c49f956d61aecbaea70ee10"></a>long int</td>
 <td class="fieldname">
 factorization_integer</td>
 <td class="fielddoc">
 the total integer workspace required for the factorization </td></tr>
 <tr><td class="fieldtype">
-<a id="addcd710082286575000fc0c79bc63617"></a>int</td>
+<a id="af203cbeaa163d0f5f1a231187c20f491"></a>long int</td>
 <td class="fieldname">
 factorization_real</td>
 <td class="fielddoc">
@@ -640,19 +637,13 @@ timings (see above) </td></tr>
 sls_inform</td>
 <td class="fielddoc">
 inform parameters from the GALAHAD package SLS used </td></tr>
-<tr><td class="fieldtype">
-<a id="aa39eb0d7b50d4a858849f8ef652ae84c"></a>struct uls_inform_type</td>
-<td class="fieldname">
-uls_inform</td>
-<td class="fielddoc">
-inform parameters from the GALAHAD package ULS used </td></tr>
 </table>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="acff800cfbe2a1e907413cdd4c2f257a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acff800cfbe2a1e907413cdd4c2f257a0">&#9670;&nbsp;</a></span>sbls_initialize()</h2>
+<a id="a30b1a9463e4abd5cfa0150ffb30569a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30b1a9463e4abd5cfa0150ffb30569a9">&#9670;&nbsp;</a></span>sbls_initialize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -672,8 +663,8 @@ inform parameters from the GALAHAD package ULS used </td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">struct <a class="el" href="sbls_8h.html#structsbls__inform__type">sbls_inform_type</a> *&#160;</td>
-          <td class="paramname"><em>inform</em>&#160;</td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>status</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -685,11 +676,16 @@ inform parameters from the GALAHAD package ULS used </td></tr>
 <p>Set default control values and initialize private data</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">control</td><td>is a struct containing control information (see <a class="el" href="sbls_8h.html#structsbls__control__type">sbls_control_type</a>) </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="sbls_8h.html#structsbls__inform__type">sbls_inform_type</a>) </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">control</td><td>is a struct containing control information (see <a class="el" href="sbls_8h.html#structsbls__control__type">sbls_control_type</a>)</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently): <ul>
+<li>0. The import was succesful. </li>
+</ul>
+</td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="sblst_8c-example.html#a3">sblst.c</a>, and <a class="el" href="sblstf_8c-example.html#a3">sblstf.c</a>.</dd>
 </dl>
 
 </div>
@@ -730,8 +726,8 @@ inform parameters from the GALAHAD package ULS used </td></tr>
 
 </div>
 </div>
-<a id="a20cca573b9d2a1d63cea21beec0109dc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a20cca573b9d2a1d63cea21beec0109dc">&#9670;&nbsp;</a></span>sbls_import()</h2>
+<a id="ab7cbabccf52f8be7ae417e089eba4b82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7cbabccf52f8be7ae417e089eba4b82">&#9670;&nbsp;</a></span>sbls_import()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -829,6 +825,12 @@ inform parameters from the GALAHAD package ULS used </td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>C_type</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>C_ne</em>, </td>
         </tr>
@@ -889,6 +891,8 @@ inform parameters from the GALAHAD package ULS used </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="sblst_8c-example.html#a8">sblst.c</a>, and <a class="el" href="sblstf_8c-example.html#a8">sblstf.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -938,8 +942,8 @@ inform parameters from the GALAHAD package ULS used </td></tr>
 
 </div>
 </div>
-<a id="acc4e94e4b4358d6c358d080182454f96"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc4e94e4b4358d6c358d080182454f96">&#9670;&nbsp;</a></span>sbls_factorize_matrix()</h2>
+<a id="a77799da1282c3567b56ae8db42b75f65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77799da1282c3567b56ae8db42b75f65">&#9670;&nbsp;</a></span>sbls_factorize_matrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -961,12 +965,6 @@ inform parameters from the GALAHAD package ULS used </td></tr>
           <td></td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>m</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1024,9 +1022,8 @@ inform parameters from the GALAHAD package ULS used </td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
- On initial entry, status must be set to 1. <br  />
- Possible exit are: <ul>
+    <tr><td class="paramdir">[out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the exit status from the package. <br  />
+ Possible values are: <ul>
 <li>0. The factors were generated succesfully.</li>
 </ul>
 <ul>
@@ -1035,13 +1032,13 @@ inform parameters from the GALAHAD package ULS used </td></tr>
 <li>-3. The restrictions n &gt; 0 and m &gt; 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated.</li>
 </ul>
 <ul>
-<li>-9. An error was reported by SLS analyse. The return status from SLS analyse is given in informSLS_informstatus. See the documentation for the GALAHAD package SLS for further details.</li>
+<li>-9. An error was reported by SLS analyse. The return status from SLS analyse is given in inform.sls_inform.status. See the documentation for the GALAHAD package SLS for further details.</li>
 </ul>
 <ul>
-<li>-10. An error was reported by SLS_factorize. The return status from SLS factorize is given in informSLS_informstatus. See the documentation for the GALAHAD package SLS for further details.</li>
+<li>-10. An error was reported by SLS_factorize. The return status from SLS factorize is given in inform.sls_inform.status. See the documentation for the GALAHAD package SLS for further details.</li>
 </ul>
 <ul>
-<li>-13. An error was reported by ULS_factorize. The return status from ULS_factorize is given in informuls_factorize_status. See the documentation for the GALAHAD package ULS for further details.</li>
+<li>-13. An error was reported by ULS_factorize. The return status from ULS_factorize is given in inform.uls_factorize_status. See the documentation for the GALAHAD package ULS for further details.</li>
 </ul>
 <ul>
 <li>-15. The computed preconditioner \(K_G\) is singular and is thus unsuitable.</li>
@@ -1050,11 +1047,10 @@ inform parameters from the GALAHAD package ULS used </td></tr>
 <li>-20. The computed preconditioner \(K_G\) has the wrong inertia and is thus unsuitable.</li>
 </ul>
 <ul>
-<li>-24. An error was reported by the GALAHAD package SORT_reorder_by_rows. The return status from SORT_reorder_by_rows is given in informsort_status. See the documentation for the GALAHAD package SORT for further details.</li>
+<li>-24. An error was reported by the GALAHAD package SORT_reorder_by_rows. The return status from SORT_reorder_by_rows is given in inform.sort_status. See the documentation for the GALAHAD package SORT for further details.</li>
 </ul>
 </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>is a scalar variable of type int, that holds the number of rows in the symmetric matrix \(H\).</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">m</td><td>is a scalar variable of type int, that holds the number of rows in the symmetric matrix \(C\).</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">h_ne</td><td>is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix \(H\).</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">H_val</td><td>is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix \(H\) in any of the available storage schemes</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">a_ne</td><td>is a scalar variable of type int, that holds the number of entries in the unsymmetric matrix \(A\).</td></tr>
@@ -1064,6 +1060,8 @@ inform parameters from the GALAHAD package ULS used </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">D</td><td>is a one-dimensional array of size n and type double, that holds the values of the entries of the diagonal matrix \(D\) that is required if the user has specified control.preconditioner = 5. It need not be set otherwise. </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="sblst_8c-example.html#a9">sblst.c</a>, and <a class="el" href="sblstf_8c-example.html#a9">sblstf.c</a>.</dd>
 </dl>
 
 </div>
@@ -1117,9 +1115,8 @@ inform parameters from the GALAHAD package ULS used </td></tr>
  <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
- On initial entry, status must be set to 1. <br  />
- Possible exit are: <ul>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the exit status from the package. <br  />
+ Possible values are: <ul>
 <li>0. The required solution was obtained.</li>
 </ul>
 <ul>
@@ -1127,10 +1124,10 @@ inform parameters from the GALAHAD package ULS used </td></tr>
 <li>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively.</li>
 </ul>
 <ul>
-<li>-11. An error was reported by SLS_solve. The return status from SLS solve is given in informSLS_informstatus. See the documentation for the GALAHAD package SLS for further details.</li>
+<li>-11. An error was reported by SLS_solve. The return status from SLS solve is given in inform.sls_inform.status. See the documentation for the GALAHAD package SLS for further details.</li>
 </ul>
 <ul>
-<li>-14. An error was reported by ULS_solve. The return status from ULS_solve is given in informuls_solve_status. See the documentation for the GALAHAD package ULS for further details.</li>
+<li>-14. An error was reported by ULS_solve. The return status from ULS_solve is given in inform.uls_solve_status. See the documentation for the GALAHAD package ULS for further details.</li>
 </ul>
 </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>is a scalar variable of type int, that holds the number of entries in the vector \(a\).</td></tr>
@@ -1138,6 +1135,8 @@ inform parameters from the GALAHAD package ULS used </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">sol</td><td>is a one-dimensional array of size n + m and type double. on entry, its first n entries must hold the vector \(a\), and the following entries must hold the vector \(b\). On a successful exit, its first n entries contain the solution components \(x\), and the following entries contain the components \(y\). </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="sblst_8c-example.html#a10">sblst.c</a>, and <a class="el" href="sblstf_8c-example.html#a10">sblstf.c</a>.</dd>
 </dl>
 
 </div>
@@ -1185,6 +1184,8 @@ inform parameters from the GALAHAD package ULS used </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="sblst_8c-example.html#a11">sblst.c</a>, and <a class="el" href="sblstf_8c-example.html#a11">sblstf.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -1227,6 +1228,8 @@ inform parameters from the GALAHAD package ULS used </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="sbls_8h.html#structsbls__inform__type">sbls_inform_type</a>) </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="sblst_8c-example.html#a13">sblst.c</a>, and <a class="el" href="sblstf_8c-example.html#a13">sblstf.c</a>.</dd>
 </dl>
 
 </div>

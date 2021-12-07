@@ -700,7 +700,8 @@
 
 !  ignore Fortran userdata type (not interoperable)
 
-  TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+! TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_nlpt_userdata_type ) :: fuserdata
 
 !  associate data pointer
 
@@ -846,7 +847,8 @@
 
 !  ignore Fortran userdata type (not interoperable)
 
-  TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+! TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_nlpt_userdata_type ) :: fuserdata
 
 !  associate data pointer
 

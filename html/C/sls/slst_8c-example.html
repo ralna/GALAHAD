@@ -105,6 +105,7 @@ $(function() {
 <div class="line">    <span class="comment">// Set problem data</span></div>
 <div class="line">    <span class="keywordtype">int</span> n = 5; <span class="comment">// dimension of A</span></div>
 <div class="line">    <span class="keywordtype">int</span> ne = 7; <span class="comment">// number of elements of A</span></div>
+<div class="line">    <span class="keywordtype">int</span> dense_ne = 15; <span class="comment">// number of elements of A</span></div>
 <div class="line">    <span class="keywordtype">int</span> row[] = {0, 1, 1, 2, 2, 3, 4}; <span class="comment">// indices, NB lower triangle</span></div>
 <div class="line">    <span class="keywordtype">int</span> col[] = {0, 0, 4, 1, 2, 2, 4};</div>
 <div class="line">    <span class="keywordtype">int</span> ptr[] = {0, 1, 3, 5, 6, 7}; <span class="comment">// pointers to indices</span></div>
@@ -128,7 +129,7 @@ $(function() {
 <div class="line">    <span class="keywordflow">for</span>( <span class="keywordtype">int</span> d=1; d &lt;= 3; d++){</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Initialize SLS - use the sils solver</span></div>
-<div class="line">        <a name="a3"></a><a class="code" href="sls_8h.html#a81323ce6669f39797c9ab7770c0435ce">sls_initialize</a>( <span class="stringliteral">&quot;sils&quot;</span>, &amp;data, &amp;control, &amp;inform );</div>
+<div class="line">        <a name="a3"></a><a class="code" href="sls_8h.html#a1d8a0c73587ca6d7f5333d41b3e2472a">sls_initialize</a>( <span class="stringliteral">&quot;sils&quot;</span>, &amp;data, &amp;control, &amp;<a class="code" href="sls_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a> );</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Set user-defined control options</span></div>
 <div class="line">        control.f_indexing = <span class="keyword">false</span>; <span class="comment">// C sparse matrix indexing</span></div>
@@ -150,7 +151,7 @@ $(function() {
 <div class="line">                printf(<span class="stringliteral">&quot; dense          &quot;</span>);</div>
 <div class="line">                <a class="code" href="sls_8h.html#a380a7f50cc71c705d15a791acde946cf">sls_analyse_matrix</a>( &amp;control, &amp;data, &amp;<a class="code" href="sls_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a>, n,</div>
 <div class="line">                                    <span class="stringliteral">&quot;dense&quot;</span>, ne, NULL, NULL, NULL );</div>
-<div class="line">                <a class="code" href="sls_8h.html#ab6666f5eb7b0bdbbc9c9b52b7a2e2c41">sls_factorize_matrix</a>( &amp;data, &amp;<a class="code" href="sls_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a>, ne, dense );</div>
+<div class="line">                <a class="code" href="sls_8h.html#ab6666f5eb7b0bdbbc9c9b52b7a2e2c41">sls_factorize_matrix</a>( &amp;data, &amp;<a class="code" href="sls_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a>, dense_ne, dense );</div>
 <div class="line">                <span class="keywordflow">break</span>;</div>
 <div class="line">            }</div>
 <div class="line"> </div>
@@ -240,7 +241,7 @@ $(function() {
 <div class="ttc" id="asls_8h_html_a380a7f50cc71c705d15a791acde946cf"><div class="ttname"><a href="sls_8h.html#a380a7f50cc71c705d15a791acde946cf">sls_analyse_matrix</a></div><div class="ttdeci">void sls_analyse_matrix(struct sls_control_type *control, void **data, int *status, int n, const char type[], int ne, const int row[], const int col[], const int ptr[])</div></div>
 <div class="ttc" id="asls_8h_html_a1b3e7546b59b06160c51e16b6781bc0b"><div class="ttname"><a href="sls_8h.html#a1b3e7546b59b06160c51e16b6781bc0b">sls_solve_system</a></div><div class="ttdeci">void sls_solve_system(void **data, int *status, int n, real_wp_ sol[])</div></div>
 <div class="ttc" id="asls_8h_html_aacc344b8cdf0b1c27965f191382372e4"><div class="ttname"><a href="sls_8h.html#aacc344b8cdf0b1c27965f191382372e4">sls_reset_control</a></div><div class="ttdeci">void sls_reset_control(struct sls_control_type *control, void **data, int *status)</div></div>
-<div class="ttc" id="asls_8h_html_a81323ce6669f39797c9ab7770c0435ce"><div class="ttname"><a href="sls_8h.html#a81323ce6669f39797c9ab7770c0435ce">sls_initialize</a></div><div class="ttdeci">void sls_initialize(const char solver[], void **data, struct sls_control_type *control, struct sls_inform_type *inform)</div></div>
+<div class="ttc" id="asls_8h_html_a1d8a0c73587ca6d7f5333d41b3e2472a"><div class="ttname"><a href="sls_8h.html#a1d8a0c73587ca6d7f5333d41b3e2472a">sls_initialize</a></div><div class="ttdeci">void sls_initialize(const char solver[], void **data, struct sls_control_type *control, int *status)</div></div>
 <div class="ttc" id="asls_8h_html_ab6666f5eb7b0bdbbc9c9b52b7a2e2c41"><div class="ttname"><a href="sls_8h.html#ab6666f5eb7b0bdbbc9c9b52b7a2e2c41">sls_factorize_matrix</a></div><div class="ttdeci">void sls_factorize_matrix(void **data, int *status, int ne, const real_wp_ val[])</div></div>
 <div class="ttc" id="asls_8h_html_a6e27f49150e9a14580fb313cc2777e00"><div class="ttname"><a href="sls_8h.html#a6e27f49150e9a14580fb313cc2777e00">sls_inform_type::status</a></div><div class="ttdeci">int status</div><div class="ttdoc">reported return status: 0 success -1 allocation error -2 deallocation error -3 matrix data faulty (....</div><div class="ttdef"><b>Definition:</b> sls.h:652</div></div>
 <!-- start footer part -->

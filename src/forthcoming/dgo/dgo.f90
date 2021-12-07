@@ -401,6 +401,7 @@
        INTEGER :: eval_status, out, error, start_print, stop_print, print_gap
        INTEGER :: print_level, print_level_ugo
        INTEGER :: jumpto, pass, length, attempts, boxes
+       INTEGER :: best, index_l, index_u, index_l_best, index_u_best
 
        REAL :: time_start, time_record, time_now
        REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
@@ -1255,7 +1256,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, best, index_l, index_u, index_l_best, index_u_best
+     INTEGER :: i
      INTEGER, DIMENSION( 1 ) :: loc
      REAL ( KIND = wp ) :: b, d, m, phix, term1, term2, term3
      REAL ( KIND = wp ) :: lipschitz_estimate_max, x, y, yp, delta_upper
@@ -1410,7 +1411,7 @@
      IF ( data%control%alive_unit > 0 ) THEN
       INQUIRE( FILE = data%control%alive_file, EXIST = alive )
       IF ( .NOT. alive ) THEN
-         OPEN( data%control%alive_unit, FILE = data%control%alive_file,                  &
+         OPEN( data%control%alive_unit, FILE = data%control%alive_file,        &
                FORM = 'FORMATTED', STATUS = 'NEW' )
          REWIND data%control%alive_unit
          WRITE( data%control%alive_unit, "( ' GALAHAD rampages onwards ' )" )
@@ -1660,32 +1661,32 @@
        
 !  consider vertex x_l, and find its position, index_l, in the dictionary
 
-     CALL DGO_vertex( nlp%n, nlp%X_l, data%string, data%rstring, index_l,      &
+     CALL DGO_vertex( nlp%n, nlp%X_l, data%string, data%rstring, data%index_l, &
                       data%HASH_data, data%control%HASH_control,               &
                       inform%HASH_inform )
 
 !  the vertex is new
 
-     IF ( index_l > 0 ) THEN
+     IF ( data%index_l > 0 ) THEN
 
 !  initialize the vertex data
 
-       CALL DGO_allocate_vertex_arrays( nlp%n, data%VERTEX( index_l ),         &
+       CALL DGO_allocate_vertex_arrays( nlp%n, data%VERTEX( data%index_l ),    &
                                         data%control, inform )
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
 !  record the vertex
 
-       data%VERTEX( index_l )%X( : nlp%n ) = nlp%X_l( : nlp%n )
+       data%VERTEX( data%index_l )%X( : nlp%n ) = nlp%X_l( : nlp%n )
 
 !  compute the objective function value if explicitly available ...
 
        inform%f_eval = inform%f_eval + 1
        IF ( data%present_eval_f ) THEN
-         CALL eval_F( inform%status, data%VERTEX( index_l )%X, userdata,       &
-                      data%VERTEX( index_l )%f )
+         CALL eval_F( inform%status, data%VERTEX( data%index_l )%X, userdata,  &
+                      data%VERTEX( data%index_l )%f )
          IF ( inform%status /= GALAHAD_ok ) GO TO 910
-         data%f_upper = MIN( data%f_upper, data%VERTEX( index_l )%f )
+         data%f_upper = MIN( data%f_upper, data%VERTEX( data%index_l )%f )
        ELSE
          inform%status = 2
        END IF
@@ -1694,8 +1695,8 @@
 
        inform%g_eval = inform%g_eval + 1
        IF ( data%present_eval_g ) THEN
-         CALL eval_G( inform%status, data%VERTEX( index_l )%X, userdata,       &
-                      data%VERTEX( index_l )%G )
+         CALL eval_G( inform%status, data%VERTEX( data%index_l )%X, userdata,  &
+                      data%VERTEX( data%index_l )%G )
          IF ( inform%status /= GALAHAD_ok ) GO TO 910
        ELSE
          IF ( inform%status == 2 ) THEN
@@ -1711,7 +1712,7 @@
 !  if necessary, obtain f and/or g via reverse communication
 
      IF ( inform%status /= GALAHAD_ok ) THEN
-       nlp%X( : nlp%n ) = data%VERTEX( index_l )%X( : nlp%n )
+       nlp%X( : nlp%n ) = data%VERTEX( data%index_l )%X( : nlp%n )
        data%branch = 110 ; RETURN
      END IF
 
@@ -1721,19 +1722,19 @@
 
 !  the vertex is new, record any reverse-communication f and g
 
-     IF ( index_l > 0 ) THEN
+     IF ( data%index_l > 0 ) THEN
        IF ( .NOT. data%present_eval_f ) THEN
-         data%VERTEX( index_l )%f = nlp%f
-         data%f_upper = MIN( data%f_upper, data%VERTEX( index_l )%f )
+         data%VERTEX( data%index_l )%f = nlp%f
+         data%f_upper = MIN( data%f_upper, data%VERTEX( data%index_l )%f )
        END IF
        IF ( .NOT. data%present_eval_g ) THEN
-         data%VERTEX( index_l )%G( : nlp%n ) = nlp%G( : nlp%n )
+         data%VERTEX( data%index_l )%G( : nlp%n ) = nlp%G( : nlp%n )
        END IF
 
 !  this is an existing vertex, reuse the objective value and gradient
 
-     ELSE IF ( index_l < 0 ) THEN
-       index_l = - index_l
+     ELSE IF ( data%index_l < 0 ) THEN
+       data%index_l = - data%index_l
 
 !  the dictionary is full
 
@@ -1744,32 +1745,32 @@
 
 !  do the same to vertex x_u
 
-     CALL DGO_vertex( nlp%n, nlp%X_u, data%string, data%rstring, index_u,      &
+     CALL DGO_vertex( nlp%n, nlp%X_u, data%string, data%rstring, data%index_u, &
                       data%HASH_data, data%control%HASH_control,               &
                       inform%HASH_inform )
 
 !  the vertex is new
 
-     IF ( index_u > 0 ) THEN
+     IF ( data%index_u > 0 ) THEN
 
 !  initialize the vertex data
 
-       CALL DGO_allocate_vertex_arrays( nlp%n, data%VERTEX( index_u ),         &
+       CALL DGO_allocate_vertex_arrays( nlp%n, data%VERTEX( data%index_u ),    &
                                         data%control, inform )
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
 !  record the vertex
 
-       data%VERTEX( index_u )%X( : nlp%n ) = nlp%X_u( : nlp%n )
+       data%VERTEX( data%index_u )%X( : nlp%n ) = nlp%X_u( : nlp%n )
 
 !  compute the objective function value if explicitly available ...
 
        inform%f_eval = inform%f_eval + 1
        IF ( data%present_eval_f ) THEN
-         CALL eval_F( inform%status, data%VERTEX( index_u )%X, userdata,       &
-                      data%VERTEX( index_u )%f )
+         CALL eval_F( inform%status, data%VERTEX( data%index_u )%X, userdata,  &
+                      data%VERTEX( data%index_u )%f )
          IF ( inform%status /= GALAHAD_ok ) GO TO 910
-         data%f_upper = MIN( data%f_upper, data%VERTEX( index_u )%f )
+         data%f_upper = MIN( data%f_upper, data%VERTEX( data%index_u )%f )
        ELSE
          inform%status = 2
        END IF
@@ -1778,8 +1779,8 @@
 
        inform%g_eval = inform%g_eval + 1
        IF ( data%present_eval_g ) THEN
-         CALL eval_G( inform%status, data%VERTEX( index_u )%X, userdata,       &
-                      data%VERTEX( index_u )%G )
+         CALL eval_G( inform%status, data%VERTEX( data%index_u )%X, userdata,  &
+                      data%VERTEX( data%index_u )%G )
          IF ( inform%status /= GALAHAD_ok ) GO TO 910
        ELSE
          IF ( inform%status == 2 ) THEN
@@ -1795,7 +1796,7 @@
 !  if necessary, obtain f and/or g via reverse communication
 
      IF ( inform%status /= GALAHAD_ok ) THEN
-       nlp%X( : nlp%n ) = data%VERTEX( index_u )%X( : nlp%n )
+       nlp%X( : nlp%n ) = data%VERTEX( data%index_u )%X( : nlp%n )
        data%branch = 120 ; RETURN
      END IF
 
@@ -1805,19 +1806,19 @@
 
 !  the vertex is new, record any reverse-communication f and g
 
-     IF ( index_u > 0 ) THEN
+     IF ( data%index_u > 0 ) THEN
        IF ( .NOT. data%present_eval_f ) THEN
-         data%VERTEX( index_u )%f = nlp%f
-         data%f_upper = MIN( data%f_upper, data%VERTEX( index_u )%f )
+         data%VERTEX( data%index_u )%f = nlp%f
+         data%f_upper = MIN( data%f_upper, data%VERTEX( data%index_u )%f )
        END IF
        IF ( .NOT. data%present_eval_g ) THEN
-         data%VERTEX( index_u )%G( : nlp%n ) = nlp%G( : nlp%n )
+         data%VERTEX( data%index_u )%G( : nlp%n ) = nlp%G( : nlp%n )
        END IF
 
 !  this is an existing vertex, reuse the objective value and gradient
 
-     ELSE IF ( index_u < 0 ) THEN
-       index_u = - index_u
+     ELSE IF ( data%index_u < 0 ) THEN
+       data%index_u = - data%index_u
 
 !  the dictionary is full
 
@@ -1829,8 +1830,8 @@
 !  set up the first box with vertices x_l and x_u
 
      data%boxes = 1
-     CALL DGO_initialize_box( index_l, data%VERTEX( index_l ),                 &
-                              index_u, data%VERTEX( index_u ),                 &
+     CALL DGO_initialize_box( data%index_l, data%VERTEX( data%index_l ),       &
+                              data%index_u, data%VERTEX( data%index_u ),       &
                               data%BOX( data%boxes ) )
 
 !  record the initial diagonal
@@ -1877,19 +1878,23 @@
 !  start from the current box vertex with the smallest value
 
        loc = MINLOC( data%BOX( : data%boxes )%f_upper )
-       best = loc( 1 )
+       data%best = loc( 1 )
 
 !  return the best value of the objective found
 
-       data%f_upper = data%BOX( best )%f_upper
-       nlp%f = data%BOX( best )%f_l
+       data%f_upper = data%BOX( data%best )%f_upper
+       nlp%f = data%BOX( data%best )%f_l
        IF ( data%f_upper == nlp%f ) THEN
-         nlp%X( : nlp%n ) = data%VERTEX( data%BOX( best )%index_l )%X( : nlp%n )
-!        nlp%G( : nlp%n ) = data%VERTEX( data%BOX( best )%index_l )%G( : nlp%n )
+         nlp%X( : nlp%n )                                                      &
+           = data%VERTEX( data%BOX( data%best )%index_l )%X( : nlp%n )
+!        nlp%G( : nlp%n )                                                      &
+!         = data%VERTEX( data%BOX( data%best )%index_l )%G( : nlp%n )
        ELSE
-         nlp%f = data%BOX( best )%f_u
-         nlp%X( : nlp%n ) = data%VERTEX( data%BOX( best )%index_u )%X( : nlp%n )
-!        nlp%G( : nlp%n ) = data%VERTEX( data%BOX( best )%index_u )%G( : nlp%n )
+         nlp%f = data%BOX( data%best )%f_u
+         nlp%X( : nlp%n )                                                      &
+           = data%VERTEX( data%BOX( data%best )%index_u )%X( : nlp%n )
+!        nlp%G( : nlp%n )                                                      &
+!          = data%VERTEX( data%BOX( data%best )%index_u )%G( : nlp%n )
        END IF
 !      inform%norm_pg = TWO_NORM( nlp%X -                                      &
 !            TRB_projection( nlp%n, nlp%X - nlp%G, nlp%X_l, nlp%X_u ) )
@@ -2188,25 +2193,25 @@
 !  ============================================================================
 
        loc = MINLOC( data%BOX( : data%boxes )%f_lower )
-       best = loc( 1 )
+       data%best = loc( 1 )
 
 !  record the indices of the vertices x_l_best and x_l_best in this box
 
-       index_l_best = data%BOX( best )%index_l
-       index_u_best = data%BOX( best )%index_u 
+       data%index_l_best = data%BOX( data%best )%index_l
+       data%index_u_best = data%BOX( data%best )%index_u 
 
 !  describe the box if required
 
        IF ( data%printm ) THEN
          WRITE( data%out, "( /, A, ' iteration ', I0, ' best box ', I0 )" )    &
-           prefix, inform%iter, best
+           prefix, inform%iter, data%best
          WRITE( data%out, "( A, ' l =', /, ( 5ES16.8 ) )" )                    &
-           prefix, DATA%VERTEX( index_l_best )%X( : nlp%n )
+           prefix, DATA%VERTEX( data%index_l_best )%X( : nlp%n )
          WRITE( data%out, "( A, ' u =', /, ( 5ES16.8 ) )" )                    &
-           prefix, DATA%VERTEX( index_u_best )%X( : nlp%n )
+           prefix, DATA%VERTEX( data%index_u_best )%X( : nlp%n )
          WRITE( data%out, "( A, ' f_lower, f_upper, delta', 3ES16.8 )" )       &
-           prefix, data%BOX( best )%f_lower, data%BOX( best )%f_upper,         &
-           data%BOX( best )%delta
+           prefix, data%BOX( data%best )%f_lower,                              &
+           data%BOX( data%best )%f_upper, data%BOX( data%best )%delta
        END IF
 
 !  ============================================================================
@@ -2215,14 +2220,14 @@
 
 !  stop if the maximum box length is sufficiently small
 
-       inform%length_ratio = data%BOX( best )%delta / data%delta_0
+       inform%length_ratio = data%BOX( data%best )%delta / data%delta_0
        IF ( inform%length_ratio <= data%control%stop_length ) THEN
          inform%why_stop  = 'D' ; inform%status = GALAHAD_ok ; GO TO 800
        END IF
 
 !  stop if the objective function gap is sufficiently small
 
-       inform%f_gap = data%f_best - data%BOX( best )%f_lower 
+       inform%f_gap = data%f_best - data%BOX( data%best )%f_lower 
        IF  ( inform%f_gap <= data%control%stop_f ) THEN
          inform%why_stop  = 'F' ; inform%status = GALAHAD_ok ; GO TO 800
        END IF
@@ -2233,8 +2238,8 @@
 
 !  initialize these as the current lower and upper vertices in the best box
 
-       data%X_l( : nlp%n ) = data%VERTEX( index_l_best )%X( : nlp%n )
-       data%X_u( : nlp%n ) = data%VERTEX( index_u_best )%X( : nlp%n )
+       data%X_l( : nlp%n ) = data%VERTEX( data%index_l_best )%X( : nlp%n )
+       data%X_u( : nlp%n ) = data%VERTEX( data%index_u_best )%X( : nlp%n )
 
 !  compute an index that corresponds to a longest edge d of the box
 
@@ -2249,32 +2254,32 @@
 
 !  consider vertex x_l, and find its position, index_l, in the dictionary
 
-       CALL DGO_vertex( nlp%n, data%X_l, data%string, data%rstring, index_l,   &
-                        data%HASH_data, data%control%HASH_control,             &
-                        inform%HASH_inform )
+       CALL DGO_vertex( nlp%n, data%X_l, data%string, data%rstring,            &
+                        data%index_l, data%HASH_data,                          &
+                        data%control%HASH_control, inform%HASH_inform )
 
 !  the vertex is new
 
-       IF ( index_l > 0 ) THEN
+       IF ( data%index_l > 0 ) THEN
 
 !  initialize the vertex data
 
-         CALL DGO_allocate_vertex_arrays( nlp%n, data%VERTEX( index_l ),       &
+         CALL DGO_allocate_vertex_arrays( nlp%n, data%VERTEX( data%index_l ),  &
                                           data%control, inform )
          IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
 !  record the vertex
 
-         data%VERTEX( index_l )%X( : nlp%n ) = data%X_l( : nlp%n )
+         data%VERTEX( data%index_l )%X( : nlp%n ) = data%X_l( : nlp%n )
 
 !  compute the objective function value if explicitly available ...
 
          inform%f_eval = inform%f_eval + 1
          IF ( data%present_eval_f ) THEN
-           CALL eval_F( inform%status, data%VERTEX( index_l )%X, userdata,     &
-                        data%VERTEX( index_l )%f )
+           CALL eval_F( inform%status, data%VERTEX( data%index_l )%X,          &
+                        userdata, data%VERTEX( data%index_l )%f )
            IF ( inform%status /= GALAHAD_ok ) GO TO 910
-           data%f_upper = MIN( data%f_upper, data%VERTEX( index_l )%f )
+           data%f_upper = MIN( data%f_upper, data%VERTEX( data%index_l )%f )
          ELSE
            inform%status = 2
          END IF
@@ -2283,8 +2288,8 @@
 
          inform%g_eval = inform%g_eval + 1
          IF ( data%present_eval_g ) THEN
-           CALL eval_G( inform%status, data%VERTEX( index_l )%X, userdata,     &
-                        data%VERTEX( index_l )%G )
+           CALL eval_G( inform%status, data%VERTEX( data%index_l )%X,          &
+                        userdata, data%VERTEX( data%index_l )%G )
            IF ( inform%status /= GALAHAD_ok ) GO TO 910
          ELSE
            IF ( inform%status == 2 ) THEN
@@ -2300,7 +2305,7 @@
 !  if necessary, obtain f and/or g via reverse communication
 
        IF ( inform%status /= GALAHAD_ok ) THEN
-         nlp%X( : nlp%n ) = data%VERTEX( index_l )%X( : nlp%n )
+         nlp%X( : nlp%n ) = data%VERTEX( data%index_l )%X( : nlp%n )
          data%branch = 510 ; RETURN
        END IF
 
@@ -2310,19 +2315,19 @@
 
 !  the vertex is new, record any reverse-communication f and g
 
-       IF ( index_l > 0 ) THEN
+       IF ( data%index_l > 0 ) THEN
          IF ( .NOT. data%present_eval_f ) THEN
-           data%VERTEX( index_l )%f = nlp%f
-           data%f_upper = MIN( data%f_upper, data%VERTEX( index_l )%f )
+           data%VERTEX( data%index_l )%f = nlp%f
+           data%f_upper = MIN( data%f_upper, data%VERTEX( data%index_l )%f )
          END IF
          IF ( .NOT. data%present_eval_g ) THEN
-           data%VERTEX( index_l )%G( : nlp%n ) = nlp%G( : nlp%n )
+           data%VERTEX( data%index_l )%G( : nlp%n ) = nlp%G( : nlp%n )
          END IF
 
 !  this is an existing vertex, reuse the objective value and gradient
 
-       ELSE IF ( index_l < 0 ) THEN
-         index_l = - index_l
+       ELSE IF ( data%index_l < 0 ) THEN
+         data%index_l = - data%index_l
 
 !  the dictionary is full
 
@@ -2333,32 +2338,32 @@
 
 !  do the same to vertex x_u
 
-       CALL DGO_vertex( nlp%n, data%X_u, data%string, data%rstring, index_u,   &
-                        data%HASH_data, data%control%HASH_control,             &
-                        inform%HASH_inform )
+       CALL DGO_vertex( nlp%n, data%X_u, data%string, data%rstring,            &
+                        data%index_u, data%HASH_data,                          &
+                        data%control%HASH_control, inform%HASH_inform )
 
 !  the vertex is new
 
-       IF ( index_u > 0 ) THEN
+       IF ( data%index_u > 0 ) THEN
 
 !  initialize the vertex data
 
-         CALL DGO_allocate_vertex_arrays( nlp%n, data%VERTEX( index_u ),       &
+         CALL DGO_allocate_vertex_arrays( nlp%n, data%VERTEX( data%index_u ),  &
                                           data%control, inform )
          IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
 !  record the vertex
 
-         data%VERTEX( index_u )%X( : nlp%n ) = data%X_u( : nlp%n )
+         data%VERTEX( data%index_u )%X( : nlp%n ) = data%X_u( : nlp%n )
 
 !  compute the objective function value if explicitly available ...
 
          inform%f_eval = inform%f_eval + 1
          IF ( data%present_eval_f ) THEN
-           CALL eval_F( inform%status, data%VERTEX( index_u )%X, userdata,     &
-                        data%VERTEX( index_u )%f )
+           CALL eval_F( inform%status, data%VERTEX( data%index_u )%X,          &
+                        userdata, data%VERTEX( data%index_u )%f )
            IF ( inform%status /= GALAHAD_ok ) GO TO 910
-           data%f_upper = MIN( data%f_upper, data%VERTEX( index_u )%f )
+           data%f_upper = MIN( data%f_upper, data%VERTEX( data%index_u )%f )
          ELSE
            inform%status = 2
          END IF
@@ -2367,8 +2372,8 @@
 
          inform%g_eval = inform%g_eval + 1
          IF ( data%present_eval_g ) THEN
-           CALL eval_G( inform%status, data%VERTEX( index_u )%X, userdata,     &
-                        data%VERTEX( index_u )%G )
+           CALL eval_G( inform%status, data%VERTEX( data%index_u )%X,          &
+                        userdata, data%VERTEX( data%index_u )%G )
            IF ( inform%status /= GALAHAD_ok ) GO TO 910
          ELSE
            IF ( inform%status == 2 ) THEN
@@ -2384,7 +2389,7 @@
 !  if necessary, obtain f and/or g via reverse communication
 
        IF ( inform%status /= GALAHAD_ok ) THEN
-         nlp%X( : nlp%n ) = data%VERTEX( index_u )%X( : nlp%n )
+         nlp%X( : nlp%n ) = data%VERTEX( data%index_u )%X( : nlp%n )
          data%branch = 520 ; RETURN
        END IF
 
@@ -2394,19 +2399,19 @@
 
 !  the vertex is new, record any reverse-communication f and g
 
-       IF ( index_u > 0 ) THEN
+       IF ( data%index_u > 0 ) THEN
          IF ( .NOT. data%present_eval_f ) THEN
-           data%VERTEX( index_u )%f = nlp%f
-           data%f_upper = MIN( data%f_upper, data%VERTEX( index_u )%f )
+           data%VERTEX( data%index_u )%f = nlp%f
+           data%f_upper = MIN( data%f_upper, data%VERTEX( data%index_u )%f )
          END IF
          IF ( .NOT. data%present_eval_g ) THEN
-           data%VERTEX( index_u )%G( : nlp%n ) = nlp%G( : nlp%n )
+           data%VERTEX( data%index_u )%G( : nlp%n ) = nlp%G( : nlp%n )
          END IF
 
 !  this is an existing vertex, reuse the objective value and gradient
 
-       ELSE IF ( index_u < 0 ) THEN
-         index_u = - index_u
+       ELSE IF ( data%index_u < 0 ) THEN
+         data%index_u = - data%index_u
 
 !  the dictionary is full
 
@@ -2421,22 +2426,24 @@
 
 !  replace the best box with one with vertices x_l and x_u
 
-       CALL DGO_initialize_box( index_l, data%VERTEX( index_l ),               &
-                                index_u, data%VERTEX( index_u ),               &
-                                data%BOX( best ) )
+       CALL DGO_initialize_box( data%index_l, data%VERTEX( data%index_l ),     &
+                                data%index_u, data%VERTEX( data%index_u ),     &
+                                data%BOX( data%best ) )
 
 !  add a new box with vertices x_l_best and x_u
 
        data%boxes = data%boxes + 1
-       CALL DGO_initialize_box( index_l_best, data%VERTEX( index_l_best ),     &
-                                index_u, data%VERTEX( index_u ),               &
+       CALL DGO_initialize_box( data%index_l_best,                             &
+                                data%VERTEX( data%index_l_best ),              &
+                                data%index_u, data%VERTEX( data%index_u ),     &
                                 data%BOX( data%boxes ) )
 
 !  and another with vertices x_l and x_u_best
 
        data%boxes = data%boxes + 1
-       CALL DGO_initialize_box( index_l, data%VERTEX( index_l ),               &
-                                index_u_best, data%VERTEX( index_u_best ),     &
+       CALL DGO_initialize_box( data%index_l, data%VERTEX( data%index_l ),     &
+                                data%index_u_best,                             &
+                                data%VERTEX( data%index_u_best ),              &
                                 data%BOX( data%boxes ) )
 
        GO TO 200
@@ -2475,19 +2482,23 @@
 
      ELSE
        loc = MINLOC( data%BOX( : data%boxes )%f_upper )
-       best = loc( 1 )
+       data%best = loc( 1 )
 
 !  return the best value of the objective found
 
-       data%f_upper = data%BOX( best )%f_upper
-       inform%obj = data%BOX( best )%f_l
+       data%f_upper = data%BOX( data%best )%f_upper
+       inform%obj = data%BOX( data%best )%f_l
        IF ( data%f_upper == inform%obj ) THEN
-         nlp%X( : nlp%n ) = data%VERTEX( data%BOX( best )%index_l )%X( : nlp%n )
-         nlp%G( : nlp%n ) = data%VERTEX( data%BOX( best )%index_l )%G( : nlp%n )
+         nlp%X( : nlp%n )                                                      &
+           = data%VERTEX( data%BOX( data%best )%index_l )%X( : nlp%n )
+         nlp%G( : nlp%n )                                                      &
+           = data%VERTEX( data%BOX( data%best )%index_l )%G( : nlp%n )
        ELSE
-         inform%obj = data%BOX( best )%f_u
-         nlp%X( : nlp%n ) = data%VERTEX( data%BOX( best )%index_u )%X( : nlp%n )
-         nlp%G( : nlp%n ) = data%VERTEX( data%BOX( best )%index_u )%G( : nlp%n )
+         inform%obj = data%BOX( data%best )%f_u
+         nlp%X( : nlp%n )                                                      &
+           = data%VERTEX( data%BOX( data%best )%index_u )%X( : nlp%n )
+         nlp%G( : nlp%n )                                                      &
+           = data%VERTEX( data%BOX( data%best )%index_u )%G( : nlp%n )
        END IF
        inform%norm_pg = TWO_NORM( nlp%X -                                      &
              TRB_projection( nlp%n, nlp%X - nlp%G, nlp%X_l, nlp%X_u ) )
@@ -2639,16 +2650,27 @@
 
 !  Deallocate all arrays allocated within UGO
 
-!    CALL UGO_terminate( data%UGO_data, data%control%UGO_control,              &
-!                        inform%UGO_inform )
-!    inform%status = inform%UGO_inform%status
-!    IF ( inform%status /= GALAHAD_ok ) THEN
-!      inform%alloc_status = inform%UGO_inform%alloc_status
-!      inform%bad_alloc = inform%UGO_inform%bad_alloc
-!      IF ( control%deallocate_error_fatal ) RETURN
-!    END IF
+     CALL UGO_terminate( data%UGO_data, data%control%UGO_control,              &
+                         inform%UGO_inform )
+     inform%status = inform%UGO_inform%status
+     IF ( inform%status /= GALAHAD_ok ) THEN
+       inform%alloc_status = inform%UGO_inform%alloc_status
+       inform%bad_alloc = inform%UGO_inform%bad_alloc
+       IF ( control%deallocate_error_fatal ) RETURN
+     END IF
 
-!  Deallocate all arrays allocated within UGO
+!  Deallocate all arrays allocated within TRB
+
+     CALL TRB_terminate( data%TRB_data, data%control%TRB_control,              &
+                         inform%TRB_inform )
+     inform%status = inform%TRB_inform%status
+     IF ( inform%status /= GALAHAD_ok ) THEN
+       inform%alloc_status = inform%TRB_inform%alloc_status
+       inform%bad_alloc = inform%TRB_inform%bad_alloc
+       IF ( control%deallocate_error_fatal ) RETURN
+     END IF
+
+!  Deallocate all arrays allocated within HASH
 
      CALL HASH_terminate( data%HASH_data, data%control%HASH_control,           &
                          inform%HASH_inform )
@@ -2989,7 +3011,9 @@
      INTEGER, INTENT( IN ) :: n, ne
      INTEGER, INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: H_row, H_col, H_ptr
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
      REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( n ) :: X_l, X_u
 
 !  local variables

@@ -8851,8 +8851,8 @@
      TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( IN ) :: n, m, J_ne
      INTEGER, INTENT( OUT ) :: status
-     CHARACTER ( LEN = * ), INTENT( IN ) :: J_type
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: J_row, J_col, J_ptr
+     CHARACTER ( LEN = * ), INTENT( IN ), OPTIONAL :: J_type
+     INTEGER, DIMENSION( : ), INTENT( IN ), OPTIONAL :: J_row, J_col, J_ptr
      INTEGER, INTENT( IN ), OPTIONAL :: H_ne, P_ne
      CHARACTER ( LEN = * ), INTENT( IN ), OPTIONAL :: H_type
      INTEGER, DIMENSION( : ), INTENT( IN ), OPTIONAL :: H_row, H_col, H_ptr

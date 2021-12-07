@@ -18,7 +18,7 @@ checkpoint                M
 clock                     M
 convert                   M
 copyright                 M
-cqp                       M C
+cqp                       M C+
 cpu_time                  M
 cro                       M
 cutest_functions          M
@@ -58,7 +58,7 @@ lstr                      M C
 miqr                      M
 mop                       M
 nlpt                      M
-nls                       M C
+nls                       M C+
 norms                     M
 opt                       M
 pdqp                      M C
@@ -77,7 +77,7 @@ rand                      M
 roots                     M
 rpd                       M
 rqs                       M C
-sbls                      M C+ stack smashing detected
+sbls                      M C+
 scale                     M
 scaling                   M
 scu                       M
@@ -108,7 +108,7 @@ forthcoming:
 
 barc                      M C
 bgo                       M C+
-dgo                       M C+ (bug with reverse hashing ifort)
+dgo                       M C+
 lhs                       M C+
 trace                     M (but buggy)
 tral                      M (broken)

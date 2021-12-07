@@ -329,7 +329,7 @@
 
 !  create space for the table and keys
 
-      array_name = 'hash: dataa%TABLE'
+      array_name = 'hash: data%TABLE'
       CALL SPACE_resize_array( length, data%TABLE,                             &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
@@ -337,7 +337,7 @@
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'hash: dataa%KEY'
+      array_name = 'hash: data%KEY'
       CALL SPACE_resize_array( nchar, length, data%KEY,                        &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &

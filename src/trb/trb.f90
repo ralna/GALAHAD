@@ -2332,7 +2332,8 @@
 
 !  compute the norm of the projected gradient
 
-     data%WK = TRB_projection( nlp%n, nlp%X - nlp%G, nlp%X_l, nlp%X_u )
+     data%WK2 = nlp%X - nlp%G
+     data%WK = TRB_projection( nlp%n, data%WK2, nlp%X_l, nlp%X_u )
      inform%norm_pg = TWO_NORM( nlp%X - data%WK )
 
 !  if a sparsity-based secant approximation of the Hessian is required,
@@ -3878,9 +3879,10 @@
 
              IF ( data%control%hessian_available ) THEN
                data%dense_p = .TRUE.
+               l = data%nnz_p_u - data%nnz_p_l + 1
                CALL TRB_hessian_times_vector( nlp%n,                           &
                         data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ),        &
-                        data%nnz_p_u - data%nnz_p_l + 1, data%INDEX_nz_hp,     &
+                        l, data%INDEX_nz_hp,                                   &
                         data%nnz_hp, data%INDEX_used_hp, data%n_prods,         &
                         data%P, data%HP, data%H_by_cols, data%dense_p )
 
@@ -3892,8 +3894,9 @@
 !                  data%P( data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u) )
                  data%branch = 380 ; inform%status = 7 ; RETURN
                ELSE
+                 l = data%nnz_p_u - data%nnz_p_l + 1
                  CALL eval_SHPROD( data%eval_status, nlp%X( : nlp%n ),         &
-                              userdata, data%nnz_p_u - data%nnz_p_l + 1,       &
+                              userdata, l,                                     &
                               data%INDEX_nz_p( data%nnz_p_l : data%nnz_p_u ),  &
                               data%P, data%nnz_hp, data%INDEX_nz_hp, data%HP,  &
                               got_h = data%got_h )
@@ -4942,7 +4945,8 @@
 
 !  compute the norm of the projected gradient
 
-         data%WK = TRB_projection( nlp%n, nlp%X - nlp%G, nlp%X_l, nlp%X_u )
+         data%WK2 = nlp%X - nlp%G
+         data%WK = TRB_projection( nlp%n, data%WK2, nlp%X_l, nlp%X_u )
          inform%norm_pg = TWO_NORM( nlp%X - data%WK )
 
          data%new_h = .TRUE.
@@ -5000,7 +5004,8 @@
 
 !  compute the norm of the projected gradient
 
-     data%WK = TRB_projection( nlp%n, nlp%X - nlp%G, nlp%X_l, nlp%X_u )
+     data%WK2 = nlp%X - nlp%G
+     data%WK = TRB_projection( nlp%n, data%WK2, nlp%X_l, nlp%X_u )
      inform%norm_pg = TWO_NORM( nlp%X - data%WK )
 
 !  print details of solution

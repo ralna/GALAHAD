@@ -18,6 +18,14 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
+    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+  } }
+});
+</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -138,7 +146,7 @@ $(function() {
 <div class="line">    <span class="keywordflow">for</span>( <span class="keywordtype">int</span> d=1; d &lt;= 5; d++){</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Initialize TRB</span></div>
-<div class="line">        <a name="a2"></a><a class="code" href="trb_8h.html#aae182e47703158fd8095fd3ae06e1007">trb_initialize</a>( &amp;data, &amp;control, &amp;inform );</div>
+<div class="line">        <a name="a2"></a><a class="code" href="trb_8h.html#a9bffc46178a3e0b7eb2927d1c50440a1">trb_initialize</a>( &amp;data, &amp;control, &amp;status );</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Set user-defined control options</span></div>
 <div class="line">        control.f_indexing = <span class="keyword">true</span>; <span class="comment">// Fortran sparse matrix indexing</span></div>
@@ -211,7 +219,7 @@ $(function() {
 <div class="line"> </div>
 <div class="line">    <span class="comment">// reverse-communication input/output</span></div>
 <div class="line">    <span class="keywordtype">int</span> eval_status, nnz_u, nnz_v;</div>
-<div class="line">    <span class="keywordtype">double</span> f;</div>
+<div class="line">    <span class="keywordtype">double</span> f = 0.0;</div>
 <div class="line">    <span class="keywordtype">double</span> u[n], v[n];</div>
 <div class="line">    <span class="keywordtype">int</span> index_nz_u[n], index_nz_v[n];</div>
 <div class="line">    <span class="keywordtype">double</span> H_val[ne], H_dense[n*(n+1)/2], H_diag[n];</div>
@@ -219,7 +227,7 @@ $(function() {
 <div class="line">    <span class="keywordflow">for</span>( <span class="keywordtype">int</span> d=1; d &lt;= 5; d++){</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Initialize TRB</span></div>
-<div class="line">        <a class="code" href="trb_8h.html#aae182e47703158fd8095fd3ae06e1007">trb_initialize</a>( &amp;data, &amp;control, &amp;inform );</div>
+<div class="line">        <a class="code" href="trb_8h.html#a9bffc46178a3e0b7eb2927d1c50440a1">trb_initialize</a>( &amp;data, &amp;control, &amp;status );</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Set user-defined control options</span></div>
 <div class="line">        control.f_indexing = <span class="keyword">true</span>; <span class="comment">// Fortran sparse matrix indexing</span></div>
@@ -335,6 +343,7 @@ $(function() {
 <div class="line">                st = <span class="charliteral">&#39;P&#39;</span>;</div>
 <div class="line">                <a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( &amp;control, &amp;data, &amp;status, n, x_l, x_u, </div>
 <div class="line">                            <span class="stringliteral">&quot;absent&quot;</span>, ne, NULL, NULL, NULL );</div>
+<div class="line">                nnz_u = 0;</div>
 <div class="line">                <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">                    <a name="a9"></a><a class="code" href="trb_8h.html#a95eac11acf02fe0d6eb4bc39ace5a100">trb_solve_reverse_without_mat</a>( &amp;data, &amp;status, &amp;eval_status,</div>
 <div class="line">                                                   n, x, f, g, u, v, index_nz_v,</div>
@@ -569,9 +578,9 @@ $(function() {
 <div class="ttc" id="atrb_8h_html_structtrb__inform__type"><div class="ttname"><a href="trb_8h.html#structtrb__inform__type">trb_inform_type</a></div><div class="ttdef"><b>Definition:</b> trb.h:553</div></div>
 <div class="ttc" id="atrb_8h_html"><div class="ttname"><a href="trb_8h.html">trb.h</a></div></div>
 <div class="ttc" id="atrb_8h_html_a739c7a44ddd0ce7b350cfa6da54948d0"><div class="ttname"><a href="trb_8h.html#a739c7a44ddd0ce7b350cfa6da54948d0">trb_terminate</a></div><div class="ttdeci">void trb_terminate(void **data, struct trb_control_type *control, struct trb_inform_type *inform)</div></div>
-<div class="ttc" id="atrb_8h_html_aae182e47703158fd8095fd3ae06e1007"><div class="ttname"><a href="trb_8h.html#aae182e47703158fd8095fd3ae06e1007">trb_initialize</a></div><div class="ttdeci">void trb_initialize(void **data, struct trb_control_type *control, struct trb_inform_type *inform)</div></div>
 <div class="ttc" id="atrb_8h_html_a13bc38fb28201adb78af7acf910ff0d8"><div class="ttname"><a href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a></div><div class="ttdeci">void trb_import(struct trb_control_type *control, void **data, int *status, int n, const real_wp_ x_l[], const real_wp_ x_u[], const char H_type[], int ne, const int H_row[], const int H_col[], const int H_ptr[])</div></div>
 <div class="ttc" id="atrb_8h_html_a5a58e6c0c022eb451f14c82d653967f7"><div class="ttname"><a href="trb_8h.html#a5a58e6c0c022eb451f14c82d653967f7">trb_solve_with_mat</a></div><div class="ttdeci">void trb_solve_with_mat(void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int ne, int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_h)(int, int, const real_wp_[], real_wp_[], const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</div></div>
+<div class="ttc" id="atrb_8h_html_a9bffc46178a3e0b7eb2927d1c50440a1"><div class="ttname"><a href="trb_8h.html#a9bffc46178a3e0b7eb2927d1c50440a1">trb_initialize</a></div><div class="ttdeci">void trb_initialize(void **data, struct trb_control_type *control, int *status)</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

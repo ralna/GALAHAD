@@ -18,6 +18,14 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
+    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+  } }
+});
+</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -102,8 +110,8 @@ Functions</h2></td></tr>
 <tr class="separator:adf9db7eff2fce137ae2abd2e013c47b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f0eb83fd31ee4108156f2e84176389d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nls_8h.html#a3f0eb83fd31ee4108156f2e84176389d">nls_import</a> (struct <a class="el" href="nls_8h.html#structnls__control__type">nls_control_type</a> *control, void **data, int *status, int n, int m, const char J_type[], int J_ne, const int J_row[], const int J_col[], const int J_ptr[], const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char P_type[], int P_ne, const int P_row[], const int P_col[], const int P_ptr[], const real_wp_ w[])</td></tr>
 <tr class="separator:a3f0eb83fd31ee4108156f2e84176389d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a855775351d3ef7c77fac1dcec9e7915d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nls_8h.html#a855775351d3ef7c77fac1dcec9e7915d">nls_reset_control</a> (struct <a class="el" href="nls_8h.html#structnls__control__type">nls_control_type</a> *control, void **data, int *status,)</td></tr>
-<tr class="separator:a855775351d3ef7c77fac1dcec9e7915d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07f0857c9923ad0f92d51ed00833afda"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nls_8h.html#a07f0857c9923ad0f92d51ed00833afda">nls_reset_control</a> (struct <a class="el" href="nls_8h.html#structnls__control__type">nls_control_type</a> *control, void **data, int *status)</td></tr>
+<tr class="separator:a07f0857c9923ad0f92d51ed00833afda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae923c2e6afabb3563fe0998d45b715c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nls_8h.html#ae923c2e6afabb3563fe0998d45b715c4">nls_solve_with_mat</a> (void **data, void *userdata, int *status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], int(*eval_c)(int, int, const real_wp_[], real_wp_[], const void *), int j_ne, int(*eval_j)(int, int, int, const real_wp_[], real_wp_[], const void *), int h_ne, int(*eval_h)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], const void *), int p_ne, int(*eval_hprods)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], bool, const void *))</td></tr>
 <tr class="separator:ae923c2e6afabb3563fe0998d45b715c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a692ecbfaa428584e60aa4c33d7278a64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="nls_8h.html#a692ecbfaa428584e60aa4c33d7278a64">nls_solve_without_mat</a> (void **data, void *userdata, int *status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], int(*eval_c)(int, int, const real_wp_[], real_wp_[], const void *), int(*eval_jprod)(int, int, const real_wp_[], const bool, real_wp_[], const real_wp_[], bool, const void *), int(*eval_hprod)(int, int, const real_wp_[], const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), int p_ne, int(*eval_hprods)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], bool, const void *))</td></tr>
@@ -133,95 +141,47 @@ Functions</h2></td></tr>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="ac631699a26f321b14dbed37115f3c006"></a>char</td>
-<td class="fieldname">
-alive_file[31]</td>
-<td class="fielddoc">
-see alive_unit </td></tr>
-<tr><td class="fieldtype">
-<a id="a3fc6359d77a53a63d57ea600b51eac13"></a>int</td>
-<td class="fieldname">
-alive_unit</td>
-<td class="fielddoc">
-removal of the file alive_file from unit alive_unit terminates execution </td></tr>
-<tr><td class="fieldtype">
-<a id="ab05d7c2b06d3a9fb085fa3739501d1c8"></a>real_wp_</td>
-<td class="fieldname">
-clock_time_limit</td>
-<td class="fielddoc">
-the maximum elapsed clock time allowed (-ve means infinite) </td></tr>
-<tr><td class="fieldtype">
-<a id="a52f14ff3f85e6805f2373eef5d0f3dfd"></a>real_wp_</td>
-<td class="fieldname">
-cpu_time_limit</td>
-<td class="fielddoc">
-the maximum CPU time allowed (-ve means infinite) </td></tr>
-<tr><td class="fieldtype">
-<a id="a58a2c67fad6e808e8365eff67700cba5"></a>bool</td>
-<td class="fieldname">
-deallocate_error_fatal</td>
-<td class="fielddoc">
-if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue </td></tr>
-<tr><td class="fieldtype">
 <a id="a11614f44ef4d939bdd984953346a7572"></a>int</td>
 <td class="fieldname">
 error</td>
 <td class="fielddoc">
 error and warning diagnostics occur on stream error </td></tr>
 <tr><td class="fieldtype">
-<a id="ac0774abb09bb59381960d771cb38b8ef"></a>real_wp_</td>
+<a id="aa8000eda101cade7c6c4b913fce0cc9c"></a>int</td>
 <td class="fieldname">
-eta_successful</td>
+out</td>
 <td class="fielddoc">
-REAL ( KIND = wp ) :: initial_inner_weight = 0.0001_wp a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than .eta_successful times that predicted by a quadratic model of the decrease. The regularization weight will be decreaed if this relative decrease is greater than .eta_very_successful but smaller than .eta_too_successful. </td></tr>
+general output occurs on stream out </td></tr>
 <tr><td class="fieldtype">
-<a id="a6af4c9666b9342fa75b665bfb8cef524"></a>real_wp_</td>
+<a id="a12dae630bd8f5d2d00f6a86d652f5c81"></a>int</td>
 <td class="fieldname">
-eta_too_successful</td>
+print_level</td>
 <td class="fielddoc">
-see eta_successful </td></tr>
+the level of output required. <ul>
+<li>\(\leq\) 0 gives no output, </li>
+<li>= 1 gives a one-line summary for every iteration, </li>
+<li>= 2 gives a summary of the inner iteration for each iteration, </li>
+<li>\(\geq\) 3 gives increasingly verbose (debugging) output </li>
+</ul>
+</td></tr>
 <tr><td class="fieldtype">
-<a id="a5e55cf3fe7846b0f9b23919b0f95469e"></a>real_wp_</td>
+<a id="ae0eb21dc79b53664e45ce07c9109b3aa"></a>int</td>
 <td class="fieldname">
-eta_very_successful</td>
+start_print</td>
 <td class="fielddoc">
-see eta_successful </td></tr>
+any printing will start on this iteration </td></tr>
 <tr><td class="fieldtype">
-<a id="ae665ac50d8c985bf502ba2b90363826a"></a>int</td>
+<a id="a9a3d9960a04602d2a18009c82ae2124e"></a>int</td>
 <td class="fieldname">
-hessian_available</td>
+stop_print</td>
 <td class="fielddoc">
-is the Hessian matrix of second derivatives available ( \(\geq\) 2), is access only via matrix-vector products (=1) or is it not available ( \(\leq\) 0) ? </td></tr>
+any printing will stop on this iteration </td></tr>
 <tr><td class="fieldtype">
-<a id="ab32efd2263e7fbebfe87846bc977f1ab"></a>real_wp_</td>
+<a id="a31edaef6b722ef2721633484405a649b"></a>int</td>
 <td class="fieldname">
-initial_inner_weight</td>
+print_gap</td>
 <td class="fielddoc">
-initial value for the inner regularization weight for tensor GN (-ve =&gt; 0) </td></tr>
-<tr><td class="fieldtype">
-<a id="aa8b73dcc65ae7dc7b3331980f77c5fb4"></a>real_wp_</td>
-<td class="fieldname">
-initial_weight</td>
-<td class="fielddoc">
-initial value for the regularization weight (-ve =&gt; \(1/\|g_0\|)\)) </td></tr>
-<tr><td class="fieldtype">
-<a id="a331884a4968f11decfca0a687fc59dde"></a>int</td>
-<td class="fieldname">
-jacobian_available</td>
-<td class="fielddoc">
-is the Jacobian matrix of first derivatives available ( \(\geq\) 2), is access only via matrix-vector products (=1) or is it not available ( \(\leq\) 0) ? </td></tr>
-<tr><td class="fieldtype">
-<a id="a7abb4c844c9fddec04f47c856f4a2383"></a>real_wp_</td>
-<td class="fieldname">
-large_root</td>
-<td class="fielddoc">
-see reduce_gap </td></tr>
-<tr><td class="fieldtype">
-<a id="adb993f5277ee10213227e86ba94fd934"></a>bool</td>
-<td class="fieldname">
-magic_step</td>
-<td class="fielddoc">
-allow the user to perform a "magic" step to improve the objective </td></tr>
+the number of iterations between printing </td></tr>
 <tr><td class="fieldtype">
 <a id="ab717630b215f0362699acac11fb3652c"></a>int</td>
 <td class="fieldname">
@@ -229,11 +189,29 @@ maxit</td>
 <td class="fielddoc">
 the maximum number of iterations performed </td></tr>
 <tr><td class="fieldtype">
-<a id="a044b125f7d2b5409dde4253030798367"></a>real_wp_</td>
+<a id="a3fc6359d77a53a63d57ea600b51eac13"></a>int</td>
 <td class="fieldname">
-minimum_weight</td>
+alive_unit</td>
 <td class="fielddoc">
-minimum permitted regularization weight </td></tr>
+removal of the file alive_file from unit alive_unit terminates execution </td></tr>
+<tr><td class="fieldtype">
+<a id="ac631699a26f321b14dbed37115f3c006"></a>char</td>
+<td class="fieldname">
+alive_file[31]</td>
+<td class="fielddoc">
+see alive_unit </td></tr>
+<tr><td class="fieldtype">
+<a id="a331884a4968f11decfca0a687fc59dde"></a>int</td>
+<td class="fieldname">
+jacobian_available</td>
+<td class="fielddoc">
+is the Jacobian matrix of first derivatives available ( \(\geq\) 2), is access only via matrix-vector products (=1) or is it not available ( \(\leq\) 0) ? </td></tr>
+<tr><td class="fieldtype">
+<a id="ae665ac50d8c985bf502ba2b90363826a"></a>int</td>
+<td class="fieldname">
+hessian_available</td>
+<td class="fielddoc">
+is the Hessian matrix of second derivatives available ( \(\geq\) 2), is access only via matrix-vector products (=1) or is it not available ( \(\leq\) 0) ? </td></tr>
 <tr><td class="fieldtype">
 <a id="a027a1f1731d22465c926ce57be2364c3"></a>int</td>
 <td class="fieldname">
@@ -251,12 +229,6 @@ the model used. <p>Possible values are </p><ul>
 <li>8 tensor Gauss-Newton transition from a least-squares to a general mode </li>
 </ul>
 </td></tr>
-<tr><td class="fieldtype">
-<a id="a856b2df558071805c217b6d72a1e215b"></a>int</td>
-<td class="fieldname">
-non_monotone</td>
-<td class="fielddoc">
-non-monotone \(\leq\) 0 monotone strategy used, anything else non-monotone strategy with this history length used </td></tr>
 <tr><td class="fieldtype">
 <a id="a5b6da5fd1d9c6f86967fa0b4197e3498"></a>int</td>
 <td class="fieldname">
@@ -282,72 +254,17 @@ the regularization norm used. <br  />
 </ul>
 </td></tr>
 <tr><td class="fieldtype">
-<a id="aa8000eda101cade7c6c4b913fce0cc9c"></a>int</td>
+<a id="a856b2df558071805c217b6d72a1e215b"></a>int</td>
 <td class="fieldname">
-out</td>
+non_monotone</td>
 <td class="fielddoc">
-general output occurs on stream out </td></tr>
+non-monotone \(\leq\) 0 monotone strategy used, anything else non-monotone strategy with this history length used </td></tr>
 <tr><td class="fieldtype">
-<a id="aa8611d2e53cef87afe803f0e486f3c98"></a>real_wp_</td>
+<a id="a91395480b85edaac83529fc7f1605289"></a>int</td>
 <td class="fieldname">
-power</td>
+weight_update_strategy</td>
 <td class="fielddoc">
-the regularization power (&lt;2 =&gt; chosen according to the model) </td></tr>
-<tr><td class="fieldtype">
-<a id="a1dc05936393ba705f516a0c275df4ffc"></a>char</td>
-<td class="fieldname">
-prefix[31]</td>
-<td class="fielddoc">
-all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
-<tr><td class="fieldtype">
-<a id="a31edaef6b722ef2721633484405a649b"></a>int</td>
-<td class="fieldname">
-print_gap</td>
-<td class="fielddoc">
-the number of iterations between printing </td></tr>
-<tr><td class="fieldtype">
-<a id="a12dae630bd8f5d2d00f6a86d652f5c81"></a>int</td>
-<td class="fieldname">
-print_level</td>
-<td class="fielddoc">
-the level of output required. <ul>
-<li>\(\leq\) 0 gives no output, </li>
-<li>= 1 gives a one-line summary for every iteration, </li>
-<li>= 2 gives a summary of the inner iteration for each iteration, </li>
-<li>\(\geq\) 3 gives increasingly verbose (debugging) output </li>
-</ul>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="a95ba685ae01db06b2e9a16412097612a"></a>bool</td>
-<td class="fieldname">
-print_obj</td>
-<td class="fielddoc">
-print values of the objective/gradient rather than ||c|| and its gradien </td></tr>
-<tr><td class="fieldtype">
-<a id="a462c383f8c4b96b23d585f292bd5e0e2"></a>real_wp_</td>
-<td class="fieldname">
-reduce_gap</td>
-<td class="fielddoc">
-expert parameters as suggested in Gould, Porcelli and Toint, "Updating t
-regularization parameter in the adaptive cubic regularization algorithm" RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011), <a href="http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf">http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf</a> (these are denoted beta, epsilon_chi and alpha_max in the paper) </td></tr>
-<tr><td class="fieldtype">
-<a id="aa451859552980839fa9fe17df018c042"></a>bool</td>
-<td class="fieldname">
-renormalize_weight</td>
-<td class="fielddoc">
-should the weight be renormalized to account for a change in scaling? </td></tr>
-<tr><td class="fieldtype">
-<a id="a957fc1f4f26eeef3b0951791ff972e8d"></a>bool</td>
-<td class="fieldname">
-space_critical</td>
-<td class="fielddoc">
-if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time </td></tr>
-<tr><td class="fieldtype">
-<a id="ae0eb21dc79b53664e45ce07c9109b3aa"></a>int</td>
-<td class="fieldname">
-start_print</td>
-<td class="fielddoc">
-any printing will start on this iteration </td></tr>
+define the weight-update strategy: 1 (basic), 2 (reset to zero when very successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT) </td></tr>
 <tr><td class="fieldtype">
 <a id="add1b86a6f37634dcbf1e5f55807eac2b"></a>real_wp_</td>
 <td class="fieldname">
@@ -373,47 +290,65 @@ stop_g_relative</td>
 <td class="fielddoc">
 see stop_c_absolute </td></tr>
 <tr><td class="fieldtype">
-<a id="a9a3d9960a04602d2a18009c82ae2124e"></a>int</td>
-<td class="fieldname">
-stop_print</td>
-<td class="fielddoc">
-any printing will stop on this iteration </td></tr>
-<tr><td class="fieldtype">
 <a id="a56612668b00bf042745379f43166cd27"></a>real_wp_</td>
 <td class="fieldname">
 stop_s</td>
 <td class="fielddoc">
 see stop_c_absolute </td></tr>
 <tr><td class="fieldtype">
-<a id="a8c10db7cf72a4e3e52c9601007f7b1de"></a>bool</td>
+<a id="aa8611d2e53cef87afe803f0e486f3c98"></a>real_wp_</td>
 <td class="fieldname">
-subproblem_direct</td>
+power</td>
 <td class="fielddoc">
-use a direct (factorization) or (preconditioned) iterative method to find the search direction </td></tr>
+the regularization power (&lt;2 =&gt; chosen according to the model) </td></tr>
 <tr><td class="fieldtype">
-<a id="a3e388718674f5243006272b3911fae22"></a>real_wp_</td>
+<a id="aa8b73dcc65ae7dc7b3331980f77c5fb4"></a>real_wp_</td>
 <td class="fieldname">
-switch_to_newton</td>
+initial_weight</td>
 <td class="fielddoc">
-if the Gauss-Newto to Newton model is specified, switch to Newton as soon as the norm of the gradient g is smaller than switch_to_newton </td></tr>
+initial value for the regularization weight (-ve =&gt; \(1/\|g_0\|)\)) </td></tr>
 <tr><td class="fieldtype">
-<a id="a28c746bfd481575683553dc28abe3e30"></a>real_wp_</td>
+<a id="a044b125f7d2b5409dde4253030798367"></a>real_wp_</td>
 <td class="fieldname">
-tiny_gap</td>
+minimum_weight</td>
 <td class="fielddoc">
-see reduce_gap </td></tr>
+minimum permitted regularization weight </td></tr>
 <tr><td class="fieldtype">
-<a id="a46e8590e1c6ebb8c2a673d854762424d"></a>real_wp_</td>
+<a id="ab32efd2263e7fbebfe87846bc977f1ab"></a>real_wp_</td>
 <td class="fieldname">
-weight_decrease</td>
+initial_inner_weight</td>
 <td class="fielddoc">
-REAL ( KIND = wp ) :: weight_decrease = half. </td></tr>
+initial value for the inner regularization weight for tensor GN (-ve =&gt; 0) </td></tr>
+<tr><td class="fieldtype">
+<a id="ac0774abb09bb59381960d771cb38b8ef"></a>real_wp_</td>
+<td class="fieldname">
+eta_successful</td>
+<td class="fielddoc">
+REAL ( KIND = wp ) :: initial_inner_weight = 0.0001_wp a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than .eta_successful times that predicted by a quadratic model of the decrease. The regularization weight will be decreaed if this relative decrease is greater than .eta_very_successful but smaller than .eta_too_successful. </td></tr>
+<tr><td class="fieldtype">
+<a id="a5e55cf3fe7846b0f9b23919b0f95469e"></a>real_wp_</td>
+<td class="fieldname">
+eta_very_successful</td>
+<td class="fielddoc">
+see eta_successful </td></tr>
+<tr><td class="fieldtype">
+<a id="a6af4c9666b9342fa75b665bfb8cef524"></a>real_wp_</td>
+<td class="fieldname">
+eta_too_successful</td>
+<td class="fielddoc">
+see eta_successful </td></tr>
 <tr><td class="fieldtype">
 <a id="a481b6aeef2f3d9a0078665db1e512c85"></a>real_wp_</td>
 <td class="fieldname">
 weight_decrease_min</td>
 <td class="fielddoc">
 on very successful iterations, the regularization weight will be reduced by the factor .weight_decrease but no more than .weight_decrease_min while if the iteration is unsucceful, the weight will be increased by a factor .weight_increase but no more than .weight_increase_max (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli and Toint, 2011) </td></tr>
+<tr><td class="fieldtype">
+<a id="a46e8590e1c6ebb8c2a673d854762424d"></a>real_wp_</td>
+<td class="fieldname">
+weight_decrease</td>
+<td class="fielddoc">
+REAL ( KIND = wp ) :: weight_decrease = half. </td></tr>
 <tr><td class="fieldtype">
 <a id="a92d59bc5d9b2899fbb318ea033e85540"></a>real_wp_</td>
 <td class="fieldname">
@@ -427,11 +362,84 @@ weight_increase_max</td>
 <td class="fielddoc">
 see weight_increase </td></tr>
 <tr><td class="fieldtype">
-<a id="a91395480b85edaac83529fc7f1605289"></a>int</td>
+<a id="a462c383f8c4b96b23d585f292bd5e0e2"></a>real_wp_</td>
 <td class="fieldname">
-weight_update_strategy</td>
+reduce_gap</td>
 <td class="fielddoc">
-define the weight-update strategy: 1 (basic), 2 (reset to zero when very successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT) </td></tr>
+expert parameters as suggested in Gould, Porcelli and Toint, "Updating t
+regularization parameter in the adaptive cubic regularization algorithm" RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011), <a href="http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf">http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf</a> (these are denoted beta, epsilon_chi and alpha_max in the paper) </td></tr>
+<tr><td class="fieldtype">
+<a id="a28c746bfd481575683553dc28abe3e30"></a>real_wp_</td>
+<td class="fieldname">
+tiny_gap</td>
+<td class="fielddoc">
+see reduce_gap </td></tr>
+<tr><td class="fieldtype">
+<a id="a7abb4c844c9fddec04f47c856f4a2383"></a>real_wp_</td>
+<td class="fieldname">
+large_root</td>
+<td class="fielddoc">
+see reduce_gap </td></tr>
+<tr><td class="fieldtype">
+<a id="a3e388718674f5243006272b3911fae22"></a>real_wp_</td>
+<td class="fieldname">
+switch_to_newton</td>
+<td class="fielddoc">
+if the Gauss-Newto to Newton model is specified, switch to Newton as soon as the norm of the gradient g is smaller than switch_to_newton </td></tr>
+<tr><td class="fieldtype">
+<a id="a52f14ff3f85e6805f2373eef5d0f3dfd"></a>real_wp_</td>
+<td class="fieldname">
+cpu_time_limit</td>
+<td class="fielddoc">
+the maximum CPU time allowed (-ve means infinite) </td></tr>
+<tr><td class="fieldtype">
+<a id="ab05d7c2b06d3a9fb085fa3739501d1c8"></a>real_wp_</td>
+<td class="fieldname">
+clock_time_limit</td>
+<td class="fielddoc">
+the maximum elapsed clock time allowed (-ve means infinite) </td></tr>
+<tr><td class="fieldtype">
+<a id="a8c10db7cf72a4e3e52c9601007f7b1de"></a>bool</td>
+<td class="fieldname">
+subproblem_direct</td>
+<td class="fielddoc">
+use a direct (factorization) or (preconditioned) iterative method to find the search direction </td></tr>
+<tr><td class="fieldtype">
+<a id="aa451859552980839fa9fe17df018c042"></a>bool</td>
+<td class="fieldname">
+renormalize_weight</td>
+<td class="fielddoc">
+should the weight be renormalized to account for a change in scaling? </td></tr>
+<tr><td class="fieldtype">
+<a id="adb993f5277ee10213227e86ba94fd934"></a>bool</td>
+<td class="fieldname">
+magic_step</td>
+<td class="fielddoc">
+allow the user to perform a "magic" step to improve the objective </td></tr>
+<tr><td class="fieldtype">
+<a id="a95ba685ae01db06b2e9a16412097612a"></a>bool</td>
+<td class="fieldname">
+print_obj</td>
+<td class="fielddoc">
+print values of the objective/gradient rather than ||c|| and its gradien </td></tr>
+<tr><td class="fieldtype">
+<a id="a957fc1f4f26eeef3b0951791ff972e8d"></a>bool</td>
+<td class="fieldname">
+space_critical</td>
+<td class="fielddoc">
+if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time </td></tr>
+<tr><td class="fieldtype">
+<a id="a58a2c67fad6e808e8365eff67700cba5"></a>bool</td>
+<td class="fieldname">
+deallocate_error_fatal</td>
+<td class="fielddoc">
+if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue </td></tr>
+<tr><td class="fieldtype">
+<a id="a1dc05936393ba705f516a0c275df4ffc"></a>char</td>
+<td class="fieldname">
+prefix[31]</td>
+<td class="fielddoc">
+all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
 </table>
 
 </div>
@@ -453,35 +461,11 @@ define the weight-update strategy: 1 (basic), 2 (reset to zero when very success
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="ac631699a26f321b14dbed37115f3c006"></a>char</td>
+<a id="a6e8421b34d6b85dcb33c1dd0179efbb3"></a>bool</td>
 <td class="fieldname">
-alive_file[31]</td>
+f_indexing</td>
 <td class="fielddoc">
-see alive_unit </td></tr>
-<tr><td class="fieldtype">
-<a id="a3fc6359d77a53a63d57ea600b51eac13"></a>int</td>
-<td class="fieldname">
-alive_unit</td>
-<td class="fielddoc">
-removal of the file alive_file from unit alive_unit terminates execution </td></tr>
-<tr><td class="fieldtype">
-<a id="ab05d7c2b06d3a9fb085fa3739501d1c8"></a>real_wp_</td>
-<td class="fieldname">
-clock_time_limit</td>
-<td class="fielddoc">
-the maximum elapsed clock time allowed (-ve means infinite) </td></tr>
-<tr><td class="fieldtype">
-<a id="a52f14ff3f85e6805f2373eef5d0f3dfd"></a>real_wp_</td>
-<td class="fieldname">
-cpu_time_limit</td>
-<td class="fielddoc">
-the maximum CPU time allowed (-ve means infinite) </td></tr>
-<tr><td class="fieldtype">
-<a id="a58a2c67fad6e808e8365eff67700cba5"></a>bool</td>
-<td class="fieldname">
-deallocate_error_fatal</td>
-<td class="fielddoc">
-if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue </td></tr>
+use C or Fortran sparse matrix indexing </td></tr>
 <tr><td class="fieldtype">
 <a id="a11614f44ef4d939bdd984953346a7572"></a>int</td>
 <td class="fieldname">
@@ -489,65 +473,41 @@ error</td>
 <td class="fielddoc">
 error and warning diagnostics occur on stream error </td></tr>
 <tr><td class="fieldtype">
-<a id="ac0774abb09bb59381960d771cb38b8ef"></a>real_wp_</td>
+<a id="aa8000eda101cade7c6c4b913fce0cc9c"></a>int</td>
 <td class="fieldname">
-eta_successful</td>
+out</td>
 <td class="fielddoc">
-REAL ( KIND = wp ) :: initial_inner_weight = 0.0001_wp a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than .eta_successful times that predicted by a quadratic model of the decrease. The regularization weight will be decreaed if this relative decrease is greater than .eta_very_successful but smaller than .eta_too_successful. </td></tr>
+general output occurs on stream out </td></tr>
 <tr><td class="fieldtype">
-<a id="a6af4c9666b9342fa75b665bfb8cef524"></a>real_wp_</td>
+<a id="a12dae630bd8f5d2d00f6a86d652f5c81"></a>int</td>
 <td class="fieldname">
-eta_too_successful</td>
+print_level</td>
 <td class="fielddoc">
-see eta_successful </td></tr>
+the level of output required. <ul>
+<li>\(\leq\) 0 gives no output, </li>
+<li>= 1 gives a one-line summary for every iteration, </li>
+<li>= 2 gives a summary of the inner iteration for each iteration, </li>
+<li>\(\geq\) 3 gives increasingly verbose (debugging) output </li>
+</ul>
+</td></tr>
 <tr><td class="fieldtype">
-<a id="a5e55cf3fe7846b0f9b23919b0f95469e"></a>real_wp_</td>
+<a id="ae0eb21dc79b53664e45ce07c9109b3aa"></a>int</td>
 <td class="fieldname">
-eta_very_successful</td>
+start_print</td>
 <td class="fielddoc">
-see eta_successful </td></tr>
+any printing will start on this iteration </td></tr>
 <tr><td class="fieldtype">
-<a id="a6e8421b34d6b85dcb33c1dd0179efbb3"></a>bool</td>
+<a id="a9a3d9960a04602d2a18009c82ae2124e"></a>int</td>
 <td class="fieldname">
-f_indexing</td>
+stop_print</td>
 <td class="fielddoc">
-use C or Fortran sparse matrix indexing </td></tr>
+any printing will stop on this iteration </td></tr>
 <tr><td class="fieldtype">
-<a id="ae665ac50d8c985bf502ba2b90363826a"></a>int</td>
+<a id="a31edaef6b722ef2721633484405a649b"></a>int</td>
 <td class="fieldname">
-hessian_available</td>
+print_gap</td>
 <td class="fielddoc">
-is the Hessian matrix of second derivatives available ( \(\geq\) 2), is access only via matrix-vector products (=1) or is it not available ( \(\leq\) 0) ? </td></tr>
-<tr><td class="fieldtype">
-<a id="ab32efd2263e7fbebfe87846bc977f1ab"></a>real_wp_</td>
-<td class="fieldname">
-initial_inner_weight</td>
-<td class="fielddoc">
-initial value for the inner regularization weight for tensor GN (-ve =&gt; 0) </td></tr>
-<tr><td class="fieldtype">
-<a id="aa8b73dcc65ae7dc7b3331980f77c5fb4"></a>real_wp_</td>
-<td class="fieldname">
-initial_weight</td>
-<td class="fielddoc">
-initial value for the regularization weight (-ve =&gt; \(1/\|g_0\|)\)) </td></tr>
-<tr><td class="fieldtype">
-<a id="a331884a4968f11decfca0a687fc59dde"></a>int</td>
-<td class="fieldname">
-jacobian_available</td>
-<td class="fielddoc">
-is the Jacobian matrix of first derivatives available ( \(\geq\) 2), is access only via matrix-vector products (=1) or is it not available ( \(\leq\) 0) ? </td></tr>
-<tr><td class="fieldtype">
-<a id="a7abb4c844c9fddec04f47c856f4a2383"></a>real_wp_</td>
-<td class="fieldname">
-large_root</td>
-<td class="fielddoc">
-see reduce_gap </td></tr>
-<tr><td class="fieldtype">
-<a id="adb993f5277ee10213227e86ba94fd934"></a>bool</td>
-<td class="fieldname">
-magic_step</td>
-<td class="fielddoc">
-allow the user to perform a "magic" step to improve the objective </td></tr>
+the number of iterations between printing </td></tr>
 <tr><td class="fieldtype">
 <a id="ab717630b215f0362699acac11fb3652c"></a>int</td>
 <td class="fieldname">
@@ -555,11 +515,29 @@ maxit</td>
 <td class="fielddoc">
 the maximum number of iterations performed </td></tr>
 <tr><td class="fieldtype">
-<a id="a044b125f7d2b5409dde4253030798367"></a>real_wp_</td>
+<a id="a3fc6359d77a53a63d57ea600b51eac13"></a>int</td>
 <td class="fieldname">
-minimum_weight</td>
+alive_unit</td>
 <td class="fielddoc">
-minimum permitted regularization weight </td></tr>
+removal of the file alive_file from unit alive_unit terminates execution </td></tr>
+<tr><td class="fieldtype">
+<a id="ac631699a26f321b14dbed37115f3c006"></a>char</td>
+<td class="fieldname">
+alive_file[31]</td>
+<td class="fielddoc">
+see alive_unit </td></tr>
+<tr><td class="fieldtype">
+<a id="a331884a4968f11decfca0a687fc59dde"></a>int</td>
+<td class="fieldname">
+jacobian_available</td>
+<td class="fielddoc">
+is the Jacobian matrix of first derivatives available ( \(\geq\) 2), is access only via matrix-vector products (=1) or is it not available ( \(\leq\) 0) ? </td></tr>
+<tr><td class="fieldtype">
+<a id="ae665ac50d8c985bf502ba2b90363826a"></a>int</td>
+<td class="fieldname">
+hessian_available</td>
+<td class="fielddoc">
+is the Hessian matrix of second derivatives available ( \(\geq\) 2), is access only via matrix-vector products (=1) or is it not available ( \(\leq\) 0) ? </td></tr>
 <tr><td class="fieldtype">
 <a id="a027a1f1731d22465c926ce57be2364c3"></a>int</td>
 <td class="fieldname">
@@ -577,12 +555,6 @@ the model used. <p>Possible values are </p><ul>
 <li>8 tensor Gauss-Newton transition from a least-squares to a general mode </li>
 </ul>
 </td></tr>
-<tr><td class="fieldtype">
-<a id="a856b2df558071805c217b6d72a1e215b"></a>int</td>
-<td class="fieldname">
-non_monotone</td>
-<td class="fielddoc">
-non-monotone \(\leq\) 0 monotone strategy used, anything else non-monotone strategy with this history length used </td></tr>
 <tr><td class="fieldtype">
 <a id="a5b6da5fd1d9c6f86967fa0b4197e3498"></a>int</td>
 <td class="fieldname">
@@ -608,72 +580,17 @@ the regularization norm used. <br  />
 </ul>
 </td></tr>
 <tr><td class="fieldtype">
-<a id="aa8000eda101cade7c6c4b913fce0cc9c"></a>int</td>
+<a id="a856b2df558071805c217b6d72a1e215b"></a>int</td>
 <td class="fieldname">
-out</td>
+non_monotone</td>
 <td class="fielddoc">
-general output occurs on stream out </td></tr>
+non-monotone \(\leq\) 0 monotone strategy used, anything else non-monotone strategy with this history length used </td></tr>
 <tr><td class="fieldtype">
-<a id="aa8611d2e53cef87afe803f0e486f3c98"></a>real_wp_</td>
+<a id="a91395480b85edaac83529fc7f1605289"></a>int</td>
 <td class="fieldname">
-power</td>
+weight_update_strategy</td>
 <td class="fielddoc">
-the regularization power (&lt;2 =&gt; chosen according to the model) </td></tr>
-<tr><td class="fieldtype">
-<a id="a1dc05936393ba705f516a0c275df4ffc"></a>char</td>
-<td class="fieldname">
-prefix[31]</td>
-<td class="fielddoc">
-all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
-<tr><td class="fieldtype">
-<a id="a31edaef6b722ef2721633484405a649b"></a>int</td>
-<td class="fieldname">
-print_gap</td>
-<td class="fielddoc">
-the number of iterations between printing </td></tr>
-<tr><td class="fieldtype">
-<a id="a12dae630bd8f5d2d00f6a86d652f5c81"></a>int</td>
-<td class="fieldname">
-print_level</td>
-<td class="fielddoc">
-the level of output required. <ul>
-<li>\(\leq\) 0 gives no output, </li>
-<li>= 1 gives a one-line summary for every iteration, </li>
-<li>= 2 gives a summary of the inner iteration for each iteration, </li>
-<li>\(\geq\) 3 gives increasingly verbose (debugging) output </li>
-</ul>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="a95ba685ae01db06b2e9a16412097612a"></a>bool</td>
-<td class="fieldname">
-print_obj</td>
-<td class="fielddoc">
-print values of the objective/gradient rather than ||c|| and its gradien </td></tr>
-<tr><td class="fieldtype">
-<a id="a462c383f8c4b96b23d585f292bd5e0e2"></a>real_wp_</td>
-<td class="fieldname">
-reduce_gap</td>
-<td class="fielddoc">
-expert parameters as suggested in Gould, Porcelli and Toint, "Updating t
-regularization parameter in the adaptive cubic regularization algorithm" RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011), <a href="http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf">http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf</a> (these are denoted beta, epsilon_chi and alpha_max in the paper) </td></tr>
-<tr><td class="fieldtype">
-<a id="aa451859552980839fa9fe17df018c042"></a>bool</td>
-<td class="fieldname">
-renormalize_weight</td>
-<td class="fielddoc">
-should the weight be renormalized to account for a change in scaling? </td></tr>
-<tr><td class="fieldtype">
-<a id="a957fc1f4f26eeef3b0951791ff972e8d"></a>bool</td>
-<td class="fieldname">
-space_critical</td>
-<td class="fielddoc">
-if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time </td></tr>
-<tr><td class="fieldtype">
-<a id="ae0eb21dc79b53664e45ce07c9109b3aa"></a>int</td>
-<td class="fieldname">
-start_print</td>
-<td class="fielddoc">
-any printing will start on this iteration </td></tr>
+define the weight-update strategy: 1 (basic), 2 (reset to zero when very successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT) </td></tr>
 <tr><td class="fieldtype">
 <a id="add1b86a6f37634dcbf1e5f55807eac2b"></a>real_wp_</td>
 <td class="fieldname">
@@ -699,53 +616,65 @@ stop_g_relative</td>
 <td class="fielddoc">
 see stop_c_absolute </td></tr>
 <tr><td class="fieldtype">
-<a id="a9a3d9960a04602d2a18009c82ae2124e"></a>int</td>
-<td class="fieldname">
-stop_print</td>
-<td class="fielddoc">
-any printing will stop on this iteration </td></tr>
-<tr><td class="fieldtype">
 <a id="a56612668b00bf042745379f43166cd27"></a>real_wp_</td>
 <td class="fieldname">
 stop_s</td>
 <td class="fielddoc">
 see stop_c_absolute </td></tr>
 <tr><td class="fieldtype">
-<a id="a00b9f02fd328ee8fcd289b0a36ae8218"></a>struct <a class="el" href="nls_8h.html#structnls__subproblem__control__type">nls_subproblem_control_type</a></td>
+<a id="aa8611d2e53cef87afe803f0e486f3c98"></a>real_wp_</td>
 <td class="fieldname">
-subproblem_control</td>
+power</td>
 <td class="fielddoc">
-control parameters for the step-finding subproblem </td></tr>
+the regularization power (&lt;2 =&gt; chosen according to the model) </td></tr>
 <tr><td class="fieldtype">
-<a id="a8c10db7cf72a4e3e52c9601007f7b1de"></a>bool</td>
+<a id="aa8b73dcc65ae7dc7b3331980f77c5fb4"></a>real_wp_</td>
 <td class="fieldname">
-subproblem_direct</td>
+initial_weight</td>
 <td class="fielddoc">
-use a direct (factorization) or (preconditioned) iterative method to find the search direction </td></tr>
+initial value for the regularization weight (-ve =&gt; \(1/\|g_0\|)\)) </td></tr>
 <tr><td class="fieldtype">
-<a id="a3e388718674f5243006272b3911fae22"></a>real_wp_</td>
+<a id="a044b125f7d2b5409dde4253030798367"></a>real_wp_</td>
 <td class="fieldname">
-switch_to_newton</td>
+minimum_weight</td>
 <td class="fielddoc">
-if the Gauss-Newto to Newton model is specified, switch to Newton as soon as the norm of the gradient g is smaller than switch_to_newton </td></tr>
+minimum permitted regularization weight </td></tr>
 <tr><td class="fieldtype">
-<a id="a28c746bfd481575683553dc28abe3e30"></a>real_wp_</td>
+<a id="ab32efd2263e7fbebfe87846bc977f1ab"></a>real_wp_</td>
 <td class="fieldname">
-tiny_gap</td>
+initial_inner_weight</td>
 <td class="fielddoc">
-see reduce_gap </td></tr>
+initial value for the inner regularization weight for tensor GN (-ve =&gt; 0) </td></tr>
 <tr><td class="fieldtype">
-<a id="a46e8590e1c6ebb8c2a673d854762424d"></a>real_wp_</td>
+<a id="ac0774abb09bb59381960d771cb38b8ef"></a>real_wp_</td>
 <td class="fieldname">
-weight_decrease</td>
+eta_successful</td>
 <td class="fielddoc">
-REAL ( KIND = wp ) :: weight_decrease = half. </td></tr>
+REAL ( KIND = wp ) :: initial_inner_weight = 0.0001_wp a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than .eta_successful times that predicted by a quadratic model of the decrease. The regularization weight will be decreaed if this relative decrease is greater than .eta_very_successful but smaller than .eta_too_successful. </td></tr>
+<tr><td class="fieldtype">
+<a id="a5e55cf3fe7846b0f9b23919b0f95469e"></a>real_wp_</td>
+<td class="fieldname">
+eta_very_successful</td>
+<td class="fielddoc">
+see eta_successful </td></tr>
+<tr><td class="fieldtype">
+<a id="a6af4c9666b9342fa75b665bfb8cef524"></a>real_wp_</td>
+<td class="fieldname">
+eta_too_successful</td>
+<td class="fielddoc">
+see eta_successful </td></tr>
 <tr><td class="fieldtype">
 <a id="a481b6aeef2f3d9a0078665db1e512c85"></a>real_wp_</td>
 <td class="fieldname">
 weight_decrease_min</td>
 <td class="fielddoc">
 on very successful iterations, the regularization weight will be reduced by the factor .weight_decrease but no more than .weight_decrease_min while if the iteration is unsucceful, the weight will be increased by a factor .weight_increase but no more than .weight_increase_max (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli and Toint, 2011) </td></tr>
+<tr><td class="fieldtype">
+<a id="a46e8590e1c6ebb8c2a673d854762424d"></a>real_wp_</td>
+<td class="fieldname">
+weight_decrease</td>
+<td class="fielddoc">
+REAL ( KIND = wp ) :: weight_decrease = half. </td></tr>
 <tr><td class="fieldtype">
 <a id="a92d59bc5d9b2899fbb318ea033e85540"></a>real_wp_</td>
 <td class="fieldname">
@@ -759,11 +688,90 @@ weight_increase_max</td>
 <td class="fielddoc">
 see weight_increase </td></tr>
 <tr><td class="fieldtype">
-<a id="a91395480b85edaac83529fc7f1605289"></a>int</td>
+<a id="a462c383f8c4b96b23d585f292bd5e0e2"></a>real_wp_</td>
 <td class="fieldname">
-weight_update_strategy</td>
+reduce_gap</td>
 <td class="fielddoc">
-define the weight-update strategy: 1 (basic), 2 (reset to zero when very successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT) </td></tr>
+expert parameters as suggested in Gould, Porcelli and Toint, "Updating t
+regularization parameter in the adaptive cubic regularization algorithm" RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011), <a href="http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf">http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf</a> (these are denoted beta, epsilon_chi and alpha_max in the paper) </td></tr>
+<tr><td class="fieldtype">
+<a id="a28c746bfd481575683553dc28abe3e30"></a>real_wp_</td>
+<td class="fieldname">
+tiny_gap</td>
+<td class="fielddoc">
+see reduce_gap </td></tr>
+<tr><td class="fieldtype">
+<a id="a7abb4c844c9fddec04f47c856f4a2383"></a>real_wp_</td>
+<td class="fieldname">
+large_root</td>
+<td class="fielddoc">
+see reduce_gap </td></tr>
+<tr><td class="fieldtype">
+<a id="a3e388718674f5243006272b3911fae22"></a>real_wp_</td>
+<td class="fieldname">
+switch_to_newton</td>
+<td class="fielddoc">
+if the Gauss-Newto to Newton model is specified, switch to Newton as soon as the norm of the gradient g is smaller than switch_to_newton </td></tr>
+<tr><td class="fieldtype">
+<a id="a52f14ff3f85e6805f2373eef5d0f3dfd"></a>real_wp_</td>
+<td class="fieldname">
+cpu_time_limit</td>
+<td class="fielddoc">
+the maximum CPU time allowed (-ve means infinite) </td></tr>
+<tr><td class="fieldtype">
+<a id="ab05d7c2b06d3a9fb085fa3739501d1c8"></a>real_wp_</td>
+<td class="fieldname">
+clock_time_limit</td>
+<td class="fielddoc">
+the maximum elapsed clock time allowed (-ve means infinite) </td></tr>
+<tr><td class="fieldtype">
+<a id="a8c10db7cf72a4e3e52c9601007f7b1de"></a>bool</td>
+<td class="fieldname">
+subproblem_direct</td>
+<td class="fielddoc">
+use a direct (factorization) or (preconditioned) iterative method to find the search direction </td></tr>
+<tr><td class="fieldtype">
+<a id="aa451859552980839fa9fe17df018c042"></a>bool</td>
+<td class="fieldname">
+renormalize_weight</td>
+<td class="fielddoc">
+should the weight be renormalized to account for a change in scaling? </td></tr>
+<tr><td class="fieldtype">
+<a id="adb993f5277ee10213227e86ba94fd934"></a>bool</td>
+<td class="fieldname">
+magic_step</td>
+<td class="fielddoc">
+allow the user to perform a "magic" step to improve the objective </td></tr>
+<tr><td class="fieldtype">
+<a id="a95ba685ae01db06b2e9a16412097612a"></a>bool</td>
+<td class="fieldname">
+print_obj</td>
+<td class="fielddoc">
+print values of the objective/gradient rather than ||c|| and its gradien </td></tr>
+<tr><td class="fieldtype">
+<a id="a957fc1f4f26eeef3b0951791ff972e8d"></a>bool</td>
+<td class="fieldname">
+space_critical</td>
+<td class="fielddoc">
+if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time </td></tr>
+<tr><td class="fieldtype">
+<a id="a58a2c67fad6e808e8365eff67700cba5"></a>bool</td>
+<td class="fieldname">
+deallocate_error_fatal</td>
+<td class="fielddoc">
+if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue </td></tr>
+<tr><td class="fieldtype">
+<a id="a1dc05936393ba705f516a0c275df4ffc"></a>char</td>
+<td class="fieldname">
+prefix[31]</td>
+<td class="fielddoc">
+all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
+<tr><td class="fieldtype">
+<a id="a00b9f02fd328ee8fcd289b0a36ae8218"></a>struct <a class="el" href="nls_8h.html#structnls__subproblem__control__type">nls_subproblem_control_type</a></td>
+<td class="fieldname">
+subproblem_control</td>
+<td class="fielddoc">
+control parameters for the step-finding subproblem </td></tr>
 </table>
 
 </div>
@@ -783,11 +791,47 @@ define the weight-update strategy: 1 (basic), 2 (reset to zero when very success
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
+<a id="aa7b2ccce10ffc8ef240d5be56ec1fbbc"></a>real_sp_</td>
+<td class="fieldname">
+total</td>
+<td class="fielddoc">
+the total CPU time spent in the package </td></tr>
+<tr><td class="fieldtype">
+<a id="adc5369028902776a12fe8d393be67174"></a>real_sp_</td>
+<td class="fieldname">
+preprocess</td>
+<td class="fielddoc">
+the CPU time spent preprocessing the problem </td></tr>
+<tr><td class="fieldtype">
 <a id="a0ca2b20748c7749a77d684124011c531"></a>real_sp_</td>
 <td class="fieldname">
 analyse</td>
 <td class="fielddoc">
 the CPU time spent analysing the required matrices prior to factorizatio </td></tr>
+<tr><td class="fieldtype">
+<a id="ab7eecce4b013c87e490b8984c74c59c3"></a>real_sp_</td>
+<td class="fieldname">
+factorize</td>
+<td class="fielddoc">
+the CPU time spent factorizing the required matrices </td></tr>
+<tr><td class="fieldtype">
+<a id="a6356532c25755a6e5fedee1a7d703949"></a>real_sp_</td>
+<td class="fieldname">
+solve</td>
+<td class="fielddoc">
+the CPU time spent computing the search direction </td></tr>
+<tr><td class="fieldtype">
+<a id="ae9145eea8e19f9cae77904d3d00c5d1f"></a>real_wp_</td>
+<td class="fieldname">
+clock_total</td>
+<td class="fielddoc">
+the total clock time spent in the package </td></tr>
+<tr><td class="fieldtype">
+<a id="a0c3b390c67037ef2fe8b4cf29e079e4e"></a>real_wp_</td>
+<td class="fieldname">
+clock_preprocess</td>
+<td class="fielddoc">
+the clock time spent preprocessing the problem </td></tr>
 <tr><td class="fieldtype">
 <a id="a3394e706afb175d930c81c4b86fe8f4b"></a>real_wp_</td>
 <td class="fieldname">
@@ -801,47 +845,11 @@ clock_factorize</td>
 <td class="fielddoc">
 the clock time spent factorizing the required matrices </td></tr>
 <tr><td class="fieldtype">
-<a id="a0c3b390c67037ef2fe8b4cf29e079e4e"></a>real_wp_</td>
-<td class="fieldname">
-clock_preprocess</td>
-<td class="fielddoc">
-the clock time spent preprocessing the problem </td></tr>
-<tr><td class="fieldtype">
 <a id="af569df4b8828eb7ac8a05ef1030d1358"></a>real_wp_</td>
 <td class="fieldname">
 clock_solve</td>
 <td class="fielddoc">
 the clock time spent computing the search direction </td></tr>
-<tr><td class="fieldtype">
-<a id="ae9145eea8e19f9cae77904d3d00c5d1f"></a>real_wp_</td>
-<td class="fieldname">
-clock_total</td>
-<td class="fielddoc">
-the total clock time spent in the package </td></tr>
-<tr><td class="fieldtype">
-<a id="ab7eecce4b013c87e490b8984c74c59c3"></a>real_sp_</td>
-<td class="fieldname">
-factorize</td>
-<td class="fielddoc">
-the CPU time spent factorizing the required matrices </td></tr>
-<tr><td class="fieldtype">
-<a id="adc5369028902776a12fe8d393be67174"></a>real_sp_</td>
-<td class="fieldname">
-preprocess</td>
-<td class="fielddoc">
-the CPU time spent preprocessing the problem </td></tr>
-<tr><td class="fieldtype">
-<a id="a6356532c25755a6e5fedee1a7d703949"></a>real_sp_</td>
-<td class="fieldname">
-solve</td>
-<td class="fielddoc">
-the CPU time spent computing the search direction </td></tr>
-<tr><td class="fieldtype">
-<a id="aa7b2ccce10ffc8ef240d5be56ec1fbbc"></a>real_sp_</td>
-<td class="fieldname">
-total</td>
-<td class="fielddoc">
-the total CPU time spent in the package </td></tr>
 </table>
 
 </div>
@@ -861,6 +869,12 @@ the total CPU time spent in the package </td></tr>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
+<a id="a6e27f49150e9a14580fb313cc2777e00"></a>int</td>
+<td class="fieldname">
+status</td>
+<td class="fielddoc">
+return status. See NLS_solve for details </td></tr>
+<tr><td class="fieldtype">
 <a id="a4335d5f44067aca76d5fff71eeb7d381"></a>int</td>
 <td class="fieldname">
 alloc_status</td>
@@ -879,11 +893,11 @@ bad_eval[13]</td>
 <td class="fielddoc">
 the name of the user-supplied evaluation routine for which an error ocur </td></tr>
 <tr><td class="fieldtype">
-<a id="ab8312e1defeefffdcc0b5956bcb31ad4"></a>int</td>
+<a id="aab6f168571c2073e01e240524b8a3da0"></a>int</td>
 <td class="fieldname">
-c_eval</td>
+iter</td>
 <td class="fielddoc">
-the total number of evaluations of the residual function c(x) </td></tr>
+the total number of iterations performed </td></tr>
 <tr><td class="fieldtype">
 <a id="ad37cf7ad93af3413bc01b6515aad692a"></a>int</td>
 <td class="fieldname">
@@ -891,47 +905,11 @@ cg_iter</td>
 <td class="fielddoc">
 the total number of CG iterations performed </td></tr>
 <tr><td class="fieldtype">
-<a id="a42d0c89df887685f68327d07c6e92f05"></a>real_wp_</td>
+<a id="ab8312e1defeefffdcc0b5956bcb31ad4"></a>int</td>
 <td class="fieldname">
-factorization_average</td>
+c_eval</td>
 <td class="fielddoc">
-the average number of factorizations per sub-problem solve </td></tr>
-<tr><td class="fieldtype">
-<a id="a1e477a1869f7d6863b2c42209fc98bae"></a>int</td>
-<td class="fieldname">
-factorization_integer</td>
-<td class="fielddoc">
-the total integer workspace required for the factorization </td></tr>
-<tr><td class="fieldtype">
-<a id="a97dadabf3b7bdf921c4dcd1f43129f05"></a>int</td>
-<td class="fieldname">
-factorization_max</td>
-<td class="fielddoc">
-the maximum number of factorizations in a sub-problem solve </td></tr>
-<tr><td class="fieldtype">
-<a id="addcd710082286575000fc0c79bc63617"></a>int</td>
-<td class="fieldname">
-factorization_real</td>
-<td class="fielddoc">
-the total real workspace required for the factorization </td></tr>
-<tr><td class="fieldtype">
-<a id="aa448fed9eb03e70d5a03300b4fbbf210"></a>int</td>
-<td class="fieldname">
-factorization_status</td>
-<td class="fielddoc">
-the return status from the factorization </td></tr>
-<tr><td class="fieldtype">
-<a id="af1410cb1718f2a083dd8a7dee9ab643a"></a>int</td>
-<td class="fieldname">
-h_eval</td>
-<td class="fielddoc">
-the total number of evaluations of the scaled Hessian H(x,y) of c(x) </td></tr>
-<tr><td class="fieldtype">
-<a id="aab6f168571c2073e01e240524b8a3da0"></a>int</td>
-<td class="fieldname">
-iter</td>
-<td class="fielddoc">
-the total number of iterations performed </td></tr>
+the total number of evaluations of the residual function c(x) </td></tr>
 <tr><td class="fieldtype">
 <a id="a47a079918ad01b32fd15ed6a0b8bd581"></a>int</td>
 <td class="fieldname">
@@ -939,11 +917,53 @@ j_eval</td>
 <td class="fielddoc">
 the total number of evaluations of the Jacobian J(x) of c(x) </td></tr>
 <tr><td class="fieldtype">
-<a id="abf69f7ec94abc74ca967f247f54bc919"></a>int</td>
+<a id="af1410cb1718f2a083dd8a7dee9ab643a"></a>int</td>
+<td class="fieldname">
+h_eval</td>
+<td class="fielddoc">
+the total number of evaluations of the scaled Hessian H(x,y) of c(x) </td></tr>
+<tr><td class="fieldtype">
+<a id="a97dadabf3b7bdf921c4dcd1f43129f05"></a>int</td>
+<td class="fieldname">
+factorization_max</td>
+<td class="fielddoc">
+the maximum number of factorizations in a sub-problem solve </td></tr>
+<tr><td class="fieldtype">
+<a id="aa448fed9eb03e70d5a03300b4fbbf210"></a>int</td>
+<td class="fieldname">
+factorization_status</td>
+<td class="fielddoc">
+the return status from the factorization </td></tr>
+<tr><td class="fieldtype">
+<a id="a000fc3c3afd41e368d7f258b6b02e5da"></a>long int</td>
 <td class="fieldname">
 max_entries_factors</td>
 <td class="fielddoc">
 the maximum number of entries in the factors </td></tr>
+<tr><td class="fieldtype">
+<a id="a1e477a1869f7d6863b2c42209fc98bae"></a>int</td>
+<td class="fieldname">
+factorization_integer</td>
+<td class="fielddoc">
+the total integer workspace required for the factorization </td></tr>
+<tr><td class="fieldtype">
+<a id="addcd710082286575000fc0c79bc63617"></a>int</td>
+<td class="fieldname">
+factorization_real</td>
+<td class="fielddoc">
+the total real workspace required for the factorization </td></tr>
+<tr><td class="fieldtype">
+<a id="a42d0c89df887685f68327d07c6e92f05"></a>real_wp_</td>
+<td class="fieldname">
+factorization_average</td>
+<td class="fielddoc">
+the average number of factorizations per sub-problem solve </td></tr>
+<tr><td class="fieldtype">
+<a id="a0cbcb28977ac1f47ab67d27e4216626d"></a>real_wp_</td>
+<td class="fieldname">
+obj</td>
+<td class="fielddoc">
+the value of the objective function \(\frac{1}{2}\|c(x)\|^2_W\) at the best estimate the solution, x, determined by NLS_solve </td></tr>
 <tr><td class="fieldtype">
 <a id="a4969b17b30edb63a6bbcb89c7c10a340"></a>real_wp_</td>
 <td class="fieldname">
@@ -957,29 +977,17 @@ norm_g</td>
 <td class="fielddoc">
 the norm of the gradient of \(\|c(x)\|_W\) of the objective function at the best estimate, x, of the solution determined by NLS_solve </td></tr>
 <tr><td class="fieldtype">
-<a id="a0cbcb28977ac1f47ab67d27e4216626d"></a>real_wp_</td>
+<a id="adcd20aeaf7042e972ddab56f3867ce70"></a>real_wp_</td>
 <td class="fieldname">
-obj</td>
+weight</td>
 <td class="fielddoc">
-the value of the objective function \(\frac{1}{2}\|c(x)\|^2_W\) at the best estimate the solution, x, determined by NLS_solve </td></tr>
-<tr><td class="fieldtype">
-<a id="a6e27f49150e9a14580fb313cc2777e00"></a>int</td>
-<td class="fieldname">
-status</td>
-<td class="fielddoc">
-return status. See NLS_solve for details </td></tr>
+the final regularization weight used </td></tr>
 <tr><td class="fieldtype">
 <a id="a44dc03b1a33bf900f668c713cbac9498"></a>struct <a class="el" href="nls_8h.html#structnls__time__type">nls_time_type</a></td>
 <td class="fieldname">
 time</td>
 <td class="fielddoc">
 timings (see above) </td></tr>
-<tr><td class="fieldtype">
-<a id="adcd20aeaf7042e972ddab56f3867ce70"></a>real_wp_</td>
-<td class="fieldname">
-weight</td>
-<td class="fielddoc">
-the final regularization weight used </td></tr>
 </table>
 
 </div>
@@ -1001,6 +1009,12 @@ the final regularization weight used </td></tr>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
+<a id="a6e27f49150e9a14580fb313cc2777e00"></a>int</td>
+<td class="fieldname">
+status</td>
+<td class="fielddoc">
+return status. See NLS_solve for details </td></tr>
+<tr><td class="fieldtype">
 <a id="a4335d5f44067aca76d5fff71eeb7d381"></a>int</td>
 <td class="fieldname">
 alloc_status</td>
@@ -1019,11 +1033,11 @@ bad_eval[13]</td>
 <td class="fielddoc">
 the name of the user-supplied evaluation routine for which an error ocur </td></tr>
 <tr><td class="fieldtype">
-<a id="ab8312e1defeefffdcc0b5956bcb31ad4"></a>int</td>
+<a id="aab6f168571c2073e01e240524b8a3da0"></a>int</td>
 <td class="fieldname">
-c_eval</td>
+iter</td>
 <td class="fielddoc">
-the total number of evaluations of the residual function c(x) </td></tr>
+the total number of iterations performed </td></tr>
 <tr><td class="fieldtype">
 <a id="ad37cf7ad93af3413bc01b6515aad692a"></a>int</td>
 <td class="fieldname">
@@ -1031,47 +1045,11 @@ cg_iter</td>
 <td class="fielddoc">
 the total number of CG iterations performed </td></tr>
 <tr><td class="fieldtype">
-<a id="a42d0c89df887685f68327d07c6e92f05"></a>real_wp_</td>
+<a id="ab8312e1defeefffdcc0b5956bcb31ad4"></a>int</td>
 <td class="fieldname">
-factorization_average</td>
+c_eval</td>
 <td class="fielddoc">
-the average number of factorizations per sub-problem solve </td></tr>
-<tr><td class="fieldtype">
-<a id="a1e477a1869f7d6863b2c42209fc98bae"></a>int</td>
-<td class="fieldname">
-factorization_integer</td>
-<td class="fielddoc">
-the total integer workspace required for the factorization </td></tr>
-<tr><td class="fieldtype">
-<a id="a97dadabf3b7bdf921c4dcd1f43129f05"></a>int</td>
-<td class="fieldname">
-factorization_max</td>
-<td class="fielddoc">
-the maximum number of factorizations in a sub-problem solve </td></tr>
-<tr><td class="fieldtype">
-<a id="addcd710082286575000fc0c79bc63617"></a>int</td>
-<td class="fieldname">
-factorization_real</td>
-<td class="fielddoc">
-the total real workspace required for the factorization </td></tr>
-<tr><td class="fieldtype">
-<a id="aa448fed9eb03e70d5a03300b4fbbf210"></a>int</td>
-<td class="fieldname">
-factorization_status</td>
-<td class="fielddoc">
-the return status from the factorization </td></tr>
-<tr><td class="fieldtype">
-<a id="af1410cb1718f2a083dd8a7dee9ab643a"></a>int</td>
-<td class="fieldname">
-h_eval</td>
-<td class="fielddoc">
-the total number of evaluations of the scaled Hessian H(x,y) of c(x) </td></tr>
-<tr><td class="fieldtype">
-<a id="aab6f168571c2073e01e240524b8a3da0"></a>int</td>
-<td class="fieldname">
-iter</td>
-<td class="fielddoc">
-the total number of iterations performed </td></tr>
+the total number of evaluations of the residual function c(x) </td></tr>
 <tr><td class="fieldtype">
 <a id="a47a079918ad01b32fd15ed6a0b8bd581"></a>int</td>
 <td class="fieldname">
@@ -1079,11 +1057,53 @@ j_eval</td>
 <td class="fielddoc">
 the total number of evaluations of the Jacobian J(x) of c(x) </td></tr>
 <tr><td class="fieldtype">
+<a id="af1410cb1718f2a083dd8a7dee9ab643a"></a>int</td>
+<td class="fieldname">
+h_eval</td>
+<td class="fielddoc">
+the total number of evaluations of the scaled Hessian H(x,y) of c(x) </td></tr>
+<tr><td class="fieldtype">
+<a id="a97dadabf3b7bdf921c4dcd1f43129f05"></a>int</td>
+<td class="fieldname">
+factorization_max</td>
+<td class="fielddoc">
+the maximum number of factorizations in a sub-problem solve </td></tr>
+<tr><td class="fieldtype">
+<a id="aa448fed9eb03e70d5a03300b4fbbf210"></a>int</td>
+<td class="fieldname">
+factorization_status</td>
+<td class="fielddoc">
+the return status from the factorization </td></tr>
+<tr><td class="fieldtype">
 <a id="abf69f7ec94abc74ca967f247f54bc919"></a>int</td>
 <td class="fieldname">
 max_entries_factors</td>
 <td class="fielddoc">
 the maximum number of entries in the factors </td></tr>
+<tr><td class="fieldtype">
+<a id="a1e477a1869f7d6863b2c42209fc98bae"></a>int</td>
+<td class="fieldname">
+factorization_integer</td>
+<td class="fielddoc">
+the total integer workspace required for the factorization </td></tr>
+<tr><td class="fieldtype">
+<a id="addcd710082286575000fc0c79bc63617"></a>int</td>
+<td class="fieldname">
+factorization_real</td>
+<td class="fielddoc">
+the total real workspace required for the factorization </td></tr>
+<tr><td class="fieldtype">
+<a id="a42d0c89df887685f68327d07c6e92f05"></a>real_wp_</td>
+<td class="fieldname">
+factorization_average</td>
+<td class="fielddoc">
+the average number of factorizations per sub-problem solve </td></tr>
+<tr><td class="fieldtype">
+<a id="a0cbcb28977ac1f47ab67d27e4216626d"></a>real_wp_</td>
+<td class="fieldname">
+obj</td>
+<td class="fielddoc">
+the value of the objective function \(\frac{1}{2}\|c(x)\|^2_W\) at the best estimate the solution, x, determined by NLS_solve </td></tr>
 <tr><td class="fieldtype">
 <a id="a4969b17b30edb63a6bbcb89c7c10a340"></a>real_wp_</td>
 <td class="fieldname">
@@ -1097,23 +1117,11 @@ norm_g</td>
 <td class="fielddoc">
 the norm of the gradient of \(\|c(x)\|_W\) of the objective function at the best estimate, x, of the solution determined by NLS_solve </td></tr>
 <tr><td class="fieldtype">
-<a id="a0cbcb28977ac1f47ab67d27e4216626d"></a>real_wp_</td>
+<a id="adcd20aeaf7042e972ddab56f3867ce70"></a>real_wp_</td>
 <td class="fieldname">
-obj</td>
+weight</td>
 <td class="fielddoc">
-the value of the objective function \(\frac{1}{2}\|c(x)\|^2_W\) at the best estimate the solution, x, determined by NLS_solve </td></tr>
-<tr><td class="fieldtype">
-<a id="a6e27f49150e9a14580fb313cc2777e00"></a>int</td>
-<td class="fieldname">
-status</td>
-<td class="fielddoc">
-return status. See NLS_solve for details </td></tr>
-<tr><td class="fieldtype">
-<a id="afe321f4b9cfc27d8927047e53e2f288a"></a>struct <a class="el" href="nls_8h.html#structnls__subproblem__inform__type">nls_subproblem_inform_type</a></td>
-<td class="fieldname">
-subproblem_inform</td>
-<td class="fielddoc">
-inform parameters for subproblem </td></tr>
+the final regularization weight used </td></tr>
 <tr><td class="fieldtype">
 <a id="a44dc03b1a33bf900f668c713cbac9498"></a>struct <a class="el" href="nls_8h.html#structnls__time__type">nls_time_type</a></td>
 <td class="fieldname">
@@ -1121,16 +1129,97 @@ time</td>
 <td class="fielddoc">
 timings (see above) </td></tr>
 <tr><td class="fieldtype">
-<a id="adcd20aeaf7042e972ddab56f3867ce70"></a>real_wp_</td>
+<a id="afe321f4b9cfc27d8927047e53e2f288a"></a>struct <a class="el" href="nls_8h.html#structnls__subproblem__inform__type">nls_subproblem_inform_type</a></td>
 <td class="fieldname">
-weight</td>
+subproblem_inform</td>
 <td class="fielddoc">
-the final regularization weight used </td></tr>
+inform parameters for subproblem </td></tr>
 </table>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="aa344bb15b74ab3b3ee6afb2de072b19f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa344bb15b74ab3b3ee6afb2de072b19f">&#9670;&nbsp;</a></span>nls_initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nls_initialize </td>
+          <td>(</td>
+          <td class="paramtype">void **&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct <a class="el" href="nls_8h.html#structnls__control__type">nls_control_type</a> *&#160;</td>
+          <td class="paramname"><em>control</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct <a class="el" href="nls_8h.html#structnls__inform__type">nls_inform_type</a> *&#160;</td>
+          <td class="paramname"><em>inform</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set default control values and initialize private data</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">control</td><td>is a struct containing control information (see <a class="el" href="nls_8h.html#structnls__control__type">nls_control_type</a>) </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="nls_8h.html#structnls__inform__type">nls_inform_type</a>) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="nlst_8c-example.html#a2">nlst.c</a>, and <a class="el" href="nlstf_8c-example.html#a2">nlstf.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="adf9db7eff2fce137ae2abd2e013c47b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf9db7eff2fce137ae2abd2e013c47b3">&#9670;&nbsp;</a></span>nls_read_specfile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nls_read_specfile </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="nls_8h.html#structnls__control__type">nls_control_type</a> *&#160;</td>
+          <td class="paramname"><em>control</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>specfile</em>[]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">control</td><td>is a struct containing control information (see <a class="el" href="nls_8h.html#structnls__control__type">nls_control_type</a>) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">specfile</td><td>is a character string containing the name of the specification file </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a3f0eb83fd31ee4108156f2e84176389d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3f0eb83fd31ee4108156f2e84176389d">&#9670;&nbsp;</a></span>nls_import()</h2>
 
@@ -1308,137 +1397,8 @@ the final regularization weight used </td></tr>
 
 </div>
 </div>
-<a id="a765da96b0a1f3d07dab53cc3400c22d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a765da96b0a1f3d07dab53cc3400c22d8">&#9670;&nbsp;</a></span>nls_information()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void nls_information </td>
-          <td>(</td>
-          <td class="paramtype">void **&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">struct <a class="el" href="nls_8h.html#structnls__inform__type">nls_inform_type</a> *&#160;</td>
-          <td class="paramname"><em>inform</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>status</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Provides output information</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="nls_8h.html#structnls__inform__type">nls_inform_type</a>)</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently): <ul>
-<li>0. The values were recorded succesfully </li>
-</ul>
-</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="nlst_8c-example.html#a6">nlst.c</a>, and <a class="el" href="nlstf_8c-example.html#a6">nlstf.c</a>.</dd>
-</dl>
-
-</div>
-</div>
-<a id="aa344bb15b74ab3b3ee6afb2de072b19f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa344bb15b74ab3b3ee6afb2de072b19f">&#9670;&nbsp;</a></span>nls_initialize()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void nls_initialize </td>
-          <td>(</td>
-          <td class="paramtype">void **&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">struct <a class="el" href="nls_8h.html#structnls__control__type">nls_control_type</a> *&#160;</td>
-          <td class="paramname"><em>control</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">struct <a class="el" href="nls_8h.html#structnls__inform__type">nls_inform_type</a> *&#160;</td>
-          <td class="paramname"><em>inform</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Set default control values and initialize private data</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">control</td><td>is a struct containing control information (see <a class="el" href="nls_8h.html#structnls__control__type">nls_control_type</a>) </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="nls_8h.html#structnls__inform__type">nls_inform_type</a>) </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="nlst_8c-example.html#a2">nlst.c</a>, and <a class="el" href="nlstf_8c-example.html#a2">nlstf.c</a>.</dd>
-</dl>
-
-</div>
-</div>
-<a id="adf9db7eff2fce137ae2abd2e013c47b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adf9db7eff2fce137ae2abd2e013c47b3">&#9670;&nbsp;</a></span>nls_read_specfile()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void nls_read_specfile </td>
-          <td>(</td>
-          <td class="paramtype">struct <a class="el" href="nls_8h.html#structnls__control__type">nls_control_type</a> *&#160;</td>
-          <td class="paramname"><em>control</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char&#160;</td>
-          <td class="paramname"><em>specfile</em>[]&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">control</td><td>is a struct containing control information (see <a class="el" href="nls_8h.html#structnls__control__type">nls_control_type</a>) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">specfile</td><td>is a character string containing the name of the specification file </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a855775351d3ef7c77fac1dcec9e7915d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a855775351d3ef7c77fac1dcec9e7915d">&#9670;&nbsp;</a></span>nls_reset_control()</h2>
+<a id="a07f0857c9923ad0f92d51ed00833afda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07f0857c9923ad0f92d51ed00833afda">&#9670;&nbsp;</a></span>nls_reset_control()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1479,6 +1439,306 @@ the final regularization weight used </td></tr>
 </td></tr>
   </table>
   </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae923c2e6afabb3563fe0998d45b715c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae923c2e6afabb3563fe0998d45b715c4">&#9670;&nbsp;</a></span>nls_solve_with_mat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nls_solve_with_mat </td>
+          <td>(</td>
+          <td class="paramtype">void **&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>userdata</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>x</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>c</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>g</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int(*)(int, int, const real_wp_[], real_wp_[], const void *)&#160;</td>
+          <td class="paramname"><em>eval_c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>j_ne</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int(*)(int, int, int, const real_wp_[], real_wp_[], const void *)&#160;</td>
+          <td class="paramname"><em>eval_j</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>h_ne</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int(*)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], const void *)&#160;</td>
+          <td class="paramname"><em>eval_h</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>p_ne</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int(*)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], bool, const void *)&#160;</td>
+          <td class="paramname"><em>eval_hprods</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Find a local minimizer of a given function using a trust-region method.</p>
+<p>This call is for the case where \(H = \nabla_{xx}f(x)\) is provided specifically, and all function/derivative information is available by function calls.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">userdata</td><td>is a structure that allows data to be passed into the function and derivative evaluation programs.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
+ On initial entry, status must be set to 1. <br  />
+ Possible exit are: <ul>
+<li>0. The run was succesful</li>
+</ul>
+<ul>
+<li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
+<li>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
+<li>-3. The restriction n &gt; 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated. </li>
+<li>-9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status </li>
+<li>-10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status. </li>
+<li>-11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status. </li>
+<li>-16. The problem is so ill-conditioned that further progress is impossible. </li>
+<li>-17. The step is too small to make further impact. </li>
+<li>-18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem. </li>
+<li>-19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem. </li>
+<li>-82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.</li>
+</ul>
+</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>is a scalar variable of type int, that holds the number of variables.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">m</td><td>is a scalar variable of type int, that holds the number of residuals.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>is a one-dimensional array of size n and type double, that holds the values \(x\) of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains \(x_j\).</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">c</td><td>is a one-dimensional array of size m and type double, that holds the residual \(c(x)\). The i-th component of c, j = 0, ... , n-1, contains \(c_j(x) \).</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">g</td><td>is a one-dimensional array of size n and type double, that holds the gradient \(g = \nabla_xf(x)\) of the objective function. The j-th component of g, j = 0, ... , n-1, contains \(g_j \).</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">eval_c</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_c( <span class="keywordtype">int</span> n, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">double</span> c[], <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata ) </div>
+</div><!-- fragment --> The componnts of the residual function \(c(x)\) evaluated at x= \(x\) must be assigned to c, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_c</code> via the structure <code>userdata</code>.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">j_ne</td><td>is a scalar variable of type int, that holds the number of entries in the Jacobian matrix \(J\).</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">eval_j</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_j( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> jne, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">double</span> j[], </div>
+<div class="line">            <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata )</div>
+</div><!-- fragment --> The components of the Jacobian \(J = \nabla_x c(x\)) of the residuals must be assigned to j in the same order as presented to nls_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_j</code> via the structure <code>userdata</code>.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">h_ne</td><td>is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix \(H\) if it is used.</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">eval_h</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_h( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> hne, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keyword">const</span> <span class="keywordtype">double</span> y[], </div>
+<div class="line">            <span class="keywordtype">double</span> h[], <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata )</div>
+</div><!-- fragment --> The nonzeros of the matrix \(H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)\) of the weighted residual Hessian evaluated at x= \(x\) and y= \(y\) must be assigned to h in the same order as presented to nls_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_h</code> via the structure <code>userdata</code>.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_ne</td><td>is a scalar variable of type int, that holds the number of entries in the residual-Hessians-vector product matrix \(P\) if it is used.</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">eval_hprods</td><td>is an optional user-supplied function that may be NULL. If non-NULL, it must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_hprods( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> pne, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], </div>
+<div class="line">                    <span class="keyword">const</span> <span class="keywordtype">double</span> v[], <span class="keywordtype">double</span> p[], <span class="keywordtype">bool</span> got_h, </div>
+<div class="line">                    <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata ) );</div>
+</div><!-- fragment --> The entries of the matrix \(P\), whose i-th column is the product \(\nabla_{xx}c_i(x) v\) between \(\nabla_{xx}c_i(x)\), the Hessian of the i-th component of the residual \(c(x)\) at x= \(x\), and v= \(v\) must be returned in p and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_hprods</code> via the structure <code>userdata</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="nlst_8c-example.html#a4">nlst.c</a>, and <a class="el" href="nlstf_8c-example.html#a4">nlstf.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a692ecbfaa428584e60aa4c33d7278a64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a692ecbfaa428584e60aa4c33d7278a64">&#9670;&nbsp;</a></span>nls_solve_without_mat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nls_solve_without_mat </td>
+          <td>(</td>
+          <td class="paramtype">void **&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>userdata</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>x</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>c</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>g</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int(*)(int, int, const real_wp_[], real_wp_[], const void *)&#160;</td>
+          <td class="paramname"><em>eval_c</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int(*)(int, int, const real_wp_[], const bool, real_wp_[], const real_wp_[], bool, const void *)&#160;</td>
+          <td class="paramname"><em>eval_jprod</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int(*)(int, int, const real_wp_[], const real_wp_[], real_wp_[], const real_wp_[], bool, const void *)&#160;</td>
+          <td class="paramname"><em>eval_hprod</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>p_ne</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int(*)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], bool, const void *)&#160;</td>
+          <td class="paramname"><em>eval_hprods</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Find a local minimizer of a given function using a trust-region method.</p>
+<p>This call is for the case where access to \(H = \nabla_{xx}f(x)\) is provided by Hessian-vector products, and all function/derivative information is available by function calls.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">userdata</td><td>is a structure that allows data to be passed into the function and derivative evaluation programs.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
+ On initial entry, status must be set to 1. <br  />
+ Possible exit are: <ul>
+<li>0. The run was succesful</li>
+</ul>
+<ul>
+<li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
+<li>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
+<li>-3. The restriction n &gt; 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated. </li>
+<li>-9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status </li>
+<li>-10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status. </li>
+<li>-11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status. </li>
+<li>-16. The problem is so ill-conditioned that further progress is impossible. </li>
+<li>-17. The step is too small to make further impact. </li>
+<li>-18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem. </li>
+<li>-19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem. </li>
+<li>-82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.</li>
+</ul>
+</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>is a scalar variable of type int, that holds the number of variables</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">m</td><td>is a scalar variable of type int, that holds the number of residuals.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>is a one-dimensional array of size n and type double, that holds the values \(x\) of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains \(x_j\).</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">c</td><td>is a one-dimensional array of size m and type double, that holds the residual \(c(x)\). The i-th component of c, j = 0, ... , n-1, contains \(c_j(x) \).</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">g</td><td>is a one-dimensional array of size n and type double, that holds the gradient \(g = \nabla_xf(x)\) of the objective function. The j-th component of g, j = 0, ... , n-1, contains \(g_j \).</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">eval_c</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_c( <span class="keywordtype">int</span> n, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">double</span> c[], <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata ) </div>
+</div><!-- fragment --> The componnts of the residual function \(c(x)\) evaluated at x= \(x\) must be assigned to c, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_c</code> via the structure <code>userdata</code>.</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">eval_jprod</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_jprod( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">bool</span> transpose, </div>
+<div class="line">                <span class="keywordtype">double</span> u[], <span class="keyword">const</span> <span class="keywordtype">double</span> v[], <span class="keywordtype">bool</span> got_j, </div>
+<div class="line">                <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata )</div>
+</div><!-- fragment --> The sum \(u + \nabla_{x}c_(x) v\) (if tranpose is false) or The sum \(u + (\nabla_{x}c_(x))^T v\) (if tranpose is true) bewteen the product of the Jacobian \(\nabla_{x}c_(x)\) or its tranpose with the vector v= \(v\) and the vector $ \(u\) must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_jprod</code> via the structure <code>userdata</code>.</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">eval_hprod</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_hprod( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keyword">const</span> <span class="keywordtype">double</span> y[], </div>
+<div class="line">                <span class="keywordtype">double</span> u[], <span class="keyword">const</span> <span class="keywordtype">double</span> v[], <span class="keywordtype">bool</span> got_h, </div>
+<div class="line">                <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata )</div>
+</div><!-- fragment --> The sum \(u + \sum_{i=1}^m y_i \nabla_{xx}c_i(x) v\) of the product of the weighted residual Hessian \(H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)\) evaluated at x= \(x\) and y= \(y\) with the vector v= \(v\) and the vector $ \(u\) must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessians have already been evaluated or used at x if got_h is true. Data may be passed into <code>eval_hprod</code> via the structure <code>userdata</code>.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_ne</td><td>is a scalar variable of type int, that holds the number of entries in the residual-Hessians-vector product matrix \(P\) if it is used.</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">eval_hprods</td><td>is an optional user-supplied function that may be NULL. If non-NULL, it must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_hprods( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> p_ne, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], </div>
+<div class="line">                 <span class="keyword">const</span> <span class="keywordtype">double</span> v[], <span class="keywordtype">double</span> pval[], <span class="keywordtype">bool</span> got_h, </div>
+<div class="line">                 <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata )</div>
+</div><!-- fragment --> The entries of the matrix \(P\), whose i-th column is the product \(\nabla_{xx}c_i(x) v\) between \(\nabla_{xx}c_i(x)\), the Hessian of the i-th component of the residual \(c(x)\) at x= \(x\), and v= \(v\) must be returned in pval and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_hprods</code> via the structure <code>userdata</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="nlst_8c-example.html#a5">nlst.c</a>, and <a class="el" href="nlstf_8c-example.html#a5">nlstf.c</a>.</dd>
 </dl>
 
 </div>
@@ -1807,14 +2067,14 @@ the final regularization weight used </td></tr>
 
 </div>
 </div>
-<a id="ae923c2e6afabb3563fe0998d45b715c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae923c2e6afabb3563fe0998d45b715c4">&#9670;&nbsp;</a></span>nls_solve_with_mat()</h2>
+<a id="a765da96b0a1f3d07dab53cc3400c22d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a765da96b0a1f3d07dab53cc3400c22d8">&#9670;&nbsp;</a></span>nls_information()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void nls_solve_with_mat </td>
+          <td class="memname">void nls_information </td>
           <td>(</td>
           <td class="paramtype">void **&#160;</td>
           <td class="paramname"><em>data</em>, </td>
@@ -1822,86 +2082,14 @@ the final regularization weight used </td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>userdata</em>, </td>
+          <td class="paramtype">struct <a class="el" href="nls_8h.html#structnls__inform__type">nls_inform_type</a> *&#160;</td>
+          <td class="paramname"><em>inform</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>status</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>m</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>x</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>c</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>g</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int(*)(int, int, const real_wp_[], real_wp_[], const void *)&#160;</td>
-          <td class="paramname"><em>eval_c</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>j_ne</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int(*)(int, int, int, const real_wp_[], real_wp_[], const void *)&#160;</td>
-          <td class="paramname"><em>eval_j</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>h_ne</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int(*)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], const void *)&#160;</td>
-          <td class="paramname"><em>eval_h</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>p_ne</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int(*)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], bool, const void *)&#160;</td>
-          <td class="paramname"><em>eval_hprods</em>&#160;</td>
+          <td class="paramname"><em>status</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1910,199 +2098,19 @@ the final regularization weight used </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Find a local minimizer of a given function using a trust-region method.</p>
-<p>This call is for the case where \(H = \nabla_{xx}f(x)\) is provided specifically, and all function/derivative information is available by function calls.</p>
+<p>Provides output information</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">userdata</td><td>is a structure that allows data to be passed into the function and derivative evaluation programs.</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
- On initial entry, status must be set to 1. <br  />
- Possible exit are: <ul>
-<li>0. The run was succesful</li>
-</ul>
-<ul>
-<li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
-<li>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
-<li>-3. The restriction n &gt; 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated. </li>
-<li>-9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status </li>
-<li>-10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status. </li>
-<li>-11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status. </li>
-<li>-16. The problem is so ill-conditioned that further progress is impossible. </li>
-<li>-17. The step is too small to make further impact. </li>
-<li>-18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem. </li>
-<li>-19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem. </li>
-<li>-82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.</li>
+    <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="nls_8h.html#structnls__inform__type">nls_inform_type</a>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently): <ul>
+<li>0. The values were recorded succesfully </li>
 </ul>
 </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>is a scalar variable of type int, that holds the number of variables.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">m</td><td>is a scalar variable of type int, that holds the number of residuals.</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>is a one-dimensional array of size n and type double, that holds the values \(x\) of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains \(x_j\).</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">c</td><td>is a one-dimensional array of size m and type double, that holds the residual \(c(x)\). The i-th component of c, j = 0, ... , n-1, contains \(c_j(x) \).</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">g</td><td>is a one-dimensional array of size n and type double, that holds the gradient \(g = \nabla_xf(x)\) of the objective function. The j-th component of g, j = 0, ... , n-1, contains \(g_j \).</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">eval_c</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_c( <span class="keywordtype">int</span> n, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">double</span> c[], <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata ) </div>
-</div><!-- fragment --> The componnts of the residual function \(c(x)\) evaluated at x= \(x\) must be assigned to c, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_c</code> via the structure <code>userdata</code>.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">j_ne</td><td>is a scalar variable of type int, that holds the number of entries in the Jacobian matrix \(J\).</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">eval_j</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_j( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> jne, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">double</span> j[], </div>
-<div class="line">            <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata )</div>
-</div><!-- fragment --> The components of the Jacobian \(J = \nabla_x c(x\)) of the residuals must be assigned to j in the same order as presented to nls_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_j</code> via the structure <code>userdata</code>.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">h_ne</td><td>is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix \(H\) if it is used.</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">eval_h</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_h( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> hne, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keyword">const</span> <span class="keywordtype">double</span> y[], </div>
-<div class="line">            <span class="keywordtype">double</span> h[], <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata )</div>
-</div><!-- fragment --> The nonzeros of the matrix \(H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)\) of the weighted residual Hessian evaluated at x= \(x\) and y= \(y\) must be assigned to h in the same order as presented to nls_import, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_h</code> via the structure <code>userdata</code>.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">p_ne</td><td>is a scalar variable of type int, that holds the number of entries in the residual-Hessians-vector product matrix \(P\) if it is used.</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">eval_hprods</td><td>is an optional user-supplied function that may be NULL. If non-NULL, it must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_hprods( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> pne, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], </div>
-<div class="line">                    <span class="keyword">const</span> <span class="keywordtype">double</span> v[], <span class="keywordtype">double</span> p[], <span class="keywordtype">bool</span> got_h, </div>
-<div class="line">                    <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata ) );</div>
-</div><!-- fragment --> The entries of the matrix \(P\), whose i-th column is the product \(\nabla_{xx}c_i(x) v\) between \(\nabla_{xx}c_i(x)\), the Hessian of the i-th component of the residual \(c(x)\) at x= \(x\), and v= \(v\) must be returned in p and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_hprods</code> via the structure <code>userdata</code>. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="nlst_8c-example.html#a4">nlst.c</a>, and <a class="el" href="nlstf_8c-example.html#a4">nlstf.c</a>.</dd>
-</dl>
-
-</div>
-</div>
-<a id="a692ecbfaa428584e60aa4c33d7278a64"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a692ecbfaa428584e60aa4c33d7278a64">&#9670;&nbsp;</a></span>nls_solve_without_mat()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void nls_solve_without_mat </td>
-          <td>(</td>
-          <td class="paramtype">void **&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>userdata</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>status</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>m</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>x</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>c</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>g</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int(*)(int, int, const real_wp_[], real_wp_[], const void *)&#160;</td>
-          <td class="paramname"><em>eval_c</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int(*)(int, int, const real_wp_[], const bool, real_wp_[], const real_wp_[], bool, const void *)&#160;</td>
-          <td class="paramname"><em>eval_jprod</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int(*)(int, int, const real_wp_[], const real_wp_[], real_wp_[], const real_wp_[], bool, const void *)&#160;</td>
-          <td class="paramname"><em>eval_hprod</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>p_ne</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int(*)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], bool, const void *)&#160;</td>
-          <td class="paramname"><em>eval_hprods</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Find a local minimizer of a given function using a trust-region method.</p>
-<p>This call is for the case where access to \(H = \nabla_{xx}f(x)\) is provided by Hessian-vector products, and all function/derivative information is available by function calls.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">userdata</td><td>is a structure that allows data to be passed into the function and derivative evaluation programs.</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
- On initial entry, status must be set to 1. <br  />
- Possible exit are: <ul>
-<li>0. The run was succesful</li>
-</ul>
-<ul>
-<li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
-<li>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
-<li>-3. The restriction n &gt; 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated. </li>
-<li>-9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status </li>
-<li>-10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status. </li>
-<li>-11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status. </li>
-<li>-16. The problem is so ill-conditioned that further progress is impossible. </li>
-<li>-17. The step is too small to make further impact. </li>
-<li>-18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem. </li>
-<li>-19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem. </li>
-<li>-82. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.</li>
-</ul>
-</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>is a scalar variable of type int, that holds the number of variables</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">m</td><td>is a scalar variable of type int, that holds the number of residuals.</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>is a one-dimensional array of size n and type double, that holds the values \(x\) of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains \(x_j\).</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">c</td><td>is a one-dimensional array of size m and type double, that holds the residual \(c(x)\). The i-th component of c, j = 0, ... , n-1, contains \(c_j(x) \).</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">g</td><td>is a one-dimensional array of size n and type double, that holds the gradient \(g = \nabla_xf(x)\) of the objective function. The j-th component of g, j = 0, ... , n-1, contains \(g_j \).</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">eval_c</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_c( <span class="keywordtype">int</span> n, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">double</span> c[], <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata ) </div>
-</div><!-- fragment --> The componnts of the residual function \(c(x)\) evaluated at x= \(x\) must be assigned to c, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_c</code> via the structure <code>userdata</code>.</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">eval_jprod</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_jprod( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keywordtype">bool</span> transpose, </div>
-<div class="line">                <span class="keywordtype">double</span> u[], <span class="keyword">const</span> <span class="keywordtype">double</span> v[], <span class="keywordtype">bool</span> got_j, </div>
-<div class="line">                <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata )</div>
-</div><!-- fragment --> The sum \(u + \nabla_{x}c_(x) v\) (if tranpose is false) or The sum \(u + (\nabla_{x}c_(x))^T v\) (if tranpose is true) bewteen the product of the Jacobian \(\nabla_{x}c_(x)\) or its tranpose with the vector v= \(v\) and the vector $ \(u\) must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_jprod</code> via the structure <code>userdata</code>.</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">eval_hprod</td><td>is a user-supplied function that must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_hprod( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], <span class="keyword">const</span> <span class="keywordtype">double</span> y[], </div>
-<div class="line">                <span class="keywordtype">double</span> u[], <span class="keyword">const</span> <span class="keywordtype">double</span> v[], <span class="keywordtype">bool</span> got_h, </div>
-<div class="line">                <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata )</div>
-</div><!-- fragment --> The sum \(u + \sum_{i=1}^m y_i \nabla_{xx}c_i(x) v\) of the product of the weighted residual Hessian \(H = \sum_{i=1}^m y_i \nabla_{xx}c_i(x)\) evaluated at x= \(x\) and y= \(y\) with the vector v= \(v\) and the vector $ \(u\) must be returned in u, and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. The Hessians have already been evaluated or used at x if got_h is true. Data may be passed into <code>eval_hprod</code> via the structure <code>userdata</code>.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">p_ne</td><td>is a scalar variable of type int, that holds the number of entries in the residual-Hessians-vector product matrix \(P\) if it is used.</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">eval_hprods</td><td>is an optional user-supplied function that may be NULL. If non-NULL, it must have the following signature: <div class="fragment"><div class="line"><span class="keywordtype">int</span> eval_hprods( <span class="keywordtype">int</span> n, <span class="keywordtype">int</span> m, <span class="keywordtype">int</span> p_ne, <span class="keyword">const</span> <span class="keywordtype">double</span> x[], </div>
-<div class="line">                 <span class="keyword">const</span> <span class="keywordtype">double</span> v[], <span class="keywordtype">double</span> pval[], <span class="keywordtype">bool</span> got_h, </div>
-<div class="line">                 <span class="keyword">const</span> <span class="keywordtype">void</span> *userdata )</div>
-</div><!-- fragment --> The entries of the matrix \(P\), whose i-th column is the product \(\nabla_{xx}c_i(x) v\) between \(\nabla_{xx}c_i(x)\), the Hessian of the i-th component of the residual \(c(x)\) at x= \(x\), and v= \(v\) must be returned in pval and the function return value set to 0. If the evaluation is impossible at x, return should be set to a nonzero value. Data may be passed into <code>eval_hprods</code> via the structure <code>userdata</code>. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="nlst_8c-example.html#a5">nlst.c</a>, and <a class="el" href="nlstf_8c-example.html#a5">nlstf.c</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="nlst_8c-example.html#a6">nlst.c</a>, and <a class="el" href="nlstf_8c-example.html#a6">nlstf.c</a>.</dd>
 </dl>
 
 </div>

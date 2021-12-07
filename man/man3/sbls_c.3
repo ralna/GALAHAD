@@ -1,4 +1,4 @@
-.TH "sbls.h" 3 "Fri Nov 26 2021" "C interfaces to GALAHAD SBLS" \" -*- nroff -*-
+.TH "sbls.h" 3 "Tue Dec 7 2021" "C interfaces to GALAHAD SBLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -11,8 +11,6 @@ sbls.h
 \fC#include 'galahad_precision\&.h'\fP
 .br
 \fC#include 'sls\&.h'\fP
-.br
-\fC#include 'uls\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -32,19 +30,19 @@ sbls.h
 
 .in +1c
 .ti -1c
-.RI "void \fBsbls_initialize\fP (void **data, struct \fBsbls_control_type\fP *control, struct \fBsbls_inform_type\fP *inform)"
+.RI "void \fBsbls_initialize\fP (void **data, struct \fBsbls_control_type\fP *control, int *status)"
 .br
 .ti -1c
 .RI "void \fBsbls_read_specfile\fP (struct \fBsbls_control_type\fP *control, const char specfile[])"
 .br
 .ti -1c
-.RI "void \fBsbls_import\fP (struct \fBsbls_control_type\fP *control, void **data, int *status, int n, int m, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[], int C_ne, const int C_row[], const int C_col[], const int C_ptr[])"
+.RI "void \fBsbls_import\fP (struct \fBsbls_control_type\fP *control, void **data, int *status, int n, int m, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[], const char C_type[], int C_ne, const int C_row[], const int C_col[], const int C_ptr[])"
 .br
 .ti -1c
 .RI "void \fBsbls_reset_control\fP (struct \fBsbls_control_type\fP *control, void **data, int *status)"
 .br
 .ti -1c
-.RI "void \fBsbls_factorize_matrix\fP (void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], int a_ne, const real_wp_ A_val[], int c_ne, const real_wp_ C_val[], const real_wp_ D[])"
+.RI "void \fBsbls_factorize_matrix\fP (void **data, int *status, int n, int h_ne, const real_wp_ H_val[], int a_ne, const real_wp_ A_val[], int c_ne, const real_wp_ C_val[], const real_wp_ D[])"
 .br
 .ti -1c
 .RI "void \fBsbls_solve_system\fP (void **data, int *status, int n, int m, real_wp_ sol[])"
@@ -342,9 +340,6 @@ char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.
 struct sls_control_type \fIsls_control\fP control parameters for SLS 
 .br
 .PP
-struct uls_control_type \fIuls_control\fP control parameters for ULS 
-.br
-.PP
 .RE
 .PP
 .SH "struct sbls_time_type"
@@ -424,10 +419,10 @@ int \fIuls_solve_status\fP see sils_analyse_status
 int \fIsort_status\fP the return status from the sorting routines 
 .br
 .PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+long int \fIfactorization_integer\fP the total integer workspace required for the factorization 
 .br
 .PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
+long int \fIfactorization_real\fP the total real workspace required for the factorization 
 .br
 .PP
 int \fIpreconditioner\fP the preconditioner used 
@@ -463,23 +458,25 @@ struct \fBsbls_time_type\fP \fItime\fP timings (see above)
 struct sls_inform_type \fIsls_inform\fP inform parameters from the GALAHAD package SLS used 
 .br
 .PP
-struct uls_inform_type \fIuls_inform\fP inform parameters from the GALAHAD package ULS used 
-.br
-.PP
 .RE
 .PP
 .SH "Function Documentation"
 .PP 
-.SS "void sbls_initialize (void ** data, struct \fBsbls_control_type\fP * control, struct \fBsbls_inform_type\fP * inform)"
+.SS "void sbls_initialize (void ** data, struct \fBsbls_control_type\fP * control, int * status)"
 Set default control values and initialize private data
 .PP
 \fBParameters\fP
 .RS 4
-\fIdata\fP holds private internal data 
+\fIdata\fP holds private internal data
 .br
-\fIcontrol\fP is a struct containing control information (see \fBsbls_control_type\fP) 
+\fIcontrol\fP is a struct containing control information (see \fBsbls_control_type\fP)
 .br
-\fIinform\fP is a struct containing output information (see \fBsbls_inform_type\fP) 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
 .RE
 .PP
 
@@ -494,7 +491,7 @@ Read the content of a specification file, and assign values associated with give
 .RE
 .PP
 
-.SS "void sbls_import (struct \fBsbls_control_type\fP * control, void ** data, int * status, int n, int m, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[], int C_ne, const int C_row[], const int C_col[], const int C_ptr[])"
+.SS "void sbls_import (struct \fBsbls_control_type\fP * control, void ** data, int * status, int n, int m, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[], const char C_type[], int C_ne, const int C_row[], const int C_col[], const int C_ptr[])"
 Import structural matrix data into internal storage prior to solution\&.
 .PP
 \fBParameters\fP
@@ -570,7 +567,7 @@ Reset control parameters after import if required\&.
 .RE
 .PP
 
-.SS "void sbls_factorize_matrix (void ** data, int * status, int n, int m, int h_ne, const real_wp_ H_val[], int a_ne, const real_wp_ A_val[], int c_ne, const real_wp_ C_val[], const real_wp_ D[])"
+.SS "void sbls_factorize_matrix (void ** data, int * status, int n, int h_ne, const real_wp_ H_val[], int a_ne, const real_wp_ A_val[], int c_ne, const real_wp_ C_val[], const real_wp_ D[])"
 Form and factorize the block matrix \[K_{G} = \mat{cc}{ G & A^T \\ A & - C }\]  
   \n
   K_G = ( G  A^T )
@@ -582,11 +579,9 @@ Form and factorize the block matrix \[K_{G} = \mat{cc}{ G & A^T \\ A & - C }\]
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
 .br
- On initial entry, status must be set to 1\&. 
-.br
- Possible exit are: 
+ Possible values are: 
 .PD 0
 
 .IP "\(bu" 2
@@ -602,15 +597,15 @@ Form and factorize the block matrix \[K_{G} = \mat{cc}{ G & A^T \\ A & - C }\]
 .PP
 .PD 0
 .IP "\(bu" 2
--9\&. An error was reported by SLS analyse\&. The return status from SLS analyse is given in informSLS_informstatus\&. See the documentation for the GALAHAD package SLS for further details\&.
+-9\&. An error was reported by SLS analyse\&. The return status from SLS analyse is given in inform\&.sls_inform\&.status\&. See the documentation for the GALAHAD package SLS for further details\&.
 .PP
 .PD 0
 .IP "\(bu" 2
--10\&. An error was reported by SLS_factorize\&. The return status from SLS factorize is given in informSLS_informstatus\&. See the documentation for the GALAHAD package SLS for further details\&.
+-10\&. An error was reported by SLS_factorize\&. The return status from SLS factorize is given in inform\&.sls_inform\&.status\&. See the documentation for the GALAHAD package SLS for further details\&.
 .PP
 .PD 0
 .IP "\(bu" 2
--13\&. An error was reported by ULS_factorize\&. The return status from ULS_factorize is given in informuls_factorize_status\&. See the documentation for the GALAHAD package ULS for further details\&.
+-13\&. An error was reported by ULS_factorize\&. The return status from ULS_factorize is given in inform\&.uls_factorize_status\&. See the documentation for the GALAHAD package ULS for further details\&.
 .PP
 .PD 0
 .IP "\(bu" 2
@@ -622,12 +617,10 @@ Form and factorize the block matrix \[K_{G} = \mat{cc}{ G & A^T \\ A & - C }\]
 .PP
 .PD 0
 .IP "\(bu" 2
--24\&. An error was reported by the GALAHAD package SORT_reorder_by_rows\&. The return status from SORT_reorder_by_rows is given in informsort_status\&. See the documentation for the GALAHAD package SORT for further details\&.
+-24\&. An error was reported by the GALAHAD package SORT_reorder_by_rows\&. The return status from SORT_reorder_by_rows is given in inform\&.sort_status\&. See the documentation for the GALAHAD package SORT for further details\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of rows in the symmetric matrix H\&.
-.br
-\fIm\fP is a scalar variable of type int, that holds the number of rows in the symmetric matrix C\&.
 .br
 \fIh_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix H\&.
 .br
@@ -657,11 +650,9 @@ Solve the block linear system \[\mat{cc}{ G & A^T \\ A & - C } \vect{ x \\ y } =
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
 .br
- On initial entry, status must be set to 1\&. 
-.br
- Possible exit are: 
+ Possible values are: 
 .PD 0
 
 .IP "\(bu" 2
@@ -675,11 +666,11 @@ Solve the block linear system \[\mat{cc}{ G & A^T \\ A & - C } \vect{ x \\ y } =
 .PP
 .PD 0
 .IP "\(bu" 2
--11\&. An error was reported by SLS_solve\&. The return status from SLS solve is given in informSLS_informstatus\&. See the documentation for the GALAHAD package SLS for further details\&.
+-11\&. An error was reported by SLS_solve\&. The return status from SLS solve is given in inform\&.sls_inform\&.status\&. See the documentation for the GALAHAD package SLS for further details\&.
 .PP
 .PD 0
 .IP "\(bu" 2
--14\&. An error was reported by ULS_solve\&. The return status from ULS_solve is given in informuls_solve_status\&. See the documentation for the GALAHAD package ULS for further details\&.
+-14\&. An error was reported by ULS_solve\&. The return status from ULS_solve is given in inform\&.uls_solve_status\&. See the documentation for the GALAHAD package ULS for further details\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of entries in the vector a\&.

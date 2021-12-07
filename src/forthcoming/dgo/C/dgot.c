@@ -143,7 +143,7 @@ int main(void) {
 
     // reverse-communication input/output
     int eval_status, nnz_u, nnz_v;
-    double f;
+    double f = 0.0;
     double u[n], v[n];
     int index_nz_u[n], index_nz_v[n];
     double H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
@@ -336,6 +336,7 @@ int main(void) {
                 st = 'P';
                 dgo_import( &control, &data, &status, n, x_l, x_u,
                             "absent", ne, NULL, NULL, NULL );
+                nnz_u = 0;
                 while(true){ // reverse-communication loop
                     dgo_solve_reverse_without_mat( &data, &status, &eval_status,
                                                    n, x, f, g, u, v, index_nz_v,

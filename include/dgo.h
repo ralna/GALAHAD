@@ -927,22 +927,24 @@ void dgo_solve_reverse_without_mat( void **data,
  *   j = 0, ... ,  n-1, contains g_j.
  * 
  *  u is a one-dimensional array of size n and type double, that is used for
- *   reverse communication (see above for details)
+ *   reverse communication (see status=5,6,7 above for details)
  * 
  *  v is a one-dimensional array of size n and type double, that is used for
- *   reverse communication (see above for details)
+ *   reverse communication (see status=5,6,7 above for details)
  *
  *  index_nz_v is a one-dimensional array of size n and type int, that is used
- *   for reverse communication (see above for details)
+ *   for reverse communication (see status=7 above for details)
  * 
  *  nnz_v is a scalar variable of type int, that is used for reverse
- *   communication (see above for details)
+ *   communication (see status=7 above for details)
  * 
  *  index_nz_u s a one-dimensional array of size n and type int, that is used
- *   for reverse communication (see above for details)
+ *   for reverse communication (see status=7 above for details)
  * 
  *  nnz_u is a scalar variable of type int, that is used for reverse
- *   communication (see above for details)
+ *   communication (see above for details). On initial (status=1)
+ *   entry, nnz_u should be set to an (arbitrary) nonzero value, and 
+ *   nnz_u=0 is recommended
  *
  *  ---------------------------------------------------------------------------
  */  

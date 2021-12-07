@@ -353,8 +353,7 @@
 !  where prefix contains the required string enclosed in quotes,
 !  e.g. "string" or 'string'
 
-       CHARACTER ( LEN = 30 ) :: prefix = '""                            '
-
+       CHARACTER ( LEN = 30 ) :: prefix = '""' // REPEAT( ' ', 28 )
      END TYPE SLS_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -

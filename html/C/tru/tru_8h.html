@@ -18,6 +18,14 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
+    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+  } }
+});
+</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -92,14 +100,14 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a1ae7a579fa70c63d8dc62566c04d9aff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tru_8h.html#a1ae7a579fa70c63d8dc62566c04d9aff">tru_initialize</a> (void **data, struct <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a> *control, struct <a class="el" href="tru_8h.html#structtru__inform__type">tru_inform_type</a> *inform)</td></tr>
-<tr class="separator:a1ae7a579fa70c63d8dc62566c04d9aff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7def0657e11fee556d3006fb64fe267"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tru_8h.html#af7def0657e11fee556d3006fb64fe267">tru_initialize</a> (void **data, struct <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a> *control, int *status)</td></tr>
+<tr class="separator:af7def0657e11fee556d3006fb64fe267"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a870a28132f2747e12d7c93c9ce6ffd01"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tru_8h.html#a870a28132f2747e12d7c93c9ce6ffd01">tru_read_specfile</a> (struct <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a> *control, const char specfile[])</td></tr>
 <tr class="separator:a870a28132f2747e12d7c93c9ce6ffd01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8175a402569a69faa351e2dcd3c48b94"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tru_8h.html#a8175a402569a69faa351e2dcd3c48b94">tru_import</a> (struct <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a> *control, void **data, int *status, int n, const char H_type[], int ne, const int H_row[], const int H_col[], const int H_ptr[])</td></tr>
 <tr class="separator:a8175a402569a69faa351e2dcd3c48b94"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b6fdf7f4f42d0615e2ebaa1295181d8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tru_8h.html#a3b6fdf7f4f42d0615e2ebaa1295181d8">tru_reset_control</a> (struct <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a> *control, void **data, int *status,)</td></tr>
-<tr class="separator:a3b6fdf7f4f42d0615e2ebaa1295181d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97ce8d0956fdb4165504433a93714495"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tru_8h.html#a97ce8d0956fdb4165504433a93714495">tru_reset_control</a> (struct <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a> *control, void **data, int *status)</td></tr>
+<tr class="separator:a97ce8d0956fdb4165504433a93714495"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a638a31d7027eaf1ae39aa7278e7c5c5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tru_8h.html#a638a31d7027eaf1ae39aa7278e7c5c5a">tru_solve_with_mat</a> (void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int ne, int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_h)(int, int, const real_wp_[], real_wp_[], const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</td></tr>
 <tr class="separator:a638a31d7027eaf1ae39aa7278e7c5c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa508227d17d8da723bb0401023acd96"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tru_8h.html#aaa508227d17d8da723bb0401023acd96">tru_solve_without_mat</a> (void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_hprod)(int, const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</td></tr>
@@ -131,41 +139,11 @@ Functions</h2></td></tr>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="a7565611061db14e471a4f68e6dabbc17"></a>int</td>
+<a id="a6e8421b34d6b85dcb33c1dd0179efbb3"></a>bool</td>
 <td class="fieldname">
-advanced_start</td>
+f_indexing</td>
 <td class="fielddoc">
-try to pick a good initial trust-region radius using .advanced_start iterates of a variant on the strategy of Sartenaer SISC 18(6) 1990:1788-1803 </td></tr>
-<tr><td class="fieldtype">
-<a id="ac631699a26f321b14dbed37115f3c006"></a>char</td>
-<td class="fieldname">
-alive_file[31]</td>
-<td class="fielddoc">
-see alive_unit </td></tr>
-<tr><td class="fieldtype">
-<a id="a3fc6359d77a53a63d57ea600b51eac13"></a>int</td>
-<td class="fieldname">
-alive_unit</td>
-<td class="fielddoc">
-removal of the file alive_file from unit alive_unit terminates execution </td></tr>
-<tr><td class="fieldtype">
-<a id="ab05d7c2b06d3a9fb085fa3739501d1c8"></a>real_wp_</td>
-<td class="fieldname">
-clock_time_limit</td>
-<td class="fielddoc">
-the maximum elapsed clock time allowed (-ve means infinite) </td></tr>
-<tr><td class="fieldtype">
-<a id="a52f14ff3f85e6805f2373eef5d0f3dfd"></a>real_wp_</td>
-<td class="fieldname">
-cpu_time_limit</td>
-<td class="fielddoc">
-the maximum CPU time allowed (-ve means infinite) </td></tr>
-<tr><td class="fieldtype">
-<a id="a58a2c67fad6e808e8365eff67700cba5"></a>bool</td>
-<td class="fieldname">
-deallocate_error_fatal</td>
-<td class="fielddoc">
-if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue </td></tr>
+use C or Fortran sparse matrix indexing </td></tr>
 <tr><td class="fieldtype">
 <a id="a11614f44ef4d939bdd984953346a7572"></a>int</td>
 <td class="fieldname">
@@ -173,65 +151,41 @@ error</td>
 <td class="fielddoc">
 error and warning diagnostics occur on stream error </td></tr>
 <tr><td class="fieldtype">
-<a id="ac0774abb09bb59381960d771cb38b8ef"></a>real_wp_</td>
+<a id="aa8000eda101cade7c6c4b913fce0cc9c"></a>int</td>
 <td class="fieldname">
-eta_successful</td>
+out</td>
 <td class="fielddoc">
-a potential iterate will only be accepted if the actual decrease \(f - f(x_{new})\) is larger than .eta_successful times that predicted by a quadratic model of the decrease. The trust-region radius will be increased if this relative decrease is greater than .eta_very_successful but smaller than .eta_too_successful </td></tr>
+general output occurs on stream out </td></tr>
 <tr><td class="fieldtype">
-<a id="a6af4c9666b9342fa75b665bfb8cef524"></a>real_wp_</td>
+<a id="a12dae630bd8f5d2d00f6a86d652f5c81"></a>int</td>
 <td class="fieldname">
-eta_too_successful</td>
+print_level</td>
 <td class="fielddoc">
-see eta_successful </td></tr>
+the level of output required. <ul>
+<li>\(\leq\) 0 gives no output, </li>
+<li>= 1 gives a one-line summary for every iteration, </li>
+<li>= 2 gives a summary of the inner iteration for each iteration, </li>
+<li>\(\geq\) 3 gives increasingly verbose (debugging) output </li>
+</ul>
+</td></tr>
 <tr><td class="fieldtype">
-<a id="a5e55cf3fe7846b0f9b23919b0f95469e"></a>real_wp_</td>
+<a id="ae0eb21dc79b53664e45ce07c9109b3aa"></a>int</td>
 <td class="fieldname">
-eta_very_successful</td>
+start_print</td>
 <td class="fielddoc">
-see eta_successful </td></tr>
+any printing will start on this iteration </td></tr>
 <tr><td class="fieldtype">
-<a id="a6e8421b34d6b85dcb33c1dd0179efbb3"></a>bool</td>
+<a id="a9a3d9960a04602d2a18009c82ae2124e"></a>int</td>
 <td class="fieldname">
-f_indexing</td>
+stop_print</td>
 <td class="fielddoc">
-use C or Fortran sparse matrix indexing </td></tr>
+any printing will stop on this iteration </td></tr>
 <tr><td class="fieldtype">
-<a id="a0fa05e3076ccb30e3b859c1e4be08981"></a>bool</td>
+<a id="a31edaef6b722ef2721633484405a649b"></a>int</td>
 <td class="fieldname">
-hessian_available</td>
+print_gap</td>
 <td class="fielddoc">
-is the Hessian matrix of second derivatives available or is access only via matrix-vector products? </td></tr>
-<tr><td class="fieldtype">
-<a id="adb095f545799aab1d69fcdca912d4afd"></a>int</td>
-<td class="fieldname">
-icfs_vectors</td>
-<td class="fielddoc">
-number of vectors used by the Lin-More' incomplete factorization matrix \(P\) if required </td></tr>
-<tr><td class="fieldtype">
-<a id="aa1a65cb31a449551c7819e7e886ca028"></a>real_wp_</td>
-<td class="fieldname">
-initial_radius</td>
-<td class="fielddoc">
-initial value for the trust-region radius </td></tr>
-<tr><td class="fieldtype">
-<a id="a90eb3c326cdd5cd8f81f084c4ec5bf30"></a>int</td>
-<td class="fieldname">
-lbfgs_vectors</td>
-<td class="fielddoc">
-number of vectors used by the L-BFGS matrix \(P\) if required </td></tr>
-<tr><td class="fieldtype">
-<a id="a0d14c8b2992107c3e0f8099cf7f3d04f"></a>int</td>
-<td class="fieldname">
-max_dxg</td>
-<td class="fielddoc">
-number of vectors used by the sparsity-based secant Hessian if required </td></tr>
-<tr><td class="fieldtype">
-<a id="ad67b5e31569fee1255347e8d1782ce9d"></a>real_wp_</td>
-<td class="fieldname">
-maximum_radius</td>
-<td class="fielddoc">
-maximum permitted trust-region radius </td></tr>
+the number of iterations between printing </td></tr>
 <tr><td class="fieldtype">
 <a id="ab717630b215f0362699acac11fb3652c"></a>int</td>
 <td class="fieldname">
@@ -239,17 +193,27 @@ maxit</td>
 <td class="fielddoc">
 the maximum number of iterations allowed </td></tr>
 <tr><td class="fieldtype">
-<a id="a97a46af6187162b529821f79d1559827"></a>int</td>
+<a id="a3fc6359d77a53a63d57ea600b51eac13"></a>int</td>
 <td class="fieldname">
-mi28_lsize</td>
+alive_unit</td>
 <td class="fielddoc">
-the maximum number of fill entries within each column of the incomplete factor L computed by HSL_MI28. In general, increasing .mi28_lsize improve the quality of the preconditioner but increases the time to compute and then apply the preconditioner. Values less than 0 are treated as 0 </td></tr>
+removal of the file alive_file from unit alive_unit terminates execution </td></tr>
 <tr><td class="fieldtype">
-<a id="a8cd04d404e41a2a09c29eeb2de78cd85"></a>int</td>
+<a id="ac631699a26f321b14dbed37115f3c006"></a>char</td>
 <td class="fieldname">
-mi28_rsize</td>
+alive_file[31]</td>
 <td class="fielddoc">
-the maximum number of entries within each column of the strictly lower triangular matrix \(R\) used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize * n are allocated internally to hold \(R\). Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize &gt; 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize &gt;= .mi28_lsize is generally recommended </td></tr>
+see alive_unit </td></tr>
+<tr><td class="fieldtype">
+<a id="a856b2df558071805c217b6d72a1e215b"></a>int</td>
+<td class="fieldname">
+non_monotone</td>
+<td class="fielddoc">
+the descent strategy used. <p>Possible values are </p><ul>
+<li>&lt;= 0 a monotone strategy is used. </li>
+<li>anything else, a non-monotone strategy with history length .non_monotine is used. </li>
+</ul>
+</td></tr>
 <tr><td class="fieldtype">
 <a id="a027a1f1731d22465c926ce57be2364c3"></a>int</td>
 <td class="fieldname">
@@ -263,16 +227,6 @@ the model used. <p>Possible values are </p><ul>
 <li>4 secant second-order (sparsity-based) </li>
 <li>5 secant second-order (limited-memory BFGS, with .lbfgs_vectors history) </li>
 <li>6 secant second-order (limited-memory SR1, with .lbfgs_vectors history) </li>
-</ul>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="a856b2df558071805c217b6d72a1e215b"></a>int</td>
-<td class="fieldname">
-non_monotone</td>
-<td class="fielddoc">
-the descent strategy used. <p>Possible values are </p><ul>
-<li>&lt;= 0 a monotone strategy is used. </li>
-<li>anything else, a non-monotone strategy with history length .non_monotine is used. </li>
 </ul>
 </td></tr>
 <tr><td class="fieldtype">
@@ -298,41 +252,95 @@ the trust-region norm used. <p>The norm is defined via \(\|v\|^2 = v^T P v\), an
 </ul>
 </td></tr>
 <tr><td class="fieldtype">
-<a id="a7eed67e26bc4e17ca334031b7fd608a6"></a>real_wp_</td>
+<a id="abf884043df0f9c0d95bcff6fae1bf9bb"></a>int</td>
 <td class="fieldname">
-obj_unbounded</td>
+semi_bandwidth</td>
 <td class="fielddoc">
-the smallest value the objective function may take before the problem is marked as unbounded </td></tr>
+specify the semi-bandwidth of the band matrix \(P\) if required </td></tr>
 <tr><td class="fieldtype">
-<a id="aa8000eda101cade7c6c4b913fce0cc9c"></a>int</td>
+<a id="a90eb3c326cdd5cd8f81f084c4ec5bf30"></a>int</td>
 <td class="fieldname">
-out</td>
+lbfgs_vectors</td>
 <td class="fielddoc">
-general output occurs on stream out </td></tr>
+number of vectors used by the L-BFGS matrix \(P\) if required </td></tr>
 <tr><td class="fieldtype">
-<a id="a1dc05936393ba705f516a0c275df4ffc"></a>char</td>
+<a id="a0d14c8b2992107c3e0f8099cf7f3d04f"></a>int</td>
 <td class="fieldname">
-prefix[31]</td>
+max_dxg</td>
 <td class="fielddoc">
-all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
+number of vectors used by the sparsity-based secant Hessian if required </td></tr>
 <tr><td class="fieldtype">
-<a id="a31edaef6b722ef2721633484405a649b"></a>int</td>
+<a id="adb095f545799aab1d69fcdca912d4afd"></a>int</td>
 <td class="fieldname">
-print_gap</td>
+icfs_vectors</td>
 <td class="fielddoc">
-the number of iterations between printing </td></tr>
+number of vectors used by the Lin-More' incomplete factorization matrix \(P\) if required </td></tr>
 <tr><td class="fieldtype">
-<a id="a12dae630bd8f5d2d00f6a86d652f5c81"></a>int</td>
+<a id="a97a46af6187162b529821f79d1559827"></a>int</td>
 <td class="fieldname">
-print_level</td>
+mi28_lsize</td>
 <td class="fielddoc">
-the level of output required. <ul>
-<li>\(\leq\) 0 gives no output, </li>
-<li>= 1 gives a one-line summary for every iteration, </li>
-<li>= 2 gives a summary of the inner iteration for each iteration, </li>
-<li>\(\geq\) 3 gives increasingly verbose (debugging) output </li>
-</ul>
-</td></tr>
+the maximum number of fill entries within each column of the incomplete factor L computed by HSL_MI28. In general, increasing .mi28_lsize improve the quality of the preconditioner but increases the time to compute and then apply the preconditioner. Values less than 0 are treated as 0 </td></tr>
+<tr><td class="fieldtype">
+<a id="a8cd04d404e41a2a09c29eeb2de78cd85"></a>int</td>
+<td class="fieldname">
+mi28_rsize</td>
+<td class="fielddoc">
+the maximum number of entries within each column of the strictly lower triangular matrix \(R\) used in the computation of the preconditioner by HSL_MI28. Rank-1 arrays of size .mi28_rsize * n are allocated internally to hold \(R\). Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on .mi28_rsize. Setting .mi28_rsize &gt; 0 generally leads to a higher quality preconditioner than using .mi28_rsize = 0, and choosing .mi28_rsize &gt;= .mi28_lsize is generally recommended </td></tr>
+<tr><td class="fieldtype">
+<a id="a6182fed3e6c11b9aa39e1460c1def7f8"></a>real_wp_</td>
+<td class="fieldname">
+stop_g_absolute</td>
+<td class="fielddoc">
+overall convergence tolerances. The iteration will terminate when the norm of the gradient of the objective function is smaller than MAX( .stop_g_absolute, .stop_g_relative * norm of the initial gradient or if the step is less than .stop_s </td></tr>
+<tr><td class="fieldtype">
+<a id="aeb89f1dc942cea0814ee1e8d645467d3"></a>real_wp_</td>
+<td class="fieldname">
+stop_g_relative</td>
+<td class="fielddoc">
+see stop_g_absolute </td></tr>
+<tr><td class="fieldtype">
+<a id="a56612668b00bf042745379f43166cd27"></a>real_wp_</td>
+<td class="fieldname">
+stop_s</td>
+<td class="fielddoc">
+see stop_g_absolute </td></tr>
+<tr><td class="fieldtype">
+<a id="a7565611061db14e471a4f68e6dabbc17"></a>int</td>
+<td class="fieldname">
+advanced_start</td>
+<td class="fielddoc">
+try to pick a good initial trust-region radius using .advanced_start iterates of a variant on the strategy of Sartenaer SISC 18(6) 1990:1788-1803 </td></tr>
+<tr><td class="fieldtype">
+<a id="aa1a65cb31a449551c7819e7e886ca028"></a>real_wp_</td>
+<td class="fieldname">
+initial_radius</td>
+<td class="fielddoc">
+initial value for the trust-region radius </td></tr>
+<tr><td class="fieldtype">
+<a id="ad67b5e31569fee1255347e8d1782ce9d"></a>real_wp_</td>
+<td class="fieldname">
+maximum_radius</td>
+<td class="fielddoc">
+maximum permitted trust-region radius </td></tr>
+<tr><td class="fieldtype">
+<a id="ac0774abb09bb59381960d771cb38b8ef"></a>real_wp_</td>
+<td class="fieldname">
+eta_successful</td>
+<td class="fielddoc">
+a potential iterate will only be accepted if the actual decrease \(f - f(x_{new})\) is larger than .eta_successful times that predicted by a quadratic model of the decrease. The trust-region radius will be increased if this relative decrease is greater than .eta_very_successful but smaller than .eta_too_successful </td></tr>
+<tr><td class="fieldtype">
+<a id="a5e55cf3fe7846b0f9b23919b0f95469e"></a>real_wp_</td>
+<td class="fieldname">
+eta_very_successful</td>
+<td class="fielddoc">
+see eta_successful </td></tr>
+<tr><td class="fieldtype">
+<a id="a6af4c9666b9342fa75b665bfb8cef524"></a>real_wp_</td>
+<td class="fieldname">
+eta_too_successful</td>
+<td class="fielddoc">
+see eta_successful </td></tr>
 <tr><td class="fieldtype">
 <a id="a5fdd7428d08e428c376420582cbff66e"></a>real_wp_</td>
 <td class="fieldname">
@@ -352,11 +360,35 @@ radius_reduce_max</td>
 <td class="fielddoc">
 see radius_increase; </td></tr>
 <tr><td class="fieldtype">
-<a id="a761e5ba3ea38a06456f35a1690e77a2e"></a>bool</td>
+<a id="a7eed67e26bc4e17ca334031b7fd608a6"></a>real_wp_</td>
 <td class="fieldname">
-renormalize_radius</td>
+obj_unbounded</td>
 <td class="fielddoc">
-should the radius be renormalized to account for a change in preconditioner? </td></tr>
+the smallest value the objective function may take before the problem is marked as unbounded </td></tr>
+<tr><td class="fieldtype">
+<a id="a52f14ff3f85e6805f2373eef5d0f3dfd"></a>real_wp_</td>
+<td class="fieldname">
+cpu_time_limit</td>
+<td class="fielddoc">
+the maximum CPU time allowed (-ve means infinite) </td></tr>
+<tr><td class="fieldtype">
+<a id="ab05d7c2b06d3a9fb085fa3739501d1c8"></a>real_wp_</td>
+<td class="fieldname">
+clock_time_limit</td>
+<td class="fielddoc">
+the maximum elapsed clock time allowed (-ve means infinite) </td></tr>
+<tr><td class="fieldtype">
+<a id="a0fa05e3076ccb30e3b859c1e4be08981"></a>bool</td>
+<td class="fieldname">
+hessian_available</td>
+<td class="fielddoc">
+is the Hessian matrix of second derivatives available or is access only via matrix-vector products? </td></tr>
+<tr><td class="fieldtype">
+<a id="a8c10db7cf72a4e3e52c9601007f7b1de"></a>bool</td>
+<td class="fieldname">
+subproblem_direct</td>
+<td class="fielddoc">
+use a direct (factorization) or (preconditioned) iterative method to find the search direction </td></tr>
 <tr><td class="fieldtype">
 <a id="a7a834a2cc8deb90becaf0245edb7eea9"></a>bool</td>
 <td class="fieldname">
@@ -364,11 +396,11 @@ retrospective_trust_region</td>
 <td class="fielddoc">
 is a retrospective strategy to be used to update the trust-region radius? </td></tr>
 <tr><td class="fieldtype">
-<a id="abf884043df0f9c0d95bcff6fae1bf9bb"></a>int</td>
+<a id="a761e5ba3ea38a06456f35a1690e77a2e"></a>bool</td>
 <td class="fieldname">
-semi_bandwidth</td>
+renormalize_radius</td>
 <td class="fielddoc">
-specify the semi-bandwidth of the band matrix \(P\) if required </td></tr>
+should the radius be renormalized to account for a change in preconditioner? </td></tr>
 <tr><td class="fieldtype">
 <a id="a957fc1f4f26eeef3b0951791ff972e8d"></a>bool</td>
 <td class="fieldname">
@@ -376,41 +408,17 @@ space_critical</td>
 <td class="fielddoc">
 if .space_critical true, every effort will be made to use as little space as possible. This may result in longer computation time </td></tr>
 <tr><td class="fieldtype">
-<a id="ae0eb21dc79b53664e45ce07c9109b3aa"></a>int</td>
+<a id="a58a2c67fad6e808e8365eff67700cba5"></a>bool</td>
 <td class="fieldname">
-start_print</td>
+deallocate_error_fatal</td>
 <td class="fielddoc">
-any printing will start on this iteration </td></tr>
+if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution. Otherwise, computation will continue </td></tr>
 <tr><td class="fieldtype">
-<a id="a6182fed3e6c11b9aa39e1460c1def7f8"></a>real_wp_</td>
+<a id="a1dc05936393ba705f516a0c275df4ffc"></a>char</td>
 <td class="fieldname">
-stop_g_absolute</td>
+prefix[31]</td>
 <td class="fielddoc">
-overall convergence tolerances. The iteration will terminate when the norm of the gradient of the objective function is smaller than MAX( .stop_g_absolute, .stop_g_relative * norm of the initial gradient or if the step is less than .stop_s </td></tr>
-<tr><td class="fieldtype">
-<a id="aeb89f1dc942cea0814ee1e8d645467d3"></a>real_wp_</td>
-<td class="fieldname">
-stop_g_relative</td>
-<td class="fielddoc">
-see stop_g_absolute </td></tr>
-<tr><td class="fieldtype">
-<a id="a9a3d9960a04602d2a18009c82ae2124e"></a>int</td>
-<td class="fieldname">
-stop_print</td>
-<td class="fielddoc">
-any printing will stop on this iteration </td></tr>
-<tr><td class="fieldtype">
-<a id="a56612668b00bf042745379f43166cd27"></a>real_wp_</td>
-<td class="fieldname">
-stop_s</td>
-<td class="fielddoc">
-see stop_g_absolute </td></tr>
-<tr><td class="fieldtype">
-<a id="a8c10db7cf72a4e3e52c9601007f7b1de"></a>bool</td>
-<td class="fieldname">
-subproblem_direct</td>
-<td class="fielddoc">
-use a direct (factorization) or (preconditioned) iterative method to find the search direction </td></tr>
+all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
 </table>
 
 </div>
@@ -430,11 +438,47 @@ use a direct (factorization) or (preconditioned) iterative method to find the se
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
+<a id="aa7b2ccce10ffc8ef240d5be56ec1fbbc"></a>real_sp_</td>
+<td class="fieldname">
+total</td>
+<td class="fielddoc">
+the total CPU time spent in the package </td></tr>
+<tr><td class="fieldtype">
+<a id="adc5369028902776a12fe8d393be67174"></a>real_sp_</td>
+<td class="fieldname">
+preprocess</td>
+<td class="fielddoc">
+the CPU time spent preprocessing the problem </td></tr>
+<tr><td class="fieldtype">
 <a id="a0ca2b20748c7749a77d684124011c531"></a>real_sp_</td>
 <td class="fieldname">
 analyse</td>
 <td class="fielddoc">
 the CPU time spent analysing the required matrices prior to factorization </td></tr>
+<tr><td class="fieldtype">
+<a id="ab7eecce4b013c87e490b8984c74c59c3"></a>real_sp_</td>
+<td class="fieldname">
+factorize</td>
+<td class="fielddoc">
+the CPU time spent factorizing the required matrices </td></tr>
+<tr><td class="fieldtype">
+<a id="a6356532c25755a6e5fedee1a7d703949"></a>real_sp_</td>
+<td class="fieldname">
+solve</td>
+<td class="fielddoc">
+the CPU time spent computing the search direction </td></tr>
+<tr><td class="fieldtype">
+<a id="ae9145eea8e19f9cae77904d3d00c5d1f"></a>real_wp_</td>
+<td class="fieldname">
+clock_total</td>
+<td class="fielddoc">
+the total clock time spent in the package </td></tr>
+<tr><td class="fieldtype">
+<a id="a0c3b390c67037ef2fe8b4cf29e079e4e"></a>real_wp_</td>
+<td class="fieldname">
+clock_preprocess</td>
+<td class="fielddoc">
+the clock time spent preprocessing the problem </td></tr>
 <tr><td class="fieldtype">
 <a id="a3394e706afb175d930c81c4b86fe8f4b"></a>real_wp_</td>
 <td class="fieldname">
@@ -448,47 +492,11 @@ clock_factorize</td>
 <td class="fielddoc">
 the clock time spent factorizing the required matrices </td></tr>
 <tr><td class="fieldtype">
-<a id="a0c3b390c67037ef2fe8b4cf29e079e4e"></a>real_wp_</td>
-<td class="fieldname">
-clock_preprocess</td>
-<td class="fielddoc">
-the clock time spent preprocessing the problem </td></tr>
-<tr><td class="fieldtype">
 <a id="af569df4b8828eb7ac8a05ef1030d1358"></a>real_wp_</td>
 <td class="fieldname">
 clock_solve</td>
 <td class="fielddoc">
 the clock time spent computing the search direction </td></tr>
-<tr><td class="fieldtype">
-<a id="ae9145eea8e19f9cae77904d3d00c5d1f"></a>real_wp_</td>
-<td class="fieldname">
-clock_total</td>
-<td class="fielddoc">
-the total clock time spent in the package </td></tr>
-<tr><td class="fieldtype">
-<a id="ab7eecce4b013c87e490b8984c74c59c3"></a>real_sp_</td>
-<td class="fieldname">
-factorize</td>
-<td class="fielddoc">
-the CPU time spent factorizing the required matrices </td></tr>
-<tr><td class="fieldtype">
-<a id="adc5369028902776a12fe8d393be67174"></a>real_sp_</td>
-<td class="fieldname">
-preprocess</td>
-<td class="fielddoc">
-the CPU time spent preprocessing the problem </td></tr>
-<tr><td class="fieldtype">
-<a id="a6356532c25755a6e5fedee1a7d703949"></a>real_sp_</td>
-<td class="fieldname">
-solve</td>
-<td class="fielddoc">
-the CPU time spent computing the search direction </td></tr>
-<tr><td class="fieldtype">
-<a id="aa7b2ccce10ffc8ef240d5be56ec1fbbc"></a>real_sp_</td>
-<td class="fieldname">
-total</td>
-<td class="fielddoc">
-the total CPU time spent in the package </td></tr>
 </table>
 
 </div>
@@ -510,6 +518,12 @@ the total CPU time spent in the package </td></tr>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
+<a id="a6e27f49150e9a14580fb313cc2777e00"></a>int</td>
+<td class="fieldname">
+status</td>
+<td class="fielddoc">
+return status. See TRU_solve for details </td></tr>
+<tr><td class="fieldtype">
 <a id="a4335d5f44067aca76d5fff71eeb7d381"></a>int</td>
 <td class="fieldname">
 alloc_status</td>
@@ -521,6 +535,12 @@ the status of the last attempted allocation/deallocation </td></tr>
 bad_alloc[81]</td>
 <td class="fielddoc">
 the name of the array for which an allocation/deallocation error ocurred </td></tr>
+<tr><td class="fieldtype">
+<a id="aab6f168571c2073e01e240524b8a3da0"></a>int</td>
+<td class="fieldname">
+iter</td>
+<td class="fielddoc">
+the total number of iterations performed </td></tr>
 <tr><td class="fieldtype">
 <a id="ad37cf7ad93af3413bc01b6515aad692a"></a>int</td>
 <td class="fieldname">
@@ -534,36 +554,6 @@ f_eval</td>
 <td class="fielddoc">
 the total number of evaluations of the objection function </td></tr>
 <tr><td class="fieldtype">
-<a id="a42d0c89df887685f68327d07c6e92f05"></a>real_wp_</td>
-<td class="fieldname">
-factorization_average</td>
-<td class="fielddoc">
-the average number of factorizations per sub-problem solve </td></tr>
-<tr><td class="fieldtype">
-<a id="a1e477a1869f7d6863b2c42209fc98bae"></a>int</td>
-<td class="fieldname">
-factorization_integer</td>
-<td class="fielddoc">
-the total integer workspace required for the factorization </td></tr>
-<tr><td class="fieldtype">
-<a id="a97dadabf3b7bdf921c4dcd1f43129f05"></a>int</td>
-<td class="fieldname">
-factorization_max</td>
-<td class="fielddoc">
-the maximum number of factorizations in a sub-problem solve </td></tr>
-<tr><td class="fieldtype">
-<a id="addcd710082286575000fc0c79bc63617"></a>int</td>
-<td class="fieldname">
-factorization_real</td>
-<td class="fielddoc">
-the total real workspace required for the factorization </td></tr>
-<tr><td class="fieldtype">
-<a id="aa448fed9eb03e70d5a03300b4fbbf210"></a>int</td>
-<td class="fieldname">
-factorization_status</td>
-<td class="fielddoc">
-the return status from the factorization </td></tr>
-<tr><td class="fieldtype">
 <a id="acd459eb95ff0f2d74e9cc3931d8e5469"></a>int</td>
 <td class="fieldname">
 g_eval</td>
@@ -576,11 +566,17 @@ h_eval</td>
 <td class="fielddoc">
 the total number of evaluations of the Hessian of the objection function </td></tr>
 <tr><td class="fieldtype">
-<a id="aab6f168571c2073e01e240524b8a3da0"></a>int</td>
+<a id="a97dadabf3b7bdf921c4dcd1f43129f05"></a>int</td>
 <td class="fieldname">
-iter</td>
+factorization_max</td>
 <td class="fielddoc">
-the total number of iterations performed </td></tr>
+the maximum number of factorizations in a sub-problem solve </td></tr>
+<tr><td class="fieldtype">
+<a id="aa448fed9eb03e70d5a03300b4fbbf210"></a>int</td>
+<td class="fieldname">
+factorization_status</td>
+<td class="fielddoc">
+the return status from the factorization </td></tr>
 <tr><td class="fieldtype">
 <a id="a000fc3c3afd41e368d7f258b6b02e5da"></a>long int</td>
 <td class="fieldname">
@@ -588,11 +584,23 @@ max_entries_factors</td>
 <td class="fielddoc">
 the maximum number of entries in the factors </td></tr>
 <tr><td class="fieldtype">
-<a id="ae1bc0a751c6ede62421bbc49fbe7d9fe"></a>real_wp_</td>
+<a id="a1e477a1869f7d6863b2c42209fc98bae"></a>int</td>
 <td class="fieldname">
-norm_g</td>
+factorization_integer</td>
 <td class="fielddoc">
-the norm of the gradient of the objective function at the best estimate of the solution determined by the package. </td></tr>
+the total integer workspace required for the factorization </td></tr>
+<tr><td class="fieldtype">
+<a id="addcd710082286575000fc0c79bc63617"></a>int</td>
+<td class="fieldname">
+factorization_real</td>
+<td class="fielddoc">
+the total real workspace required for the factorization </td></tr>
+<tr><td class="fieldtype">
+<a id="a42d0c89df887685f68327d07c6e92f05"></a>real_wp_</td>
+<td class="fieldname">
+factorization_average</td>
+<td class="fielddoc">
+the average number of factorizations per sub-problem solve </td></tr>
 <tr><td class="fieldtype">
 <a id="a0cbcb28977ac1f47ab67d27e4216626d"></a>real_wp_</td>
 <td class="fieldname">
@@ -600,17 +608,17 @@ obj</td>
 <td class="fielddoc">
 the value of the objective function at the best estimate of the solution determined by the package. </td></tr>
 <tr><td class="fieldtype">
+<a id="ae1bc0a751c6ede62421bbc49fbe7d9fe"></a>real_wp_</td>
+<td class="fieldname">
+norm_g</td>
+<td class="fielddoc">
+the norm of the gradient of the objective function at the best estimate of the solution determined by the package. </td></tr>
+<tr><td class="fieldtype">
 <a id="a72757b6410f755f008e2fb6d711b61be"></a>real_wp_</td>
 <td class="fieldname">
 radius</td>
 <td class="fielddoc">
 the current value of the trust-region radius </td></tr>
-<tr><td class="fieldtype">
-<a id="a6e27f49150e9a14580fb313cc2777e00"></a>int</td>
-<td class="fieldname">
-status</td>
-<td class="fielddoc">
-return status. See TRU_solve for details </td></tr>
 <tr><td class="fieldtype">
 <a id="a5df9a5b97fb9ee0f6e9c620ffa1719e7"></a>struct <a class="el" href="tru_8h.html#structtru__time__type">tru_time_type</a></td>
 <td class="fieldname">
@@ -622,6 +630,90 @@ timings (see above) </td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="af7def0657e11fee556d3006fb64fe267"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7def0657e11fee556d3006fb64fe267">&#9670;&nbsp;</a></span>tru_initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tru_initialize </td>
+          <td>(</td>
+          <td class="paramtype">void **&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a> *&#160;</td>
+          <td class="paramname"><em>control</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set default control values and initialize private data</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">control</td><td>is a struct containing control information (see <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently): <ul>
+<li>0. The import was succesful. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="trut_8c-example.html#a2">trut.c</a>, and <a class="el" href="trutf_8c-example.html#a2">trutf.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a870a28132f2747e12d7c93c9ce6ffd01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a870a28132f2747e12d7c93c9ce6ffd01">&#9670;&nbsp;</a></span>tru_read_specfile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tru_read_specfile </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a> *&#160;</td>
+          <td class="paramname"><em>control</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>specfile</em>[]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">control</td><td>is a struct containing control information (see <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a>) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">specfile</td><td>is a character string containing the name of the specification file </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a8175a402569a69faa351e2dcd3c48b94"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8175a402569a69faa351e2dcd3c48b94">&#9670;&nbsp;</a></span>tru_import()</h2>
 
@@ -715,137 +807,8 @@ timings (see above) </td></tr>
 
 </div>
 </div>
-<a id="a7c756ce759b44ddbd1ffac77bf497e5a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c756ce759b44ddbd1ffac77bf497e5a">&#9670;&nbsp;</a></span>tru_information()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void tru_information </td>
-          <td>(</td>
-          <td class="paramtype">void **&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">struct <a class="el" href="tru_8h.html#structtru__inform__type">tru_inform_type</a> *&#160;</td>
-          <td class="paramname"><em>inform</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>status</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Provides output information</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="tru_8h.html#structtru__inform__type">tru_inform_type</a>)</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently): <ul>
-<li>0. The values were recorded succesfully </li>
-</ul>
-</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="trut_8c-example.html#a6">trut.c</a>, and <a class="el" href="trutf_8c-example.html#a6">trutf.c</a>.</dd>
-</dl>
-
-</div>
-</div>
-<a id="a1ae7a579fa70c63d8dc62566c04d9aff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1ae7a579fa70c63d8dc62566c04d9aff">&#9670;&nbsp;</a></span>tru_initialize()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void tru_initialize </td>
-          <td>(</td>
-          <td class="paramtype">void **&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">struct <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a> *&#160;</td>
-          <td class="paramname"><em>control</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">struct <a class="el" href="tru_8h.html#structtru__inform__type">tru_inform_type</a> *&#160;</td>
-          <td class="paramname"><em>inform</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Set default control values and initialize private data</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">control</td><td>is a struct containing control information (see <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a>) </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="tru_8h.html#structtru__inform__type">tru_inform_type</a>) </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="trut_8c-example.html#a2">trut.c</a>, and <a class="el" href="trutf_8c-example.html#a2">trutf.c</a>.</dd>
-</dl>
-
-</div>
-</div>
-<a id="a870a28132f2747e12d7c93c9ce6ffd01"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a870a28132f2747e12d7c93c9ce6ffd01">&#9670;&nbsp;</a></span>tru_read_specfile()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void tru_read_specfile </td>
-          <td>(</td>
-          <td class="paramtype">struct <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a> *&#160;</td>
-          <td class="paramname"><em>control</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char&#160;</td>
-          <td class="paramname"><em>specfile</em>[]&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">control</td><td>is a struct containing control information (see <a class="el" href="tru_8h.html#structtru__control__type">tru_control_type</a>) </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">specfile</td><td>is a character string containing the name of the specification file </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a3b6fdf7f4f42d0615e2ebaa1295181d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3b6fdf7f4f42d0615e2ebaa1295181d8">&#9670;&nbsp;</a></span>tru_reset_control()</h2>
+<a id="a97ce8d0956fdb4165504433a93714495"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97ce8d0956fdb4165504433a93714495">&#9670;&nbsp;</a></span>tru_reset_control()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -886,246 +849,6 @@ timings (see above) </td></tr>
 </td></tr>
   </table>
   </dd>
-</dl>
-
-</div>
-</div>
-<a id="a804863856294e362b724fca8953300d5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a804863856294e362b724fca8953300d5">&#9670;&nbsp;</a></span>tru_solve_reverse_with_mat()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void tru_solve_reverse_with_mat </td>
-          <td>(</td>
-          <td class="paramtype">void **&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>status</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>eval_status</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>x</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>g</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>ne</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>H_val</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const real_wp_&#160;</td>
-          <td class="paramname"><em>u</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>v</em>[]&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Find a local minimizer of a given function using a trust-region method.</p>
-<p>This call is for the case where \(H = \nabla_{xx}f(x)\) is provided specifically, but function/derivative information is only available by returning to the calling procedure</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
- On initial entry, status must be set to 1. <br  />
- Possible exit are: <ul>
-<li>0. The run was succesful</li>
-</ul>
-<ul>
-<li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
-<li>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
-<li>-3. The restriction n &gt; 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated. </li>
-<li>-7. The objective function appears to be unbounded from below </li>
-<li>-9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status </li>
-<li>-10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status. </li>
-<li>-11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status. </li>
-<li>-16. The problem is so ill-conditioned that further progress is impossible. </li>
-<li>-18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem. </li>
-<li>-19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem. </li>
-<li>-40. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.</li>
-</ul>
-</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">status</td><td>(continued) <ul>
-<li>2. The user should compute the objective function value \(f(x)\) at the point \(x\) indicated in x and then re-enter the function. The required value should be set in f, and eval_status should be set to 0. If the user is unable to evaluate \(f(x)\)&mdash; for instance, if the function is undefined at \(x\)&mdash; the user need not set f, but should then set eval_status to a non-zero value. </li>
-<li>3. The user should compute the gradient of the objective function \(\nabla_x f(x)\) at the point \(x\) indicated in x and then re-enter the function. The value of the i-th component of the g radient should be set in g[i], for i = 0, ..., n-1 and eval_status should be set to 0. If the user is unable to evaluate a component of \(\nabla_x f(x)\) &mdash; for instance if a component of the gradient is undefined at \(x\) -the user need not set g, but should then set eval_status to a non-zero value. </li>
-<li>4. The user should compute the Hessian of the objective function \(\nabla_{xx}f(x)\) at the point x indicated in \(x\) and then re-enter the function. The value l-th component of the Hessian stored according to the scheme input in the remainder of \(H\) should be set in H_val[l], for l = 0, ..., ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of \(\nabla_{xx}f(x)\) &mdash; for instance, if a component of the Hessian is undefined at \(x\) &mdash; the user need not set H_val, but should then set eval_status to a non-zero value. </li>
-<li>6. The user should compute the product \(u = P(x)v\) of their preconditioner \(P(x)\) at the point x indicated in \(x\) with the vector \(v\) and then re-enter the function. The vector \(v\) is given in v, the resulting vector \(u = P(x)v\) should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product&mdash; for instance, if a component of the preconditioner is undefined at \(x\) &mdash; the user need not set u, but should then set eval_status to a non-zero value.</li>
-</ul>
-</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">eval_status</td><td>is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>is a scalar variable of type int, that holds the number of variables</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>is a one-dimensional array of size n and type double, that holds the values \(x\) of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains \(x_j\).</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">f</td><td>is a scalar variable pointer of type double, that holds the value of the objective function.</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">g</td><td>is a one-dimensional array of size n and type double, that holds the gradient \(g = \nabla_xf(x)\) of the objective function. The j-th component of g, j = 0, ... , n-1, contains \(g_j \).</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">ne</td><td>is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix \(H\).</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">H_val</td><td>is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix \(H\) in any of the available storage schemes.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">u</td><td>is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">v</td><td>is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details) </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="trut_8c-example.html#a8">trut.c</a>, and <a class="el" href="trutf_8c-example.html#a8">trutf.c</a>.</dd>
-</dl>
-
-</div>
-</div>
-<a id="a97252b83eaab0b4d5d3ac53e6b317206"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a97252b83eaab0b4d5d3ac53e6b317206">&#9670;&nbsp;</a></span>tru_solve_reverse_without_mat()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void tru_solve_reverse_without_mat </td>
-          <td>(</td>
-          <td class="paramtype">void **&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>status</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>eval_status</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>n</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>x</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>f</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>g</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>u</em>[], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">real_wp_&#160;</td>
-          <td class="paramname"><em>v</em>[]&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Find a local minimizer of a given function using a trust-region method.</p>
-<p>This call is for the case where access to \(H = \nabla_{xx}f(x)\) is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
- On initial entry, status must be set to 1. <br  />
- Possible exit are: <ul>
-<li>0. The run was succesful</li>
-</ul>
-<ul>
-<li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
-<li>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
-<li>-3. The restriction n &gt; 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated. </li>
-<li>-7. The objective function appears to be unbounded from below </li>
-<li>-9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status </li>
-<li>-10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status. </li>
-<li>-11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status. </li>
-<li>-16. The problem is so ill-conditioned that further progress is impossible. </li>
-<li>-18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem. </li>
-<li>-19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem. </li>
-<li>-40. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.</li>
-</ul>
-</td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">status</td><td>(continued) <ul>
-<li>2. The user should compute the objective function value \(f(x)\) at the point \(x\) indicated in x and then re-enter the function. The required value should be set in f, and eval_status should be set to 0. If the user is unable to evaluate \(f(x)\) &mdash; for instance, if the function is undefined at \(x\) &mdash; the user need not set f, but should then set eval_status to a non-zero value. </li>
-<li>3. The user should compute the gradient of the objective function \(\nabla_x f(x)\) at the point \(x\) indicated in x and then re-enter the function. The value of the i-th component of the g radient should be set in g[i], for i = 0, ..., n-1 and eval_status should be set to 0. If the user is unable to evaluate a component of \(\nabla_x f(x)\) &mdash; for instance if a component of the gradient is undefined at \(x\) -the user need not set g, but should then set eval_status to a non-zero value. </li>
-<li>5. The user should compute the product \(\nabla_{xx}f(x)v\) of the Hessian of the objective function \(\nabla_{xx}f(x)\) at the point \(x\) indicated in x with the vector \(v\), add the result to the vector \(u\) and then re-enter the function. The vectors \(u\) and \(v\) are given in u and v respectively, the resulting vector \(u + \nabla_{xx}f(x)v\) should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product&mdash; for instance, if a component of the Hessian is undefined at \(x\) &mdash; the user need not alter u, but should then set eval_status to a non-zero value. </li>
-<li>6. The user should compute the product \(u = P(x)v\) of their preconditioner \(P(x)\) at the point x indicated in \(x\) with the vector \(v\) and then re-enter the function. The vector \(v\) is given in v, the resulting vector \(u = P(x)v\) should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product&mdash; for instance, if a component of the preconditioner is undefined at \(x\) &mdash; the user need not set u, but should then set eval_status to a non-zero value.</li>
-</ul>
-</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">eval_status</td><td>is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>is a scalar variable of type int, that holds the number of variables</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>is a one-dimensional array of size n and type double, that holds the values \(x\) of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains \(x_j\).</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">f</td><td>is a scalar variable pointer of type double, that holds the value of the objective function.</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">g</td><td>is a one-dimensional array of size n and type double, that holds the gradient \(g = \nabla_xf(x)\) of the objective function. The j-th component of g, j = 0, ... , n-1, contains \(g_j \).</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">u</td><td>is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">v</td><td>is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details) </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="trut_8c-example.html#a9">trut.c</a>, and <a class="el" href="trutf_8c-example.html#a9">trutf.c</a>.</dd>
 </dl>
 
 </div>
@@ -1371,6 +1094,294 @@ timings (see above) </td></tr>
   </dd>
 </dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="trut_8c-example.html#a5">trut.c</a>, and <a class="el" href="trutf_8c-example.html#a5">trutf.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a804863856294e362b724fca8953300d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a804863856294e362b724fca8953300d5">&#9670;&nbsp;</a></span>tru_solve_reverse_with_mat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tru_solve_reverse_with_mat </td>
+          <td>(</td>
+          <td class="paramtype">void **&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>eval_status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>x</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>g</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ne</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>H_val</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const real_wp_&#160;</td>
+          <td class="paramname"><em>u</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>v</em>[]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Find a local minimizer of a given function using a trust-region method.</p>
+<p>This call is for the case where \(H = \nabla_{xx}f(x)\) is provided specifically, but function/derivative information is only available by returning to the calling procedure</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
+ On initial entry, status must be set to 1. <br  />
+ Possible exit are: <ul>
+<li>0. The run was succesful</li>
+</ul>
+<ul>
+<li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
+<li>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
+<li>-3. The restriction n &gt; 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated. </li>
+<li>-7. The objective function appears to be unbounded from below </li>
+<li>-9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status </li>
+<li>-10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status. </li>
+<li>-11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status. </li>
+<li>-16. The problem is so ill-conditioned that further progress is impossible. </li>
+<li>-18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem. </li>
+<li>-19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem. </li>
+<li>-40. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.</li>
+</ul>
+</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">status</td><td>(continued) <ul>
+<li>2. The user should compute the objective function value \(f(x)\) at the point \(x\) indicated in x and then re-enter the function. The required value should be set in f, and eval_status should be set to 0. If the user is unable to evaluate \(f(x)\)&mdash; for instance, if the function is undefined at \(x\)&mdash; the user need not set f, but should then set eval_status to a non-zero value. </li>
+<li>3. The user should compute the gradient of the objective function \(\nabla_x f(x)\) at the point \(x\) indicated in x and then re-enter the function. The value of the i-th component of the g radient should be set in g[i], for i = 0, ..., n-1 and eval_status should be set to 0. If the user is unable to evaluate a component of \(\nabla_x f(x)\) &mdash; for instance if a component of the gradient is undefined at \(x\) -the user need not set g, but should then set eval_status to a non-zero value. </li>
+<li>4. The user should compute the Hessian of the objective function \(\nabla_{xx}f(x)\) at the point x indicated in \(x\) and then re-enter the function. The value l-th component of the Hessian stored according to the scheme input in the remainder of \(H\) should be set in H_val[l], for l = 0, ..., ne-1 and eval_status should be set to 0. If the user is unable to evaluate a component of \(\nabla_{xx}f(x)\) &mdash; for instance, if a component of the Hessian is undefined at \(x\) &mdash; the user need not set H_val, but should then set eval_status to a non-zero value. </li>
+<li>6. The user should compute the product \(u = P(x)v\) of their preconditioner \(P(x)\) at the point x indicated in \(x\) with the vector \(v\) and then re-enter the function. The vector \(v\) is given in v, the resulting vector \(u = P(x)v\) should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product&mdash; for instance, if a component of the preconditioner is undefined at \(x\) &mdash; the user need not set u, but should then set eval_status to a non-zero value.</li>
+</ul>
+</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">eval_status</td><td>is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>is a scalar variable of type int, that holds the number of variables</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>is a one-dimensional array of size n and type double, that holds the values \(x\) of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains \(x_j\).</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">f</td><td>is a scalar variable pointer of type double, that holds the value of the objective function.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">g</td><td>is a one-dimensional array of size n and type double, that holds the gradient \(g = \nabla_xf(x)\) of the objective function. The j-th component of g, j = 0, ... , n-1, contains \(g_j \).</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ne</td><td>is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix \(H\).</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">H_val</td><td>is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix \(H\) in any of the available storage schemes.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">u</td><td>is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">v</td><td>is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="trut_8c-example.html#a8">trut.c</a>, and <a class="el" href="trutf_8c-example.html#a8">trutf.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a97252b83eaab0b4d5d3ac53e6b317206"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97252b83eaab0b4d5d3ac53e6b317206">&#9670;&nbsp;</a></span>tru_solve_reverse_without_mat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tru_solve_reverse_without_mat </td>
+          <td>(</td>
+          <td class="paramtype">void **&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>eval_status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>x</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>g</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>u</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">real_wp_&#160;</td>
+          <td class="paramname"><em>v</em>[]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Find a local minimizer of a given function using a trust-region method.</p>
+<p>This call is for the case where access to \(H = \nabla_{xx}f(x)\) is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
+ On initial entry, status must be set to 1. <br  />
+ Possible exit are: <ul>
+<li>0. The run was succesful</li>
+</ul>
+<ul>
+<li>-1. An allocation error occurred. A message indicating the offending array is written on unit control.error, and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
+<li>-2. A deallocation error occurred. A message indicating the offending array is written on unit control.error and the returned allocation status and a string containing the name of the offending array are held in inform.alloc_status and inform.bad_alloc respectively. </li>
+<li>-3. The restriction n &gt; 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated. </li>
+<li>-7. The objective function appears to be unbounded from below </li>
+<li>-9. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform.factor_status </li>
+<li>-10. The factorization failed; the return status from the factorization package is given in the component inform.factor_status. </li>
+<li>-11. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform.factor_status. </li>
+<li>-16. The problem is so ill-conditioned that further progress is impossible. </li>
+<li>-18. Too many iterations have been performed. This may happen if control.maxit is too small, but may also be symptomatic of a badly scaled problem. </li>
+<li>-19. The CPU time limit has been reached. This may happen if control.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem. </li>
+<li>-40. The user has forced termination of solver by removing the file named control.alive_file from unit unit control.alive_unit.</li>
+</ul>
+</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">status</td><td>(continued) <ul>
+<li>2. The user should compute the objective function value \(f(x)\) at the point \(x\) indicated in x and then re-enter the function. The required value should be set in f, and eval_status should be set to 0. If the user is unable to evaluate \(f(x)\) &mdash; for instance, if the function is undefined at \(x\) &mdash; the user need not set f, but should then set eval_status to a non-zero value. </li>
+<li>3. The user should compute the gradient of the objective function \(\nabla_x f(x)\) at the point \(x\) indicated in x and then re-enter the function. The value of the i-th component of the g radient should be set in g[i], for i = 0, ..., n-1 and eval_status should be set to 0. If the user is unable to evaluate a component of \(\nabla_x f(x)\) &mdash; for instance if a component of the gradient is undefined at \(x\) -the user need not set g, but should then set eval_status to a non-zero value. </li>
+<li>5. The user should compute the product \(\nabla_{xx}f(x)v\) of the Hessian of the objective function \(\nabla_{xx}f(x)\) at the point \(x\) indicated in x with the vector \(v\), add the result to the vector \(u\) and then re-enter the function. The vectors \(u\) and \(v\) are given in u and v respectively, the resulting vector \(u + \nabla_{xx}f(x)v\) should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product&mdash; for instance, if a component of the Hessian is undefined at \(x\) &mdash; the user need not alter u, but should then set eval_status to a non-zero value. </li>
+<li>6. The user should compute the product \(u = P(x)v\) of their preconditioner \(P(x)\) at the point x indicated in \(x\) with the vector \(v\) and then re-enter the function. The vector \(v\) is given in v, the resulting vector \(u = P(x)v\) should be set in u and eval_status should be set to 0. If the user is unable to evaluate the product&mdash; for instance, if a component of the preconditioner is undefined at \(x\) &mdash; the user need not set u, but should then set eval_status to a non-zero value.</li>
+</ul>
+</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">eval_status</td><td>is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">n</td><td>is a scalar variable of type int, that holds the number of variables</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>is a one-dimensional array of size n and type double, that holds the values \(x\) of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains \(x_j\).</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">f</td><td>is a scalar variable pointer of type double, that holds the value of the objective function.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">g</td><td>is a one-dimensional array of size n and type double, that holds the gradient \(g = \nabla_xf(x)\) of the objective function. The j-th component of g, j = 0, ... , n-1, contains \(g_j \).</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">u</td><td>is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">v</td><td>is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="trut_8c-example.html#a9">trut.c</a>, and <a class="el" href="trutf_8c-example.html#a9">trutf.c</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a7c756ce759b44ddbd1ffac77bf497e5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c756ce759b44ddbd1ffac77bf497e5a">&#9670;&nbsp;</a></span>tru_information()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tru_information </td>
+          <td>(</td>
+          <td class="paramtype">void **&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">struct <a class="el" href="tru_8h.html#structtru__inform__type">tru_inform_type</a> *&#160;</td>
+          <td class="paramname"><em>inform</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int *&#160;</td>
+          <td class="paramname"><em>status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Provides output information</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="tru_8h.html#structtru__inform__type">tru_inform_type</a>)</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the exit status from the package. Possible values are (currently): <ul>
+<li>0. The values were recorded succesfully </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="trut_8c-example.html#a6">trut.c</a>, and <a class="el" href="trutf_8c-example.html#a6">trutf.c</a>.</dd>
 </dl>
 
 </div>

@@ -18,6 +18,14 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
+    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+  } }
+});
+</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -105,10 +113,10 @@ References</h2>
 Call order</h1>
 <p>To solve a given problem, functions from the trb package must be called in the following order:</p>
 <ul>
-<li><a class="el" href="trb_8h.html#aae182e47703158fd8095fd3ae06e1007">trb_initialize</a> - provide default control parameters and set up initial data structures</li>
+<li><a class="el" href="trb_8h.html#a9bffc46178a3e0b7eb2927d1c50440a1">trb_initialize</a> - provide default control parameters and set up initial data structures</li>
 <li><a class="el" href="trb_8h.html#a4eaafdaf5187c8b91c119ce9395469e9">trb_read_specfile</a> (optional) - override control values by reading replacement values from a file</li>
 <li><a class="el" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a> - set up problem data structures and fixed values</li>
-<li><a class="el" href="trb_8h.html#abd25a5352aa4065c940af630b50d5467">trb_reset_control</a> (optional) - possibly change control parameters if a sequence of problems are being solved</li>
+<li><a class="el" href="trb_8h.html#a550c3ca1966ea0fa9de84423b8658cd7">trb_reset_control</a> (optional) - possibly change control parameters if a sequence of problems are being solved</li>
 <li>solve the problem by calling one of<ul>
 <li><a class="el" href="trb_8h.html#a5a58e6c0c022eb451f14c82d653967f7">trb_solve_with_mat</a> - solve using function calls to evaluate function, gradient and Hessian values</li>
 <li><a class="el" href="trb_8h.html#a376b81748cec0bf992542d80b8d38f49">trb_solve_without_mat</a> - solve using function calls to evaluate function and gradient values and Hessian-vector products</li>

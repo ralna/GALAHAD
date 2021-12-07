@@ -259,6 +259,7 @@ int main(void) {
                 st = 'P';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "absent", ne, NULL, NULL, NULL );
+                nnz_u = 0;
                 while(true){ // reverse-communication loop
                     trb_solve_reverse_without_mat( &data, &status, &eval_status,
                                                    n, x, f, g, u, v, index_nz_v,

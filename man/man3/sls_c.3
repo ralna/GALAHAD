@@ -1,4 +1,4 @@
-.TH "sls.h" 3 "Fri Dec 3 2021" "C interfaces to GALAHAD SLS" \" -*- nroff -*-
+.TH "sls.h" 3 "Tue Dec 7 2021" "C interfaces to GALAHAD SLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -46,7 +46,7 @@ sls.h
 
 .in +1c
 .ti -1c
-.RI "void \fBsls_initialize\fP (const char solver[], void **data, struct \fBsls_control_type\fP *control, struct \fBsls_inform_type\fP *inform)"
+.RI "void \fBsls_initialize\fP (const char solver[], void **data, struct \fBsls_control_type\fP *control, int *status)"
 .br
 .ti -1c
 .RI "void \fBsls_read_specfile\fP (struct \fBsls_control_type\fP *control, const char specfile[])"
@@ -257,13 +257,13 @@ int \fImin_real_factor_size\fP initial size for real array for the factors and o
 int \fImin_integer_factor_size\fP initial size for integer array for the factors and other data 
 .br
 .PP
-int \fImax_real_factor_size\fP maximum size for real array for the factors and other data 
+long int \fImax_real_factor_size\fP maximum size for real array for the factors and other data 
 .br
 .PP
-int \fImax_integer_factor_size\fP maximum size for integer array for the factors and other data 
+long int \fImax_integer_factor_size\fP maximum size for integer array for the factors and other data 
 .br
 .PP
-int \fImax_in_core_store\fP amount of in-core storage to be used for out-of-core factorization 
+long int \fImax_in_core_store\fP amount of in-core storage to be used for out-of-core factorization 
 .br
 .PP
 real_wp_ \fIarray_increase_factor\fP factor by which arrays sizes are to be increased if they are too small 
@@ -507,25 +507,25 @@ int \fImax_depth_assembly_tree\fP maximum depth of the assembly tree
 int \fInodes_assembly_tree\fP nodes in the assembly tree (= number of elimination steps) 
 .br
 .PP
-int \fIreal_size_desirable\fP desirable or actual size for real array for the factors and other data 
+long int \fIreal_size_desirable\fP desirable or actual size for real array for the factors and other data 
 .br
 .PP
-int \fIinteger_size_desirable\fP desirable or actual size for integer array for the factors and other dat 
+long int \fIinteger_size_desirable\fP desirable or actual size for integer array for the factors and other dat 
 .br
 .PP
-int \fIreal_size_necessary\fP necessary size for real array for the factors and other data 
+long int \fIreal_size_necessary\fP necessary size for real array for the factors and other data 
 .br
 .PP
-int \fIinteger_size_necessary\fP necessary size for integer array for the factors and other data 
+long int \fIinteger_size_necessary\fP necessary size for integer array for the factors and other data 
 .br
 .PP
-int \fIreal_size_factors\fP predicted or actual number of reals to hold factors 
+long int \fIreal_size_factors\fP predicted or actual number of reals to hold factors 
 .br
 .PP
-int \fIinteger_size_factors\fP predicted or actual number of integers to hold factors 
+long int \fIinteger_size_factors\fP predicted or actual number of integers to hold factors 
 .br
 .PP
-int \fIentries_in_factors\fP number of entries in factors 
+long int \fIentries_in_factors\fP number of entries in factors 
 .br
 .PP
 int \fImax_task_pool_size\fP maximum number of tasks in the factorization task pool 
@@ -570,13 +570,13 @@ int \fInum_zero\fP number of pivots that are considered zero (and ignored)
 int \fIiterative_refinements\fP number of iterative refinements performed 
 .br
 .PP
-int \fIflops_assembly\fP anticipated or actual number of floating-point operations in assembly 
+long int \fIflops_assembly\fP anticipated or actual number of floating-point operations in assembly 
 .br
 .PP
-int \fIflops_elimination\fP anticipated or actual number of floating-point operations in elimination 
+long int \fIflops_elimination\fP anticipated or actual number of floating-point operations in elimination 
 .br
 .PP
-int \fIflops_blas\fP additional number of floating-point operations for BLAS 
+long int \fIflops_blas\fP additional number of floating-point operations for BLAS 
 .br
 .PP
 real_wp_ \fIlargest_modified_pivot\fP largest diagonal modification when static pivoting or ensuring definiten 
@@ -691,18 +691,25 @@ int \fIlapack_error\fP the output scalars and arrays from LAPACK routines
 .PP
 .SH "Function Documentation"
 .PP 
-.SS "void sls_initialize (const char solver[], void ** data, struct \fBsls_control_type\fP * control, struct \fBsls_inform_type\fP * inform)"
+.SS "void sls_initialize (const char solver[], void ** data, struct \fBsls_control_type\fP * control, int * status)"
 Set default control values and initialize private data
 .PP
 \fBParameters\fP
 .RS 4
-\fIsolver\fP is a one-dimensional array of type char that specifies the \fBsolver package \fP that should be used to factorize the matrix A\&. It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'pardiso', 'mkl pardiso', 'wsmp', 'potr', 'sytr' or 'pbtr'; lower or upper case variants are allowed\&. 
+\fIsolver\fP is a one-dimensional array of type char that specifies the \fBsolver package \fP that should be used to factorize the matrix A\&. It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'pardiso', 'mkl pardiso', 'wsmp', 'potr', 'sytr' or 'pbtr'; lower or upper case variants are allowed\&.
 .br
-\fIdata\fP holds private internal data 
+\fIdata\fP holds private internal data
 .br
-\fIcontrol\fP is a struct containing control information (see \fBsls_control_type\fP) 
+\fIcontrol\fP is a struct containing control information (see \fBsls_control_type\fP)
 .br
-\fIinform\fP is a struct containing output information (see \fBsls_inform_type\fP)\&. A successful call occurs when inform\&.status = 0, while if inform\&.status = -26, the requested solver is unavailable\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.IP "\(bu" 2
+-26\&. The requested solver is not available\&. 
+.PP
 .RE
 .PP
 
@@ -726,37 +733,41 @@ Import structural matrix data into internal storage prior to solution
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+.br
+ Possible values are: 
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import and analysis were conducted succesfully\&.
+.PP
+.PD 0
 .IP "\(bu" 2
 -1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
 .IP "\(bu" 2
 -2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
 .IP "\(bu" 2
--3\&. The restrictions n > 0 or requirement that the matrix type mus contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated\&. 
+-3\&. The restrictions n > 0 or requirement that the matrix type must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated\&. 
 .IP "\(bu" 2
--20 The matrix is not positive definite while the solver used expected it to be\&. 
+-20\&. The matrix is not positive definite while the solver used expected it to be\&. 
 .IP "\(bu" 2
--26 The requested solver is not available\&. 
+-26\&. The requested solver is not available\&. 
 .IP "\(bu" 2
--29 This option is not available with this solver\&. 
+-29\&. This option is not available with this solver\&. 
 .IP "\(bu" 2
--32 More than control\&.max integer factor size words of internal integer storage are required for in-core factorization\&. 
+-32\&. More than control\&.max integer factor size words of internal integer storage are required for in-core factorization\&. 
 .IP "\(bu" 2
--34 The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
+-34\&. The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
 .IP "\(bu" 2
--35 The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&. 
+-35\&. The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&. 
 .IP "\(bu" 2
--36 The scaling package HSL MC64 failed; check the solver-specific information component inform\&.mc64_info along with HSL MC64’s documentation for more details\&. 
+-36\&. The scaling package HSL MC64 failed; check the solver-specific information component inform\&.mc64_info along with HSL MC64’s documentation for more details\&. 
 .IP "\(bu" 2
--37 The scaling package MC77 failed; check the solver-specific information components inform\&.mc77 info and inform\&.mc77_rinfo along with MC77’s documentation for more details\&. 
+-37\&. The scaling package MC77 failed; check the solver-specific information components inform\&.mc77 info and inform\&.mc77_rinfo along with MC77’s documentation for more details\&. 
 .IP "\(bu" 2
--43 A direct-access file error occurred\&. See the value of inform\&.ma77_info\&.flag for more details\&. 
+-43\&. A direct-access file error occurred\&. See the value of inform\&.ma77_info\&.flag for more details\&. 
 .IP "\(bu" 2
--50 A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details\&.
+-50\&. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of rows in the symmetric matrix A\&.
@@ -798,11 +809,9 @@ Form and factorize the symmetric matrix A\&.
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
 .br
- On initial entry, status must be set to 1\&. 
-.br
- Possible exit are: 
+ Possible values are: 
 .PD 0
 
 .IP "\(bu" 2
@@ -816,25 +825,25 @@ Form and factorize the symmetric matrix A\&.
 .IP "\(bu" 2
 -3\&. The restrictions n > 0 or requirement that the matrix type must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated\&. 
 .IP "\(bu" 2
--20 The matrix is not positive definite while the solver used expected it to be\&. 
+-20\&. The matrix is not positive definite while the solver used expected it to be\&. 
 .IP "\(bu" 2
--26 The requested solver is not available\&. 
+-26\&. The requested solver is not available\&. 
 .IP "\(bu" 2
--29 This option is not available with this solver\&. 
+-29\&. This option is not available with this solver\&. 
 .IP "\(bu" 2
--32 More than control\&.max integer factor size words of internal integer storage are required for in-core factorization\&. 
+-32\&. More than control\&.max integer factor size words of internal integer storage are required for in-core factorization\&. 
 .IP "\(bu" 2
--34 The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
+-34\&. The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
 .IP "\(bu" 2
--35 The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&. 
+-35\&. The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&. 
 .IP "\(bu" 2
--36 The scaling package HSL MC64 failed; check the solver-specific information component inform\&.mc64_info along with HSL MC64’s documentation for more details\&. 
+-36\&. The scaling package HSL MC64 failed; check the solver-specific information component inform\&.mc64_info along with HSL MC64’s documentation for more details\&. 
 .IP "\(bu" 2
--37 The scaling package MC77 failed; check the solver-specific information components inform\&.mc77 info and inform\&.mc77_rinfo along with MC77’s documentation for more details\&. 
+-37\&. The scaling package MC77 failed; check the solver-specific information components inform\&.mc77 info and inform\&.mc77_rinfo along with MC77’s documentation for more details\&. 
 .IP "\(bu" 2
--43 A direct-access file error occurred\&. See the value of inform\&.ma77_info\&.flag for more details\&. 
+-43\&. A direct-access file error occurred\&. See the value of inform\&.ma77_info\&.flag for more details\&. 
 .IP "\(bu" 2
--50 A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details\&.
+-50\&. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details\&.
 .PP
 .br
 \fIne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix A\&.
@@ -850,11 +859,9 @@ Solve the linear system Ax=b\&.
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
 .br
- On initial entry, status must be set to 1\&. 
-.br
- Possible exit are: 
+ Possible values are: 
 .PD 0
 
 .IP "\(bu" 2
@@ -866,9 +873,9 @@ Solve the linear system Ax=b\&.
 .IP "\(bu" 2
 -2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
 .IP "\(bu" 2
--34 The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
+-34\&. The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
 .IP "\(bu" 2
--35 The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&.
+-35\&. The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of entries in the vectors b and x\&.
@@ -902,9 +909,9 @@ Given the factorization A = L D U with U = L^T, solve the linear system Mx=b, wh
 .IP "\(bu" 2
 -2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
 .IP "\(bu" 2
--34 The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
+-34\&. The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
 .IP "\(bu" 2
--35 The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&.
+-35\&. The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of entries in the vectors b and x\&.

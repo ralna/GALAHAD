@@ -1,4 +1,4 @@
-.TH "tru.h" 3 "Wed Nov 24 2021" "C interfaces to GALAHAD TRU" \" -*- nroff -*-
+.TH "tru.h" 3 "Tue Dec 7 2021" "C interfaces to GALAHAD TRU" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -28,7 +28,7 @@ tru.h
 
 .in +1c
 .ti -1c
-.RI "void \fBtru_initialize\fP (void **data, struct \fBtru_control_type\fP *control, struct \fBtru_inform_type\fP *inform)"
+.RI "void \fBtru_initialize\fP (void **data, struct \fBtru_control_type\fP *control, int *status)"
 .br
 .ti -1c
 .RI "void \fBtru_read_specfile\fP (struct \fBtru_control_type\fP *control, const char specfile[])"
@@ -37,7 +37,7 @@ tru.h
 .RI "void \fBtru_import\fP (struct \fBtru_control_type\fP *control, void **data, int *status, int n, const char H_type[], int ne, const int H_row[], const int H_col[], const int H_ptr[])"
 .br
 .ti -1c
-.RI "void \fBtru_reset_control\fP (struct \fBtru_control_type\fP *control, void **data, int *status,)"
+.RI "void \fBtru_reset_control\fP (struct \fBtru_control_type\fP *control, void **data, int *status)"
 .br
 .ti -1c
 .RI "void \fBtru_solve_with_mat\fP (void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int ne, int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_h)(int, int, const real_wp_[], real_wp_[], const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))"
@@ -137,64 +137,57 @@ control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIadvanced_start\fP try to pick a good initial trust-region radius using \&.advanced_start iterates of a variant on the strategy of Sartenaer SISC 18(6) 1990:1788-1803 
-.br
-.PP
-char \fIalive_file[31]\fP see alive_unit 
-.br
-.PP
-int \fIalive_unit\fP removal of the file alive_file from unit alive_unit terminates execution 
-.br
-.PP
-real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
-.br
-.PP
-real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite) 
-.br
-.PP
-bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
 .br
 .PP
 int \fIerror\fP error and warning diagnostics occur on stream error 
 .br
 .PP
-real_wp_ \fIeta_successful\fP a potential iterate will only be accepted if the actual decrease f - f(x_{new}) is larger than \&.eta_successful times that predicted by a quadratic model of the decrease\&. The trust-region radius will be increased if this relative decrease is greater than \&.eta_very_successful but smaller than \&.eta_too_successful 
+int \fIout\fP general output occurs on stream out 
 .br
 .PP
-real_wp_ \fIeta_too_successful\fP see eta_successful 
+int \fIprint_level\fP the level of output required\&. 
+.PD 0
+
+.IP "\(bu" 2
+<= 0 gives no output, 
+.IP "\(bu" 2
+= 1 gives a one-line summary for every iteration, 
+.IP "\(bu" 2
+= 2 gives a summary of the inner iteration for each iteration, 
+.IP "\(bu" 2
+>= 3 gives increasingly verbose (debugging) output 
+.PP
+
 .br
 .PP
-real_wp_ \fIeta_very_successful\fP see eta_successful 
+int \fIstart_print\fP any printing will start on this iteration 
 .br
 .PP
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+int \fIstop_print\fP any printing will stop on this iteration 
 .br
 .PP
-bool \fIhessian_available\fP is the Hessian matrix of second derivatives available or is access only via matrix-vector products? 
-.br
-.PP
-int \fIicfs_vectors\fP number of vectors used by the Lin-More' incomplete factorization matrix P if required 
-.br
-.PP
-real_wp_ \fIinitial_radius\fP initial value for the trust-region radius 
-.br
-.PP
-int \fIlbfgs_vectors\fP number of vectors used by the L-BFGS matrix P if required 
-.br
-.PP
-int \fImax_dxg\fP number of vectors used by the sparsity-based secant Hessian if required 
-.br
-.PP
-real_wp_ \fImaximum_radius\fP maximum permitted trust-region radius 
+int \fIprint_gap\fP the number of iterations between printing 
 .br
 .PP
 int \fImaxit\fP the maximum number of iterations allowed 
 .br
 .PP
-int \fImi28_lsize\fP the maximum number of fill entries within each column of the incomplete factor L computed by HSL_MI28\&. In general, increasing \&.mi28_lsize improve the quality of the preconditioner but increases the time to compute and then apply the preconditioner\&. Values less than 0 are treated as 0 
+int \fIalive_unit\fP removal of the file alive_file from unit alive_unit terminates execution 
 .br
 .PP
-int \fImi28_rsize\fP the maximum number of entries within each column of the strictly lower triangular matrix R used in the computation of the preconditioner by HSL_MI28\&. Rank-1 arrays of size \&.mi28_rsize * n are allocated internally to hold R\&. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on \&.mi28_rsize\&. Setting \&.mi28_rsize > 0 generally leads to a higher quality preconditioner than using \&.mi28_rsize = 0, and choosing \&.mi28_rsize >= \&.mi28_lsize is generally recommended 
+char \fIalive_file[31]\fP see alive_unit 
+.br
+.PP
+int \fInon_monotone\fP the descent strategy used\&. Possible values are 
+.PD 0
+
+.IP "\(bu" 2
+<= 0 a monotone strategy is used\&. 
+.IP "\(bu" 2
+anything else, a non-monotone strategy with history length \&.non_monotine is used\&. 
+.PP
+
 .br
 .PP
 int \fImodel\fP the model used\&. Possible values are 
@@ -214,17 +207,6 @@ int \fImodel\fP the model used\&. Possible values are
 5 secant second-order (limited-memory BFGS, with \&.lbfgs_vectors history) 
 .IP "\(bu" 2
 6 secant second-order (limited-memory SR1, with \&.lbfgs_vectors history) 
-.PP
-
-.br
-.PP
-int \fInon_monotone\fP the descent strategy used\&. Possible values are 
-.PD 0
-
-.IP "\(bu" 2
-<= 0 a monotone strategy is used\&. 
-.IP "\(bu" 2
-anything else, a non-monotone strategy with history length \&.non_monotine is used\&. 
 .PP
 
 .br
@@ -264,31 +246,49 @@ int \fInorm\fP the trust-region norm used\&. The norm is defined via ||v||^2 = v
 
 .br
 .PP
-real_wp_ \fIobj_unbounded\fP the smallest value the objective function may take before the problem is marked as unbounded 
+int \fIsemi_bandwidth\fP specify the semi-bandwidth of the band matrix P if required 
 .br
 .PP
-int \fIout\fP general output occurs on stream out 
+int \fIlbfgs_vectors\fP number of vectors used by the L-BFGS matrix P if required 
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+int \fImax_dxg\fP number of vectors used by the sparsity-based secant Hessian if required 
 .br
 .PP
-int \fIprint_gap\fP the number of iterations between printing 
+int \fIicfs_vectors\fP number of vectors used by the Lin-More' incomplete factorization matrix P if required 
 .br
 .PP
-int \fIprint_level\fP the level of output required\&. 
-.PD 0
-
-.IP "\(bu" 2
-<= 0 gives no output, 
-.IP "\(bu" 2
-= 1 gives a one-line summary for every iteration, 
-.IP "\(bu" 2
-= 2 gives a summary of the inner iteration for each iteration, 
-.IP "\(bu" 2
->= 3 gives increasingly verbose (debugging) output 
+int \fImi28_lsize\fP the maximum number of fill entries within each column of the incomplete factor L computed by HSL_MI28\&. In general, increasing \&.mi28_lsize improve the quality of the preconditioner but increases the time to compute and then apply the preconditioner\&. Values less than 0 are treated as 0 
+.br
 .PP
-
+int \fImi28_rsize\fP the maximum number of entries within each column of the strictly lower triangular matrix R used in the computation of the preconditioner by HSL_MI28\&. Rank-1 arrays of size \&.mi28_rsize * n are allocated internally to hold R\&. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on \&.mi28_rsize\&. Setting \&.mi28_rsize > 0 generally leads to a higher quality preconditioner than using \&.mi28_rsize = 0, and choosing \&.mi28_rsize >= \&.mi28_lsize is generally recommended 
+.br
+.PP
+real_wp_ \fIstop_g_absolute\fP overall convergence tolerances\&. The iteration will terminate when the norm of the gradient of the objective function is smaller than MAX( \&.stop_g_absolute, \&.stop_g_relative * norm of the initial gradient or if the step is less than \&.stop_s 
+.br
+.PP
+real_wp_ \fIstop_g_relative\fP see stop_g_absolute 
+.br
+.PP
+real_wp_ \fIstop_s\fP see stop_g_absolute 
+.br
+.PP
+int \fIadvanced_start\fP try to pick a good initial trust-region radius using \&.advanced_start iterates of a variant on the strategy of Sartenaer SISC 18(6) 1990:1788-1803 
+.br
+.PP
+real_wp_ \fIinitial_radius\fP initial value for the trust-region radius 
+.br
+.PP
+real_wp_ \fImaximum_radius\fP maximum permitted trust-region radius 
+.br
+.PP
+real_wp_ \fIeta_successful\fP a potential iterate will only be accepted if the actual decrease f - f(x_{new}) is larger than \&.eta_successful times that predicted by a quadratic model of the decrease\&. The trust-region radius will be increased if this relative decrease is greater than \&.eta_very_successful but smaller than \&.eta_too_successful 
+.br
+.PP
+real_wp_ \fIeta_very_successful\fP see eta_successful 
+.br
+.PP
+real_wp_ \fIeta_too_successful\fP see eta_successful 
 .br
 .PP
 real_wp_ \fIradius_increase\fP on very successful iterations, the trust-region radius will be increased by the factor \&.radius_increase, while if the iteration is unsucceful, the radius will be decreased by a factor \&.radius_reduce but no more than \&.radius_reduce_max 
@@ -300,34 +300,34 @@ real_wp_ \fIradius_reduce\fP see radius_increase;
 real_wp_ \fIradius_reduce_max\fP see radius_increase; 
 .br
 .PP
-bool \fIrenormalize_radius\fP should the radius be renormalized to account for a change in preconditioner? 
+real_wp_ \fIobj_unbounded\fP the smallest value the objective function may take before the problem is marked as unbounded 
+.br
+.PP
+real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite) 
+.br
+.PP
+real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
+.br
+.PP
+bool \fIhessian_available\fP is the Hessian matrix of second derivatives available or is access only via matrix-vector products? 
+.br
+.PP
+bool \fIsubproblem_direct\fP use a direct (factorization) or (preconditioned) iterative method to find the search direction 
 .br
 .PP
 bool \fIretrospective_trust_region\fP is a retrospective strategy to be used to update the trust-region radius? 
 .br
 .PP
-int \fIsemi_bandwidth\fP specify the semi-bandwidth of the band matrix P if required 
+bool \fIrenormalize_radius\fP should the radius be renormalized to account for a change in preconditioner? 
 .br
 .PP
 bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
 .br
 .PP
-int \fIstart_print\fP any printing will start on this iteration 
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
 .br
 .PP
-real_wp_ \fIstop_g_absolute\fP overall convergence tolerances\&. The iteration will terminate when the norm of the gradient of the objective function is smaller than MAX( \&.stop_g_absolute, \&.stop_g_relative * norm of the initial gradient or if the step is less than \&.stop_s 
-.br
-.PP
-real_wp_ \fIstop_g_relative\fP see stop_g_absolute 
-.br
-.PP
-int \fIstop_print\fP any printing will stop on this iteration 
-.br
-.PP
-real_wp_ \fIstop_s\fP see stop_g_absolute 
-.br
-.PP
-bool \fIsubproblem_direct\fP use a direct (factorization) or (preconditioned) iterative method to find the search direction 
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
 .RE
@@ -338,7 +338,25 @@ time derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
+real_sp_ \fItotal\fP the total CPU time spent in the package 
+.br
+.PP
+real_sp_ \fIpreprocess\fP the CPU time spent preprocessing the problem 
+.br
+.PP
 real_sp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorization 
+.br
+.PP
+real_sp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
+.br
+.PP
+real_sp_ \fIsolve\fP the CPU time spent computing the search direction 
+.br
+.PP
+real_wp_ \fIclock_total\fP the total clock time spent in the package 
+.br
+.PP
+real_wp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem 
 .br
 .PP
 real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorization 
@@ -347,25 +365,7 @@ real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrice
 real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
 .br
 .PP
-real_wp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem 
-.br
-.PP
 real_wp_ \fIclock_solve\fP the clock time spent computing the search direction 
-.br
-.PP
-real_wp_ \fIclock_total\fP the total clock time spent in the package 
-.br
-.PP
-real_sp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
-.br
-.PP
-real_sp_ \fIpreprocess\fP the CPU time spent preprocessing the problem 
-.br
-.PP
-real_sp_ \fIsolve\fP the CPU time spent computing the search direction 
-.br
-.PP
-real_sp_ \fItotal\fP the total CPU time spent in the package 
 .br
 .PP
 .RE
@@ -376,10 +376,16 @@ inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
+int \fIstatus\fP return status\&. See TRU_solve for details 
+.br
+.PP
 int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
 .br
 .PP
 char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+.br
+.PP
+int \fIiter\fP the total number of iterations performed 
 .br
 .PP
 int \fIcg_iter\fP the total number of CG iterations performed 
@@ -388,43 +394,37 @@ int \fIcg_iter\fP the total number of CG iterations performed
 int \fIf_eval\fP the total number of evaluations of the objection function 
 .br
 .PP
-real_wp_ \fIfactorization_average\fP the average number of factorizations per sub-problem solve 
-.br
-.PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
-.br
-.PP
-int \fIfactorization_max\fP the maximum number of factorizations in a sub-problem solve 
-.br
-.PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
-.br
-.PP
-int \fIfactorization_status\fP the return status from the factorization 
-.br
-.PP
 int \fIg_eval\fP the total number of evaluations of the gradient of the objection function 
 .br
 .PP
 int \fIh_eval\fP the total number of evaluations of the Hessian of the objection function 
 .br
 .PP
-int \fIiter\fP the total number of iterations performed 
+int \fIfactorization_max\fP the maximum number of factorizations in a sub-problem solve 
+.br
+.PP
+int \fIfactorization_status\fP the return status from the factorization 
 .br
 .PP
 long int \fImax_entries_factors\fP the maximum number of entries in the factors 
 .br
 .PP
-real_wp_ \fInorm_g\fP the norm of the gradient of the objective function at the best estimate of the solution determined by the package\&. 
+int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+.br
+.PP
+int \fIfactorization_real\fP the total real workspace required for the factorization 
+.br
+.PP
+real_wp_ \fIfactorization_average\fP the average number of factorizations per sub-problem solve 
 .br
 .PP
 real_wp_ \fIobj\fP the value of the objective function at the best estimate of the solution determined by the package\&. 
 .br
 .PP
-real_wp_ \fIradius\fP the current value of the trust-region radius 
+real_wp_ \fInorm_g\fP the norm of the gradient of the objective function at the best estimate of the solution determined by the package\&. 
 .br
 .PP
-int \fIstatus\fP return status\&. See TRU_solve for details 
+real_wp_ \fIradius\fP the current value of the trust-region radius 
 .br
 .PP
 struct \fBtru_time_type\fP \fItime\fP timings (see above) 
@@ -434,6 +434,35 @@ struct \fBtru_time_type\fP \fItime\fP timings (see above)
 .PP
 .SH "Function Documentation"
 .PP 
+.SS "void tru_initialize (void ** data, struct \fBtru_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBtru_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void tru_read_specfile (struct \fBtru_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBtru_control_type\fP) 
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
 .SS "void tru_import (struct \fBtru_control_type\fP * control, void ** data, int * status, int n, const char H_type[], int ne, const int H_row[], const int H_col[], const int H_ptr[])"
 Import problem data into internal storage prior to solution\&.
 .PP
@@ -470,48 +499,6 @@ Import problem data into internal storage prior to solution\&.
 .RE
 .PP
 
-.SS "void tru_information (void ** data, struct \fBtru_inform_type\fP * inform, int * status)"
-Provides output information
-.PP
-\fBParameters\fP
-.RS 4
-\fIdata\fP holds private internal data
-.br
-\fIinform\fP is a struct containing output information (see \fBtru_inform_type\fP)
-.br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
-.PD 0
-
-.IP "\(bu" 2
-0\&. The values were recorded succesfully 
-.PP
-.RE
-.PP
-
-.SS "void tru_initialize (void ** data, struct \fBtru_control_type\fP * control, struct \fBtru_inform_type\fP * inform)"
-Set default control values and initialize private data
-.PP
-\fBParameters\fP
-.RS 4
-\fIdata\fP holds private internal data 
-.br
-\fIcontrol\fP is a struct containing control information (see \fBtru_control_type\fP) 
-.br
-\fIinform\fP is a struct containing output information (see \fBtru_inform_type\fP) 
-.RE
-.PP
-
-.SS "void tru_read_specfile (struct \fBtru_control_type\fP * control, const char specfile[])"
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
-.PP
-\fBParameters\fP
-.RS 4
-\fIcontrol\fP is a struct containing control information (see \fBtru_control_type\fP) 
-.br
-\fIspecfile\fP is a character string containing the name of the specification file 
-.RE
-.PP
-
 .SS "void tru_reset_control (struct \fBtru_control_type\fP * control, void ** data, int * status)"
 Reset control parameters after import if required\&.
 .PP
@@ -527,156 +514,6 @@ Reset control parameters after import if required\&.
 .IP "\(bu" 2
 1\&. The import was succesful, and the package is ready for the solve phase 
 .PP
-.RE
-.PP
-
-.SS "void tru_solve_reverse_with_mat (void ** data, int * status, int * eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], int ne, real_wp_ H_val[], const real_wp_ u[], real_wp_ v[])"
-Find a local minimizer of a given function using a trust-region method\&.
-.PP
-This call is for the case where H = nabla_{xx}f(x) is provided specifically, but function/derivative information is only available by returning to the calling procedure
-.PP
-\fBParameters\fP
-.RS 4
-\fIdata\fP holds private internal data
-.br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
-.br
- On initial entry, status must be set to 1\&. 
-.br
- Possible exit are: 
-.PD 0
-
-.IP "\(bu" 2
-0\&. The run was succesful
-.PP
-.PD 0
-.IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
-.IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
-.IP "\(bu" 2
--3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated\&. 
-.IP "\(bu" 2
--7\&. The objective function appears to be unbounded from below 
-.IP "\(bu" 2
--9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
-.IP "\(bu" 2
--10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
-.IP "\(bu" 2
--11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
-.IP "\(bu" 2
--16\&. The problem is so ill-conditioned that further progress is impossible\&. 
-.IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
--19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
--40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
-.PP
-.br
-\fIstatus\fP (continued) 
-.PD 0
-
-.IP "\(bu" 2
-2\&. The user should compute the objective function value f(x) at the point x indicated in x and then re-enter the function\&. The required value should be set in f, and eval_status should be set to 0\&. If the user is unable to evaluate f(x)--- for instance, if the function is undefined at x--- the user need not set f, but should then set eval_status to a non-zero value\&. 
-.IP "\(bu" 2
-3\&. The user should compute the gradient of the objective function nabla_x f(x) at the point x indicated in x and then re-enter the function\&. The value of the i-th component of the g radient should be set in g[i], for i = 0, \&.\&.\&., n-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of nabla_x f(x) --- for instance if a component of the gradient is undefined at x -the user need not set g, but should then set eval_status to a non-zero value\&. 
-.IP "\(bu" 2
-4\&. The user should compute the Hessian of the objective function nabla_{xx}f(x) at the point x indicated in x and then re-enter the function\&. The value l-th component of the Hessian stored according to the scheme input in the remainder of H should be set in H_val[l], for l = 0, \&.\&.\&., ne-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of nabla_{xx}f(x) --- for instance, if a component of the Hessian is undefined at x --- the user need not set H_val, but should then set eval_status to a non-zero value\&. 
-.IP "\(bu" 2
-6\&. The user should compute the product u = P(x)v of their preconditioner P(x) at the point x indicated in x with the vector v and then re-enter the function\&. The vector v is given in v, the resulting vector u = P(x)v should be set in u and eval_status should be set to 0\&. If the user is unable to evaluate the product--- for instance, if a component of the preconditioner is undefined at x --- the user need not set u, but should then set eval_status to a non-zero value\&.
-.PP
-.br
-\fIeval_status\fP is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
-.br
-\fIn\fP is a scalar variable of type int, that holds the number of variables
-.br
-\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
-.br
-\fIf\fP is a scalar variable pointer of type double, that holds the value of the objective function\&.
-.br
-\fIg\fP is a one-dimensional array of size n and type double, that holds the gradient g = nabla_xf(x) of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
-.br
-\fIne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix H\&.
-.br
-\fIH_val\fP is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H in any of the available storage schemes\&.
-.br
-\fIu\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)
-.br
-\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details) 
-.RE
-.PP
-
-.SS "void tru_solve_reverse_without_mat (void ** data, int * status, int * eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], real_wp_ u[], real_wp_ v[])"
-Find a local minimizer of a given function using a trust-region method\&.
-.PP
-This call is for the case where access to H = nabla_{xx}f(x) is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure\&.
-.PP
-\fBParameters\fP
-.RS 4
-\fIdata\fP holds private internal data
-.br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
-.br
- On initial entry, status must be set to 1\&. 
-.br
- Possible exit are: 
-.PD 0
-
-.IP "\(bu" 2
-0\&. The run was succesful
-.PP
-.PD 0
-.IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
-.IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
-.IP "\(bu" 2
--3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated\&. 
-.IP "\(bu" 2
--7\&. The objective function appears to be unbounded from below 
-.IP "\(bu" 2
--9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
-.IP "\(bu" 2
--10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
-.IP "\(bu" 2
--11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
-.IP "\(bu" 2
--16\&. The problem is so ill-conditioned that further progress is impossible\&. 
-.IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
--19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
--40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
-.PP
-.br
-\fIstatus\fP (continued) 
-.PD 0
-
-.IP "\(bu" 2
-2\&. The user should compute the objective function value f(x) at the point x indicated in x and then re-enter the function\&. The required value should be set in f, and eval_status should be set to 0\&. If the user is unable to evaluate f(x) --- for instance, if the function is undefined at x --- the user need not set f, but should then set eval_status to a non-zero value\&. 
-.IP "\(bu" 2
-3\&. The user should compute the gradient of the objective function nabla_x f(x) at the point x indicated in x and then re-enter the function\&. The value of the i-th component of the g radient should be set in g[i], for i = 0, \&.\&.\&., n-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of nabla_x f(x) --- for instance if a component of the gradient is undefined at x -the user need not set g, but should then set eval_status to a non-zero value\&. 
-.IP "\(bu" 2
-5\&. The user should compute the product nabla_{xx}f(x)v of the Hessian of the objective function nabla_{xx}f(x) at the point x indicated in x with the vector v, add the result to the vector u and then re-enter the function\&. The vectors u and v are given in u and v respectively, the resulting vector u + nabla_{xx}f(x)v should be set in u and eval_status should be set to 0\&. If the user is unable to evaluate the product--- for instance, if a component of the Hessian is undefined at x --- the user need not alter u, but should then set eval_status to a non-zero value\&. 
-.IP "\(bu" 2
-6\&. The user should compute the product u = P(x)v of their preconditioner P(x) at the point x indicated in x with the vector v and then re-enter the function\&. The vector v is given in v, the resulting vector u = P(x)v should be set in u and eval_status should be set to 0\&. If the user is unable to evaluate the product--- for instance, if a component of the preconditioner is undefined at x --- the user need not set u, but should then set eval_status to a non-zero value\&.
-.PP
-.br
-\fIeval_status\fP is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
-.br
-\fIn\fP is a scalar variable of type int, that holds the number of variables
-.br
-\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
-.br
-\fIf\fP is a scalar variable pointer of type double, that holds the value of the objective function\&.
-.br
-\fIg\fP is a one-dimensional array of size n and type double, that holds the gradient g = nabla_xf(x) of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
-.br
-\fIu\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)
-.br
-\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details) 
 .RE
 .PP
 
@@ -863,6 +700,174 @@ int eval_prec( int n, const double x[], double u[], const double v[],
 .fi
 .PP
  The product u = P(x) v of the user's preconditioner P(x) evaluated at x with the vector v = v, the result u must be retured in u, and the function return value set to 0\&. If the evaluation is impossible at x, return should be set to a nonzero value\&. Data may be passed into \fCeval_prec\fP via the structure \fCuserdata\fP\&. 
+.RE
+.PP
+
+.SS "void tru_solve_reverse_with_mat (void ** data, int * status, int * eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], int ne, real_wp_ H_val[], const real_wp_ u[], real_wp_ v[])"
+Find a local minimizer of a given function using a trust-region method\&.
+.PP
+This call is for the case where H = nabla_{xx}f(x) is provided specifically, but function/derivative information is only available by returning to the calling procedure
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated\&. 
+.IP "\(bu" 2
+-7\&. The objective function appears to be unbounded from below 
+.IP "\(bu" 2
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+.IP "\(bu" 2
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+.IP "\(bu" 2
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+.PP
+.br
+\fIstatus\fP (continued) 
+.PD 0
+
+.IP "\(bu" 2
+2\&. The user should compute the objective function value f(x) at the point x indicated in x and then re-enter the function\&. The required value should be set in f, and eval_status should be set to 0\&. If the user is unable to evaluate f(x)--- for instance, if the function is undefined at x--- the user need not set f, but should then set eval_status to a non-zero value\&. 
+.IP "\(bu" 2
+3\&. The user should compute the gradient of the objective function nabla_x f(x) at the point x indicated in x and then re-enter the function\&. The value of the i-th component of the g radient should be set in g[i], for i = 0, \&.\&.\&., n-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of nabla_x f(x) --- for instance if a component of the gradient is undefined at x -the user need not set g, but should then set eval_status to a non-zero value\&. 
+.IP "\(bu" 2
+4\&. The user should compute the Hessian of the objective function nabla_{xx}f(x) at the point x indicated in x and then re-enter the function\&. The value l-th component of the Hessian stored according to the scheme input in the remainder of H should be set in H_val[l], for l = 0, \&.\&.\&., ne-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of nabla_{xx}f(x) --- for instance, if a component of the Hessian is undefined at x --- the user need not set H_val, but should then set eval_status to a non-zero value\&. 
+.IP "\(bu" 2
+6\&. The user should compute the product u = P(x)v of their preconditioner P(x) at the point x indicated in x with the vector v and then re-enter the function\&. The vector v is given in v, the resulting vector u = P(x)v should be set in u and eval_status should be set to 0\&. If the user is unable to evaluate the product--- for instance, if a component of the preconditioner is undefined at x --- the user need not set u, but should then set eval_status to a non-zero value\&.
+.PP
+.br
+\fIeval_status\fP is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
+.br
+\fIf\fP is a scalar variable pointer of type double, that holds the value of the objective function\&.
+.br
+\fIg\fP is a one-dimensional array of size n and type double, that holds the gradient g = nabla_xf(x) of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
+.br
+\fIne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix H\&.
+.br
+\fIH_val\fP is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H in any of the available storage schemes\&.
+.br
+\fIu\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)
+.br
+\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details) 
+.RE
+.PP
+
+.SS "void tru_solve_reverse_without_mat (void ** data, int * status, int * eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], real_wp_ u[], real_wp_ v[])"
+Find a local minimizer of a given function using a trust-region method\&.
+.PP
+This call is for the case where access to H = nabla_{xx}f(x) is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated\&. 
+.IP "\(bu" 2
+-7\&. The objective function appears to be unbounded from below 
+.IP "\(bu" 2
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+.IP "\(bu" 2
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+.IP "\(bu" 2
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+.PP
+.br
+\fIstatus\fP (continued) 
+.PD 0
+
+.IP "\(bu" 2
+2\&. The user should compute the objective function value f(x) at the point x indicated in x and then re-enter the function\&. The required value should be set in f, and eval_status should be set to 0\&. If the user is unable to evaluate f(x) --- for instance, if the function is undefined at x --- the user need not set f, but should then set eval_status to a non-zero value\&. 
+.IP "\(bu" 2
+3\&. The user should compute the gradient of the objective function nabla_x f(x) at the point x indicated in x and then re-enter the function\&. The value of the i-th component of the g radient should be set in g[i], for i = 0, \&.\&.\&., n-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of nabla_x f(x) --- for instance if a component of the gradient is undefined at x -the user need not set g, but should then set eval_status to a non-zero value\&. 
+.IP "\(bu" 2
+5\&. The user should compute the product nabla_{xx}f(x)v of the Hessian of the objective function nabla_{xx}f(x) at the point x indicated in x with the vector v, add the result to the vector u and then re-enter the function\&. The vectors u and v are given in u and v respectively, the resulting vector u + nabla_{xx}f(x)v should be set in u and eval_status should be set to 0\&. If the user is unable to evaluate the product--- for instance, if a component of the Hessian is undefined at x --- the user need not alter u, but should then set eval_status to a non-zero value\&. 
+.IP "\(bu" 2
+6\&. The user should compute the product u = P(x)v of their preconditioner P(x) at the point x indicated in x with the vector v and then re-enter the function\&. The vector v is given in v, the resulting vector u = P(x)v should be set in u and eval_status should be set to 0\&. If the user is unable to evaluate the product--- for instance, if a component of the preconditioner is undefined at x --- the user need not set u, but should then set eval_status to a non-zero value\&.
+.PP
+.br
+\fIeval_status\fP is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
+.br
+\fIf\fP is a scalar variable pointer of type double, that holds the value of the objective function\&.
+.br
+\fIg\fP is a one-dimensional array of size n and type double, that holds the gradient g = nabla_xf(x) of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
+.br
+\fIu\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details)
+.br
+\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see above for details) 
+.RE
+.PP
+
+.SS "void tru_information (void ** data, struct \fBtru_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBtru_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
 .RE
 .PP
 

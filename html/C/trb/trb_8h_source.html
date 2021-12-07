@@ -18,6 +18,14 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
+    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+  } }
+});
+</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -275,126 +283,126 @@ $(function() {
 <div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160; </div>
 <div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-*-   T R B _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*</span></div>
 <div class="line"><a name="l00657"></a><span class="lineno">  657</span>&#160; </div>
-<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#aae182e47703158fd8095fd3ae06e1007">trb_initialize</a>( <span class="keywordtype">void</span> **data, </div>
+<div class="line"><a name="l00658"></a><span class="lineno">  658</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a9bffc46178a3e0b7eb2927d1c50440a1">trb_initialize</a>( <span class="keywordtype">void</span> **data, </div>
 <div class="line"><a name="l00659"></a><span class="lineno">  659</span>&#160;                     <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__control__type">trb_control_type</a> *control,</div>
-<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;                     <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__inform__type">trb_inform_type</a> *inform );</div>
+<div class="line"><a name="l00660"></a><span class="lineno">  660</span>&#160;                     <span class="keywordtype">int</span> *status );</div>
 <div class="line"><a name="l00661"></a><span class="lineno">  661</span>&#160; </div>
-<div class="line"><a name="l00672"></a><span class="lineno">  672</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-   T R B _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*</span></div>
-<div class="line"><a name="l00673"></a><span class="lineno">  673</span>&#160; </div>
-<div class="line"><a name="l00674"></a><span class="lineno">  674</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a4eaafdaf5187c8b91c119ce9395469e9">trb_read_specfile</a>( <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__control__type">trb_control_type</a> *control, </div>
-<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;                        <span class="keyword">const</span> <span class="keywordtype">char</span> specfile[]) ;</div>
+<div class="line"><a name="l00675"></a><span class="lineno">  675</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-   T R B _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*</span></div>
 <div class="line"><a name="l00676"></a><span class="lineno">  676</span>&#160; </div>
-<div class="line"><a name="l00688"></a><span class="lineno">  688</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-*-*-*-   T R B _ I M P O R T    -*-*-*-*-*-*-*-*-*-*-*-*</span></div>
-<div class="line"><a name="l00689"></a><span class="lineno">  689</span>&#160; </div>
-<div class="line"><a name="l00690"></a><span class="lineno">  690</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__control__type">trb_control_type</a> *control,</div>
-<div class="line"><a name="l00691"></a><span class="lineno">  691</span>&#160;                 <span class="keywordtype">void</span> **data,</div>
-<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;                 <span class="keywordtype">int</span> *status, </div>
-<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160;                 <span class="keywordtype">int</span> n,</div>
-<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;                 <span class="keyword">const</span> real_wp_ x_l[], </div>
-<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;                 <span class="keyword">const</span> real_wp_ x_u[], </div>
-<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;                 <span class="keyword">const</span> <span class="keywordtype">char</span> H_type[], </div>
-<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;                 <span class="keywordtype">int</span> ne, </div>
-<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;                 <span class="keyword">const</span> <span class="keywordtype">int</span> H_row[],</div>
-<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;                 <span class="keyword">const</span> <span class="keywordtype">int</span> H_col[], </div>
-<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;                 <span class="keyword">const</span> <span class="keywordtype">int</span> H_ptr[] );</div>
-<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160; </div>
-<div class="line"><a name="l00766"></a><span class="lineno">  766</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-   T R B _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*</span></div>
-<div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160; </div>
-<div class="line"><a name="l00768"></a><span class="lineno">  768</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#abd25a5352aa4065c940af630b50d5467">trb_reset_control</a>( <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__control__type">trb_control_type</a> *control,</div>
-<div class="line"><a name="l00769"></a><span class="lineno">  769</span>&#160;                        <span class="keywordtype">void</span> **data,</div>
-<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;                        <span class="keywordtype">int</span> *status, );</div>
+<div class="line"><a name="l00677"></a><span class="lineno">  677</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a4eaafdaf5187c8b91c119ce9395469e9">trb_read_specfile</a>( <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__control__type">trb_control_type</a> *control, </div>
+<div class="line"><a name="l00678"></a><span class="lineno">  678</span>&#160;                        <span class="keyword">const</span> <span class="keywordtype">char</span> specfile[]) ;</div>
+<div class="line"><a name="l00679"></a><span class="lineno">  679</span>&#160; </div>
+<div class="line"><a name="l00692"></a><span class="lineno">  692</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-*-*-*-   T R B _ I M P O R T    -*-*-*-*-*-*-*-*-*-*-*-*</span></div>
+<div class="line"><a name="l00693"></a><span class="lineno">  693</span>&#160; </div>
+<div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a>( <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__control__type">trb_control_type</a> *control,</div>
+<div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;                 <span class="keywordtype">void</span> **data,</div>
+<div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;                 <span class="keywordtype">int</span> *status, </div>
+<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;                 <span class="keywordtype">int</span> n,</div>
+<div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;                 <span class="keyword">const</span> real_wp_ x_l[], </div>
+<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;                 <span class="keyword">const</span> real_wp_ x_u[], </div>
+<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;                 <span class="keyword">const</span> <span class="keywordtype">char</span> H_type[], </div>
+<div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;                 <span class="keywordtype">int</span> ne, </div>
+<div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;                 <span class="keyword">const</span> <span class="keywordtype">int</span> H_row[],</div>
+<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;                 <span class="keyword">const</span> <span class="keywordtype">int</span> H_col[], </div>
+<div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;                 <span class="keyword">const</span> <span class="keywordtype">int</span> H_ptr[] );</div>
+<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160; </div>
+<div class="line"><a name="l00770"></a><span class="lineno">  770</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-   T R B _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*</span></div>
 <div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160; </div>
-<div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-   T R B _ S O L V E _ W I T H _ M A T   -*-*-*-*-*-*-*-*</span></div>
-<div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160; </div>
-<div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a5a58e6c0c022eb451f14c82d653967f7">trb_solve_with_mat</a>( <span class="keywordtype">void</span> **data,</div>
-<div class="line"><a name="l00788"></a><span class="lineno">  788</span>&#160;                         <span class="keywordtype">void</span> *userdata, </div>
-<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;                         <span class="keywordtype">int</span> *status, </div>
-<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160;                         <span class="keywordtype">int</span> n, </div>
-<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;                         real_wp_ x[], </div>
-<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;                         real_wp_ g[],</div>
-<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;                         <span class="keywordtype">int</span> ne, </div>
-<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;                         <span class="keywordtype">int</span> (*eval_f)(</div>
-<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;                           <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_*, <span class="keyword">const</span> <span class="keywordtype">void</span> * ), </div>
-<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;                         <span class="keywordtype">int</span> (*eval_g)(</div>
-<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160;                           <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_[], <span class="keyword">const</span> <span class="keywordtype">void</span> * ),</div>
-<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;                         <span class="keywordtype">int</span> (*eval_h)(</div>
-<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;                           <span class="keywordtype">int</span>, <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_[], </div>
-<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;                           <span class="keyword">const</span> <span class="keywordtype">void</span> * ),</div>
-<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;                         <span class="keywordtype">int</span> (*eval_prec)(</div>
-<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;                           <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_[], <span class="keyword">const</span> real_wp_[], </div>
-<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;                           <span class="keyword">const</span> <span class="keywordtype">void</span> * ) );</div>
-<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160; </div>
-<div class="line"><a name="l00916"></a><span class="lineno">  916</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-   T R B _ S O L V E _ W I T H O U T _ M A T   -*-*-*-*-*-*</span></div>
-<div class="line"><a name="l00917"></a><span class="lineno">  917</span>&#160; </div>
-<div class="line"><a name="l00918"></a><span class="lineno">  918</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a376b81748cec0bf992542d80b8d38f49">trb_solve_without_mat</a>( <span class="keywordtype">void</span> **data,</div>
-<div class="line"><a name="l00919"></a><span class="lineno">  919</span>&#160;                            <span class="keywordtype">void</span> *userdata, </div>
-<div class="line"><a name="l00920"></a><span class="lineno">  920</span>&#160;                            <span class="keywordtype">int</span> *status, </div>
-<div class="line"><a name="l00921"></a><span class="lineno">  921</span>&#160;                            <span class="keywordtype">int</span> n, </div>
-<div class="line"><a name="l00922"></a><span class="lineno">  922</span>&#160;                            real_wp_ x[], </div>
-<div class="line"><a name="l00923"></a><span class="lineno">  923</span>&#160;                            real_wp_ g[], </div>
-<div class="line"><a name="l00924"></a><span class="lineno">  924</span>&#160;                            <span class="keywordtype">int</span> (*eval_f)(</div>
-<div class="line"><a name="l00925"></a><span class="lineno">  925</span>&#160;                              <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_*, <span class="keyword">const</span> <span class="keywordtype">void</span> * ), </div>
-<div class="line"><a name="l00926"></a><span class="lineno">  926</span>&#160;                            <span class="keywordtype">int</span> (*eval_g)(</div>
-<div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;                              <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_[], <span class="keyword">const</span> <span class="keywordtype">void</span> * ),</div>
-<div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;                            <span class="keywordtype">int</span> (*eval_hprod)(</div>
-<div class="line"><a name="l00929"></a><span class="lineno">  929</span>&#160;                              <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_[], </div>
-<div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;                              <span class="keyword">const</span> real_wp_[], <span class="keywordtype">bool</span>, <span class="keyword">const</span> <span class="keywordtype">void</span> * ), </div>
-<div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160;                            <span class="keywordtype">int</span> (*eval_shprod)(</div>
-<div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;                              <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], <span class="keywordtype">int</span>, <span class="keyword">const</span> <span class="keywordtype">int</span>[], </div>
-<div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;                              <span class="keyword">const</span> real_wp_[], <span class="keywordtype">int</span>*, <span class="keywordtype">int</span>[], </div>
-<div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;                           real_wp_[], <span class="keywordtype">bool</span>, <span class="keyword">const</span> <span class="keywordtype">void</span> * ), </div>
-<div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;                            <span class="keywordtype">int</span> (*eval_prec)(</div>
-<div class="line"><a name="l00936"></a><span class="lineno">  936</span>&#160;                              <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_[], </div>
-<div class="line"><a name="l00937"></a><span class="lineno">  937</span>&#160;                               <span class="keyword">const</span> real_wp_[], <span class="keyword">const</span> <span class="keywordtype">void</span> * ) );</div>
-<div class="line"><a name="l00938"></a><span class="lineno">  938</span>&#160; </div>
-<div class="line"><a name="l01067"></a><span class="lineno"> 1067</span>&#160;<span class="comment">//  *-*-*-*-*-   T R B _ S O L V E _ R E V E R S E _ W I T H _ M A T   -*-*-*-*</span></div>
-<div class="line"><a name="l01068"></a><span class="lineno"> 1068</span>&#160; </div>
-<div class="line"><a name="l01069"></a><span class="lineno"> 1069</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a7bb520e36666386824b216a84be08837">trb_solve_reverse_with_mat</a>( <span class="keywordtype">void</span> **data,</div>
-<div class="line"><a name="l01070"></a><span class="lineno"> 1070</span>&#160;                                 <span class="keywordtype">int</span> *status, </div>
-<div class="line"><a name="l01071"></a><span class="lineno"> 1071</span>&#160;                                 <span class="keywordtype">int</span> *eval_status, </div>
-<div class="line"><a name="l01072"></a><span class="lineno"> 1072</span>&#160;                                 <span class="keywordtype">int</span> n, </div>
-<div class="line"><a name="l01073"></a><span class="lineno"> 1073</span>&#160;                                 real_wp_ x[], </div>
-<div class="line"><a name="l01074"></a><span class="lineno"> 1074</span>&#160;                                 real_wp_ f, </div>
-<div class="line"><a name="l01075"></a><span class="lineno"> 1075</span>&#160;                                 real_wp_ g[], </div>
-<div class="line"><a name="l01076"></a><span class="lineno"> 1076</span>&#160;                                 <span class="keywordtype">int</span> ne, </div>
-<div class="line"><a name="l01077"></a><span class="lineno"> 1077</span>&#160;                                 real_wp_ H_val[], </div>
-<div class="line"><a name="l01078"></a><span class="lineno"> 1078</span>&#160;                                 <span class="keyword">const</span> real_wp_ u[], </div>
-<div class="line"><a name="l01079"></a><span class="lineno"> 1079</span>&#160;                                 real_wp_ v[] );</div>
-<div class="line"><a name="l01080"></a><span class="lineno"> 1080</span>&#160; </div>
-<div class="line"><a name="l01195"></a><span class="lineno"> 1195</span>&#160;<span class="comment">//  *-*-*-   T R B _ S O L V E _ R E V E R S E _ W I T H O U T _ M A T   -*-*-*</span></div>
-<div class="line"><a name="l01196"></a><span class="lineno"> 1196</span>&#160; </div>
-<div class="line"><a name="l01197"></a><span class="lineno"> 1197</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a95eac11acf02fe0d6eb4bc39ace5a100">trb_solve_reverse_without_mat</a>( <span class="keywordtype">void</span> **data,</div>
-<div class="line"><a name="l01198"></a><span class="lineno"> 1198</span>&#160;                                    <span class="keywordtype">int</span> *status, </div>
-<div class="line"><a name="l01199"></a><span class="lineno"> 1199</span>&#160;                                    <span class="keywordtype">int</span> *eval_status, </div>
-<div class="line"><a name="l01200"></a><span class="lineno"> 1200</span>&#160;                                    <span class="keywordtype">int</span> n, </div>
-<div class="line"><a name="l01201"></a><span class="lineno"> 1201</span>&#160;                                    real_wp_ x[], </div>
-<div class="line"><a name="l01202"></a><span class="lineno"> 1202</span>&#160;                                    real_wp_ f, </div>
-<div class="line"><a name="l01203"></a><span class="lineno"> 1203</span>&#160;                                    real_wp_ g[], </div>
-<div class="line"><a name="l01204"></a><span class="lineno"> 1204</span>&#160;                                    real_wp_ u[], </div>
-<div class="line"><a name="l01205"></a><span class="lineno"> 1205</span>&#160;                                    real_wp_ v[],</div>
-<div class="line"><a name="l01206"></a><span class="lineno"> 1206</span>&#160;                                    <span class="keywordtype">int</span> index_nz_v[], </div>
-<div class="line"><a name="l01207"></a><span class="lineno"> 1207</span>&#160;                                    <span class="keywordtype">int</span> *nnz_v, </div>
-<div class="line"><a name="l01208"></a><span class="lineno"> 1208</span>&#160;                                    <span class="keyword">const</span> <span class="keywordtype">int</span> index_nz_u[], </div>
-<div class="line"><a name="l01209"></a><span class="lineno"> 1209</span>&#160;                                    <span class="keywordtype">int</span> nnz_u );</div>
-<div class="line"><a name="l01210"></a><span class="lineno"> 1210</span>&#160; </div>
-<div class="line"><a name="l01343"></a><span class="lineno"> 1343</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-*-   T R B _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*</span></div>
-<div class="line"><a name="l01344"></a><span class="lineno"> 1344</span>&#160; </div>
-<div class="line"><a name="l01345"></a><span class="lineno"> 1345</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a105f41a31d49c59885c3372090bec776">trb_information</a>( <span class="keywordtype">void</span> **data,</div>
-<div class="line"><a name="l01346"></a><span class="lineno"> 1346</span>&#160;                      <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__inform__type">trb_inform_type</a> *inform,</div>
-<div class="line"><a name="l01347"></a><span class="lineno"> 1347</span>&#160;                      <span class="keywordtype">int</span> *status );</div>
-<div class="line"><a name="l01348"></a><span class="lineno"> 1348</span>&#160; </div>
-<div class="line"><a name="l01362"></a><span class="lineno"> 1362</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-*-   T R B _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*</span></div>
-<div class="line"><a name="l01363"></a><span class="lineno"> 1363</span>&#160; </div>
-<div class="line"><a name="l01364"></a><span class="lineno"> 1364</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a739c7a44ddd0ce7b350cfa6da54948d0">trb_terminate</a>( <span class="keywordtype">void</span> **data, </div>
-<div class="line"><a name="l01365"></a><span class="lineno"> 1365</span>&#160;                    <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__control__type">trb_control_type</a> *control, </div>
-<div class="line"><a name="l01366"></a><span class="lineno"> 1366</span>&#160;                    <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__inform__type">trb_inform_type</a> *inform );</div>
-<div class="line"><a name="l01367"></a><span class="lineno"> 1367</span>&#160; </div>
-<div class="line"><a name="l01398"></a><span class="lineno"> 1398</span>&#160;<span class="comment">// end include guard</span></div>
-<div class="line"><a name="l01399"></a><span class="lineno"> 1399</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01400"></a><span class="lineno"> 1400</span>&#160; </div>
-<div class="line"><a name="l01401"></a><span class="lineno"> 1401</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l01402"></a><span class="lineno"> 1402</span>&#160;} <span class="comment">/* extern &quot;C&quot; */</span></div>
-<div class="line"><a name="l01403"></a><span class="lineno"> 1403</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00772"></a><span class="lineno">  772</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a550c3ca1966ea0fa9de84423b8658cd7">trb_reset_control</a>( <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__control__type">trb_control_type</a> *control,</div>
+<div class="line"><a name="l00773"></a><span class="lineno">  773</span>&#160;                        <span class="keywordtype">void</span> **data,</div>
+<div class="line"><a name="l00774"></a><span class="lineno">  774</span>&#160;                        <span class="keywordtype">int</span> *status );</div>
+<div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160; </div>
+<div class="line"><a name="l00789"></a><span class="lineno">  789</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-   T R B _ S O L V E _ W I T H _ M A T   -*-*-*-*-*-*-*-*</span></div>
+<div class="line"><a name="l00790"></a><span class="lineno">  790</span>&#160; </div>
+<div class="line"><a name="l00791"></a><span class="lineno">  791</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a5a58e6c0c022eb451f14c82d653967f7">trb_solve_with_mat</a>( <span class="keywordtype">void</span> **data,</div>
+<div class="line"><a name="l00792"></a><span class="lineno">  792</span>&#160;                         <span class="keywordtype">void</span> *userdata, </div>
+<div class="line"><a name="l00793"></a><span class="lineno">  793</span>&#160;                         <span class="keywordtype">int</span> *status, </div>
+<div class="line"><a name="l00794"></a><span class="lineno">  794</span>&#160;                         <span class="keywordtype">int</span> n, </div>
+<div class="line"><a name="l00795"></a><span class="lineno">  795</span>&#160;                         real_wp_ x[], </div>
+<div class="line"><a name="l00796"></a><span class="lineno">  796</span>&#160;                         real_wp_ g[],</div>
+<div class="line"><a name="l00797"></a><span class="lineno">  797</span>&#160;                         <span class="keywordtype">int</span> ne, </div>
+<div class="line"><a name="l00798"></a><span class="lineno">  798</span>&#160;                         <span class="keywordtype">int</span> (*eval_f)(</div>
+<div class="line"><a name="l00799"></a><span class="lineno">  799</span>&#160;                           <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_*, <span class="keyword">const</span> <span class="keywordtype">void</span> * ), </div>
+<div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;                         <span class="keywordtype">int</span> (*eval_g)(</div>
+<div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;                           <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_[], <span class="keyword">const</span> <span class="keywordtype">void</span> * ),</div>
+<div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;                         <span class="keywordtype">int</span> (*eval_h)(</div>
+<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;                           <span class="keywordtype">int</span>, <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_[], </div>
+<div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;                           <span class="keyword">const</span> <span class="keywordtype">void</span> * ),</div>
+<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;                         <span class="keywordtype">int</span> (*eval_prec)(</div>
+<div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;                           <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_[], <span class="keyword">const</span> real_wp_[], </div>
+<div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;                           <span class="keyword">const</span> <span class="keywordtype">void</span> * ) );</div>
+<div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160; </div>
+<div class="line"><a name="l00920"></a><span class="lineno">  920</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-   T R B _ S O L V E _ W I T H O U T _ M A T   -*-*-*-*-*-*</span></div>
+<div class="line"><a name="l00921"></a><span class="lineno">  921</span>&#160; </div>
+<div class="line"><a name="l00922"></a><span class="lineno">  922</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a376b81748cec0bf992542d80b8d38f49">trb_solve_without_mat</a>( <span class="keywordtype">void</span> **data,</div>
+<div class="line"><a name="l00923"></a><span class="lineno">  923</span>&#160;                            <span class="keywordtype">void</span> *userdata, </div>
+<div class="line"><a name="l00924"></a><span class="lineno">  924</span>&#160;                            <span class="keywordtype">int</span> *status, </div>
+<div class="line"><a name="l00925"></a><span class="lineno">  925</span>&#160;                            <span class="keywordtype">int</span> n, </div>
+<div class="line"><a name="l00926"></a><span class="lineno">  926</span>&#160;                            real_wp_ x[], </div>
+<div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;                            real_wp_ g[], </div>
+<div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;                            <span class="keywordtype">int</span> (*eval_f)(</div>
+<div class="line"><a name="l00929"></a><span class="lineno">  929</span>&#160;                              <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_*, <span class="keyword">const</span> <span class="keywordtype">void</span> * ), </div>
+<div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;                            <span class="keywordtype">int</span> (*eval_g)(</div>
+<div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160;                              <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_[], <span class="keyword">const</span> <span class="keywordtype">void</span> * ),</div>
+<div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;                            <span class="keywordtype">int</span> (*eval_hprod)(</div>
+<div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;                              <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_[], </div>
+<div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;                              <span class="keyword">const</span> real_wp_[], <span class="keywordtype">bool</span>, <span class="keyword">const</span> <span class="keywordtype">void</span> * ), </div>
+<div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;                            <span class="keywordtype">int</span> (*eval_shprod)(</div>
+<div class="line"><a name="l00936"></a><span class="lineno">  936</span>&#160;                              <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], <span class="keywordtype">int</span>, <span class="keyword">const</span> <span class="keywordtype">int</span>[], </div>
+<div class="line"><a name="l00937"></a><span class="lineno">  937</span>&#160;                              <span class="keyword">const</span> real_wp_[], <span class="keywordtype">int</span>*, <span class="keywordtype">int</span>[], </div>
+<div class="line"><a name="l00938"></a><span class="lineno">  938</span>&#160;                           real_wp_[], <span class="keywordtype">bool</span>, <span class="keyword">const</span> <span class="keywordtype">void</span> * ), </div>
+<div class="line"><a name="l00939"></a><span class="lineno">  939</span>&#160;                            <span class="keywordtype">int</span> (*eval_prec)(</div>
+<div class="line"><a name="l00940"></a><span class="lineno">  940</span>&#160;                              <span class="keywordtype">int</span>, <span class="keyword">const</span> real_wp_[], real_wp_[], </div>
+<div class="line"><a name="l00941"></a><span class="lineno">  941</span>&#160;                               <span class="keyword">const</span> real_wp_[], <span class="keyword">const</span> <span class="keywordtype">void</span> * ) );</div>
+<div class="line"><a name="l00942"></a><span class="lineno">  942</span>&#160; </div>
+<div class="line"><a name="l01071"></a><span class="lineno"> 1071</span>&#160;<span class="comment">//  *-*-*-*-*-   T R B _ S O L V E _ R E V E R S E _ W I T H _ M A T   -*-*-*-*</span></div>
+<div class="line"><a name="l01072"></a><span class="lineno"> 1072</span>&#160; </div>
+<div class="line"><a name="l01073"></a><span class="lineno"> 1073</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a7bb520e36666386824b216a84be08837">trb_solve_reverse_with_mat</a>( <span class="keywordtype">void</span> **data,</div>
+<div class="line"><a name="l01074"></a><span class="lineno"> 1074</span>&#160;                                 <span class="keywordtype">int</span> *status, </div>
+<div class="line"><a name="l01075"></a><span class="lineno"> 1075</span>&#160;                                 <span class="keywordtype">int</span> *eval_status, </div>
+<div class="line"><a name="l01076"></a><span class="lineno"> 1076</span>&#160;                                 <span class="keywordtype">int</span> n, </div>
+<div class="line"><a name="l01077"></a><span class="lineno"> 1077</span>&#160;                                 real_wp_ x[], </div>
+<div class="line"><a name="l01078"></a><span class="lineno"> 1078</span>&#160;                                 real_wp_ f, </div>
+<div class="line"><a name="l01079"></a><span class="lineno"> 1079</span>&#160;                                 real_wp_ g[], </div>
+<div class="line"><a name="l01080"></a><span class="lineno"> 1080</span>&#160;                                 <span class="keywordtype">int</span> ne, </div>
+<div class="line"><a name="l01081"></a><span class="lineno"> 1081</span>&#160;                                 real_wp_ H_val[], </div>
+<div class="line"><a name="l01082"></a><span class="lineno"> 1082</span>&#160;                                 <span class="keyword">const</span> real_wp_ u[], </div>
+<div class="line"><a name="l01083"></a><span class="lineno"> 1083</span>&#160;                                 real_wp_ v[] );</div>
+<div class="line"><a name="l01084"></a><span class="lineno"> 1084</span>&#160; </div>
+<div class="line"><a name="l01199"></a><span class="lineno"> 1199</span>&#160;<span class="comment">//  *-*-*-   T R B _ S O L V E _ R E V E R S E _ W I T H O U T _ M A T   -*-*-*</span></div>
+<div class="line"><a name="l01200"></a><span class="lineno"> 1200</span>&#160; </div>
+<div class="line"><a name="l01201"></a><span class="lineno"> 1201</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a95eac11acf02fe0d6eb4bc39ace5a100">trb_solve_reverse_without_mat</a>( <span class="keywordtype">void</span> **data,</div>
+<div class="line"><a name="l01202"></a><span class="lineno"> 1202</span>&#160;                                    <span class="keywordtype">int</span> *status, </div>
+<div class="line"><a name="l01203"></a><span class="lineno"> 1203</span>&#160;                                    <span class="keywordtype">int</span> *eval_status, </div>
+<div class="line"><a name="l01204"></a><span class="lineno"> 1204</span>&#160;                                    <span class="keywordtype">int</span> n, </div>
+<div class="line"><a name="l01205"></a><span class="lineno"> 1205</span>&#160;                                    real_wp_ x[], </div>
+<div class="line"><a name="l01206"></a><span class="lineno"> 1206</span>&#160;                                    real_wp_ f, </div>
+<div class="line"><a name="l01207"></a><span class="lineno"> 1207</span>&#160;                                    real_wp_ g[], </div>
+<div class="line"><a name="l01208"></a><span class="lineno"> 1208</span>&#160;                                    real_wp_ u[], </div>
+<div class="line"><a name="l01209"></a><span class="lineno"> 1209</span>&#160;                                    real_wp_ v[],</div>
+<div class="line"><a name="l01210"></a><span class="lineno"> 1210</span>&#160;                                    <span class="keywordtype">int</span> index_nz_v[], </div>
+<div class="line"><a name="l01211"></a><span class="lineno"> 1211</span>&#160;                                    <span class="keywordtype">int</span> *nnz_v, </div>
+<div class="line"><a name="l01212"></a><span class="lineno"> 1212</span>&#160;                                    <span class="keyword">const</span> <span class="keywordtype">int</span> index_nz_u[], </div>
+<div class="line"><a name="l01213"></a><span class="lineno"> 1213</span>&#160;                                    <span class="keywordtype">int</span> nnz_u );</div>
+<div class="line"><a name="l01214"></a><span class="lineno"> 1214</span>&#160; </div>
+<div class="line"><a name="l01349"></a><span class="lineno"> 1349</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-*-   T R B _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*</span></div>
+<div class="line"><a name="l01350"></a><span class="lineno"> 1350</span>&#160; </div>
+<div class="line"><a name="l01351"></a><span class="lineno"> 1351</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a105f41a31d49c59885c3372090bec776">trb_information</a>( <span class="keywordtype">void</span> **data,</div>
+<div class="line"><a name="l01352"></a><span class="lineno"> 1352</span>&#160;                      <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__inform__type">trb_inform_type</a> *inform,</div>
+<div class="line"><a name="l01353"></a><span class="lineno"> 1353</span>&#160;                      <span class="keywordtype">int</span> *status );</div>
+<div class="line"><a name="l01354"></a><span class="lineno"> 1354</span>&#160; </div>
+<div class="line"><a name="l01368"></a><span class="lineno"> 1368</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-*-   T R B _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*</span></div>
+<div class="line"><a name="l01369"></a><span class="lineno"> 1369</span>&#160; </div>
+<div class="line"><a name="l01370"></a><span class="lineno"> 1370</span>&#160;<span class="keywordtype">void</span> <a class="code" href="trb_8h.html#a739c7a44ddd0ce7b350cfa6da54948d0">trb_terminate</a>( <span class="keywordtype">void</span> **data, </div>
+<div class="line"><a name="l01371"></a><span class="lineno"> 1371</span>&#160;                    <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__control__type">trb_control_type</a> *control, </div>
+<div class="line"><a name="l01372"></a><span class="lineno"> 1372</span>&#160;                    <span class="keyword">struct</span> <a class="code" href="trb_8h.html#structtrb__inform__type">trb_inform_type</a> *inform );</div>
+<div class="line"><a name="l01373"></a><span class="lineno"> 1373</span>&#160; </div>
+<div class="line"><a name="l01404"></a><span class="lineno"> 1404</span>&#160;<span class="comment">// end include guard</span></div>
+<div class="line"><a name="l01405"></a><span class="lineno"> 1405</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01406"></a><span class="lineno"> 1406</span>&#160; </div>
+<div class="line"><a name="l01407"></a><span class="lineno"> 1407</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l01408"></a><span class="lineno"> 1408</span>&#160;} <span class="comment">/* extern &quot;C&quot; */</span></div>
+<div class="line"><a name="l01409"></a><span class="lineno"> 1409</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="atrb_8h_html_a1360e9ccd514178810a976ac1d072692"><div class="ttname"><a href="trb_8h.html#a1360e9ccd514178810a976ac1d072692">trb_control_type::stop_rel_cg</a></div><div class="ttdeci">real_wp_ stop_rel_cg</div><div class="ttdoc">required relative reduction in the resuiduals from CG</div><div class="ttdef"><b>Definition:</b> trb.h:395</div></div>
 <div class="ttc" id="atrb_8h_html_a95eac11acf02fe0d6eb4bc39ace5a100"><div class="ttname"><a href="trb_8h.html#a95eac11acf02fe0d6eb4bc39ace5a100">trb_solve_reverse_without_mat</a></div><div class="ttdeci">void trb_solve_reverse_without_mat(void **data, int *status, int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], real_wp_ u[], real_wp_ v[], int index_nz_v[], int *nnz_v, const int index_nz_u[], int nnz_u)</div></div>
@@ -417,7 +425,6 @@ $(function() {
 <div class="ttc" id="atrb_8h_html_a1d6107630beebe9a594b0588ac88016f"><div class="ttname"><a href="trb_8h.html#a1d6107630beebe9a594b0588ac88016f">trb_inform_type::n_free</a></div><div class="ttdeci">int n_free</div><div class="ttdoc">the number of variables that are free from their bounds</div><div class="ttdef"><b>Definition:</b> trb.h:569</div></div>
 <div class="ttc" id="atrb_8h_html_ad095bacb69fb3fc3ac3de46b9fad96f0"><div class="ttname"><a href="trb_8h.html#ad095bacb69fb3fc3ac3de46b9fad96f0">trb_control_type::exact_gcp</a></div><div class="ttdeci">bool exact_gcp</div><div class="ttdoc">is the exact Cauchy point required rather than an approximation?</div><div class="ttdef"><b>Definition:</b> trb.h:457</div></div>
 <div class="ttc" id="atrb_8h_html_ad1c7da271c9b5bab69d9e9cc52d2cf5b"><div class="ttname"><a href="trb_8h.html#ad1c7da271c9b5bab69d9e9cc52d2cf5b">trb_inform_type::time</a></div><div class="ttdeci">struct trb_time_type time</div><div class="ttdoc">timings (see above)</div><div class="ttdef"><b>Definition:</b> trb.h:631</div></div>
-<div class="ttc" id="atrb_8h_html_abd25a5352aa4065c940af630b50d5467"><div class="ttname"><a href="trb_8h.html#abd25a5352aa4065c940af630b50d5467">trb_reset_control</a></div><div class="ttdeci">void trb_reset_control(struct trb_control_type *control, void **data, int *status,)</div></div>
 <div class="ttc" id="atrb_8h_html_a027a1f1731d22465c926ce57be2364c3"><div class="ttname"><a href="trb_8h.html#a027a1f1731d22465c926ce57be2364c3">trb_control_type::model</a></div><div class="ttdeci">int model</div><div class="ttdoc">the model used.</div><div class="ttdef"><b>Definition:</b> trb.h:304</div></div>
 <div class="ttc" id="atrb_8h_html_aed4a4de60fddff880a1ef290ab230bde"><div class="ttname"><a href="trb_8h.html#aed4a4de60fddff880a1ef290ab230bde">trb_control_type::stop_pg_absolute</a></div><div class="ttdeci">real_wp_ stop_pg_absolute</div><div class="ttdoc">overall convergence tolerances. The iteration will terminate when the norm of the gradient of the obj...</div><div class="ttdef"><b>Definition:</b> trb.h:375</div></div>
 <div class="ttc" id="atrb_8h_html_a5b6da5fd1d9c6f86967fa0b4197e3498"><div class="ttname"><a href="trb_8h.html#a5b6da5fd1d9c6f86967fa0b4197e3498">trb_control_type::norm</a></div><div class="ttdeci">int norm</div><div class="ttdef"><b>Definition:</b> trb.h:328</div></div>
@@ -429,6 +436,7 @@ $(function() {
 <div class="ttc" id="atrb_8h_html_a4335d5f44067aca76d5fff71eeb7d381"><div class="ttname"><a href="trb_8h.html#a4335d5f44067aca76d5fff71eeb7d381">trb_inform_type::alloc_status</a></div><div class="ttdeci">int alloc_status</div><div class="ttdoc">the status of the last attempted allocation/deallocation</div><div class="ttdef"><b>Definition:</b> trb.h:561</div></div>
 <div class="ttc" id="atrb_8h_html_ab47548da92f2f23bae395a0b960d7fba"><div class="ttname"><a href="trb_8h.html#ab47548da92f2f23bae395a0b960d7fba">trb_control_type::radius_reduce_max</a></div><div class="ttdeci">real_wp_ radius_reduce_max</div><div class="ttdoc">see radius_increase</div><div class="ttdef"><b>Definition:</b> trb.h:418</div></div>
 <div class="ttc" id="atrb_8h_html_af569df4b8828eb7ac8a05ef1030d1358"><div class="ttname"><a href="trb_8h.html#af569df4b8828eb7ac8a05ef1030d1358">trb_time_type::clock_solve</a></div><div class="ttdeci">real_wp_ clock_solve</div><div class="ttdoc">the clock time spent computing the search direction</div><div class="ttdef"><b>Definition:</b> trb.h:547</div></div>
+<div class="ttc" id="atrb_8h_html_a550c3ca1966ea0fa9de84423b8658cd7"><div class="ttname"><a href="trb_8h.html#a550c3ca1966ea0fa9de84423b8658cd7">trb_reset_control</a></div><div class="ttdeci">void trb_reset_control(struct trb_control_type *control, void **data, int *status)</div></div>
 <div class="ttc" id="atrb_8h_html_acb02a4d1ae275a55874bb9897262b1fe"><div class="ttname"><a href="trb_8h.html#acb02a4d1ae275a55874bb9897262b1fe">trb_inform_type::norm_pg</a></div><div class="ttdeci">real_wp_ norm_pg</div><div class="ttdoc">the norm of the projected gradient of the objective function at the best estimate of the solution det...</div><div class="ttdef"><b>Definition:</b> trb.h:623</div></div>
 <div class="ttc" id="atrb_8h_html_a7bb520e36666386824b216a84be08837"><div class="ttname"><a href="trb_8h.html#a7bb520e36666386824b216a84be08837">trb_solve_reverse_with_mat</a></div><div class="ttdeci">void trb_solve_reverse_with_mat(void **data, int *status, int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], int ne, real_wp_ H_val[], const real_wp_ u[], real_wp_ v[])</div></div>
 <div class="ttc" id="atrb_8h_html_a19ba64e8444ca3672abd157e4f1303a3"><div class="ttname"><a href="trb_8h.html#a19ba64e8444ca3672abd157e4f1303a3">trb_inform_type::bad_alloc</a></div><div class="ttdeci">char bad_alloc[81]</div><div class="ttdoc">the name of the array for which an allocation/deallocation error ocurred</div><div class="ttdef"><b>Definition:</b> trb.h:565</div></div>
@@ -471,7 +479,6 @@ $(function() {
 <div class="ttc" id="atrb_8h_html_a761e5ba3ea38a06456f35a1690e77a2e"><div class="ttname"><a href="trb_8h.html#a761e5ba3ea38a06456f35a1690e77a2e">trb_control_type::renormalize_radius</a></div><div class="ttdeci">bool renormalize_radius</div><div class="ttdoc">should the radius be renormalized to account for a change in preconditio</div><div class="ttdef"><b>Definition:</b> trb.h:449</div></div>
 <div class="ttc" id="atrb_8h_html_a7565611061db14e471a4f68e6dabbc17"><div class="ttname"><a href="trb_8h.html#a7565611061db14e471a4f68e6dabbc17">trb_control_type::advanced_start</a></div><div class="ttdeci">int advanced_start</div><div class="ttdoc">iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1</div><div class="ttdef"><b>Definition:</b> trb.h:383</div></div>
 <div class="ttc" id="atrb_8h_html_a739c7a44ddd0ce7b350cfa6da54948d0"><div class="ttname"><a href="trb_8h.html#a739c7a44ddd0ce7b350cfa6da54948d0">trb_terminate</a></div><div class="ttdeci">void trb_terminate(void **data, struct trb_control_type *control, struct trb_inform_type *inform)</div></div>
-<div class="ttc" id="atrb_8h_html_aae182e47703158fd8095fd3ae06e1007"><div class="ttname"><a href="trb_8h.html#aae182e47703158fd8095fd3ae06e1007">trb_initialize</a></div><div class="ttdeci">void trb_initialize(void **data, struct trb_control_type *control, struct trb_inform_type *inform)</div></div>
 <div class="ttc" id="atrb_8h_html_structtrb__time__type"><div class="ttname"><a href="trb_8h.html#structtrb__time__type">trb_time_type</a></div><div class="ttdef"><b>Definition:</b> trb.h:507</div></div>
 <div class="ttc" id="atrb_8h_html_a8c10db7cf72a4e3e52c9601007f7b1de"><div class="ttname"><a href="trb_8h.html#a8c10db7cf72a4e3e52c9601007f7b1de">trb_control_type::subproblem_direct</a></div><div class="ttdeci">bool subproblem_direct</div><div class="ttdoc">use a direct (factorization) or (preconditioned) iterative method to find the search direction</div><div class="ttdef"><b>Definition:</b> trb.h:441</div></div>
 <div class="ttc" id="atrb_8h_html_a13bc38fb28201adb78af7acf910ff0d8"><div class="ttname"><a href="trb_8h.html#a13bc38fb28201adb78af7acf910ff0d8">trb_import</a></div><div class="ttdeci">void trb_import(struct trb_control_type *control, void **data, int *status, int n, const real_wp_ x_l[], const real_wp_ x_u[], const char H_type[], int ne, const int H_row[], const int H_col[], const int H_ptr[])</div></div>
@@ -481,6 +488,7 @@ $(function() {
 <div class="ttc" id="atrb_8h_html_aab6f168571c2073e01e240524b8a3da0"><div class="ttname"><a href="trb_8h.html#aab6f168571c2073e01e240524b8a3da0">trb_inform_type::iter</a></div><div class="ttdeci">int iter</div><div class="ttdoc">the total number of iterations performed</div><div class="ttdef"><b>Definition:</b> trb.h:573</div></div>
 <div class="ttc" id="atrb_8h_html_a5c424056838394ef7a658c5376614567"><div class="ttname"><a href="trb_8h.html#a5c424056838394ef7a658c5376614567">trb_control_type::radius_reduce</a></div><div class="ttdeci">real_wp_ radius_reduce</div><div class="ttdoc">see radius_increase</div><div class="ttdef"><b>Definition:</b> trb.h:416</div></div>
 <div class="ttc" id="atrb_8h_html_a6356532c25755a6e5fedee1a7d703949"><div class="ttname"><a href="trb_8h.html#a6356532c25755a6e5fedee1a7d703949">trb_time_type::solve</a></div><div class="ttdeci">real_sp_ solve</div><div class="ttdoc">the CPU time spent computing the search direction</div><div class="ttdef"><b>Definition:</b> trb.h:527</div></div>
+<div class="ttc" id="atrb_8h_html_a9bffc46178a3e0b7eb2927d1c50440a1"><div class="ttname"><a href="trb_8h.html#a9bffc46178a3e0b7eb2927d1c50440a1">trb_initialize</a></div><div class="ttdeci">void trb_initialize(void **data, struct trb_control_type *control, int *status)</div></div>
 <div class="ttc" id="atrb_8h_html_a1e477a1869f7d6863b2c42209fc98bae"><div class="ttname"><a href="trb_8h.html#a1e477a1869f7d6863b2c42209fc98bae">trb_inform_type::factorization_integer</a></div><div class="ttdeci">int factorization_integer</div><div class="ttdoc">the total integer workspace required for the factorization</div><div class="ttdef"><b>Definition:</b> trb.h:609</div></div>
 <div class="ttc" id="atrb_8h_html_abf69f7ec94abc74ca967f247f54bc919"><div class="ttname"><a href="trb_8h.html#abf69f7ec94abc74ca967f247f54bc919">trb_inform_type::max_entries_factors</a></div><div class="ttdeci">int max_entries_factors</div><div class="ttdoc">the maximum number of entries in the factors</div><div class="ttdef"><b>Definition:</b> trb.h:605</div></div>
 <div class="ttc" id="atrb_8h_html_a0fa05e3076ccb30e3b859c1e4be08981"><div class="ttname"><a href="trb_8h.html#a0fa05e3076ccb30e3b859c1e4be08981">trb_control_type::hessian_available</a></div><div class="ttdeci">bool hessian_available</div><div class="ttdoc">is the Hessian matrix of second derivatives available or is access only via matrix-vector products?</div><div class="ttdef"><b>Definition:</b> trb.h:436</div></div>

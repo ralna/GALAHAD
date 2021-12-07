@@ -18,6 +18,14 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
+    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+  } }
+});
+</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -129,9 +137,9 @@ Reference</h2>
 <p>N. I. M. Gould, D. Orban and D. P. Robinson (2013). Trajectory-following methods for large-scale degenerate convex quadratic programming, Mathematical Programming Computation 5(2) 113-142.</p>
 <h2><a class="anchor" id="cqp_call_order"></a>
 Call order</h2>
-<p>To solve a given problem, functions from the nls package must be called in the following order:</p>
+<p>To solve a given problem, functions from the cqp package must be called in the following order:</p>
 <ul>
-<li><a class="el" href="cqp_8h.html#a44f40145b22d57b6675cc664c85f19bf">cqp_initialize</a> - provide default control parameters and set up initial data structures</li>
+<li><a class="el" href="cqp_8h.html#a782387ad9cccc5f2e2da9df9016fb923">cqp_initialize</a> - provide default control parameters and set up initial data structures</li>
 <li><a class="el" href="cqp_8h.html#ade439e5e06c2852fcb089bb39a667a74">cqp_read_specfile</a> (optional) - override control values by reading replacement values from a file</li>
 <li><a class="el" href="cqp_8h.html#a6a2be17b6f871df80bbac93940b83af3">cqp_import</a> - set up problem data structures and fixed values</li>
 <li><a class="el" href="cqp_8h.html#a9f7ccb0cffa909a2be7556edda430190">cqp_reset_control</a> (optional) - possibly change control parameters if a sequence of problems are being solved</li>

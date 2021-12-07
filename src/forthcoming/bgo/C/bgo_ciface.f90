@@ -452,7 +452,9 @@
 
 !  copy control out 
 
+write(6,*) ' before copy'
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+write(6,*) ' after copy'
   RETURN
 
   END SUBROUTINE bgo_initialize
@@ -656,7 +658,8 @@
 
 !  ignore Fortran userdata type (not interoperable)
 
-  TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+! TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_nlpt_userdata_type ) :: fuserdata
 
 !  associate data pointer
 
@@ -802,7 +805,8 @@
 
 !  ignore Fortran userdata type (not interoperable)
 
-  TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+! TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_nlpt_userdata_type ) :: fuserdata
 
 !  associate data pointer
 

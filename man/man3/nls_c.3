@@ -1,4 +1,4 @@
-.TH "nls.h" 3 "Wed Nov 24 2021" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
+.TH "nls.h" 3 "Tue Dec 7 2021" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -43,7 +43,7 @@ nls.h
 .RI "void \fBnls_import\fP (struct \fBnls_control_type\fP *control, void **data, int *status, int n, int m, const char J_type[], int J_ne, const int J_row[], const int J_col[], const int J_ptr[], const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char P_type[], int P_ne, const int P_row[], const int P_col[], const int P_ptr[], const real_wp_ w[])"
 .br
 .ti -1c
-.RI "void \fBnls_reset_control\fP (struct \fBnls_control_type\fP *control, void **data, int *status,)"
+.RI "void \fBnls_reset_control\fP (struct \fBnls_control_type\fP *control, void **data, int *status)"
 .br
 .ti -1c
 .RI "void \fBnls_solve_with_mat\fP (void **data, void *userdata, int *status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], int(*eval_c)(int, int, const real_wp_[], real_wp_[], const void *), int j_ne, int(*eval_j)(int, int, int, const real_wp_[], real_wp_[], const void *), int h_ne, int(*eval_h)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], const void *), int p_ne, int(*eval_hprods)(int, int, int, const real_wp_[], const real_wp_[], real_wp_[], bool, const void *))"
@@ -206,55 +206,49 @@ control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-char \fIalive_file[31]\fP see alive_unit 
-.br
-.PP
-int \fIalive_unit\fP removal of the file alive_file from unit alive_unit terminates execution 
-.br
-.PP
-real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
-.br
-.PP
-real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite) 
-.br
-.PP
-bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
-.br
-.PP
 int \fIerror\fP error and warning diagnostics occur on stream error 
 .br
 .PP
-real_wp_ \fIeta_successful\fP REAL ( KIND = wp ) :: initial_inner_weight = 0\&.0001_wp a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than \&.eta_successful times that predicted by a quadratic model of the decrease\&. The regularization weight will be decreaed if this relative decrease is greater than \&.eta_very_successful but smaller than \&.eta_too_successful\&. 
+int \fIout\fP general output occurs on stream out 
 .br
 .PP
-real_wp_ \fIeta_too_successful\fP see eta_successful 
+int \fIprint_level\fP the level of output required\&. 
+.PD 0
+
+.IP "\(bu" 2
+<= 0 gives no output, 
+.IP "\(bu" 2
+= 1 gives a one-line summary for every iteration, 
+.IP "\(bu" 2
+= 2 gives a summary of the inner iteration for each iteration, 
+.IP "\(bu" 2
+>= 3 gives increasingly verbose (debugging) output 
+.PP
+
 .br
 .PP
-real_wp_ \fIeta_very_successful\fP see eta_successful 
+int \fIstart_print\fP any printing will start on this iteration 
 .br
 .PP
-int \fIhessian_available\fP is the Hessian matrix of second derivatives available (>= 2), is access only via matrix-vector products (=1) or is it not available (<= 0) ? 
+int \fIstop_print\fP any printing will stop on this iteration 
 .br
 .PP
-real_wp_ \fIinitial_inner_weight\fP initial value for the inner regularization weight for tensor GN (-ve => 0) 
-.br
-.PP
-real_wp_ \fIinitial_weight\fP initial value for the regularization weight (-ve => 1/||g_0||)) 
-.br
-.PP
-int \fIjacobian_available\fP is the Jacobian matrix of first derivatives available (>= 2), is access only via matrix-vector products (=1) or is it not available (<= 0) ? 
-.br
-.PP
-real_wp_ \fIlarge_root\fP see reduce_gap 
-.br
-.PP
-bool \fImagic_step\fP allow the user to perform a 'magic' step to improve the objective 
+int \fIprint_gap\fP the number of iterations between printing 
 .br
 .PP
 int \fImaxit\fP the maximum number of iterations performed 
 .br
 .PP
-real_wp_ \fIminimum_weight\fP minimum permitted regularization weight 
+int \fIalive_unit\fP removal of the file alive_file from unit alive_unit terminates execution 
+.br
+.PP
+char \fIalive_file[31]\fP see alive_unit 
+.br
+.PP
+int \fIjacobian_available\fP is the Jacobian matrix of first derivatives available (>= 2), is access only via matrix-vector products (=1) or is it not available (<= 0) ? 
+.br
+.PP
+int \fIhessian_available\fP is the Hessian matrix of second derivatives available (>= 2), is access only via matrix-vector products (=1) or is it not available (<= 0) ? 
 .br
 .PP
 int \fImodel\fP the model used\&. Possible values are 
@@ -280,9 +274,6 @@ int \fImodel\fP the model used\&. Possible values are
 8 tensor Gauss-Newton transition from a least-squares to a general mode 
 .PP
 
-.br
-.PP
-int \fInon_monotone\fP non-monotone <= 0 monotone strategy used, anything else non-monotone strategy with this history length used 
 .br
 .PP
 int \fInorm\fP the regularization norm used\&. 
@@ -322,47 +313,10 @@ int \fInorm\fP the regularization norm used\&.
 
 .br
 .PP
-int \fIout\fP general output occurs on stream out 
+int \fInon_monotone\fP non-monotone <= 0 monotone strategy used, anything else non-monotone strategy with this history length used 
 .br
 .PP
-real_wp_ \fIpower\fP the regularization power (<2 => chosen according to the model) 
-.br
-.PP
-char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
-.br
-.PP
-int \fIprint_gap\fP the number of iterations between printing 
-.br
-.PP
-int \fIprint_level\fP the level of output required\&. 
-.PD 0
-
-.IP "\(bu" 2
-<= 0 gives no output, 
-.IP "\(bu" 2
-= 1 gives a one-line summary for every iteration, 
-.IP "\(bu" 2
-= 2 gives a summary of the inner iteration for each iteration, 
-.IP "\(bu" 2
->= 3 gives increasingly verbose (debugging) output 
-.PP
-
-.br
-.PP
-bool \fIprint_obj\fP print values of the objective/gradient rather than ||c|| and its gradien 
-.br
-.PP
-real_wp_ \fIreduce_gap\fP expert parameters as suggested in Gould, Porcelli and Toint, 'Updating t
-regularization parameter in the adaptive cubic regularization algorithm' RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011), http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf (these are denoted beta, epsilon_chi and alpha_max in the paper) 
-.br
-.PP
-bool \fIrenormalize_weight\fP should the weight be renormalized to account for a change in scaling? 
-.br
-.PP
-bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
-.br
-.PP
-int \fIstart_print\fP any printing will start on this iteration 
+int \fIweight_update_strategy\fP define the weight-update strategy: 1 (basic), 2 (reset to zero when very successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT) 
 .br
 .PP
 real_wp_ \fIstop_c_absolute\fP overall convergence tolerances\&. The iteration will terminate when ||c(x)||_2 <= MAX( \&.stop_c_absolute, \&.stop_c_relative 
@@ -383,25 +337,34 @@ real_wp_ \fIstop_g_absolute\fP see stop_c_absolute
 real_wp_ \fIstop_g_relative\fP see stop_c_absolute 
 .br
 .PP
-int \fIstop_print\fP any printing will stop on this iteration 
-.br
-.PP
 real_wp_ \fIstop_s\fP see stop_c_absolute 
 .br
 .PP
-bool \fIsubproblem_direct\fP use a direct (factorization) or (preconditioned) iterative method to find the search direction 
+real_wp_ \fIpower\fP the regularization power (<2 => chosen according to the model) 
 .br
 .PP
-real_wp_ \fIswitch_to_newton\fP if the Gauss-Newto to Newton model is specified, switch to Newton as soon as the norm of the gradient g is smaller than switch_to_newton 
+real_wp_ \fIinitial_weight\fP initial value for the regularization weight (-ve => 1/||g_0||)) 
 .br
 .PP
-real_wp_ \fItiny_gap\fP see reduce_gap 
+real_wp_ \fIminimum_weight\fP minimum permitted regularization weight 
 .br
 .PP
-real_wp_ \fIweight_decrease\fP REAL ( KIND = wp ) :: weight_decrease = half\&. 
+real_wp_ \fIinitial_inner_weight\fP initial value for the inner regularization weight for tensor GN (-ve => 0) 
+.br
+.PP
+real_wp_ \fIeta_successful\fP REAL ( KIND = wp ) :: initial_inner_weight = 0\&.0001_wp a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than \&.eta_successful times that predicted by a quadratic model of the decrease\&. The regularization weight will be decreaed if this relative decrease is greater than \&.eta_very_successful but smaller than \&.eta_too_successful\&. 
+.br
+.PP
+real_wp_ \fIeta_very_successful\fP see eta_successful 
+.br
+.PP
+real_wp_ \fIeta_too_successful\fP see eta_successful 
 .br
 .PP
 real_wp_ \fIweight_decrease_min\fP on very successful iterations, the regularization weight will be reduced by the factor \&.weight_decrease but no more than \&.weight_decrease_min while if the iteration is unsucceful, the weight will be increased by a factor \&.weight_increase but no more than \&.weight_increase_max (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli and Toint, 2011) 
+.br
+.PP
+real_wp_ \fIweight_decrease\fP REAL ( KIND = wp ) :: weight_decrease = half\&. 
 .br
 .PP
 real_wp_ \fIweight_increase\fP REAL ( KIND = wp ) :: weight_increase = two\&. 
@@ -410,7 +373,44 @@ real_wp_ \fIweight_increase\fP REAL ( KIND = wp ) :: weight_increase = two\&.
 real_wp_ \fIweight_increase_max\fP see weight_increase 
 .br
 .PP
-int \fIweight_update_strategy\fP define the weight-update strategy: 1 (basic), 2 (reset to zero when very successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT) 
+real_wp_ \fIreduce_gap\fP expert parameters as suggested in Gould, Porcelli and Toint, 'Updating t
+regularization parameter in the adaptive cubic regularization algorithm' RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011), http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf (these are denoted beta, epsilon_chi and alpha_max in the paper) 
+.br
+.PP
+real_wp_ \fItiny_gap\fP see reduce_gap 
+.br
+.PP
+real_wp_ \fIlarge_root\fP see reduce_gap 
+.br
+.PP
+real_wp_ \fIswitch_to_newton\fP if the Gauss-Newto to Newton model is specified, switch to Newton as soon as the norm of the gradient g is smaller than switch_to_newton 
+.br
+.PP
+real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite) 
+.br
+.PP
+real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
+.br
+.PP
+bool \fIsubproblem_direct\fP use a direct (factorization) or (preconditioned) iterative method to find the search direction 
+.br
+.PP
+bool \fIrenormalize_weight\fP should the weight be renormalized to account for a change in scaling? 
+.br
+.PP
+bool \fImagic_step\fP allow the user to perform a 'magic' step to improve the objective 
+.br
+.PP
+bool \fIprint_obj\fP print values of the objective/gradient rather than ||c|| and its gradien 
+.br
+.PP
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
 .RE
@@ -421,58 +421,52 @@ control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-char \fIalive_file[31]\fP see alive_unit 
-.br
-.PP
-int \fIalive_unit\fP removal of the file alive_file from unit alive_unit terminates execution 
-.br
-.PP
-real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
-.br
-.PP
-real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite) 
-.br
-.PP
-bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
 .br
 .PP
 int \fIerror\fP error and warning diagnostics occur on stream error 
 .br
 .PP
-real_wp_ \fIeta_successful\fP REAL ( KIND = wp ) :: initial_inner_weight = 0\&.0001_wp a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than \&.eta_successful times that predicted by a quadratic model of the decrease\&. The regularization weight will be decreaed if this relative decrease is greater than \&.eta_very_successful but smaller than \&.eta_too_successful\&. 
+int \fIout\fP general output occurs on stream out 
 .br
 .PP
-real_wp_ \fIeta_too_successful\fP see eta_successful 
+int \fIprint_level\fP the level of output required\&. 
+.PD 0
+
+.IP "\(bu" 2
+<= 0 gives no output, 
+.IP "\(bu" 2
+= 1 gives a one-line summary for every iteration, 
+.IP "\(bu" 2
+= 2 gives a summary of the inner iteration for each iteration, 
+.IP "\(bu" 2
+>= 3 gives increasingly verbose (debugging) output 
+.PP
+
 .br
 .PP
-real_wp_ \fIeta_very_successful\fP see eta_successful 
+int \fIstart_print\fP any printing will start on this iteration 
 .br
 .PP
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+int \fIstop_print\fP any printing will stop on this iteration 
 .br
 .PP
-int \fIhessian_available\fP is the Hessian matrix of second derivatives available (>= 2), is access only via matrix-vector products (=1) or is it not available (<= 0) ? 
-.br
-.PP
-real_wp_ \fIinitial_inner_weight\fP initial value for the inner regularization weight for tensor GN (-ve => 0) 
-.br
-.PP
-real_wp_ \fIinitial_weight\fP initial value for the regularization weight (-ve => 1/||g_0||)) 
-.br
-.PP
-int \fIjacobian_available\fP is the Jacobian matrix of first derivatives available (>= 2), is access only via matrix-vector products (=1) or is it not available (<= 0) ? 
-.br
-.PP
-real_wp_ \fIlarge_root\fP see reduce_gap 
-.br
-.PP
-bool \fImagic_step\fP allow the user to perform a 'magic' step to improve the objective 
+int \fIprint_gap\fP the number of iterations between printing 
 .br
 .PP
 int \fImaxit\fP the maximum number of iterations performed 
 .br
 .PP
-real_wp_ \fIminimum_weight\fP minimum permitted regularization weight 
+int \fIalive_unit\fP removal of the file alive_file from unit alive_unit terminates execution 
+.br
+.PP
+char \fIalive_file[31]\fP see alive_unit 
+.br
+.PP
+int \fIjacobian_available\fP is the Jacobian matrix of first derivatives available (>= 2), is access only via matrix-vector products (=1) or is it not available (<= 0) ? 
+.br
+.PP
+int \fIhessian_available\fP is the Hessian matrix of second derivatives available (>= 2), is access only via matrix-vector products (=1) or is it not available (<= 0) ? 
 .br
 .PP
 int \fImodel\fP the model used\&. Possible values are 
@@ -498,9 +492,6 @@ int \fImodel\fP the model used\&. Possible values are
 8 tensor Gauss-Newton transition from a least-squares to a general mode 
 .PP
 
-.br
-.PP
-int \fInon_monotone\fP non-monotone <= 0 monotone strategy used, anything else non-monotone strategy with this history length used 
 .br
 .PP
 int \fInorm\fP the regularization norm used\&. 
@@ -540,47 +531,10 @@ int \fInorm\fP the regularization norm used\&.
 
 .br
 .PP
-int \fIout\fP general output occurs on stream out 
+int \fInon_monotone\fP non-monotone <= 0 monotone strategy used, anything else non-monotone strategy with this history length used 
 .br
 .PP
-real_wp_ \fIpower\fP the regularization power (<2 => chosen according to the model) 
-.br
-.PP
-char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
-.br
-.PP
-int \fIprint_gap\fP the number of iterations between printing 
-.br
-.PP
-int \fIprint_level\fP the level of output required\&. 
-.PD 0
-
-.IP "\(bu" 2
-<= 0 gives no output, 
-.IP "\(bu" 2
-= 1 gives a one-line summary for every iteration, 
-.IP "\(bu" 2
-= 2 gives a summary of the inner iteration for each iteration, 
-.IP "\(bu" 2
->= 3 gives increasingly verbose (debugging) output 
-.PP
-
-.br
-.PP
-bool \fIprint_obj\fP print values of the objective/gradient rather than ||c|| and its gradien 
-.br
-.PP
-real_wp_ \fIreduce_gap\fP expert parameters as suggested in Gould, Porcelli and Toint, 'Updating t
-regularization parameter in the adaptive cubic regularization algorithm' RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011), http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf (these are denoted beta, epsilon_chi and alpha_max in the paper) 
-.br
-.PP
-bool \fIrenormalize_weight\fP should the weight be renormalized to account for a change in scaling? 
-.br
-.PP
-bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
-.br
-.PP
-int \fIstart_print\fP any printing will start on this iteration 
+int \fIweight_update_strategy\fP define the weight-update strategy: 1 (basic), 2 (reset to zero when very successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT) 
 .br
 .PP
 real_wp_ \fIstop_c_absolute\fP overall convergence tolerances\&. The iteration will terminate when ||c(x)||_2 <= MAX( \&.stop_c_absolute, \&.stop_c_relative 
@@ -601,28 +555,34 @@ real_wp_ \fIstop_g_absolute\fP see stop_c_absolute
 real_wp_ \fIstop_g_relative\fP see stop_c_absolute 
 .br
 .PP
-int \fIstop_print\fP any printing will stop on this iteration 
-.br
-.PP
 real_wp_ \fIstop_s\fP see stop_c_absolute 
 .br
 .PP
-struct \fBnls_subproblem_control_type\fP \fIsubproblem_control\fP control parameters for the step-finding subproblem 
+real_wp_ \fIpower\fP the regularization power (<2 => chosen according to the model) 
 .br
 .PP
-bool \fIsubproblem_direct\fP use a direct (factorization) or (preconditioned) iterative method to find the search direction 
+real_wp_ \fIinitial_weight\fP initial value for the regularization weight (-ve => 1/||g_0||)) 
 .br
 .PP
-real_wp_ \fIswitch_to_newton\fP if the Gauss-Newto to Newton model is specified, switch to Newton as soon as the norm of the gradient g is smaller than switch_to_newton 
+real_wp_ \fIminimum_weight\fP minimum permitted regularization weight 
 .br
 .PP
-real_wp_ \fItiny_gap\fP see reduce_gap 
+real_wp_ \fIinitial_inner_weight\fP initial value for the inner regularization weight for tensor GN (-ve => 0) 
 .br
 .PP
-real_wp_ \fIweight_decrease\fP REAL ( KIND = wp ) :: weight_decrease = half\&. 
+real_wp_ \fIeta_successful\fP REAL ( KIND = wp ) :: initial_inner_weight = 0\&.0001_wp a potential iterate will only be accepted if the actual decrease f - f(x_new) is larger than \&.eta_successful times that predicted by a quadratic model of the decrease\&. The regularization weight will be decreaed if this relative decrease is greater than \&.eta_very_successful but smaller than \&.eta_too_successful\&. 
+.br
+.PP
+real_wp_ \fIeta_very_successful\fP see eta_successful 
+.br
+.PP
+real_wp_ \fIeta_too_successful\fP see eta_successful 
 .br
 .PP
 real_wp_ \fIweight_decrease_min\fP on very successful iterations, the regularization weight will be reduced by the factor \&.weight_decrease but no more than \&.weight_decrease_min while if the iteration is unsucceful, the weight will be increased by a factor \&.weight_increase but no more than \&.weight_increase_max (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli and Toint, 2011) 
+.br
+.PP
+real_wp_ \fIweight_decrease\fP REAL ( KIND = wp ) :: weight_decrease = half\&. 
 .br
 .PP
 real_wp_ \fIweight_increase\fP REAL ( KIND = wp ) :: weight_increase = two\&. 
@@ -631,7 +591,47 @@ real_wp_ \fIweight_increase\fP REAL ( KIND = wp ) :: weight_increase = two\&.
 real_wp_ \fIweight_increase_max\fP see weight_increase 
 .br
 .PP
-int \fIweight_update_strategy\fP define the weight-update strategy: 1 (basic), 2 (reset to zero when very successful), 3 (imitate TR), 4 (increase lower bound), 5 (GPT) 
+real_wp_ \fIreduce_gap\fP expert parameters as suggested in Gould, Porcelli and Toint, 'Updating t
+regularization parameter in the adaptive cubic regularization algorithm' RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011), http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf (these are denoted beta, epsilon_chi and alpha_max in the paper) 
+.br
+.PP
+real_wp_ \fItiny_gap\fP see reduce_gap 
+.br
+.PP
+real_wp_ \fIlarge_root\fP see reduce_gap 
+.br
+.PP
+real_wp_ \fIswitch_to_newton\fP if the Gauss-Newto to Newton model is specified, switch to Newton as soon as the norm of the gradient g is smaller than switch_to_newton 
+.br
+.PP
+real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite) 
+.br
+.PP
+real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
+.br
+.PP
+bool \fIsubproblem_direct\fP use a direct (factorization) or (preconditioned) iterative method to find the search direction 
+.br
+.PP
+bool \fIrenormalize_weight\fP should the weight be renormalized to account for a change in scaling? 
+.br
+.PP
+bool \fImagic_step\fP allow the user to perform a 'magic' step to improve the objective 
+.br
+.PP
+bool \fIprint_obj\fP print values of the objective/gradient rather than ||c|| and its gradien 
+.br
+.PP
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+struct \fBnls_subproblem_control_type\fP \fIsubproblem_control\fP control parameters for the step-finding subproblem 
 .br
 .PP
 .RE
@@ -642,7 +642,25 @@ time derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
+real_sp_ \fItotal\fP the total CPU time spent in the package 
+.br
+.PP
+real_sp_ \fIpreprocess\fP the CPU time spent preprocessing the problem 
+.br
+.PP
 real_sp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorizatio 
+.br
+.PP
+real_sp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
+.br
+.PP
+real_sp_ \fIsolve\fP the CPU time spent computing the search direction 
+.br
+.PP
+real_wp_ \fIclock_total\fP the total clock time spent in the package 
+.br
+.PP
+real_wp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem 
 .br
 .PP
 real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorizat 
@@ -651,25 +669,7 @@ real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrice
 real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
 .br
 .PP
-real_wp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem 
-.br
-.PP
 real_wp_ \fIclock_solve\fP the clock time spent computing the search direction 
-.br
-.PP
-real_wp_ \fIclock_total\fP the total clock time spent in the package 
-.br
-.PP
-real_sp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
-.br
-.PP
-real_sp_ \fIpreprocess\fP the CPU time spent preprocessing the problem 
-.br
-.PP
-real_sp_ \fIsolve\fP the CPU time spent computing the search direction 
-.br
-.PP
-real_sp_ \fItotal\fP the total CPU time spent in the package 
 .br
 .PP
 .RE
@@ -680,6 +680,9 @@ inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
+int \fIstatus\fP return status\&. See NLS_solve for details 
+.br
+.PP
 int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
 .br
 .PP
@@ -689,37 +692,40 @@ char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocat
 char \fIbad_eval[13]\fP the name of the user-supplied evaluation routine for which an error ocur 
 .br
 .PP
-int \fIc_eval\fP the total number of evaluations of the residual function c(x) 
+int \fIiter\fP the total number of iterations performed 
 .br
 .PP
 int \fIcg_iter\fP the total number of CG iterations performed 
 .br
 .PP
-real_wp_ \fIfactorization_average\fP the average number of factorizations per sub-problem solve 
-.br
-.PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
-.br
-.PP
-int \fIfactorization_max\fP the maximum number of factorizations in a sub-problem solve 
-.br
-.PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
-.br
-.PP
-int \fIfactorization_status\fP the return status from the factorization 
-.br
-.PP
-int \fIh_eval\fP the total number of evaluations of the scaled Hessian H(x,y) of c(x) 
-.br
-.PP
-int \fIiter\fP the total number of iterations performed 
+int \fIc_eval\fP the total number of evaluations of the residual function c(x) 
 .br
 .PP
 int \fIj_eval\fP the total number of evaluations of the Jacobian J(x) of c(x) 
 .br
 .PP
-int \fImax_entries_factors\fP the maximum number of entries in the factors 
+int \fIh_eval\fP the total number of evaluations of the scaled Hessian H(x,y) of c(x) 
+.br
+.PP
+int \fIfactorization_max\fP the maximum number of factorizations in a sub-problem solve 
+.br
+.PP
+int \fIfactorization_status\fP the return status from the factorization 
+.br
+.PP
+long int \fImax_entries_factors\fP the maximum number of entries in the factors 
+.br
+.PP
+int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+.br
+.PP
+int \fIfactorization_real\fP the total real workspace required for the factorization 
+.br
+.PP
+real_wp_ \fIfactorization_average\fP the average number of factorizations per sub-problem solve 
+.br
+.PP
+real_wp_ \fIobj\fP the value of the objective function 1/2||c(x)||^2_W at the best estimate the solution, x, determined by NLS_solve 
 .br
 .PP
 real_wp_ \fInorm_c\fP the norm of the residual ||c(x)||_W at the best estimate of the solution x, determined by NLS_solve 
@@ -728,16 +734,10 @@ real_wp_ \fInorm_c\fP the norm of the residual ||c(x)||_W at the best estimate o
 real_wp_ \fInorm_g\fP the norm of the gradient of ||c(x)||_W of the objective function at the best estimate, x, of the solution determined by NLS_solve 
 .br
 .PP
-real_wp_ \fIobj\fP the value of the objective function 1/2||c(x)||^2_W at the best estimate the solution, x, determined by NLS_solve 
-.br
-.PP
-int \fIstatus\fP return status\&. See NLS_solve for details 
+real_wp_ \fIweight\fP the final regularization weight used 
 .br
 .PP
 struct \fBnls_time_type\fP \fItime\fP timings (see above) 
-.br
-.PP
-real_wp_ \fIweight\fP the final regularization weight used 
 .br
 .PP
 .RE
@@ -748,6 +748,9 @@ inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
+int \fIstatus\fP return status\&. See NLS_solve for details 
+.br
+.PP
 int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
 .br
 .PP
@@ -757,37 +760,40 @@ char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocat
 char \fIbad_eval[13]\fP the name of the user-supplied evaluation routine for which an error ocur 
 .br
 .PP
-int \fIc_eval\fP the total number of evaluations of the residual function c(x) 
+int \fIiter\fP the total number of iterations performed 
 .br
 .PP
 int \fIcg_iter\fP the total number of CG iterations performed 
 .br
 .PP
-real_wp_ \fIfactorization_average\fP the average number of factorizations per sub-problem solve 
-.br
-.PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
-.br
-.PP
-int \fIfactorization_max\fP the maximum number of factorizations in a sub-problem solve 
-.br
-.PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
-.br
-.PP
-int \fIfactorization_status\fP the return status from the factorization 
-.br
-.PP
-int \fIh_eval\fP the total number of evaluations of the scaled Hessian H(x,y) of c(x) 
-.br
-.PP
-int \fIiter\fP the total number of iterations performed 
+int \fIc_eval\fP the total number of evaluations of the residual function c(x) 
 .br
 .PP
 int \fIj_eval\fP the total number of evaluations of the Jacobian J(x) of c(x) 
 .br
 .PP
+int \fIh_eval\fP the total number of evaluations of the scaled Hessian H(x,y) of c(x) 
+.br
+.PP
+int \fIfactorization_max\fP the maximum number of factorizations in a sub-problem solve 
+.br
+.PP
+int \fIfactorization_status\fP the return status from the factorization 
+.br
+.PP
 int \fImax_entries_factors\fP the maximum number of entries in the factors 
+.br
+.PP
+int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+.br
+.PP
+int \fIfactorization_real\fP the total real workspace required for the factorization 
+.br
+.PP
+real_wp_ \fIfactorization_average\fP the average number of factorizations per sub-problem solve 
+.br
+.PP
+real_wp_ \fIobj\fP the value of the objective function 1/2||c(x)||^2_W at the best estimate the solution, x, determined by NLS_solve 
 .br
 .PP
 real_wp_ \fInorm_c\fP the norm of the residual ||c(x)||_W at the best estimate of the solution x, determined by NLS_solve 
@@ -796,25 +802,43 @@ real_wp_ \fInorm_c\fP the norm of the residual ||c(x)||_W at the best estimate o
 real_wp_ \fInorm_g\fP the norm of the gradient of ||c(x)||_W of the objective function at the best estimate, x, of the solution determined by NLS_solve 
 .br
 .PP
-real_wp_ \fIobj\fP the value of the objective function 1/2||c(x)||^2_W at the best estimate the solution, x, determined by NLS_solve 
-.br
-.PP
-int \fIstatus\fP return status\&. See NLS_solve for details 
-.br
-.PP
-struct \fBnls_subproblem_inform_type\fP \fIsubproblem_inform\fP inform parameters for subproblem 
+real_wp_ \fIweight\fP the final regularization weight used 
 .br
 .PP
 struct \fBnls_time_type\fP \fItime\fP timings (see above) 
 .br
 .PP
-real_wp_ \fIweight\fP the final regularization weight used 
+struct \fBnls_subproblem_inform_type\fP \fIsubproblem_inform\fP inform parameters for subproblem 
 .br
 .PP
 .RE
 .PP
 .SH "Function Documentation"
 .PP 
+.SS "void nls_initialize (void ** data, struct \fBnls_control_type\fP * control, struct \fBnls_inform_type\fP * inform)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data 
+.br
+\fIcontrol\fP is a struct containing control information (see \fBnls_control_type\fP) 
+.br
+\fIinform\fP is a struct containing output information (see \fBnls_inform_type\fP) 
+.RE
+.PP
+
+.SS "void nls_read_specfile (struct \fBnls_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBnls_control_type\fP) 
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
 .SS "void nls_import (struct \fBnls_control_type\fP * control, void ** data, int * status, int n, int m, const char J_type[], int J_ne, const int J_row[], const int J_col[], const int J_ptr[], const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char P_type[], int P_ne, const int P_row[], const int P_col[], const int P_ptr[], const real_wp_ w[])"
 Import problem data into internal storage prior to solution\&.
 .PP
@@ -875,48 +899,6 @@ Import problem data into internal storage prior to solution\&.
 .RE
 .PP
 
-.SS "void nls_information (void ** data, struct \fBnls_inform_type\fP * inform, int * status)"
-Provides output information
-.PP
-\fBParameters\fP
-.RS 4
-\fIdata\fP holds private internal data
-.br
-\fIinform\fP is a struct containing output information (see \fBnls_inform_type\fP)
-.br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
-.PD 0
-
-.IP "\(bu" 2
-0\&. The values were recorded succesfully 
-.PP
-.RE
-.PP
-
-.SS "void nls_initialize (void ** data, struct \fBnls_control_type\fP * control, struct \fBnls_inform_type\fP * inform)"
-Set default control values and initialize private data
-.PP
-\fBParameters\fP
-.RS 4
-\fIdata\fP holds private internal data 
-.br
-\fIcontrol\fP is a struct containing control information (see \fBnls_control_type\fP) 
-.br
-\fIinform\fP is a struct containing output information (see \fBnls_inform_type\fP) 
-.RE
-.PP
-
-.SS "void nls_read_specfile (struct \fBnls_control_type\fP * control, const char specfile[])"
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
-.PP
-\fBParameters\fP
-.RS 4
-\fIcontrol\fP is a struct containing control information (see \fBnls_control_type\fP) 
-.br
-\fIspecfile\fP is a character string containing the name of the specification file 
-.RE
-.PP
-
 .SS "void nls_reset_control (struct \fBnls_control_type\fP * control, void ** data, int * status)"
 Reset control parameters after import if required\&.
 .PP
@@ -932,190 +914,6 @@ Reset control parameters after import if required\&.
 .IP "\(bu" 2
 1\&. The import was succesful, and the package is ready for the solve phase 
 .PP
-.RE
-.PP
-
-.SS "void nls_solve_reverse_with_mat (void ** data, int * status, int * eval_status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], int j_ne, real_wp_ J_val[], const real_wp_ y[], int h_ne, real_wp_ H_val[], real_wp_ v[], int p_ne, real_wp_ P_val[])"
-Find a local minimizer of a given function using a trust-region method\&.
-.PP
-This call is for the case where H = nabla_{xx}f(x) is provided specifically, but function/derivative information is only available by returning to the calling procedure
-.PP
-\fBParameters\fP
-.RS 4
-\fIdata\fP holds private internal data
-.br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
-.br
- On initial entry, status must be set to 1\&. 
-.br
- Possible exit are: 
-.PD 0
-
-.IP "\(bu" 2
-0\&. The run was succesful
-.PP
-.PD 0
-.IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
-.IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
-.IP "\(bu" 2
--3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated\&. 
-.IP "\(bu" 2
--9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
-.IP "\(bu" 2
--10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
-.IP "\(bu" 2
--11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
-.IP "\(bu" 2
--16\&. The problem is so ill-conditioned that further progress is impossible\&. 
-.IP "\(bu" 2
--17\&. The step is too small to make further impact\&. 
-.IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
--19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
--82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
-.PP
-.PD 0
-.IP "\(bu" 2
-2\&. The user should compute the vector of residuals c(x) at the point x indicated in x and then re-enter the function\&. The required value should be set in c, and eval_status should be set to 0\&. If the user is unable to evaluate c(x)--- for instance, if the function is undefined at x--- the user need not set c, but should then set eval_status to a non-zero value\&.
-.PP
-.PD 0
-.IP "\(bu" 2
-3\&. The user should compute the Jacobian of the vector of residual functions, nabla_x c(x), at the point x indicated in x and then re-enter the function\&. The l-th component of the Jacobian stored according to the scheme specified for the remainder of J in the earlier call to nls_import should be set in J_val[l], for l = 0, \&.\&.\&., J_ne-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of J --- for instance, if a component of the matrix is undefined at x --- the user need not set J_val, but should then set eval_status to a non-zero value\&.
-.PP
-.br
-\fIstatus\fP (continued) 
-.PD 0
-
-.IP "\(bu" 2
-4\&. The user should compute the matrix H = \\sum_{i=1}^m v_i nabla_{xx}c_i(x) of weighted residual Hessian evaluated at x=x and v=v and then re-enter the function\&. The l-th component of the matrix stored according to the scheme specified for the remainder of H in the earlier call to nls_import should be set in H_val[l], for l = 0, \&.\&.\&., H_ne-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of H --- for instance, if a component of the matrix is undefined at x --- the user need not set H_val, but should then set eval_status to a non-zero value\&. \fBNote\fP that this return will not happen if the Gauss-Newton model is selected\&. 
-.IP "\(bu" 2
-7\&. The user should compute the entries of the matrix P, whose i-th column is the product nabla_{xx}c_i(x) v between nabla_{xx}c_i(x), the Hessian of the i-th component of the residual c(x) at x=x, and v=v and then re-enter the function\&. The l-th component of the matrix stored according to the scheme specified for the remainder of P in the earlier call to nls_import should be set in P_val[l], for l = 0, \&.\&.\&., P_ne-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of P --- for instance, if a component of the matrix is undefined at x --- the user need not set P_val, but should then set eval_status to a non-zero value\&. \fBNote\fP that this return will not happen if either the Gauss-Newton or Newton models is selected\&.
-.PP
-.br
-\fIeval_status\fP is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
-.br
-\fIn\fP is a scalar variable of type int, that holds the number of variables
-.br
-\fIm\fP is a scalar variable of type int, that holds the number of residuals\&.
-.br
-\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
-.br
-\fIc\fP is a one-dimensional array of size m and type double, that holds the residual c(x)\&. The i-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j(x) \&. See status = 2, above, for more details\&.
-.br
-\fIg\fP is a one-dimensional array of size n and type double, that holds the gradient g = nabla_xf(x) of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
-.br
-\fIj_ne\fP is a scalar variable of type int, that holds the number of entries in the Jacobian matrix J\&.
-.br
-\fIJ_val\fP is a one-dimensional array of size j_ne and type double, that holds the values of the entries of the Jacobian matrix J in any of the available storage schemes\&. See status = 3, above, for more details\&.
-.br
-\fIy\fP is a one-dimensional array of size m and type double, that is used for reverse communication\&. See status = 4 above for more details\&.
-.br
-\fIh_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix H\&.
-.br
-\fIH_val\fP is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H in any of the available storage schemes\&. See status = 4, above, for more details\&.
-.br
-\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication\&. See status = 7, above, for more details\&.
-.br
-\fIp_ne\fP is a scalar variable of type int, that holds the number of entries in the residual-Hessians-vector product matrix, P\&.
-.br
-\fIP_val\fP is a one-dimensional array of size p_ne and type double, that holds the values of the entries of the residual-Hessians-vector product matrix, P\&. See status = 7, above, for more details\&. 
-.RE
-.PP
-
-.SS "void nls_solve_reverse_without_mat (void ** data, int * status, int * eval_status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], bool * transpose, real_wp_ u[], real_wp_ v[], real_wp_ y[], int p_ne, real_wp_ P_val[])"
-Find a local minimizer of a given function using a trust-region method\&.
-.PP
-This call is for the case where access to H = nabla_{xx}f(x) is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure\&.
-.PP
-\fBParameters\fP
-.RS 4
-\fIdata\fP holds private internal data
-.br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
-.br
- On initial entry, status must be set to 1\&. 
-.br
- Possible exit are: 
-.PD 0
-
-.IP "\(bu" 2
-0\&. The run was succesful
-.PP
-.PD 0
-.IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
-.IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
-.IP "\(bu" 2
--3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated\&. 
-.IP "\(bu" 2
--9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status
-.PP
-.br
-\fIstatus\fP (continued) 
-.PD 0
-
-.IP "\(bu" 2
--10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
-.IP "\(bu" 2
--11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
-.IP "\(bu" 2
--16\&. The problem is so ill-conditioned that further progress is impossible\&.
-.PP
-.PD 0
-.IP "\(bu" 2
--17\&. The step is too small to make further impact\&. 
-.IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
--19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
--82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
-.PP
-.PD 0
-.IP "\(bu" 2
-2\&. The user should compute the vector of residuals c(x) at the point x indicated in x and then re-enter the function\&. The required value should be set in c, and eval_status should be set to 0\&. If the user is unable to evaluate c(x)--- for instance, if the function is undefined at x--- the user need not set c, but should then set eval_status to a non-zero value\&.
-.PP
-.PD 0
-.IP "\(bu" 2
-5\&. The user should compute the sum u + nabla_{x}c_(x) v (if tranpose is false) or u + (nabla_{x}c_(x))^T v (if tranpose is true) between the product of the Jacobian nabla_{x}c_(x) or its tranpose with the vector v=v and the vector u = $u, and then re-enter the function\&. The result should be set in u, and eval_status should be set to 0\&. If the user is unable to evaluate the sum --- for instance, if the Jacobian is undefined at x --- the user need not set u, but should then set eval_status to a non-zero value\&.
-.PP
-.PD 0
-.IP "\(bu" 2
-6\&. The user should compute the sum u + \\sum_{i=1}^m y_i nabla_{xx}c_i(x) v between the product of the weighted residual Hessian H = \\sum_{i=1}^m y_i nabla_{xx}c_i(x) evaluated at x=x and y=y with the vector v=v and the the vector u = $u, and then re-enter the function\&. The result should be set in u, and eval_status should be set to 0\&. If the user is unable to evaluate the sum --- for instance, if the weifghted residual Hessian is undefined at x --- the user need not set u, but should then set eval_status to a non-zero value\&.
-.PP
-.PD 0
-.IP "\(bu" 2
-7\&. The user should compute the entries of the matrix P, whose i-th column is the product nabla_{xx}c_i(x) v between nabla_{xx}c_i(x), the Hessian of the i-th component of the residual c(x) at x=x, and v=v and then re-enter the function\&. The l-th component of the matrix stored according to the scheme specified for the remainder of P in the earlier call to nls_import should be set in P_val[l], for l = 0, \&.\&.\&., P_ne-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of P --- for instance, if a component of the matrix is undefined at x --- the user need not set P_val, but should then set eval_status to a non-zero value\&. \fBNote\fP that this return will not happen if either the Gauss-Newton or Newton models is selected\&.
-.PP
-.br
-\fIeval_status\fP is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
-.br
-\fIn\fP is a scalar variable of type int, that holds the number of variables
-.br
-\fIm\fP is a scalar variable of type int, that holds the number of residuals\&.
-.br
-\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
-.br
-\fIc\fP is a one-dimensional array of size m and type double, that holds the residual c(x)\&. The i-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j(x) \&. See status = 2, above, for more details\&.
-.br
-\fIg\fP is a one-dimensional array of size n and type double, that holds the gradient g = nabla_xf(x) of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
-.br
-\fItranspose\fP is a scalar variable of type bool, that indicates whether the product with Jacobian or its transpose should be obtained when status=5\&.
-.br
-\fIu\fP is a one-dimensional array of size max(n,m) and type double, that is used for reverse communication\&. See status = 5,6 above for more details\&.
-.br
-\fIv\fP is a one-dimensional array of size max(n,m) and type double, that is used for reverse communication\&. See status = 5,6,7 above for more details\&.
-.br
-\fIy\fP is a one-dimensional array of size m and type double, that is used for reverse communication\&. See status = 6 above for more details\&.
-.br
-\fIp_ne\fP is a scalar variable of type int, that holds the number of entries in the residual-Hessians-vector product matrix, P\&.
-.br
-\fIP_val\fP is a one-dimensional array of size P_ne and type double, that holds the values of the entries of the residual-Hessians-vector product matrix, P\&. See status = 7, above, for more details\&. 
 .RE
 .PP
 
@@ -1322,6 +1120,208 @@ int eval_hprods( int n, int m, int p_ne, const double x[],
 .fi
 .PP
  The entries of the matrix P, whose i-th column is the product nabla_{xx}c_i(x) v between nabla_{xx}c_i(x), the Hessian of the i-th component of the residual c(x) at x=x, and v=v must be returned in pval and the function return value set to 0\&. If the evaluation is impossible at x, return should be set to a nonzero value\&. Data may be passed into \fCeval_hprods\fP via the structure \fCuserdata\fP\&. 
+.RE
+.PP
+
+.SS "void nls_solve_reverse_with_mat (void ** data, int * status, int * eval_status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], int j_ne, real_wp_ J_val[], const real_wp_ y[], int h_ne, real_wp_ H_val[], real_wp_ v[], int p_ne, real_wp_ P_val[])"
+Find a local minimizer of a given function using a trust-region method\&.
+.PP
+This call is for the case where H = nabla_{xx}f(x) is provided specifically, but function/derivative information is only available by returning to the calling procedure
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated\&. 
+.IP "\(bu" 2
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+.IP "\(bu" 2
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+.IP "\(bu" 2
+-17\&. The step is too small to make further impact\&. 
+.IP "\(bu" 2
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+2\&. The user should compute the vector of residuals c(x) at the point x indicated in x and then re-enter the function\&. The required value should be set in c, and eval_status should be set to 0\&. If the user is unable to evaluate c(x)--- for instance, if the function is undefined at x--- the user need not set c, but should then set eval_status to a non-zero value\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+3\&. The user should compute the Jacobian of the vector of residual functions, nabla_x c(x), at the point x indicated in x and then re-enter the function\&. The l-th component of the Jacobian stored according to the scheme specified for the remainder of J in the earlier call to nls_import should be set in J_val[l], for l = 0, \&.\&.\&., J_ne-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of J --- for instance, if a component of the matrix is undefined at x --- the user need not set J_val, but should then set eval_status to a non-zero value\&.
+.PP
+.br
+\fIstatus\fP (continued) 
+.PD 0
+
+.IP "\(bu" 2
+4\&. The user should compute the matrix H = \\sum_{i=1}^m v_i nabla_{xx}c_i(x) of weighted residual Hessian evaluated at x=x and v=v and then re-enter the function\&. The l-th component of the matrix stored according to the scheme specified for the remainder of H in the earlier call to nls_import should be set in H_val[l], for l = 0, \&.\&.\&., H_ne-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of H --- for instance, if a component of the matrix is undefined at x --- the user need not set H_val, but should then set eval_status to a non-zero value\&. \fBNote\fP that this return will not happen if the Gauss-Newton model is selected\&. 
+.IP "\(bu" 2
+7\&. The user should compute the entries of the matrix P, whose i-th column is the product nabla_{xx}c_i(x) v between nabla_{xx}c_i(x), the Hessian of the i-th component of the residual c(x) at x=x, and v=v and then re-enter the function\&. The l-th component of the matrix stored according to the scheme specified for the remainder of P in the earlier call to nls_import should be set in P_val[l], for l = 0, \&.\&.\&., P_ne-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of P --- for instance, if a component of the matrix is undefined at x --- the user need not set P_val, but should then set eval_status to a non-zero value\&. \fBNote\fP that this return will not happen if either the Gauss-Newton or Newton models is selected\&.
+.PP
+.br
+\fIeval_status\fP is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of residuals\&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
+.br
+\fIc\fP is a one-dimensional array of size m and type double, that holds the residual c(x)\&. The i-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j(x) \&. See status = 2, above, for more details\&.
+.br
+\fIg\fP is a one-dimensional array of size n and type double, that holds the gradient g = nabla_xf(x) of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
+.br
+\fIj_ne\fP is a scalar variable of type int, that holds the number of entries in the Jacobian matrix J\&.
+.br
+\fIJ_val\fP is a one-dimensional array of size j_ne and type double, that holds the values of the entries of the Jacobian matrix J in any of the available storage schemes\&. See status = 3, above, for more details\&.
+.br
+\fIy\fP is a one-dimensional array of size m and type double, that is used for reverse communication\&. See status = 4 above for more details\&.
+.br
+\fIh_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix H\&.
+.br
+\fIH_val\fP is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H in any of the available storage schemes\&. See status = 4, above, for more details\&.
+.br
+\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication\&. See status = 7, above, for more details\&.
+.br
+\fIp_ne\fP is a scalar variable of type int, that holds the number of entries in the residual-Hessians-vector product matrix, P\&.
+.br
+\fIP_val\fP is a one-dimensional array of size p_ne and type double, that holds the values of the entries of the residual-Hessians-vector product matrix, P\&. See status = 7, above, for more details\&. 
+.RE
+.PP
+
+.SS "void nls_solve_reverse_without_mat (void ** data, int * status, int * eval_status, int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ g[], bool * transpose, real_wp_ u[], real_wp_ v[], real_wp_ y[], int p_ne, real_wp_ P_val[])"
+Find a local minimizer of a given function using a trust-region method\&.
+.PP
+This call is for the case where access to H = nabla_{xx}f(x) is provided by Hessian-vector products, but function/derivative information is only available by returning to the calling procedure\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated\&. 
+.IP "\(bu" 2
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status
+.PP
+.br
+\fIstatus\fP (continued) 
+.PD 0
+
+.IP "\(bu" 2
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-16\&. The problem is so ill-conditioned that further progress is impossible\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+-17\&. The step is too small to make further impact\&. 
+.IP "\(bu" 2
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-82\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+2\&. The user should compute the vector of residuals c(x) at the point x indicated in x and then re-enter the function\&. The required value should be set in c, and eval_status should be set to 0\&. If the user is unable to evaluate c(x)--- for instance, if the function is undefined at x--- the user need not set c, but should then set eval_status to a non-zero value\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+5\&. The user should compute the sum u + nabla_{x}c_(x) v (if tranpose is false) or u + (nabla_{x}c_(x))^T v (if tranpose is true) between the product of the Jacobian nabla_{x}c_(x) or its tranpose with the vector v=v and the vector u = $u, and then re-enter the function\&. The result should be set in u, and eval_status should be set to 0\&. If the user is unable to evaluate the sum --- for instance, if the Jacobian is undefined at x --- the user need not set u, but should then set eval_status to a non-zero value\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+6\&. The user should compute the sum u + \\sum_{i=1}^m y_i nabla_{xx}c_i(x) v between the product of the weighted residual Hessian H = \\sum_{i=1}^m y_i nabla_{xx}c_i(x) evaluated at x=x and y=y with the vector v=v and the the vector u = $u, and then re-enter the function\&. The result should be set in u, and eval_status should be set to 0\&. If the user is unable to evaluate the sum --- for instance, if the weifghted residual Hessian is undefined at x --- the user need not set u, but should then set eval_status to a non-zero value\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+7\&. The user should compute the entries of the matrix P, whose i-th column is the product nabla_{xx}c_i(x) v between nabla_{xx}c_i(x), the Hessian of the i-th component of the residual c(x) at x=x, and v=v and then re-enter the function\&. The l-th component of the matrix stored according to the scheme specified for the remainder of P in the earlier call to nls_import should be set in P_val[l], for l = 0, \&.\&.\&., P_ne-1 and eval_status should be set to 0\&. If the user is unable to evaluate a component of P --- for instance, if a component of the matrix is undefined at x --- the user need not set P_val, but should then set eval_status to a non-zero value\&. \fBNote\fP that this return will not happen if either the Gauss-Newton or Newton models is selected\&.
+.PP
+.br
+\fIeval_status\fP is a scalar variable of type int, that is used to indicate if objective function/gradient/Hessian values can be provided (see above)
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of residuals\&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
+.br
+\fIc\fP is a one-dimensional array of size m and type double, that holds the residual c(x)\&. The i-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j(x) \&. See status = 2, above, for more details\&.
+.br
+\fIg\fP is a one-dimensional array of size n and type double, that holds the gradient g = nabla_xf(x) of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
+.br
+\fItranspose\fP is a scalar variable of type bool, that indicates whether the product with Jacobian or its transpose should be obtained when status=5\&.
+.br
+\fIu\fP is a one-dimensional array of size max(n,m) and type double, that is used for reverse communication\&. See status = 5,6 above for more details\&.
+.br
+\fIv\fP is a one-dimensional array of size max(n,m) and type double, that is used for reverse communication\&. See status = 5,6,7 above for more details\&.
+.br
+\fIy\fP is a one-dimensional array of size m and type double, that is used for reverse communication\&. See status = 6 above for more details\&.
+.br
+\fIp_ne\fP is a scalar variable of type int, that holds the number of entries in the residual-Hessians-vector product matrix, P\&.
+.br
+\fIP_val\fP is a one-dimensional array of size P_ne and type double, that holds the values of the entries of the residual-Hessians-vector product matrix, P\&. See status = 7, above, for more details\&. 
+.RE
+.PP
+
+.SS "void nls_information (void ** data, struct \fBnls_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBnls_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
 .RE
 .PP
 

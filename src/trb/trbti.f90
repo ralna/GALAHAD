@@ -4,17 +4,15 @@
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
-   TYPE ( NLPT_problem_type ):: nlp
    TYPE ( TRB_control_type ) :: control
    TYPE ( TRB_inform_type ) :: inform
    TYPE ( TRB_full_data_type ) :: data
    TYPE ( NLPT_userdata_type ) :: userdata
 !  EXTERNAL :: FUN, GRAD, HESS, HESSPROD, PREC
    INTEGER :: n, ne, nnz_v, nnz_u
-   INTEGER :: i, s, status, data_storage_type, eval_status
-   LOGICAL :: alive
+   INTEGER :: status, data_storage_type, eval_status
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
-   REAL ( KIND = wp ) :: dum, f
+   REAL ( KIND = wp ) :: f
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, G, X_l, X_u, U, V
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: INDEX_nz_v, INDEX_nz_u
@@ -248,7 +246,7 @@
      CALL TRB_terminate( data, control, inform )  ! delete internal workspace
    END DO
 
-   DEALLOCATE( X, X_l, x_u, G )
+   DEALLOCATE( X, G, X_l, x_u, U, V, INDEX_nz_v, INDEX_nz_u )
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, userdata%real )
 
 CONTAINS

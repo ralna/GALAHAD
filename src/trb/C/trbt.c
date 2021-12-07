@@ -28,7 +28,7 @@ int hessprod_diag( int n, const double x[], double u[], const double v[],
                    bool got_h, const void * );
 int shessprod_diag( int n, const double x[], int nnz_v, const int index_nz_v[],
                     const double v[], int *nnz_u, int index_nz_u[], double u[],
-                     bool got_h, const void * );
+                    bool got_h, const void * );
 
 int main(void) {
 
@@ -134,12 +134,12 @@ int main(void) {
     printf("\n tests reverse-communication options\n\n");
 
     // reverse-communication input/output
-    int eval_status, nnz_u, nnz_v;
+    int eval_status, nnz_v;
+    int nnz_u;
     double f = 0.0;
     double u[n], v[n];
     int index_nz_u[n], index_nz_v[n];
     double H_val[ne], H_dense[n*(n+1)/2], H_diag[n];
- 
     for( int d=1; d <= 5; d++){
 
         // Initialize TRB
@@ -259,6 +259,7 @@ int main(void) {
                 st = 'P';
                 trb_import( &control, &data, &status, n, x_l, x_u, 
                             "absent", ne, NULL, NULL, NULL );
+                nnz_u = 0;
                 while(true){ // reverse-communication loop
                     trb_solve_reverse_without_mat( &data, &status, &eval_status,
                                                    n, x, f, g, u, v, index_nz_v,

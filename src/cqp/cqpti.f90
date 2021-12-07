@@ -149,7 +149,7 @@
      END IF
      CALL CQP_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( X, C, G, Y, Z, W, X_0, X_stat, C_stat )
+   DEALLOCATE( X, C, G, Y, Z, W, X_0, x_l, X_u, C_l, C_u, X_stat, C_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
 
    END PROGRAM GALAHAD_CQP_interface_test

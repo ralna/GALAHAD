@@ -1332,16 +1332,18 @@ void trb_solve_reverse_without_mat( void **data,
     used for reverse communication (see status=5,6,7 above for details)
 
  @param[in,out] index_nz_v is a one-dimensional array of size n and type int, 
-    that is used for reverse communication (see status=5,6,7 above for details)
+    that is used for reverse communication (see status=7 above for details)
  
  @param[in,out] nnz_v is a scalar variable of type int, that is used for 
-    reverse communication (see status=5,6,7 above for details)
+    reverse communication (see status=7 above for details)
  
  @param[in] index_nz_u s a one-dimensional array of size n and type int, 
-     that is used for reverse communication (see status=5,6,7 above for details)
+     that is used for reverse communication (see status=7 above for details)
  
  @param[in] nnz_u is a scalar variable of type int, that is used for reverse
-     communication (see status=5,6,7 above for details)
+     communication (see status=7 above for details). On initial (status=1)
+     entry, nnz_u should be set to an (arbitrary) nonzero value, and 
+     nnz_u=0 is recommended
 */  
 
 //  *-*-*-*-*-*-*-*-*-*-   T R B _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*

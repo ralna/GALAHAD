@@ -18,6 +18,14 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
+    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+  } }
+});
+</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -132,7 +140,7 @@ $(function() {
 <div class="line">    <span class="keywordflow">for</span>( <span class="keywordtype">int</span> d=1; d &lt;= 5; d++){</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Initialize ARC</span></div>
-<div class="line">        <a name="a2"></a><a class="code" href="arc_8h.html#a8358ca1b4baa7ce2716f83768c0df5d4">arc_initialize</a>( &amp;data, &amp;control, &amp;inform );</div>
+<div class="line">        <a name="a2"></a><a class="code" href="arc_8h.html#a54564960edd1c926630be24245773633">arc_initialize</a>( &amp;data, &amp;control, &amp;status );</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Set user-defined control options</span></div>
 <div class="line">        control.f_indexing = <span class="keyword">false</span>; <span class="comment">// C sparse matrix indexing</span></div>
@@ -201,7 +209,7 @@ $(function() {
 <div class="line"> </div>
 <div class="line">    <span class="comment">// reverse-communication input/output</span></div>
 <div class="line">    <span class="keywordtype">int</span> eval_status;</div>
-<div class="line">    <span class="keywordtype">double</span> f;</div>
+<div class="line">    <span class="keywordtype">double</span> f = 0.0;</div>
 <div class="line">    <span class="keywordtype">double</span> u[n], v[n];</div>
 <div class="line">    <span class="keywordtype">int</span> index_nz_u[n], index_nz_v[n];</div>
 <div class="line">    <span class="keywordtype">double</span> H_val[ne], H_dense[n*(n+1)/2], H_diag[n];</div>
@@ -209,7 +217,7 @@ $(function() {
 <div class="line">    <span class="keywordflow">for</span>( <span class="keywordtype">int</span> d=1; d &lt;= 5; d++){</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Initialize ARC</span></div>
-<div class="line">        <a class="code" href="arc_8h.html#a8358ca1b4baa7ce2716f83768c0df5d4">arc_initialize</a>( &amp;data, &amp;control, &amp;inform );</div>
+<div class="line">        <a class="code" href="arc_8h.html#a54564960edd1c926630be24245773633">arc_initialize</a>( &amp;data, &amp;control, &amp;status );</div>
 <div class="line"> </div>
 <div class="line">        <span class="comment">// Set user-defined control options</span></div>
 <div class="line">        control.f_indexing = <span class="keyword">false</span>; <span class="comment">// C sparse matrix indexing</span></div>
@@ -475,9 +483,9 @@ $(function() {
 <div class="ttc" id="aarc_8h_html"><div class="ttname"><a href="arc_8h.html">arc.h</a></div></div>
 <div class="ttc" id="aarc_8h_html_a1f098df65cdabfcf80d8e6fb3b1035c5"><div class="ttname"><a href="arc_8h.html#a1f098df65cdabfcf80d8e6fb3b1035c5">arc_solve_reverse_without_mat</a></div><div class="ttdeci">void arc_solve_reverse_without_mat(void **data, int *status, int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], real_wp_ u[], real_wp_ v[])</div></div>
 <div class="ttc" id="aarc_8h_html_aea7f9bc40b893f4df507d807ea8cd670"><div class="ttname"><a href="arc_8h.html#aea7f9bc40b893f4df507d807ea8cd670">arc_solve_without_mat</a></div><div class="ttdeci">void arc_solve_without_mat(void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_hprod)(int, const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</div></div>
-<div class="ttc" id="aarc_8h_html_a8358ca1b4baa7ce2716f83768c0df5d4"><div class="ttname"><a href="arc_8h.html#a8358ca1b4baa7ce2716f83768c0df5d4">arc_initialize</a></div><div class="ttdeci">void arc_initialize(void **data, struct arc_control_type *control, struct arc_inform_type *inform)</div></div>
 <div class="ttc" id="aarc_8h_html_a4121482e6db477eee55cc2b50bc52835"><div class="ttname"><a href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a></div><div class="ttdeci">void arc_import(struct arc_control_type *control, void **data, int *status, int n, const char H_type[], int ne, const int H_row[], const int H_col[], const int H_ptr[])</div></div>
 <div class="ttc" id="aarc_8h_html_a7aa74c74e7ca781532d38d337f0d05eb"><div class="ttname"><a href="arc_8h.html#a7aa74c74e7ca781532d38d337f0d05eb">arc_terminate</a></div><div class="ttdeci">void arc_terminate(void **data, struct arc_control_type *control, struct arc_inform_type *inform)</div></div>
+<div class="ttc" id="aarc_8h_html_a54564960edd1c926630be24245773633"><div class="ttname"><a href="arc_8h.html#a54564960edd1c926630be24245773633">arc_initialize</a></div><div class="ttdeci">void arc_initialize(void **data, struct arc_control_type *control, int *status)</div></div>
 <div class="ttc" id="aarc_8h_html_aec0ce871d494f995e8ad500011a10d56"><div class="ttname"><a href="arc_8h.html#aec0ce871d494f995e8ad500011a10d56">arc_information</a></div><div class="ttdeci">void arc_information(void **data, struct arc_inform_type *inform, int *status)</div></div>
 <div class="ttc" id="aarc_8h_html_structarc__inform__type"><div class="ttname"><a href="arc_8h.html#structarc__inform__type">arc_inform_type</a></div><div class="ttdef"><b>Definition:</b> arc.h:550</div></div>
 <div class="ttc" id="aarc_8h_html_ac47e436d7364399dd7a60efac61ef955"><div class="ttname"><a href="arc_8h.html#ac47e436d7364399dd7a60efac61ef955">arc_solve_reverse_with_mat</a></div><div class="ttdeci">void arc_solve_reverse_with_mat(void **data, int *status, int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], int ne, real_wp_ H_val[], const real_wp_ u[], real_wp_ v[])</div></div>

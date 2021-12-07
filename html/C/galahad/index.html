@@ -18,6 +18,14 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
+    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+  } }
+});
+</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -112,8 +120,8 @@ Scope</h1>
 </ul>
 <p>In addition, there are packages for solving a variety of required sub tasks, and most specifically interface routines to external solvers for solving linear equations:</p>
 <ul>
-<li>sls - symetric linear systems </li>
-<li>sbls - symetric block linear systems </li>
+<li><a class="el" href="">sls</a>- symetric linear systems   <a href="../../../html/C/sls/sls.html">(link)</a>  </li>
+<li><a class="el" href="">sbls</a> - symetric block linear systems   <a href="../../../html/C/sbls/sbls.html">(link)</a>  </li>
 <li>uls - unsymetric linear systems</li>
 </ul>
 <p>C interfaces to all of these are underway, and each will be released once it is ready. If <b>you</b> have a particular need, please let us know, and we will raise its priority!</p>

@@ -312,7 +312,7 @@ extern "C" {
 #include "galahad_precision.h"
 
 // required packages
-// #include "sls.h"
+#include "sls.h"
 // #include "uls.h"
 
 
@@ -508,7 +508,7 @@ struct sbls_control_type {
 
     /// \brief
     /// control parameters for SLS
-///    struct sls_control_type sls_control;
+    struct sls_control_type sls_control;
 
     /// \brief
     /// control parameters for ULS
@@ -645,7 +645,7 @@ struct sbls_inform_type {
 
     /// \brief
     /// inform parameters from the GALAHAD package SLS used
-///    struct sls_inform_type sls_inform;
+    struct sls_inform_type sls_inform;
 
     /// \brief
     /// inform parameters from the GALAHAD package ULS used
@@ -703,7 +703,7 @@ void sbls_import( struct sbls_control_type *control,
                  const int A_row[],
                  const int A_col[], 
                  const int A_ptr[],
-                 const char C_type[], 
+                 const char C_type[],
                  int C_ne, 
                  const int C_row[],
                  const int C_col[], 

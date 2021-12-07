@@ -1,4 +1,4 @@
-.TH "cqp.h" 3 "Wed Nov 24 2021" "C interfaces to GALAHAD CQP" \" -*- nroff -*-
+.TH "cqp.h" 3 "Tue Dec 7 2021" "C interfaces to GALAHAD CQP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -9,6 +9,8 @@ cqp.h
 \fC#include <stdbool\&.h>\fP
 .br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'sbls\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -28,7 +30,7 @@ cqp.h
 
 .in +1c
 .ti -1c
-.RI "void \fBcqp_initialize\fP (void **data, struct \fBcqp_control_type\fP *control, struct \fBcqp_inform_type\fP *inform)"
+.RI "void \fBcqp_initialize\fP (void **data, struct \fBcqp_control_type\fP *control, int *status)"
 .br
 .ti -1c
 .RI "void \fBcqp_read_specfile\fP (struct \fBcqp_control_type\fP *control, const char specfile[])"
@@ -128,7 +130,7 @@ with many enhancements described by
 .PP
 N\&. I\&. M\&. Gould, D\&. Orban and D\&. P\&. Robinson (2013)\&. Trajectory-following methods for large-scale degenerate convex quadratic programming, Mathematical Programming Computation 5(2) 113-142\&.
 .SS "Call order"
-To solve a given problem, functions from the nls package must be called in the following order:
+To solve a given problem, functions from the cqp package must be called in the following order:
 .PP
 .IP "\(bu" 2
 \fBcqp_initialize\fP - provide default control parameters and set up initial data structures
@@ -191,130 +193,13 @@ control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIarc\fP which residual trajectory should be used to aim from the current iterate to the solution\&. Possible values are 
-.PD 0
-
-.IP "\(bu" 2
-1 the Zhang linear residual trajectory 
-.IP "\(bu" 2
-2 the Zhao-Sun quadratic residual trajectory 
-.IP "\(bu" 2
-3 the Zhang arc ultimately switching to the Zhao-Sun residual trajectory 
-.IP "\(bu" 2
-4 the mixed linear-quadratic residual trajectory 
-.IP "\(bu" 2
-5 the Zhang arc ultimately switching to the mixed linear-quadratic residual trajectory 
-.PP
-
-.br
-.PP
-bool \fIbalance_initial_complentarity\fP if \&.balance_initial_complentarity is true, the initial complemetarity is required to be balanced 
-.br
-.PP
-real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
-.br
-.PP
-real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite) 
-.br
-.PP
-bool \fIcrossover\fP if \&.crossover is true, cross over the solution to one defined by linearly-independent constraints if possible 
-.br
-.PP
-bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
-.br
-.PP
-real_wp_ \fIdufeas\fP initial dual variables will not be closer than \&.dufeas from their bounds 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
 .br
 .PP
 int \fIerror\fP error and warning diagnostics occur on stream error 
 .br
 .PP
-bool \fIevery_order\fP try every order of series up to series_order? 
-.br
-.PP
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
-.br
-.PP
-bool \fIfeasol\fP if \&.feasol is true, the final solution obtained will be perturbed so that variables close to their bounds are moved onto these bounds 
-.br
-.PP
-real_wp_ \fIgamma_c\fP individual complementarities will not be allowed to be smaller than gamma_c times the average value 
-.br
-.PP
-real_wp_ \fIgamma_f\fP the average complementarity will not be allowed to be smaller than gamma_f times the primal/dual infeasibility 
-.br
-.PP
-bool \fIgenerate_qplib_file\fP if \&.generate_qplib_file is \&.true\&. if a QPLIB file describing the current problem is to be generated 
-.br
-.PP
-bool \fIgenerate_sif_file\fP if \&.generate_sif_file is \&.true\&. if a SIF file describing the current problem is to be generated 
-.br
-.PP
-bool \fIgetdua\fP if \&.getdua, is true, advanced initial values are obtained for the dual variables 
-.br
-.PP
-real_wp_ \fIidentical_bounds_tol\fP any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than \&.identical_bounds_tol will be reset to the average of their values 
-.br
-.PP
-real_wp_ \fIindicator_tol_p\fP if \&.indicator_type = 1, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound <= \&.indicator_p_tol 
-.br
-.PP
-real_wp_ \fIindicator_tol_pd\fP if \&.indicator_type = 2, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound <= \&.indicator_tol_pd * size of corresponding multiplier 
-.br
-.PP
-real_wp_ \fIindicator_tol_tapia\fP if \&.indicator_type = 3, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound <= \&.indicator_tol_tapia * distance to same bound at previous iteration 
-.br
-.PP
-int \fIindicator_type\fP specifies the type of indicator function used\&. Pssible values are 
-.PD 0
-
-.IP "\(bu" 2
-1 primal indicator: a constraint is active if and only if the distance to its nearest bound <= \&.indicator_p_tol 
-.IP "\(bu" 2
-2 primal-dual indicator: a constraint is active if and only if the distance to its nearest bound <= \&.indicator_tol_pd * size of corresponding multiplier 
-.IP "\(bu" 2
-3 primal-dual indicator: a constraint is active if and only if the distance to its nearest bound <= \&.indicator_tol_tapia * distance to same bound at previous iteration 
-.PP
-
-.br
-.PP
-int \fIinfeas_max\fP the number of iterations for which the overall infeasibility of the problem is not reduced by at least a factor \&.reduce_infeas before the problem is flagged as infeasible (see reduce_infeas) 
-.br
-.PP
-real_wp_ \fIinfinity\fP any bound larger than infinity in modulus will be regarded as infinite 
-.br
-.PP
-bool \fIjust_feasible\fP if \&.treat_separable_as_general, is true, any separability in the problem structure will be ignored 
-.br
-.PP
-int \fImaxit\fP at most maxit inner iterations are allowed 
-.br
-.PP
-real_wp_ \fImu_lunge\fP start terminal extrapolation when mu reaches mu_lunge 
-.br
-.PP
-real_wp_ \fImuzero\fP the initial value of the barrier parameter\&. If muzero is not positive, it will be reset to an appropriate value 
-.br
-.PP
-int \fImuzero_fixed\fP the initial value of the barrier parameter will not be changed for the first muzero_fixed iterations 
-.br
-.PP
-real_wp_ \fIobj_unbounded\fP if the objective function value is smaller than obj_unbounded, it will be flagged as unbounded from below\&. 
-.br
-.PP
 int \fIout\fP general output occurs on stream out 
-.br
-.PP
-real_wp_ \fIperturb_h\fP \&.perturb_h will be added to the Hessian 
-.br
-.PP
-real_wp_ \fIpotential_unbounded\fP if W=0 and the potential function value is smaller than \&.potential_unbounded * number of one-sided bounds, the analytic center will be flagged as unbounded 
-.br
-.PP
-char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
-.br
-.PP
-real_wp_ \fIprfeas\fP initial primal variables will not be closer than \&.prfeas from their bounds 
 .br
 .PP
 int \fIprint_level\fP the level of output required is specified by print_level 
@@ -332,19 +217,19 @@ int \fIprint_level\fP the level of output required is specified by print_level
 
 .br
 .PP
-bool \fIpuiseux\fP decide between Puiseux and Taylor series approximations to the arc 
+int \fIstart_print\fP any printing will start on this iteration 
 .br
 .PP
-int \fIqplib_file_device\fP specifies the unit number to write generated QPLIB file describing the current problem 
+int \fIstop_print\fP any printing will stop on this iteration 
 .br
 .PP
-char \fIqplib_file_name[31]\fP name of generated QPLIB file containing input problem 
+int \fImaxit\fP at most maxit inner iterations are allowed 
 .br
 .PP
-real_wp_ \fIreduce_infeas\fP if the overall infeasibility of the problem is not reduced by at least a factor \&.reduce_infeas over \&.infeas_max iterations, the problem is flagged as infeasible (see infeas_max) 
+int \fIinfeas_max\fP the number of iterations for which the overall infeasibility of the problem is not reduced by at least a factor \&.reduce_infeas before the problem is flagged as infeasible (see reduce_infeas) 
 .br
 .PP
-bool \fIremove_dependencies\fP the equality constraints will be preprocessed to remove any linear dependencies if true 
+int \fImuzero_fixed\fP the initial value of the barrier parameter will not be changed for the first muzero_fixed iterations 
 .br
 .PP
 int \fIrestore_problem\fP indicate whether and how much of the input problem should be restored on output\&. Possible values are 
@@ -360,49 +245,169 @@ int \fIrestore_problem\fP indicate whether and how much of the input problem sho
 
 .br
 .PP
+int \fIindicator_type\fP specifies the type of indicator function used\&. Pssible values are 
+.PD 0
+
+.IP "\(bu" 2
+1 primal indicator: a constraint is active if and only if the distance to its nearest bound <= \&.indicator_p_tol 
+.IP "\(bu" 2
+2 primal-dual indicator: a constraint is active if and only if the distance to its nearest bound <= \&.indicator_tol_pd * size of corresponding multiplier 
+.IP "\(bu" 2
+3 primal-dual indicator: a constraint is active if and only if the distance to its nearest bound <= \&.indicator_tol_tapia * distance to same bound at previous iteration 
+.PP
+
+.br
+.PP
+int \fIarc\fP which residual trajectory should be used to aim from the current iterate to the solution\&. Possible values are 
+.PD 0
+
+.IP "\(bu" 2
+1 the Zhang linear residual trajectory 
+.IP "\(bu" 2
+2 the Zhao-Sun quadratic residual trajectory 
+.IP "\(bu" 2
+3 the Zhang arc ultimately switching to the Zhao-Sun residual trajectory 
+.IP "\(bu" 2
+4 the mixed linear-quadratic residual trajectory 
+.IP "\(bu" 2
+5 the Zhang arc ultimately switching to the mixed linear-quadratic residual trajectory 
+.PP
+
+.br
+.PP
 int \fIseries_order\fP the order of (Taylor/Puiseux) series to fit to the path data 
 .br
 .PP
 int \fIsif_file_device\fP specifies the unit number to write generated SIF file describing the current problem 
 .br
 .PP
-char \fIsif_file_name[31]\fP name of generated SIF file containing input problem 
+int \fIqplib_file_device\fP specifies the unit number to write generated QPLIB file describing the current problem 
 .br
 .PP
-bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
-.br
-.PP
-int \fIstart_print\fP any printing will start on this iteration 
-.br
-.PP
-real_wp_ \fIstop_abs_c\fP the required absolute and relative accuracies for the complementarity 
-.br
-.PP
-real_wp_ \fIstop_abs_d\fP the required absolute and relative accuracies for the dual infeasibility 
+real_wp_ \fIinfinity\fP any bound larger than infinity in modulus will be regarded as infinite 
 .br
 .PP
 real_wp_ \fIstop_abs_p\fP the required absolute and relative accuracies for the primal infeasibility 
 .br
 .PP
-int \fIstop_print\fP any printing will stop on this iteration 
+real_wp_ \fIstop_rel_p\fP see stop_abs_p 
 .br
 .PP
-real_wp_ \fIstop_rel_c\fP see stop_abs_c 
+real_wp_ \fIstop_abs_d\fP the required absolute and relative accuracies for the dual infeasibility 
 .br
 .PP
 real_wp_ \fIstop_rel_d\fP see stop_abs_d 
 .br
 .PP
-real_wp_ \fIstop_rel_p\fP see stop_abs_p 
+real_wp_ \fIstop_abs_c\fP the required absolute and relative accuracies for the complementarity 
+.br
+.PP
+real_wp_ \fIstop_rel_c\fP see stop_abs_c 
+.br
+.PP
+real_wp_ \fIperturb_h\fP \&.perturb_h will be added to the Hessian 
+.br
+.PP
+real_wp_ \fIprfeas\fP initial primal variables will not be closer than \&.prfeas from their bounds 
+.br
+.PP
+real_wp_ \fIdufeas\fP initial dual variables will not be closer than \&.dufeas from their bounds 
+.br
+.PP
+real_wp_ \fImuzero\fP the initial value of the barrier parameter\&. If muzero is not positive, it will be reset to an appropriate value 
 .br
 .PP
 real_wp_ \fItau\fP the weight attached to primal-dual infeasibility compared to complementa when assessing step acceptance 
 .br
 .PP
-bool \fItreat_separable_as_general\fP if \&.just_feasible is true, the algorithm will stop as soon as a feasible point is found\&. Otherwise, the optimal solution to the problem will be found 
+real_wp_ \fIgamma_c\fP individual complementarities will not be allowed to be smaller than gamma_c times the average value 
+.br
+.PP
+real_wp_ \fIgamma_f\fP the average complementarity will not be allowed to be smaller than gamma_f times the primal/dual infeasibility 
+.br
+.PP
+real_wp_ \fIreduce_infeas\fP if the overall infeasibility of the problem is not reduced by at least a factor \&.reduce_infeas over \&.infeas_max iterations, the problem is flagged as infeasible (see infeas_max) 
+.br
+.PP
+real_wp_ \fIobj_unbounded\fP if the objective function value is smaller than obj_unbounded, it will be flagged as unbounded from below\&. 
+.br
+.PP
+real_wp_ \fIpotential_unbounded\fP if W=0 and the potential function value is smaller than \&.potential_unbounded * number of one-sided bounds, the analytic center will be flagged as unbounded 
+.br
+.PP
+real_wp_ \fIidentical_bounds_tol\fP any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than \&.identical_bounds_tol will be reset to the average of their values 
+.br
+.PP
+real_wp_ \fImu_lunge\fP start terminal extrapolation when mu reaches mu_lunge 
+.br
+.PP
+real_wp_ \fIindicator_tol_p\fP if \&.indicator_type = 1, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound <= \&.indicator_p_tol 
+.br
+.PP
+real_wp_ \fIindicator_tol_pd\fP if \&.indicator_type = 2, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound <= \&.indicator_tol_pd * size of corresponding multiplier 
+.br
+.PP
+real_wp_ \fIindicator_tol_tapia\fP if \&.indicator_type = 3, a constraint/bound will be deemed to be active if and only if the distance to its nearest bound <= \&.indicator_tol_tapia * distance to same bound at previous iteration 
+.br
+.PP
+real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite) 
+.br
+.PP
+real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
+.br
+.PP
+bool \fIremove_dependencies\fP the equality constraints will be preprocessed to remove any linear dependencies if true 
 .br
 .PP
 bool \fItreat_zero_bounds_as_general\fP any problem bound with the value zero will be treated as if it were a general value if true 
+.br
+.PP
+bool \fItreat_separable_as_general\fP if \&.just_feasible is true, the algorithm will stop as soon as a feasible point is found\&. Otherwise, the optimal solution to the problem will be found 
+.br
+.PP
+bool \fIjust_feasible\fP if \&.treat_separable_as_general, is true, any separability in the problem structure will be ignored 
+.br
+.PP
+bool \fIgetdua\fP if \&.getdua, is true, advanced initial values are obtained for the dual variables 
+.br
+.PP
+bool \fIpuiseux\fP decide between Puiseux and Taylor series approximations to the arc 
+.br
+.PP
+bool \fIevery_order\fP try every order of series up to series_order? 
+.br
+.PP
+bool \fIfeasol\fP if \&.feasol is true, the final solution obtained will be perturbed so that variables close to their bounds are moved onto these bounds 
+.br
+.PP
+bool \fIbalance_initial_complentarity\fP if \&.balance_initial_complentarity is true, the initial complemetarity is required to be balanced 
+.br
+.PP
+bool \fIcrossover\fP if \&.crossover is true, cross over the solution to one defined by linearly-independent constraints if possible 
+.br
+.PP
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+.br
+.PP
+bool \fIgenerate_sif_file\fP if \&.generate_sif_file is \&.true\&. if a SIF file describing the current problem is to be generated 
+.br
+.PP
+bool \fIgenerate_qplib_file\fP if \&.generate_qplib_file is \&.true\&. if a QPLIB file describing the current problem is to be generated 
+.br
+.PP
+char \fIsif_file_name[31]\fP name of generated SIF file containing input problem 
+.br
+.PP
+char \fIqplib_file_name[31]\fP name of generated QPLIB file containing input problem 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+struct sbls_control_type \fIsbls_control\fP control parameters for FDC struct fdc_control_type fdc_control; control parameters for SBLS 
 .br
 .PP
 .RE
@@ -413,7 +418,31 @@ time derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
+real_wp_ \fItotal\fP the total CPU time spent in the package 
+.br
+.PP
+real_wp_ \fIpreprocess\fP the CPU time spent preprocessing the problem 
+.br
+.PP
+real_wp_ \fIfind_dependent\fP the CPU time spent detecting linear dependencies 
+.br
+.PP
 real_wp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorization 
+.br
+.PP
+real_wp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
+.br
+.PP
+real_wp_ \fIsolve\fP the CPU time spent computing the search direction 
+.br
+.PP
+real_wp_ \fIclock_total\fP the total clock time spent in the package 
+.br
+.PP
+real_wp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem 
+.br
+.PP
+real_wp_ \fIclock_find_dependent\fP the clock time spent detecting linear dependencies 
 .br
 .PP
 real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorization 
@@ -422,31 +451,7 @@ real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrice
 real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
 .br
 .PP
-real_wp_ \fIclock_find_dependent\fP the clock time spent detecting linear dependencies 
-.br
-.PP
-real_wp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem 
-.br
-.PP
 real_wp_ \fIclock_solve\fP the clock time spent computing the search direction 
-.br
-.PP
-real_wp_ \fIclock_total\fP the total clock time spent in the package 
-.br
-.PP
-real_wp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
-.br
-.PP
-real_wp_ \fIfind_dependent\fP the CPU time spent detecting linear dependencies 
-.br
-.PP
-real_wp_ \fIpreprocess\fP the CPU time spent preprocessing the problem 
-.br
-.PP
-real_wp_ \fIsolve\fP the CPU time spent computing the search direction 
-.br
-.PP
-real_wp_ \fItotal\fP the total CPU time spent in the package 
 .br
 .PP
 .RE
@@ -457,10 +462,64 @@ inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
+int \fIstatus\fP return status\&. See CQP_solve for details 
+.br
+.PP
 int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
 .br
 .PP
 char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+.br
+.PP
+int \fIiter\fP the total number of iterations required 
+.br
+.PP
+int \fIfactorization_status\fP the return status from the factorization 
+.br
+.PP
+long int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+.br
+.PP
+long int \fIfactorization_real\fP the total real workspace required for the factorization 
+.br
+.PP
+int \fInfacts\fP the total number of factorizations performed 
+.br
+.PP
+int \fInbacts\fP the total number of 'wasted' function evaluations during the linesearch 
+.br
+.PP
+int \fIthreads\fP the number of threads used 
+.br
+.PP
+real_wp_ \fIobj\fP the value of the objective function at the best estimate of the solution determined by CQP_solve 
+.br
+.PP
+real_wp_ \fIprimal_infeasibility\fP the value of the primal infeasibility 
+.br
+.PP
+real_wp_ \fIdual_infeasibility\fP the value of the dual infeasibility 
+.br
+.PP
+real_wp_ \fIcomplementary_slackness\fP the value of the complementary slackness 
+.br
+.PP
+real_wp_ \fIinit_primal_infeasibility\fP these values at the initial point (needed bg GALAHAD_CCQP) 
+.br
+.PP
+real_wp_ \fIinit_dual_infeasibility\fP see init_primal_infeasibility 
+.br
+.PP
+real_wp_ \fIinit_complementary_slackness\fP see init_primal_infeasibility 
+.br
+.PP
+real_wp_ \fIpotential\fP the value of the logarithmic potential function sum -log(distance to constraint boundary) 
+.br
+.PP
+real_wp_ \fInon_negligible_pivot\fP the smallest pivot which was not judged to be zero when detecting linear dependent constraints 
+.br
+.PP
+bool \fIfeasible\fP is the returned 'solution' feasible? 
 .br
 .PP
 int \fIcheckpointsIter[16]\fP checkpoints(i) records the iteration at which the criticality measures first fall below 10^{-i}, i = 1, \&.\&.\&., 16 (-1 means not achieved) 
@@ -469,67 +528,45 @@ int \fIcheckpointsIter[16]\fP checkpoints(i) records the iteration at which the 
 real_wp_ \fIcheckpointsTime[16]\fP see checkpointsIter 
 .br
 .PP
-real_wp_ \fIcomplementary_slackness\fP the value of the complementary slackness 
-.br
-.PP
-real_wp_ \fIdual_infeasibility\fP the value of the dual infeasibility 
-.br
-.PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
-.br
-.PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
-.br
-.PP
-int \fIfactorization_status\fP the return status from the factorization 
-.br
-.PP
-bool \fIfeasible\fP is the returned 'solution' feasible? 
-.br
-.PP
-real_wp_ \fIinit_complementary_slackness\fP see init_primal_infeasibility 
-.br
-.PP
-real_wp_ \fIinit_dual_infeasibility\fP see init_primal_infeasibility 
-.br
-.PP
-real_wp_ \fIinit_primal_infeasibility\fP these values at the initial point (needed bg GALAHAD_CCQP) 
-.br
-.PP
-int \fIiter\fP the total number of iterations required 
-.br
-.PP
-int \fInbacts\fP the total number of 'wasted' function evaluations during the linesearch 
-.br
-.PP
-int \fInfacts\fP the total number of factorizations performed 
-.br
-.PP
-real_wp_ \fInon_negligible_pivot\fP the smallest pivot which was not judged to be zero when detecting linear dependent constraints 
-.br
-.PP
-real_wp_ \fIobj\fP the value of the objective function at the best estimate of the solution determined by CQP_solve 
-.br
-.PP
-real_wp_ \fIpotential\fP the value of the logarithmic potential function sum -log(distance to constraint boundary) 
-.br
-.PP
-real_wp_ \fIprimal_infeasibility\fP the value of the primal infeasibility 
-.br
-.PP
-int \fIstatus\fP return status\&. See CQP_solve for details 
-.br
-.PP
-int \fIthreads\fP the number of threads used 
-.br
-.PP
 struct \fBcqp_time_type\fP \fItime\fP timings (see above) 
+.br
+.PP
+struct sbls_inform_type \fIsbls_inform\fP inform parameters for FDC struct fdc_inform_type fdc_inform; inform parameters for SBLS 
 .br
 .PP
 .RE
 .PP
 .SH "Function Documentation"
 .PP 
+.SS "void cqp_initialize (void ** data, struct \fBcqp_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBcqp_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void cqp_read_specfile (struct \fBcqp_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBcqp_control_type\fP)
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
 .SS "void cqp_import (struct \fBcqp_control_type\fP * control, void ** data, int * status, int n, int m, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[])"
 Import problem data into internal storage prior to solution\&.
 .PP
@@ -580,48 +617,6 @@ Import problem data into internal storage prior to solution\&.
 .RE
 .PP
 
-.SS "void cqp_information (void ** data, struct \fBcqp_inform_type\fP * inform, int * status)"
-Provides output information
-.PP
-\fBParameters\fP
-.RS 4
-\fIdata\fP holds private internal data
-.br
-\fIinform\fP is a struct containing output information (see \fBcqp_inform_type\fP)
-.br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
-.PD 0
-
-.IP "\(bu" 2
-0\&. The values were recorded succesfully 
-.PP
-.RE
-.PP
-
-.SS "void cqp_initialize (void ** data, struct \fBcqp_control_type\fP * control, struct \fBcqp_inform_type\fP * inform)"
-Set default control values and initialize private data
-.PP
-\fBParameters\fP
-.RS 4
-\fIdata\fP holds private internal data 
-.br
-\fIcontrol\fP is a struct containing control information (see \fBcqp_control_type\fP) 
-.br
-\fIinform\fP is a struct containing output information (see \fBcqp_inform_type\fP) 
-.RE
-.PP
-
-.SS "void cqp_read_specfile (struct \fBcqp_control_type\fP * control, const char specfile[])"
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
-.PP
-\fBParameters\fP
-.RS 4
-\fIcontrol\fP is a struct containing control information (see \fBcqp_control_type\fP) 
-.br
-\fIspecfile\fP is a character string containing the name of the specification file 
-.RE
-.PP
-
 .SS "void cqp_reset_control (struct \fBcqp_control_type\fP * control, void ** data, int * status)"
 Reset control parameters after import if required\&.
 .PP
@@ -635,7 +630,7 @@ Reset control parameters after import if required\&.
 .PD 0
 
 .IP "\(bu" 2
-1\&. The import was succesful, and the package is ready for the solve phase 
+0\&. The import was succesful\&. 
 .PP
 .RE
 .PP
@@ -655,7 +650,7 @@ Solve the quadratic program when the Hessian H is available\&.
 .PD 0
 
 .IP "\(bu" 2
-0\&. The run was succesful
+0\&. The run was succesful\&.
 .PP
 .PD 0
 .IP "\(bu" 2
@@ -809,6 +804,24 @@ Solve the shifted least-distance quadratic program
 \fIx_stat\fP is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables\&. If x_stat(j) is negative, the variable x_j most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&.
 .br
 \fIc_stat\fP is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints\&. If c_stat(i) is negative, the constraint value a_{i}^{T}x most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&. 
+.RE
+.PP
+
+.SS "void cqp_information (void ** data, struct \fBcqp_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBcqp_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
 .RE
 .PP
 

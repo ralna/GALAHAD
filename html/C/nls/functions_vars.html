@@ -18,6 +18,14 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+   TeX: { Macros: {
+    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
+    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+  } }
+});
+</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -250,7 +258,7 @@ $(function() {
 </li>
 <li>max_entries_factors
 : <a class="el" href="nls_8h.html#abf69f7ec94abc74ca967f247f54bc919">nls_inform_type</a>
-, <a class="el" href="nls_8h.html#abf69f7ec94abc74ca967f247f54bc919">nls_subproblem_inform_type</a>
+, <a class="el" href="nls_8h.html#a000fc3c3afd41e368d7f258b6b02e5da">nls_subproblem_inform_type</a>
 </li>
 <li>maxit
 : <a class="el" href="nls_8h.html#ab717630b215f0362699acac11fb3652c">nls_control_type</a>
