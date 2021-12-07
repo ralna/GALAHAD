@@ -6,7 +6,7 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "C interfaces to GALAHAD $(PACKAGE)"
 PROJECT_NUMBER         =
-PROJECT_BRIEF          = "header files for C interfaces to GALAHAD $(PACKAGE) package"
+PROJECT_BRIEF          = "header files for C interfaces to the GALAHAD $(PACKAGE) package"
 PROJECT_LOGO           =
 OUTPUT_DIRECTORY       = $(GALAHAD)/doc/C/$(package)
 CREATE_SUBDIRS         = NO
