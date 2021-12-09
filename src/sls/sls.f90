@@ -920,7 +920,7 @@
 
      END SUBROUTINE SLS_initialize
 
-!- G A L A H A D -  S B L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
+!- G A L A H A D -  S L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
 
      SUBROUTINE SLS_full_initialize( solver, data, control, inform )
 
@@ -6125,7 +6125,7 @@
 
      END SUBROUTINE SLS_terminate
 
-! -  G A L A H A D -  S B L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+! -  G A L A H A D -  S L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
 
      SUBROUTINE SLS_full_terminate( data, control, inform )
 
@@ -8946,7 +8946,7 @@
 ! =============================================================================
 ! -----------------------------------------------------------------------------
 
-!-  G A L A H A D -  S B L S _ a n a l y s e _ m a t r i x _ S U B R O U T I N E
+!-  G A L A H A D -  S L S _ a n a l y s e _ m a t r i x _ S U B R O U T I N E -
 
      SUBROUTINE SLS_analyse_matrix( control, data, status, n,                  &
                                     matrix_type, matrix_ne,                    &
@@ -9130,7 +9130,7 @@
 
      END SUBROUTINE SLS_analyse_matrix
 
-!-  G A L A H A D -  S B L S _ r e s e t _ c o n t r o l   S U B R O U T I N E -
+!-  G A L A H A D -  S L S _ r e s e t _ c o n t r o l   S U B R O U T I N E -
 
      SUBROUTINE SLS_reset_control( control, data, status )
 
@@ -9158,7 +9158,7 @@
 
      END SUBROUTINE SLS_reset_control
 
-! G A L A H A D - S B L S _ f a c t o r i z e _ m a t r i x  S U B R O U T I N E
+! G A L A H A D - S L S _ f a c t o r i z e _ m a t r i x  S U B R O U T I N E -
 
      SUBROUTINE SLS_factorize_matrix( data, status, matrix_val )
 
@@ -9191,7 +9191,7 @@
 
      END SUBROUTINE SLS_factorize_matrix
 
-!--  G A L A H A D -  S B L S _ s o l v e _ s y s t e m   S U B R O U T I N E  -
+!--  G A L A H A D -  S L S _ s o l v e _ s y s t e m   S U B R O U T I N E  -
 
      SUBROUTINE SLS_solve_system( data, status, SOL )
 
@@ -9219,7 +9219,7 @@
 
      END SUBROUTINE SLS_solve_system
 
-!--  G A L A H A D -  S B L S _ p a r t i a l _ s o l v e  S U B R O U T I N E -
+!--  G A L A H A D -  S L S _ p a r t i a l _ s o l v e  S U B R O U T I N E -
 
      SUBROUTINE SLS_partial_solve( part, data, status, SOL )
 
@@ -9249,7 +9249,7 @@
 
      END SUBROUTINE SLS_partial_solve
 
-!-  G A L A H A D -  S B L S _ i n f o r m a t i o n   S U B R O U T I N E  -
+!-*-  G A L A H A D -  S L S _ i n f o r m a t i o n   S U B R O U T I N E  -*-
 
      SUBROUTINE SLS_information( data, inform, status )
 
