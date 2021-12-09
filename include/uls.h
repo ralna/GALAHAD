@@ -1,7 +1,7 @@
 //* \file uls.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 30/11/2021 AT 08:48 GMT.
+ * THIS VERSION: GALAHAD 3.3 - 09/12/2021 AT 12:55 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_ULS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -16,10 +16,37 @@
  */
 
 /*! \mainpage GALAHAD C package uls
- 
+
   \section uls_intro Introduction
 
   \subsection uls_purpose Purpose
+
+This package
+{\bf solves dense or sparse unsymmetric systems of linear equations}
+using variants of Gaussian elimination.
+Given a sparse symmetric matrix $\bmA = \{ a_{ij} \}_{m \times n}$, and an
+$m$-vector $\bmb$ or a matrix $\bmB = \{ b_{ij} \}_{m \times r}$, this
+subroutine solves the system $\bmA \bmx = \bmb$
+or the block system $\bmA \bmX = \bmB$. If
+$\bmb$ is an $n$-vector or  $\bmB = \{ b_{ij} \}_{n \times r}$,
+the subroutine may solve instead the system $\bmA^T \bmx = \bmb$
+or block system  $\bmA^T \bmX = \bmB$ . Both square ($m=n$) and
+rectangular ($m\neq n$)  matrices are handled; one of an infinite
+class of  solutions for consistent systems will be returned
+whenever $\bmA$ is not of full rank.
+
+\noindent The method provides a common interface to a variety of well-known
+solvers from HSL.
+% and elsewhere.
+Currently supported solvers include
+{\tt MA28/GLS} and {\tt HSL\_MA48},
+%{\tt HSL\_MA77} and {\tt HSL\_MA87}
+%from {HSL} and {\tt PARDISO} from the Pardiso Project.
+Note that
+{\bf the solvers themselves do not form part of this package and must be obtained
+separately.} Dummy instances are provided for solvers that are unavailable.
+Also note that additional flexibility may be obtained by calling the
+solvers directly rather that via this package.
 
   \subsection uls_authors Authors
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
@@ -28,13 +55,120 @@
 
   \subsection uls_date Originally released
 
+  August 2009,  C interface December 2021.
+
   \subsection uls_terminology Terminology
-
+The solvers used each produce an $\bmP_R \bmL \bmU \bmP_C$ factorization
+of $\bmA$, where $\bmL$ and $\bmU$ are lower and upper triangular
+matrices, and $\bmP_R$ and $\bmP_C$ are row and column permutation
+matrices respectively.
   \subsection uls_method Method
+Variants of sparse Gaussian elimination are used.
 
+\noindent
+The solver {\tt GLS} is available as part of \galahad\ and relies on
+the HSL Archive packages {\tt MA33}. To obtain HSL Archive packages, see
+
+{\tt http://hsl.rl.ac.uk/archive/ }.
+
+\noindent
+The solver {\tt HSL\_MA48}
+%{\tt HSL\_MA77} and
+%{\tt HSL\_MA87}, the ordering package
+%{\tt HSL\_MC68} and the scaling packages
+%{\tt HSL\_MC64} and {\tt MC77}
+%are all part of HSL 2007.
+is part of HSL 2007.
+To obtain HSL 2007 packages, see
+
+{\tt http://hsl.rl.ac.uk/hsl2007/ }.
   \subsection uls_references Reference
 
+The methods used are described in the user-documentation for
+\vspace*{1mm}
+
+\noindent
+HSL 2007, A collection of {F}ortran codes for large-scale scientific
+ computation (2007). \\
+ {\tt http://www.cse.clrc.ac.uk/nag/hsl}
+  \subsection uls_purpose Purpose
+
+
   \subsection uls_call_order Call order
+  To solve a given problem, functions from the uls package must be called
+  in the following order:
+
+  - \link uls_initialize \endlink - provide default control parameters and
+      set up initial data structures
+  - \link uls_read_specfile \endlink (optional) - override control values
+      by reading replacement values from a file
+  - \link sls_factorize_matrix \endlink - set up matrix data structures,
+       analyse the structure to choose a suitable order for factorization,
+       and then factorize the matrix \f$A\f$
+  - \link uls_reset_control \endlink (optional) - possibly change control
+      parameters if a sequence of problems are being solved
+  - \link uls_solve_system \endlink - solve the linear system of
+        equations \f$Ax=b\f$ or \f$A^Tx=b\f$
+  - \link uls_information \endlink (optional) - recover information about
+    the solution and solution process
+  - \link uls_terminate \endlink - deallocate data structures
+
+  \latexonly
+  See Section~\ref{examples} for examples of use.
+  \endlatexonly
+  \htmlonly
+  See the <a href="examples.html">examples tab</a> for illustrations of use.
+  \endhtmlonly
+  \manonly
+  See the examples section for illustrations of use.
+  \endmanonly
+
+  \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
+
+  The unsymmetric \f$m\f$ by \f$n\f$  matrix  \f$A\f$ may be presented
+  and stored in a variety of convenient input formats.
+
+  Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
+  Choose \c control.f_indexing as \c false for C style and \c true for
+  fortran style; the discussion below presumes C style, but add 1 to
+  indices for the corresponding fortran version.
+
+  Wrappers will automatically convert between 0-based (C) and 1-based
+  (fortran) array indexing, so may be used transparently from C. This
+  conversion involves both time and memory overheads that may be avoided
+  by supplying data that is already stored using 1-based indexing.
+
+  \subsubsection unsymmetric_matrix_dense Dense storage format
+  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
+  the values of the entries of each row in turn are
+  stored in order within an appropriate real one-dimensional array.
+  In this case, component \f$n \ast i + j\f$  of the storage array A_val
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
+  \f$0 \leq j \leq n-1\f$.
+
+  \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
+  Only the nonzero entries of the matrices are stored.
+  For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
+  its row index i, column index j
+  and value \f$A_{ij}\f$,
+  \f$0 \leq i \leq m-1\f$,  \f$0 \leq j \leq n-1\f$,  are stored as
+  the \f$l\f$-th components of the integer arrays A_row and
+  A_col and real array A_val, respectively, while the number of nonzeros
+  is recorded as A_ne = \f$ne\f$.
+
+  \subsubsection unsymmetric_matrix_row_wise Sparse row-wise storage format
+  Again only the nonzero entries are stored, but this time
+  they are ordered so that those in row i appear directly before those
+  in row i+1. For the i-th row of \f$A\f$ the i-th component of the
+  integer array A_ptr holds the position of the first entry in this row,
+  while A_ptr(m) holds the total number of entries plus one.
+  The column indices j, \f$0 \leq j \leq n-1\f$, and values
+  \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
+  l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
+  of the integer array A_col, and real array A_val, respectively.
+  For sparse matrices, this scheme almost always requires less storage than
+  its predecessor.
+
  */
 
 #ifdef __cplusplus
@@ -44,7 +178,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_ULS_H 
+#ifndef GALAHAD_ULS_H
 #define GALAHAD_ULS_H
 
 // precision
@@ -85,7 +219,7 @@ struct uls_control_type {
 
     /// \brief
     /// prediction of factor by which the fill-in will exceed the initial
-    /// number of nonzeros in A
+    /// number of nonzeros in \f$A\f$
     int initial_fill_in_factor;
 
     /// \brief
@@ -110,11 +244,11 @@ struct uls_control_type {
 
     /// \brief
     /// pivot control:
-    /// 1  Threshold Partial Pivoting is desired
-    /// 2  Threshold Rook Pivoting is desired
-    /// 3  Threshold Complete Pivoting is desired
-    /// 4  Threshold Symmetric Pivoting is desired
-    /// 5  Threshold Diagonal Pivoting is desired
+    /// \li 1  Threshold Partial Pivoting is desired
+    /// \li 2  Threshold Rook Pivoting is desired
+    /// \li 3  Threshold Complete Pivoting is desired
+    /// \li 4  Threshold Symmetric Pivoting is desired
+    /// \li 5  Threshold Diagonal Pivoting is desired
     int pivot_control;
 
     /// \brief
@@ -160,8 +294,9 @@ struct uls_control_type {
     real_wp_ zero_tolerance;
 
     /// \brief
-    /// refinement will cease as soon as the residual ||Ax-b|| falls below
-    /// max( acceptable_residual_relative * ||b||, acceptable_residual_absolute
+    /// refinement will cease as soon as the residual \f$\|Ax-b\|\f$ falls
+    /// below max( acceptable_residual_relative * \f$\|b\|\f$,
+    ///            acceptable_residual_absolute )
     real_wp_ acceptable_residual_relative;
     /// see acceptable_residual_relative
     real_wp_ acceptable_residual_absolute;
@@ -184,12 +319,11 @@ struct uls_inform_type {
     /// 0  success
     /// -1  allocation error
     /// -2  deallocation error
-    /// -3  matrix data faulty (.n < 1, .ne < 0)
+    /// -3  matrix data faulty (m < 1, n < 1, ne < 0)
     /// -29  unavailable option
     /// -31  input order is not a permutation or is faulty in some other way
     /// -32  error with integer workspace
     /// -33  error with real workspace
-    /// -34  error from PARDISO
     /// -50  solver-specific error; see the solver's info parameter
     /// -101  unknown solver
     int status;
@@ -240,11 +374,11 @@ struct uls_inform_type {
 
     /// \brief
     /// pivot control:
-    /// 1  Threshold Partial Pivoting has been used
-    /// 2  Threshold Rook Pivoting has been used
-    /// 3  Threshold Complete Pivoting has been desired
-    /// 4  Threshold Symmetric Pivoting has been desired
-    /// 5  Threshold Diagonal Pivoting has been desired
+    /// \li 1  Threshold Partial Pivoting has been used
+    /// \li 2  Threshold Rook Pivoting has been used
+    /// \li 3  Threshold Complete Pivoting has been desired
+    /// \li 4  Threshold Symmetric Pivoting has been desired
+    /// \li 5  Threshold Diagonal Pivoting has been desired
     int pivot_control;
 
     /// \brief
@@ -275,7 +409,7 @@ struct uls_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    U L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void uls_initialize( void **data, 
+void uls_initialize( void **data,
                      struct uls_control_type *control,
                      struct uls_inform_type *inform );
 
@@ -283,67 +417,119 @@ void uls_initialize( void **data,
  Set default control values and initialize private data
 
   @param[in,out] data  holds private internal data
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see uls_control_type)
   @param[out] inform   is a struct containing output information
-              (see uls_inform_type) 
+              (see uls_inform_type)
 */
 
 // *-*-*-*-*-*-*-*-*-    U L S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void uls_read_specfile( struct uls_control_type *control, 
+void uls_read_specfile( struct uls_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters
 
-  @param[in,out]  control  is a struct containing control information 
+  @param[in,out]  control  is a struct containing control information
               (see uls_control_type)
   @param[in]  specfile  is a character string containing the name of
               the specification file
 */
 
-// *-*-*-*-*-*-*-*-*-*-*-*-    U L S  _ I M P O R T   -*-*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-    U L S  _ F A C T O R I Z E _ M A T R I X   -*-*-*-*-*-*-
 
-void uls_import( struct uls_control_type *control,
-                 void **data,
-                 int *status );
+void uls_factorize_matrix( struct uls_control_type *control,
+                         void **data,
+                         int *status,
+                         int m,
+                         int n,
+                         const char type[],
+                         int ne,
+                         const int row[],
+                         const int col[],
+                         const int ptr[],
+                         const real_wp_ val[] );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import matrix data into internal storage prior to solution, analyse
+ the sparsity patern, and subsequently factorize the matrix
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see uls_control_type)
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
-    the exit status from the package. Possible values are:
-  \li  1. The import was succesful, and the package is ready for the solve phase
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
-       inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
-       returned allocation status and a string containing the
-       name of the offending array are held in 
-       inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restriction n > 0 or requirement that type contains
-       its relevant string 'dense', 'coordinate', 'sparse_by_rows',
-       'diagonal' or 'absent' has been violated.
+ @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. \n
+    Possible values are:
+  \li  0. The import, analysis and factorization were conducted succesfully.
+
+  \li -1. An allocation error occurred. A message indicating the offending
+       array is written on unit control.error, and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the offending
+       array is written on unit control.error and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -3. The restrictions n > 0 and m> 0 or requirement that the matrix type
+       must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows
+       has been violated.
+  \li -26. The requested solver is not available.
+  \li -29. This option is not available with this solver.
+  \li -32. More than control.max integer factor size words of internal
+       integer storage are required for in-core factorization.
+  \li -50. A solver-specific error occurred; check the solver-specific
+       information component of inform along with the solver’s
+       documentation for more details.
+
+ @param[in] m is a scalar variable of type int, that holds the number of
+    rows in the unsymmetric matrix \f$A\f$.
+
+ @param[in] n is a scalar variable of type int, that holds the number of
+    columns in the unsymmetric matrix \f$A\f$.
+
+ @param[in] type is a one-dimensional array of type char that specifies the
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
+   used for the matrix \f$A\f$. It should be one of 'coordinate',
+   'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
+
+ @param[in] ne is a scalar variable of type int, that holds the number of
+   entries in \f$A\f$ in the sparse co-ordinate
+   storage scheme. It need not be set for any of the other schemes.
+
+ @param[in] row is a one-dimensional array of size ne and type int, that
+   holds the row indices of the matrix \f$A\f$ in the sparse
+   co-ordinate storage scheme. It need not be set for any of the other
+   three schemes, and in this case can be NULL.
+
+ @param[in] col is a one-dimensional array of size ne and type int,
+   that holds the column indices of the matrix \f$A\f$ in
+   either the sparse co-ordinate, or the sparse row-wise storage scheme. It
+   need not be set when the dense storage schemes is used,  and in this
+   case can be NULL.
+
+ @param[in]  ptr is a one-dimensional array of size m+1 and type int,
+   that holds the starting position of  each row of the matrix
+   \f$A\f$, as well as the total number of entries plus one,
+   in the sparse row-wise storage scheme. It need not be set when the
+   other schemes are used, and in this case can be NULL.
+
+ @param[in] val is a one-dimensional array of size ne and type double,
+    that holds the values of the entries of the matrix \f$A\f$ in any of
+   the supported storage schemes.
 */
 
 // *-*-*-*-*-*-*-    U L S  _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*
 
 void uls_reset_control( struct uls_control_type *control,
-                 void **data,
-                 int *status );
+                        void **data,
+                        int *status );
 
 /*!<
- Reset control parameters after import if required. 
+ Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see uls_control_type)
@@ -352,7 +538,56 @@ void uls_reset_control( struct uls_control_type *control,
 
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
-  \li  1. The import was succesful, and the package is ready for the solve phase
+  \li  0. The import was succesful.
+*/
+
+//  *-*-*-*-*-*-*-*-   U L S _ s o l v e _ s y s t e m   -*-*-*-*-*-*-*-*-*-
+
+void uls_solve_system( void **data,
+                       int *status,
+                       int m,
+                       int n,
+                       real_wp_ sol[],
+                       bool trans );
+
+/*!<
+ Solve the linear system \f$Ax=b\f$ or \f$A^Tx=b\f$.
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the exit status from the package. \n
+    Possible values are:
+  \li  0. The required solution was obtained.
+
+  \li -1. An allocation error occurred. A message indicating the offending
+       array is written on unit control.error, and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the offending
+       array is written on unit control.error and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -34. The package PARDISO failed; check the solver-specific
+       information components inform.pardiso iparm and inform.pardiso_dparm
+       along with PARDISO’s documentation for more details.
+  \li -35. The package WSMP failed; check the solver-specific information
+       components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s
+       documentation for more details.
+
+ @param[in] m is a scalar variable of type int, that holds the number of
+    rows in the unsymmetric matrix \f$A\f$.
+
+ @param[in] n is a scalar variable of type int, that holds the number of
+    columns in the unsymmetric matrix \f$A\f$.
+
+ @param[in,out] sol is a one-dimensional array of size n and type double.
+    On entry, it must hold the vector \f$b\f$. On a successful exit,
+    its contains the solution \f$x\f$.
+
+ @param[in] trans is a scalar variable of type bool, that specifies
+    whether to solve the equation \f$A^Tx=b\f$ (trans=true) or
+    \f$Ax=b\f$ (trans=false).
 */
 
 // *-*-*-*-*-*-*-*-*-*-    U L S  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
@@ -367,7 +602,7 @@ void uls_information( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] inform   is a struct containing output information
-              (see uls_inform_type) 
+              (see uls_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -377,8 +612,8 @@ void uls_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    U L S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void uls_terminate( void **data, 
-                    struct uls_control_type *control, 
+void uls_terminate( void **data,
+                    struct uls_control_type *control,
                     struct uls_inform_type *inform );
 
 /*!<
@@ -386,7 +621,7 @@ void uls_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see uls_control_type)
 
   @param[out] inform   is a struct containing output information

@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package nls
- 
+
   \section nls_intro Introduction
 
   \subsection nls_purpose Purpose
@@ -52,11 +52,11 @@
 
   \subsection nls_terminology Terminology
 
-  The \e gradient \f$\nabla_x f(x)\f$ of a function \f$f(x)\f$ is the vector 
+  The \e gradient \f$\nabla_x f(x)\f$ of a function \f$f(x)\f$ is the vector
   whose \f$i\f$-th component is \f$\partial f(x)/\partial x_i\f$.
-  The \e Hessian \f$\nabla_{xx} f(x)\f$ of \f$f(x)\f$ is the symmetric matrix 
+  The \e Hessian \f$\nabla_{xx} f(x)\f$ of \f$f(x)\f$ is the symmetric matrix
   whose \f$i,j\f$-th entry is \f$\partial^2 f(x)/\partial x_i \partial x_j\f$.
-  The Hessian is \e sparse if a significant and useful proportion of the 
+  The Hessian is \e sparse if a significant and useful proportion of the
   entries are universally zero.
 
   The algorithm used by the package is iterative. From the current best estimate
@@ -66,13 +66,13 @@
   the objective function \f$f(x_k+s)\f$ built around
   \f$x_k\f$. The model is the sum of two basic components,
   a suitable approximation \f$t_k(s)\f$ of \f$f(x_k+s)\f$,
-  %another approximation of \f$(\rho/r) \|x_k+s\|_r^r\f$ 
+  %another approximation of \f$(\rho/r) \|x_k+s\|_r^r\f$
   (if \f$\rho > 0\f$),
   and a regularization term \f$(\sigma_k/p) \|s\|_{S_k}^p\f$
   involving a weight \f$\sigma_k\f$, power \f$p\f$ and
   a norm \f$\|s\|_{S_k} := \sqrt{s^T S_k s}\f$ for a given positive
-  definite scaling matrix \f$S_k\f$ that is included to prevent large 
-  corrections. The weight  \f$\sigma_k\f$ is adjusted as the algorithm 
+  definite scaling matrix \f$S_k\f$ that is included to prevent large
+  corrections. The weight  \f$\sigma_k\f$ is adjusted as the algorithm
   progresses to  ensure convergence.
 
   The model \f$t_k(s)\f$ is a truncated Taylor-series approximation, and this
@@ -84,7 +84,7 @@
   \mbox{for $i=1,\ldots,m$ and $j=1,\ldots,n$.}\f]
 \manonly
   \n
-  J(x)_{i,j} := partial c_i(x) / \partial x_j 
+  J(x)_{i,j} := partial c_i(x) / \partial x_j
   \n
 \endmanonly
 \manonly for i=1,...,m and j=1,...,n.\endmanonly
@@ -96,7 +96,7 @@
   \;\; \mbox{for $i,j=1,\ldots,n$}\f]
 \manonly
   \n
-  H(x,y) := sum_{\ell=1}^m y_\ell H_\ell(x), where 
+  H(x,y) := sum_{\ell=1}^m y_\ell H_\ell(x), where
   \n
   H_l(x)_{i,j} := partial^2 c_l(x) / partial x_i partial x_j
   \n
@@ -126,13 +126,13 @@ for i,j=1,...,n\endmanonly
    \frac{1}{2} s^T \cdot P(x_k,s) \|^2_W\f$,
   where the \f$i\f$-th component of \f$s^T \cdot P(x_k,s)\f$ is
   shorthand for the scalar \f$s^T H_i(x_k) s\f$,
-  where \f$W\f$ is the diagonal matrix of weights 
+  where \f$W\f$ is the diagonal matrix of weights
   \f$w_i\f$, \f$i = 1, \ldots m\f$.
 
   Access to a particular model requires that the user is either able to
-  provide the derivatives needed (``<i>matrix available</i>'') 
+  provide the derivatives needed (``<i>matrix available</i>'')
   or that the products
-  of these derivatives (and their transposes) with specified vectors are 
+  of these derivatives (and their transposes) with specified vectors are
   possible (``<i>matrix free</i>'').
 
   \subsection nls_method Method
@@ -140,7 +140,7 @@ for i,j=1,...,n\endmanonly
   An adaptive regularization method is used.
   In this, an improvement to a current
   estimate of the required minimizer, \f$x_k\f$ is sought by computing a
-  step \f$s_k\f$. The step is chosen to approximately minimize a model 
+  step \f$s_k\f$. The step is chosen to approximately minimize a model
   \f$t_k(s)\f$ of \f$f_{\rho,r}(x_k+s)\f$
   that includes a weighted regularization term
   \f$(\sigma_k/p) \|s\|_{S_k}^p\f$
@@ -148,7 +148,7 @@ for i,j=1,...,n\endmanonly
   resulting step \f$s_k\f$ is assessed by computing the "ratio"
   %\f$(f_{\rho,p}(x_k) - f_{\rho,p}(x_k+s_k))/(t_k(0)-t_k(s_k))\f$.
   \f$(f(x_k) - f(x_k + s_k))/(t_k(0) - t_k(s_k))\f$.
-  The step is deemed to have succeeded if the ratio exceeds a given 
+  The step is deemed to have succeeded if the ratio exceeds a given
   \f$\eta_s > 0\f$,
   and in this case \f$x_{k+1} = x_k + s_k\f$. Otherwise
   \f$x_{k+1} = x_k\f$, and the weight is increased by powers of a given
@@ -159,8 +159,8 @@ for i,j=1,...,n\endmanonly
   \f$\|\nabla_x f(x_k)\|\f$ is smaller than a specified value.
 
   A choice of linear, quadratic or quartic models \f$t_k(s)\f$ is available
-  (see the \ref nls_terminology section), and normally a two-norm 
-  regularization will  be used, but this may change if preconditioning 
+  (see the \ref nls_terminology section), and normally a two-norm
+  regularization will  be used, but this may change if preconditioning
   is employed.
 
   If linear or quadratic models are employed, an appropriate,
@@ -210,18 +210,18 @@ for i,j=1,...,n\endmanonly
 
   \subsection nls_call_order Call order
 
-  To solve a given problem, functions from the nls package must be called 
+  To solve a given problem, functions from the nls package must be called
   in the following order:
 
   - \link nls_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link nls_read_specfile \endlink (optional) - override control values 
+  - \link nls_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - \link nls_import \endlink - set up problem data structures and fixed
       values
-  - \link nls_reset_control \endlink (optional) - possibly change control 
+  - \link nls_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
-  - solve the problem by calling one of 
+  - solve the problem by calling one of
      - \link nls_solve_with_mat \endlink - solve using function calls to
        evaluate function, gradient and Hessian values
      - \link nls_solve_without_mat \endlink - solve using function calls to
@@ -229,7 +229,7 @@ for i,j=1,...,n\endmanonly
      - \link nls_solve_reverse_with_mat \endlink - solve returning to the
        calling program to obtain function, gradient and Hessian values, or
      - \link nls_solve_reverse_without_mat \endlink - solve returning to the
-       calling prorgram to obtain function and gradient values and 
+       calling prorgram to obtain function and gradient values and
        Hessian-vector products
   - \link nls_information \endlink (optional) - recover information about
     the solution and solution process
@@ -247,43 +247,43 @@ for i,j=1,...,n\endmanonly
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
-  The unsymmetric \f$m\f$ by \f$n\f$ Jacobian matrix 
+  The unsymmetric \f$m\f$ by \f$n\f$ Jacobian matrix
   \f$J \equiv \nabla_x c(x)\f$ and the residual-Hessians-vector
-  product matrix $P(x,v)$ may be presented 
-  and stored in a variety of convenient input formats. Let 
+  product matrix $P(x,v)$ may be presented
+  and stored in a variety of convenient input formats. Let
   \f$A\f$ be \f$J\f$ or \f$P\f$ as appropriate.
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
 
   Wrappers will automatically convert between 0-based (C) and 1-based
   (fortran) array indexing, so may be used transparently from C. This
   conversion involves both time and memory overheads that may be avoided
-  by supplying data that is already stored using 1-based indexing. 
+  by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   In this case, component \f$n \ast i + j\f$  of the storage array A_val
-  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$, 
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_dense_cols Dense by columns storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by columns, that is, 
+  The matrix \f$A\f$ is stored as a compact  dense matrix by columns, that is,
   the values of the entries of each column in turn are
   stored in order within an appropriate real one-dimensional array.
   In this case, component \f$m \ast j + i\f$  of the storage array A_val
-  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$, 
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
-  its row index i, column index j 
-  and value \f$A_{ij}\f$, 
+  its row index i, column index j
+  and value \f$A_{ij}\f$,
   \f$0 \leq i \leq m-1\f$,  \f$0 \leq j \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays A_row and
   A_col and real array A_val, respectively, while the number of nonzeros
@@ -295,7 +295,7 @@ for i,j=1,...,n\endmanonly
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array A_ptr holds the position of the first entry in this row,
   while A_ptr(m) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq n-1\f$, and values 
+  The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
   l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
   of the integer array A_col, and real array A_val, respectively.
@@ -308,26 +308,27 @@ for i,j=1,...,n\endmanonly
   in column j+1. For the j-th column of \f$A\f$ the j-th component of the
   integer array A_ptr holds the position of the first entry in this column,
   while A_ptr(n) holds the total number of entries plus one.
-  The row indices i, \f$0 \leq i \leq m-1\f$, and values \f$A_{ij}\f$ 
+  The row indices i, \f$0 \leq i \leq m-1\f$, and values \f$A_{ij}\f$
   of the  nonzero entries in the j-th columnsare stored in components
   l = A_ptr(j), \f$\ldots\f$, A_ptr(j+1)-1, \f$0 \leq j \leq n-1\f$,
   of the integer array A_row, and real array A_val, respectively.
-  As before, for sparse matrices, this scheme almost always requires less 
+  As before, for sparse matrices, this scheme almost always requires less
   storage than the co-ordinate format.
+
   \subsection main_symmetric_matrices Symmetric matrix storage formats
 
-  Likewise, the symmetric \f$n\f$ by \f$n\f$ weighted-residual 
-  Hessian matrix \f$H = H(x,y)\f$ may be presented 
-  and stored in a variety of formats. But crucially symmetry is exploited 
-  by only storing values from the lower triangular part 
+  Likewise, the symmetric \f$n\f$ by \f$n\f$ weighted-residual
+  Hessian matrix \f$H = H(x,y)\f$ may be presented
+  and stored in a variety of formats. But crucially symmetry is exploited
+  by only storing values from the lower triangular part
   (i.e, those entries that lie on or below the leading diagonal).
 
   \subsubsection symmetric_matrix_dense Dense storage format
-  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   Since \f$H\f$ is symmetric, only the lower triangular part (that is the part
-  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held. 
+  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
   In this case the lower triangle should be stored by rows, that is
   component \f$i \ast i / 2 + j\f$  of the storage array H_val
   will hold the value \f$h_{ij}\f$ (and, by symmetry, \f$h_{ji}\f$)
@@ -336,7 +337,7 @@ for i,j=1,...,n\endmanonly
   \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
-  its row index i, column index j 
+  its row index i, column index j
   and value \f$h_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays H_row and
   H_col and real array H_val, respectively, while the number of nonzeros
@@ -349,7 +350,7 @@ for i,j=1,...,n\endmanonly
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
   integer array H_ptr holds the position of the first entry in this row,
   while H_ptr(n) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq i\f$, and values 
+  The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$h_{ij}\f$ of the  entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
   integer array H_col, and real array H_val, respectively.
@@ -358,8 +359,8 @@ for i,j=1,...,n\endmanonly
   its predecessor.
 
   \subsubsection symmetric_matrix_diagonal Diagonal storage format
-  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all 
-  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries 
+  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all
+  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries
   \f$H_{ii}\f$, \f$0 \leq i \leq n-1\f$ need
   be stored, and the first n components of the array H_val may be
   used for the purpose.
@@ -387,7 +388,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_NLS_H 
+#ifndef GALAHAD_NLS_H
 #define GALAHAD_NLS_H
 
 // precision
@@ -406,10 +407,10 @@ struct nls_subproblem_control_type {
     /// general output occurs on stream out
     int out;
 
-    /// \brief the level of output required. 
-    /// \li \f$\leq\f$ 0 gives no output, 
-    /// \li  = 1 gives a one-line summary for every iteration, 
-    /// \li  = 2 gives a summary of the inner iteration for each iteration, 
+    /// \brief the level of output required.
+    /// \li \f$\leq\f$ 0 gives no output,
+    /// \li  = 1 gives a one-line summary for every iteration,
+    /// \li  = 2 gives a summary of the inner iteration for each iteration,
     /// \li \f$\geq\f$ 3 gives increasingly verbose (debugging) output
     int print_level;
 
@@ -436,19 +437,19 @@ struct nls_subproblem_control_type {
     char alive_file[31];
 
     /// \brief
-    /// is the Jacobian matrix of first derivatives available (\f$\geq\f$ 2), 
-    /// is access only via matrix-vector products (=1) or is it not available 
+    /// is the Jacobian matrix of first derivatives available (\f$\geq\f$ 2),
+    /// is access only via matrix-vector products (=1) or is it not available
     /// (\f$\leq\f$ 0) ?
     int jacobian_available;
 
     /// \brief
-    /// is the Hessian matrix of second derivatives available (\f$\geq\f$ 2), 
-    /// is access only via matrix-vector products (=1) or is it not available 
+    /// is the Hessian matrix of second derivatives available (\f$\geq\f$ 2),
+    /// is access only via matrix-vector products (=1) or is it not available
     /// (\f$\leq\f$ 0) ?
     int hessian_available;
 
     /// \brief
-    /// the model used. 
+    /// the model used.
     ///
     /// Possible values are
     /// \li 0  dynamic (*not yet implemented*)
@@ -459,12 +460,12 @@ struct nls_subproblem_control_type {
     /// \li 5  Gauss-Newton to Newton transition
     /// \li 6  tensor Gauss-Newton treated as a least-squares model
     /// \li 7  tensor Gauss-Newton treated as a general model
-    /// \li 8  tensor Gauss-Newton transition from a least-squares 
+    /// \li 8  tensor Gauss-Newton transition from a least-squares
     ///        to a general mode
     int model;
 
-    /// \brief 
-    /// the regularization norm used. 
+    /// \brief
+    /// the regularization norm used.
 
     /// The norm is defined via \f$\|v\|^2 = v^T S v\f$,
     /// and will define the preconditioner used for iterative methods.
@@ -475,15 +476,15 @@ struct nls_subproblem_control_type {
     ///         .PSLS_control.lbfgs_vectors history) (*not yet implemented*)
     /// \li -1  identity (= Euclidan two-norm)
     /// \li  0  automatic (*not yet implemented*)
-    /// \li  1  diagonal, \f$S\f$ = diag( max( \f$J^TJ\f$ Hessian, 
+    /// \li  1  diagonal, \f$S\f$ = diag( max( \f$J^TJ\f$ Hessian,
     ///         .PSLS_contro.min_diagonal ) )
-    /// \li  2  diagonal, \f$S\f$ = diag( max( Hessian, 
+    /// \li  2  diagonal, \f$S\f$ = diag( max( Hessian,
     ///         .PSLS_contro.min_diagonal ) )
     /// \li  3  banded, \f$S\f$ = band( Hessian ) with semi-bandwidth
     ///         .PSLS_control.semi_bandwidth
     /// \li  4  re-ordered band, P=band(order(A)) with semi-bandwidth
     ///         .PSLS_control.semi_bandwidth
-    /// \li  5  full factorization, \f$S\f$ = Hessian, Schnabel-Eskow 
+    /// \li  5  full factorization, \f$S\f$ = Hessian, Schnabel-Eskow
     ///         modification
     /// \li  6  full factorization, \f$S\f$ = Hessian, GMPS modification
     ///         (*not yet implemented*)
@@ -495,7 +496,7 @@ struct nls_subproblem_control_type {
     int norm;
 
     /// \brief
-    /// non-monotone \f$\leq\f$ 0 monotone strategy used, anything else 
+    /// non-monotone \f$\leq\f$ 0 monotone strategy used, anything else
     /// non-monotone strategy with this history length used
     int non_monotone;
 
@@ -507,11 +508,11 @@ struct nls_subproblem_control_type {
 
     /// \brief
     /// overall convergence tolerances. The iteration will terminate when
-    /// \f$||c(x)||_2 \leq \f$ MAX( .stop_c_absolute, .stop_c_relative 
+    /// \f$||c(x)||_2 \leq \f$ MAX( .stop_c_absolute, .stop_c_relative
     ///   \f$ * \|c(x_{\mbox{initial}})\|_2\f$, or
-    /// when the norm of the gradient, \f$g = J^T(x) c(x) / \|c(x)\|_2\f$, 
+    /// when the norm of the gradient, \f$g = J^T(x) c(x) / \|c(x)\|_2\f$,
     /// of ||c||_2, satisfies
-    /// \f$\|g\|_2 \leq\f$  MAX( .stop_g_absolute, .stop_g_relative 
+    /// \f$\|g\|_2 \leq\f$  MAX( .stop_g_absolute, .stop_g_relative
     ///   \f$ * \|g_{\mbox{initial}}\|_2\f$, or
     /// if the step is less than .stop_s
     real_wp_ stop_c_absolute;
@@ -537,7 +538,7 @@ struct nls_subproblem_control_type {
     real_wp_ minimum_weight;
 
     /// \brief
-    /// initial value for the inner regularization weight for tensor GN 
+    /// initial value for the inner regularization weight for tensor GN
     /// (-ve => 0)
     real_wp_ initial_inner_weight;
 
@@ -669,10 +670,10 @@ struct nls_control_type {
     /// general output occurs on stream out
     int out;
 
-    /// \brief the level of output required. 
-    /// \li \f$\leq\f$ 0 gives no output, 
-    /// \li  = 1 gives a one-line summary for every iteration, 
-    /// \li  = 2 gives a summary of the inner iteration for each iteration, 
+    /// \brief the level of output required.
+    /// \li \f$\leq\f$ 0 gives no output,
+    /// \li  = 1 gives a one-line summary for every iteration,
+    /// \li  = 2 gives a summary of the inner iteration for each iteration,
     /// \li \f$\geq\f$ 3 gives increasingly verbose (debugging) output
     int print_level;
 
@@ -699,19 +700,19 @@ struct nls_control_type {
     char alive_file[31];
 
     /// \brief
-    /// is the Jacobian matrix of first derivatives available (\f$\geq\f$ 2), 
-    /// is access only via matrix-vector products (=1) or is it not 
+    /// is the Jacobian matrix of first derivatives available (\f$\geq\f$ 2),
+    /// is access only via matrix-vector products (=1) or is it not
     /// available (\f$\leq\f$ 0) ?
     int jacobian_available;
 
     /// \brief
-    /// is the Hessian matrix of second derivatives available (\f$\geq\f$ 2), 
-    /// is access only via matrix-vector products (=1) or is it not 
+    /// is the Hessian matrix of second derivatives available (\f$\geq\f$ 2),
+    /// is access only via matrix-vector products (=1) or is it not
     /// available (\f$\leq\f$ 0) ?
     int hessian_available;
 
     /// \brief
-    /// the model used. 
+    /// the model used.
     ///
     /// Possible values are
     /// \li 0  dynamic (*not yet implemented*)
@@ -722,12 +723,12 @@ struct nls_control_type {
     /// \li 5  Gauss-Newton to Newton transition
     /// \li 6  tensor Gauss-Newton treated as a least-squares model
     /// \li 7  tensor Gauss-Newton treated as a general model
-    /// \li 8  tensor Gauss-Newton transition from a least-squares 
+    /// \li 8  tensor Gauss-Newton transition from a least-squares
     ///        to a general mode
     int model;
 
-    /// \brief 
-    /// the regularization norm used. 
+    /// \brief
+    /// the regularization norm used.
 
     /// The norm is defined via \f$\|v\|^2 = v^T S v\f$,
     /// and will define the preconditioner used for iterative methods.
@@ -738,15 +739,15 @@ struct nls_control_type {
     ///         .PSLS_control.lbfgs_vectors history) (*not yet implemented*)
     /// \li -1  identity (= Euclidan two-norm)
     /// \li  0  automatic (*not yet implemented*)
-    /// \li  1  diagonal, \f$S\f$ = diag( max( \f$J^TJ\f$ Hessian, 
+    /// \li  1  diagonal, \f$S\f$ = diag( max( \f$J^TJ\f$ Hessian,
     ///         .PSLS_contro.min_diagonal ) )
-    /// \li  2  diagonal, \f$S\f$ = diag( max( Hessian, 
+    /// \li  2  diagonal, \f$S\f$ = diag( max( Hessian,
     ///         .PSLS_contro.min_diagonal ) )
     /// \li  3  banded, \f$S\f$ = band( Hessian ) with semi-bandwidth
     ///         .PSLS_control.semi_bandwidth
     /// \li  4  re-ordered band, P=band(order(A)) with semi-bandwidth
     ///         .PSLS_control.semi_bandwidth
-    /// \li  5  full factorization, \f$S\f$ = Hessian, Schnabel-Eskow 
+    /// \li  5  full factorization, \f$S\f$ = Hessian, Schnabel-Eskow
     ///         modification
     /// \li  6  full factorization, \f$S\f$ = Hessian, GMPS modification
     ///         (*not yet implemented*)
@@ -758,7 +759,7 @@ struct nls_control_type {
     int norm;
 
     /// \brief
-    /// non-monotone \f$\leq\f$ 0 monotone strategy used, anything else 
+    /// non-monotone \f$\leq\f$ 0 monotone strategy used, anything else
     /// non-monotone strategy with this history length used
     int non_monotone;
 
@@ -770,11 +771,11 @@ struct nls_control_type {
 
     /// \brief
     /// overall convergence tolerances. The iteration will terminate when
-    /// \f$||c(x)||_2 \leq \f$ MAX( .stop_c_absolute, .stop_c_relative 
+    /// \f$||c(x)||_2 \leq \f$ MAX( .stop_c_absolute, .stop_c_relative
     ///   \f$ * \|c(x_{\mbox{initial}})\|_2\f$ or
     /// when the norm of the gradient, \f$g = J^T(x) c(x) / \|c(x)\|_2\f$,
     /// of ||c(x)||_2 satisfies
-    /// \f$\|g\|_2 \leq\f$  MAX( .stop_g_absolute, .stop_g_relative 
+    /// \f$\|g\|_2 \leq\f$  MAX( .stop_g_absolute, .stop_g_relative
     ///   \f$ * \|g_{\mbox{initial}}\|_2\f$, or
     /// if the step is less than .stop_s
     real_wp_ stop_c_absolute;
@@ -800,7 +801,7 @@ struct nls_control_type {
     real_wp_ minimum_weight;
 
     /// \brief
-    /// initial value for the inner regularization weight for tensor GN 
+    /// initial value for the inner regularization weight for tensor GN
     /// (-ve => 0)
     real_wp_ initial_inner_weight;
 
@@ -1031,12 +1032,12 @@ struct nls_subproblem_inform_type {
     real_wp_ factorization_average;
 
     /// \brief
-    /// the value of the objective function \f$\frac{1}{2}\|c(x)\|^2_W\f$ 
+    /// the value of the objective function \f$\frac{1}{2}\|c(x)\|^2_W\f$
     /// at the best estimate the solution, x, determined by NLS_solve
     real_wp_ obj;
 
     /// \brief
-    /// the norm of the residual \f$\|c(x)\|_W\f$ at the best estimate of 
+    /// the norm of the residual \f$\|c(x)\|_W\f$ at the best estimate of
     /// the solution x, determined by NLS_solve
     real_wp_ norm_c;
 
@@ -1140,12 +1141,12 @@ struct nls_inform_type {
     real_wp_ factorization_average;
 
     /// \brief
-    /// the value of the objective function \f$\frac{1}{2}\|c(x)\|^2_W\f$ 
+    /// the value of the objective function \f$\frac{1}{2}\|c(x)\|^2_W\f$
     /// at the best estimate the solution, x, determined by NLS_solve
     real_wp_ obj;
 
     /// \brief
-    /// the norm of the residual \f$\|c(x)\|_W\f$ at the best estimate of 
+    /// the norm of the residual \f$\|c(x)\|_W\f$ at the best estimate of
     /// the solution x, determined by NLS_solve
     real_wp_ norm_c;
 
@@ -1189,7 +1190,7 @@ struct nls_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    N L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void nls_initialize( void **data, 
+void nls_initialize( void **data,
                      struct nls_control_type *control,
                      struct nls_inform_type *inform );
 
@@ -1197,22 +1198,22 @@ void nls_initialize( void **data,
  Set default control values and initialize private data
 
   @param[in,out] data  holds private internal data
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see nls_control_type)
   @param[out] inform   is a struct containing output information
-              (see nls_inform_type) 
+              (see nls_inform_type)
 */
 
 // *-*-*-*-*-*-*-*-*-    N L S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void nls_read_specfile( struct nls_control_type *control, 
+void nls_read_specfile( struct nls_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters
 
-  @param[in,out]  control  is a struct containing control information 
+  @param[in,out]  control  is a struct containing control information
               (see nls_control_type)
   @param[in]  specfile  is a character string containing the name of
               the specification file
@@ -1222,28 +1223,28 @@ void nls_read_specfile( struct nls_control_type *control,
 
 void nls_import( struct nls_control_type *control,
                  void **data,
-                 int *status, 
+                 int *status,
                  int n,
                  int m,
-                 const char J_type[], 
-                 int J_ne, 
+                 const char J_type[],
+                 int J_ne,
                  const int J_row[],
-                 const int J_col[], 
+                 const int J_col[],
                  const int J_ptr[],
-                 const char H_type[], 
-                 int H_ne, 
+                 const char H_type[],
+                 int H_ne,
                  const int H_row[],
-                 const int H_col[], 
+                 const int H_col[],
                  const int H_ptr[],
-                 const char P_type[], 
-                 int P_ne, 
+                 const char P_type[],
+                 int P_ne,
                  const int P_row[],
-                 const int P_col[], 
+                 const int P_col[],
                  const int P_ptr[],
                  const real_wp_ w[] );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see nls_control_type)
@@ -1261,8 +1262,8 @@ void nls_import( struct nls_control_type *control,
        array is written on unit control.error and the returned allocation
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0, m > 0 or requirement that J/H/P_type 
-       contains its relevant string 'dense', 'dense_by_columns', 
+  \li -3. The restrictions n > 0, m > 0 or requirement that J/H/P_type
+       contains its relevant string 'dense', 'dense_by_columns',
        'coordinate', 'sparse_by_rows', 'sparse_by_columns',
        'diagonal' or 'absent' has been violated.
 
@@ -1273,51 +1274,51 @@ void nls_import( struct nls_control_type *control,
     residuals.
 
  @param[in]  J_type is a one-dimensional array of type char that specifies the
-   \link main_unsymmetric_matrices symmetric storage scheme \endlink 
-   used for the Jacobian, \f$J\f$. It should be one of 'coordinate', 
+   \link main_unsymmetric_matrices symmetric storage scheme \endlink
+   used for the Jacobian, \f$J\f$. It should be one of 'coordinate',
   'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian
   is via matrix-vector products; lower or upper case variants are allowed.
 
  @param[in]  J_ne is a scalar variable of type int, that holds the number of
-   entries in \f$J\f$ in the sparse co-ordinate storage scheme. 
+   entries in \f$J\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  J_row is a one-dimensional array of size J_ne and type int, that 
-   holds the row indices of \f$J\f$ in the sparse co-ordinate storage scheme. 
-   It need not be set for any of the other schemes, 
+ @param[in]  J_row is a one-dimensional array of size J_ne and type int, that
+   holds the row indices of \f$J\f$ in the sparse co-ordinate storage scheme.
+   It need not be set for any of the other schemes,
    and in this case can be NULL.
 
  @param[in]  J_col is a one-dimensional array of size J_ne and type int,
-   that holds the column indices of \f$J\f$ in either the sparse co-ordinate, 
-   or the sparse row-wise storage scheme. It need not be set when the 
+   that holds the column indices of \f$J\f$ in either the sparse co-ordinate,
+   or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
  @param[in]  J_ptr is a one-dimensional array of size n+1 and type int,
-   that holds the starting position of each row of \f$J\f$, as well as the 
-   total number of entries plus one, in the sparse row-wise storage scheme. 
-   It need not be set when the other schemes are used, 
+   that holds the starting position of each row of \f$J\f$, as well as the
+   total number of entries plus one, in the sparse row-wise storage scheme.
+   It need not be set when the other schemes are used,
    and in this case can be NULL.
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
-   \link main_symmetric_matrices symmetric storage scheme \endlink 
-   used for the Hessian, \f$H\f$. It should be one of 'coordinate', 
-   'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to 
-   \f$H\f$ is via matrix-vector products; lower or upper case variants 
+   \link main_symmetric_matrices symmetric storage scheme \endlink
+   used for the Hessian, \f$H\f$. It should be one of 'coordinate',
+   'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to
+   \f$H\f$ is via matrix-vector products; lower or upper case variants
     are allowed.
 
  @param[in]  H_ne is a scalar variable of type int, that holds the number of
    entries in the lower triangular part of \f$H\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other three schemes.
 
- @param[in]  H_row is a one-dimensional array of size H_ne and type int, that 
+ @param[in]  H_row is a one-dimensional array of size H_ne and type int, that
    holds the row indices of the lower triangular part of \f$H\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
  @param[in]  H_col is a one-dimensional array of size H_ne and type int,
-   that holds the column indices of the lower triangular part of \f$H\f$ in 
-   either the sparse co-ordinate, or the sparse row-wise storage scheme. It 
-   need not be set when the dense or diagonal storage schemes are used, 
+   that holds the column indices of the lower triangular part of \f$H\f$ in
+   either the sparse co-ordinate, or the sparse row-wise storage scheme. It
+   need not be set when the dense or diagonal storage schemes are used,
    and in this case can be NULL.
 
  @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
@@ -1327,34 +1328,34 @@ void nls_import( struct nls_control_type *control,
    other schemes are used, and in this case can be NULL.
 
  @param[in]  P_type is a one-dimensional array of type char that specifies the
-   \link main_unsymmetric_matrices symmetric storage scheme \endlink 
-   used for the residual-Hessians-vector product matrix, \f$P\f$. It should be 
-   one of 'coordinate', 'sparse_by_columns', 'dense_by_columns' or 'absent', 
-   the latter if access to \f$P\f$ is  via matrix-vector products; 
+   \link main_unsymmetric_matrices symmetric storage scheme \endlink
+   used for the residual-Hessians-vector product matrix, \f$P\f$. It should be
+   one of 'coordinate', 'sparse_by_columns', 'dense_by_columns' or 'absent',
+   the latter if access to \f$P\f$ is  via matrix-vector products;
    lower or upper case variants are allowed.
 
  @param[in]  P_ne is a scalar variable of type int, that holds the number of
-   entries in \f$P\f$ in the sparse co-ordinate storage scheme. 
+   entries in \f$P\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  P_row is a one-dimensional array of size P_ne and type int, that 
-   holds the row indices of \f$P\f$ in either the sparse co-ordinate, 
-   or the sparse column-wise storage scheme. 
-   It need not be set when the dense storage scheme is used, 
+ @param[in]  P_row is a one-dimensional array of size P_ne and type int, that
+   holds the row indices of \f$P\f$ in either the sparse co-ordinate,
+   or the sparse column-wise storage scheme.
+   It need not be set when the dense storage scheme is used,
    and in this case can be NULL.
 
  @param[in]  P_col is a one-dimensional array of size P_ne and type int, that
-   holds the row indices of \f$P\f$ in the sparse co-ordinate storage scheme. 
-   It need not be set for any of the other schemes, 
+   holds the row indices of \f$P\f$ in the sparse co-ordinate storage scheme.
+   It need not be set for any of the other schemes,
    and in this case can be NULL.
 
  @param[in]  P_ptr is a one-dimensional array of size m+1 and type int,
-   that holds the starting position of each row of \f$P\f$, as well as the 
-   total number of entries plus one, in the sparse row-wise storage scheme. 
-   It need not be set when the other schemes are used, 
+   that holds the starting position of each row of \f$P\f$, as well as the
+   total number of entries plus one, in the sparse row-wise storage scheme.
+   It need not be set when the other schemes are used,
    and in this case can be NULL.
 
- @param[in] w is a one-dimensional array of size m and type double, 
+ @param[in] w is a one-dimensional array of size m and type double,
    that holds the values \f$w\f$ of the weights on the residuals in the
    least-squares objective function. It need not be set if the weights are
    all ones, and in this case can be NULL
@@ -1366,7 +1367,7 @@ void nls_reset_control( struct nls_control_type *control,
                         void **data,
                         int *status );
 
-/*!< 
+/*!<
  Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
@@ -1382,35 +1383,35 @@ void nls_reset_control( struct nls_control_type *control,
 //  *-*-*-*-*-*-*-*-*-   N L S _ S O L V E _ W I T H _ M A T   -*-*-*-*-*-*-*-*
 
 void nls_solve_with_mat( void **data,
-                         void *userdata, 
-                         int *status, 
-                         int n, 
-                         int m, 
-                         real_wp_ x[], 
+                         void *userdata,
+                         int *status,
+                         int n,
+                         int m,
+                         real_wp_ x[],
                          real_wp_ c[],
                          real_wp_ g[],
                          int (*eval_c)(
-                           int, int, const real_wp_[], real_wp_[], 
-                           const void * ), 
-                         int j_ne, 
+                           int, int, const real_wp_[], real_wp_[],
+                           const void * ),
+                         int j_ne,
                          int (*eval_j)(
                            int, int, int, const real_wp_[], real_wp_[],
                            const void * ),
-                         int h_ne, 
+                         int h_ne,
                          int (*eval_h)(
-                           int, int, int, const real_wp_[], const real_wp_[], 
+                           int, int, int, const real_wp_[], const real_wp_[],
                            real_wp_[], const void * ),
-                         int p_ne, 
+                         int p_ne,
                          int (*eval_hprods)(
-                           int, int, int, const real_wp_[], 
-                           const real_wp_[], real_wp_[], bool, 
+                           int, int, int, const real_wp_[],
+                           const real_wp_[], real_wp_[], bool,
                            const void * ) );
 
 /*!<
  Find a local minimizer of a given function using a trust-region method.
 
- This call is for the case where \f$H = \nabla_{xx}f(x)\f$ is 
- provided specifically, and all function/derivative information is 
+ This call is for the case where \f$H = \nabla_{xx}f(x)\f$ is
+ provided specifically, and all function/derivative information is
  available by function calls.
 
  @param[in,out] data holds private internal data
@@ -1443,7 +1444,7 @@ void nls_solve_with_mat( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -17. The step is too small to make further impact.
   \li -18. Too many iterations have been performed. This may happen if
@@ -1452,123 +1453,123 @@ void nls_solve_with_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -82. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
- 
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables.
 
  @param[in] m is a scalar variable of type int, that holds the number of
     residuals.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[out] c is a one-dimensional array of size m and type double, that 
+
+ @param[out] c is a one-dimensional array of size m and type double, that
     holds the residual \f$c(x)\f$.
     The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
-  
- @param[out] g is a one-dimensional array of size n and type double, that 
-    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function. 
+
+ @param[out] g is a one-dimensional array of size n and type double, that
+    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param eval_c is a user-supplied function that must have the following 
+
+ @param eval_c is a user-supplied function that must have the following
    signature:
    \code
-        int eval_c( int n, const double x[], double c[], const void *userdata ) 
+        int eval_c( int n, const double x[], double c[], const void *userdata )
    \endcode
-   The componnts of the residual function \f$c(x)\f$ evaluated at x=\f$x\f$ 
-   must be assigned to c, and the function return value set to 0. If the 
+   The componnts of the residual function \f$c(x)\f$ evaluated at x=\f$x\f$
+   must be assigned to c, and the function return value set to 0. If the
    evaluation is impossible at x, return should be set to a nonzero value.
-   Data may be passed into \c eval_c via the structure \c userdata. 
+   Data may be passed into \c eval_c via the structure \c userdata.
 
- @param[in] j_ne is a scalar variable of type int, that holds the number of 
+ @param[in] j_ne is a scalar variable of type int, that holds the number of
     entries in the Jacobian matrix \f$J\f$.
 
- @param eval_j is a user-supplied function that must have the following 
+ @param eval_j is a user-supplied function that must have the following
    signature:
    \code
-      int eval_j( int n, int m, int jne, const double x[], double j[], 
+      int eval_j( int n, int m, int jne, const double x[], double j[],
                   const void *userdata )
    \endcode
    The components of the Jacobian \f$J = \nabla_x c(x\f$) of the residuals must
-   be assigned to j in the same order as presented to nls_import, and the 
-   function return value set to 0. If the evaluation is impossible at x, 
+   be assigned to j in the same order as presented to nls_import, and the
+   function return value set to 0. If the evaluation is impossible at x,
    return should be set to a nonzero value.
-   Data may be passed into \c eval_j via the structure \c userdata. 
- 
- @param[in] h_ne is a scalar variable of type int, that holds the number of 
+   Data may be passed into \c eval_j via the structure \c userdata.
+
+ @param[in] h_ne is a scalar variable of type int, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$
     if it is used.
 
- @param eval_h is a user-supplied function that must have the following 
+ @param eval_h is a user-supplied function that must have the following
    signature:
    \code
-        int eval_h( int n, int m, int hne, const double x[], const double y[], 
+        int eval_h( int n, int m, int hne, const double x[], const double y[],
                     double h[], const void *userdata )
    \endcode
-   The nonzeros of the matrix \f$H = \sum_{i=1}^m y_i  \nabla_{xx}c_i(x)\f$ 
-   of the weighted residual Hessian evaluated at x=\f$x\f$ and y=\f$y\f$ must 
-   be assigned to h in the same order as presented to nls_import, and the 
-   function return value set to 0. If the evaluation is impossible at x, 
+   The nonzeros of the matrix \f$H = \sum_{i=1}^m y_i  \nabla_{xx}c_i(x)\f$
+   of the weighted residual Hessian evaluated at x=\f$x\f$ and y=\f$y\f$ must
+   be assigned to h in the same order as presented to nls_import, and the
+   function return value set to 0. If the evaluation is impossible at x,
    return should be set to a nonzero value.
-   Data may be passed into \c eval_h via the structure \c userdata. 
- 
- @param[in] p_ne is a scalar variable of type int, that holds the number of 
-    entries in the residual-Hessians-vector product matrix \f$P\f$ if it 
+   Data may be passed into \c eval_h via the structure \c userdata.
+
+ @param[in] p_ne is a scalar variable of type int, that holds the number of
+    entries in the residual-Hessians-vector product matrix \f$P\f$ if it
     is used.
 
- @param  eval_hprods is an optional user-supplied function that may be NULL. 
+ @param  eval_hprods is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
 
-       int eval_hprods( int n, int m, int pne, const double x[], 
-                           const double v[], double p[], bool got_h, 
+       int eval_hprods( int n, int m, int pne, const double x[],
+                           const double v[], double p[], bool got_h,
                            const void *userdata ) );
 
    \endcode
-   The entries of the matrix \f$P\f$, whose i-th column is the 
-   product \f$\nabla_{xx}c_i(x) v\f$ between \f$\nabla_{xx}c_i(x)\f$, the 
-   Hessian of the i-th component of the residual \f$c(x)\f$ at x=\f$x\f$, and 
-   v=\f$v\f$ must be returned in p and the function return value set to 0. 
-   If the evaluation is impossible at x, return should be set to a nonzero 
-   value.   Data may be passed into \c eval_hprods via the structure 
-   \c userdata. 
- */ 
+   The entries of the matrix \f$P\f$, whose i-th column is the
+   product \f$\nabla_{xx}c_i(x) v\f$ between \f$\nabla_{xx}c_i(x)\f$, the
+   Hessian of the i-th component of the residual \f$c(x)\f$ at x=\f$x\f$, and
+   v=\f$v\f$ must be returned in p and the function return value set to 0.
+   If the evaluation is impossible at x, return should be set to a nonzero
+   value.   Data may be passed into \c eval_hprods via the structure
+   \c userdata.
+ */
 
 //  *-*-*-*-*-*-*-*-   N L S _ S O L V E _ W I T H O U T _ M A T   -*-*-*-*-*-*
 
 void nls_solve_without_mat( void **data,
-                            void *userdata, 
-                            int *status, 
-                            int n, 
-                            int m, 
-                            real_wp_ x[], 
-                            real_wp_ c[], 
-                            real_wp_ g[], 
+                            void *userdata,
+                            int *status,
+                            int n,
+                            int m,
+                            real_wp_ x[],
+                            real_wp_ c[],
+                            real_wp_ g[],
                             int (*eval_c)(
-                              int, int, const real_wp_[], real_wp_[], 
-                              const void * ), 
+                              int, int, const real_wp_[], real_wp_[],
+                              const void * ),
                             int (*eval_jprod)(
-                              int, int, const real_wp_[], const bool, 
-                              real_wp_[], const real_wp_[], bool, 
+                              int, int, const real_wp_[], const bool,
+                              real_wp_[], const real_wp_[], bool,
                               const void * ),
                             int (*eval_hprod)(
-                              int, int, const real_wp_[], const real_wp_[], 
-                              real_wp_[], const real_wp_[], bool, 
-                              const void * ), 
-                            int p_ne, 
+                              int, int, const real_wp_[], const real_wp_[],
+                              real_wp_[], const real_wp_[], bool,
+                              const void * ),
+                            int p_ne,
                             int (*eval_hprods)(
-                              int, int, int, const real_wp_[], 
-                              const real_wp_[], real_wp_[], bool, 
+                              int, int, int, const real_wp_[],
+                              const real_wp_[], real_wp_[], bool,
                               const void * ) );
 
 /*!<
  Find a local minimizer of a given function using a trust-region method.
 
- This call is for the case where access to \f$H = \nabla_{xx}f(x)\f$ is 
- provided by Hessian-vector products, and all function/derivative 
+ This call is for the case where access to \f$H = \nabla_{xx}f(x)\f$ is
+ provided by Hessian-vector products, and all function/derivative
  information is available by function calls.
 
  @param[in,out] data holds private internal data
@@ -1601,7 +1602,7 @@ void nls_solve_without_mat( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -17. The step is too small to make further impact.
   \li -18. Too many iterations have been performed. This may happen if
@@ -1610,112 +1611,112 @@ void nls_solve_without_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -82. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
- 
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
  @param[in] m is a scalar variable of type int, that holds the number of
     residuals.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[out] c is a one-dimensional array of size m and type double, that 
+
+ @param[out] c is a one-dimensional array of size m and type double, that
     holds the residual \f$c(x)\f$.
     The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
-  
- @param[out] g is a one-dimensional array of size n and type double, that 
-    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function. 
-    The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param eval_c is a user-supplied function that must have the following 
-   signature:
-   \code
-        int eval_c( int n, const double x[], double c[], const void *userdata ) 
-   \endcode
-   The componnts of the residual function \f$c(x)\f$ evaluated at x=\f$x\f$ 
-   must be assigned to c, and the function return value set to 0. If the 
-   evaluation is impossible at x, return should be set to a nonzero value.
-   Data may be passed into \c eval_c via the structure \c userdata. 
 
- @param eval_jprod is a user-supplied function that must have the following 
+ @param[out] g is a one-dimensional array of size n and type double, that
+    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
+    The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
+
+ @param eval_c is a user-supplied function that must have the following
    signature:
    \code
-      int eval_jprod( int n, int m, const double x[], bool transpose, 
-                      double u[], const double v[], bool got_j, 
+        int eval_c( int n, const double x[], double c[], const void *userdata )
+   \endcode
+   The componnts of the residual function \f$c(x)\f$ evaluated at x=\f$x\f$
+   must be assigned to c, and the function return value set to 0. If the
+   evaluation is impossible at x, return should be set to a nonzero value.
+   Data may be passed into \c eval_c via the structure \c userdata.
+
+ @param eval_jprod is a user-supplied function that must have the following
+   signature:
+   \code
+      int eval_jprod( int n, int m, const double x[], bool transpose,
+                      double u[], const double v[], bool got_j,
                       const void *userdata )
    \endcode
    The sum \f$u + \nabla_{x}c_(x) v\f$ (if tranpose is false) or
    The sum \f$u + (\nabla_{x}c_(x))^T v\f$ (if tranpose is true)
    bewteen the product of the Jacobian \f$\nabla_{x}c_(x)\f$ or its tranpose
-   with the vector v=\f$v\f$ and the vector $\f$u\f$ must be returned in u, 
-   and the function return value set to 0. If the evaluation is impossible 
+   with the vector v=\f$v\f$ and the vector $\f$u\f$ must be returned in u,
+   and the function return value set to 0. If the evaluation is impossible
    at x, return should be set to a nonzero value.
-   Data may be passed into \c eval_jprod via the structure \c userdata. 
+   Data may be passed into \c eval_jprod via the structure \c userdata.
 
- @param eval_hprod is a user-supplied function that must have the following 
+ @param eval_hprod is a user-supplied function that must have the following
    signature:
    \code
-        int eval_hprod( int n, int m, const double x[], const double y[], 
-                        double u[], const double v[], bool got_h, 
+        int eval_hprod( int n, int m, const double x[], const double y[],
+                        double u[], const double v[], bool got_h,
                         const void *userdata )
    \endcode
-   The sum \f$u + \sum_{i=1}^m y_i  \nabla_{xx}c_i(x) v\f$ of the product of 
-   the weighted residual Hessian \f$H = \sum_{i=1}^m y_i  \nabla_{xx}c_i(x)\f$ 
-   evaluated at x=\f$x\f$ and y=\f$y\f$ with the vector v=\f$v\f$ and the 
-   vector $\f$u\f$ must be returned in u, and the function return value 
-   set to 0. If the evaluation is impossible at x, return should be set to 
+   The sum \f$u + \sum_{i=1}^m y_i  \nabla_{xx}c_i(x) v\f$ of the product of
+   the weighted residual Hessian \f$H = \sum_{i=1}^m y_i  \nabla_{xx}c_i(x)\f$
+   evaluated at x=\f$x\f$ and y=\f$y\f$ with the vector v=\f$v\f$ and the
+   vector $\f$u\f$ must be returned in u, and the function return value
+   set to 0. If the evaluation is impossible at x, return should be set to
    a nonzero value.
    The Hessians have already been evaluated or used at x if got_h is true.
-   Data may be passed into \c eval_hprod via the structure \c userdata. 
+   Data may be passed into \c eval_hprod via the structure \c userdata.
 
- @param[in] p_ne is a scalar variable of type int, that holds the number of 
-    entries in the residual-Hessians-vector product matrix \f$P\f$ if it 
+ @param[in] p_ne is a scalar variable of type int, that holds the number of
+    entries in the residual-Hessians-vector product matrix \f$P\f$ if it
     is used.
 
- @param  eval_hprods is an optional user-supplied function that may be NULL. 
+ @param  eval_hprods is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
-       int eval_hprods( int n, int m, int p_ne, const double x[], 
-                        const double v[], double pval[], bool got_h, 
+       int eval_hprods( int n, int m, int p_ne, const double x[],
+                        const double v[], double pval[], bool got_h,
                         const void *userdata )
    \endcode
-   The entries of the matrix \f$P\f$, whose i-th column is the 
-   product \f$\nabla_{xx}c_i(x) v\f$ between \f$\nabla_{xx}c_i(x)\f$, the 
-   Hessian of the i-th component of the residual \f$c(x)\f$ at x=\f$x\f$, and 
-   v=\f$v\f$ must be returned in pval and the function return value set to 0. 
-   If the evaluation is impossible at x, return should be set to a nonzero 
-   value.   Data may be passed into \c eval_hprods via the structure 
-   \c userdata. 
- */ 
+   The entries of the matrix \f$P\f$, whose i-th column is the
+   product \f$\nabla_{xx}c_i(x) v\f$ between \f$\nabla_{xx}c_i(x)\f$, the
+   Hessian of the i-th component of the residual \f$c(x)\f$ at x=\f$x\f$, and
+   v=\f$v\f$ must be returned in pval and the function return value set to 0.
+   If the evaluation is impossible at x, return should be set to a nonzero
+   value.   Data may be passed into \c eval_hprods via the structure
+   \c userdata.
+ */
 
 //  *-*-*-*-*-   N L S _ S O L V E _ R E V E R S E _ W I T H _ M A T   -*-*-*-*
 
 void nls_solve_reverse_with_mat( void **data,
-                                 int *status, 
-                                 int *eval_status, 
-                                 int n, 
-                                 int m, 
-                                 real_wp_ x[], 
-                                 real_wp_ c[], 
-                                 real_wp_ g[], 
-                                 int j_ne, 
-                                 real_wp_ J_val[], 
-                                 const real_wp_ y[], 
-                                 int h_ne, 
-                                 real_wp_ H_val[], 
+                                 int *status,
+                                 int *eval_status,
+                                 int n,
+                                 int m,
+                                 real_wp_ x[],
+                                 real_wp_ c[],
+                                 real_wp_ g[],
+                                 int j_ne,
+                                 real_wp_ J_val[],
+                                 const real_wp_ y[],
+                                 int h_ne,
+                                 real_wp_ H_val[],
                                  real_wp_ v[],
-                                 int p_ne, 
+                                 int p_ne,
                                  real_wp_ P_val[] );
 
 /*!<
  Find a local minimizer of a given function using a trust-region method.
 
- This call is for the case where \f$H = \nabla_{xx}f(x)\f$ is 
- provided specifically, but function/derivative information is only 
+ This call is for the case where \f$H = \nabla_{xx}f(x)\f$ is
+ provided specifically, but function/derivative information is only
  available by returning to the calling procedure
 
  @param[in,out] data holds private internal data
@@ -1745,7 +1746,7 @@ void nls_solve_reverse_with_mat( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -17. The step is too small to make further impact.
   \li -18. Too many iterations have been performed. This may happen if
@@ -1754,133 +1755,133 @@ void nls_solve_reverse_with_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -82. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
 
-  \li  2. The user should compute the vector of residuals \f$c(x)\f$ at 
-         the point \f$x\f$ indicated in x and then re-enter the function. 
-         The required value should be set in c, and eval_status should be 
-         set to 0. If the user is unable to evaluate \f$c(x)\f$--- for 
-         instance, if the function is undefined at \f$x\f$--- the user need 
+  \li  2. The user should compute the vector of residuals \f$c(x)\f$ at
+         the point \f$x\f$ indicated in x and then re-enter the function.
+         The required value should be set in c, and eval_status should be
+         set to 0. If the user is unable to evaluate \f$c(x)\f$--- for
+         instance, if the function is undefined at \f$x\f$--- the user need
          not set c, but should then set eval_status to a non-zero value.
 
-  \li   3. The user should compute the Jacobian of the vector of residual 
-         functions, \f$\nabla_x c(x)\f$, at the point \f$x\f$ indicated in x 
-         and then re-enter the function. The l-th component of the Jacobian 
-         stored according to the scheme specified for the remainder of 
-         \f$J\f$ in the earlier call to nls_import should be set in J_val[l], 
-         for l = 0, ..., J_ne-1 and eval_status should be set to 0. 
-         If the user is unable to evaluate a component of \f$J\f$ --- for 
-         instance, if a component of the matrix is undefined at 
-         \f$x\f$ --- the user need not set J_val, but should 
+  \li   3. The user should compute the Jacobian of the vector of residual
+         functions, \f$\nabla_x c(x)\f$, at the point \f$x\f$ indicated in x
+         and then re-enter the function. The l-th component of the Jacobian
+         stored according to the scheme specified for the remainder of
+         \f$J\f$ in the earlier call to nls_import should be set in J_val[l],
+         for l = 0, ..., J_ne-1 and eval_status should be set to 0.
+         If the user is unable to evaluate a component of \f$J\f$ --- for
+         instance, if a component of the matrix is undefined at
+         \f$x\f$ --- the user need not set J_val, but should
          then set eval_status to a non-zero value.
 
  @param status (continued)
   \li   4. The user should compute the matrix
-         \f$H = \sum_{i=1}^m v_i  \nabla_{xx}c_i(x)\f$ 
+         \f$H = \sum_{i=1}^m v_i  \nabla_{xx}c_i(x)\f$
          of weighted residual Hessian evaluated at x=\f$x\f$ and v=\f$v\f$
-         and then re-enter the function. The l-th component of the matrix 
-         stored according to the scheme specified for the remainder of 
-         \f$H\f$ in the earlier call to nls_import should be set in H_val[l], 
-         for l = 0, ..., H_ne-1 and eval_status should be set to 0. 
-         If the user is unable to evaluate a component of \f$H\f$ --- for 
-         instance, if a component of the matrix is undefined at 
-         \f$x\f$ --- the user need not set H_val, but should 
+         and then re-enter the function. The l-th component of the matrix
+         stored according to the scheme specified for the remainder of
+         \f$H\f$ in the earlier call to nls_import should be set in H_val[l],
+         for l = 0, ..., H_ne-1 and eval_status should be set to 0.
+         If the user is unable to evaluate a component of \f$H\f$ --- for
+         instance, if a component of the matrix is undefined at
+         \f$x\f$ --- the user need not set H_val, but should
          then set eval_status to a non-zero value. \b Note that this
          return will not happen if the Gauss-Newton model is selected.
-  \li   7. The user should compute the entries of the matrix \f$P\f$, 
-          whose i-th column is the product \f$\nabla_{xx}c_i(x) v\f$ between 
-         \f$\nabla_{xx}c_i(x)\f$, the Hessian of the i-th component of the 
-         residual \f$c(x)\f$ at x=\f$x\f$, and v=\f$v\f$ and then re-enter 
-         the function. The l-th component of the matrix 
-         stored according to the scheme specified for the remainder of 
-         \f$P\f$ in the earlier call to nls_import should be set in P_val[l], 
-         for l = 0, ..., P_ne-1 and eval_status should be set to 0. 
-         If the user is unable to evaluate a component of \f$P\f$ --- for 
-         instance, if a component of the matrix is undefined at 
-         \f$x\f$ --- the user need not set P_val, but should 
-         then set eval_status to a non-zero value. 
-         \b Note that this return will not happen if either the Gauss-Newton 
+  \li   7. The user should compute the entries of the matrix \f$P\f$,
+          whose i-th column is the product \f$\nabla_{xx}c_i(x) v\f$ between
+         \f$\nabla_{xx}c_i(x)\f$, the Hessian of the i-th component of the
+         residual \f$c(x)\f$ at x=\f$x\f$, and v=\f$v\f$ and then re-enter
+         the function. The l-th component of the matrix
+         stored according to the scheme specified for the remainder of
+         \f$P\f$ in the earlier call to nls_import should be set in P_val[l],
+         for l = 0, ..., P_ne-1 and eval_status should be set to 0.
+         If the user is unable to evaluate a component of \f$P\f$ --- for
+         instance, if a component of the matrix is undefined at
+         \f$x\f$ --- the user need not set P_val, but should
+         then set eval_status to a non-zero value.
+         \b Note that this return will not happen if either the Gauss-Newton
          or Newton models is selected.
- 
- @param[in,out] eval_status is a scalar variable of type int, that is used to 
-    indicate if  objective function/gradient/Hessian values can be provided 
-    (see above) 
-  
+
+ @param[in,out] eval_status is a scalar variable of type int, that is used to
+    indicate if  objective function/gradient/Hessian values can be provided
+    (see above)
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
  @param[in] m is a scalar variable of type int, that holds the number of
     residuals.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[in,out] c is a one-dimensional array of size m and type double, that 
+
+ @param[in,out] c is a one-dimensional array of size m and type double, that
     holds the residual \f$c(x)\f$.
     The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
     See status = 2, above, for more details.
-  
- @param[in,out] g is a one-dimensional array of size n and type double, that 
-    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function. 
+
+ @param[in,out] g is a one-dimensional array of size n and type double, that
+    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] j_ne is a scalar variable of type int, that holds the number of 
+
+ @param[in] j_ne is a scalar variable of type int, that holds the number of
     entries in the Jacobian matrix \f$J\f$.
- 
- @param[in] J_val is a one-dimensional array of size j_ne and type double, 
-    that holds the values of the entries of the Jacobian matrix \f$J\f$ 
-    in any of the available storage schemes. 
+
+ @param[in] J_val is a one-dimensional array of size j_ne and type double,
+    that holds the values of the entries of the Jacobian matrix \f$J\f$
+    in any of the available storage schemes.
     See status = 3, above, for more details.
 
- @param[in,out] y is a one-dimensional array of size m and type double, that is 
+ @param[in,out] y is a one-dimensional array of size m and type double, that is
     used for reverse communication.
     See status = 4 above for more details.
 
- @param[in] h_ne is a scalar variable of type int, that holds the number of 
+ @param[in] h_ne is a scalar variable of type int, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
- 
- @param[in] H_val is a one-dimensional array of size h_ne and type double, 
-    that holds the values of the entries of the lower triangular part of the 
+
+ @param[in] H_val is a one-dimensional array of size h_ne and type double,
+    that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
     See status = 4, above, for more details.
 
- @param[in,out] v is a one-dimensional array of size n and type double, that is 
+ @param[in,out] v is a one-dimensional array of size n and type double, that is
     used for reverse communication.
     See status = 7, above, for more details.
 
- @param[in] p_ne is a scalar variable of type int, that holds the number of 
+ @param[in] p_ne is a scalar variable of type int, that holds the number of
     entries in the residual-Hessians-vector product matrix, \f$P\f$.
- 
- @param[in] P_val is a one-dimensional array of size p_ne and type double, 
-    that holds the values of the entries of the residual-Hessians-vector 
+
+ @param[in] P_val is a one-dimensional array of size p_ne and type double,
+    that holds the values of the entries of the residual-Hessians-vector
     product matrix, \f$P\f$.
     See status = 7, above, for more details.
-*/  
+*/
 
 //  *-*-*-   N L S _ S O L V E _ R E V E R S E _ W I T H O U T _ M A T   -*-*-*
 
 void nls_solve_reverse_without_mat( void **data,
-                                    int *status, 
-                                    int *eval_status, 
-                                    int n, 
-                                    int m, 
-                                    real_wp_ x[], 
-                                    real_wp_ c[], 
-                                    real_wp_ g[], 
+                                    int *status,
+                                    int *eval_status,
+                                    int n,
+                                    int m,
+                                    real_wp_ x[],
+                                    real_wp_ c[],
+                                    real_wp_ g[],
                                     bool *transpose,
-                                    real_wp_ u[], 
+                                    real_wp_ u[],
                                     real_wp_ v[],
                                     real_wp_ y[],
-                                    int p_ne, 
+                                    int p_ne,
                                     real_wp_ P_val[] );
 
 /*!<
  Find a local minimizer of a given function using a trust-region method.
 
- This call is for the case where access to \f$H = \nabla_{xx}f(x)\f$ is 
- provided by Hessian-vector products, but function/derivative information 
+ This call is for the case where access to \f$H = \nabla_{xx}f(x)\f$ is
+ provided by Hessian-vector products, but function/derivative information
  is only available by returning to the calling procedure.
 
  @param[in,out] data holds private internal data
@@ -1912,7 +1913,7 @@ void nls_solve_reverse_without_mat( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
 
   \li -17. The step is too small to make further impact.
@@ -1922,101 +1923,101 @@ void nls_solve_reverse_without_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -82. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
 
-  \li  2. The user should compute the vector of residuals \f$c(x)\f$ at 
-         the point \f$x\f$ indicated in x and then re-enter the function. 
-         The required value should be set in c, and eval_status should be 
-         set to 0. If the user is unable to evaluate \f$c(x)\f$--- for 
-         instance, if the function is undefined at \f$x\f$--- the user need 
+  \li  2. The user should compute the vector of residuals \f$c(x)\f$ at
+         the point \f$x\f$ indicated in x and then re-enter the function.
+         The required value should be set in c, and eval_status should be
+         set to 0. If the user is unable to evaluate \f$c(x)\f$--- for
+         instance, if the function is undefined at \f$x\f$--- the user need
          not set c, but should then set eval_status to a non-zero value.
 
-  \li  5. The user should compute the sum \f$u + \nabla_{x}c_(x) v\f$ 
-         (if tranpose is false) or \f$u + (\nabla_{x}c_(x))^T v\f$ 
-         (if tranpose is true) between the product of the Jacobian 
-         \f$\nabla_{x}c_(x)\f$ or its tranpose with the vector v=\f$v\f$ and 
+  \li  5. The user should compute the sum \f$u + \nabla_{x}c_(x) v\f$
+         (if tranpose is false) or \f$u + (\nabla_{x}c_(x))^T v\f$
+         (if tranpose is true) between the product of the Jacobian
+         \f$\nabla_{x}c_(x)\f$ or its tranpose with the vector v=\f$v\f$ and
          the vector u = $\f$u\f$, and then re-enter the function.
-         The result should be set in u, and eval_status should be set to 0. 
-         If the user is unable to evaluate the sum --- for 
-         instance, if the Jacobian is undefined at \f$x\f$ --- the user need 
+         The result should be set in u, and eval_status should be set to 0.
+         If the user is unable to evaluate the sum --- for
+         instance, if the Jacobian is undefined at \f$x\f$ --- the user need
          not set u, but should then set eval_status to a non-zero value.
 
-  \li  6. The user should compute the sum 
-         \f$u + \sum_{i=1}^m y_i \nabla_{xx}c_i(x) v\f$ between the product 
-         of the weighted residual Hessian 
-         \f$H = \sum_{i=1}^m y_i  \nabla_{xx}c_i(x)\f$ 
+  \li  6. The user should compute the sum
+         \f$u + \sum_{i=1}^m y_i \nabla_{xx}c_i(x) v\f$ between the product
+         of the weighted residual Hessian
+         \f$H = \sum_{i=1}^m y_i  \nabla_{xx}c_i(x)\f$
          evaluated at x=\f$x\f$ and y=\f$y\f$ with the vector v=\f$v\f$
          and the the vector u = $\f$u\f$, and then re-enter the function.
-         The result should be set in u, and eval_status should be set to 0. 
-         If the user is unable to evaluate the sum --- for 
-         instance, if the weifghted residual Hessian is undefined at 
-         \f$x\f$ --- the user need not set u, but should then set eval_status 
+         The result should be set in u, and eval_status should be set to 0.
+         If the user is unable to evaluate the sum --- for
+         instance, if the weifghted residual Hessian is undefined at
+         \f$x\f$ --- the user need not set u, but should then set eval_status
          to a non-zero value.
 
-  \li   7. The user should compute the entries of the matrix \f$P\f$, whose 
-         i-th column is the product \f$\nabla_{xx}c_i(x) v\f$ between 
-         \f$\nabla_{xx}c_i(x)\f$, the Hessian of the i-th component of the 
-         residual \f$c(x)\f$ at x=\f$x\f$, and v=\f$v\f$ and then re-enter 
-         the function. The l-th component of the matrix 
-         stored according to the scheme specified for the remainder of 
-         \f$P\f$ in the earlier call to nls_import should be set in P_val[l], 
-         for l = 0, ..., P_ne-1 and eval_status should be set to 0. 
-         If the user is unable to evaluate a component of \f$P\f$ --- for 
-         instance, if a component of the matrix is undefined at 
-         \f$x\f$ --- the user need not set P_val, but should 
+  \li   7. The user should compute the entries of the matrix \f$P\f$, whose
+         i-th column is the product \f$\nabla_{xx}c_i(x) v\f$ between
+         \f$\nabla_{xx}c_i(x)\f$, the Hessian of the i-th component of the
+         residual \f$c(x)\f$ at x=\f$x\f$, and v=\f$v\f$ and then re-enter
+         the function. The l-th component of the matrix
+         stored according to the scheme specified for the remainder of
+         \f$P\f$ in the earlier call to nls_import should be set in P_val[l],
+         for l = 0, ..., P_ne-1 and eval_status should be set to 0.
+         If the user is unable to evaluate a component of \f$P\f$ --- for
+         instance, if a component of the matrix is undefined at
+         \f$x\f$ --- the user need not set P_val, but should
          then set eval_status to a non-zero value.
-         \b Note that this return will not happen if either the Gauss-Newton 
+         \b Note that this return will not happen if either the Gauss-Newton
          or Newton models is selected.
- 
- @param[in,out] eval_status is a scalar variable of type int, that is used to 
-    indicate if  objective function/gradient/Hessian values can be provided 
-    (see above) 
-  
+
+ @param[in,out] eval_status is a scalar variable of type int, that is used to
+    indicate if  objective function/gradient/Hessian values can be provided
+    (see above)
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
  @param[in] m is a scalar variable of type int, that holds the number of
     residuals.
 
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[in,out] c is a one-dimensional array of size m and type double, that 
+
+ @param[in,out] c is a one-dimensional array of size m and type double, that
     holds the residual \f$c(x)\f$.
     The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
     See status = 2, above, for more details.
-  
- @param[in,out] g is a one-dimensional array of size n and type double, that 
-    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function. 
+
+ @param[in,out] g is a one-dimensional array of size n and type double, that
+    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
+
  @param[out] transpose is a scalar variable of type bool, that indicates
-   whether the product with Jacobian or its transpose should be obtained when 
+   whether the product with Jacobian or its transpose should be obtained when
    status=5.
 
- @param[in,out] u is a one-dimensional array of size max(n,m) and type double, 
+ @param[in,out] u is a one-dimensional array of size max(n,m) and type double,
     that is used for reverse communication.
     See status = 5,6 above for more details.
-  
- @param[in,out] v is a one-dimensional array of size max(n,m) and type double, 
+
+ @param[in,out] v is a one-dimensional array of size max(n,m) and type double,
     that is used for reverse communication.
     See status = 5,6,7 above for more details.
 
- @param[in,out] y is a one-dimensional array of size m and type double, that is 
+ @param[in,out] y is a one-dimensional array of size m and type double, that is
     used for reverse communication.
     See status = 6 above for more details.
 
- @param[in] p_ne is a scalar variable of type int, that holds the number of 
+ @param[in] p_ne is a scalar variable of type int, that holds the number of
     entries in the residual-Hessians-vector product matrix, \f$P\f$.
- 
- @param[in] P_val is a one-dimensional array of size P_ne and type double, 
-    that holds the values of the entries of the residual-Hessians-vector 
+
+ @param[in] P_val is a one-dimensional array of size P_ne and type double,
+    that holds the values of the entries of the residual-Hessians-vector
     product matrix, \f$P\f$.
     See status = 7, above, for more details.
 
-*/  
+*/
 
 // *-*-*-*-*-*-*-*-*-*-    N L S  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
@@ -2030,7 +2031,7 @@ void nls_information( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] inform   is a struct containing output information
-              (see nls_inform_type) 
+              (see nls_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -2040,8 +2041,8 @@ void nls_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    N L S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void nls_terminate( void **data, 
-                    struct nls_control_type *control, 
+void nls_terminate( void **data,
+                    struct nls_control_type *control,
                     struct nls_inform_type *inform );
 
 /*!<
@@ -2049,7 +2050,7 @@ void nls_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see nls_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -2063,11 +2064,11 @@ void nls_terminate( void **data,
    (Jacobian, Hessian, residual-Hessians-vector product)
    are directly available and when their product with vectors may be found.
    Both function call evaluations and returns to the calling program
-   to find the required values are illustrated. A variety of supported 
+   to find the required values are illustrated. A variety of supported
    Hessian storage formats are shown.
-  
+
    Notice that C-style indexing is used, and that this is flaggeed by
-   setting \c control.f_indexing to \c false. In addition, see how 
+   setting \c control.f_indexing to \c false. In addition, see how
    parameters may be passed into the evaluation functions via \c userdata.\n
 
    \example nlstf.c

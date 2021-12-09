@@ -16,14 +16,14 @@
  */
 
 /*! \mainpage GALAHAD C package sls
- 
+
   \section sls_intro Introduction
 
   \subsection sls_purpose Purpose
 
 This package
 <b> solves dense or sparse symmetric systems of linear equations</b>
-using variants of Gaussian elimination.  Given a sparse symmetric 
+using variants of Gaussian elimination.  Given a sparse symmetric
 \f$n \times n\f$ matrix \f$A\f$, and an \f$n\f$-vector \f$b\f$, this
 subroutine solves the system \f$A x = b\f$.  The matrix \f$A\f$ need not
 be definite.
@@ -58,7 +58,7 @@ The solvers used each produce an \f$L D L^T\f$ factorization of
 \f$A\f$ or a perturbation thereof, where \f$L\f$ is a permuted
 lower triangular matrix and \f$D\f$ is a block diagonal matrix with
 blocks of order 1 and 2. It is convenient to write this factorization in
-the form 
+the form
 \f[A + E = P L D L^T P^T,\f] where
 \f$P\f$ is a permutation matrix and \f$E\f$ is any diagonal
 perturbation introduced.
@@ -66,7 +66,7 @@ perturbation introduced.
 
   \subsection sls_solvers Supported external solvers
 
-The key features of the external solvers supported by sls are 
+The key features of the external solvers supported by sls are
 given in the following table.
 
 \manonly
@@ -77,7 +77,7 @@ given in the following table.
 
 <table>
 <caption>External solver characteristics</caption>
-<tr><th> solver <th> factorization <th> indefinite \f$A\f$ 
+<tr><th> solver <th> factorization <th> indefinite \f$A\f$
     <th> out-of-core <th> parallelised
 <tr><td> \c SILS/MA27 <td> multifrontal <td> yes <td> no <td> no
 <tr><td> \c HSL_MA57 <td> multifrontal <td> yes <td> no <td> no
@@ -87,7 +87,7 @@ given in the following table.
 <tr><td> \c HSL_MA97 <td> multifrontal <td> yes <td> no <td> OpenMP core
 <tr><td> \c SSIDS <td> multifrontal <td> yes <td> no <td> CUDA core
 <tr><td> \c PARDISO <td> left-right-looking <td> yes <td> no <td> OpenMP fully
-<tr><td> \c MKL_PARDISO <td> left-right-looking <td> yes <td> optionally 
+<tr><td> \c MKL_PARDISO <td> left-right-looking <td> yes <td> optionally
      <td> OpenMP fully
 <tr><td> \c WSMP <td> left-right-looking <td> yes <td> no <td> OpenMP fully
 <tr><td> \c POTR <td> dense <td> no <td> no <td> with parallel LAPACK
@@ -113,8 +113,6 @@ External solver characteristics (ooc = out-of-core factorization)
  SYTR        dense                 yes   no    with parallel LAPACK
  PBTR        dense band             no   no    with parallel LAPACK
 \endmanonly
-
-
 
   \subsection sls_method Method
 
@@ -190,7 +188,7 @@ and papers
 
 O. Schenk and K. G&auml;rtner,
 ``Solving Unsymmetric Sparse Systems of Linear Equations with PARDISO''.
-Journal of Future Generation Computer Systems \b, 20(3) (2004) 475--487, 
+Journal of Future Generation Computer Systems \b, 20(3) (2004) 475--487,
 
 O. Schenk and K. G&auml;rtner,
 ``On fast factorization pivoting methods for symmetric indefinite systems''.
@@ -206,21 +204,21 @@ NY 10598, USA (2010).
 
 
   \subsection sls_call_order Call order
-  To solve a given problem, functions from the sls package must be called 
+  To solve a given problem, functions from the sls package must be called
   in the following order:
 
   - \link sls_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link sls_read_specfile \endlink (optional) - override control values 
+  - \link sls_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - \link sls_analyse_matrix \endlink - set up matrix data structures
        and analyse the structure to choose a suitable order for factorization
-  - \link sls_reset_control \endlink (optional) - possibly change control 
+  - \link sls_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
-  - \link sls_factorize_matrix \endlink - form and factorize the block
-      matrix from its components
+  - \link sls_factorize_matrix \endlink - form and factorize the
+      matrix \f$A\f$
   - one of
-    - \link sls_solve_system \endlink - solve the linear system of 
+    - \link sls_solve_system \endlink - solve the linear system of
         equations \f$Ax=b\f$
     - \link sls_partial_solve_system \endlink - solve a linear system
         \f$Mx=b\f$ involving one of the matrix factors \f$M\f$ of \f$A\f$
@@ -239,27 +237,27 @@ NY 10598, USA (2010).
   \endmanonly
  \subsection main_symmetric_matrices Symmetric matrix storage formats
 
-  The symmetric \f$n\f$ by \f$n\f$ coefficient matrix \f$A\f$ may be presented 
-  and stored in a variety of convenient input formats.  Crucially symmetry 
-  is exploited  by only storing values from the lower triangular part 
-  (i.e, those entries that lie on or below the leading diagonal). 
+  The symmetric \f$n\f$ by \f$n\f$ coefficient matrix \f$A\f$ may be presented
+  and stored in a variety of convenient input formats.  Crucially symmetry
+  is exploited  by only storing values from the lower triangular part
+  (i.e, those entries that lie on or below the leading diagonal).
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
 
   Wrappers will automatically convert between 0-based (C) and 1-based
   (fortran) array indexing, so may be used transparently from C. This
   conversion involves both time and memory overheads that may be avoided
-  by supplying data that is already stored using 1-based indexing. 
+  by supplying data that is already stored using 1-based indexing.
 
   \subsubsection symmetric_matrix_dense Dense storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   Since \f$A\f$ is symmetric, only the lower triangular part (that is the part
-  \f$A_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held. 
+  \f$A_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
   In this case the lower triangle should be stored by rows, that is
   component \f$i \ast i / 2 + j\f$  of the storage array val
   will hold the value \f$A_{ij}\f$ (and, by symmetry, \f$A_{ji}\f$)
@@ -268,7 +266,7 @@ NY 10598, USA (2010).
   \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
-  its row index i, column index j 
+  its row index i, column index j
   and value \f$A_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays row and
   col and real array val, respectively, while the number of nonzeros
@@ -281,7 +279,7 @@ NY 10598, USA (2010).
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array ptr holds the position of the first entry in this row,
   while ptr(n) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq i\f$, and values 
+  The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$A_{ij}\f$ of the  entries in the i-th row are stored in components
   l = ptr(i), \f$\ldots\f$, ptr(i+1)-1 of the
   integer array col, and real array val, respectively.
@@ -297,7 +295,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_SLS_H 
+#ifndef GALAHAD_SLS_H
 #define GALAHAD_SLS_H
 
 // precision
@@ -413,7 +411,7 @@ struct sls_control_type {
     ///        occur immediately a pivot sign change is detected.
     /// \li 3  No pivoting will be performed and an error exit will
     ///        occur if a zero pivot is detected.
-    /// \li 4  No pivoting is performed but pivots are changed to all be 
+    /// \li 4  No pivoting is performed but pivots are changed to all be
     ///        positive
     int pivot_control;
 
@@ -421,17 +419,17 @@ struct sls_control_type {
     /// controls ordering (ignored if explicit PERM argument present)
     /// \li <0  chosen by the specified solver with its
     ///        own ordering-selected value -ordering
-    /// \li 0  chosen package default (or the AMD ordering if no package 
+    /// \li 0  chosen package default (or the AMD ordering if no package
     ///        default)
-    /// \li 1  Approximate minimum degree (AMD) with provisions for "dense" 
+    /// \li 1  Approximate minimum degree (AMD) with provisions for "dense"
     ///        rows/col
     /// \li 2  Minimum degree
     /// \li 3  Nested disection
-    /// \li 4  indefinite ordering to generate a combination of 1x1 
+    /// \li 4  indefinite ordering to generate a combination of 1x1
     ///        and 2x2 pivots
     /// \li 5  Profile/Wavefront reduction
     /// \li 6  Bandwidth reduction
-    /// \li >6  ordering chosen depending on matrix characteristics 
+    /// \li >6  ordering chosen depending on matrix characteristics
     ///        (not yet implemented)
     int ordering;
 
@@ -917,8 +915,8 @@ struct sls_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    S L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void sls_initialize( const char solver[], 
-                     void **data, 
+void sls_initialize( const char solver[],
+                     void **data,
                      struct sls_control_type *control,
                      int *status );
 
@@ -926,15 +924,15 @@ void sls_initialize( const char solver[],
  Set default control values and initialize private data
 
  @param[in] solver is a one-dimensional array of type char that specifies
-    the \link external solver package \endlink 
-    that should be used to factorize the matrix \f$A\f$. It should be one of 
-   'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 
+    the \link external solver package \endlink
+    that should be used to factorize the matrix \f$A\f$. It should be one of
+   'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids',
    'pardiso', 'mkl pardiso', 'wsmp', 'potr', 'sytr' or 'pbtr';
    lower or upper case variants are allowed.
 
  @param[in,out] data  holds private internal data
 
- @param[out] control is a struct containing control information 
+ @param[out] control is a struct containing control information
               (see sls_control_type)
 
  @param[out] status is a scalar variable of type int, that gives
@@ -945,14 +943,14 @@ void sls_initialize( const char solver[],
 
 // *-*-*-*-*-*-*-*-*-    S L S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void sls_read_specfile( struct sls_control_type *control, 
+void sls_read_specfile( struct sls_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters
 
-  @param[in,out] control is a struct containing control information 
+  @param[in,out] control is a struct containing control information
               (see sls_control_type)
   @param[in]  specfile  is a character string containing the name of
               the specification file
@@ -964,10 +962,10 @@ void sls_analyse_matrix( struct sls_control_type *control,
                          void **data,
                          int *status,
                          int n,
-                         const char type[], 
-                         int ne, 
+                         const char type[],
+                         int ne,
                          const int row[],
-                         const int col[], 
+                         const int col[],
                          const int ptr[] );
 
 /*!<
@@ -991,7 +989,7 @@ void sls_analyse_matrix( struct sls_control_type *control,
        array is written on unit control.error and the returned allocation
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0 or requirement that the matrix type 
+  \li -3. The restrictions n > 0 or requirement that the matrix type
        must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows
        has been violated.
   \li -20. The matrix is not positive definite while the solver used
@@ -1001,7 +999,7 @@ void sls_analyse_matrix( struct sls_control_type *control,
   \li -32. More than control.max integer factor size words of internal
        integer storage are required for in-core factorization.
   \li -34. The package PARDISO failed; check the solver-specific
-       information components inform.pardiso iparm and inform.pardiso_dparm 
+       information components inform.pardiso iparm and inform.pardiso_dparm
        along with PARDISO’s documentation for more details.
   \li -35. The package WSMP failed; check the solver-specific information
        components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s
@@ -1017,29 +1015,29 @@ void sls_analyse_matrix( struct sls_control_type *control,
   \li -50. A solver-specific error occurred; check the solver-specific
        information component of inform along with the solver’s
        documentation for more details.
- 
+
  @param[in] n is a scalar variable of type int, that holds the number of
     rows in the symmetric matrix \f$A\f$.
 
  @param[in] type is a one-dimensional array of type char that specifies the
-   \link main_symmetric_matrices symmetric storage scheme \endlink 
-   used for the matrix \f$A\f$. It should be one of 'coordinate', 
+   \link main_symmetric_matrices symmetric storage scheme \endlink
+   used for the matrix \f$A\f$. It should be one of 'coordinate',
    'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.
 
  @param[in] ne is a scalar variable of type int, that holds the number of
    entries in the lower triangular part of \f$A\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in] row is a one-dimensional array of size ne and type int, that 
+ @param[in] row is a one-dimensional array of size ne and type int, that
    holds the row indices of the lower triangular part of \f$A\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
  @param[in] col is a one-dimensional array of size ne and type int,
-   that holds the column indices of the lower triangular part of \f$A\f$ in 
-   either the sparse co-ordinate, or the sparse row-wise storage scheme. It 
-   need not be set when the dense, diagonal or (scaled) identity storage 
-   schemes are used,  and in this case can be NULL.
+   that holds the column indices of the lower triangular part of \f$A\f$ in
+   either the sparse co-ordinate, or the sparse row-wise storage scheme. It
+   need not be set when the dense storage scheme is used, and in this case
+   can be NULL.
 
  @param[in]  ptr is a one-dimensional array of size n+1 and type int,
    that holds the starting position of  each row of the lower
@@ -1056,7 +1054,7 @@ void sls_reset_control( struct sls_control_type *control,
                         int *status );
 
 /*!<
- Reset control parameters after import if required. 
+ Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see sls_control_type)
@@ -1093,7 +1091,7 @@ void sls_factorize_matrix( void **data,
        array is written on unit control.error and the returned allocation
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0 or requirement that the matrix type 
+  \li -3. The restrictions n > 0 or requirement that the matrix type
        must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows
        has been violated.
   \li -20. The matrix is not positive definite while the solver used
@@ -1103,7 +1101,7 @@ void sls_factorize_matrix( void **data,
   \li -32. More than control.max integer factor size words of internal
        integer storage are required for in-core factorization.
   \li -34. The package PARDISO failed; check the solver-specific
-       information components inform.pardiso iparm and inform.pardiso_dparm 
+       information components inform.pardiso iparm and inform.pardiso_dparm
        along with PARDISO’s documentation for more details.
   \li -35. The package WSMP failed; check the solver-specific information
        components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s
@@ -1119,20 +1117,20 @@ void sls_factorize_matrix( void **data,
   \li -50. A solver-specific error occurred; check the solver-specific
        information component of inform along with the solver’s
        documentation for more details.
- 
- @param[in] ne is a scalar variable of type int, that holds the number of 
+
+ @param[in] ne is a scalar variable of type int, that holds the number of
     entries in the lower triangular part of the symmetric matrix \f$A\f$.
 
- @param[in] val is a one-dimensional array of size ne and type double, 
-    that holds the values of the entries of the lower triangular part of the 
-    symmetric matrix \f$A\f$ in any of the available storage schemes
+ @param[in] val is a one-dimensional array of size ne and type double,
+    that holds the values of the entries of the lower triangular part of the
+    symmetric matrix \f$A\f$ in any of the supported storage schemes.
 */
 
 //  *-*-*-*-*-*-*-*-   S L S _ s o l v e _ s y s t e m   -*-*-*-*-*-*-*-*-*-
 
 void sls_solve_system( void **data,
                        int *status,
-                       int n, 
+                       int n,
                        real_wp_ sol[] );
 
 /*!<
@@ -1154,7 +1152,7 @@ void sls_solve_system( void **data,
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
   \li -34. The package PARDISO failed; check the solver-specific
-       information components inform.pardiso iparm and inform.pardiso_dparm 
+       information components inform.pardiso iparm and inform.pardiso_dparm
        along with PARDISO’s documentation for more details.
   \li -35. The package WSMP failed; check the solver-specific information
        components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s
@@ -1170,22 +1168,22 @@ void sls_solve_system( void **data,
 
 //  *-*-*-*-*-   S L S _ p a r t i a l _ s o l v e _ s y s t e m   -*-*-*-*-*-
 
-void sls_partial_solve_system( const char part[], 
+void sls_partial_solve_system( const char part[],
                                void **data,
                                int *status,
-                               int n, 
+                               int n,
                                real_wp_ sol[] );
 
 /*!<
  Given the factorization \f$A = L D U\f$ with \f$U = L^T\f$,
- solve the linear system \f$Mx=b\f$, where \f$M\f$ is one of 
+ solve the linear system \f$Mx=b\f$, where \f$M\f$ is one of
  \f$L\f$, \f$D\f$, \f$U\f$ or \f$S = L \sqrt{D}\f$.
 
 
  @param[in] part is a one-dimensional array of type char that specifies the
    component \f$M\f$ of the factorization that is to be used.
    It should be one of "L", "D", "U" or "S", and these correspond to the
-   parts  \f$L\f$, \f$D\f$, \f$U\f$ and \f$S\f$; lower or upper case 
+   parts  \f$L\f$, \f$D\f$, \f$U\f$ and \f$S\f$; lower or upper case
    variants are allowed.
 
  @param[in,out] data holds private internal data
@@ -1205,7 +1203,7 @@ void sls_partial_solve_system( const char part[],
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
   \li -34. The package PARDISO failed; check the solver-specific
-       information components inform.pardiso iparm and inform.pardiso_dparm 
+       information components inform.pardiso iparm and inform.pardiso_dparm
        along with PARDISO’s documentation for more details.
   \li -35. The package WSMP failed; check the solver-specific information
        components inform.wsmp_iparm and inform.wsmp dparm along with WSMP’s
@@ -1232,7 +1230,7 @@ void sls_information( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] inform is a struct containing output information
-              (see sls_inform_type) 
+              (see sls_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -1242,8 +1240,8 @@ void sls_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    S L S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void sls_terminate( void **data, 
-                    struct sls_control_type *control, 
+void sls_terminate( void **data,
+                    struct sls_control_type *control,
                     struct sls_inform_type *inform );
 
 /*!<
@@ -1251,7 +1249,7 @@ void sls_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see sls_control_type)
 
   @param[out] inform  is a struct containing output information
@@ -1264,9 +1262,9 @@ void sls_terminate( void **data,
    This is an example of how to use the package in conjunction with the
    sparse linear solver \c sils.
    A variety of supported matrix storage formats are illustrated.
-  
+
    Notice that C-style indexing is used, and that this is flaggeed by
-   setting \c control.f_indexing to \c false. 
+   setting \c control.f_indexing to \c false.
 
     \example slstf.c
    This is the same example, but now fortran-style indexing is used.\n
