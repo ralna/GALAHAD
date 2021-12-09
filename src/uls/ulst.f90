@@ -28,6 +28,8 @@
    REAL ( KIND = wp ), DIMENSION( n ) ::                                       &
      rhs = (/ 2.0_wp, 33.0_wp, 11.0_wp, 15.0_wp, 4.0_wp /)
    REAL ( KIND = wp ), DIMENSION( n ) ::                                       &
+     rhst = (/ 8.0_wp, 12.0_wp, 23.0_wp, 5.0_wp, 12.0_wp /)
+   REAL ( KIND = wp ), DIMENSION( n ) ::                                       &
      SOL = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp /)
 
 ! Choose optional ordering
@@ -64,7 +66,7 @@
        ELSE
          write(6,"( '  provided ordering' )" )
        END IF
-       WRITE( 6,"( '   solver  1 RHS  1 refine')")
+       WRITE( 6,"( '   solver  1 RHS 1 refine 1 RHST 1 refine')")
 !      DO solver = 1, 1
        DO solver = 1, 2
 !      DO solver = 1, 5
@@ -113,6 +115,24 @@
 ! Perform one refinement
          control%max_iterative_refinements = 1
          CALL ULS_solve( matrix, B, X, data, control, inform, .FALSE. )
+         IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                        &
+                 <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+           WRITE( 6, "( '    ok  ' )", advance = 'no' )
+         ELSE
+           WRITE( 6, "( '  fail  ' )", advance = 'no' )
+         END IF
+! Solve transpose without refinement
+         B = rhst
+         CALL ULS_solve( matrix, B, X, data, control, inform, .TRUE. )
+         IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                        &
+                 <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+           WRITE( 6, "( '   ok  ' )", advance = 'no' )
+         ELSE
+           WRITE( 6, "( '  fail ' )", advance = 'no' )
+         END IF
+! Perform one refinement
+         control%max_iterative_refinements = 1
+         CALL ULS_solve( matrix, B, X, data, control, inform, .TRUE. )
          IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                        &
                  <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
            WRITE( 6, "( '    ok  ' )", advance = 'no' )

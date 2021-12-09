@@ -6155,19 +6155,12 @@
 
 !  deallocate any internal problem arrays
 
-     array_name = 'sls: data%matrix%ptr'
      CALL SPACE_dealloc_array( data%matrix%ptr,                                &
                                inform%status, inform%alloc_status )
-
-     array_name = 'sls: data%matrix%row'
      CALL SPACE_dealloc_array( data%matrix%row,                                &
                                inform%status, inform%alloc_status )
-
-     array_name = 'sls: data%matrix%col'
      CALL SPACE_dealloc_array( data%matrix%col,                                &
                                inform%status, inform%alloc_status )
-
-     array_name = 'sls: data%matrix%val'
      CALL SPACE_dealloc_array( data%matrix%val,                                &
                                inform%status, inform%alloc_status )
 
@@ -8963,9 +8956,10 @@
 !  data is a scalar variable of type SLS_full_data_type used for internal data
 !
 !  status is a scalar variable of type default intege that indicates the
-!   success or otherwise of the import. Possible values are:
+!   success or otherwise of the import and analysis. Possible values are:
 !
-!    1. The import was succesful, and the package is ready for the solve phase
+!    0. The analysis was succesful, and the package is ready for the
+!       factorization phase
 !
 !   -1. An allocation error occurred. A message indicating the offending
 !       array is written on unit control.error, and the returned allocation
@@ -8975,17 +8969,15 @@
 !       array is written on unit control.error and the returned allocation
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
-!   -3. The restriction n > 0, m >= 0 or requirement that type contains
-!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
-!       'DIAGONAL' 'SCALED_IDENTITY', 'IDENTITY', 'ZERO', or 'NONE'
+!   -3. The restriction n > 0 or requirement that type contains
+!       its relevant string 'DENSE', 'COORDINATE' or 'SPARSE_BY_ROWS',
 !       has been violated.
 !
 !  n is a scalar variable of type default integer, that holds the number of
-!   rows (and columns) of the matrix
+!   rows (and columns) of the matrix A
 !
 !  matrix_type is a character string that specifies the storage scheme used
-!   for A. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
-!   'diagonal' 'scaled_identity', 'identity', 'zero' or 'none';
+!   for A. It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
 !   lower or upper case variants are allowed.
 !
 !  matrix_ne is a scalar variable of type default integer, that holds the
@@ -8998,14 +8990,14 @@
 !   three schemes, and in this case can be of length 0
 !
 !  matrix_col is a rank-one array of type default integer,
-!   that holds the column indices of the  lower triangular part of H in either
+!   that holds the column indices of the  lower triangular part of A in either
 !   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
 !   be set when the dense, diagonal, scaled identity, identity or zero schemes
 !   are used, and in this case can be of length 0
 !
 !  matrix_ptr is a rank-one array of dimension n+1 and type default
 !   integer, that holds the starting position of  each row of the  lower
-!   triangular part of H, as well as the total number of entries plus one,
+!   triangular part of A, as well as the total number of entries plus one,
 !   in the sparse row-wise storage scheme. It need not be set when the
 !   other schemes are used, and in this case can be of length 0
 !
@@ -9164,6 +9156,51 @@
 
 !  factorize the matrix A
 
+!  Arguments are as follows:
+
+!  data is a scalar variable of type SLS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the factorization. Possible values are:
+!
+!    0. The factorization was succesful, and the package is ready for the
+!       solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!-  20. The matrix is not positive definite while the solver used expected
+!       it to be.
+!  -29. This option is not available with this solver.
+!  -32. More than control%max integer factor size words of internal integer
+!       storage are required for in-core factorization.
+!  -34. The package PARDISO failed; check the solver-specific information
+!       components inform%pardiso_iparm and inform%pardiso_dparm along with
+!       PARDISO’s documentation for more details.
+!  -35. The package WSMP failed; check the solver-specific information
+!       components inform%wsmp_iparm and inform%wsmp_dparm along with
+!       WSMP’s documentation for more details.
+!  -36. The scaling package HSL MC64 failed; check the solver-specific
+!       information component inform%mc64_info along with HSL MC64’s
+!       documentation for more details.
+!  -37. The scaling package MC77 failed; check the solver-specific information
+!      components inform%mc77_info and inform%mc77_rinfo along with MC77’s
+!      documentation for more details.
+!  -43. A direct-access file error occurred. See the value of
+!      inform%ma77_info%flag for more details.
+!  -50. A solver-specific error occurred; check the solver-specific
+!       information component of inform along with the solver’s documentation
+!       for more details.
+!
+!  matrix_val is a rank-one array of type default real, that holds the
+!   values of  the  lower triangular part of A input in precisely the same
+!   order as those for the row and column indices in SLS_analyse_matrix
+
 !  See SLS_form_and_factorize for a description of the required arguments
 
 !--------------------------------
@@ -9195,8 +9232,32 @@
 
      SUBROUTINE SLS_solve_system( data, status, SOL )
 
-!  solve the linear system A x = b, where SOL holds the right-hand side b
-!  on input, and the solution x on output.
+!  solve the linear system A x = b
+
+!  Arguments are as follows:
+
+!  data is a scalar variable of type SLS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    0. The solve was succesful
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!  -50. A solver-specific error occurred; check the solver-specific
+!       information component of inform along with the solver’s documentation
+!       for more details.
+!
+!  SOL is a rank-one array of type default real, that holds the RHS b on
+!      entry, and the solution x on a successful exit
+
 !  See SLS_solve for a description of the required arguments
 
 !--------------------------------

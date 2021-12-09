@@ -39,7 +39,7 @@
                ULS_fredholm_alternative, ULS_terminate,                        &
                ULS_enquire, ULS_read_specfile, ULS_initialize_solver,          &
                ULS_full_initialize, ULS_full_terminate,                        &
-               ULS_analyse_matrix, ULS_factorize_matrix, ULS_solve_system,     &
+               ULS_factorize_matrix, ULS_solve_system,                         &
                ULS_reset_control, ULS_information,                             &
                SMT_type, SMT_get, SMT_put
 
@@ -337,6 +337,7 @@
        TYPE ( ULS_control_type ) :: ULS_control
        TYPE ( ULS_inform_type ) :: ULS_inform
        TYPE ( SMT_type ) :: matrix
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS
      END TYPE ULS_full_data_type
 
 !--------------------------------
@@ -1522,32 +1523,21 @@
      TYPE ( ULS_control_type ), INTENT( IN ) :: control
      TYPE ( ULS_inform_type ), INTENT( INOUT ) :: inform
 
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     CHARACTER ( LEN = 80 ) :: array_name
-
 !  deallocate workspace
 
      CALL ULS_terminate( data%uls_data, control, inform )
 
 !  deallocate any internal problem arrays
 
-     array_name = 'uls: data%matrix%ptr'
      CALL SPACE_dealloc_array( data%matrix%ptr,                                &
                                inform%status, inform%alloc_status )
-
-     array_name = 'uls: data%matrix%row'
      CALL SPACE_dealloc_array( data%matrix%row,                                &
                                inform%status, inform%alloc_status )
-
-     array_name = 'uls: data%matrix%col'
      CALL SPACE_dealloc_array( data%matrix%col,                                &
                                inform%status, inform%alloc_status )
-
-     array_name = 'uls: data%matrix%val'
      CALL SPACE_dealloc_array( data%matrix%val,                                &
+                               inform%status, inform%alloc_status )
+     CALL SPACE_dealloc_array( data%RHS,                                       &
                                inform%status, inform%alloc_status )
 
      RETURN
@@ -1687,7 +1677,6 @@
 
      END FUNCTION ULS_keyword
 
-
 ! -----------------------------------------------------------------------------
 ! =============================================================================
 ! -----------------------------------------------------------------------------
@@ -1696,14 +1685,14 @@
 ! =============================================================================
 ! -----------------------------------------------------------------------------
 
-!-  G A L A H A D -  U L S _ a n a l y s e _ m a t r i x _ S U B R O U T I N E -
+! G A L A H A D - U L S _ f a c t o r i z e _ m a t r i x  S U B R O U T I N E -
 
-     SUBROUTINE ULS_analyse_matrix( control, data, status, n,                  &
-                                    matrix_type, matrix_ne,                    &
-                                    matrix_row, matrix_col, matrix_ptr )
+     SUBROUTINE ULS_factorize_matrix( control, data, status, m, n,             &
+                                      matrix_type, matrix_ne, matrix_row,      &
+                                      matrix_col, matrix_ptr, matrix_val )
 
-!  import structural matrix data into internal storage, and analyse the
-!  structure prior to factorization
+!  import structural matrix data into internal storage, analyse the structure,
+!  and then perform a factorization
 
 !  Arguments are as follows:
 
@@ -1713,9 +1702,10 @@
 !  data is a scalar variable of type ULS_full_data_type used for internal data
 !
 !  status is a scalar variable of type default intege that indicates the
-!   success or otherwise of the import. Possible values are:
+!   success or otherwise of the import and analysis. Possible values are:
 !
-!    1. The import was succesful, and the package is ready for the solve phase
+!    0. The factorization was succesful, and the package is ready for the
+!       solution phase
 !
 !   -1. An allocation error occurred. A message indicating the offending
 !       array is written on unit control.error, and the returned allocation
@@ -1726,38 +1716,43 @@
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
 !   -3. The restriction n > 0, m >= 0 or requirement that type contains
-!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
-!       'DIAGONAL' 'SCALED_IDENTITY', 'IDENTITY', 'ZERO', or 'NONE'
+!       its relevant string 'DENSE', 'COORDINATE' or 'SPARSE_BY_ROWS'
 !       has been violated.
 !
+!  m is a scalar variable of type default integer, that holds the number of
+!   rows of the matrix A
+!
 !  n is a scalar variable of type default integer, that holds the number of
-!   rows (and columns) of the matrix
+!   columns of the matrix A
 !
 !  matrix_type is a character string that specifies the storage scheme used
-!   for A. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
-!   'diagonal' 'scaled_identity', 'identity', 'zero' or 'none';
+!   for A. It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
 !   lower or upper case variants are allowed.
 !
 !  matrix_ne is a scalar variable of type default integer, that holds the
-!   number of entries in the  lower triangular part of A in the sparse
-!   co-ordinate storage scheme. It need not be set for any of the other schemes.
+!   number of entries in A in the sparse co-ordinate storage scheme.
+!   It need not be set for any of the other schemes.
 !
-!  matrix_row is a rank-one array of type default integer, that holds
-!   the row indices of the  lower triangular part of A in the sparse
-!   co-ordinate storage scheme. It need not be set for any of the other
-!   three schemes, and in this case can be of length 0
+!  matrix_row is a rank-one array of type default integer, that holds the
+!   row indices of A in the sparse co-ordinate storage scheme. It need not
+!   be set for any of the other schemes, and in this case can be of length 0
 !
-!  matrix_col is a rank-one array of type default integer,
-!   that holds the column indices of the  lower triangular part of H in either
-!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
-!   be set when the dense, diagonal, scaled identity, identity or zero schemes
-!   are used, and in this case can be of length 0
+!  matrix_col is a rank-one array of type default integer, that holds the
+!   column indices of A in either the sparse co-ordinate, or the sparse
+!   row-wise storage scheme. It need not  be set when the dense scheme is
+!   used, and in this case can be of length 0
 !
-!  matrix_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the  lower
-!   triangular part of H, as well as the total number of entries plus one,
-!   in the sparse row-wise storage scheme. It need not be set when the
-!   other schemes are used, and in this case can be of length 0
+!  matrix_ptr is a rank-one array of dimension m+1 and type default
+!   integer, that holds the starting position of each row of A, as well as
+!   the total number of entries plus one, in the sparse row-wise storage
+!   scheme. It need not be set when the other schemes are used, and in
+!   this case can be of length 0
+!
+!  matrix_val is a rank-one array of type default real, that holds the
+!   values of A input in precisely the same order as those for the row
+!   and column indices
+!
+!  See ULS_factorize for a description of the required arguments
 !
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -1765,12 +1760,13 @@
 
      TYPE ( ULS_control_type ), INTENT( INOUT ) :: control
      TYPE ( ULS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, matrix_ne
+     INTEGER, INTENT( IN ) :: m, n, matrix_ne
      INTEGER, INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: matrix_type
      INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: matrix_row
      INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: matrix_col
      INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: matrix_ptr
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: matrix_val
 
 !  copy control to data
 
@@ -1778,7 +1774,7 @@
 
 !  set A appropriately in the smt storage type
 
-     data%matrix%n = n ; data%matrix%m = n
+     data%matrix%m = m ; data%matrix%n = n
      SELECT CASE ( matrix_type )
      CASE ( 'coordinate', 'COORDINATE' )
        CALL SMT_put( data%matrix%type, 'COORDINATE',                           &
@@ -1803,9 +1799,9 @@
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        CALL SMT_put( data%matrix%type, 'SPARSE_BY_ROWS',                       &
                      data%uls_inform%alloc_status )
-       data%matrix%ne = matrix_ptr( n + 1 ) - 1
+       data%matrix%ne = matrix_ptr( m + 1 ) - 1
 
-       CALL SPACE_resize_array( n + 1, data%matrix%ptr,                        &
+       CALL SPACE_resize_array( m + 1, data%matrix%ptr,                        &
               data%uls_inform%status, data%uls_inform%alloc_status )
        IF ( data%uls_inform%status /= 0 ) GO TO 900
 
@@ -1817,55 +1813,39 @@
               data%uls_inform%status, data%uls_inform%alloc_status )
        IF ( data%uls_inform%status /= 0 ) GO TO 900
 
-       data%matrix%ptr( : n + 1 ) = matrix_ptr( : n + 1 )
+       data%matrix%ptr( : m + 1 ) = matrix_ptr( : m + 1 )
        data%matrix%col( : data%matrix%ne ) = matrix_col( : data%matrix%ne )
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%matrix%type, 'DENSE',                                &
                      data%uls_inform%alloc_status )
-       data%matrix%ne = ( n * ( n + 1 ) ) / 2
+       data%matrix%ne = m * n
 
        CALL SPACE_resize_array( data%matrix%ne, data%matrix%val,               &
               data%uls_inform%status, data%uls_inform%alloc_status )
        IF ( data%uls_inform%status /= 0 ) GO TO 900
-
-     CASE ( 'diagonal', 'DIAGONAL' )
-       CALL SMT_put( data%matrix%type, 'DIAGONAL',                             &
-                     data%uls_inform%alloc_status )
-       data%matrix%ne = n
-
-       CALL SPACE_resize_array( data%matrix%ne, data%matrix%val,               &
-              data%uls_inform%status, data%uls_inform%alloc_status )
-       IF ( data%uls_inform%status /= 0 ) GO TO 900
-
-     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
-       CALL SMT_put( data%matrix%type, 'SCALED_IDENTITY',                      &
-                     data%uls_inform%alloc_status )
-       data%matrix%ne = 1
-
-       CALL SPACE_resize_array( data%matrix%ne, data%matrix%val,               &
-              data%uls_inform%status, data%uls_inform%alloc_status )
-       IF ( data%uls_inform%status /= 0 ) GO TO 900
-
-     CASE ( 'identity', 'IDENTITY' )
-       CALL SMT_put( data%matrix%type, 'IDENTITY',                             &
-                     data%uls_inform%alloc_status )
-       data%matrix%ne = 0
-
-     CASE ( 'zero', 'ZERO', 'none', 'NONE' )
-       CALL SMT_put( data%matrix%type, 'ZERO',                                 &
-                     data%uls_inform%alloc_status )
-       data%matrix%ne = 0
 
      CASE DEFAULT
        data%uls_inform%status = GALAHAD_error_unknown_storage
        GO TO 900
      END SELECT
 
-!  analyse the sparsity structure of the matrix prior to factorization
 
-     CALL ULS_analyse( data%matrix, data%uls_data, data%uls_control,           &
-                       data%uls_inform )
+!  save the values of matrix
+
+     IF ( data%matrix%ne > 0 )                                                 &
+       data%matrix%val( : data%matrix%ne ) = matrix_val( : data%matrix%ne )
+
+!  factorize the matrix
+
+     CALL ULS_factorize( data%matrix, data%uls_data, data%uls_control,         &
+                         data%uls_inform )
+
+!  set up space for the solution vector
+
+     CALL SPACE_resize_array( MAX( m, n ), data%RHS,                           &
+            data%uls_inform%status, data%uls_inform%alloc_status )
+     IF ( data%uls_inform%status /= 0 ) GO TO 900
 
      status = data%uls_inform%status
      RETURN
@@ -1876,9 +1856,9 @@
      status = data%uls_inform%status
      RETURN
 
-!  End of subroutine ULS_analyse_matrix
+!  End of subroutine ULS_factorize_matrix
 
-     END SUBROUTINE ULS_analyse_matrix
+     END SUBROUTINE ULS_factorize_matrix
 
 !-  G A L A H A D -  U L S _ r e s e t _ c o n t r o l   S U B R O U T I N E -
 
@@ -1908,45 +1888,40 @@
 
      END SUBROUTINE ULS_reset_control
 
-! G A L A H A D - U L S _ f a c t o r i z e _ m a t r i x  S U B R O U T I N E -
-
-     SUBROUTINE ULS_factorize_matrix( data, status, matrix_val )
-
-!  factorize the matrix A
-
-!  See ULS_form_and_factorize for a description of the required arguments
-
-!--------------------------------
-!   D u m m y   A r g u m e n t s
-!--------------------------------
-
-     INTEGER, INTENT( OUT ) :: status
-     TYPE ( ULS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: matrix_val
-
-!  save the values of matrix
-
-     IF ( data%matrix%ne > 0 )                                                 &
-       data%matrix%val( : data%matrix%ne ) = matrix_val( : data%matrix%ne )
-
-!  factorize the matrix
-
-     CALL ULS_factorize( data%matrix, data%uls_data, data%uls_control,         &
-                         data%uls_inform )
-
-     status = data%uls_inform%status
-     RETURN
-
-!  end of subroutine ULS_factorize_matrix
-
-     END SUBROUTINE ULS_factorize_matrix
-
 !--  G A L A H A D -  U L S _ s o l v e _ s y s t e m   S U B R O U T I N E  -
 
-     SUBROUTINE ULS_solve_system( data, status, SOL )
+     SUBROUTINE ULS_solve_system( data, status, SOL, trans )
 
-!  solve the linear system A x = b, where SOL holds the right-hand side b
-!  on input, and the solution x on output.
+!  solve the linear system A x = b or A^T x = b
+
+!  Arguments are as follows:
+
+!  data is a scalar variable of type ULS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    0. The solve was succesful
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!  -50. A solver-specific error occurred; check the solver-specific
+!       information component of inform along with the solver’s documentation
+!       for more details.
+!
+!  SOL is a rank-one array of type default real, that holds the RHS b on
+!      entry, and the solution x on a successful exit
+!
+!  trans is a scalr variable of type logical that should be set true
+!      if the solution to the system A^T x = b is sought, and false
+!      if the solution to the system A x = b is required
+
 !  See ULS_solve for a description of the required arguments
 
 !--------------------------------
@@ -1954,13 +1929,22 @@
 !--------------------------------
 
      INTEGER, INTENT( OUT ) :: status
+     LOGICAL, INTENT( IN ) :: trans
      TYPE ( ULS_full_data_type ), INTENT( INOUT ) :: data
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: SOL
 
+!  set up the right-hand side b
+
+     IF ( trans ) THEN
+       data%RHS( : data%matrix%n ) = SOL( : data%matrix%n )
+     ELSE
+       data%RHS( : data%matrix%m ) = SOL( : data%matrix%m )
+     END IF
+
 !  solve the block linear system
 
-     CALL ULS_solve( data%matrix, SOL, data%uls_data, data%uls_control,        &
-                     data%uls_inform )
+     CALL ULS_solve( data%matrix, data%RHS, SOL, data%uls_data,                &
+                     data%uls_control, data%uls_inform, trans )
 
      status = data%uls_inform%status
      RETURN
@@ -2000,6 +1984,3 @@
 !  End of module GALAHAD_ULS_double
 
    END MODULE GALAHAD_ULS_double
-
-
-
