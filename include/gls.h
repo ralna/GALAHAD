@@ -53,7 +53,7 @@ extern "C" {
 /**
  * control derived type as a C struct
  */
-struct gls_control_type {
+struct gls_control {
 
     /// \brief
     /// use C or Fortran sparse matrix indexing
@@ -126,7 +126,7 @@ struct gls_control_type {
 
     /// \brief
     /// Density for switch to full code
-    real_wp_ switch;
+    real_wp_ switch_full;
 
     /// \brief
     /// Drop tolerance
@@ -146,108 +146,79 @@ struct gls_control_type {
 
     /// \brief
     /// Control to abort if structurally singular
-    bool struct;
+    bool struct_abort;
 };
 
 /**
  * ainfo derived type as a C struct
  */
-struct gls_ainfo_type {
+struct gls_ainfo {
 
     /// \brief
-    /// Unit for error messages
-    int lp;
+    /// Flags success or failure case
+    int flag;
 
     /// \brief
-    /// Unit for warning messages
-    int wp;
+    /// More information on failure
+    int more;
 
     /// \brief
-    /// Unit for monitor output
-    int mp;
+    /// Size for analysis
+    int len_analyse;
 
     /// \brief
-    /// Controls level of diagnostic output
-    int ldiag;
+    /// Size for factorize
+    int len_factorize;
 
     /// \brief
-    /// Minimum block size for block-triangular form (BTF) ... >=n to avoid
-    int btf;
+    /// Number of compresses
+    int ncmpa;
 
     /// \brief
-    /// Maximum number of iterations
-    int maxit;
+    /// Estimated rank
+    int rank;
 
     /// \brief
-    /// Level 3 blocking in factorize
-    int factor_blocking;
+    /// Number of entries dropped
+    int drop;
 
     /// \brief
-    /// Switch for using Level 1 or 2 BLAS in solve.
-    int solve_blas;
+    /// Structural rank of matrix
+    int struc_rank;
 
     /// \brief
-    /// Initial size for real array for the factors.
-    int la;
+    /// Number of indices out-of-range
+    int oor;
 
     /// \brief
-    /// Initial size for integer array for the factors.
-    int la_int;
-    /// \brief
-    /// Maximum size for real array for the factors.
-    int maxla;
+    /// Number of duplicates
+    int dup;
 
     /// \brief
-    /// Controls pivoting:  Number of columns searched.  Zero for Markowitz
-    int pivoting;  
+    /// STAT value after allocate failure
+    int stat;
 
     /// \brief
-    /// Initially fill_in * ne space allocated for factors
-    int fill_in;
+    /// Size largest non-triangular block
+    int lblock;
 
     /// \brief
-    /// Factor by which arrays sizes are to be increased if they are too small
-    real_wp_ multiplier; 
+    /// Sum of orders of non-triangular blocks
+    int sblock;
 
     /// \brief
-    /// if previously allocated internal workspace arrays are greater than 
-    /// reduce times the currently required sizes, they are reset to current 
-    /// requirments 
-    real_wp_ reduce;
+    /// Total entries in all non-tringular blocks
+    int tblock;
 
     /// \brief
-    /// Pivot threshold
-    real_wp_ u;
-
-    /// \brief
-    /// Density for switch to full code
-    real_wp_ switch;
-
-    /// \brief
-    /// Drop tolerance
-    real_wp_ drop;
-
-    /// \brief
-    /// anything < this is considered zero
-    real_wp_ tolerance;
-
-    /// \brief
-    /// Ratio for required reduction using IR
-    real_wp_ cgce;
-
-    /// \brief
-    /// Set to 0 for diagonal pivoting
-    bool diagonal_pivoting;
-
-    /// \brief
-    /// Control to abort if structurally singular
-    bool struct;
+    /// Number of operations in elimination
+    real_wp_ ops;
 };
 
 /**
  * finfo derived type as a C struct
  */
-struct gls_finfo_type {
+struct gls_finfo {
 
     /// \brief
     /// Flags success or failure case
@@ -285,7 +256,7 @@ struct gls_finfo_type {
 /**
  * sinfo derived type as a C struct
  */
-struct gls_sinfo_type {
+struct gls_sinfo {
 
     /// \brief
     /// Flags success or failure case
@@ -304,22 +275,20 @@ struct gls_sinfo_type {
 // *-*-*-*-*-*-*-*-*-*-    G L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
 void gls_initialize( void **data, 
-                     struct gls_control_type *control,
-                     struct gls_inform_type *inform );
+                     struct gls_control *control );
 
 /*!<
  Set default control values and initialize private data
 
   @param[in,out] data  holds private internal data
+
   @param[out] control  is a struct containing control information 
-              (see gls_control_type)
-  @param[out] inform   is a struct containing output information
-              (see gls_inform_type) 
+              (see gls_control)
 */
 
 // *-*-*-*-*-*-*-*-*-    G L S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void gls_read_specfile( struct gls_control_type *control, 
+void gls_read_specfile( struct gls_control *control, 
                         const char specfile[] );
 
 /*!<
@@ -327,14 +296,15 @@ void gls_read_specfile( struct gls_control_type *control,
   with given keywords to the corresponding control parameters
 
   @param[in,out]  control  is a struct containing control information 
-              (see gls_control_type)
+              (see gls_control)
+
   @param[in]  specfile  is a character string containing the name of
               the specification file
 */
 
 // *-*-*-*-*-*-*-*-*-*-*-*-    G L S  _ I M P O R T   -*-*-*-*-*-*-*-*-*-*
 
-void gls_import( struct gls_control_type *control,
+void gls_import( struct gls_control *control,
                  void **data,
                  int *status );
 
@@ -342,7 +312,7 @@ void gls_import( struct gls_control_type *control,
  Import problem data into internal storage prior to solution. 
 
  @param[in] control is a struct whose members provide control
-  paramters for the remaining prcedures (see gls_control_type)
+  paramters for the remaining prcedures (see gls_control)
 
  @param[in,out] data holds private internal data
 
@@ -366,15 +336,15 @@ void gls_import( struct gls_control_type *control,
 
 // *-*-*-*-*-*-*-    G L S  _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*
 
-void gls_reset_control( struct gls_control_type *control,
-                 void **data,
-                 int *status );
+void gls_reset_control( struct gls_control *control,
+                        void **data,
+                        int *status );
 
 /*!<
  Reset control parameters after import if required. 
 
  @param[in] control is a struct whose members provide control
-  paramters for the remaining prcedures (see gls_control_type)
+  paramters for the remaining prcedures (see gls_control)
 
  @param[in,out] data holds private internal data
 
@@ -386,7 +356,9 @@ void gls_reset_control( struct gls_control_type *control,
 // *-*-*-*-*-*-*-*-*-*-    G L S  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
 void gls_information( void **data,
-                      struct gls_inform_type *inform,
+                      struct gls_ainfo *ainfo,
+                      struct gls_finfo *finfo,
+                      struct gls_sinfo *sinfo,
                       int *status );
 
 /*!<
@@ -394,8 +366,14 @@ void gls_information( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] inform   is a struct containing output information
-              (see gls_inform_type) 
+  @param[out] ainfo   is a struct containing analysis output information
+              (see gls_ainfo) 
+
+  @param[out] finfo   is a struct containing factorization output information
+              (see gls_finfo) 
+
+  @param[out] sinfo   is a struct containing solver output information
+              (see gls_sinfo) 
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -405,9 +383,9 @@ void gls_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    G L S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void gls_terminate( void **data, 
-                    struct gls_control_type *control, 
-                    struct gls_inform_type *inform );
+void gls_finalize( void **data, 
+                   struct gls_control *control, 
+                   int *status );
 
 /*!<
   Deallocate all internal private storage
@@ -415,10 +393,12 @@ void gls_terminate( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] control  is a struct containing control information 
-              (see gls_control_type)
+              (see gls_control)
 
-  @param[out] inform   is a struct containing output information
-              (see gls_inform_type)
+  @param[out] status is a scalar variable of type int, that gives
+              the exit status from the package.
+              Possible values are (currently):
+  \li  0. The values were recorded succesfully
  */
 
 /** \example glst.c

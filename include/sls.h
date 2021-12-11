@@ -202,7 +202,6 @@ IBM Research Report RC 21886, IBM T. J. Watson Research Center,
 NY 10598, USA (2010).
 
 
-
   \subsection sls_call_order Call order
   To solve a given problem, functions from the sls package must be called
   in the following order:
@@ -921,7 +920,7 @@ void sls_initialize( const char solver[],
                      int *status );
 
 /*!<
- Set default control values and initialize private data
+ Select solver, set default control values and initialize private data
 
  @param[in] solver is a one-dimensional array of type char that specifies
     the \link external solver package \endlink

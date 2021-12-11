@@ -21,32 +21,24 @@
 
   \subsection uls_purpose Purpose
 
-This package
-{\bf solves dense or sparse unsymmetric systems of linear equations}
-using variants of Gaussian elimination.
-Given a sparse symmetric matrix $\bmA = \{ a_{ij} \}_{m \times n}$, and an
-$m$-vector $\bmb$ or a matrix $\bmB = \{ b_{ij} \}_{m \times r}$, this
-subroutine solves the system $\bmA \bmx = \bmb$
-or the block system $\bmA \bmX = \bmB$. If
-$\bmb$ is an $n$-vector or  $\bmB = \{ b_{ij} \}_{n \times r}$,
-the subroutine may solve instead the system $\bmA^T \bmx = \bmb$
-or block system  $\bmA^T \bmX = \bmB$ . Both square ($m=n$) and
-rectangular ($m\neq n$)  matrices are handled; one of an infinite
-class of  solutions for consistent systems will be returned
-whenever $\bmA$ is not of full rank.
+  This package
+  <b> solves dense or sparse unsymmetric systems of linear equations</b>
+  using variants of Gaussian elimination.
+  Given a sparse symmetric \f$m \times n\f$ matrix \f$A = a_{ij}\f$, and an
+  \f$m\f$-vector \f$b\f$, this subroutine solves the system \f$A x = b\f$. If
+  \f$b\f$ is an \f$n\f$-vector, the package may solve instead the system 
+  \f$A^T x = b\f$. Both square (\f$m=n\f$) and
+  rectangular (\f$m \neq n\f$)  matrices are handled; one of an infinite
+  class of solutions for consistent systems will be returned
+  whenever \f$A\f$ is not of full rank.
 
-\noindent The method provides a common interface to a variety of well-known
-solvers from HSL.
-% and elsewhere.
-Currently supported solvers include
-{\tt MA28/GLS} and {\tt HSL\_MA48},
-%{\tt HSL\_MA77} and {\tt HSL\_MA87}
-%from {HSL} and {\tt PARDISO} from the Pardiso Project.
-Note that
-{\bf the solvers themselves do not form part of this package and must be obtained
-separately.} Dummy instances are provided for solvers that are unavailable.
-Also note that additional flexibility may be obtained by calling the
-solvers directly rather that via this package.
+  The method provides a common interface to a variety of well-known solvers 
+  from HSL. Currently supported solvers include \c MA28/GLS and \c HSL\_MA48.
+  Note that <b> the solvers themselves do not form part of this package 
+  and must be obtained separately.</b> 
+  Dummy instances are provided for solvers that are unavailable.
+  Also note that additional flexibility may be obtained by calling the
+  solvers directly rather that via this package.
 
   \subsection uls_authors Authors
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
@@ -58,41 +50,30 @@ solvers directly rather that via this package.
   August 2009,  C interface December 2021.
 
   \subsection uls_terminology Terminology
-The solvers used each produce an $\bmP_R \bmL \bmU \bmP_C$ factorization
-of $\bmA$, where $\bmL$ and $\bmU$ are lower and upper triangular
-matrices, and $\bmP_R$ and $\bmP_C$ are row and column permutation
-matrices respectively.
+  The solvers used each produce an \f$P_R L U P_C\f$ factorization
+  of \f$A\f$, where \f$L\f$ and \f$U\f$ are lower and upper triangular
+  matrices, and \f$P_R\f$ and \f$P_C\f$ are row and column permutation
+  matrices respectively.
+
   \subsection uls_method Method
-Variants of sparse Gaussian elimination are used.
+  Variants of sparse Gaussian elimination are used.
 
-\noindent
-The solver {\tt GLS} is available as part of \galahad\ and relies on
-the HSL Archive packages {\tt MA33}. To obtain HSL Archive packages, see
+  The solver \c GLS is available as part of GALAHAD and relies on
+  the HSL Archive packages \c MA33. To obtain HSL Archive packages, see
 
-{\tt http://hsl.rl.ac.uk/archive/ }.
+    http://hsl.rl.ac.uk/archive/ .
 
-\noindent
-The solver {\tt HSL\_MA48}
-%{\tt HSL\_MA77} and
-%{\tt HSL\_MA87}, the ordering package
-%{\tt HSL\_MC68} and the scaling packages
-%{\tt HSL\_MC64} and {\tt MC77}
-%are all part of HSL 2007.
-is part of HSL 2007.
-To obtain HSL 2007 packages, see
+  The solver \c HSL\_MA48 is part of HSL 2007. To obtain HSL 2007 packages, see
 
-{\tt http://hsl.rl.ac.uk/hsl2007/ }.
-  \subsection uls_references Reference
+    http://hsl.rl.ac.uk/hsl2007/ .
 
-The methods used are described in the user-documentation for
-\vspace*{1mm}
+    \subsection uls_references Reference
 
-\noindent
-HSL 2007, A collection of {F}ortran codes for large-scale scientific
- computation (2007). \\
- {\tt http://www.cse.clrc.ac.uk/nag/hsl}
-  \subsection uls_purpose Purpose
+  The methods used are described in the user-documentation for
 
+    HSL 2007, A collection of {F}ortran codes for large-scale scientific
+    computation (2007).  \n
+    http://www.cse.clrc.ac.uk/nag/hsl
 
   \subsection uls_call_order Call order
   To solve a given problem, functions from the uls package must be called
@@ -102,7 +83,7 @@ HSL 2007, A collection of {F}ortran codes for large-scale scientific
       set up initial data structures
   - \link uls_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
-  - \link sls_factorize_matrix \endlink - set up matrix data structures,
+  - \link uls_factorize_matrix \endlink - set up matrix data structures,
        analyse the structure to choose a suitable order for factorization,
        and then factorize the matrix \f$A\f$
   - \link uls_reset_control \endlink (optional) - possibly change control
@@ -252,7 +233,8 @@ struct uls_control_type {
     int pivot_control;
 
     /// \brief
-    /// number of rows/columns pivot selection restricted to (0 = no restriction
+    /// number of rows/columns pivot selection restricted to 
+    /// (0 = no restriction)
     int pivot_search_limit;
 
     /// \brief
@@ -316,16 +298,16 @@ struct uls_inform_type {
 
     /// \brief
     /// reported return status:
-    /// 0  success
-    /// -1  allocation error
-    /// -2  deallocation error
-    /// -3  matrix data faulty (m < 1, n < 1, ne < 0)
-    /// -29  unavailable option
-    /// -31  input order is not a permutation or is faulty in some other way
-    /// -32  error with integer workspace
-    /// -33  error with real workspace
-    /// -50  solver-specific error; see the solver's info parameter
-    /// -101  unknown solver
+    /// \li 0  success
+    /// \li -1  allocation error
+    /// \li -2  deallocation error
+    /// \li -3  matrix data faulty (m < 1, n < 1, ne < 0)
+    /// \li -26  unknown solver
+    /// \li -29  unavailable option
+    /// \li -31  input order is not a permutation or is faulty in some other way
+    /// \li -32  error with integer workspace
+    /// \li -33  error with real workspace
+    /// \li -50  solver-specific error; see the solver's info parameter
     int status;
 
     /// \brief
@@ -386,17 +368,17 @@ struct uls_inform_type {
     int iterative_refinements;
 
     /// \brief
-    /// has an "alternative" y: A^T y = 0 and yT b > 0 been found when trying to
-    /// solve A x = b ?
+    /// has an "alternative" y: A^T y = 0 and yT b > 0 been found when 
+    /// trying to solve A x = b ?
     bool alternative;
 
     /// \brief
     /// the output arrays from GLS
-    struct gls_ainfo_type gls_ainfo;
+    struct gls_ainfo gls_ainfo;
     /// see gls_ainfo
-    struct gls_finfo_type gls_finfo;
+    struct gls_finfo gls_finfo;
     /// see gls_ainfo
-    struct gls_sinfo_type gls_sinfo;
+    struct gls_sinfo gls_sinfo;
 
     /// \brief
     /// the output arrays from MA48
@@ -409,18 +391,30 @@ struct uls_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    U L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void uls_initialize( void **data,
+void uls_initialize( const char solver[],
+                     void **data,
                      struct uls_control_type *control,
-                     struct uls_inform_type *inform );
+                     int *status );
 
 /*!<
  Set default control values and initialize private data
 
-  @param[in,out] data  holds private internal data
-  @param[out] control  is a struct containing control information
+ Select solver, set default control values and initialize private data
+
+ @param[in] solver is a one-dimensional array of type char that specifies
+    the \link external solver package \endlink
+    that should be used to factorize the matrix \f$A\f$. It should be one of
+   'gls', 'ma28' or 'ma48; lower or upper case variants are allowed.
+
+ @param[in,out] data  holds private internal data
+
+ @param[out] control is a struct containing control information
               (see uls_control_type)
-  @param[out] inform   is a struct containing output information
-              (see uls_inform_type)
+
+ @param[out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are:
+  \li  0. The import was succesful.
+  \li -26. The requested solver is not available.
 */
 
 // *-*-*-*-*-*-*-*-*-    U L S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
@@ -441,16 +435,16 @@ void uls_read_specfile( struct uls_control_type *control,
 // *-*-*-*-*-*-*-*-    U L S  _ F A C T O R I Z E _ M A T R I X   -*-*-*-*-*-*-
 
 void uls_factorize_matrix( struct uls_control_type *control,
-                         void **data,
-                         int *status,
-                         int m,
-                         int n,
-                         const char type[],
-                         int ne,
-                         const int row[],
-                         const int col[],
-                         const int ptr[],
-                         const real_wp_ val[] );
+                           void **data,
+                           int *status,
+                           int m,
+                           int n,
+                           const char type[],
+                           int ne,
+                           const real_wp_ val[],
+                           const int row[],
+                           const int col[],
+                           const int ptr[] );
 
 /*!<
  Import matrix data into internal storage prior to solution, analyse
@@ -500,6 +494,10 @@ void uls_factorize_matrix( struct uls_control_type *control,
    entries in \f$A\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
+ @param[in] val is a one-dimensional array of size ne and type double,
+    that holds the values of the entries of the matrix \f$A\f$ in any of
+   the supported storage schemes.
+
  @param[in] row is a one-dimensional array of size ne and type int, that
    holds the row indices of the matrix \f$A\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
@@ -517,9 +515,6 @@ void uls_factorize_matrix( struct uls_control_type *control,
    in the sparse row-wise storage scheme. It need not be set when the
    other schemes are used, and in this case can be NULL.
 
- @param[in] val is a one-dimensional array of size ne and type double,
-    that holds the values of the entries of the matrix \f$A\f$ in any of
-   the supported storage schemes.
 */
 
 // *-*-*-*-*-*-*-    U L S  _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*
@@ -628,8 +623,18 @@ void uls_terminate( void **data,
               (see uls_inform_type)
  */
 
-/** \example ulst.c
-   This is an example of how to use the package.\n
+/** \anchor examples
+   \f$\label{examples}\f$
+   \example ulst.c
+   This is an example of how to use the package in conjunction with the
+   sparse linear solver \c sils.
+   A variety of supported matrix storage formats are illustrated.
+
+   Notice that C-style indexing is used, and that this is flaggeed by
+   setting \c control.f_indexing to \c false.
+
+    \example ulstf.c
+   This is the same example, but now fortran-style indexing is used.\n
  */
 
 // end include guard

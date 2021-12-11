@@ -14,32 +14,37 @@
   MODULE GALAHAD_ULS_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_ULS_double, ONLY: &
-        f_uls_control_type => ULS_control_type, &
-        f_uls_inform_type => ULS_inform_type, &
-        f_uls_full_data_type => ULS_full_data_type, &
-        f_uls_initialize => ULS_initialize, &
-        f_uls_read_specfile => ULS_read_specfile, &
-        f_uls_import => ULS_import, &
-        f_uls_reset_control => ULS_reset_control, &
-        f_uls_information => ULS_information, &
+    USE GALAHAD_ULS_double, ONLY:                                              &
+        f_uls_control_type => ULS_control_type,                                &
+        f_uls_inform_type => ULS_inform_type,                                  &
+        f_uls_full_data_type => ULS_full_data_type,                            &
+        f_uls_initialize => ULS_initialize,                                    &
+        f_uls_read_specfile => ULS_read_specfile,                              &
+        f_uls_factorize_matrix => ULS_factorize_matrix,                        &
+        f_uls_solve_system => ULS_solve_system,                                &
+        f_uls_reset_control => ULS_reset_control,                              &
+        f_uls_information => ULS_information,                                  &
         f_uls_terminate => ULS_terminate
 
-    USE GALAHAD_GLS_double_ciface, ONLY: &
-        gls_inform_type, &
-        gls_control_type, &
-        copy_gls_inform_in => copy_inform_in, &
-        copy_gls_inform_out => copy_inform_out, &
-        copy_gls_control_in => copy_control_in, &
-        copy_gls_control_out => copy_control_out
+    USE GALAHAD_GLS_double_ciface, ONLY:                                       &
+        gls_control,                                                           &
+        gls_ainfo,                                                             &
+        gls_finfo,                                                             &
+        gls_sinfo,                                                             &
+        copy_gls_ainfo_in => copy_ainfo_in,                                    &
+        copy_gls_finfo_in => copy_finfo_in,                                    &
+        copy_gls_sinfo_in => copy_sinfo_in,                                    &
+        copy_gls_ainfo_out => copy_ainfo_out,                                  &
+        copy_gls_finfo_out => copy_finfo_out,                                  &
+        copy_gls_sinfo_out => copy_sinfo_out
 
-    USE GALAHAD_MA48_double_ciface, ONLY: &
-        ma48_inform_type, &
-        ma48_control_type, &
-        copy_ma48_inform_in => copy_inform_in, &
-        copy_ma48_inform_out => copy_inform_out, &
-        copy_ma48_control_in => copy_control_in, &
-        copy_ma48_control_out => copy_control_out
+!   USE GALAHAD_MA48_double_ciface, ONLY:                                      &
+!       ma48_inform_type,                                                      &
+!       ma48_control_type,                                                     &
+!       copy_ma48_inform_in => copy_inform_in,                                 &
+!       copy_ma48_inform_out => copy_inform_out,                               &
+!       copy_ma48_control_in => copy_control_in,                               &
+!       copy_ma48_control_out => copy_control_out
 
     IMPLICIT NONE
 
@@ -99,12 +104,12 @@
       INTEGER ( KIND = C_INT ) :: pivot_control
       INTEGER ( KIND = C_INT ) :: iterative_refinements
       LOGICAL ( KIND = C_BOOL ) :: alternative
-      TYPE ( gls_inform_type ) :: gls_inform
-      TYPE ( gls_inform_type ) :: gls_inform
-      TYPE ( gls_inform_type ) :: gls_inform
-      TYPE ( ma48_inform_type ) :: ma48_inform
-      TYPE ( ma48_inform_type ) :: ma48_inform
-      TYPE ( ma48_inform_type ) :: ma48_inform
+      TYPE ( gls_ainfo ) :: gls_ainfo
+      TYPE ( gls_finfo ) :: gls_finfo
+      TYPE ( gls_sinfo ) :: gls_sinfo
+!     TYPE ( ma48_ainfo ) :: ma48_ainfo
+!     TYPE ( ma48_finfo ) :: ma48_finfo
+!     TYPE ( ma48_sinfo ) :: ma48_sinfo
     END TYPE uls_inform_type
 
 !----------------------
@@ -148,8 +153,10 @@
     fcontrol%relative_pivot_tolerance = ccontrol%relative_pivot_tolerance
     fcontrol%absolute_pivot_tolerance = ccontrol%absolute_pivot_tolerance
     fcontrol%zero_tolerance = ccontrol%zero_tolerance
-    fcontrol%acceptable_residual_relative = ccontrol%acceptable_residual_relative
-    fcontrol%acceptable_residual_absolute = ccontrol%acceptable_residual_absolute
+    fcontrol%acceptable_residual_relative                                      &
+      = ccontrol%acceptable_residual_relative
+    fcontrol%acceptable_residual_absolute                                      &
+      = ccontrol%acceptable_residual_absolute
 
     ! Logicals
     fcontrol%stop_if_singular = ccontrol%stop_if_singular
@@ -198,8 +205,10 @@
     ccontrol%relative_pivot_tolerance = fcontrol%relative_pivot_tolerance
     ccontrol%absolute_pivot_tolerance = fcontrol%absolute_pivot_tolerance
     ccontrol%zero_tolerance = fcontrol%zero_tolerance
-    ccontrol%acceptable_residual_relative = fcontrol%acceptable_residual_relative
-    ccontrol%acceptable_residual_absolute = fcontrol%acceptable_residual_absolute
+    ccontrol%acceptable_residual_relative                                      &
+      = fcontrol%acceptable_residual_relative
+    ccontrol%acceptable_residual_absolute                                      &
+      = fcontrol%acceptable_residual_absolute
 
     ! Logicals
     ccontrol%stop_if_singular = fcontrol%stop_if_singular
@@ -239,12 +248,12 @@
     finform%alternative = cinform%alternative
 
     ! Derived types
-    CALL copy_gls_inform_in( cinform%gls_inform, finform%gls_inform )
-    CALL copy_gls_inform_in( cinform%gls_inform, finform%gls_inform )
-    CALL copy_gls_inform_in( cinform%gls_inform, finform%gls_inform )
-    CALL copy_ma48_inform_in( cinform%ma48_inform, finform%ma48_inform )
-    CALL copy_ma48_inform_in( cinform%ma48_inform, finform%ma48_inform )
-    CALL copy_ma48_inform_in( cinform%ma48_inform, finform%ma48_inform )
+    CALL copy_gls_ainfo_in( cinform%gls_ainfo, finform%gls_ainfo )
+    CALL copy_gls_finfo_in( cinform%gls_finfo, finform%gls_finfo )
+    CALL copy_gls_sinfo_in( cinform%gls_sinfo, finform%gls_sinfo )
+!   CALL copy_ma48_ainfo_in( cinform%ma48_ainfo, finform%ma48_ainfo )
+!   CALL copy_ma48_finfo_in( cinform%ma48_finfo, finform%ma48_finfo )
+!   CALL copy_ma48_sinfo_in( cinform%ma48_sinfo, finform%ma48_sinfo )
 
     ! Strings
     DO i = 1, 81
@@ -281,12 +290,12 @@
     cinform%alternative = finform%alternative
 
     ! Derived types
-    CALL copy_gls_inform_out( finform%gls_inform, cinform%gls_inform )
-    CALL copy_gls_inform_out( finform%gls_inform, cinform%gls_inform )
-    CALL copy_gls_inform_out( finform%gls_inform, cinform%gls_inform )
-    CALL copy_ma48_inform_out( finform%ma48_inform, cinform%ma48_inform )
-    CALL copy_ma48_inform_out( finform%ma48_inform, cinform%ma48_inform )
-    CALL copy_ma48_inform_out( finform%ma48_inform, cinform%ma48_inform )
+    CALL copy_gls_ainfo_out( finform%gls_ainfo, cinform%gls_ainfo )
+    CALL copy_gls_finfo_out( finform%gls_finfo, cinform%gls_finfo )
+    CALL copy_gls_sinfo_out( finform%gls_sinfo, cinform%gls_sinfo )
+!   CALL copy_ma48_ainfo_out( finform%ma48_ainfo, cinform%ma48a_info )
+!   CALL copy_ma48_finfo_out( finform%ma48_finfo, cinform%ma48f_info )
+!   CALL copy_ma48_sinfo_out( finform%ma48_sinfo, cinform%ma48s_info )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -303,15 +312,16 @@
 !  C interface to fortran uls_initialize
 !  -------------------------------------
 
-  SUBROUTINE uls_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE uls_initialize( csolver, cdata, ccontrol, status ) BIND( C ) 
   USE GALAHAD_ULS_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: csolver
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( uls_control_type ), INTENT( OUT ) :: ccontrol
-  TYPE ( uls_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
@@ -319,14 +329,20 @@
   TYPE ( f_uls_control_type ) :: fcontrol
   TYPE ( f_uls_inform_type ) :: finform
   LOGICAL :: f_indexing 
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( csolver ) ) :: fsolver
 
 !  allocate fdata
 
   ALLOCATE( fdata ); cdata = C_LOC( fdata )
 
+!  convert C string to Fortran string
+
+  fsolver = cstr_to_fchar( csolver )
+
 !  initialize required fortran types
 
-  CALL f_uls_initialize( fdata, fcontrol, finform )
+  CALL f_uls_initialize( fsolver, fdata, fcontrol, finform )
+  status = finform%status
 
 !  C sparse matrix indexing by default
 
@@ -336,10 +352,6 @@
 !  copy control out 
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
-
-!  copy inform out
-
-  CALL copy_inform_out( finform, cinform )
   RETURN
 
   END SUBROUTINE uls_initialize
@@ -394,11 +406,12 @@
 
   END SUBROUTINE uls_read_specfile
 
-!  ---------------------------------
-!  C interface to fortran uls_inport
-!  ---------------------------------
+!  -----------------------------------------
+!  C interface to fortran uls_factorize_matrix
+!  -----------------------------------------
 
-  SUBROUTINE uls_import( ccontrol, cdata, status ) BIND( C )
+  SUBROUTINE uls_factorize_matrix( ccontrol, cdata, status, m, n, ctype, ne,   &
+                                   val, row, col, ptr  ) BIND( C )
   USE GALAHAD_ULS_double_ciface
   IMPLICIT NONE
 
@@ -407,11 +420,19 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( uls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: m, n, ne
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: ctype
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ne ) :: val
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: row
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: col
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: ptr
 
 !  local variables
 
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( ctype ) ) :: ftype
   TYPE ( f_uls_control_type ) :: fcontrol
   TYPE ( f_uls_full_data_type ), POINTER :: fdata
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: row_find, col_find, ptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -422,6 +443,10 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
+!  convert C string to Fortran string
+
+  ftype = cstr_to_fchar( ctype )
+
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
@@ -429,12 +454,30 @@
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
+    IF ( PRESENT( row ) ) THEN
+      ALLOCATE( row_find( ne ) )
+      row_find = row + 1
+    END IF
+    IF ( PRESENT( col ) ) THEN
+      ALLOCATE( col_find( ne ) )
+      col_find = col + 1
+    END IF
+    IF ( PRESENT( ptr ) ) THEN
+      ALLOCATE( ptr_find( n + 1 ) )
+      ptr_find = ptr + 1
+    END IF
 
-!  import the problem data into the required ULS structure
+!  factorize_matrix the problem data into the required ULS structure
 
-    CALL f_uls_import( fcontrol, fdata, status )
+    CALL f_uls_factorize_matrix( fcontrol, fdata, status, m, n, ftype, ne,     &
+                                 val, row_find, col_find, ptr_find )
+
+    IF ( ALLOCATED( row_find ) ) DEALLOCATE( row_find )
+    IF ( ALLOCATED( col_find ) ) DEALLOCATE( col_find )
+    IF ( ALLOCATED( ptr_find ) ) DEALLOCATE( ptr_find )
   ELSE
-    CALL f_uls_import( fcontrol, fdata, status )
+    CALL f_uls_factorize_matrix( fcontrol, fdata, status, m, n, ftype, ne,     &
+                                 val, row, col, ptr )
   END IF
 
 !  copy control out
@@ -442,11 +485,11 @@
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
 
-  END SUBROUTINE uls_import
+  END SUBROUTINE uls_factorize_matrix
 
-!  ---------------------------------------
-!  C interface to fortran uls_reset_control
 !  ----------------------------------------
+!  C interface to fortran uls_reset_control
+!  -----------------------------------------
 
   SUBROUTINE uls_reset_control( ccontrol, cdata, status ) BIND( C )
   USE GALAHAD_ULS_double_ciface
@@ -482,6 +525,39 @@
   RETURN
 
   END SUBROUTINE uls_reset_control
+
+!  ----------------------------------------
+!  C interface to fortran uls_solve_system
+!  ----------------------------------------
+
+  SUBROUTINE uls_solve_system( cdata, status, m, n, sol, ctrans ) BIND( C )
+  USE GALAHAD_ULS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: m, n
+  LOGICAL ( KIND = C_BOOL ), INTENT( IN ), VALUE :: ctrans
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( MAX( m, n ) ) :: sol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_uls_full_data_type ), POINTER :: fdata
+  LOGICAL :: ftrans
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!   form and factorize the block matrix
+
+  ftrans = ctrans
+  CALL f_uls_solve_system( fdata, status, sol, ftrans )
+  RETURN
+
+  END SUBROUTINE uls_solve_system
 
 !  --------------------------------------
 !  C interface to fortran uls_information

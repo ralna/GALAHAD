@@ -18,10 +18,10 @@ int main(void) {
 
     // Set problem data
     int n = 5; // dimension of A
-    int ne = 7; // number of elements of A
-    int dense_ne = 15; // number of elements of A
-    int row[] = {1, 2, 2, 3, 3, 4, 5}; // indices, NB lower triangle
-    int col[] = {1, 1, 5, 2, 3, 3, 5};
+    int ne = 7; // number of entries of A
+    int dense_ne = 15; // number of elements of A as a dense matrix
+    int row[] = {1, 2, 2, 3, 3, 4, 5}; // row indices, NB lower triangle
+    int col[] = {1, 1, 5, 2, 3, 3, 5}; // column indices
     int ptr[] = {1, 2, 4, 6, 7, 8}; // pointers to indices
     double val[] = {2.0, 3.0, 6.0, 4.0,  1.0, 5.0, 1.0}; // values
     double dense[] = {2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0, 

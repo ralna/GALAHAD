@@ -14,32 +14,38 @@
   MODULE GALAHAD_SLS_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_SLS_double, ONLY: &
-        f_sls_control_type => SLS_control_type, &
-        f_sls_time_type => SLS_time_type, &
-        f_sls_inform_type => SLS_inform_type, &
-        f_sls_full_data_type => SLS_full_data_type, &
-        f_sls_initialize => SLS_initialize, &
-        f_sls_read_specfile => SLS_read_specfile, &
-        f_sls_analyse_matrix => SLS_analyse_matrix, &
-        f_sls_factorize_matrix => SLS_factorize_matrix, &
-        f_sls_solve_system => SLS_solve_system, &
-        f_sls_partial_solve => SLS_partial_solve, &
-        f_sls_reset_control => SLS_reset_control, &
-        f_sls_information => SLS_information, &
+    USE GALAHAD_SLS_double, ONLY:                                              &
+        f_sls_control_type => SLS_control_type,                                &
+        f_sls_time_type => SLS_time_type,                                      &
+        f_sls_inform_type => SLS_inform_type,                                  &
+        f_sls_full_data_type => SLS_full_data_type,                            &
+        f_sls_initialize => SLS_initialize,                                    &
+        f_sls_read_specfile => SLS_read_specfile,                              &
+        f_sls_analyse_matrix => SLS_analyse_matrix,                            &
+        f_sls_factorize_matrix => SLS_factorize_matrix,                        &
+        f_sls_solve_system => SLS_solve_system,                                &
+        f_sls_partial_solve => SLS_partial_solve,                              &
+        f_sls_reset_control => SLS_reset_control,                              &
+        f_sls_information => SLS_information,                                  &
         f_sls_terminate => SLS_terminate
 
-!!$    USE GALAHAD_SILS_double_ciface, ONLY: &
-!!$        sils_inform_type, &
-!!$        sils_control_type, &
-!!$        copy_sils_inform_in => copy_inform_in, &
-!!$        copy_sils_inform_out => copy_inform_out, &
-!!$        copy_sils_control_in => copy_control_in, &
-!!$        copy_sils_control_out => copy_control_out
-!!$
+    USE GALAHAD_SILS_double_ciface, ONLY:                                      &
+        sils_control,                                                          &
+        sils_ainfo,                                                            &
+        sils_finfo,                                                            &
+        sils_sinfo,                                                            &
+        copy_sils_ainfo_in => copy_ainfo_in,                                   &
+        copy_sils_finfo_in => copy_finfo_in,                                   &
+        copy_sils_sinfo_in => copy_sinfo_in,                                   &
+        copy_sils_ainfo_out => copy_ainfo_out,                                 &
+        copy_sils_finfo_out => copy_finfo_out,                                 &
+        copy_sils_sinfo_out => copy_sinfo_out
+
 !!$    USE GALAHAD_MA57_double_ciface, ONLY: &
-!!$        ma57_inform_type, &
-!!$        ma57_control_type, &
+!!$        ma57_control, &
+!!$        ma57_ainfo, &
+!!$        ma57_finfo, &
+!!$        ma57_sinfo, &
 !!$        copy_ma57_inform_in => copy_inform_in, &
 !!$        copy_ma57_inform_out => copy_inform_out, &
 !!$        copy_ma57_control_in => copy_control_in, &
@@ -237,12 +243,12 @@
       REAL ( KIND = wp ) :: forward_error
       LOGICAL ( KIND = C_BOOL ) :: alternative
       TYPE ( sls_time_type ) :: time
-!      TYPE ( sils_inform_type ) :: sils_inform
-!      TYPE ( sils_inform_type ) :: sils_inform
-!      TYPE ( sils_inform_type ) :: sils_inform
-!      TYPE ( ma57_inform_type ) :: ma57_inform
-!      TYPE ( ma57_inform_type ) :: ma57_inform
-!      TYPE ( ma57_inform_type ) :: ma57_inform
+      TYPE ( sils_ainfo ) :: sils_ainfo
+      TYPE ( sils_finfo ) :: sils_finfo
+      TYPE ( sils_sinfo ) :: sils_sinfo
+!      TYPE ( ma57_ainfo ) :: ma57_ainfo
+!      TYPE ( ma57_finfo ) :: ma57_finfo
+!      TYPE ( ma57_sinfo ) :: ma57_sinfo
 !      TYPE ( ma77_inform_type ) :: ma77_inform
 !      TYPE ( ma86_inform_type ) :: ma86_inform
 !      TYPE ( ma87_inform_type ) :: ma87_inform
@@ -612,12 +618,12 @@
 
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
-!    CALL copy_sils_inform_in( cinform%sils_inform, finform%sils_inform )
-!    CALL copy_sils_inform_in( cinform%sils_inform, finform%sils_inform )
-!    CALL copy_sils_inform_in( cinform%sils_inform, finform%sils_inform )
-!    CALL copy_ma57_inform_in( cinform%ma57_inform, finform%ma57_inform )
-!    CALL copy_ma57_inform_in( cinform%ma57_inform, finform%ma57_inform )
-!    CALL copy_ma57_inform_in( cinform%ma57_inform, finform%ma57_inform )
+    CALL copy_sils_ainfo_in( cinform%sils_ainfo, finform%sils_ainfo )
+    CALL copy_sils_finfo_in( cinform%sils_finfo, finform%sils_finfo )
+    CALL copy_sils_sinfo_in( cinform%sils_sinfo, finform%sils_sinfo )
+!    CALL copy_ma57_ainfo_in( cinform%ma57_ainfo, finform%ma57_ainfo )
+!    CALL copy_ma57_finfo_in( cinform%ma57_sinfo, finform%ma57_finfo )
+!    CALL copy_ma57_sinfo_in( cinform%ma57_finfo, finform%ma57_sinfo )
 !    CALL copy_ma77_inform_in( cinform%ma77_inform, finform%ma77_inform )
 !    CALL copy_ma86_inform_in( cinform%ma86_inform, finform%ma86_inform )
 !    CALL copy_ma87_inform_in( cinform%ma87_inform, finform%ma87_inform )
@@ -706,12 +712,12 @@
 
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
-!    CALL copy_sils_inform_out( finform%sils_inform, cinform%sils_inform )
-!    CALL copy_sils_inform_out( finform%sils_inform, cinform%sils_inform )
-!    CALL copy_sils_inform_out( finform%sils_inform, cinform%sils_inform )
-!    CALL copy_ma57_inform_out( finform%ma57_inform, cinform%ma57_inform )
-!    CALL copy_ma57_inform_out( finform%ma57_inform, cinform%ma57_inform )
-!    CALL copy_ma57_inform_out( finform%ma57_inform, cinform%ma57_inform )
+    CALL copy_sils_ainfo_out( finform%sils_ainfo, cinform%sils_ainfo )
+    CALL copy_sils_finfo_out( finform%sils_finfo, cinform%sils_finfo )
+    CALL copy_sils_sinfo_out( finform%sils_sinfo, cinform%sils_sinfo )
+!    CALL copy_ma57_ainfo_out( finform%ma57_ainfo, cinform%ma57_ainfo )
+!    CALL copy_ma57_finfo_out( finform%ma57_sinfo, cinform%ma57_finfo )
+!    CALL copy_ma57_sinfo_out( finform%ma57_finfo, cinform%ma57_sinfo )
 !    CALL copy_ma77_inform_out( finform%ma77_inform, cinform%ma77_inform )
 !    CALL copy_ma86_inform_out( finform%ma86_inform, cinform%ma86_inform )
 !    CALL copy_ma87_inform_out( finform%ma87_inform, cinform%ma87_inform )

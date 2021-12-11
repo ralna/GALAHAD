@@ -20,6 +20,11 @@ PACKAGE = SILS
 
 DEPENDENCIES = make_dummy make_zd11 make_smt make_ma27
 
+#  auxiliary packages that the C interface to the current package depends 
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = make_ciface_common
+
 #  other packages that depend on package
 
 DEPENDS = ir sls psls mdchl lancelot_types qpd fdc superb
@@ -59,6 +64,23 @@ $(LG)($(package).o): ../$(package)/$(package).f90
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).f90 )
 	cd $(OBJ); $(ARR) $(package).o; $(RM) $(package).f90 $(package).o
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  package C interface compilation
+
+$(package)_ciface.o: $(LG)($(package).o) $(CLG)($(package)_ciface.o)
+
+$(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_ciface"
+	$(SED) -f $(CISEDS) ../$(package)/C/$(package)_ciface.f90 \
+           > $(OBJ)/$(package)_ciface.f90
+	cd $(OBJ); $(FORTRAN) -o $(package)_ciface.o $(FFLAGSS) \
+           $(package)_ciface.f90 \
+            || ( printf ' %-26s' "=> Disabling optimization " ; \
+           $(FORTRAN) -o $(package)_ciface.o $(FFLAGSN) $(package)_ciface.f90 )
+	cd $(OBJ); $(CARR) $(package)_ciface.o
+	cd $(OBJ); $(RM) $(package)_ciface.f90 $(package)_ciface.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

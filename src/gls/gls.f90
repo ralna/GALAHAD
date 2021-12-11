@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 05/09/2012 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 10/12/2021 AT 15:10 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ G L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -30,7 +30,22 @@
 
      PRIVATE
      PUBLIC :: GLS_initialize, GLS_analyse, GLS_solve, GLS_finalize,           &
-               GLS_fredholm_alternative, GLS_special_rows_and_cols, SMT_type
+               GLS_fredholm_alternative, GLS_special_rows_and_cols,            &
+               GLS_full_initialize, GLS_full_finalize,                         &
+               GLS_reset_control, GLS_information,                             &
+               SMT_type
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE GLS_initialize
+       MODULE PROCEDURE GLS_initialize, GLS_full_initialize
+     END INTERFACE GLS_initialize
+
+     INTERFACE GLS_finalize
+       MODULE PROCEDURE GLS_finalize, GLS_full_finalize
+     END INTERFACE GLS_finalize
 
 !--------------------
 !   P r e c i s i o n
@@ -52,38 +67,6 @@
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
-
-     TYPE, PUBLIC :: GLS_factors
-       PRIVATE
-       LOGICAL :: got_factors = .FALSE.
-! scalars and arrays required by MA33
-       INTEGER :: n, licn, lirn, orig_m, orig_n
-       REAL ( KIND = wp ) :: u
-       INTEGER, DIMENSION( 2 ) :: IDISP
-       INTEGER, DIMENSION( 10 ) :: ICNTL, ICNTL_MC23
-       INTEGER, DIMENSION( 10 ) :: INFO, INFO_MC23
-       REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL
-       REAL ( KIND = wp ), DIMENSION( 5 ) :: RINFO
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ICN          ! length licn
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IFIRST       ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IP           ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IPC          ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IPC2         ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IPTR         ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IQ           ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IRN          ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LASTC        ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LASTR        ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LENC         ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LENR         ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LENRL        ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NEXTC        ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NEXTR        ! length n
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LENOFF       ! length 1/n
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A ! length licn
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W ! length n
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R ! length n
-     END TYPE GLS_factors
 
      TYPE, PUBLIC :: GLS_control
 
@@ -290,6 +273,48 @@
        INTEGER :: stat = 0
      END TYPE GLS_sinfo
 
+     TYPE, PUBLIC :: GLS_factors
+       PRIVATE
+       LOGICAL :: got_factors = .FALSE.
+! scalars and arrays required by MA33
+       INTEGER :: n, licn, lirn, orig_m, orig_n
+       REAL ( KIND = wp ) :: u
+       INTEGER, DIMENSION( 2 ) :: IDISP
+       INTEGER, DIMENSION( 10 ) :: ICNTL, ICNTL_MC23
+       INTEGER, DIMENSION( 10 ) :: INFO, INFO_MC23
+       REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL
+       REAL ( KIND = wp ), DIMENSION( 5 ) :: RINFO
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ICN          ! length licn
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IFIRST       ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IP           ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IPC          ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IPC2         ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IPTR         ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IQ           ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IRN          ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LASTC        ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LASTR        ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LENC         ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LENR         ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LENRL        ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NEXTC        ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NEXTR        ! length n
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LENOFF       ! length 1/n
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A ! length licn
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W ! length n
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R ! length n
+     END TYPE GLS_factors
+
+     TYPE, PUBLIC :: GLS_full_data_type
+       LOGICAL :: f_indexing
+       TYPE ( GLS_factors ) :: GLS_factors
+       TYPE ( GLS_control ) :: GLS_control
+       TYPE ( GLS_ainfo ) :: GLS_ainfo
+       TYPE ( GLS_finfo ) :: GLS_finfo
+       TYPE ( GLS_sinfo ) :: GLS_sinfo
+       TYPE ( SMT_type ) :: matrix
+     END TYPE GLS_full_data_type
+
 !--------------------------------
 !   I n t e r f a c e  B l o c k
 !--------------------------------
@@ -398,9 +423,39 @@
 
      RETURN
 
-!  End of SILS_initialize
+!  End of GLS_initialize
 
      END SUBROUTINE GLS_initialize
+
+!- G A L A H A D -  G L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
+
+     SUBROUTINE GLS_full_initialize( data, control )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for GLS controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( GLS_control ), INTENT( OUT ) :: control
+
+     CALL GLS_initialize( data%gls_factors, control )
+
+     RETURN
+
+!  End of subroutine GLS_full_initialize
+
+     END SUBROUTINE GLS_full_initialize
 
 !-*-*-*-*-*-*-*-   G L S _ A N A L Y S E  S U B R O U T I N E   -*-*-*-*-*-*-
 
@@ -1656,7 +1711,7 @@
      SUBROUTINE GLS_finalize( FACTORS, CONTROL, info )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-!  DEALLOCATE all currently ALLOCATEd arrays
+!  deallocate all currently allocated arrays
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
@@ -1758,6 +1813,61 @@
 !  End of GLS_finalize
 
      END SUBROUTINE GLS_finalize
+
+     SUBROUTINE GLS_full_finalize( data, control, info )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( GLS_control ), INTENT( IN ) :: control
+     INTEGER, INTENT( OUT ) :: info
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+     INTEGER :: dealloc_stat
+
+!  deallocate workspace
+
+     CALL GLS_finalize( data%gls_factors, control, info )
+
+!  deallocate any internal problem arrays
+
+     IF ( ALLOCATED( data%matrix%ptr ) ) THEN
+       DEALLOCATE( data%matrix%ptr, STAT = dealloc_stat )
+       IF ( dealloc_stat /= 0 ) info = dealloc_stat
+     END IF
+
+     IF ( ALLOCATED( data%matrix%row ) ) THEN
+       DEALLOCATE( data%matrix%row, STAT = dealloc_stat )
+       IF ( dealloc_stat /= 0 ) info = dealloc_stat
+     END IF
+
+     IF ( ALLOCATED( data%matrix%col ) ) THEN
+       DEALLOCATE( data%matrix%col, STAT = dealloc_stat )
+       IF ( dealloc_stat /= 0 ) info = dealloc_stat
+     END IF
+
+     IF ( ALLOCATED( data%matrix%val ) ) THEN
+       DEALLOCATE( data%matrix%val, STAT = dealloc_stat )
+       IF ( dealloc_stat /= 0 ) info = dealloc_stat
+     END IF
+
+     RETURN
+
+!  End of subroutine GLS_full_finalize
+
+     END SUBROUTINE GLS_full_finalize
 
 !-*  G L S _ S P E C I A L _ R O W S _ A N D _ C O L S  S U B R O U T I N E  *-
 
@@ -2545,6 +2655,74 @@
 !  End of GLS_fredholm_alternative_main
 
      END SUBROUTINE GLS_fredholm_alternative_main
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D -  G L S _ r e s e t _ c o n t r o l   S U B R O U T I N E -
+
+     SUBROUTINE GLS_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See GLS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLS_control ), INTENT( IN ) :: control
+     TYPE ( GLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%gls_control = control
+
+!  flag a successful call
+
+     status = 0
+     RETURN
+
+!  end of subroutine GLS_reset_control
+
+     END SUBROUTINE GLS_reset_control
+
+!-  G A L A H A D -  G L S _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE GLS_information( data, ainfo, finfo, sinfo, status )
+
+!  return solver information during or after solution by GLS
+!  See GLS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE( GLS_ainfo ), INTENT( OUT ) :: ainfo
+     TYPE( GLS_finfo ), INTENT( OUT ) :: finfo
+     TYPE( GLS_sinfo ), INTENT( OUT ) :: sinfo
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     ainfo = data%gls_ainfo
+     finfo = data%gls_finfo
+     sinfo = data%gls_sinfo
+
+!  flag a successful call
+
+     status = 0
+     RETURN
+
+!  end of subroutine GLS_information
+
+     END SUBROUTINE GLS_information
 
    END MODULE GALAHAD_GLS_double
 

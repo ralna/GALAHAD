@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 03/11/2011 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 10/12/2021 AT 15:00 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ S I L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -32,7 +32,21 @@
      PRIVATE
      PUBLIC :: SILS_initialize, SILS_analyse, SILS_factorize, SILS_solve,      &
                SILS_finalize, SILS_enquire, SILS_alter_d, SILS_part_solve,     &
+               SILS_full_initialize, SILS_full_finalize,                       &
+               SILS_reset_control, SILS_information,                           &
                SMT_type
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE SILS_initialize
+       MODULE PROCEDURE SILS_initialize, SILS_full_initialize
+     END INTERFACE SILS_initialize
+
+     INTERFACE SILS_finalize
+       MODULE PROCEDURE SILS_finalize, SILS_full_finalize
+     END INTERFACE SILS_finalize
 
 !--------------------
 !   P r e c i s i o n
@@ -49,28 +63,6 @@
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
-
-     TYPE, PUBLIC :: SILS_factors
-       PRIVATE
-!      INTEGER, ALLOCATABLE, DIMENSION( :, : )  :: keep
-       INTEGER, ALLOCATABLE, DIMENSION( : )  :: keep
-       INTEGER, ALLOCATABLE, DIMENSION( : )  :: iw
-       INTEGER, ALLOCATABLE, DIMENSION( : )  :: iw1
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: val
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: w ! len maxfrt
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: r ! length n
-       INTEGER :: n = - 1      ! Matrix order
-       INTEGER :: nrltot = - 1 ! Size for val without compression
-       INTEGER :: nirtot = - 1 ! Size for iw without compression
-       INTEGER :: nrlnec = - 1 ! Size for val with compression
-       INTEGER :: nirnec = - 1 ! Size for iw with compression
-       INTEGER :: nsteps = - 1 ! Number of elimination steps
-       INTEGER :: maxfrt = - 1 ! Largest front size
-       INTEGER :: latop = - 1  ! Position of final entry of val
-       INTEGER :: dim_iw1 = - 1 ! Size of iw1 for solves
-       INTEGER :: pivoting = - 1 ! type of pivoting used
-       REAL ( KIND = wp ) :: ops = - one
-     END TYPE SILS_factors
 
      TYPE, PUBLIC :: SILS_control
 
@@ -261,6 +253,38 @@
        REAL ( KIND = wp ) :: error = - 1.0_wp  ! Estimate of forward error
      END TYPE SILS_sinfo
 
+     TYPE, PUBLIC :: SILS_factors
+       PRIVATE
+!      INTEGER, ALLOCATABLE, DIMENSION( :, : )  :: keep
+       INTEGER, ALLOCATABLE, DIMENSION( : )  :: keep
+       INTEGER, ALLOCATABLE, DIMENSION( : )  :: iw
+       INTEGER, ALLOCATABLE, DIMENSION( : )  :: iw1
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: val
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: w ! len maxfrt
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: r ! length n
+       INTEGER :: n = - 1      ! Matrix order
+       INTEGER :: nrltot = - 1 ! Size for val without compression
+       INTEGER :: nirtot = - 1 ! Size for iw without compression
+       INTEGER :: nrlnec = - 1 ! Size for val with compression
+       INTEGER :: nirnec = - 1 ! Size for iw with compression
+       INTEGER :: nsteps = - 1 ! Number of elimination steps
+       INTEGER :: maxfrt = - 1 ! Largest front size
+       INTEGER :: latop = - 1  ! Position of final entry of val
+       INTEGER :: dim_iw1 = - 1 ! Size of iw1 for solves
+       INTEGER :: pivoting = - 1 ! type of pivoting used
+       REAL ( KIND = wp ) :: ops = - one
+     END TYPE SILS_factors
+
+     TYPE, PUBLIC :: SILS_full_data_type
+       LOGICAL :: f_indexing
+       TYPE ( SILS_factors ) :: SILS_factors
+       TYPE ( SILS_control ) :: SILS_control
+       TYPE ( SILS_ainfo ) :: SILS_ainfo
+       TYPE ( SILS_finfo ) :: SILS_finfo
+       TYPE ( SILS_sinfo ) :: SILS_sinfo
+       TYPE ( SMT_type ) :: matrix
+     END TYPE SILS_full_data_type
+
 !--------------------------------
 !   I n t e r f a c e  B l o c k
 !--------------------------------
@@ -374,6 +398,36 @@
 !  End of SILS_initialize
 
      END SUBROUTINE SILS_initialize
+
+!- G A L A H A D -  S I L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
+
+     SUBROUTINE SILS_full_initialize( data, control )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for SILS controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SILS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SILS_control ), INTENT( OUT ) :: control
+
+     CALL SILS_initialize( data%sils_factors, control )
+
+     RETURN
+
+!  End of subroutine SILS_full_initialize
+
+     END SUBROUTINE SILS_full_initialize
 
 !-*-*-*-*-*-*-*-   S I L S _ A N A L Y S E  S U B R O U T I N E   -*-*-*-*-*-*-
 
@@ -2314,6 +2368,63 @@
 
      END SUBROUTINE SILS_finalize
 
+! -  G A L A H A D -  S I L S _ f u l l _ f i n a l i z e  S U B R O U T I N E -
+
+     SUBROUTINE SILS_full_finalize( data, control, info )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SILS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SILS_control ), INTENT( IN ) :: control
+     INTEGER, INTENT( OUT ) :: info
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+     INTEGER :: dealloc_stat
+
+!  deallocate workspace
+
+     CALL SILS_finalize( data%sils_factors, control, info )
+
+!  deallocate any internal problem arrays
+
+     IF ( ALLOCATED( data%matrix%ptr ) ) THEN
+       DEALLOCATE( data%matrix%ptr, STAT = dealloc_stat )
+       IF ( dealloc_stat /= 0 ) info = dealloc_stat
+     END IF
+
+     IF ( ALLOCATED( data%matrix%row ) ) THEN
+       DEALLOCATE( data%matrix%row, STAT = dealloc_stat )
+       IF ( dealloc_stat /= 0 ) info = dealloc_stat
+     END IF
+
+     IF ( ALLOCATED( data%matrix%col ) ) THEN
+       DEALLOCATE( data%matrix%col, STAT = dealloc_stat )
+       IF ( dealloc_stat /= 0 ) info = dealloc_stat
+     END IF
+
+     IF ( ALLOCATED( data%matrix%val ) ) THEN
+       DEALLOCATE( data%matrix%val, STAT = dealloc_stat )
+       IF ( dealloc_stat /= 0 ) info = dealloc_stat
+     END IF
+
+     RETURN
+
+!  End of subroutine SILS_full_finalize
+
+     END SUBROUTINE SILS_full_finalize
+
 !-*-*-*-*-*-*-*-   S I L S _ E N Q U I R E  S U B R O U T I N E   -*-*-*-*-*-*-
 
      SUBROUTINE SILS_enquire( FACTORS, PERM, PIVOTS, D, PERTURBATION )
@@ -2755,5 +2866,73 @@
 !  End of SILS_part_solve
 
      END SUBROUTINE SILS_part_solve
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D -  S I L S _ r e s e t _ c o n t r o l   S U B R O U T I N E -
+
+     SUBROUTINE SILS_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See SILS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SILS_control ), INTENT( IN ) :: control
+     TYPE ( SILS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%sils_control = control
+
+!  flag a successful call
+
+     status = 0
+     RETURN
+
+!  end of subroutine SILS_reset_control
+
+     END SUBROUTINE SILS_reset_control
+
+!-  G A L A H A D -  S I L S _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE SILS_information( data, ainfo, finfo, sinfo, status )
+
+!  return solver information during or after solution by SILS
+!  See SILS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SILS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE( SILS_ainfo ), INTENT( OUT ) :: ainfo
+     TYPE( SILS_finfo ), INTENT( OUT ) :: finfo
+     TYPE( SILS_sinfo ), INTENT( OUT ) :: sinfo
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     ainfo = data%sils_ainfo
+     finfo = data%sils_finfo
+     sinfo = data%sils_sinfo
+
+!  flag a successful call
+
+     status = 0
+     RETURN
+
+!  end of subroutine SILS_information
+
+     END SUBROUTINE SILS_information
 
    END MODULE GALAHAD_SILS_double

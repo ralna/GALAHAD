@@ -21,11 +21,9 @@
         f_sils_sinfo => SILS_sinfo, &
         f_sils_full_data_type => SILS_full_data_type, &
         f_sils_initialize => SILS_initialize, &
-        f_sils_read_specfile => SILS_read_specfile, &
-        f_sils_import => SILS_import, &
         f_sils_reset_control => SILS_reset_control, &
         f_sils_information => SILS_information, &
-        f_sils_terminate => SILS_terminate
+        f_sils_finalize => SILS_finalize
 
     IMPLICIT NONE
 
@@ -224,15 +222,10 @@
 
 !  copy C ainfo parameters to fortran
 
-    SUBROUTINE copy_ainfo_in( cainfo, fainfo, f_indexing ) 
+    SUBROUTINE copy_ainfo_in( cainfo, fainfo ) 
     TYPE ( sils_ainfo ), INTENT( IN ) :: cainfo
     TYPE ( f_sils_ainfo ), INTENT( OUT ) :: fainfo
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
     
-    ! C or Fortran sparse matrix indexing
-    IF ( PRESENT( f_indexing ) ) f_indexing = cainfo%f_indexing
-
     ! Integers
     fainfo%flag = cainfo%flag
     fainfo%more = cainfo%more
@@ -259,14 +252,9 @@
 
 !  copy fortran ainfo parameters to C
 
-    SUBROUTINE copy_ainfo_out( fainfo, cainfo, f_indexing ) 
+    SUBROUTINE copy_ainfo_out( fainfo, cainfo ) 
     TYPE ( f_sils_ainfo ), INTENT( IN ) :: fainfo
     TYPE ( sils_ainfo ), INTENT( OUT ) :: cainfo
-    LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i
-    
-    ! C or Fortran sparse matrix indexing
-    IF ( PRESENT( f_indexing ) ) cainfo%f_indexing = f_indexing
 
     ! Integers
     cainfo%flag = fainfo%flag
@@ -294,14 +282,9 @@
 
 !  copy C finfo parameters to fortran
 
-    SUBROUTINE copy_finfo_in( cfinfo, ffinfo, f_indexing ) 
+    SUBROUTINE copy_finfo_in( cfinfo, ffinfo ) 
     TYPE ( sils_finfo ), INTENT( IN ) :: cfinfo
     TYPE ( f_sils_finfo ), INTENT( OUT ) :: ffinfo
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
-    
-    ! C or Fortran sparse matrix indexing
-    IF ( PRESENT( f_indexing ) ) f_indexing = cfinfo%f_indexing
 
     ! Integers
     ffinfo%flag = cfinfo%flag
@@ -340,14 +323,9 @@
 
 !  copy fortran finfo parameters to C
 
-    SUBROUTINE copy_finfo_out( ffinfo, cfinfo, f_indexing ) 
+    SUBROUTINE copy_finfo_out( ffinfo, cfinfo ) 
     TYPE ( f_sils_finfo ), INTENT( IN ) :: ffinfo
     TYPE ( sils_finfo ), INTENT( OUT ) :: cfinfo
-    LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i
-    
-    ! C or Fortran sparse matrix indexing
-    IF ( PRESENT( f_indexing ) ) cfinfo%f_indexing = f_indexing
 
     ! Integers
     cfinfo%flag = ffinfo%flag
@@ -386,14 +364,9 @@
 
 !  copy C sinfo parameters to fortran
 
-    SUBROUTINE copy_sinfo_in( csinfo, fsinfo, f_indexing ) 
+    SUBROUTINE copy_sinfo_in( csinfo, fsinfo ) 
     TYPE ( sils_sinfo ), INTENT( IN ) :: csinfo
     TYPE ( f_sils_sinfo ), INTENT( OUT ) :: fsinfo
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
-    
-    ! C or Fortran sparse matrix indexing
-    IF ( PRESENT( f_indexing ) ) f_indexing = csinfo%f_indexing
 
     ! Integers
     fsinfo%flag = csinfo%flag
@@ -411,14 +384,9 @@
 
 !  copy fortran sinfo parameters to C
 
-    SUBROUTINE copy_sinfo_out( fsinfo, csinfo, f_indexing ) 
+    SUBROUTINE copy_sinfo_out( fsinfo, csinfo ) 
     TYPE ( f_sils_sinfo ), INTENT( IN ) :: fsinfo
     TYPE ( sils_sinfo ), INTENT( OUT ) :: csinfo
-    LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i
-    
-    ! C or Fortran sparse matrix indexing
-    IF ( PRESENT( f_indexing ) ) csinfo%f_indexing = f_indexing
 
     ! Integers
     csinfo%flag = fsinfo%flag
@@ -440,7 +408,7 @@
 !  C interface to fortran sils_initialize
 !  -------------------------------------
 
-  SUBROUTINE sils_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE sils_initialize( cdata, ccontrol ) BIND( C ) 
   USE GALAHAD_SILS_double_ciface
   IMPLICIT NONE
 
@@ -448,13 +416,11 @@
 
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( sils_control ), INTENT( OUT ) :: ccontrol
-  TYPE ( sils_inform_type ), INTENT( OUT ) :: cinform
 
 !  local variables
 
   TYPE ( f_sils_full_data_type ), POINTER :: fdata
   TYPE ( f_sils_control ) :: fcontrol
-  TYPE ( f_sils_inform_type ) :: finform
   LOGICAL :: f_indexing 
 
 !  allocate fdata
@@ -463,7 +429,7 @@
 
 !  initialize required fortran types
 
-  CALL f_sils_initialize( fdata, fcontrol, finform )
+  CALL f_sils_initialize( fdata, fcontrol )
 
 !  C sparse matrix indexing by default
 
@@ -473,113 +439,9 @@
 !  copy control out 
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
-
-!  copy inform out
-
-  CALL copy_inform_out( finform, cinform )
   RETURN
 
   END SUBROUTINE sils_initialize
-
-!  ----------------------------------------
-!  C interface to fortran sils_read_specfile
-!  ----------------------------------------
-
-  SUBROUTINE sils_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_SILS_double_ciface
-  IMPLICIT NONE
-
-!  dummy arguments
-
-  TYPE ( sils_control ), INTENT( INOUT ) :: ccontrol
-  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cspecfile
-
-!  local variables
-
-  TYPE ( f_sils_control ) :: fcontrol
-  CHARACTER ( KIND = C_CHAR, LEN = strlen( cspecfile ) ) :: fspecfile
-  LOGICAL :: f_indexing
-
-!  device unit number for specfile
-
-  INTEGER ( KIND = C_INT ), PARAMETER :: device = 10
-
-!  convert C string to Fortran string
-
-  fspecfile = cstr_to_fchar( cspecfile )
-
-!  copy control in
-
-  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
-!  open specfile for reading
-
-  OPEN( UNIT = device, FILE = fspecfile )
-  
-!  read control parameters from the specfile
-
-  CALL f_sils_read_specfile( fcontrol, device )
-
-!  close specfile
-
-  CLOSE( device )
-
-!  copy control out
-
-  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
-  RETURN
-
-  END SUBROUTINE sils_read_specfile
-
-!  ---------------------------------
-!  C interface to fortran sils_inport
-!  ---------------------------------
-
-  SUBROUTINE sils_import( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_SILS_double_ciface
-  IMPLICIT NONE
-
-!  dummy arguments
-
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-  TYPE ( sils_control ), INTENT( INOUT ) :: ccontrol
-  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-
-!  local variables
-
-  TYPE ( f_sils_control ) :: fcontrol
-  TYPE ( f_sils_full_data_type ), POINTER :: fdata
-  LOGICAL :: f_indexing
-
-!  copy control and inform in
-
-  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-
-!  associate data pointer
-
-  CALL C_F_POINTER( cdata, fdata )
-
-!  is fortran-style 1-based indexing used?
-
-  fdata%f_indexing = f_indexing
-
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-
-!  import the problem data into the required SILS structure
-
-    CALL f_sils_import( fcontrol, fdata, status )
-  ELSE
-    CALL f_sils_import( fcontrol, fdata, status )
-  END IF
-
-!  copy control out
-
-  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
-  RETURN
-
-  END SUBROUTINE sils_import
 
 !  ---------------------------------------
 !  C interface to fortran sils_reset_control
@@ -624,20 +486,24 @@
 !  C interface to fortran sils_information
 !  --------------------------------------
 
-  SUBROUTINE sils_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE sils_information( cdata, cainfo, cfinfo, csinfo, status ) BIND( C )
   USE GALAHAD_SILS_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  TYPE ( sils_inform_type ), INTENT( INOUT ) :: cinform
+  TYPE ( sils_ainfo ), INTENT( INOUT ) :: cainfo
+  TYPE ( sils_finfo ), INTENT( INOUT ) :: cfinfo
+  TYPE ( sils_sinfo ), INTENT( INOUT ) :: csinfo
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
 
 !  local variables
 
   TYPE ( f_sils_full_data_type ), pointer :: fdata
-  TYPE ( f_sils_inform_type ) :: finform
+  TYPE ( f_sils_ainfo ) :: fainfo
+  TYPE ( f_sils_finfo ) :: ffinfo
+  TYPE ( f_sils_sinfo ) :: fsinfo
 
 !  associate data pointer
 
@@ -645,20 +511,22 @@
 
 !  obtain SILS solution information
 
-  CALL f_sils_information( fdata, finform, status )
+  CALL f_sils_information( fdata, fainfo, ffinfo, fsinfo, status )
 
-!  copy inform out
+!  copy infos out
 
-  CALL copy_inform_out( finform, cinform )
+  CALL copy_ainfo_out( fainfo, cainfo )
+  CALL copy_finfo_out( ffinfo, cfinfo )
+  CALL copy_sinfo_out( fsinfo, csinfo )
   RETURN
 
   END SUBROUTINE sils_information
 
 !  ------------------------------------
-!  C interface to fortran sils_terminate
+!  C interface to fortran sils_finalize
 !  ------------------------------------
 
-  SUBROUTINE sils_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE sils_finalize( cdata, ccontrol, status ) BIND( C ) 
   USE GALAHAD_SILS_double_ciface
   IMPLICIT NONE
 
@@ -666,22 +534,17 @@
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( sils_control ), INTENT( IN ) :: ccontrol
-  TYPE ( sils_inform_type ), INTENT( INOUT ) :: cinform
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
 
 !  local variables
 
   TYPE ( f_sils_full_data_type ), pointer :: fdata
   TYPE ( f_sils_control ) :: fcontrol
-  TYPE ( f_sils_inform_type ) :: finform
   LOGICAL :: f_indexing
 
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-
-!  copy inform in
-
-  CALL copy_inform_in( cinform, finform )
 
 !  associate data pointer
 
@@ -689,15 +552,11 @@
 
 !  deallocate workspace
 
-  CALL f_sils_terminate( fdata, fcontrol, finform )
-
-!  copy inform out
-
-  CALL copy_inform_out( finform, cinform )
+  CALL f_sils_finalize( fdata, fcontrol, status )
 
 !  deallocate data
 
   DEALLOCATE( fdata ); cdata = C_NULL_PTR 
   RETURN
 
-  END SUBROUTINE sils_terminate
+  END SUBROUTINE sils_finalize

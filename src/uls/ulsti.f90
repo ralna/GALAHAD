@@ -32,7 +32,8 @@
 
    WRITE( 6,"( ' storage         RHS   refine   RHST  refine')")
 ! read matrix order and number of entries
-   DO storage_type = 1, 3
+!  DO storage_type = 1, 3
+   DO storage_type = 3, 3
 ! initialize the structures for the gls solver
      CALL ULS_initialize( 'gls ', data, control, inform )
      IF ( inform%status < 0 ) THEN
@@ -47,15 +48,15 @@
      CASE ( 1 )
        WRITE( 6, "( A15 )", advance = 'no' ) " coordinate    "
        CALL ULS_factorize_matrix( control, data, status, m, n,                 &
-                                  'coordinate', ne, row, col, null, val )
+                                  'coordinate', ne, val, row, col, null )
      CASE ( 2 )
        WRITE( 6, "( A15 )", advance = 'no' ) " sparse by rows"
        CALL ULS_factorize_matrix( control, data, status, m, n,                 &
-                                  'sparse_by_rows', ne, null, col, ptr, val )
+                                  'sparse_by_rows', ne, val, null, col, ptr )
      CASE ( 3 )
        WRITE( 6, "( A15 )", advance = 'no' ) " dense         "
        CALL ULS_factorize_matrix( control, data, status, m, n,                 &
-                                  'dense', ne, null, null, null, dense )
+                                  'dense', ne, dense, null, null, null )
      END SELECT
      IF ( status < 0 ) THEN
        CALL ULS_information( data, inform, status )

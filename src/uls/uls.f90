@@ -206,13 +206,13 @@
 !    -1  allocation error
 !    -2  deallocation error
 !    -3  matrix data faulty (%n < 1, %ne < 0)
+!   -26  unknown solver
 !   -29  unavailable option
 !   -31  input order is not a permutation or is faulty in some other way
 !   -32  error with integer workspace
 !   -33  error with real workspace
 !   -34  error from PARDISO
 !   -50  solver-specific error; see the solver's info parameter
-!  -101  unknown solver
 
        INTEGER :: status = 0
 
@@ -1266,6 +1266,9 @@
          inform%more_info = data%ma48_sinfo%more
          inform%alloc_status = data%ma48_sinfo%stat
        END IF
+     CASE DEFAULT
+       WRITE( 6, * ) ' solver ', data%solver( 1 : data%len_solver )
+       WRITE( 6, * ) ' should not be here'
      END SELECT
      RETURN
 
@@ -1688,8 +1691,8 @@
 ! G A L A H A D - U L S _ f a c t o r i z e _ m a t r i x  S U B R O U T I N E -
 
      SUBROUTINE ULS_factorize_matrix( control, data, status, m, n,             &
-                                      matrix_type, matrix_ne, matrix_row,      &
-                                      matrix_col, matrix_ptr, matrix_val )
+                                      matrix_type, matrix_ne, matrix_val,      &
+                                      matrix_row, matrix_col, matrix_ptr )
 
 !  import structural matrix data into internal storage, analyse the structure,
 !  and then perform a factorization
@@ -1733,6 +1736,10 @@
 !   number of entries in A in the sparse co-ordinate storage scheme.
 !   It need not be set for any of the other schemes.
 !
+!  matrix_val is a rank-one array of type default real, that holds the
+!   values of A input in precisely the same order as those for the row
+!   and column indices
+!
 !  matrix_row is a rank-one array of type default integer, that holds the
 !   row indices of A in the sparse co-ordinate storage scheme. It need not
 !   be set for any of the other schemes, and in this case can be of length 0
@@ -1747,10 +1754,6 @@
 !   the total number of entries plus one, in the sparse row-wise storage
 !   scheme. It need not be set when the other schemes are used, and in
 !   this case can be of length 0
-!
-!  matrix_val is a rank-one array of type default real, that holds the
-!   values of A input in precisely the same order as those for the row
-!   and column indices
 !
 !  See ULS_factorize for a description of the required arguments
 !
