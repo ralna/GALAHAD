@@ -953,10 +953,9 @@ void cqp_import( struct cqp_control_type *control,
    other schemes are used, and in this case can be NULL.
 
  @param[in]  A_type is a one-dimensional array of type char that specifies the
-   \link main_unsymmetric_matrices symmetric storage scheme \endlink 
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink 
    used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate', 
-  'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian
-  is via matrix-vector products; lower or upper case variants are allowed.
+  'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
 
  @param[in]  A_ne is a scalar variable of type int, that holds the number of
    entries in \f$A\f$ in the sparse co-ordinate storage scheme. 

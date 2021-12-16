@@ -1,4 +1,4 @@
-.TH "cqp.h" 3 "Tue Dec 7 2021" "C interfaces to GALAHAD CQP" \" -*- nroff -*-
+.TH "cqp.h" 3 "Sun Dec 12 2021" "C interfaces to GALAHAD CQP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -605,7 +605,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .br
-\fIA_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the constraint Jacobian, A\&. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed\&.
+\fIA_type\fP is a one-dimensional array of type char that specifies the \fBunsymmetric storage scheme \fP used for the constraint Jacobian, A\&. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed\&.
 .br
 \fIA_ne\fP is a scalar variable of type int, that holds the number of entries in A in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
 .br

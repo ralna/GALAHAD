@@ -57,7 +57,7 @@ int main(void) {
         control.get_norm_residual = true;
 
         // Set user-defined control options
-        control.f_indexing = true; // C sparse matrix indexing
+        control.f_indexing = true; // fortran sparse matrix indexing
 
         switch(d){
             case 1: // sparse co-ordinate storage

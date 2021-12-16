@@ -46,7 +46,22 @@
 
       PRIVATE
       PUBLIC :: RQS_initialize, RQS_read_specfile, RQS_solve, RQS_terminate,   &
-                RQS_solve_diagonal, SMT_type, SMT_put, SMT_get
+                RQS_solve_diagonal, RQS_full_initialize, RQS_full_terminate,   &
+                RQS_import, RQS_import_M, RQS_import_A,                        &
+                RQS_solve_problem, RQS_reset_control, RQS_information,         &
+                SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE RQS_initialize
+       MODULE PROCEDURE RQS_initialize, RQS_full_initialize
+     END INTERFACE RQS_initialize
+
+     INTERFACE RQS_terminate
+       MODULE PROCEDURE RQS_terminate, RQS_full_terminate
+     END INTERFACE RQS_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -239,28 +254,6 @@
         TYPE ( IR_control_type ) :: IR_control
       END TYPE
 
-!  - - - - - - - - - -
-!   data derived type
-!  - - - - - - - - - -
-
-      TYPE, PUBLIC :: RQS_data_type
-        PRIVATE
-        INTEGER :: m, npm, h_ne, m_ne, a_ne, m_end
-        TYPE ( RAND_seed ) :: seed
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U, V, Y, Z, WORK
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: M_diag, M_offd
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_dense, X_dense
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Q_dense
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: M_dense
-        TYPE ( SMT_type ) :: H_dense, A_dense
-        LOGICAL :: get_initial_u = .TRUE.
-        LOGICAL :: accurate = .TRUE.
-        TYPE ( SMT_type ) :: H_lambda
-        TYPE ( IR_data_type ) :: IR_data
-        TYPE ( SLS_data_type ) :: SLS_data
-        TYPE ( RQS_control_type ) :: control
-      END TYPE
-
 !  - - - - - - - - - - - - - - - - - - - - - -
 !   time derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - -  -
@@ -398,6 +391,37 @@
         TYPE ( IR_inform_type ) :: IR_inform
       END TYPE
 
+!  - - - - - - - - - -
+!   data derived type
+!  - - - - - - - - - -
+
+      TYPE, PUBLIC :: RQS_data_type
+        PRIVATE
+        INTEGER :: m, npm, h_ne, m_ne, a_ne, m_end
+        TYPE ( RAND_seed ) :: seed
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U, V, Y, Z, WORK
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: M_diag, M_offd
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_dense, X_dense
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Q_dense
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: M_dense
+        TYPE ( SMT_type ) :: H_dense, A_dense
+        LOGICAL :: get_initial_u = .TRUE.
+        LOGICAL :: accurate = .TRUE.
+        TYPE ( SMT_type ) :: H_lambda
+        TYPE ( IR_data_type ) :: IR_data
+        TYPE ( SLS_data_type ) :: SLS_data
+        TYPE ( RQS_control_type ) :: control
+      END TYPE
+
+      TYPE, PUBLIC :: RQS_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( RQS_data_type ) :: RQS_data
+        TYPE ( RQS_control_type ) :: RQS_control
+        TYPE ( RQS_inform_type ) :: RQS_inform
+        TYPE ( SMT_type ) :: H, M, A
+        LOGICAL :: use_m, use_a
+      END TYPE RQS_full_data_type
+
     CONTAINS
 
 !-*-*-*-*-*-*-  R Q S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
@@ -467,6 +491,38 @@
 !  End of subroutine RQS_initialize
 
       END SUBROUTINE RQS_initialize
+
+!- G A L A H A D -  R Q S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE RQS_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for RQS controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( RQS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( RQS_control_type ), INTENT( OUT ) :: control
+     TYPE ( RQS_inform_type ), INTENT( OUT ) :: inform
+
+     CALL RQS_initialize( data%rqs_data, control, inform )
+
+     RETURN
+
+!  End of subroutine RQS_full_initialize
+
+     END SUBROUTINE RQS_full_initialize
 
 !-*-*-*-*-   R Q S _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
 
@@ -712,7 +768,7 @@
 !-*-*-*-*-*-*-*-*-*-*  R Q S _ S O L V E   S U B R O U T I N E  -*-*-*-*-*-*-*
 
       SUBROUTINE RQS_solve( n, p, sigma, f, C, H, X, data, control, inform,    &
-                            M, A )
+                            M, A, Y )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -747,6 +803,7 @@
       TYPE ( RQS_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SMT_type ), OPTIONAL, INTENT( INOUT ) :: M
       TYPE ( SMT_type ), OPTIONAL, INTENT( INOUT ) :: A
+      REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ), DIMENSION( * ) :: Y
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -858,7 +915,7 @@
 
 !  allocate space to hold the required matrices H_dense and Q_dense
 
-          array_name = 'trs: H_dense%val'
+          array_name = 'rqs: H_dense%val'
           CALL SPACE_resize_array( n, data%H_dense%val,                        &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -866,7 +923,7 @@
               bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= 0 ) GO TO 910
 
-          array_name = 'trs: Q_dense'
+          array_name = 'rqs: Q_dense'
           CALL SPACE_resize_array( n, n, data%Q_dense,                         &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -876,7 +933,7 @@
 
 !  allocate space to hold the vectors X_dense and C_dense
 
-          array_name = 'trs: X_dense'
+          array_name = 'rqs: X_dense'
           CALL SPACE_resize_array( n, data%X_dense,                            &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -884,7 +941,7 @@
               bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= 0 ) GO TO 910
 
-          array_name = 'trs: C_dense'
+          array_name = 'rqs: C_dense'
           CALL SPACE_resize_array( n, data%C_dense,                            &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -925,7 +982,7 @@
           nb = ILAENV( 1, 'DSYTRD', 'L', n, - 1, - 1, - 1 )
           lwork = MAX( 1, 3 * n - 1, ( nb + 2 ) * n )
 
-          array_name = 'trs: work'
+          array_name = 'rqs: work'
           CALL SPACE_resize_array( lwork, data%WORK,                           &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -937,7 +994,7 @@
 
 !  if necessary allocate space to hold the additional dense matrices M_dense
 
-            array_name = 'trs: M_dense'
+            array_name = 'rqs: M_dense'
             CALL SPACE_resize_array( n, n, data%M_dense,                       &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
@@ -1014,7 +1071,7 @@
           m_dim = A%m
           data%A_dense%m = m_dim
           data%A_dense%n = n
-          array_name = 'trs: A_dense%val'
+          array_name = 'rqs: A_dense%val'
           CALL SPACE_resize_array( m_dim * n, data%A_dense%val,                &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -1062,7 +1119,7 @@
 
           CALL RQS_solve_main( n, p, sigma, f, data%C_dense, data%H_dense,     &
                                data%X_dense, data, control, inform,            &
-                               A = data%A_dense )
+                               A = data%A_dense, Y = Y )
         ELSE
           CALL RQS_solve_diagonal( n, p, sigma, f, data%C_dense,               &
                                    data%H_dense%val, data%X_dense,             &
@@ -1087,7 +1144,7 @@
 !  solve the sparse problem
 
         CALL RQS_solve_main( n, p, sigma, f, C, H, X, data, control, inform,   &
-                             M, A )
+                             M, A, Y )
       END IF
 
 !  ----
@@ -1131,7 +1188,7 @@
 !-*-*-*-*-*-*-  R Q S _ S O L V E _ M A I N   S U B R O U T I N E  -*-*-*-*-*-
 
       SUBROUTINE RQS_solve_main( n, p, sigma, f, C, H, X, data, control,      &
-                                 inform, M, A )
+                                 inform, M, A, Y )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -1287,6 +1344,9 @@
 !
 !    If the argument A is absent, no linear constraints Ax = 0 will be imposed
 !
+!  Y - an optional array of dimension at least A%m that will be filled
+!    with Lagrange multipliers for the constraints A x = 0, if present
+!
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !-----------------------------------------------
@@ -1303,6 +1363,7 @@
       TYPE ( RQS_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SMT_type ), OPTIONAL, INTENT( INOUT ) :: M
       TYPE ( SMT_type ), OPTIONAL, INTENT( INOUT ) :: A
+      REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ), DIMENSION( * ) :: Y
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -1324,7 +1385,7 @@
       REAL ( KIND = wp ), DIMENSION( 0 : max_degree ) :: x_norm2
       REAL ( KIND = wp ), DIMENSION( 0 : max_degree ) :: pi_beta, theta_beta
       LOGICAL :: printi, printt, printd, psdef, try_zero, dummy, unit_m
-      LOGICAL :: problem_file_exists, phase_1, constrained
+      LOGICAL :: problem_file_exists, phase_1, constrained, set_y
       CHARACTER ( LEN = 1 ) :: region, bad_eval
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1359,6 +1420,11 @@
 
       IF ( constrained ) THEN
         IF ( A%m <= 0 ) constrained = .FALSE.
+      END IF
+     IF ( constrained .AND. PRESENT( Y ) ) THEN
+        set_y = .TRUE.
+      ELSE
+        set_y = .FALSE.
       END IF
       phase_1 = .TRUE.
       X = zero ; inform%x_norm = zero
@@ -2208,6 +2274,7 @@
                              data%control%SLS_control,                         &
                              inform%IR_inform, inform%SLS_inform )
               X = data%Y( : n )
+              IF ( set_y )  Y( : data%m ) = data%Y( n + 1 : data%npm )
             ELSE
               X = - C
               CALL IR_solve( data%H_lambda, X, data%IR_data, data%SLS_data,    &
@@ -4808,6 +4875,114 @@
 
       END SUBROUTINE RQS_terminate
 
+! -  G A L A H A D -  R Q S _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE RQS_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( RQS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( RQS_control_type ), INTENT( IN ) :: control
+     TYPE ( RQS_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL RQS_terminate( data%rqs_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     array_name = 'rqs: data%H%ptr'
+     CALL SPACE_dealloc_array( data%H%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rqs: data%H%row'
+     CALL SPACE_dealloc_array( data%H%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rqs: data%H%col'
+     CALL SPACE_dealloc_array( data%H%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rqs: data%H%val'
+     CALL SPACE_dealloc_array( data%H%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rqs: data%M%ptr'
+     CALL SPACE_dealloc_array( data%M%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rqs: data%M%row'
+     CALL SPACE_dealloc_array( data%M%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rqs: data%M%col'
+     CALL SPACE_dealloc_array( data%M%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rqs: data%M%val'
+     CALL SPACE_dealloc_array( data%M%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rqs: data%A%ptr'
+     CALL SPACE_dealloc_array( data%A%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rqs: data%A%row'
+     CALL SPACE_dealloc_array( data%A%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rqs: data%A%col'
+     CALL SPACE_dealloc_array( data%A%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rqs: data%A%val'
+     CALL SPACE_dealloc_array( data%A%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     RETURN
+
+!  End of subroutine RQS_full_terminate
+
+     END SUBROUTINE RQS_full_terminate
+
 !-*-*-*-*-*-*-  R Q S _ P I _ D E R I V S   S U B R O U T I N E   -*-*-*-*-*-*-
 
       SUBROUTINE RQS_pi_derivs( max_order, beta, x_norm2, pi_beta )
@@ -5123,6 +5298,838 @@
 !  End of function RQS_lambda_root
 
       END FUNCTION RQS_lambda_root
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-  G A L A H A D -  R Q S _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+
+     SUBROUTINE RQS_import( control, data, status, n,                          &
+                            H_type, H_ne, H_row, H_col, H_ptr )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to RQS_solve
+!
+!  data is a scalar variable of type RQS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that the types contain
+!       a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'IDENTITY' has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  H_type is a character string that specifies the Hessian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or
+!   'diagonal'. Lower or upper case variants are allowed.
+!
+!  H_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  H_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  H_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  H_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( RQS_control_type ), INTENT( INOUT ) :: control
+     TYPE ( RQS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n
+     INTEGER, OPTIONAL, INTENT( IN ) :: H_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     data%rqs_control = control
+
+     error = data%rqs_control%error
+     space_critical = data%rqs_control%space_critical
+     deallocate_error_fatal = data%rqs_control%space_critical
+
+!  flag that M and A are not currently used
+
+     data%use_m = .FALSE. ; data%use_a = .FALSE. ; data%A%m = 0
+
+!  set H appropriately in its storage type
+
+     SELECT CASE ( H_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( H_row ) .AND. PRESENT( H_col ) ) ) THEN
+         data%rqs_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%H%type, 'COORDINATE', data%rqs_inform%alloc_status )
+       data%H%n = n ; data%H%ne = H_ne
+
+       array_name = 'rqs: data%H%row'
+       CALL SPACE_resize_array( data%H%ne, data%H%row,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'rqs: data%H%col'
+       CALL SPACE_resize_array( data%H%ne, data%H%col,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'rqs: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       data%H%row( : data%H%ne ) = H_row( : data%H%ne )
+       data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( H_col ) .AND. PRESENT( H_ptr ) ) ) THEN
+         data%rqs_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%H%type, 'SPARSE_BY_ROWS',                            &
+                     data%rqs_inform%alloc_status )
+       data%H%n = n ; data%H%ne = H_ptr( n + 1 ) - 1
+
+       array_name = 'rqs: data%H%ptr'
+       CALL SPACE_resize_array( n + 1, data%H%ptr,                             &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'rqs: data%H%col'
+       CALL SPACE_resize_array( data%H%ne, data%H%col,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'rqs: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       data%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+       data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%H%type, 'DENSE', data%rqs_inform%alloc_status )
+       data%H%n = n ; data%H%ne = ( n * ( n + 1 ) ) / 2
+
+       array_name = 'rqs: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%H%type, 'DIAGONAL', data%rqs_inform%alloc_status )
+       data%H%n = n ; data%H%ne = n
+
+       array_name = 'rqs: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%rqs_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%rqs_inform%status
+     RETURN
+
+!  End of subroutine RQS_import
+
+     END SUBROUTINE RQS_import
+
+!-*-*-*-  G A L A H A D -  R Q S _ i m p o r t _ M _ S U B R O U T I N E -*-*-*-
+
+     SUBROUTINE RQS_import_M( data, status, M_type, M_ne, M_row, M_col, M_ptr )
+
+!  import fixed problem data for the scaling matrix M into internal 
+!  storage prior to solution. Arguments are as follows:
+
+!  data is a scalar variable of type RQS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that the types contain
+!       a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'IDENTITY' has been violated.
+!
+!  M_type is a character string that specifies the scaling matrix storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense',
+!   'diagonal' or 'identity'. Lower or upper case variants are allowed.
+!
+!  M_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the lower triangular part of M in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  M_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of M in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  M_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of M in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  M_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of M, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( RQS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, OPTIONAL, INTENT( IN ) :: M_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: M_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_ptr
+
+!  local variables
+
+     INTEGER :: n, error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     WRITE( data%rqs_control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     error = data%rqs_control%error
+     space_critical = data%rqs_control%space_critical
+     deallocate_error_fatal = data%rqs_control%space_critical
+
+!  recover the dimension
+
+     n = data%H%n
+
+!  set M appropriately in its storage type
+
+     SELECT CASE ( M_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( M_ne ) .AND. PRESENT( M_row ) .AND.               &
+                    PRESENT( M_col ) ) ) THEN
+         data%rqs_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%M%type, 'COORDINATE', data%rqs_inform%alloc_status )
+       data%M%n = n ; data%M%ne = M_ne
+
+       array_name = 'rqs: data%M%row'
+       CALL SPACE_resize_array( data%M%ne, data%M%row,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'rqs: data%M%col'
+       CALL SPACE_resize_array( data%M%ne, data%M%col,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'rqs: data%M%val'
+       CALL SPACE_resize_array( data%M%ne, data%M%val,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       data%M%row( : data%M%ne ) = M_row( : data%M%ne )
+       data%M%col( : data%M%ne ) = M_col( : data%M%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( M_col ) .AND. PRESENT( M_ptr ) ) ) THEN
+         data%rqs_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%M%type, 'SPARSE_BY_ROWS',                            &
+                     data%rqs_inform%alloc_status )
+       data%M%n = n ; data%M%ne = M_ptr( n + 1 ) - 1
+
+       array_name = 'rqs: data%M%ptr'
+       CALL SPACE_resize_array( n + 1, data%M%ptr,                             &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'rqs: data%M%col'
+       CALL SPACE_resize_array( data%M%ne, data%M%col,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'rqs: data%M%val'
+       CALL SPACE_resize_array( data%M%ne, data%M%val,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       data%M%ptr( : n + 1 ) = M_ptr( : n + 1 )
+       data%M%col( : data%M%ne ) = M_col( : data%M%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%M%type, 'DENSE', data%rqs_inform%alloc_status )
+       data%M%n = n ; data%M%ne = ( n * ( n + 1 ) ) / 2
+
+       array_name = 'rqs: data%M%val'
+       CALL SPACE_resize_array( data%M%ne, data%M%val,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%M%type, 'DIAGONAL', data%rqs_inform%alloc_status )
+       data%M%n = n ; data%M%ne = n
+
+       array_name = 'rqs: data%M%val'
+       CALL SPACE_resize_array( data%M%ne, data%M%val,                         &
+              data%rqs_inform%status, data%rqs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%rqs_inform%bad_alloc, out = error )
+       IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%M%type, 'IDENTITY', data%rqs_inform%alloc_status )
+       data%M%n = n ; data%M%ne = 0
+
+     CASE DEFAULT
+       data%rqs_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     data%use_m = .TRUE.
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%rqs_inform%status
+     RETURN
+
+!  End of subroutine RQS_import_M
+
+     END SUBROUTINE RQS_import_M
+
+!-*-*-*-  G A L A H A D -  R Q S _ i m p o r t _ A _ S U B R O U T I N E -*-*-*-
+
+     SUBROUTINE RQS_import_A( data, status, m,                                 &
+                              A_type, A_ne, A_row, A_col, A_ptr )
+
+!  import fixed problem data for the constraint Jacobian A into internal 
+!  storage prior to solution. Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to RQS_solve
+!
+!  data is a scalar variable of type RQS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that the types contain
+!       a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'IDENTITY' has been violated.
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   constraints
+!
+!  A_type is a character string that specifies the Jacobian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'
+!   if m > 0; lower or upper case variants are allowed
+!
+!  A_ne is a scalar variable of type default integer, that holds the number of
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!  for any of the other schemes.
+!
+!  A_row is a rank-one array of type default integer, that holds the row
+!   indices J in the sparse co-ordinate storage scheme. It need not be set
+!   for any of the other schemes, and in this case can be of length 0
+!
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
+!   in this case can be of length 0
+!
+!  A_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of J, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
+!   can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( RQS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: m
+     INTEGER, OPTIONAL, INTENT( IN ) :: A_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+
+!  local variables
+
+     INTEGER :: n, error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+     WRITE( data%rqs_control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     error = data%rqs_control%error
+     space_critical = data%rqs_control%space_critical
+     deallocate_error_fatal = data%rqs_control%space_critical
+
+!  recover the dimension
+
+     n = data%H%n
+
+!  set A appropriately in its storage type
+
+     IF ( m > 0 ) THEN
+       data%A%n = n ; data%A%m = m
+       SELECT CASE ( A_type )
+       CASE ( 'coordinate', 'COORDINATE' )
+         IF ( .NOT. ( PRESENT( A_ne ) .AND. PRESENT( A_row ) .AND.             &
+                      PRESENT( A_col ) ) ) THEN
+           data%rqs_inform%status = GALAHAD_error_optional
+           GO TO 900
+         END IF
+         CALL SMT_put( data%A%type, 'COORDINATE', data%rqs_inform%alloc_status )
+         data%A%ne = A_ne
+
+         array_name = 'rqs: data%A%row'
+         CALL SPACE_resize_array( data%A%ne, data%A%row,                       &
+                data%rqs_inform%status, data%rqs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%rqs_inform%bad_alloc, out = error )
+         IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+         array_name = 'rqs: data%A%col'
+         CALL SPACE_resize_array( data%A%ne, data%A%col,                       &
+                data%rqs_inform%status, data%rqs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%rqs_inform%bad_alloc, out = error )
+         IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+         array_name = 'rqs: data%A%val'
+         CALL SPACE_resize_array( data%A%ne, data%A%val,                       &
+                data%rqs_inform%status, data%rqs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%rqs_inform%bad_alloc, out = error )
+         IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+         data%A%row( : data%A%ne ) = A_row( : data%A%ne )
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+
+       CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+         IF ( .NOT. ( PRESENT( A_col ) .AND. PRESENT( A_ptr ) ) ) THEN
+           data%rqs_inform%status = GALAHAD_error_optional
+           GO TO 900
+         END IF
+         CALL SMT_put( data%A%type, 'SPARSE_BY_ROWS',                          &
+                       data%rqs_inform%alloc_status )
+         data%A%ne = A_ptr( m + 1 ) - 1
+         array_name = 'rqs: data%A%ptr'
+         CALL SPACE_resize_array( m + 1, data%A%ptr,                           &
+                data%rqs_inform%status, data%rqs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%rqs_inform%bad_alloc, out = error )
+         IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+         array_name = 'rqs: data%A%col'
+         CALL SPACE_resize_array( data%A%ne, data%A%col,                       &
+                data%rqs_inform%status, data%rqs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%rqs_inform%bad_alloc, out = error )
+         IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+         array_name = 'rqs: data%A%val'
+         CALL SPACE_resize_array( data%A%ne, data%A%val,                       &
+                data%rqs_inform%status, data%rqs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%rqs_inform%bad_alloc, out = error )
+         IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+         data%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+
+       CASE ( 'dense', 'DENSE' )
+         CALL SMT_put( data%A%type, 'DENSE', data%rqs_inform%alloc_status )
+         data%A%ne = m * n
+
+         array_name = 'rqs: data%A%val'
+         CALL SPACE_resize_array( data%A%ne, data%A%val,                       &
+                data%rqs_inform%status, data%rqs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%rqs_inform%bad_alloc, out = error )
+         IF ( data%rqs_inform%status /= 0 ) GO TO 900
+
+       CASE DEFAULT
+         data%rqs_inform%status = GALAHAD_error_unknown_storage
+         GO TO 900
+       END SELECT
+     ELSE
+       data%A%n = n ; data%A%m = m ; data%A%ne = 0
+     END IF
+
+     data%use_a = .TRUE.
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%rqs_inform%status
+     RETURN
+
+!  End of subroutine RQS_import_A
+
+     END SUBROUTINE RQS_import_A
+
+!-  G A L A H A D -  T R S _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE RQS_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See RQS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( RQS_control_type ), INTENT( IN ) :: control
+     TYPE ( RQS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%rqs_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine RQS_reset_control
+
+     END SUBROUTINE RQS_reset_control
+
+!-  G A L A H A D -  T R S _ s o l v e _ p r o b l e m  S U B R O U T I N E  -
+
+     SUBROUTINE RQS_solve_problem( data, status, p, sigma, f, C, H_val, X,     &
+                                   M_val, A_val, Y )
+
+!  solve the regularized quadratic problem whose structure was previously
+!  imported. See RQS_solve for a description of the required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type RQS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, radius > 0, m >= 0 or requirement that the 
+!       types contain a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'IDENTITY' has been violated.
+!
+!   H_val is a one-dimensional array of size h_ne and type default real
+!    that holds the values of the entries of the lower triangular part of 
+!    the Hessian matrix H in the storage scheme specified in rqs_import.
+!
+!  C is a rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, c.
+!   The j-th component of C, j = 1, ... , n, contains (c)_j.
+!
+!  f is a scalar of type default real, that holds the constant term of the 
+!   objective function.
+!
+!  p is a scalar of type default real, that holds the power of the 
+!   regularization norm (p > 2).
+!
+!  sigma is a scalar of type default real, that holds the positive value 
+!   of the regularization weight.
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!   M_val is an optional one-dimensional array of size m_ne and type default 
+!    real that holds the values of the entries of the lower triangular part of 
+!    the scaling matrix M in the storage scheme specified in rqs_import. This
+!    need not be given if M is the identity matrix
+!
+!   A_val is an optional one-dimensional array of size h_ne and type default 
+!    real that holds the values of the entries of the constraint Jacobian
+!    matrix A, if there are constraints, in the storage scheme specified 
+!    in rqs_import.
+!
+!  Y is an optional rank-one array of dimension m and type default
+!   real, that holds the vector of the Lagrange multipliers, y,
+!   corresponding to the constraints A x = 0, if any.
+!   The i-th component of Y, j = 1, ... , m, contains (y)_i, the
+!   mulltipier of the i-th constraint (Ax)_i = 0.
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( RQS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
+     REAL ( KIND = wp ), INTENT( IN ) :: f, p, sigma
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_val
+     REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_val
+     REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: Y
+
+!  local variables
+
+     INTEGER :: n
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  recover the dimensions
+
+     n = data%H%n
+
+!  save the Hessian entries
+
+     IF ( data%H%ne > 0 ) data%H%val( : data%H%ne ) = H_val( : data%H%ne )
+
+!  call the solver
+
+     IF ( data%A%m == 0 ) THEN
+       IF ( .NOT. data%use_m ) THEN
+         CALL RQS_solve( n, p, sigma, f, C, data%H, X, data%rqs_data,          &
+                         data%rqs_control, data%rqs_inform )
+       ELSE
+         IF ( .NOT. PRESENT( M_val ) ) THEN
+           data%rqs_inform%status = GALAHAD_error_optional
+           GO TO 900
+         END IF
+         IF ( data%M%ne > 0 ) data%M%val( : data%M%ne ) = M_val( : data%M%ne )
+         CALL RQS_solve( n, p, sigma, f, C, data%H, X, data%rqs_data,          &
+                         data%rqs_control, data%rqs_inform, M = data%M )
+       END IF
+     ELSE
+       IF ( .NOT. PRESENT( A_val ) ) THEN
+         data%rqs_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
+       IF ( .NOT. data%use_m ) THEN
+         CALL RQS_solve( n, p, sigma, f, C, data%H, X, data%rqs_data,          &
+                         data%rqs_control, data%rqs_inform,                    &
+                         A = data%A, Y = Y )
+
+       ELSE
+         IF ( .NOT. PRESENT( M_val ) ) THEN
+           data%rqs_inform%status = GALAHAD_error_optional
+           GO TO 900
+         END IF
+         IF ( data%M%ne > 0 ) data%M%val( : data%M%ne ) = M_val( : data%M%ne )
+         CALL RQS_solve( n, p, sigma, f, C, data%H, X, data%rqs_data,          &
+                         data%rqs_control, data%rqs_inform,                    &
+                         M = data%M, A = data%A, Y = Y )
+       END IF
+     END IF
+
+     status = data%rqs_inform%status
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%rqs_inform%status
+     RETURN
+
+!  End of subroutine RQS_solve_problem
+
+     END SUBROUTINE RQS_solve_problem
+
+!-  G A L A H A D -  T R S _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE RQS_information( data, inform, status )
+
+!  return solver information during or after solution by RQS
+!  See RQS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( RQS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( RQS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%rqs_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine RQS_information
+
+     END SUBROUTINE RQS_information
 
 !-*-*-*-*-*-  End of G A L A H A D _ R Q S  double  M O D U L E  *-*-*-*-*-*-
 

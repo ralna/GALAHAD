@@ -10936,6 +10936,10 @@ END DO
 
      SELECT CASE ( H_type )
      CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( H_row ) .AND. PRESENT( H_col ) ) ) THEN
+         data%cqp_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
        CALL SMT_put( data%prob%H%type, 'COORDINATE',                           &
                      data%cqp_inform%alloc_status )
        data%prob%H%n = n
@@ -10973,6 +10977,10 @@ END DO
        data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
+         data%cqp_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
        CALL SMT_put( data%prob%H%type, 'SPARSE_BY_ROWS',                       &
                      data%cqp_inform%alloc_status )
        data%prob%H%n = n
@@ -11081,6 +11089,10 @@ END DO
 
      SELECT CASE ( A_type )
      CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( A_row ) .AND. PRESENT( A_col ) ) ) THEN
+         data%cqp_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
        CALL SMT_put( data%prob%A%type, 'COORDINATE',                           &
                      data%cqp_inform%alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m
@@ -11117,6 +11129,10 @@ END DO
        data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
+         data%cqp_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
        CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
                      data%cqp_inform%alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m

@@ -48,7 +48,22 @@
       PRIVATE
       PUBLIC :: TRS_initialize, TRS_read_specfile, TRS_solve, TRS_terminate,   &
                 TRS_contract, TRS_solve_diagonal, TRS_orthogonal_solve,        &
+                TRS_full_initialize, TRS_full_terminate,                       &
+                TRS_import, TRS_import_M, TRS_import_A,                        &
+                TRS_solve_problem, TRS_reset_control, TRS_information,         &
                 SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE TRS_initialize
+       MODULE PROCEDURE TRS_initialize, TRS_full_initialize
+     END INTERFACE TRS_initialize
+
+     INTERFACE TRS_terminate
+       MODULE PROCEDURE TRS_terminate, TRS_full_terminate
+     END INTERFACE TRS_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -195,7 +210,7 @@
 !  is the solution is REQUIRED to lie on the boundary (i.e., is the constraint
 !  an equality)?
 
-        LOGICAL :: equality_problem= .FALSE.
+        LOGICAL :: equality_problem = .FALSE.
 
 !  ignore initial_multiplier?
 
@@ -248,30 +263,7 @@
 
         TYPE ( IR_control_type ) :: IR_control
 
-      END TYPE
-
-!  - - - - - - - - - -
-!   data derived type
-!  - - - - - - - - - -
-
-      TYPE, PUBLIC :: TRS_data_type
-        PRIVATE
-        INTEGER :: m, npm, h_ne, m_ne, a_ne, m_end
-        TYPE ( RAND_seed ) :: seed
-!       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: D
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U, V, Y, Z, WORK
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: M_diag, M_offd
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_dense, X_dense
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Q_dense
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: M_dense
-        TYPE ( SMT_type ) :: H_dense, A_dense
-        LOGICAL :: get_initial_u = .TRUE.
-        LOGICAL :: accurate = .TRUE.
-        TYPE ( SMT_type ) :: H_lambda
-        TYPE ( IR_data_type ) :: IR_data
-        TYPE ( SLS_data_type ) :: SLS_data
-        TYPE ( TRS_control_type ) :: control
-      END TYPE
+      END TYPE TRS_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
 !   time derived type with component defaults
@@ -406,6 +398,38 @@
         TYPE ( IR_inform_type ) :: IR_inform
       END TYPE
 
+!  - - - - - - - - - -
+!   data derived type
+!  - - - - - - - - - -
+
+      TYPE, PUBLIC :: TRS_data_type
+        PRIVATE
+        INTEGER :: m, npm, h_ne, m_ne, a_ne, m_end
+        TYPE ( RAND_seed ) :: seed
+!       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: D
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U, V, Y, Z, WORK
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: M_diag, M_offd
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_dense, X_dense
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Q_dense
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: M_dense
+        TYPE ( SMT_type ) :: H_dense, A_dense
+        LOGICAL :: get_initial_u = .TRUE.
+        LOGICAL :: accurate = .TRUE.
+        TYPE ( SMT_type ) :: H_lambda
+        TYPE ( IR_data_type ) :: IR_data
+        TYPE ( SLS_data_type ) :: SLS_data
+        TYPE ( TRS_control_type ) :: control
+      END TYPE TRS_data_type
+
+      TYPE, PUBLIC :: TRS_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( TRS_data_type ) :: TRS_data
+        TYPE ( TRS_control_type ) :: TRS_control
+        TYPE ( TRS_inform_type ) :: TRS_inform
+        TYPE ( SMT_type ) :: H, M, A
+        LOGICAL :: use_m, use_a
+      END TYPE TRS_full_data_type
+
     CONTAINS
 
 !-*-*-*-*-*-*-  T R S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
@@ -478,6 +502,38 @@
 !  End of subroutine TRS_initialize
 
       END SUBROUTINE TRS_initialize
+
+!- G A L A H A D -  T R S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE TRS_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for TRS controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TRS_control_type ), INTENT( OUT ) :: control
+     TYPE ( TRS_inform_type ), INTENT( OUT ) :: inform
+
+     CALL TRS_initialize( data%trs_data, control, inform )
+
+     RETURN
+
+!  End of subroutine TRS_full_initialize
+
+     END SUBROUTINE TRS_full_initialize
 
 !-*-*-*-*-   T R S _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
 
@@ -3927,6 +3983,114 @@
 
       END SUBROUTINE TRS_terminate
 
+! -  G A L A H A D -  T R S _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE TRS_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TRS_control_type ), INTENT( IN ) :: control
+     TYPE ( TRS_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL TRS_terminate( data%trs_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     array_name = 'trs: data%H%ptr'
+     CALL SPACE_dealloc_array( data%H%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trs: data%H%row'
+     CALL SPACE_dealloc_array( data%H%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trs: data%H%col'
+     CALL SPACE_dealloc_array( data%H%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trs: data%H%val'
+     CALL SPACE_dealloc_array( data%H%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trs: data%M%ptr'
+     CALL SPACE_dealloc_array( data%M%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trs: data%M%row'
+     CALL SPACE_dealloc_array( data%M%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trs: data%M%col'
+     CALL SPACE_dealloc_array( data%M%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trs: data%M%val'
+     CALL SPACE_dealloc_array( data%M%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trs: data%A%ptr'
+     CALL SPACE_dealloc_array( data%A%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trs: data%A%row'
+     CALL SPACE_dealloc_array( data%A%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trs: data%A%col'
+     CALL SPACE_dealloc_array( data%A%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'trs: data%A%val'
+     CALL SPACE_dealloc_array( data%A%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     RETURN
+
+!  End of subroutine TRS_full_terminate
+
+     END SUBROUTINE TRS_full_terminate
+
 !-*-*-*-  G A L A H A D -  T R S _ c o n t r a c t  S U B R O U T I N E -*-*-*-
 
      SUBROUTINE TRS_contract( n, radius, lambda, G, S, sigma_lower,            &
@@ -4894,6 +5058,835 @@
 !  end of subroutine TRS_orthogonal_solve
 
      END SUBROUTINE TRS_orthogonal_solve
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-  G A L A H A D -  T R S _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+
+     SUBROUTINE TRS_import( control, data, status, n,                          &
+                            H_type, H_ne, H_row, H_col, H_ptr )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to TRS_solve
+!
+!  data is a scalar variable of type TRS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that the types contain
+!       a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'IDENTITY' has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  H_type is a character string that specifies the Hessian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or
+!   'diagonal'. Lower or upper case variants are allowed.
+!
+!  H_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  H_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  H_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  H_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRS_control_type ), INTENT( INOUT ) :: control
+     TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n
+     INTEGER, OPTIONAL, INTENT( IN ) :: H_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     data%trs_control = control
+
+     error = data%trs_control%error
+     space_critical = data%trs_control%space_critical
+     deallocate_error_fatal = data%trs_control%space_critical
+
+!  flag that M and A are not currently used
+
+     data%use_m = .FALSE. ; data%use_a = .FALSE.
+
+!  set H appropriately in its storage type
+
+     SELECT CASE ( H_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( H_row ) .AND. PRESENT( H_col ) ) ) THEN
+         data%trs_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%H%type, 'COORDINATE', data%trs_inform%alloc_status )
+       data%H%n = n ; data%H%ne = H_ne
+
+       array_name = 'trs: data%H%row'
+       CALL SPACE_resize_array( data%H%ne, data%H%row,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'trs: data%H%col'
+       CALL SPACE_resize_array( data%H%ne, data%H%col,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'trs: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       data%H%row( : data%H%ne ) = H_row( : data%H%ne )
+       data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( H_col ) .AND. PRESENT( H_ptr ) ) ) THEN
+         data%trs_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%H%type, 'SPARSE_BY_ROWS',                            &
+                     data%trs_inform%alloc_status )
+       data%H%n = n ; data%H%ne = H_ptr( n + 1 ) - 1
+
+       array_name = 'trs: data%H%ptr'
+       CALL SPACE_resize_array( n + 1, data%H%ptr,                             &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'trs: data%H%col'
+       CALL SPACE_resize_array( data%H%ne, data%H%col,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'trs: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       data%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+       data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%H%type, 'DENSE', data%trs_inform%alloc_status )
+       data%H%n = n ; data%H%ne = ( n * ( n + 1 ) ) / 2
+
+       array_name = 'trs: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%H%type, 'DIAGONAL', data%trs_inform%alloc_status )
+       data%H%n = n ; data%H%ne = n
+
+       array_name = 'trs: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%trs_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%trs_inform%status
+     RETURN
+
+!  End of subroutine TRS_import
+
+     END SUBROUTINE TRS_import
+
+!-*-*-*-  G A L A H A D -  T R S _ i m p o r t _ M _ S U B R O U T I N E -*-*-*-
+
+     SUBROUTINE TRS_import_M( data, status, M_type, M_ne, M_row, M_col, M_ptr )
+
+!  import fixed problem data for the scaling matrix M into internal 
+!  storage prior to solution. Arguments are as follows:
+
+!  data is a scalar variable of type TRS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that the types contain
+!       a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'IDENTITY' has been violated.
+!
+!  M_type is a character string that specifies the scaling matrix storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense',
+!   'diagonal' or 'identity'. Lower or upper case variants are allowed.
+!
+!  M_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the lower triangular part of M in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  M_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of M in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  M_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of M in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  M_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of M, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, OPTIONAL, INTENT( IN ) :: M_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: M_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_ptr
+
+!  local variables
+
+     INTEGER :: n, error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     WRITE( data%trs_control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     error = data%trs_control%error
+     space_critical = data%trs_control%space_critical
+     deallocate_error_fatal = data%trs_control%space_critical
+
+!  recover the dimension
+
+     n = data%H%n
+
+!  set M appropriately in its storage type
+
+     SELECT CASE ( M_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( M_ne ) .AND. PRESENT( M_row ) .AND.               &
+                    PRESENT( M_col ) ) ) THEN
+         data%trs_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%M%type, 'COORDINATE', data%trs_inform%alloc_status )
+       data%M%n = n ; data%M%ne = M_ne
+
+       array_name = 'trs: data%M%row'
+       CALL SPACE_resize_array( data%M%ne, data%M%row,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'trs: data%M%col'
+       CALL SPACE_resize_array( data%M%ne, data%M%col,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'trs: data%M%val'
+       CALL SPACE_resize_array( data%M%ne, data%M%val,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       data%M%row( : data%M%ne ) = M_row( : data%M%ne )
+       data%M%col( : data%M%ne ) = M_col( : data%M%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( M_col ) .AND. PRESENT( M_ptr ) ) ) THEN
+         data%trs_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%M%type, 'SPARSE_BY_ROWS',                            &
+                     data%trs_inform%alloc_status )
+       data%M%n = n ; data%M%ne = M_ptr( n + 1 ) - 1
+
+       array_name = 'trs: data%M%ptr'
+       CALL SPACE_resize_array( n + 1, data%M%ptr,                             &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'trs: data%M%col'
+       CALL SPACE_resize_array( data%M%ne, data%M%col,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       array_name = 'trs: data%M%val'
+       CALL SPACE_resize_array( data%M%ne, data%M%val,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       data%M%ptr( : n + 1 ) = M_ptr( : n + 1 )
+       data%M%col( : data%M%ne ) = M_col( : data%M%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%M%type, 'DENSE', data%trs_inform%alloc_status )
+       data%M%n = n ; data%M%ne = ( n * ( n + 1 ) ) / 2
+
+       array_name = 'trs: data%M%val'
+       CALL SPACE_resize_array( data%M%ne, data%M%val,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%M%type, 'DIAGONAL', data%trs_inform%alloc_status )
+       data%M%n = n ; data%M%ne = n
+
+       array_name = 'trs: data%M%val'
+       CALL SPACE_resize_array( data%M%ne, data%M%val,                         &
+              data%trs_inform%status, data%trs_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%trs_inform%bad_alloc, out = error )
+       IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%M%type, 'IDENTITY', data%trs_inform%alloc_status )
+       data%M%n = n ; data%M%ne = 0
+
+     CASE DEFAULT
+       data%trs_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     data%use_m = .TRUE.
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%trs_inform%status
+     RETURN
+
+!  End of subroutine TRS_import_M
+
+     END SUBROUTINE TRS_import_M
+
+!-*-*-*-  G A L A H A D -  T R S _ i m p o r t _ A _ S U B R O U T I N E -*-*-*-
+
+     SUBROUTINE TRS_import_A( data, status, m,                                 &
+                              A_type, A_ne, A_row, A_col, A_ptr )
+
+!  import fixed problem data for the constraint Jacobian A into internal 
+!  storage prior to solution. Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to TRS_solve
+!
+!  data is a scalar variable of type TRS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that the types contain
+!       a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'IDENTITY' has been violated.
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   constraints
+!
+!  A_type is a character string that specifies the Jacobian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'
+!   if m > 0; lower or upper case variants are allowed
+!
+!  A_ne is a scalar variable of type default integer, that holds the number of
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!  for any of the other schemes.
+!
+!  A_row is a rank-one array of type default integer, that holds the row
+!   indices J in the sparse co-ordinate storage scheme. It need not be set
+!   for any of the other schemes, and in this case can be of length 0
+!
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
+!   in this case can be of length 0
+!
+!  A_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of J, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
+!   can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: m
+     INTEGER, OPTIONAL, INTENT( IN ) :: A_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+
+!  local variables
+
+     INTEGER :: n, error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+     WRITE( data%trs_control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     error = data%trs_control%error
+     space_critical = data%trs_control%space_critical
+     deallocate_error_fatal = data%trs_control%space_critical
+
+!  recover the dimension
+
+     n = data%H%n
+
+!  set A appropriately in its storage type
+
+     IF ( m > 0 ) THEN
+       data%A%n = n ; data%A%m = m
+       SELECT CASE ( A_type )
+       CASE ( 'coordinate', 'COORDINATE' )
+         IF ( .NOT. ( PRESENT( A_ne ) .AND. PRESENT( A_row ) .AND.             &
+                      PRESENT( A_col ) ) ) THEN
+           data%trs_inform%status = GALAHAD_error_optional
+           GO TO 900
+         END IF
+         CALL SMT_put( data%A%type, 'COORDINATE', data%trs_inform%alloc_status )
+         data%A%ne = A_ne
+
+         array_name = 'trs: data%A%row'
+         CALL SPACE_resize_array( data%A%ne, data%A%row,                       &
+                data%trs_inform%status, data%trs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%trs_inform%bad_alloc, out = error )
+         IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+         array_name = 'trs: data%A%col'
+         CALL SPACE_resize_array( data%A%ne, data%A%col,                       &
+                data%trs_inform%status, data%trs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%trs_inform%bad_alloc, out = error )
+         IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+         array_name = 'trs: data%A%val'
+         CALL SPACE_resize_array( data%A%ne, data%A%val,                       &
+                data%trs_inform%status, data%trs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%trs_inform%bad_alloc, out = error )
+         IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+         data%A%row( : data%A%ne ) = A_row( : data%A%ne )
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+
+       CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+         IF ( .NOT. ( PRESENT( A_col ) .AND. PRESENT( A_ptr ) ) ) THEN
+           data%trs_inform%status = GALAHAD_error_optional
+           GO TO 900
+         END IF
+         CALL SMT_put( data%A%type, 'SPARSE_BY_ROWS',                          &
+                       data%trs_inform%alloc_status )
+         data%A%ne = A_ptr( m + 1 ) - 1
+         array_name = 'trs: data%A%ptr'
+         CALL SPACE_resize_array( m + 1, data%A%ptr,                           &
+                data%trs_inform%status, data%trs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%trs_inform%bad_alloc, out = error )
+         IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+         array_name = 'trs: data%A%col'
+         CALL SPACE_resize_array( data%A%ne, data%A%col,                       &
+                data%trs_inform%status, data%trs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%trs_inform%bad_alloc, out = error )
+         IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+         array_name = 'trs: data%A%val'
+         CALL SPACE_resize_array( data%A%ne, data%A%val,                       &
+                data%trs_inform%status, data%trs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%trs_inform%bad_alloc, out = error )
+         IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+         data%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+
+       CASE ( 'dense', 'DENSE' )
+         CALL SMT_put( data%A%type, 'DENSE', data%trs_inform%alloc_status )
+         data%A%ne = m * n
+
+         array_name = 'trs: data%A%val'
+         CALL SPACE_resize_array( data%A%ne, data%A%val,                       &
+                data%trs_inform%status, data%trs_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal = deallocate_error_fatal,               &
+                exact_size = space_critical,                                   &
+                bad_alloc = data%trs_inform%bad_alloc, out = error )
+         IF ( data%trs_inform%status /= 0 ) GO TO 900
+
+       CASE DEFAULT
+         data%trs_inform%status = GALAHAD_error_unknown_storage
+         GO TO 900
+       END SELECT
+     ELSE
+       data%A%n = n ; data%A%m = m ; data%A%ne = 0
+     END IF
+
+     data%use_a = .TRUE.
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%trs_inform%status
+     RETURN
+
+!  End of subroutine TRS_import_A
+
+     END SUBROUTINE TRS_import_A
+
+!-  G A L A H A D -  T R S _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE TRS_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See TRS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRS_control_type ), INTENT( IN ) :: control
+     TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%trs_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine TRS_reset_control
+
+     END SUBROUTINE TRS_reset_control
+
+!-  G A L A H A D -  T R S _ s o l v e _ p r o b l e m  S U B R O U T I N E  -
+
+     SUBROUTINE TRS_solve_problem( data, status, radius, f, C, H_val, X,       &
+                                   M_val, A_val, Y )
+
+!  solve the trust-region problem whose structure was previously
+!  imported. See TRS_solve for a description of the required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type TRS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, radius > 0, m >= 0 or requirement that the 
+!       types contain a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' or 'IDENTITY' has been violated.
+!
+!  radius is a scalar of type default real, that holds the positive value 
+!   of the trust-region radius.
+!
+!  f is a scalar of type default real, that holds the constant term of the 
+!   objective function.
+!
+!  C is a rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, c.
+!   The j-th component of C, j = 1, ... , n, contains (c)_j.
+!
+!  H_val is a one-dimensional array of size h_ne and type default real
+!   that holds the values of the entries of the lower triangular part of 
+!   the Hessian matrix H in the storage scheme specified in trs_import.
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  M_val is an optional one-dimensional array of size m_ne and type default 
+!   real that holds the values of the entries of the lower triangular part of 
+!   the scaling matrix M in the storage scheme specified in trs_import. This
+!   need not be given if M is the identity matrix
+!
+!  A_val is an optional one-dimensional array of size h_ne and type default 
+!   real that holds the values of the entries of the constraint Jacobian
+!   matrix A, if there are constraints, in the storage scheme specified 
+!   in trs_import.
+!
+!  Y is an optional rank-one array of dimension m and type default
+!   real, that holds the vector of the Lagrange multipliers, y,
+!   corresponding to the constraints A x = 0, if any.
+!   The i-th component of Y, j = 1, ... , m, contains (y)_i, the
+!   mulltipier of the i-th constraint (Ax)_i = 0.
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), INTENT( IN ) :: f, radius
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_val
+     REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_val
+     REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: Y
+
+!  local variables
+
+     INTEGER :: n
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  recover the dimension
+
+     n = data%H%n
+
+!  save the Hessian entries
+
+     IF ( data%H%ne > 0 ) data%H%val( : data%H%ne ) = H_val( : data%H%ne )
+
+!  call the solver
+
+     IF ( data%A%m == 0 ) THEN
+       IF ( .NOT. data%use_m ) THEN
+         CALL TRS_solve( n, radius, f, C, data%H, X, data%trs_data,            &
+                         data%trs_control, data%trs_inform )
+       ELSE
+         IF ( .NOT. PRESENT( M_val ) ) THEN
+           data%trs_inform%status = GALAHAD_error_optional
+           GO TO 900
+         END IF
+         IF ( data%M%ne > 0 ) data%M%val( : data%M%ne ) = M_val( : data%M%ne )
+         CALL TRS_solve( n, radius, f, C, data%H, X, data%trs_data,            &
+                         data%trs_control, data%trs_inform, M = data%M )
+       END IF
+     ELSE
+       IF ( .NOT. PRESENT( A_val ) ) THEN
+         data%trs_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
+       IF ( .NOT. data%use_m ) THEN
+         CALL TRS_solve( n, radius, f, C, data%H, X, data%trs_data,            &
+                         data%trs_control, data%trs_inform,                    &
+                         A = data%A, Y = Y )
+
+       ELSE
+         IF ( .NOT. PRESENT( M_val ) ) THEN
+           data%trs_inform%status = GALAHAD_error_optional
+           GO TO 900
+         END IF
+         IF ( data%M%ne > 0 ) data%M%val( : data%M%ne ) = M_val( : data%M%ne )
+         CALL TRS_solve( n, radius, f, C, data%H, X, data%trs_data,            &
+                         data%trs_control, data%trs_inform,                    &
+                         M = data%M, A = data%A, Y = Y )
+       END IF
+     END IF
+
+     status = data%trs_inform%status
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%trs_inform%status
+     RETURN
+
+!  End of subroutine TRS_solve_problem
+
+     END SUBROUTINE TRS_solve_problem
+
+!-  G A L A H A D -  T R S _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE TRS_information( data, inform, status )
+
+!  return solver information during or after solution by TRS
+!  See TRS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( TRS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%trs_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine TRS_information
+
+     END SUBROUTINE TRS_information
 
 !-*-*-*-*-*-  End of G A L A H A D _ T R S  double  M O D U L E  *-*-*-*-*-*-
 

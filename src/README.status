@@ -98,7 +98,7 @@ trans                     M
 trb                       M C+
 trs                       M C
 tru                       M C+
-uls                       M C
+uls                       M C+
 userdata                  M
 warm                      M
 wcp                       M C

@@ -1274,7 +1274,7 @@ void nls_import( struct nls_control_type *control,
     residuals.
 
  @param[in]  J_type is a one-dimensional array of type char that specifies the
-   \link main_unsymmetric_matrices symmetric storage scheme \endlink
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
    used for the Jacobian, \f$J\f$. It should be one of 'coordinate',
   'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian
   is via matrix-vector products; lower or upper case variants are allowed.
@@ -1328,7 +1328,7 @@ void nls_import( struct nls_control_type *control,
    other schemes are used, and in this case can be NULL.
 
  @param[in]  P_type is a one-dimensional array of type char that specifies the
-   \link main_unsymmetric_matrices symmetric storage scheme \endlink
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
    used for the residual-Hessians-vector product matrix, \f$P\f$. It should be
    one of 'coordinate', 'sparse_by_columns', 'dense_by_columns' or 'absent',
    the latter if access to \f$P\f$ is  via matrix-vector products;

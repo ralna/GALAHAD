@@ -10,7 +10,7 @@
    INTEGER :: i, l, ordering, scaling, solver, storage_type, s, status
    INTEGER, PARAMETER :: n = 5, ne  = 7
    REAL ( KIND = wp ), PARAMETER :: good_x = EPSILON( 1.0_wp ) ** 0.333
-   REAL ( KIND = wp ) :: X( n )
+   REAL ( KIND = wp ), DIMENSION( n ) :: X
    INTEGER, DIMENSION( 0 ) :: null
    INTEGER, DIMENSION( ne ) :: row = (/ 1, 2, 2, 3, 3, 4, 5 /)
    INTEGER, DIMENSION( ne ) :: col = (/ 1, 1, 5, 2, 3, 3, 5 /)
@@ -25,9 +25,6 @@
      rhs = (/ 8.0_wp, 45.0_wp, 31.0_wp, 15.0_wp, 17.0_wp /)
    REAL ( KIND = wp ), DIMENSION( n ) ::                                       &
      SOL = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp /)
-   INTEGER, DIMENSION( ne ) :: drow = (/ 1, 2, 3, 3, 4, 5, 5 /)
-   INTEGER, DIMENSION( ne ) :: dcol = (/ 1, 2, 2, 3, 4, 1, 5 /)
-   INTEGER, DIMENSION( n + 1 ) :: dptr = (/ 1, 2, 3, 5, 6, 8 /)
 
 !  =====================================
 !  basic test of various storage formats
@@ -48,16 +45,16 @@
      SELECT CASE( storage_type )
      CASE ( 1 )
        WRITE( 6, "( A15 )", advance = 'no' ) " coordinate    "
-       CALL SLS_analyse_matrix( control, data, status, n, 'coordinate',        &
-                                ne, row, col, null )
+       CALL SLS_analyse_matrix( control, data, status, n,                      &
+                                'coordinate', ne, row, col, null )
      CASE ( 2 )
        WRITE( 6, "( A15 )", advance = 'no' ) " sparse by rows"
-       CALL SLS_analyse_matrix( control, data, status, n, 'sparse_by_rows',    &
-                                ne, null, col, ptr )
+       CALL SLS_analyse_matrix( control, data, status, n,                      &
+                                'sparse_by_rows', ne, null, col, ptr )
      CASE ( 3 )
        WRITE( 6, "( A15 )", advance = 'no' ) " dense         "
-       CALL SLS_analyse_matrix( control, data, status, n, 'dense',             &
-                                ne, null, null, null )
+       CALL SLS_analyse_matrix( control, data, status, n,                      &
+                                'dense', ne, null, null, null )
      END SELECT
      IF ( status < 0 ) THEN
        CALL SLS_information( data, inform, status )

@@ -694,19 +694,21 @@
  & '', /, &
  & 'void ', A, '_initialize( void **data, ', /, &
  & '                     struct ', A, '_control_type *control,', /, &
- & '                     struct ', A, '_inform_type *inform );', /, &
+ & '                     int *status );', /, &
  & '', /, &
  &  '/*!<', /, &
  &  ' Set default control values and initialize private data', /, &
  &  '', /, &
  &  '  @param[in,out] data holds private internal data', /, &
+ &  '', /, &
  &  '  @param[out] control is a struct containing control information ', /, &
  &  '              (see ', A, '_control_type)', /, &
- &  '  @param[out] inform is a struct containing output information', /, &
- &  '              (see ', A, '_inform_type) ', /, &
+ &  '', /, &
+ &  '  @param[out] status is a scalar variable of type int, that gives', /, &
+ &  '    the exit status from the package. Possible values are (currently):', &
+ &  '  \li  0. The import was succesful.', /, &
  &  '*/' &
- & )" ) TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower ),   &
-        TRIM( package_lower ), TRIM( package_lower )
+ & )" ) TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower )
 
   WRITE( h_unit, "(                                                            &
  & '', /, &
@@ -1010,7 +1012,7 @@
       WRITE( ciface_unit, "( '', /, '    ! Strings' )" )
       DO i = 1, control_nc
         WRITE( ciface_unit, "( &
-      & '    l = 1, LEN( fcontrol%', A, ' )', /, &
+      & '    l = LEN( fcontrol%', A, ' )', /, &
       & '    DO i = 1, l', /, &
       & '      ccontrol%', A, '( i ) = fcontrol%', A, '( i : i )', /, &
       & '    END DO', /, &
@@ -1134,7 +1136,7 @@
       WRITE( ciface_unit, "( '', /, '    ! Strings' )" )
       DO i = 1, inform_nc
         WRITE( ciface_unit, "( &
-      & '    DO i = 1, LEN( finform%', A, ' )', /, &
+      & '    DO i = LEN( finform%', A, ' )', /, &
       & '      IF ( cinform%', A, '( i ) == C_NULL_CHAR ) EXIT', /, &
       & '      finform%', A, '( i : i ) = cinform%', A, '( i )', /, &
       & '    END DO' &
@@ -1230,15 +1232,15 @@
  & '!  C interface to fortran ', A, '_initialize', /, &
  & '!  -------------------------------------', /, &
  & '', /, &
- & '  SUBROUTINE ', A, '_initialize( cdata, ccontrol, cinform ) BIND( C ) ', /, &
+ & '  SUBROUTINE ', A, '_initialize( cdata, ccontrol, status ) BIND( C ) ', /, &
  & '  USE GALAHAD_', A, '_double_ciface', /, &
  & '  IMPLICIT NONE', /, &
  & '', /, &
  & '!  dummy arguments', /, &
  & '', /, &
+ & '  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status', /, &
  & '  TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box', /, &
  & '  TYPE ( ', A, '_control_type ), INTENT( OUT ) :: ccontrol', /, &
- & '  TYPE ( ', A, '_inform_type ), INTENT( OUT ) :: cinform', /, &
  & '', /, &
  & '!  local variables', /, &
  & '', /, &
@@ -1254,6 +1256,7 @@
  & '!  initialize required fortran types', /, &
  & '', /, &
  & '  CALL f_', A, '_initialize( fdata, fcontrol, finform )', /, &
+ & '  status = finform%status', /, &
  & '', /, &
  & '!  C sparse matrix indexing by default', /, &
  & '', /, &
@@ -1263,10 +1266,6 @@
  & '!  copy control out ', /, &
  & '', /, &
  & '  CALL copy_control_out( fcontrol, ccontrol, f_indexing )', /, &
- & '', /, &
- & '!  copy inform out', /, &
- & '', /, &
- & '  CALL copy_inform_out( finform, cinform )', /, &
  & '  RETURN', /, &
  & '', /, &
  & '  END SUBROUTINE ', A, '_initialize' &

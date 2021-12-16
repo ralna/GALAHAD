@@ -8926,6 +8926,10 @@
 
      SELECT CASE ( J_type )
      CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( J_row ) .AND. PRESENT( J_col ) ) ) THEN
+         data%nls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
        CALL SMT_put( data%nlp%J%type, 'COORDINATE',                            &
                      data%nls_inform%alloc_status )
        data%nlp%J%n = n ; data%nlp%J%m = m
@@ -8962,6 +8966,10 @@
        data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne )
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( J_col ) .AND. PRESENT( J_ptr ) ) ) THEN
+         data%nls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
        CALL SMT_put( data%nlp%J%type, 'SPARSE_BY_ROWS',                        &
                      data%nls_inform%alloc_status )
        data%nlp%J%n = n ; data%nlp%J%m = m
@@ -9023,7 +9031,8 @@
      IF ( newton ) THEN
        SELECT CASE ( H_type )
        CASE ( 'coordinate', 'COORDINATE' )
-         IF ( .NOT. ( PRESENT( H_row ) .AND. PRESENT( H_col ) ) ) THEN
+         IF ( .NOT. ( PRESENT( H_ne ) .AND. PRESENT( H_row ) .AND.            &
+                      PRESENT( H_col ) ) ) THEN
            data%nls_inform%status = GALAHAD_error_optional
            GO TO 900
          END IF
@@ -9145,7 +9154,8 @@
      IF ( tensor_newton ) THEN
        SELECT CASE ( P_type )
        CASE ( 'coordinate', 'COORDINATE' )
-         IF ( .NOT. ( PRESENT( P_row ) .AND. PRESENT( P_col ) ) ) THEN
+         IF ( .NOT. ( PRESENT( P_ne ) .AND. PRESENT( P_row ) .AND.            &
+                      PRESENT( P_col ) ) ) THEN
            data%nls_inform%status = GALAHAD_error_optional
            GO TO 900
          END IF

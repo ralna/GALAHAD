@@ -1,4 +1,4 @@
-.TH "nls.h" 3 "Tue Dec 7 2021" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
+.TH "nls.h" 3 "Sun Dec 12 2021" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -88,11 +88,11 @@ The algorithm used by the package is iterative\&. From the current best estimate
 .PP
 The model t_k(s) is a truncated Taylor-series approximation, and this relies on being able to compute or estimate derivatives of c(x)\&. Various models are provided, and each has different derivative requirements\&. We denote the m by n \fIresidual Jacobian\fP J(x) = nabla_x c(x) as the matrix whose i,j-th component \[J(x)_{i,j} := partial c_i(x) / partial x_j \;\; \mbox{for $i=1,...,m$ and $j=1,...,n$.}\]  
   \n
-  J(x)_{i,j} := partial c_i(x) / partial x_j 
+  J(x)_{i,j} := partial c_i(x) / partial x_j
   \n
   for i=1,...,m and j=1,...,n. For a given m-vector y, the \fIweighted-residual Hessian\fP is the sum \[H(x,y) := \sum_{l=1}^m y_l H_l(x), \;\; \mbox{where}\;\; H_l(x)_{i,j} := partial^2 c_l(x) / partial x_i partial x_j \;\; \mbox{for $i,j=1,...,n$}\]  
   \n
-  H(x,y) := sum_{l=1}^m y_l H_l(x), where 
+  H(x,y) := sum_{l=1}^m y_l H_l(x), where
   \n
   H_l(x)_{i,j} := partial^2 c_l(x) / partial x_i partial x_j
   \n
@@ -181,7 +181,7 @@ Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= 
 .SS "Sparse row-wise storage format"
 Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SS "Sparse column-wise storage format"
-Once again only the nonzero entries are stored, but this time they are ordered so that those in column j appear directly before those in column j+1\&. For the j-th column of A the j-th component of the integer array A_ptr holds the position of the first entry in this column, while A_ptr(n) holds the total number of entries plus one\&. The row indices i, 0 <= i <= m-1, and values A_{ij} of the nonzero entries in the j-th columnsare stored in components l = A_ptr(j), \&.\&.\&., A_ptr(j+1)-1, 0 <= j <= n-1, of the integer array A_row, and real array A_val, respectively\&. As before, for sparse matrices, this scheme almost always requires less storage than the co-ordinate format\&. 
+Once again only the nonzero entries are stored, but this time they are ordered so that those in column j appear directly before those in column j+1\&. For the j-th column of A the j-th component of the integer array A_ptr holds the position of the first entry in this column, while A_ptr(n) holds the total number of entries plus one\&. The row indices i, 0 <= i <= m-1, and values A_{ij} of the nonzero entries in the j-th columnsare stored in components l = A_ptr(j), \&.\&.\&., A_ptr(j+1)-1, 0 <= j <= n-1, of the integer array A_row, and real array A_val, respectively\&. As before, for sparse matrices, this scheme almost always requires less storage than the co-ordinate format\&.
 .SS "Symmetric matrix storage formats"
 Likewise, the symmetric n by n weighted-residual Hessian matrix H = H(x,y) may be presented and stored in a variety of formats\&. But crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&.
 .SS "Dense storage format"
@@ -276,9 +276,7 @@ int \fImodel\fP the model used\&. Possible values are
 
 .br
 .PP
-int \fInorm\fP the regularization norm used\&. 
-.br
- The norm is defined via ||v||^2 = v^T S v, and will define the preconditioner used for iterative methods\&. Possible values for S are
+int \fInorm\fP the regularization norm used\&. The norm is defined via ||v||^2 = v^T S v, and will define the preconditioner used for iterative methods\&. Possible values for S are
 .PP
 .PD 0
 .IP "\(bu" 2
@@ -494,9 +492,7 @@ int \fImodel\fP the model used\&. Possible values are
 
 .br
 .PP
-int \fInorm\fP the regularization norm used\&. 
-.br
- The norm is defined via ||v||^2 = v^T S v, and will define the preconditioner used for iterative methods\&. Possible values for S are
+int \fInorm\fP the regularization norm used\&. The norm is defined via ||v||^2 = v^T S v, and will define the preconditioner used for iterative methods\&. Possible values for S are
 .PP
 .PD 0
 .IP "\(bu" 2
@@ -865,7 +861,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIm\fP is a scalar variable of type int, that holds the number of residuals\&.
 .br
-\fIJ_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the Jacobian, J\&. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed\&.
+\fIJ_type\fP is a one-dimensional array of type char that specifies the \fBunsymmetric storage scheme \fP used for the Jacobian, J\&. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or 'absent', the latter if access to the Jacobian is via matrix-vector products; lower or upper case variants are allowed\&.
 .br
 \fIJ_ne\fP is a scalar variable of type int, that holds the number of entries in J in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
 .br
@@ -885,7 +881,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .br
-\fIP_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the residual-Hessians-vector product matrix, P\&. It should be one of 'coordinate', 'sparse_by_columns', 'dense_by_columns' or 'absent', the latter if access to P is via matrix-vector products; lower or upper case variants are allowed\&.
+\fIP_type\fP is a one-dimensional array of type char that specifies the \fBunsymmetric storage scheme \fP used for the residual-Hessians-vector product matrix, P\&. It should be one of 'coordinate', 'sparse_by_columns', 'dense_by_columns' or 'absent', the latter if access to P is via matrix-vector products; lower or upper case variants are allowed\&.
 .br
 \fIP_ne\fP is a scalar variable of type int, that holds the number of entries in P in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
 .br
@@ -976,7 +972,7 @@ This call is for the case where H = nabla_{xx}f(x) is provided specifically, and
 \fIeval_c\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_c( int n, const double x[], double c[], const void *userdata ) 
+int eval_c( int n, const double x[], double c[], const void *userdata )
 
 .fi
 .PP
@@ -987,7 +983,7 @@ int eval_c( int n, const double x[], double c[], const void *userdata )
 \fIeval_j\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_j( int n, int m, int jne, const double x[], double j[], 
+int eval_j( int n, int m, int jne, const double x[], double j[],
             const void *userdata )
 
 .fi
@@ -999,7 +995,7 @@ int eval_j( int n, int m, int jne, const double x[], double j[],
 \fIeval_h\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_h( int n, int m, int hne, const double x[], const double y[], 
+int eval_h( int n, int m, int hne, const double x[], const double y[],
             double h[], const void *userdata )
 
 .fi
@@ -1011,8 +1007,8 @@ int eval_h( int n, int m, int hne, const double x[], const double y[],
 \fIeval_hprods\fP is an optional user-supplied function that may be NULL\&. If non-NULL, it must have the following signature: 
 .PP
 .nf
-int eval_hprods( int n, int m, int pne, const double x[], 
-                    const double v[], double p[], bool got_h, 
+int eval_hprods( int n, int m, int pne, const double x[],
+                    const double v[], double p[], bool got_h,
                     const void *userdata ) );
 
 .fi
@@ -1080,7 +1076,7 @@ This call is for the case where access to H = nabla_{xx}f(x) is provided by Hess
 \fIeval_c\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_c( int n, const double x[], double c[], const void *userdata ) 
+int eval_c( int n, const double x[], double c[], const void *userdata )
 
 .fi
 .PP
@@ -1089,8 +1085,8 @@ int eval_c( int n, const double x[], double c[], const void *userdata )
 \fIeval_jprod\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_jprod( int n, int m, const double x[], bool transpose, 
-                double u[], const double v[], bool got_j, 
+int eval_jprod( int n, int m, const double x[], bool transpose,
+                double u[], const double v[], bool got_j,
                 const void *userdata )
 
 .fi
@@ -1100,8 +1096,8 @@ int eval_jprod( int n, int m, const double x[], bool transpose,
 \fIeval_hprod\fP is a user-supplied function that must have the following signature: 
 .PP
 .nf
-int eval_hprod( int n, int m, const double x[], const double y[], 
-                double u[], const double v[], bool got_h, 
+int eval_hprod( int n, int m, const double x[], const double y[],
+                double u[], const double v[], bool got_h,
                 const void *userdata )
 
 .fi
@@ -1113,8 +1109,8 @@ int eval_hprod( int n, int m, const double x[], const double y[],
 \fIeval_hprods\fP is an optional user-supplied function that may be NULL\&. If non-NULL, it must have the following signature: 
 .PP
 .nf
-int eval_hprods( int n, int m, int p_ne, const double x[], 
-                 const double v[], double pval[], bool got_h, 
+int eval_hprods( int n, int m, int p_ne, const double x[],
+                 const double v[], double pval[], bool got_h,
                  const void *userdata )
 
 .fi

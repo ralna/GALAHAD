@@ -619,6 +619,10 @@
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   function evaluation error: check its return status' )" )     &
          prefix, routine, prefix
+     CASE( GALAHAD_error_optional )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   missing optional argument' )" )     &
+         prefix, routine, prefix
      CASE( GALAHAD_error_max_evaluations )
        WRITE( out, "( /, A,  ' Warning return from ', A, ' -', /, A,           &
       &       '   the evaluation limit has been reached' )" )                  &

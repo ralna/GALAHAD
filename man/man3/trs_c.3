@@ -1,0 +1,670 @@
+.TH "trs.h" 3 "Thu Dec 16 2021" "C interfaces to GALAHAD TRS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+trs.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'sls\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBtrs_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBtrs_time_type\fP"
+.br
+.ti -1c
+.RI "struct \fBtrs_history_type\fP"
+.br
+.ti -1c
+.RI "struct \fBtrs_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBtrs_initialize\fP (void **data, struct \fBtrs_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBtrs_read_specfile\fP (struct \fBtrs_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBtrs_import\fP (struct \fBtrs_control_type\fP *control, void **data, int *status, int n, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[])"
+.br
+.ti -1c
+.RI "void \fBtrs_import_m\fP (void **data, int *status, int n, const char M_type[], int M_ne, const int M_row[], const int M_col[], const int M_ptr[])"
+.br
+.ti -1c
+.RI "void \fBtrs_import_a\fP (void **data, int *status, int m, const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[])"
+.br
+.ti -1c
+.RI "void \fBtrs_reset_control\fP (struct \fBtrs_control_type\fP *control, void **data, int *status)"
+.br
+.ti -1c
+.RI "void \fBtrs_solve_problem\fP (void **data, int *status, int n, const real_wp_ radius, const real_wp_ f, const real_wp_ c[], int H_ne, const real_wp_ H_val[], real_wp_ x[], int M_ne, const real_wp_ M_val[], int m, int A_ne, const real_wp_ A_val[], real_wp_ y[])"
+.br
+.ti -1c
+.RI "void \fBtrs_information\fP (void **data, struct \fBtrs_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBtrs_terminate\fP (void **data, struct \fBtrs_control_type\fP *control, struct \fBtrs_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+Given real n by n symmetric matrices H and M (with M diagonally dominant), another real m by n matrix A, a real n vector c and scalars Delta>0 and f, this package finds a \fBglobal minimizer of the quadratic objective function 1/2 x^T H x + c^T x + f, where the vector x is required to satisfy the constraint ||x||_M <= Delta and possibly A x = 0,\fP and where the M-norm of x is ||x||_M = sqrt{x^T M x}\&. 
+.br
+ This problem commonly occurs as a trust-region subproblem in nonlinear optimization calculations\&. The package may also be used to solve the related problem in which x is instead required to satisfy the \fBequality constraint ||x||_M = Delta\fP\&. The matrix M need not be provided in the commonly-occurring l_2-trust-region case for which M = I, the n by n identity matrix\&.
+.PP
+Factorization of matrices of the form H + lambda M---or \[\mbox{(1)}\;\;\; \mat{cc}{ H + lambda M & A^T \\ A & 0}\]  
+\n
+    (1)     ( H + lambda M   A^T )
+            (      A          0  )
+\n
+ in cases where A x = 0 is imposed---for a succession of scalars lambda will be required, so this package is most suited for the case where such a factorization may be found efficiently\&. If this is not the case, the GALAHAD package \fCGLTR\fP may be preferred\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould and H\&. S\&. Thorne, STFC-Rutherford Appleton Laboratory, England, and D\&. P\&. Robinson, Oxford University, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+October 2008, C interface December 2021\&.
+.SS "Method"
+The method is iterative, and proceeds in two phases\&. Firstly, lower and upper bounds, lambda_L and lambda_U, on lambda_* are computed using Gershgorin's theorems and other eigenvalue bounds\&. The first phase of the computation proceeds by progressively shrinking the bound interval [lambda_L,lambda_U] until a value lambda for which ||x(lambda)||_M >= Delta is found\&. Here x(lambda) and its companion y(lambda) are defined to be a solution of \[\mbox{(2)}\;\;\; (H + lambda M)x(lambda) + A^T y(lambda) = - c \;\mbox{and}\; A x(lambda) = 0.\]  
+\n
+   (2)    (H + lambda M)x(lambda) + A^T y(lambda) = - c and
+                      A x(lambda) = 0;
+\n
+ along the way the possibility that H might be positive definite on the null-space of A and ||x(0)||_M <= Delta is examined, and if this transpires the process is terminated with x_* = x(0)\&. 
+.br
+ Once the terminating lambda from the first phase has been discovered, the second phase consists of applying Newton or higher-order iterations to the nonlinear ``secular'' equation ||x(lambda)||_M = Delta with the knowledge that such iterations are both globally and ultimately rapidly convergent\&. It is possible in the ``hard'' case that the interval in the first-phase will shrink to the single point lambda_*, and precautions are taken, using inverse iteration with Rayleigh-quotient acceleration to ensure that this too happens rapidly\&.
+.PP
+The dominant cost is the requirement that we solve a sequence of linear systems (2)\&. In the absence of linear constraints, an efficient sparse Cholesky factorization with precautions to detect indefinite H + lambda M is used\&. If A x = 0 is required, a sparse symmetric, indefinite factorization of (1) is used rather than a Cholesky factorization\&.
+.SS "Reference"
+The method is described in detail in
+.PP
+H\&. S\&. Dollar, N\&. I\&. M\&. Gould and D\&. P\&. Robinson\&. On solving trust-region and other regularised subproblems in optimization\&. Mathematical Programming Computation \fB2(1)\fP (2010) 21--57\&.
+.SS "Call order"
+To solve a given problem, functions from the trs package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBtrs_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBtrs_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+\fBtrs_import\fP - set up problem data structures and fixed values
+.IP "\(bu" 2
+\fBtrs_import_m\fP - (optional) set up problem data structures and fixed values for the scaling matrix M, if any
+.IP "\(bu" 2
+\fBtrs_import_a\fP - (optional) set up problem data structures and fixed values for the constraint matrix A, if any
+.IP "\(bu" 2
+\fBtrs_reset_control\fP (optional) - possibly change control parameters if a sequence of problems are being solved
+.IP "\(bu" 2
+\fBtrs_solve_problem\fP - solve the trust-region problem
+.IP "\(bu" 2
+\fBtrs_information\fP (optional) - recover information about the solution and solution process
+.IP "\(bu" 2
+\fBtrs_terminate\fP - deallocate data structures
+.PP
+.PP
+   
+  See the examples section for illustrations of use.
+  
+.SS "Unsymmetric matrix storage formats"
+The unsymmetric m by n constraint matrix A may be presented and stored in a variety of convenient input formats\&.
+.PP
+Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; the discussion below presumes C style, but add 1 to indices for the corresponding fortran version\&.
+.PP
+Wrappers will automatically convert between 0-based (C) and 1-based (fortran) array indexing, so may be used transparently from C\&. This conversion involves both time and memory overheads that may be avoided by supplying data that is already stored using 1-based indexing\&.
+.SS "Dense storage format"
+The matrix A is stored as a compact dense matrix by rows, that is, the values of the entries of each row in turn are stored in order within an appropriate real one-dimensional array\&. In this case, component n * i + j of the storage array A_val will hold the value A_{ij} for 0 <= i <= m-1, 0 <= j <= n-1\&.
+.SS "Sparse co-ordinate storage format"
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
+.SS "Sparse row-wise storage format"
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+.SS "Symmetric matrix storage formats"
+Likewise, the symmetric n by n objective Hessian matrix H and scaling matrix M may be presented and stored in a variety of formats\&. But crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&. In what follows, we refer to H but this applies equally to M\&.
+.SS "Dense storage format"
+The matrix H is stored as a compact dense matrix by rows, that is, the values of the entries of each row in turn are stored in order within an appropriate real one-dimensional array\&. Since H is symmetric, only the lower triangular part (that is the part h_{ij} for 0 <= j <= i <= n-1) need be held\&. In this case the lower triangle should be stored by rows, that is component i * i / 2 + j of the storage array H_val will hold the value h_{ij} (and, by symmetry, h_{ji}) for 0 <= j <= i <= n-1\&.
+.SS "Sparse co-ordinate storage format"
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of H, its row index i, column index j and value h_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays H_row and H_col and real array H_val, respectively, while the number of nonzeros is recorded as H_ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
+.SS "Sparse row-wise storage format"
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values h_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+.SS "Diagonal storage format"
+If H is diagonal (i\&.e\&., H_{ij} = 0 for all 0 <= i /= j <= n-1) only the diagonals entries H_{ii}, 0 <= i <= n-1 need be stored, and the first n components of the array H_val may be used for the purpose\&. 
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct trs_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+int \fIerror\fP unit for error messages 
+.br
+.PP
+int \fIout\fP unit for monitor output 
+.br
+.PP
+int \fIproblem\fP unit to write problem data into file problem_file 
+.br
+.PP
+int \fIprint_level\fP controls level of diagnostic output 
+.br
+.PP
+int \fIdense_factorization\fP should the problem be solved by dense factorization? Possible values are 
+.PD 0
+
+.IP "\(bu" 2
+0 sparse factorization will be used 
+.IP "\(bu" 2
+1 dense factorization will be used 
+.IP "\(bu" 2
+other the choice is made automatically depending on the dimension & sparsity 
+.PP
+
+.br
+.PP
+int \fInew_h\fP how much of H has changed since the previous call\&. Possible values are 
+.PD 0
+
+.IP "\(bu" 2
+0 unchanged 
+.IP "\(bu" 2
+1 values but not indices have changed 
+.IP "\(bu" 2
+2 values and indices have changed 
+.PP
+
+.br
+.PP
+int \fInew_m\fP how much of M has changed since the previous call\&. Possible values are 
+.PD 0
+
+.IP "\(bu" 2
+0 unchanged 
+.IP "\(bu" 2
+1 values but not indices have changed 
+.IP "\(bu" 2
+2 values and indices have changed 
+.PP
+
+.br
+.PP
+int \fInew_a\fP how much of A has changed since the previous call\&. Possible values are 
+.PD 0
+
+.IP "\(bu" 2
+0 unchanged 
+.IP "\(bu" 2
+1 values but not indices have changed 
+.IP "\(bu" 2
+2 values and indices have changed 
+.PP
+
+.br
+.PP
+int \fImax_factorizations\fP the maximum number of factorizations (=iterations) allowed\&. -ve implies no limit 
+.br
+.PP
+int \fIinverse_itmax\fP the number of inverse iterations performed in the 'maybe hard' case 
+.br
+.PP
+int \fItaylor_max_degree\fP maximum degree of Taylor approximant allowed 
+.br
+.PP
+real_wp_ \fIinitial_multiplier\fP initial estimate of the Lagrange multipler 
+.br
+.PP
+real_wp_ \fIlower\fP lower and upper bounds on the multiplier, if known 
+.br
+.PP
+real_wp_ \fIupper\fP see lower 
+.br
+.PP
+real_wp_ \fIstop_normal\fP stop when | ||x|| - radius | <= max( stop_normal * radius, stop_absolute_normal ) 
+.br
+.PP
+real_wp_ \fIstop_absolute_normal\fP see stop_normal 
+.br
+.PP
+real_wp_ \fIstop_hard\fP stop when bracket on optimal multiplier <= stop_hard * max( bracket ends ) 
+.br
+.PP
+real_wp_ \fIstart_invit_tol\fP start inverse iteration when bracket on optimal multiplier <= stop_start_invit_tol * max( bracket ends ) 
+.br
+.PP
+real_wp_ \fIstart_invitmax_tol\fP start full inverse iteration when bracket on multiplier <= stop_start_invitmax_tol * max( bracket ends) 
+.br
+.PP
+bool \fIequality_problem\fP is the solution is <b<required to lie on the boundary (i\&.e\&., is the constraint an equality)? 
+.br
+.PP
+bool \fIuse_initial_multiplier\fP ignore initial_multiplier? 
+.br
+.PP
+bool \fIinitialize_approx_eigenvector\fP should a suitable initial eigenvector should be chosen or should a previous eigenvector may be used? 
+.br
+.PP
+bool \fIforce_Newton\fP ignore the trust-region if H is positive definite 
+.br
+.PP
+bool \fIspace_critical\fP if space is critical, ensure allocated arrays are no bigger than needed 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP exit if any deallocation fails 
+.br
+.PP
+char \fIproblem_file[31]\fP name of file into which to write problem data 
+.br
+.PP
+char \fIsymmetric_linear_solver[31]\fP symmetric (indefinite) linear equation solver 
+.br
+.PP
+char \fIdefinite_linear_solver[31]\fP definite linear equation solver 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+struct sls_control_type \fIsls_control\fP control parameters for the Cholesky factorization and solution (see sls_c documentation) 
+.br
+.PP
+.RE
+.PP
+.SH "struct trs_time_type"
+.PP 
+time derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+real_wp_ \fItotal\fP total CPU time spent in the package 
+.br
+.PP
+real_wp_ \fIassemble\fP CPU time spent building H + lambda M\&. 
+.br
+.PP
+real_wp_ \fIanalyse\fP CPU time spent reordering H + lambda M prior to factorization\&. 
+.br
+.PP
+real_wp_ \fIfactorize\fP CPU time spent factorizing H + lambda M\&. 
+.br
+.PP
+real_wp_ \fIsolve\fP CPU time spent solving linear systems inolving H + lambda M\&. 
+.br
+.PP
+real_wp_ \fIclock_total\fP total clock time spent in the package 
+.br
+.PP
+real_wp_ \fIclock_assemble\fP clock time spent building H + lambda M 
+.br
+.PP
+real_wp_ \fIclock_analyse\fP clock time spent reordering H + lambda M prior to factorization 
+.br
+.PP
+real_wp_ \fIclock_factorize\fP clock time spent factorizing H + lambda M 
+.br
+.PP
+real_wp_ \fIclock_solve\fP clock time spent solving linear systems inolving H + lambda M 
+.br
+.PP
+.RE
+.PP
+.SH "struct trs_history_type"
+.PP 
+history derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+real_wp_ \fIlambda\fP the value of lambda 
+.br
+.PP
+real_wp_ \fIx_norm\fP the corresponding value of ||x(lambda)||_M 
+.br
+.PP
+.RE
+.PP
+.SH "struct trs_inform_type"
+.PP 
+inform derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP reported return status: 
+.PD 0
+
+.IP "\(bu" 2
+0 the solution has been found 
+.IP "\(bu" 2
+-1 an array allocation has failed 
+.IP "\(bu" 2
+-2 an array deallocation has failed 
+.IP "\(bu" 2
+-3 n and/or Delta is not positive 
+.IP "\(bu" 2
+-9 the analysis phase of the factorization of H + lambda M failed 
+.IP "\(bu" 2
+-10 the factorization of H + lambda M failed 
+.IP "\(bu" 2
+-15 M does not appear to be strictly diagonally dominant 
+.IP "\(bu" 2
+-16 ill-conditioning has prevented furthr progress 
+.PP
+
+.br
+.PP
+int \fIalloc_status\fP STAT value after allocate failure\&. 
+.br
+.PP
+int \fIfactorizations\fP the number of factorizations performed 
+.br
+.PP
+int \fImax_entries_factors\fP the maximum number of entries in the factors 
+.br
+.PP
+int \fIlen_history\fP the number of (||x||_M,lambda) pairs in the history 
+.br
+.PP
+real_wp_ \fIobj\fP the value of the quadratic function 
+.br
+.PP
+real_wp_ \fIx_norm\fP the M-norm of x, ||x||_M 
+.br
+.PP
+real_wp_ \fImultiplier\fP the Lagrange multiplier corresponding to the trust-region constraint 
+.br
+.PP
+real_wp_ \fIpole\fP a lower bound max(0,-lambda_1), where lambda_1 is the left-most eigenvalue of (H,M) 
+.br
+.PP
+bool \fIdense_factorization\fP was a dense factorization used? 
+.br
+.PP
+bool \fIhard_case\fP has the hard case occurred? 
+.br
+.PP
+char \fIbad_alloc[81]\fP name of array that provoked an allocate failure 
+.br
+.PP
+struct \fBtrs_time_type\fP \fItime\fP time information 
+.br
+.PP
+struct \fBtrs_history_type\fP \fIhistory[100]\fP history information 
+.br
+.PP
+struct sls_inform_type \fIsls_inform\fP cholesky information (see sls_c documentation) 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void trs_initialize (void ** data, struct \fBtrs_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBtrs_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void trs_read_specfile (struct \fBtrs_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBtrs_control_type\fP)
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
+.SS "void trs_import (struct \fBtrs_control_type\fP * control, void ** data, int * status, int n, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[])"
+Import problem data into internal storage prior to solution\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBtrs_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', diagonal' or 'identity' has been violated\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of rows (and columns) of H\&.
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general linear constraints\&.
+.br
+\fIH_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the Hessian, H\&. It should be one of 'coordinate', 'sparse_by_rows', 'dense', or 'diagonal'; lower or upper case variants are allowed\&.
+.br
+\fIH_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
+.br
+\fIH_row\fP is a one-dimensional array of size H_ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme\&. It need not be set for any of the other three schemes, and in this case can be NULL\&.
+.br
+\fIH_col\fP is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, 
+.br
+ and in this case can be NULL\&.
+.br
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+.RE
+.PP
+
+.SS "void trs_import_m (void ** data, int * status, int n, const char M_type[], int M_ne, const int M_row[], const int M_col[], const int M_ptr[])"
+Import data for the scaling matrix M into internal storage prior to solution\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', diagonal' or 'identity' has been violated\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of rows (and columns) of M\&.
+.br
+\fIM_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the scaling matrix, M\&. It should be one of 'coordinate', 'sparse_by_rows', 'dense', or 'diagonal'; lower or upper case variants are allowed\&.
+.br
+\fIM_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of M in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
+.br
+\fIM_row\fP is a one-dimensional array of size M_ne and type int, that holds the row indices of the lower triangular part of M in the sparse co-ordinate storage scheme\&. It need not be set for any of the other three schemes, and in this case can be NULL\&.
+.br
+\fIM_col\fP is a one-dimensional array of size M_ne and type int, that holds the column indices of the lower triangular part of M in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense, diagonal or identity storage schemes are used, and in this case can be NULL\&.
+.br
+\fIM_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of M, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+.RE
+.PP
+
+.SS "void trs_import_a (void ** data, int * status, int m, const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[])"
+Import data for the constraint matrix A into internal storage prior to solution\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated\&.
+.PP
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general linear constraints, i\&.e\&., the number of rows of A, if any\&. m must be non-negative\&.
+.br
+\fIA_type\fP is a one-dimensional array of type char that specifies the \fBunsymmetric storage scheme \fP used for the constraint Jacobian, A if any\&. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed\&.
+.br
+\fIA_ne\fP is a scalar variable of type int, that holds the number of entries in A, if used, in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
+.br
+\fIA_row\fP is a one-dimensional array of size A_ne and type int, that holds the row indices of A in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes, and in this case can be NULL\&.
+.br
+\fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
+.br
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+.RE
+.PP
+
+.SS "void trs_reset_control (struct \fBtrs_control_type\fP * control, void ** data, int * status)"
+Reset control parameters after import if required\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBtrs_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void trs_solve_problem (void ** data, int * status, int n, const real_wp_ radius, const real_wp_ f, const real_wp_ c[], int H_ne, const real_wp_ H_val[], real_wp_ x[], int M_ne, const real_wp_ M_val[], int m, int A_ne, const real_wp_ A_val[], real_wp_ y[])"
+Solve the trsut-region problem\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0, radius > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'identity' has been violated\&. 
+.IP "\(bu" 2
+-9\&. The analysis phase of the factorization of the matrix (1) failed\&. 
+.IP "\(bu" 2
+-10\&. The factorization of the matrix (1) failed\&. 
+.IP "\(bu" 2
+-15\&. The matrix M appears not to be diagonally dominant\&. 
+.IP "\(bu" 2
+-16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+.IP "\(bu" 2
+-18\&. Too many factorizations have been required\&. This may happen if control\&.max factorizations is too small, but may also be symptomatic of a badly scaled problem\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIradius\fP is a scalar of type double, that holds the trust-region radius, Delta, used\&. radius must be strictly positive
+.br
+\fIf\fP is a scalar of type double, that holds the constant term f of the objective function\&.
+.br
+\fIc\fP is a one-dimensional array of size n and type double, that holds the linear term c of the objective function\&. The j-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j \&.
+.br
+\fIH_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix H\&.
+.br
+\fIH_val\fP is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H in any of the available storage schemes\&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
+.br
+\fIM_ne\fP is a scalar variable of type int, that holds the number of entries in the scaling matrix M if it not the iedntity matrix\&.
+.br
+\fIM_val\fP is a one-dimensional array of size M_ne and type double, that holds the values of the entries of the scaling matrix M, if it is not the identity matrix, in any of the available storage schemes\&. If M_val is NULL, M will be taken to be the identity matrix\&.
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general linear constraints, if any\&. m must be non-negative\&.
+.br
+\fIA_ne\fP is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix A if used\&. A_ne must be non-negative\&.
+.br
+\fIA_val\fP is a one-dimensional array of size A_ne and type double, that holds the values of the entries of the constraint Jacobian matrix A, if used, in any of the available storage schemes\&. If A_val is NULL, no constraints will be enforced\&.
+.br
+\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the equality constraints A x = 0 if used\&. The i-th component of y, i = 0, \&.\&.\&. , m-1, contains y_i\&. 
+.RE
+.PP
+
+.SS "void trs_information (void ** data, struct \fBtrs_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBtrs_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void trs_terminate (void ** data, struct \fBtrs_control_type\fP * control, struct \fBtrs_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBtrs_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBtrs_inform_type\fP) 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD TRS from the source code\&.

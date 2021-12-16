@@ -9023,6 +9023,10 @@
      data%matrix%n = n ; data%matrix%m = n
      SELECT CASE ( matrix_type )
      CASE ( 'coordinate', 'COORDINATE' )
+      IF ( .NOT. ( PRESENT( matrix_row ) .AND. PRESENT( matrix_col ) ) ) THEN
+         data%sls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
        CALL SMT_put( data%matrix%type, 'COORDINATE',                           &
                      data%sls_inform%alloc_status )
        data%matrix%ne = matrix_ne
@@ -9043,6 +9047,10 @@
        data%matrix%col( : data%matrix%ne ) = matrix_col( : data%matrix%ne )
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+      IF ( .NOT. ( PRESENT( matrix_ptr ) .AND. PRESENT( matrix_col ) ) ) THEN
+         data%sls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
        CALL SMT_put( data%matrix%type, 'SPARSE_BY_ROWS',                       &
                      data%sls_inform%alloc_status )
        data%matrix%ne = matrix_ptr( n + 1 ) - 1

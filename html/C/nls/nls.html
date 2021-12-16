@@ -38,7 +38,7 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">C interfaces to GALAHAD NLS
    </div>
-   <div id="projectbrief">header files for C interfaces to GALAHAD NLS package</div>
+   <div id="projectbrief">header files for C interfaces to the GALAHAD NLS package</div>
   </td>
  </tr>
  </tbody>
@@ -171,7 +171,7 @@ Sparse row-wise storage format</h3>
 <p>Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1. For the i-th row of \(A\) the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one. The column indices j, \(0 \leq j \leq n-1\), and values \(A_{ij}\) of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \(\ldots\), A_ptr(i+1)-1, \(0 \leq i \leq m-1\), of the integer array A_col, and real array A_val, respectively. For sparse matrices, this scheme almost always requires less storage than its predecessor.</p>
 <h3><a class="anchor" id="unsymmetric_matrix_column_wise"></a>
 Sparse column-wise storage format</h3>
-<p>Once again only the nonzero entries are stored, but this time they are ordered so that those in column j appear directly before those in column j+1. For the j-th column of \(A\) the j-th component of the integer array A_ptr holds the position of the first entry in this column, while A_ptr(n) holds the total number of entries plus one. The row indices i, \(0 \leq i \leq m-1\), and values \(A_{ij}\) of the nonzero entries in the j-th columnsare stored in components l = A_ptr(j), \(\ldots\), A_ptr(j+1)-1, \(0 \leq j \leq n-1\), of the integer array A_row, and real array A_val, respectively. As before, for sparse matrices, this scheme almost always requires less storage than the co-ordinate format. </p>
+<p>Once again only the nonzero entries are stored, but this time they are ordered so that those in column j appear directly before those in column j+1. For the j-th column of \(A\) the j-th component of the integer array A_ptr holds the position of the first entry in this column, while A_ptr(n) holds the total number of entries plus one. The row indices i, \(0 \leq i \leq m-1\), and values \(A_{ij}\) of the nonzero entries in the j-th columnsare stored in components l = A_ptr(j), \(\ldots\), A_ptr(j+1)-1, \(0 \leq j \leq n-1\), of the integer array A_row, and real array A_val, respectively. As before, for sparse matrices, this scheme almost always requires less storage than the co-ordinate format.</p>
 <h2><a class="anchor" id="main_symmetric_matrices"></a>
 Symmetric matrix storage formats</h2>
 <p>Likewise, the symmetric \(n\) by \(n\) weighted-residual Hessian matrix \(H = H(x,y)\) may be presented and stored in a variety of formats. But crucially symmetry is exploited by only storing values from the lower triangular part (i.e, those entries that lie on or below the leading diagonal).</p>
