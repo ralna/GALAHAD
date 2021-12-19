@@ -1,0 +1,379 @@
+.TH "glrt.h" 3 "Sun Dec 19 2021" "C interfaces to GALAHAD GLRT" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+glrt.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBglrt_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBglrt_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBglrt_initialize\fP (void **data, struct \fBglrt_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBglrt_read_specfile\fP (struct \fBglrt_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBglrt_import_control\fP (struct \fBglrt_control_type\fP *control, void **data, int *status)"
+.br
+.ti -1c
+.RI "void \fBglrt_solve_problem\fP (void **data, int *status, int n, const real_wp_ power, const real_wp_ weight, real_wp_ x[], real_wp_ r[], real_wp_ vector[])"
+.br
+.ti -1c
+.RI "void \fBglrt_information\fP (void **data, struct \fBglrt_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBglrt_terminate\fP (void **data, struct \fBglrt_control_type\fP *control, struct \fBglrt_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+Given real n by n symmetric matrices H and M (with M positive definite), real n vector c, and scalars sigma>= 0 and f_0, this package finds an \fB approximate minimizer of the regularised quadratic objective function\fP \[1/2 x^T H x + c^T x + f_0 + \frac{1}{p} sigma ||x||_M^p,\]  
+\n
+1/2 x^T H x + c^T x + f_0 + 1/p sigma ||x||^p_M,
+\n
+ where || v ||_M = sqrt{v^T M v} is the M-norm of v\&. This problem commonly occurs as a subproblem in nonlinear optimization calculations involving cubic regularisation\&. The method may be suitable for large n as no factorization of H is required\&. Reverse communication is used to obtain matrix-vector products of the form H z and M^{-1} z\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+November, 2007, C interface December 2021\&.
+.SS "Terminology"
+.SS "Method"
+The required solution x necessarily satisfies the optimality condition H x + lambda M x + c + lambda o = 0, where lambda = sigma [ ||x||_M^2]^{p/2-1}\&. In addition, the matrix H + lambda M will be positive semi-definite\&.
+.PP
+The method is iterative\&. Starting with the vector M^{-1} c, a matrix of Lanczos vectors is built one column at a time so that the k-th column is generated during iteration k\&. These columns span a so-called Krylov space\&. The resulting n by k matrix Q_k has the property that Q_k^T H Q_k = T_k , where T_k is tridiagonal\&. An approximation to the required solution may then be expressed formally as \[x_{k+1} = Q_k y_k,\]  
+\n
+   x_{k+1}  =  Q_k y_k
+\n
+ where y_k solves the ``tridiagonal'' subproblem of minimizing \[(1) \;\;\; 1/2 y^T T_k y + || c||_{M^{-1}} e_1^T y + \frac{1}{p} sigma || y ||^p_2,\]  
+\n
+  (1) 1/2  y^T T_k y  + || c||_{M^{-1}} e_1^T y + 1/p sigma || y ||^p_2,
+\n
+ where e_1 is the first unit vector\&.
+.PP
+To minimize (1), the optimality conditions \[(2) \;\;\; ( T_k + lambda I ) y(lambda) = - c - lambda d,\]  
+\n
+  (2)   ( T_k + lambda I ) y(lambda) = - c - lambda d,
+\n
+ where lambda = sigma ||y(lambda)+d||^{p-2}_M are used as the basis of an iteration\&. Specifically, given an estimate lambda for which T_k + lambda I is positive definite, the tridiagonal system (2) may be efficiently solved to give y(lambda)\&. It is then simply a matter of adjusting lambda (for example by a Newton-like process) to solve the scalar nonlinear equation \[(3) \;\;\; \theta(lambda) = ||y(lambda)+d||^{p-2}_M - \frac{lambda}{sigma} = 0.\]  
+\n
+  (3) theta(lambda) =  ||y(lambda)+d||^{p-2}_M - lambda/sigma = 0.
+\n
+ In practice (3) is reformulated, and a more rapidly converging iteration is used\&.
+.PP
+It is possible to measure the optimality measure ||H x + lambda M x + c + lambda o||_{M^{-1}} without computing x_{k+1}, and thus without needing Q_k \&. Once this measure is sufficiently small, a second pass is required to obtain the estimate x_{k+1} from y_k \&. As this second pass is an additional expense, a record is kept of the optimal objective function values for each value of k, and the second pass is only performed so far as to ensure a given fraction of the final optimal objective value\&. Large savings may be made in the second pass by choosing the required fraction to be significantly smaller than one\&.
+.PP
+Special code is used in the special case p=2, as in this case a single pass suffices\&.
+.SS "Reference"
+The method is described in detail in
+.PP
+C\&. Cartis, N\&. I\&. M\&. Gould and Ph\&. L\&. Toint, Adaptive cubic regularisation methods for unconstrained optimization\&. Part I: motivation, convergence and numerical results\&. Mathematical Programming \fB127(2)\fP, pp\&.245-295, 2011\&.
+.SS "Call order"
+To solve a given problem, functions from the glrt package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBglrt_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBglrt_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+\fBglrt_import_control\fP - import control parameters prior to solution
+.IP "\(bu" 2
+\fBglrt_solve_problem\fP - solve the problem by reverse communication, a sequence of calls are made under control of a status parameter, each exit either asks the user to provide additional informaton and to re-enter, or reports that either the solution has been found or that an error has occurred
+.IP "\(bu" 2
+\fBglrt_information\fP (optional) - recover information about the solution and solution process
+.IP "\(bu" 2
+\fBglrt_terminate\fP - deallocate data structures
+.PP
+.PP
+   
+  See the examples section for an illustration of use.
+   
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct glrt_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+int \fIerror\fP error and warning diagnostics occur on stream error 
+.br
+.PP
+int \fIout\fP general output occurs on stream out 
+.br
+.PP
+int \fIprint_level\fP the level of output required is specified by print_level 
+.br
+.PP
+int \fIitmax\fP the maximum number of iterations allowed (-ve = no bound) 
+.br
+.PP
+int \fIstopping_rule\fP the stopping rule used (see below): 
+.PD 0
+
+.IP "\(bu" 2
+1\&. stop rule = norm of the step 
+.IP "\(bu" 2
+2\&. stop rule is norm of the step / sigma other\&. stop rule = 1\&.0, 
+.br
+ 
+.PP
+
+.br
+.PP
+int \fIfreq\fP frequency for solving the reduced tri-diagonal problem 
+.br
+.PP
+int \fIextra_vectors\fP the number of extra work vectors of length n used 
+.br
+.PP
+int \fIritz_printout_device\fP the unit number for writing debug Ritz values 
+.br
+.PP
+real_wp_ \fIstop_relative\fP the iteration stops successfully when the gradient in the M^{-1} norm is smaller than max( stop_relative * min( 1, stop_rule ) * norm initial gradient, stop_absolute ) 
+.br
+.PP
+real_wp_ \fIstop_absolute\fP see stop_relative 
+.br
+.PP
+real_wp_ \fIfraction_opt\fP an estimate of the solution that gives at least \&.fraction_opt times the optimal objective value will be found 
+.br
+.PP
+real_wp_ \fIrminvr_zero\fP the smallest value that the square of the M norm of the gradient of the objective may be before it is considered to be zero 
+.br
+.PP
+real_wp_ \fIf_0\fP the constant term, f0, in the objective function 
+.br
+.PP
+bool \fIunitm\fP is M the identity matrix ? 
+.br
+.PP
+bool \fIimpose_descent\fP is descent required i\&.e\&., should c^T x < 0 ? 
+.br
+.PP
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+.br
+.PP
+bool \fIprint_ritz_values\fP should the Ritz values be written to the debug stream? 
+.br
+.PP
+char \fIritz_file_name[31]\fP name of debug file containing the Ritz values 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+.RE
+.PP
+.SH "struct glrt_inform_type"
+.PP 
+inform derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP return status\&. See \fBglrt_solve_problem\fP for details 
+.br
+.PP
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+.br
+.PP
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+.br
+.PP
+int \fIiter\fP the total number of iterations required 
+.br
+.PP
+int \fIiter_pass2\fP the total number of pass-2 iterations required 
+.br
+.PP
+real_wp_ \fIobj\fP the value of the quadratic function 
+.br
+.PP
+real_wp_ \fIobj_regularized\fP the value of the regularized quadratic function 
+.br
+.PP
+real_wp_ \fImultiplier\fP the multiplier, sigma ||x||^{p-2} 
+.br
+.PP
+real_wp_ \fIxpo_norm\fP the value of the norm ||x||_M 
+.br
+.PP
+real_wp_ \fIleftmost\fP an estimate of the leftmost generalized eigenvalue of the pencil (H,M) 
+.br
+.PP
+bool \fInegative_curvature\fP was negative curvature encountered ? 
+.br
+.PP
+bool \fIhard_case\fP did the hard case occur ? 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void glrt_initialize (void ** data, struct \fBglrt_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBglrt_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void glrt_read_specfile (struct \fBglrt_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBglrt_control_type\fP) 
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
+.SS "void glrt_import_control (struct \fBglrt_control_type\fP * control, void ** data, int * status)"
+Import control parameters prior to solution\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBglrt_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.PP
+.RE
+.PP
+
+.SS "void glrt_solve_problem (void ** data, int * status, int n, const real_wp_ power, const real_wp_ weight, real_wp_ x[], real_wp_ r[], real_wp_ vector[])"
+Solve the regularized-quadratic problem using reverse communication\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ This must be set to 
+.PD 0
+
+.IP "\(bu" 2
+1\&. on initial entry\&. Set r (below) to c for this entry\&. 
+.IP "\(bu" 2
+6\&. the iteration is to be restarted with a larger weight but with all other data unchanged\&. Set r (below) to c for this entry\&.
+.PP
+Possible exit values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. the solution has been found 
+.IP "\(bu" 2
+2\&. the inverse of M must be applied to vector with the result returned in vector and the function re-entered with all other data unchanged\&. This will only happen if control\&.unitm is false 
+.IP "\(bu" 2
+3\&. the product H * vector must be formed, with the result returned in vector and the function re-entered with all other data unchanged 
+.IP "\(bu" 2
+4\&. The iteration must be restarted\&. Reset r (below) to c and re-enter with all other data unchanged\&. 
+.IP "\(bu" 2
+-1\&. an array allocation has failed 
+.IP "\(bu" 2
+-2\&. an array deallocation has failed 
+.IP "\(bu" 2
+-3\&. n and/or radius is not positive 
+.IP "\(bu" 2
+-7\&. the problem is unbounded from below\&. This can only happen if power = 2, and in this case the objective is unbounded along the arc x + t vector as t goes to infinity 
+.IP "\(bu" 2
+-15\&. the matrix M appears to be indefinite 
+.IP "\(bu" 2
+-18\&. the iteration limit has been exceeded
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIpower\fP is a scalar of type double, that holds the egularization power, p >= 2
+.br
+\fIweight\fP is a scalar of type double, that holds the positive regularization weight, sigma
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the solution x\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j \&.
+.br
+\fIr\fP is a one-dimensional array of size n and type double, that that must be set to c on entry (status = 1) and re-entry (status = 4, 5)\&. On exit, r contains the resiual H x + c\&.
+.br
+\fIvector\fP is a one-dimensional array of size n and type double, that should be used and reset appropriately when status = 2 and 3 as directed\&. 
+.RE
+.PP
+
+.SS "void glrt_information (void ** data, struct \fBglrt_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBglrt_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void glrt_terminate (void ** data, struct \fBglrt_control_type\fP * control, struct \fBglrt_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBglrt_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBglrt_inform_type\fP) 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD GLRT from the source code\&.

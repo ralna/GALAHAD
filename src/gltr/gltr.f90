@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 10/08/2021 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 3.3 - 17/12/2021 AT 09:30 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ G L T R  double  M O D U L E  *-*-*-*-*-*-*-
 
@@ -16,12 +16,12 @@
 
 !      -----------------------------------------------
 !      |                                             |
-!      | Solve the quadratic program                 |
+!      | Solve the (trust-region) quadratic program  |
 !      |                                             |
-!      |    minimize     1/2 <x, H x> + <c, x> + f0  |
-!      |    subject to   < x, M x> <= radius^2       |
+!      |    minimize   1/2 <x,H x> + <c,x> + f0      |
+!      |    subject to < x,M x> <= radius^2          |
 !      |       or                                    |
-!      |    subject to   < x, M x>  = radius^2       |
+!      |    subject to < x,M x>  = radius^2          |
 !      |                                             |
 !      | using a generalized Lanczos method          |
 !      |                                             |
@@ -40,14 +40,17 @@
       PRIVATE
       PUBLIC :: GLTR_initialize, GLTR_read_specfile, GLTR_solve,               &
                 GLTR_terminate, GLTR_leftmost_eigenvalue,                      &
-                GLTR_leftmost_eigenvector, GLTR_tridiagonal_solve
+                GLTR_leftmost_eigenvector, GLTR_tridiagonal_solve,             &
+                GLTR_full_initialize, GLTR_full_terminate,                     &
+                GLTR_import_control, GLTR_solve_problem, GLTR_information
 
 !----------------------
 !   I n t e r f a c e s
 !----------------------
 
       INTERFACE GLTR_initialize
-        MODULE PROCEDURE GLTR_initialize, GLTR_initialize_info
+        MODULE PROCEDURE GLTR_initialize, GLTR_initialize_info,                &
+                         GLTR_full_initialize
       END INTERFACE GLTR_initialize
 
       INTERFACE GLTR_solve
@@ -55,7 +58,8 @@
       END INTERFACE GLTR_solve
 
       INTERFACE GLTR_terminate
-        MODULE PROCEDURE GLTR_terminate, GLTR_terminate_info
+        MODULE PROCEDURE GLTR_terminate, GLTR_terminate_info,                  &
+                         GLTR_full_terminate
       END INTERFACE GLTR_terminate
 
 !--------------------
@@ -214,6 +218,10 @@
 
         INTEGER :: iter_pass2 = - 1
 
+!  the value of the quadratic function (= f, for compatibility with glrt)
+
+        REAL ( KIND = wp ) :: obj = biginf
+
 !  the Lagrange multiplier corresponding to the trust-region constraint
 
         REAL ( KIND = wp ) :: multiplier = zero
@@ -294,6 +302,13 @@
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: V_extra
       END TYPE GLTR_data_type
 
+      TYPE, PUBLIC :: GLTR_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( GLTR_data_type ) :: GLTR_data
+        TYPE ( GLTR_control_type ) :: GLTR_control
+        TYPE ( GLTR_inform_type ) :: GLTR_inform
+      END TYPE GLTR_full_data_type
+
     CONTAINS
 
 !-*-*-*-*-*-  G L T R _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
@@ -356,6 +371,38 @@
       info%GLTR_inform_type = inform
       RETURN
       END SUBROUTINE GLTR_initialize_info
+
+! G A L A H A D - G L T R _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E 
+
+     SUBROUTINE GLTR_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for GLTR controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLTR_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( GLTR_control_type ), INTENT( OUT ) :: control
+     TYPE ( GLTR_inform_type ), INTENT( OUT ) :: inform
+
+     CALL GLTR_initialize( data%gltr_data, control, inform )
+
+     RETURN
+
+!  End of subroutine GLTR_full_initialize
+
+     END SUBROUTINE GLTR_full_initialize
 
 !-*-*-*-   G L T R _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
 
@@ -688,7 +735,7 @@
       END IF
       data%use_old = .FALSE. ; data%try_warm = .FALSE.
       data%radius2 = radius * radius ; data%rtol = roots_tol
-      X = zero ; f = control%f_0 ; data%x_last = zero
+      X = zero ; inform%obj = control%f_0 ; f = inform%obj ; data%x_last = zero
 
 !  =====================
 !  Array (re)allocations
@@ -1039,11 +1086,11 @@
         IF ( data%interior ) THEN
           IF ( data%iter /= 0 ) THEN
             WRITE( control%out, "( A, I7, ES16.8, 4ES9.2, ES10.2 )" )          &
-                   prefix, data%iter, f, data%pgnorm, data%alpha,              &
+                   prefix, data%iter, inform%obj, data%pgnorm, data%alpha,     &
                    data%normp, SQRT( data%xmx ), inform%rayleigh
           ELSE
-            WRITE( control%out, "( A, I7, ES16.8, ES9.2, 4X, '-',              &
-           &      2( 8X, '-' ), 9X, '-' )" ) prefix, data%iter, f, data%pgnorm
+            WRITE( control%out, "( A, I7, ES16.8, ES9.2, 4X, '-', 2( 8X, '-' ),&
+            &  9X, '-' )" ) prefix, data%iter, inform%obj, data%pgnorm
           END IF
         ELSE
           IF ( data%iter /= 0 ) THEN
@@ -1151,7 +1198,7 @@
 !  Record the optimal objective function value and prepare to recover the
 !  approximate solution
 
-          f = data%MIN_f( dim_sub - 1 ) + control%f_0
+          inform%obj = data%MIN_f( dim_sub - 1 ) + control%f_0 ; f = inform%obj
           inform%multiplier = data%LAMBDA( dim_sub - 1 )
           data%tau = one
           data%iter = 0
@@ -1236,11 +1283,13 @@
                   roots_tol, nroots, other_root, alpha, roots_debug )
         data%xmx = data%xmx + alpha * ( two * data%xmp + alpha * data%pmp )
         X( : n ) = X( : n ) + alpha * data%P( : n )
-        f = f + alpha * ( half * alpha * inform%curv - data%rminvr )
+        inform%obj                                                             &
+          = inform%obj + alpha * ( half * alpha * inform%curv - data%rminvr )
+        f = inform%obj
 
 !  Terminate if f is smaller than the permitted minimum
 
-        IF ( f < control%f_min ) GO TO 970
+        IF ( inform%obj < control%f_min ) GO TO 970
 
 !  If the Steihaug-Toint strategy is to be used, find the appropriate
 !  point on the boundary and stop
@@ -1278,14 +1327,16 @@
         IF (  xmx_trial <= data%radius2 ) THEN
           data%xmx = xmx_trial
           X = X + data%alpha * data%P( : n )
-          f = f - half * data%alpha * data%alpha * inform%curv
+          inform%obj                                                           &
+            = inform%obj - half * data%alpha * data%alpha * inform%curv
+          f = inform%obj
 
 !  Terminate if f is smaller than the permitted minimum
 
-          IF ( f < control%f_min ) GO TO 970
+          IF ( inform%obj < control%f_min ) GO TO 970
 
-          IF ( .NOT. control%steihaug_toint )                                 &
-            data%MIN_f( data%itm1 ) = f - control%f_0
+          IF ( .NOT. control%steihaug_toint )                                  &
+            data%MIN_f( data%itm1 ) = inform%obj - control%f_0
 
 !  The new point is outside the trust region
 
@@ -1293,16 +1344,18 @@
 
 !  Find the appropriate point on the boundary
 
-           CALL ROOTS_quadratic(                                              &
-                     data%xmx - data%radius2, two * data%xmp, data%pmp,       &
+           CALL ROOTS_quadratic(                                               &
+                     data%xmx - data%radius2, two * data%xmp, data%pmp,        &
                      roots_tol, nroots, other_root, alpha, roots_debug )
            data%xmx = data%xmx + alpha * ( two * data%xmp + alpha * data%pmp )
            X = X + alpha * data%P( : n )
-           f = f + alpha * ( half * alpha * inform%curv - data%rminvr )
+           inform%obj                                                          &
+             = inform%obj + alpha * ( half * alpha * inform%curv - data%rminvr )
+           f = inform%obj
 
 !  Terminate if f is smaller than the permitted minimum
 
-           IF ( f < control%f_min ) GO TO 970
+           IF ( inform%obj < control%f_min ) GO TO 970
 
 !  If the Steihaug-Toint strategy is to be used, find the appropriate
 !  point on the boundary and stop
@@ -1407,7 +1460,7 @@
       IF ( control%steihaug_toint ) GO TO 100
       IF ( data%prev_steihaug_toint ) GO TO 100
 
-      X = zero ; f = control%f_0 ; data%U = zero
+      X = zero ; inform%obj = control%f_0 ; f = inform%obj ; data%U = zero
       inform%iter = 0 ; inform%iter_pass2 = 0
       data%interior = .NOT. control%boundary
       data%use_old = .FALSE. ; data%try_warm = .TRUE.
@@ -1437,7 +1490,7 @@
 
       inform%mnormx = radius
       inform%multiplier = data%LAMBDA( data%dim_sub - 1 )
-      f = data%MIN_f( data%dim_sub - 1 ) + control%f_0
+      inform%obj = data%MIN_f( data%dim_sub - 1 ) + control%f_0 ; f = inform%obj
       data%iter = 0 ; data%tau = one
 
 !  --------------------------------------
@@ -1571,8 +1624,8 @@
       IF ( data%printi ) WRITE( control%out, "( A, I7, ES16.8, 4X, '-', 4X,    &
      &     3ES9.2, ES10.2, //, A,                                              &
      &     ' Now leaving trust region (Steihaug-Toint)' )" )                   &
-          prefix, data%iter, f, data%alpha, data%normp, SQRT( data%xmx ),      &
-          inform%rayleigh, prefix
+          prefix, data%iter, inform%obj, data%alpha, data%normp,               &
+          SQRT( data%xmx ), inform%rayleigh, prefix
       inform%status = GALAHAD_warning_on_boundary ; inform%iter = data%iter
       RETURN
 
@@ -1818,13 +1871,46 @@
       RETURN
       END SUBROUTINE GLTR_terminate_info
 
+!   G A L A H A D -  G L T R _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+
+     SUBROUTINE GLTR_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLTR_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( GLTR_control_type ), INTENT( IN ) :: control
+     TYPE ( GLTR_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL GLTR_terminate( data%gltr_data, control, inform )
+     RETURN
+
+!  End of subroutine GLTR_full_terminate
+
+     END SUBROUTINE GLTR_full_terminate
+
 !-*-*-*-*-*-*-*-*-*-*-  G L T R _ t t r s  S U B R O U T I N E -*-*-*-*-*-*-*-*
 
       SUBROUTINE GLTR_ttrs( n, D, OFFD, D_fact, OFFD_fact, C, radius, rtol,    &
-                           interior, equality, itmax, try_warm, use_old,       &
-                           old_leftmost, lambda, f, X, info, iter, U, W,       &
-                           seed, debug, out, prefix,                           &
-                           hard_case, hard_case_step )
+                            interior, equality, itmax, try_warm, use_old,      &
+                            old_leftmost, lambda, f, X, info, iter, U, W,      &
+                            seed, debug, out, prefix,                          &
+                            hard_case, hard_case_step )
 
 ! ---------------------------------------------------------------------
 
@@ -2083,7 +2169,7 @@
 !  The Lagrange multiplier will be positive and lambda is in L
 
           ELSE
-             lambda = zero
+            lambda = zero
           END IF
         ELSE
           interior = .FALSE.
@@ -2662,6 +2748,171 @@
 !  end of subroutine GLTR_tridiagonal_solve
 
       END SUBROUTINE GLTR_tridiagonal_solve
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D -  G L T R _ i m p o r t _ c o n t r o l  S U B R O U T I N E 
+
+     SUBROUTINE GLTR_import_control( control, data, status )
+
+!  import control parameters prior to solution. Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading 
+!   comments to GLTR_solve
+!
+!  data is a scalar variable of type GLTR_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLTR_control_type ), INTENT( INOUT ) :: control
+     TYPE ( GLTR_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  copy control to internal data
+
+     data%gltr_control = control
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  End of subroutine GLTR_import_control
+
+     END SUBROUTINE GLTR_import_control
+
+!-  G A L A H A D -  G L T R _ s o l v e _ p r o b l e m  S U B R O U T I N E  -
+
+     SUBROUTINE GLTR_solve_problem( data, status, n, radius, X, R, VECTOR )
+
+!  solve the trust-region subproblem. Arguments are as follows:
+
+!  data is a scalar variable of type GLTR_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the solve.
+!
+!   This must be set to 
+!      1 on initial entry. Set R (below) to c for this entry.
+!      4 the iteration is to be restarted with a smaller radius but
+!        with all other data unchanged. Set R (below) to c for this entry.
+!
+!   Possible exit values are:
+!      0 the solution has been found
+!      2 the inverse of M must be applied to
+!        VECTOR with the result returned in VECTOR and the subroutine
+!        re-entered with all other data unchanged. 
+!        This will only happen if control%unitm is .FALSE.
+!      3 the product H * VECTOR must be formed, with
+!        the result returned in VECTOR and the subroutine re-entered
+!         with all other data unchanged
+!      5 The iteration must be restarted. Reset R (below) to c and 
+!        re-enter with all other data unchanged
+!        This exit will only occur if control%steihaug_toint is
+!        .FALSE. and the solution lies on the trust-region boundary
+!     -1 an array allocation has failed
+!     -2 an array deallocation has failed
+!     -3 n and/or radius is not positive
+!     -15 the matrix M appears to be indefinite
+!     -18 the iteration limit has been exceeded
+!     -30 the trust-region has been encountered in Steihaug-Toint mode
+!     -31 the function value is smaller than control%f_min
+!
+!  n is a scalar variable of type default intege that holds the number 
+!   of unknowns
+!
+!  radius is a scalar of type default real, that holds the positive value 
+!   of the trust-region radius
+!
+!  X is a rank-one array of dimension n and type default real
+!   that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j. X need
+!   not be set on entry, but should be preserved between calls.
+!
+!  R is a rank-one array of dimension n and type default real
+!   that must be set to c on entry (status = 1) and re-entry 
+!   (status = 4, 5). On exit, R contains the resiual H x + c
+!   
+!  VECTOR is a rank-one array of dimension n and type default real
+!   that should be used and reset appropriately when status = 2 and 3
+!   as directed
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLTR_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( INOUT ) :: status
+     INTEGER, INTENT( IN ) :: n
+     REAL ( KIND = wp ), INTENT( IN ) :: radius
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: R
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: VECTOR
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     REAL ( KIND = wp ) :: f
+
+     WRITE( data%gltr_control%out, "( '' )", ADVANCE = 'no')! prevents ifort bug
+
+!  recover data from reverse communication
+
+     data%gltr_inform%status = status
+
+!  call the solver
+
+     CALL GLTR_solve( n, radius, f, X, R, VECTOR,                              &
+                      data%gltr_data, data%gltr_control, data%gltr_inform )
+
+!  collect data for reverse communication
+
+     status = data%gltr_inform%status
+     RETURN
+
+!  End of subroutine GLTR_solve_problem
+
+     END SUBROUTINE GLTR_solve_problem
+
+!-  G A L A H A D -  G L T R _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE GLTR_information( data, inform, status )
+
+!  return solver information during or after solution by GLTR
+!  See GLTR_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLTR_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( GLTR_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%gltr_inform
+     
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine GLTR_information
+
+     END SUBROUTINE GLTR_information
 
 !-*-*-*-*-*-  End of G A L A H A D _ G L T R  double  M O D U L E  *-*-*-*-*-*-
 

@@ -39,12 +39,18 @@
        matrix factorization
       \latexonly \href{trs_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/trs/trs.html">(link)</a> \endhtmlonly
-  \li gltr - the trust-region subproblem using matrix-vector products
+  \li \link gltr  \endlink - the trust-region subproblem using 
+       matrix-vector products
+      \latexonly \href{gltr_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/gltr/gltr.html">(link)</a> \endhtmlonly
   \li \link rqs \endlink - the regularized quadratic subproblem 
       using matrix factorization
       \latexonly \href{rqs_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/rqs/rqs.html">(link)</a> \endhtmlonly
-  \li glrt - the regularized quadratic subproblem using matrix-vector products
+  \li \link glrt  \endlink - the regularized quadratic subproblem using 
+       matrix-vector products
+      \latexonly \href{glrt_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/glrt/glrt.html">(link)</a> \endhtmlonly
   \li qpb - general quadratic programming using an active-set method
   \li qpa - general quadratic programming using an interor-point method
   \li blls - bound-constrained linear-least-squares using

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.2 - 25/02/2018 AT 07:45 GMT.
+! THIS VERSION: GALAHAD 3.3 - 17/12/2021 AT 09:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ G L R T  M O D U L E  *-*-*-*-*-*-*-*-*-
 
@@ -18,7 +18,7 @@
 !      | Solve the regularised quadratic minimization problem              |
 !      |                                                                   |
 !      |    minimize     1/p sigma ( ||x + o||_M^2 + eps )^(p/2)           |
-!      |                   + 1/2 <x, H x> + <c, x> + f0                    |
+!      |                   + 1/2 <x,H x> + <c,x> + f0                      |
 !      |                                                                   |
 !      ! where M is symmetric, positive definite and p (>=2), eps (>=0)    |
 !      | and sigma (>0) are constants using a generalized Lanczos method   |
@@ -40,7 +40,21 @@
       IMPLICIT NONE
 
       PRIVATE
-      PUBLIC :: GLRT_initialize, GLRT_read_specfile, GLRT_solve, GLRT_terminate
+      PUBLIC :: GLRT_initialize, GLRT_read_specfile, GLRT_solve,               &
+                GLRT_terminate, GLRT_full_initialize, GLRT_full_terminate,     &
+                GLRT_import_control, GLRT_solve_problem, GLRT_information
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+      INTERFACE GLRT_initialize
+        MODULE PROCEDURE GLRT_initialize, GLRT_full_initialize
+      END INTERFACE GLRT_initialize
+
+      INTERFACE GLRT_terminate
+        MODULE PROCEDURE GLRT_terminate, GLRT_full_terminate
+      END INTERFACE GLRT_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -110,14 +124,11 @@
 
 !   the iteration stops successfully when the gradient in the M(inverse) norm
 !    is smaller than
-!      max( stop_relative * min( 1, stop_rule ),
-!           stop_absolute ) * norm initial gradient,
-!           stop_norm * ||x+o||_M^stop_power )
+!      max( stop_relative * min( 1, stop_rule ) * norm initial gradient,
+!           stop_absolute ) 
 
         REAL ( KIND = wp ) :: stop_relative = epsmch
         REAL ( KIND = wp ) :: stop_absolute = zero
-        REAL ( KIND = wp ) :: stop_norm = zero
-        REAL ( KIND = wp ) :: stop_power = two
 
 !   an estimate of the solution that gives at least %fraction_opt times
 !    the optimal objective value will be found
@@ -263,6 +274,13 @@
         CHARACTER ( LEN = 1 ) :: descent
       END TYPE
 
+      TYPE, PUBLIC :: GLRT_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( GLRT_data_type ) :: GLRT_data
+        TYPE ( GLRT_control_type ) :: GLRT_control
+        TYPE ( GLRT_inform_type ) :: GLRT_inform
+      END TYPE GLRT_full_data_type
+
     CONTAINS
 
 !-*-*-*-*-*-  G L R T _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
@@ -310,6 +328,38 @@
 
       END SUBROUTINE GLRT_initialize
 
+! G A L A H A D - G L R T _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E 
+
+     SUBROUTINE GLRT_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for GLRT controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLRT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( GLRT_control_type ), INTENT( OUT ) :: control
+     TYPE ( GLRT_inform_type ), INTENT( OUT ) :: inform
+
+     CALL GLRT_initialize( data%glrt_data, control, inform )
+
+     RETURN
+
+!  End of subroutine GLRT_full_initialize
+
+     END SUBROUTINE GLRT_full_initialize
+
 !-*-*-*-*-   G L R T _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
       SUBROUTINE GLRT_read_specfile( control, device, alt_specname )
@@ -331,8 +381,6 @@
 !   ritz-printout-device                            34
 !   relative-accuracy-required                      1.0E-8
 !   absolute-accuracy-required                      0.0
-!   norm-accuracy-required                          0.0
-!   norm-power-used                                 2.0
 !   fraction-optimality-required                    1.0
 !   zero-gradient-tolerance                         2.0E-15
 !   constant-term-in-objective                      0.0
@@ -365,9 +413,7 @@
       INTEGER, PARAMETER :: ritz_printout_device = extra_vectors + 1
       INTEGER, PARAMETER :: stop_relative = ritz_printout_device + 1
       INTEGER, PARAMETER :: stop_absolute = stop_relative + 1
-      INTEGER, PARAMETER :: stop_norm = stop_absolute + 1
-      INTEGER, PARAMETER :: stop_power = stop_norm + 1
-      INTEGER, PARAMETER :: fraction_opt = stop_power + 1
+      INTEGER, PARAMETER :: fraction_opt = stop_absolute + 1
       INTEGER, PARAMETER :: rminvr_zero = fraction_opt + 1
       INTEGER, PARAMETER :: f_0 = rminvr_zero + 1
       INTEGER, PARAMETER :: unitm = f_0 + 1
@@ -400,8 +446,6 @@
 
       spec( stop_relative )%keyword = 'relative-accuracy-required'
       spec( stop_absolute )%keyword = 'absolute-accuracy-required'
-      spec( stop_norm )%keyword = 'norm-accuracy-required'
-      spec( stop_power )%keyword = 'norm-power-used'
       spec( fraction_opt )%keyword = 'fraction-optimality-required'
       spec( rminvr_zero )%keyword = 'zero-gradient-tolerance'
       spec( f_0 )%keyword = 'constant-term-in-objective'
@@ -463,12 +507,6 @@
                                   control%error )
       CALL SPECFILE_assign_value( spec( stop_absolute ),                       &
                                   control%stop_absolute,                       &
-                                  control%error )
-      CALL SPECFILE_assign_value( spec( stop_norm ),                           &
-                                  control%stop_norm,                           &
-                                  control%error )
-      CALL SPECFILE_assign_value( spec( stop_power ),                          &
-                                  control%stop_power,                          &
                                   control%error )
       CALL SPECFILE_assign_value( spec( fraction_opt ),                        &
                                   control%fraction_opt,                        &
@@ -768,7 +806,7 @@
         IF ( inform%status /= 0 ) GO TO 960
 
         IF ( control%print_ritz_values ) THEN
-          array_name = 'gltr: E'
+          array_name = 'glrt: E'
           CALL SPACE_resize_array( data%itmax + 2, data%E,                     &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -776,7 +814,7 @@
               bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= 0 ) GO TO 960
 
-          array_name = 'gltr: OFFE'
+          array_name = 'glrt: OFFE'
           CALL SPACE_resize_array( data%itmax + 1, data%OFFE,                  &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
@@ -1218,7 +1256,7 @@
             data%tau = one
             inform%iter = data%iter ; data%iter = 0
             IF ( data%save_vectors ) GO TO 390
-            data%branch = 500 ; inform%status = 4
+            data%branch = 500 ; inform%status = 5
             RETURN
           END IF
 
@@ -1938,6 +1976,39 @@
 
       END SUBROUTINE GLRT_terminate
 
+!   G A L A H A D -  G L R T _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+
+     SUBROUTINE GLRT_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLRT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( GLRT_control_type ), INTENT( IN ) :: control
+     TYPE ( GLRT_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL GLRT_terminate( data%glrt_data, control, inform )
+     RETURN
+
+!  End of subroutine GLRT_full_terminate
+
+     END SUBROUTINE GLRT_full_terminate
+
 !-*-*-*-*-*-*-*-*-*-*-  G L R T _ t r t s  S U B R O U T I N E -*-*-*-*-*-*-*-*
 
       SUBROUTINE GLRT_trts( n, D, OFFD, D_fact, OFFD_fact, C, p, sigma,        &
@@ -2558,6 +2629,174 @@
         END SUBROUTINE GLRT_trts_f
 
       END SUBROUTINE GLRT_trts
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D -  G L R T _ i m p o r t _ c o n t r o l  S U B R O U T I N E 
+
+     SUBROUTINE GLRT_import_control( control, data, status )
+
+!  import control parameters prior to solution. Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading 
+!   comments to GLRT_solve
+!
+!  data is a scalar variable of type GLRT_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLRT_control_type ), INTENT( INOUT ) :: control
+     TYPE ( GLRT_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  copy control to internal data
+
+     data%glrt_control = control
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  End of subroutine GLRT_import_control
+
+     END SUBROUTINE GLRT_import_control
+
+!-  G A L A H A D -  G L R T _ s o l v e _ p r o b l e m  S U B R O U T I N E  -
+
+     SUBROUTINE GLRT_solve_problem( data, status, n, power, weight, X, R,      &
+                                    VECTOR )
+
+!  solve the regularized-quadratic subproblem. Arguments are as follows:
+
+!  data is a scalar variable of type GLRT_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the solve.
+!
+!   This must be set to 
+!      1 on initial entry. Set R (below) to c for this entry.
+!      6 the iteration is to be restarted with a larger weight but
+!        with all other data unchanged. Set R (below) to c for this entry.
+!
+!   Possible exit values are:
+!      0 the solution has been found
+!      2 the inverse of M must be applied to
+!        VECTOR with the result returned in VECTOR and the subroutine
+!        re-entered with all other data unchanged. 
+!        This will only happen if control%unitm is .FALSE.
+!      3 the product H * VECTOR must be formed, with
+!        the result returned in VECTOR and the subroutine re-entered
+!         with all other data unchanged
+!      4 The iteration must be restarted. Reset R (below) to c and 
+!        re-enter with all other data unchanged.
+!     -1 an array allocation has failed
+!     -2 an array deallocation has failed
+!     -3 n and/or radius is not positive
+!     -7 the problem is unbounded from below. This can only happen if
+!        power = 2, and in this case the objective is unbounded along
+!        the arc x + t vector as t goes to infinity
+!     -15 the matrix M appears to be indefinite
+!     -18 the iteration limit has been exceeded
+!
+!  n is a scalar variable of type default intege that holds the number 
+!   of unknowns
+!
+!  power is a scalar of type default real, that holds the positive value 
+!   of the regularization power, p
+!
+!  weight is a scalar of type default real, that holds the positive value 
+!   of the regularization weight, sigma
+!
+!  X is a rank-one array of dimension n and type default real
+!   that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j. X need
+!   not be set on entry, but should be preserved between calls.
+!
+!  R is a rank-one array of dimension n and type default real
+!   that must be set to c on entry (status = 1) and re-entry 
+!   (status = 4, 5). On exit, R contains the resiual H x + c
+!   
+!  VECTOR is a rank-one array of dimension n and type default real
+!   that should be used and reset appropriately when status = 2 and 3
+!   as directed
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLRT_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( INOUT ) :: status
+     INTEGER, INTENT( IN ) :: n
+     REAL ( KIND = wp ), INTENT( IN ) :: power, weight
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: R
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: VECTOR
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     REAL ( KIND = wp ) :: f
+
+     WRITE( data%glrt_control%out, "( '' )", ADVANCE = 'no')! prevents ifort bug
+
+!  recover data from reverse communication
+
+     data%glrt_inform%status = status
+
+!  call the solver
+
+     CALL GLRT_solve( n, power, weight, X, R, VECTOR,                          &
+                      data%glrt_data, data%glrt_control, data%glrt_inform )
+
+!  collect data for reverse communication
+
+     status = data%glrt_inform%status
+     RETURN
+
+!  End of subroutine GLRT_solve_problem
+
+     END SUBROUTINE GLRT_solve_problem
+
+!-  G A L A H A D -  G L R T _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE GLRT_information( data, inform, status )
+
+!  return solver information during or after solution by GLRT
+!  See GLRT_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( GLRT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( GLRT_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%glrt_inform
+     
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine GLRT_information
+
+     END SUBROUTINE GLRT_information
 
 !-*-*-*-*-*-*-*-  End of G A L A H A D _ G L R T  M O D U L E  *-*-*-*-*-*-*-*-
 

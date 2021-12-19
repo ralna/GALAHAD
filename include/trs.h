@@ -821,7 +821,7 @@ void trs_solve_problem( void **data,
                         real_wp_ y[] );
 
 /*!<
- Solve the trsut-region problem.
+ Solve the trust-region problem.
 
  @param[in,out] data holds private internal data
 

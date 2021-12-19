@@ -8,8 +8,6 @@
 ! ritz-printout-device                              34
 ! relative-accuracy-required                        1.0E-8
 ! absolute-accuracy-required                        0.0
-! norm-accuracy-required                            0.0
-! norm-power-used                                   2.0
 ! fraction-optimality-required                      1.0
 ! zero-gradient-tolerance                           2.0E-15
 ! constant-term-in-objective                        0.0

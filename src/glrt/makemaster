@@ -26,6 +26,11 @@ DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 \
 
 DEPENDS = arc barc nls
 
+#  auxiliary packages that the C interface to the current package depends 
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = make_ciface_common
+
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS =

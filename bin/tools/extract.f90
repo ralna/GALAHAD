@@ -1136,7 +1136,7 @@
       WRITE( ciface_unit, "( '', /, '    ! Strings' )" )
       DO i = 1, inform_nc
         WRITE( ciface_unit, "( &
-      & '    DO i = LEN( finform%', A, ' )', /, &
+      & '    DO i = 1, LEN( finform%', A, ' )', /, &
       & '      IF ( cinform%', A, '( i ) == C_NULL_CHAR ) EXIT', /, &
       & '      finform%', A, '( i : i ) = cinform%', A, '( i )', /, &
       & '    END DO' &
