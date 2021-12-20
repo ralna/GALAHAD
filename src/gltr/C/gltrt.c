@@ -13,7 +13,7 @@ int main(void) {
     struct gltr_inform_type inform;
 
     // Set problem data
-    int n = 3; // dimension
+    int n = 100; // dimension
 
     int status;
     double radius;
@@ -26,19 +26,16 @@ int main(void) {
     gltr_initialize( &data, &control, &status );
 
     // use a unit M ?
-    // for( int unit_m=0; unit_m <= 1; unit_m++){
-    for( int unit_m=0; unit_m <= 0; unit_m++){
+    for( int unit_m=0; unit_m <= 1; unit_m++){
       if ( unit_m == 0 ){
         control.unitm = false;
       } else {
         control.unitm = true;
       }
       gltr_import_control( &control, &data, &status );
-      printf("unitm %s\n", control.unitm ? "true" : "false");
 
       // resolve with a smaller radius ?
-      // for( int new_radius=0; new_radius <= 1; new_radius++){
-      for( int new_radius=0; new_radius <= 0; new_radius++){
+      for( int new_radius=0; new_radius <= 1; new_radius++){
         if ( new_radius == 0 ){
            radius = 1.0; 
            status = 1;
@@ -51,7 +48,6 @@ int main(void) {
         // iteration loop to find the minimizer
         while(true){ // reverse-communication loop
           gltr_solve_problem( &data, &status, n, radius, x, r, vector );
-          printf(" status = %i\n", status );
           if ( status == 0 ) { // successful termination
               break;
           } else if ( status < 0 ) { // error exit

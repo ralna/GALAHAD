@@ -486,10 +486,9 @@ void glrt_terminate( void **data,
 /** \anchor examples
    \f$\label{examples}\f$
    \example glrtt.c
-   This is an example of how to use the package to solve a trus-region
-   problem. A variety of supported Hessian, scaling and constraint 
-   matrix storage formats are shown.
-
+   This is an example of how to use the package to solve a regularized quadratic
+   problem. The use of default and non-default scaling matrices, and restarts 
+   with a larger regularization weight are illustrated.
  */
 
 // end include guard

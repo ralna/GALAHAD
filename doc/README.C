@@ -21,6 +21,9 @@ Currently there are C interfaces to the following core packages:
   gltr - solve the trust-region subproblem using matrix-vector products
   rqs  - solve the reqgularized quadratic subproblem using matrix factorization
   glrt - solve the reqgularized quadratic subproblem using matrix vector prods
+  lstr - solve the least-squares trust-region subproblem using mat-vect prods
+  lsrt - solve the regularized least-squares subproblem using mat-vect prods
+  l2rt - solve the regularized l_2 norm subproblem using matrix-vector prods
   tru  - solve unconstrained optimization problems using trust-region methods
   arc  - solve unconstrained optimization problems using regularization methods
   nls  - find the smallest Euclidean norm of a vector-valued function  

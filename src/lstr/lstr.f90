@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 08/04/2015 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 3.3 - 20/12/2021 AT 07:45 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L S T R   M O D U L E  *-*-*-*-*-*-*-*-*-
 
@@ -38,7 +38,21 @@
       PRIVATE
       PUBLIC :: LSTR_initialize, LSTR_read_specfile, LSTR_solve,               &
                 LSTR_terminate, LSTR_transform_bidiagonal,                     &
-                LSTR_backsolve_bidiagonal
+                LSTR_backsolve_bidiagonal,                                     &
+                LSTR_full_initialize, LSTR_full_terminate,                     &
+                LSTR_import_control, LSTR_solve_problem, LSTR_information
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+      INTERFACE LSTR_initialize
+        MODULE PROCEDURE LSTR_initialize, LSTR_full_initialize
+      END INTERFACE LSTR_initialize
+
+      INTERFACE LSTR_terminate
+        MODULE PROCEDURE LSTR_terminate, LSTR_full_terminate
+      END INTERFACE LSTR_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -194,7 +208,7 @@
 
         INTEGER :: biter_min = - 1
 
-!  the smallest number of inner iterations performed during an outer iteration
+!  the largest number of inner iterations performed during an outer iteration
 
         INTEGER :: biter_max = - 1
 
@@ -253,6 +267,13 @@
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: V_extra
       END TYPE
 
+      TYPE, PUBLIC :: LSTR_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( LSTR_data_type ) :: LSTR_data
+        TYPE ( LSTR_control_type ) :: LSTR_control
+        TYPE ( LSTR_inform_type ) :: LSTR_inform
+      END TYPE LSTR_full_data_type
+
     CONTAINS
 
 !-*-*-*-*-*-  L S T R _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
@@ -293,6 +314,38 @@
 !  End of subroutine LSTR_initialize
 
       END SUBROUTINE LSTR_initialize
+
+! G A L A H A D - L S T R _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E 
+
+     SUBROUTINE LSTR_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for LSTR controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LSTR_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LSTR_control_type ), INTENT( OUT ) :: control
+     TYPE ( LSTR_inform_type ), INTENT( OUT ) :: inform
+
+     CALL LSTR_initialize( data%lstr_data, control, inform )
+
+     RETURN
+
+!  End of subroutine LSTR_full_initialize
+
+     END SUBROUTINE LSTR_full_initialize
 
 !-*-*-*-*-   L S T R _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
@@ -673,7 +726,7 @@
 !  Array (re)allocations
 !  =====================
 
-      array_name = 'gltr: W'
+      array_name = 'lstr: W'
       CALL SPACE_resize_array( n, data%W,                                      &
           inform%status, inform%alloc_status, array_name = array_name,         &
           deallocate_error_fatal = control%deallocate_error_fatal,             &
@@ -691,7 +744,7 @@
 
 !  Allocate space for the solution, y, in the subspace x = V_k y
 
-        array_name = 'gltr: Y'
+        array_name = 'lstr: Y'
         CALL SPACE_resize_array( data%itmax, data%Y,                           &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -701,7 +754,7 @@
 
 !  Allocate space for the Lanczos bidiagonal, B_k
 
-        array_name = 'gltr: B_diag'
+        array_name = 'lstr: B_diag'
         CALL SPACE_resize_array( data%itmax + 1, data%B_diag,                  &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -709,7 +762,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= 0 ) GO TO 960
 
-        array_name = 'gltr: B_offdiag'
+        array_name = 'lstr: B_offdiag'
         CALL SPACE_resize_array( data%itmax, data%B_offdiag,                   &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -719,7 +772,7 @@
 
 !  Allocate space for the Cholesky factor R_k of B_k^T B_k
 
-        array_name = 'gltr: R_diag'
+        array_name = 'lstr: R_diag'
         CALL SPACE_resize_array( data%itmax, data%R_diag,                      &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -727,7 +780,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= 0 ) GO TO 960
 
-        array_name = 'gltr: R_offdiag'
+        array_name = 'lstr: R_offdiag'
         CALL SPACE_resize_array( data%itmax - 1, data%R_offdiag,               &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -737,7 +790,7 @@
 
 !  Allocate worspace for the bi-diagonal trust-region solves
 
-        array_name = 'gltr: F'
+        array_name = 'lstr: F'
         CALL SPACE_resize_array( data%itmax, data%F,                           &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -745,7 +798,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= 0 ) GO TO 960
 
-        array_name = 'gltr: G'
+        array_name = 'lstr: G'
         CALL SPACE_resize_array( 0, data%itmax, data%G,                        &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -753,7 +806,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= 0 ) GO TO 960
 
-        array_name = 'gltr: H'
+        array_name = 'lstr: H'
         CALL SPACE_resize_array( data%itmax, data%H,                           &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -763,7 +816,7 @@
 
 !  Allocate workspace for the sequence of smallest function values & multiplier
 
-        array_name = 'gltr: DECREASE'
+        array_name = 'lstr: DECREASE'
         CALL SPACE_resize_array( data%itmax, data%DECREASE,                    &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -771,7 +824,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= 0 ) GO TO 960
 
-        array_name = 'gltr: LAMBDA'
+        array_name = 'lstr: LAMBDA'
         CALL SPACE_resize_array( data%itmax, data%LAMBDA,                      &
             inform%status, inform%alloc_status, array_name = array_name,       &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
@@ -783,14 +836,14 @@
 
         data%extra_vectors = control%extra_vectors
         IF ( data%extra_vectors > 0 ) THEN
-          array_name = 'gltr: U_extra'
+          array_name = 'lstr: U_extra'
           CALL SPACE_resize_array( m, data%U_extra,                            &
               inform%status, inform%alloc_status, array_name = array_name,     &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status == 0 ) THEN
-            array_name = 'gltr: V_extra'
+            array_name = 'lstr: V_extra'
             CALL SPACE_resize_array( n, data%extra_vectors, data%V_extra,      &
                 inform%status, inform%alloc_status, array_name = array_name,   &
                 deallocate_error_fatal = control%deallocate_error_fatal,       &
@@ -1164,9 +1217,10 @@
 !  Compute the norms ||r_k|| and ||A^T r_k||
 
           data%try_warm = .TRUE.
-          inform%r_norm = SQRT( DOT_PRODUCT( data%G( : inform%iter ),          &
-                                             data%G( : inform%iter ) )         &
-                          - data%LAMBDA( inform%iter ) * (radius ** 2 ) )
+          inform%r_norm =                                                      &
+            SQRT( MAX( DOT_PRODUCT( data%G( : inform%iter ),                   &
+                                    data%G( : inform%iter ) )                  &
+                      - data%LAMBDA( inform%iter ) * ( radius ** 2 ), zero ) )
           inform%ATr_norm = ABS( data%alpha_kp1 * data%B_offdiag( inform%iter )&
                                  * data%Y( inform%iter ) )
 !         inform%ATr_norm = ABS( data%B_diag( inform%iter + 1 ) *              &
@@ -1247,9 +1301,10 @@
 !  Compute the norms ||r_pass2|| and ||A^T r_pass2|| and the Lagrange multiplier
 
       inform%multiplier = data%Y( data%end_pass2 )
-      inform%r_norm = SQRT( DOT_PRODUCT( data%G( : data%end_pass2 ),           &
-                                         data%G( : data%end_pass2 ) )          &
-                        - data%LAMBDA( data%end_pass2 ) * (radius ** 2 ) )
+      inform%r_norm =                                                          &
+        SQRT( MAX( DOT_PRODUCT( data%G( : data%end_pass2 ),                    &
+                                data%G( : data%end_pass2 ) )                   &
+            - data%LAMBDA( data%end_pass2 ) * (radius ** 2 ), zero ) )
       inform%ATr_norm = ABS( data%B_diag( data%end_pass2 + 1 ) *               &
               data%B_offdiag( data%end_pass2 ) * data%Y( data%end_pass2 ) )
 
@@ -1368,9 +1423,10 @@
 !  Compute the norms ||r_pass2|| and ||A^T r_pass2|| and the Lagrange multiplier
 
       inform%multiplier = data%Y( data%end_pass2 )
-      inform%r_norm = SQRT( DOT_PRODUCT( data%G( : data%end_pass2 ),           &
-                                         data%G( : data%end_pass2 ) )          &
-                        - data%LAMBDA( data%end_pass2 ) * (radius ** 2 ) )
+      inform%r_norm =                                                          &
+        SQRT( MAX( DOT_PRODUCT( data%G( : data%end_pass2 ),                    &
+                                data%G( : data%end_pass2 ) )                   &
+          - data%LAMBDA( data%end_pass2 ) * (radius ** 2 ), zero )  )
       inform%ATr_norm = ABS( data%B_diag( data%end_pass2 + 1 ) *               &
               data%B_offdiag( data%end_pass2 ) * data%Y( data%end_pass2 ) )
 
@@ -1578,7 +1634,40 @@
 
       END SUBROUTINE LSTR_terminate
 
-!-*-*-*-  L S T R _ S O L V E _ B I D I A G O N A L   S U B R O U T I N E  *-*-*-
+!   G A L A H A D -  L S T R _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+
+     SUBROUTINE LSTR_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LSTR_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LSTR_control_type ), INTENT( IN ) :: control
+     TYPE ( LSTR_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL LSTR_terminate( data%lstr_data, control, inform )
+     RETURN
+
+!  End of subroutine LSTR_full_terminate
+
+     END SUBROUTINE LSTR_full_terminate
+
+!-*-*-  L S T R _ S O L V E _ B I D I A G O N A L   S U B R O U T I N E  -*-*-
 
       SUBROUTINE LSTR_solve_bidiagonal( n, B_diag, B_offdiag, beta, radius,    &
                                         lambda, Y, H, R_diag, R_offdiag, F, G, &
@@ -1925,6 +2014,173 @@
 !  End of subroutine LSTR_backsolve_bidiagonal
 
       END SUBROUTINE LSTR_backsolve_bidiagonal
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D -  L S T R _ i m p o r t _ c o n t r o l  S U B R O U T I N E 
+
+     SUBROUTINE LSTR_import_control( control, data, status )
+
+!  import control parameters prior to solution. Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading 
+!   comments to LSTR_solve
+!
+!  data is a scalar variable of type LSTR_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LSTR_control_type ), INTENT( INOUT ) :: control
+     TYPE ( LSTR_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  copy control to internal data
+
+     data%lstr_control = control
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  End of subroutine LSTR_import_control
+
+     END SUBROUTINE LSTR_import_control
+
+!-  G A L A H A D -  L S T R _ s o l v e _ p r o b l e m  S U B R O U T I N E  -
+
+     SUBROUTINE LSTR_solve_problem( data, status, m, n, radius, X, U, V )
+
+!  solve the trust-region subproblem. Arguments are as follows:
+
+!  data is a scalar variable of type LSTR_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the solve.
+!
+!   This must be set to 
+!      1 on initial entry. Set U (below) to b for this entry, or
+!      5 the iteration is to be restarted with a smaller radius but
+!        with all other data unchanged. Set U (below) to b for this entry
+!
+!   Possible exit values are:
+!      0 the solution has been found
+!      2 The user must perform the operation u := u + A v, and re-enter the 
+!        subroutine. The vectors u and v are available in the arrays U and V 
+!        (below) respectively, and the result u must overwrite the content of
+!        U. No argument except U should be altered before re-entering the 
+!        subroutine
+!      3 The user must perform the operation v := v + A^T u, and re-enter the 
+!        subroutine. The vectors u and v are available in the arrays U and V 
+!        (below) respectively, and the result v must overwrite the content of
+!        V. No argument except V should be altered before re-entering the 
+!        subroutine
+!      4 The user must reset U (below) to b, and re-eneter the subroutine
+!        without changing the other arguments
+!     -1 an array allocation has failed
+!     -2 an array deallocation has failed
+!     -3 m, n and/or radius are not positive
+!    -18 the iteration limit has been exceeded
+!    -25 status is not between 1 and 5 on entry
+!
+!  m is a scalar variable of type default intege that holds the number 
+!   of equations (i.e., rows of A) . m must be positive
+!
+!  n is a scalar variable of type default intege that holds the number 
+!   of variables (i.e., columns of A) . n must be positive
+!
+!  radius is a scalar of type default real, that holds the positive value 
+!   of the trust-region radius, Delta
+!
+!  X is a rank-one array of dimension n and type default real
+!   that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j. X need
+!   not be set on entry, but should be preserved between calls.
+!
+!  U is a rank-one array of dimension m and type default real
+!   that must be set appropriately on entry (status = 1, 5) and re-entry 
+!   (status = 2, 3, 4). See status above.
+!   
+!  V is a rank-one array of dimension n and type default real
+!   that must be set appropriately on re-entry 
+!   (status = 2, 3, 4). See status above.
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LSTR_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( INOUT ) :: status
+     INTEGER, INTENT( IN ) :: m, n
+     REAL ( KIND = wp ), INTENT( IN ) :: radius
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: V
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     REAL ( KIND = wp ) :: f
+
+     WRITE( data%lstr_control%out, "( '' )", ADVANCE = 'no')! prevents ifort bug
+
+!  recover data from reverse communication
+
+     data%lstr_inform%status = status
+
+!  call the solver
+
+     CALL LSTR_solve( m, n, radius, X, U, V,                                   &
+                      data%lstr_data, data%lstr_control, data%lstr_inform )
+
+!  collect data for reverse communication
+
+     status = data%lstr_inform%status
+     RETURN
+
+!  End of subroutine LSTR_solve_problem
+
+     END SUBROUTINE LSTR_solve_problem
+
+!-  G A L A H A D -  L S T R _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE LSTR_information( data, inform, status )
+
+!  return solver information during or after solution by LSTR
+!  See LSTR_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LSTR_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LSTR_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%lstr_inform
+     
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine LSTR_information
+
+     END SUBROUTINE LSTR_information
 
 !-*-*-*-*-*-  End of G A L A H A D _ L S T R  double  M O D U L E  *-*-*-*-*-*-
 

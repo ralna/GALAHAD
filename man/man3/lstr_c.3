@@ -1,0 +1,390 @@
+.TH "lstr.h" 3 "Mon Dec 20 2021" "C interfaces to GALAHAD LSTR" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+lstr.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBlstr_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBlstr_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBlstr_initialize\fP (void **data, struct \fBlstr_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBlstr_read_specfile\fP (struct \fBlstr_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBlstr_import_control\fP (struct \fBlstr_control_type\fP *control, void **data, int *status)"
+.br
+.ti -1c
+.RI "void \fBlstr_solve_problem\fP (void **data, int *status, int m, int n, const real_wp_ radius, real_wp_ x[], real_wp_ u[], real_wp_ v[])"
+.br
+.ti -1c
+.RI "void \fBlstr_information\fP (void **data, struct \fBlstr_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBlstr_terminate\fP (void **data, struct \fBlstr_control_type\fP *control, struct \fBlstr_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+Given a real m by n matrix A, a real m vector b and a scalar Delta>0, this package finds an \fB approximate minimizer of || A x - b||_2, where the vector x is required to satisfy the ``trust-region'' constraint ||x||_2 <= Delta\&.\fP This problem commonly occurs as a trust-region subproblem in nonlinear optimization calculations, and may be used to regularize the solution of under-determined or ill-conditioned linear least-squares problems\&. The method may be suitable for large m and/or n as no factorization involving A is required\&. Reverse communication is used to obtain matrix-vector products of the form u + A v and v + A^T u\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+November 2007, C interface December 2021\&.
+.SS "Terminology"
+The required solution x necessarily satisfies the optimality condition A^T ( A x - b ) + lambda x = 0, where lambda >= 0 is a Lagrange multiplier corresponding to the trust-region constraint ||x||_2 <= Delta\&.
+.SS "Method"
+The method is iterative\&. Starting with the vector u_1 = b, a bi-diagonalisation process is used to generate the vectors v_k and u_k+1 so that the n by k matrix V_k = ( v_1 \&.\&.\&. v_k) and the m by (k+1) matrix U_k = ( u_1 \&.\&.\&. u_{k+1}) together satisfy \[A V_k = U_{k+1} B_k \;\mbox{and}\; b = ||b|| U_{k+1} e_1,\]  
+\n
+       A V_k = U_{k+1} B_k and b = ||b|| U_{k+1} e_1,
+\n
+ where B_k is (k+1) by k and lower bi-diagonal, U_k and V_k have orthonormal columns and e_1 is the first unit vector\&. The solution sought is of the form x_k = V_k y_k, where y_k solves the bi-diagonal least-squares trust-region problem \[(1) \;\;\; \min || B_k y - ||b|| e_1 ||_2 \;\mbox{subject to}\; ||y||_2 <= Delta.\]  
+\n
+   (1)    min || B_k y - ||b|| e_1 ||_2 subject to ||y||_2 <= Delta.
+\n
+
+.PP
+If the trust-region constraint is inactive, the solution y_k may be found, albeit indirectly, via the LSQR algorithm of Paige and Saunders which solves the bi-diagonal least-squares problem \[ \min || B_k y - ||b|| e_1 ||_2\]  
+\n
+     min || B_k y - ||b|| e_1 ||_2
+\n
+ using a QR factorization of B_k\&. Only the most recent v_k and u_{k+1} are required, and their predecessors discarded, to compute x_k from x_{k-1}\&. This method has the important property that the iterates y (and thus x_k) generated increase in norm with k\&. Thus as soon as an LSQR iterate lies outside the trust-region, the required solution to (1) and thus to the original problem must lie on the boundary of the trust-region\&.
+.PP
+If the solution is so constrained, the simplest strategy is to interpolate the last interior iterate with the newly discovered exterior one to find the boundary point---the so-called Steihaug-Toint point---between them\&. Once the solution is known to lie on the trust-region boundary, further improvement may be made by solving \[ \min || B_k y - ||b|| e_1 ||_2 \;\mbox{subject to}\; |||y||_2 = Delta,\]  
+\n
+     min || B_k y - ||b|| e_1 ||_2 subject to ||y||_2 = Delta,
+\n
+ for which the optimality conditions require that y_k = y(lambda_k) where lambda_k is the positive root of \[B_k^T ( B_k^{} y(lambda) - ||b|| e_1^{} ) + lambda y(lambda) = 0 \;\mbox{and}\; ||y(lambda)||_2 = Delta\]  
+\n
+      B_k^T ( B_k y(lambda) - ||b|| e_1 ) + lambda y(lambda) = 0
+      and ||y(lambda)||_2 = Delta
+\n
+ The vector y(lambda) is equivalently the solution to the regularized least-squares problem \[\min \left || \vect{ B_k \\ lambda^{1/2} I } y - ||b|| e_1^{} \right ||\]  
+\n
+      min  ||  B_k y - ||b|| e_1 ||
+           ||    lambda^{1/2} y  ||
+\n
+ and may be found efficiently\&. Given y(lambda), Newton's method is then used to find lambda_k as the positive root of ||y(lambda)||_2 = Delta\&. Unfortunately, unlike when the solution lies in the interior of the trust-region, it is not known how to recur x_k from x_{k-1} given y_k, and a second pass in which x_k = V_k y_k is regenerated is needed---this need only be done once x_k has implicitly deemed to be sufficiently close to optimality\&. As this second pass is an additional expense, a record is kept of the optimal objective function values for each value of k, and the second pass is only performed so far as to ensure a given fraction of the final optimal objective value\&. Large savings may be made in the second pass by choosing the required fraction to be significantly smaller than one\&.
+.SS "Reference"
+A complete description of the unconstrained case is given by
+.PP
+C\&. C\&. Paige and M\&. A\&. Saunders, LSQR: an algorithm for sparse linear equations and sparse least squares\&. ACM Transactions on Mathematical Software, 8(1):43--71, 1982
+.PP
+and
+.PP
+C\&. C\&. Paige and M\&. A\&. Saunders, ALGORITHM 583: LSQR: an algorithm for sparse linear equations and sparse least squares\&. ACM Transactions on Mathematical Software, 8(2):195--209, 1982\&.
+.PP
+Additional details on how to proceed once the trust-region constraint is encountered are described in detail in
+.PP
+C\&. Cartis, N\&. I\&. M\&. Gould and Ph\&. L\&. Toint, Trust-region and other regularisation of linear least-squares problems\&. BIT 49(1):21-53 (2009)\&.
+.SS "Call order"
+To solve a given problem, functions from the lstr package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBlstr_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBlstr_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+\fBlstr_import_control\fP - import control parameters prior to solution
+.IP "\(bu" 2
+\fBlstr_solve_problem\fP - solve the problem by reverse communication, a sequence of calls are made under control of a status parameter, each exit either asks the user to provide additional informaton and to re-enter, or reports that either the solution has been found or that an error has occurred
+.IP "\(bu" 2
+\fBlstr_information\fP (optional) - recover information about the solution and solution process
+.IP "\(bu" 2
+\fBlstr_terminate\fP - deallocate data structures
+.PP
+.PP
+   
+  See the examples section for an illustration of use.
+   
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct lstr_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+int \fIerror\fP error and warning diagnostics occur on stream error 
+.br
+.PP
+int \fIout\fP general output occurs on stream out 
+.br
+.PP
+int \fIprint_level\fP the level of output required is specified by print_level 
+.br
+.PP
+int \fIstart_print\fP any printing will start on this iteration 
+.br
+.PP
+int \fIstop_print\fP any printing will stop on this iteration 
+.br
+.PP
+int \fIprint_gap\fP the number of iterations between printing 
+.br
+.PP
+int \fIitmin\fP the minimum number of iterations allowed (-ve = no bound) 
+.br
+.PP
+int \fIitmax\fP the maximum number of iterations allowed (-ve = no bound) 
+.br
+.PP
+int \fIitmax_on_boundary\fP the maximum number of iterations allowed once the boundary has been encountered (-ve = no bound) 
+.br
+.PP
+int \fIbitmax\fP the maximum number of Newton inner iterations per outer iteration allowe (-ve = no bound) 
+.br
+.PP
+int \fIextra_vectors\fP the number of extra work vectors of length n used 
+.br
+.PP
+real_wp_ \fIstop_relative\fP the iteration stops successfully when ||A^Tr|| is less than max( stop_relative * ||A^Tr_{initial} ||, stop_absolute ) 
+.br
+.PP
+real_wp_ \fIstop_absolute\fP see stop_relative 
+.br
+.PP
+real_wp_ \fIfraction_opt\fP an estimate of the solution that gives at least \&.fraction_opt times the optimal objective value will be found 
+.br
+.PP
+real_wp_ \fItime_limit\fP the maximum elapsed time allowed (-ve means infinite) 
+.br
+.PP
+bool \fIsteihaug_toint\fP should the iteration stop when the Trust-region is first encountered? 
+.br
+.PP
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+.RE
+.PP
+.SH "struct lstr_inform_type"
+.PP 
+inform derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP return status\&. See \fBlstr_solve_problem\fP for details 
+.br
+.PP
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+.br
+.PP
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+.br
+.PP
+int \fIiter\fP the total number of iterations required 
+.br
+.PP
+int \fIiter_pass2\fP the total number of pass-2 iterations required if the solution lies on the trust-region boundary 
+.br
+.PP
+int \fIbiters\fP the total number of inner iterations performed 
+.br
+.PP
+int \fIbiter_min\fP the smallest number of inner iterations performed during an outer iteration 
+.br
+.PP
+int \fIbiter_max\fP the largestt number of inner iterations performed during an outer iteration 
+.br
+.PP
+real_wp_ \fImultiplier\fP the Lagrange multiplier, lambda, corresponding to the trust-region constraint 
+.br
+.PP
+real_wp_ \fIx_norm\fP the Euclidean norm of x 
+.br
+.PP
+real_wp_ \fIr_norm\fP the Euclidean norm of Ax-b 
+.br
+.PP
+real_wp_ \fIAtr_norm\fP the Euclidean norm of A^T (Ax-b) + lambda x 
+.br
+.PP
+real_wp_ \fIbiter_mean\fP the average number of inner iterations performed during an outer 
+.br
+ iteration 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void lstr_initialize (void ** data, struct \fBlstr_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBlstr_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.br
+ 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void lstr_read_specfile (struct \fBlstr_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBlstr_control_type\fP) 
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
+.SS "void lstr_import_control (struct \fBlstr_control_type\fP * control, void ** data, int * status)"
+Import control parameters prior to solution\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBlstr_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.PP
+.RE
+.PP
+
+.SS "void lstr_solve_problem (void ** data, int * status, int m, int n, const real_wp_ radius, real_wp_ x[], real_wp_ u[], real_wp_ v[])"
+Solve the trust-region least-squares problem using reverse communication\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ This must be set to 
+.PD 0
+
+.IP "\(bu" 2
+1\&. on initial entry\&. Set u (below) to b for this entry\&. 
+.IP "\(bu" 2
+5\&. the iteration is to be restarted with a smaller radius but with all other data unchanged\&. Set u (below) to b for this entry\&.
+.PP
+Possible exit values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. the solution has been found 
+.IP "\(bu" 2
+2\&. The user must perform the operation \[u := u + A v,\]  
+\n
+               u := u + A v,
+\n
+ and recall the function\&. The vectors u and v are available in the arrays u and v (below) respectively, and the result u must overwrite the content of u\&. No argument except u should be altered before recalling the function 
+.IP "\(bu" 2
+3\&. The user must perform the operation \[v := v + A^T u,\]  
+\n
+               v := v + A^T u,
+\n
+ and recall the function\&. The vectors u and v are available in the arrays u and v (below) respectively, and the result v must overwrite the content of v\&. No argument except v should be altered before recalling the function 
+.IP "\(bu" 2
+4\&. The user must reset u (below) to b are recall the function\&. No argument except u should be altered before recalling the function 
+.IP "\(bu" 2
+-1\&. an array allocation has failed 
+.IP "\(bu" 2
+-2\&. an array deallocation has failed 
+.IP "\(bu" 2
+-3\&. one or more of n, m or weight violates allowed bounds 
+.IP "\(bu" 2
+-18\&. the iteration limit has been exceeded 
+.IP "\(bu" 2
+-25\&. status is negative on entry
+.PP
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of equations (i\&.e\&., rows of A), m > 0
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables (i\&.e\&., columns of A), n > 0
+.br
+\fIradius\fP is a scalar of type double, that holds the trust-region radius, Delta > 0
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the solution x\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j \&.
+.br
+\fIu\fP is a one-dimensional array of size m and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status\&.
+.br
+\fIv\fP is a one-dimensional array of size n and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status\&. 
+.RE
+.PP
+
+.SS "void lstr_information (void ** data, struct \fBlstr_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBlstr_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void lstr_terminate (void ** data, struct \fBlstr_control_type\fP * control, struct \fBlstr_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBlstr_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBlstr_inform_type\fP) 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD LSTR from the source code\&.

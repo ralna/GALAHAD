@@ -40,7 +40,21 @@
       IMPLICIT NONE
 
       PRIVATE
-      PUBLIC :: L2RT_initialize, L2RT_read_specfile, L2RT_solve, L2RT_terminate
+      PUBLIC :: L2RT_initialize, L2RT_read_specfile, L2RT_solve,               &
+                L2RT_terminate, L2RT_full_initialize, L2RT_full_terminate,     &
+                L2RT_import_control, L2RT_solve_problem, L2RT_information
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+      INTERFACE L2RT_initialize
+        MODULE PROCEDURE L2RT_initialize, L2RT_full_initialize
+      END INTERFACE L2RT_initialize
+
+      INTERFACE L2RT_terminate
+        MODULE PROCEDURE L2RT_terminate, L2RT_full_terminate
+      END INTERFACE L2RT_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -191,7 +205,7 @@
 
         INTEGER :: biter_min = - 1
 
-!  the smallest number of inner iterations performed during an outer iteration
+!  the largest number of inner iterations performed during an outer iteration
 
         INTEGER :: biter_max = - 1
 
@@ -255,6 +269,13 @@
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: V_extra
       END TYPE
 
+      TYPE, PUBLIC :: L2RT_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( L2RT_data_type ) :: L2RT_data
+        TYPE ( L2RT_control_type ) :: L2RT_control
+        TYPE ( L2RT_inform_type ) :: L2RT_inform
+      END TYPE L2RT_full_data_type
+
     CONTAINS
 
 !-*-*-*-*-*-  L 2 R T _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
@@ -294,6 +315,38 @@
 !  End of subroutine L2RT_initialize
 
       END SUBROUTINE L2RT_initialize
+
+! G A L A H A D - L 2 R T _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E 
+
+     SUBROUTINE L2RT_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for L2RT controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( L2RT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( L2RT_control_type ), INTENT( OUT ) :: control
+     TYPE ( L2RT_inform_type ), INTENT( OUT ) :: inform
+
+     CALL L2RT_initialize( data%l2rt_data, control, inform )
+
+     RETURN
+
+!  End of subroutine L2RT_full_initialize
+
+     END SUBROUTINE L2RT_full_initialize
 
 !-*-*-*-*-   L 2 R T _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
@@ -362,7 +415,7 @@
       INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
       INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
       INTEGER, PARAMETER :: lspec = prefix
-      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'LSRT'
+      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'L2RT'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
 !  define the keywords
@@ -1524,6 +1577,39 @@
 
       END SUBROUTINE L2RT_terminate
 
+!   G A L A H A D -  L 2 R T _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+
+     SUBROUTINE L2RT_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( L2RT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( L2RT_control_type ), INTENT( IN ) :: control
+     TYPE ( L2RT_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL L2RT_terminate( data%l2rt_data, control, inform )
+     RETURN
+
+!  End of subroutine L2RT_full_terminate
+
+     END SUBROUTINE L2RT_full_terminate
+
 !-*-*-*-  L 2 R T _ S O L V E _ B I D I A G O N A L   S U B R O U T I N E  *-*-
 
       SUBROUTINE L2RT_solve_bidiagonal( n, B_diag, B_offdiag, beta, p, sigma,  &
@@ -1926,6 +2012,178 @@
 !  End of subroutine L2RT_solve_bidiagonal
 
       END SUBROUTINE L2RT_solve_bidiagonal
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D -  L 2 R T _ i m p o r t _ c o n t r o l  S U B R O U T I N E 
+
+     SUBROUTINE L2RT_import_control( control, data, status )
+
+!  import control parameters prior to solution. Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading 
+!   comments to L2RT_solve
+!
+!  data is a scalar variable of type L2RT_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( L2RT_control_type ), INTENT( INOUT ) :: control
+     TYPE ( L2RT_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  copy control to internal data
+
+     data%l2rt_control = control
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  End of subroutine L2RT_import_control
+
+     END SUBROUTINE L2RT_import_control
+
+!-  G A L A H A D -  L 2 R T _ s o l v e _ p r o b l e m  S U B R O U T I N E  -
+
+     SUBROUTINE L2RT_solve_problem( data, status, m, n, power, weight, shift,  &
+                                    X, U, V )
+
+!  solve the regularization subproblem. Arguments are as follows:
+
+!  data is a scalar variable of type L2RT_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the solve.
+!
+!   This must be set to 
+!      1 on initial entry. Set U (below) to b for this entry
+!
+!   Possible exit values are:
+!      0 the solution has been found
+!      2 The user must perform the operation u := u + A v, and re-enter the 
+!        subroutine. The vectors u and v are available in the arrays U and V 
+!        (below) respectively, and the result u must overwrite the content of
+!        U. No argument except U should be altered before re-entering the 
+!        subroutine
+!      3 The user must perform the operation v := v + A^T u, and re-enter the 
+!        subroutine. The vectors u and v are available in the arrays U and V 
+!        (below) respectively, and the result v must overwrite the content of
+!        V. No argument except V should be altered before re-entering the 
+!        subroutine
+!      4 The user must reset U (below) to b, and re-eneter the subroutine
+!        without changing the other arguments
+!     -1 an array allocation has failed
+!     -2 an array deallocation has failed
+!     -3 m, n and/or radius are not positive
+!    -18 the iteration limit has been exceeded
+!    -25 status is not between 1 and 5 on entry
+!
+!  m is a scalar variable of type default intege that holds the number 
+!   of equations (i.e., rows of A) . m must be positive
+!
+!  n is a scalar variable of type default intege that holds the number 
+!   of variables (i.e., columns of A) . n must be positive
+!
+!  power is a scalar of type default real, that holds the positive value 
+!   of the regularization power, p
+!
+!  weight is a scalar of type default real, that holds the positive value 
+!   of the regularization weight, sigma
+!
+!  shift is a scalar of type default real, that holds the positive value 
+!   of the shift, mu
+!
+!  X is a rank-one array of dimension n and type default real
+!   that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j. X need
+!   not be set on entry, but should be preserved between calls.
+!
+!  U is a rank-one array of dimension m and type default real
+!   that must be set appropriately on entry (status = 1, 5) and re-entry 
+!   (status = 2, 3, 4). See status above.
+!   
+!  V is a rank-one array of dimension n and type default real
+!   that must be set appropriately on re-entry 
+!   (status = 2, 3, 4). See status above.
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( L2RT_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( INOUT ) :: status
+     INTEGER, INTENT( IN ) :: m, n
+     REAL ( KIND = wp ), INTENT( IN ) :: power, weight, shift
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: V
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     REAL ( KIND = wp ) :: f
+
+     WRITE( data%l2rt_control%out, "( '' )", ADVANCE = 'no')! prevents ifort bug
+
+!  recover data from reverse communication
+
+     data%l2rt_inform%status = status
+
+!  call the solver
+
+     CALL L2RT_solve( m, n, power, weight, shift, X, U, V,                     &
+                      data%l2rt_data, data%l2rt_control, data%l2rt_inform )
+
+!  collect data for reverse communication
+
+     status = data%l2rt_inform%status
+     RETURN
+
+!  End of subroutine L2RT_solve_problem
+
+     END SUBROUTINE L2RT_solve_problem
+
+!-  G A L A H A D -  L 2 R T _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE L2RT_information( data, inform, status )
+
+!  return solver information during or after solution by L2RT
+!  See L2RT_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( L2RT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( L2RT_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%l2rt_inform
+     
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine L2RT_information
+
+     END SUBROUTINE L2RT_information
 
 !-*-*-*-*-*-  End of G A L A H A D _ L 2 R T  double  M O D U L E  *-*-*-*-*-*-
 

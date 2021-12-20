@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 09/04/2015 AT 08:45 GMT.
+! THIS VERSION: GALAHAD 3.3 - 20/12/2021 AT 09:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L S R T   M O D U L E  *-*-*-*-*-*-*-*-*-
 
@@ -19,7 +19,7 @@
 !      |                                                           |
 !      |    minimize  1/2 || A x - b ||^2 + 1/p sigma || x ||^p    |
 !      |                                                           |
-!      | for given sigma and p >= 2 using a                        |
+!      | for given weight sigma and power p >= 2 using a           |
 !      ! Lanczos bi-diagonalisation method                         |
 !      |                                                           |
 !      -------------------------------------------------------------
@@ -39,7 +39,21 @@
       IMPLICIT NONE
 
       PRIVATE
-      PUBLIC :: LSRT_initialize, LSRT_read_specfile, LSRT_solve, LSRT_terminate
+      PUBLIC :: LSRT_initialize, LSRT_read_specfile, LSRT_solve,               &
+                LSRT_terminate, LSRT_full_initialize, LSRT_full_terminate,     &
+                LSRT_import_control, LSRT_solve_problem, LSRT_information
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+      INTERFACE LSRT_initialize
+        MODULE PROCEDURE LSRT_initialize, LSRT_full_initialize
+      END INTERFACE LSRT_initialize
+
+      INTERFACE LSRT_terminate
+        MODULE PROCEDURE LSRT_terminate, LSRT_full_terminate
+      END INTERFACE LSRT_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -192,7 +206,7 @@
 
         INTEGER :: biter_min = - 1
 
-!  the smallest number of inner iterations performed during an outer iteration
+!  the largest number of inner iterations performed during an outer iteration
 
         INTEGER :: biter_max = - 1
 
@@ -255,6 +269,13 @@
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: V_extra
       END TYPE
 
+      TYPE, PUBLIC :: LSRT_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( LSRT_data_type ) :: LSRT_data
+        TYPE ( LSRT_control_type ) :: LSRT_control
+        TYPE ( LSRT_inform_type ) :: LSRT_inform
+      END TYPE LSRT_full_data_type
+
     CONTAINS
 
 !-*-*-*-*-*-  L S R T _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
@@ -294,6 +315,38 @@
 !  End of subroutine LSRT_initialize
 
       END SUBROUTINE LSRT_initialize
+
+! G A L A H A D - L S R T _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E 
+
+     SUBROUTINE LSRT_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for LSRT controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LSRT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LSRT_control_type ), INTENT( OUT ) :: control
+     TYPE ( LSRT_inform_type ), INTENT( OUT ) :: inform
+
+     CALL LSRT_initialize( data%lsrt_data, control, inform )
+
+     RETURN
+
+!  End of subroutine LSRT_full_initialize
+
+     END SUBROUTINE LSRT_full_initialize
 
 !-*-*-*-*-   L S R T _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
@@ -1499,6 +1552,39 @@
 
       END SUBROUTINE LSRT_terminate
 
+!   G A L A H A D -  L S R T _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+
+     SUBROUTINE LSRT_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LSRT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LSRT_control_type ), INTENT( IN ) :: control
+     TYPE ( LSRT_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL LSRT_terminate( data%lsrt_data, control, inform )
+     RETURN
+
+!  End of subroutine LSRT_full_terminate
+
+     END SUBROUTINE LSRT_full_terminate
+
 !-*-*-*-  L S R T _ S O L V E _ B I D I A G O N A L   S U B R O U T I N E  *-*-
 
       SUBROUTINE LSRT_solve_bidiagonal( n, B_diag, B_offdiag, beta, p, sigma,  &
@@ -1812,6 +1898,174 @@
 !  End of subroutine LSRT_solve_bidiagonal
 
       END SUBROUTINE LSRT_solve_bidiagonal
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D -  L S R T _ i m p o r t _ c o n t r o l  S U B R O U T I N E 
+
+     SUBROUTINE LSRT_import_control( control, data, status )
+
+!  import control parameters prior to solution. Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading 
+!   comments to LSRT_solve
+!
+!  data is a scalar variable of type LSRT_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LSRT_control_type ), INTENT( INOUT ) :: control
+     TYPE ( LSRT_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  copy control to internal data
+
+     data%lsrt_control = control
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  End of subroutine LSRT_import_control
+
+     END SUBROUTINE LSRT_import_control
+
+!-  G A L A H A D -  L S R T _ s o l v e _ p r o b l e m  S U B R O U T I N E  -
+
+     SUBROUTINE LSRT_solve_problem( data, status, m, n, power, weight, X, U, V )
+
+!  solve the regularization subproblem. Arguments are as follows:
+
+!  data is a scalar variable of type LSRT_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the solve.
+!
+!   This must be set to 
+!      1 on initial entry. Set U (below) to b for this entry
+!
+!   Possible exit values are:
+!      0 the solution has been found
+!      2 The user must perform the operation u := u + A v, and re-enter the 
+!        subroutine. The vectors u and v are available in the arrays U and V 
+!        (below) respectively, and the result u must overwrite the content of
+!        U. No argument except U should be altered before re-entering the 
+!        subroutine
+!      3 The user must perform the operation v := v + A^T u, and re-enter the 
+!        subroutine. The vectors u and v are available in the arrays U and V 
+!        (below) respectively, and the result v must overwrite the content of
+!        V. No argument except V should be altered before re-entering the 
+!        subroutine
+!      4 The user must reset U (below) to b, and re-eneter the subroutine
+!        without changing the other arguments
+!     -1 an array allocation has failed
+!     -2 an array deallocation has failed
+!     -3 m, n and/or radius are not positive
+!    -18 the iteration limit has been exceeded
+!    -25 status is not between 1 and 5 on entry
+!
+!  m is a scalar variable of type default intege that holds the number 
+!   of equations (i.e., rows of A) . m must be positive
+!
+!  n is a scalar variable of type default intege that holds the number 
+!   of variables (i.e., columns of A) . n must be positive
+!
+!  power is a scalar of type default real, that holds the positive value 
+!   of the regularization power, p
+!
+!  weight is a scalar of type default real, that holds the positive value 
+!   of the regularization weight, sigma
+!
+!  X is a rank-one array of dimension n and type default real
+!   that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j. X need
+!   not be set on entry, but should be preserved between calls.
+!
+!  U is a rank-one array of dimension m and type default real
+!   that must be set appropriately on entry (status = 1, 5) and re-entry 
+!   (status = 2, 3, 4). See status above.
+!   
+!  V is a rank-one array of dimension n and type default real
+!   that must be set appropriately on re-entry 
+!   (status = 2, 3, 4). See status above.
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LSRT_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( INOUT ) :: status
+     INTEGER, INTENT( IN ) :: m, n
+     REAL ( KIND = wp ), INTENT( IN ) :: power, weight
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: V
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     REAL ( KIND = wp ) :: f
+
+     WRITE( data%lsrt_control%out, "( '' )", ADVANCE = 'no')! prevents ifort bug
+
+!  recover data from reverse communication
+
+     data%lsrt_inform%status = status
+
+!  call the solver
+
+     CALL LSRT_solve( m, n, power, weight, X, U, V,                            &
+                      data%lsrt_data, data%lsrt_control, data%lsrt_inform )
+
+!  collect data for reverse communication
+
+     status = data%lsrt_inform%status
+     RETURN
+
+!  End of subroutine LSRT_solve_problem
+
+     END SUBROUTINE LSRT_solve_problem
+
+!-  G A L A H A D -  L S R T _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE LSRT_information( data, inform, status )
+
+!  return solver information during or after solution by LSRT
+!  See LSRT_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LSRT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LSRT_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%lsrt_inform
+     
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine LSRT_information
+
+     END SUBROUTINE LSRT_information
 
 !-*-*-*-*-*-  End of G A L A H A D _ L S R T  double  M O D U L E  *-*-*-*-*-*-
 

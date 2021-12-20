@@ -82,7 +82,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <p><a class="anchor" id="examples"></a> \(\label{examples}\)</p>
-<p>This is an example of how to use the package to solve a trus-region problem. A variety of supported Hessian, scaling and constraint matrix storage formats are shown.</p>
+<p>This is an example of how to use the package to solve a trust-region problem. The use of default and non-default scaling matrices, and restarts with a smaller trust-region radius are illustrated.</p>
 <div class="fragment"><div class="line"><span class="comment">/* gltrt.c */</span></div>
 <div class="line"><span class="comment">/* Full test for the GLTR C interface */</span></div>
 <div class="line"> </div>
@@ -98,7 +98,7 @@ $(function() {
 <div class="line">    <span class="keyword">struct </span><a name="_a1"></a><a class="code" href="gltr_8h.html#structgltr__inform__type">gltr_inform_type</a> inform;</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Set problem data</span></div>
-<div class="line">    <span class="keywordtype">int</span> n = 3; <span class="comment">// dimension</span></div>
+<div class="line">    <span class="keywordtype">int</span> n = 100; <span class="comment">// dimension</span></div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordtype">int</span> <a name="a2"></a><a class="code" href="gltr_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a>;</div>
 <div class="line">    <span class="keywordtype">double</span> radius;</div>
@@ -111,19 +111,16 @@ $(function() {
 <div class="line">    <a name="a3"></a><a class="code" href="gltr_8h.html#ac06a7060d9355146e801157c2f29ca5c">gltr_initialize</a>( &amp;data, &amp;control, &amp;<a class="code" href="gltr_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a> );</div>
 <div class="line"> </div>
 <div class="line">    <span class="comment">// use a unit M ?</span></div>
-<div class="line">    <span class="comment">// for( int unit_m=0; unit_m &lt;= 1; unit_m++){</span></div>
-<div class="line">    <span class="keywordflow">for</span>( <span class="keywordtype">int</span> unit_m=0; unit_m &lt;= 0; unit_m++){</div>
+<div class="line">    <span class="keywordflow">for</span>( <span class="keywordtype">int</span> unit_m=0; unit_m &lt;= 1; unit_m++){</div>
 <div class="line">      <span class="keywordflow">if</span> ( unit_m == 0 ){</div>
 <div class="line">        control.<a name="a4"></a><a class="code" href="gltr_8h.html#ae18a96ff3d3a13fe7a965fc39325d25c">unitm</a> = <span class="keyword">false</span>;</div>
 <div class="line">      } <span class="keywordflow">else</span> {</div>
 <div class="line">        control.<a class="code" href="gltr_8h.html#ae18a96ff3d3a13fe7a965fc39325d25c">unitm</a> = <span class="keyword">true</span>;</div>
 <div class="line">      }</div>
 <div class="line">      <a name="a5"></a><a class="code" href="gltr_8h.html#acb8a654fc381e3f231c3d10858f111b3">gltr_import_control</a>( &amp;control, &amp;data, &amp;<a class="code" href="gltr_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a> );</div>
-<div class="line">      printf(<span class="stringliteral">&quot;unitm %s\n&quot;</span>, control.<a class="code" href="gltr_8h.html#ae18a96ff3d3a13fe7a965fc39325d25c">unitm</a> ? <span class="stringliteral">&quot;true&quot;</span> : <span class="stringliteral">&quot;false&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">      <span class="comment">// resolve with a smaller radius ?</span></div>
-<div class="line">      <span class="comment">// for( int new_radius=0; new_radius &lt;= 1; new_radius++){</span></div>
-<div class="line">      <span class="keywordflow">for</span>( <span class="keywordtype">int</span> new_radius=0; new_radius &lt;= 0; new_radius++){</div>
+<div class="line">      <span class="keywordflow">for</span>( <span class="keywordtype">int</span> new_radius=0; new_radius &lt;= 1; new_radius++){</div>
 <div class="line">        <span class="keywordflow">if</span> ( new_radius == 0 ){</div>
 <div class="line">           radius = 1.0; </div>
 <div class="line">           <a class="code" href="gltr_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a> = 1;</div>
@@ -136,7 +133,6 @@ $(function() {
 <div class="line">        <span class="comment">// iteration loop to find the minimizer</span></div>
 <div class="line">        <span class="keywordflow">while</span>(<span class="keyword">true</span>){ <span class="comment">// reverse-communication loop</span></div>
 <div class="line">          <a name="a6"></a><a class="code" href="gltr_8h.html#ad77040d245e6bc307d13ea0cec355f18">gltr_solve_problem</a>( &amp;data, &amp;<a class="code" href="gltr_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a>, n, radius, x, r, vector );</div>
-<div class="line">          printf(<span class="stringliteral">&quot; status = %i\n&quot;</span>, <a class="code" href="gltr_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a> );</div>
 <div class="line">          <span class="keywordflow">if</span> ( <a class="code" href="gltr_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a> == 0 ) { <span class="comment">// successful termination</span></div>
 <div class="line">              <span class="keywordflow">break</span>;</div>
 <div class="line">          } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( <a class="code" href="gltr_8h.html#a6e27f49150e9a14580fb313cc2777e00">status</a> &lt; 0 ) { <span class="comment">// error exit</span></div>

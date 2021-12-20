@@ -51,6 +51,18 @@
        matrix-vector products
       \latexonly \href{glrt_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/glrt/glrt.html">(link)</a> \endhtmlonly
+  \li \link lstr  \endlink - the least-squares trust-region subproblem using 
+       matrix-vector products
+      \latexonly \href{lstr_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/lstr/lstr.html">(link)</a> \endhtmlonly
+  \li \link lsrt  \endlink - the regularized least-squares subproblem using 
+       matrix-vector products
+      \latexonly \href{lsrt_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/lsrt/lsrt.html">(link)</a> \endhtmlonly
+  \li \link l2rt  \endlink - the regularized linear l_2 norm subproblem using 
+       matrix-vector products
+      \latexonly \href{l2rt_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/l2rt/l2rt.html">(link)</a> \endhtmlonly
   \li qpb - general quadratic programming using an active-set method
   \li qpa - general quadratic programming using an interor-point method
   \li blls - bound-constrained linear-least-squares using

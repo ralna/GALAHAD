@@ -1272,8 +1272,7 @@
  & )" )                                                                        &
      TRIM( package_lower ), TRIM( package_lower ), TRIM( package_upper ),      &
      TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower ),      &
-     TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower ),      &
-     TRIM( package_lower )
+     TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower )
 
   WRITE( ciface_unit, "(                                                       &
  & '', /, &

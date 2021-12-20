@@ -15,7 +15,6 @@
    DO unit_m = 0, 1 ! use a unit M ?
      control%unitm = unit_m == 1
      CALL GLTR_import_control( control, data, status )
-     radius = 1.0_wp
      DO new_radius = 0, 1 ! resolve with a smaller radius ?
        IF ( new_radius == 0 ) THEN
          radius = 1.0_wp ; status = 1

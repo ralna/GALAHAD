@@ -376,10 +376,7 @@
 
 !  copy control and inform in
 
-write(6,*) ' in import'
-write(6,*)  ccontrol%unitm
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-write(6,*)  fcontrol%unitm
 
 !  associate data pointer
 
@@ -402,7 +399,7 @@ write(6,*)  fcontrol%unitm
 
 !  -----------------------------------------
 !  C interface to fortran gltr_solve_problem
-!  ----------------------------------------_
+!  -----------------------------------------
 
   SUBROUTINE gltr_solve_problem( cdata, status, n, radius, x, r,               &
                                  vector ) BIND( C )
@@ -434,9 +431,9 @@ write(6,*)  fcontrol%unitm
 
   END SUBROUTINE gltr_solve_problem
 
-!  --------------------------------------
+!  ---------------------------------------
 !  C interface to fortran gltr_information
-!  --------------------------------------
+!  ---------------------------------------
 
   SUBROUTINE gltr_information( cdata, cinform, status ) BIND( C ) 
   USE GALAHAD_GLTR_double_ciface
