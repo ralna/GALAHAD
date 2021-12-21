@@ -28,8 +28,10 @@
   \li lpb - linear programming using an interior-point method
   \li bqp - bound-constrained convex quadratic programming using 
       a gradient-projection method
-  \li bqpb - bound-constrained convex quadratic programming using 
-      an interor-point method
+  \li \link bqpb \endlink - bound-constrained convex quadratic programming 
+      using an interor-point method
+      \latexonly \href{bqpb_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/bqpb/bqpb.html">(link)</a> \endhtmlonly
   \li \link cqp \endlink - convex quadratic programming using 
       an interor-point method
       \latexonly \href{cqp_c.pdf}{(link)} \endlatexonly

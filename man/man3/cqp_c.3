@@ -1,4 +1,4 @@
-.TH "cqp.h" 3 "Sun Dec 12 2021" "C interfaces to GALAHAD CQP" \" -*- nroff -*-
+.TH "cqp.h" 3 "Tue Dec 21 2021" "C interfaces to GALAHAD CQP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -143,7 +143,7 @@ To solve a given problem, functions from the cqp package must be called in the f
 .IP "\(bu" 2
 solve the problem by calling one of
 .IP "  \(bu" 4
-\fBcqp_solve_qp\fP - solve the quadratic program
+\fBcqp_solve_qpqp\fP - solve the quadratic program
 .IP "  \(bu" 4
 \fBcqp_solve_sld\fP - solve the shifted least-distance problem
 .PP
@@ -705,8 +705,6 @@ Solve the quadratic program when the Hessian H is available\&.
 .br
 \fIx_u\fP is a one-dimensional array of size n and type double, that holds the upper bounds x^l on the variables x\&. The j-th component of x_u, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
 .br
-\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication\&. See status = 7, above, for more details\&.
-.br
 \fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
 .br
 \fIc\fP is a one-dimensional array of size m and type double, that holds the residual c(x)\&. The i-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j(x) \&.
@@ -790,8 +788,6 @@ Solve the shifted least-distance quadratic program
 \fIx_l\fP is a one-dimensional array of size n and type double, that holds the lower bounds x^l on the variables x\&. The j-th component of x_l, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
 .br
 \fIx_u\fP is a one-dimensional array of size n and type double, that holds the upper bounds x^l on the variables x\&. The j-th component of x_u, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
-.br
-\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication\&. See status = 7, above, for more details\&.
 .br
 \fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
 .br

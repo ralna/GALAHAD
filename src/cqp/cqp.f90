@@ -1676,37 +1676,39 @@
 
       IF ( data%a_ne <= 0 ) THEN
         separable_bqp = .TRUE.
-        SELECT CASE ( SMT_get( prob%H%type ) )
-        CASE ( 'NONE', 'ZERO', 'IDENTITY', 'SCALED_IDENTITY', 'DIAGONAL' )
-        CASE ( 'DENSE' )
-          l = 0
-          DO i = 1, prob%n
-            DO j = 1, i
-              l = l + 1
+        IF ( prob%Hessian_kind < 0 ) THEN
+          SELECT CASE ( SMT_get( prob%H%type ) )
+          CASE ( 'NONE', 'ZERO', 'IDENTITY', 'SCALED_IDENTITY', 'DIAGONAL' )
+          CASE ( 'DENSE' )
+            l = 0
+            DO i = 1, prob%n
+              DO j = 1, i
+                l = l + 1
+                IF ( i /= j .AND. prob%H%val( l ) /= zero ) THEN
+                  separable_bqp = .FALSE. ; GO TO 10
+                END IF
+              END DO
+            END DO
+          CASE ( 'SPARSE_BY_ROWS' )
+            DO i = 1, prob%n
+              DO l = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
+                j = prob%H%col( l )
+                IF ( i /= j .AND. prob%H%val( l ) /= zero ) THEN
+                  separable_bqp = .FALSE. ; GO TO 10
+                END IF
+              END DO
+            END DO
+          CASE ( 'COORDINATE' )
+            DO l = 1, prob%H%ne
+              i = prob%H%row( l ) ; j = prob%H%col( l )
               IF ( i /= j .AND. prob%H%val( l ) /= zero ) THEN
                 separable_bqp = .FALSE. ; GO TO 10
               END IF
             END DO
-          END DO
-        CASE ( 'SPARSE_BY_ROWS' )
-          DO i = 1, prob%n
-            DO l = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
-              j = prob%H%col( l )
-              IF ( i /= j .AND. prob%H%val( l ) /= zero ) THEN
-                separable_bqp = .FALSE. ; GO TO 10
-              END IF
-            END DO
-          END DO
-        CASE ( 'COORDINATE' )
-          DO l = 1, prob%H%ne
-            i = prob%H%row( l ) ; j = prob%H%col( l )
-            IF ( i /= j .AND. prob%H%val( l ) /= zero ) THEN
-              separable_bqp = .FALSE. ; GO TO 10
-            END IF
-          END DO
-        CASE ( 'LBFGS' )
-          separable_bqp = .FALSE.
-        END SELECT
+          CASE ( 'LBFGS' )
+            separable_bqp = .FALSE.
+          END SELECT
+        END IF
  10     CONTINUE
 
 !  the problem is a separable bound-constrained QP. Solve it explicitly
@@ -8144,6 +8146,12 @@ END DO
 
      array_name = 'cqp: data%prob%G'
      CALL SPACE_dealloc_array( data%prob%G,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'cqp: data%prob%Y'
+     CALL SPACE_dealloc_array( data%prob%Y,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

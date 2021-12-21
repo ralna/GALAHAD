@@ -23,9 +23,8 @@ or the {\bf bound-constrained shifted least-distance problem}
 subject to the simple bound constraints
 \disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
 where the $n$ by $n$ symmetric, positive-semi-definite matrix $\bmH$, the
-vectors $\bmg$, $\bmw$, $\bmx^{0}$, $\bmc^{l}$, $\bmc^{u}$, $\bmx^{l}$,
-$\bmx^{u}$ and the scalar $f$ are given.
-Any of the constraint bounds $c_{i}^{l}$, $c_{i}^{u}$,
+vectors $\bmg$, $\bmw$, $\bmx^{0}$, $\bmx^{l}$,
+$\bmx^{u}$ and the scalar $f$ are given. Any of the constraint bounds 
 $x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
 Full advantage is taken of any zero coefficients in the matrix $\bmH$.
 
@@ -239,9 +238,6 @@ are:
 
 \ittf{n} is a scalar variable of type default \integer,
  that holds the number of optimization variables, $n$.
-
-\ittf{m} is a scalar variable of type default \integer,
- that holds the number of general linear constraints, $m$.
 
 \itt{Hessian\_kind} is a scalar variable of type default \integer,
 that is used to indicate what type of Hessian the problem involves.
@@ -1118,9 +1114,7 @@ large-scale  degenerate convex quadratic programming,
 \galexample
 Suppose we wish to minimize
 $\half x_1^2 + x_2^2 + x_2 x_3 + \threehalves x_3^2 + 2 x_2 + 1$
-subject to the the general linear constraints
-$1 \leq  2 x_{1}  +  x_{2}  \leq  2$ and
-$x_{2}  +  x_{3}  =  2$, and simple bounds
+subject to the simple bounds
 $-1  \leq  x_{1}  \leq  1$ and $x_{3}  \leq  2$.
 Then, on writing the data for this problem as
 \disp{\bmH = \mat{ccc}{1 & & \\ & 2 & 1 \\ &  1 & 3}, \;\;

@@ -200,7 +200,7 @@
   - \link cqp_reset_control \endlink (optional) - possibly change control 
       parameters if a sequence of problems are being solved
   - solve the problem by calling one of 
-     - \link cqp_solve_qp \endlink - solve the quadratic program
+     - \link cqp_solve_qpqp \endlink - solve the quadratic program
      - \link cqp_solve_sld \endlink - solve the shifted least-distance problem
   - \link cqp_information \endlink (optional) - recover information about
     the solution and solution process
@@ -1109,10 +1109,6 @@ void cqp_solve_qp( void **data,
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
   
- @param[in,out] v is a one-dimensional array of size n and type double, that is 
-    used for reverse communication.
-    See status = 7, above, for more details.
-
  @param[in,out] x is a one-dimensional array of size n and type double, that 
     holds the values \f$x\f$ of the optimization variables. The j-th component 
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
@@ -1253,10 +1249,6 @@ void cqp_solve_sldqp( void **data,
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
   
- @param[in,out] v is a one-dimensional array of size n and type double, that is 
-    used for reverse communication.
-    See status = 7, above, for more details.
-
  @param[in,out] x is a one-dimensional array of size n and type double, that 
     holds the values \f$x\f$ of the optimization variables. The j-th component 
     of x, j = 0, ... , n-1, contains \f$x_j\f$.

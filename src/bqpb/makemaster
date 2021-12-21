@@ -20,13 +20,19 @@ PACKAGE = BQPB
 
 DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
                make_gltr make_lpqp make_fdc make_fit \
-               make_qpp make_trans make_scale make_scu \
+               make_qpp make_trans make_scale make_checkpoint make_scu \
                make_ir make_mop make_cro make_presolve \
-               make_qpd make_userdata make_cqp
+               make_qpd make_rpd make_userdata make_cqp
 
 #  other packages that depend on package
 
 DEPENDS = cqps
+
+#  auxiliary packages that the C interface to the current package depends
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = make_ciface_common make_ciface_sils make_ciface_sls \
+                make_ciface_sbls
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

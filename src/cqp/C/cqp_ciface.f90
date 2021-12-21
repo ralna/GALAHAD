@@ -36,12 +36,12 @@
 !!$        copy_fdc_control_in => copy_control_in, &
 !!$        copy_fdc_control_out => copy_control_out
 !!$
-    USE GALAHAD_SBLS_double_ciface, ONLY: &
-        sbls_inform_type, &
-        sbls_control_type, &
-        copy_sbls_inform_in => copy_inform_in, &
-        copy_sbls_inform_out => copy_inform_out, &
-        copy_sbls_control_in => copy_control_in, &
+    USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
+        sbls_inform_type,                                                      &
+        sbls_control_type,                                                     &
+        copy_sbls_inform_in => copy_inform_in,                                 &
+        copy_sbls_inform_out => copy_inform_out,                               &
+        copy_sbls_control_in => copy_control_in,                               &
         copy_sbls_control_out => copy_control_out
 
 !!$    USE GALAHAD_FIT_double_ciface, ONLY: &

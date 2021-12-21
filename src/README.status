@@ -1,4 +1,4 @@
-** CURRENT STATUS OF PACKAGES 2021-06-05 **
+** CURRENT STATUS OF PACKAGES 2021-12-21 **
 
 CONVERSION TO NEW MAKEMASTERS & C INTERFACES
 --------------------------------------------
@@ -10,7 +10,7 @@ arc                       M C+
 basic                     M
 blls                      M C
 bqp                       M C
-bqpb                      M (replace with specialised cqp?) C
+bqpb                      M (replace with specialised cqp?) C+
 bsc                       M
 ccqp                      M C
 check                     M (build cutest interface?)
@@ -35,13 +35,13 @@ filtrane                  M C
 fisqp                     M C
 fit                       M
 general
-glrt                      M C
+glrt                      M C+
 gls                       M
-gltr                      M C
+gltr                      M C+
 hsl
 ir                        M
 l1qp                      M
-l2rt                      M
+l2rt                      M C+
 lancelot                  M
 lancelot_simple           M
 lapack
@@ -53,8 +53,8 @@ lpa                       M C
 lpb                       M C
 lpqp                      M
 lsqp                      M C
-lsrt                      M C
-lstr                      M C
+lsrt                      M C+
+lstr                      M C+
 miqr                      M
 mop                       M
 nlpt                      M
@@ -76,7 +76,7 @@ qpt                       M
 rand                      M
 roots                     M
 rpd                       M
-rqs                       M C
+rqs                       M C+
 sbls                      M C+
 scale                     M
 scaling                   M
@@ -96,7 +96,7 @@ symbols                   M
 tools                     M
 trans                     M
 trb                       M C+
-trs                       M C
+trs                       M C+
 tru                       M C+
 uls                       M C+
 userdata                  M
@@ -137,10 +137,12 @@ trtn                      M
 Specific issues:
 
 bgo:
-Runtime Error: space.f90, line 3397: Dangling pointer POINT used as argument to intrinsic function ASSOCIATED
+Runtime Error: space.f90, line 3397: Dangling pointer POINT used as 
+argument to intrinsic function ASSOCIATED
 Target was DEALLOCATEd at line 3398 of space.f90
 Program terminated by fatal error
-space.f90, line 3397: Error occurred in GALAHAD_SPACE_DOUBLE:SPACE_DEALLOC_REAL_POINTER
+space.f90, line 3397: Error occurred in 
+GALAHAD_SPACE_DOUBLE:SPACE_DEALLOC_REAL_POINTER
 bgo.f90, line 2450: Called by GALAHAD_BGO_DOUBLE:BGO_TERMINATE
 bgos.f90, line 44: Called by GALAHAD_BGO_EXAMPLE
  data%P associated
