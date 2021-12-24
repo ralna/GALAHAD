@@ -25,7 +25,9 @@
   GALAHAD provides packages as named for the following problems:
 
   \li lpa - linear programming using an active-set method
-  \li lpb - linear programming using an interior-point method
+  \li \link lpb \endlink - linear programming using an interior-point method
+      \latexonly \href{lpb_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/lpb/lpb.html">(link)</a> \endhtmlonly
   \li bqp - bound-constrained convex quadratic programming using 
       a gradient-projection method
   \li \link bqpb \endlink - bound-constrained convex quadratic programming 
@@ -36,7 +38,10 @@
       an interor-point method
       \latexonly \href{cqp_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/cqp/cqp.html">(link)</a> \endhtmlonly
-  \li dqp - convex quadratic programming using a dual active-set method
+  \li \link dqp \endlink - convex quadratic programming using a 
+       dual active-set method
+      \latexonly \href{dqp_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/dqp/dqp.html">(link)</a> \endhtmlonly
   \li \link trs \endlink - the trust-region subproblem using 
        matrix factorization
       \latexonly \href{trs_c.pdf}{(link)} \endlatexonly
@@ -65,8 +70,8 @@
        matrix-vector products
       \latexonly \href{l2rt_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/l2rt/l2rt.html">(link)</a> \endhtmlonly
-  \li qpb - general quadratic programming using an active-set method
-  \li qpa - general quadratic programming using an interor-point method
+  \li qpa - general quadratic programming using an active-set method
+  \li qpb - general quadratic programming using an interor-point method
   \li blls - bound-constrained linear-least-squares using
       a gradient-projection method
   \li bllsb - bound-constrained linear-least-squares using

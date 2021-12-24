@@ -69,7 +69,8 @@
   \subsection cqp_date Originally released
   November 2010, C interface September 2021.
 
-  \subsection cqp_method Method
+  \subsection cqp_terminology Terminology
+
   The required solution \f$x\f$ necessarily satisfies
   the primal optimality conditions
   \f[\mbox{(1a) $\hspace{66mm} A x = c\hspace{66mm}$}\f]
@@ -120,6 +121,8 @@
   known as the Lagrange multipliers for
   the general linear constraints, and the dual variables for the bounds,
   respectively, and where the vector inequalities hold component-wise.
+
+  \subsection cqp_method Method
 
   Primal-dual interior point methods iterate towards a point
   that satisfies these conditions by ultimately aiming to satisfy
@@ -200,8 +203,8 @@
   - \link cqp_reset_control \endlink (optional) - possibly change control 
       parameters if a sequence of problems are being solved
   - solve the problem by calling one of 
-     - \link cqp_solve_qpqp \endlink - solve the quadratic program
-     - \link cqp_solve_sld \endlink - solve the shifted least-distance problem
+     - \link cqp_solve_qp \endlink - solve the quadratic program
+     - \link cqp_solve_sldqp \endlink - solve the shifted least-distance problem
   - \link cqp_information \endlink (optional) - recover information about
     the solution and solution process
   - \link cqp_terminate \endlink - deallocate data structures

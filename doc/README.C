@@ -16,7 +16,10 @@ Currently there are C interfaces to the following core packages:
   uls  - common interface to a variety of popular unsymmetric linear solvers
   sls  - common interface to a variety of popular symmetric linear solvers
   sbls - precondition/solve symmetric block linear systems
+  lpb  - solve linear programs using IP methods
+  bqpb - solve convex bound-constrained quadratic programs using IP methods
   cqp  - solve convex quadratic programs using interior-point methods
+  dqp  - solve convex quadratic programs using dual projection methods
   trs  - solve the trust-region subproblem using matrix factorization
   gltr - solve the trust-region subproblem using matrix-vector products
   rqs  - solve the reqgularized quadratic subproblem using matrix factorization

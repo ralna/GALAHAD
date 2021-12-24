@@ -23,6 +23,7 @@
    TeX: { Macros: {
     vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
     mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
   } }
 });
 </script>
@@ -96,11 +97,11 @@ Scope</h1>
 <p>GALAHAD provides packages as named for the following problems:</p>
 <ul>
 <li>lpa - linear programming using an active-set method </li>
-<li>lpb - linear programming using an interior-point method </li>
+<li><a class="el" href="">lpb</a> - linear programming using an interior-point method   <a href="../../../html/C/lpb/lpb.html">(link)</a>  </li>
 <li>bqp - bound-constrained convex quadratic programming using a gradient-projection method </li>
 <li><a class="el" href="">bqpb</a> - bound-constrained convex quadratic programming using an interor-point method   <a href="../../../html/C/bqpb/bqpb.html">(link)</a>  </li>
 <li><a class="el" href="">cqp</a> - convex quadratic programming using an interor-point method   <a href="../../../html/C/cqp/cqp.html">(link)</a>  </li>
-<li>dqp - convex quadratic programming using a dual active-set method </li>
+<li><a class="el" href="">dqp</a> - convex quadratic programming using a dual active-set method   <a href="../../../html/C/dqp/dqp.html">(link)</a>  </li>
 <li><a class="el" href="">trs</a> - the trust-region subproblem using matrix factorization   <a href="../../../html/C/trs/trs.html">(link)</a>  </li>
 <li><a class="el" href="">gltr</a> - the trust-region subproblem using matrix-vector products   <a href="../../../html/C/gltr/gltr.html">(link)</a>  </li>
 <li><a class="el" href="">rqs</a> - the regularized quadratic subproblem using matrix factorization   <a href="../../../html/C/rqs/rqs.html">(link)</a>  </li>
@@ -108,8 +109,8 @@ Scope</h1>
 <li><a class="el" href="">lstr</a> - the least-squares trust-region subproblem using matrix-vector products   <a href="../../../html/C/lstr/lstr.html">(link)</a>  </li>
 <li><a class="el" href="">lsrt</a> - the regularized least-squares subproblem using matrix-vector products   <a href="../../../html/C/lsrt/lsrt.html">(link)</a>  </li>
 <li><a class="el" href="">l2rt</a> - the regularized linear l_2 norm subproblem using matrix-vector products   <a href="../../../html/C/l2rt/l2rt.html">(link)</a>  </li>
-<li>qpb - general quadratic programming using an active-set method </li>
-<li>qpa - general quadratic programming using an interor-point method </li>
+<li>qpa - general quadratic programming using an active-set method </li>
+<li>qpb - general quadratic programming using an interor-point method </li>
 <li>blls - bound-constrained linear-least-squares using a gradient-projection method </li>
 <li>bllsb - bound-constrained linear-least-squares using an interior-point method (in preparation) </li>
 <li><a class="el" href="">tru</a> - unconstrained optimization using a trust-region method   <a href="../../../html/C/tru/tru.html">(link)</a>  </li>
