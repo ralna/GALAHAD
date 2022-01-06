@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 03/08/2021 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ U G O   C   I N T E R F A C E  -*-*-*-*-*-*-
 
@@ -26,6 +26,7 @@
         f_ugo_solve_direct   => UGO_solve_direct,                              &
         f_ugo_information    => UGO_information,                               &
         f_ugo_terminate      => UGO_terminate
+
     USE GALAHAD_NLPT_double, only:                                             &
         f_nlpt_userdata_type => NLPT_userdata_type
 

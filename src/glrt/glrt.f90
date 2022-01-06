@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 17/12/2021 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 3.4 - 05/01/2022 AT 10:15 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ G L R T  M O D U L E  *-*-*-*-*-*-*-*-*-
 
@@ -267,6 +267,7 @@
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_sub
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U_sub
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R_extra
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P_extra
@@ -891,6 +892,14 @@
             bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= 0 ) GO TO 960
 
+        array_name = 'glrt: V'
+        CALL SPACE_resize_array( 0, data%itmax + 1, data%V,                    &
+            inform%status, inform%alloc_status, array_name = array_name,       &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= 0 ) GO TO 960
+
         array_name = 'glrt: W'
         CALL SPACE_resize_array( 0, data%itmax + 1, data%W,                    &
             inform%status, inform%alloc_status, array_name = array_name,       &
@@ -1219,7 +1228,7 @@
                            data%X_sub( : dim_sub - 1 ),                        &
                            inform%xpo_norm, data%tinfo, data%titer,            &
                            data%U_sub( : dim_sub - 1 ),                        &
-                           data%W( : dim_sub - 1 ),                            &
+                           data%V( : dim_sub - 1 ), data%W( : dim_sub - 1 ),   &
                            data%seed, control%print_level - 1, control%out,    &
                            prefix, inform%hard_case, data%hard_case_step,      &
                            eps = eps, O = data%O_sub( : dim_sub - 1 ), &
@@ -1237,7 +1246,7 @@
                            data%X_sub( : dim_sub - 1 ),                        &
                            inform%xpo_norm, data%tinfo, data%titer,            &
                            data%U_sub( : dim_sub - 1 ),                        &
-                           data%W( : dim_sub - 1 ),                            &
+                           data%V( : dim_sub - 1 ), data%W( : dim_sub - 1 ),   &
                            data%seed, control%print_level - 1, control%out,    &
                            prefix, inform%hard_case, data%hard_case_step,      &
                            eps = eps )
@@ -1256,7 +1265,7 @@
             data%tau = one
             inform%iter = data%iter ; data%iter = 0
             IF ( data%save_vectors ) GO TO 390
-            data%branch = 500 ; inform%status = 5
+            data%branch = 500 ; inform%status = 4
             RETURN
           END IF
 
@@ -1410,7 +1419,7 @@
                  data%use_old, inform%leftmost, data%LAMBDA( data%itm1 ),      &
                  data%MIN_f( data%itm1 ), data%MIN_f_regularized( data%itm1 ), &
                  data%X_sub( : data%itm1 ), inform%xpo_norm, data%tinfo,       &
-                 data%titer, data%U_sub( : data%itm1),                         &
+                 data%titer, data%U_sub( : data%itm1 ), data%V( : data%itm1 ), &
                  data%W( : data%itm1 ), data%seed, control%print_level - 1,    &
                  control%out, prefix, inform%hard_case, data%hard_case_step,   &
                  eps = eps, O = data%O_sub( : data%itm1 ),                     &
@@ -1431,7 +1440,7 @@
                data%use_old, inform%leftmost, data%LAMBDA( data%itm1 ),        &
                data%MIN_f( data%itm1 ), data%MIN_f_regularized( data%itm1 ),   &
                data%X_sub( : data%itm1 ), inform%xpo_norm, data%tinfo,         &
-               data%titer, data%U_sub( : data%itm1),                           &
+               data%titer, data%U_sub( : data%itm1 ), data%V( : data%itm1 ),   &
                data%W( : data%itm1 ), data%seed, control%print_level - 1,      &
                control%out, prefix, inform%hard_case, data%hard_case_step,     &
                eps = eps )
@@ -1572,7 +1581,7 @@
                    data%X_sub( : data%dim_sub - 1 ),                           &
                    inform%xpo_norm, data%tinfo, data%titer,                    &
                    data%U_sub( : data%dim_sub - 1 ),                           &
-                   data%W( : data%dim_sub - 1 ),                               &
+                   data%V( : dim_sub - 1 ), data%W( : dim_sub - 1 ),           &
                    data%seed, control%print_level - 1, control%out, prefix,    &
                    inform%hard_case, data%hard_case_step,                      &
                    eps = eps, O = data%O_sub( data%dim_sub - 1 ),              &
@@ -1590,7 +1599,7 @@
                    data%X_sub( : data%dim_sub - 1 ),                           &
                    inform%xpo_norm, data%tinfo, data%titer,                    &
                    data%U_sub( : data%dim_sub - 1 ),                           &
-                   data%W( : data%dim_sub - 1 ),                               &
+                   data%V( : dim_sub - 1 ), data%W( : dim_sub - 1 ),           &
                    data%seed, control%print_level - 1, control%out, prefix,    &
                    inform%hard_case, data%hard_case_step,                      &
                    eps = eps )
@@ -1860,12 +1869,6 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'glrt: U'
-      CALL SPACE_dealloc_array( data%U,                                        &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
       array_name = 'glrt: D'
       CALL SPACE_dealloc_array( data%D,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -1944,6 +1947,12 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+      array_name = 'glrt: V'
+      CALL SPACE_dealloc_array( data%V,                                        &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
       array_name = 'glrt: W'
       CALL SPACE_dealloc_array( data%W,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -2014,7 +2023,7 @@
       SUBROUTINE GLRT_trts( n, D, OFFD, D_fact, OFFD_fact, C, p, sigma,        &
                             rtol, itmax, try_warm, use_old, old_leftmost,      &
                             lambda, f, f_regularized, X, xponorm, inform,      &
-                            iter, U, W, seed, print_level, out, prefix,        &
+                            iter, U, V, W, seed, print_level, out, prefix,     &
                             hard_case, hard_case_step, eps, O, onorm2 )
 
 ! ---------------------------------------------------------------------
@@ -2121,6 +2130,8 @@
 !    U is a real work (out) array of dimension n that may hold an
 !      eigenvector estimate
 
+!    V is a real work (out) array of dimension n.
+
 !    W is a real work (out) array of dimension n.
 
 !    print_level is an integer (in) variable.
@@ -2168,7 +2179,7 @@
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n - 1 ) :: OFFD
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: C, D
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n - 1 ) :: OFFD_fact
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: D_fact, X, U, W
+      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: D_fact, X, U, V, W
       TYPE ( RAND_seed ), INTENT( INOUT ) :: seed
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       LOGICAL, INTENT( OUT ) :: hard_case
@@ -2216,14 +2227,13 @@
 
         IF ( indef == 0 ) THEN
           IF ( PRESENT( O ) ) THEN
-            CALL GLRT_tridiagonal_solve( n, D, OFFD, lambda, D_fact, OFFD_fact,&
-                                         - C - lambda * O, X, W, U, itref_max, &
-                                         rxnorm2, out, debug, prefix )
+            V = - C - lambda * O
           ELSE
-            CALL GLRT_tridiagonal_solve( n, D, OFFD, lambda, D_fact, OFFD_fact,&
-                                         - C, X, W, U, itref_max, rxnorm2, out,&
-                                         debug, prefix )
+            V = - C
           END IF
+          CALL GLRT_tridiagonal_solve( n, D, OFFD, lambda, D_fact, OFFD_fact,  &
+                                       V, X, W, U, itref_max, rxnorm2, out,    &
+                                       debug, prefix )
 
 !  If the (p-2)nd power of the solution is larger than lambda/sigma,
 !  it provides a good initial estimate of the solution to the problem
@@ -2299,14 +2309,13 @@
 !  Solve T x = - c - lambda * o
 
       IF ( PRESENT( O ) ) THEN
-        CALL GLRT_tridiagonal_solve( n, D, OFFD, lambda_pert, D_fact,        &
-                                     OFFD_fact, - C - lambda_pert * O, X, W, &
-                                     U, itref_max, rxnorm2, out, debug, prefix )
+        V = - C - lambda_pert * O
       ELSE
-        CALL GLRT_tridiagonal_solve( n, D, OFFD, lambda_pert, D_fact,        &
-                                     OFFD_fact, - C, X, W,                   &
-                                     U, itref_max, rxnorm2, out, debug, prefix )
+        V = - C
       END IF
+      CALL GLRT_tridiagonal_solve( n, D, OFFD, lambda_pert, D_fact, OFFD_fact, &
+                                   V, X, W, U, itref_max, rxnorm2, out, debug, &
+                                   prefix )
 
       delta = lambda_pert / sigma
       IF ( PRESENT( O ) ) THEN
@@ -2498,14 +2507,13 @@
 !  Solve the equation (T + lambda*I) x = - c - lambda * o
 
         IF ( PRESENT( O ) ) THEN
-          CALL GLRT_tridiagonal_solve( n, D, OFFD, lambda, D_fact, OFFD_fact,  &
-                                       - C - lambda * O, X, W, U, itref_max,   &
-                                       rxnorm2, out, debug, prefix )
+          V = - C - lambda * O
         ELSE
-          CALL GLRT_tridiagonal_solve( n, D, OFFD, lambda, D_fact, OFFD_fact,  &
-                                       - C, X, W, U, itref_max, rxnorm2, out,  &
-                                       debug, prefix )
+          V = - C
         END IF
+        CALL GLRT_tridiagonal_solve( n, D, OFFD, lambda, D_fact, OFFD_fact,    &
+                                     V, X, W, U, itref_max, rxnorm2, out,      &
+                                     debug, prefix )
 
         delta = lambda / sigma
         IF ( PRESENT( O ) ) THEN

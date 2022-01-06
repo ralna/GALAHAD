@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for dummy and basic GALAHAD packages
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-23
+#  This version: 2022-01-02
 
 #  include standard GALAHAD makefile definitions
  
@@ -10,8 +10,8 @@ include $(GALAHAD)/src/makedefs/definitions
 #  compilation agenda
 
 DUMMYS = cpu_time_silent clock_silent extend_silent symbols_silent \
-         dummy_silent dummy_hsl_silent dummy_spral_silent \
-         blas_silent lapack_silent blas_interface_silent \
+         dummy_silent dummy_hsl_silent dummy_hsl_c_silent \
+         dummy_spral_silent blas_silent lapack_silent blas_interface_silent \
          lapack_interface_silent metis_silent minpack_silent \
          pardiso_silent mkl_pardiso_silent wsmp_silent \
          string_silent buildspec_silent
@@ -190,6 +190,22 @@ $(HLG)(dummy_hsl.o): ../dum/dummy_hsl.f90
 	cd $(OBJ); $(FORTRAN) -o dummy_hsl.o $(FFLAGSS) dummy_hsl.f90
 	cd $(OBJ); $(HARR) dummy_hsl.o ; $(RM) dummy_hsl.f90 dummy_hsl.o
 	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+#  dummy_hsl c package
+
+dummy_hsl_c_silent: $(HCLG)(dummy_hsl_c.o)
+dummy_hsl_c: $(HCLG)(dummy_hsl_c.o)
+	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
+
+dummy_hsl_c.o: $(HCLG)(dummy_hsl_c.o)
+
+$(HCLG)(dummy_hsl_c.o): ../dum/dummy_hsl_c.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_hsl_c"
+	$(CP) ../dum/dummy_hsl_c.f90 $(OBJ)/dummy_hsl_c.f90
+	cd $(OBJ); $(FORTRAN) -o dummy_hsl_c.o $(FFLAGSS) dummy_hsl_c.f90
+	cd $(OBJ); $(HCARR) dummy_hsl_c.o ; $(RM) dummy_hsl_c.f90 dummy_hsl_c.o
+	$(RANLIB) $(HCLG)
 	@printf '[ OK ]\n'
 
 #  dummy_spral package

@@ -1,7 +1,7 @@
 #  GALAHAD makefile intermediaries
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2021-04-28
+#  This version: 2022-01-02
 
 ########################
 #  basic packages alone
@@ -91,11 +91,6 @@ make_checkpoint:
 	( cd $(GALAHAD)/src/checkpoint ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) checkpoint.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/checkpoint )
-
-make_common_ciface:
-	( cd $(GALAHAD)/src/common ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) common_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/common )
 
 make_convert:
 	( cd $(GALAHAD)/src/convert ; \
@@ -505,6 +500,9 @@ make_ugo:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ugo.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ugo )
 
+make_uls_deps: make_dummy make_specfile make_sort make_zd11 \
+               make_smt make_space make_ma33 make_gls make_ma48
+
 make_uls:
 	( cd $(GALAHAD)/src/uls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) uls.o \
@@ -520,9 +518,14 @@ make_wcp:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) wcp.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/wcp )
 
-make_$(SSIDS):
+make_ssids:
+	( cd $(GALAHAD)/src/ssids ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssids )
+
+make_ssids_dum:
 	( cd $(GALAHAD)/src/dum ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) $(SSIDS)_silent \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_dum_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dum )
 
 make_zd11:
@@ -1088,9 +1091,14 @@ make_all_wcp:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) wcp_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/wcp )
 
-make_all_$(SSIDS):
+make_all_ssids:
+	( cd $(GALAHAD)/src/ssids ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssids )
+
+make_all_ssids_dum:
 	( cd $(GALAHAD)/src/dum ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) $(SSIDS)_silent \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_dum_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dum )
 
 make_all_zd11:
@@ -1280,11 +1288,6 @@ make_ciface_clock:
 	( cd $(GALAHAD)/src/clock ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clock_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clock )
-
-make_ciface_checkpoint:
-	( cd $(GALAHAD)/src/checkpoint ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) checkpoint_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/checkpoint )
 
 make_ciface_common:
 	( cd $(GALAHAD)/src/common ; \
@@ -1591,10 +1594,7 @@ make_ciface_rqs:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) rqs_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rqs )
 
-make_ciface_sbls_deps: make_ciface_sls_deps make_ciface_sls \
-                      make_ciface_ma33 make_ciface_gls make_ciface_ma48 \
-                      make_ciface_uls make_ciface_roots \
-                      make_ciface_norms make_ciface_lmt make_ciface_qpt
+make_ciface_sbls_deps: make_ciface_sls make_ciface_uls
 
 make_ciface_sbls:
 	( cd $(GALAHAD)/src/sbls ; \
@@ -1631,13 +1631,9 @@ make_ciface_sils:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sils_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sils )
 
-make_ciface_sls_deps: make_ciface_dummy make_ciface_specfile \
-                      make_ciface_sort make_ciface_zd11 \
-                      make_ciface_smt make_ciface_space \
-                      make_ciface_sils make_ciface_ma57 \
-                      make_ciface_ma77 make_ciface_ma86 \
-                      make_ciface_ma87 make_ciface_ma97 \
-                      make_ciface_mc61 make_mc64 make_mc68 make_$(SSIDS)
+make_ciface_sls_deps: make_ciface_sils make_ciface_$(SSIDS) make_ciface_ma57 \
+                      make_ciface_ma77 make_ciface_ma86 make_ciface_ma87 \
+                      make_ciface_ma97 make_ciface_mc64 make_ciface_mc68
 
 make_ciface_sls:
 	( cd $(GALAHAD)/src/sls ; \
@@ -1704,6 +1700,8 @@ make_ciface_ugo:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ugo_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ugo )
 
+make_ciface_uls_deps: make_ciface_gls make_ciface_ma48
+
 make_ciface_uls:
 	( cd $(GALAHAD)/src/uls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) uls_ciface.o \
@@ -1719,9 +1717,14 @@ make_ciface_wcp:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) wcp_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/wcp )
 
-make_ciface_$(SSIDS):
+make_ciface_ssids:
+	( cd $(GALAHAD)/src/ssids ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_ciface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssids )
+
+make_ciface_ssids_dum:
 	( cd $(GALAHAD)/src/dum ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) $(SSIDS)_silent \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dum )
 
 make_ciface_zd11:
@@ -1729,6 +1732,52 @@ make_ciface_zd11:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) zd11_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
 
+#  non-free packages
+
+make_ciface_ma48:
+	( cd $(GALAHAD)/src/non-free/ma48 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma48_ciface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma48 )
+
+make_ciface_ma57:
+	( cd $(GALAHAD)/src/non-free/ma57 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma57_ciface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma57 )
+
+make_ciface_ma77:
+	( cd $(GALAHAD)/src/non-free/ma77 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma77_ciface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma77 )
+
+make_ciface_ma86:
+	( cd $(GALAHAD)/src/non-free/ma86 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma86_ciface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma86 )
+
+make_ciface_ma87:
+	( cd $(GALAHAD)/src/non-free/ma87 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma87_ciface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma87 )
+
+make_ciface_ma97:
+	( cd $(GALAHAD)/src/non-free/ma97 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma97_ciface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma97 )
+
+make_ciface_mc64:
+	( cd $(GALAHAD)/src/non-free/mc64 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc64_ciface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc64 )
+
+make_ciface_mc68:
+	( cd $(GALAHAD)/src/non-free/mc68 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc68_ciface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc68 )
+
+make_ciface_mi20:
+	( cd $(GALAHAD)/src/non-free/mi20 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi20_ciface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi20 )
 
 
 

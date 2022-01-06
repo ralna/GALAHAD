@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/11/2021 AT 15:24 GMT.
+! THIS VERSION: GALAHAD 3.4 - 05/02/2022 AT 13:150 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  S L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -41,71 +41,56 @@
         copy_sils_finfo_out => copy_finfo_out,                                 &
         copy_sils_sinfo_out => copy_sinfo_out
 
-!!$    USE GALAHAD_MA57_double_ciface, ONLY: &
-!!$        ma57_control, &
-!!$        ma57_ainfo, &
-!!$        ma57_finfo, &
-!!$        ma57_sinfo, &
-!!$        copy_ma57_inform_in => copy_inform_in, &
-!!$        copy_ma57_inform_out => copy_inform_out, &
-!!$        copy_ma57_control_in => copy_control_in, &
-!!$        copy_ma57_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_MA77_double_ciface, ONLY: &
-!!$        ma77_inform_type, &
-!!$        ma77_control_type, &
-!!$        copy_ma77_inform_in => copy_inform_in, &
-!!$        copy_ma77_inform_out => copy_inform_out, &
-!!$        copy_ma77_control_in => copy_control_in, &
-!!$        copy_ma77_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_MA86_double_ciface, ONLY: &
-!!$        ma86_inform_type, &
-!!$        ma86_control_type, &
-!!$        copy_ma86_inform_in => copy_inform_in, &
-!!$        copy_ma86_inform_out => copy_inform_out, &
-!!$        copy_ma86_control_in => copy_control_in, &
-!!$        copy_ma86_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_MA87_double_ciface, ONLY: &
-!!$        ma87_inform_type, &
-!!$        ma87_control_type, &
-!!$        copy_ma87_inform_in => copy_inform_in, &
-!!$        copy_ma87_inform_out => copy_inform_out, &
-!!$        copy_ma87_control_in => copy_control_in, &
-!!$        copy_ma87_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_MA97_double_ciface, ONLY: &
-!!$        ma97_inform_type, &
-!!$        ma97_control_type, &
-!!$        copy_ma97_inform_in => copy_inform_in, &
-!!$        copy_ma97_inform_out => copy_inform_out, &
-!!$        copy_ma97_control_in => copy_control_in, &
-!!$        copy_ma97_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_SSIDS_double_ciface, ONLY: &
-!!$        ssids_inform_type, &
-!!$        ssids_control_type, &
-!!$        copy_ssids_inform_in => copy_inform_in, &
-!!$        copy_ssids_inform_out => copy_inform_out, &
-!!$        copy_ssids_control_in => copy_control_in, &
-!!$        copy_ssids_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_MC64_double_ciface, ONLY: &
-!!$        mc64_inform_type, &
-!!$        mc64_control_type, &
-!!$        copy_mc64_inform_in => copy_inform_in, &
-!!$        copy_mc64_inform_out => copy_inform_out, &
-!!$        copy_mc64_control_in => copy_control_in, &
-!!$        copy_mc64_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_MC68_double_ciface, ONLY: &
-!!$        mc68_inform_type, &
-!!$        mc68_control_type, &
-!!$        copy_mc68_inform_in => copy_inform_in, &
-!!$        copy_mc68_inform_out => copy_inform_out, &
-!!$        copy_mc68_control_in => copy_control_in, &
-!!$        copy_mc68_control_out => copy_control_out
+    USE HSL_MA57_double_ciface, ONLY:                                          &
+        ma57_control,                                                          &
+        ma57_ainfo_d,                                                          &
+        ma57_finfo_d,                                                          &
+        ma57_sinfo_d,                                                          &
+        copy_ma57_ainfo_out => copy_ainfo_out,                                 &
+        copy_ma57_finfo_out => copy_finfo_out,                                 &
+        copy_ma57_sinfo_out => copy_sinfo_out
+
+    USE HSL_MA77_double_iface, ONLY:                                           &
+        ma77_info,                                                             &
+        ma77_control,                                                          &
+        copy_ma77_info_out => copy_info_out,                                   &
+        copy_ma77_control_in => copy_control_in
+
+    USE HSL_MA86D_ciface, ONLY:                                                &
+        ma86_info,                                                             &
+        ma86_control,                                                          &
+        copy_ma86_info_out => copy_info_out,                                   &
+        copy_ma86_control_in => copy_control_in
+
+    USE HSL_MA87D_ciface, ONLY:                                                &
+        ma87_info,                                                             &
+        ma87_control,                                                          &
+        copy_ma87_info_out => copy_info_out,                                   &
+        copy_ma87_control_in => copy_control_in
+
+    USE HSL_MA97_double_ciface, ONLY:                                          &
+        ma97_info,                                                             &
+        ma97_control,                                                          &
+        copy_ma97_info_out => copy_info_out,                                   &
+        copy_ma97_control_in => copy_control_in
+
+    USE SPRAL_SSIDS_double_ciface, ONLY:                                       &
+        ssids_inform,                                                          &
+        ssids_options,                                                         &
+        copy_ssids_inform_out => copy_inform_out,                              &
+        copy_ssids_options_in => copy_options_in
+
+    USE HSL_MC64_double_ciface, ONLY:                                          &
+        mc64_info,                                                             &
+        mc64_control,                                                          &
+        copy_mc64_info_out => copy_info_out,                                   &
+        copy_mc64_control_in => copy_control_in
+
+    USE HSL_MC68_integer_ciface, ONLY:                                         &
+        mc68_info,                                                             &
+        mc68_control,                                                          &
+        copy_mc68_info_out => copy_info_out,                                   &
+        copy_mc68_control_in => copy_control_in
 
     IMPLICIT NONE
 
@@ -246,18 +231,18 @@
       TYPE ( sils_ainfo ) :: sils_ainfo
       TYPE ( sils_finfo ) :: sils_finfo
       TYPE ( sils_sinfo ) :: sils_sinfo
-!      TYPE ( ma57_ainfo ) :: ma57_ainfo
-!      TYPE ( ma57_finfo ) :: ma57_finfo
-!      TYPE ( ma57_sinfo ) :: ma57_sinfo
-!      TYPE ( ma77_inform_type ) :: ma77_inform
-!      TYPE ( ma86_inform_type ) :: ma86_inform
-!      TYPE ( ma87_inform_type ) :: ma87_inform
-!      TYPE ( ma97_inform_type ) :: ma97_inform
-!      TYPE ( ssids_inform_type ) :: ssids_inform
+      TYPE ( ma57_ainfo_d ) :: ma57_ainfo
+      TYPE ( ma57_finfo_d ) :: ma57_finfo
+      TYPE ( ma57_sinfo_d ) :: ma57_sinfo
+      TYPE ( ma77_info ) :: ma77_info
+      TYPE ( ma86_info ) :: ma86_info
+      TYPE ( ma87_info ) :: ma87_info
+      TYPE ( ma97_info ) :: ma97_info
+      TYPE ( ssids_inform ) :: ssids_inform
       INTEGER ( KIND = C_INT ), DIMENSION( 10 ) :: mc61_info
       REAL ( KIND = wp ), DIMENSION( 15 ) :: mc61_rinfo
-!      TYPE ( mc64_inform_type ) :: mc64_inform
-!      TYPE ( mc68_inform_type ) :: mc68_inform
+      TYPE ( mc64_info ) :: mc64_info
+      TYPE ( mc68_info ) :: mc68_info
       INTEGER ( KIND = C_INT ), DIMENSION( 10 ) :: mc77_info
       REAL ( KIND = wp ), DIMENSION( 10 ) :: mc77_rinfo
       INTEGER ( KIND = C_INT ) :: pardiso_error
@@ -621,16 +606,7 @@
     CALL copy_sils_ainfo_in( cinform%sils_ainfo, finform%sils_ainfo )
     CALL copy_sils_finfo_in( cinform%sils_finfo, finform%sils_finfo )
     CALL copy_sils_sinfo_in( cinform%sils_sinfo, finform%sils_sinfo )
-!    CALL copy_ma57_ainfo_in( cinform%ma57_ainfo, finform%ma57_ainfo )
-!    CALL copy_ma57_finfo_in( cinform%ma57_sinfo, finform%ma57_finfo )
-!    CALL copy_ma57_sinfo_in( cinform%ma57_finfo, finform%ma57_sinfo )
-!    CALL copy_ma77_inform_in( cinform%ma77_inform, finform%ma77_inform )
-!    CALL copy_ma86_inform_in( cinform%ma86_inform, finform%ma86_inform )
-!    CALL copy_ma87_inform_in( cinform%ma87_inform, finform%ma87_inform )
-!    CALL copy_ma97_inform_in( cinform%ma97_inform, finform%ma97_inform )
 !    CALL copy_ssids_inform_in( cinform%ssids_inform, finform%ssids_inform )
-!    CALL copy_mc64_inform_in( cinform%mc64_inform, finform%mc64_inform )
-!    CALL copy_mc68_inform_in( cinform%mc68_inform, finform%mc68_inform )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -715,16 +691,16 @@
     CALL copy_sils_ainfo_out( finform%sils_ainfo, cinform%sils_ainfo )
     CALL copy_sils_finfo_out( finform%sils_finfo, cinform%sils_finfo )
     CALL copy_sils_sinfo_out( finform%sils_sinfo, cinform%sils_sinfo )
-!    CALL copy_ma57_ainfo_out( finform%ma57_ainfo, cinform%ma57_ainfo )
-!    CALL copy_ma57_finfo_out( finform%ma57_sinfo, cinform%ma57_finfo )
-!    CALL copy_ma57_sinfo_out( finform%ma57_finfo, cinform%ma57_sinfo )
-!    CALL copy_ma77_inform_out( finform%ma77_inform, cinform%ma77_inform )
-!    CALL copy_ma86_inform_out( finform%ma86_inform, cinform%ma86_inform )
-!    CALL copy_ma87_inform_out( finform%ma87_inform, cinform%ma87_inform )
-!    CALL copy_ma97_inform_out( finform%ma97_inform, cinform%ma97_inform )
-!    CALL copy_ssids_inform_out( finform%ssids_inform, cinform%ssids_inform )
-!    CALL copy_mc64_inform_out( finform%mc64_inform, cinform%mc64_inform )
-!    CALL copy_mc68_inform_out( finform%mc68_inform, cinform%mc68_inform )
+    CALL copy_ma57_ainfo_out( finform%ma57_ainfo, cinform%ma57_ainfo )
+    CALL copy_ma57_finfo_out( finform%ma57_finfo, cinform%ma57_finfo )
+    CALL copy_ma57_sinfo_out( finform%ma57_sinfo, cinform%ma57_sinfo )
+    CALL copy_ma77_info_out( finform%ma77_info, cinform%ma77_info )
+    CALL copy_ma86_info_out( finform%ma86_info, cinform%ma86_info )
+    CALL copy_ma87_info_out( finform%ma87_info, cinform%ma87_info )
+    CALL copy_ma97_info_out( finform%ma97_info, cinform%ma97_info )
+    CALL copy_ssids_inform_out( finform%ssids_inform, cinform%ssids_inform )
+    CALL copy_mc64_info_out( finform%mc64_info, cinform%mc64_info )
+    CALL copy_mc68_info_out( finform%mc68_info, cinform%mc68_info )
 
     ! Strings
     l = LEN( finform%bad_alloc )
@@ -907,7 +883,7 @@
     IF ( ALLOCATED( ptr_find ) ) DEALLOCATE( ptr_find )
   ELSE
     CALL f_sls_analyse_matrix( fcontrol, fdata, status, n, ftype, ne,          &
-                                row, col, ptr )
+                               row, col, ptr )
   END IF
 
 !  copy control out

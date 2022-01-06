@@ -209,6 +209,15 @@ extern "C" {
 // precision
 #include "galahad_precision.h"
 
+// required packages
+#include "trs.h"
+#include "gltr.h"
+//#include "dps.h"
+//#include "psls.h"
+//#include "lms.h"
+//#include "sec.h"
+//#include "sha.h"
+
 /**
  * control derived type as a C struct
  */

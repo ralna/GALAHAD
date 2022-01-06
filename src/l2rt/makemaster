@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD L2RT package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2021-05-29
+#  This version: 2022-01-06
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -24,6 +24,15 @@ DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 \
 #  other packages that depend on package
 
 DEPENDS = 
+
+#  auxiliary packages that the C interface to the current package depends
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES =
+
+#  other C interface packages that depend on current interface package 
+
+CDEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

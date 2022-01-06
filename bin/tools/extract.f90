@@ -143,7 +143,7 @@
   WRITE( h_unit, "( '//* \file ', A, '.h */', / )" ) TRIM( package_lower )
 
   WRITE( h_unit, "( '/*', /, &
- &  ' * THIS VERSION: GALAHAD 3.3 - ', A2, '/', A2, '/', A4, ' AT ',           &
+ &  ' * THIS VERSION: GALAHAD 3.4 - ', A2, '/', A2, '/', A4, ' AT ',           &
  &  A2, ':', A2, ' GMT.' )" ) day, month, year, hour, minute
   WRITE( h_unit, "( ' *', /, &
  &  ' *-*-*-*-*-*-*-*-*-  GALAHAD_', A, &
@@ -153,7 +153,7 @@
  &  ' *  Principal author: Jaroslav Fowkes & Nick Gould', /, &
  &  ' *', /, &
  &  ' *  History -', /, &
- &  ' *   originally released GALAHAD Version 3.3. ', &
+ &  ' *   originally released GALAHAD Version 3.4. ', &
  &  A, 1X, I0, A2, 1X, A4 )" ) &
      TRIM( package_upper ), TRIM( months( imonth) ), iday, days( iday ), year
   WRITE( h_unit, "( ' *', /, &
@@ -232,7 +232,7 @@
 !  insert leading data
 
   WRITE( ciface_unit, "(                                                       &
- &  '! THIS VERSION: GALAHAD 3.3 - ', A2, '/', A2, '/', A4, ' AT ',            &
+ &  '! THIS VERSION: GALAHAD 3.4 - ', A2, '/', A2, '/', A4, ' AT ',            &
  &  A2, ':', A2, ' GMT.' )" ) day, month, year, hour, minute
   WRITE( ciface_unit, "(                                                       &
  &  '', /, &
@@ -245,7 +245,7 @@
  &  '!  Principal authors: Jaroslav Fowkes & Nick Gould', /, &
  &  '', /, &
  &  '!  History -', /, &
- &  '!    originally released GALAHAD Version 3.3. ', &
+ &  '!    originally released GALAHAD Version 3.4. ', &
  &  A, 1X, I0, A2, 1X, A4 )" ) &
      TRIM( months( imonth) ), iday, days( iday ), year
   WRITE( ciface_unit, "(                                                       &
@@ -704,9 +704,9 @@
  &  '  @param[out] control is a struct containing control information ', /, &
  &  '              (see ', A, '_control_type)', /, &
  &  '', /, &
- &  '  @param[out] status is a scalar variable of type int, that gives', /, &
+ &  '  @param[out] status is a scalar variable of type int, that gives', /,   &
  &  '    the exit status from the package. Possible values are (currently):', &
- &  '  \li  0. The import was succesful.', /, &
+ &  /, '  \li  0. The import was succesful.', /, &
  &  '*/' &
  & )" ) TRIM( package_lower ), TRIM( package_lower ), TRIM( package_lower )
 

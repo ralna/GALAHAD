@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 30/11/2021 AT 08:48 GMT.
+! THIS VERSION: GALAHAD 3.3 - 02/01/2022 AT 15:45 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  U L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -38,13 +38,14 @@
         copy_gls_finfo_out => copy_finfo_out,                                  &
         copy_gls_sinfo_out => copy_sinfo_out
 
-!   USE GALAHAD_MA48_double_ciface, ONLY:                                      &
-!       ma48_inform_type,                                                      &
-!       ma48_control_type,                                                     &
-!       copy_ma48_inform_in => copy_inform_in,                                 &
-!       copy_ma48_inform_out => copy_inform_out,                               &
-!       copy_ma48_control_in => copy_control_in,                               &
-!       copy_ma48_control_out => copy_control_out
+    USE HSL_MA48_double_ciface, ONLY:                                          &
+        ma48_control,                                                          &
+        ma48_ainfo,                                                            &
+        ma48_finfo,                                                            &
+        ma48_sinfo,                                                            &
+        copy_ma48_ainfo_out => copy_ainfo_out,                                 &
+        copy_ma48_finfo_out => copy_finfo_out,                                 &
+        copy_ma48_sinfo_out => copy_sinfo_out
 
     IMPLICIT NONE
 
@@ -107,9 +108,9 @@
       TYPE ( gls_ainfo ) :: gls_ainfo
       TYPE ( gls_finfo ) :: gls_finfo
       TYPE ( gls_sinfo ) :: gls_sinfo
-!     TYPE ( ma48_ainfo ) :: ma48_ainfo
-!     TYPE ( ma48_finfo ) :: ma48_finfo
-!     TYPE ( ma48_sinfo ) :: ma48_sinfo
+      TYPE ( ma48_ainfo ) :: ma48_ainfo
+      TYPE ( ma48_finfo ) :: ma48_finfo
+      TYPE ( ma48_sinfo ) :: ma48_sinfo
     END TYPE uls_inform_type
 
 !----------------------
@@ -251,9 +252,6 @@
     CALL copy_gls_ainfo_in( cinform%gls_ainfo, finform%gls_ainfo )
     CALL copy_gls_finfo_in( cinform%gls_finfo, finform%gls_finfo )
     CALL copy_gls_sinfo_in( cinform%gls_sinfo, finform%gls_sinfo )
-!   CALL copy_ma48_ainfo_in( cinform%ma48_ainfo, finform%ma48_ainfo )
-!   CALL copy_ma48_finfo_in( cinform%ma48_finfo, finform%ma48_finfo )
-!   CALL copy_ma48_sinfo_in( cinform%ma48_sinfo, finform%ma48_sinfo )
 
     ! Strings
     DO i = 1, 81
@@ -293,9 +291,9 @@
     CALL copy_gls_ainfo_out( finform%gls_ainfo, cinform%gls_ainfo )
     CALL copy_gls_finfo_out( finform%gls_finfo, cinform%gls_finfo )
     CALL copy_gls_sinfo_out( finform%gls_sinfo, cinform%gls_sinfo )
-!   CALL copy_ma48_ainfo_out( finform%ma48_ainfo, cinform%ma48a_info )
-!   CALL copy_ma48_finfo_out( finform%ma48_finfo, cinform%ma48f_info )
-!   CALL copy_ma48_sinfo_out( finform%ma48_sinfo, cinform%ma48s_info )
+    CALL copy_ma48_ainfo_out( finform%ma48_ainfo, cinform%ma48_ainfo )
+    CALL copy_ma48_finfo_out( finform%ma48_finfo, cinform%ma48_finfo )
+    CALL copy_ma48_sinfo_out( finform%ma48_sinfo, cinform%ma48_sinfo )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )

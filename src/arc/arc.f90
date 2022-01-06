@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/04/2021 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 13:00 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ A R C   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -2728,7 +2728,7 @@
 
 !  perform a generalized Lanczos iteration
 
-         CALL GLRT_solve( nlp%n, three, inform%weight, data%S( : nlp%n ),        &
+         CALL GLRT_solve( nlp%n, three, inform%weight, data%S( : nlp%n ),      &
                           data%G_current( : nlp%n ), data%V( : nlp%n ),        &
                           data%GLRT_data, data%control%GLRT_control,           &
                           inform%GLRT_inform )
@@ -4279,6 +4279,7 @@
 
 !  copy control to data
 
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
      data%arc_control = control
 
      error = data%arc_control%error

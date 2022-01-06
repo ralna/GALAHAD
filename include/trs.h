@@ -254,7 +254,7 @@ extern "C" {
 
 // required packages
 #include "sls.h"
-// #include "ir.h"
+#include "ir.h"
 
 /**
  * control derived type as a C struct

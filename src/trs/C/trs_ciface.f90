@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 12/12/2021 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  T R S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -38,13 +38,13 @@
         copy_sls_control_in => copy_control_in,                                &
         copy_sls_control_out => copy_control_out
 
-!    USE GALAHAD_IR_double_ciface, ONLY: &
-!        ir_inform_type, &
-!        ir_control_type, &
-!        copy_ir_inform_in => copy_inform_in, &
-!        copy_ir_inform_out => copy_inform_out, &
-!        copy_ir_control_in => copy_control_in, &
-!        copy_ir_control_out => copy_control_out
+    USE GALAHAD_IR_double_ciface, ONLY:                                        &
+        ir_inform_type,                                                        &
+        ir_control_type,                                                       &
+        copy_ir_inform_in => copy_inform_in,                                   &
+        copy_ir_inform_out => copy_inform_out,                                 &
+        copy_ir_control_in => copy_control_in,                                 &
+        copy_ir_control_out => copy_control_out
 
     IMPLICIT NONE
 
@@ -91,7 +91,7 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: definite_linear_solver
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
       TYPE ( sls_control_type ) :: sls_control
-!     TYPE ( ir_control_type ) :: ir_control
+      TYPE ( ir_control_type ) :: ir_control
     END TYPE trs_control_type
 
     TYPE, BIND( C ) :: trs_time_type
@@ -128,7 +128,7 @@
       TYPE ( trs_time_type ) :: time
       TYPE ( trs_history_type ), DIMENSION( 100 ) :: history
       TYPE ( sls_inform_type ) :: sls_inform
-!     TYPE ( ir_inform_type ) :: ir_inform
+      TYPE ( ir_inform_type ) :: ir_inform
     END TYPE trs_inform_type
 
 !----------------------
@@ -182,7 +182,7 @@
 
     ! Derived types
     CALL copy_sls_control_in( ccontrol%sls_control, fcontrol%sls_control )
-!   CALL copy_ir_control_in( ccontrol%ir_control, fcontrol%ir_control )
+    CALL copy_ir_control_in( ccontrol%ir_control, fcontrol%ir_control )
 
     ! Strings
     DO i = 1, LEN( fcontrol%problem_file )
@@ -252,7 +252,7 @@
 
     ! Derived types
     CALL copy_sls_control_out( fcontrol%sls_control, ccontrol%sls_control )
-!   CALL copy_ir_control_out( fcontrol%ir_control, ccontrol%ir_control )
+    CALL copy_ir_control_out( fcontrol%ir_control, ccontrol%ir_control )
 
     ! Strings
     l = LEN( fcontrol%problem_file )
@@ -377,7 +377,7 @@
     CALL copy_time_in( cinform%time, finform%time )
     CALL copy_history_in( cinform%history, finform%history )
     CALL copy_sls_inform_in( cinform%sls_inform, finform%sls_inform )
-!   CALL copy_ir_inform_in( cinform%ir_inform, finform%ir_inform )
+    CALL copy_ir_inform_in( cinform%ir_inform, finform%ir_inform )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -416,7 +416,7 @@
     CALL copy_time_out( finform%time, cinform%time )
     CALL copy_history_out( finform%history, cinform%history )
     CALL copy_sls_inform_out( finform%sls_inform, cinform%sls_inform )
-!   CALL copy_ir_inform_out( finform%ir_inform, cinform%ir_inform )
+    CALL copy_ir_inform_out( finform%ir_inform, cinform%ir_inform )
 
     ! Strings
     l = LEN( finform%bad_alloc )

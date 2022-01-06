@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 24/12/2021 AT 09:21 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  L P B    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -27,14 +27,6 @@
         f_lpb_information    => LPB_information,                               &
         f_lpb_terminate      => LPB_terminate
 
-!    USE GALAHAD_FDC_double_ciface, ONLY: &
-!        fdc_inform_type, &
-!        fdc_control_type, &
-!        copy_fdc_inform_in => copy_inform_in, &
-!        copy_fdc_inform_out => copy_inform_out, &
-!        copy_fdc_control_in => copy_control_in, &
-!        copy_fdc_control_out => copy_control_out
-
     USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
         sbls_inform_type,                                                      &
         sbls_control_type,                                                     &
@@ -42,6 +34,14 @@
         copy_sbls_inform_out  => copy_inform_out,                              &
         copy_sbls_control_in  => copy_control_in,                              &
         copy_sbls_control_out => copy_control_out
+
+!    USE GALAHAD_FDC_double_ciface, ONLY: &
+!        fdc_inform_type, &
+!        fdc_control_type, &
+!        copy_fdc_inform_in => copy_inform_in, &
+!        copy_fdc_inform_out => copy_inform_out, &
+!        copy_fdc_control_in => copy_control_in, &
+!        copy_fdc_control_out => copy_control_out
 
 !   USE GALAHAD_FIT_double_ciface, ONLY: &
 !       fit_inform_type, &

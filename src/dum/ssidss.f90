@@ -169,32 +169,31 @@ MODULE SPRAL_SSIDS
 
 ! in ssids.f90
    type SSIDS_options
-      integer :: print_level = 0
-      integer :: unit_diagnostics = 6
-      integer :: unit_error = 6
-      integer :: unit_warning = 6
-      integer :: ordering = 1
-      integer :: nemin = nemin_default
-      integer :: scaling = 0
-      logical :: action = .true.
-      real(wp) :: small = 1e-20_wp
-      real(wp) :: u = 0.01
-      logical :: use_gpu_factor = .true.
-      logical :: use_gpu_solve = .true.
-      integer :: nstream = 1
-      real(wp) :: multiplier = 1.1
-      type(auction_options) :: auction
-      real :: min_loadbalance = 0.8
-      integer :: cpu_small_subtree_threshold = 4*10**6
-      integer :: cpu_task_block_size = 256
-      integer(long) :: min_gpu_work = 10**10_long
-      real :: max_load_inbalance = 1.5
-      real :: gpu_perf_coeff = 1.5
-      integer :: pivot_method = PIVOT_METHOD_APP_BLOCK
-      logical :: ignore_numa = .true.
-      logical :: use_gpu = .true.
-!     character(len=:), allocatable :: rb_dump
-      character, allocatable, DIMENSION(:) :: rb_dump
+     integer :: print_level = 0
+     integer :: unit_diagnostics = 6
+     integer :: unit_error = 6
+     integer :: unit_warning = 6
+     integer :: ordering = 1
+     integer :: nemin = nemin_default
+     logical :: ignore_numa = .true.
+     logical :: use_gpu = .true.
+     logical :: gpu_only = .false.
+     integer(long) :: min_gpu_work = 5*10**9_long
+     real :: max_load_inbalance = 1.2
+     real :: gpu_perf_coeff = 1.0
+     integer :: scaling = 0
+     integer(long) :: small_subtree_threshold = 4*10**6
+     integer :: cpu_block_size = 256
+     logical :: action = .true.
+     integer :: pivot_method = 2
+     real(wp) :: small = 1e-20_wp
+     real(wp) :: u = 0.01
+     integer :: nstream = 1
+     real(wp) :: multiplier = 1.1
+!    type(auction_options) :: auction
+     real :: min_loadbalance = 0.8
+!    character(len=:), allocatable :: rb_dump
+     integer :: failed_pivot_method = 1
    end type SSIDS_options
 
 contains

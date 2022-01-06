@@ -24,6 +24,10 @@ BLG  = $(OBJ)/libgalahad_blas.a
 BLGS = $(OBJS)/libgalahad_blas.a
 BLGD = $(OBJD)/libgalahad_blas.a
 
+CLG  = $(OBJ)/libgalahad_c.a
+CLGS = $(OBJS)/libgalahad_c.a
+CLGD = $(OBJD)/libgalahad_c.a
+
 PRLG  = $(OBJ)/libgalahad_problem.a
 PRLGS = $(OBJS)/libgalahad_problem.a
 PRLGD = $(OBJD)/libgalahad_problem.a
@@ -82,6 +86,7 @@ WARR = $(AR) $(ARREPFLAGS) $(WLG)
 
 RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
 RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
 PRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PRLG)
 
 #  sed scripts
@@ -1150,6 +1155,19 @@ $(RLG)(ssidsd.o): ../dum/ssidsd.f90
 	$(MVMODS)
 	$(RMARFILE) sls.o
 	$(RANLIB) $(RLG)
+	@printf '[ OK ]\n'
+
+ssids_ciface.o: $(CLG)(ssids_ciface.o)
+
+$(CLG)(ssids_ciface.o): ../dum/C/ssids_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssids_ciface"
+	$(CP) ../dum/C/ssids_ciface.f90 $(OBJ)/ssids_ciface.f90
+	cd $(OBJ) ; $(FORTRAN) -o ssids_ciface.o $(FFLAGS) \
+                      ssids_ciface.f90
+	cd $(OBJ) ; $(RARR) ssids_ciface.o ; \
+                    $(RM) ssids_ciface.f90 ssids_ciface.o
+	$(CRMARFILE) sls_ciface.o
+	$(MVMODS)
 	@printf '[ OK ]\n'
 
 pardiso.o: $(PLG)(pardiso.o)

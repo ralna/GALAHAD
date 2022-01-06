@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 26/07/2021 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 3.4 - 05/01/2022 AT 10:15 GMT.
    PROGRAM GALAHAD_ARC_interface_test
    USE GALAHAD_ARC_double                       ! double precision version
    USE GALAHAD_SYMBOLS

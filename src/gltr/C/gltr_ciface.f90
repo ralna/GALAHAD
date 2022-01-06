@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 16/12/2021 AT 10:16 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  G L T R    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -14,15 +14,15 @@
   MODULE GALAHAD_GLTR_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_GLTR_double, ONLY: &
-        f_gltr_control_type => GLTR_control_type, &
-        f_gltr_inform_type => GLTR_inform_type, &
-        f_gltr_full_data_type => GLTR_full_data_type, &
-        f_gltr_initialize => GLTR_initialize, &
-        f_gltr_read_specfile => GLTR_read_specfile, &
-        f_gltr_import_control => GLTR_import_control, &
-        f_gltr_solve_problem => GLTR_solve_problem, &
-        f_gltr_information => GLTR_information, &
+    USE GALAHAD_GLTR_double, ONLY:                                             &
+        f_gltr_control_type => GLTR_control_type,                              &
+        f_gltr_inform_type => GLTR_inform_type,                                &
+        f_gltr_full_data_type => GLTR_full_data_type,                          &
+        f_gltr_initialize => GLTR_initialize,                                  &
+        f_gltr_read_specfile => GLTR_read_specfile,                            &
+        f_gltr_import_control => GLTR_import_control,                          &
+        f_gltr_solve_problem => GLTR_solve_problem,                            &
+        f_gltr_information => GLTR_information,                                &
         f_gltr_terminate => GLTR_terminate
 
     IMPLICIT NONE

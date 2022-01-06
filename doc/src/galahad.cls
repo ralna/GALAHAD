@@ -42,7 +42,7 @@
 
 \newcommand{\libraryname}{GA\-LA\-H\-AD}
 %\newcommand{\releasename}{GALAHAD Optimization Library version $2.\epsilon$}
-\newcommand{\releasename}{GALAHAD Optimization Library version $3.3$}
+\newcommand{\releasename}{GALAHAD Optimization Library version $4.0$}
 
 \newcommand\@ptsize{}
 \newif\if@restonecol

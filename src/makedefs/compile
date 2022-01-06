@@ -28,6 +28,7 @@ $(LG)($(package).o): ../$(package)/$(package).f90
 	$(RMOBFILE) $(package)s2.o
 	$(RMOBFILE) $(package)s3.o
 	$(RMOBFILE) $(package)t.o
+	$(CRMARFILE) $(package)_ciface.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -45,6 +46,9 @@ $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
            $(FORTRAN) -o $(package)_ciface.o $(FFLAGSN) $(package)_ciface.f90 )
 	cd $(OBJ); $(CARR) $(package)_ciface.o
 	cd $(OBJ); $(RM) $(package)_ciface.f90 $(package)_ciface.o
+	$(CRMARFILES) $(CDEPENDS)
+	$(RMOBFILE) $(package)ct.o
+	$(RMOBFILE) $(package)ctf.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

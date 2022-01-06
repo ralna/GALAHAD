@@ -61,7 +61,7 @@ int main(void) {
             }
             h_vector[n-1] = vector[n-2] + 2.0 * vector[n-1];
             for( int i = 0; i < n; i++) vector[i] = h_vector[i];
-          } else if ( status == 5 ) { // restart
+          } else if ( status == 4 ) { // restart
             for( int i = 0; i < n; i++) r[i] = 1.0;
           }else{
               printf(" the value %1i of status should not occur\n", 

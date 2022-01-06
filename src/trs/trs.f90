@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 26/10/2014 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ T R S  double  M O D U L E  *-*-*-*-*-*-*-
 
@@ -486,12 +486,12 @@
       control%SLS_control%out = control%out
       control%SLS_control%statistics = control%out
 !     control%SLS_control%print_level = control%print_level
-      control%SLS_control%prefix = '" - SLS:"'
+      control%SLS_control%prefix = '" - SLS:"                     '
 
 !  Set initial values for solve controls
 
       CALL IR_initialize( data%IR_data, control%IR_control, inform%IR_inform )
-      control%IR_control%prefix = '" - IR:"'
+      control%IR_control%prefix = '" - IR:"                      '
 
 !  Set initial data values
 
@@ -5147,7 +5147,7 @@
 
 !  copy control to data
 
-     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     WRITE( control%out, "( '' )", ADVANCE = 'no' ) ! prevents ifort bug
      data%trs_control = control
 
      error = data%trs_control%error
@@ -5799,7 +5799,6 @@
 !  local variables
 
      INTEGER :: n
-     CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimension
 

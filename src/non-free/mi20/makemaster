@@ -1,72 +1,37 @@
 #  Main body of the installation makefile for the MI20 packages
 
-#  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 11 IV 2006
+#  Nick Gould, for GALAHAD production
+#  This version: 2022-01-04
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD HSL makefile definitions
 
-#  compiler flags
+include $(GALAHAD)/src/makedefs/hsl_definitions
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+#  compilation order
 
-#  names of random libraries
+MI20S = basics zd11 ma48 $(HLGS)(hsl_mc65s.o) $(HLGD)(fd15s.o) \
+        $(HLGS)(mi21s.o) $(HLGS)(mi24s.o) $(HLGS)(mi26s.o) \
+        $(HLGS)(hsl_mi32s.o) $(HLGS)(hsl_mi20s.o)
+MI20D = basics zd11 ma48 $(HLGD)(hsl_mc65d.o) $(HLGD)(fd15d.o) \
+        $(HLGD)(mi21d.o) $(HLGD)(mi24d.o) $(HLGD)(mi26d.o) \
+        $(HLGD)(hsl_mi32d.o) $(HLGD)(hsl_mi20d.o)
 
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
-
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
-
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
-
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
-
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
-
-#  Archive manipulation strings
-
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
-
-SUCC = precision version) compiled successfully
+MI20CS = $(MI20S) $(HCLGS)(hsl_mi20s_ciface.o)
+MI20CD = $(MI20D) $(HCLGD)(hsl_mi20d_ciface.o)
 
 #  compilation agenda
 
 mi20: mi20_$(PRECIS)
 	@printf ' %-21s\n' "HSL MI20 routines ($(PRECIS) $(SUCC)"
 mi20_silent: mi20_$(PRECIS)
-mi20_single: basics zd11 ma48 $(HLGS)(hsl_mc65s.o) $(HLGD)(fd15s.o) \
-               $(HLGS)(mi21s.o) $(HLGS)(mi24s.o) $(HLGS)(mi26s.o) \
-               $(HLGD)(hsl_mi32s.o) $(HLGS)(hsl_mi20s.o)
-mi20_double: basics zd11 ma48 $(HLGD)(hsl_mc65d.o) $(HLGD)(fd15d.o) \
-               $(HLGD)(mi21d.o) $(HLGD)(mi24d.o) $(HLGD)(mi26d.o) \
-               $(HLGD)(hsl_mi32d.o) $(HLGD)(hsl_mi20d.o)
+mi20_single: $(MI20S)
+mi20_double: $(MI20D)
+
+mi20_ciface: mi20_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MI20 C routines ($(PRECIS) $(SUCC)"
+mi20_ciface_silent: mi20_ciface_$(PRECIS)
+mi20_ciface_single: $(MI20CS)
+mi20_ciface_double: $(MI20CD)
 
 #  lapack packages
 
@@ -155,30 +120,6 @@ $(HLG)(hsl_mi32d.o): $(MI20)/hsl_mi32d.f90
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
-hsl_mi20s.o: $(HLG)(hsl_mi20s.o)
-
-$(HLG)(hsl_mi20s.o): $(MI20)/hsl_mi20s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20s"
-	$(CP) $(MI20)/hsl_mi20s.f90 $(OBJ)/hsl_mi20s.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi20s.o $(FFLAGS) hsl_mi20s.f90
-	cd $(OBJ) ; $(HARR) hsl_mi20s.o ; $(RM) hsl_mi20s.f90 hsl_mi20s.o
-	$(RMARFILE) ermo.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_mi20d.o: $(HLG)(hsl_mi20d.o)
-
-$(HLG)(hsl_mi20d.o): $(MI20)/hsl_mi20d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20d"
-	$(CP) $(MI20)/hsl_mi20d.f90 $(OBJ)/hsl_mi20d.f90
-	cd $(OBJ) ; $(FORTRAN) -o hsl_mi20d.o $(FFLAGSS) hsl_mi20d.f90
-	cd $(OBJ) ; $(HARR) hsl_mi20d.o ; $(RM) hsl_mi20d.f90 hsl_mi20d.o
-	$(RMARFILE) ermo.o
-	$(MVMODS)
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
 mi21s.o: $(HLG)(mi21s.o)
 
 $(HLG)(mi21s.o): $(MI20)/mi21s.f
@@ -249,4 +190,56 @@ $(HLG)(fd15d.o): $(MI20)/fd15d.f
 	$(CP) $(MI20)/fd15d.f $(OBJ)/fd15d.f90
 	cd $(OBJ); $(FORTRAN) -o fd15d.o $(FFLAGS77) fd15d.f90
 	cd $(OBJ); $(HARR) fd15d.o ; $(RM) fd15d.f90 fd15d.o
+	@printf '[ OK ]\n'
+
+hsl_mi20s.o: $(HLG)(hsl_mi20s.o)
+
+$(HLG)(hsl_mi20s.o): $(MI20)/hsl_mi20s.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20s"
+	$(CP) $(MI20)/hsl_mi20s.f90 $(OBJ)/hsl_mi20s.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mi20s.o $(FFLAGS) hsl_mi20s.f90
+	cd $(OBJ) ; $(HARR) hsl_mi20s.o ; $(RM) hsl_mi20s.f90 hsl_mi20s.o
+	$(RMARFILE) ermo.o
+	$(MVMODS)
+	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+hsl_mi20d.o: $(HLG)(hsl_mi20d.o)
+
+$(HLG)(hsl_mi20d.o): $(MI20)/hsl_mi20d.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20d"
+	$(CP) $(MI20)/hsl_mi20d.f90 $(OBJ)/hsl_mi20d.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mi20d.o $(FFLAGSS) hsl_mi20d.f90
+	cd $(OBJ) ; $(HARR) hsl_mi20d.o ; $(RM) hsl_mi20d.f90 hsl_mi20d.o
+	$(RMARFILE) ermo.o
+	$(MVMODS)
+	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+hsl_mi20s_ciface.o: $(HCLG)(hsl_mi20s_ciface.o)
+
+$(HCLG)(hsl_mi20s_ciface.o): $(MI20)/hsl_mi20s_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20s_ciface"
+	$(CP) $(MI20)/C/hsl_mi20s_ciface.f90 $(OBJ)/hsl_mi20s_ciface.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mi20s_ciface.o $(FFLAGS) \
+                      hsl_mi20s_ciface.f90
+	cd $(OBJ) ; $(HCARR) hsl_mi20s_ciface.o ; \
+                    $(RM) hsl_mi20s_ciface.f90 hsl_mi20s_ciface.o
+	$(CRMARFILE) ermo_ciface.o
+	$(MVMODS)
+	$(RANLIB) $(HCLG)
+	@printf '[ OK ]\n'
+
+hsl_mi20d_ciface.o: $(HCLG)(hsl_mi20d_ciface.o)
+
+$(HCLG)(hsl_mi20d_ciface.o): $(MI20)/C/hsl_mi20d_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi20d_ciface"
+	$(CP) $(MI20)/C/hsl_mi20d_ciface.f90 $(OBJ)/hsl_mi20d_ciface.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mi20d_ciface.o $(FFLAGS) \
+                      hsl_mi20d_ciface.f90
+	cd $(OBJ) ; $(HCARR) hsl_mi20d_ciface.o ; \
+                    $(RM) hsl_mi20d_ciface.f90 hsl_mi20d_ciface.o
+	$(CRMARFILE) ermo_ciface.o
+	$(MVMODS)
+	$(RANLIB) $(HCLG)
 	@printf '[ OK ]\n'

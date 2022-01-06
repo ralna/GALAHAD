@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 10/08/2021 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 13:00 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ T R U   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 

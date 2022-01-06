@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 03/09/2021 AT 09:11 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  C Q P    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -28,14 +28,6 @@
         f_cqp_information    => CQP_information,                               &
         f_cqp_terminate      => CQP_terminate
 
-!!$    USE GALAHAD_FDC_double_ciface, ONLY: &
-!!$        fdc_inform_type, &
-!!$        fdc_control_type, &
-!!$        copy_fdc_inform_in => copy_inform_in, &
-!!$        copy_fdc_inform_out => copy_inform_out, &
-!!$        copy_fdc_control_in => copy_control_in, &
-!!$        copy_fdc_control_out => copy_control_out
-!!$
     USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
         sbls_inform_type,                                                      &
         sbls_control_type,                                                     &
@@ -44,6 +36,14 @@
         copy_sbls_control_in => copy_control_in,                               &
         copy_sbls_control_out => copy_control_out
 
+!!$    USE GALAHAD_FDC_double_ciface, ONLY: &
+!!$        fdc_inform_type, &
+!!$        fdc_control_type, &
+!!$        copy_fdc_inform_in => copy_inform_in, &
+!!$        copy_fdc_inform_out => copy_inform_out, &
+!!$        copy_fdc_control_in => copy_control_in, &
+!!$        copy_fdc_control_out => copy_control_out
+!!$
 !!$    USE GALAHAD_FIT_double_ciface, ONLY: &
 !!$        fit_inform_type, &
 !!$        fit_control_type, &

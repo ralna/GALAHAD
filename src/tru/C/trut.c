@@ -317,7 +317,7 @@ int grad( int n, const double x[], double g[], const void *userdata ){
 
 // Hessian of the objective
 int hess( int n, int ne, const double x[], double hval[], 
-         const void *userdata ){
+          const void *userdata ){
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 2.0;
     hval[2] = 2.0;
@@ -328,7 +328,7 @@ int hess( int n, int ne, const double x[], double hval[],
 
 // Dense Hessian
 int hess_dense( int n, int ne, const double x[], double hval[], 
-               const void *userdata ){ 
+                const void *userdata ){ 
     hval[0] = 2.0 - cos(x[0]);
     hval[1] = 0.0;
     hval[2] = 2.0;
@@ -340,7 +340,7 @@ int hess_dense( int n, int ne, const double x[], double hval[],
 
 // Hessian-vector product
 int hessprod( int n, const double x[], double u[], const double v[], 
-             bool got_h, const void *userdata ){
+              bool got_h, const void *userdata ){
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos(x[0]) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
     u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
@@ -349,7 +349,7 @@ int hessprod( int n, const double x[], double u[], const double v[],
 
 // Apply preconditioner
 int prec( int n, const double x[], double u[], const double v[], 
-         const void *userdata ){
+          const void *userdata ){
    u[0] = 0.5 * v[0];
    u[1] = 0.5 * v[1];
    u[2] = 0.25 * v[2];

@@ -226,8 +226,8 @@ extern "C" {
 #include "galahad_precision.h"
 
 // required packages
-//#include "trs.h"
-//#include "gltr.h"
+#include "trs.h"
+#include "gltr.h"
 //#include "psls.h"
 //#include "lms.h"
 //#include "sha.h"

@@ -10,9 +10,9 @@ D$(PACKAGE) = $(DEPENDENCIES) $(LGD)($(package).o)
 
 #  compilation agenda for package with C interface
 
-S$(PACKAGE)C = $(S$(PACKAGE)) $(CDEPENDENCIES) make_common_ciface \
+S$(PACKAGE)C = $(S$(PACKAGE)) make_ciface_common $(CDEPENDENCIES) \
                $(CLGS)($(package)_ciface.o)
-D$(PACKAGE)C = $(D$(PACKAGE)) $(CDEPENDENCIES) make_common_ciface \
+D$(PACKAGE)C = $(D$(PACKAGE)) make_ciface_common $(CDEPENDENCIES) \
                $(CLGD)($(package)_ciface.o)
 
 #  additional run agenda
@@ -29,7 +29,7 @@ DQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) $(OBJD)/in$(package).o
 LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
                  $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
-CLIBS = -lgalahad_c $(LIBS)
+CLIBS = -lgalahad_c -lgalahad_hsl_c $(LIBS)
 
 #  compilation and run agenda
 
@@ -494,7 +494,7 @@ $(package)cdtf: $($(PACKAGE)CDTF)
 	- ./run_$(package)
 #	- ./run_$(package) > $(package)dtf.output 2>&1
 #	cat $(package)dtf.output
-#	rm ./run_$(package)
+	rm ./run_$(package)
 
 #  main program
 

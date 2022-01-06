@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 03/02/2020 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 3.4 - 04/01/2022 AT 12:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ I R   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -29,8 +29,8 @@
       IMPLICIT NONE
 
       PRIVATE
-      PUBLIC :: IR_initialize, IR_read_specfile, IR_terminate,                 &
-                IR_solve, SMT_type, SMT_put, SMT_get
+      PUBLIC :: IR_initialize, IR_read_specfile, IR_terminate, IR_solve,       &
+                SMT_type, SMT_put, SMT_get
 
 !--------------------
 !   P r e c i s i o n
@@ -104,7 +104,7 @@
 !  e.g. "string" or 'string'
 
         CHARACTER ( LEN = 30 ) :: prefix  = '""                            '
-      END TYPE
+      END TYPE IR_control_type
 
 !  - - - - - - - - - -
 !   data derived type
@@ -113,7 +113,7 @@
       TYPE, PUBLIC :: IR_data_type
         INTEGER :: n = 0
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B, RES
-      END TYPE
+      END TYPE IR_data_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
@@ -144,7 +144,7 @@
 
         REAL ( KIND = wp ) :: norm_final_residual = HUGE( one )
 
-      END TYPE
+      END TYPE IR_inform_type
 
    CONTAINS
 

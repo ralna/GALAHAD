@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 06/08/2021 AT 15:50 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ D G O   C   I N T E R F A C E  -*-*-*-*-*-*-
 
@@ -29,8 +29,10 @@
         f_dgo_solve_reverse_without_mat => DGO_solve_reverse_without_mat,      &
         f_dgo_information               => DGO_information,                    &
         f_dgo_terminate                 => DGO_terminate
+
     USE GALAHAD_NLPT_double, ONLY:                                             &
         f_nlpt_userdata_type            => NLPT_userdata_type
+
     USE GALAHAD_TRB_double_ciface, ONLY:                                       &
         trb_inform_type,                                                       &
         trb_control_type,                                                      &
@@ -38,6 +40,7 @@
         copy_trb_inform_out           => copy_inform_out,                      &
         copy_trb_control_in           => copy_control_in,                      &
         copy_trb_control_out          => copy_control_out
+
     USE GALAHAD_UGO_double_ciface, ONLY:                                       &
         ugo_inform_type,                                                       &
         ugo_control_type,                                                      &
@@ -45,6 +48,7 @@
         copy_ugo_inform_out           => copy_inform_out,                      &
         copy_ugo_control_in           => copy_control_in,                      &
         copy_ugo_control_out          => copy_control_out
+
     USE GALAHAD_HASH_ciface, ONLY:                                             &
         hash_inform_type,                                                      &
         hash_control_type,                                                     &

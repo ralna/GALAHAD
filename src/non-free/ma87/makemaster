@@ -1,85 +1,35 @@
 #  Main body of the installation makefile for the MA87 packages
 
-#  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 21 VI 2009
+#  Nick Gould, for GALAHAD production
+#  This version: 2022-01-04
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD HSL makefile definitions
 
-#  compiler flags
+include $(GALAHAD)/src/makedefs/hsl_definitions
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) $(OPENMP)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
-RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+#  compilation order
 
-#  names of random libraries
+MA87S = blas lapack zd11 $(HLGS)(hsl_mc34s.o) $(HLGS)(hsl_mc78i.o) \
+        $(HLGS)(hsl_ma87s.o)
+MA87D =  blas lapack zd11 $(HLGD)(hsl_mc34d.o) $(HLGD)(hsl_mc78i.o) \
+        $(HLGD)(hsl_ma87d.o)
 
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
-
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
-
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
-
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
-
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
-
-MA87SS = blas lapack zd11 $(HLGS)(hsl_mc34s.o) zd11 $(HLGS)(hsl_mc78i.o) \
-                          $(HLGS)(hsl_ma87s.o)
-
-MA87DS = blas lapack zd11 $(HLGD)(hsl_mc34d.o) zd11 $(HLGD)(hsl_mc78i.o) \
-                          $(HLGD)(hsl_ma87d.o)
-
-#  Libraries used
-
-LIBS = $(HSL) $(METIS) $(LAPACK) $(BLAS)
-
-#  Archive manipulation strings
-
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-HRMARFILES = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLGS)
-HRMARFILED = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLGD)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
-
-SUCC = precision version) compiled successfully
+MA87CS = $(MA87S) $(HCLGS)(hsl_ma87s_ciface.o)
+MA87CD = $(MA87D) $(HCLGD)(hsl_ma87d_ciface.o)
 
 #  compilation agenda
 
 ma87: ma87_$(PRECIS)
 	@printf ' %-21s\n' "HSL MA87 routines ($(PRECIS) $(SUCC)"
 ma87_silent: ma87_$(PRECIS)
-ma87_single: blas lapack zd11 $(HLGS)(hsl_mc34s.o) \
-             $(HLGS)(hsl_mc78i.o) $(HLGS)(hsl_ma87s.o)
-ma87_double: blas lapack zd11 $(HLGD)(hsl_mc34d.o) \
-             $(HLGD)(hsl_mc78i.o) $(HLGD)(hsl_ma87d.o)
+ma87_single: $(MA87S) 
+ma87_double: $(MA87D)
 
+ma87_ciface: ma87_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA87 C routines ($(PRECIS) $(SUCC)"
+ma87_ciface_silent: ma87_ciface_$(PRECIS)
+ma87_ciface_single: $(MA87CS)
+ma87_ciface_double: $(MA87CD)
 
 #  lapack packages
 
@@ -177,9 +127,37 @@ $(HLG)(hsl_ma87d.o): $(MA87)/hsl_ma87d.f90
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
+hsl_ma87s_ciface.o: $(HCLG)(hsl_ma87s_ciface.o)
+
+$(HCLG)(hsl_ma87s_ciface.o): $(MA87)/hsl_ma87s_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma87s_ciface"
+	$(CP) $(MA87)/C/hsl_ma87s_ciface.f90 $(OBJ)/hsl_ma87s_ciface.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma87s_ciface.o $(FFLAGSOMP) \
+                      hsl_ma87s_ciface.f90
+	cd $(OBJ) ; $(HCARR) hsl_ma87s_ciface.o ; \
+                    $(RM) hsl_ma87s_ciface.f90 hsl_ma87s_ciface.o
+	$(CRMARFILE) sls_ciface.o
+	$(MVMODS)
+	$(RANLIB) $(HCLG)
+	@printf '[ OK ]\n'
+
+hsl_ma87d_ciface.o: $(HCLG)(hsl_ma87d_ciface.o)
+
+$(HCLG)(hsl_ma87d_ciface.o): $(MA87)/C/hsl_ma87d_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma87d_ciface"
+	$(CP) $(MA87)/C/hsl_ma87d_ciface.f90 $(OBJ)/hsl_ma87d_ciface.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma87d_ciface.o $(FFLAGSOMP) \
+                      hsl_ma87d_ciface.f90
+	cd $(OBJ) ; $(HCARR) hsl_ma87d_ciface.o ; \
+                    $(RM) hsl_ma87d_ciface.f90 hsl_ma87d_ciface.o
+	$(CRMARFILE) sls_ciface.o
+	$(MVMODS)
+	$(RANLIB) $(HCLG)
+	@printf '[ OK ]\n'
+
 # run spec-sheet example tests
 
-ma87ds: $(MA87DS)
+ma87ds: $(MA87D)
 	cd $(MA87) ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
            -o run_ma87 hsl_ma87ds.f90 -L$(OBJD) $(LIBS)
 	- $(MA87)/run_ma87 < $(MA87)/hsl_ma87ds.data

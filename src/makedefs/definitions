@@ -1,7 +1,7 @@
 #  Standard GALAHAD makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2021-06-28
+#  This version: 2022-01-02
 
 #  makefile shell
 
@@ -50,13 +50,14 @@ DLGD = $(OBJD)/libgalahad_dummy.a
 HLG  = $(OBJ)/libgalahad_hsl.a
 HLGS = $(OBJS)/libgalahad_hsl.a
 HLGD = $(OBJD)/libgalahad_hsl.a
+
+HCLG  = $(OBJ)/libgalahad_hsl_c.a
+HCLGS = $(OBJS)/libgalahad_hsl_c.a
+HCLGD = $(OBJD)/libgalahad_hsl_c.a
+
 LLG  = $(OBJ)/libgalahad_lapack.a
 LLGS = $(OBJS)/libgalahad_lapack.a
 LLGD = $(OBJD)/libgalahad_lapack.a
-
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
 
 MLG  = $(OBJ)/libgalahad_metis.a
 MLGS = $(OBJS)/libgalahad_metis.a
@@ -94,18 +95,19 @@ BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
 
 CARR = $(AR) $(ARREPFLAGS) $(CLG)
 CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
+CRMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(CLG)
 
 DARR = $(AR) $(ARREPFLAGS) $(DLG)
 DRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(DLG)
 
 HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+HCARR = $(AR) $(ARREPFLAGS) $(HCLG)
+HCRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HCLG)
 
 LARR = $(AR) $(ARREPFLAGS) $(LLG)
 LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
 
 MARR = $(AR) $(ARREPFLAGS) $(MLG)
 MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MLG)

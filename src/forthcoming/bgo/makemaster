@@ -26,15 +26,19 @@ DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
                make_psls make_sha make_lhs make_ugo \
                make_sha make_cauchy make_cg make_trb
 
+#  other packages that depend on package
+
+DEPENDS =
+
 #  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)
 
 CDEPENDENCIES = make_ciface_common make_ciface_lhs make_ciface_trb \
                 make_ciface_ugo
 
-#  other packages that depend on package
+#  other C interface packages that depend on current interface package 
 
-DEPENDS =
+CDEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

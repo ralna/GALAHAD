@@ -1,9 +1,9 @@
 #  Main body of the installation makefile for the SPRAL SSIDS package
 #  SPRAL SSIDS was developed by Jonathan Hogg (now at Apple) and is
-#  available under a BSD licence
+#  available under a BSD licence as part of GALAHAD
 
-#  N. Gould, D. Orban and Ph. L. Toint.
-#  This version:  6 IX 2016
+#  Nick Gould, for GALAHAD production
+#  This version: 2022-01-02
 
 SHELL = /bin/$(BINSHELL)
 
@@ -16,23 +16,33 @@ FFLAGS77      = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
 FFLAGS77S     = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
 FFLAGSOMP     = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
                 $(SOMP)
-FFLAGSNOMP    = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
-                $(SOMP)
-RUNFFLAGS     =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
-RUNFFLAGSCUDA =          $(OPTIMIZATION)          $(MODULES)
-RUNFFLAGSOMP  =          $(OPTIMIZATION) $(DEBUG) $(MODULES) $(SOMP)
+FFLAGSNOMP    = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SOMP)
+
+#  C++ compiler flags
 
 CXXFLAGSOMP   = $(CXXBASIC) $(OPTIMIZATION) $(CXXDEBUG)  $(SOMP)
 CXXFLAGSNOMP  = $(CXXBASIC) $(NOOPTIMIZATION) $(CXXDEBUG) $(SOMP)
 
+#  CUDA compiler flags
+
 CUDAFLAGS   = -arch=$(CUDAARCH) -code=$(CUDACODE) $(CUDABASIC) $(OPTIMIZATION)
 CUDAFLAGSN  = -arch=$(CUDAARCH) -code=$(CUDACODE) $(CUDABASIC) $(NOOPTIMIZATION)
+
+#  linking and run flags
+
+RUNFFLAGS     = $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSCUDA = $(OPTIMIZATION) $(MODULES)
+RUNFFLAGSOMP  = $(OPTIMIZATION) $(DEBUG) $(MODULES) $(SOMP)
 
 #  names of random libraries
 
 LG  = $(OBJ)/libgalahad.a
 LGS = $(OBJS)/libgalahad.a
 LGD = $(OBJD)/libgalahad.a
+
+CLG  = $(OBJ)/libgalahad_c.a
+CLGS = $(OBJS)/libgalahad_c.a
+CLGD = $(OBJD)/libgalahad_c.a
 
 RLG  = $(OBJ)/libgalahad_spral.a
 RLGS = $(OBJS)/libgalahad_spral.a
@@ -51,9 +61,16 @@ RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
 RARR = $(AR) $(ARREPFLAGS) $(RLG)
 RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(RLG)
 
+CARR = $(AR) $(ARREPFLAGS) $(CLG)
+CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
+
 #  sed scripts
 
 HWLOCSEDS = $(GALAHAD)/seds/have_hwloc_$(HWLOC)def.sed
+
+#  strings
+
+SUCC = precision version) compiled successfully
 
 #  compilation agenda
 
@@ -99,40 +116,32 @@ SSIDSS = $(CUDAS$(CUDA)) \
          $(RLGS)(guess_topology.o) $(RLGS)(omp.o) $(RLGS)(NumericSubtree.o) \
          $(RLGS)(profile.o) $(RLGS)(SymbolicSubtree.o) $(RLGS)(cholesky.o) \
          $(RLGS)(ldlt_app.o) $(RLGS)(ldlt_nopiv.o) $(RLGS)(ldlt_tpp.o) \
-         $(RLGS)(wrappers.o) $(RLGS)(ThreadStats.o) \
-         $(RLGS)(hw_topology.o) \
+         $(RLGS)(wrappers.o) $(RLGS)(ThreadStats.o) $(RLGS)(hw_topology.o) \
          $(RLGS)(metis4_wrapper.o) $(RLGS)(matrix_util.o) $(RLGS)(scaling.o) \
          $(RLGS)(match_order.o) $(RLGS)(datatypes.o) \
          $(RLGS)(core_analyse.o) $(RLGS)(pgm.o) $(RLGS)(inform.o) \
-         $(RLGS)(contrib.o) $(RLGS)(subtree.o) \
-         $(RLGS)(akeep.o) $(RLGS)(cpu_iface.o) $(RLGS)(cpu_subtree.o) \
-         $(RLGS)(profile_iface.o) \
+         $(RLGS)(contrib.o) $(RLGS)(subtree.o) $(RLGS)(akeep.o) \
+         $(RLGS)(cpu_iface.o) $(RLGS)(cpu_subtree.o) $(RLGS)(profile_iface.o) \
          $(GPUS$(CUDA)) \
-         $(RLGS)(anal.o) $(RLGS)(fkeep.o) \
-         $(RLGS)(random.o) $(RLGS)(rutherford_boeing.o) \
-         $(RLGS)(ssids.o) \
-         $(RLGS)(contrib_free.o)
+         $(RLGS)(anal.o) $(RLGS)(fkeep.o) $(RLGS)(random.o) \
+         $(RLGS)(rutherford_boeing.o) $(RLGS)(ssids.o) $(RLGS)(contrib_free.o)
 SSIDSD = $(CUDAD$(CUDA)) \
          $(RLGD)(compat.o) \
          $(RLGD)(guess_topology.o) $(RLGD)(omp.o) $(RLGD)(NumericSubtree.o) \
          $(RLGD)(profile.o) $(RLGD)(SymbolicSubtree.o) $(RLGD)(cholesky.o) \
          $(RLGD)(ldlt_app.o) $(RLGD)(ldlt_nopiv.o) $(RLGD)(ldlt_tpp.o) \
-         $(RLGD)(wrappers.o) $(RLGD)(ThreadStats.o) \
-         $(RLGD)(hw_topology.o) \
+         $(RLGD)(wrappers.o) $(RLGD)(ThreadStats.o) $(RLGD)(hw_topology.o) \
          $(RLGD)(metis4_wrapper.o) $(RLGD)(matrix_util.o) $(RLGD)(scaling.o) \
          $(RLGD)(match_order.o) $(RLGD)(datatypes.o) \
          $(RLGD)(core_analyse.o) $(RLGD)(pgm.o) $(RLGD)(inform.o) \
-         $(RLGD)(contrib.o) $(RLGD)(subtree.o) \
-         $(RLGD)(akeep.o) $(RLGD)(cpu_iface.o) $(RLGD)(cpu_subtree.o) \
-         $(RLGD)(profile_iface.o) \
+         $(RLGD)(contrib.o) $(RLGD)(subtree.o) $(RLGD)(akeep.o) \
+         $(RLGD)(cpu_iface.o) $(RLGD)(cpu_subtree.o) $(RLGD)(profile_iface.o) \
          $(GPUD$(CUDA)) \
-         $(RLGD)(anal.o) $(RLGD)(fkeep.o) \
-         $(RLGD)(random.o) $(RLGD)(rutherford_boeing.o) \
-         $(RLGD)(ssids.o) \
-         $(RLGD)(contrib_free.o)
+         $(RLGD)(anal.o) $(RLGD)(fkeep.o) $(RLGD)(random.o) \
+         $(RLGD)(rutherford_boeing.o) $(RLGD)(ssids.o) $(RLGD)(contrib_free.o)
 
-SUCC = precision version) compiled successfully
-SUCC_CUTEST = precision version) for CUTEst compiled successfully
+SSIDSCS = $(SSIDSS) $(CLGS)(ssids_ciface.o)
+SSIDSCD = $(SSIDSD) $(CLGD)(ssids_ciface.o)
 
 #  main compilations and runs
 
@@ -152,6 +161,12 @@ ssids_single: $(SSIDSS)
 	$(RANLIB) $(RLGS)
 ssids_double: $(SSIDSD)
 	$(RANLIB) $(RLGD)
+
+ssids_ciface: ssids_ciface_$(PRECIS)
+	@printf ' %-21s\n' "SSIDS C routines ($(PRECIS) $(SUCC)"
+ssids_ciface_silent: ssids_ciface_$(PRECIS)
+ssids_ciface_single: $(SSIDSCS)
+ssids_ciface_double: $(SSIDSCD)
 
 # run spec-sheet example tests
 
@@ -1071,7 +1086,19 @@ $(RLG)(ssids.o): ../ssids/ssids.f90
                     $(FORTRAN) -o ssids.o $(FFLAGSNOMP) ssids.f90 )
 	cd $(OBJ) ; $(RARR) ssids.o ; $(RM) ssids.f90 ssids.o
 	$(RMARFILE) sls.o
-#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+ssids_ciface.o: $(CLG)(ssids_ciface.o)
+
+$(CLG)(ssids_ciface.o): ../ssids/C/ssids_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssids_ciface"
+	$(CP) ../ssids/C/ssids_ciface.f90 $(OBJ)/ssids_ciface.f90
+	cd $(OBJ) ; $(FORTRAN) -o ssids_ciface.o $(FFLAGSOMP) \
+                      ssids_ciface.f90
+	cd $(OBJ) ; $(CARR) ssids_ciface.o ; \
+                    $(RM) ssids_ciface.f90 ssids_ciface.o
+	$(CRMARFILE) sls_ciface.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

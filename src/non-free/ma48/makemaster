@@ -1,64 +1,34 @@
 #  Main body of the installation makefile for the MA48 packages
 
-#  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 11 IV 2006
+#  Nick Gould, for GALAHAD production
+#  This version: 2022-01-04
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD HSL makefile definitions
 
-#  compiler flags
+include $(GALAHAD)/src/makedefs/hsl_definitions
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+#  compilation order
 
-#  names of random libraries
-
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
-
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
-
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
-
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
-
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
-
-#  Archive manipulation strings
-
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-HRMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
+MA48S = zd11 $(HLGS)(mc71s.o) $(HLGS)(hsl_zb01s.o) \
+        $(HLGS)(hsl_zb01i.o) $(HLGS)(hsl_ma48s.o)
+MA48D = zd11 $(HLGD)(mc71d.o) $(HLGD)(hsl_zb01d.o) \
+        $(HLGD)(hsl_zb01i.o) $(HLGD)(hsl_ma48d.o)
+MA48CS = $(MA48S) $(HCLGS)(hsl_ma48s_ciface.o)
+MA48CD = $(MA48D) $(HCLGD)(hsl_ma48d_ciface.o)
 
 #  compilation agenda
+
+ma48v3: ma48v3_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA48 routines ($(PRECIS) $(SUCC)"
+ma48v3_silent: ma48v3_$(PRECIS)
+ma48v3_single: $(MA48S)
+ma48v3_double: $(MA48D)
+
+ma48_ciface: ma48_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA48 C routines ($(PRECIS) $(SUCC)"
+ma48_ciface_silent: ma48_ciface_$(PRECIS)
+ma48_ciface_single: $(MA48CS)
+ma48_ciface_double: $(MA48CD)
 
 ma48s = blas $(HLGS)(mc71s.o) \
         $(HLGS)(mc13s.o) $(HLGS)(mc21s.o)
@@ -70,33 +40,14 @@ ma48d = blas $(HLGD)(mc71d.o) \
 ma51s = $(ma48s) $(HLGS)(ma51s.o)
 ma51d = $(ma48d) $(HLGD)(ma51d.o)
 
-hsl_ma48s = zd11 $(HLGS)(mc71s.o) \
-            $(HLGS)(hsl_zb01s.o) $(HLGS)(hsl_zb01i.o) \
-            $(HLGS)(hsl_ma48s.o)
-hsl_ma48d = zd11 $(HLGD)(mc71d.o) \
-            $(HLGD)(hsl_zb01d.o) $(HLGD)(hsl_zb01i.o) \
-            $(HLGD)(hsl_ma48d.o)
-
 RMA48S = $(OBJS)/ma48ss.o -L$(OBJS) $(LAPACK) $(BLAS)
 RMA48D = $(OBJD)/ma48ds.o -L$(OBJD) $(LAPACK) $(BLAS)
 
 RHSLMA48S = $(OBJS)/ma48ss.o -L$(OBJS) $(LAPACK) $(BLAS)
 RHSLMA48D = $(OBJD)/ma48ds.o -L$(OBJD) $(LAPACK) $(BLAS)
 
-SUCC = precision version) compiled successfully
-
-#  main compilations and runs
-
 all: ma48
 test: test_ma
-
-#  all qp routines
-
-ma48v3: ma48v3_$(PRECIS)
-	@printf ' %-21s\n' "HSL MA48 routines ($(PRECIS) $(SUCC)"
-ma48v3_silent: ma48v3_$(PRECIS)
-ma48v3_single: $(hsl_ma48s)
-ma48v3_double: $(hsl_ma48d)
 
 ma48ss: $(ma48s) $(OBJS)/ma48ss.o
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o ./run_ma48 $(RMA48S)
@@ -274,28 +225,6 @@ $(HLG)(ma48d.o): $(MA48)/ma48d.f
 
 #  hsl_ma48 and its dependencies
 
-hsl_ma48s.o: $(HLG)(hsl_ma48s.o)
-
-$(HLG)(hsl_ma48s.o): $(MA48)/hsl_ma48s.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48s"
-	$(CP) $(MA48)/hsl_ma48s.f90 $(OBJ)/hsl_ma48s.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma48s.f90
-	cd $(OBJ); $(HARR) hsl_ma48s.o ; $(RM) hsl_ma48s.f90 hsl_ma48s.o
-	$(RMARFILE) sbls.o
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
-hsl_ma48d.o: $(HLG)(hsl_ma48d.o)
-
-$(HLG)(hsl_ma48d.o): $(MA48)/hsl_ma48d.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48d "
-	$(CP) $(MA48)/hsl_ma48d.f90 $(OBJ)/hsl_ma48d.f90
-	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma48d.f90
-	cd $(OBJ); $(HARR) hsl_ma48d.o ; $(RM) hsl_ma48d.f90 hsl_ma48d.o
-	$(RMARFILE) sbls.o
-	$(RANLIB) $(HLG)
-	@printf '[ OK ]\n'
-
 hsl_zb01s.o: $(HLG)(hsl_zb01s.o)
 
 $(HLG)(hsl_zb01s.o): $(MA48)/hsl_zb01s.f90
@@ -328,6 +257,56 @@ $(HLG)(hsl_zb01i.o): $(MA48)/hsl_zb01i.f90
 	$(HRMARFILE) hsl_ma48s.o
 	$(HRMARFILE) hsl_ma48d.o
 	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+hsl_ma48s.o: $(HLG)(hsl_ma48s.o)
+
+$(HLG)(hsl_ma48s.o): $(MA48)/hsl_ma48s.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48s"
+	$(CP) $(MA48)/hsl_ma48s.f90 $(OBJ)/hsl_ma48s.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma48s.f90
+	cd $(OBJ); $(HARR) hsl_ma48s.o ; $(RM) hsl_ma48s.f90 hsl_ma48s.o
+	$(RMARFILE) sbls.o
+	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+hsl_ma48d.o: $(HLG)(hsl_ma48d.o)
+
+$(HLG)(hsl_ma48d.o): $(MA48)/hsl_ma48d.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48d "
+	$(CP) $(MA48)/hsl_ma48d.f90 $(OBJ)/hsl_ma48d.f90
+	cd $(OBJ); $(FORTRAN) $(FFLAGS) hsl_ma48d.f90
+	cd $(OBJ); $(HARR) hsl_ma48d.o ; $(RM) hsl_ma48d.f90 hsl_ma48d.o
+	$(RMARFILE) sbls.o
+	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+hsl_ma48s_ciface.o: $(HCLG)(hsl_ma48s_ciface.o)
+
+$(HCLG)(hsl_ma48s_ciface.o): $(MA48)/hsl_ma48s_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48s_ciface"
+	$(CP) $(MA48)/C/hsl_ma48s_ciface.f90 $(OBJ)/hsl_ma48s_ciface.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma48s_ciface.o $(FFLAGS) \
+                      hsl_ma48s_ciface.f90
+	cd $(OBJ) ; $(HCARR) hsl_ma48s_ciface.o ; \
+                    $(RM) hsl_ma48s_ciface.f90 hsl_ma48s_ciface.o
+	$(CRMARFILE) sls_ciface.o
+	$(MVMODS)
+	$(RANLIB) $(HCLG)
+	@printf '[ OK ]\n'
+
+hsl_ma48d_ciface.o: $(HCLG)(hsl_ma48d_ciface.o)
+
+$(HCLG)(hsl_ma48d_ciface.o): $(MA48)/C/hsl_ma48d_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma48d_ciface"
+	$(CP) $(MA48)/C/hsl_ma48d_ciface.f90 $(OBJ)/hsl_ma48d_ciface.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_ma48d_ciface.o $(FFLAGS) \
+                      hsl_ma48d_ciface.f90
+	cd $(OBJ) ; $(HCARR) hsl_ma48d_ciface.o ; \
+                    $(RM) hsl_ma48d_ciface.f90 hsl_ma48d_ciface.o
+	$(CRMARFILE) sls_ciface.o
+	$(MVMODS)
+	$(RANLIB) $(HCLG)
 	@printf '[ OK ]\n'
 
 #  ma51

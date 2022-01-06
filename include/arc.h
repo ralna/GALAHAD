@@ -221,9 +221,9 @@ extern "C" {
 #include "galahad_precision.h"
 
 // required packages
-//#include "rqs.h"
+#include "rqs.h"
+#include "glrt.h"
 //#include "dps.h"
-//#include "glrt.h"
 //#include "psls.h"
 //#include "lms.h"
 //#include "sha.h"
