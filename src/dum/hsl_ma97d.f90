@@ -112,6 +112,7 @@ module hsl_MA97_double
 
   type MA97_akeep ! proper version has many componets!
     integer :: n
+    integer :: ne
   end type MA97_akeep
 
   type MA97_fkeep ! proper version has many componets!
@@ -167,6 +168,7 @@ contains
 
   subroutine MA97_factor_double(matrix_type,val,akeep,fkeep,control,info,      &
                                 scale,ptr,row)
+   integer, intent(in) :: matrix_type 
    real(wp), intent(in) :: val(*)
    type (MA97_akeep), intent (in) :: akeep
    type (MA97_fkeep), intent (out) :: fkeep
@@ -191,6 +193,7 @@ contains
 
   subroutine MA97_factor_solve_double(matrix_type,val,nrhs,x,lx,akeep,fkeep,   &
                                       control,info,scale,ptr,row)
+   integer, intent(in) :: matrix_type 
    real(wp), intent(in) :: val(*)
    integer(short) :: lx, nrhs
    real(wp), intent(inout) :: x(lx,nrhs)
@@ -217,7 +220,7 @@ contains
 
   subroutine MA97_factor_solve_one_double(matrix_type,val,x1,akeep,fkeep,      &
                                           control,info,scale,ptr,row)
-   integer(short), intent(in) :: matrix_type 
+   integer, intent(in) :: matrix_type 
    real(wp), intent(in) :: val(*)
    real(wp), intent(inout) :: x1(:) 
    type (MA97_akeep), intent (in) :: akeep
