@@ -21,6 +21,9 @@ module hsl_ma57_single
       integer :: pivoting ! Set to pivoting option used in factorize
       integer :: scaling  ! Set to scaling option used in factorize
       integer :: static   ! Set to indicate if static pivots chosen
+      integer :: rank     ! Set to indicate the rank of the factorization
+      integer :: nirbdu   ! Set to number of integers in factors
+      integer :: nebdu    ! Set to number of entries in factors
    end type ma57_factors
 
    type ma57_control

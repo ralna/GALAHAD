@@ -17,7 +17,15 @@ PACKAGE = ALL_RQ
 DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
                make_lmt make_qpt make_rand make_gltr make_glrt \
                make_lstr make_lsrt make_l2rt make_ir make_mop \
-               make_ir make_trs make_rqs make_dps 
+               make_trs make_rqs make_dps 
+
+#  auxiliary packages that the C interface to the current package depends 
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = make_ciface_common make_ciface_sils make_ciface_uls_deps \
+                make_ciface_sls_deps make_ciface_sls make_ciface_gltr \
+                make_ciface_glrt make_ciface_lstr make_ciface_lsrt \
+                make_ciface_l2rt make_ciface_trs make_ciface_rqs
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -61,6 +69,7 @@ include $(GALAHAD)/src/makedefs/definitions
 #  main compilations and runs
 
 all: $(package)
+all_ciface: $(package) $(package)_ciface
 all_cutest: $(package)_cutest
 tests: all $(TESTS)
 test_full: all $(TEST_FULL)
@@ -71,6 +80,10 @@ $(package)_silent: $(package)_silent_$(PRECIS)
 $(package)_silent_single: $(DEPENDENCIES)
 $(package)_silent_double: $(DEPENDENCIES)
 
+$(package)_ciface_silent: $(package)_ciface_silent_$(PRECIS)
+$(package)_ciface_silent_single: $(CDEPENDENCIES)
+$(package)_ciface_silent_double: $(CDEPENDENCIES)
+
 #  packages
 
 $(package): $(package)_$(PRECIS)
@@ -79,6 +92,13 @@ $(package)_single: $(DEPENDENCIES)
 	$(RANLIB) $(LGS)
 $(package)_double: $(DEPENDENCIES)
 	$(RANLIB) $(LGD)
+
+$(package)_ciface: $(package)_ciface_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_C)"
+$(package)_ciface_single: $(CDEPENDENCIES)
+	$(RANLIB) $(CLGS)
+$(package)_ciface_double: $(CDEPENDENCIES)
+	$(RANLIB) $(CLGD)
 
 #  silent CUTEst packages
 
