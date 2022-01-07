@@ -43,6 +43,11 @@ module hsl_MA97_double
       module procedure MA97_solve_fredholm_double
    end interface ma97_solve_fredholm
 
+   interface ma97_free
+      module procedure free_akeep_double
+      module procedure free_fkeep_double
+   end interface ma97_free
+
   interface MA97_enquire_posdef
     module procedure MA97_enquire_posdef_double
   end interface
@@ -54,6 +59,11 @@ module hsl_MA97_double
   interface MA97_alter
     module procedure MA97_alter_double
   end interface
+
+  interface ma97_lmultiply
+     module procedure ma97_lmultiply_one_double
+     module procedure ma97_lmultiply_mult_double
+  end interface ma97_lmultiply
 
   interface ma97_sparse_fwd_solve
       module procedure ma97_sparse_fwd_solve_double
@@ -81,6 +91,9 @@ module hsl_MA97_double
     integer(short) :: print_level = 0 ! Controls diagnostic printing
     integer :: scaling = 0 ! controls use of scaling. 
     real(wp) :: small = tiny(one) ! Minimum pivot size
+    logical :: solve_blas3 = .false. ! Use sgemm rather than sgemv in solve
+    integer(long) :: solve_min = 100000 ! Minimum value of info%num_factor
+    logical :: solve_mf = .false. ! Do we use s/n (false) or m/f (true) solve?
     real(wp) :: u = 0.01 ! Initial relative pivot threshold
     integer(short) :: unit_diagnostics = 6 ! unit for diagnostic printing.
     integer(short) :: unit_error = 6 ! unit number for error messages
@@ -311,6 +324,53 @@ contains
    info%flag = GALAHAD_unavailable_option
   end subroutine MA97_solve_fredholm_double
 
+  subroutine ma97_lmultiply_one_double(trans, x1, y1, akeep, fkeep,            &
+                                       control, info)
+     logical, intent(in) :: trans
+     real(wp), dimension(:), intent(in) :: x1
+     real(wp), dimension(:), intent(out) :: y1
+     type(ma97_akeep), intent(in) :: akeep
+     type(ma97_fkeep), intent(in) :: fkeep
+     type(ma97_control), intent(in) :: control
+     type(ma97_info), intent(out) :: info
+
+   IF ( control%unit_error >= 0 .AND. control%print_level > 0 )                &
+     WRITE( control%unit_error,                                                &
+         "( ' We regret that the solution options that you have ', /,          &
+  &         ' chosen are not all freely available with GALAHAD.', /,           &
+  &         ' If you have HSL (formerly the Harwell Subroutine', /,            &
+  &         ' Library), this option may be enabled by replacing the ', /,      &
+  &         ' dummy subroutine MA97_lmultiply_mult with its HSL namesake',     &
+  &          /, ' and dependencies. See ', /,                                  &
+  &         '   $GALAHAD/src/makedefs/packages for details.' )" )
+   info%flag = GALAHAD_unavailable_option
+  end subroutine ma97_lmultiply_one_double
+
+  subroutine ma97_lmultiply_mult_double(trans, k, x, ldx, y, ldy,              &
+                                        akeep, fkeep, control, info)
+     logical, intent(in) :: trans
+     integer, intent(in) :: k
+     integer, intent(in) :: ldx
+     real(wp), dimension(ldx,k), intent(in) :: x
+     integer, intent(in) :: ldy
+     real(wp), dimension(ldy,k), intent(out) :: y
+     type(ma97_akeep), intent(in) :: akeep
+     type(ma97_fkeep), intent(in) :: fkeep
+     type(ma97_control), intent(in) :: control
+     type(ma97_info), intent(out) :: info
+
+   IF ( control%unit_error >= 0 .AND. control%print_level > 0 )                &
+     WRITE( control%unit_error,                                                &
+         "( ' We regret that the solution options that you have ', /,          &
+  &         ' chosen are not all freely available with GALAHAD.', /,           &
+  &         ' If you have HSL (formerly the Harwell Subroutine', /,            &
+  &         ' Library), this option may be enabled by replacing the ', /,      &
+  &         ' dummy subroutine MA97_lmultiply_one with its HSL namesake',      &
+  &          /, ' and dependencies. See ', /,                                  &
+  &         '   $GALAHAD/src/makedefs/packages for details.' )" )
+   info%flag = GALAHAD_unavailable_option
+  end subroutine ma97_lmultiply_mult_double
+
   subroutine MA97_enquire_posdef_double(akeep,fkeep,control,info,d)
     real(wp), dimension( : ), intent(out) :: d
     type (MA97_akeep), intent (in) :: akeep
@@ -398,6 +458,14 @@ contains
    info%flag = GALAHAD_unavailable_option
 
   end subroutine ma97_sparse_fwd_solve_double
+
+  subroutine free_akeep_double(akeep)
+     type(ma97_akeep), intent(inout) :: akeep
+  end subroutine free_akeep_double
+
+  subroutine free_fkeep_double(fkeep)
+     type(ma97_fkeep), intent(inout) :: fkeep
+  end subroutine free_fkeep_double
 
   subroutine MA97_finalise_double(akeep,fkeep)
     type (MA97_akeep), intent (inout) :: akeep
