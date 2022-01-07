@@ -125,7 +125,7 @@ test_qplib: test_$(package)_qplib
 #  process package
 
 $(package): $(package)_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_C)"
 $(package)_single: $($(PACKAGE)OBJECTSS)
 	$(RANLIB) $(LGS)
 $(package)_double: $($(PACKAGE)OBJECTSD)
@@ -140,11 +140,20 @@ $(package)_silent_double: $($(PACKAGE)OBJECTSD)
 #  process C interface to package
 
 $(package)c: $(package)c_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_C)"
 $(package)c_single: $($(PACKAGE)OBJECTSCS)
 	$(RANLIB) $(LGS)
 	$(RANLIB) $(CLGS)
 $(package)c_double: $($(PACKAGE)OBJECTSCD)
+	$(RANLIB) $(LGD)
+	$(RANLIB) $(CLGD)
+
+$(package)_ciface: $(package)_ciface_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_C)"
+$(package)_ciface_single: $($(PACKAGE)OBJECTSCS)
+	$(RANLIB) $(LGS)
+	$(RANLIB) $(CLGS)
+$(package)_ciface_double: $($(PACKAGE)OBJECTSCD)
 	$(RANLIB) $(LGD)
 	$(RANLIB) $(CLGD)
 
@@ -153,6 +162,10 @@ $(package)c_double: $($(PACKAGE)OBJECTSCD)
 $(package)c_silent: $(package)c_silent_$(PRECIS)
 $(package)c_silent_single: $($(PACKAGE)OBJECTSCS)
 $(package)c_silent_double: $($(PACKAGE)OBJECTSCD)
+
+$(package)_ciface_silent: $(package)_ciface_silent_$(PRECIS)
+$(package)_ciface_silent_single: $($(PACKAGE)OBJECTSCS)
+$(package)_ciface_silent_double: $($(PACKAGE)OBJECTSCD)
 
 # process package for CUTEst
 

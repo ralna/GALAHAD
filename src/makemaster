@@ -79,6 +79,40 @@ all_ampl_double:
             CUSTOM_AMPL_FLAGS="-DQP -DCQP -DQPA -DQPB \
                                -DQPC -DPRESOLVE -DFILTRANE -DLANCELOT" )
 
+#  -------------------------------
+#  everything with CUTEst not AMPL
+#  -------------------------------
+
+all_ciface: all_ciface_$(PRECIS)
+
+all_ciface_single:
+	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          all_ciface all_qplib PRECIS=single PWD=$(PWD)/all_qp )
+	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         all_ciface PRECIS=single PWD=$(PWD)/all_rq )
+	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         tru_ciface PRECIS=single PWD=$(PWD)/tru )
+	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         arc_ciface PRECIS=single PWD=$(PWD)/arc )
+	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         trb_ciface PRECIS=single PWD=$(PWD)/trb )
+	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         nls_ciface PRECIS=single PWD=$(PWD)/nls )
+
+all_ciface_double:
+	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         all_ciface all_qplib PRECIS=double PWD=$(PWD)/all_qp )
+	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                        all_ciface PRECIS=double PWD=$(PWD)/all_rq )
+	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          tru_ciface PRECIS=double PWD=$(PWD)/tru )
+	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          arc_ciface PRECIS=double PWD=$(PWD)/arc )
+	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          trb_ciface PRECIS=double PWD=$(PWD)/trb )
+	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          nls_ciface PRECIS=double PWD=$(PWD)/nls )
+
 #  ---------------------------
 #  everything for distribution
 #  ---------------------------

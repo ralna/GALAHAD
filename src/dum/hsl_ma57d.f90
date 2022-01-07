@@ -1,4 +1,4 @@
-! THIS VERSION: 21/06/2009 AT 15:20:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-07 AT 12:00 GMT.
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 5 7   M O D U L E  -*-*-*-
 

@@ -1,4 +1,4 @@
-! THIS VERSION: 21/06/2009 AT 15:20:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-07 AT 12:00 GMT.
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 7 7   M O D U L E  -*-*-*-
 
@@ -79,6 +79,10 @@ module hsl_MA77_single
       module procedure MA77_restart_single
   end interface
 
+  interface MA77_lmultiply
+      module procedure MA77_lmultiply_single
+  end interface
+
   interface MA77_finalise
       module procedure MA77_finalise_single
   end interface
@@ -145,7 +149,7 @@ module hsl_MA77_single
     integer(short) :: tree_nodes = 0
     integer(short) :: unit_restart = -1
     integer(short) :: unused = 0
-    real(wp) :: usmall = zero
+    real(wp) :: u = zero
   end type MA77_info
 
   type MA77_node
@@ -243,46 +247,7 @@ contains
     type (MA77_info) :: info
     integer(short), optional, intent (in) :: nelt
     character (len=*), optional, intent (in) :: path(:)
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_open with its HSL namesake ', /,                     &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-!  info%flag = GALAHAD_unavailable_option
-   info%flag = - 100 + GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
+    call MA77_unavailable( info, control, 'ma77_open' )
   end subroutine MA77_open_single
 
   subroutine MA77_input_vars_single(index,nvar,list,keep,control,info)
@@ -295,47 +260,7 @@ contains
     type (MA77_keep), intent (inout) :: keep   
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info   
-
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_input_vars HSL namesake ', /,                        &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-
+    call MA77_unavailable( info, control, 'ma77_input_vars' )
   end subroutine MA77_input_vars_single
 
   subroutine MA77_analyse_single(order,keep,control,info)
@@ -344,47 +269,7 @@ contains
     integer(short), intent (inout), dimension(keep%n) :: order
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_analyse HSL namesake ', /,                           &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-
+    call MA77_unavailable( info, control, 'ma77_analyse' )
   end subroutine MA77_analyse_single
 
 !****************************************************************************
@@ -397,47 +282,7 @@ contains
     type (MA77_keep), intent (inout) :: keep
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
-
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_input_reals HSL namesake ', /,                       &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-
+    call MA77_unavailable( info, control, 'ma77_input_reals' )
   end subroutine MA77_input_reals_single
 
   subroutine MA77_factor_single(pos_def,keep,control,info,scale)
@@ -447,47 +292,7 @@ contains
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
     real(wp), intent(in), optional :: scale(:)
-
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_factor HSL namesake ', /,                            &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-
+    call MA77_unavailable( info, control, 'ma77_factor' )
   end subroutine MA77_factor_single
 
   subroutine MA77_factor_solve_single(pos_def,keep,control,info,nrhs, &
@@ -502,46 +307,7 @@ contains
     integer(short) :: lx
     integer(short) :: nrhs
     real (wp), intent(inout) :: x(lx,nrhs)
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_factor_solve HSL namesake ', /,                      &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-
+    call MA77_unavailable( info, control, 'ma77_factor_solve' )
   end subroutine MA77_factor_solve_single
 
    subroutine MA77_resid_single(nrhs,lx,x,lresid,resid,keep,control,info,anorm)
@@ -555,46 +321,7 @@ contains
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
     real(wp),optional :: anorm
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_resid HSL namesake ', /,                             &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-
+    call MA77_unavailable( info, control, 'ma77_resid' )
   end subroutine MA77_resid_single
 
   subroutine MA77_solve_single(nrhs,lx,x,keep,control,info,scale,job)
@@ -607,47 +334,7 @@ contains
     type (MA77_info), intent (inout) :: info
     real(wp), intent(in), optional :: scale(:)
     integer(short), optional, intent (in) :: job 
-
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_solve HSL namesake ', /,                             &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-
+    call MA77_unavailable( info, control, 'ma77_solve' )
   end subroutine MA77_solve_single
 
   subroutine MA77_solve_fredholm_single( nrhs, flag_out, lx, x,                &
@@ -661,48 +348,21 @@ contains
     type (MA77_control), intent (in) :: control
     type (MA77_info), intent (inout) :: info
     real(wp), intent(in), optional :: scale(:)
-
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_solve_fredholm HSL namesake ', /,                    &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-
+    call MA77_unavailable( info, control, 'ma77_solve_fredholm' )
   end subroutine MA77_solve_fredholm_single
+
+  subroutine MA77_lmultiply_single(trans,k,lx,x,ly,y,keep,control,info,scale)
+    logical, intent (in) :: trans
+    integer(short), intent (in) :: k
+    integer(short), intent (in) :: lx, ly
+    real (wp), intent (inout) :: x(lx,k) ! On entry, x must
+    real (wp), intent (out) :: y(ly,k) ! On exit,
+    type (MA77_keep), intent (inout) :: keep
+    type (MA77_control), intent (in) :: control
+    type (MA77_info), intent (inout) :: info
+    real(wp), intent(in), optional :: scale(:)
+    call MA77_unavailable( info, control, 'ma77_lmultiply' )
+  end subroutine MA77_lmultiply_single
 
   subroutine MA77_enquire_posdef_single(d,keep,control,info)
     USE GALAHAD_SYMBOLS
@@ -710,143 +370,26 @@ contains
     type (MA77_control), intent (inout) :: control
     type (MA77_info), intent (inout) :: info
     real(wp) :: d(:)
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_enquire HSL namesake ', /,                           &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-
+    call MA77_unavailable( info, control, 'ma77_enquire_posdef' )
   end subroutine ma77_enquire_posdef_single
 
   subroutine MA77_enquire_indef_single(piv_order,d,keep,control,info)
     USE GALAHAD_SYMBOLS
-  real(wp) :: d(:,:)
-  type (MA77_keep), intent (inout) :: keep
-  type (MA77_control), intent (inout) :: control
-  type (MA77_info), intent (inout) :: info
-  integer(short) :: piv_order(:)
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_enquire_indef HSL namesake ', /,                     &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-
+    real(wp) :: d(:,:)
+    type (MA77_keep), intent (inout) :: keep
+    type (MA77_control), intent (inout) :: control
+    type (MA77_info), intent (inout) :: info
+    integer(short) :: piv_order(:)
+    call MA77_unavailable( info, control, 'ma77_enquire_indef' )
   end subroutine ma77_enquire_indef_single
 
   subroutine MA77_alter_single(d,keep,control,info)
     USE GALAHAD_SYMBOLS
-  type (MA77_keep), intent (inout) :: keep
-  type (MA77_control), intent (inout) :: control
-  type (MA77_info), intent (inout) :: info
-  real(wp), intent (inout) :: d(:,:)
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_alter HSL namesake ', /,                             &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-
+    type (MA77_keep), intent (inout) :: keep
+    type (MA77_control), intent (inout) :: control
+    type (MA77_info), intent (inout) :: info
+    real(wp), intent (inout) :: d(:,:)
+    call MA77_unavailable( info, control, 'ma77_alter' )
   end subroutine ma77_alter_single
 
   subroutine MA77_scale_single(scale,keep,control,info,anorm)
@@ -856,46 +399,7 @@ contains
     type (MA77_info), intent (inout) :: info
     real(wp),optional :: anorm
     real (wp) :: scale(:)
-        IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_scale HSL namesake ', /,                             &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-
+    call MA77_unavailable( info, control, 'ma77_scale' )
   end subroutine MA77_scale_single
 
   subroutine MA77_print_iflag(keep,nout,iflag,ie,st,ios)
@@ -991,45 +495,7 @@ contains
     type (MA77_control), intent (in) :: control
     type (MA77_info) :: info
     character (len=*), optional, intent (in) :: restart_file
-         IF ( control%unit_error >= 0 ) WRITE( control%unit_error,             &
-     "( ' We regret that the solution options that you have ', /,              &
-  &     ' chosen are not all freely available with GALAHAD.', /,               &
-  &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
-  &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_finalise HSL namesake ', /,                          &
-  &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
+    call MA77_unavailable( info, control, 'ma77_finalize' )
   end subroutine MA77_finalise_single
 
   subroutine MA77_restart_single(restart_file,filename,keep,control,info,path)
@@ -1040,45 +506,53 @@ contains
     character (len=*), intent (in) :: restart_file
     character (len=*), optional, intent (in) :: path(:)
     character (len=*), intent (in) :: filename(4)
+    call MA77_unavailable( info, control, 'ma77_restart' )
+  end subroutine MA77_restart_single
+
+  subroutine MA77_unavailable( info, control, name )
+    USE GALAHAD_SYMBOLS
+    type (MA77_info), intent (inout) :: info
+    type (MA77_control), intent (in) :: control
+    character ( len = * ), intent( in ) :: name
         IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
      "( ' We regret that the solution options that you have ', /,              &
   &     ' chosen are not all freely available with GALAHAD.', /,               &
   &     ' If you have HSL (formerly the Harwell Subroutine', /,                &
   &     ' Library), this option may be enabled by replacing the dummy ', /,    &
-  &     ' subroutine MA77_restart HSL namesake ', /,                           &
+  &     ' subroutine ', A, ' HSL namesake ', /,                                &
   &     ' and dependencies. See ', /,                                          &
-  &     '   $GALAHAD/src/makedefs/packages for details.' )" )
-   info%flag = GALAHAD_unavailable_option
-   info%detlog = 0.0
-   info%detsign = 1 
-   info%iostat = 0
-   info%matrix_dup = 0
-   info%matrix_rank = 0
-   info%matrix_outrange = 0
-   info%maxdepth = 0
-   info%maxfront = 0
-   info%minstore = 0_long
-   info%ndelay = 0
-   info%nfactor = 0
-   info%nflops = 0
-   info%niter = 0
-   info%nsup = 0
-   info%num_neg = 0
-   info%num_nothresh = 0
-   info%num_perturbed = 0
-   info%ntwo = 0
-   info%stat = 0
-   info%index(1:4) = -1
-   info%nio_read(1:2) = 0
-   info%nio_write(1:2) = 0
-   info%nwd_read(1:2) = 0
-   info%nwd_write(1:2) = 0
-   info%num_file(1:4) = 0
-   info%storage(1:4) = 0_long
-   info%tree_nodes = 0
-   info%unit_restart = -1
-   info%unused = 0
-   info%usmall = zero
-  end subroutine MA77_restart_single
+  &     '   $GALAHAD/src/makedefs/packages for details.' )" ) name
+    info%flag = GALAHAD_unavailable_option
+    info%detlog = 0.0
+    info%detsign = 1 
+    info%iostat = 0
+    info%matrix_dup = 0
+    info%matrix_rank = 0
+    info%matrix_outrange = 0
+    info%maxdepth = 0
+    info%maxfront = 0
+    info%minstore = 0_long
+    info%ndelay = 0
+    info%nfactor = 0
+    info%nflops = 0
+    info%niter = 0
+    info%nsup = 0
+    info%num_neg = 0
+    info%num_nothresh = 0
+    info%num_perturbed = 0
+    info%ntwo = 0
+    info%stat = 0
+    info%index(1:4) = -1
+    info%nio_read(1:2) = 0
+    info%nio_write(1:2) = 0
+    info%nwd_read(1:2) = 0
+    info%nwd_write(1:2) = 0
+    info%num_file(1:4) = 0
+    info%storage(1:4) = 0_long
+    info%tree_nodes = 0
+    info%unit_restart = -1
+    info%unused = 0
+    info%u = zero
+  end subroutine MA77_unavailable
 
 end module hsl_MA77_single
