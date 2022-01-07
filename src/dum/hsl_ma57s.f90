@@ -81,22 +81,23 @@ module hsl_ma57_single
    end type ma57_control
 
    type ma57_ainfo
-      real(wp) :: opsa = -1.0_wp  ! Anticipated # operations in assembly
+      real(wp) :: opsa = -1.0_wp ! Anticipated # operations in assembly
       real(wp) :: opse = -1.0_wp ! Anticipated # operations in elimination
-      integer :: flag = 0    ! Flags success or failure case
-      integer :: more = 0    ! More information on failure
-      integer :: nsteps = -1 ! Number of elimination steps
-      integer :: nrltot = -1 ! Size for a without compression
-      integer :: nirtot = -1 ! Size for iw without compression
-      integer :: nrlnec = -1 ! Size for a with compression
-      integer :: nirnec = -1 ! Size for iw with compression
-      integer :: nrladu = -1 ! Number of reals to hold factors
-      integer :: niradu = -1 ! Number of integers to hold factors
-      integer :: ncmpa = -1  ! Number of compresses
-      integer :: oor = 0     ! Number of indices out-of-range
-      integer :: dup = 0     ! Number of duplicates
-      integer :: maxfrt = -1 ! Forecast maximum front size
-      integer :: stat = 0    ! STAT value after allocate failure
+      integer :: flag = 0      ! Flags success or failure case
+      integer :: more = 0      ! More information on failure
+      integer :: nsteps = -1   ! Number of elimination steps
+      integer :: nrltot = -1   ! Size for a without compression
+      integer :: nirtot = -1   ! Size for iw without compression
+      integer :: nrlnec = -1   ! Size for a with compression
+      integer :: nirnec = -1   ! Size for iw with compression
+      integer :: nrladu = -1   ! Number of reals to hold factors
+      integer :: niradu = -1   ! Number of integers to hold factors
+      integer :: ncmpa = -1    ! Number of compresses
+      integer :: ordering = -1 ! Indicates the ordering actually used
+      integer :: oor = 0       ! Number of indices out-of-range
+      integer :: dup = 0       ! Number of duplicates
+      integer :: maxfrt = -1   ! Forecast maximum front size
+      integer :: stat = 0      ! STAT value after allocate failure
    end type ma57_ainfo
 
    type ma57_finfo
@@ -146,6 +147,10 @@ module hsl_ma57_single
 ! ma57_part_solve1 for 1 rhs  and ma57_part_solve2 for more than 1.
       module procedure ma57_part_solve1,ma57_part_solve2
    end interface
+
+   interface ma57_get_n__
+      module procedure ma57_get_n_single
+   end interface ma57_get_n__
 
 contains
 
@@ -381,5 +386,50 @@ contains
      &     '   $GALAHAD/src/makedefs/packages for details.' )" )
       sinfo%flag = GALAHAD_unavailable_option
    end subroutine ma57_sparse_lsolve
+
+   subroutine ma57_lmultiply(factors,control,trans,x,y,sinfo)
+      type(ma57_factors), intent(in) :: factors
+      type(ma57_control), intent(in) :: control
+      character, intent(in) :: trans
+      real(wp), intent(in) :: x(:)
+      real(wp), intent(out) :: y(:)
+      type(ma57_sinfo), intent(out) :: sinfo
+      IF ( control%lp >= 0 ) WRITE( control%lp,                                &
+        "( ' We regret that the solution options that you have ', /,           &
+     &     ' chosen are not all freely available with GALAHAD.', /,            &
+     &     ' If you have HSL (formerly the Harwell Subroutine', /,             &
+     &     ' Library), this option may be enabled by replacing the dummy ', /, &
+     &     ' subroutine MA57_lmultiply with its HSL namesake ', /,             &
+     &     ' and dependencies. See ', /,                                       &
+     &     '   $GALAHAD/src/makedefs/packages for details.' )" )
+      sinfo%flag = GALAHAD_unavailable_option
+   end subroutine ma57_lmultiply
+
+   subroutine ma57_get_factors(factors,control,nzl,iptrl,lrows,lvals,          &
+                               nzd,iptrd,drows,dvals,perm,invperm,scale,sinfo)
+      type(ma57_factors), intent(in) :: factors
+      type(ma57_control), intent(in) :: control
+      real(wp), intent(out) :: lvals(factors%nebdu),dvals(2*factors%n),        &
+                               scale(factors%n)
+      integer, intent(out) :: nzl,nzd,iptrl(factors%n+1),lrows(factors%nebdu), &
+                              iptrd(factors%n+1),drows(2*factors%n),           &
+                              perm(factors%n),invperm(factors%n)
+      type(ma57_sinfo), intent(out) :: sinfo
+      IF ( control%lp >= 0 ) WRITE( control%lp,                                &
+        "( ' We regret that the solution options that you have ', /,           &
+     &     ' chosen are not all freely available with GALAHAD.', /,            &
+     &     ' If you have HSL (formerly the Harwell Subroutine', /,             &
+     &     ' Library), this option may be enabled by replacing the dummy ', /, &
+     &     ' subroutine MA57_get_factors with its HSL namesake ', /,           &
+     &     ' and dependencies. See ', /,                                       &
+     &     '   $GALAHAD/src/makedefs/packages for details.' )" )
+      sinfo%flag = GALAHAD_unavailable_option
+   end subroutine ma57_get_factors
+
+   pure integer function ma57_get_n_single(factors)
+      type(ma57_factors), intent(in) :: factors
+
+      ma57_get_n_single = factors%n
+   end function ma57_get_n_single
 
 end module hsl_ma57_single

@@ -179,11 +179,11 @@
     cinform%norm_final_residual = finform%norm_final_residual
 
     ! Strings
-!   l = LEN( finform%bad_alloc )
-!   DO i = 1, l
-!     cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
-!   END DO
-!   cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
+!    l = LEN( finform%bad_alloc )
+!    DO i = 1, l
+!       cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
+!    END DO
+!    cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_inform_out

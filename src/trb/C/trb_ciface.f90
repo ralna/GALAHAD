@@ -1061,7 +1061,7 @@
       status = feval_shprod( n, x, nnz_v, index_nz_v, v, nnz_u, index_nz_u,    &
                              u, cgot_h, cuserdata )
     ELSE ! handle C sparse matrix indexing
-      status = feval_shprod(n, x, nnz_v, index_nz_v - 1, v, nnz_u, index_nz_u, &
+      status = feval_shprod( n, x, nnz_v, index_nz_v - 1, v, nnz_u, index_nz_u,&
                              u, cgot_h, cuserdata )
       index_nz_u = index_nz_u + 1
     END IF

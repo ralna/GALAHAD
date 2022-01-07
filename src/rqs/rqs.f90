@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 31/01/2020 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 13:00 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ R Q S  double  M O D U L E  *-*-*-*-*-*-*-
 

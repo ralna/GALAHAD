@@ -45,7 +45,6 @@ int main(void) {
     int status;
     double x[n];
     char ma[3];
-//    char* ma = "  ";
 
     printf(" C sparse matrix indexing\n\n");
 

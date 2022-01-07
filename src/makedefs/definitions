@@ -146,6 +146,7 @@ LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
 #  strings
 
 SUCC = precision version) compiled successfully
+SUCC_C = precision version) for C compiled successfully
 SUCC_CUTEST = precision version) for CUTEst compiled successfully
 SUCC_QPLIB = precision version) for QPLIB compiled successfully
 
