@@ -87,7 +87,6 @@ module hsl_MA97_double
     integer(short) :: unit_warning = 6 ! unit number for warning messages
     integer(long) :: min_subtree_work = 1e5 ! Minimum amount of work
     integer :: min_ldsrk_work = 1e4 ! Minimum amount of work to aim
-    real(wp) :: consist_tol = epsilon(one) ! used on call to ma97_solve_fredholm
   end type MA97_control
 
   type MA97_info ! The scalar info of this type returns information to user.
