@@ -1,10 +1,13 @@
-! THIS VERSION: 21/09/2011 AT 15:15:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-07 AT 13:00 GMT.
 
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 9 7    M O D U L E  -*-*-*-*-*-
 
 module hsl_MA97_double
     
    USE GALAHAD_SYMBOLS
+
+   implicit none
+   public :: ma97_get_n__, ma97_get_nz__
 
 ! Parameters (all private)
   integer, parameter, private  :: short = kind(0)
@@ -60,6 +63,14 @@ module hsl_MA97_double
       module procedure MA97_finalise_double
   end interface
 
+  interface ma97_get_n__
+     module procedure ma97_get_n_double
+  end interface ma97_get_n__
+
+  interface ma97_get_nz__
+     module procedure ma97_get_nz_double
+  end interface ma97_get_nz__
+
   type MA97_control ! The scalar control of this type controls the action
     logical :: action = .true. ! pos_def = .false. only.
     real(wp) :: consist_tol = epsilon(one) 
@@ -76,6 +87,7 @@ module hsl_MA97_double
     integer(short) :: unit_warning = 6 ! unit number for warning messages
     integer(long) :: min_subtree_work = 1e5 ! Minimum amount of work
     integer :: min_ldsrk_work = 1e4 ! Minimum amount of work to aim
+    real(wp) :: consist_tol = epsilon(one) ! used on call to ma97_solve_fredholm
   end type MA97_control
 
   type MA97_info ! The scalar info of this type returns information to user.
@@ -389,5 +401,17 @@ contains
     type (MA97_akeep), intent (inout) :: akeep
     type (MA97_fkeep), intent (inout) :: fkeep
   end subroutine MA97_finalise_double
+
+pure integer function ma97_get_n_double(akeep)
+   type(ma97_akeep), intent(in) :: akeep
+
+   ma97_get_n_double = akeep%n
+end function ma97_get_n_double
+
+pure integer function ma97_get_nz_double(akeep)
+   type(ma97_akeep), intent(in) :: akeep
+
+   ma97_get_nz_double = akeep%ne
+end function ma97_get_nz_double
 
 end module hsl_MA97_double

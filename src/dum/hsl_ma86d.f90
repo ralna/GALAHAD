@@ -1,4 +1,4 @@
-! THIS VERSION: 21/01/2011 AT 10:40:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-07 AT 13:00 GMT.
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 8 6    M O D U L E  -*-*-*-
 
@@ -9,6 +9,7 @@ module hsl_MA86_double
    use hsl_zd11_double
 
    implicit none
+   public :: ma86_get_n__
 
    ! Parameters (all private)
    ! Data kinds
@@ -96,6 +97,10 @@ module hsl_MA86_double
    interface MA86_finalise 
       module procedure MA86_finalise_double
    end interface
+
+   interface MA86_get_n__
+      module procedure ma86_get_n_double
+   end interface MA86_get_n__
 
    type block_type
       integer :: bcol            ! block column that blk belongs to
@@ -605,5 +610,10 @@ subroutine ma86_print_flag(iflag, control, context, st)
   &     '   $GALAHAD/src/makedefs/packages for details.' )" )
 
 end subroutine MA86_print_flag
+
+pure integer function ma86_get_n_double(keep)
+   type(ma86_keep), intent(in) :: keep
+   ma86_get_n_double = keep%n
+end function ma86_get_n_double
 
 end module hsl_MA86_double

@@ -1,10 +1,13 @@
-! THIS VERSION: 21/09/2011 AT 15:15:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-07 AT 13:00 GMT.
 
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 9 7    M O D U L E  -*-*-*-*-*-
 
 module hsl_MA97_single
     
    USE GALAHAD_SYMBOLS
+
+   implicit none
+   public :: ma97_get_n__, ma97_get_nz__
 
 ! Parameters (all private)
   integer, parameter, private  :: short = kind(0)
@@ -59,6 +62,14 @@ module hsl_MA97_single
   interface MA97_finalise
       module procedure MA97_finalise_single
   end interface
+
+  interface ma97_get_n__
+     module procedure ma97_get_n_single
+  end interface ma97_get_n__
+
+  interface ma97_get_nz__
+     module procedure ma97_get_nz_single
+  end interface ma97_get_nz__
 
   type MA97_control ! The scalar control of this type controls the action
     logical :: action = .true. ! pos_def = .false. only.
@@ -389,5 +400,17 @@ contains
     type (MA97_akeep), intent (inout) :: akeep
     type (MA97_fkeep), intent (inout) :: fkeep
   end subroutine MA97_finalise_single
+
+pure integer function ma97_get_n_single(akeep)
+   type(ma97_akeep), intent(in) :: akeep
+
+   ma97_get_n_single = akeep%n
+end function ma97_get_n_single
+
+pure integer function ma97_get_nz_single(akeep)
+   type(ma97_akeep), intent(in) :: akeep
+
+   ma97_get_nz_single = akeep%ne
+end function ma97_get_nz_single
 
 end module hsl_MA97_single

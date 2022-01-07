@@ -1,4 +1,4 @@
-! THIS VERSION: 19/01/2011 AT 16:40:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-07 AT 13:00 GMT.
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 8 7    M O D U L E  -*-*-*-
 module hsl_MA87_double
@@ -8,6 +8,7 @@ module hsl_MA87_double
    use hsl_zd11_double
 
    implicit none
+   public :: ma87_get_n__
 
    ! Parameters (all private)
    ! Data kinds
@@ -93,6 +94,10 @@ module hsl_MA87_double
    interface MA87_finalise
       module procedure MA87_finalise_double
    end interface
+
+   interface ma87_get_n__
+      module procedure ma87_get_n_double
+   end interface ma87_get_n__
 
    type block_type
       ! Static info, which is set in ma87_analayse
@@ -602,5 +607,10 @@ subroutine ma87_print_flag(iflag, control, context, st)
   &     '   $GALAHAD/src/makedefs/packages for details.' )" )
 
 end subroutine MA87_print_flag
+
+pure integer function ma87_get_n_double(keep)
+   type(ma87_keep), intent(in) :: keep
+   ma87_get_n_double = keep%n
+end function ma87_get_n_double
 
 end module hsl_MA87_double
