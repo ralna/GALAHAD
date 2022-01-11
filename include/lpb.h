@@ -30,26 +30,26 @@
   \n
 \endmanonly
   subject to the general linear constraints
-  \f[c_{i}^{l}  \leq  a_{i}^{T}x  \leq c_{i}^{u}, \;\;\; i = 1, \ldots , m,\f]
+  \f[c_i^l  \leq  a_i^Tx  \leq c_i^u, \;\;\; i = 1, \ldots , m,\f]
 \manonly
   \n
    c_i^l \[<=] a_i^Tx \[<=] c_i^u, i = 1, ... , m,
   \n
 \endmanonly
   and the simple bound constraints
-  \f[x_{j}^{l}  \leq  x_{j}^{ } \leq x_{j}^{u}, \;\;\; j = 1, \ldots , n,\f]
+  \f[x_j^l  \leq  x_j \leq x_j^u, \;\;\; j = 1, \ldots , n,\f]
 \manonly
   \n
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
 \endmanonly
   where the vectors \f$g\f$, \f$w\f$, \f$x^{0}\f$,
-  \f$a_{i}\f$, \f$c^{l}\f$, \f$c^{u}\f$, \f$x^{l}\f$,
-  \f$x^{u}\f$ and the scalar \f$f\f$ are given.
-  Any of the constraint bounds \f$c_{i}^{l}\f$, \f$c_{i}^{u}\f$,
-  \f$x_{j}^{l}\f$ and \f$x_{j}^{u}\f$ may be infinite.
+  \f$a_i\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$,
+  \f$x^u\f$ and the scalar \f$f\f$ are given.
+  Any of the constraint bounds \f$c_i^l\f$, \f$c_i^u\f$,
+  \f$x_j^l\f$ and \f$x_j^u\f$ may be infinite.
   Full advantage is taken of any zero coefficients in the matrix
-  \f$A\f$ whose rows are the transposes of the vectors \f$a_{i}\f$.
+  \f$A\f$ whose rows are the transposes of the vectors \f$a_i\f$.
 
   \subsection lpb_authors Authors
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, 
@@ -85,9 +85,9 @@
   \n
 \endmanonly
   where
-  \f[\mbox{(2b) $\hspace{24mm} y = y^{l} + y^{u}, \;\; z = z^{l} + z^{u}, \,\,
-   y^{l} \geq 0 , \;\;  y^{u} \leq 0 , \;\;
-   z^{l} \geq 0 \;\; \mbox{and} \;\; z^{u} \leq 0,\hspace{24mm}$} \f]
+  \f[\mbox{(2b) $\hspace{24mm} y = y^l + y^u, \;\; z = z^l + z^u, \,\,
+   y^l \geq 0 , \;\;  y^u \leq 0 , \;\;
+   z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0,\hspace{24mm}$} \f]
 \manonly
   \n
    (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
@@ -96,8 +96,8 @@
 \endmanonly
   and the complementary slackness conditions
   \f[\mbox{(3) $\hspace{12mm}
-  ( A x - c^{l} )^{T} y^{l} = 0  ,\;\;  ( A x - c^{u} )^{T} y^{u} = 0  ,\;\;
-  (x -x^{l} )^{T} z^{l} = 0 \;\;  \mbox{and} \;\; (x -x^{u} )^{T} z^{u} = 0,\hspace{12mm} $}\f]
+  ( A x - c^l )^T y^l = 0  ,\;\;  ( A x - c^u )^T y^u = 0  ,\;\;
+  (x -x^l )^T z^l = 0 \;\;  \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\f]
 \manonly
   \n
   (3) (A x - c^l)^T y^l = 0, (A x - c^u)^T y^u = 0,
@@ -189,7 +189,7 @@
       values
   - \link lpb_reset_control \endlink (optional) - possibly change control 
       parameters if a sequence of problems are being solved
-  - \link lpb_solve \endlink - solve the linear program
+  - \link lpb_solve_lp \endlink - solve the linear program
   - \link lpb_information \endlink (optional) - recover information about
     the solution and solution process
   - \link lpb_terminate \endlink - deallocate data structures
@@ -893,7 +893,6 @@ void lpb_solve_lp( void **data,
 
  @param[in,out] status is a scalar variable of type int, that gives
     the entry and exit status from the package. \n
-    On initial entry, status must be set to 1. \n
     Possible exit are:
   \li  0. The run was succesful.
 
@@ -970,12 +969,12 @@ void lpb_solve_lp( void **data,
   
  @param[out] c is a one-dimensional array of size m and type double, that 
     holds the residual \f$c(x)\f$.
-    The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
+    The i-th component of c, i = 0, ... ,  m-1, contains  \f$c_i(x) \f$.
   
  @param[in,out] y is a one-dimensional array of size n and type double, that 
     holds the values \f$y\f$ of the Lagrange multipliers for the general 
     linear constraints. The j-th component 
-    of y, j = 0, ... , n-1, contains \f$y_j\f$.
+    of y, j = 0, ... , m-1, contains \f$y_i\f$.
   
  @param[in,out] z is a one-dimensional array of size n and type double, that 
     holds the values \f$z\f$ of the dual variables. 
@@ -989,7 +988,7 @@ void lpb_solve_lp( void **data,
 
  @param[out] c_stat is a one-dimensional array of size m and type int, that 
     gives the optimal status of the general linear constraints. If c_stat(i) is 
-    negative, the constraint value \f$a_{i}^{T}x\f$ most likely lies on its 
+    negative, the constraint value \f$a_i^T x\f$ most likely lies on its 
     lower bound, if it is positive, it lies on its upper bound, and if it 
     is zero, it lies  between its bounds.
 */  
@@ -1035,8 +1034,8 @@ void lpb_terminate( void **data,
 /** \anchor examples
    \f$\label{examples}\f$
    \example lpbt.c
-   This is an example of how to use the package to solve a quadratic program.
-   A variety of supported Hessian and constraint matrix storage formats are 
+   This is an example of how to use the package to solve a linear program.
+   A variety of supported constraint matrix storage formats are 
    shown.
   
    Notice that C-style indexing is used, and that this is flaggeed by

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 28/09/2021 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-10 AT 08:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ C Q P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -594,6 +594,10 @@
 
         TYPE ( RPD_inform_type ) :: RPD_inform
       END TYPE
+
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: CQP_full_data_type
         LOGICAL :: f_indexing

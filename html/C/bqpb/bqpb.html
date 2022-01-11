@@ -23,6 +23,7 @@
    TeX: { Macros: {
     vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
     mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
   } }
 });
 </script>
@@ -35,6 +36,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="galahad.small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">C interfaces to GALAHAD BQPB
    </div>
@@ -89,12 +91,12 @@ Purpose</h2>
 \[\mbox{minimize}\;\; q(x) = \frac{1}{2} x^T H x + g^T x + f \]
 </p>
 <p>  or the <b>shifted least-distance problem</b> </p><p class="formulaDsp">
-\[\mbox{minimize}\;\; \frac{1}{2} \sum_{j=1}^n w_j^2 ( x_j^{ } - x_j^0 )^2 + g^T x + f \]
+\[\mbox{minimize}\;\; \frac{1}{2} \sum_{j=1}^n w_j^2 ( x_j - x_j^0 )^2 + g^T x + f \]
 </p>
 <p>  subject to the simple bound constraints </p><p class="formulaDsp">
-\[x_{j}^{l} \leq x_{j}^{ } \leq x_{j}^{u}, \;\;\; j = 1, \ldots , n,\]
+\[x_j^l \leq x_j \leq x_j^u, \;\;\; j = 1, \ldots , n,\]
 </p>
-<p>  where the \(n\) by \(n\) symmetric, positive-semi-definite matrix \(H\), the vectors \(g\), \(w\), \(x^{0}\), \(x^{l}\), \(x^{u}\) and the scalar \(f\) are given. Any of the constraint bounds \(x_{j}^{l}\) and \(x_{j}^{u}\) may be infinite. Full advantage is taken of any zero coefficients in the matrix \(H\).</p>
+<p>  where the \(n\) by \(n\) symmetric, positive-semi-definite matrix \(H\), the vectors \(g\), \(w\), \(x^{0}\), \(x^l\), \(x^u\) and the scalar \(f\) are given. Any of the constraint bounds \(x_j^l\) and \(x_j^u\) may be infinite. Full advantage is taken of any zero coefficients in the matrix \(H\).</p>
 <h2><a class="anchor" id="bqpb_authors"></a>
 Authors</h2>
 <p>N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.</p>
@@ -111,10 +113,10 @@ Method</h2>
 \[\mbox{(2a) $\hspace{3mm} H x + g = z \;\; (\mbox{or} \;\; W^{2} (x -x^0) + g = z \;\; \mbox{for the shifted-least-distance type objective})$}\]
 </p>
 <p>  where </p><p class="formulaDsp">
-\[\mbox{(2b) $\hspace{24mm} z = z^{l} + z^{u}, \,\, z^{l} \geq 0 \;\; \mbox{and} \;\; z^{u} \leq 0,\hspace{24mm}$} \]
+\[\mbox{(2b) $\hspace{24mm} z = z^l + z^u, \,\, z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0,\hspace{24mm}$} \]
 </p>
 <p>  and the complementary slackness conditions </p><p class="formulaDsp">
-\[\mbox{(3) $\hspace{12mm} (x -x^{l} )^{T} z^{l} = 0 \;\; \mbox{and} \;\; (x -x^{u} )^{T} z^{u} = 0,\hspace{12mm} $}\]
+\[\mbox{(3) $\hspace{12mm} (x -x^l )^{T} z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^{T} z^u = 0,\hspace{12mm} $}\]
 </p>
 <p>  where the diagonal matrix \(W^2\) has diagonal entries \(w_j^2\), \(j = 1, \ldots , n\), where the vector \(z\) is known as the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise.</p>
 <p>Primal-dual interior point methods iterate towards a point that satisfies these conditions by ultimately aiming to satisfy (2a) and (3), while ensuring that (1) and (2b) are satisfied as strict inequalities at each stage. Appropriate norms of the amounts by which (2a) and (3) fail to be satisfied are known as the primal and dual infeasibility, and the violation of complementary slackness, respectively. The fact that (1) and (2b) are satisfied as strict inequalities gives such methods their other title, namely interior-point methods.</p>

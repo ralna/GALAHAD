@@ -23,6 +23,7 @@
    TeX: { Macros: {
     vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
     mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
   } }
 });
 </script>
@@ -35,6 +36,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="galahad.small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">C interfaces to GALAHAD CQP
    </div>
@@ -1202,7 +1204,7 @@ inform parameters for FDC struct fdc_inform_type fdc_inform; <p>inform parameter
     <tr><td class="paramdir">[in,out]</td><td class="paramname">y</td><td>is a one-dimensional array of size n and type double, that holds the values \(y\) of the Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains \(y_j\).</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">z</td><td>is a one-dimensional array of size n and type double, that holds the values \(z\) of the dual variables. The j-th component of z, j = 0, ... , n-1, contains \(z_j\).</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">x_stat</td><td>is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable \(x_j\) most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">c_stat</td><td>is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value \(a_{i}^{T}x\) most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">c_stat</td><td>is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value \(a_i^Tx\) most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1382,11 +1384,11 @@ inform parameters for FDC struct fdc_inform_type fdc_inform; <p>inform parameter
     <tr><td class="paramdir">[in]</td><td class="paramname">x_l</td><td>is a one-dimensional array of size n and type double, that holds the lower bounds \(x^l\) on the variables \(x\). The j-th component of x_l, j = 0, ... , n-1, contains \(x^l_j\).</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">x_u</td><td>is a one-dimensional array of size n and type double, that holds the upper bounds \(x^l\) on the variables \(x\). The j-th component of x_u, j = 0, ... , n-1, contains \(x^l_j\).</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">x</td><td>is a one-dimensional array of size n and type double, that holds the values \(x\) of the optimization variables. The j-th component of x, j = 0, ... , n-1, contains \(x_j\).</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">c</td><td>is a one-dimensional array of size m and type double, that holds the residual \(c(x)\). The i-th component of c, j = 0, ... , n-1, contains \(c_j(x) \).</td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">y</td><td>is a one-dimensional array of size n and type double, that holds the values \(y\) of the Lagrange multipliers for the general linear constraints. The j-th component of y, j = 0, ... , n-1, contains \(y_j\).</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">c</td><td>is a one-dimensional array of size m and type double, that holds the residual \(c(x)\). The i-th component of c, i = 0, ... , m-1, contains \(c_i(x) \).</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">y</td><td>is a one-dimensional array of size n and type double, that holds the values \(y\) of the Lagrange multipliers for the general linear constraints. The j-th component of y, i = 0, ... , m-1, contains \(y_i\).</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">z</td><td>is a one-dimensional array of size n and type double, that holds the values \(z\) of the dual variables. The j-th component of z, j = 0, ... , n-1, contains \(z_j\).</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">x_stat</td><td>is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables. If x_stat(j) is negative, the variable \(x_j\) most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds.</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">c_stat</td><td>is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value \(a_{i}^{T}x\) most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">c_stat</td><td>is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints. If c_stat(i) is negative, the constraint value \(a_i^T x\) most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds. </td></tr>
   </table>
   </dd>
 </dl>

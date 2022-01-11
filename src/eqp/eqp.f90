@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-10 AT 08:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ E Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -44,7 +44,21 @@
       PRIVATE
       PUBLIC :: EQP_initialize, EQP_read_specfile, EQP_solve, EQP_terminate,   &
                 EQP_solve_main, EQP_resolve, EQP_resolve_main, EQP_data_type,  &
-                QPT_problem_type, SMT_type, SMT_put, SMT_get
+                EQP_full_initialize, EQP_full_terminate, EQP_information,      &
+                EQP_solve_qp, EQP_solve_sldqp, EQP_import, EQP_reset_control,  &
+                EQP_resolve_qp, QPT_problem_type, SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE EQP_initialize
+       MODULE PROCEDURE EQP_initialize, EQP_full_initialize
+     END INTERFACE EQP_initialize
+
+     INTERFACE EQP_terminate
+       MODULE PROCEDURE EQP_terminate, EQP_full_terminate
+     END INTERFACE EQP_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -341,6 +355,18 @@
         TYPE ( GLTR_inform_type ) :: GLTR_inform
       END TYPE
 
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: EQP_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( EQP_data_type ) :: EQP_data
+        TYPE ( EQP_control_type ) :: EQP_control
+        TYPE ( EQP_inform_type ) :: EQP_inform
+        TYPE ( QPT_problem_type ) :: prob
+      END TYPE EQP_full_data_type
+
    CONTAINS
 
 !-*-*-*-*-*-   E Q P _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
@@ -406,6 +432,38 @@
 !  End of EQP_initialize
 
       END SUBROUTINE EQP_initialize
+
+!- G A L A H A D -  E Q P _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE EQP_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for EQP controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( EQP_control_type ), INTENT( OUT ) :: control
+     TYPE ( EQP_inform_type ), INTENT( OUT ) :: inform
+
+     CALL EQP_initialize( data%eqp_data, control, inform )
+
+     RETURN
+
+!  End of subroutine EQP_full_initialize
+
+     END SUBROUTINE EQP_full_initialize
 
 !-*-*-*-*-   E Q P _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
 
@@ -2581,6 +2639,938 @@
 !  End of subroutine EQP_terminate
 
       END SUBROUTINE EQP_terminate
+
+! -  G A L A H A D -  E Q P _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE EQP_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( EQP_control_type ), INTENT( IN ) :: control
+     TYPE ( EQP_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL EQP_terminate( data%eqp_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     array_name = 'eqp: data%prob%X'
+     CALL SPACE_dealloc_array( data%prob%X,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%G'
+     CALL SPACE_dealloc_array( data%prob%G,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%Y'
+     CALL SPACE_dealloc_array( data%prob%Y,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%C'
+     CALL SPACE_dealloc_array( data%prob%C,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%WEIGHT'
+     CALL SPACE_dealloc_array( data%prob%WEIGHT,                               &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%X0'
+     CALL SPACE_dealloc_array( data%prob%X0,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%H%ptr'
+     CALL SPACE_dealloc_array( data%prob%H%ptr,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%H%row'
+     CALL SPACE_dealloc_array( data%prob%H%row,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%H%col'
+     CALL SPACE_dealloc_array( data%prob%H%col,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%H%val'
+     CALL SPACE_dealloc_array( data%prob%H%val,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%A%ptr'
+     CALL SPACE_dealloc_array( data%prob%A%ptr,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%A%row'
+     CALL SPACE_dealloc_array( data%prob%A%row,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%A%col'
+     CALL SPACE_dealloc_array( data%prob%A%col,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'eqp: data%prob%A%val'
+     CALL SPACE_dealloc_array( data%prob%A%val,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     RETURN
+
+!  End of subroutine EQP_full_terminate
+
+     END SUBROUTINE EQP_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-*-  G A L A H A D -  E Q P _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+
+     SUBROUTINE EQP_import( control, data, status, n, m,                       &
+                            H_type, H_ne, H_row, H_col, H_ptr,                 &
+                            A_type, A_ne, A_row, A_col, A_ptr )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to EQP_solve
+!
+!  data is a scalar variable of type EQP_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that type contains
+!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' 'SCALED_IDENTITY', 'IDENTITY', 'ZERO', 'NONE' or
+!       'SHIFTED_LEAST_DISTANCE' has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   residuals
+!
+!  H_type is a character string that specifies the Hessian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   'diagonal' 'scaled_identity', 'identity', 'zero', 'none' or
+!   'shifted_least_distance', the latter if the Hessian is that of
+!   1/2 sum_j w_j (x_j-x^0_j)^2 rather than of 1/2 x' H x
+!   Lower or upper case variants are allowed.
+!
+!  H_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  H_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  H_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  H_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!  A_type is a character string that specifies the Jacobian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   or 'absent', the latter if m = 0; lower or upper case variants are allowed
+!
+!  A_ne is a scalar variable of type default integer, that holds the number of
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!  for any of the other schemes.
+!
+!  A_row is a rank-one array of type default integer, that holds the row
+!   indices J in the sparse co-ordinate storage scheme. It need not be set
+!   for any of the other schemes, and in this case can be of length 0
+!
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
+!   in this case can be of length 0
+!
+!  A_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of J, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
+!   can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( EQP_control_type ), INTENT( INOUT ) :: control
+     TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n, m, A_ne, H_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     data%eqp_control = control
+
+     error = data%eqp_control%error
+     space_critical = data%eqp_control%space_critical
+     deallocate_error_fatal = data%eqp_control%space_critical
+
+!  allocate vector space if required
+
+     array_name = 'eqp: data%prob%X'
+     CALL SPACE_resize_array( n, data%prob%X,                                  &
+            data%eqp_inform%status, data%eqp_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%eqp_inform%bad_alloc, out = error )
+     IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+     array_name = 'eqp: data%prob%C'
+     CALL SPACE_resize_array( m, data%prob%C,                                  &
+            data%eqp_inform%status, data%eqp_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%eqp_inform%bad_alloc, out = error )
+     IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+     array_name = 'eqp: data%prob%Y'
+     CALL SPACE_resize_array( m, data%prob%Y,                                  &
+            data%eqp_inform%status, data%eqp_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%eqp_inform%bad_alloc, out = error )
+     IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+!  put data into the required components of the qpt storage type
+
+     data%prob%n = n ; data%prob%m = m
+
+!  set H appropriately in the qpt storage type
+
+     SELECT CASE ( H_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( H_row ) .AND. PRESENT( H_col ) ) ) THEN
+         data%eqp_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%H%type, 'COORDINATE',                           &
+                     data%eqp_inform%alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = H_ne
+       data%prob%Hessian_kind = - 1
+
+       array_name = 'eqp: data%prob%H%row'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%row,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'eqp: data%prob%H%col'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%col,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'eqp: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+       data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne )
+       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
+         data%eqp_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%H%type, 'SPARSE_BY_ROWS',                       &
+                     data%eqp_inform%alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = H_ptr( n + 1 ) - 1
+       data%prob%Hessian_kind = - 1
+
+       array_name = 'eqp: data%prob%H%ptr'
+       CALL SPACE_resize_array( n + 1, data%prob%H%ptr,                        &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'eqp: data%prob%H%col'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%col,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'eqp: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+       data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%prob%H%type, 'DENSE',                                &
+                     data%eqp_inform%alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = ( n * ( n + 1 ) ) / 2
+       data%prob%Hessian_kind = - 1
+
+       array_name = 'eqp: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%prob%H%type, 'DIAGONAL',                             &
+                     data%eqp_inform%alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = n
+       data%prob%Hessian_kind = - 1
+
+       array_name = 'eqp: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%prob%H%type, 'SCALED_IDENTITY',                      &
+                     data%eqp_inform%alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = 1
+       data%prob%Hessian_kind = - 1
+
+       array_name = 'eqp: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%prob%H%type, 'IDENTITY',                             &
+                     data%eqp_inform%alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = 0
+       data%prob%Hessian_kind = - 1
+
+     CASE ( 'zero', 'ZERO', 'none', 'NONE' )
+       CALL SMT_put( data%prob%H%type, 'ZERO',                                 &
+                     data%eqp_inform%alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = 0
+       data%prob%Hessian_kind = 0
+     CASE ( 'shifted_least_distance', 'SHIFTED_LEAST_DISTANCE' )
+       data%prob%Hessian_kind = 2
+     CASE DEFAULT
+       data%eqp_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+!  set A appropriately in the qpt storage type
+
+     SELECT CASE ( A_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( A_row ) .AND. PRESENT( A_col ) ) ) THEN
+         data%eqp_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%A%type, 'COORDINATE',                           &
+                     data%eqp_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = A_ne
+
+       array_name = 'eqp: data%prob%A%row'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%row,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'eqp: data%prob%A%col'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%col,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'eqp: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
+         data%eqp_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
+                     data%eqp_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = A_ptr( m + 1 ) - 1
+       array_name = 'eqp: data%prob%A%ptr'
+       CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'eqp: data%prob%A%col'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%col,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'eqp: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+       data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%prob%A%type, 'DENSE',                                &
+                     data%eqp_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = m * n
+
+       array_name = 'eqp: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%eqp_inform%bad_alloc, out = error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%eqp_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%eqp_inform%status
+     RETURN
+
+!  End of subroutine EQP_import
+
+     END SUBROUTINE EQP_import
+
+!-  G A L A H A D -  E Q P _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE EQP_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See EQP_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( EQP_control_type ), INTENT( IN ) :: control
+     TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%eqp_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine EQP_reset_control
+
+     END SUBROUTINE EQP_reset_control
+
+!-*-*-*-  G A L A H A D -  E Q P _ s o l v e _ q p  S U B R O U T I N E  -*-*-*-
+
+     SUBROUTINE EQP_solve_qp( data, status, H_val, G, f, A_val, C, X, Y )
+
+!  solve the quadratic programming problem whose structure was previously
+!  imported. See EQP_solve for a description of the required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  G is a rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, g.
+!   The j-th component of G, j = 1, ... , n, contains (g)_j.
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = wp ), INTENT( IN ) :: f
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
+
+!  local variables
+
+     INTEGER :: m, n
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  recover the dimensions
+
+     m = data%prob%m ; n = data%prob%n
+
+!  save the constant term of the objective function
+
+     data%prob%f = f
+
+!  save the linear term of the objective function
+
+     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+       data%prob%gradient_kind = 0
+     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+       data%prob%gradient_kind = 1
+     ELSE
+       data%prob%gradient_kind = 2
+       array_name = 'eqp: data%prob%G'
+       CALL SPACE_resize_array( n, data%prob%G,                                &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal =                                         &
+                data%eqp_control%deallocate_error_fatal,                       &
+              exact_size = data%eqp_control%space_critical,                    &
+              bad_alloc = data%eqp_inform%bad_alloc,                           &
+              out = data%eqp_control%error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+       data%prob%G( : n ) = G( : n )
+     END IF
+
+!  save the initial primal and dual variables and Lagrange multipliers
+
+     data%prob%X( : n ) = X( : n )
+     data%prob%Y( : m ) = Y( : m )
+
+!  save the Hessian entries
+
+     IF ( data%prob%Hessian_kind /= 2 ) THEN
+       IF ( data%prob%H%ne > 0 )                                               &
+         data%prob%H%val( : data%prob%H%ne ) = H_val( : data%prob%H%ne )
+     ELSE
+       data%eqp_inform%status = GALAHAD_error_hessian_type
+       GO TO 900
+     END IF
+
+!  save the constraint Jacobian entries
+
+     IF ( data%prob%A%ne > 0 )                                                 &
+       data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
+
+!  call the solver
+
+     CALL EQP_solve( data%prob, data%eqp_data, data%eqp_control,               &
+                     data%eqp_inform ) 
+
+!  recover the optimal primal and dual variables, Lagrange multipliers and
+!  constraint values
+
+     X( : n ) = data%prob%X( : n )
+     Y( : m ) = data%prob%Y( : m )
+
+     status = data%eqp_inform%status
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%eqp_inform%status
+     RETURN
+
+!  End of subroutine EQP_solve_qp
+
+     END SUBROUTINE EQP_solve_qp
+
+!-*-  G A L A H A D -  E Q P _ s o l v e _ s l d q p  S U B R O U T I N E  -*-
+
+     SUBROUTINE EQP_solve_sldqp( data, status, W, X0, G, f, A_val, C, X, Y )
+
+!  solve the shifted-least-distance problem whose structure was previously
+!  imported. See EQP_solve for a description of the required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: W, X0
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = wp ), INTENT( IN ) :: f
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
+
+!  local variables
+
+     INTEGER :: m, n
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  recover the dimensions
+
+     m = data%prob%m ; n = data%prob%n
+
+!  save the constant term of the objective function
+
+     data%prob%f = f
+
+!  save the linear term of the objective function
+
+     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+       data%prob%gradient_kind = 0
+     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+       data%prob%gradient_kind = 1
+     ELSE
+       data%prob%gradient_kind = 2
+       array_name = 'eqp: data%prob%G'
+       CALL SPACE_resize_array( n, data%prob%G,                                &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal =                                         &
+                data%eqp_control%deallocate_error_fatal,                       &
+              exact_size = data%eqp_control%space_critical,                    &
+              bad_alloc = data%eqp_inform%bad_alloc,                           &
+              out = data%eqp_control%error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+       data%prob%G( : n ) = G( : n )
+     END IF
+
+!  save the initial primal and dual variables and Lagrange multipliers
+
+     data%prob%X( : n ) = X( : n )
+     data%prob%Y( : m ) = Y( : m )
+
+!  save the Hessian entries
+
+     IF ( data%prob%Hessian_kind == 2 ) THEN
+       IF ( COUNT( W( : n ) == 0.0_wp ) == n ) THEN
+         data%prob%Hessian_kind = 0
+       ELSE IF ( COUNT( W( : n ) == 1.0_wp ) == n ) THEN
+         data%prob%Hessian_kind = 1
+       ELSE
+         array_name = 'eqp: data%prob%WEIGHT'
+         CALL SPACE_resize_array( n, data%prob%WEIGHT,                         &
+                data%eqp_inform%status, data%eqp_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal =                                       &
+                  data%eqp_control%deallocate_error_fatal,                     &
+                exact_size = data%eqp_control%space_critical,                  &
+                bad_alloc = data%eqp_inform%bad_alloc,                         &
+                out = data%eqp_control%error )
+         IF ( data%eqp_inform%status /= 0 ) GO TO 900
+         data%prob%WEIGHT( : n ) = W( : n )
+       END IF
+
+       IF ( COUNT( X0( : n ) == 0.0_wp ) == n ) THEN
+         data%prob%target_kind = 0
+       ELSE IF ( COUNT( X0( : n ) == 1.0_wp ) == n ) THEN
+         data%prob%target_kind = 1
+       ELSE
+         data%prob%target_kind = 2
+         array_name = 'eqp: data%prob%X0'
+         CALL SPACE_resize_array( n, data%prob%X0,                             &
+                data%eqp_inform%status, data%eqp_inform%alloc_status,          &
+                array_name = array_name,                                       &
+                deallocate_error_fatal =                                       &
+                  data%eqp_control%deallocate_error_fatal,                     &
+                exact_size = data%eqp_control%space_critical,                  &
+                bad_alloc = data%eqp_inform%bad_alloc,                         &
+                out = data%eqp_control%error )
+         IF ( data%eqp_inform%status /= 0 ) GO TO 900
+         data%prob%X0( : n ) = X0( : n )
+       END IF
+     ELSE
+       data%eqp_inform%status = GALAHAD_error_hessian_type
+       GO TO 900
+     END IF
+
+!  save the constraint Jacobian entries
+
+     data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
+
+!  call the solver
+
+     CALL EQP_solve( data%prob, data%eqp_data, data%eqp_control,               &
+                     data%eqp_inform )
+
+!  recover the optimal primal and dual variables, Lagrange multipliers and
+!  constraint values
+
+     X( : n ) = data%prob%X( : n )
+     Y( : m ) = data%prob%Y( : m )
+
+     status = data%eqp_inform%status
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%eqp_inform%status
+     RETURN
+
+!  End of subroutine EQP_solve_sldqp
+
+     END SUBROUTINE EQP_solve_sldqp
+
+!-*-*-*-  G A L A H A D -  E Q P _ s o l v e _ q p  S U B R O U T I N E  -*-*-*-
+
+     SUBROUTINE EQP_resolve_qp( data, status, G, f, C, X, Y )
+
+!  solve the quadratic programming problem whose structure was previously
+!  imported. See EQP_solve for a description of the required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  G is a rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, g.
+!   The j-th component of G, j = 1, ... , n, contains (g)_j.
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = wp ), INTENT( IN ) :: f
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
+
+!  local variables
+
+     INTEGER :: m, n
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  recover the dimensions
+
+     m = data%prob%m ; n = data%prob%n
+
+!  save the constant term of the objective function
+
+     data%prob%f = f
+
+!  save the linear term of the objective function
+
+     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+       data%prob%gradient_kind = 0
+     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+       data%prob%gradient_kind = 1
+     ELSE
+       data%prob%gradient_kind = 2
+       array_name = 'eqp: data%prob%G'
+       CALL SPACE_resize_array( n, data%prob%G,                                &
+              data%eqp_inform%status, data%eqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal =                                         &
+                data%eqp_control%deallocate_error_fatal,                       &
+              exact_size = data%eqp_control%space_critical,                    &
+              bad_alloc = data%eqp_inform%bad_alloc,                           &
+              out = data%eqp_control%error )
+       IF ( data%eqp_inform%status /= 0 ) GO TO 900
+       data%prob%G( : n ) = G( : n )
+     END IF
+
+!  save the initial primal and dual variables and Lagrange multipliers
+
+     data%prob%X( : n ) = X( : n )
+     data%prob%Y( : m ) = Y( : m )
+
+!  call the solver
+
+     CALL EQP_resolve( data%prob, data%eqp_data, data%eqp_control,             &
+                       data%eqp_inform )
+
+!  recover the optimal primal and dual variables, Lagrange multipliers and
+!  constraint values
+
+     X( : n ) = data%prob%X( : n )
+     Y( : m ) = data%prob%Y( : m )
+
+     status = data%eqp_inform%status
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%eqp_inform%status
+     RETURN
+
+!  End of subroutine EQP_resolve_qp
+
+     END SUBROUTINE EQP_resolve_qp
+
+!-  G A L A H A D -  E Q P _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE EQP_information( data, inform, status )
+
+!  return solver information during or after solution by EQP
+!  See EQP_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( EQP_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%eqp_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine EQP_information
+
+     END SUBROUTINE EQP_information
 
 !  End of module EQP
 

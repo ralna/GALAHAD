@@ -30,7 +30,7 @@
   \n
 \endmanonly
   or the <b>shifted least-distance problem</b>
-  \f[\mbox{minimize}\;\; \frac{1}{2} \sum_{j=1}^n w_j^2 ( x_j^{ } - x_j^0 )^2 
+  \f[\mbox{minimize}\;\; \frac{1}{2} \sum_{j=1}^n w_j^2 ( x_j - x_j^0 )^2 
    + g^T x + f \f]
 \manonly
   \n
@@ -38,7 +38,7 @@
   \n
 \endmanonly
   subject to the simple bound constraints
-  \f[x_{j}^{l}  \leq  x_{j}^{ } \leq x_{j}^{u}, \;\;\; j = 1, \ldots , n,\f]
+  \f[x_j^l  \leq  x_j \leq x_j^u, \;\;\; j = 1, \ldots , n,\f]
 \manonly
   \n
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
@@ -46,8 +46,8 @@
 \endmanonly
   where the \f$n\f$ by \f$n\f$ symmetric, positive-semi-definite matrix 
   \f$H\f$, the vectors \f$g\f$, \f$w\f$, \f$x^{0}\f$,
-  \f$x^{l}\f$,  \f$x^{u}\f$ and the scalar \f$f\f$ are given. Any of
-  the constraint bounds \f$x_{j}^{l}\f$ and \f$x_{j}^{u}\f$ may be infinite.
+  \f$x^l\f$,  \f$x^u\f$ and the scalar \f$f\f$ are given. Any of
+  the constraint bounds \f$x_j^l\f$ and \f$x_j^u\f$ may be infinite.
   Full advantage is taken of any zero coefficients in the matrix \f$H\f$.
 
   \subsection bqpb_authors Authors
@@ -79,8 +79,8 @@
   \n
 \endmanonly
   where
-  \f[\mbox{(2b) $\hspace{24mm} z = z^{l} + z^{u}, \,\,
-   z^{l} \geq 0 \;\; \mbox{and} \;\; z^{u} \leq 0,\hspace{24mm}$} \f]
+  \f[\mbox{(2b) $\hspace{24mm} z = z^l + z^u, \,\,
+   z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0,\hspace{24mm}$} \f]
 \manonly
   \n
    (2b) z = z^l + z^u, z^l \[>=] 0 and z^u \[<=] 0,
@@ -88,7 +88,7 @@
 \endmanonly
   and the complementary slackness conditions
   \f[\mbox{(3) $\hspace{12mm}
-  (x -x^{l} )^{T} z^{l} = 0 \;\;  \mbox{and} \;\; (x -x^{u} )^{T} z^{u} = 0,\hspace{12mm} $}\f]
+  (x -x^l )^{T} z^l = 0 \;\;  \mbox{and} \;\; (x -x^u )^{T} z^u = 0,\hspace{12mm} $}\f]
 \manonly
   \n
   (3) (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
@@ -929,7 +929,6 @@ void bqpb_solve_qp( void **data,
 
  @param[in,out] status is a scalar variable of type int, that gives
     the entry and exit status from the package. \n
-    On initial entry, status must be set to 1. \n
     Possible exit are:
   \li  0. The run was succesful.
 
@@ -1028,7 +1027,6 @@ void bqpb_solve_sldqp( void **data,
 
  @param[in,out] status is a scalar variable of type int, that gives
     the entry and exit status from the package. \n
-    On initial entry, status must be set to 1. \n
     Possible exit are:
   \li  0. The run was succesful
 

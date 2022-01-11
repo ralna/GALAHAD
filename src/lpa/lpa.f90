@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-10 AT 08:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L P A    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -46,7 +46,21 @@
 
       PRIVATE
       PUBLIC :: LPA_initialize, LPA_read_specfile, LPA_solve, LPA_terminate,   &
+                LPA_full_initialize, LPA_full_terminate, LPA_information,      &
+                LPA_import, LPA_solve_lp, LPA_reset_control,                   &
                 QPT_problem_type, SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE LPA_initialize
+       MODULE PROCEDURE LPA_initialize, LPA_full_initialize
+     END INTERFACE LPA_initialize
+
+     INTERFACE LPA_terminate
+       MODULE PROCEDURE LPA_terminate, LPA_full_terminate
+     END INTERFACE LPA_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -162,14 +176,14 @@
 
        REAL ( KIND = wp ) :: zero_tolerance = epsmch
 
-!  any solution component whose change is smaller than a tolerence times the
-!   largest change may be considered to be zero
+!  any solution component whose change is smaller than a tolerence times
+!   the largest change may be considered to be zero
 
 !      REAL ( KIND = wp ) :: change_tolerance = epsmch ** ( 2.0_wp / 3.0_wp )
        REAL ( KIND = wp ) :: change_tolerance = ten ** ( - 10 )
 
-!   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than
-!    identical_bounds_tol will be reset to the average of their values
+!   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer 
+!    than identical_bounds_tol will be reset to the average of their values
 
        REAL ( KIND = wp ) :: identical_bounds_tol = epsmch
 
@@ -336,6 +350,18 @@
         TYPE ( LPA_control_type ) :: control
       END TYPE LPA_data_type
 
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: LPA_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( LPA_data_type ) :: LPA_data
+        TYPE ( LPA_control_type ) :: LPA_control
+        TYPE ( LPA_inform_type ) :: LPA_inform
+        TYPE ( QPT_problem_type ) :: prob
+      END TYPE LPA_full_data_type
+
       CONTAINS
 
 !-*-*-*-*-*-   L P A _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
@@ -379,6 +405,38 @@
 !  End of LPA_initialize
 
       END SUBROUTINE LPA_initialize
+
+!- G A L A H A D -  L P A _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE LPA_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for LPA controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LPA_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LPA_control_type ), INTENT( OUT ) :: control
+     TYPE ( LPA_inform_type ), INTENT( OUT ) :: inform
+
+     CALL LPA_initialize( data%lpa_data, control, inform )
+
+     RETURN
+
+!  End of subroutine LPA_full_initialize
+
+     END SUBROUTINE LPA_full_initialize
 
 !-*-*-*-*-   L P A _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
@@ -1733,6 +1791,120 @@
 !  End of subroutine LPA_terminate
 
       END SUBROUTINE LPA_terminate
+
+! -  G A L A H A D -  L P A _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE LPA_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LPA_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LPA_control_type ), INTENT( IN ) :: control
+     TYPE ( LPA_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL LPA_terminate( data%lpa_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     array_name = 'lpa: data%prob%X'
+     CALL SPACE_dealloc_array( data%prob%X,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%X_l'
+     CALL SPACE_dealloc_array( data%prob%X_l,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%X_u'
+     CALL SPACE_dealloc_array( data%prob%X_u,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%G'
+     CALL SPACE_dealloc_array( data%prob%G,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%Y'
+     CALL SPACE_dealloc_array( data%prob%Y,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%Z'
+     CALL SPACE_dealloc_array( data%prob%Z,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%C'
+     CALL SPACE_dealloc_array( data%prob%C,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%C_l'
+     CALL SPACE_dealloc_array( data%prob%C_l,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%C_u'
+     CALL SPACE_dealloc_array( data%prob%C_u,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%A%ptr'
+     CALL SPACE_dealloc_array( data%prob%A%ptr,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%A%row'
+     CALL SPACE_dealloc_array( data%prob%A%row,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%A%col'
+     CALL SPACE_dealloc_array( data%prob%A%col,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'lpa: data%prob%A%val'
+     CALL SPACE_dealloc_array( data%prob%A%val,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     RETURN
+
+!  End of subroutine LPA_full_terminate
+
+     END SUBROUTINE LPA_full_terminate
 
 !-*-*-*-*-*-*-*-   L P A _ r e o r d e r    S U B R O U T I N E  -*-*-*-*-*-*-
 
@@ -3972,6 +4144,462 @@
 !  End of LPA_revert_dual
 
       END SUBROUTINE LPA_revert_dual
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-*-  G A L A H A D -  C Q P _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+
+     SUBROUTINE LPA_import( control, data, status, n, m,                       &
+                            A_type, A_ne, A_row, A_col, A_ptr )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to LPA_solve
+!
+!  data is a scalar variable of type LPA_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that a_type contains
+!       its relevant string 'DENSE', 'COORDINATE' or 'SPARSE_BY_ROWS'
+!       has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   residuals
+!
+!  A_type is a character string that specifies the Jacobian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   or 'absent', the latter if m = 0; lower or upper case variants are allowed
+!
+!  A_ne is a scalar variable of type default integer, that holds the number of
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!  for any of the other schemes.
+!
+!  A_row is a rank-one array of type default integer, that holds the row
+!   indices J in the sparse co-ordinate storage scheme. It need not be set
+!   for any of the other schemes, and in this case can be of length 0
+!
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
+!   in this case can be of length 0
+!
+!  A_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of J, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
+!   can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LPA_control_type ), INTENT( INOUT ) :: control
+     TYPE ( LPA_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n, m, A_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     data%lpa_control = control
+
+     error = data%lpa_control%error
+     space_critical = data%lpa_control%space_critical
+     deallocate_error_fatal = data%lpa_control%space_critical
+
+!  allocate vector space if required
+
+     array_name = 'lpa: data%prob%X'
+     CALL SPACE_resize_array( n, data%prob%X,                                  &
+            data%lpa_inform%status, data%lpa_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%lpa_inform%bad_alloc, out = error )
+     IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+     array_name = 'lpa: data%prob%X_l'
+     CALL SPACE_resize_array( n, data%prob%X_l,                                &
+            data%lpa_inform%status, data%lpa_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%lpa_inform%bad_alloc, out = error )
+     IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+     array_name = 'lpa: data%prob%X_u'
+     CALL SPACE_resize_array( n, data%prob%X_u,                                &
+            data%lpa_inform%status, data%lpa_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%lpa_inform%bad_alloc, out = error )
+     IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+     array_name = 'lpa: data%prob%Z'
+     CALL SPACE_resize_array( n, data%prob%Z,                                  &
+            data%lpa_inform%status, data%lpa_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%lpa_inform%bad_alloc, out = error )
+     IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+     array_name = 'lpa: data%prob%C'
+     CALL SPACE_resize_array( m, data%prob%C,                                  &
+            data%lpa_inform%status, data%lpa_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%lpa_inform%bad_alloc, out = error )
+     IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+     array_name = 'lpa: data%prob%C_l'
+     CALL SPACE_resize_array( m, data%prob%C_l,                                &
+            data%lpa_inform%status, data%lpa_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%lpa_inform%bad_alloc, out = error )
+     IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+     array_name = 'lpa: data%prob%C_u'
+     CALL SPACE_resize_array( m, data%prob%C_u,                                &
+            data%lpa_inform%status, data%lpa_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%lpa_inform%bad_alloc, out = error )
+     IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+     array_name = 'lpa: data%prob%Y'
+     CALL SPACE_resize_array( m, data%prob%Y,                                  &
+            data%lpa_inform%status, data%lpa_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%lpa_inform%bad_alloc, out = error )
+     IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+!  put data into the required components of the qpt storage type
+
+     data%prob%n = n ; data%prob%m = m
+
+!  set A appropriately in the qpt storage type
+
+     SELECT CASE ( A_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( A_row ) .AND. PRESENT( A_col ) ) ) THEN
+         data%lpa_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%A%type, 'COORDINATE',                           &
+                     data%lpa_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = A_ne
+
+       array_name = 'lpa: data%prob%A%row'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%row,               &
+              data%lpa_inform%status, data%lpa_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%lpa_inform%bad_alloc, out = error )
+       IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+       array_name = 'lpa: data%prob%A%col'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%col,               &
+              data%lpa_inform%status, data%lpa_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%lpa_inform%bad_alloc, out = error )
+       IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+       array_name = 'lpa: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%lpa_inform%status, data%lpa_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%lpa_inform%bad_alloc, out = error )
+       IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
+         data%lpa_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
+                     data%lpa_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = A_ptr( m + 1 ) - 1
+       array_name = 'lpa: data%prob%A%ptr'
+       CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
+              data%lpa_inform%status, data%lpa_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%lpa_inform%bad_alloc, out = error )
+       IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+       array_name = 'lpa: data%prob%A%col'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%col,               &
+              data%lpa_inform%status, data%lpa_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%lpa_inform%bad_alloc, out = error )
+       IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+       array_name = 'lpa: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%lpa_inform%status, data%lpa_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%lpa_inform%bad_alloc, out = error )
+       IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+       data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%prob%A%type, 'DENSE',                                &
+                     data%lpa_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = m * n
+
+       array_name = 'lpa: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%lpa_inform%status, data%lpa_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%lpa_inform%bad_alloc, out = error )
+       IF ( data%lpa_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%lpa_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%lpa_inform%status
+     RETURN
+
+!  End of subroutine LPA_import
+
+     END SUBROUTINE LPA_import
+
+!-  G A L A H A D -  C Q P _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE LPA_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See LPA_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LPA_control_type ), INTENT( IN ) :: control
+     TYPE ( LPA_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%lpa_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine LPA_reset_control
+
+     END SUBROUTINE LPA_reset_control
+
+!-*-*-*-  G A L A H A D -  C Q P _ s o l v e _ q p  S U B R O U T I N E  -*-*-*-
+
+     SUBROUTINE LPA_solve_lp( data, status, G, f, A_val, C_l, C_u,             &
+                              X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+
+!  solve the quadratic programming problem whose structure was previously
+!  imported. See LPA_solve for a description of the required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  G is a rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, g.
+!   The j-th component of G, j = 1, ... , n, contains (g)_j.
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( LPA_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = wp ), INTENT( IN ) :: f
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
+     INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: C_stat, X_stat
+
+!  local variables
+
+     INTEGER :: m, n
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  recover the dimensions
+
+     m = data%prob%m ; n = data%prob%n
+
+!  save the constant term of the objective function
+
+     data%prob%f = f
+
+!  save the linear term of the objective function
+
+     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+       data%prob%gradient_kind = 0
+     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+       data%prob%gradient_kind = 1
+     ELSE
+       data%prob%gradient_kind = 2
+       array_name = 'lpa: data%prob%G'
+       CALL SPACE_resize_array( n, data%prob%G,                                &
+              data%lpa_inform%status, data%lpa_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal =                                         &
+                data%lpa_control%deallocate_error_fatal,                       &
+              exact_size = data%lpa_control%space_critical,                    &
+              bad_alloc = data%lpa_inform%bad_alloc,                           &
+              out = data%lpa_control%error )
+       IF ( data%lpa_inform%status /= 0 ) GO TO 900
+       data%prob%G( : n ) = G( : n )
+     END IF
+
+!  save the lower and upper simple bounds
+
+     data%prob%X_l( : n ) = X_l( : n )
+     data%prob%X_u( : n ) = X_u( : n )
+
+!  save the lower and upper constraint bounds
+
+     data%prob%C_l( : m ) = C_l( : m )
+     data%prob%C_u( : m ) = C_u( : m )
+
+!  save the initial primal and dual variables and Lagrange multipliers
+
+     data%prob%X( : n ) = X( : n )
+     data%prob%Z( : n ) = Z( : n )
+     data%prob%Y( : m ) = Y( : m )
+
+!  save the constraint Jacobian entries
+
+     IF ( data%prob%A%ne > 0 )                                                 &
+       data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
+
+!  call the solver
+
+     CALL LPA_solve( data%prob, data%lpa_data, data%lpa_control,               &
+                     data%lpa_inform, C_stat = C_stat, X_stat = X_stat )
+
+!  recover the optimal primal and dual variables, Lagrange multipliers and
+!  constraint values
+
+     X( : n ) = data%prob%X( : n )
+     Z( : n ) = data%prob%Z( : n )
+     Y( : m ) = data%prob%Y( : m )
+     C( : m ) = data%prob%C( : m )
+
+     status = data%lpa_inform%status
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%lpa_inform%status
+     RETURN
+
+!  End of subroutine LPA_solve_lp
+
+     END SUBROUTINE LPA_solve_lp
+
+!-  G A L A H A D -  C Q P _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE LPA_information( data, inform, status )
+
+!  return solver information during or after solution by LPA
+!  See LPA_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LPA_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LPA_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%lpa_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine LPA_information
+
+     END SUBROUTINE LPA_information
 
 !  End of module LPA
 

@@ -142,6 +142,18 @@ only the diagonals entries $h_{ii}$, $1 \leq i \leq n$,  need be stored,
 and the first $n$ components of the array {\tt H\%val} may be used for 
 the purpose. There is no sensible equivalent for the non-square $\bmA$.
 
+\subsubsection{Scaled-identity-matrix storage format}\label{scaled-identity}
+If $\bmH$ is a scalar multiple of the identity matrix
+(i.e., $h_{ii} = h_{11}$  and $h_{ij} = 0$ for all $1 \leq i \neq j \leq n$)
+only the first diagonal entry $h_{11}$ needs be stored,
+and the first component of the array {\tt H\%val} may be used for
+the purpose. Again, there is no sensible equivalent for the non-square $\bmA$.
+
+\subsubsection{Identity-matrix storage format}\label{identity}
+If $\bmH$ is the identity matrix
+(i.e., $h_{ii} = 1$ and $h_{ij} = 0$ for all $1 \leq i \neq j \leq n$),
+no explicit entries needs be stored.
+
 %%%%%%%%%%%%%%%%%%%%%% long integers %%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Integer kinds}\label{Integer kinds}
@@ -255,8 +267,8 @@ are used:
 
 \begin{description}
 
-\itt{H\%type} is an allocatable array of rank one and type default \character, that
-is used to indicate the storage scheme used. If the dense storage scheme 
+\itt{H\%type} is an allocatable array of rank one and type default \character, 
+that is used to indicate the storage scheme used. If the dense storage scheme 
 (see Section~\ref{dense}) is used, 
 the first five components of {\tt H\%type} must contain the
 string {\tt DENSE}.
@@ -266,9 +278,17 @@ string {\tt COORDINATE},
 for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
 the first fourteen components of {\tt H\%type} must contain the
 string {\tt SPARSE\_BY\_ROWS},
-and for the diagonal storage scheme (see Section~\ref{diagonal}),
+for the diagonal storage scheme (see Section~\ref{diagonal}),
 the first eight components of {\tt H\%type} must contain the
-string {\tt DIAGONAL}.
+string {\tt DIAGONAL},
+for the scaled-identity matrix storage scheme
+(see Section~\ref{scaled-identity}),
+the first fifteen components of {\tt H\%type} must contain the
+string {\tt SCALED\_IDENTITY},
+for the identity matrix storage scheme
+(see Section~\ref{identity}), and
+the first eight components of {\tt H\%type} must contain the
+string {\tt IDENTITY}.
 
 For convenience, the procedure {\tt SMT\_put} 
 may be used to allocate sufficient space and insert the required keyword

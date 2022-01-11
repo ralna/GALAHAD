@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 22/11/2021 AT 13:40 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-10 AT 13:30 GMT.
    PROGRAM GALAHAD_CQP_interface_test
    USE GALAHAD_CQP_double                       ! double precision version
    USE GALAHAD_SYMBOLS

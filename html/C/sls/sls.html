@@ -23,6 +23,7 @@
    TeX: { Macros: {
     vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
     mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
   } }
 });
 </script>
@@ -35,10 +36,11 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="galahad.small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">C interfaces to GALAHAD SLS
    </div>
-   <div id="projectbrief">header files for C interfaces to GALAHAD SLS package</div>
+   <div id="projectbrief">header files for C interfaces to the GALAHAD SLS package</div>
   </td>
  </tr>
  </tbody>
@@ -170,7 +172,7 @@ Call order</h2>
 <li><a class="el" href="sls_8h.html#ada1e7b9ed799335702f85a551b64bf88">sls_read_specfile</a> (optional) - override control values by reading replacement values from a file</li>
 <li><a class="el" href="sls_8h.html#a380a7f50cc71c705d15a791acde946cf">sls_analyse_matrix</a> - set up matrix data structures and analyse the structure to choose a suitable order for factorization</li>
 <li><a class="el" href="sls_8h.html#aacc344b8cdf0b1c27965f191382372e4">sls_reset_control</a> (optional) - possibly change control parameters if a sequence of problems are being solved</li>
-<li><a class="el" href="sls_8h.html#ab6666f5eb7b0bdbbc9c9b52b7a2e2c41">sls_factorize_matrix</a> - form and factorize the block matrix from its components</li>
+<li><a class="el" href="sls_8h.html#ab6666f5eb7b0bdbbc9c9b52b7a2e2c41">sls_factorize_matrix</a> - form and factorize the matrix \(A\)</li>
 <li>one of<ul>
 <li><a class="el" href="sls_8h.html#a1b3e7546b59b06160c51e16b6781bc0b">sls_solve_system</a> - solve the linear system of equations \(Ax=b\)</li>
 <li><a class="el" href="sls_8h.html#ac66dc50d8b54acab90d70ae649b92905">sls_partial_solve_system</a> - solve a linear system \(Mx=b\) involving one of the matrix factors \(M\) of \(A\)</li>

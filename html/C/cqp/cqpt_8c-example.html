@@ -23,6 +23,7 @@
    TeX: { Macros: {
     vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
     mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
   } }
 });
 </script>
@@ -35,6 +36,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="galahad.small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">C interfaces to GALAHAD CQP
    </div>
@@ -289,17 +291,17 @@ $(function() {
 <div class="line"> </div>
 </div><!-- fragment --> </div><!-- contents -->
 <div class="ttc" id="acqp_8h_html_a311864de053b1cbbf78b1cbab052e56e"><div class="ttname"><a href="cqp_8h.html#a311864de053b1cbbf78b1cbab052e56e">cqp_solve_sldqp</a></div><div class="ttdeci">void cqp_solve_sldqp(void **data, int *status, int n, int m, const real_wp_ w[], const real_wp_ x0[], const real_wp_ g[], const real_wp_ f, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])</div></div>
-<div class="ttc" id="acqp_8h_html_structcqp__control__type"><div class="ttname"><a href="cqp_8h.html#structcqp__control__type">cqp_control_type</a></div><div class="ttdef"><b>Definition:</b> cqp.h:355</div></div>
+<div class="ttc" id="acqp_8h_html_structcqp__control__type"><div class="ttname"><a href="cqp_8h.html#structcqp__control__type">cqp_control_type</a></div><div class="ttdef"><b>Definition:</b> cqp.h:358</div></div>
 <div class="ttc" id="acqp_8h_html_adfb7589696e4e07fdb65f02bc42c5daf"><div class="ttname"><a href="cqp_8h.html#adfb7589696e4e07fdb65f02bc42c5daf">cqp_information</a></div><div class="ttdeci">void cqp_information(void **data, struct cqp_inform_type *inform, int *status)</div></div>
 <div class="ttc" id="acqp_8h_html"><div class="ttname"><a href="cqp_8h.html">cqp.h</a></div></div>
-<div class="ttc" id="acqp_8h_html_a0cbcb28977ac1f47ab67d27e4216626d"><div class="ttname"><a href="cqp_8h.html#a0cbcb28977ac1f47ab67d27e4216626d">cqp_inform_type::obj</a></div><div class="ttdeci">real_wp_ obj</div><div class="ttdoc">the value of the objective function at the best estimate of the solution determined by CQP_solve</div><div class="ttdef"><b>Definition:</b> cqp.h:768</div></div>
+<div class="ttc" id="acqp_8h_html_a0cbcb28977ac1f47ab67d27e4216626d"><div class="ttname"><a href="cqp_8h.html#a0cbcb28977ac1f47ab67d27e4216626d">cqp_inform_type::obj</a></div><div class="ttdeci">real_wp_ obj</div><div class="ttdoc">the value of the objective function at the best estimate of the solution determined by CQP_solve</div><div class="ttdef"><b>Definition:</b> cqp.h:771</div></div>
 <div class="ttc" id="acqp_8h_html_a84e12e9e546f51762d305333dce68e2b"><div class="ttname"><a href="cqp_8h.html#a84e12e9e546f51762d305333dce68e2b">cqp_terminate</a></div><div class="ttdeci">void cqp_terminate(void **data, struct cqp_control_type *control, struct cqp_inform_type *inform)</div></div>
 <div class="ttc" id="acqp_8h_html_a782387ad9cccc5f2e2da9df9016fb923"><div class="ttname"><a href="cqp_8h.html#a782387ad9cccc5f2e2da9df9016fb923">cqp_initialize</a></div><div class="ttdeci">void cqp_initialize(void **data, struct cqp_control_type *control, int *status)</div></div>
 <div class="ttc" id="acqp_8h_html_ac2d720ee7b719bf63c3fa208d37f1bc1"><div class="ttname"><a href="cqp_8h.html#ac2d720ee7b719bf63c3fa208d37f1bc1">cqp_solve_qp</a></div><div class="ttdeci">void cqp_solve_qp(void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])</div></div>
-<div class="ttc" id="acqp_8h_html_aab6f168571c2073e01e240524b8a3da0"><div class="ttname"><a href="cqp_8h.html#aab6f168571c2073e01e240524b8a3da0">cqp_inform_type::iter</a></div><div class="ttdeci">int iter</div><div class="ttdoc">the total number of iterations required</div><div class="ttdef"><b>Definition:</b> cqp.h:739</div></div>
-<div class="ttc" id="acqp_8h_html_structcqp__inform__type"><div class="ttname"><a href="cqp_8h.html#structcqp__inform__type">cqp_inform_type</a></div><div class="ttdef"><b>Definition:</b> cqp.h:723</div></div>
-<div class="ttc" id="acqp_8h_html_a6e27f49150e9a14580fb313cc2777e00"><div class="ttname"><a href="cqp_8h.html#a6e27f49150e9a14580fb313cc2777e00">cqp_inform_type::status</a></div><div class="ttdeci">int status</div><div class="ttdoc">return status. See CQP_solve for details</div><div class="ttdef"><b>Definition:</b> cqp.h:727</div></div>
-<div class="ttc" id="acqp_8h_html_a6e8421b34d6b85dcb33c1dd0179efbb3"><div class="ttname"><a href="cqp_8h.html#a6e8421b34d6b85dcb33c1dd0179efbb3">cqp_control_type::f_indexing</a></div><div class="ttdeci">bool f_indexing</div><div class="ttdoc">use C or Fortran sparse matrix indexing</div><div class="ttdef"><b>Definition:</b> cqp.h:359</div></div>
+<div class="ttc" id="acqp_8h_html_aab6f168571c2073e01e240524b8a3da0"><div class="ttname"><a href="cqp_8h.html#aab6f168571c2073e01e240524b8a3da0">cqp_inform_type::iter</a></div><div class="ttdeci">int iter</div><div class="ttdoc">the total number of iterations required</div><div class="ttdef"><b>Definition:</b> cqp.h:742</div></div>
+<div class="ttc" id="acqp_8h_html_structcqp__inform__type"><div class="ttname"><a href="cqp_8h.html#structcqp__inform__type">cqp_inform_type</a></div><div class="ttdef"><b>Definition:</b> cqp.h:726</div></div>
+<div class="ttc" id="acqp_8h_html_a6e27f49150e9a14580fb313cc2777e00"><div class="ttname"><a href="cqp_8h.html#a6e27f49150e9a14580fb313cc2777e00">cqp_inform_type::status</a></div><div class="ttdeci">int status</div><div class="ttdoc">return status. See CQP_solve for details</div><div class="ttdef"><b>Definition:</b> cqp.h:730</div></div>
+<div class="ttc" id="acqp_8h_html_a6e8421b34d6b85dcb33c1dd0179efbb3"><div class="ttname"><a href="cqp_8h.html#a6e8421b34d6b85dcb33c1dd0179efbb3">cqp_control_type::f_indexing</a></div><div class="ttdeci">bool f_indexing</div><div class="ttdoc">use C or Fortran sparse matrix indexing</div><div class="ttdef"><b>Definition:</b> cqp.h:362</div></div>
 <div class="ttc" id="acqp_8h_html_a6a2be17b6f871df80bbac93940b83af3"><div class="ttname"><a href="cqp_8h.html#a6a2be17b6f871df80bbac93940b83af3">cqp_import</a></div><div class="ttdeci">void cqp_import(struct cqp_control_type *control, void **data, int *status, int n, int m, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[])</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -23,6 +23,7 @@
    TeX: { Macros: {
     vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
     mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
   } }
 });
 </script>
@@ -35,10 +36,11 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="galahad.small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">C interfaces to GALAHAD TRB
    </div>
-   <div id="projectbrief">header files for C interfaces to GALAHAD TRB package</div>
+   <div id="projectbrief">header files for C interfaces to the GALAHAD TRB package</div>
   </td>
  </tr>
  </tbody>
@@ -111,8 +113,8 @@ $(function() {
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="preprocessor">#include &quot;galahad_precision.h&quot;</span></div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160; </div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="comment">// required packages</span></div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="comment">//#include &quot;trs.h&quot;</span></div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="comment">//#include &quot;gltr.h&quot;</span></div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="preprocessor">#include &quot;trs.h&quot;</span></div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="preprocessor">#include &quot;gltr.h&quot;</span></div>
 <div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="comment">//#include &quot;psls.h&quot;</span></div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="comment">//#include &quot;lms.h&quot;</span></div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="comment">//#include &quot;sha.h&quot;</span></div>

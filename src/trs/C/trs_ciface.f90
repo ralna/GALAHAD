@@ -142,7 +142,7 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( trs_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_trs_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
     INTEGER :: i
     
     ! C or Fortran sparse matrix indexing

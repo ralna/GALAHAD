@@ -1,4 +1,4 @@
-.TH "trs.h" 3 "Thu Dec 16 2021" "C interfaces to GALAHAD TRS" \" -*- nroff -*-
+.TH "trs.h" 3 "Sat Jan 8 2022" "C interfaces to GALAHAD TRS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -11,6 +11,8 @@ trs.h
 \fC#include 'galahad_precision\&.h'\fP
 .br
 \fC#include 'sls\&.h'\fP
+.br
+\fC#include 'ir\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -571,7 +573,7 @@ Reset control parameters after import if required\&.
 .PP
 
 .SS "void trs_solve_problem (void ** data, int * status, int n, const real_wp_ radius, const real_wp_ f, const real_wp_ c[], int H_ne, const real_wp_ H_val[], real_wp_ x[], int M_ne, const real_wp_ M_val[], int m, int A_ne, const real_wp_ A_val[], real_wp_ y[])"
-Solve the trsut-region problem\&.
+Solve the trust-region problem\&.
 .PP
 \fBParameters\fP
 .RS 4

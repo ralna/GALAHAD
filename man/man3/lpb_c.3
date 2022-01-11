@@ -1,4 +1,4 @@
-.TH "lpb.h" 3 "Fri Dec 24 2021" "C interfaces to GALAHAD LPB" \" -*- nroff -*-
+.TH "lpb.h" 3 "Sat Jan 8 2022" "C interfaces to GALAHAD LPB" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -61,15 +61,15 @@ This package uses a primal-dual interior-point method to solve the \fBlinear pro
   \n
   minimize q(x) := g^T x + f
   \n
- subject to the general linear constraints \[c_{i}^{l} <= a_{i}^{T}x <= c_{i}^{u}, \;\;\; i = 1, ... , m,\]  
+ subject to the general linear constraints \[c_i^l <= a_i^Tx <= c_i^u, \;\;\; i = 1, ... , m,\]  
   \n
    c_i^l \[<=] a_i^Tx \[<=] c_i^u, i = 1, ... , m,
   \n
- and the simple bound constraints \[x_{j}^{l} <= x_{j}^{ } <= x_{j}^{u}, \;\;\; j = 1, ... , n,\]  
+ and the simple bound constraints \[x_j^l <= x_j <= x_j^u, \;\;\; j = 1, ... , n,\]  
   \n
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
- where the vectors g, w, x^{0}, a_{i}, c^{l}, c^{u}, x^{l}, x^{u} and the scalar f are given\&. Any of the constraint bounds c_{i}^{l}, c_{i}^{u}, x_{j}^{l} and x_{j}^{u} may be infinite\&. Full advantage is taken of any zero coefficients in the matrix A whose rows are the transposes of the vectors a_{i}\&.
+ where the vectors g, w, x^{0}, a_i, c^l, c^u, x^l, x^u and the scalar f are given\&. Any of the constraint bounds c_i^l, c_i^u, x_j^l and x_j^u may be infinite\&. Full advantage is taken of any zero coefficients in the matrix A whose rows are the transposes of the vectors a_i\&.
 .SS "Authors"
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
@@ -89,12 +89,12 @@ The required solution x necessarily satisfies the primal optimality conditions \
   \n
   (2a) g = A^T y + z 
   \n
- where \[\mbox{(2b) $\hspace{24mm} y = y^{l} + y^{u}, \;\; z = z^{l} + z^{u}, \,\, y^{l} >= 0 , \;\; y^{u} <= 0 , \;\; z^{l} >= 0 \;\; \mbox{and} \;\; z^{u} <= 0,\hspace{24mm}$} \]  
+ where \[\mbox{(2b) $\hspace{24mm} y = y^l + y^u, \;\; z = z^l + z^u, \,\, y^l >= 0 , \;\; y^u <= 0 , \;\; z^l >= 0 \;\; \mbox{and} \;\; z^u <= 0,\hspace{24mm}$} \]  
   \n
    (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
         z^l \[>=] 0 and z^u \[<=] 0,
   \n
- and the complementary slackness conditions \[\mbox{(3) $\hspace{12mm} ( A x - c^{l} )^{T} y^{l} = 0 ,\;\; ( A x - c^{u} )^{T} y^{u} = 0 ,\;\; (x -x^{l} )^{T} z^{l} = 0 \;\; \mbox{and} \;\; (x -x^{u} )^{T} z^{u} = 0,\hspace{12mm} $}\]  
+ and the complementary slackness conditions \[\mbox{(3) $\hspace{12mm} ( A x - c^l )^T y^l = 0 ,\;\; ( A x - c^u )^T y^u = 0 ,\;\; (x -x^l )^T z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\]  
   \n
   (3) (A x - c^l)^T y^l = 0, (A x - c^u)^T y^u = 0,
       (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
@@ -132,7 +132,7 @@ To solve a given problem, functions from the lpb package must be called in the f
 .IP "\(bu" 2
 \fBlpb_reset_control\fP (optional) - possibly change control parameters if a sequence of problems are being solved
 .IP "\(bu" 2
-\fBlpb_solve\fP - solve the linear program
+\fBlpb_solve_lp\fP - solve the linear program
 .IP "\(bu" 2
 \fBlpb_information\fP (optional) - recover information about the solution and solution process
 .IP "\(bu" 2
@@ -640,15 +640,15 @@ Solve the linear program\&.
 .br
 \fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
 .br
-\fIc\fP is a one-dimensional array of size m and type double, that holds the residual c(x)\&. The i-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j(x) \&.
+\fIc\fP is a one-dimensional array of size m and type double, that holds the residual c(x)\&. The i-th component of c, i = 0, \&.\&.\&. , m-1, contains c_i(x) \&.
 .br
-\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the general linear constraints\&. The j-th component of y, j = 0, \&.\&.\&. , n-1, contains y_j\&.
+\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the general linear constraints\&. The j-th component of y, j = 0, \&.\&.\&. , m-1, contains y_i\&.
 .br
 \fIz\fP is a one-dimensional array of size n and type double, that holds the values z of the dual variables\&. The j-th component of z, j = 0, \&.\&.\&. , n-1, contains z_j\&.
 .br
 \fIx_stat\fP is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables\&. If x_stat(j) is negative, the variable x_j most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&.
 .br
-\fIc_stat\fP is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints\&. If c_stat(i) is negative, the constraint value a_{i}^{T}x most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&. 
+\fIc_stat\fP is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints\&. If c_stat(i) is negative, the constraint value a_i^T x most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&. 
 .RE
 .PP
 

@@ -4993,7 +4993,7 @@
       IF ( printi ) WRITE( control%out, "( /, A, ' entering QPA ' )" ) prefix
 
       CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
-      CALL QPA_solve_qp( data%dims, prob%n, prob%m,                            &
+      CALL QPA_qp_solve( data%dims, prob%n, prob%m,                            &
                          prob%H%val, prob%H%col, prob%H%ptr,                   &
                          prob%G, prob%f, prob%rho_g, prob%rho_b, prob%A%val,   &
                          prob%A%col, prob%A%ptr, prob%C_l, prob%C_u, prob%X_l, &

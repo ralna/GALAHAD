@@ -5156,7 +5156,7 @@
 
 !  flag that M and A are not currently used
 
-     data%use_m = .FALSE. ; data%use_a = .FALSE.
+     data%use_m = .FALSE. ; data%use_a = .FALSE. ; data%A%m = 0
 
 !  set H appropriately in its storage type
 

@@ -23,6 +23,7 @@
    TeX: { Macros: {
     vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
     mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
   } }
 });
 </script>
@@ -35,10 +36,11 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="galahad.small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">C interfaces to GALAHAD TRU
    </div>
-   <div id="projectbrief">header files for C interfaces to GALAHAD TRU package</div>
+   <div id="projectbrief">header files for C interfaces to the GALAHAD TRU package</div>
   </td>
  </tr>
  </tbody>
@@ -482,9 +484,9 @@ $(function() {
 <div class="ttc" id="atru_8h_html_a638a31d7027eaf1ae39aa7278e7c5c5a"><div class="ttname"><a href="tru_8h.html#a638a31d7027eaf1ae39aa7278e7c5c5a">tru_solve_with_mat</a></div><div class="ttdeci">void tru_solve_with_mat(void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int ne, int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_h)(int, int, const real_wp_[], real_wp_[], const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</div></div>
 <div class="ttc" id="atru_8h_html"><div class="ttname"><a href="tru_8h.html">tru.h</a></div></div>
 <div class="ttc" id="atru_8h_html_a97252b83eaab0b4d5d3ac53e6b317206"><div class="ttname"><a href="tru_8h.html#a97252b83eaab0b4d5d3ac53e6b317206">tru_solve_reverse_without_mat</a></div><div class="ttdeci">void tru_solve_reverse_without_mat(void **data, int *status, int *eval_status, int n, real_wp_ x[], real_wp_ f, real_wp_ g[], real_wp_ u[], real_wp_ v[])</div></div>
-<div class="ttc" id="atru_8h_html_structtru__inform__type"><div class="ttname"><a href="tru_8h.html#structtru__inform__type">tru_inform_type</a></div><div class="ttdef"><b>Definition:</b> tru.h:496</div></div>
+<div class="ttc" id="atru_8h_html_structtru__inform__type"><div class="ttname"><a href="tru_8h.html#structtru__inform__type">tru_inform_type</a></div><div class="ttdef"><b>Definition:</b> tru.h:505</div></div>
 <div class="ttc" id="atru_8h_html_aa38f8880b4f63e610ae1f269353ac46e"><div class="ttname"><a href="tru_8h.html#aa38f8880b4f63e610ae1f269353ac46e">tru_terminate</a></div><div class="ttdeci">void tru_terminate(void **data, struct tru_control_type *control, struct tru_inform_type *inform)</div></div>
-<div class="ttc" id="atru_8h_html_structtru__control__type"><div class="ttname"><a href="tru_8h.html#structtru__control__type">tru_control_type</a></div><div class="ttdef"><b>Definition:</b> tru.h:215</div></div>
+<div class="ttc" id="atru_8h_html_structtru__control__type"><div class="ttname"><a href="tru_8h.html#structtru__control__type">tru_control_type</a></div><div class="ttdef"><b>Definition:</b> tru.h:224</div></div>
 <div class="ttc" id="atru_8h_html_af7def0657e11fee556d3006fb64fe267"><div class="ttname"><a href="tru_8h.html#af7def0657e11fee556d3006fb64fe267">tru_initialize</a></div><div class="ttdeci">void tru_initialize(void **data, struct tru_control_type *control, int *status)</div></div>
 <div class="ttc" id="atru_8h_html_a7c756ce759b44ddbd1ffac77bf497e5a"><div class="ttname"><a href="tru_8h.html#a7c756ce759b44ddbd1ffac77bf497e5a">tru_information</a></div><div class="ttdeci">void tru_information(void **data, struct tru_inform_type *inform, int *status)</div></div>
 <div class="ttc" id="atru_8h_html_aaa508227d17d8da723bb0401023acd96"><div class="ttname"><a href="tru_8h.html#aaa508227d17d8da723bb0401023acd96">tru_solve_without_mat</a></div><div class="ttdeci">void tru_solve_without_mat(void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_hprod)(int, const real_wp_[], real_wp_[], const real_wp_[], bool, const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</div></div>

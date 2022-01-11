@@ -23,6 +23,7 @@
    TeX: { Macros: {
     vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
     mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
   } }
 });
 </script>
@@ -35,10 +36,11 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="galahad.small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">C interfaces to GALAHAD SLS
    </div>
-   <div id="projectbrief">header files for C interfaces to GALAHAD SLS package</div>
+   <div id="projectbrief">header files for C interfaces to the GALAHAD SLS package</div>
   </td>
  </tr>
  </tbody>
@@ -102,10 +104,10 @@ $(function() {
 <div class="line"> </div>
 <div class="line">    <span class="comment">// Set problem data</span></div>
 <div class="line">    <span class="keywordtype">int</span> n = 5; <span class="comment">// dimension of A</span></div>
-<div class="line">    <span class="keywordtype">int</span> ne = 7; <span class="comment">// number of elements of A</span></div>
-<div class="line">    <span class="keywordtype">int</span> dense_ne = 15; <span class="comment">// number of elements of A</span></div>
-<div class="line">    <span class="keywordtype">int</span> row[] = {1, 2, 2, 3, 3, 4, 5}; <span class="comment">// indices, NB lower triangle</span></div>
-<div class="line">    <span class="keywordtype">int</span> col[] = {1, 1, 5, 2, 3, 3, 5};</div>
+<div class="line">    <span class="keywordtype">int</span> ne = 7; <span class="comment">// number of entries of A</span></div>
+<div class="line">    <span class="keywordtype">int</span> dense_ne = 15; <span class="comment">// number of elements of A as a dense matrix</span></div>
+<div class="line">    <span class="keywordtype">int</span> row[] = {1, 2, 2, 3, 3, 4, 5}; <span class="comment">// row indices, NB lower triangle</span></div>
+<div class="line">    <span class="keywordtype">int</span> col[] = {1, 1, 5, 2, 3, 3, 5}; <span class="comment">// column indices</span></div>
 <div class="line">    <span class="keywordtype">int</span> ptr[] = {1, 2, 4, 6, 7, 8}; <span class="comment">// pointers to indices</span></div>
 <div class="line">    <span class="keywordtype">double</span> val[] = {2.0, 3.0, 6.0, 4.0,  1.0, 5.0, 1.0}; <span class="comment">// values</span></div>
 <div class="line">    <span class="keywordtype">double</span> dense[] = {2.0, 3.0, 0.0, 0.0, 4.0, 1.0, 0.0, </div>
@@ -234,15 +236,15 @@ $(function() {
 <div class="ttc" id="asls_8h_html_aa5aafa378e3500ce31783e13c3395d30"><div class="ttname"><a href="sls_8h.html#aa5aafa378e3500ce31783e13c3395d30">sls_terminate</a></div><div class="ttdeci">void sls_terminate(void **data, struct sls_control_type *control, struct sls_inform_type *inform)</div></div>
 <div class="ttc" id="asls_8h_html_a0ca4a126813c3aafac9d791a152b233c"><div class="ttname"><a href="sls_8h.html#a0ca4a126813c3aafac9d791a152b233c">sls_information</a></div><div class="ttdeci">void sls_information(void **data, struct sls_inform_type *inform, int *status)</div></div>
 <div class="ttc" id="asls_8h_html"><div class="ttname"><a href="sls_8h.html">sls.h</a></div></div>
-<div class="ttc" id="asls_8h_html_structsls__inform__type"><div class="ttname"><a href="sls_8h.html#structsls__inform__type">sls_inform_type</a></div><div class="ttdef"><b>Definition:</b> sls.h:633</div></div>
-<div class="ttc" id="asls_8h_html_structsls__control__type"><div class="ttname"><a href="sls_8h.html#structsls__control__type">sls_control_type</a></div><div class="ttdef"><b>Definition:</b> sls.h:320</div></div>
+<div class="ttc" id="asls_8h_html_structsls__inform__type"><div class="ttname"><a href="sls_8h.html#structsls__inform__type">sls_inform_type</a></div><div class="ttdef"><b>Definition:</b> sls.h:630</div></div>
+<div class="ttc" id="asls_8h_html_structsls__control__type"><div class="ttname"><a href="sls_8h.html#structsls__control__type">sls_control_type</a></div><div class="ttdef"><b>Definition:</b> sls.h:317</div></div>
 <div class="ttc" id="asls_8h_html_ac66dc50d8b54acab90d70ae649b92905"><div class="ttname"><a href="sls_8h.html#ac66dc50d8b54acab90d70ae649b92905">sls_partial_solve_system</a></div><div class="ttdeci">void sls_partial_solve_system(const char part[], void **data, int *status, int n, real_wp_ sol[])</div></div>
 <div class="ttc" id="asls_8h_html_a380a7f50cc71c705d15a791acde946cf"><div class="ttname"><a href="sls_8h.html#a380a7f50cc71c705d15a791acde946cf">sls_analyse_matrix</a></div><div class="ttdeci">void sls_analyse_matrix(struct sls_control_type *control, void **data, int *status, int n, const char type[], int ne, const int row[], const int col[], const int ptr[])</div></div>
 <div class="ttc" id="asls_8h_html_a1b3e7546b59b06160c51e16b6781bc0b"><div class="ttname"><a href="sls_8h.html#a1b3e7546b59b06160c51e16b6781bc0b">sls_solve_system</a></div><div class="ttdeci">void sls_solve_system(void **data, int *status, int n, real_wp_ sol[])</div></div>
 <div class="ttc" id="asls_8h_html_aacc344b8cdf0b1c27965f191382372e4"><div class="ttname"><a href="sls_8h.html#aacc344b8cdf0b1c27965f191382372e4">sls_reset_control</a></div><div class="ttdeci">void sls_reset_control(struct sls_control_type *control, void **data, int *status)</div></div>
 <div class="ttc" id="asls_8h_html_a1d8a0c73587ca6d7f5333d41b3e2472a"><div class="ttname"><a href="sls_8h.html#a1d8a0c73587ca6d7f5333d41b3e2472a">sls_initialize</a></div><div class="ttdeci">void sls_initialize(const char solver[], void **data, struct sls_control_type *control, int *status)</div></div>
 <div class="ttc" id="asls_8h_html_ab6666f5eb7b0bdbbc9c9b52b7a2e2c41"><div class="ttname"><a href="sls_8h.html#ab6666f5eb7b0bdbbc9c9b52b7a2e2c41">sls_factorize_matrix</a></div><div class="ttdeci">void sls_factorize_matrix(void **data, int *status, int ne, const real_wp_ val[])</div></div>
-<div class="ttc" id="asls_8h_html_a6e27f49150e9a14580fb313cc2777e00"><div class="ttname"><a href="sls_8h.html#a6e27f49150e9a14580fb313cc2777e00">sls_inform_type::status</a></div><div class="ttdeci">int status</div><div class="ttdoc">reported return status: 0 success -1 allocation error -2 deallocation error -3 matrix data faulty (....</div><div class="ttdef"><b>Definition:</b> sls.h:652</div></div>
+<div class="ttc" id="asls_8h_html_a6e27f49150e9a14580fb313cc2777e00"><div class="ttname"><a href="sls_8h.html#a6e27f49150e9a14580fb313cc2777e00">sls_inform_type::status</a></div><div class="ttdeci">int status</div><div class="ttdoc">reported return status: 0 success -1 allocation error -2 deallocation error -3 matrix data faulty (....</div><div class="ttdef"><b>Definition:</b> sls.h:649</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

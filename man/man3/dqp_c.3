@@ -1,4 +1,4 @@
-.TH "dqp.h" 3 "Fri Dec 24 2021" "C interfaces to GALAHAD DQP" \" -*- nroff -*-
+.TH "dqp.h" 3 "Sat Jan 8 2022" "C interfaces to GALAHAD DQP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -72,15 +72,15 @@ This package uses a dual gradient-projection interior-point method to solve the 
   \n
    minimize 1/2 \sum_{j=1}^n w_j^2 ( x_j - x_j^0 )^2  + g^T x + f
   \n
- subject to the general linear constraints \[c_{i}^l <= a_{i}^{T}x <= c_{i}^u, \;\;\; i = 1, ... , m,\]  
+ subject to the general linear constraints \[c_i^l <= a_i^Tx <= c_i^u, \;\;\; i = 1, ... , m,\]  
   \n
    c_i^l \[<=] a_i^Tx \[<=] c_i^u, i = 1, ... , m,
   \n
- and the simple bound constraints \[x_{j}^l <= x_{j}^{ } <= x_{j}^u, \;\;\; j = 1, ... , n,\]  
+ and the simple bound constraints \[x_j^l <= x_j^{ } <= x_j^u, \;\;\; j = 1, ... , n,\]  
   \n
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
- where the n by n symmetric, positive-definite matrix H, the vectors g, w, x^{0}, a_{i}, c^l, c^u, x^l, x^u and the scalar f are given\&. Any of the constraint bounds c_{i}^l, c_{i}^u, x_{j}^l and x_{j}^u may be infinite\&. Full advantage is taken of any zero coefficients in the matrix H or the matrix A of vectors a_{i}\&.
+ where the n by n symmetric, positive-definite matrix H, the vectors g, w, x^{0}, a_i, c^l, c^u, x^l, x^u and the scalar f are given\&. Any of the constraint bounds c_i^l, c_i^u, x_j^l and x_j^u may be infinite\&. Full advantage is taken of any zero coefficients in the matrix H or the matrix A of vectors a_i\&.
 .SS "Authors"
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
@@ -107,16 +107,15 @@ The required solution x necessarily satisfies the primal optimality conditions \
    (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
         z^l \[>=] 0 and z^u \[<=] 0,
   \n
- and the complementary slackness conditions \[\mbox{(3) $\hspace{12mm} ( A x - c^l )^{T} y^l = 0 ,\;\; ( A x - c^u )^{T} y^u = 0 ,\;\; (x -x^l )^{T} z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^{T} z^u = 0,\hspace{12mm} $}\]  
+ and the complementary slackness conditions \[\mbox{(3) $\hspace{12mm} ( A x - c^l )^T y^l = 0 ,\;\; ( A x - c^u )^T y^u = 0 ,\;\; (x -x^l )^T z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\]  
   \n
   (3) (A x - c^l)^T y^l = 0, (A x - c^u)^T y^u = 0,
       (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
   \n
  where the diagonal matrix W^2 has diagonal entries w_j^2, j = 1, \&.\&.\&. , n, where the vectors y and z are known as the Lagrange multipliers for the general linear constraints, and the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise\&.
 .SS "Method"
-Dual gradient-projection methods solve (0) by instead solving the dual quadratic program \[\mbox{(4) $\arr{ll}{\mbox{minimize}\;\; q^D(y^l, y^u, z^l, z^u) = & \!\!\! 1/2 [ ( y^l + y^u )^T A + ( z^l + z^u ]^T ) H^{-1} [ A^T ( y^l + y^u ) + z^l + z^u ] \\ & - [ ( y^l + y^u )^T A + ( z^l + z^u ]^T ) H^{-1} g - ( c^{l T} y^l + c^{u T} y^u + x^{l T} z^l + x^{u T} z^u) \\ \mbox{subject to} & ( y^l, z^l ) >= 0 \;\;\mbox{and} \;\; (y^u, z^u) <= 0,}$}\]  
+Dual gradient-projection methods solve (0) by instead solving the dual quadratic program    
   \n 
-(ignore the above, it is doxygen junk!)
   (4) minimize q^D(y^l, y^u, z^l, z^u) = 
      1/2 [ ( y^l  + y^u )^T A + ( z^l + z^u ]^T ) H^{-1}
       [ A^T ( y^l  + y^u ) + z^l + z^u ]
@@ -707,7 +706,7 @@ Solve the quadratic program when the Hessian H is available\&.
 .br
 \fIx_stat\fP is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables\&. If x_stat(j) is negative, the variable x_j most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&.
 .br
-\fIc_stat\fP is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints\&. If c_stat(i) is negative, the constraint value a_{i}^{T}x most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&. 
+\fIc_stat\fP is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints\&. If c_stat(i) is negative, the constraint value a_i^Tx most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&. 
 .RE
 .PP
 
@@ -791,7 +790,7 @@ Solve the shifted least-distance quadratic program
 .br
 \fIx_stat\fP is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables\&. If x_stat(j) is negative, the variable x_j most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&.
 .br
-\fIc_stat\fP is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints\&. If c_stat(i) is negative, the constraint value a_{i}^{T}x most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&. 
+\fIc_stat\fP is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints\&. If c_stat(i) is negative, the constraint value a_i^Tx most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&. 
 .RE
 .PP
 

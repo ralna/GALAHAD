@@ -23,6 +23,7 @@
    TeX: { Macros: {
     vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
     mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
+    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
   } }
 });
 </script>
@@ -35,10 +36,11 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="galahad.small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">C interfaces to GALAHAD SLS
    </div>
-   <div id="projectbrief">header files for C interfaces to GALAHAD SLS package</div>
+   <div id="projectbrief">header files for C interfaces to the GALAHAD SLS package</div>
   </td>
  </tr>
  </tbody>
@@ -1077,7 +1079,7 @@ the output scalars and arrays from LAPACK routines </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set default control values and initialize private data</p>
+<p>Select solver, set default control values and initialize private data</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">solver</td><td>is a one-dimensional array of type char that specifies the <a class="el" href="">solver package </a> that should be used to factorize the matrix \(A\). It should be one of 'sils', 'ma27', 'ma57', 'ma77', 'ma86', 'ma87', 'ma97', 'ssids', 'pardiso', 'mkl pardiso', 'wsmp', 'potr', 'sytr' or 'pbtr'; lower or upper case variants are allowed.</td></tr>
@@ -1228,7 +1230,7 @@ the output scalars and arrays from LAPACK routines </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">type</td><td>is a one-dimensional array of type char that specifies the <a class="el" href="index.html#main_symmetric_matrices">symmetric storage scheme </a> used for the matrix \(A\). It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ne</td><td>is a scalar variable of type int, that holds the number of entries in the lower triangular part of \(A\) in the sparse co-ordinate storage scheme. It need not be set for any of the other schemes.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">row</td><td>is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of \(A\) in the sparse co-ordinate storage scheme. It need not be set for any of the other three schemes, and in this case can be NULL.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">col</td><td>is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of \(A\) in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">col</td><td>is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of \(A\) in either the sparse co-ordinate, or the sparse row-wise storage scheme. It need not be set when the dense storage scheme is used, and in this case can be NULL.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ptr</td><td>is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of \(A\), as well as the total number of entries plus one, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL. </td></tr>
   </table>
   </dd>
@@ -1348,7 +1350,7 @@ the output scalars and arrays from LAPACK routines </td></tr>
 </ul>
 </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ne</td><td>is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix \(A\).</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">val</td><td>is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix \(A\) in any of the available storage schemes </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">val</td><td>is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix \(A\) in any of the supported storage schemes. </td></tr>
   </table>
   </dd>
 </dl>

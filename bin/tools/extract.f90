@@ -143,8 +143,8 @@
   WRITE( h_unit, "( '//* \file ', A, '.h */', / )" ) TRIM( package_lower )
 
   WRITE( h_unit, "( '/*', /, &
- &  ' * THIS VERSION: GALAHAD 3.4 - ', A2, '/', A2, '/', A4, ' AT ',           &
- &  A2, ':', A2, ' GMT.' )" ) day, month, year, hour, minute
+ &  ' * THIS VERSION: GALAHAD 4.0 - ', A4, '-', A2, '-', A2, ' AT ',           &
+ &  A2, ':', A2, ' GMT.' )" ) year, month, day, hour, minute
   WRITE( h_unit, "( ' *', /, &
  &  ' *-*-*-*-*-*-*-*-*-  GALAHAD_', A, &
  &     ' C INTERFACE  *-*-*-*-*-*-*-*-*-*-', /, &
@@ -153,7 +153,7 @@
  &  ' *  Principal author: Jaroslav Fowkes & Nick Gould', /, &
  &  ' *', /, &
  &  ' *  History -', /, &
- &  ' *   originally released GALAHAD Version 3.4. ', &
+ &  ' *   originally released GALAHAD Version 4.0. ', &
  &  A, 1X, I0, A2, 1X, A4 )" ) &
      TRIM( package_upper ), TRIM( months( imonth) ), iday, days( iday ), year
   WRITE( h_unit, "( ' *', /, &
@@ -232,8 +232,8 @@
 !  insert leading data
 
   WRITE( ciface_unit, "(                                                       &
- &  '! THIS VERSION: GALAHAD 3.4 - ', A2, '/', A2, '/', A4, ' AT ',            &
- &  A2, ':', A2, ' GMT.' )" ) day, month, year, hour, minute
+ &  '! THIS VERSION: GALAHAD 4.0 - ', A4, '-', A2, '-', A2, ' AT ',            &
+ &  A2, ':', A2, ' GMT.' )" ) year, month, day, hour, minute
   WRITE( ciface_unit, "(                                                       &
  &  '', /, &
  &  '!-*-*-*-*-*-*-*-  G A L A H A D _ ', 10( 1X, A1 ) )", ADVANCE = 'NO' )    &
@@ -245,7 +245,7 @@
  &  '!  Principal authors: Jaroslav Fowkes & Nick Gould', /, &
  &  '', /, &
  &  '!  History -', /, &
- &  '!    originally released GALAHAD Version 3.4. ', &
+ &  '!    originally released GALAHAD Version 4.0. ', &
  &  A, 1X, I0, A2, 1X, A4 )" ) &
      TRIM( months( imonth) ), iday, days( iday ), year
   WRITE( ciface_unit, "(                                                       &

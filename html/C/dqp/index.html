@@ -36,6 +36,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="galahad.small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">C interfaces to GALAHAD DQP
    </div>
@@ -93,12 +94,12 @@ Purpose</h2>
 \[\mbox{minimize}\;\; \frac{1}{2} \sum_{j=1}^n w_j^2 ( x_j^{ } - x_j^0 )^2 + g^T x + f \]
 </p>
 <p>  subject to the general linear constraints </p><p class="formulaDsp">
-\[c_{i}^l \leq a_{i}^{T}x \leq c_{i}^u, \;\;\; i = 1, \ldots , m,\]
+\[c_i^l \leq a_i^Tx \leq c_i^u, \;\;\; i = 1, \ldots , m,\]
 </p>
 <p>  and the simple bound constraints </p><p class="formulaDsp">
-\[x_{j}^l \leq x_{j}^{ } \leq x_{j}^u, \;\;\; j = 1, \ldots , n,\]
+\[x_j^l \leq x_j^{ } \leq x_j^u, \;\;\; j = 1, \ldots , n,\]
 </p>
-<p>  where the \(n\) by \(n\) symmetric, positive-definite matrix \(H\), the vectors \(g\), \(w\), \(x^{0}\), \(a_{i}\), \(c^l\), \(c^u\), \(x^l\), \(x^u\) and the scalar \(f\) are given. Any of the constraint bounds \(c_{i}^l\), \(c_{i}^u\), \(x_{j}^l\) and \(x_{j}^u\) may be infinite. Full advantage is taken of any zero coefficients in the matrix \(H\) or the matrix \(A\) of vectors \(a_{i}\).</p>
+<p>  where the \(n\) by \(n\) symmetric, positive-definite matrix \(H\), the vectors \(g\), \(w\), \(x^{0}\), \(a_i\), \(c^l\), \(c^u\), \(x^l\), \(x^u\) and the scalar \(f\) are given. Any of the constraint bounds \(c_i^l\), \(c_i^u\), \(x_j^l\) and \(x_j^u\) may be infinite. Full advantage is taken of any zero coefficients in the matrix \(H\) or the matrix \(A\) of vectors \(a_i\).</p>
 <h2><a class="anchor" id="dqp_authors"></a>
 Authors</h2>
 <p>N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.</p>
@@ -121,15 +122,14 @@ Terminology</h2>
 \[\mbox{(2b) $\hspace{24mm} y = y^l + y^u, \;\; z = z^l + z^u, \,\, y^l \geq 0 , \;\; y^u \leq 0 , \;\; z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0,\hspace{24mm}$} \]
 </p>
 <p>  and the complementary slackness conditions </p><p class="formulaDsp">
-\[\mbox{(3) $\hspace{12mm} ( A x - c^l )^{T} y^l = 0 ,\;\; ( A x - c^u )^{T} y^u = 0 ,\;\; (x -x^l )^{T} z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^{T} z^u = 0,\hspace{12mm} $}\]
+\[\mbox{(3) $\hspace{12mm} ( A x - c^l )^T y^l = 0 ,\;\; ( A x - c^u )^T y^u = 0 ,\;\; (x -x^l )^T z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\]
 </p>
 <p>  where the diagonal matrix \(W^2\) has diagonal entries \(w_j^2\), \(j = 1, \ldots , n\), where the vectors \(y\) and \(z\) are known as the Lagrange multipliers for the general linear constraints, and the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise.</p>
 <h2><a class="anchor" id="dqp_method"></a>
 Method</h2>
-<p>Dual gradient-projection methods solve (0) by instead solving the dual quadratic program </p><p class="formulaDsp">
-\[\mbox{(4) $\arr{ll}{\mbox{minimize}\;\; q^D(y^l, y^u, z^l, z^u) = &amp; \!\!\! \frac{1}{2} [ ( y^l + y^u )^T A + ( z^l + z^u ]^T ) H^{-1} [ A^T ( y^l + y^u ) + z^l + z^u ] \\ &amp; - [ ( y^l + y^u )^T A + ( z^l + z^u ]^T ) H^{-1} g - ( c^{l T} y^l + c^{u T} y^u + x^{l T} z^l + x^{u T} z^u) \\ \mbox{subject to} &amp; ( y^l, z^l ) \geq 0 \;\;\mbox{and} \;\; (y^u, z^u) \leq 0,}$}\]
-</p>
-<p>  and then recovering the required solution from the linear system </p><p class="formulaDsp">
+<p>Dual gradient-projection methods solve (0) by instead solving the dual quadratic program   
+$$\mbox{(4) $\arr{ll}{\mbox{minimize}\;\; q^D(y^l, y^u, z^l, z^u) = & \!\!\! \frac{1}{2} [ ( y^l  + y^u )^T A + ( z^l + z^u ]^T ) H^{-1} [ A^T ( y^l  + y^u ) + z^l + z^u ] \\  & -  [ ( y^l  + y^u )^T A + ( z^l + z^u ]^T ) H^{-1} g - ( c^{l T} y^l + c^{u T} y^u +  x^{l T} z^l + x^{u T} z^u) \\ \mbox{subject to} & ( y^l, z^l ) \geq 0 \;\;\mbox{and} \;\;   (y^u, z^u) \leq 0,}$}$$
+  and then recovering the required solution from the linear system </p><p class="formulaDsp">
 \[\mbox{$H x = - g + A^T ( y^l + y^u ) + z^l + z^u.$}\]
 </p>
 <p>  The dual problem (4) is solved by an accelerated gradient-projection method comprising of alternating phases in which (i) the current projected dual gradient is traced downhill (the 'arc search') as far as possible and (ii) the dual variables that are currently on their bounds are temporarily fixed and the unconstrained minimizer of \(q^D(y^l, y^u, z^l, z^u)\) with respect to the remaining variables is sought; the minimizer in the second phase may itself need to be projected back into the dual feasible region (either using a brute-force backtrack or a second arc search).</p>
