@@ -333,9 +333,9 @@ $(function() {
 <div class="line"><a name="l01173"></a><span class="lineno"> 1173</span>&#160;                   <span class="keywordtype">int</span> x_stat[], </div>
 <div class="line"><a name="l01174"></a><span class="lineno"> 1174</span>&#160;                   <span class="keywordtype">int</span> c_stat[] );</div>
 <div class="line"><a name="l01175"></a><span class="lineno"> 1175</span>&#160; </div>
-<div class="line"><a name="l01294"></a><span class="lineno"> 1294</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-*-*-   Q P A _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*</span></div>
+<div class="line"><a name="l01294"></a><span class="lineno"> 1294</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-*-   Q P A _ S O L V E _ L 1 Q P   -*-*-*-*-*-*-*-*-*-*-</span></div>
 <div class="line"><a name="l01295"></a><span class="lineno"> 1295</span>&#160; </div>
-<div class="line"><a name="l01296"></a><span class="lineno"> 1296</span>&#160;<span class="keywordtype">void</span> <a class="code" href="qpa_8h.html#a95cc7e9a5a976b94772a8d3a8d8669a1">qpa_solve_l1qp</a>( <span class="keywordtype">void</span> **data,</div>
+<div class="line"><a name="l01296"></a><span class="lineno"> 1296</span>&#160;<span class="keywordtype">void</span> <a class="code" href="qpa_8h.html#a1a95adb548b743128e0df4ab4e801f19">qpa_solve_l1qp</a>( <span class="keywordtype">void</span> **data,</div>
 <div class="line"><a name="l01297"></a><span class="lineno"> 1297</span>&#160;                     <span class="keywordtype">int</span> *status,</div>
 <div class="line"><a name="l01298"></a><span class="lineno"> 1298</span>&#160;                     <span class="keywordtype">int</span> n, </div>
 <div class="line"><a name="l01299"></a><span class="lineno"> 1299</span>&#160;                     <span class="keywordtype">int</span> m, </div>
@@ -343,60 +343,63 @@ $(function() {
 <div class="line"><a name="l01301"></a><span class="lineno"> 1301</span>&#160;                     <span class="keyword">const</span> real_wp_ H_val[], </div>
 <div class="line"><a name="l01302"></a><span class="lineno"> 1302</span>&#160;                     <span class="keyword">const</span> real_wp_ g[], </div>
 <div class="line"><a name="l01303"></a><span class="lineno"> 1303</span>&#160;                     <span class="keyword">const</span> real_wp_ f, </div>
-<div class="line"><a name="l01304"></a><span class="lineno"> 1304</span>&#160;                     <span class="keywordtype">int</span> a_ne,</div>
-<div class="line"><a name="l01305"></a><span class="lineno"> 1305</span>&#160;                     <span class="keyword">const</span> real_wp_ A_val[], </div>
-<div class="line"><a name="l01306"></a><span class="lineno"> 1306</span>&#160;                     <span class="keyword">const</span> real_wp_ c_l[], </div>
-<div class="line"><a name="l01307"></a><span class="lineno"> 1307</span>&#160;                     <span class="keyword">const</span> real_wp_ c_u[], </div>
-<div class="line"><a name="l01308"></a><span class="lineno"> 1308</span>&#160;                     <span class="keyword">const</span> real_wp_ x_l[], </div>
-<div class="line"><a name="l01309"></a><span class="lineno"> 1309</span>&#160;                     <span class="keyword">const</span> real_wp_ x_u[], </div>
-<div class="line"><a name="l01310"></a><span class="lineno"> 1310</span>&#160;                     real_wp_ x[], </div>
-<div class="line"><a name="l01311"></a><span class="lineno"> 1311</span>&#160;                     real_wp_ c[], </div>
-<div class="line"><a name="l01312"></a><span class="lineno"> 1312</span>&#160;                     real_wp_ y[], </div>
-<div class="line"><a name="l01313"></a><span class="lineno"> 1313</span>&#160;                     real_wp_ z[], </div>
-<div class="line"><a name="l01314"></a><span class="lineno"> 1314</span>&#160;                     <span class="keywordtype">int</span> x_stat[], </div>
-<div class="line"><a name="l01315"></a><span class="lineno"> 1315</span>&#160;                     <span class="keywordtype">int</span> c_stat[] );</div>
-<div class="line"><a name="l01316"></a><span class="lineno"> 1316</span>&#160; </div>
-<div class="line"><a name="l01435"></a><span class="lineno"> 1435</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-*-*-   Q P A _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*</span></div>
-<div class="line"><a name="l01436"></a><span class="lineno"> 1436</span>&#160; </div>
-<div class="line"><a name="l01437"></a><span class="lineno"> 1437</span>&#160;<span class="keywordtype">void</span> <a class="code" href="qpa_8h.html#a1c5a2cdbda74733cdbd9bd0f56ded57a">qpa_solve_bcl1qp</a>( <span class="keywordtype">void</span> **data,</div>
-<div class="line"><a name="l01438"></a><span class="lineno"> 1438</span>&#160;                       <span class="keywordtype">int</span> *status,</div>
-<div class="line"><a name="l01439"></a><span class="lineno"> 1439</span>&#160;                       <span class="keywordtype">int</span> n, </div>
-<div class="line"><a name="l01440"></a><span class="lineno"> 1440</span>&#160;                       <span class="keywordtype">int</span> m, </div>
-<div class="line"><a name="l01441"></a><span class="lineno"> 1441</span>&#160;                       <span class="keywordtype">int</span> h_ne,</div>
-<div class="line"><a name="l01442"></a><span class="lineno"> 1442</span>&#160;                       <span class="keyword">const</span> real_wp_ H_val[], </div>
-<div class="line"><a name="l01443"></a><span class="lineno"> 1443</span>&#160;                       <span class="keyword">const</span> real_wp_ g[], </div>
-<div class="line"><a name="l01444"></a><span class="lineno"> 1444</span>&#160;                       <span class="keyword">const</span> real_wp_ f, </div>
-<div class="line"><a name="l01445"></a><span class="lineno"> 1445</span>&#160;                       <span class="keywordtype">int</span> a_ne,</div>
-<div class="line"><a name="l01446"></a><span class="lineno"> 1446</span>&#160;                       <span class="keyword">const</span> real_wp_ A_val[], </div>
-<div class="line"><a name="l01447"></a><span class="lineno"> 1447</span>&#160;                       <span class="keyword">const</span> real_wp_ c_l[], </div>
-<div class="line"><a name="l01448"></a><span class="lineno"> 1448</span>&#160;                       <span class="keyword">const</span> real_wp_ c_u[], </div>
-<div class="line"><a name="l01449"></a><span class="lineno"> 1449</span>&#160;                       <span class="keyword">const</span> real_wp_ x_l[], </div>
-<div class="line"><a name="l01450"></a><span class="lineno"> 1450</span>&#160;                       <span class="keyword">const</span> real_wp_ x_u[], </div>
-<div class="line"><a name="l01451"></a><span class="lineno"> 1451</span>&#160;                       real_wp_ x[], </div>
-<div class="line"><a name="l01452"></a><span class="lineno"> 1452</span>&#160;                       real_wp_ c[], </div>
-<div class="line"><a name="l01453"></a><span class="lineno"> 1453</span>&#160;                       real_wp_ y[], </div>
-<div class="line"><a name="l01454"></a><span class="lineno"> 1454</span>&#160;                       real_wp_ z[], </div>
-<div class="line"><a name="l01455"></a><span class="lineno"> 1455</span>&#160;                       <span class="keywordtype">int</span> x_stat[], </div>
-<div class="line"><a name="l01456"></a><span class="lineno"> 1456</span>&#160;                       <span class="keywordtype">int</span> c_stat[] );</div>
-<div class="line"><a name="l01457"></a><span class="lineno"> 1457</span>&#160; </div>
-<div class="line"><a name="l01576"></a><span class="lineno"> 1576</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    Q P A  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*</span></div>
-<div class="line"><a name="l01577"></a><span class="lineno"> 1577</span>&#160; </div>
-<div class="line"><a name="l01578"></a><span class="lineno"> 1578</span>&#160;<span class="keywordtype">void</span> <a class="code" href="qpa_8h.html#a631cf6ec1a95b27c712ace4fa7dc06f0">qpa_information</a>( <span class="keywordtype">void</span> **data,</div>
-<div class="line"><a name="l01579"></a><span class="lineno"> 1579</span>&#160;                      <span class="keyword">struct</span> <a class="code" href="qpa_8h.html#structqpa__inform__type">qpa_inform_type</a> *inform,</div>
-<div class="line"><a name="l01580"></a><span class="lineno"> 1580</span>&#160;                      <span class="keywordtype">int</span> *status );</div>
-<div class="line"><a name="l01581"></a><span class="lineno"> 1581</span>&#160; </div>
-<div class="line"><a name="l01596"></a><span class="lineno"> 1596</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    Q P A  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*</span></div>
-<div class="line"><a name="l01597"></a><span class="lineno"> 1597</span>&#160; </div>
-<div class="line"><a name="l01598"></a><span class="lineno"> 1598</span>&#160;<span class="keywordtype">void</span> <a class="code" href="qpa_8h.html#a18b73b54796470edc039e3ac85bd30d5">qpa_terminate</a>( <span class="keywordtype">void</span> **data, </div>
-<div class="line"><a name="l01599"></a><span class="lineno"> 1599</span>&#160;                    <span class="keyword">struct</span> <a class="code" href="qpa_8h.html#structqpa__control__type">qpa_control_type</a> *control, </div>
-<div class="line"><a name="l01600"></a><span class="lineno"> 1600</span>&#160;                    <span class="keyword">struct</span> <a class="code" href="qpa_8h.html#structqpa__inform__type">qpa_inform_type</a> *inform );</div>
-<div class="line"><a name="l01601"></a><span class="lineno"> 1601</span>&#160; </div>
-<div class="line"><a name="l01630"></a><span class="lineno"> 1630</span>&#160;<span class="comment">// end include guard</span></div>
-<div class="line"><a name="l01631"></a><span class="lineno"> 1631</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01632"></a><span class="lineno"> 1632</span>&#160; </div>
-<div class="line"><a name="l01633"></a><span class="lineno"> 1633</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l01634"></a><span class="lineno"> 1634</span>&#160;} <span class="comment">/* extern &quot;C&quot; */</span></div>
-<div class="line"><a name="l01635"></a><span class="lineno"> 1635</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01304"></a><span class="lineno"> 1304</span>&#160;                     <span class="keyword">const</span> real_wp_ rho_g, </div>
+<div class="line"><a name="l01305"></a><span class="lineno"> 1305</span>&#160;                     <span class="keyword">const</span> real_wp_ rho_b, </div>
+<div class="line"><a name="l01306"></a><span class="lineno"> 1306</span>&#160;                     <span class="keywordtype">int</span> a_ne,</div>
+<div class="line"><a name="l01307"></a><span class="lineno"> 1307</span>&#160;                     <span class="keyword">const</span> real_wp_ A_val[], </div>
+<div class="line"><a name="l01308"></a><span class="lineno"> 1308</span>&#160;                     <span class="keyword">const</span> real_wp_ c_l[], </div>
+<div class="line"><a name="l01309"></a><span class="lineno"> 1309</span>&#160;                     <span class="keyword">const</span> real_wp_ c_u[], </div>
+<div class="line"><a name="l01310"></a><span class="lineno"> 1310</span>&#160;                     <span class="keyword">const</span> real_wp_ x_l[], </div>
+<div class="line"><a name="l01311"></a><span class="lineno"> 1311</span>&#160;                     <span class="keyword">const</span> real_wp_ x_u[], </div>
+<div class="line"><a name="l01312"></a><span class="lineno"> 1312</span>&#160;                     real_wp_ x[], </div>
+<div class="line"><a name="l01313"></a><span class="lineno"> 1313</span>&#160;                     real_wp_ c[], </div>
+<div class="line"><a name="l01314"></a><span class="lineno"> 1314</span>&#160;                     real_wp_ y[], </div>
+<div class="line"><a name="l01315"></a><span class="lineno"> 1315</span>&#160;                     real_wp_ z[], </div>
+<div class="line"><a name="l01316"></a><span class="lineno"> 1316</span>&#160;                     <span class="keywordtype">int</span> x_stat[], </div>
+<div class="line"><a name="l01317"></a><span class="lineno"> 1317</span>&#160;                     <span class="keywordtype">int</span> c_stat[] );</div>
+<div class="line"><a name="l01318"></a><span class="lineno"> 1318</span>&#160; </div>
+<div class="line"><a name="l01443"></a><span class="lineno"> 1443</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-*-   Q P A _ S O L V E _ B C L 1 Q P   -*-*-*-*-*-*-*-*-</span></div>
+<div class="line"><a name="l01444"></a><span class="lineno"> 1444</span>&#160; </div>
+<div class="line"><a name="l01445"></a><span class="lineno"> 1445</span>&#160;<span class="keywordtype">void</span> <a class="code" href="qpa_8h.html#a5b5ef5f0d8134d8f02b1da62a04a3ace">qpa_solve_bcl1qp</a>( <span class="keywordtype">void</span> **data,</div>
+<div class="line"><a name="l01446"></a><span class="lineno"> 1446</span>&#160;                       <span class="keywordtype">int</span> *status,</div>
+<div class="line"><a name="l01447"></a><span class="lineno"> 1447</span>&#160;                       <span class="keywordtype">int</span> n, </div>
+<div class="line"><a name="l01448"></a><span class="lineno"> 1448</span>&#160;                       <span class="keywordtype">int</span> m, </div>
+<div class="line"><a name="l01449"></a><span class="lineno"> 1449</span>&#160;                       <span class="keywordtype">int</span> h_ne,</div>
+<div class="line"><a name="l01450"></a><span class="lineno"> 1450</span>&#160;                       <span class="keyword">const</span> real_wp_ H_val[], </div>
+<div class="line"><a name="l01451"></a><span class="lineno"> 1451</span>&#160;                       <span class="keyword">const</span> real_wp_ g[], </div>
+<div class="line"><a name="l01452"></a><span class="lineno"> 1452</span>&#160;                       <span class="keyword">const</span> real_wp_ f, </div>
+<div class="line"><a name="l01453"></a><span class="lineno"> 1453</span>&#160;                       <span class="keyword">const</span> real_wp_ rho_g, </div>
+<div class="line"><a name="l01454"></a><span class="lineno"> 1454</span>&#160;                       <span class="keywordtype">int</span> a_ne,</div>
+<div class="line"><a name="l01455"></a><span class="lineno"> 1455</span>&#160;                       <span class="keyword">const</span> real_wp_ A_val[], </div>
+<div class="line"><a name="l01456"></a><span class="lineno"> 1456</span>&#160;                       <span class="keyword">const</span> real_wp_ c_l[], </div>
+<div class="line"><a name="l01457"></a><span class="lineno"> 1457</span>&#160;                       <span class="keyword">const</span> real_wp_ c_u[], </div>
+<div class="line"><a name="l01458"></a><span class="lineno"> 1458</span>&#160;                       <span class="keyword">const</span> real_wp_ x_l[], </div>
+<div class="line"><a name="l01459"></a><span class="lineno"> 1459</span>&#160;                       <span class="keyword">const</span> real_wp_ x_u[], </div>
+<div class="line"><a name="l01460"></a><span class="lineno"> 1460</span>&#160;                       real_wp_ x[], </div>
+<div class="line"><a name="l01461"></a><span class="lineno"> 1461</span>&#160;                       real_wp_ c[], </div>
+<div class="line"><a name="l01462"></a><span class="lineno"> 1462</span>&#160;                       real_wp_ y[], </div>
+<div class="line"><a name="l01463"></a><span class="lineno"> 1463</span>&#160;                       real_wp_ z[], </div>
+<div class="line"><a name="l01464"></a><span class="lineno"> 1464</span>&#160;                       <span class="keywordtype">int</span> x_stat[], </div>
+<div class="line"><a name="l01465"></a><span class="lineno"> 1465</span>&#160;                       <span class="keywordtype">int</span> c_stat[] );</div>
+<div class="line"><a name="l01466"></a><span class="lineno"> 1466</span>&#160; </div>
+<div class="line"><a name="l01588"></a><span class="lineno"> 1588</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    Q P A  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*</span></div>
+<div class="line"><a name="l01589"></a><span class="lineno"> 1589</span>&#160; </div>
+<div class="line"><a name="l01590"></a><span class="lineno"> 1590</span>&#160;<span class="keywordtype">void</span> <a class="code" href="qpa_8h.html#a631cf6ec1a95b27c712ace4fa7dc06f0">qpa_information</a>( <span class="keywordtype">void</span> **data,</div>
+<div class="line"><a name="l01591"></a><span class="lineno"> 1591</span>&#160;                      <span class="keyword">struct</span> <a class="code" href="qpa_8h.html#structqpa__inform__type">qpa_inform_type</a> *inform,</div>
+<div class="line"><a name="l01592"></a><span class="lineno"> 1592</span>&#160;                      <span class="keywordtype">int</span> *status );</div>
+<div class="line"><a name="l01593"></a><span class="lineno"> 1593</span>&#160; </div>
+<div class="line"><a name="l01608"></a><span class="lineno"> 1608</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    Q P A  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*</span></div>
+<div class="line"><a name="l01609"></a><span class="lineno"> 1609</span>&#160; </div>
+<div class="line"><a name="l01610"></a><span class="lineno"> 1610</span>&#160;<span class="keywordtype">void</span> <a class="code" href="qpa_8h.html#a18b73b54796470edc039e3ac85bd30d5">qpa_terminate</a>( <span class="keywordtype">void</span> **data, </div>
+<div class="line"><a name="l01611"></a><span class="lineno"> 1611</span>&#160;                    <span class="keyword">struct</span> <a class="code" href="qpa_8h.html#structqpa__control__type">qpa_control_type</a> *control, </div>
+<div class="line"><a name="l01612"></a><span class="lineno"> 1612</span>&#160;                    <span class="keyword">struct</span> <a class="code" href="qpa_8h.html#structqpa__inform__type">qpa_inform_type</a> *inform );</div>
+<div class="line"><a name="l01613"></a><span class="lineno"> 1613</span>&#160; </div>
+<div class="line"><a name="l01642"></a><span class="lineno"> 1642</span>&#160;<span class="comment">// end include guard</span></div>
+<div class="line"><a name="l01643"></a><span class="lineno"> 1643</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01644"></a><span class="lineno"> 1644</span>&#160; </div>
+<div class="line"><a name="l01645"></a><span class="lineno"> 1645</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l01646"></a><span class="lineno"> 1646</span>&#160;} <span class="comment">/* extern &quot;C&quot; */</span></div>
+<div class="line"><a name="l01647"></a><span class="lineno"> 1647</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aqpa_8h_html_a9c5b9155e1665977103d8c32881d9f00"><div class="ttname"><a href="qpa_8h.html#a9c5b9155e1665977103d8c32881d9f00">qpa_time_type::analyse</a></div><div class="ttdeci">real_wp_ analyse</div><div class="ttdoc">the CPU time spent analysing the required matrices prior to factorizatio</div><div class="ttdef"><b>Definition:</b> qpa.h:877</div></div>
 <div class="ttc" id="aqpa_8h_html_a11a46bd456ea63bac8bdffb056fe98c9"><div class="ttname"><a href="qpa_8h.html#a11a46bd456ea63bac8bdffb056fe98c9">qpa_control_type::infinity</a></div><div class="ttdeci">real_wp_ infinity</div><div class="ttdoc">any bound larger than infinity in modulus will be regarded as infinite</div><div class="ttdef"><b>Definition:</b> qpa.h:714</div></div>
@@ -418,6 +421,7 @@ $(function() {
 <div class="ttc" id="aqpa_8h_html_a19ba64e8444ca3672abd157e4f1303a3"><div class="ttname"><a href="qpa_8h.html#a19ba64e8444ca3672abd157e4f1303a3">qpa_inform_type::bad_alloc</a></div><div class="ttdeci">char bad_alloc[81]</div><div class="ttdoc">the name of the array for which an allocation/deallocation error ocurred</div><div class="ttdef"><b>Definition:</b> qpa.h:923</div></div>
 <div class="ttc" id="aqpa_8h_html_a0e142fa8dc9c363c3c2993b6129b0955"><div class="ttname"><a href="qpa_8h.html#a0e142fa8dc9c363c3c2993b6129b0955">qpa_control_type::valmin</a></div><div class="ttdeci">int valmin</div><div class="ttdoc">an initial guess as to the real workspace required by SLS (OBSOL</div><div class="ttdef"><b>Definition:</b> qpa.h:635</div></div>
 <div class="ttc" id="aqpa_8h_html_af54a1b17cb663c1e89a5bcd5f1e9961f"><div class="ttname"><a href="qpa_8h.html#af54a1b17cb663c1e89a5bcd5f1e9961f">qpa_inform_type::nfacts</a></div><div class="ttdeci">int nfacts</div><div class="ttdoc">the total number of factorizations performed</div><div class="ttdef"><b>Definition:</b> qpa.h:951</div></div>
+<div class="ttc" id="aqpa_8h_html_a1a95adb548b743128e0df4ab4e801f19"><div class="ttname"><a href="qpa_8h.html#a1a95adb548b743128e0df4ab4e801f19">qpa_solve_l1qp</a></div><div class="ttdeci">void qpa_solve_l1qp(void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, const real_wp_ rho_g, const real_wp_ rho_b, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])</div></div>
 <div class="ttc" id="aqpa_8h_html_a58a2c67fad6e808e8365eff67700cba5"><div class="ttname"><a href="qpa_8h.html#a58a2c67fad6e808e8365eff67700cba5">qpa_control_type::deallocate_error_fatal</a></div><div class="ttdeci">bool deallocate_error_fatal</div><div class="ttdoc">if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution....</div><div class="ttdef"><b>Definition:</b> qpa.h:829</div></div>
 <div class="ttc" id="aqpa_8h_html_a7aedce06c5903f675a7c1496f42ff834"><div class="ttname"><a href="qpa_8h.html#a7aedce06c5903f675a7c1496f42ff834">qpa_control_type::inner_stop_relative</a></div><div class="ttdeci">real_wp_ inner_stop_relative</div><div class="ttdoc">the search direction is considered as an acceptable approximation to the minimizer of the model if th...</div><div class="ttdef"><b>Definition:</b> qpa.h:772</div></div>
 <div class="ttc" id="aqpa_8h_html_ab4584330c0becd648f624a63da263422"><div class="ttname"><a href="qpa_8h.html#ab4584330c0becd648f624a63da263422">qpa_control_type::infeas_check_interval</a></div><div class="ttdeci">int infeas_check_interval</div><div class="ttdoc">the infeasibility will be checked for improvement every infeas_check_interval iterations (see infeas_...</div><div class="ttdef"><b>Definition:</b> qpa.h:645</div></div>
@@ -466,8 +470,8 @@ $(function() {
 <div class="ttc" id="aqpa_8h_html_aab6f168571c2073e01e240524b8a3da0"><div class="ttname"><a href="qpa_8h.html#aab6f168571c2073e01e240524b8a3da0">qpa_inform_type::iter</a></div><div class="ttdeci">int iter</div><div class="ttdoc">the total number of iterations required</div><div class="ttdef"><b>Definition:</b> qpa.h:931</div></div>
 <div class="ttc" id="aqpa_8h_html_a6f12f6f5f94ae38d4a4152b1150dd9af"><div class="ttname"><a href="qpa_8h.html#a6f12f6f5f94ae38d4a4152b1150dd9af">qpa_control_type::multiplier_tol</a></div><div class="ttdeci">real_wp_ multiplier_tol</div><div class="ttdoc">any dual variable or Lagrange multiplier which is less than multiplier_t outside its optimal interval...</div><div class="ttdef"><b>Definition:</b> qpa.h:780</div></div>
 <div class="ttc" id="aqpa_8h_html_aa636051ebb14fdebe323a3843e7e24e3"><div class="ttname"><a href="qpa_8h.html#aa636051ebb14fdebe323a3843e7e24e3">qpa_control_type::feas_tol</a></div><div class="ttdeci">real_wp_ feas_tol</div><div class="ttdoc">any constraint violated by less than feas_tol will be considered to be satisfied</div><div class="ttdef"><b>Definition:</b> qpa.h:719</div></div>
-<div class="ttc" id="aqpa_8h_html_a1c5a2cdbda74733cdbd9bd0f56ded57a"><div class="ttname"><a href="qpa_8h.html#a1c5a2cdbda74733cdbd9bd0f56ded57a">qpa_solve_bcl1qp</a></div><div class="ttdeci">void qpa_solve_bcl1qp(void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])</div></div>
 <div class="ttc" id="aqpa_8h_html_a0cbcb28977ac1f47ab67d27e4216626d"><div class="ttname"><a href="qpa_8h.html#a0cbcb28977ac1f47ab67d27e4216626d">qpa_inform_type::obj</a></div><div class="ttdeci">real_wp_ obj</div><div class="ttdoc">the value of the objective function at the best estimate of the solution determined by QPA_solve</div><div class="ttdef"><b>Definition:</b> qpa.h:969</div></div>
+<div class="ttc" id="aqpa_8h_html_a5b5ef5f0d8134d8f02b1da62a04a3ace"><div class="ttname"><a href="qpa_8h.html#a5b5ef5f0d8134d8f02b1da62a04a3ace">qpa_solve_bcl1qp</a></div><div class="ttdeci">void qpa_solve_bcl1qp(void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, const real_wp_ rho_g, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])</div></div>
 <div class="ttc" id="aqpa_8h_html_aa448fed9eb03e70d5a03300b4fbbf210"><div class="ttname"><a href="qpa_8h.html#aa448fed9eb03e70d5a03300b4fbbf210">qpa_inform_type::factorization_status</a></div><div class="ttdeci">int factorization_status</div><div class="ttdoc">the return status from the factorization</div><div class="ttdef"><b>Definition:</b> qpa.h:939</div></div>
 <div class="ttc" id="aqpa_8h_html_a79e62dbb4cbb6e99d82167e60c703015"><div class="ttname"><a href="qpa_8h.html#a79e62dbb4cbb6e99d82167e60c703015">qpa_time_type::factorize</a></div><div class="ttdeci">real_wp_ factorize</div><div class="ttdoc">the CPU time spent factorizing the required matrices</div><div class="ttdef"><b>Definition:</b> qpa.h:881</div></div>
 <div class="ttc" id="aqpa_8h_html_a6e27f49150e9a14580fb313cc2777e00"><div class="ttname"><a href="qpa_8h.html#a6e27f49150e9a14580fb313cc2777e00">qpa_inform_type::status</a></div><div class="ttdeci">int status</div><div class="ttdoc">return status. See QPA_solve for details</div><div class="ttdef"><b>Definition:</b> qpa.h:915</div></div>
@@ -489,7 +493,6 @@ $(function() {
 <div class="ttc" id="aqpa_8h_html_a2441f4b793197c9f7ff879131baf2655"><div class="ttname"><a href="qpa_8h.html#a2441f4b793197c9f7ff879131baf2655">qpa_control_type::infeas_g_improved_by_factor</a></div><div class="ttdeci">real_wp_ infeas_g_improved_by_factor</div><div class="ttdoc">if the infeasibility of the general constraints has not dropped by a fac of infeas_g_improved_by_fact...</div><div class="ttdef"><b>Definition:</b> qpa.h:736</div></div>
 <div class="ttc" id="aqpa_8h_html_a5031bbc31f94e4cba6a540a3182b6d80"><div class="ttname"><a href="qpa_8h.html#a5031bbc31f94e4cba6a540a3182b6d80">qpa_control_type::indmin</a></div><div class="ttdeci">int indmin</div><div class="ttdoc">an initial guess as to the integer workspace required by SLS (OBSOL</div><div class="ttdef"><b>Definition:</b> qpa.h:631</div></div>
 <div class="ttc" id="aqpa_8h_html_abbf84109b56423a0eb15b3c096349eff"><div class="ttname"><a href="qpa_8h.html#abbf84109b56423a0eb15b3c096349eff">qpa_control_type::solve_qp</a></div><div class="ttdeci">bool solve_qp</div><div class="ttdoc">if solve_qp is .TRUE., the value of prob.rho_g and prob.rho_b will be increased as many times as are ...</div><div class="ttdef"><b>Definition:</b> qpa.h:800</div></div>
-<div class="ttc" id="aqpa_8h_html_a95cc7e9a5a976b94772a8d3a8d8669a1"><div class="ttname"><a href="qpa_8h.html#a95cc7e9a5a976b94772a8d3a8d8669a1">qpa_solve_l1qp</a></div><div class="ttdeci">void qpa_solve_l1qp(void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -106,15 +106,6 @@
         CHARACTER ( LEN = 30 ) :: prefix  = '""                            '
       END TYPE IR_control_type
 
-!  - - - - - - - - - -
-!   data derived type
-!  - - - - - - - - - -
-
-      TYPE, PUBLIC :: IR_data_type
-        INTEGER :: n = 0
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B, RES
-      END TYPE IR_data_type
-
 !  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -145,6 +136,26 @@
         REAL ( KIND = wp ) :: norm_final_residual = HUGE( one )
 
       END TYPE IR_inform_type
+
+!  - - - - - - - - - -
+!   data derived type
+!  - - - - - - - - - -
+
+      TYPE, PUBLIC :: IR_data_type
+        INTEGER :: n = 0
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B, RES
+      END TYPE IR_data_type
+
+!  - - - - - - - - - - - -
+!   full data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: IR_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( IR_data_type ) :: IR_data
+        TYPE ( IR_control_type ) :: IR_control
+        TYPE ( IR_inform_type ) :: IR_inform
+      END TYPE IR_full_data_type
 
    CONTAINS
 

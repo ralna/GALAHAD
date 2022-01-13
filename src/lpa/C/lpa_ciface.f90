@@ -14,25 +14,26 @@
   MODULE GALAHAD_LPA_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_LPA_double, ONLY: &
-        f_lpa_control_type => LPA_control_type, &
-        f_lpa_time_type => LPA_time_type, &
-        f_lpa_inform_type => LPA_inform_type, &
-        f_lpa_full_data_type => LPA_full_data_type, &
-        f_lpa_initialize => LPA_initialize, &
-        f_lpa_read_specfile => LPA_read_specfile, &
-        f_lpa_import => LPA_import, &
-        f_lpa_reset_control => LPA_reset_control, &
-        f_lpa_information => LPA_information, &
+    USE GALAHAD_LPA_double, ONLY:                                              &
+        f_lpa_control_type => LPA_control_type,                                &
+        f_lpa_time_type => LPA_time_type,                                      &
+        f_lpa_inform_type => LPA_inform_type,                                  &
+        f_lpa_full_data_type => LPA_full_data_type,                            &
+        f_lpa_initialize => LPA_initialize,                                    &
+        f_lpa_read_specfile => LPA_read_specfile,                              &
+        f_lpa_import => LPA_import,                                            &
+        f_lpa_solve_lp => LPA_solve_lp,                                        &
+        f_lpa_reset_control => LPA_reset_control,                              &
+        f_lpa_information => LPA_information,                                  &
         f_lpa_terminate => LPA_terminate
 
-    USE GALAHAD_RPD_double_ciface, ONLY: &
-        rpd_inform_type, &
-        rpd_control_type, &
-        copy_rpd_inform_in => copy_inform_in, &
-        copy_rpd_inform_out => copy_inform_out, &
-        copy_rpd_control_in => copy_control_in, &
-        copy_rpd_control_out => copy_control_out
+!   USE GALAHAD_RPD_double_ciface, ONLY:                                       &
+!       rpd_inform_type,                                                       &
+!       rpd_control_type,                                                      &
+!       copy_rpd_inform_in => copy_inform_in,                                  &
+!       copy_rpd_inform_out => copy_inform_out,                                &
+!       copy_rpd_control_in => copy_control_in,                                &
+!       copy_rpd_control_out => copy_control_out
 
     IMPLICIT NONE
 
@@ -101,9 +102,9 @@
       REAL ( KIND = wp ) :: obj
       REAL ( KIND = wp ) :: primal_infeasibility
       LOGICAL ( KIND = C_BOOL ) :: feasible
-      REAL ( KIND = wp ) :: RINFO
+      REAL ( KIND = wp ), DIMENSION( 40 ) :: RINFO
       TYPE ( lpa_time_type ) :: time
-      TYPE ( rpd_inform_type ) :: rpd_inform
+!     TYPE ( rpd_inform_type ) :: rpd_inform
     END TYPE lpa_inform_type
 
 !----------------------
@@ -297,7 +298,7 @@
 
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
-    CALL copy_rpd_inform_in( cinform%rpd_inform, finform%rpd_inform )
+!   CALL copy_rpd_inform_in( cinform%rpd_inform, finform%rpd_inform )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -332,7 +333,7 @@
 
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
-    CALL copy_rpd_inform_out( finform%rpd_inform, cinform%rpd_inform )
+!   CALL copy_rpd_inform_out( finform%rpd_inform, cinform%rpd_inform )
 
     ! Strings
     l = LEN( finform%bad_alloc )
@@ -442,7 +443,8 @@
 !  C interface to fortran lpa_inport
 !  ---------------------------------
 
-  SUBROUTINE lpa_import( ccontrol, cdata, status ) BIND( C )
+  SUBROUTINE lpa_import( ccontrol, cdata, status, n, m,                        &
+                         catype, ane, arow, acol, aptr ) BIND( C )
   USE GALAHAD_LPA_double_ciface
   IMPLICIT NONE
 
@@ -451,11 +453,18 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( lpa_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
 
 !  local variables
 
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
   TYPE ( f_lpa_control_type ) :: fcontrol
   TYPE ( f_lpa_full_data_type ), POINTER :: fdata
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -466,6 +475,10 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
+!  convert C string to Fortran string
+
+  fatype = cstr_to_fchar( catype )
+
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
@@ -473,12 +486,30 @@
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
+    IF ( PRESENT( arow ) ) THEN
+      ALLOCATE( arow_find( ane ) )
+      arow_find = arow + 1
+    END IF
+    IF ( PRESENT( acol ) ) THEN
+      ALLOCATE( acol_find( ane ) )
+      acol_find = acol + 1
+    END IF
+    IF ( PRESENT( aptr ) ) THEN
+      ALLOCATE( aptr_find( m + 1 ) )
+      aptr_find = aptr + 1
+    END IF
 
 !  import the problem data into the required LPA structure
 
-    CALL f_lpa_import( fcontrol, fdata, status )
+    CALL f_lpa_import( fcontrol, fdata, status, n, m,                          &
+                       fatype, ane, arow_find, acol_find, aptr_find )
+
+    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
+    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
+    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
   ELSE
-    CALL f_lpa_import( fcontrol, fdata, status )
+    CALL f_lpa_import( fcontrol, fdata, status, n, m,                          &
+                       fatype, ane, arow, acol, aptr )
   END IF
 
 !  copy control out
@@ -488,7 +519,7 @@
 
   END SUBROUTINE lpa_import
 
-!  ---------------------------------------
+!  ----------------------------------------
 !  C interface to fortran lpa_reset_control
 !  ----------------------------------------
 
@@ -522,10 +553,51 @@
 
 !  import the control parameters into the required structure
 
-  CALL f_LPA_reset_control( fcontrol, fdata, status )
+  CALL f_lpa_reset_control( fcontrol, fdata, status )
   RETURN
 
   END SUBROUTINE lpa_reset_control
+
+!  ------------------------------------
+!  C interface to fortran lpa_solve_lpa
+!  ------------------------------------
+
+  SUBROUTINE lpa_solve_lp( cdata, status, n, m, g, f, ane, aval,               &
+                           cl, cu, xl, xu, x, c, y, z, xstat, cstat ) BIND( C )
+  USE GALAHAD_LPA_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( m ) :: cstat
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_lpa_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the qp
+
+  CALL f_lpa_solve_lp( fdata, status, g, f, aval, cl, cu, xl, xu, x, c, y, z,  &
+                       xstat, cstat )
+  RETURN
+
+  END SUBROUTINE lpa_solve_lp
 
 !  --------------------------------------
 !  C interface to fortran lpa_information

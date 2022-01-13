@@ -372,11 +372,11 @@ extern "C" {
 #include "galahad_precision.h"
 
 // required packages
-#include "lsqp.h"
-#include "fdc.h"
+//#include "lsqp.h"
+//#include "fdc.h"
 #include "sbls.h"
 #include "gltr.h"
-#include "fit.h"
+//#include "fit.h"
 
 /**
  * control derived type as a C struct
@@ -412,7 +412,7 @@ struct qpb_control_type {
     int maxit;
 
     /// \brief
-    /// the maximum number of iterative refinements allowed               (OBSOL
+    /// the maximum number of iterative refinements allowed
     int itref_max;
 
     /// \brief
@@ -423,12 +423,13 @@ struct qpb_control_type {
 
     /// \brief
     /// specifies the type of indicator function used. Pssible values are
-    /// 1 primal indicator: constraint active <=> distance to nearest bound
-    /// <= .indicator_p_tol
-    /// 2 primal-dual indicator: constraint active <=> distance to nearest bound
-    /// <= .indicator_tol_pd * size of corresponding multiplier
-    /// 3 primal-dual indicator: constraint active <=> distance to nearest bound
-    /// <= .indicator_tol_tapia * distance to same bound at previous iteration
+    /// \li 1 primal indicator: constraint active <=> distance to nearest
+    ///     bound <= .indicator_p_tol
+    /// \li 2 primal-dual indicator: constraint active <=> distance to nearest 
+    ///     bound <= .indicator_tol_pd * size of corresponding multiplier
+    /// \li 3 primal-dual indicator: constraint active <=> distance to nearest 
+    ///     bound <= .indicator_tol_tapia * distance to same bound at previous 
+    ///     iteration
     int indicator_type;
 
     /// \brief
@@ -441,9 +442,9 @@ struct qpb_control_type {
 
     /// \brief
     /// should extrapolation be used to track the central path? Possible values
-    /// 0 never
-    /// 1 after the final major iteration
-    /// 2 at each major iteration
+    /// \li 0 never
+    /// \li 1 after the final major iteration
+    /// \li 2 at each major iteration
     int extrapolate;
 
     /// \brief
@@ -452,22 +453,22 @@ struct qpb_control_type {
 
     /// \brief
     /// the factorization to be used. Possible values are
-    /// 0  automatic
-    /// 1  Schur-complement factorization
-    /// 2  augmented-system factorization                              (OBSOLETE
+    /// \li 0  automatic
+    /// \li 1  Schur-complement factorization
+    /// \li 2  augmented-system factorization
     int factor;
 
     /// \brief
     /// the maximum number of nonzeros in a column of A which is permitted
-    /// with the Schur-complement factorization                          (OBSOLE
+    /// with the Schur-complement factorization
     int max_col;
 
     /// \brief
-    /// an initial guess as to the integer workspace required by SBLS     (OBSOL
+    /// an initial guess as to the integer workspace required by SBLS
     int indmin;
 
     /// \brief
-    /// an initial guess as to the real workspace required by SBLS        (OBSOL
+    /// an initial guess as to the real workspace required by SBLS
     int valmin;
 
     /// \brief
@@ -479,15 +480,15 @@ struct qpb_control_type {
     /// \brief
     /// the preconditioner to be used for the CG is defined by precon.
     /// Possible values are
-    /// 0  automatic
-    /// 1  no preconditioner, i.e, the identity within full factorization
-    /// 2  full factorization
-    /// 3  band within full factorization
-    /// 4  diagonal using the barrier terms within full factorization  (OBSOLETE
+    /// \li 0  automatic
+    /// \li 1  no preconditioner, i.e, the identity within full factorization
+    /// \li 2  full factorization
+    /// \li 3  band within full factorization
+    /// \li 4  diagonal using the barrier terms within full factorization
     int precon;
 
     /// \brief
-    /// the semi-bandwidth of a band preconditioner, if appropriate       (OBSOL
+    /// the semi-bandwidth of a band preconditioner, if appropriate
     int nsemib;
 
     /// \brief
@@ -496,7 +497,8 @@ struct qpb_control_type {
     int path_derivatives;
 
     /// \brief
-    /// the order of (Puiseux) series to fit to the path data: <=0 to fit all da
+    /// the order of (Puiseux) series to fit to the path data: 
+    ///  <=0 to fit all data
     int fit_order;
 
     /// \brief
@@ -551,29 +553,29 @@ struct qpb_control_type {
     real_wp_ reduce_infeas;
 
     /// \brief
-    /// if the objective function value is smaller than obj_unbounded, it will b
-    /// flagged as unbounded from below.
+    /// if the objective function value is smaller than obj_unbounded, it will
+    /// be flagged as unbounded from below.
     real_wp_ obj_unbounded;
 
     /// \brief
     /// the threshold pivot used by the matrix factorization.
-    /// See the documentation for SBLS for details                       (OBSOLE
+    /// See the documentation for SBLS for details
     real_wp_ pivot_tol;
 
     /// \brief
     /// the threshold pivot used by the matrix factorization when attempting to
     /// detect linearly dependent constraints.
-    /// See the documentation for FDC for details                        (OBSOLE
+    /// See the documentation for FDC for details
     real_wp_ pivot_tol_for_dependencies;
 
     /// \brief
     /// any pivots smaller than zero_pivot in absolute value will be regarded to
-    /// zero when attempting to detect linearly dependent constraints    (OBSOLE
+    /// zero when attempting to detect linearly dependent constraints
     real_wp_ zero_pivot;
 
     /// \brief
-    /// any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer tha
-    /// identical_bounds_tol will be reset to the average of their values
+    /// any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer
+    /// than identical_bounds_tol will be reset to the average of their values
     real_wp_ identical_bounds_tol;
 
     /// \brief
@@ -636,9 +638,9 @@ struct qpb_control_type {
 
     /// \brief
     /// if .center is true, the algorithm will use the analytic center
-    /// of the feasible set as its initial feasible point. Otherwise, a feasible
-    /// point as close as possible to the initial point will be used. We recomme
-    /// using the analytic center
+    /// of the feasible set as its initial feasible point. Otherwise, a 
+    /// feasible point as close as possible to the initial point will be used. 
+    /// We recommend using the analytic center
     bool center;
 
     /// \brief
@@ -651,13 +653,13 @@ struct qpb_control_type {
     bool puiseux;
 
     /// \brief
-    /// if .feasol is true, the final solution obtained will be perturbed so tha
-    /// variables close to their bounds are moved onto these bounds
+    /// if .feasol is true, the final solution obtained will be perturbed so
+    /// that variables close to their bounds are moved onto these bounds
     bool feasol;
 
     /// \brief
     /// if .array_syntax_worse_than_do_loop is true, f77-style do loops will be
-    /// used rather than f90-style array syntax for vector operations    (OBSOLE
+    /// used rather than f90-style array syntax for vector operations
     bool array_syntax_worse_than_do_loop;
 
     /// \brief
@@ -687,11 +689,11 @@ struct qpb_control_type {
 
     /// \brief
     /// control parameters for LSQP
-    struct lsqp_control_type lsqp_control;
+    ///struct lsqp_control_type lsqp_control;
 
     /// \brief
     /// control parameters for FDC
-    struct fdc_control_type fdc_control;
+    ///struct fdc_control_type fdc_control;
 
     /// \brief
     /// control parameters for SBLS
@@ -703,7 +705,7 @@ struct qpb_control_type {
 
     /// \brief
     /// control parameters for FIT
-    struct fit_control_type fit_control;
+    ///struct fit_control_type fit_control;
 };
 
 /**
@@ -866,11 +868,11 @@ struct qpb_inform_type {
 
     /// \brief
     /// inform parameters for LSQP
-    struct lsqp_inform_type lsqp_inform;
+    ///struct lsqp_inform_type lsqp_inform;
 
     /// \brief
     /// inform parameters for FDC
-    struct fdc_inform_type fdc_inform;
+    ///struct fdc_inform_type fdc_inform;
 
     /// \brief
     /// inform parameters for SBLS
@@ -882,7 +884,7 @@ struct qpb_inform_type {
 
     /// \brief
     /// return information from FIT
-    struct fit_inform_type fit_inform;
+    ///struct fit_inform_type fit_inform;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    Q P B  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

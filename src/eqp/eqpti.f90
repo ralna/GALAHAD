@@ -41,6 +41,7 @@
    H_dense = (/ 1.0_wp, 0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp /)
    ALLOCATE( H_diag( n ), H_zero( 0 ) )
    H_diag = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+   C = (/ 3.0_wp, 0.0_wp /)
 
 ! problem data complete
 
@@ -50,7 +51,7 @@
 
    WRITE( 6, "( /, ' basic tests of qp storage formats', / )" )
 
-   DO data_storage_type = 1, 7
+   DO data_storage_type = 1, 6
      CALL EQP_initialize( data, control, inform )
      X = 0.0_wp ; Y = 0.0_wp ! start from zero
      SELECT CASE ( data_storage_type )
@@ -77,6 +78,7 @@
        CALL EQP_import( control, data, status, n, m,                           &
                         'diagonal', H_ne, H_row, H_col, H_ptr,                 &
                         'sparse_by_rows', A_ne, A_row, A_col, A_ptr )
+       CALL EQP_solve_qp( data, status, H_diag, G, f, A_val, C, X, Y )
      CASE ( 5 ) ! scaled identity
        st = ' S'
        CALL EQP_import( control, data, status, n, m,                           &
@@ -98,6 +100,7 @@
      ELSE
        WRITE( 6, "( A2, ': EQP_solve exit status = ', I0 ) " ) st, inform%status
      END IF
+write(6,*) X
      CALL EQP_terminate( data, control, inform )  ! delete internal workspace
    END DO
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, H_zero )

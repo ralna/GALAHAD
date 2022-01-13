@@ -480,11 +480,11 @@ struct trb_control_type {
 
     /// \brief
     /// control parameters for TRS
-    ///struct trs_control_type trs_control;
+    struct trs_control_type trs_control;
 
     /// \brief
     /// control parameters for GLTR
-    ///struct gltr_control_type gltr_control;
+    struct gltr_control_type gltr_control;
 
     /// \brief
     /// control parameters for PSLS
@@ -632,11 +632,11 @@ struct trb_inform_type {
 
     /// \brief
     /// inform parameters for TRS
-    ///struct trs_inform_type trs_inform;
+    struct trs_inform_type trs_inform;
 
     /// \brief
     /// inform parameters for GLTR
-    ///struct gltr_inform_type gltr_inform;
+    struct gltr_inform_type gltr_inform;
 
     /// \brief
     /// inform parameters for PSLS

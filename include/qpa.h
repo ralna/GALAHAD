@@ -1291,7 +1291,7 @@ void qpa_solve_qp( void **data,
     c_stat should be set as above to provide a guide to the initial working set.
 */  
 
-//  *-*-*-*-*-*-*-*-*-*-*-   Q P A _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   Q P A _ S O L V E _ L 1 Q P   -*-*-*-*-*-*-*-*-*-*-
 
 void qpa_solve_l1qp( void **data,
                      int *status,
@@ -1301,6 +1301,8 @@ void qpa_solve_l1qp( void **data,
                      const real_wp_ H_val[], 
                      const real_wp_ g[], 
                      const real_wp_ f, 
+                     const real_wp_ rho_g, 
+                     const real_wp_ rho_b, 
                      int a_ne,
                      const real_wp_ A_val[], 
                      const real_wp_ c_l[], 
@@ -1377,6 +1379,12 @@ void qpa_solve_l1qp( void **data,
  @param[in] f is a scalar of type double, that 
     holds the constant term \f$f\f$ of the objective function. 
   
+ @param[in] rho_g is a scalar of type double, that 
+    holds the parameter \f$\rho_g\f$ associated with the linear constraints.
+  
+ @param[in] rho_b is a scalar of type double, that holds the parameter 
+   \f$\rho_b\f$ associated with the simple bound constraints.
+  
  @param[in] a_ne is a scalar variable of type int, that holds the number of 
     entries in the constraint Jacobian matrix \f$A\f$.
  
@@ -1432,7 +1440,7 @@ void qpa_solve_l1qp( void **data,
     c_stat should be set as above to provide a guide to the initial working set.
 */  
 
-//  *-*-*-*-*-*-*-*-*-*-*-   Q P A _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   Q P A _ S O L V E _ B C L 1 Q P   -*-*-*-*-*-*-*-*-
 
 void qpa_solve_bcl1qp( void **data,
                        int *status,
@@ -1442,6 +1450,7 @@ void qpa_solve_bcl1qp( void **data,
                        const real_wp_ H_val[], 
                        const real_wp_ g[], 
                        const real_wp_ f, 
+                       const real_wp_ rho_g, 
                        int a_ne,
                        const real_wp_ A_val[], 
                        const real_wp_ c_l[], 
@@ -1517,6 +1526,9 @@ void qpa_solve_bcl1qp( void **data,
   
  @param[in] f is a scalar of type double, that 
     holds the constant term \f$f\f$ of the objective function. 
+  
+ @param[in] rho_g is a scalar of type double, that 
+    holds the parameter \f$\rho_g\f$ associated with the linear constraints.
   
  @param[in] a_ne is a scalar variable of type int, that holds the number of 
     entries in the constraint Jacobian matrix \f$A\f$.

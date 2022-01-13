@@ -779,6 +779,25 @@
 !       H%type( 1 : 8 ) = TRANSFER( 'DIAGONAL', H%type )
 !       H%val( : )   the values of the diagonals of H, stored in order
 !
+!     v) scaled identity
+!
+!       In this case, the following must be set:
+!
+!       H%type( 1 : 15) = 'SCALED-IDENTITY'
+!       H%val( 1 )  the value assigned to each diagonal of H
+!
+!    vi) identity
+!
+!       In this case, the following must be set:
+!
+!       H%type( 1 : 8 ) = 'IDENTITY'
+!
+!   vii) no Hessian
+!
+!       In this case, the following must be set:
+!
+!       H%type( 1 : 4 ) = 'ZERO' or 'NONE'
+!
 !    On exit, the components will most likely have been reordered.
 !    The output  matrix will be stored by rows, according to scheme (ii) above.
 !    However, if scheme (i) is used for input, the output H%row will contain
@@ -892,10 +911,11 @@
 !       alloc_status.
 !
 !   - 3 one of the restrictions
-!          prob%n     >=  1
-!          prob%m     >=  0
-!          prob%A%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' }
-!          prob%H%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE', 'DIAGONAL'}
+!         prob%n     >=  1
+!         prob%m     >=  0
+!         prob%A%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' }
+!         prob%H%type in { 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE', 'DIAGONAL',
+!                          'SCALED_IDENTITY', 'IDENTITY', 'ZERO', 'NONE' }
 !       has been violated.
 !
 !    -5 the constraints are likely inconsistent
@@ -1053,7 +1073,15 @@
               prefix, prob%X0( : prob%n )
           END IF
         ELSE
-          IF ( SMT_get( prob%H%type ) == 'DIAGONAL' ) THEN
+          IF ( SMT_get( prob%H%type ) == 'ZERO' .OR.                           &
+               SMT_get( prob%H%type ) == 'NONE' ) THEN
+            WRITE( control%out, "( A, ' H = 0' )" ) prefix
+          ELSE IF ( SMT_get( prob%H%type ) == 'IDENTITY' ) THEN
+            WRITE( control%out, "( A, ' H = identity' )" ) prefix
+          ELSE IF ( SMT_get( prob%H%type ) == 'SCALED_IDENTITY' ) THEN
+            WRITE( control%out, "( A, ' H = ', ES24.16, '* identity' )" )      &
+              prefix, prob%H%val( 1 )
+          ELSE IF ( SMT_get( prob%H%type ) == 'DIAGONAL' ) THEN
             WRITE( control%out, "( A, ' H (diagonal) = ', /, ( 3ES24.16 ) )" ) &
               prefix, prob%H%val( : prob%n )
           ELSE IF ( SMT_get( prob%H%type ) == 'DENSE' ) THEN
@@ -2065,6 +2093,12 @@
 !  Compute the function and gradient values at x_f
 
         SELECT CASE ( SMT_get( H%type ) )
+        CASE ( 'ZERO', 'NONE' )
+          data%G_f( : n ) = zero
+        CASE ( 'IDENTITY' )
+          data%G_f( : n ) = X( : n )
+        CASE ( 'SCALED_IDENTITY' )
+          data%G_f( : n ) = H%val( 1 ) * X( : n )
         CASE ( 'DIAGONAL' )
           DO i = 1, n
             data%G_f( i ) = H%val( i ) * X( i )
@@ -2304,6 +2338,12 @@
           data%WORK( : n ) = data%VECTOR( : n )
 
           SELECT CASE ( SMT_get( H%type ) )
+          CASE ( 'ZERO', 'NONE' )
+            data%VECTOR( : n ) = zero
+          CASE ( 'IDENTITY' )
+            data%VECTOR( : n ) = data%WORK( : n )
+          CASE ( 'SCALED_IDENTITY' )
+            data%VECTOR( : n ) = H%val( 1 ) * data%WORK( : n )
           CASE ( 'DIAGONAL' )
             DO i = 1, n
               data%VECTOR( i ) = H%val( i ) * data%WORK( i )
@@ -2403,6 +2443,12 @@
 
       IF ( printt ) THEN
         SELECT CASE ( SMT_get( H%type ) )
+        CASE ( 'ZERO', 'NONE' )
+          data%G_f( : n ) = zero
+        CASE ( 'IDENTITY' )
+          data%G_f( : n ) = X( : n )
+        CASE ( 'SCALED_IDENTITY' )
+          data%G_f( : n ) = H%val( 1 ) * X( : n )
         CASE ( 'DIAGONAL' )
           DO i = 1, n
             data%G_f( i ) = H%val( i ) * X( i )
@@ -3280,6 +3326,10 @@
        data%prob%G( : n ) = G( : n )
      END IF
 
+!  save the linear term of the constraints
+
+     data%prob%C( : m ) = C( : m )
+
 !  save the initial primal and dual variables and Lagrange multipliers
 
      data%prob%X( : n ) = X( : n )
@@ -3377,6 +3427,10 @@
        IF ( data%eqp_inform%status /= 0 ) GO TO 900
        data%prob%G( : n ) = G( : n )
      END IF
+
+!  save the linear term of the constraints
+
+     data%prob%C( : m ) = C( : m )
 
 !  save the initial primal and dual variables and Lagrange multipliers
 
@@ -3514,6 +3568,10 @@
        IF ( data%eqp_inform%status /= 0 ) GO TO 900
        data%prob%G( : n ) = G( : n )
      END IF
+
+!  save the linear term of the constraints
+
+     data%prob%C( : m ) = C( : m )
 
 !  save the initial primal and dual variables and Lagrange multipliers
 

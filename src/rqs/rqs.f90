@@ -413,6 +413,10 @@
         TYPE ( RQS_control_type ) :: control
       END TYPE
 
+!  - - - - - - - - - - - -
+!   full data derived type
+!  - - - - - - - - - - - -
+
       TYPE, PUBLIC :: RQS_full_data_type
         LOGICAL :: f_indexing
         TYPE ( RQS_data_type ) :: RQS_data

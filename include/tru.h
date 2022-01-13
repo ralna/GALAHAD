@@ -431,15 +431,15 @@ struct tru_control_type {
 
     /// \brief
     /// control parameters for TRS
-    ///struct trs_control_type trs_control;
-
-    /// \brief
-    /// control parameters for DPS
-    ///struct trs_control_type dps_control;
+    struct trs_control_type trs_control;
 
     /// \brief
     /// control parameters for GLTR
-    ///struct gltr_control_type gltr_control;
+    struct gltr_control_type gltr_control;
+
+    /// \brief
+    /// control parameters for DPS
+    ///struct dps_control_type dps_control;
 
     /// \brief
     /// control parameters for PSLS
@@ -565,10 +565,10 @@ struct tru_inform_type {
     struct tru_time_type time;
 
     /// inform parameters for TRS
-    ///struct trs_inform_type trs_inform;
+    struct trs_inform_type trs_inform;
 
     /// inform parameters for GLTR
-    ///struct gltr_info_type gltr_inform;
+    struct gltr_inform_type gltr_inform;
 
     /// inform parameters for PSLS
     ///struct psls_inform_type psls_inform;

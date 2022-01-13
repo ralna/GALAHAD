@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-07 AT 16:16 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-13 AT 08:30 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  Q P A    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -14,24 +14,27 @@
   MODULE GALAHAD_QPA_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_QPA_double, ONLY: &
-        f_qpa_control_type => QPA_control_type, &
-        f_qpa_time_type => QPA_time_type, &
-        f_qpa_inform_type => QPA_inform_type, &
-        f_qpa_full_data_type => QPA_full_data_type, &
-        f_qpa_initialize => QPA_initialize, &
-        f_qpa_read_specfile => QPA_read_specfile, &
-        f_qpa_import => QPA_import, &
-        f_qpa_reset_control => QPA_reset_control, &
-        f_qpa_information => QPA_information, &
-        f_qpa_terminate => QPA_terminate
+    USE GALAHAD_QPA_double, ONLY:                                              &
+        f_qpa_control_type   => QPA_control_type,                              &
+        f_qpa_time_type      => QPA_time_type,                                 &
+        f_qpa_inform_type    => QPA_inform_type,                               &
+        f_qpa_full_data_type => QPA_full_data_type,                            &
+        f_qpa_initialize     => QPA_initialize,                                &
+        f_qpa_read_specfile  => QPA_read_specfile,                             &
+        f_qpa_import         => QPA_import,                                    &
+        f_qpa_solve_qp       => QPA_solve_qp,                                  &
+        f_qpa_solve_l1qp     => QPA_solve_l1qp,                                &
+        f_qpa_solve_bcl1qp   => QPA_solve_bcl1qp,                              &
+        f_qpa_reset_control  => QPA_reset_control,                             &
+        f_qpa_information    => QPA_information,                               &
+        f_qpa_terminate      => QPA_terminate
 
-    USE GALAHAD_SLS_double_ciface, ONLY: &
-        sls_inform_type, &
-        sls_control_type, &
-        copy_sls_inform_in => copy_inform_in, &
-        copy_sls_inform_out => copy_inform_out, &
-        copy_sls_control_in => copy_control_in, &
+    USE GALAHAD_SLS_double_ciface, ONLY:                                       &
+        sls_inform_type,                                                       &
+        sls_control_type,                                                      &
+        copy_sls_inform_in   => copy_inform_in,                                &
+        copy_sls_inform_out  => copy_inform_out,                               &
+        copy_sls_control_in  => copy_control_in,                               &
         copy_sls_control_out => copy_control_out
 
     IMPLICIT NONE
@@ -195,11 +198,13 @@
     fcontrol%clock_time_limit = ccontrol%clock_time_limit
 
     ! Logicals
-    fcontrol%treat_zero_bounds_as_general = ccontrol%treat_zero_bounds_as_general
+    fcontrol%treat_zero_bounds_as_general                                      &
+      = ccontrol%treat_zero_bounds_as_general
     fcontrol%solve_qp = ccontrol%solve_qp
     fcontrol%solve_within_bounds = ccontrol%solve_within_bounds
     fcontrol%randomize = ccontrol%randomize
-    fcontrol%array_syntax_worse_than_do_loop = ccontrol%array_syntax_worse_than_do_loop
+    fcontrol%array_syntax_worse_than_do_loop                                   &
+      = ccontrol%array_syntax_worse_than_do_loop
     fcontrol%space_critical = ccontrol%space_critical
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
     fcontrol%generate_sif_file = ccontrol%generate_sif_file
@@ -211,7 +216,8 @@
     ! Strings
     DO i = 1, LEN( fcontrol%symmetric_linear_solver )
       IF ( ccontrol%symmetric_linear_solver( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%symmetric_linear_solver( i : i ) = ccontrol%symmetric_linear_solver( i )
+      fcontrol%symmetric_linear_solver( i : i )                                &
+        = ccontrol%symmetric_linear_solver( i )
     END DO
     DO i = 1, LEN( fcontrol%sif_file_name )
       IF ( ccontrol%sif_file_name( i ) == C_NULL_CHAR ) EXIT
@@ -278,11 +284,13 @@
     ccontrol%clock_time_limit = fcontrol%clock_time_limit
 
     ! Logicals
-    ccontrol%treat_zero_bounds_as_general = fcontrol%treat_zero_bounds_as_general
+    ccontrol%treat_zero_bounds_as_general                                      &
+      = fcontrol%treat_zero_bounds_as_general
     ccontrol%solve_qp = fcontrol%solve_qp
     ccontrol%solve_within_bounds = fcontrol%solve_within_bounds
     ccontrol%randomize = fcontrol%randomize
-    ccontrol%array_syntax_worse_than_do_loop = fcontrol%array_syntax_worse_than_do_loop
+    ccontrol%array_syntax_worse_than_do_loop                                   &
+      = fcontrol%array_syntax_worse_than_do_loop
     ccontrol%space_critical = fcontrol%space_critical
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
     ccontrol%generate_sif_file = fcontrol%generate_sif_file
@@ -294,7 +302,8 @@
     ! Strings
     l = LEN( fcontrol%symmetric_linear_solver )
     DO i = 1, l
-      ccontrol%symmetric_linear_solver( i ) = fcontrol%symmetric_linear_solver( i : i )
+      ccontrol%symmetric_linear_solver( i )                                    &
+        = fcontrol%symmetric_linear_solver( i : i )
     END DO
     ccontrol%symmetric_linear_solver( l + 1 ) = C_NULL_CHAR
     l = LEN( fcontrol%sif_file_name )
@@ -440,7 +449,7 @@
 !  C interface to fortran qpa_initialize
 !  -------------------------------------
 
-  SUBROUTINE qpa_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE qpa_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_QPA_double_ciface
   IMPLICIT NONE
 
@@ -455,7 +464,7 @@
   TYPE ( f_qpa_full_data_type ), POINTER :: fdata
   TYPE ( f_qpa_control_type ) :: fcontrol
   TYPE ( f_qpa_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -471,9 +480,10 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+
   RETURN
 
   END SUBROUTINE qpa_initialize
@@ -508,11 +518,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_qpa_read_specfile( fcontrol, device )
@@ -532,7 +542,9 @@
 !  C interface to fortran qpa_inport
 !  ---------------------------------
 
-  SUBROUTINE qpa_import( ccontrol, cdata, status ) BIND( C )
+  SUBROUTINE qpa_import( ccontrol, cdata, status, n, m,                        &
+                         chtype, hne, hrow, hcol, hptr,                        &
+                         catype, ane, arow, acol, aptr ) BIND( C )
   USE GALAHAD_QPA_double_ciface
   IMPLICIT NONE
 
@@ -541,11 +553,24 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( qpa_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne, ane
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
 
 !  local variables
 
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
   TYPE ( f_qpa_control_type ) :: fcontrol
   TYPE ( f_qpa_full_data_type ), POINTER :: fdata
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -556,6 +581,11 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
+!  convert C string to Fortran string
+
+  fhtype = cstr_to_fchar( chtype )
+  fatype = cstr_to_fchar( catype )
+
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
@@ -563,12 +593,48 @@
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
+    IF ( PRESENT( hrow ) ) THEN
+      ALLOCATE( hrow_find( hne ) )
+      hrow_find = hrow + 1
+    END IF
+    IF ( PRESENT( hcol ) ) THEN
+      ALLOCATE( hcol_find( hne ) )
+      hcol_find = hcol + 1
+    END IF
+    IF ( PRESENT( hptr ) ) THEN
+      ALLOCATE( hptr_find( n + 1 ) )
+      hptr_find = hptr + 1
+    END IF
+
+    IF ( PRESENT( arow ) ) THEN
+      ALLOCATE( arow_find( ane ) )
+      arow_find = arow + 1
+    END IF
+    IF ( PRESENT( acol ) ) THEN
+      ALLOCATE( acol_find( ane ) )
+      acol_find = acol + 1
+    END IF
+    IF ( PRESENT( aptr ) ) THEN
+      ALLOCATE( aptr_find( m + 1 ) )
+      aptr_find = aptr + 1
+    END IF
 
 !  import the problem data into the required QPA structure
 
-    CALL f_qpa_import( fcontrol, fdata, status )
+    CALL f_qpa_import( fcontrol, fdata, status, n, m,                          &
+                       fhtype, hne, hrow_find, hcol_find, hptr_find,           &
+                       fatype, ane, arow_find, acol_find, aptr_find )
+
+    IF ( ALLOCATED( hrow_find ) ) DEALLOCATE( hrow_find )
+    IF ( ALLOCATED( hcol_find ) ) DEALLOCATE( hcol_find )
+    IF ( ALLOCATED( hptr_find ) ) DEALLOCATE( hptr_find )
+    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
+    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
+    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
   ELSE
-    CALL f_qpa_import( fcontrol, fdata, status )
+    CALL f_qpa_import( fcontrol, fdata, status, n, m,                          &
+                       fhtype, hne, hrow, hcol, hptr,                          &
+                       fatype, ane, arow, acol, aptr )
   END IF
 
 !  copy control out
@@ -578,7 +644,7 @@
 
   END SUBROUTINE qpa_import
 
-!  ---------------------------------------
+!  ----------------------------------------
 !  C interface to fortran qpa_reset_control
 !  ----------------------------------------
 
@@ -612,16 +678,144 @@
 
 !  import the control parameters into the required structure
 
-  CALL f_QPA_reset_control( fcontrol, fdata, status )
+  CALL f_qpa_reset_control( fcontrol, fdata, status )
   RETURN
 
   END SUBROUTINE qpa_reset_control
+
+!  -----------------------------------
+!  C interface to fortran qpa_solve_qp
+!  -----------------------------------
+
+  SUBROUTINE qpa_solve_qp( cdata, status, n, m, hne, hval, g, f, ane, aval,    &
+                           cl, cu, xl, xu, x, c, y, z, xstat, cstat ) BIND( C )
+  USE GALAHAD_QPA_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane, hne
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( m ) :: cstat
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_qpa_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the qp
+
+  CALL f_qpa_solve_qp( fdata, status, hval, g, f, aval, cl, cu, xl, xu,        &
+                       x, c, y, z, xstat, cstat )
+  RETURN
+
+  END SUBROUTINE qpa_solve_qp
+
+!  -------------------------------------
+!  C interface to fortran qpa_solve_l1qp
+!  -------------------------------------
+
+  SUBROUTINE qpa_solve_l1qp( cdata, status, n, m, hne, hval, g, f,             &
+                             rho_g, rho_b, ane, aval, cl, cu, xl, xu,          &
+                             x, c, y, z, xstat, cstat) BIND( C )
+  USE GALAHAD_QPA_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane, hne
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f, rho_g, rho_b
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( m ) :: cstat
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_qpa_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the qp
+
+  CALL f_qpa_solve_l1qp( fdata, status, hval, g, f, rho_g, rho_b, aval,        &
+                         cl, cu, xl, xu, x, c, y, z, xstat, cstat )
+  RETURN
+
+  END SUBROUTINE qpa_solve_l1qp
+
+!  ---------------------------------------
+!  C interface to fortran qpa_solve_bcl1qp
+!  ---------------------------------------
+
+  SUBROUTINE qpa_solve_bcl1qp( cdata, status, n, m, hne, hval, g, f, rho_g,    &
+                               ane, aval, cl, cu, xl, xu, x, c, y, z,          &
+                               xstat, cstat ) BIND( C )
+  USE GALAHAD_QPA_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane, hne
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f, rho_g
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( m ) :: cstat
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_qpa_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the qp
+
+  CALL f_qpa_solve_bcl1qp( fdata, status, hval, g, f, rho_g, aval, cl, cu,    &
+                           xl, xu, x, c, y, z, xstat, cstat )
+  RETURN
+
+  END SUBROUTINE qpa_solve_bcl1qp
 
 !  --------------------------------------
 !  C interface to fortran qpa_information
 !  --------------------------------------
 
-  SUBROUTINE qpa_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE qpa_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_QPA_double_ciface
   IMPLICIT NONE
 
@@ -655,7 +849,7 @@
 !  C interface to fortran qpa_terminate
 !  ------------------------------------
 
-  SUBROUTINE qpa_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE qpa_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_QPA_double_ciface
   IMPLICIT NONE
 
@@ -694,7 +888,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE qpa_terminate

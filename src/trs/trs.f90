@@ -421,6 +421,10 @@
         TYPE ( TRS_control_type ) :: control
       END TYPE TRS_data_type
 
+!  - - - - - - - - - - - -
+!   full data derived type
+!  - - - - - - - - - - - -
+
       TYPE, PUBLIC :: TRS_full_data_type
         LOGICAL :: f_indexing
         TYPE ( TRS_data_type ) :: TRS_data

@@ -151,9 +151,6 @@
      - \link eqp_solve_sldqp \endlink - solve the shifted least-distance problem
   - \link eqp_resolve_qp \endlink (optional) - resolve the problem with the
     same Hessian and Jacobian, but different \f$g\f$, \f$f\f$ and/or \f$c\f$
-
-possibly change control 
-      parameters if a sequence of problems are being solved
   - \link eqp_information \endlink (optional) - recover information about
     the solution and solution process
   - \link eqp_terminate \endlink - deallocate data structures
@@ -289,9 +286,9 @@ extern "C" {
 #include "galahad_precision.h"
 
 // required packages
-#include "fdc.h"
-include "sbls.h"
-include "gltr.h"
+//#include "fdc.h"
+#include "sbls.h"
+#include "gltr.h"
 
 /**
  * control derived type as a C struct
@@ -467,7 +464,7 @@ struct eqp_control_type {
 
     /// \brief
     /// control parameters for FDC
-    struct fdc_control_type fdc_control;
+    ///struct fdc_control_type fdc_control;
 
     /// \brief
     /// control parameters for SBLS
@@ -560,7 +557,7 @@ struct eqp_inform_type {
 
     /// \brief
     /// inform parameters for FDC
-    struct fdc_inform_type fdc_inform;
+    ///struct fdc_inform_type fdc_inform;
 
     /// \brief
     /// inform parameters for SBLS

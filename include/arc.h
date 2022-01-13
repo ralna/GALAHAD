@@ -473,15 +473,15 @@ struct arc_control_type {
 
     /// \brief
     /// control parameters for RQS
-    ///struct rqs_control_type rqs_control;
+    struct rqs_control_type rqs_control;
+
+    /// \brief
+    /// control parameters for GLRT
+    struct glrt_control_type glrt_control;
 
     /// \brief
     /// control parameters for DPS
     ///struct dps_control_type dps_control;
-
-    /// \brief
-    /// control parameters for GLRT
-    ///struct glrt_control_type glrt_control;
 
     /// \brief
     /// control parameters for PSLS
@@ -625,15 +625,15 @@ struct arc_inform_type {
 
     /// \brief
     /// inform parameters for RQS
-    ///struct rqs_inform_type rqs_inform;
+    struct rqs_inform_type rqs_inform;
+
+    /// \brief
+    /// inform parameters for GLRT
+    struct glrt_inform_type glrt_inform;
 
     /// \brief
     /// inform parameters for DPS
     ///struct dps_inform_type dps_inform;
-
-    /// \brief
-    /// inform parameters for GLRT
-    ///struct glrt_inform_type glrt_inform;
 
     /// \brief
     /// inform parameters for PSLS

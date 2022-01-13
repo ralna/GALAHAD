@@ -79,7 +79,8 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &quot;galahad_precision.h&quot;</code><br />
-<code>#include &quot;fdc.h&quot;</code><br />
+<code>#include &quot;sbls.h&quot;</code><br />
+<code>#include &quot;gltr.h&quot;</code><br />
 </div>
 <p><a href="eqp_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -126,6 +127,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>control derived type as a C struct </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="eqpt_8c-example.html#_a0">eqpt.c</a>, and <a class="el" href="eqptf_8c-example.html#_a0">eqptf.c</a>.</dd>
+</dl>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -333,17 +336,12 @@ prefix[31]</td>
 <td class="fielddoc">
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
 <tr><td class="fieldtype">
-<a id="a7bef6e4f678e16a4dcdc40677efddd80"></a>struct fdc_control_type</td>
-<td class="fieldname">
-fdc_control</td>
-<td class="fielddoc">
-control parameters for FDC </td></tr>
-<tr><td class="fieldtype">
 <a id="a04ba974b3c8d21137deb070d0e8dfc3a"></a>struct sbls_control_type</td>
 <td class="fieldname">
 sbls_control</td>
 <td class="fielddoc">
-control parameters for SBLS </td></tr>
+control parameters for FDC struct fdc_control_type fdc_control; <p>control parameters for SBLS </p>
+</td></tr>
 <tr><td class="fieldtype">
 <a id="aa48d482633f3788830b1d8dc85fa91d6"></a>struct gltr_control_type</td>
 <td class="fieldname">
@@ -438,6 +436,8 @@ the clock time spent computing the search direction </td></tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>inform derived type as a C struct </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="eqpt_8c-example.html#_a1">eqpt.c</a>, and <a class="el" href="eqptf_8c-example.html#_a1">eqptf.c</a>.</dd>
+</dl>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -495,17 +495,12 @@ time</td>
 <td class="fielddoc">
 timings (see above) </td></tr>
 <tr><td class="fieldtype">
-<a id="a966b6933e7b53fb2d71f55f267ad00f4"></a>struct fdc_inform_type</td>
-<td class="fieldname">
-fdc_inform</td>
-<td class="fielddoc">
-inform parameters for FDC </td></tr>
-<tr><td class="fieldtype">
 <a id="a7e7617645ca9908f4f75e5216bb7cf68"></a>struct sbls_inform_type</td>
 <td class="fieldname">
 sbls_inform</td>
 <td class="fielddoc">
-inform parameters for SBLS </td></tr>
+inform parameters for FDC struct fdc_inform_type fdc_inform; <p>inform parameters for SBLS </p>
+</td></tr>
 <tr><td class="fieldtype">
 <a id="a27a98844f05f18669d3dd60d3e6a8e46"></a>struct gltr_inform_type</td>
 <td class="fieldname">
@@ -559,6 +554,8 @@ return information from GLTR </td></tr>
 </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="eqpt_8c-example.html#a3">eqpt.c</a>, and <a class="el" href="eqptf_8c-example.html#a3">eqptf.c</a>.</dd>
 </dl>
 
 </div>
@@ -729,6 +726,8 @@ return information from GLTR </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">A_ptr</td><td>is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of \(A\), as well as the total number of entries plus one, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL. </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="eqpt_8c-example.html#a5">eqpt.c</a>, and <a class="el" href="eqptf_8c-example.html#a5">eqptf.c</a>.</dd>
 </dl>
 
 </div>
@@ -907,6 +906,8 @@ return information from GLTR </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="eqpt_8c-example.html#a6">eqpt.c</a>, and <a class="el" href="eqptf_8c-example.html#a6">eqptf.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -1037,6 +1038,8 @@ return information from GLTR </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">y</td><td>is a one-dimensional array of size n and type double, that holds the values \(y\) of the Lagrange multipliers for the linear constraints. The j-th component of y, i = 0, ... , m-1, contains \(y_i\). </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="eqpt_8c-example.html#a11">eqpt.c</a>, and <a class="el" href="eqptf_8c-example.html#a11">eqptf.c</a>.</dd>
 </dl>
 
 </div>
@@ -1185,6 +1188,8 @@ return information from GLTR </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="eqpt_8c-example.html#a7">eqpt.c</a>, and <a class="el" href="eqptf_8c-example.html#a7">eqptf.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -1227,6 +1232,8 @@ return information from GLTR </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="eqp_8h.html#structeqp__inform__type">eqp_inform_type</a>) </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="eqpt_8c-example.html#a10">eqpt.c</a>, and <a class="el" href="eqptf_8c-example.html#a10">eqptf.c</a>.</dd>
 </dl>
 
 </div>

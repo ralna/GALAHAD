@@ -10,7 +10,7 @@
    TYPE ( QPA_full_data_type ) :: data
    INTEGER :: n, m, A_ne, H_ne
    INTEGER :: data_storage_type, status
-   REAL ( KIND = wp ) :: f
+   REAL ( KIND = wp ) :: f, rho_g, rho_b
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
@@ -127,11 +127,12 @@
 
    CALL QPA_initialize( data, control, inform )
    X = 0.0_wp ; Y = 0.0_wp ; Z = 0.0_wp ! start from zero
+   rho_g = 0.1_wp ; rho_b = 0.1_wp ! penalty parameters
    CALL QPA_import( control, data, status, n, m,                               &
                     'coordinate', H_ne, H_row, H_col, H_ptr,                   &
                     'coordinate', A_ne, A_row, A_col, A_ptr )
-   CALL QPA_solve_l1qp( data, status, H_val, G, f, A_val, C_l, C_u,            &
-                        X_l, X_u, X, C, Y, Z, X_stat, C_stat )
+   CALL QPA_solve_l1qp( data, status, H_val, G, f, rho_g, rho_b, A_val,        &
+                        C_l, C_u, X_l, X_u, X, C, Y, Z, X_stat, C_stat )
    CALL QPA_information( data, inform, status )
    IF ( inform%status == 0 ) THEN
      WRITE( 6, "( A6, I6, ' iterations. Optimal objective value = ', F5.2,     &
@@ -139,7 +140,9 @@
    ELSE
      WRITE( 6, "( A2, ': QPA_solve exit status = ', I0 ) " ) st, inform%status
    END IF
-   CALL QPA_solve_bcl1qp( data, status, H_val, G, f, A_val, C_l, C_u,          &
+   X = 0.0_wp ; Y = 0.0_wp ; Z = 0.0_wp ! start from zero
+   rho_g = 0.01_wp ! penalty parameters
+   CALL QPA_solve_bcl1qp( data, status, H_val, G, f, rho_g, A_val, C_l, C_u,   &
                           X_l, X_u, X, C, Y, Z, X_stat, C_stat )
    CALL QPA_information( data, inform, status )
    IF ( inform%status == 0 ) THEN

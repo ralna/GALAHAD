@@ -18,15 +18,6 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-   TeX: { Macros: {
-    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
-    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
-    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
-  } }
-});
-</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -88,11 +79,8 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &quot;galahad_precision.h&quot;</code><br />
-<code>#include &quot;lsqp.h&quot;</code><br />
-<code>#include &quot;fdc.h&quot;</code><br />
 <code>#include &quot;sbls.h&quot;</code><br />
 <code>#include &quot;gltr.h&quot;</code><br />
-<code>#include &quot;fit.h&quot;</code><br />
 </div>
 <p><a href="qpb_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -135,6 +123,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>control derived type as a C struct </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpbt_8c-example.html#_a0">qpbt.c</a>, and <a class="el" href="qpbtf_8c-example.html#_a0">qpbtf.c</a>.</dd>
+</dl>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -184,7 +174,7 @@ at most maxit inner iterations are allowed </td></tr>
 <td class="fieldname">
 itref_max</td>
 <td class="fielddoc">
-the maximum number of iterative refinements allowed (OBSOL </td></tr>
+the maximum number of iterative refinements allowed </td></tr>
 <tr><td class="fieldtype">
 <a id="a7a1029142a22f3e2a1963c3428276849"></a>int</td>
 <td class="fieldname">
@@ -196,7 +186,12 @@ the maximum number of CG iterations allowed. If cg_maxit &lt; 0, this number wil
 <td class="fieldname">
 indicator_type</td>
 <td class="fielddoc">
-specifies the type of indicator function used. Pssible values are 1 primal indicator: constraint active &lt;=&gt; distance to nearest bound &lt;= .indicator_p_tol 2 primal-dual indicator: constraint active &lt;=&gt; distance to nearest bound &lt;= .indicator_tol_pd * size of corresponding multiplier 3 primal-dual indicator: constraint active &lt;=&gt; distance to nearest bound &lt;= .indicator_tol_tapia * distance to same bound at previous iteration </td></tr>
+specifies the type of indicator function used. Pssible values are <ul>
+<li>1 primal indicator: constraint active &lt;=&gt; distance to nearest bound &lt;= .indicator_p_tol </li>
+<li>2 primal-dual indicator: constraint active &lt;=&gt; distance to nearest bound &lt;= .indicator_tol_pd * size of corresponding multiplier </li>
+<li>3 primal-dual indicator: constraint active &lt;=&gt; distance to nearest bound &lt;= .indicator_tol_tapia * distance to same bound at previous iteration </li>
+</ul>
+</td></tr>
 <tr><td class="fieldtype">
 <a id="a19f10912888ac7ebd153fb21baaeaefa"></a>int</td>
 <td class="fieldname">
@@ -208,7 +203,12 @@ indicate whether and how much of the input problem should be restored on output.
 <td class="fieldname">
 extrapolate</td>
 <td class="fielddoc">
-should extrapolation be used to track the central path? Possible values 0 never 1 after the final major iteration 2 at each major iteration </td></tr>
+should extrapolation be used to track the central path? Possible values <ul>
+<li>0 never </li>
+<li>1 after the final major iteration </li>
+<li>2 at each major iteration </li>
+</ul>
+</td></tr>
 <tr><td class="fieldtype">
 <a id="a48cfa8490ae2df9a90dd0e4d759c391f"></a>int</td>
 <td class="fieldname">
@@ -220,25 +220,30 @@ the maximum number of previous path points to use when fitting the data </td></t
 <td class="fieldname">
 factor</td>
 <td class="fielddoc">
-the factorization to be used. Possible values are 0 automatic 1 Schur-complement factorization 2 augmented-system factorization (OBSOLETE </td></tr>
+the factorization to be used. Possible values are <ul>
+<li>0 automatic </li>
+<li>1 Schur-complement factorization </li>
+<li>2 augmented-system factorization </li>
+</ul>
+</td></tr>
 <tr><td class="fieldtype">
 <a id="abca2db33b9520095e98790d45a1be93f"></a>int</td>
 <td class="fieldname">
 max_col</td>
 <td class="fielddoc">
-the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization (OBSOLE </td></tr>
+the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization </td></tr>
 <tr><td class="fieldtype">
 <a id="a5031bbc31f94e4cba6a540a3182b6d80"></a>int</td>
 <td class="fieldname">
 indmin</td>
 <td class="fielddoc">
-an initial guess as to the integer workspace required by SBLS (OBSOL </td></tr>
+an initial guess as to the integer workspace required by SBLS </td></tr>
 <tr><td class="fieldtype">
 <a id="a0e142fa8dc9c363c3c2993b6129b0955"></a>int</td>
 <td class="fieldname">
 valmin</td>
 <td class="fielddoc">
-an initial guess as to the real workspace required by SBLS (OBSOL </td></tr>
+an initial guess as to the real workspace required by SBLS </td></tr>
 <tr><td class="fieldtype">
 <a id="af7d33b88b67b2366d7e2df31d42083a9"></a>int</td>
 <td class="fieldname">
@@ -250,13 +255,20 @@ the number of iterations for which the overall infeasibility of the problem is n
 <td class="fieldname">
 precon</td>
 <td class="fielddoc">
-the preconditioner to be used for the CG is defined by precon. Possible values are 0 automatic 1 no preconditioner, i.e, the identity within full factorization 2 full factorization 3 band within full factorization 4 diagonal using the barrier terms within full factorization (OBSOLETE </td></tr>
+the preconditioner to be used for the CG is defined by precon. Possible values are <ul>
+<li>0 automatic </li>
+<li>1 no preconditioner, i.e, the identity within full factorization </li>
+<li>2 full factorization </li>
+<li>3 band within full factorization </li>
+<li>4 diagonal using the barrier terms within full factorization </li>
+</ul>
+</td></tr>
 <tr><td class="fieldtype">
 <a id="a2215bbe54edcdc418de8b79a995c9b75"></a>int</td>
 <td class="fieldname">
 nsemib</td>
 <td class="fielddoc">
-the semi-bandwidth of a band preconditioner, if appropriate (OBSOL </td></tr>
+the semi-bandwidth of a band preconditioner, if appropriate </td></tr>
 <tr><td class="fieldtype">
 <a id="a67f815d63085b187a059b9db28570911"></a>int</td>
 <td class="fieldname">
@@ -268,7 +280,7 @@ the maximum order of path derivative to use </td></tr>
 <td class="fieldname">
 fit_order</td>
 <td class="fielddoc">
-the order of (Puiseux) series to fit to the path data: &lt;=0 to fit all da </td></tr>
+the order of (Puiseux) series to fit to the path data: &lt;=0 to fit all data </td></tr>
 <tr><td class="fieldtype">
 <a id="a65c6f8382f1e75cd0b8abd5d148188d0"></a>int</td>
 <td class="fieldname">
@@ -346,31 +358,31 @@ if the overall infeasibility of the problem is not reduced by at least a factor 
 <td class="fieldname">
 obj_unbounded</td>
 <td class="fielddoc">
-if the objective function value is smaller than obj_unbounded, it will b flagged as unbounded from below. </td></tr>
+if the objective function value is smaller than obj_unbounded, it will be flagged as unbounded from below. </td></tr>
 <tr><td class="fieldtype">
 <a id="a133347eb5f45a24a77b63b4afd4212e8"></a>real_wp_</td>
 <td class="fieldname">
 pivot_tol</td>
 <td class="fielddoc">
-the threshold pivot used by the matrix factorization. See the documentation for SBLS for details (OBSOLE </td></tr>
+the threshold pivot used by the matrix factorization. See the documentation for SBLS for details </td></tr>
 <tr><td class="fieldtype">
 <a id="a14e253b53c59b0850d7d3b5245d89df9"></a>real_wp_</td>
 <td class="fieldname">
 pivot_tol_for_dependencies</td>
 <td class="fielddoc">
-the threshold pivot used by the matrix factorization when attempting to detect linearly dependent constraints. See the documentation for FDC for details (OBSOLE </td></tr>
+the threshold pivot used by the matrix factorization when attempting to detect linearly dependent constraints. See the documentation for FDC for details </td></tr>
 <tr><td class="fieldtype">
 <a id="aed8525bc028ed7ae0a9dd1bb3154cda2"></a>real_wp_</td>
 <td class="fieldname">
 zero_pivot</td>
 <td class="fielddoc">
-any pivots smaller than zero_pivot in absolute value will be regarded to zero when attempting to detect linearly dependent constraints (OBSOLE </td></tr>
+any pivots smaller than zero_pivot in absolute value will be regarded to zero when attempting to detect linearly dependent constraints </td></tr>
 <tr><td class="fieldtype">
 <a id="abc74ac9bbf6375075f8943aac6ee09e4"></a>real_wp_</td>
 <td class="fieldname">
 identical_bounds_tol</td>
 <td class="fielddoc">
-any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer tha identical_bounds_tol will be reset to the average of their values </td></tr>
+any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than identical_bounds_tol will be reset to the average of their values </td></tr>
 <tr><td class="fieldtype">
 <a id="a7aedce06c5903f675a7c1496f42ff834"></a>real_wp_</td>
 <td class="fieldname">
@@ -448,7 +460,7 @@ any problem bound with the value zero will be treated as if it were a general va
 <td class="fieldname">
 center</td>
 <td class="fielddoc">
-if .center is true, the algorithm will use the analytic center of the feasible set as its initial feasible point. Otherwise, a feasible point as close as possible to the initial point will be used. We recomme using the analytic center </td></tr>
+if .center is true, the algorithm will use the analytic center of the feasible set as its initial feasible point. Otherwise, a feasible point as close as possible to the initial point will be used. We recommend using the analytic center </td></tr>
 <tr><td class="fieldtype">
 <a id="a539cfdddc36d2e16b0647e84a49a61a1"></a>bool</td>
 <td class="fieldname">
@@ -466,13 +478,13 @@ If extrapolation is to be used, decide between Puiseux and Taylor series. </td><
 <td class="fieldname">
 feasol</td>
 <td class="fielddoc">
-if .feasol is true, the final solution obtained will be perturbed so tha variables close to their bounds are moved onto these bounds </td></tr>
+if .feasol is true, the final solution obtained will be perturbed so that variables close to their bounds are moved onto these bounds </td></tr>
 <tr><td class="fieldtype">
 <a id="a67975e9960ae3d4d79bf18b240b9f614"></a>bool</td>
 <td class="fieldname">
 array_syntax_worse_than_do_loop</td>
 <td class="fielddoc">
-if .array_syntax_worse_than_do_loop is true, f77-style do loops will be used rather than f90-style array syntax for vector operations (OBSOLE </td></tr>
+if .array_syntax_worse_than_do_loop is true, f77-style do loops will be used rather than f90-style array syntax for vector operations </td></tr>
 <tr><td class="fieldtype">
 <a id="a957fc1f4f26eeef3b0951791ff972e8d"></a>bool</td>
 <td class="fieldname">
@@ -504,35 +516,19 @@ prefix[31]</td>
 <td class="fielddoc">
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
 <tr><td class="fieldtype">
-<a id="a2cda9960f4e6a417f64b213147f802e0"></a>struct lsqp_control_type</td>
-<td class="fieldname">
-lsqp_control</td>
-<td class="fielddoc">
-control parameters for LSQP </td></tr>
-<tr><td class="fieldtype">
-<a id="a7bef6e4f678e16a4dcdc40677efddd80"></a>struct fdc_control_type</td>
-<td class="fieldname">
-fdc_control</td>
-<td class="fielddoc">
-control parameters for FDC </td></tr>
-<tr><td class="fieldtype">
 <a id="a04ba974b3c8d21137deb070d0e8dfc3a"></a>struct sbls_control_type</td>
 <td class="fieldname">
 sbls_control</td>
 <td class="fielddoc">
-control parameters for SBLS </td></tr>
+control parameters for LSQP struct lsqp_control_type lsqp_control; <p>control parameters for FDC struct fdc_control_type fdc_control;</p>
+<p>control parameters for SBLS </p>
+</td></tr>
 <tr><td class="fieldtype">
 <a id="aa48d482633f3788830b1d8dc85fa91d6"></a>struct gltr_control_type</td>
 <td class="fieldname">
 gltr_control</td>
 <td class="fielddoc">
 control parameters for GLTR </td></tr>
-<tr><td class="fieldtype">
-<a id="a4b2e99077c510333b6b2a6f0b59114b9"></a>struct fit_control_type</td>
-<td class="fieldname">
-fit_control</td>
-<td class="fielddoc">
-control parameters for FIT </td></tr>
 </table>
 
 </div>
@@ -687,6 +683,8 @@ the clock time spent computing the search direction in the inital-point </td></t
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>inform derived type as a C struct </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpbt_8c-example.html#_a1">qpbt.c</a>, and <a class="el" href="qpbtf_8c-example.html#_a1">qpbtf.c</a>.</dd>
+</dl>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -780,35 +778,19 @@ time</td>
 <td class="fielddoc">
 timings (see above) </td></tr>
 <tr><td class="fieldtype">
-<a id="acc149a8b0411baab4ddd0d9e4ccf28ff"></a>struct lsqp_inform_type</td>
-<td class="fieldname">
-lsqp_inform</td>
-<td class="fielddoc">
-inform parameters for LSQP </td></tr>
-<tr><td class="fieldtype">
-<a id="a966b6933e7b53fb2d71f55f267ad00f4"></a>struct fdc_inform_type</td>
-<td class="fieldname">
-fdc_inform</td>
-<td class="fielddoc">
-inform parameters for FDC </td></tr>
-<tr><td class="fieldtype">
 <a id="a7e7617645ca9908f4f75e5216bb7cf68"></a>struct sbls_inform_type</td>
 <td class="fieldname">
 sbls_inform</td>
 <td class="fielddoc">
-inform parameters for SBLS </td></tr>
+inform parameters for LSQP struct lsqp_inform_type lsqp_inform; <p>inform parameters for FDC struct fdc_inform_type fdc_inform;</p>
+<p>inform parameters for SBLS </p>
+</td></tr>
 <tr><td class="fieldtype">
 <a id="a27a98844f05f18669d3dd60d3e6a8e46"></a>struct gltr_inform_type</td>
 <td class="fieldname">
 gltr_inform</td>
 <td class="fielddoc">
 return information from GLTR </td></tr>
-<tr><td class="fieldtype">
-<a id="ac6efa45e989564727014956bf3e00deb"></a>struct fit_inform_type</td>
-<td class="fieldname">
-fit_inform</td>
-<td class="fielddoc">
-return information from FIT </td></tr>
 </table>
 
 </div>
@@ -856,6 +838,8 @@ return information from FIT </td></tr>
 </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpbt_8c-example.html#a3">qpbt.c</a>, and <a class="el" href="qpbtf_8c-example.html#a3">qpbtf.c</a>.</dd>
 </dl>
 
 </div>
@@ -1026,6 +1010,8 @@ return information from FIT </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">A_ptr</td><td>is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of \(A\), as well as the total number of entries plus one, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL. </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpbt_8c-example.html#a5">qpbt.c</a>, and <a class="el" href="qpbtf_8c-example.html#a5">qpbtf.c</a>.</dd>
 </dl>
 
 </div>
@@ -1254,6 +1240,8 @@ return information from FIT </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpbt_8c-example.html#a6">qpbt.c</a>, and <a class="el" href="qpbtf_8c-example.html#a6">qpbtf.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -1300,6 +1288,8 @@ return information from FIT </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpbt_8c-example.html#a7">qpbt.c</a>, and <a class="el" href="qpbtf_8c-example.html#a7">qpbtf.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -1342,6 +1332,8 @@ return information from FIT </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="qpb_8h.html#structqpb__inform__type">qpb_inform_type</a>) </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpbt_8c-example.html#a10">qpbt.c</a>, and <a class="el" href="qpbtf_8c-example.html#a10">qpbtf.c</a>.</dd>
 </dl>
 
 </div>

@@ -137,10 +137,10 @@
   main subbroutine from this package requires that the input problem
   be transformed into the ``standard form''
 \latexonly
-  \[  \begin{array}{rl}\mbox{minimize} & g'^T x' \\(4)  \;\; \mbox{subject to} & A' x' = b \\ &  l_i \leq x'_i \leq u_i, \;\;  (i\leq k) \\ \mbox{and} & x'_l \geq 0, \;\; (i \geq l) \end{array} \]
+  \[  \begin{array}{rl}\mbox{minimize} & g^{\prime T} x^{\prime} \\(4)  \;\; \mbox{subject to} & A^{\prime} x^{\prime} = b \\ &  l_i \leq x^{\prime}_i \leq u_i, \;\;  (i\leq k) \\ \mbox{and} & x^{\prime}_l \geq 0, \;\; (i \geq l) \end{array} \]
 \endlatexonly
 \htmlonly
-  \f[  \begin{array}{rl}\mbox{minimize} & g'^T x' \\(4)  \;\; \mbox{subject to} & A' x' = b \\ &  l_i \leq x'_i \leq u_i, \;\;  (i\leq k) \\ \mbox{and} & x'_l \geq 0, \;\; (i \geq l) \end{array} \f]
+  \f[   \begin{array}{rl}\mbox{minimize} & g^{\prime T} x^{\prime} \\(4)  \;\; \mbox{subject to} & A^{\prime} x^{\prime} = b \\ &  l_i \leq x^{\prime}_i \leq u_i, \;\;  (i\leq k) \\ \mbox{and} & x^{\prime}_l \geq 0, \;\; (i \geq l) \end{array} \f]
 \endhtmlonly
 \manonly
   \n
@@ -156,7 +156,7 @@
   In order to deal with the possibility that the general constraints
   are inconsistent or not of full rank,
   LA04 introduces additional ``artifical'' variables \f$v\f$ and replaces
-  the constraints of \req{newlp} by
+  the constraints of (4) by
   \f[(5) \;\; A' x' + v = b\f]
   and gradually encourages \f$v\f$ to zero as a first solution phase.
 
@@ -168,7 +168,7 @@
   obtained. Each iteration of the simplex method requires the solution
   of a number of sets of linear equations whose coefficient matrix is
   the <b>basis</b> matrix \f$B\f$, made up of the columns of 
-  \f$[A'  I]\f$ corresponding to the basic variables, or its transpose
+  \f$[A'\f$  \f$I]\f$ corresponding to the basic variables, or its transpose
   \f$B^T\f$. As the basis matrices for consecutive iterations are
   closely related, it is normally advantageous to update (rather than
   recompute) their factorizations as the computation proceeds.  If an
@@ -177,7 +177,7 @@
   simple crash algorithm of Gould and Reid (1989), and initial
   steepest-edge weights are calculated.
 
-  Phases one (finding a feasible solution) and two (solving \req{newlp})
+  Phases one (finding a feasible solution) and two (solving (4)
   of the simplex method are applied, as appropriate, with the choice of
   entering variable as described by Goldfarb and Reid (1977) and the
   choice of leaving variable as proposed by Harris (1973).
@@ -203,11 +203,11 @@
   Mathematical Programming <b>45</b> 475-501.
 
   P. M. J. Harris (1973).
-  Pivot selection methods of the {D}evex {LP} code.
+  Pivot selection methods of the Devex LP code.
   Mathematical Programming <b>5</b> 1-28.
 
   J. K. Reid (1982)
-  A sparsity-exploiting variant of the {B}artels-{G}olub
+  A sparsity-exploiting variant of the Bartels-Golub
   decomposition for linear-programming bases.
   Mathematical Programming <b>24</b> 55-69.
 
@@ -299,7 +299,7 @@ extern "C" {
 #include "galahad_precision.h"
 
 // required packages
-#include "rpd.h"
+//#include "rpd.h"
 
 /**
  * control derived type as a C struct
@@ -536,7 +536,7 @@ struct lpa_inform_type {
 
     /// \brief
     /// inform parameters for RPD
-    struct rpd_inform_type rpd_inform;
+    ///struct rpd_inform_type rpd_inform;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    L P A  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

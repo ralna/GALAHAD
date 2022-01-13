@@ -407,7 +407,7 @@ struct rqs_control_type {
 
     /// \brief
     /// control parameters for iterative refinement (see ir_c documentation)
-    /// struct ir_control_type ir_control;
+    struct ir_control_type ir_control;
 };
 
 /**
@@ -545,7 +545,7 @@ struct rqs_inform_type {
     /// cholesky information (see sls_c documentation)
     struct sls_inform_type sls_inform;
     /// iterative_refinement information (see ir_c documentation)
-    /// struct ir_inform_type ir_inform;
+    struct ir_inform_type ir_inform;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    R Q S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

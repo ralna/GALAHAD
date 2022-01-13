@@ -79,7 +79,6 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &quot;galahad_precision.h&quot;</code><br />
-<code>#include &quot;rpd.h&quot;</code><br />
 </div>
 <p><a href="lpa_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -122,6 +121,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>control derived type as a C struct </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="lpat_8c-example.html#_a0">lpat.c</a>, and <a class="el" href="lpatf_8c-example.html#_a0">lpatf.c</a>.</dd>
+</dl>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -386,6 +387,8 @@ the clock time spent preprocessing the problem </td></tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>inform derived type as a C struct </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="lpat_8c-example.html#_a1">lpat.c</a>, and <a class="el" href="lpatf_8c-example.html#_a1">lpatf.c</a>.</dd>
+</dl>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -454,12 +457,6 @@ the information array from LA04 </td></tr>
 time</td>
 <td class="fielddoc">
 timings (see above) </td></tr>
-<tr><td class="fieldtype">
-<a id="a823701505feea7615e9f8995769d8b60"></a>struct rpd_inform_type</td>
-<td class="fieldname">
-rpd_inform</td>
-<td class="fielddoc">
-inform parameters for RPD </td></tr>
 </table>
 
 </div>
@@ -508,6 +505,8 @@ inform parameters for RPD </td></tr>
 </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="lpat_8c-example.html#a3">lpat.c</a>, and <a class="el" href="lpatf_8c-example.html#a3">lpatf.c</a>.</dd>
 </dl>
 
 </div>
@@ -642,6 +641,8 @@ inform parameters for RPD </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">A_ptr</td><td>is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of \(A\), as well as the total number of entries plus one, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL. </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="lpat_8c-example.html#a5">lpat.c</a>, and <a class="el" href="lpatf_8c-example.html#a5">lpatf.c</a>.</dd>
 </dl>
 
 </div>
@@ -855,6 +856,8 @@ inform parameters for RPD </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="lpat_8c-example.html#a6">lpat.c</a>, and <a class="el" href="lpatf_8c-example.html#a6">lpatf.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -901,6 +904,8 @@ inform parameters for RPD </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="lpat_8c-example.html#a7">lpat.c</a>, and <a class="el" href="lpatf_8c-example.html#a7">lpatf.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -943,6 +948,8 @@ inform parameters for RPD </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="lpa_8h.html#structlpa__inform__type">lpa_inform_type</a>) </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="lpat_8c-example.html#a10">lpat.c</a>, and <a class="el" href="lpatf_8c-example.html#a10">lpatf.c</a>.</dd>
 </dl>
 
 </div>

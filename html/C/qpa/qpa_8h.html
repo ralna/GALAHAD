@@ -104,10 +104,10 @@ Functions</h2></td></tr>
 <tr class="separator:a9d60441b2beaddb4c653156592ffc1ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9c60939ef803461d90631dd48cb55d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="qpa_8h.html#af9c60939ef803461d90631dd48cb55d7">qpa_solve_qp</a> (void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])</td></tr>
 <tr class="separator:af9c60939ef803461d90631dd48cb55d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95cc7e9a5a976b94772a8d3a8d8669a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="qpa_8h.html#a95cc7e9a5a976b94772a8d3a8d8669a1">qpa_solve_l1qp</a> (void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])</td></tr>
-<tr class="separator:a95cc7e9a5a976b94772a8d3a8d8669a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c5a2cdbda74733cdbd9bd0f56ded57a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="qpa_8h.html#a1c5a2cdbda74733cdbd9bd0f56ded57a">qpa_solve_bcl1qp</a> (void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])</td></tr>
-<tr class="separator:a1c5a2cdbda74733cdbd9bd0f56ded57a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a95adb548b743128e0df4ab4e801f19"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="qpa_8h.html#a1a95adb548b743128e0df4ab4e801f19">qpa_solve_l1qp</a> (void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, const real_wp_ rho_g, const real_wp_ rho_b, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])</td></tr>
+<tr class="separator:a1a95adb548b743128e0df4ab4e801f19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b5ef5f0d8134d8f02b1da62a04a3ace"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="qpa_8h.html#a5b5ef5f0d8134d8f02b1da62a04a3ace">qpa_solve_bcl1qp</a> (void **data, int *status, int n, int m, int h_ne, const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, const real_wp_ rho_g, int a_ne, const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])</td></tr>
+<tr class="separator:a5b5ef5f0d8134d8f02b1da62a04a3ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a631cf6ec1a95b27c712ace4fa7dc06f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="qpa_8h.html#a631cf6ec1a95b27c712ace4fa7dc06f0">qpa_information</a> (void **data, struct <a class="el" href="qpa_8h.html#structqpa__inform__type">qpa_inform_type</a> *inform, int *status)</td></tr>
 <tr class="separator:a631cf6ec1a95b27c712ace4fa7dc06f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18b73b54796470edc039e3ac85bd30d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="qpa_8h.html#a18b73b54796470edc039e3ac85bd30d5">qpa_terminate</a> (void **data, struct <a class="el" href="qpa_8h.html#structqpa__control__type">qpa_control_type</a> *control, struct <a class="el" href="qpa_8h.html#structqpa__inform__type">qpa_inform_type</a> *inform)</td></tr>
@@ -126,6 +126,8 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>control derived type as a C struct </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpat_8c-example.html#_a0">qpat.c</a>, and <a class="el" href="qpatf_8c-example.html#_a0">qpatf.c</a>.</dd>
+</dl>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -530,6 +532,8 @@ the clock time spent computing the search direction </td></tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>inform derived type as a C struct </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpat_8c-example.html#_a1">qpat.c</a>, and <a class="el" href="qpatf_8c-example.html#_a1">qpatf.c</a>.</dd>
+</dl>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -693,6 +697,8 @@ inform parameters for SLS </td></tr>
 </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpat_8c-example.html#a3">qpat.c</a>, and <a class="el" href="qpatf_8c-example.html#a3">qpatf.c</a>.</dd>
 </dl>
 
 </div>
@@ -863,6 +869,8 @@ inform parameters for SLS </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">A_ptr</td><td>is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of \(A\), as well as the total number of entries plus one, in the sparse row-wise storage scheme. It need not be set when the other schemes are used, and in this case can be NULL. </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpat_8c-example.html#a5">qpat.c</a>, and <a class="el" href="qpatf_8c-example.html#a5">qpatf.c</a>.</dd>
 </dl>
 
 </div>
@@ -1090,11 +1098,13 @@ inform parameters for SLS </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpat_8c-example.html#a6">qpat.c</a>, and <a class="el" href="qpatf_8c-example.html#a6">qpatf.c</a>.</dd>
+</dl>
 
 </div>
 </div>
-<a id="a95cc7e9a5a976b94772a8d3a8d8669a1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a95cc7e9a5a976b94772a8d3a8d8669a1">&#9670;&nbsp;</a></span>qpa_solve_l1qp()</h2>
+<a id="a1a95adb548b743128e0df4ab4e801f19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a95adb548b743128e0df4ab4e801f19">&#9670;&nbsp;</a></span>qpa_solve_l1qp()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1146,6 +1156,18 @@ inform parameters for SLS </td></tr>
           <td></td>
           <td class="paramtype">const real_wp_&#160;</td>
           <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const real_wp_&#160;</td>
+          <td class="paramname"><em>rho_g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const real_wp_&#160;</td>
+          <td class="paramname"><em>rho_b</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1255,6 +1277,8 @@ inform parameters for SLS </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">H_val</td><td>is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix \(H\) in any of the available storage schemes.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">g</td><td>is a one-dimensional array of size n and type double, that holds the linear term \(g\) of the objective function. The j-th component of g, j = 0, ... , n-1, contains \(g_j \).</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">f</td><td>is a scalar of type double, that holds the constant term \(f\) of the objective function.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rho_g</td><td>is a scalar of type double, that holds the parameter \(\rho_g\) associated with the linear constraints.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rho_b</td><td>is a scalar of type double, that holds the parameter \(\rho_b\) associated with the simple bound constraints.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">a_ne</td><td>is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix \(A\).</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">A_val</td><td>is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the constraint Jacobian matrix \(A\) in any of the available storage schemes.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">c_l</td><td>is a one-dimensional array of size m and type double, that holds the lower bounds \(c^l\) on the constraints \(A x\). The i-th component of c_l, i = 0, ... , m-1, contains \(c^l_i\).</td></tr>
@@ -1270,11 +1294,13 @@ inform parameters for SLS </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpat_8c-example.html#a11">qpat.c</a>, and <a class="el" href="qpatf_8c-example.html#a11">qpatf.c</a>.</dd>
+</dl>
 
 </div>
 </div>
-<a id="a1c5a2cdbda74733cdbd9bd0f56ded57a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c5a2cdbda74733cdbd9bd0f56ded57a">&#9670;&nbsp;</a></span>qpa_solve_bcl1qp()</h2>
+<a id="a5b5ef5f0d8134d8f02b1da62a04a3ace"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b5ef5f0d8134d8f02b1da62a04a3ace">&#9670;&nbsp;</a></span>qpa_solve_bcl1qp()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1326,6 +1352,12 @@ inform parameters for SLS </td></tr>
           <td></td>
           <td class="paramtype">const real_wp_&#160;</td>
           <td class="paramname"><em>f</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const real_wp_&#160;</td>
+          <td class="paramname"><em>rho_g</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1435,6 +1467,7 @@ inform parameters for SLS </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">H_val</td><td>is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix \(H\) in any of the available storage schemes.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">g</td><td>is a one-dimensional array of size n and type double, that holds the linear term \(g\) of the objective function. The j-th component of g, j = 0, ... , n-1, contains \(g_j \).</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">f</td><td>is a scalar of type double, that holds the constant term \(f\) of the objective function.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rho_g</td><td>is a scalar of type double, that holds the parameter \(\rho_g\) associated with the linear constraints.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">a_ne</td><td>is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix \(A\).</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">A_val</td><td>is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the constraint Jacobian matrix \(A\) in any of the available storage schemes.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">c_l</td><td>is a one-dimensional array of size m and type double, that holds the lower bounds \(c^l\) on the constraints \(A x\). The i-th component of c_l, i = 0, ... , m-1, contains \(c^l_i\).</td></tr>
@@ -1449,6 +1482,8 @@ inform parameters for SLS </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">c_stat</td><td>is a one-dimensional array of size m and type int, that gives the current status of the general linear constraints. If c_stat(i) is negative, the constraint value \(a_i^Tx\) most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds. On entry, if control.cold_start = 0, c_stat should be set as above to provide a guide to the initial working set. </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpat_8c-example.html#a12">qpat.c</a>, and <a class="el" href="qpatf_8c-example.html#a12">qpatf.c</a>.</dd>
 </dl>
 
 </div>
@@ -1496,6 +1531,8 @@ inform parameters for SLS </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpat_8c-example.html#a7">qpat.c</a>, and <a class="el" href="qpatf_8c-example.html#a7">qpatf.c</a>.</dd>
+</dl>
 
 </div>
 </div>
@@ -1538,6 +1575,8 @@ inform parameters for SLS </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">inform</td><td>is a struct containing output information (see <a class="el" href="qpa_8h.html#structqpa__inform__type">qpa_inform_type</a>) </td></tr>
   </table>
   </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="qpat_8c-example.html#a10">qpat.c</a>, and <a class="el" href="qpatf_8c-example.html#a10">qpatf.c</a>.</dd>
 </dl>
 
 </div>

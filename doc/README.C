@@ -16,10 +16,12 @@ Currently there are C interfaces to the following core packages:
   uls  - common interface to a variety of popular unsymmetric linear solvers
   sls  - common interface to a variety of popular symmetric linear solvers
   sbls - precondition/solve symmetric block linear systems
+  lpa  - solve linear programs using the simplex method
   lpb  - solve linear programs using IP methods
   bqpb - solve convex bound-constrained quadratic programs using IP methods
   cqp  - solve convex quadratic programs using interior-point methods
   dqp  - solve convex quadratic programs using dual projection methods
+  eqp  - solve equality-constrained quadratic programs using iterative methods
   trs  - solve the trust-region subproblem using matrix factorization
   gltr - solve the trust-region subproblem using matrix-vector products
   rqs  - solve the reqgularized quadratic subproblem using matrix factorization
@@ -27,6 +29,8 @@ Currently there are C interfaces to the following core packages:
   lstr - solve the least-squares trust-region subproblem using mat-vect prods
   lsrt - solve the regularized least-squares subproblem using mat-vect prods
   l2rt - solve the regularized l_2 norm subproblem using matrix-vector prods
+  qpa  - solve general quadratic programs using working-set methods
+  qpb  - solve general quadratic programs using interior-point methods
   tru  - solve unconstrained optimization problems using trust-region methods
   arc  - solve unconstrained optimization problems using regularization methods
   nls  - find the smallest Euclidean norm of a vector-valued function  
@@ -84,4 +88,4 @@ Jari Fowkes (jaroslav.fowkes@stfc.ac.uk)
 
 For GALAHAD productions
 7 December 2021
-This version: 16 December 2021
+This version: 13 January 2022

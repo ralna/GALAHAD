@@ -14,40 +14,43 @@
   MODULE GALAHAD_EQP_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_EQP_double, ONLY: &
-        f_eqp_control_type => EQP_control_type, &
-        f_eqp_time_type => EQP_time_type, &
-        f_eqp_inform_type => EQP_inform_type, &
-        f_eqp_full_data_type => EQP_full_data_type, &
-        f_eqp_initialize => EQP_initialize, &
-        f_eqp_read_specfile => EQP_read_specfile, &
-        f_eqp_import => EQP_import, &
-        f_eqp_reset_control => EQP_reset_control, &
-        f_eqp_information => EQP_information, &
+    USE GALAHAD_EQP_double, ONLY:                                              &
+        f_eqp_control_type => EQP_control_type,                                &
+        f_eqp_time_type => EQP_time_type,                                      &
+        f_eqp_inform_type => EQP_inform_type,                                  &
+        f_eqp_full_data_type => EQP_full_data_type,                            &
+        f_eqp_initialize => EQP_initialize,                                    &
+        f_eqp_read_specfile => EQP_read_specfile,                              &
+        f_eqp_import => EQP_import,                                            &
+        f_eqp_solve_qp => EQP_solve_qp,                                        &
+        f_eqp_solve_sldqp => EQP_solve_sldqp,                                  &
+        f_eqp_resolve_qp => EQP_resolve_qp,                                    &
+        f_eqp_reset_control => EQP_reset_control,                              &
+        f_eqp_information => EQP_information,                                  &
         f_eqp_terminate => EQP_terminate
 
-    USE GALAHAD_FDC_double_ciface, ONLY: &
-        fdc_inform_type, &
-        fdc_control_type, &
-        copy_fdc_inform_in => copy_inform_in, &
-        copy_fdc_inform_out => copy_inform_out, &
-        copy_fdc_control_in => copy_control_in, &
-        copy_fdc_control_out => copy_control_out
+!   USE GALAHAD_FDC_double_ciface, ONLY:                                       &
+!       fdc_inform_type,                                                       &
+!       fdc_control_type,                                                      &
+!       copy_fdc_inform_in => copy_inform_in,                                  &
+!       copy_fdc_inform_out => copy_inform_out,                                &
+!       copy_fdc_control_in => copy_control_in,                                &
+!       copy_fdc_control_out => copy_control_out
 
-    USE GALAHAD_SBLS_double_ciface, ONLY: &
-        sbls_inform_type, &
-        sbls_control_type, &
-        copy_sbls_inform_in => copy_inform_in, &
-        copy_sbls_inform_out => copy_inform_out, &
-        copy_sbls_control_in => copy_control_in, &
+    USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
+        sbls_inform_type,                                                      &
+        sbls_control_type,                                                     &
+        copy_sbls_inform_in => copy_inform_in,                                 &
+        copy_sbls_inform_out => copy_inform_out,                               &
+        copy_sbls_control_in => copy_control_in,                               &
         copy_sbls_control_out => copy_control_out
 
-    USE GALAHAD_GLTR_double_ciface, ONLY: &
-        gltr_inform_type, &
-        gltr_control_type, &
-        copy_gltr_inform_in => copy_inform_in, &
-        copy_gltr_inform_out => copy_inform_out, &
-        copy_gltr_control_in => copy_control_in, &
+    USE GALAHAD_GLTR_double_ciface, ONLY:                                      &
+        gltr_inform_type,                                                      &
+        gltr_control_type,                                                     &
+        copy_gltr_inform_in => copy_inform_in,                                 &
+        copy_gltr_inform_out => copy_inform_out,                               &
+        copy_gltr_control_in => copy_control_in,                               &
         copy_gltr_control_out => copy_control_out
 
     IMPLICIT NONE
@@ -98,7 +101,7 @@
       LOGICAL ( KIND = C_BOOL ) :: generate_sif_file
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: sif_file_name
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
-      TYPE ( fdc_control_type ) :: fdc_control
+!     TYPE ( fdc_control_type ) :: fdc_control
       TYPE ( sbls_control_type ) :: sbls_control
       TYPE ( gltr_control_type ) :: gltr_control
     END TYPE eqp_control_type
@@ -125,7 +128,7 @@
       INTEGER ( KIND = C_INT ) :: factorization_real
       REAL ( KIND = wp ) :: obj
       TYPE ( eqp_time_type ) :: time
-      TYPE ( fdc_inform_type ) :: fdc_inform
+!     TYPE ( fdc_inform_type ) :: fdc_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
       TYPE ( gltr_inform_type ) :: gltr_inform
     END TYPE eqp_inform_type
@@ -185,7 +188,7 @@
     fcontrol%generate_sif_file = ccontrol%generate_sif_file
 
     ! Derived types
-    CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
+!   CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
     CALL copy_sbls_control_in( ccontrol%sbls_control, fcontrol%sbls_control )
     CALL copy_gltr_control_in( ccontrol%gltr_control, fcontrol%gltr_control )
 
@@ -251,7 +254,7 @@
     ccontrol%generate_sif_file = fcontrol%generate_sif_file
 
     ! Derived types
-    CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
+!   CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
     CALL copy_sbls_control_out( fcontrol%sbls_control, ccontrol%sbls_control )
     CALL copy_gltr_control_out( fcontrol%gltr_control, ccontrol%gltr_control )
 
@@ -330,7 +333,7 @@
 
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
-    CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
+!   CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
     CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
     CALL copy_gltr_inform_in( cinform%gltr_inform, finform%gltr_inform )
 
@@ -363,7 +366,7 @@
 
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
-    CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
+!   CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
     CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
     CALL copy_gltr_inform_out( finform%gltr_inform, cinform%gltr_inform )
 
@@ -383,7 +386,7 @@
 !  C interface to fortran eqp_initialize
 !  -------------------------------------
 
-  SUBROUTINE eqp_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE eqp_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_EQP_double_ciface
   IMPLICIT NONE
 
@@ -398,7 +401,7 @@
   TYPE ( f_eqp_full_data_type ), POINTER :: fdata
   TYPE ( f_eqp_control_type ) :: fcontrol
   TYPE ( f_eqp_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -414,9 +417,10 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+
   RETURN
 
   END SUBROUTINE eqp_initialize
@@ -451,11 +455,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_eqp_read_specfile( fcontrol, device )
@@ -475,7 +479,9 @@
 !  C interface to fortran eqp_inport
 !  ---------------------------------
 
-  SUBROUTINE eqp_import( ccontrol, cdata, status ) BIND( C )
+  SUBROUTINE eqp_import( ccontrol, cdata, status, n, m,                        &
+                         chtype, hne, hrow, hcol, hptr,                        &
+                         catype, ane, arow, acol, aptr ) BIND( C )
   USE GALAHAD_EQP_double_ciface
   IMPLICIT NONE
 
@@ -484,11 +490,24 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( eqp_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne, ane
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
 
 !  local variables
 
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
   TYPE ( f_eqp_control_type ) :: fcontrol
   TYPE ( f_eqp_full_data_type ), POINTER :: fdata
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -499,6 +518,11 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
+!  convert C string to Fortran string
+
+  fhtype = cstr_to_fchar( chtype )
+  fatype = cstr_to_fchar( catype )
+
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
@@ -506,12 +530,48 @@
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
+    IF ( PRESENT( hrow ) ) THEN
+      ALLOCATE( hrow_find( hne ) )
+      hrow_find = hrow + 1
+    END IF
+    IF ( PRESENT( hcol ) ) THEN
+      ALLOCATE( hcol_find( hne ) )
+      hcol_find = hcol + 1
+    END IF
+    IF ( PRESENT( hptr ) ) THEN
+      ALLOCATE( hptr_find( n + 1 ) )
+      hptr_find = hptr + 1
+    END IF
+
+    IF ( PRESENT( arow ) ) THEN
+      ALLOCATE( arow_find( ane ) )
+      arow_find = arow + 1
+    END IF
+    IF ( PRESENT( acol ) ) THEN
+      ALLOCATE( acol_find( ane ) )
+      acol_find = acol + 1
+    END IF
+    IF ( PRESENT( aptr ) ) THEN
+      ALLOCATE( aptr_find( m + 1 ) )
+      aptr_find = aptr + 1
+    END IF
 
 !  import the problem data into the required EQP structure
 
-    CALL f_eqp_import( fcontrol, fdata, status )
+    CALL f_eqp_import( fcontrol, fdata, status, n, m,                          &
+                       fhtype, hne, hrow_find, hcol_find, hptr_find,           &
+                       fatype, ane, arow_find, acol_find, aptr_find )
+
+    IF ( ALLOCATED( hrow_find ) ) DEALLOCATE( hrow_find )
+    IF ( ALLOCATED( hcol_find ) ) DEALLOCATE( hcol_find )
+    IF ( ALLOCATED( hptr_find ) ) DEALLOCATE( hptr_find )
+    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
+    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
+    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
   ELSE
-    CALL f_eqp_import( fcontrol, fdata, status )
+    CALL f_eqp_import( fcontrol, fdata, status, n, m,                          &
+                       fhtype, hne, hrow, hcol, hptr,                          &
+                       fatype, ane, arow, acol, aptr )
   END IF
 
 !  copy control out
@@ -521,7 +581,7 @@
 
   END SUBROUTINE eqp_import
 
-!  ---------------------------------------
+!  ----------------------------------------
 !  C interface to fortran eqp_reset_control
 !  ----------------------------------------
 
@@ -555,16 +615,125 @@
 
 !  import the control parameters into the required structure
 
-  CALL f_EQP_reset_control( fcontrol, fdata, status )
+  CALL f_eqp_reset_control( fcontrol, fdata, status )
   RETURN
 
   END SUBROUTINE eqp_reset_control
+
+!  -----------------------------------
+!  C interface to fortran eqp_solve_qp
+!  -----------------------------------
+
+  SUBROUTINE eqp_solve_qp( cdata, status, n, m, hne, hval, g, f, ane, aval,    &
+                           c, x, y ) BIND( C )
+  USE GALAHAD_EQP_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane, hne
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: c
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: y
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_eqp_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the qp
+
+  CALL f_eqp_solve_qp( fdata, status, hval, g, f, aval, c, x, y )
+  RETURN
+
+  END SUBROUTINE eqp_solve_qp
+
+!  --------------------------------------
+!  C interface to fortran eqp_solve_sldqp
+!  --------------------------------------
+
+  SUBROUTINE eqp_solve_sldqp( cdata, status, n, m, w, x0, g, f, ane, aval,     &
+                              c, x, y ) BIND( C )
+  USE GALAHAD_EQP_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: w
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: x0
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: c
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: y
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_eqp_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the qp
+
+  CALL f_eqp_solve_sldqp( fdata, status, w, x0, g, f, aval, c, x, y )
+  RETURN
+
+  END SUBROUTINE eqp_solve_sldqp
+
+!  -------------------------------------
+!  C interface to fortran eqp_resolve_qp
+!  -------------------------------------
+
+  SUBROUTINE eqp_resolve_qp( cdata, status, n, m, g, f, c, x, y ) BIND( C )
+  USE GALAHAD_EQP_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: c
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: y
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_eqp_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the qp
+
+  CALL f_eqp_resolve_qp( fdata, status, g, f, c, x, y )
+  RETURN
+
+  END SUBROUTINE eqp_resolve_qp
 
 !  --------------------------------------
 !  C interface to fortran eqp_information
 !  --------------------------------------
 
-  SUBROUTINE eqp_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE eqp_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_EQP_double_ciface
   IMPLICIT NONE
 
@@ -598,7 +767,7 @@
 !  C interface to fortran eqp_terminate
 !  ------------------------------------
 
-  SUBROUTINE eqp_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE eqp_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_EQP_double_ciface
   IMPLICIT NONE
 
@@ -637,7 +806,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE eqp_terminate
