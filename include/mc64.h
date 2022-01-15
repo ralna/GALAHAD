@@ -4,8 +4,8 @@
  * All rights reserved
  *
  * Written by: Jonathan Hogg
- *
  * Version 2.2.0
+ * Modified by Nick Gould for GALAHAD use, 2022-01-15
  * 
  * History: See ChangeLog
  *
@@ -47,19 +47,13 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef HSL_MC64D_H
-#define HSL_MC64D_H
+#ifndef HSL_MC64_H
+#define HSL_MC64_H
 
-#ifndef mc64_default_control
-#define mc64_control mc64_control_d
-#define mc64_info mc64_info_d
-#define mc64_default_control mc64_default_control_d
-#define mc64_matching mc64_matching_d
-#endif
+// precision
+#include "galahad_precision.h"
 
-typedef double mc64pkgtype_d_;
-
-struct mc64_control_d {
+struct mc64_control {
    int f_arrays;
    int lp;
    int wp;
@@ -68,20 +62,12 @@ struct mc64_control_d {
    int checking;
 };
 
-struct mc64_info_d {
+struct mc64_info {
    int flag;
    int more;
    int strucrank;
    int stat;
 };
-
-/* Set default values of control */
-void mc64_default_control_d(struct mc64_control *control);
-/* Find a matching, and (optionally) scaling */
-void mc64_matching_d(int job, int matrix_type, int m, int n, const int *ptr,
-   const int *row, const mc64pkgtype_d_ *cval,
-   const struct mc64_control *control,
-   struct mc64_info *info, int *perm, mc64pkgtype_d_ *scale);
 
 #endif
 

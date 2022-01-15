@@ -4,6 +4,7 @@
  * All rights reserved
  *
  * Written by: Jonathan Hogg
+ * Modified by Nick Gould for GALAHAD use, 2022-01-15
  *
  * THIS FILE ONLY may be redistributed under the below modified BSD licence.
  * All other files distributed as part of the HSL_MA48 package
@@ -44,35 +45,20 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef HSL_MA48D_H
-#define HSL_MA48D_H
+#ifndef HSL_MA48_H
+#define HSL_MA48_H
 
-#ifndef ma48_control
-#define ma48_control ma48_control_d
-#define ma48_ainfo ma48_ainfo_d
-#define ma48_finfo ma48_finfo_d
-#define ma48_sinfo ma48_sinfo_d
-#define ma48_initialize ma48_initialize_d
-#define ma48_default_control ma48_default_control_d
-#define ma48_analyse ma48_analyse_d
-#define ma48_get_perm ma48_get_perm_d
-#define ma48_factorize ma48_factorize_d
-#define ma48_solve ma48_solve_d
-#define ma48_finalize ma48_finalize_d
-#define ma48_special_rows_and_cols ma48_special_rows_and_cols_d
-#define ma48_determinant ma48_determinant_d
-#endif
+// precision
+#include "galahad_precision.h"
 
-typedef double ma48pkgtype_d_;
-
-struct ma48_control_d {
+struct ma48_control {
    int f_arrays; /* If eval to true, use 1-based indexing, else 0-based */
-   ma48pkgtype_d_ multiplier; /* If arrays are too small, increase by factor */
-   ma48pkgtype_d_ u; /* Pivot threshold */
-   ma48pkgtype_d_ switch_; /* Density for switch to full code */
-   ma48pkgtype_d_ drop; /* Drop tolerance */
-   ma48pkgtype_d_ tolerance; /* Anything less than this is considered zero */
-   ma48pkgtype_d_ cgce; /* Ratio for required reduction using IR */
+   real_wp_ multiplier; /* If arrays are too small, increase by factor */
+   real_wp_ u; /* Pivot threshold */
+   real_wp_ switch_; /* Density for switch to full code */
+   real_wp_ drop; /* Drop tolerance */
+   real_wp_ tolerance; /* Anything less than this is considered zero */
+   real_wp_ cgce; /* Ratio for required reduction using IR */
    int lp; /* Fortran unit for error messages */
    int wp; /* Fortran unit for warning messages */
    int mp; /* Fortran unit for monitor output */
@@ -89,8 +75,8 @@ struct ma48_control_d {
 };
 
 
-struct ma48_ainfo_d {
-   ma48pkgtype_d_ ops; /* Number of operations in elimination */
+struct ma48_ainfo {
+   real_wp_ ops; /* Number of operations in elimination */
    int flag; /* Return code */
    int more; /* More information on failure */
    long lena_analyse; /* Size for analysis (main arrays) */
@@ -110,8 +96,8 @@ struct ma48_ainfo_d {
 };
 
 
-struct ma48_finfo_d {
-   ma48pkgtype_d_ ops; /* Number of operations in elimination */
+struct ma48_finfo {
+   real_wp_ ops; /* Number of operations in elimination */
    int flag; /* Return code */
    int more; /* More information on failure */
    long size_factor; /* Number of words to hold factors */
@@ -122,40 +108,11 @@ struct ma48_finfo_d {
    int stat; /* Fortran STAT value after allocate failure */
 };
 
-
-struct ma48_sinfo_d {
+struct ma48_sinfo {
    int flag; /* Return code */
    int more; /* More information on failure */
    int stat; /* Fortran STAT value after allocate failure */
 };
-
-void ma48_default_control_d(struct ma48_control_d *control);
-
-void ma48_initialize_d(void **factors);
-
-void ma48_analyse_d(int m, int n, long ne, const int row[],
-      const int col[], const ma48pkgtype_d_ val[], void *factors,
-      const struct ma48_control_d *control, struct ma48_ainfo_d *ainfo,
-      struct ma48_finfo_d *finfo, const int perm[], const int endcol[]);
-
-void ma48_factorize_d(int m, int n, long ne, const int row[],
-      const int col[], const ma48pkgtype_d_ val[], void *factors,
-      const struct ma48_control_d *control, struct ma48_finfo_d *finfo,
-      int fast, int partial);
-
-void ma48_solve_d(int m, int n, long ne, const int row[],
-      const int col[], const ma48pkgtype_d_ val[], const void *factors,
-      const ma48pkgtype_d_ rhs[], ma48pkgtype_d_ x[],
-      const struct ma48_control_d *control, struct ma48_sinfo_d *sinfo,
-      int trans, ma48pkgtype_d_ resid[], ma48pkgtype_d_ *error);
-
-int ma48_finalize_d(void **factors, const struct ma48_control_d *control);
-
-int ma48_determinant_d(const void *factors, int *sgndet,
-      ma48pkgtype_d_ *logdet, const struct ma48_control_d *control);
-
-int ma48_special_rows_and_cols_d(const void *factors, int *rank,
-      int rows[], int cols[], const struct ma48_control_d *control);
 
 #endif
 

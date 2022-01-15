@@ -835,27 +835,27 @@ struct sls_inform_type {
 
     /// \brief
     /// the output structure from ma57
-    struct ma57_ainfo_d ma57_ainfo;
+    struct ma57_ainfo ma57_ainfo;
     /// see ma57_ainfo
-    struct ma57_finfo_d ma57_finfo;
+    struct ma57_finfo ma57_finfo;
     /// see ma57_ainfo
-    struct ma57_sinfo_d ma57_sinfo;
+    struct ma57_sinfo ma57_sinfo;
 
     /// \brief
     /// the output structure from ma77
-    struct ma77_info_d ma77_inform;
+    struct ma77_info ma77_inform;
 
     /// \brief
     /// the output structure from ma86
-    struct ma86_info_d ma86_inform;
+    struct ma86_info ma86_inform;
 
     /// \brief
     /// the output structure from ma87
-    struct ma87_info_d ma87_inform;
+    struct ma87_info ma87_inform;
 
     /// \brief
     /// the output structure from ma97
-    struct ma97_info_d ma97_inform;
+    struct ma97_info ma97_inform;
 
     /// \brief
     /// the output structure from ssids
@@ -869,11 +869,11 @@ struct sls_inform_type {
 
     /// \brief
     /// the output structure from mc64
-    struct mc64_info_d mc64_inform;
+    struct mc64_info mc64_inform;
 
     /// \brief
     /// the output structure from mc68
-    struct mc68_info_i mc68_inform;
+    struct mc68_info mc68_inform;
 
     /// \brief
     /// the integer output array from mc77

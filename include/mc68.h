@@ -4,6 +4,7 @@
  * All rights reserved
  *
  * Written by: Jonathan Hogg
+ * Modified by Nick Gould for GALAHAD use, 2022-01-15
  *
  * THIS FILE ONLY may be redistributed under the below modified BSD licence.
  * All other files distributed as part of the HSL_MC68 package
@@ -46,14 +47,10 @@ extern "C" {
 #ifndef HSL_MC68I
 #define HSL_MC68I
 
-#ifndef mc68_default_control
-#define mc68_control mc68_control_i
-#define mc68_info mc68_info_i
-#define mc68_default_control mc68_default_control_i
-#define mc68_order mc68_order_i
-#endif
+// precision
+#include "galahad_precision.h"
 
-struct mc68_control_i {
+struct mc68_control {
    /* Extra options for C version */
    int f_array_in;      /* 0 for C array indexing, 1 for Fortran indexing */
    int f_array_out;     /* 0 for C array indexing, 1 for Fortran indexing
@@ -70,7 +67,7 @@ struct mc68_control_i {
    int row_search;      /* Number of rows searched for pivot with ord=6 */
 };
 
-struct mc68_info_i {
+struct mc68_info {
    int flag;            /* error/warning flag */
    int iostat;          /* holds Fortran iostat parameter */
    int stat;            /* holds Fortran stat parameter */
@@ -82,12 +79,6 @@ struct mc68_info_i {
    int zb01_info;       /* holds flag from zb01_expand1 call */
    int n_dense_rows;    /* holds number of dense rows from amdd */
 };
-
-/* Set default values for control struct */
-void mc68_default_control_i(struct mc68_control *control);
-/* Perform ordering */
-void mc68_order_i(int ord, int n, const int ptr[], const int row[],
-   int perm[], const struct mc68_control_i *control, struct mc68_info_i *info);
 
 #endif
 

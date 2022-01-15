@@ -382,11 +382,11 @@ struct uls_inform_type {
 
     /// \brief
     /// the output arrays from MA48
-    struct ma48_ainfo_d ma48_ainfo;
+    struct ma48_ainfo ma48_ainfo;
     /// see ma48_ainfo
-    struct ma48_finfo_d ma48_finfo;
+    struct ma48_finfo ma48_finfo;
     /// see ma48_ainfo
-    struct ma48_sinfo_d ma48_sinfo;
+    struct ma48_sinfo ma48_sinfo;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    U L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

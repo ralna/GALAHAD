@@ -4,6 +4,7 @@
  * All rights reserved
  *
  * Written by: Jonathan Hogg
+ * Modified by Nick Gould for GALAHAD use, 2022-01-15
  *
  * THIS FILE ONLY may be redistributed under the below modified BSD licence.
  * All other files distributed as part of the HSL_MA86 package
@@ -44,25 +45,14 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef HSL_MA86D_H
-#define HSL_MA86D_H
+#ifndef HSL_MA86_H
+#define HSL_MA86_H
 
-#ifndef ma86_default_control
-#define ma86_control ma86_control_d
-#define ma86_info ma86_info_d
-#define ma86_default_control ma86_default_control_d
-#define ma86_analyse ma86_analyse_d
-#define ma86_factor ma86_factor_d
-#define ma86_factor_solve ma86_factor_solve_d
-#define ma86_solve ma86_solve_d
-#define ma86_finalise ma86_finalise_d
-#endif
-
-typedef double ma86pkgtype_d_;
-typedef double ma86realtype_d_;
+// precision
+#include "galahad_precision.h"
 
 /* Data type for user controls */
-struct ma86_control_d {
+struct ma86_control {
    /* Note: 0 is false, non-zero is true */
 
    /* C/Fortran interface related controls */
@@ -95,18 +85,18 @@ struct ma86_control_d {
                   if false */
    int nbi;    /* Inner block size for use with ma64*/
    int pool_size; /* Size of task pool arrays*/
-   ma86realtype_d_ small_; /* Pivots less than small are treated as zero*/
-   ma86realtype_d_ static_;/* Control static pivoting*/
-   ma86realtype_d_ u;      /* Pivot tolerance*/
-   ma86realtype_d_ umin;   /* Minimum pivot tolerance*/
-   int scaling;            /* Scaling algorithm to use */
+   real_wp_ small_; /* Pivots less than small are treated as zero*/
+   real_wp_ static_;/* Control static pivoting*/
+   real_wp_ u;      /* Pivot tolerance*/
+   real_wp_ umin;   /* Minimum pivot tolerance*/
+   int scaling;     /* Scaling algorithm to use */
 };
 
 /***************************************************/
 
 /* data type for returning information to user.*/
-struct ma86_info_d {
-   ma86realtype_d_ detlog;       /* Holds logarithm of abs det A (or 0) */
+struct ma86_info {
+   real_wp_ detlog;     /* Holds logarithm of abs det A (or 0) */
    int detsign;         /* Holds sign of determinant (+/-1 or 0) */
    int flag;            /* Error return flag (0 on success) */
    int matrix_rank;     /* Rank of matrix */
@@ -121,33 +111,8 @@ struct ma86_info_d {
    int num_two;         /* Number of 2x2 pivots */
    int pool_size;       /* Maximum size of task pool used */
    int stat;            /* STAT value on error return -1. */
-   ma86realtype_d_ usmall;       /* smallest threshold parameter used */
+   real_wp_ usmall;     /* smallest threshold parameter used */
 };
-
-/* Initialise control with default values */
-void ma86_default_control_d(struct ma86_control_d *control);
-/* Analyse the sparsity pattern and prepare for factorization */
-void ma86_analyse_d(const int n, const int ptr[], const int row[], int order[],
-      void **keep, const struct ma86_control_d *control,
-      struct ma86_info_d *info);
-/* To factorize the matrix */
-void ma86_factor_d(const int n, const int ptr[], const int row[],
-      const ma86pkgtype_d_ val[], const int order[], void **keep,
-      const struct ma86_control_d *control, struct ma86_info_d *info,
-      const ma86realtype_d_ scale[]);
-/* To factorize the matrix AND solve AX = B */
-void ma86_factor_solve_d(const int n, const int ptr[], const int row[],
-      const ma86pkgtype_d_ val[], const int order[], void **keep,
-      const struct ma86_control_d *control, struct ma86_info_d *info,
-      const int nrhs, const int ldx, ma86pkgtype_d_ x[],
-      const ma86realtype_d_ scale[]);
-/* To solve AX = B using the computed factors */
-void ma86_solve_d(const int job, const int nrhs, const int ldx,
-      ma86pkgtype_d_ *x, const int order[], void **keep,
-      const struct ma86_control_d *control, struct ma86_info_d *info,
-      const ma86realtype_d_ scale[]);
-/* To clean up memory in keep */
-void ma86_finalise_d(void **keep, const struct ma86_control_d *control);
 
 #endif
 
