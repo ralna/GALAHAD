@@ -36,6 +36,10 @@
       using an interor-point method
       \latexonly \href{bqpb_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/bqpb/bqpb.html">(link)</a> \endhtmlonly
+  \li \link lsqp \endlink - linear and seprable quadratic programming using 
+      an interor-point method
+      \latexonly \href{lsqp_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/lsqp/lsqp.html">(link)</a> \endhtmlonly
   \li \link cqp \endlink - convex quadratic programming using 
       an interor-point method
       \latexonly \href{cqp_c.pdf}{(link)} \endlatexonly

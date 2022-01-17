@@ -19,7 +19,7 @@
 !     |                                               |
 !     | Given a symmetric matrix A, provide and       |
 !     ! apply a symmetric, positive-definite or       |
-!     | strictly-diagonally-dominat preconditioner P  |
+!     | strictly-diagonally-dominant preconditioner P |
 !     |                                               |
 !      -----------------------------------------------
 
@@ -172,7 +172,7 @@
         LOGICAL :: get_semi_bandwidth = .TRUE.
 
 !  set get_norm_residual true if the residual when applying the preconditioner
-!  are to be calculated
+!  is to be calculated
 
         LOGICAL :: get_norm_residual = .FALSE.
 
@@ -1573,10 +1573,10 @@
 
           IF ( control%print_level <= 0 .OR. control%out <= 0 )                &
             data%mc61_ICNTL( 1 : 2 ) = - 1
-          CALL MC61AD( 2, data%n_sub, data%mc61_lirn,                          &
-                       data%P_row, data%P_colptr, data%PERM, data%mc61_liw,    &
-                       data%IW, data%W, data%mc61_ICNTL, data%mc61_CNTL,       &
-                       inform%mc61_info, inform%mc61_rinfo )
+            CALL MC61AD( 2, data%n_sub, data%mc61_lirn,                        &
+                         data%P_row, data%P_colptr, data%PERM, data%mc61_liw,  &
+                         data%IW, data%W, data%mc61_ICNTL, data%mc61_CNTL,     &
+                         inform%mc61_info, inform%mc61_rinfo )
 
 !write(6,*) ' perm ', data%PERM
           IF ( inform%mc61_info( 1 ) == GALAHAD_unavailable_option ) THEN

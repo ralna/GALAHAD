@@ -9083,13 +9083,84 @@
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-!  X is a rank-one array of dimension n and type default
-!   real, that holds the vector of the primal variables, x.
-!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!  data is a scalar variable of type QPB_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, qpa_solve above.
+
+!  H_val is a rank-one array of type default real, that holds the values
+!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   specified in qpa_import.
 !
 !  G is a rank-one array of dimension n and type default
 !   real, that holds the vector of linear terms of the objective, g.
 !   The j-th component of G, j = 1, ... , n, contains (g)_j.
+!
+!  f is a scalar of type default real, that holds the constant term, f,
+!   of the objective.
+!
+!  A_val is a rank-one array of type default real, that holds the values
+!   of the  lower triangular part of the Jacobian A in the storage scheme 
+!   specified in qpa_import.
+!
+!  C_l, C_u are rank-one arrays of dimension m, that hold the values of
+!   the lower and upper bounds, c_l and c_u, on the general linear constraints.
+!   Any bound c_l(i) or c_u(i) larger than or equal to control%infinity in
+!   absolute value will be regarded as being infinite (see the entry
+!   control%infinity). Thus, an infinite lower bound may be specified by
+!   setting the appropriate component of C_l to a value smaller than
+!   -control%infinity, while an infinite upper bound can be specified by
+!   setting the appropriate element of C_u to a value larger than
+!   control%infinity.
+!
+!  X_l, X_u are rank-one arrays of dimension n, that hold the values of
+!   the lower and upper bounds, c_l and c_u, on the variables x.
+!   Any bound x_l(i) or x_u(i) larger than or equal to control%infinity in
+!   absolute value will be regarded as being infinite (see the entry
+!   control%infinity). Thus, an infinite lower bound may be specified by
+!   setting the appropriate component of X_l to a value smaller than
+!   -control%infinity, while an infinite upper bound can be specified by
+!   setting the appropriate element of X_u to a value larger than
+!   control%infinity. 
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  Y is a rank-one array of dimension m and type default
+!   real, that holds the vector of the Lagrange multipliers, y.
+!   The i-th component of Y, i = 1, ... , m, contains (y)_i.
+!
+!  Z is a rank-one array of dimension n and type default
+!   real, that holds the vector of the dual variables, z.
+!   The j-th component of Z, j = 1, ... , n, contains (z)_j.
+!
+!  X_stat is a rank-one array of dimension n and type default integer, 
+!   that may be set by the user on entry to indicate which of the variables
+!   are to be included in the initial working set. If this facility is 
+!   required, the component control%cold_start must be set to 0 on entry; 
+!   X_stat need not be set if control%cold_start is nonzero. On exit,
+!   X_stat will indicate which constraints are in the final working set.
+!   Possible entry/exit values are
+!   X_stat( i ) < 0, the i-th bound constraint is in the working set,
+!                    on its lower bound,
+!               > 0, the i-th bound constraint is in the working set
+!                    on its upper bound, and
+!               = 0, the i-th bound constraint is not in the working set
+!
+!  C_stat is a rank-one array of dimension m and type default integer, 
+!   that may be set by the user on entry to indicate which of the constraints 
+!   are to be included in the initial working set. If this facility is 
+!   required, the component control%cold_start must be set to 0 on entry; 
+!   C_stat need not be set if control%cold_start is nonzero. On exit,
+!   C_stat will indicate which constraints are in the final working set.
+!   Possible entry/exit values are
+!   C_stat( i ) < 0, the i-th constraint is in the working set,
+!                    on its lower bound,
+!               > 0, the i-th constraint is in the working set
+!                    on its upper bound, and
+!               = 0, the i-th constraint is not in the working set
 
      INTEGER, INTENT( OUT ) :: status
      TYPE ( QPB_full_data_type ), INTENT( INOUT ) :: data

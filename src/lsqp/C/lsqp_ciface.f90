@@ -14,32 +14,33 @@
   MODULE GALAHAD_LSQP_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_LSQP_double, ONLY: &
-        f_lsqp_control_type => LSQP_control_type, &
-        f_lsqp_time_type => LSQP_time_type, &
-        f_lsqp_inform_type => LSQP_inform_type, &
-        f_lsqp_full_data_type => LSQP_full_data_type, &
-        f_lsqp_initialize => LSQP_initialize, &
-        f_lsqp_read_specfile => LSQP_read_specfile, &
-        f_lsqp_import => LSQP_import, &
-        f_lsqp_reset_control => LSQP_reset_control, &
-        f_lsqp_information => LSQP_information, &
-        f_lsqp_terminate => LSQP_terminate
+    USE GALAHAD_LSQP_double, ONLY:                                             &
+        f_lsqp_control_type   => LSQP_control_type,                            &
+        f_lsqp_time_type      => LSQP_time_type,                               &
+        f_lsqp_inform_type    => LSQP_inform_type,                             &
+        f_lsqp_full_data_type => LSQP_full_data_type,                          &
+        f_lsqp_initialize     => LSQP_initialize,                              &
+        f_lsqp_read_specfile  => LSQP_read_specfile,                           &
+        f_lsqp_import         => LSQP_import,                                  &
+        f_lsqp_reset_control  => LSQP_reset_control,                           &
+        f_lsqp_solve_qp       => LSQP_solve_qp,                                &
+        f_lsqp_information    => LSQP_information,                             &
+        f_lsqp_terminate      => LSQP_terminate
 
-    USE GALAHAD_FDC_double_ciface, ONLY: &
-        fdc_inform_type, &
-        fdc_control_type, &
-        copy_fdc_inform_in => copy_inform_in, &
-        copy_fdc_inform_out => copy_inform_out, &
-        copy_fdc_control_in => copy_control_in, &
-        copy_fdc_control_out => copy_control_out
+!    USE GALAHAD_FDC_double_ciface, ONLY:                                      &
+!        fdc_inform_type,                                                      &
+!        fdc_control_type,                                                     &
+!        copy_fdc_inform_in  => copy_inform_in,                                &
+!        copy_fdc_inform_out  => copy_inform_out,                              &
+!        copy_fdc_control_in  => copy_control_in,                              &
+!        copy_fdc_control_out => copy_control_out
 
-    USE GALAHAD_SBLS_double_ciface, ONLY: &
-        sbls_inform_type, &
-        sbls_control_type, &
-        copy_sbls_inform_in => copy_inform_in, &
-        copy_sbls_inform_out => copy_inform_out, &
-        copy_sbls_control_in => copy_control_in, &
+    USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
+        sbls_inform_type,                                                      &
+        sbls_control_type,                                                     &
+        copy_sbls_inform_in   => copy_inform_in,                               &
+        copy_sbls_inform_out  => copy_inform_out,                              &
+        copy_sbls_control_in  => copy_control_in,                              &
         copy_sbls_control_out => copy_control_out
 
     IMPLICIT NONE
@@ -110,7 +111,7 @@
       LOGICAL ( KIND = C_BOOL ) :: generate_sif_file
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: sif_file_name
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
-      TYPE ( fdc_control_type ) :: fdc_control
+!     TYPE ( fdc_control_type ) :: fdc_control
       TYPE ( sbls_control_type ) :: sbls_control
     END TYPE lsqp_control_type
 
@@ -144,7 +145,7 @@
       REAL ( KIND = wp ) :: non_negligible_pivot
       LOGICAL ( KIND = C_BOOL ) :: feasible
       TYPE ( lsqp_time_type ) :: time
-      TYPE ( fdc_inform_type ) :: fdc_inform
+!     TYPE ( fdc_inform_type ) :: fdc_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
     END TYPE lsqp_inform_type
 
@@ -223,7 +224,7 @@
     fcontrol%generate_sif_file = ccontrol%generate_sif_file
 
     ! Derived types
-    CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
+!   CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
     CALL copy_sbls_control_in( ccontrol%sbls_control, fcontrol%sbls_control )
 
     ! Strings
@@ -308,7 +309,7 @@
     ccontrol%generate_sif_file = fcontrol%generate_sif_file
 
     ! Derived types
-    CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
+!   CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
     CALL copy_sbls_control_out( fcontrol%sbls_control, ccontrol%sbls_control )
 
     ! Strings
@@ -399,7 +400,7 @@
 
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
-    CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
+!   CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
     CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
 
     ! Strings
@@ -438,7 +439,7 @@
 
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
-    CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
+!   CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
     CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
 
     ! Strings
@@ -453,11 +454,11 @@
 
   END MODULE GALAHAD_LSQP_double_ciface
 
-!  -------------------------------------
+!  --------------------------------------
 !  C interface to fortran lsqp_initialize
-!  -------------------------------------
+!  --------------------------------------
 
-  SUBROUTINE lsqp_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE lsqp_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_LSQP_double_ciface
   IMPLICIT NONE
 
@@ -472,7 +473,7 @@
   TYPE ( f_lsqp_full_data_type ), POINTER :: fdata
   TYPE ( f_lsqp_control_type ) :: fcontrol
   TYPE ( f_lsqp_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -488,16 +489,17 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+
   RETURN
 
   END SUBROUTINE lsqp_initialize
 
-!  ----------------------------------------
+!  -----------------------------------------
 !  C interface to fortran lsqp_read_specfile
-!  ----------------------------------------
+!  -----------------------------------------
 
   SUBROUTINE lsqp_read_specfile( ccontrol, cspecfile ) BIND( C )
   USE GALAHAD_LSQP_double_ciface
@@ -525,11 +527,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_lsqp_read_specfile( fcontrol, device )
@@ -545,11 +547,12 @@
 
   END SUBROUTINE lsqp_read_specfile
 
-!  ---------------------------------
+!  ----------------------------------
 !  C interface to fortran lsqp_inport
-!  ---------------------------------
+!  ----------------------------------
 
-  SUBROUTINE lsqp_import( ccontrol, cdata, status ) BIND( C )
+  SUBROUTINE lsqp_import( ccontrol, cdata, status, n, m,                        &
+                         catype, ane, arow, acol, aptr ) BIND( C )
   USE GALAHAD_LSQP_double_ciface
   IMPLICIT NONE
 
@@ -558,11 +561,18 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( lsqp_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
 
 !  local variables
 
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
   TYPE ( f_lsqp_control_type ) :: fcontrol
   TYPE ( f_lsqp_full_data_type ), POINTER :: fdata
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -573,6 +583,10 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
+!  convert C string to Fortran string
+
+  fatype = cstr_to_fchar( catype )
+
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
@@ -580,12 +594,30 @@
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
+    IF ( PRESENT( arow ) ) THEN
+      ALLOCATE( arow_find( ane ) )
+      arow_find = arow + 1
+    END IF
+    IF ( PRESENT( acol ) ) THEN
+      ALLOCATE( acol_find( ane ) )
+      acol_find = acol + 1
+    END IF
+    IF ( PRESENT( aptr ) ) THEN
+      ALLOCATE( aptr_find( m + 1 ) )
+      aptr_find = aptr + 1
+    END IF
 
 !  import the problem data into the required LSQP structure
 
-    CALL f_lsqp_import( fcontrol, fdata, status )
+    CALL f_lsqp_import( fcontrol, fdata, status, n, m,                         &
+                       fatype, ane, arow_find, acol_find, aptr_find )
+
+    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
+    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
+    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
   ELSE
-    CALL f_lsqp_import( fcontrol, fdata, status )
+    CALL f_lsqp_import( fcontrol, fdata, status, n, m,                         &
+                        fatype, ane, arow, acol, aptr )
   END IF
 
 !  copy control out
@@ -595,9 +627,9 @@
 
   END SUBROUTINE lsqp_import
 
-!  ---------------------------------------
+!  -----------------------------------------
 !  C interface to fortran lsqp_reset_control
-!  ----------------------------------------
+!  -----------------------------------------
 
   SUBROUTINE lsqp_reset_control( ccontrol, cdata, status ) BIND( C )
   USE GALAHAD_LSQP_double_ciface
@@ -629,16 +661,59 @@
 
 !  import the control parameters into the required structure
 
-  CALL f_LSQP_reset_control( fcontrol, fdata, status )
+  CALL f_lsqp_reset_control( fcontrol, fdata, status )
   RETURN
 
   END SUBROUTINE lsqp_reset_control
+
+!  ------------------------------------
+!  C interface to fortran lsqp_solve_qp
+!  ------------------------------------
+
+  SUBROUTINE lsqp_solve_qp( cdata, status, n, m, w, x0, g, f, ane, aval, cl,   &
+                            cu, xl, xu, x, c, y, z, xstat, cstat ) BIND( C )
+  USE GALAHAD_LSQP_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: w
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: x0
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: y
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( m ) :: cstat
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_lsqp_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the qp
+
+  CALL f_lsqp_solve_qp( fdata, status, w, x0, g, f, aval, cl, cu, xl, xu,      &
+                        x, c, y, z, xstat, cstat )
+  RETURN
+
+  END SUBROUTINE lsqp_solve_qp
 
 !  --------------------------------------
 !  C interface to fortran lsqp_information
 !  --------------------------------------
 
-  SUBROUTINE lsqp_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE lsqp_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_LSQP_double_ciface
   IMPLICIT NONE
 
@@ -668,11 +743,11 @@
 
   END SUBROUTINE lsqp_information
 
-!  ------------------------------------
+!  -------------------------------------
 !  C interface to fortran lsqp_terminate
-!  ------------------------------------
+!  -------------------------------------
 
-  SUBROUTINE lsqp_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE lsqp_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_LSQP_double_ciface
   IMPLICIT NONE
 
@@ -711,7 +786,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE lsqp_terminate

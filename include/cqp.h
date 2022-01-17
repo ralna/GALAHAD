@@ -71,57 +71,6 @@
 
   \subsection cqp_terminology Terminology
 
-  The required solution \f$x\f$ necessarily satisfies
-  the primal optimality conditions
-  \f[\mbox{(1a) $\hspace{66mm} A x = c\hspace{66mm}$}\f]
-\manonly
-  \n
-  (1a) A x = c
-  \n
-\endmanonly
-  and
-  \f[\mbox{(1b) $\hspace{52mm} c^l \leq c \leq c^u, \;\; x^l \leq x \leq x^u,\hspace{52mm}$} \f]
-\manonly
-  \n
-  (1b) c^l \[<=] c \[<=] c^u, x^l \[<=] x \[<=] x^u,
-  \n
-\endmanonly
-  the dual optimality conditions
-  \f[\mbox{(2a) $\hspace{3mm} H x + g = A^T y + z \;\; (\mbox{or} 
-\;\;  W^{2} (x -x^0) + g = A^T y + z \;\; \mbox{for the shifted-least-distance type objective})$}\f]
-\manonly
-  \n
-  (2a) H x + g = A^T y + z 
-       (or W^2 (x -x^0) + g = A^T y + z 
-        for the shifted-least-distance type objective)
-  \n
-\endmanonly
-  where
-  \f[\mbox{(2b) $\hspace{24mm} y = y^l + y^u, \;\; z = z^l + z^u, \,\,
-   y^l \geq 0 , \;\;  y^u \leq 0 , \;\;
-   z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0,\hspace{24mm}$} \f]
-\manonly
-  \n
-   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
-        z^l \[>=] 0 and z^u \[<=] 0,
-  \n
-\endmanonly
-  and the complementary slackness conditions
-  \f[\mbox{(3) $\hspace{12mm}
-  ( A x - c^l )^T y^l = 0  ,\;\;  ( A x - c^u )^T y^u = 0  ,\;\;
-  (x -x^l )^T z^l = 0 \;\;  \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\f]
-\manonly
-  \n
-  (3) (A x - c^l)^T y^l = 0, (A x - c^u)^T y^u = 0,
-      (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
-  \n
-\endmanonly
-  where the diagonal matrix \f$W^2\f$ has diagonal entries \f$w_j^2\f$,
-  \f$j = 1, \ldots , n\f$, where the vectors \f$y\f$ and \f$z\f$ are
-  known as the Lagrange multipliers for
-  the general linear constraints, and the dual variables for the bounds,
-  respectively, and where the vector inequalities hold component-wise.
-
   \subsection cqp_method Method
 
   Primal-dual interior point methods iterate towards a point
@@ -410,7 +359,7 @@ struct cqp_control_type {
     int restore_problem;
 
     /// \brief
-    /// specifies the type of indicator function used. Pssible values are
+    /// specifies the type of indicator function used. Possible values are
     /// \li 1 primal indicator: a constraint is active if and only if
     ///     the distance to its nearest bound \f$\leq\f$ .indicator_p_tol
     /// \li 2 primal-dual indicator: a constraint is active if and only if
@@ -1205,8 +1154,6 @@ void cqp_solve_sldqp( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
-           specified.
  
  @param[in] n is a scalar variable of type int, that holds the number of
     variables

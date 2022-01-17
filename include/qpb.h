@@ -57,8 +57,8 @@
   that is not the global solution to the given problem.
 
   \subsection qpb_authors Authors
-  N. I. M. Gould and D. P. Robinson, STFC-Rutherford Appleton Laboratory,
-  England, and Philippe L. Toint, University of Namur, Belgium.
+  N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England, and
+  Philippe L. Toint, University of Namur, Belgium.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
@@ -212,7 +212,14 @@
 
   \subsection qpb_references Reference
 
-  The method is described in detail in
+  The basic algorithm is a generalisation of those of
+
+  Y. Zhang (1994),
+   On the convergence of a class of infeasible interior-point methods for the 
+   horizontal linear complementarity problem,
+   SIAM J. Optimization 4(1) 208-227,
+
+  with a number of enhancements described by
 
   A. R. Conn, N. I. M. Gould, D. Orban and Ph. L. Toint (1999).
   A primal-dual trust-region algorithm for minimizing a non-convex 
@@ -372,7 +379,7 @@ extern "C" {
 #include "galahad_precision.h"
 
 // required packages
-//#include "lsqp.h"
+#include "lsqp.h"
 //#include "fdc.h"
 #include "sbls.h"
 #include "gltr.h"
@@ -689,7 +696,7 @@ struct qpb_control_type {
 
     /// \brief
     /// control parameters for LSQP
-    ///struct lsqp_control_type lsqp_control;
+    struct lsqp_control_type lsqp_control;
 
     /// \brief
     /// control parameters for FDC
@@ -868,7 +875,7 @@ struct qpb_inform_type {
 
     /// \brief
     /// inform parameters for LSQP
-    ///struct lsqp_inform_type lsqp_inform;
+    struct lsqp_inform_type lsqp_inform;
 
     /// \brief
     /// inform parameters for FDC
