@@ -18,7 +18,9 @@ Currently there are C interfaces to the following core packages:
   sbls - precondition/solve symmetric block linear systems
   lpa  - solve linear programs using the simplex method
   lpb  - solve linear programs using IP methods
+  wcp  - find a well-centered feasible point in a polyhedron using an IP method
   bqpb - solve convex bound-constrained quadratic programs using IP methods
+  lsqp - solve linear or seprable quadatic programs using interior-point methods
   cqp  - solve convex quadratic programs using interior-point methods
   dqp  - solve convex quadratic programs using dual projection methods
   eqp  - solve equality-constrained quadratic programs using iterative methods
@@ -88,4 +90,4 @@ Jari Fowkes (jaroslav.fowkes@stfc.ac.uk)
 
 For GALAHAD productions
 7 December 2021
-This version: 13 January 2022
+This version: 19 January 2022

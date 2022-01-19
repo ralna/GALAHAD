@@ -733,7 +733,7 @@ struct lsqp_inform_type {
     struct sbls_inform_type sbls_inform;
 };
 
-// *-*-*-*-*-*-*-*-*-*-    Q P B  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-    L S Q P  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
 void lsqp_initialize( void **data, 
                      struct lsqp_control_type *control,
@@ -752,7 +752,7 @@ void lsqp_initialize( void **data,
   \li  0. The import was succesful.
 */
 
-// *-*-*-*-*-*-*-*-*-    Q P B  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-    L S Q P  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
 void lsqp_read_specfile( struct lsqp_control_type *control, 
                         const char specfile[] );
@@ -768,7 +768,7 @@ void lsqp_read_specfile( struct lsqp_control_type *control,
               the specification file
 */
 
-// *-*-*-*-*-*-*-*-*-*-*-*-    Q P B  _ I M P O R T   -*-*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-*-*-    L S Q P  _ I M P O R T   -*-*-*-*-*-*-*-*-*-*
 
 void lsqp_import( struct lsqp_control_type *control,
                  void **data,
@@ -840,7 +840,7 @@ void lsqp_import( struct lsqp_control_type *control,
 */
 
 
-//  *-*-*-*-*-*-*-*-*-   Q P B _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-   L S Q P _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
 
 void lsqp_reset_control( struct lsqp_control_type *control,
                         void **data,
@@ -859,7 +859,7 @@ void lsqp_reset_control( struct lsqp_control_type *control,
   \li  0. The import was succesful.
  */
 
-//  *-*-*-*-*-*-*-*-*-*-*-   L Q Q P _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-
+//  *-*-*-*-*-*-*-*-*-*-*-   L S Q P _ S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-
 
 void lsqp_solve_qp( void **data,
                     int *status,
@@ -996,7 +996,7 @@ void lsqp_solve_qp( void **data,
     is zero, it lies  between its bounds.
 */  
 
-// *-*-*-*-*-*-*-*-*-*-    Q P B  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-    L S Q P  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
 void lsqp_information( void **data,
                       struct lsqp_inform_type *inform,
@@ -1016,7 +1016,7 @@ void lsqp_information( void **data,
   \li  0. The values were recorded succesfully
 */
 
-// *-*-*-*-*-*-*-*-*-*-    Q P B  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-*-*-*-*-    L S Q P  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
 void lsqp_terminate( void **data, 
                     struct lsqp_control_type *control, 

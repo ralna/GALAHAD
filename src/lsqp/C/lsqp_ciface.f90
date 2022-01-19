@@ -211,14 +211,17 @@
 
     ! Logicals
     fcontrol%remove_dependencies = ccontrol%remove_dependencies
-    fcontrol%treat_zero_bounds_as_general = ccontrol%treat_zero_bounds_as_general
+    fcontrol%treat_zero_bounds_as_general                                      &
+      = ccontrol%treat_zero_bounds_as_general
     fcontrol%just_feasible = ccontrol%just_feasible
     fcontrol%getdua = ccontrol%getdua
     fcontrol%puiseux = ccontrol%puiseux
     fcontrol%feasol = ccontrol%feasol
-    fcontrol%balance_initial_complentarity = ccontrol%balance_initial_complentarity
+    fcontrol%balance_initial_complentarity                                     &
+      = ccontrol%balance_initial_complentarity
     fcontrol%use_corrector = ccontrol%use_corrector
-    fcontrol%array_syntax_worse_than_do_loop = ccontrol%array_syntax_worse_than_do_loop
+    fcontrol%array_syntax_worse_than_do_loop                                   &
+      = ccontrol%array_syntax_worse_than_do_loop
     fcontrol%space_critical = ccontrol%space_critical
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
     fcontrol%generate_sif_file = ccontrol%generate_sif_file
@@ -296,14 +299,17 @@
 
     ! Logicals
     ccontrol%remove_dependencies = fcontrol%remove_dependencies
-    ccontrol%treat_zero_bounds_as_general = fcontrol%treat_zero_bounds_as_general
+    ccontrol%treat_zero_bounds_as_general                                      &
+      = fcontrol%treat_zero_bounds_as_general
     ccontrol%just_feasible = fcontrol%just_feasible
     ccontrol%getdua = fcontrol%getdua
     ccontrol%puiseux = fcontrol%puiseux
     ccontrol%feasol = fcontrol%feasol
-    ccontrol%balance_initial_complentarity = fcontrol%balance_initial_complentarity
+    ccontrol%balance_initial_complentarity 
+      = fcontrol%balance_initial_complentarity                                 &
     ccontrol%use_corrector = fcontrol%use_corrector
-    ccontrol%array_syntax_worse_than_do_loop = fcontrol%array_syntax_worse_than_do_loop
+    ccontrol%array_syntax_worse_than_do_loop                                   &
+      = fcontrol%array_syntax_worse_than_do_loop
     ccontrol%space_critical = fcontrol%space_critical
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
     ccontrol%generate_sif_file = fcontrol%generate_sif_file
@@ -551,8 +557,8 @@
 !  C interface to fortran lsqp_inport
 !  ----------------------------------
 
-  SUBROUTINE lsqp_import( ccontrol, cdata, status, n, m,                        &
-                         catype, ane, arow, acol, aptr ) BIND( C )
+  SUBROUTINE lsqp_import( ccontrol, cdata, status, n, m,                       &
+                          catype, ane, arow, acol, aptr ) BIND( C )
   USE GALAHAD_LSQP_double_ciface
   IMPLICIT NONE
 

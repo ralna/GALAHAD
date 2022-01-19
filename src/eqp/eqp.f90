@@ -3275,13 +3275,38 @@
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-!  X is a rank-one array of dimension n and type default
-!   real, that holds the vector of the primal variables, x.
-!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!  data is a scalar variable of type CQP_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, cqp_solve above.
+!
+!  H_val is a rank-one array of type default real, that holds the values
+!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   specified in cqp_import.
 !
 !  G is a rank-one array of dimension n and type default
 !   real, that holds the vector of linear terms of the objective, g.
 !   The j-th component of G, j = 1, ... , n, contains (g)_j.
+!
+!  f is a scalar of type default real, that holds the constant term, f,
+!   of the objective.
+!
+!  A_val is a rank-one array of type default real, that holds the values
+!   of the Jacobian A in the storage scheme specified in cqp_import.
+!
+!  C is a rank-one array of dimension n and type default
+!   real, that holds the consraint vector, c.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  Y is a rank-one array of dimension m and type default
+!   real, that holds the vector of the Lagrange multipliers, y.
+!   The i-th component of Y, i = 1, ... , m, contains (y)_i.
+!
 
      INTEGER, INTENT( OUT ) :: status
      TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data

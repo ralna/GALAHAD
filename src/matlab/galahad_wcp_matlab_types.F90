@@ -58,7 +58,7 @@
         mwPointer :: status, alloc_status, bad_alloc, iter, factorization_status
         mwPointer :: factorization_integer, factorization_real, nfacts
         mwPointer :: c_implicit, x_implicit, y_implicit, z_implicit
-        mwPointer :: obj, non_negligible_pivot, feasible
+        mwPointer :: obj, mu_final_target_max, non_negligible_pivot, feasible
         TYPE ( WCP_time_pointer_type ) :: time_pointer
         TYPE ( FDC_pointer_type ) :: FDC_pointer
         TYPE ( SBLS_pointer_type ) :: SBLS_pointer
@@ -465,13 +465,14 @@
 
       mwPointer :: mxCreateStructMatrix
 
-      INTEGER * 4, PARAMETER :: ninform = 18
+      INTEGER * 4, PARAMETER :: ninform = 19
       CHARACTER ( LEN = 21 ), PARAMETER :: finform( ninform ) = (/             &
            'status               ', 'alloc_status         ',                   &
            'bad_alloc            ', 'factorization_status ',                   &
            'factorization_integer', 'factorization_real   ',                   &
            'nfacts               ', 'iter                 ',                   &
-           'obj                  ', 'non_negligible_pivot ',                   &
+           'obj                  ', 'mu_final_target_max  ',                   &
+           'non_negligible_pivot ',                                            &
            'c_implicit           ', 'x_implicit           ',                   &
            'y_implicit           ', 'z_implicit           ',                   &
            'feasible             ', 'time                 ',                   &
@@ -525,6 +526,8 @@
         'feasible', WCP_pointer%feasible )
       CALL MATLAB_create_real_component( WCP_pointer%pointer,                  &
         'obj', WCP_pointer%obj )
+      CALL MATLAB_create_real_component( WCP_pointer%pointer,                  &
+        'mu_final_target_max', WCP_pointer%mu_final_target_max )
       CALL MATLAB_create_real_component( WCP_pointer%pointer,                  &
          'non_negligible_pivot', WCP_pointer%non_negligible_pivot )
 
@@ -623,6 +626,8 @@
                                mxGetPr( WCP_pointer%feasible ) )
       CALL MATLAB_copy_to_ptr( WCP_inform%obj,                                 &
                                mxGetPr( WCP_pointer%obj ) )                     
+      CALL MATLAB_copy_to_ptr( WCP_inform%mu_final_target_max,                 &
+                               mxGetPr( WCP_pointer%mu_final_target_max ) )  
       CALL MATLAB_copy_to_ptr( WCP_inform%non_negligible_pivot,                &
                                mxGetPr( WCP_pointer%non_negligible_pivot ) )
 

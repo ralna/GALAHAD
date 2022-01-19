@@ -28,6 +28,7 @@ $(LG)($(package).o): ../$(package)/$(package).f90
 	$(RMOBFILE) $(package)s2.o
 	$(RMOBFILE) $(package)s3.o
 	$(RMOBFILE) $(package)t.o
+	$(RMOBFILE) $(package)ti.o
 	$(CRMARFILE) $(package)_ciface.o
 	$(MVMODS)
 	@printf '[ OK ]\n'

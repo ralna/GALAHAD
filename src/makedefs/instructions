@@ -449,7 +449,7 @@ $(package)dti: $($(PACKAGE)DTI)
 	- ./run_$(package)
 #	- ./run_$(package) > $(package)dti.output 2>&1
 #	cat $(package)dti.output
-	rm ./run_$(package)
+#	rm ./run_$(package)
 
 #  run full (comprehensive) C example tests
 

@@ -30,6 +30,9 @@
   \li \link lpb \endlink - linear programming using an interior-point method
       \latexonly \href{lpb_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/lpb/lpb.html">(link)</a> \endhtmlonly
+  \li \link wcp \endlink - linear feasibility using an interor-point method
+      \latexonly \href{wcp_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/wcp/wcp.html">(link)</a> \endhtmlonly
   \li bqp - bound-constrained convex quadratic programming using 
       a gradient-projection method
   \li \link bqpb \endlink - bound-constrained convex quadratic programming 

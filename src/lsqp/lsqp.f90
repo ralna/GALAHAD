@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-18 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L S Q P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -7520,7 +7520,7 @@
 
      END SUBROUTINE LSQP_import
 
-!-  G A L A H A D -  L S Q P _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+!-  G A L A H A D -  L S Q P _ r e s e t _ c o n t r o l   S U B R O U T I N E -
 
      SUBROUTINE LSQP_reset_control( control, data, status )
 
@@ -7564,12 +7564,8 @@
 !
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the import. If status = 0, the solve was succesful.
-!   For other values see, qpa_solve above.
+!   For other values see, lsqp_solve above.
 
-!  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
-!   specified in qpa_import.
-!
 !  W is a rank-one array of dimension n and type default
 !   real, that holds the vector of weights, w, in the objective function.
 !   The j-th component of W, j = 1, ... , n, contains (W)_j.
@@ -7586,8 +7582,7 @@
 !   of the objective.
 !
 !  A_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Jacobian A in the storage scheme 
-!   specified in qpa_import.
+!   of the Jacobian A in the storage scheme specified in lsqp_import.
 !
 !  C_l, C_u are rank-one arrays of dimension m, that hold the values of
 !   the lower and upper bounds, c_l and c_u, on the general linear constraints.

@@ -13069,8 +13069,7 @@ main: DO
 !   of the parameter associated the general constraints.
 !
 !  A_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Jacobian A in the storage scheme 
-!   specified in qpa_import.
+!   of the Jacobian A in the storage scheme specified in qpa_import.
 !
 !  C_l, C_u are rank-one arrays of dimension m, that hold the values of
 !   the lower and upper bounds, c_l and c_u, on the general linear constraints.

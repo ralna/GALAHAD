@@ -9087,11 +9087,11 @@
 !
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the import. If status = 0, the solve was succesful.
-!   For other values see, qpa_solve above.
+!   For other values see, qpb_solve above.
 
 !  H_val is a rank-one array of type default real, that holds the values
 !   of the  lower triangular part of the Hessian H in the storage scheme 
-!   specified in qpa_import.
+!   specified in qpb_import.
 !
 !  G is a rank-one array of dimension n and type default
 !   real, that holds the vector of linear terms of the objective, g.
@@ -9101,8 +9101,7 @@
 !   of the objective.
 !
 !  A_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Jacobian A in the storage scheme 
-!   specified in qpa_import.
+!   of the Jacobian A in the storage scheme specified in qpb_import.
 !
 !  C_l, C_u are rank-one arrays of dimension m, that hold the values of
 !   the lower and upper bounds, c_l and c_u, on the general linear constraints.

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-13 AT 16:05 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-19 AT 08:45 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  W C P    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -14,32 +14,33 @@
   MODULE GALAHAD_WCP_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_WCP_double, ONLY: &
-        f_wcp_control_type => WCP_control_type, &
-        f_wcp_time_type => WCP_time_type, &
-        f_wcp_inform_type => WCP_inform_type, &
-        f_wcp_full_data_type => WCP_full_data_type, &
-        f_wcp_initialize => WCP_initialize, &
-        f_wcp_read_specfile => WCP_read_specfile, &
-        f_wcp_import => WCP_import, &
-        f_wcp_reset_control => WCP_reset_control, &
-        f_wcp_information => WCP_information, &
-        f_wcp_terminate => WCP_terminate
+    USE GALAHAD_WCP_double, ONLY:                                              &
+        f_wcp_control_type   => WCP_control_type,                              &
+        f_wcp_time_type      => WCP_time_type,                                 &
+        f_wcp_inform_type    => WCP_inform_type,                               &
+        f_wcp_full_data_type => WCP_full_data_type,                            &
+        f_wcp_initialize     => WCP_initialize,                                &
+        f_wcp_read_specfile  => WCP_read_specfile,                             &
+        f_wcp_import         => WCP_import,                                    &
+        f_wcp_reset_control  => WCP_reset_control,                             &
+        f_wcp_find_wcp       => WCP_find_wcp,                                  &
+        f_wcp_information    => WCP_information,                               &
+        f_wcp_terminate      => WCP_terminate
 
-    USE GALAHAD_FDC_double_ciface, ONLY: &
-        fdc_inform_type, &
-        fdc_control_type, &
-        copy_fdc_inform_in => copy_inform_in, &
-        copy_fdc_inform_out => copy_inform_out, &
-        copy_fdc_control_in => copy_control_in, &
-        copy_fdc_control_out => copy_control_out
+!   USE GALAHAD_FDC_double_ciface, ONLY:                                       &
+!       fdc_inform_type,                                                       &
+!       fdc_control_type,                                                      &
+!       copy_fdc_inform_in  => copy_inform_in,                                 &
+!       copy_fdc_inform_out  => copy_inform_out,                               &
+!       copy_fdc_control_in  => copy_control_in,                               &
+!       copy_fdc_control_out => copy_control_out
 
-    USE GALAHAD_SBLS_double_ciface, ONLY: &
-        sbls_inform_type, &
-        sbls_control_type, &
-        copy_sbls_inform_in => copy_inform_in, &
-        copy_sbls_inform_out => copy_inform_out, &
-        copy_sbls_control_in => copy_control_in, &
+    USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
+        sbls_inform_type,                                                      &
+        sbls_control_type,                                                     &
+        copy_sbls_inform_in   => copy_inform_in,                               &
+        copy_sbls_inform_out  => copy_inform_out,                              &
+        copy_sbls_control_in  => copy_control_in,                              &
         copy_sbls_control_out => copy_control_out
 
     IMPLICIT NONE
@@ -105,7 +106,7 @@
       LOGICAL ( KIND = C_BOOL ) :: record_x_status
       LOGICAL ( KIND = C_BOOL ) :: record_c_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
-      TYPE ( fdc_control_type ) :: fdc_control
+!     TYPE ( fdc_control_type ) :: fdc_control
       TYPE ( sbls_control_type ) :: sbls_control
     END TYPE wcp_control_type
 
@@ -138,10 +139,11 @@
       INTEGER ( KIND = C_INT ) :: y_implicit
       INTEGER ( KIND = C_INT ) :: z_implicit
       REAL ( KIND = wp ) :: obj
+      REAL ( KIND = wp ) :: mu_final_target_max
       REAL ( KIND = wp ) :: non_negligible_pivot
       LOGICAL ( KIND = C_BOOL ) :: feasible
       TYPE ( wcp_time_type ) :: time
-      TYPE ( fdc_inform_type ) :: fdc_inform
+!     TYPE ( fdc_inform_type ) :: fdc_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
     END TYPE wcp_inform_type
 
@@ -206,9 +208,11 @@
 
     ! Logicals
     fcontrol%remove_dependencies = ccontrol%remove_dependencies
-    fcontrol%treat_zero_bounds_as_general = ccontrol%treat_zero_bounds_as_general
+    fcontrol%treat_zero_bounds_as_general                                      &
+      = ccontrol%treat_zero_bounds_as_general
     fcontrol%just_feasible = ccontrol%just_feasible
-    fcontrol%balance_initial_complementarity = ccontrol%balance_initial_complementarity
+    fcontrol%balance_initial_complementarity                                   &
+      = ccontrol%balance_initial_complementarity
     fcontrol%use_corrector = ccontrol%use_corrector
     fcontrol%space_critical = ccontrol%space_critical
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
@@ -216,7 +220,7 @@
     fcontrol%record_c_status = ccontrol%record_c_status
 
     ! Derived types
-    CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
+!   CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
     CALL copy_sbls_control_in( ccontrol%sbls_control, fcontrol%sbls_control )
 
     ! Strings
@@ -283,9 +287,11 @@
 
     ! Logicals
     ccontrol%remove_dependencies = fcontrol%remove_dependencies
-    ccontrol%treat_zero_bounds_as_general = fcontrol%treat_zero_bounds_as_general
+    ccontrol%treat_zero_bounds_as_general                                      &
+      = fcontrol%treat_zero_bounds_as_general
     ccontrol%just_feasible = fcontrol%just_feasible
-    ccontrol%balance_initial_complementarity = fcontrol%balance_initial_complementarity
+    ccontrol%balance_initial_complementarity                                   &
+      = fcontrol%balance_initial_complementarity
     ccontrol%use_corrector = fcontrol%use_corrector
     ccontrol%space_critical = fcontrol%space_critical
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
@@ -293,7 +299,7 @@
     ccontrol%record_c_status = fcontrol%record_c_status
 
     ! Derived types
-    CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
+!   CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
     CALL copy_sbls_control_out( fcontrol%sbls_control, ccontrol%sbls_control )
 
     ! Strings
@@ -374,6 +380,7 @@
 
     ! Reals
     finform%obj = cinform%obj
+    finform%mu_final_target_max = cinform%mu_final_target_max
     finform%non_negligible_pivot = cinform%non_negligible_pivot
 
     ! Logicals
@@ -381,7 +388,7 @@
 
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
-    CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
+!   CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
     CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
 
     ! Strings
@@ -415,6 +422,7 @@
 
     ! Reals
     cinform%obj = finform%obj
+    cinform%mu_final_target_max = finform%mu_final_target_max
     cinform%non_negligible_pivot = finform%non_negligible_pivot
 
     ! Logicals
@@ -422,7 +430,7 @@
 
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
-    CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
+!   CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
     CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
 
     ! Strings
@@ -437,11 +445,11 @@
 
   END MODULE GALAHAD_WCP_double_ciface
 
-!  -------------------------------------
+!  --------------------------------------
 !  C interface to fortran wcp_initialize
-!  -------------------------------------
+!  --------------------------------------
 
-  SUBROUTINE wcp_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE wcp_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_WCP_double_ciface
   IMPLICIT NONE
 
@@ -456,7 +464,7 @@
   TYPE ( f_wcp_full_data_type ), POINTER :: fdata
   TYPE ( f_wcp_control_type ) :: fcontrol
   TYPE ( f_wcp_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -472,16 +480,17 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+
   RETURN
 
   END SUBROUTINE wcp_initialize
 
-!  ----------------------------------------
+!  -----------------------------------------
 !  C interface to fortran wcp_read_specfile
-!  ----------------------------------------
+!  -----------------------------------------
 
   SUBROUTINE wcp_read_specfile( ccontrol, cspecfile ) BIND( C )
   USE GALAHAD_WCP_double_ciface
@@ -509,11 +518,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_wcp_read_specfile( fcontrol, device )
@@ -529,11 +538,12 @@
 
   END SUBROUTINE wcp_read_specfile
 
-!  ---------------------------------
+!  ----------------------------------
 !  C interface to fortran wcp_inport
-!  ---------------------------------
+!  ----------------------------------
 
-  SUBROUTINE wcp_import( ccontrol, cdata, status ) BIND( C )
+  SUBROUTINE wcp_import( ccontrol, cdata, status, n, m,                        &
+                          catype, ane, arow, acol, aptr ) BIND( C )
   USE GALAHAD_WCP_double_ciface
   IMPLICIT NONE
 
@@ -542,11 +552,18 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( wcp_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
 
 !  local variables
 
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
   TYPE ( f_wcp_control_type ) :: fcontrol
   TYPE ( f_wcp_full_data_type ), POINTER :: fdata
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -557,6 +574,10 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
+!  convert C string to Fortran string
+
+  fatype = cstr_to_fchar( catype )
+
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
@@ -564,12 +585,30 @@
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
+    IF ( PRESENT( arow ) ) THEN
+      ALLOCATE( arow_find( ane ) )
+      arow_find = arow + 1
+    END IF
+    IF ( PRESENT( acol ) ) THEN
+      ALLOCATE( acol_find( ane ) )
+      acol_find = acol + 1
+    END IF
+    IF ( PRESENT( aptr ) ) THEN
+      ALLOCATE( aptr_find( m + 1 ) )
+      aptr_find = aptr + 1
+    END IF
 
 !  import the problem data into the required WCP structure
 
-    CALL f_wcp_import( fcontrol, fdata, status )
+    CALL f_wcp_import( fcontrol, fdata, status, n, m,                          &
+                       fatype, ane, arow_find, acol_find, aptr_find )
+
+    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
+    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
+    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
   ELSE
-    CALL f_wcp_import( fcontrol, fdata, status )
+    CALL f_wcp_import( fcontrol, fdata, status, n, m,                          &
+                        fatype, ane, arow, acol, aptr )
   END IF
 
 !  copy control out
@@ -579,9 +618,9 @@
 
   END SUBROUTINE wcp_import
 
-!  ---------------------------------------
+!  -----------------------------------------
 !  C interface to fortran wcp_reset_control
-!  ----------------------------------------
+!  -----------------------------------------
 
   SUBROUTINE wcp_reset_control( ccontrol, cdata, status ) BIND( C )
   USE GALAHAD_WCP_double_ciface
@@ -613,16 +652,56 @@
 
 !  import the control parameters into the required structure
 
-  CALL f_WCP_reset_control( fcontrol, fdata, status )
+  CALL f_wcp_reset_control( fcontrol, fdata, status )
   RETURN
 
   END SUBROUTINE wcp_reset_control
+
+!  ------------------------------------
+!  C interface to fortran wcp_find_wcp
+!  ------------------------------------
+
+  SUBROUTINE wcp_find_wcp( cdata, status, n, m, g, ane, aval, cl, cu, xl, xu,  &
+                           x, c, yl, yu, zl, zu, xstat, cstat ) BIND( C )
+  USE GALAHAD_WCP_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, zl, zu
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: yl, yu
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( m ) :: cstat
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_wcp_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  solve the qp
+
+  CALL f_wcp_find_wcp( fdata, status, g, aval, cl, cu, xl, xu,                 &
+                        x, c, yl, yu, zl, zu, xstat, cstat )
+  RETURN
+
+  END SUBROUTINE wcp_find_wcp
 
 !  --------------------------------------
 !  C interface to fortran wcp_information
 !  --------------------------------------
 
-  SUBROUTINE wcp_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE wcp_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_WCP_double_ciface
   IMPLICIT NONE
 
@@ -652,11 +731,11 @@
 
   END SUBROUTINE wcp_information
 
-!  ------------------------------------
+!  -------------------------------------
 !  C interface to fortran wcp_terminate
-!  ------------------------------------
+!  -------------------------------------
 
-  SUBROUTINE wcp_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE wcp_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_WCP_double_ciface
   IMPLICIT NONE
 
@@ -695,7 +774,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE wcp_terminate

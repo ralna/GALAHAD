@@ -986,8 +986,14 @@ See {\tt X\_status}.
 value of the (primal) objective function, $\bmg^T \bmx$, 
 at the well-centered point found.
 
+\itt{mu\_final\_target\_max} is a scalar variable of type default \realdp, 
+that holds the largest component of all the targets
+$\bmmu_c^{l}$, $\bmmu_c^{u}$, $\bmmu_x^{l}$ and $\bmmu_x^{u}$ used
+at the well-centered point found.
+
 \itt{non\_negligible\_pivot} is a scalar variable of type default \realdp, 
-that holds the value of the smallest pivot larger than {\tt control\%zero\_pivot}
+that holds the value of the smallest pivot larger than 
+{\tt control\%zero\_pivot}
 when searching for dependent linear constraints. If 
 {\tt non\_negligible\_pivot} is close to  {\tt control\%zero\_pivot},
 this may indicate that there are further dependent constraints, and
@@ -1647,7 +1653,7 @@ $\bmv(\alpha) = \bmv + \alpha \dot{\bmv} + \alpha^2 \ddot{\bmv}$, $\alpha \in
 involving the standard Newton step $\dot{\bmv}$
 for the equations \req{prim}, \req{dual}, \req{pert-slknessc}
 and \req{pert-slknessx}, optionally augmented by a corrector $\ddot{\bmv}$
-to account fir the nonlinearity in \req{pert-slknessc}--\req{pert-slknessx},
+to account for the nonlinearity in \req{pert-slknessc}--\req{pert-slknessx},
 is truncated so as to ensure that
 \disp{
 ( c_i^{}(\alpha) - c^l_i + (\theta_c^l)_i^{} ) 
