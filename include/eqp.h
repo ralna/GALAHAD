@@ -286,7 +286,7 @@ extern "C" {
 #include "galahad_precision.h"
 
 // required packages
-//#include "fdc.h"
+#include "fdc.h"
 #include "sbls.h"
 #include "gltr.h"
 
@@ -464,7 +464,7 @@ struct eqp_control_type {
 
     /// \brief
     /// control parameters for FDC
-    ///struct fdc_control_type fdc_control;
+    struct fdc_control_type fdc_control;
 
     /// \brief
     /// control parameters for SBLS
@@ -557,7 +557,7 @@ struct eqp_inform_type {
 
     /// \brief
     /// inform parameters for FDC
-    ///struct fdc_inform_type fdc_inform;
+    struct fdc_inform_type fdc_inform;
 
     /// \brief
     /// inform parameters for SBLS

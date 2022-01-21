@@ -29,13 +29,13 @@
         f_eqp_information => EQP_information,                                  &
         f_eqp_terminate => EQP_terminate
 
-!   USE GALAHAD_FDC_double_ciface, ONLY:                                       &
-!       fdc_inform_type,                                                       &
-!       fdc_control_type,                                                      &
-!       copy_fdc_inform_in => copy_inform_in,                                  &
-!       copy_fdc_inform_out => copy_inform_out,                                &
-!       copy_fdc_control_in => copy_control_in,                                &
-!       copy_fdc_control_out => copy_control_out
+    USE GALAHAD_FDC_double_ciface, ONLY:                                       &
+        fdc_inform_type,                                                       &
+        fdc_control_type,                                                      &
+        copy_fdc_inform_in => copy_inform_in,                                  &
+        copy_fdc_inform_out => copy_inform_out,                                &
+        copy_fdc_control_in => copy_control_in,                                &
+        copy_fdc_control_out => copy_control_out
 
     USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
         sbls_inform_type,                                                      &
@@ -101,7 +101,7 @@
       LOGICAL ( KIND = C_BOOL ) :: generate_sif_file
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: sif_file_name
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
-!     TYPE ( fdc_control_type ) :: fdc_control
+      TYPE ( fdc_control_type ) :: fdc_control
       TYPE ( sbls_control_type ) :: sbls_control
       TYPE ( gltr_control_type ) :: gltr_control
     END TYPE eqp_control_type
@@ -128,7 +128,7 @@
       INTEGER ( KIND = C_INT ) :: factorization_real
       REAL ( KIND = wp ) :: obj
       TYPE ( eqp_time_type ) :: time
-!     TYPE ( fdc_inform_type ) :: fdc_inform
+      TYPE ( fdc_inform_type ) :: fdc_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
       TYPE ( gltr_inform_type ) :: gltr_inform
     END TYPE eqp_inform_type
@@ -188,7 +188,7 @@
     fcontrol%generate_sif_file = ccontrol%generate_sif_file
 
     ! Derived types
-!   CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
+    CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
     CALL copy_sbls_control_in( ccontrol%sbls_control, fcontrol%sbls_control )
     CALL copy_gltr_control_in( ccontrol%gltr_control, fcontrol%gltr_control )
 
@@ -254,7 +254,7 @@
     ccontrol%generate_sif_file = fcontrol%generate_sif_file
 
     ! Derived types
-!   CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
+    CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
     CALL copy_sbls_control_out( fcontrol%sbls_control, ccontrol%sbls_control )
     CALL copy_gltr_control_out( fcontrol%gltr_control, ccontrol%gltr_control )
 
@@ -333,7 +333,7 @@
 
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
-!   CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
+    CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
     CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
     CALL copy_gltr_inform_in( cinform%gltr_inform, finform%gltr_inform )
 
@@ -366,7 +366,7 @@
 
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
-!   CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
+    CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
     CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
     CALL copy_gltr_inform_out( finform%gltr_inform, cinform%gltr_inform )
 

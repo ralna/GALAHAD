@@ -27,13 +27,13 @@
         f_lsqp_information    => LSQP_information,                             &
         f_lsqp_terminate      => LSQP_terminate
 
-!    USE GALAHAD_FDC_double_ciface, ONLY:                                      &
-!        fdc_inform_type,                                                      &
-!        fdc_control_type,                                                     &
-!        copy_fdc_inform_in  => copy_inform_in,                                &
-!        copy_fdc_inform_out  => copy_inform_out,                              &
-!        copy_fdc_control_in  => copy_control_in,                              &
-!        copy_fdc_control_out => copy_control_out
+     USE GALAHAD_FDC_double_ciface, ONLY:                                      &
+         fdc_inform_type,                                                      &
+         fdc_control_type,                                                     &
+         copy_fdc_inform_in  => copy_inform_in,                                &
+         copy_fdc_inform_out  => copy_inform_out,                              &
+         copy_fdc_control_in  => copy_control_in,                              &
+         copy_fdc_control_out => copy_control_out
 
     USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
         sbls_inform_type,                                                      &
@@ -111,7 +111,7 @@
       LOGICAL ( KIND = C_BOOL ) :: generate_sif_file
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: sif_file_name
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
-!     TYPE ( fdc_control_type ) :: fdc_control
+      TYPE ( fdc_control_type ) :: fdc_control
       TYPE ( sbls_control_type ) :: sbls_control
     END TYPE lsqp_control_type
 
@@ -145,7 +145,7 @@
       REAL ( KIND = wp ) :: non_negligible_pivot
       LOGICAL ( KIND = C_BOOL ) :: feasible
       TYPE ( lsqp_time_type ) :: time
-!     TYPE ( fdc_inform_type ) :: fdc_inform
+      TYPE ( fdc_inform_type ) :: fdc_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
     END TYPE lsqp_inform_type
 
@@ -227,7 +227,7 @@
     fcontrol%generate_sif_file = ccontrol%generate_sif_file
 
     ! Derived types
-!   CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
+    CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
     CALL copy_sbls_control_in( ccontrol%sbls_control, fcontrol%sbls_control )
 
     ! Strings
@@ -305,8 +305,8 @@
     ccontrol%getdua = fcontrol%getdua
     ccontrol%puiseux = fcontrol%puiseux
     ccontrol%feasol = fcontrol%feasol
-    ccontrol%balance_initial_complentarity 
-      = fcontrol%balance_initial_complentarity                                 &
+    ccontrol%balance_initial_complentarity                                     &
+      = fcontrol%balance_initial_complentarity
     ccontrol%use_corrector = fcontrol%use_corrector
     ccontrol%array_syntax_worse_than_do_loop                                   &
       = fcontrol%array_syntax_worse_than_do_loop
@@ -315,7 +315,7 @@
     ccontrol%generate_sif_file = fcontrol%generate_sif_file
 
     ! Derived types
-!   CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
+    CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
     CALL copy_sbls_control_out( fcontrol%sbls_control, ccontrol%sbls_control )
 
     ! Strings
@@ -406,7 +406,7 @@
 
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
-!   CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
+    CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
     CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
 
     ! Strings
@@ -445,7 +445,7 @@
 
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
-!   CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
+    CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
     CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
 
     ! Strings

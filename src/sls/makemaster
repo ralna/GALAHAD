@@ -31,7 +31,7 @@ CDEPENDENCIES = make_ciface_sls_deps
 
 #  other C interface packages that depend on current interface package 
 
-CDEPENDS = ir_ciface sbls_ciface trs_ciface rqs_ciface
+CDEPENDS = ir sbls trs rqs
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

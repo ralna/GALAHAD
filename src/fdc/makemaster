@@ -23,7 +23,17 @@ DEPENDENCIES = make_sls_deps make_sls make_ma33 make_gls \
 
 #  other packages that depend on package
 
-DEPENDS = 
+DEPENDS = eqp lpb lsqp cqp dqp bqpb wcp
+
+#  auxiliary packages that the C interface to the current package depends 
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = make_ciface_sls_deps make_ciface_sls \
+                make_ciface_uls_deps make_ciface_uls
+
+#  other C interface packages that depend on current interface package 
+
+CDEPENDS = eqp lpb lsqp cqp dqp bqpb wcp
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

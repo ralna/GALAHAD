@@ -21,7 +21,7 @@ int main(void) {
     int A_row[] = {0, 0, 1, 1}; // row indices
     int A_col[] = {0, 1, 1, 2}; // column indices
     int A_ptr[] = {0, 2, 4}; // row pointers
-    double A_val[] = {2.0, 1.0, 1.0, 1.0 }; // values
+    double A_val[] = {2.0, 1.0, 1.0, 1.0}; // values
     double c_l[] = {1.0, 2.0};   // constraint lower bound
     double c_u[] = {2.0, 2.0};   // constraint upper bound
     double x_l[] = {-1.0, - INFINITY, - INFINITY}; // variable lower bound

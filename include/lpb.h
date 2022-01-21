@@ -1,7 +1,7 @@
 //* \file lpb.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 24/12/2021 AT 09:21 GMT.
+ * THIS VERSION: GALAHAD 4.0 - 2022-01-21 AT 09:00 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LPB C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -265,7 +265,7 @@ extern "C" {
 #include "galahad_precision.h"
 
 // required packages
-//#include "fdc.h"
+#include "fdc.h"
 #include "sbls.h"
 //#include "fit.h"
 //#include "roots.h"
@@ -546,7 +546,7 @@ struct lpb_control_type {
 
     /// \brief
     /// control parameters for FDC
-    /// struct fdc_control_type fdc_control;
+    struct fdc_control_type fdc_control;
 
     /// \brief
     /// control parameters for SBLS
@@ -718,7 +718,7 @@ struct lpb_inform_type {
 
     /// \brief
     /// inform parameters for FDC
-    /// struct fdc_inform_type fdc_inform;
+    struct fdc_inform_type fdc_inform;
 
     /// \brief
     /// inform parameters for SBLS

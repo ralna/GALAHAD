@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-19 AT 13:50 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ F D C    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -35,7 +35,20 @@
 
       PRIVATE
       PUBLIC :: FDC_initialize, FDC_read_specfile, FDC_find_dependent,         &
-                FDC_terminate, SMT_type
+                FDC_terminate, FDC_full_initialize, FDC_full_terminate,        &
+                FDC_find_dependent_rows, SMT_type
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE FDC_initialize
+       MODULE PROCEDURE FDC_initialize, FDC_full_initialize
+     END INTERFACE FDC_initialize
+
+     INTERFACE FDC_terminate
+       MODULE PROCEDURE FDC_terminate, FDC_full_terminate
+     END INTERFACE FDC_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -94,7 +107,7 @@
 !    REAL ( KIND = wp ) :: max_infeas = epsmch ** 0.33_wp
      REAL ( KIND = wp ) :: max_infeas = epsmch
 
-!  chose whether SLS or ULS is used to determine dependencies
+!  choose whether SLS or ULS is used to determine dependencies
 
         LOGICAL :: use_sls = .FALSE.
 
@@ -220,6 +233,16 @@
         TYPE ( FDC_control_type ) :: control
       END TYPE
 
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: FDC_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( FDC_data_type ) :: FDC_data
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: DEPEN
+      END TYPE FDC_full_data_type
+
    CONTAINS
 
 !-*-*-*-*-*-   F D C _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
@@ -278,6 +301,38 @@
 !  End of FDC_initialize
 
       END SUBROUTINE FDC_initialize
+
+!- G A L A H A D -  F D C _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE FDC_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for FDC controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( FDC_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( FDC_control_type ), INTENT( OUT ) :: control
+     TYPE ( FDC_inform_type ), INTENT( OUT ) :: inform
+
+     CALL FDC_initialize( data%fdc_data, control, inform )
+
+     RETURN
+
+!  End of subroutine FDC_full_initialize
+
+     END SUBROUTINE FDC_full_initialize
 
 !-*-*-*-*-   F D C _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
 
@@ -460,8 +515,7 @@
 !-*-*-*-   F D C _ F I N D _ D E P E N D E N T  S U B R O U T I N E   -*-*-*-
 
       SUBROUTINE FDC_find_dependent( n, m, A_val, A_col, A_ptr, C,             &
-                                     n_depen, C_depen,                         &
-                                     data, control, inform )
+                                     n_depen, DEPEN, data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -497,7 +551,7 @@
 !   n_depen is an INTEGER variable that gives the number of rows of A that
 !    are deemed to be linearly dependent
 !
-!   C_depen is a INTEGER pointer array that will have been allocated to
+!   DEPEN is a INTEGER pointer array that will have been allocated to
 !    be of length n_depen, and will contain the indices of the rows of A
 !    that are deemed to be linearly dependent
 !
@@ -564,7 +618,7 @@
                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C
 
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_depen
+      INTEGER, ALLOCATABLE, DIMENSION( : ) :: DEPEN
       TYPE ( FDC_data_type ), INTENT( INOUT ) :: data
       TYPE ( FDC_control_type ), INTENT( IN ) :: control
       TYPE ( FDC_inform_type ), INTENT( INOUT ) :: inform
@@ -583,10 +637,10 @@
       CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
       IF ( control%use_sls ) THEN
         CALL FDC_find_dependent_sls( n, m, A_val, A_col, A_ptr, C,             &
-                                     n_depen, C_depen, data, control, inform )
+                                     n_depen, DEPEN, data, control, inform )
       ELSE
         CALL FDC_find_dependent_uls( n, m, A_val, A_col, A_ptr, C,             &
-                                     n_depen, C_depen, data, control, inform )
+                                     n_depen, DEPEN, data, control, inform )
       END IF
       CALL CPU_TIME( time_now ); CALL CLOCK_time( clock_now )
       inform%time%total = inform%time%total + time_now - time_start
@@ -604,7 +658,7 @@
 !-*-*   F D C _ F I N D _ D E P E N D E N T _ S L S  S U B R O U T I N E   *-*-
 
       SUBROUTINE FDC_find_dependent_sls( n, m, A_val, A_col, A_ptr, C,         &
-                                         n_depen, C_depen,                     &
+                                         n_depen, DEPEN,                       &
                                          data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -629,7 +683,7 @@
                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C
 
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_depen
+      INTEGER, ALLOCATABLE, DIMENSION( : ) :: DEPEN
       TYPE ( FDC_data_type ), INTENT( INOUT ) :: data
       TYPE ( FDC_control_type ), INTENT( IN ) :: control
       TYPE ( FDC_inform_type ), INTENT( INOUT ) :: inform
@@ -671,7 +725,7 @@
       IF ( n == 0 ) THEN
         IF ( MAXVAL( C ) <= data%control%max_infeas ) THEN
           DO i = 1, m - 1
-            C_depen( i ) = i
+            DEPEN( i ) = i
           END DO
           n_depen = m - 1
           inform%status = GALAHAD_ok
@@ -1005,8 +1059,8 @@
 
 !  Allocate arrays to indicate which constraints have been freed
 
-        array_name = 'fdc: data%C_depen'
-        CALL SPACE_resize_array( n_depen, C_depen, inform%status,              &
+        array_name = 'fdc: data%DEPEN'
+        CALL SPACE_resize_array( n_depen, DEPEN, inform%status,                &
                inform%alloc_status, array_name = array_name,                   &
                deallocate_error_fatal = data%control%deallocate_error_fatal,   &
                exact_size = data%control%space_critical,                       &
@@ -1038,13 +1092,13 @@
                 IF ( ABS( root1 ) >= big .OR.                                  &
                      ( root1 == zero .AND. root2 == zero ) ) THEN
                   n_depen = n_depen + 1
-                  C_depen( n_depen )                                           &
+                  DEPEN( n_depen )                                             &
                     = MIN( ABS( data%P( i ) ), ABS( data%P( i + 1 ) ) ) - n
                   data%D( 1, i ) = zero ;  data%D( 2, i ) = zero
                   data%D( 1, i + 1 ) = zero
                 END IF
                 n_depen = n_depen + 1
-                C_depen( n_depen ) = MAX( ABS( data%P( i ) ),                  &
+                DEPEN( n_depen ) = MAX( ABS( data%P( i ) ),                    &
                                           ABS( data%P( i + 1 ) ) ) - n
               END IF
 
@@ -1055,7 +1109,7 @@
               IF ( ABS( data%D( 1, i ) ) >= big .OR.                           &
                         data%D( 1, i ) == zero ) THEN
                 n_depen = n_depen + 1
-                C_depen( n_depen ) = data%P( i ) - n
+                DEPEN( n_depen ) = data%P( i ) - n
                 data%D( 1, i ) = zero
               END IF
             END IF
@@ -1065,7 +1119,7 @@
 
             IF ( ABS( data%D( 1, i ) ) >= big .OR. data%D( 1, i ) == zero ) THEN
               n_depen = n_depen + 1
-              C_depen( n_depen ) = data%P( i ) - n
+              DEPEN( n_depen ) = data%P( i ) - n
               data%D( 1, i ) = zero
             END IF
           END IF
@@ -1075,7 +1129,7 @@
 
         DO i = inform%SLS_inform%rank + 1, data%K%n
           n_depen = n_depen + 1
-          C_depen( n_depen ) = data%P( i ) - n
+          DEPEN( n_depen ) = data%P( i ) - n
         END DO
 
 !  Reset "small" pivots to zero
@@ -1130,7 +1184,7 @@
 !-*-*   F D C _ F I N D _ D E P E N D E N T _ U L S  S U B R O U T I N E   *-*-
 
       SUBROUTINE FDC_find_dependent_uls( n, m, A_val, A_col, A_ptr, C,         &
-                                         n_depen, C_depen,                     &
+                                         n_depen, DEPEN,                       &
                                          data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1154,7 +1208,7 @@
                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C
 
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_depen
+      INTEGER, ALLOCATABLE, DIMENSION( : ) :: DEPEN
       TYPE ( FDC_data_type ), INTENT( INOUT ) :: data
       TYPE ( FDC_control_type ), INTENT( IN ) :: control
       TYPE ( FDC_inform_type ), INTENT( INOUT ) :: inform
@@ -1197,7 +1251,7 @@
       IF ( n == 0 ) THEN
         IF ( MAXVAL( C ) <= data%control%max_infeas ) THEN
           DO i = 1, m - 1
-            C_depen( i ) = i
+            DEPEN( i ) = i
           END DO
           n_depen = m - 1
           inform%status = GALAHAD_ok
@@ -1342,8 +1396,8 @@
                bad_alloc = inform%bad_alloc, out = data%control%error )
         IF ( inform%status /= GALAHAD_ok ) RETURN
 
-        array_name = 'fdc: data%C_depen'
-        CALL SPACE_resize_array( n_depen, C_depen, inform%status,              &
+        array_name = 'fdc: data%DEPEN'
+        CALL SPACE_resize_array( n_depen, DEPEN, inform%status,                &
                inform%alloc_status, array_name = array_name,                   &
                deallocate_error_fatal = data%control%deallocate_error_fatal,   &
                exact_size = data%control%space_critical,                       &
@@ -1371,7 +1425,7 @@
         DO i = 1, data%A%m
           IF ( data%INDEP( i ) == 0 ) THEN
             l = l + 1
-            C_depen( l ) = i
+            DEPEN( l ) = i
           END IF
         END DO
 
@@ -1421,7 +1475,7 @@
 
 !-*-*-*-*-*-*-   F D C _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-*
 
-      SUBROUTINE FDC_terminate( data, control, inform, C_depen )
+      SUBROUTINE FDC_terminate( data, control, inform, DEPEN )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -1434,7 +1488,7 @@
 
 !  Arguments:
 !
-!   C_depen  see Subroutine FDC_find_dependent
+!   DEPEN  see Subroutine FDC_find_dependent
 !   data     see Subroutine FDC_find_dependent
 !   control  see preamble
 !   inform   see preamble
@@ -1446,7 +1500,7 @@
       TYPE ( FDC_data_type ), INTENT( INOUT ) :: data
       TYPE ( FDC_control_type ), INTENT( IN ) :: control
       TYPE ( FDC_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER, ALLOCATABLE, OPTIONAL, DIMENSION( : ) :: C_depen
+      INTEGER, ALLOCATABLE, OPTIONAL, DIMENSION( : ) :: DEPEN
 
 !  Local variables
 
@@ -1553,9 +1607,9 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      IF ( PRESENT( C_depen ) ) THEN
-        array_name = 'fdc: C_depen'
-        CALL SPACE_dealloc_array( C_depen,                                     &
+      IF ( PRESENT( DEPEN ) ) THEN
+        array_name = 'fdc: DEPEN'
+        CALL SPACE_dealloc_array( DEPEN,                                       &
            inform%status, inform%alloc_status, array_name = array_name,        &
            bad_alloc = inform%bad_alloc, out = control%error )
         IF ( control%deallocate_error_fatal .AND.                              &
@@ -1567,6 +1621,121 @@
 !  End of subroutine FDC_terminate
 
       END SUBROUTINE FDC_terminate
+! -  G A L A H A D -  F D C _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE FDC_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( FDC_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( FDC_control_type ), INTENT( IN ) :: control
+     TYPE ( FDC_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL FDC_terminate( data%fdc_data, control, inform, DEPEN = data%DEPEN )
+
+     RETURN
+
+!  End of subroutine FDC_full_terminate
+
+     END SUBROUTINE FDC_full_terminate
+
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!- G A L A H A D -  F D C _ f i n d _ d e p e n d e n t _ r o w s  SUBROUTINE
+
+     SUBROUTINE FDC_find_dependent_rows( control, data, inform, status,        &
+                                         m, n, A_col, A_ptr, A_val, B,         &
+                                         n_depen, DEPEN )
+
+!  find the dependent rows of A, and subsequent inconsistencies in Ax=c.
+!  See FDC_find_dependent for further descriptions of the required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  control is a scalar variable of derived type fdc_control_type
+!   whose components are described in the leading comments to FDC
+!
+!  data is a scalar variable of type FDC_data_type used for internal data
+!
+!  inform is a scalar variable of derived type fdc_inform_type
+!   whose components are described in the leading comments to FDC
+!
+!  status is a scalar variable of type default integer that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, FDC_find_dependent above.
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   rows of A
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   columns of A
+!
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of the rows of A stored consecutively; the order within each
+!   row is irrelevant
+!
+!  A_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of a, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!
+!  A_val is a rank-one array of type default real, that holds the values
+!   of A in the order disctated by A_col and A_ptr
+!
+!  B is a rank-one array of dimension n and type default
+!   real, that holds the right-hand side vector, b.
+!   The j-th component of B, i = 1, ... , m, contains (b)_i.
+!
+!  n_depen is a scalar variable of type default integer, that holds the 
+!   number of dependent constraints, if any.
+!
+!  DEPEN is a rank-one array of dimension m and type default integer,
+!   whose first n_depen components contain the indices of dependent constraints
+
+     TYPE ( FDC_control_type ), INTENT( INOUT ) :: control
+     TYPE ( FDC_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( IN ) :: n, m
+     INTEGER, INTENT( OUT ) :: status, n_depen
+     TYPE ( FDC_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ), DIMENSION( : ) :: A_col
+     INTEGER, INTENT( IN ), DIMENSION( : ) :: A_ptr
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: B
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: DEPEN
+
+!  find the dependencies/inconsistencies
+
+     CALL FDC_find_dependent( n, m, A_val, A_col, A_ptr, B, n_depen,           &
+                              data%DEPEN, data%fdc_data, control, inform )
+     IF ( n_depen > 0 ) DEPEN( : n_depen ) = data%DEPEN( : n_depen )
+     status = inform%status
+     RETURN
+
+!  End of subroutine FDC_find_dependent_rows
+
+     END SUBROUTINE FDC_find_dependent_rows
 
 !  End of module FDC
 

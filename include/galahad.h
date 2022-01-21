@@ -24,6 +24,10 @@
 
   GALAHAD provides packages as named for the following problems:
 
+  \li \link fdc \endlink - determine consistency and redundancy of linear 
+      systems
+      \latexonly \href{fdc_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/fdc/fdc.html">(link)</a> \endhtmlonly
   \li lpa - linear programming using an active-set method
       \latexonly \href{lpa_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/lpa/lpa.html">(link)</a> \endhtmlonly

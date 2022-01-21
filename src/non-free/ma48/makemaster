@@ -290,7 +290,7 @@ $(HCLG)(hsl_ma48s_ciface.o): $(MA48)/hsl_ma48s_ciface.f90
                       hsl_ma48s_ciface.f90
 	cd $(OBJ) ; $(HCARR) hsl_ma48s_ciface.o ; \
                     $(RM) hsl_ma48s_ciface.f90 hsl_ma48s_ciface.o
-	$(CRMARFILE) sls_ciface.o
+	$(CRMARFILE) uls_ciface.o
 	$(MVMODS)
 	$(RANLIB) $(HCLG)
 	@printf '[ OK ]\n'
@@ -304,7 +304,7 @@ $(HCLG)(hsl_ma48d_ciface.o): $(MA48)/C/hsl_ma48d_ciface.f90
                       hsl_ma48d_ciface.f90
 	cd $(OBJ) ; $(HCARR) hsl_ma48d_ciface.o ; \
                     $(RM) hsl_ma48d_ciface.f90 hsl_ma48d_ciface.o
-	$(CRMARFILE) sls_ciface.o
+	$(CRMARFILE) uls_ciface.o
 	$(MVMODS)
 	$(RANLIB) $(HCLG)
 	@printf '[ OK ]\n'

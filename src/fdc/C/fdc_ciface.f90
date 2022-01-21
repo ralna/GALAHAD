@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-13 AT 16:09 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-20 AT 09:45 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  F D C    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -14,32 +14,30 @@
   MODULE GALAHAD_FDC_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_FDC_double, ONLY: &
-        f_fdc_control_type => FDC_control_type, &
-        f_fdc_time_type => FDC_time_type, &
-        f_fdc_inform_type => FDC_inform_type, &
-        f_fdc_full_data_type => FDC_full_data_type, &
-        f_fdc_initialize => FDC_initialize, &
-        f_fdc_read_specfile => FDC_read_specfile, &
-        f_fdc_import => FDC_import, &
-        f_fdc_reset_control => FDC_reset_control, &
-        f_fdc_information => FDC_information, &
-        f_fdc_terminate => FDC_terminate
+    USE GALAHAD_FDC_double, ONLY:                                              &
+        f_fdc_control_type        => FDC_control_type,                         &
+        f_fdc_time_type           => FDC_time_type,                            &
+        f_fdc_inform_type         => FDC_inform_type,                          &
+        f_fdc_full_data_type      => FDC_full_data_type,                       &
+        f_fdc_initialize          => FDC_initialize,                           &
+        f_fdc_read_specfile       => FDC_read_specfile,                        &
+        f_fdc_find_dependent_rows => FDC_find_dependent_rows,                  &
+        f_fdc_terminate           => FDC_terminate
 
-    USE GALAHAD_SLS_double_ciface, ONLY: &
-        sls_inform_type, &
-        sls_control_type, &
-        copy_sls_inform_in => copy_inform_in, &
-        copy_sls_inform_out => copy_inform_out, &
-        copy_sls_control_in => copy_control_in, &
+    USE GALAHAD_SLS_double_ciface, ONLY:                                       &
+        sls_inform_type,                                                       &
+        sls_control_type,                                                      &
+        copy_sls_inform_in   => copy_inform_in,                                &
+        copy_sls_inform_out  => copy_inform_out,                               &
+        copy_sls_control_in  => copy_control_in,                               &
         copy_sls_control_out => copy_control_out
 
-    USE GALAHAD_ULS_double_ciface, ONLY: &
-        uls_inform_type, &
-        uls_control_type, &
-        copy_uls_inform_in => copy_inform_in, &
-        copy_uls_inform_out => copy_inform_out, &
-        copy_uls_control_in => copy_control_in, &
+    USE GALAHAD_ULS_double_ciface, ONLY:                                       &
+        uls_inform_type,                                                       &
+        uls_control_type,                                                      &
+        copy_uls_inform_in   => copy_inform_in,                                &
+        copy_uls_inform_out  => copy_inform_out,                               &
+        copy_uls_control_in  => copy_control_in,                               &
         copy_uls_control_out => copy_control_out
 
     IMPLICIT NONE
@@ -140,11 +138,13 @@
     ! Strings
     DO i = 1, LEN( fcontrol%symmetric_linear_solver )
       IF ( ccontrol%symmetric_linear_solver( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%symmetric_linear_solver( i : i ) = ccontrol%symmetric_linear_solver( i )
+      fcontrol%symmetric_linear_solver( i : i )                                &
+        = ccontrol%symmetric_linear_solver( i )
     END DO
     DO i = 1, LEN( fcontrol%unsymmetric_linear_solver )
       IF ( ccontrol%unsymmetric_linear_solver( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%unsymmetric_linear_solver( i : i ) = ccontrol%unsymmetric_linear_solver( i )
+      fcontrol%unsymmetric_linear_solver( i : i )                              &
+        = ccontrol%unsymmetric_linear_solver( i )
     END DO
     DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
@@ -190,12 +190,14 @@
     ! Strings
     l = LEN( fcontrol%symmetric_linear_solver )
     DO i = 1, l
-      ccontrol%symmetric_linear_solver( i ) = fcontrol%symmetric_linear_solver( i : i )
+      ccontrol%symmetric_linear_solver( i )                                    &
+        = fcontrol%symmetric_linear_solver( i : i )
     END DO
     ccontrol%symmetric_linear_solver( l + 1 ) = C_NULL_CHAR
     l = LEN( fcontrol%unsymmetric_linear_solver )
     DO i = 1, l
-      ccontrol%unsymmetric_linear_solver( i ) = fcontrol%unsymmetric_linear_solver( i : i )
+      ccontrol%unsymmetric_linear_solver( i )                                  &
+        = fcontrol%unsymmetric_linear_solver( i : i )
     END DO
     ccontrol%unsymmetric_linear_solver( l + 1 ) = C_NULL_CHAR
     l = LEN( fcontrol%prefix )
@@ -398,11 +400,14 @@
 
   END SUBROUTINE fdc_read_specfile
 
-!  ---------------------------------
-!  C interface to fortran fdc_inport
-!  ---------------------------------
+!  ----------------------------------------------
+!  C interface to fortran fdc_find_dependent_rows
+!  ----------------------------------------------
 
-  SUBROUTINE fdc_import( ccontrol, cdata, status ) BIND( C )
+  SUBROUTINE fdc_find_dependent_rows( ccontrol, cdata, cinform, status,        &
+                                      m, n, ane, acol, aptr, aval, b,          &
+                                      n_depen, depen ) BIND( C )
+
   USE GALAHAD_FDC_double_ciface
   IMPLICIT NONE
 
@@ -410,12 +415,22 @@
 
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( fdc_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( fdc_inform_type ), INTENT( OUT ) :: cinform
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: m, n, ane
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: n_depen
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ) :: aptr
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ) :: acol
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( aptr( m + 1 ) - 1 ) :: aval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION(  m ) :: b
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION(  m ) :: depen
 
 !  local variables
 
   TYPE ( f_fdc_control_type ) :: fcontrol
   TYPE ( f_fdc_full_data_type ), POINTER :: fdata
+  TYPE ( f_fdc_inform_type ) :: finform
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -433,93 +448,30 @@
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
+    ALLOCATE( aptr_find( m + 1 ) )
+    aptr_find = aptr + 1
+    ALLOCATE( acol_find( ane ) )
+    acol_find( : ane ) = acol( : ane ) + 1
 
 !  import the problem data into the required FDC structure
 
-    CALL f_fdc_import( fcontrol, fdata, status )
+    CALL f_FDC_find_dependent_rows( fcontrol, fdata, finform, status,          &
+                                    m, n, acol_find, aptr_find, aval,          &
+                                    b, n_depen, depen )
+
+    DEALLOCATE( acol_find, aptr_find )
+    IF ( n_depen > 0 ) depen( : n_depen ) = depen( : n_depen ) - 1
   ELSE
-    CALL f_fdc_import( fcontrol, fdata, status )
+    CALL f_FDC_find_dependent_rows( fcontrol, fdata, finform, status,          &
+                                    m, n, acol, aptr, aval, b, n_depen, depen )
   END IF
-
-!  copy control out
-
-  CALL copy_control_out( fcontrol, ccontrol, f_indexing )
-  RETURN
-
-  END SUBROUTINE fdc_import
-
-!  ---------------------------------------
-!  C interface to fortran fdc_reset_control
-!  ----------------------------------------
-
-  SUBROUTINE fdc_reset_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_FDC_double_ciface
-  IMPLICIT NONE
-
-!  dummy arguments
-
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-  TYPE ( fdc_control_type ), INTENT( INOUT ) :: ccontrol
-  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-
-!  local variables
-
-  TYPE ( f_fdc_control_type ) :: fcontrol
-  TYPE ( f_fdc_full_data_type ), POINTER :: fdata
-  LOGICAL :: f_indexing
-
-!  copy control in
-
-  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-
-!  associate data pointer
-
-  CALL C_F_POINTER( cdata, fdata )
-
-!  is fortran-style 1-based indexing used?
-
-  fdata%f_indexing = f_indexing
-
-!  import the control parameters into the required structure
-
-  CALL f_FDC_reset_control( fcontrol, fdata, status )
-  RETURN
-
-  END SUBROUTINE fdc_reset_control
-
-!  --------------------------------------
-!  C interface to fortran fdc_information
-!  --------------------------------------
-
-  SUBROUTINE fdc_information( cdata, cinform, status ) BIND( C ) 
-  USE GALAHAD_FDC_double_ciface
-  IMPLICIT NONE
-
-!  dummy arguments
-
-  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  TYPE ( fdc_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-
-!  local variables
-
-  TYPE ( f_fdc_full_data_type ), pointer :: fdata
-  TYPE ( f_fdc_inform_type ) :: finform
-
-!  associate data pointer
-
-  CALL C_F_POINTER( cdata, fdata )
-
-!  obtain FDC solution information
-
-  CALL f_fdc_information( fdata, finform, status )
 
 !  copy inform out
 
   CALL copy_inform_out( finform, cinform )
   RETURN
 
-  END SUBROUTINE fdc_information
+  END SUBROUTINE fdc_find_dependent_rows
 
 !  ------------------------------------
 !  C interface to fortran fdc_terminate

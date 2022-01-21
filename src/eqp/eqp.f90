@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-10 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-19 AT 13:50 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ E Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -2885,20 +2885,20 @@
 !   or 'absent', the latter if m = 0; lower or upper case variants are allowed
 !
 !  A_ne is a scalar variable of type default integer, that holds the number of
-!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!   entries in A in the sparse co-ordinate storage scheme. It need not be set
 !  for any of the other schemes.
 !
 !  A_row is a rank-one array of type default integer, that holds the row
-!   indices J in the sparse co-ordinate storage scheme. It need not be set
+!   indices A in the sparse co-ordinate storage scheme. It need not be set
 !   for any of the other schemes, and in this case can be of length 0
 !
 !  A_col is a rank-one array of type default integer, that holds the column
-!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   indices of A in either the sparse co-ordinate, or the sparse row-wise
 !   storage scheme. It need not be set when the dense scheme is used, and
 !   in this case can be of length 0
 !
 !  A_ptr is a rank-one array of dimension n+1 and type default integer,
-!   that holds the starting position of each row of J, as well as the total
+!   that holds the starting position of each row of A, as well as the total
 !   number of entries plus one, in the sparse row-wise storage scheme.
 !   It need not be set when the other schemes are used, and in this case
 !   can be of length 0
@@ -3297,7 +3297,7 @@
 !
 !  C is a rank-one array of dimension n and type default
 !   real, that holds the consraint vector, c.
-!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!   The i-th component of C, i = 1, ... , m, contains (c)_i.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -3409,6 +3409,42 @@
 !--------------------------------
 !   D u m m y   A r g u m e n t s
 !--------------------------------
+
+!  data is a scalar variable of type CQP_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, cqp_solve above.
+!
+!  W is a rank-one array of dimension n and type default
+!   real, that holds the vector of weights, w.
+!   The j-th component of W, j = 1, ... , n, contains (w)_j.
+!
+!  X0 is a rank-one array of dimension n and type default
+!   real, that holds the vector of shifts, x0.
+!   The j-th component of X0, j = 1, ... , n, contains (x0)_j.
+!
+!  G is a rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, g.
+!   The j-th component of G, j = 1, ... , n, contains (g)_j.
+!
+!  f is a scalar of type default real, that holds the constant term, f,
+!   of the objective.
+!
+!  A_val is a rank-one array of type default real, that holds the values
+!   of the Jacobian A in the storage scheme specified in cqp_import.
+!
+!  C is a rank-one array of dimension n and type default
+!   real, that holds the consraint vector, c.
+!   The i-th component of C, i = 1, ... , m, contains (c)_i.
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  Y is a rank-one array of dimension m and type default
+!   real, that holds the vector of the Lagrange multipliers, y.
+!   The i-th component of Y, i = 1, ... , m, contains (y)_i.
 
      INTEGER, INTENT( OUT ) :: status
      TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
@@ -3538,20 +3574,38 @@
 
      SUBROUTINE EQP_resolve_qp( data, status, G, f, C, X, Y )
 
-!  solve the quadratic programming problem whose structure was previously
-!  imported. See EQP_solve for a description of the required arguments.
+!  solve the quadratic programming problem with H and A as previously given.
+!  See EQP_solve for a description of the required arguments.
 
 !--------------------------------
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-!  X is a rank-one array of dimension n and type default
-!   real, that holds the vector of the primal variables, x.
-!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!  data is a scalar variable of type CQP_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, cqp_solve above.
 !
 !  G is a rank-one array of dimension n and type default
 !   real, that holds the vector of linear terms of the objective, g.
 !   The j-th component of G, j = 1, ... , n, contains (g)_j.
+!
+!  f is a scalar of type default real, that holds the constant term, f,
+!   of the objective.
+!
+!  C is a rank-one array of dimension n and type default
+!   real, that holds the consraint vector, c.
+!   The i-th component of C, i = 1, ... , m, contains (c)_i.
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  Y is a rank-one array of dimension m and type default
+!   real, that holds the vector of the Lagrange multipliers, y.
+!   The i-th component of Y, i = 1, ... , m, contains (y)_i.
+!
 
      INTEGER, INTENT( OUT ) :: status
      TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data

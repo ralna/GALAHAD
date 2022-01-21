@@ -1,7 +1,7 @@
 //* \file fdc.h */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-01-13 AT 16:09 GMT.
+ * THIS VERSION: GALAHAD 4.0 - 2022-01-19 AT 13:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_FDC C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -21,6 +21,16 @@
 
   \subsection fdc_purpose Purpose
 
+  Given an under-determined set of linear equations/constraints 
+  \f$a_i^T x = b_i^{}\f$, \f$i = 1, \ldots, m\f$ involving 
+  \f$n \geq m\f$ unknowns \f$x\f$, this package 
+  <b>determines whether the constraints are consistent, and if
+  so how many of the constraints are dependent</b>; a list of dependent
+  constraints, that is, those which may be removed without changing the
+  solution set, will be found and the remaining \f$a_i\f$ will be linearly
+  independent.  Full advantage is taken of any zero coefficients in the
+  vectors \f$a_i\f$.
+
   \subsection fdc_authors Authors
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
@@ -28,13 +38,58 @@
 
   \subsection fdc_date Originally released
 
-  \subsection fdc_terminology Terminology
+  August 2006, C interface January 2021
 
   \subsection fdc_method Method
 
-  \subsection fdc_references Reference
+  A choice of two methods is available. In the first, the matrix
+  \f[K = \mat{cc}{ \alpha I & A^T \\ A & 0 }\f]
+  is formed and factorized for some small \f$\alpha > 0\f$ using the
+  GALAHAD package SLS---the
+  factors \f$K = P L D L^T P^T\f$ are used to determine
+  whether \f$A\f$ has dependent rows. In particular, in exact arithmetic
+  dependencies in \f$A\f$ will correspond to zero pivots in the block
+  diagonal matrix \f$D\f$.
+
+  The second choice of method finds factors
+  \f$A = P L U Q\f$ of the rectangular matrix \f$A\f$
+  using the GALAHAD package ULS.
+  In this case, dependencies in \f$A\f$ will be reflected in zero diagonal
+  entries in \f$U\f$ in exact arithmetic.
+
+  The factorization in either case may also be used to
+  determine whether the system is consistent.
 
   \subsection fdc_call_order Call order
+  To solve a given problem, functions from the fdc package must be called 
+  in the following order:
+
+  - \link fdc_initialize \endlink - provide default control parameters and
+      set up initial data structures
+  - \link fdc_read_specfile \endlink (optional) - override control values 
+      by reading replacement values from a file
+  - \link fdc_find_dependent_rows \endlink - find the number of dependent
+      rows and, if there are any, whether the constraints are
+      independent
+  - \link fdc_terminate \endlink - deallocate data structures
+
+  \latexonly
+  See Section~\ref{examples} for examples of use.
+  \endlatexonly
+  \htmlonly
+  See the <a href="examples.html">examples tab</a> for illustrations of use.
+  \endhtmlonly
+  \manonly
+  See the examples section for illustrations of use.
+  \endmanonly
+
+  \subsection fdc_array_indexing Array indexing
+
+  Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
+  Choose \c control.f_indexing as \c false for C style and \c true for 
+  fortran style; add 1 to input integer arrays if fortran-style indexing is
+  used, and beware that return integer arrays will adhere to this.
+
  */
 
 #ifdef __cplusplus
@@ -89,16 +144,14 @@ struct fdc_control_type {
 
     /// \brief
     /// the absolute pivot tolerance used (obsolete)
-    /// REAL ( KIND = wp ) :: zero_pivot = epsmch ** 0.75_wp
     real_wp_ zero_pivot;
 
     /// \brief
     /// the largest permitted residual
-    /// REAL ( KIND = wp ) :: max_infeas = epsmch ** 0.33_wp
     real_wp_ max_infeas;
 
     /// \brief
-    /// chose whether SLS or ULS is used to determine dependencies
+    /// choose whether SLS or ULS is used to determine dependencies
     bool use_sls;
 
     /// \brief
@@ -245,80 +298,95 @@ void fdc_read_specfile( struct fdc_control_type *control,
 
   @param[in,out]  control is a struct containing control information 
               (see fdc_control_type)
+
   @param[in]  specfile is a character string containing the name of
               the specification file
 */
 
-// *-*-*-*-*-*-*-*-*-*-*-*-    F D C  _ I M P O R T   -*-*-*-*-*-*-*-*-*-*
+// *-*-*-*-*-*-    F D C  _ F I N D _ D E P E N D E N T _ R O W S   -*-*-*-*-*-
 
-void fdc_import( struct fdc_control_type *control,
-                 void **data,
-                 int *status );
+void fdc_find_dependent_rows( struct fdc_control_type *control,
+                              void **data,
+                              struct fdc_inform_type *inform,
+                              int *status,
+                              int m, 
+                              int n, 
+                              int A_ne, 
+                              const int A_col[], 
+                              const int A_ptr[],
+                              const real_wp_ A_val[], 
+                              const real_wp_ b[], 
+                              int *n_depen, 
+                              int depen[] );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Find dependent rows and, if any, check if \f$A x = b\f$ is consistent
 
- @param[in] control is a struct whose members provide control
-  paramters for the remaining prcedures (see fdc_control_type)
+ @param[in] control is a struct containing control information 
+           (see fdc_control_type)
 
  @param[in,out] data holds private internal data
 
- @param[in,out] status is a scalar variable of type int, that gives
-    the exit status from the package. Possible values are:
-  \li  1. The import was succesful, and the package is ready for the solve phase
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
-       inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
-       returned allocation status and a string containing the
-       name of the offending array are held in 
-       inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restriction n > 0 or requirement that type contains
-       its relevant string 'dense', 'coordinate', 'sparse_by_rows',
-       'diagonal' or 'absent' has been violated.
-*/
-
-// *-*-*-*-*-*-*-    F D C  _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*
-
-void fdc_reset_control( struct fdc_control_type *control,
-                 void **data,
-                 int *status );
-
-/*!<
- Reset control parameters after import if required. 
-
- @param[in] control is a struct whose members provide control
-  paramters for the remaining prcedures (see fdc_control_type)
-
- @param[in,out] data holds private internal data
-
- @param[in,out] status is a scalar variable of type int, that gives
-    the exit status from the package. Possible values are:
-  \li  1. The import was succesful, and the package is ready for the solve phase
-*/
-
-// *-*-*-*-*-*-*-*-*-*-    F D C  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
-
-void fdc_information( void **data,
-                      struct fdc_inform_type *inform,
-                      int *status );
-
-/*!<
-  Provides output information
-
-  @param[in,out] data holds private internal data
-
-  @param[out] inform is a struct containing output information
+ @param[out] inform  is a struct containing output information
               (see fdc_inform_type) 
 
-  @param[out] status is a scalar variable of type int, that gives
-              the exit status from the package.
-              Possible values are (currently):
-  \li  0. The values were recorded succesfully
-*/
+ @param[in,out] status is a scalar variable of type int, that gives
+    the entry and exit status from the package. \n
+    Possible exit are:
+  \li  0. The run was succesful.
+
+  \li -1. An allocation error occurred. A message indicating the offending
+       array is written on unit control.error, and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the offending
+       array is written on unit control.error and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -3. The restrictions n > 0 and m > 0 or requirement that a type contains
+       its relevant string 'dense', 'coordinate', 'sparse_by_rows',
+       'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
+        has been violated.
+  \li -5. The constraints appear to be inconsistent.
+  \li -9. The analysis phase of the factorization failed; the return status
+         from the factorization package is given in the component
+         inform.factor_status
+  \li -10. The factorization failed; the return status from the factorization
+         package is given in the component inform.factor_status.
+ 
+ @param[in] m is a scalar variable of type int, that holds the number of
+    rows of \f$A\f$.
+
+ @param[in] n is a scalar variable of type int, that holds the number of
+    columns of \f$A\f$.
+
+ @param[in] A_ne is a scalar variable of type int, that holds the number of
+    nonzero entries in \f$A\f$.
+
+ @param[in]  A_col is a one-dimensional array of size A_ne and type int,
+   that holds the column indices of \f$A\f$ in a row-wise storage scheme.
+   The nonzeros must be ordered so that those in row i appear directly before
+   those in row i+1, the order within each row is unimportant.
+
+ @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
+   that holds the starting position of each row of \f$A\f$, as well as the 
+   total number of entries plus one.
+
+ @param[in] A_val is a one-dimensional array of size a_ne and type double, 
+    that holds the values of the entries of the \f$A\f$ ordered as in A_col 
+    and A_ptr.
+  
+ @param[in] b is a one-dimensional array of size m and type double, that 
+    holds the linear term \f$b\f$  in the constraints.
+    The i-th component of b, i = 0, ... ,  m-1, contains  \f$b_i\f$.
+  
+ @param[out] n_depen is a scalar variable of type int, that holds the number of
+    dependent constraints, if any.
+
+ @param[out] depen is a one-dimensional array of size m and type int, whose
+    first n_depen components contain the indices of dependent constraints.
+
+*/  
 
 // *-*-*-*-*-*-*-*-*-*-    F D C  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
@@ -338,8 +406,20 @@ void fdc_terminate( void **data,
               (see fdc_inform_type)
  */
 
-/** \example fdct.c
-   This is an example of how to use the package.\n
+
+/** \anchor examples
+   \f$\label{examples}\f$
+   \example fdct.c
+   This is an example of how to use the package to solve a quadratic program.
+   A variety of supported Hessian and constraint matrix storage formats are 
+   shown.
+  
+   Notice that C-style indexing is used, and that this is flaggeed by
+   setting \c control.f_indexing to \c false.
+
+    \example fdctf.c
+   This is the same example, but now fortran-style indexing is used.\n
+
  */
 
 // end include guard

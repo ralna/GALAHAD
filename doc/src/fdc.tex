@@ -14,7 +14,7 @@
 
 \galsummary
 Given an under-determined set of linear equations/constraints
-$\bma_i^T \bmx = c_i^{}$,
+$\bma_i^T \bmx = b_i^{}$,
 $i = 1, \ldots, m$ involving $n \geq m$ unknowns $\bmx$, this package
 {\bf determines whether the constraints are consistent, and if so how many
 of the constraints are dependent}; a list of dependent constraints, that
@@ -193,8 +193,8 @@ that must be set \true\ if the user wishes to terminate execution if
 a deallocation  fails, and \false\ if an attempt to continue
 will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
 
-\itt{symmetric\_linear\_solver} is a scalar variable of type default \character\
-and length 30, that specifies the external package to be used to
+\itt{symmetric\_linear\_solver} is a scalar variable of type default 
+\character\ and length 30, that specifies the external package to be used to
 solve any symmetric linear system that might arise. Current possible
 choices are {\tt 'sils'}, {\tt 'ma27'}, {\tt 'ma57'}, {\tt 'ma77'},
 {\tt 'ma86'}, {\tt 'ma97'}, {\tt ssids}, {\tt 'pardiso'}
@@ -204,6 +204,14 @@ although only {\tt 'sils'} and, for OMP 4.0-compliant compilers,
 See the documentation for the \galahad\ package {\tt SLS} for further details.
 The default is {\tt symmetric\_linear\_solver = 'sils'},
 but we recommend {\tt 'ma97'} if it available.
+
+\itt{unsymmetric\_linear\_solver} is a scalar variable of type default 
+\character\ and length 30, that specifies the external package to be used to
+solve any unsymmetric linear system that might arise. Current possible
+choices are {\tt 'gls'}, {\tt 'ma28'} and {\tt 'ma48'}.
+See the documentation for the \galahad\ package {\tt ULS} for further details.
+The default is {\tt unsymmetric\_linear\_solver = 'gls'},
+but we recommend {\tt 'ma48'} if it available.
 
 \itt{prefix} is a scalar variable of type default \character\
 and length 30, that may be used to provide a user-selected
@@ -394,12 +402,12 @@ Dependent constraints are identified as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_find\_dependent( n, m, A\_val, A\_col, A\_ptr, C,
+{\tt CALL \packagename\_find\_dependent( n, m, A\_val, A\_col, A\_ptr, B,
   \&}
 \vspace*{-1mm}
 
 \hspace{52mm}
-{\tt    n\_depen, C\_depen, data, control, inform )}
+{\tt    n\_depen, DEPEN, data, control, inform )}
 
 %\vspace*{1mm}
 
@@ -419,8 +427,8 @@ of the matrix $\bmA$ whose rows are the vectors $\bma_i^T$, $i = 1, \ldots, m$.
 The entries for row $i$ must directly precede those in row $i$, but the
 order within each row is unimportant.
 
-\itt{A\_col} is an \intentin\ rank-one array of type default \integer, that holds
-the (column) indices of the entries of $\bmA$ corresponding to the
+\itt{A\_col} is an \intentin\ rank-one array of type default \integer, that 
+holds the (column) indices of the entries of $\bmA$ corresponding to the
 values input in {\tt A\_val}.
 
 \itt{A\_ptr} is an \intentin\ rank-one array of dimension {\tt m+1} and type
@@ -428,16 +436,14 @@ default \integer, whose $i$-th entry holds the starting position of row $i$
 of $\bmA$ for $i = 1, \ldots, m$. The $m+1$-st entry of {\tt A\_ptr}
 must hold the total number of entries plus one.
 
-\ittf{C} is an \intentin\ rank-one array of dimension {\tt m} and
-type default \realdp, whose $i$-th component must be set to $c_i$ for
+\ittf{B} is an \intentin\ rank-one array of dimension {\tt m} and
+type default \realdp, whose $i$-th component must be set to $b_i$ for
 $i = 1, \ldots, m$.
 
 \itt{n\_depen} is a scalar \intentout\ argument of type default \integer,
 that gives the number of dependent constraints.
 
-\itt{C\_depen} is a rank-one allocatable array of type default \integer,
-that should either have been nullified or associated on entry,
-but need not be set.
+\itt{DEPEN} is a rank-one allocatable array of type default \integer,
 On exit, if {\tt n\_depen} $>$ {\tt 0}, it will have been allocated to be of
 length {\tt n\_depen} and its components will be the indices of the dependent
 constraints. It will not be allocated or set if {\tt n\_depen = 0}.

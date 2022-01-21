@@ -1,0 +1,312 @@
+.TH "fdc.h" 3 "Thu Jan 20 2022" "C interfaces to GALAHAD FDC" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+fdc.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'sls\&.h'\fP
+.br
+\fC#include 'uls\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBfdc_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBfdc_time_type\fP"
+.br
+.ti -1c
+.RI "struct \fBfdc_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBfdc_initialize\fP (void **data, struct \fBfdc_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBfdc_read_specfile\fP (struct \fBfdc_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBfdc_find_dependent_rows\fP (struct \fBfdc_control_type\fP *control, void **data, struct \fBfdc_inform_type\fP *inform, int *status, int m, int n, int A_ne, const int A_col[], const int A_ptr[], const real_wp_ A_val[], const real_wp_ b[], int *n_depen, int depen[])"
+.br
+.ti -1c
+.RI "void \fBfdc_terminate\fP (void **data, struct \fBfdc_control_type\fP *control, struct \fBfdc_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+Given an under-determined set of linear equations/constraints a_i^T x = b_i^{}, i = 1, \&.\&.\&., m involving n >= m unknowns x, this package \fBdetermines whether the constraints are consistent, and if so how many of the constraints are dependent\fP; a list of dependent constraints, that is, those which may be removed without changing the solution set, will be found and the remaining a_i will be linearly independent\&. Full advantage is taken of any zero coefficients in the vectors a_i\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+August 2006, C interface January 2021
+.SS "Method"
+A choice of two methods is available\&. In the first, the matrix \[K = \mat{cc}{ alpha I & A^T \\ A & 0 }\] is formed and factorized for some small alpha > 0 using the GALAHAD package SLS---the factors K = P L D L^T P^T are used to determine whether A has dependent rows\&. In particular, in exact arithmetic dependencies in A will correspond to zero pivots in the block diagonal matrix D\&.
+.PP
+The second choice of method finds factors A = P L U Q of the rectangular matrix A using the GALAHAD package ULS\&. In this case, dependencies in A will be reflected in zero diagonal entries in U in exact arithmetic\&.
+.PP
+The factorization in either case may also be used to determine whether the system is consistent\&.
+.SS "Call order"
+To solve a given problem, functions from the fdc package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBfdc_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBfdc_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+\fBfdc_find_dependent_rows\fP - find the number of dependent rows and, if there are any, whether the constraints are independent
+.IP "\(bu" 2
+\fBfdc_terminate\fP - deallocate data structures
+.PP
+.PP
+   
+  See the examples section for illustrations of use.
+  
+.SS "Array indexing"
+Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; add 1 to input integer arrays if fortran-style indexing is used, and beware that return integer arrays will conform to this\&. 
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct fdc_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+int \fIerror\fP unit for error messages 
+.br
+.PP
+int \fIout\fP unit for monitor output 
+.br
+.PP
+int \fIprint_level\fP controls level of diagnostic output 
+.br
+.PP
+int \fIindmin\fP initial estimate of integer workspace for sls (obsolete) 
+.br
+.PP
+int \fIvalmin\fP initial estimate of real workspace for sls (obsolete) 
+.br
+.PP
+real_wp_ \fIpivot_tol\fP the relative pivot tolerance (obsolete) 
+.br
+.PP
+real_wp_ \fIzero_pivot\fP the absolute pivot tolerance used (obsolete) 
+.br
+.PP
+real_wp_ \fImax_infeas\fP the largest permitted residual 
+.br
+.PP
+bool \fIuse_sls\fP choose whether SLS or ULS is used to determine dependencies 
+.br
+.PP
+bool \fIscale\fP should the rows of A be scaled to have unit infinity norm or should no scaling be applied 
+.br
+.PP
+bool \fIspace_critical\fP if space is critical, ensure allocated arrays are no bigger than needed 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP exit if any deallocation fails 
+.br
+.PP
+char \fIsymmetric_linear_solver[31]\fP symmetric (indefinite) linear equation solver 
+.br
+.PP
+char \fIunsymmetric_linear_solver[31]\fP unsymmetric linear equation solver 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+struct sls_control_type \fIsls_control\fP control parameters for SLS 
+.br
+.PP
+struct uls_control_type \fIuls_control\fP control parameters for ULS 
+.br
+.PP
+.RE
+.PP
+.SH "struct fdc_time_type"
+.PP 
+time derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+real_wp_ \fItotal\fP the total CPU time spent in the package 
+.br
+.PP
+real_wp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorizatio 
+.br
+.PP
+real_wp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
+.br
+.PP
+real_wp_ \fIclock_total\fP the total clock time spent in the package 
+.br
+.PP
+real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorizat 
+.br
+.PP
+real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
+.br
+.PP
+.RE
+.PP
+.SH "struct fdc_inform_type"
+.PP 
+inform derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP return status\&. See FDC_find_dependent for details 
+.br
+.PP
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+.br
+.PP
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+.br
+.PP
+int \fIfactorization_status\fP the return status from the factorization 
+.br
+.PP
+int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+.br
+.PP
+int \fIfactorization_real\fP the total real workspace required for the factorization 
+.br
+.PP
+real_wp_ \fInon_negligible_pivot\fP the smallest pivot which was not judged to be zero when detecting linear dependent constraints 
+.br
+.PP
+struct \fBfdc_time_type\fP \fItime\fP timings (see above) 
+.br
+.PP
+struct sls_inform_type \fIsls_inform\fP SLS inform type\&. 
+.br
+.PP
+struct uls_inform_type \fIuls_inform\fP ULS inform type\&. 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void fdc_initialize (void ** data, struct \fBfdc_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBfdc_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void fdc_read_specfile (struct \fBfdc_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBfdc_control_type\fP)
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
+.SS "void fdc_find_dependent_rows (struct \fBfdc_control_type\fP * control, void ** data, struct \fBfdc_inform_type\fP * inform, int * status, int m, int n, int A_ne, const int A_col[], const int A_ptr[], const real_wp_ A_val[], const real_wp_ b[], int * n_depen, int depen[])"
+Find dependent rows and, if any, check if A x = b is consistent
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBfdc_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBfdc_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&. 
+.IP "\(bu" 2
+-5\&. The constraints appear to be inconsistent\&. 
+.IP "\(bu" 2
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+.IP "\(bu" 2
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&.
+.PP
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of rows of A\&.
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of columns of A\&.
+.br
+\fIA_ne\fP is a scalar variable of type int, that holds the number of nonzero entries in A\&.
+.br
+\fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in a row-wise storage scheme\&. The nonzeros must be ordered so that those in row i appear directly before those in row i+1, the order within each row is unimportant\&.
+.br
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one\&.
+.br
+\fIA_val\fP is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the A ordered as in A_col and A_ptr\&.
+.br
+\fIb\fP is a one-dimensional array of size m and type double, that holds the linear term b in the constraints\&. The i-th component of b, i = 0, \&.\&.\&. , m-1, contains b_i\&.
+.br
+\fIn_depen\fP is a scalar variable of type int, that holds the number of dependent constraints, if any\&.
+.br
+\fIdepen\fP is a one-dimensional array of size m and type int, whose first n_depen components contain the indices of dependent constraints\&. 
+.RE
+.PP
+
+.SS "void fdc_terminate (void ** data, struct \fBfdc_control_type\fP * control, struct \fBfdc_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBfdc_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBfdc_inform_type\fP) 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD FDC from the source code\&.

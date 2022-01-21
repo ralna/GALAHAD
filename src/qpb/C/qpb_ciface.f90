@@ -30,33 +30,33 @@
     USE GALAHAD_LSQP_double_ciface, ONLY:                                      &
         lsqp_inform_type,                                                      &
         lsqp_control_type,                                                     &
-        copy_lsqp_inform_in => copy_inform_in,                                 &
-        copy_lsqp_inform_out => copy_inform_out,                               &
-        copy_lsqp_control_in => copy_control_in,                               &
+        copy_lsqp_inform_in   => copy_inform_in,                               &
+        copy_lsqp_inform_out  => copy_inform_out,                              &
+        copy_lsqp_control_in  => copy_control_in,                              &
         copy_lsqp_control_out => copy_control_out
 
-!   USE GALAHAD_FDC_double_ciface, ONLY:                                       &
-!       fdc_inform_type,                                                       &
-!       fdc_control_type,                                                      &
-!       copy_fdc_inform_in => copy_inform_in,                                  &
-!       copy_fdc_inform_out => copy_inform_out,                                &
-!       copy_fdc_control_in => copy_control_in,                                &
-!       copy_fdc_control_out => copy_control_out
+    USE GALAHAD_FDC_double_ciface, ONLY:                                       &
+        fdc_inform_type,                                                       &
+        fdc_control_type,                                                      &
+        copy_fdc_inform_in   => copy_inform_in,                                &
+        copy_fdc_inform_out  => copy_inform_out,                               &
+        copy_fdc_control_in  => copy_control_in,                               &
+        copy_fdc_control_out => copy_control_out
 
     USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
         sbls_inform_type,                                                      &
         sbls_control_type,                                                     &
-        copy_sbls_inform_in => copy_inform_in,                                 &
-        copy_sbls_inform_out => copy_inform_out,                               &
-        copy_sbls_control_in => copy_control_in,                               &
+        copy_sbls_inform_in   => copy_inform_in,                               &
+        copy_sbls_inform_out  => copy_inform_out,                              &
+        copy_sbls_control_in  => copy_control_in,                              &
         copy_sbls_control_out => copy_control_out
 
     USE GALAHAD_GLTR_double_ciface, ONLY:                                      &
         gltr_inform_type,                                                      &
         gltr_control_type,                                                     &
-        copy_gltr_inform_in => copy_inform_in,                                 &
-        copy_gltr_inform_out => copy_inform_out,                               &
-        copy_gltr_control_in => copy_control_in,                               &
+        copy_gltr_inform_in   => copy_inform_in,                               &
+        copy_gltr_inform_out  => copy_inform_out,                              &
+        copy_gltr_control_in  => copy_control_in,                              &
         copy_gltr_control_out => copy_control_out
 
 !   USE GALAHAD_FIT_double_ciface, ONLY:                                       &
@@ -143,7 +143,7 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: sif_file_name
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
       TYPE ( lsqp_control_type ) :: lsqp_control
-!     TYPE ( fdc_control_type ) :: fdc_control
+      TYPE ( fdc_control_type ) :: fdc_control
       TYPE ( sbls_control_type ) :: sbls_control
       TYPE ( gltr_control_type ) :: gltr_control
 !     TYPE ( fit_control_type ) :: fit_control
@@ -189,7 +189,7 @@
       LOGICAL ( KIND = C_BOOL ) :: feasible
       TYPE ( qpb_time_type ) :: time
       TYPE ( lsqp_inform_type ) :: lsqp_inform
-!     TYPE ( fdc_inform_type ) :: fdc_inform
+      TYPE ( fdc_inform_type ) :: fdc_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
       TYPE ( gltr_inform_type ) :: gltr_inform
 !     TYPE ( fit_inform_type ) :: fit_inform
@@ -278,7 +278,7 @@
 
     ! Derived types
     CALL copy_lsqp_control_in( ccontrol%lsqp_control, fcontrol%lsqp_control )
-!   CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
+    CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
     CALL copy_sbls_control_in( ccontrol%sbls_control, fcontrol%sbls_control )
     CALL copy_gltr_control_in( ccontrol%gltr_control, fcontrol%gltr_control )
 !   CALL copy_fit_control_in( ccontrol%fit_control, fcontrol%fit_control )
@@ -373,7 +373,7 @@
 
     ! Derived types
     CALL copy_lsqp_control_out( fcontrol%lsqp_control, ccontrol%lsqp_control )
-!   CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
+    CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
     CALL copy_sbls_control_out( fcontrol%sbls_control, ccontrol%sbls_control )
     CALL copy_gltr_control_out( fcontrol%gltr_control, ccontrol%gltr_control )
 !   CALL copy_fit_control_out( fcontrol%fit_control, ccontrol%fit_control )
@@ -484,7 +484,7 @@
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
     CALL copy_lsqp_inform_in( cinform%lsqp_inform, finform%lsqp_inform )
-!   CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
+    CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
     CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
     CALL copy_gltr_inform_in( cinform%gltr_inform, finform%gltr_inform )
 !   CALL copy_fit_inform_in( cinform%fit_inform, finform%fit_inform )
@@ -527,7 +527,7 @@
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
     CALL copy_lsqp_inform_out( finform%lsqp_inform, cinform%lsqp_inform )
-!   CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
+    CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
     CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
     CALL copy_gltr_inform_out( finform%gltr_inform, cinform%gltr_inform )
 !   CALL copy_fit_inform_out( finform%fit_inform, cinform%fit_inform )

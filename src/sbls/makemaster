@@ -20,14 +20,18 @@ PACKAGE = SBLS
 
 DEPENDENCIES = make_sbls_deps
 
+#  other packages that depend on package
+
+DEPENDS = bqpb cqp dqp eqp lpb lsqp qpb wcp
+
 #  auxiliary packages that the C interface to the current package depends 
 #  on (prepend with make_ciface_)
 
 CDEPENDENCIES = make_ciface_sbls_deps
 
-#  other packages that depend on package
+#  other C interface packages that depend on current interface package 
 
-DEPENDS = 
+CDEPENDS = bqpb cqp dqp eqp lpb lsqp qpb wcp
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
