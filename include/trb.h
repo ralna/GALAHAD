@@ -1,7 +1,7 @@
 /** \file trb.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 19/08/2021 AT 10:45 GMT.
+ * THIS VERSION: GALAHAD 4.0 - 19/08/2021 AT 10:45 GMT.
  *
  *-*-*-*-*-*-*-  G A L A H A D _ T R B  C  I N T E R F A C E  -*-*-*-*-*-*-*-
  *
@@ -228,7 +228,7 @@ extern "C" {
 // required packages
 #include "trs.h"
 #include "gltr.h"
-//#include "psls.h"
+#include "psls.h"
 //#include "lms.h"
 //#include "sha.h"
 
@@ -488,7 +488,7 @@ struct trb_control_type {
 
     /// \brief
     /// control parameters for PSLS
-    ///struct psls_control_type psls_control;
+    struct psls_control_type psls_control;
 
     /// \brief
     /// control parameters for LMS
@@ -640,7 +640,7 @@ struct trb_inform_type {
 
     /// \brief
     /// inform parameters for PSLS
-    ///struct psls_inform_type psls_inform;
+    struct psls_inform_type psls_inform;
 
     /// \brief
     /// inform parameters for LMS

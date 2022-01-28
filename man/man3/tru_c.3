@@ -1,4 +1,4 @@
-.TH "tru.h" 3 "Sat Jan 8 2022" "C interfaces to GALAHAD TRU" \" -*- nroff -*-
+.TH "tru.h" 3 "Fri Jan 28 2022" "C interfaces to GALAHAD TRU" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -13,6 +13,8 @@ tru.h
 \fC#include 'trs\&.h'\fP
 .br
 \fC#include 'gltr\&.h'\fP
+.br
+\fC#include 'psls\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -334,6 +336,15 @@ bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any arra
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
+struct trs_control_type \fItrs_control\fP control parameters for TRS 
+.br
+.PP
+struct gltr_control_type \fIgltr_control\fP control parameters for GLTR 
+.br
+.PP
+struct psls_control_type \fIpsls_control\fP control parameters for DPS struct dps_control_type dps_control; control parameters for PSLS 
+.br
+.PP
 .RE
 .PP
 .SH "struct tru_time_type"
@@ -432,6 +443,15 @@ real_wp_ \fIradius\fP the current value of the trust-region radius
 .br
 .PP
 struct \fBtru_time_type\fP \fItime\fP timings (see above) 
+.br
+.PP
+struct trs_inform_type \fItrs_inform\fP inform parameters for TRS 
+.br
+.PP
+struct gltr_inform_type \fIgltr_inform\fP inform parameters for GLTR 
+.br
+.PP
+struct psls_inform_type \fIpsls_inform\fP inform parameters for PSLS 
 .br
 .PP
 .RE

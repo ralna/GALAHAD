@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 26/07/2021 AT 14:45 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-23 AT 15:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ P S L S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -15,13 +15,10 @@
 
    MODULE GALAHAD_PSLS_double
 
-!      -----------------------------------------------
-!     |                                               |
-!     | Given a symmetric matrix A, provide and       |
-!     ! apply a symmetric, positive-definite or       |
-!     | strictly-diagonally-dominant preconditioner P |
-!     |                                               |
-!      -----------------------------------------------
+!      --------------------------------------------------------------------
+!     | Given a symmetric matrix A, provide and apply a symmetric,         |
+!     | positive-definite or strictly-diagonally-dominant preconditioner P |
+!      --------------------------------------------------------------------
 
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
@@ -42,9 +39,25 @@
 
       PRIVATE
       PUBLIC :: PSLS_read_specfile, PSLS_initialize, PSLS_terminate,           &
-                PSLS_form_and_factorize, PSLS_update_factors, PSLS_solve,      &
+                PSLS_form_and_factorize, PSLS_update_factors, PSLS_apply,      &
                 PSLS_index_submatrix, PSLS_product, PSLS_norm, PSLS_name,      &
-                PSLS_build, SMT_type, SMT_put, SMT_get
+                PSLS_build, PSLS_full_initialize, PSLS_full_terminate,         &
+                PSLS_import, PSLS_form_preconditioner,                         &
+                PSLS_update_preconditioner, PSLS_apply_preconditioner,         &
+                PSLS_reset_control, PSLS_information,                          &
+                SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE PSLS_initialize
+       MODULE PROCEDURE PSLS_initialize, PSLS_full_initialize
+     END INTERFACE PSLS_initialize
+
+     INTERFACE PSLS_terminate
+       MODULE PROCEDURE PSLS_terminate, PSLS_full_terminate
+     END INTERFACE PSLS_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -81,7 +94,6 @@
       INTEGER, PARAMETER :: preconditioner_incomplete_lm = 6
       INTEGER, PARAMETER :: preconditioner_incomplete_mi28 = 7
       INTEGER, PARAMETER :: preconditioner_incomplete_munks = 8
-      INTEGER, PARAMETER :: preconditioner_expanding_band = 9
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -116,7 +128,6 @@
 !    6  incomplete factorization, Lin-More'
 !    7  incomplete factorization, HSL_MI28
 !    8  incomplete factorization, Munskgaard
-!    9  expanding band
 
         INTEGER :: preconditioner = 0
 
@@ -130,7 +141,7 @@
         INTEGER :: ordering = 0
 
 !  maximum number of nonzeros in a column of A for Schur-complement
-!  factorization  to accommodate newly fixed variables
+!  factorization to accommodate newly fixed variables
 
         INTEGER :: max_col = 100
 
@@ -194,7 +205,7 @@
 !  where prefix contains the required string enclosed in quotes,
 !  e.g. "string" or 'string'
 
-        CHARACTER ( LEN = 30 ) :: prefix
+        CHARACTER ( LEN = 30 ) :: prefix = '""' // REPEAT( ' ', 28 )
 
 !  control parameters for SLS
 
@@ -312,6 +323,10 @@
 
        INTEGER :: reordered_semi_bandwidth = - 1
 
+!  the semi-bandwidth used
+
+       INTEGER :: semi_bandwidth_used = - 1
+
 !  number of indices out-of-range
 
        INTEGER :: out_of_range = 0
@@ -327,10 +342,6 @@
 !  number of missing diagonal entries for an allegedly-definite matrix
 
        INTEGER :: missing_diagonals = 0
-
-!  the semi-bandwidth used
-
-       INTEGER :: semi_bandwidth_used = - 1
 
 !  number of 1 by 1 pivots in the factorization
 
@@ -403,6 +414,18 @@
         TYPE ( MI28_keep ) ::  MI28_keep
       END TYPE PSLS_data_type
 
+!  ====================================
+!  The PSLS_full_data_type derived type
+!  ====================================
+
+      TYPE, PUBLIC :: PSLS_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( PSLS_data_type ) :: PSLS_data
+        TYPE ( PSLS_control_type ) :: PSLS_control
+        TYPE ( PSLS_inform_type ) :: PSLS_inform
+        TYPE ( SMT_type ) :: A
+      END TYPE PSLS_full_data_type
+
 !  ================================
 !  The PSLS_save_type derived type
 !  ================================
@@ -423,7 +446,7 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Default control data for PSLS. This routine should be called before
-!  PSLS_solve
+!  PSLS_form_and_factorize
 !
 !  --------------------------------------------------------------------
 !
@@ -450,6 +473,38 @@
 !  End of PSLS_initialize
 
      END SUBROUTINE PSLS_initialize
+
+!- G A L A H A D -  P S L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
+
+     SUBROUTINE PSLS_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for PSLS controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( PSLS_control_type ), INTENT( OUT ) :: control
+     TYPE ( PSLS_inform_type ), INTENT( OUT ) :: inform
+
+     CALL PSLS_initialize( data%psls_data, control, inform )
+
+     RETURN
+
+!  End of subroutine PSLS_full_initialize
+
+     END SUBROUTINE PSLS_full_initialize
 
 !-*-*-*-   P S L S _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
@@ -712,7 +767,7 @@
 !   for details
 !
 !  inform is a structure of type PSLS_inform_type that provides information on
-!   exit from PSLS_solve. The component status has possible values:
+!   exit from PSLS_form_and_factorize. The component status has possible values:
 !
 !     0 Normal termination.
 !
@@ -735,14 +790,6 @@
 !  following:
 !
 !     alloc_status = The status of the last attempted allocation/deallocation
-!     analyse_status = The return status from the ordering phase of the
-!      factorization (if any)
-!     factorize_status = The return status from the factorization phase
-!     solve_status = The return status from the solve phase
-!     factorization_integer = The total integer workspace required for the
-!       factorization
-!     factorization_real = The total real workspace required for the
-!       factorization
 !     preconditioner = Code for the actual preconditioner computed
 !     semi_bandwidth = The semi-bandwidth of the original submatrix
 !     neg1, neg2 - the number of -ve 1x1 and 2x2 pivots found during the
@@ -761,7 +808,7 @@
 !     time%solve = the time spent in the solution phase
 !
 !   SUB is an optional rank-one integer assumed-sized array whose components
-!    list the indices of the required submatrix. The indices should be in
+!    list the row indices of the required submatrix. The indices should be in
 !    increasing order. If SUB is not present, the entire matrix A will be
 !    considered.
 
@@ -796,10 +843,12 @@
 !  set initial values
 
       IF ( control%new_structure ) THEN
-        inform%analyse_status = 0 ; inform%factorize_status = 0
-        inform%solve_status = 0
-        inform%factorization_integer = 0 ; inform%factorization_real = 0
-        inform%preconditioner = 0 ; inform%semi_bandwidth = 0
+        IF ( control%preconditioner == preconditioner_auto ) THEN
+          inform%preconditioner = preconditioner_diagonal
+        ELSE
+          inform%preconditioner = control%preconditioner
+        END IF
+        inform%semi_bandwidth = 0
         inform%neg1 = 0 ; inform%neg2 = 0 ; inform%perturbed = .FALSE.
         inform%fill_in_ratio = one ; inform%norm_residual = zero
         inform%bad_alloc  = ''
@@ -810,10 +859,12 @@
 
 !  return if no preconditioning (P=I) is required
 
-      IF ( control%preconditioner == preconditioner_none ) THEN
+      IF ( inform%preconditioner == preconditioner_none ) THEN
         inform%status = 0
         RETURN
       END IF
+
+!  assign a default automatic diagonal preconditioner
 
 !  record desired output level
 
@@ -927,7 +978,8 @@
       data%P%n = data%n_sub ; data%P%m = data%P%n
 
       IF ( printt ) WRITE( out, "( /, A, ' Form and factorize ' )" ) prefix
-      SELECT CASE ( control%preconditioner )
+
+      SELECT CASE ( inform%preconditioner )
 
 !  a diagonal matrix will be used
 
@@ -1931,7 +1983,7 @@
           CASE ( 'DIAGONAL' )
             data%P%ne = data%n_sub
           CASE ( 'DENSE' )
-            data%P%ne = ( data%n_sub * ( data%n_sub - 1 ) ) / 2
+            data%P%ne = ( data%n_sub * ( data%n_sub + 1 ) ) / 2
           CASE ( 'SPARSE_BY_ROWS' )
             IF ( data%sub_matrix ) THEN
               data%P%ne = 0
@@ -2038,10 +2090,10 @@
                 DO j = 1, i
                   l = l + 1
                   data%P%row( l ) = i ; data%P%col( l ) = j
+                  data%P%val( l ) = A%val( l )
                 END DO
               END DO
             END IF
-            data%P%val( : A%ne ) = A%val( : A%ne )
           END IF
         CASE ( 'SPARSE_BY_ROWS' )
           IF ( data%sub_matrix ) THEN
@@ -2110,9 +2162,9 @@
 !  One of the other cases will be used ... eventually
 
       CASE DEFAULT
-        WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )           &
-          control%preconditioner
-        inform%status = GALAHAD_preconditioner_unknown
+        IF ( printi ) WRITE( out, "( ' PSLS: case ', I0,                       &
+       &   ' not yet implemented' )" ) inform%preconditioner
+        inform%status = GALAHAD_error_unknown_precond
         RETURN
       END SELECT
 
@@ -2120,7 +2172,7 @@
       inform%time%assemble =inform%time%assemble + time_now - time_start
       inform%time%clock_assemble                                               &
         = inform%time%clock_assemble + clock_now - clock_start
-      IF ( printt ) WRITE( out, "( /, A,  ' time( assembly ) = ', F10.2 )" )   &
+      IF ( printt ) WRITE( out, "( /, A,  ' time( assembly ) = ', F0.2 )" )    &
         prefix, time_now - time_start
 
       inform%semi_bandwidth_used = data%semi_bandwidth_used
@@ -2130,7 +2182,7 @@
 !  Stage 2 - Factorize (and possibly modify) P
 !  -------------------------------------------
 
-      SELECT CASE ( control%preconditioner )
+      SELECT CASE ( inform%preconditioner )
 
 !  The diagonal matrix needs not be factorized
 
@@ -2166,10 +2218,16 @@
 
       CASE ( preconditioner_full_se )
 
+!       WRITE( 6, "( ' n, nz ', I4, 1X, I4 )" ) data%P%n, data%P%ne
+!       DO i = 1, data%P%ne
+!         WRITE( 6, "( ' row, col, val = ', 2I5, ES10.2 )" )                   &
+!           data%P%row( i ), data%P%col( i ), data%P%val( i )
+!       END DO
+
 !  initialize solver-specific data
 
         data%SLS_control = control%SLS_control
-        CALL SLS_INITIALIZE( control%definite_linear_solver,                   &
+        CALL SLS_initialize( control%definite_linear_solver,                   &
                              data%SLS_data, data%SLS_control,                  &
                              inform%SLS_inform )
 
@@ -2186,7 +2244,7 @@
           = inform%time%clock_analyse + clock_now - clock_record
         IF ( printt ) WRITE( out, 2000 ) prefix, time_now - time_record
 
-!  Test that the analysys succeeded
+!  Test that the analysis succeeded
 
         IF ( inform%SLS_inform%status < 0 ) THEN
           IF ( printi ) WRITE( out, "( /, A, ' error return from ',            &
@@ -2330,7 +2388,7 @@
                         inform%neg2, data%PERM, data%D )
         IF ( printt ) THEN
           CALL CPU_TIME( time_now )
-          WRITE( out, "( /, A, ' time( PSLS_gmps ) = ', F10.2 )" )             &
+          WRITE( out, "( /, A, ' time( PSLS_gmps ) = ', F0.2 )" )              &
             prefix, time_now - time_record
         END IF
 
@@ -2688,26 +2746,26 @@
             inform%alloc_status = inform%mi28_info%stat
           CASE( -  6 : - 2 )
             inform%status = GALAHAD_error_restrictions
-          CASE ( - 7  )
-             inform%status = GALAHAD_error_mc77
-          CASE ( - 8  )
-             inform%status = GALAHAD_error_mc64
-          CASE ( - 9  )
-             inform%status = GALAHAD_error_inertia
-          CASE ( - 10  )
+!         CASE ( - 7  )
+!            inform%status = GALAHAD_error_mc77
+!         CASE ( - 8  )
+!            inform%status = GALAHAD_error_mc64
+!         CASE ( - 9  )
+!            inform%status = GALAHAD_error_inertia
+!          CASE ( - 10  )
              inform%status = GALAHAD_error_scale
-          CASE ( - 11 )
-            inform%status = GALAHAD_error_permutation
-          CASE ( - 12  )
-             inform%status = GALAHAD_error_mc61
-          CASE ( - 13  )
-             inform%status = GALAHAD_error_mc68
+!         CASE ( - 11 )
+!           inform%status = GALAHAD_error_permutation
+!         CASE ( - 12  )
+!            inform%status = GALAHAD_error_mc61
+!          CASE ( - 13  )
+!            inform%status = GALAHAD_error_mc68
           CASE ( GALAHAD_unavailable_option  )
              inform%status = GALAHAD_unavailable_option
              IF ( control%print_level > 0 .AND. control%out > 0 )              &
                WRITE( control%out, "( A, ' hsl_mi28 is not available' )") prefix
           CASE DEFAULT
-            inform%status = GALAHAD_error_technical
+            inform%status = GALAHAD_error_mi28
           END SELECT
           RETURN
         END IF
@@ -2715,9 +2773,9 @@
 !  One of the other cases will be used ... eventually
 
       CASE DEFAULT
-        WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )           &
-          control%preconditioner
-        inform%status = GALAHAD_preconditioner_unknown
+        IF ( printi ) WRITE( out, "( ' PSLS: case ', I0,                       &
+       &   ' not yet implemented' )" ) inform%preconditioner
+        inform%status = GALAHAD_error_unknown_precond
         RETURN
       END SELECT
 
@@ -2767,7 +2825,7 @@
           bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
-      IF ( control%preconditioner == preconditioner_incomplete_mi28 ) THEN
+      IF ( inform%preconditioner == preconditioner_incomplete_mi28 ) THEN
         array_name = 'psls: data%SOL_sub'
         CALL SPACE_resize_array( data%n_sub, data%SOL_sub,                     &
             inform%status, inform%alloc_status, array_name = array_name,       &
@@ -2839,8 +2897,8 @@
 
 ! Non-executable statements
 
- 2000 FORMAT( /, A, ' time( SLS_analyse ) = ', F0.2 )
- 2010 FORMAT( /, A, ' time( SLS_factorize ) = ', F0.2 )
+ 2000 FORMAT( /, A, ' time( analyse ) = ', F0.2 )
+ 2010 FORMAT( /, A, ' time( factorize ) = ', F0.2 )
 
 !  End of subroutine PSLS_form_and_factorize
 
@@ -2907,7 +2965,7 @@
 !   for details
 !
 !  inform is a structure of type PSLS_inform_type that provides information on
-!   exit from PSLS_solve. The component status has possible values:
+!   exit from PSLS_form_and_factorize. The component status has possible values:
 !
 !     0 Normal termination.
 !
@@ -2930,14 +2988,6 @@
 !  following:
 !
 !     alloc_status = The status of the last attempted allocation/deallocation
-!     analyse_status = The return status from the ordering phase of the
-!      factorization (if any)
-!     factorize_status = The return status from the factorization phase
-!     solve_status = The return status from the solve phase
-!     factorization_integer = The total integer workspace required for the
-!       factorization
-!     factorization_real = The total real workspace required for the
-!       factorization
 !     preconditioner = Code for the actual preconditioner computed
 !     semi_bandwidth = The semi-bandwidth of the original submatrix
 !     neg1, neg2 - the number of -ve 1x1 and 2x2 pivots found during the
@@ -2990,10 +3040,12 @@
 !  set initial values
 
       IF ( control%new_structure ) THEN
-        inform%analyse_status = 0 ; inform%factorize_status = 0
-        inform%solve_status = 0
-        inform%factorization_integer = 0 ; inform%factorization_real = 0
-        inform%preconditioner = 0 ; inform%semi_bandwidth = 0
+        IF ( inform%preconditioner == preconditioner_auto ) THEN
+          inform%preconditioner = preconditioner_diagonal
+        ELSE
+          inform%preconditioner = control%preconditioner
+        END IF
+        inform%semi_bandwidth = 0
         inform%neg1 = 0 ; inform%neg2 = 0 ; inform%perturbed = .FALSE.
         inform%fill_in_ratio = one ; inform%norm_residual = zero
         inform%bad_alloc  = ''
@@ -3004,7 +3056,7 @@
 
 !  return if no preconditioning (P=I) is required
 
-      IF ( control%preconditioner == preconditioner_none ) THEN
+      IF ( inform%preconditioner == preconditioner_none ) THEN
         inform%status = GALAHAD_ok
         RETURN
       END IF
@@ -3100,7 +3152,7 @@
 !  the matrix P will be ordered so that its diagonal entries occur in
 !  positions 1:n
 
-      SELECT CASE ( control%preconditioner )
+      SELECT CASE ( inform%preconditioner )
 
 !  a diagonal matrix will be used
 
@@ -3302,9 +3354,9 @@
 
       CASE ( preconditioner_reordered_band )
 
-!       WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )           &
-!         control%preconditioner
-!       inform%status = GALAHAD_preconditioner_unknown
+!       IF ( printi ) WRITE( out, "( ' PSLS: case ', I0,                       &
+!      &   ' not yet implemented' )" ) inform%preconditioner
+!       inform%status = GALAHAD_error_unknown_precond
 !       RETURN
 
         IF ( control%new_structure ) THEN
@@ -3721,9 +3773,9 @@
 !  One of the other cases will be used ... eventually
 
       CASE DEFAULT
-        WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )           &
-          control%preconditioner
-        inform%status = GALAHAD_preconditioner_unknown
+        IF ( printi ) WRITE( out, "( ' PSLS: case ', I0,                       &
+       &   ' not yet implemented' )" ) inform%preconditioner
+        inform%status = GALAHAD_error_unknown_precond
         RETURN
       END SELECT
 
@@ -3916,7 +3968,7 @@
 !  the system P * x_sub = rhs_sub, returning the solution in rhs_sub
 
           IF ( scu_status > 0 ) THEN
-            SELECT CASE ( control%preconditioner )
+            SELECT CASE ( inform%preconditioner )
 
 !  P is a diagonal matrix
 
@@ -3960,9 +4012,10 @@
 !  P is one of the other cases ... eventually
 
             CASE DEFAULT
-              WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )     &
-                control%preconditioner
-              inform%status = GALAHAD_preconditioner_unknown
+              IF ( control%print_level > 0 .AND. control%out > 0 )             &
+                WRITE( control%out, "( ' PSLS: case ', I0,                     &
+             &   ' not yet implemented' )" ) inform%preconditioner
+              inform%status = GALAHAD_error_unknown_precond
               RETURN
             END SELECT
             GO TO 10
@@ -4033,9 +4086,9 @@
 
       END SUBROUTINE  PSLS_index_submatrix
 
-!-*-*-*-*-*-*-*-*-   P S L S _ S O L V E   S U B R O U T I N E   -*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-   P S L S _ A P P L Y   S U B R O U T I N E   -*-*-*-*-*-*-*-
 
-      SUBROUTINE PSLS_solve( SOL, data, control, inform )
+      SUBROUTINE PSLS_apply( SOL, data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -4077,14 +4130,14 @@
 
 !  return if no preconditioning (P=I) is required
 
-        IF ( control%preconditioner == preconditioner_none ) THEN
+        IF ( inform%preconditioner == preconditioner_none ) THEN
           inform%status = 0
           RETURN
         END IF
 
 !  gather the sub-components of the right-hand side
 
-        IF ( control%preconditioner == preconditioner_reordered_band ) THEN
+        IF ( inform%preconditioner == preconditioner_reordered_band ) THEN
           IF ( data%sub_matrix ) THEN
             data%RHS_sub( data%PERM( : data%n_sub ) )                          &
               = SOL( data%SUB( : data%n_sub ) )
@@ -4102,7 +4155,7 @@
 !  solve the system P * x_sub = rhs_sub, returning the solution in
 !  rhs_sub
 
-        SELECT CASE ( control%preconditioner )
+        SELECT CASE ( inform%preconditioner )
 
 !  P is a diagonal matrix
 
@@ -4153,22 +4206,23 @@
 !  P is one of the other cases ... eventually
 
         CASE DEFAULT
-          WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )         &
-            control%preconditioner
-          inform%status = GALAHAD_preconditioner_unknown
+          IF ( control%print_level > 0 .AND. control%out > 0 )                 &
+            WRITE( control%out, "( ' PSLS: preconditioner case ', I0,          &
+           &            ' not yet implemented' )" ) inform%preconditioner
+          inform%status = GALAHAD_error_unknown_precond
           RETURN
         END SELECT
 
 !  scatter the solution back to the correct sub-components
 
-        IF ( control%preconditioner == preconditioner_reordered_band ) THEN
+        IF ( inform%preconditioner == preconditioner_reordered_band ) THEN
           IF ( data%sub_matrix ) THEN
             SOL( data%SUB( : data%n_sub ) )                                    &
               = data%RHS_sub( data%PERM( : data%n_sub ) )
           ELSE
             SOL( : data%n_sub ) = data%RHS_sub( data%PERM( : data%n_sub ) )
           END IF
-        ELSE IF ( control%preconditioner == preconditioner_incomplete_mi28) THEN
+        ELSE IF ( inform%preconditioner == preconditioner_incomplete_mi28) THEN
           IF ( data%sub_matrix ) THEN
             SOL( data%SUB( : data%n_sub ) ) = data%SOL_sub( : data%n_sub )
           ELSE
@@ -4198,7 +4252,7 @@
 !  Solve for the preconditioned gradient using the Schur complement update.
 !  Gather the sub-components of SOL into RHS_scu
 
-        IF ( control%preconditioner == preconditioner_reordered_band ) THEN
+        IF ( inform%preconditioner == preconditioner_reordered_band ) THEN
           data%RHS_scu( data%PERM( : data%n_sub ) )                            &
             = SOL( data%SUB( : data%n_sub ) )
         ELSE
@@ -4221,7 +4275,7 @@
 !  the system P * x_sub = rhs_sub, returning the solution in rhs_sub
 
         IF ( scu_status > 0 ) THEN
-          SELECT CASE ( control%preconditioner )
+          SELECT CASE ( inform%preconditioner )
 
 !  P is a diagonal matrix
 
@@ -4273,9 +4327,10 @@
 !  P is one of the other cases ... eventually
 
           CASE DEFAULT
-            WRITE( 6, "( ' PSLS: case ', I0, ' not yet implemented' )" )       &
-              control%preconditioner
-            inform%status = GALAHAD_preconditioner_unknown
+            IF ( control%print_level > 0 .AND. control%out > 0 )               &
+              WRITE( control%out, "( ' PSLS: preconditioner case ', I0,        &
+             &            ' not yet implemented' )" ) inform%preconditioner
+            inform%status = GALAHAD_error_unknown_precond
             RETURN
           END SELECT
           GO TO 10
@@ -4283,10 +4338,10 @@
 
 !  Scatter the free components of the solution into SOL
 
-        IF ( control%preconditioner == preconditioner_reordered_band ) THEN
+        IF ( inform%preconditioner == preconditioner_reordered_band ) THEN
           SOL( data%SUB( : data%n_sub ) )                                      &
             = data%SOL_scu( data%PERM( : data%n_sub ) )
-        ELSE IF ( control%preconditioner == preconditioner_incomplete_mi28) THEN
+        ELSE IF ( inform%preconditioner == preconditioner_incomplete_mi28) THEN
           IF ( data%sub_matrix ) THEN
             SOL( data%SUB( : data%n_sub ) ) = data%SOL_sub( : data%n_sub )
           ELSE
@@ -4300,9 +4355,9 @@
       inform%status = GALAHAD_ok
       RETURN
 
-!  End of subroutine PSLS_solve
+!  End of subroutine PSLS_apply
 
-      END SUBROUTINE PSLS_solve
+      END SUBROUTINE PSLS_apply
 
 !-*-*-*-*-*-*-*-   P S L S _ P R O D U C T   S U B R O U T I N E   -*-*-*-*-*-*-
 
@@ -4320,7 +4375,9 @@
 
 !  Local variables
 
-      inform%status = GALAHAD_ok
+      IF ( control%print_level > 0 .AND. control%out > 0 )                     &
+        WRITE( control%out, "( ' PSLS_product not yet implemented' )" )
+      inform%status =  GALAHAD_not_yet_implemented
       RETURN
 
 !  End of subroutine PSLS_product
@@ -4354,7 +4411,7 @@
 
 !  compute the norm for the available preconditioners
 
-      SELECT CASE ( control%preconditioner )
+      SELECT CASE ( inform%preconditioner )
 
 !  identity "preconditioner"
 
@@ -4387,8 +4444,6 @@
 
         DO i = data%n_sub, 1, - 1
           m = MIN( data%semi_bandwidth_used, data%n_sub - i )
-!         data%W( i ) =                                                        &
-!           V( i ) + SUM( data%OFFDIA( : m, i ) * V( i + 1 : i + m ) )
           row_sum = V( i )
           DO j = 1, m
             row_sum = row_sum + data%OFFDIA( j, i ) *  V( i + j )
@@ -4464,11 +4519,11 @@
         PSLS_norm = SQRT( ABS( DOT_PRODUCT( data%W( : data%n_sub ),            &
                                             V( : data%n_sub ) ) ) )
 
-!  GMPS modified factorization
+!  GMPS modified factorization (to do)
 
-      CASE ( preconditioner_full_gmps )
-        inform%status = GALAHAD_norm_unknown
-        GO TO 910
+!     CASE ( preconditioner_full_gmps )
+!       inform%status = GALAHAD_norm_unknown
+!       GO TO 910
 
 !  Lin-More' incomplete Cholesky factorization,
 
@@ -4548,8 +4603,9 @@
 !  One of the other cases will be used ... eventually
 
       CASE DEFAULT
-        WRITE( 6, "( ' PSLS_norm: case ', I0, ' not yet implemented' )" )      &
-          control%preconditioner
+        IF ( control%print_level > 0 .AND. control%out > 0 )                   &
+          WRITE( control%out, "( ' PSLS_norm: preconditioner case ', I0,       &
+         &            ' not yet implemented' )" ) inform%preconditioner
         inform%status = GALAHAD_not_yet_implemented
         GO TO 910
       END SELECT
@@ -4583,7 +4639,7 @@
 !
 !   data    see Subroutine PSLS_initialize
 !   control see Subroutine PSLS_initialize
-!   inform  see Subroutine PSLS_solve
+!   inform  see Subroutine PSLS_form_and_factorize
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -4825,6 +4881,66 @@
 
       END SUBROUTINE PSLS_terminate
 
+! -  G A L A H A D -  P S L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+
+     SUBROUTINE PSLS_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( PSLS_control_type ), INTENT( IN ) :: control
+     TYPE ( PSLS_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL PSLS_terminate( data%psls_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     array_name = 'sbls: data%A%ptr'
+     CALL SPACE_dealloc_array( data%A%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%A%row'
+     CALL SPACE_dealloc_array( data%A%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%A%col'
+     CALL SPACE_dealloc_array( data%A%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%A%val'
+     CALL SPACE_dealloc_array( data%A%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     RETURN
+
+!  End of subroutine PSLS_full_terminate
+
+     END SUBROUTINE PSLS_full_terminate
+
 !-*-*-*-*-*-*-*-*-*-   P S L S _ N A M E   F U N C T I O N   -*-*-*-*-*-*-*-*-
 
       FUNCTION PSLS_name( preconditioner, semi_bandwidth, icfs_vectors )
@@ -4862,10 +4978,10 @@
           icfs_vectors, " vectors"
       CASE ( 7 )
         PSLS_name =                                                            &
-          "Munskgaard incomplete factorization preconditioner"
+          "HSL_MI28 incomplete factorization preconditioner"
       CASE ( 8 )
         PSLS_name =                                                            &
-          "expanding band preconditioner"
+          "Munskgaard incomplete factorization preconditioner"
       CASE DEFAULT
         PSLS_name =                                                            &
           "unknown preconditioner"
@@ -5038,6 +5154,363 @@
 !  End of subroutine PSLS_gmps
 
      END SUBROUTINE PSLS_gmps
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-  G A L A H A D -  P S L S _ i m p o r t _ S U B R O U T I N E -*-*-*-
+
+     SUBROUTINE PSLS_import( control, data, status, n,                         &
+                             A_type, A_ne, A_row, A_col, A_ptr )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to PSLS_form_and_factorize
+!
+!  data is a scalar variable of type PSLS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    0. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0 or the requirement that type contains
+!       its relevant string 'DENSE', 'COORDINATE' or 'SPARSE_BY_ROWS'
+!       has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   rows and columns in the 1,1 block
+!
+!  A_type is a character string that specifies the storage scheme used for H.
+!   It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
+!   lower or upper case variants are allowed.
+!
+!  A_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the  lower triangular part of A in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  A_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of A in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  A_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of A in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  A_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of A, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( PSLS_control_type ), INTENT( INOUT ) :: control
+     TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n, A_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     data%PSLS_control = control
+
+     error = data%psls_control%error
+     space_critical = data%psls_control%space_critical
+     deallocate_error_fatal = data%psls_control%space_critical
+
+!  set H appropriately in the smt storage type
+
+     data%A%n = n ; data%A%m = n
+     SELECT CASE ( A_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+      IF ( .NOT. ( PRESENT( A_row ) .AND. PRESENT( A_col ) ) ) THEN
+         data%psls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%A%type, 'COORDINATE',                                &
+                     data%psls_inform%alloc_status )
+       data%A%ne = A_ne
+
+       array_name = 'psls: data%A%row'
+       CALL SPACE_resize_array( data%A%ne, data%A%row,                         &
+              data%psls_inform%status, data%psls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%psls_inform%bad_alloc, out = error )
+       IF ( data%psls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'psls: data%A%col'
+       CALL SPACE_resize_array( data%A%ne, data%A%col,                         &
+              data%psls_inform%status, data%psls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%psls_inform%bad_alloc, out = error )
+       IF ( data%psls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'psls: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%psls_inform%status, data%psls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%psls_inform%bad_alloc, out = error )
+       IF ( data%psls_inform%status /= 0 ) GO TO 900
+
+       data%A%row( : data%A%ne ) = A_row( : data%A%ne )
+       data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+      IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
+         data%psls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%A%type, 'SPARSE_BY_ROWS',                            &
+                     data%psls_inform%alloc_status )
+       data%A%ne = A_ptr( n + 1 ) - 1
+
+       array_name = 'psls: data%A%ptr'
+       CALL SPACE_resize_array( n + 1, data%A%ptr,                             &
+              data%psls_inform%status, data%psls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%psls_inform%bad_alloc, out = error )
+       IF ( data%psls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'psls: data%A%col'
+       CALL SPACE_resize_array( data%A%ne, data%A%col,                         &
+              data%psls_inform%status, data%psls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%psls_inform%bad_alloc, out = error )
+       IF ( data%psls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'psls: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%psls_inform%status, data%psls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%psls_inform%bad_alloc, out = error )
+       IF ( data%psls_inform%status /= 0 ) GO TO 900
+
+       data%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
+       data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%A%type, 'DENSE',                                     &
+                     data%psls_inform%alloc_status )
+       data%A%ne = ( n * ( n + 1 ) ) / 2
+
+       array_name = 'psls: data%A%val'
+       CALL SPACE_resize_array( data%A%ne, data%A%val,                         &
+              data%psls_inform%status, data%psls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%psls_inform%bad_alloc, out = error )
+       IF ( data%psls_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%psls_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%psls_inform%status
+     RETURN
+
+!  End of subroutine PSLS_import
+
+     END SUBROUTINE PSLS_import
+
+!-  G A L A H A D -  P S L S _ r e s e t _ c o n t r o l   S U B R O U T I N E -
+
+     SUBROUTINE PSLS_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See PSLS_form_and_factorize for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( PSLS_control_type ), INTENT( IN ) :: control
+     TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%psls_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine PSLS_reset_control
+
+     END SUBROUTINE PSLS_reset_control
+
+! - G A L A H A D - P S L S _ f o r m _ p r e c o n d i t i o n e r SUBROUTINE -
+
+     SUBROUTINE PSLS_form_preconditioner( data, status, A_val, SUB )
+
+!  form and factorize the preconditioner P from a submatrix of the input A.
+!  See PSLS_form_and_factorize for a description of the required arguments
+!
+!   SUB is an optional rank-one integer assumed-sized array whose components
+!    list the row indices of the required submatrix. The indices should be in
+!    increasing order. If SUB is not present, the entire matrix A will be
+!    considered.
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
+     INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( : ) :: SUB
+
+!  save the value of A
+
+     IF ( data%A%ne > 0 ) data%A%val( : data%A%ne ) = A_val( : data%A%ne )
+
+!  form and factorize the preconditioner
+
+     CALL PSLS_form_and_factorize( data%A, data%psls_data, data%psls_control,  &
+                                   data%psls_inform, SUB = SUB )
+
+     status = data%psls_inform%status
+     RETURN
+
+!  end of subroutine PSLS_form_preconditioner
+
+     END SUBROUTINE PSLS_form_preconditioner
+
+! G A L A H A D - P S L S _ u p d a t e _ p r e c o n d i t i o n e r SUBROUTINE
+
+     SUBROUTINE PSLS_update_preconditioner( data, status, FIX )
+
+!  update the preconditioner P when a subset of the rows (and columns) are 
+!  removed. See PSLS_form_and_factorize for a description of the required 
+!  arguments
+!
+!   FIX is an optional rank-one integer assumed-sized array whose components
+!    list the row indices that are to be fixed.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ), DIMENSION( : ) :: FIX
+
+!  update the preconditioner
+
+     CALL PSLS_update_factors( FIX, data%psls_data, data%psls_control,         &
+                               data%psls_inform )
+
+     status = data%psls_inform%status
+     RETURN
+
+!  end of subroutine PSLS_update_preconditioner
+
+     END SUBROUTINE PSLS_update_preconditioner
+
+! - G A L A H A D - P S L S _ a p p l y _ p r e c o n d i t i o n e r SUBROUTINE
+
+     SUBROUTINE PSLS_apply_preconditioner( data, status, SOL )
+
+!  solve the preconditioned linear system P x = b,
+!  where SOL holds the right-hand side on input, and the solution on output.
+!  See PSLS_apply for a description of the required arguments
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: SOL
+
+!  solve the linear system
+
+     CALL PSLS_apply( SOL, data%psls_data, data%psls_control, data%psls_inform )
+
+     status = data%psls_inform%status
+     RETURN
+
+!  end of subroutine PSLS_apply_preconditioner
+
+     END SUBROUTINE PSLS_apply_preconditioner
+
+!-  G A L A H A D -  P S L S _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE PSLS_information( data, inform, status )
+
+!  return solver information during or after solution by PSLS
+!  See PSLS_form_and_factorize for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( PSLS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%psls_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine PSLS_information
+
+     END SUBROUTINE PSLS_information
 
 !  End of module GALAHAD_PSLS_double
 

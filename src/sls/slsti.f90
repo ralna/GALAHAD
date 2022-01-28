@@ -1,9 +1,8 @@
-! THIS VERSION: GALAHAD 3.3 - 01/12/2021 AT 16:30 GMT.
+   PROGRAM PSLS_EXAMPLE   !  GALAHAD 4.0 - 2022-01-23 AT 16:35 GMT.
    PROGRAM GALAHAD_SLS_interface_test
    USE GALAHAD_SLS_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   TYPE ( SMT_type ) :: matrix
    TYPE ( SLS_full_data_type ) :: data
    TYPE ( SLS_control_type ) control
    TYPE ( SLS_inform_type ) :: inform

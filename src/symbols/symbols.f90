@@ -122,7 +122,9 @@
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_cutest            = - 77
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_evaluation        = - 78
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_optional          = - 79
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mi35              = - 80
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mi28              = - 80
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mi35              =          &
+                                    GALAHAD_error_mi28
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_spqr              = - 81
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_alive             = - 82
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_ccqp              = - 83

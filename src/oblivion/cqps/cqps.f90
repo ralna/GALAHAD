@@ -1799,7 +1799,7 @@
 
      data%PPROD( : prob%n ) = prob%G( : prob%n )
      IF ( data%explicit_h )                                                    &
-       CALL  PSLS_solve( data%PPROD( : prob%n ), data%PSLS_data,               &
+       CALL  PSLS_apply( data%PPROD( : prob%n ), data%PSLS_data,               &
                          control%PSLS_control, inform%PSLS_inform )
 
 !  now compute H P g ...
@@ -2357,7 +2357,7 @@
 
 !write(6,"( 'u', /, ( 3ES24.16 ) )" ) data%U( : prob%n )
        IF ( data%explicit_h )                                                  &
-         CALL PSLS_solve( data%U( : prob%n ), data%PSLS_data,                  &
+         CALL PSLS_apply( data%U( : prob%n ), data%PSLS_data,                  &
                           control%PSLS_control, inform%PSLS_inform )
 
 !  set the z_l and z_u-th components of Hess_ww phi(w) v

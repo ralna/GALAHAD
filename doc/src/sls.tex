@@ -1941,7 +1941,7 @@ and {\tt control\%print\_level}.
 one of
 {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'} or   {\tt 'DENSE'}.
 % or {\tt 'DIAGONAL'}.
-\galportability ISO Fortran~95 + TR 15581 or Fortran~2003 and optionally OpenNP.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003 and optionally OpenMP.
 The package is thread-safe.
 
 %%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
@@ -2085,5 +2085,43 @@ This produces the following output:
 \VerbatimInput{\packageresults}
 }
 \noindent
-
+The same problem may be solved holding the data in
+a sparse row-wise storage format by replacing the lines
+{\tt \small
+\begin{verbatim}
+! allocate and set lower triangle of matrix in co-ordinate form
+...
+! problem setup complete
+\end{verbatim}
+}
+\noindent
+by
+{\tt \small
+\begin{verbatim}
+! allocate and set lower triangle of matrix in spares row form
+     CALL SMT_put( matrix%type, 'SPARSE_BY_ROWS', s )
+     matrix%n = n 
+     ALLOCATE( matrix%val( ne ), matrix%col( ne ), matrix%ptr( n + 1 ) )
+     matrix%ptr = (/ 1, 2, 3, 5, 6, 8 /)
+     matrix%col = (/ 1, 1, 2, 3, 3, 2, 5 /)
+     matrix%val = (/ 2.0_wp, 3.0_wp, 4.0_wp, 1.0_wp, 5.0_wp, 6.0_wp, 1.0_wp /)
+! problem setup complete
+\end{verbatim}
+}
+\noindent
+or using a dense storage format with the replacement lines
+{\tt \small
+\begin{verbatim}
+! allocate and set lower triangle of matrix in dense form
+     CALL SMT_put( matrix%type, 'DENSE', s )
+     matrix%n = n 
+     ALLOCATE( matrix%val( n * ( n + 1 ) / 2 ) )
+     matrix%val = (/ 2.0_wp, 3.0_wp, 0.0_wp, 0.0_wp, 4.0_wp, 1.0_wp,           &
+                     0.0_wp, 0.0_wp, 5.0_wp, 0.0_wp, 0.0_wp, 6.0_wp,           &
+                     0.0_wp, 0.0_wp, 1.0_wp /)
+! problem setup complete
+\end{verbatim}
+}
+\noindent
+respectively.
 \end{document}

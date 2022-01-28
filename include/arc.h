@@ -1,7 +1,7 @@
 /** \file arc.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 10/08/2021 AT 15:30 GMT.
+ * THIS VERSION: GALAHAD 4.0 - 10/08/2021 AT 15:30 GMT.
  *
  *-*-*-*-*-*-*-  G A L A H A D _ A R C  C  I N T E R F A C E  -*-*-*-*-*-*-*-
  *
@@ -224,7 +224,7 @@ extern "C" {
 #include "rqs.h"
 #include "glrt.h"
 //#include "dps.h"
-//#include "psls.h"
+#include "psls.h"
 //#include "lms.h"
 //#include "sha.h"
 
@@ -485,7 +485,7 @@ struct arc_control_type {
 
     /// \brief
     /// control parameters for PSLS
-    ///struct psls_control_type psls_control;
+    struct psls_control_type psls_control;
 
     /// \brief
     /// control parameters for LMS
@@ -637,7 +637,7 @@ struct arc_inform_type {
 
     /// \brief
     /// inform parameters for PSLS
-    ///struct psls_inform_type psls_inform;
+    struct psls_inform_type psls_inform;
 
     /// \brief
     /// inform parameters for LMS

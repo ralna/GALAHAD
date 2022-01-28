@@ -1,4 +1,4 @@
-.TH "nls.h" 3 "Sat Jan 8 2022" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
+.TH "nls.h" 3 "Fri Jan 28 2022" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -9,6 +9,12 @@ nls.h
 \fC#include <stdbool\&.h>\fP
 .br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'rqs\&.h'\fP
+.br
+\fC#include 'glrt\&.h'\fP
+.br
+\fC#include 'psls\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -411,6 +417,15 @@ bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any arra
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
+struct rqs_control_type \fIrqs_control\fP control parameters for RQS 
+.br
+.PP
+struct glrt_control_type \fIglrt_control\fP control parameters for GLRT 
+.br
+.PP
+struct psls_control_type \fIpsls_control\fP control parameters for PSLS 
+.br
+.PP
 .RE
 .PP
 .SH "struct nls_control_type"
@@ -630,6 +645,15 @@ char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(
 struct \fBnls_subproblem_control_type\fP \fIsubproblem_control\fP control parameters for the step-finding subproblem 
 .br
 .PP
+struct rqs_control_type \fIrqs_control\fP control parameters for RQS 
+.br
+.PP
+struct glrt_control_type \fIglrt_control\fP control parameters for GLRT 
+.br
+.PP
+struct psls_control_type \fIpsls_control\fP control parameters for PSLS 
+.br
+.PP
 .RE
 .PP
 .SH "struct nls_time_type"
@@ -736,6 +760,15 @@ real_wp_ \fIweight\fP the final regularization weight used
 struct \fBnls_time_type\fP \fItime\fP timings (see above) 
 .br
 .PP
+struct rqs_inform_type \fIrqs_inform\fP inform parameters for RQS 
+.br
+.PP
+struct glrt_inform_type \fIglrt_inform\fP inform parameters for GLRT 
+.br
+.PP
+struct psls_inform_type \fIpsls_inform\fP inform parameters for PSLS 
+.br
+.PP
 .RE
 .PP
 .SH "struct nls_inform_type"
@@ -805,6 +838,15 @@ struct \fBnls_time_type\fP \fItime\fP timings (see above)
 .br
 .PP
 struct \fBnls_subproblem_inform_type\fP \fIsubproblem_inform\fP inform parameters for subproblem 
+.br
+.PP
+struct rqs_inform_type \fIrqs_inform\fP inform parameters for RQS 
+.br
+.PP
+struct glrt_inform_type \fIglrt_inform\fP inform parameters for GLRT 
+.br
+.PP
+struct psls_inform_type \fIpsls_inform\fP inform parameters for PSLS 
 .br
 .PP
 .RE

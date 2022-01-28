@@ -18,15 +18,6 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-   TeX: { Macros: {
-    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
-    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
-    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
-  } }
-});
-</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -85,7 +76,7 @@ $(function() {
 <div class="contents">
 <a href="arc_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * THIS VERSION: GALAHAD 3.3 - 10/08/2021 AT 15:30 GMT.</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * THIS VERSION: GALAHAD 4.0 - 10/08/2021 AT 15:30 GMT.</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *-*-*-*-*-*-*-  G A L A H A D _ A R C  C  I N T E R F A C E  -*-*-*-*-*-*-*-</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> *</span></div>
@@ -116,7 +107,7 @@ $(function() {
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;<span class="preprocessor">#include &quot;rqs.h&quot;</span></div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="preprocessor">#include &quot;glrt.h&quot;</span></div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="comment">//#include &quot;dps.h&quot;</span></div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="comment">//#include &quot;psls.h&quot;</span></div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="preprocessor">#include &quot;psls.h&quot;</span></div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="comment">//#include &quot;lms.h&quot;</span></div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="comment">//#include &quot;sha.h&quot;</span></div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160; </div>
@@ -203,9 +194,12 @@ $(function() {
 <div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160; </div>
 <div class="line"><a name="l00472"></a><span class="lineno"><a class="line" href="arc_8h.html#a1dc05936393ba705f516a0c275df4ffc">  472</a></span>&#160;    <span class="keywordtype">char</span> <a class="code" href="arc_8h.html#a1dc05936393ba705f516a0c275df4ffc">prefix</a>[31];</div>
 <div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160; </div>
+<div class="line"><a name="l00476"></a><span class="lineno"><a class="line" href="arc_8h.html#a7339f172b9757ed89a7595a29c4bca2b">  476</a></span>&#160;    <span class="keyword">struct </span>rqs_control_type <a class="code" href="arc_8h.html#a7339f172b9757ed89a7595a29c4bca2b">rqs_control</a>;</div>
 <div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160; </div>
+<div class="line"><a name="l00480"></a><span class="lineno"><a class="line" href="arc_8h.html#ac872f3f7f159cedfac4d6898d51842a3">  480</a></span>&#160;    <span class="keyword">struct </span>glrt_control_type <a class="code" href="arc_8h.html#ac872f3f7f159cedfac4d6898d51842a3">glrt_control</a>;</div>
 <div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160; </div>
 <div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160; </div>
+<div class="line"><a name="l00488"></a><span class="lineno"><a class="line" href="arc_8h.html#a6fe2b1a82e177fbd1a39d9de9652a2c5">  488</a></span>&#160;    <span class="keyword">struct </span>psls_control_type <a class="code" href="arc_8h.html#a6fe2b1a82e177fbd1a39d9de9652a2c5">psls_control</a>;</div>
 <div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160; </div>
 <div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160; </div>
 <div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;};</div>
@@ -271,9 +265,12 @@ $(function() {
 <div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160; </div>
 <div class="line"><a name="l00624"></a><span class="lineno"><a class="line" href="arc_8h.html#a4288efaa60a28f967b947ef1b07cf445">  624</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="arc_8h.html#structarc__time__type">arc_time_type</a> <a class="code" href="arc_8h.html#a4288efaa60a28f967b947ef1b07cf445">time</a>;</div>
 <div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160; </div>
+<div class="line"><a name="l00628"></a><span class="lineno"><a class="line" href="arc_8h.html#a68497e7bbd1695ac9b830fc8fe594d60">  628</a></span>&#160;    <span class="keyword">struct </span>rqs_inform_type <a class="code" href="arc_8h.html#a68497e7bbd1695ac9b830fc8fe594d60">rqs_inform</a>;</div>
 <div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160; </div>
+<div class="line"><a name="l00632"></a><span class="lineno"><a class="line" href="arc_8h.html#aa5a47a840c1f9680ac8b9e4db3eb9e88">  632</a></span>&#160;    <span class="keyword">struct </span>glrt_inform_type <a class="code" href="arc_8h.html#aa5a47a840c1f9680ac8b9e4db3eb9e88">glrt_inform</a>;</div>
 <div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160; </div>
 <div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160; </div>
+<div class="line"><a name="l00640"></a><span class="lineno"><a class="line" href="arc_8h.html#a57ca5ed37882eb917736f845d3cdb8ee">  640</a></span>&#160;    <span class="keyword">struct </span>psls_inform_type <a class="code" href="arc_8h.html#a57ca5ed37882eb917736f845d3cdb8ee">psls_inform</a>;</div>
 <div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160; </div>
 <div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160; </div>
 <div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;};</div>
@@ -391,8 +388,10 @@ $(function() {
 <div class="line"><a name="l01334"></a><span class="lineno"> 1334</span>&#160;} <span class="comment">/* extern &quot;C&quot; */</span></div>
 <div class="line"><a name="l01335"></a><span class="lineno"> 1335</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
+<div class="ttc" id="aarc_8h_html_a57ca5ed37882eb917736f845d3cdb8ee"><div class="ttname"><a href="arc_8h.html#a57ca5ed37882eb917736f845d3cdb8ee">arc_inform_type::psls_inform</a></div><div class="ttdeci">struct psls_inform_type psls_inform</div><div class="ttdoc">inform parameters for DPS struct dps_inform_type dps_inform;</div><div class="ttdef"><b>Definition:</b> arc.h:640</div></div>
 <div class="ttc" id="aarc_8h_html_aa8b73dcc65ae7dc7b3331980f77c5fb4"><div class="ttname"><a href="arc_8h.html#aa8b73dcc65ae7dc7b3331980f77c5fb4">arc_control_type::initial_weight</a></div><div class="ttdeci">real_wp_ initial_weight</div><div class="ttdoc">Initial value for the regularisation weight (-ve =&gt; 1/||g_0||)</div><div class="ttdef"><b>Definition:</b> arc.h:380</div></div>
 <div class="ttc" id="aarc_8h_html_acd459eb95ff0f2d74e9cc3931d8e5469"><div class="ttname"><a href="arc_8h.html#acd459eb95ff0f2d74e9cc3931d8e5469">arc_inform_type::g_eval</a></div><div class="ttdeci">int g_eval</div><div class="ttdoc">the total number of evaluations of the gradient of the objection functio</div><div class="ttdef"><b>Definition:</b> arc.h:578</div></div>
+<div class="ttc" id="aarc_8h_html_ac872f3f7f159cedfac4d6898d51842a3"><div class="ttname"><a href="arc_8h.html#ac872f3f7f159cedfac4d6898d51842a3">arc_control_type::glrt_control</a></div><div class="ttdeci">struct glrt_control_type glrt_control</div><div class="ttdoc">control parameters for GLRT</div><div class="ttdef"><b>Definition:</b> arc.h:480</div></div>
 <div class="ttc" id="aarc_8h_html_aa451859552980839fa9fe17df018c042"><div class="ttname"><a href="arc_8h.html#aa451859552980839fa9fe17df018c042">arc_control_type::renormalize_weight</a></div><div class="ttdeci">bool renormalize_weight</div><div class="ttdoc">should the weight be renormalized to account for a change in preconditioner?</div><div class="ttdef"><b>Definition:</b> arc.h:452</div></div>
 <div class="ttc" id="aarc_8h_html_a481b6aeef2f3d9a0078665db1e512c85"><div class="ttname"><a href="arc_8h.html#a481b6aeef2f3d9a0078665db1e512c85">arc_control_type::weight_decrease_min</a></div><div class="ttdeci">real_wp_ weight_decrease_min</div><div class="ttdoc">on very successful iterations, the regularization weight will be reduced by the factor ....</div><div class="ttdef"><b>Definition:</b> arc.h:418</div></div>
 <div class="ttc" id="aarc_8h_html_aa952762f20eddedff0728c99ef8795b9"><div class="ttname"><a href="arc_8h.html#aa952762f20eddedff0728c99ef8795b9">arc_solve_with_mat</a></div><div class="ttdeci">void arc_solve_with_mat(void **data, void *userdata, int *status, int n, real_wp_ x[], real_wp_ g[], int ne, int(*eval_f)(int, const real_wp_[], real_wp_ *, const void *), int(*eval_g)(int, const real_wp_[], real_wp_[], const void *), int(*eval_h)(int, int, const real_wp_[], real_wp_[], const void *), int(*eval_prec)(int, const real_wp_[], real_wp_[], const real_wp_[], const void *))</div></div>
@@ -425,6 +424,7 @@ $(function() {
 <div class="ttc" id="aarc_8h_html_ad1eb586a01b707b822210edec1495481"><div class="ttname"><a href="arc_8h.html#ad1eb586a01b707b822210edec1495481">arc_read_specfile</a></div><div class="ttdeci">void arc_read_specfile(struct arc_control_type *control, const char specfile[])</div></div>
 <div class="ttc" id="aarc_8h_html_a6af4c9666b9342fa75b665bfb8cef524"><div class="ttname"><a href="arc_8h.html#a6af4c9666b9342fa75b665bfb8cef524">arc_control_type::eta_too_successful</a></div><div class="ttdeci">real_wp_ eta_too_successful</div><div class="ttdoc">see eta_successful</div><div class="ttdef"><b>Definition:</b> arc.h:409</div></div>
 <div class="ttc" id="aarc_8h_html_a9e67af1ad36a37036832168539ef2bc8"><div class="ttname"><a href="arc_8h.html#a9e67af1ad36a37036832168539ef2bc8">arc_control_type::quadratic_ratio_test</a></div><div class="ttdeci">bool quadratic_ratio_test</div><div class="ttdoc">should the test for acceptance involve the quadratic model or the cubic?</div><div class="ttdef"><b>Definition:</b> arc.h:456</div></div>
+<div class="ttc" id="aarc_8h_html_aa5a47a840c1f9680ac8b9e4db3eb9e88"><div class="ttname"><a href="arc_8h.html#aa5a47a840c1f9680ac8b9e4db3eb9e88">arc_inform_type::glrt_inform</a></div><div class="ttdeci">struct glrt_inform_type glrt_inform</div><div class="ttdoc">inform parameters for GLRT</div><div class="ttdef"><b>Definition:</b> arc.h:632</div></div>
 <div class="ttc" id="aarc_8h_html_a4121482e6db477eee55cc2b50bc52835"><div class="ttname"><a href="arc_8h.html#a4121482e6db477eee55cc2b50bc52835">arc_import</a></div><div class="ttdeci">void arc_import(struct arc_control_type *control, void **data, int *status, int n, const char H_type[], int ne, const int H_row[], const int H_col[], const int H_ptr[])</div></div>
 <div class="ttc" id="aarc_8h_html_a3fc6359d77a53a63d57ea600b51eac13"><div class="ttname"><a href="arc_8h.html#a3fc6359d77a53a63d57ea600b51eac13">arc_control_type::alive_unit</a></div><div class="ttdeci">int alive_unit</div><div class="ttdoc">removal of the file alive_file from unit alive_unit terminates execution</div><div class="ttdef"><b>Definition:</b> arc.h:273</div></div>
 <div class="ttc" id="aarc_8h_html_a97dadabf3b7bdf921c4dcd1f43129f05"><div class="ttname"><a href="arc_8h.html#a97dadabf3b7bdf921c4dcd1f43129f05">arc_inform_type::factorization_max</a></div><div class="ttdeci">int factorization_max</div><div class="ttdoc">the maximum number of factorizations in a sub-problem solve</div><div class="ttdef"><b>Definition:</b> arc.h:590</div></div>
@@ -459,7 +459,9 @@ $(function() {
 <div class="ttc" id="aarc_8h_html_ab7eecce4b013c87e490b8984c74c59c3"><div class="ttname"><a href="arc_8h.html#ab7eecce4b013c87e490b8984c74c59c3">arc_time_type::factorize</a></div><div class="ttdeci">real_sp_ factorize</div><div class="ttdoc">the CPU time spent factorizing the required matrices</div><div class="ttdef"><b>Definition:</b> arc.h:520</div></div>
 <div class="ttc" id="aarc_8h_html_af569df4b8828eb7ac8a05ef1030d1358"><div class="ttname"><a href="arc_8h.html#af569df4b8828eb7ac8a05ef1030d1358">arc_time_type::clock_solve</a></div><div class="ttdeci">real_wp_ clock_solve</div><div class="ttdoc">the clock time spent computing the search direction</div><div class="ttdef"><b>Definition:</b> arc.h:544</div></div>
 <div class="ttc" id="aarc_8h_html_a11614f44ef4d939bdd984953346a7572"><div class="ttname"><a href="arc_8h.html#a11614f44ef4d939bdd984953346a7572">arc_control_type::error</a></div><div class="ttdeci">int error</div><div class="ttdoc">error and warning diagnostics occur on stream error</div><div class="ttdef"><b>Definition:</b> arc.h:242</div></div>
+<div class="ttc" id="aarc_8h_html_a68497e7bbd1695ac9b830fc8fe594d60"><div class="ttname"><a href="arc_8h.html#a68497e7bbd1695ac9b830fc8fe594d60">arc_inform_type::rqs_inform</a></div><div class="ttdeci">struct rqs_inform_type rqs_inform</div><div class="ttdoc">inform parameters for RQS</div><div class="ttdef"><b>Definition:</b> arc.h:628</div></div>
 <div class="ttc" id="aarc_8h_html_a9a3d9960a04602d2a18009c82ae2124e"><div class="ttname"><a href="arc_8h.html#a9a3d9960a04602d2a18009c82ae2124e">arc_control_type::stop_print</a></div><div class="ttdeci">int stop_print</div><div class="ttdoc">any printing will stop on this iteration</div><div class="ttdef"><b>Definition:</b> arc.h:261</div></div>
+<div class="ttc" id="aarc_8h_html_a6fe2b1a82e177fbd1a39d9de9652a2c5"><div class="ttname"><a href="arc_8h.html#a6fe2b1a82e177fbd1a39d9de9652a2c5">arc_control_type::psls_control</a></div><div class="ttdeci">struct psls_control_type psls_control</div><div class="ttdoc">control parameters for DPS struct dps_control_type dps_control;</div><div class="ttdef"><b>Definition:</b> arc.h:488</div></div>
 <div class="ttc" id="aarc_8h_html_a044b125f7d2b5409dde4253030798367"><div class="ttname"><a href="arc_8h.html#a044b125f7d2b5409dde4253030798367">arc_control_type::minimum_weight</a></div><div class="ttdeci">real_wp_ minimum_weight</div><div class="ttdoc">minimum permitted regularisation weight</div><div class="ttdef"><b>Definition:</b> arc.h:384</div></div>
 <div class="ttc" id="aarc_8h_html_ad37cf7ad93af3413bc01b6515aad692a"><div class="ttname"><a href="arc_8h.html#ad37cf7ad93af3413bc01b6515aad692a">arc_inform_type::cg_iter</a></div><div class="ttdeci">int cg_iter</div><div class="ttdoc">the total number of CG iterations performed</div><div class="ttdef"><b>Definition:</b> arc.h:570</div></div>
 <div class="ttc" id="aarc_8h_html_a957fc1f4f26eeef3b0951791ff972e8d"><div class="ttname"><a href="arc_8h.html#a957fc1f4f26eeef3b0951791ff972e8d">arc_control_type::space_critical</a></div><div class="ttdeci">bool space_critical</div><div class="ttdoc">if .space_critical true, every effort will be made to use as little space as possible....</div><div class="ttdef"><b>Definition:</b> arc.h:461</div></div>
@@ -469,6 +471,7 @@ $(function() {
 <div class="ttc" id="aarc_8h_html_structarc__control__type"><div class="ttname"><a href="arc_8h.html#structarc__control__type">arc_control_type</a></div><div class="ttdef"><b>Definition:</b> arc.h:234</div></div>
 <div class="ttc" id="aarc_8h_html_a0c3b390c67037ef2fe8b4cf29e079e4e"><div class="ttname"><a href="arc_8h.html#a0c3b390c67037ef2fe8b4cf29e079e4e">arc_time_type::clock_preprocess</a></div><div class="ttdeci">real_wp_ clock_preprocess</div><div class="ttdoc">the clock time spent preprocessing the problem</div><div class="ttdef"><b>Definition:</b> arc.h:532</div></div>
 <div class="ttc" id="aarc_8h_html_adb095f545799aab1d69fcdca912d4afd"><div class="ttname"><a href="arc_8h.html#adb095f545799aab1d69fcdca912d4afd">arc_control_type::icfs_vectors</a></div><div class="ttdeci">int icfs_vectors</div><div class="ttdoc">number of vectors used by the Lin-More' incomplete factorization matrix P if required</div><div class="ttdef"><b>Definition:</b> arc.h:340</div></div>
+<div class="ttc" id="aarc_8h_html_a7339f172b9757ed89a7595a29c4bca2b"><div class="ttname"><a href="arc_8h.html#a7339f172b9757ed89a7595a29c4bca2b">arc_control_type::rqs_control</a></div><div class="ttdeci">struct rqs_control_type rqs_control</div><div class="ttdoc">control parameters for RQS</div><div class="ttdef"><b>Definition:</b> arc.h:476</div></div>
 <div class="ttc" id="aarc_8h_html_aab6f168571c2073e01e240524b8a3da0"><div class="ttname"><a href="arc_8h.html#aab6f168571c2073e01e240524b8a3da0">arc_inform_type::iter</a></div><div class="ttdeci">int iter</div><div class="ttdoc">the total number of iterations performed</div><div class="ttdef"><b>Definition:</b> arc.h:566</div></div>
 <div class="ttc" id="aarc_8h_html_a8c10db7cf72a4e3e52c9601007f7b1de"><div class="ttname"><a href="arc_8h.html#a8c10db7cf72a4e3e52c9601007f7b1de">arc_control_type::subproblem_direct</a></div><div class="ttdeci">bool subproblem_direct</div><div class="ttdoc">use a direct (factorization) or (preconditioned) iterative method to find the search direction</div><div class="ttdef"><b>Definition:</b> arc.h:447</div></div>
 <div class="ttc" id="aarc_8h_html_aeb89f1dc942cea0814ee1e8d645467d3"><div class="ttname"><a href="arc_8h.html#aeb89f1dc942cea0814ee1e8d645467d3">arc_control_type::stop_g_relative</a></div><div class="ttdeci">real_wp_ stop_g_relative</div><div class="ttdoc">see stop_g_absolute</div><div class="ttdef"><b>Definition:</b> arc.h:374</div></div>

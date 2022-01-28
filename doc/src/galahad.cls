@@ -1030,6 +1030,7 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\galerrrepeated}{-73}
 \newcommand{\galerreval}{-78}
 \newcommand{\galerroptional}{-79}
+\newcommand{\galerrmitwentyeight}{-80}
 \newcommand{\galerralive}{-82}
 
 \endinput

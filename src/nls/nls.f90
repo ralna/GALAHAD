@@ -801,7 +801,6 @@
      control%subproblem_control%model = gauss_newton_model
      control%subproblem_control%maxit = 50
      control%subproblem_control%print_obj = .TRUE.
-
      RETURN
 
 !  End of subroutine NLS_initialize
@@ -6808,7 +6807,7 @@
 !  use the factors obtained from PSLS
 
            IF ( data%regularization_type > diagonal_jtj_regularization ) THEN
-             CALL PSLS_solve( data%V, data%PSLS_data,                          &
+             CALL PSLS_apply( data%V, data%PSLS_data,                          &
                               data%control%PSLS_control, inform%PSLS_inform )
 
 !  use the column scaling factors from J

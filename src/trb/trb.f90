@@ -3105,7 +3105,7 @@
 !  use the factors obtained from PSLS
 
              IF ( data%nprec > 0 ) THEN
-               CALL PSLS_solve( data%V, data%PSLS_data,                        &
+               CALL PSLS_apply( data%V, data%PSLS_data,                        &
                                 data%control%PSLS_control, inform%PSLS_inform )
 
 !  compute the precoditioned gradient BFGS * g using Nocedal's LBFGS formula
@@ -4017,7 +4017,7 @@
            DO i = 1, inform%n_free
              data%HP( data%INDEX_nz_p( i ) ) = data%WK( i )
            END DO
-           CALL PSLS_solve( data%HP, data%PSLS_data,                           &
+           CALL PSLS_apply( data%HP, data%PSLS_data,                           &
                             data%control%PSLS_control, inform%PSLS_inform )
            CALL CPU_time( data%time_now ) ; CALL CLOCK_time( data%clock_now )
 !          data%tls = data%tls + data%time_now - data%time_record

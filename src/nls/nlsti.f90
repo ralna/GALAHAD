@@ -11,6 +11,7 @@
    INTEGER :: n, m, J_ne, H_ne, P_ne
    INTEGER :: data_storage_type, model, status, eval_status
    LOGICAL :: transpose
+   INTEGER, DIMENSION( 0 ) :: null
    REAL ( KIND = wp ), PARAMETER :: p = 1.0_wp
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, G, C, Y, W, U, V
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: J_row, J_col, J_ptr
@@ -53,44 +54,44 @@
    DO data_storage_type = 1, 5
      CALL NLS_initialize( data, control, inform )
      control%jacobian_available = 2 ; control%hessian_available = 2
-!    control%print_level = 1
+     control%print_level = 1
      control%model = 6
      X = 1.5_wp  ! start from 1.5
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = ' C'
        CALL NLS_import( control, data, status, n, m,                           &
-                        'coordinate', J_ne, J_row, J_col, J_ptr,               &
-                        'coordinate', H_ne, H_row, H_col, H_ptr,               &
-                        'sparse_by_columns', P_ne, P_row, P_col, P_ptr,        &
-                         W = W )
+                        'coordinate', J_ne, J_row, J_col, null,                &
+                        'coordinate', H_ne, H_row, H_col, null,                &
+                        'sparse_by_columns', P_ne, P_row, null, P_ptr,         &
+                        W = W )
        CALL NLS_solve_with_mat( data, userdata, status, X, C, G,               &
                                 RES, JAC, HESS, RHESSPRODS )
      CASE ( 2 ) ! sparse by rows  
        st = ' R'
        CALL NLS_import( control, data, status, n, m,                           &
-                        'sparse_by_rows', J_ne, J_row, J_col, J_ptr,           &
-                        'sparse_by_rows', H_ne, H_row, H_col, H_ptr,           &
-                        'sparse_by_columns', P_ne, P_row, P_col, P_ptr,        &
-                         W = W )
+                        'sparse_by_rows', J_ne, null, J_col, J_ptr,            &
+                        'sparse_by_rows', H_ne, null, H_col, H_ptr,            &
+                        'sparse_by_columns', P_ne, P_row, null, P_ptr,         &
+                        W = W )
        CALL NLS_solve_with_mat( data, userdata, status, X, C, G,               &
                                 RES, JAC, HESS, RHESSPRODS )
      CASE ( 3 ) ! dense
        st = ' D'
        CALL NLS_import( control, data, status, n, m,                           &
-                        'dense', J_ne, J_row, J_col, J_ptr,                    &
-                        'dense', H_ne, H_row, H_col, H_ptr,                    &
-                        'dense_by_columns', P_ne, P_row, P_col, P_ptr,         &
-                         W = W )
+                        'dense', J_ne, null, null, null,                       &
+                        'dense', H_ne, null, null, null,                       &
+                        'dense_by_columns', P_ne, null, null, null,            &
+                        W = W )
        CALL NLS_solve_with_mat( data, userdata, status, X, C, G,               &
                                 RES, JAC_dense, HESS_dense, RHESSPRODS_dense  )
      CASE ( 4 ) ! diagonal
        st = ' I'
        CALL NLS_import( control, data, status, n, m,                           &
-                        'sparse_by_rows', J_ne, J_row, J_col, J_ptr,           &
-                        'diagonal', H_ne, H_row, H_col, H_ptr,                 &
-                        'sparse_by_columns', P_ne, P_row, P_col, P_ptr,        &
-                         W = W )
+                        'sparse_by_rows', J_ne, null, J_col, J_ptr,            &
+                        'diagonal', H_ne, null, null, null,                    &
+                        'sparse_by_columns', P_ne, P_row, null, P_ptr,         &
+                        W = W )
        CALL NLS_solve_with_mat( data, userdata, status, X, C, G,               &
                                 RES, JAC, HESS_diag, RHESSPRODS )
      CASE ( 5 ) ! access by products
@@ -98,9 +99,9 @@
        control%jacobian_available = 1 ; control%hessian_available = 1
 !       control%print_level = 5 ; control%maxit = 1
        CALL NLS_import( control, data, status, n, m,                           &
-                        'absent', J_ne, J_row, J_col, J_ptr,                   &
-                        'absent', H_ne, H_row, H_col, H_ptr,                   &
-                        'sparse_by_columns', P_ne, P_row, P_col, P_ptr,        &
+                        'absent', J_ne, null, null, null,                      &
+                        'absent', H_ne, null, null, null,                      &
+                        'sparse_by_columns', P_ne, P_row, null, P_ptr,         &
 !                       'absent', P_ne, P_row, P_col, P_ptr,                   &
                          W = W )
        CALL NLS_solve_without_mat( data, userdata, status, X, C, G,            &
@@ -113,6 +114,7 @@
      ELSE
        WRITE( 6, "( A2, ': NLS_solve exit status = ', I0 ) " ) st, inform%status
      END IF
+stop
 !    WRITE( 6, "( ' X ', 3ES12.5 )" ) X
 !    WRITE( 6, "( ' G ', 3ES12.5 )" ) G
      CALL NLS_terminate( data, control, inform )  ! delete internal workspace

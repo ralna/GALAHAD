@@ -132,6 +132,9 @@
   \li \link sbls \endlink - symetric block linear systems
       \latexonly \href{sbls_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/sbls/sbls.html">(link)</a> \endhtmlonly
+  \li \link psls \endlink - preconditioners for symetric linear systems
+      \latexonly \href{psls_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/psls/psls.html">(link)</a> \endhtmlonly
 
   C interfaces to all of these are underway, and each will be released 
   once it is ready. If \b you have a particular need, please let us know,

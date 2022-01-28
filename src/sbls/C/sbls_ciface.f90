@@ -14,7 +14,7 @@
   MODULE GALAHAD_SBLS_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_SBLS_double, ONLY: &
+    USE GALAHAD_SBLS_double, ONLY:                                             &
         f_sbls_control_type     => SBLS_control_type,                          &
         f_sbls_time_type        => SBLS_time_type,                             &
         f_sbls_inform_type      => SBLS_inform_type,                           &
@@ -28,21 +28,21 @@
         f_sbls_information      => SBLS_information,                           &
         f_sbls_terminate        => SBLS_terminate
 
-    USE GALAHAD_SLS_double_ciface, ONLY: &
-        sls_inform_type, &
-        sls_control_type, &
-        copy_sls_inform_in => copy_inform_in, &
-        copy_sls_inform_out => copy_inform_out, &
-        copy_sls_control_in => copy_control_in, &
+    USE GALAHAD_SLS_double_ciface, ONLY:                                       &
+        sls_inform_type,                                                       &
+        sls_control_type,                                                      &
+        copy_sls_inform_in   => copy_inform_in,                                &
+        copy_sls_inform_out  => copy_inform_out,                               &
+        copy_sls_control_in  => copy_control_in,                               &
         copy_sls_control_out => copy_control_out
 
-!!$    USE GALAHAD_ULS_double_ciface, ONLY: &
-!!$        uls_inform_type, &
-!!$        uls_control_type, &
-!!$        copy_uls_inform_in => copy_inform_in, &
-!!$        copy_uls_inform_out => copy_inform_out, &
-!!$        copy_uls_control_in => copy_control_in, &
-!!$        copy_uls_control_out => copy_control_out
+    USE GALAHAD_ULS_double_ciface, ONLY:                                       &
+        uls_inform_type,                                                       &
+        uls_control_type,                                                      &
+        copy_uls_inform_in   => copy_inform_in,                                &
+        copy_uls_inform_out  => copy_inform_out,                               &
+        copy_uls_control_in  => copy_control_in,                               &
+        copy_uls_control_out => copy_control_out
 
     IMPLICIT NONE
 
@@ -98,7 +98,7 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: unsymmetric_linear_solver
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
       TYPE ( sls_control_type ) :: sls_control
-!      TYPE ( uls_control_type ) :: uls_control
+      TYPE ( uls_control_type ) :: uls_control
     END TYPE sbls_control_type
 
     TYPE, BIND( C ) :: sbls_time_type
@@ -139,7 +139,7 @@
       LOGICAL ( KIND = C_BOOL ) :: alternative
       TYPE ( sbls_time_type ) :: time
       TYPE ( sls_inform_type ) :: sls_inform
-!      TYPE ( uls_inform_type ) :: uls_inform
+      TYPE ( uls_inform_type ) :: uls_inform
     END TYPE sbls_inform_type
 
 !----------------------
@@ -201,7 +201,7 @@
 
     ! Derived types
     CALL copy_sls_control_in( ccontrol%sls_control, fcontrol%sls_control )
-!   CALL copy_uls_control_in( ccontrol%uls_control, fcontrol%uls_control )
+    CALL copy_uls_control_in( ccontrol%uls_control, fcontrol%uls_control )
 
     ! Strings
     DO i = 1, LEN( fcontrol%symmetric_linear_solver )
@@ -280,7 +280,7 @@
 
     ! Derived types
     CALL copy_sls_control_out( fcontrol%sls_control, ccontrol%sls_control )
-!    CALL copy_uls_control_out( fcontrol%uls_control, ccontrol%uls_control )
+    CALL copy_uls_control_out( fcontrol%uls_control, ccontrol%uls_control )
 
     ! Strings
     l = LEN( fcontrol%symmetric_linear_solver )
@@ -387,7 +387,7 @@
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
     CALL copy_sls_inform_in( cinform%sls_inform, finform%sls_inform )
-!   CALL copy_uls_inform_in( cinform%uls_inform, finform%uls_inform )
+    CALL copy_uls_inform_in( cinform%uls_inform, finform%uls_inform )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -437,7 +437,7 @@
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
     CALL copy_sls_inform_out( finform%sls_inform, cinform%sls_inform )
-!   CALL copy_uls_inform_out( finform%uls_inform, cinform%uls_inform )
+    CALL copy_uls_inform_out( finform%uls_inform, cinform%uls_inform )
 
     ! Strings
     l = LEN( finform%bad_alloc )

@@ -87,7 +87,7 @@ int main(void) {
         //control.print_level = 1;
         control.jacobian_available = 2; 
         control.hessian_available = 2;
-        control.model = 6;
+        control.model = 6; // tensor Gauss-Newton
         double x[] = {1.5,1.5}; // starting point
         double W[] = {1.0, 1.0, 1.0}; // weights
 

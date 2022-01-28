@@ -73,8 +73,6 @@ given in the following table.
 (ignore next paragraph - doxygen bug!)
 \endmanonly
 
-
-
 <table>
 <caption>External solver characteristics</caption>
 <tr><th> solver <th> factorization <th> indefinite \f$A\f$
@@ -1224,7 +1222,7 @@ void sls_information( void **data,
                       int *status );
 
 /*!<
-  Provides output information
+  Provide output information
 
   @param[in,out] data  holds private internal data
 

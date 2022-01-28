@@ -1826,7 +1826,7 @@
              IF ( inform%scu_status <= 0 ) EXIT
 !write(6,*) ' vec', data%VECTOR( : nlp%n )
              IF ( data%nprec > 0 ) THEN
-               CALL PSLS_solve( data%VECTOR( : nlp%n ), data%PSLS_data,        &
+               CALL PSLS_apply( data%VECTOR( : nlp%n ), data%PSLS_data,        &
                                 data%control%PSLS_control,                     &
                                 inform%PSLS_inform )
              END IF
@@ -1871,7 +1871,7 @@
 !write(6,*) ' ----------- n subspace ',  data%n_subspace
              IF ( data%n_subspace == 1 ) THEN
                IF ( data%nprec > 0 ) THEN
-                 CALL PSLS_solve( data%V( : nlp%n ), data%PSLS_data,           &
+                 CALL PSLS_apply( data%V( : nlp%n ), data%PSLS_data,           &
                                   data%control%PSLS_control,                   &
                                   inform%PSLS_inform )
                END IF
@@ -1889,7 +1889,7 @@
                  IF ( inform%scu_status <= 0 ) EXIT
 !write(6,*) ' vec', data%VECTOR( : nlp%n )
                  IF ( data%nprec > 0 ) THEN
-                   CALL PSLS_solve( data%VECTOR( : nlp%n ), data%PSLS_data,    &
+                   CALL PSLS_apply( data%VECTOR( : nlp%n ), data%PSLS_data,    &
                                     data%control%PSLS_control,                 &
                                     inform%PSLS_inform )
                  END IF

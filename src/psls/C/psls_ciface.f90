@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-14 AT 14:24 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-25 AT 09:45 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  P S L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -14,41 +14,36 @@
   MODULE GALAHAD_PSLS_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_PSLS_double, ONLY: &
-        f_psls_control_type => PSLS_control_type, &
-        f_psls_time_type => PSLS_time_type, &
-        f_psls_inform_type => PSLS_inform_type, &
-        f_psls_full_data_type => PSLS_full_data_type, &
-        f_psls_initialize => PSLS_initialize, &
-        f_psls_read_specfile => PSLS_read_specfile, &
-        f_psls_import => PSLS_import, &
-        f_psls_reset_control => PSLS_reset_control, &
-        f_psls_information => PSLS_information, &
-        f_psls_terminate => PSLS_terminate
+    USE GALAHAD_PSLS_double, ONLY:                                             &
+        f_psls_control_type          => PSLS_control_type,                     &
+        f_psls_time_type             => PSLS_time_type,                        &
+        f_psls_inform_type           => PSLS_inform_type,                      &
+        f_psls_full_data_type        => PSLS_full_data_type,                   &
+        f_psls_initialize            => PSLS_initialize,                       &
+        f_psls_read_specfile         => PSLS_read_specfile,                    &
+        f_psls_import                => PSLS_import,                           &
+        f_psls_form_preconditioner   => PSLS_form_preconditioner,              &
+        f_psls_update_preconditioner => PSLS_update_preconditioner,            &
+        f_psls_apply_preconditioner  => PSLS_apply_preconditioner,             &
+        f_psls_reset_control         => PSLS_reset_control,                    &
+        f_psls_information           => PSLS_information,                      &
+        f_psls_terminate             => PSLS_terminate
 
-    USE GALAHAD_SLS_double_ciface, ONLY: &
-        sls_inform_type, &
-        sls_control_type, &
-        copy_sls_inform_in => copy_inform_in, &
-        copy_sls_inform_out => copy_inform_out, &
-        copy_sls_control_in => copy_control_in, &
+    USE GALAHAD_SLS_double_ciface, ONLY:                                       &
+        sls_inform_type,                                                       &
+        sls_control_type,                                                      &
+        copy_sls_inform_in   => copy_inform_in,                                &
+        copy_sls_inform_out  => copy_inform_out,                               &
+        copy_sls_control_in  => copy_control_in,                               &
         copy_sls_control_out => copy_control_out
 
-    USE GALAHAD_MI28_double_ciface, ONLY: &
-        mi28_inform_type, &
-        mi28_control_type, &
-        copy_mi28_inform_in => copy_inform_in, &
-        copy_mi28_inform_out => copy_inform_out, &
-        copy_mi28_control_in => copy_control_in, &
-        copy_mi28_control_out => copy_control_out
-
-    USE GALAHAD_MI28_double_ciface, ONLY: &
-        mi28_inform_type, &
-        mi28_control_type, &
-        copy_mi28_inform_in => copy_inform_in, &
-        copy_mi28_inform_out => copy_inform_out, &
-        copy_mi28_control_in => copy_control_in, &
-        copy_mi28_control_out => copy_control_out
+    USE HSL_MI28_double_ciface, ONLY:                                          &
+        mi28_info,                                                             &
+        mi28_control,                                                          &
+        copy_mi28_control_in  => copy_control_in,                              &
+!       copy_mi28_control_out => copy_control_out,                             &
+!       copy_mi28_inform_in   => copy_inform_in,                               &
+        copy_mi28_info_out    => copy_info_out
 
     IMPLICIT NONE
 
@@ -85,7 +80,7 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: definite_linear_solver
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
       TYPE ( sls_control_type ) :: sls_control
-      TYPE ( mi28_control_type ) :: mi28_control
+      TYPE ( mi28_control ) :: mi28_control
     END TYPE psls_control_type
 
     TYPE, BIND( C ) :: psls_time_type
@@ -125,11 +120,11 @@
       REAL ( KIND = wp ) :: fill_in_ratio
       REAL ( KIND = wp ) :: norm_residual
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
-      INTEGER ( KIND = C_INT ) :: mc61_info
-      REAL ( KIND = wp ) :: mc61_rinfo
+      INTEGER ( KIND = C_INT ), DIMENSION( 10 ) :: mc61_info
+      REAL ( KIND = wp ), DIMENSION( 15 ) :: mc61_rinfo
       TYPE ( psls_time_type ) :: time
       TYPE ( sls_inform_type ) :: sls_inform
-      TYPE ( mi28_inform_type ) :: mi28_inform
+      TYPE ( mi28_info ) :: mi28_info
     END TYPE psls_inform_type
 
 !----------------------
@@ -143,8 +138,11 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
     TYPE ( psls_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_psls_control_type ), INTENT( OUT ) :: fcontrol
-    LOGICAL, optional, INTENT( OUT ) :: f_indexing
+    LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
+
+    ! local variables
     INTEGER :: i
+    LOGICAL :: f_indexing_mi28
     
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -174,12 +172,14 @@
 
     ! Derived types
     CALL copy_sls_control_in( ccontrol%sls_control, fcontrol%sls_control )
-    CALL copy_mi28_control_in( ccontrol%mi28_control, fcontrol%mi28_control )
+    CALL copy_mi28_control_in( ccontrol%mi28_control, fcontrol%mi28_control,   &
+                               f_indexing_mi28 )
 
     ! Strings
     DO i = 1, LEN( fcontrol%definite_linear_solver )
       IF ( ccontrol%definite_linear_solver( i ) == C_NULL_CHAR ) EXIT
-      fcontrol%definite_linear_solver( i : i ) = ccontrol%definite_linear_solver( i )
+      fcontrol%definite_linear_solver( i : i )                                 &
+        = ccontrol%definite_linear_solver( i )
     END DO
     DO i = 1, LEN( fcontrol%prefix )
       IF ( ccontrol%prefix( i ) == C_NULL_CHAR ) EXIT
@@ -225,12 +225,13 @@
 
     ! Derived types
     CALL copy_sls_control_out( fcontrol%sls_control, ccontrol%sls_control )
-    CALL copy_mi28_control_out( fcontrol%mi28_control, ccontrol%mi28_control )
+!   CALL copy_mi28_control_out( fcontrol%mi28_control, ccontrol%mi28_control )
 
     ! Strings
     l = LEN( fcontrol%definite_linear_solver )
     DO i = 1, l
-      ccontrol%definite_linear_solver( i ) = fcontrol%definite_linear_solver( i : i )
+      ccontrol%definite_linear_solver( i )                                     &
+        = fcontrol%definite_linear_solver( i : i )
     END DO
     ccontrol%definite_linear_solver( l + 1 ) = C_NULL_CHAR
     l = LEN( fcontrol%prefix )
@@ -326,7 +327,7 @@
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
     CALL copy_sls_inform_in( cinform%sls_inform, finform%sls_inform )
-    CALL copy_mi28_inform_in( cinform%mi28_inform, finform%mi28_inform )
+!   CALL copy_mi28_inform_in( cinform%mi28_inform, finform%mi28_inform )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -375,7 +376,7 @@
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
     CALL copy_sls_inform_out( finform%sls_inform, cinform%sls_inform )
-    CALL copy_mi28_inform_out( finform%mi28_inform, cinform%mi28_inform )
+    CALL copy_mi28_info_out( finform%mi28_info, cinform%mi28_info )
 
     ! Strings
     l = LEN( finform%bad_alloc )
@@ -393,7 +394,7 @@
 !  C interface to fortran psls_initialize
 !  -------------------------------------
 
-  SUBROUTINE psls_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE psls_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_PSLS_double_ciface
   IMPLICIT NONE
 
@@ -408,7 +409,7 @@
   TYPE ( f_psls_full_data_type ), POINTER :: fdata
   TYPE ( f_psls_control_type ) :: fcontrol
   TYPE ( f_psls_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -424,9 +425,10 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
+
   RETURN
 
   END SUBROUTINE psls_initialize
@@ -461,11 +463,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_psls_read_specfile( fcontrol, device )
@@ -481,11 +483,12 @@
 
   END SUBROUTINE psls_read_specfile
 
-!  ---------------------------------
-!  C interface to fortran psls_inport
-!  ---------------------------------
+!  ----------------------------------
+!  C interface to fortran psls_import
+!  ----------------------------------
 
-  SUBROUTINE psls_import( ccontrol, cdata, status ) BIND( C )
+  SUBROUTINE psls_import( ccontrol, cdata, status, n,                          &
+                          ctype, ne, row, col, ptr ) BIND( C )
   USE GALAHAD_PSLS_double_ciface
   IMPLICIT NONE
 
@@ -494,11 +497,18 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( psls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, ne
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: row
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ne ), OPTIONAL :: col
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: ptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: ctype
 
 !  local variables
 
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( ctype ) ) :: ftype
   TYPE ( f_psls_control_type ) :: fcontrol
   TYPE ( f_psls_full_data_type ), POINTER :: fdata
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: row_find, col_find, ptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -509,6 +519,10 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
+!  convert C string to Fortran string
+
+  ftype = cstr_to_fchar( ctype )
+
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
@@ -516,12 +530,30 @@
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
+    IF ( PRESENT( row ) ) THEN
+      ALLOCATE( row_find( ne ) )
+      row_find = row + 1
+    END IF
+    IF ( PRESENT( col ) ) THEN
+      ALLOCATE( col_find( ne ) )
+      col_find = col + 1
+    END IF
+    IF ( PRESENT( ptr ) ) THEN
+      ALLOCATE( ptr_find( n + 1 ) )
+      ptr_find = ptr + 1
+    END IF
 
 !  import the problem data into the required PSLS structure
 
-    CALL f_psls_import( fcontrol, fdata, status )
+    CALL f_psls_import( fcontrol, fdata, status, n,                            &
+                        ftype, ne, row_find, col_find, ptr_find )
+
+    IF ( ALLOCATED( row_find ) ) DEALLOCATE( row_find )
+    IF ( ALLOCATED( col_find ) ) DEALLOCATE( col_find )
+    IF ( ALLOCATED( ptr_find ) ) DEALLOCATE( ptr_find )
   ELSE
-    CALL f_psls_import( fcontrol, fdata, status )
+    CALL f_psls_import( fcontrol, fdata, status, n,                            &
+                        ftype, ne, row, col, ptr )
   END IF
 
 !  copy control out
@@ -531,9 +563,9 @@
 
   END SUBROUTINE psls_import
 
-!  ---------------------------------------
-!  C interface to fortran psls_reset_control
 !  ----------------------------------------
+!  C interface to fortran psls_reset_control
+!  -----------------------------------------
 
   SUBROUTINE psls_reset_control( ccontrol, cdata, status ) BIND( C )
   USE GALAHAD_PSLS_double_ciface
@@ -570,11 +602,134 @@
 
   END SUBROUTINE psls_reset_control
 
-!  --------------------------------------
-!  C interface to fortran psls_information
-!  --------------------------------------
+!  -----------------------------------------------
+!  C interface to fortran psls_form_preconditioner
+!  -----------------------------------------------
 
-  SUBROUTINE psls_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE psls_form_preconditioner( cdata, status, ne, val ) BIND( C )
+  USE GALAHAD_PSLS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: ne
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ne ) :: val
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_psls_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!   form and factorize the preconditioner
+
+  CALL f_psls_form_preconditioner( fdata, status, val )
+  RETURN
+
+  END SUBROUTINE psls_form_preconditioner
+
+!  ------------------------------------------------------
+!  C interface to fortran psls_form_subset_preconditioner
+!  ------------------------------------------------------
+
+  SUBROUTINE psls_form_subset_preconditioner( cdata, status, ne, val,          &
+                                              n_sub, sub ) BIND( C )
+  USE GALAHAD_PSLS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: ne, n_sub
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ne ) :: val
+  INTEGER, INTENT( IN ), DIMENSION( n_sub ) :: sub
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_psls_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!   form and factorize the subset preconditioner
+
+  CALL f_psls_form_preconditioner( fdata, status, val, SUB = sub )
+  RETURN
+
+  END SUBROUTINE psls_form_subset_preconditioner
+
+!  -----------------------------------------------
+!  C interface to fortran psls_update_preconditioner
+!  -----------------------------------------------
+
+  SUBROUTINE psls_update_preconditioner( cdata, status, n_fix, fix ) BIND( C )
+  USE GALAHAD_PSLS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n_fix
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  INTEGER, INTENT( IN ), DIMENSION( n_fix ) :: fix
+
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_psls_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!   update the preconditioner
+
+  CALL f_psls_update_preconditioner( fdata, status, fix )
+  RETURN
+
+  END SUBROUTINE psls_update_preconditioner
+
+!  ------------------------------------------------
+!  C interface to fortran psls_apply_preconditioner
+!  ------------------------------------------------
+
+  SUBROUTINE psls_apply_preconditioner( cdata, status, n, sol ) BIND( C )
+  USE GALAHAD_PSLS_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: sol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_psls_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!   form and factorize the block matrix
+
+  CALL f_psls_apply_preconditioner( fdata, status, sol )
+  RETURN
+
+  END SUBROUTINE psls_apply_preconditioner
+
+!  ---------------------------------------
+!  C interface to fortran psls_information
+!  ---------------------------------------
+
+  SUBROUTINE psls_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_PSLS_double_ciface
   IMPLICIT NONE
 
@@ -608,7 +763,7 @@
 !  C interface to fortran psls_terminate
 !  ------------------------------------
 
-  SUBROUTINE psls_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE psls_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_PSLS_double_ciface
   IMPLICIT NONE
 
@@ -647,7 +802,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE psls_terminate

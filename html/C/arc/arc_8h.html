@@ -18,15 +18,6 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-   TeX: { Macros: {
-    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
-    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
-    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
-  } }
-});
-</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -90,6 +81,7 @@ $(function() {
 <code>#include &quot;galahad_precision.h&quot;</code><br />
 <code>#include &quot;rqs.h&quot;</code><br />
 <code>#include &quot;glrt.h&quot;</code><br />
+<code>#include &quot;psls.h&quot;</code><br />
 </div>
 <p><a href="arc_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -447,6 +439,25 @@ if .deallocate_error_fatal is true, any array/pointer deallocation error will te
 prefix[31]</td>
 <td class="fielddoc">
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
+<tr><td class="fieldtype">
+<a id="a7339f172b9757ed89a7595a29c4bca2b"></a>struct rqs_control_type</td>
+<td class="fieldname">
+rqs_control</td>
+<td class="fielddoc">
+control parameters for RQS </td></tr>
+<tr><td class="fieldtype">
+<a id="ac872f3f7f159cedfac4d6898d51842a3"></a>struct glrt_control_type</td>
+<td class="fieldname">
+glrt_control</td>
+<td class="fielddoc">
+control parameters for GLRT </td></tr>
+<tr><td class="fieldtype">
+<a id="a6fe2b1a82e177fbd1a39d9de9652a2c5"></a>struct psls_control_type</td>
+<td class="fieldname">
+psls_control</td>
+<td class="fielddoc">
+control parameters for DPS struct dps_control_type dps_control; <p>control parameters for PSLS </p>
+</td></tr>
 </table>
 
 </div>
@@ -653,6 +664,25 @@ the current value of the regularization weight </td></tr>
 time</td>
 <td class="fielddoc">
 timings (see above) </td></tr>
+<tr><td class="fieldtype">
+<a id="a68497e7bbd1695ac9b830fc8fe594d60"></a>struct rqs_inform_type</td>
+<td class="fieldname">
+rqs_inform</td>
+<td class="fielddoc">
+inform parameters for RQS </td></tr>
+<tr><td class="fieldtype">
+<a id="aa5a47a840c1f9680ac8b9e4db3eb9e88"></a>struct glrt_inform_type</td>
+<td class="fieldname">
+glrt_inform</td>
+<td class="fielddoc">
+inform parameters for GLRT </td></tr>
+<tr><td class="fieldtype">
+<a id="a57ca5ed37882eb917736f845d3cdb8ee"></a>struct psls_inform_type</td>
+<td class="fieldname">
+psls_inform</td>
+<td class="fielddoc">
+inform parameters for DPS struct dps_inform_type dps_inform; <p>inform parameters for PSLS </p>
+</td></tr>
 </table>
 
 </div>

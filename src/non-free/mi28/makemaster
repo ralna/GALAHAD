@@ -1,76 +1,37 @@
 #  Main body of the installation makefile for the MI28 packages
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 11 IV 2006
+#  This version: 2022-01-26
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD HSL makefile definitions
 
-#  compiler flags
+include $(GALAHAD)/src/makedefs/hsl_definitions
 
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+#  compilation order
 
-#  names of random libraries
+MI28S = basics metis $(HLGS)(kb07i.o) $(HLGS)(mc61s.o) $(HLGS)(mc77s.o) \
+        $(HLGS)(hsl_zb01i.o) $(HLGS)(hsl_mc68i.o) $(HLGS)(hsl_mc69s.o) \
+        $(HLGS)(mc64s.o) $(HLGS)(hsl_mc64s.o) $(HLGS)(hsl_mi28s.o)
+MI28D = basics metis $(HLGD)(kb07i.o) $(HLGD)(mc61d.o) $(HLGD)(mc77d.o) \
+        $(HLGD)(hsl_zb01i.o) $(HLGD)(hsl_mc68i.o) $(HLGD)(hsl_mc69d.o) \
+        $(HLGD)(mc64d.o) $(HLGD)(hsl_mc64d.o) $(HLGD)(hsl_mi28d.o)
 
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
-
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
-
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
-
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
-
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
-
-#  Archive manipulation strings
-
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
-
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
-
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-HRMARFILES = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLGS)
-HRMARFILED = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLGD)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
-
-SUCC = precision version) compiled successfully
+MI28CS = $(MI28S) $(HCLGS)(hsl_mi28s_ciface.o)
+MI28CD = $(MI28D) $(HCLGD)(hsl_mi28d_ciface.o)
 
 #  compilation agenda
 
 mi28: mi28_$(PRECIS)
 	@printf ' %-21s\n' "HSL MI28 routines ($(PRECIS) $(SUCC)"
 mi28_silent: mi28_$(PRECIS)
-mi28_single: basics metis $(HLGS)(kb07i.o) $(HLGS)(mc61s.o) $(HLGS)(mc77s.o) \
-             $(HLGS)(hsl_zb01i.o) \
-             $(HLGS)(hsl_mc68i.o) $(HLGS)(hsl_mc69s.o) $(HLGS)(mc64s.o) \
-             $(HLGS)(hsl_mc64s.o) $(HLGS)(hsl_mi28s.o)
-mi28_double: basics metis $(HLGD)(kb07i.o) $(HLGD)(mc61d.o) $(HLGD)(mc77d.o) \
-             $(HLGD)(hsl_zb01i.o) \
-             $(HLGD)(hsl_mc68i.o) $(HLGD)(hsl_mc69d.o) $(HLGD)(mc64d.o) \
-             $(HLGD)(hsl_mc64d.o) $(HLGD)(hsl_mi28d.o)
+mi28_single: $(MI28S)
+mi28_double: $(MI28D)
+
+mi28_ciface: mi28_ciface_$(PRECIS)
+	@printf ' %-21s\n' "HSL MI28 C routines ($(PRECIS) $(SUCC)"
+mi28_ciface_silent: mi28_ciface_$(PRECIS)
+mi28_ciface_single: $(MI28CS)
+mi28_ciface_double: $(MI28CD)
 
 #  lapack packages
 
@@ -265,3 +226,30 @@ $(HLG)(hsl_mi28d.o): $(MI28)/hsl_mi28d.f90
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
+hsl_mi28s_ciface.o: $(HCLG)(hsl_mi28s_ciface.o)
+
+$(HCLG)(hsl_mi28s_ciface.o): $(MI28)/hsl_mi28s_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi28s_ciface"
+	$(CP) $(MI28)/C/hsl_mi28s_ciface.f90 $(OBJ)/hsl_mi28s_ciface.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mi28s_ciface.o $(FFLAGS) \
+                      hsl_mi28s_ciface.f90
+	cd $(OBJ) ; $(HCARR) hsl_mi28s_ciface.o ; \
+                    $(RM) hsl_mi28s_ciface.f90 hsl_mi28s_ciface.o
+	$(CRMARFILE) ermo_ciface.o
+	$(MVMODS)
+	$(RANLIB) $(HCLG)
+	@printf '[ OK ]\n'
+
+hsl_mi28d_ciface.o: $(HCLG)(hsl_mi28d_ciface.o)
+
+$(HCLG)(hsl_mi28d_ciface.o): $(MI28)/C/hsl_mi28d_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi28d_ciface"
+	$(CP) $(MI28)/C/hsl_mi28d_ciface.f90 $(OBJ)/hsl_mi28d_ciface.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mi28d_ciface.o $(FFLAGS) \
+                      hsl_mi28d_ciface.f90
+	cd $(OBJ) ; $(HCARR) hsl_mi28d_ciface.o ; \
+                    $(RM) hsl_mi28d_ciface.f90 hsl_mi28d_ciface.o
+	$(CRMARFILE) ermo_ciface.o
+	$(MVMODS)
+	$(RANLIB) $(HCLG)
+	@printf '[ OK ]\n'

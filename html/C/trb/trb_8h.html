@@ -18,15 +18,6 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-   TeX: { Macros: {
-    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
-    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
-    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
-  } }
-});
-</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -90,6 +81,7 @@ $(function() {
 <code>#include &quot;galahad_precision.h&quot;</code><br />
 <code>#include &quot;trs.h&quot;</code><br />
 <code>#include &quot;gltr.h&quot;</code><br />
+<code>#include &quot;psls.h&quot;</code><br />
 </div>
 <p><a href="trb_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -454,6 +446,24 @@ if .deallocate_error_fatal is true, any array/pointer deallocation error will te
 prefix[31]</td>
 <td class="fielddoc">
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
+<tr><td class="fieldtype">
+<a id="a0fb493acc030672e71f68fa1ef1727e8"></a>struct trs_control_type</td>
+<td class="fieldname">
+trs_control</td>
+<td class="fielddoc">
+control parameters for TRS </td></tr>
+<tr><td class="fieldtype">
+<a id="aa48d482633f3788830b1d8dc85fa91d6"></a>struct gltr_control_type</td>
+<td class="fieldname">
+gltr_control</td>
+<td class="fielddoc">
+control parameters for GLTR </td></tr>
+<tr><td class="fieldtype">
+<a id="a6fe2b1a82e177fbd1a39d9de9652a2c5"></a>struct psls_control_type</td>
+<td class="fieldname">
+psls_control</td>
+<td class="fielddoc">
+control parameters for PSLS </td></tr>
 </table>
 
 </div>
@@ -666,6 +676,24 @@ the current value of the trust-region radius </td></tr>
 time</td>
 <td class="fielddoc">
 timings (see above) </td></tr>
+<tr><td class="fieldtype">
+<a id="aa7996c925462c655f2b3dd5a5da22c21"></a>struct trs_inform_type</td>
+<td class="fieldname">
+trs_inform</td>
+<td class="fielddoc">
+inform parameters for TRS </td></tr>
+<tr><td class="fieldtype">
+<a id="a27a98844f05f18669d3dd60d3e6a8e46"></a>struct gltr_inform_type</td>
+<td class="fieldname">
+gltr_inform</td>
+<td class="fielddoc">
+inform parameters for GLTR </td></tr>
+<tr><td class="fieldtype">
+<a id="a57ca5ed37882eb917736f845d3cdb8ee"></a>struct psls_inform_type</td>
+<td class="fieldname">
+psls_inform</td>
+<td class="fielddoc">
+inform parameters for PSLS </td></tr>
 </table>
 
 </div>

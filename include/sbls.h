@@ -313,7 +313,7 @@ extern "C" {
 
 // required packages
 #include "sls.h"
-// #include "uls.h"
+#include "uls.h"
 
 
 /**
@@ -512,7 +512,7 @@ struct sbls_control_type {
 
     /// \brief
     /// control parameters for ULS
-///    struct uls_control_type uls_control;
+    struct uls_control_type uls_control;
 };
 
 /**
@@ -649,7 +649,7 @@ struct sbls_inform_type {
 
     /// \brief
     /// inform parameters from the GALAHAD package ULS used
-///    struct uls_inform_type uls_inform;
+    struct uls_inform_type uls_inform;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    S B L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

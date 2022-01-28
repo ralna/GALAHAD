@@ -15,6 +15,7 @@ Currently there are C interfaces to the following core packages:
 
   uls  - common interface to a variety of popular unsymmetric linear solvers
   sls  - common interface to a variety of popular symmetric linear solvers
+  psls - precondition/solve symmetric linear systems
   sbls - precondition/solve symmetric block linear systems
   fdc  - determine consistency and redundancy of linear systems
   lpa  - solve linear programs using the simplex method

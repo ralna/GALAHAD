@@ -394,6 +394,15 @@ extern "C" {
 // precision
 #include "galahad_precision.h"
 
+// required packages
+#include "rqs.h"
+#include "glrt.h"
+#include "psls.h"
+//#include "bsc.h"
+//#include "roots.h"
+//#include "sec.h"
+//#include "sha.h"
+
 /**
  * control derived type as a C struct
  */
@@ -634,15 +643,15 @@ struct nls_subproblem_control_type {
 
     /// \brief
     /// control parameters for RQS
-    ///struct rqs_control_type rqs_control;
+    struct rqs_control_type rqs_control;
 
     /// \brief
     /// control parameters for GLRT
-    ///struct glrt_control_type glrt_control;
+    struct glrt_control_type glrt_control;
 
     /// \brief
     /// control parameters for PSLS
-    ///struct psls_control_type psls_control;
+    struct psls_control_type psls_control;
 
     /// \brief
     /// control parameters for BSC
@@ -901,15 +910,15 @@ struct nls_control_type {
 
     /// \brief
     /// control parameters for RQS
-    ///struct rqs_control_type rqs_control;
+    struct rqs_control_type rqs_control;
 
     /// \brief
     /// control parameters for GLRT
-    ///struct glrt_control_type glrt_control;
+    struct glrt_control_type glrt_control;
 
     /// \brief
     /// control parameters for PSLS
-    ///struct psls_control_type psls_control;
+    struct psls_control_type psls_control;
 
     /// \brief
     /// control parameters for BSC
@@ -1056,15 +1065,15 @@ struct nls_subproblem_inform_type {
 
     /// \brief
     /// inform parameters for RQS
-    /// struct rqs_inform_type rqs_inform;
+    struct rqs_inform_type rqs_inform;
 
     /// \brief
     /// inform parameters for GLRT
-    /// struct glrt_inform_type glrt_inform;
+    struct glrt_inform_type glrt_inform;
 
     /// \brief
     /// inform parameters for PSLS
-    /// struct psls_inform_type psls_inform;
+    struct psls_inform_type psls_inform;
 
     /// \brief
     /// inform parameters for BSC
@@ -1169,15 +1178,15 @@ struct nls_inform_type {
 
     /// \brief
     /// inform parameters for RQS
-    /// struct rqs_inform_type rqs_inform;
+    struct rqs_inform_type rqs_inform;
 
     /// \brief
     /// inform parameters for GLRT
-    /// struct glrt_inform_type glrt_inform;
+    struct glrt_inform_type glrt_inform;
 
     /// \brief
     /// inform parameters for PSLS
-    /// struct psls_inform_type psls_inform;
+    struct psls_inform_type psls_inform;
 
     /// \brief
     /// inform parameters for BSC

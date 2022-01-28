@@ -536,10 +536,10 @@ choices are
 {\tt 'ma86'},
 {\tt 'ma97'},
 {\tt 'ssids'},
-{\tt 'pardiso'}
-and
+{\tt 'pardiso'},
 {\tt 'wsmp'},
-although only {\tt 'sils'} and, for OMP 4.0-compliant compilers,
+{\tt 'sytr'},
+although only {\tt 'sils'}, {\tt 'sytr'}  and, for OMP 4.0-compliant compilers,
 {\tt 'ssids'} are installed by default.
 See the documentation for the \galahad\ package {\tt SLS} for further details.
 The default is {\tt symmetric\_linear\_solver = 'sils'}.
@@ -556,10 +556,13 @@ choices are
 {\tt 'ma87'},
 {\tt 'ma97'},
 {\tt 'ssids'},
-{\tt 'pardiso'}
-and
+{\tt 'pardiso'},
+{\tt 'mkl\_pardiso'},
 {\tt 'wsmp'},
-although only {\tt 'sils'} and, for OMP 4.0-compliant compilers,
+{\tt 'potr'} and
+{\tt 'pbtr'},
+although only {\tt 'sils'},  {\tt 'potr'}, {\tt 'pbtr'}
+and, for OMP 4.0-compliant compilers,
 {\tt 'ssids'} are installed by default.
 See the documentation for the \galahad\ package {\tt SLS} for further details.
 The default is {\tt definite\_linear\_solver = 'sils'}.
@@ -616,26 +619,32 @@ are:
 \itt{total} is a scalar variable of type default \realdp, that gives
  the total CPU time (in seconds) spent in the package.
 
-\itt{form} is a scalar variable of type default \realdp, that gives
+\itt{assemble} is a scalar variable of type default \realdp, that gives
  the CPU time spent forming the preconditioner.
 
 \itt{factorize} is a scalar variable of type default \realdp, that gives
  the CPU time spent factorizing the preconditioner.
 
-\itt{apply} is a scalar variable of type default \realdp, that gives
+\itt{solve} is a scalar variable of type default \realdp, that gives
  the CPU time spent applying the preconditioner.
+
+\itt{update} is a scalar variable of type default \realdp, that gives
+ the CPU time spent updating the factorization.
 
 \itt{clock\_total} is a scalar variable of type default \realdp, that gives
  the total elapsed system clock time (in seconds) spent in the package.
 
-\itt{clock\_form} is a scalar variable of type default \realdp, that gives
+\itt{clock\_assemble} is a scalar variable of type default \realdp, that gives
  the  elapsed system clock time spent forming the preconditioner.
 
 \itt{clock\_factorize} is a scalar variable of type default \realdp, that gives
  the elapsed system clock time spent factorizing the preconditioner.
 
-\itt{clock\_apply} is a scalar variable of type default \realdp, that gives
+\itt{clock\_solve} is a scalar variable of type default \realdp, that gives
  the elapsed system clock time spent applying the preconditioner.
+
+\itt{clock\_update} is a scalar variable of type default \realdp, that gives
+ the elapsed system clock time spent updating the factorization.
 
 \end{description}
 

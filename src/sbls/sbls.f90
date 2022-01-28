@@ -534,6 +534,10 @@
         TYPE ( SBLS_null_space_factors_type ) :: nfactors
       END TYPE
 
+!  ====================================
+!  The PSLS_full_data_type derived type
+!  ====================================
+
       TYPE, PUBLIC :: SBLS_full_data_type
         LOGICAL :: f_indexing
         TYPE ( SBLS_data_type ) :: SBLS_data

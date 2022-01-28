@@ -1,4 +1,4 @@
-.TH "arc.h" 3 "Sat Jan 8 2022" "C interfaces to GALAHAD ARC" \" -*- nroff -*-
+.TH "arc.h" 3 "Fri Jan 28 2022" "C interfaces to GALAHAD ARC" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -13,6 +13,8 @@ arc.h
 \fC#include 'rqs\&.h'\fP
 .br
 \fC#include 'glrt\&.h'\fP
+.br
+\fC#include 'psls\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -349,6 +351,15 @@ bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any arra
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
+struct rqs_control_type \fIrqs_control\fP control parameters for RQS 
+.br
+.PP
+struct glrt_control_type \fIglrt_control\fP control parameters for GLRT 
+.br
+.PP
+struct psls_control_type \fIpsls_control\fP control parameters for DPS struct dps_control_type dps_control; control parameters for PSLS 
+.br
+.PP
 .RE
 .PP
 .SH "struct arc_time_type"
@@ -447,6 +458,15 @@ real_wp_ \fIweight\fP the current value of the regularization weight
 .br
 .PP
 struct \fBarc_time_type\fP \fItime\fP timings (see above) 
+.br
+.PP
+struct rqs_inform_type \fIrqs_inform\fP inform parameters for RQS 
+.br
+.PP
+struct glrt_inform_type \fIglrt_inform\fP inform parameters for GLRT 
+.br
+.PP
+struct psls_inform_type \fIpsls_inform\fP inform parameters for DPS struct dps_inform_type dps_inform; inform parameters for PSLS 
 .br
 .PP
 .RE

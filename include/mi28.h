@@ -1,4 +1,19 @@
- * Nick Gould for GALAHAD use, 2022-01-15
+//* \file mi28.h */
+
+/*
+ * THIS VERSION: GALAHAD 4.0 - 2022-01-27 AT 09:00 GMT.
+ *
+ *-*-*-*-*-*-*-*-*-  GALAHAD MI28 C INTERFACE  *-*-*-*-*-*-*-*-*-*-
+ *
+ *  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+ *  Principal author: Jaroslav Fowkes & Nick Gould
+ *
+ *  History -
+ *   originally released GALAHAD Version 3.3. November 27th 2021
+ *
+ *  For full documentation, see
+ *   http://galahad.rl.ac.uk/galahad-www/specs.html
+ */
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,6 +30,7 @@ extern "C" {
 
 /* Derived type to hold control parameters for hsl_mi28 */
 struct mi28_control {
+   int f_arrays;   
    real_wp_ alpha;
    bool check ;
    int iorder;

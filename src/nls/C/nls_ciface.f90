@@ -34,44 +34,44 @@
     USE GALAHAD_USERDATA_double, only:                                         &
         f_galahad_userdata_type => GALAHAD_userdata_type
 
-!!$    USE GALAHAD_RQS_double_ciface, ONLY: &
-!!$        rqs_inform_type, &
-!!$        rqs_control_type, &
-!!$        copy_rqs_inform_in => copy_inform_in, &
-!!$        copy_rqs_inform_out => copy_inform_out, &
-!!$        copy_rqs_control_in => copy_control_in, &
-!!$        copy_rqs_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_GLRT_double_ciface, ONLY: &
-!!$        glrt_inform_type, &
-!!$        glrt_control_type, &
-!!$        copy_glrt_inform_in => copy_inform_in, &
-!!$        copy_glrt_inform_out => copy_inform_out, &
-!!$        copy_glrt_control_in => copy_control_in, &
-!!$        copy_glrt_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_PSLS_double_ciface, ONLY: &
-!!$        psls_inform_type, &
-!!$        psls_control_type, &
-!!$        copy_psls_inform_in => copy_inform_in, &
-!!$        copy_psls_inform_out => copy_inform_out, &
-!!$        copy_psls_control_in => copy_control_in, &
-!!$        copy_psls_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_BSC_double_ciface, ONLY: &
-!!$        bsc_inform_type, &
-!!$        bsc_control_type, &
-!!$        copy_bsc_inform_in => copy_inform_in, &
-!!$        copy_bsc_inform_out => copy_inform_out, &
-!!$        copy_bsc_control_in => copy_control_in, &
+    USE GALAHAD_RQS_double_ciface, ONLY:                                       &
+        rqs_inform_type,                                                       &
+        rqs_control_type,                                                      &
+        copy_rqs_inform_in   => copy_inform_in,                                &
+        copy_rqs_inform_out  => copy_inform_out,                               &
+        copy_rqs_control_in  => copy_control_in,                               &
+        copy_rqs_control_out => copy_control_out
+
+    USE GALAHAD_GLRT_double_ciface, ONLY:                                      &
+        glrt_inform_type,                                                      &
+        glrt_control_type,                                                     &
+        copy_glrt_inform_in   => copy_inform_in,                               &
+        copy_glrt_inform_out  => copy_inform_out,                              &
+        copy_glrt_control_in  => copy_control_in,                              &
+        copy_glrt_control_out => copy_control_out
+
+    USE GALAHAD_PSLS_double_ciface, ONLY:                                      &
+        psls_inform_type,                                                      &
+        psls_control_type,                                                     &
+        copy_psls_inform_in   => copy_inform_in,                               &
+        copy_psls_inform_out  => copy_inform_out,                              &
+        copy_psls_control_in  => copy_control_in,                              &
+        copy_psls_control_out => copy_control_out
+
+!!$    USE GALAHAD_BSC_double_ciface, ONLY:                                    &
+!!$        bsc_inform_type,                                                    &
+!!$        bsc_control_type,                                                   &
+!!$        copy_bsc_inform_in   => copy_inform_in,                             &
+!!$        copy_bsc_inform_out  => copy_inform_out,                            &
+!!$        copy_bsc_control_in  => copy_control_in,                            &
 !!$        copy_bsc_control_out => copy_control_out
 !!$
-!!$    USE GALAHAD_ROOTS_double_ciface, ONLY: &
-!!$        roots_inform_type, &
-!!$        roots_control_type, &
-!!$        copy_roots_inform_in => copy_inform_in, &
-!!$        copy_roots_inform_out => copy_inform_out, &
-!!$        copy_roots_control_in => copy_control_in, &
+!!$    USE GALAHAD_ROOTS_double_ciface, ONLY:                                  &
+!!$        roots_inform_type,                                                  &
+!!$        roots_control_type,                                                 &
+!!$        copy_roots_inform_in   => copy_inform_in,                           &
+!!$        copy_roots_inform_out  => copy_inform_out,                          &
+!!$        copy_roots_control_in  => copy_control_in,                          &
 !!$        copy_roots_control_out => copy_control_out
 
     IMPLICIT NONE
@@ -132,9 +132,9 @@
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
-!!$      TYPE ( rqs_control_type ) :: rqs_control
-!!$      TYPE ( glrt_control_type ) :: glrt_control
-!!$      TYPE ( psls_control_type ) :: psls_control
+      TYPE ( rqs_control_type ) :: rqs_control
+      TYPE ( glrt_control_type ) :: glrt_control
+      TYPE ( psls_control_type ) :: psls_control
 !!$      TYPE ( bsc_control_type ) :: bsc_control
 !!$      TYPE ( roots_control_type ) :: roots_control
     END TYPE nls_subproblem_control_type
@@ -185,9 +185,9 @@
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
-!!$      TYPE ( rqs_control_type ) :: rqs_control
-!!$      TYPE ( glrt_control_type ) :: glrt_control
-!!$      TYPE ( psls_control_type ) :: psls_control
+      TYPE ( rqs_control_type ) :: rqs_control
+      TYPE ( glrt_control_type ) :: glrt_control
+      TYPE ( psls_control_type ) :: psls_control
 !!$      TYPE ( bsc_control_type ) :: bsc_control
 !!$      TYPE ( roots_control_type ) :: roots_control
       TYPE ( nls_subproblem_control_type ) :: subproblem_control
@@ -227,9 +227,9 @@
       REAL ( KIND = wp ) :: norm_g
       REAL ( KIND = wp ) :: weight
       TYPE ( nls_time_type ) :: time
-!!$      TYPE ( rqs_inform_type ) :: rqs_inform
-!!$      TYPE ( glrt_inform_type ) :: glrt_inform
-!!$      TYPE ( psls_inform_type ) :: psls_inform
+      TYPE ( rqs_inform_type ) :: rqs_inform
+      TYPE ( glrt_inform_type ) :: glrt_inform
+      TYPE ( psls_inform_type ) :: psls_inform
 !!$      TYPE ( bsc_inform_type ) :: bsc_inform
 !!$      TYPE ( roots_inform_type ) :: roots_inform
     END TYPE nls_subproblem_inform_type
@@ -255,9 +255,9 @@
       REAL ( KIND = wp ) :: norm_g
       REAL ( KIND = wp ) :: weight
       TYPE ( nls_time_type ) :: time
-!!$      TYPE ( rqs_inform_type ) :: rqs_inform
-!!$      TYPE ( glrt_inform_type ) :: glrt_inform
-!!$      TYPE ( psls_inform_type ) :: psls_inform
+      TYPE ( rqs_inform_type ) :: rqs_inform
+      TYPE ( glrt_inform_type ) :: glrt_inform
+      TYPE ( psls_inform_type ) :: psls_inform
 !!$      TYPE ( bsc_inform_type ) :: bsc_inform
 !!$      TYPE ( roots_inform_type ) :: roots_inform
       TYPE ( nls_subproblem_inform_type ) :: subproblem_inform
@@ -431,9 +431,9 @@
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
 
     ! Derived types
-!!$    CALL copy_rqs_control_in( ccontrol%rqs_control, fcontrol%rqs_control )
-!!$    CALL copy_glrt_control_in( ccontrol%glrt_control, fcontrol%glrt_control )
-!!$    CALL copy_psls_control_in( ccontrol%psls_control, fcontrol%psls_control )
+    CALL copy_rqs_control_in( ccontrol%rqs_control, fcontrol%rqs_control )
+    CALL copy_glrt_control_in( ccontrol%glrt_control, fcontrol%glrt_control )
+    CALL copy_psls_control_in( ccontrol%psls_control, fcontrol%psls_control )
 !!$    CALL copy_bsc_control_in( ccontrol%bsc_control, fcontrol%bsc_control )
 !!$    CALL copy_roots_control_in( ccontrol%roots_control,                     &
 !!$                               fcontrol%roots_control )
@@ -541,12 +541,12 @@
       ccontrol%subproblem_control%deallocate_error_fatal
 
     ! Derived types
-!!$    CALL copy_rqs_control_in( ccontrol%subproblem_control%rqs_control,      &
-!!&                              fcontrol%subproblem_control%rqs_control )
-!!$    CALL copy_glrt_control_in( ccontrol%subproblem_control%glrt_control,    &
-!!&                              fcontrol%subproblem_control%glrt_control )
-!!$    CALL copy_psls_control_in( ccontrol%subproblem_control%psls_control,    &
-!!&                              fcontrol%subproblem_control%psls_control )
+    CALL copy_rqs_control_in( ccontrol%subproblem_control%rqs_control,         &
+                              fcontrol%subproblem_control%rqs_control )
+    CALL copy_glrt_control_in( ccontrol%subproblem_control%glrt_control,       &
+                               fcontrol%subproblem_control%glrt_control )
+    CALL copy_psls_control_in( ccontrol%subproblem_control%psls_control,       &
+                               fcontrol%subproblem_control%psls_control )
 !!$    CALL copy_bsc_control_in( ccontrol%subproblem_control%bsc_control,      &
 !!&                              fcontrol%subproblem_control%bsc_control )
 !!$    CALL copy_roots_control_in( ccontrol%subproblem_control%roots_control,  &
@@ -628,12 +628,12 @@
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
 
     ! Derived types
-!!$    CALL copy_rqs_control_out( fcontrol%rqs_control,                        &
-!!&                                ccontrol%rqs_control )
-!!$    CALL copy_glrt_control_out( fcontrol%glrt_control,                      &
-!!&                                ccontrol%glrt_control )
-!!$    CALL copy_psls_control_out( fcontrol%psls_control,                      &
-!!&                                ccontrol%psls_control )
+    CALL copy_rqs_control_out( fcontrol%rqs_control,                           &
+                               ccontrol%rqs_control )
+    CALL copy_glrt_control_out( fcontrol%glrt_control,                         &
+                                ccontrol%glrt_control )
+    CALL copy_psls_control_out( fcontrol%psls_control,                         &
+                                ccontrol%psls_control )
 !!$    CALL copy_bsc_control_out( fcontrol%bsc_control,                        &
 !!&                               ccontrol%bsc_control )
 !!$    CALL copy_roots_control_out( fcontrol%roots_control,                    &
@@ -742,12 +742,12 @@
       fcontrol%subproblem_control%deallocate_error_fatal
 
     ! Derived types
-!!$    CALL copy_rqs_control_out( fcontrol%subproblem_control%rqs_controll,    &
-!!&                               ccontrol%subproblem_control%rqs_control )
-!!$    CALL copy_glrt_control_out( fcontrol%subproblem_control,                &
-!!&                                ccontrol%subproblem_control%glrt_control )
-!!$    CALL copy_psls_control_out( fcontrol%subproblem_control%psls_control,   &
-!!&                                ccontrol%subproblem_control%psls_control )
+    CALL copy_rqs_control_out( fcontrol%subproblem_control%rqs_control,        &
+                               ccontrol%subproblem_control%rqs_control )
+    CALL copy_glrt_control_out( fcontrol%subproblem_control%glrt_control,      &
+                                ccontrol%subproblem_control%glrt_control )
+    CALL copy_psls_control_out( fcontrol%subproblem_control%psls_control,      &
+                                ccontrol%subproblem_control%psls_control )
 !!$    CALL copy_bsc_control_out( fcontrol%subproblem_control%bsc_control,     &
 !!&                               ccontrol%subproblem_control%bsc_control )
 !!$    CALL copy_roots_control_out( fcontrol%subproblem_control%roots_control, &
@@ -841,9 +841,9 @@
 
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
-!!$    CALL copy_rqs_inform_in( cinform%rqs_inform, finform%rqs_inform )
-!!$    CALL copy_glrt_inform_in( cinform%glrt_inform, finform%glrt_inform )
-!!$    CALL copy_psls_inform_in( cinform%psls_inform, finform%psls_inform )
+    CALL copy_rqs_inform_in( cinform%rqs_inform, finform%rqs_inform )
+    CALL copy_glrt_inform_in( cinform%glrt_inform, finform%glrt_inform )
+    CALL copy_psls_inform_in( cinform%psls_inform, finform%psls_inform )
 !!$    CALL copy_bsc_inform_in( cinform%bsc_inform, finform%bsc_inform )
 !!$    CALL copy_roots_inform_in( cinform%roots_inform, finform%roots_inform )
 
@@ -900,12 +900,12 @@
     ! Derived types
     CALL copy_time_in( cinform%subproblem_inform%time,                         &
                        finform%subproblem_inform%time )
-!!$    CALL copy_rqs_inform_in( cinform%subproblem_inform%rqs_inform,          &
-!!&                             finform%subproblem_inform%rqs_inform )
-!!$    CALL copy_glrt_inform_in( cinform%subproblem_inform%glrt_inform,        &
-!!&                              finform%subproblem_inform%glrt_inform )
-!!$    CALL copy_psls_inform_in( cinform%subproblem_inform%psls_inform,        &
-!!&                              finform%subproblem_inform%psls_inform )
+    CALL copy_rqs_inform_in( cinform%subproblem_inform%rqs_inform,             &
+                             finform%subproblem_inform%rqs_inform )
+    CALL copy_glrt_inform_in( cinform%subproblem_inform%glrt_inform,           &
+                              finform%subproblem_inform%glrt_inform )
+    CALL copy_psls_inform_in( cinform%subproblem_inform%psls_inform,           &
+                              finform%subproblem_inform%psls_inform )
 !!$    CALL copy_bsc_inform_in( cinform%subproblem_inform%bsc_inform,          &
 !!&                             finform%subproblem_inform%bsc_inform )
 !!$    CALL copy_roots_inform_in( cinform%subproblem_inform%roots_inform,      &
@@ -956,9 +956,9 @@
 
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
-!!$    CALL copy_rqs_inform_out( finform%rqs_inform, cinform%rqs_inform )
-!!$    CALL copy_glrt_inform_out( finform%glrt_inform, cinform%glrt_inform )
-!!$    CALL copy_psls_inform_out( finform%psls_inform, cinform%psls_inform )
+    CALL copy_rqs_inform_out( finform%rqs_inform, cinform%rqs_inform )
+    CALL copy_glrt_inform_out( finform%glrt_inform, cinform%glrt_inform )
+    CALL copy_psls_inform_out( finform%psls_inform, cinform%psls_inform )
 !!$    CALL copy_bsc_inform_out( finform%bsc_inform, cinform%bsc_inform )
 !!$    CALL copy_roots_inform_out( finform%roots_inform, cinform%roots_inform )
 
@@ -1015,12 +1015,12 @@
     ! Derived types
     CALL copy_time_out( finform%subproblem_inform%time,                        &
                         cinform%subproblem_inform%time )
-!!$    CALL copy_rqs_inform_out( finform%subproblem_inform%rqs_inform,         &
-!!$                              cinform%subproblem_inform%rqs_inform )
-!!$    CALL copy_glrt_inform_out( finform%subproblem_inform%glrt_inform,       &
-!!$                               cinform%subproblem_inform%glrt_inform )
-!!$    CALL copy_psls_inform_out( finform%subproblem_inform%psls_inform,       &
-!!$                               cinform%subproblem_inform%psls_inform )
+    CALL copy_rqs_inform_out( finform%subproblem_inform%rqs_inform,            &
+                              cinform%subproblem_inform%rqs_inform )
+    CALL copy_glrt_inform_out( finform%subproblem_inform%glrt_inform,          &
+                               cinform%subproblem_inform%glrt_inform )
+    CALL copy_psls_inform_out( finform%subproblem_inform%psls_inform,          &
+                               cinform%subproblem_inform%psls_inform )
 !!$    CALL copy_bsc_inform_out( finform%subproblem_inform%bsc_inform,         &
 !!$                               cinform%subproblem_inform%bsc_inform )
 !!$    CALL copy_roots_inform_out( finform%subproblem_inform%roots_inform,     &

@@ -1780,5 +1780,10 @@ make_ciface_mi20:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi20_ciface_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi20 )
 
+make_ciface_mi28:
+	( cd $(GALAHAD)/src/non-free/mi28 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi28_ciface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi28 )
+
 
 

@@ -670,16 +670,17 @@ which arise at each iteration of the minimization algorithm.
     A preconditioned conjugate gradient
     method will be used with a modified Cholesky
     preconditioner due to Gill, Murray, Poncel\'{e}on and Saunders,
-    in which small or negative diagonals are
-    made sensibly positive during the factorization.
+    in which an indefinite factorization is altered to give a positive 
+    definite one.
     This option is only available if the user has provided one of the
     external packages {\tt MA27} or {\tt HSL\_MA57},
     (see Section~\ref{galexternal}).
 \itt{7$.$}
     A preconditioned conjugate gradient
     method will be used with a modified Cholesky
-    preconditioner due to Schnabel and Eskow, in which an indefinite
-    factorization is altered to give a positive definite one.
+    preconditioner due to Schnabel and Eskow, 
+    in which small or negative diagonals are
+    made sensibly positive during the factorization. 
     This option is only available if the user has provided one of the
     external packages {\tt MA27} or {\tt HSL\_MA57},
     (see Section~\ref{galexternal}).
